@@ -30,6 +30,10 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+
+// xw 2.8
+#include <wx/filename.h>
+
 #include <typeinfo>
 #include "dashboard_pi.h"
 #include "icons.h"
@@ -420,9 +424,29 @@ int dashboard_pi::Init( void )
     LoadConfig();
 
     //    This PlugIn needs a toolbar icon
-    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
-            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
-
+//    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard, _img_dashboard, wxITEM_CHECK,
+//            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
+    
+    wxString shareLocn =*GetpSharedDataLocation() +
+                _T("plugins") + wxFileName::GetPathSeparator() +
+                _T("dashboard_pi") + wxFileName::GetPathSeparator()
+                +_T("data") + wxFileName::GetPathSeparator();
+    
+     wxString normalIcon = shareLocn + _T("Dashboard.svg");
+     wxString toggledIcon = shareLocn + _T("Dashboard_toggled.svg");
+     wxString rolloverIcon = shareLocn + _T("Dashboard_rollover.svg");
+     
+     //  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
+     if(GetActiveStyleName().Lower() != _T("traditional")){
+         normalIcon = _T("");
+         toggledIcon = _T("");
+         rolloverIcon = _T("");
+     }
+         
+      m_toolbar_item_id = InsertPlugInToolSVG( _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
+             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
+    
+    
     ApplyConfig();
 
     //  If we loaded a version 1 config setup, convert now to version 2
@@ -439,6 +463,7 @@ int dashboard_pi::Init( void )
 
 bool dashboard_pi::DeInit( void )
 {
+    SaveConfig();
     if( IsRunning() ) // Timer started?
     Stop(); // Stop timer
 
@@ -883,6 +908,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
 								m_twaangle, m_twaunit);
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
+                                    toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
+                                    getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
                                     getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                         }
@@ -1375,8 +1403,8 @@ void dashboard_pi::OnToolbarToolCallback( int id )
                     if( b_anyviz )
                         pane.Show( cont->m_bIsVisible );
                     else {
-                       cont->m_bIsVisible = true;
-                       pane.Show( true );       // show all if none are marked visible and none are shown
+                       cont->m_bIsVisible = cont->m_bPersVisible;
+                       pane.Show( cont->m_bIsVisible );
                     }
                 else
                     pane.Show( false );
@@ -1513,7 +1541,9 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("Orientation"), &orient, _T("V") );
                 int i_cnt;
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
-
+                bool b_persist;
+                pConf->Read( _T("Persistence"), &b_persist, 1 );
+                
                 wxArrayInt ar;
                 for( int i = 0; i < i_cnt; i++ ) {
                     int id;
@@ -1521,8 +1551,11 @@ bool dashboard_pi::LoadConfig( void )
                     if( id != -1 ) ar.Add( id );
                 }
 // TODO: Do not add if GetCount == 0
-                m_ArrayOfDashboardWindow.Add(
-                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
+
+                DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
+                cont->m_bPersVisible = b_persist;
+
+                m_ArrayOfDashboardWindow.Add(cont);
 
             }
         }
@@ -1570,7 +1603,8 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
-
+            pConf->Write( _T("Persistence"), cont->m_bPersVisible );
+            
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( unsigned int j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
                 pConf->Write( wxString::Format( _T("Instrument%d"), j + 1 ),
@@ -1611,20 +1645,6 @@ void dashboard_pi::ApplyConfig( void )
             if(sz.x == 0)
                 sz.IncTo( wxSize( 160, 388) );
 #endif
-// <<<<<<< HEAD
-//       
-//             m_pauimgr->AddPane( cont->m_pDashboardWindow,
-//                 wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).MinSize(
-//                 sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible )
-//                 .TopDockable(!vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ) );
-// 
-// #ifdef __OCPN__ANDROID__
-//             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
-//             pane.Dockable( false );
-//             
-// #endif            
-//             
-// =======
                 wxAuiPaneInfo p = wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( false ).TopDockable(
                     !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
                         sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ).Gripper(false) ;
@@ -1671,6 +1691,7 @@ void dashboard_pi::ShowDashboard( size_t id, bool visible )
         DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( id );
         m_pauimgr->GetPane( cont->m_pDashboardWindow ).Show( visible );
         cont->m_bIsVisible = visible;
+        cont->m_bPersVisible = visible;
         m_pauimgr->Update();
     }
 }

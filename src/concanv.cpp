@@ -101,7 +101,7 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
-    wxFont *pThisLegFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
+    wxFont *pThisLegFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
                                                           qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
     pThisLegText->SetFont( *pThisLegFont );
@@ -454,9 +454,9 @@ AnnunText::AnnunText( wxWindow *parent, wxWindowID id, const wxString& LegendEle
     m_label = _T("Label");
     m_value = _T("-----");
 
-    m_plabelFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
+    m_plabelFont = FontMgr::Get().FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
             wxString( _T("Arial Bold") ) );
-    m_pvalueFont = wxTheFontList->FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
+    m_pvalueFont = FontMgr::Get().FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
             FALSE, wxString( _T("helvetica") ), wxFONTENCODING_ISO8859_1 );
 
     m_LegendTextElement = LegendElement;

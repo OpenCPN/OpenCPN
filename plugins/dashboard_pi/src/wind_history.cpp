@@ -101,7 +101,7 @@ void DashboardInstrument_WindDirHistory::SetData(int st, double data, wxString u
 		  m_DirRecCnt++;
 	  }
     }
-    if (st == OCPN_DBP_STC_TWS) {
+    if (st == OCPN_DBP_STC_TWS && data < 200.0) {
       m_WindSpd = data;
 	  // if unit changes, reset everything ...
 	  if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {

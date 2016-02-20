@@ -31,6 +31,8 @@
 
 #include "FontDesc.h"
 
+class OCPNwxFontList;
+
 /**
  * Manages the font list.
  *
@@ -57,6 +59,18 @@ class FontMgr
         void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
         bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
         void ScrubList( );
+
+        wxFont* FindOrCreateFont( int point_size, wxFontFamily family, 
+                    wxFontStyle style, wxFontWeight weight, bool underline = false,
+                    const wxString &facename = wxEmptyString,
+                    wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
+        // For wxWidgets 2.8 compatability
+        wxFont *FindOrCreateFont(int pointSize, int family, int style, int weight,
+                                 bool underline = false,
+                                 const wxString& face = wxEmptyString,
+                                 wxFontEncoding encoding = wxFONTENCODING_DEFAULT)
+            { return FindOrCreateFont(pointSize, (wxFontFamily)family, (wxFontStyle)style,
+                (wxFontWeight)weight, underline, face, encoding); }
         
         static void Shutdown();
         
@@ -70,7 +84,8 @@ class FontMgr
         wxString GetSimpleNativeFont(int size, wxString face);
     
         static FontMgr * instance;
-    
+
+        OCPNwxFontList  *m_wxFontCache;
         FontList *m_fontlist;
         wxFont   *pDefFont;
         wxArrayString m_AuxKeyArray;

@@ -117,11 +117,17 @@ extern struct sigaction sa_all_old;
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
 
+extern float  g_ChartScaleFactorExp;
+
 #include <vector>
 
 #if defined(__MSVC__) &&  (_MSC_VER < 1700) 
 #define  trunc(d) ((d>0) ? floor(d) : ceil(d))
 #endif
+
+//  Define to enable the invocation of a temporary menubar by pressing the Alt key.
+//  Not implemented for Windows XP, as it interferes with Alt-Tab processing.
+#define OCPN_ALT_MENUBAR 1
 
 
 //    Profiling support
@@ -498,6 +504,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 {
     parent_frame = ( MyFrame * ) frame;       // save a pointer to parent
 
+    pscratch_bm = NULL;
+
     SetBackgroundColour ( GetGlobalColor ( _T ( "NODTA" ) ) );
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing on color scheme change
 
@@ -758,7 +766,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_b_rot_hidef = true;
     
-    pscratch_bm = NULL;
     proute_bm = NULL;
 
     m_prot_bm = NULL;
@@ -911,6 +918,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     if ( !g_bdisable_opengl )
         m_pQuilt->EnableHighDefinitionZoom( true );
 #endif    
+
+    m_pgridFont = FontMgr::Get().FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+         wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
         
 }
 
@@ -981,6 +991,17 @@ ChartCanvas::~ChartCanvas()
     }
 #endif
 
+}
+
+bool ChartCanvas::IsTempMenuBarEnabled()
+{
+#ifdef __WXMSW__
+    int major;
+    wxGetOsVersion(&major);
+    return (major > 5);   //  For Windows, function is only available on Vista and above
+#else
+    return true;
+#endif
 }
 
 bool ChartCanvas::SetUserOwnship(){
@@ -1235,6 +1256,11 @@ bool ChartCanvas::IsQuiltDelta()
     return m_pQuilt->IsQuiltDelta( VPoint );
 }
 
+void ChartCanvas::UnlockQuilt()
+{
+    m_pQuilt->UnlockQuilt();
+}
+
 ArrayOfInts ChartCanvas::GetQuiltIndexArray( void )
 {
     return m_pQuilt->GetQuiltIndexArray();;
@@ -1410,8 +1436,6 @@ void ChartCanvas::OnKeyChar( wxKeyEvent &event )
     event.Skip();
 }    
 
-
-
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     if(g_pi_manager)
@@ -1429,7 +1453,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     // If the permanent menubar is disabled, we show it temporarily when Alt is pressed or when
     // Alt + a letter is presssed (for the top-menu-level hotkeys).
     // The toggling normally takes place in OnKeyUp, but here we handle some special cases.
-    if ( event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
+    if ( IsTempMenuBarEnabled() && event.AltDown()  &&  !pConfig->m_bShowMenuBar ) {
         // If Alt + a letter is pressed, and the menubar is hidden, show it now
         if ( event.GetKeyCode() >= 'A' && event.GetKeyCode() <= 'Z' ) {
             if ( !g_bTempShowMenuBar ) {
@@ -1502,7 +1526,18 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        StartMeasureRoute();
+        if( !m_bMeasure_Active )
+            StartMeasureRoute();
+        else{
+            CancelMeasureRoute();
+            
+            SetCursor( *pCursorArrow );
+            
+            gFrame->SurfaceToolbar();
+            InvalidateGL();
+            Refresh( false );
+        }
+        
         break;
 
     case WXK_F5:
@@ -1706,7 +1741,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 2:                      // Ctrl B
-            parent_frame->ToggleChartBar();
+            if ( pConfig->m_bShowMenuBar == false )
+                parent_frame->ToggleChartBar();
             break;
 
         case 13:             // Ctrl M // Drop Marker at cursor
@@ -1892,7 +1928,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 #ifndef __WXOSX__
         // If the permanent menu bar is disabled, and we are not in the middle of another key combo,
         // then show the menu bar temporarily when Alt is released (or hide it if already visible).
-        if ( !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
+        if ( IsTempMenuBarEnabled() && !pConfig->m_bShowMenuBar  &&  m_bMayToggleMenuBar ) {
             g_bTempShowMenuBar = !g_bTempShowMenuBar;
             parent_frame->ApplyGlobalSettings(false, false);
         }
@@ -2196,7 +2232,7 @@ wxBitmap ChartCanvas::CreateDimBitmap( wxBitmap &Bitmap, double factor )
 
 void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int max )
 {
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    wxFont *pfont = FontMgr::Get().FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     if( !m_pBrightPopup ) {
         //    Calculate size
@@ -2297,7 +2333,8 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     m_pAISRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
-                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
+                    if( console && console->IsShown() ) win_size.x -= console->GetSize().x;
+
                     m_pAISRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, AIS_ROLLOVER, win_size );
 
                     m_pAISRolloverWin->SetBitmap( AIS_ROLLOVER );
@@ -3172,6 +3209,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 b_ret = true;
             }
         }
+        
+        if(!g_bopengl)
+            VPoint.b_MercatorProjectionOverride = false;
     }
 
     //  Handle the quilted case
@@ -3937,7 +3977,14 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
 
             wxBitmap os_bm( rot_image );
-
+            
+            if(g_ChartScaleFactorExp > 1){
+                wxImage scaled_image = os_bm.ConvertToImage();
+                double factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+                os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * factor,
+                                                scaled_image.GetHeight() * factor,
+                                                wxIMAGE_QUALITY_HIGH));
+            }
             int w = os_bm.GetWidth();
             int h = os_bm.GetHeight();
             img_height = h;
@@ -4068,10 +4115,8 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
     float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
     wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxPENSTYLE_SOLID );
-    wxFont *font = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-                   wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
     dc.SetPen( GridPen );
-    dc.SetFont( *font );
+    dc.SetFont( *m_pgridFont );
     dc.SetTextForeground( GetGlobalColor( _T ( "SNDG1" ) ) );
 
     w = m_canvas_width;
@@ -6327,6 +6372,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         
 }
 
+bool panleftIsDown;
+
 bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
 {
     int x, y;
@@ -6368,10 +6415,13 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         ZoomCanvas( factor, true, false );
         
     }
-    
+
+    if( event.LeftDown() )
+        panleftIsDown = true;
+        
     if( event.LeftUp() ) {
-        if( 1/*leftIsDown*/ ) {  // left click for chart center
-            leftIsDown = false;
+        if( panleftIsDown ) {  // leftUp for chart center, but only after a leftDown seen here.
+            panleftIsDown = false;
             
             if( !g_btouch ){
                 if( !m_bChartDragging && !m_bMeasure_Active ) {
@@ -8365,7 +8415,6 @@ void pupHandler_PasteWaypoint() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteRoute() {
@@ -8483,7 +8532,6 @@ void pupHandler_PasteRoute() {
         cc1->Refresh( false );
     }
 
-    OCPNPlatform::HideBusySpinner();
 }
 
 void pupHandler_PasteTrack() {
@@ -8534,7 +8582,6 @@ void pupHandler_PasteTrack() {
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
-    OCPNPlatform::HideBusySpinner();
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
@@ -8930,7 +8977,7 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
     return result;
 }
 
-void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
+static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, int row, wxString s )
 {
     wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
     dc.SetFont( *dFont );
@@ -8946,12 +8993,14 @@ void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
 #endif
 
     xp = ref_point.x - w;
-    yp = ref_point.y + h;
+    yp = ref_point.y + h*row;
     yp += hilite_offset;
 
+    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+    dc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
+    
     AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
-    dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     dc.DrawText( s, xp, yp );
 }
 
@@ -9039,26 +9088,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
-        wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
-        dc.SetFont( *dFont );
-
-        int w, h;
-        int xp, yp;
-        int hilite_offset = 3;
-    #ifdef __WXMAC__
-        wxScreenDC sdc;
-        sdc.GetTextExtent(routeInfo, &w, &h, NULL, NULL, dFont);
-    #else
-        dc.GetTextExtent( routeInfo, &w, &h );
-    #endif
-        xp = r_rband.x - w;
-        yp = r_rband.y;
-        yp += hilite_offset;
-
-        AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
-        dc.DrawText( routeInfo, xp, yp );
+        RouteLegInfo( dc, r_rband, 0, routeInfo );
 
         wxString s0;
         if( !route->m_bIsInLayer )
@@ -9070,7 +9100,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if( !g_btouch)
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
-        RenderExtraRouteLegInfo( dc, r_rband, s0 );
+        RouteLegInfo( dc, r_rband, 1, s0 );
         m_brepaint_piano = true;
     }
 }
@@ -9174,12 +9204,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         b_newview = false;
     }
 
-    //  If the ViewPort is rotated, we may be able to use the cached rotated bitmap
+    //  If the ViewPort is skewed or rotated, we may be able to use the cached rotated bitmap.
     bool b_rcache_ok = false;
-    b_rcache_ok = !b_newview;
-
-    //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
-    if(  fabs( VPoint.skew ) > 0.01 ) b_rcache_ok = !b_newview;
+    if( fabs( VPoint.skew ) > 0.01 || fabs( VPoint.rotation ) > 0.01)
+        b_rcache_ok = !b_newview;
 
     //  Make a special VP
     if( VPoint.b_MercatorProjectionOverride ) VPoint.SetProjectionType( PROJECTION_MERCATOR );
@@ -9398,7 +9426,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
-
+    
+    if( ( ( fabs( GetVP().rotation ) > 0.01 ) )
+        ||   ( fabs( GetVP().skew ) > 0.01 ) )  {
+        
         //  Can we use the current rotated image cache?
         if( !b_rcache_ok ) {
 #ifdef __WXMSW__
@@ -9454,7 +9485,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             pChartDC = &temp_dc;
             m_roffset = wxPoint( 0, 0 );
         }
-
+    } else {            // unrotated
+        pChartDC = &temp_dc;
+        m_roffset = wxPoint( 0, 0 );
+    }
+        
     wxPoint offset = m_roffset;
 
     //        Save the PixelCache viewpoint for next time
@@ -9555,7 +9590,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     dc.DestroyClippingRegion();
 
     PaintCleanup();
-
+    OCPNPlatform::HideBusySpinner();
 //      CALLGRIND_STOP_INSTRUMENTATION
 
 }
@@ -10137,6 +10172,11 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                 continue;
             }
 
+            if ( 0 == pRouteDraw->GetnPoints() ) {
+                node = node->GetNext();
+                continue;
+            }
+            
             LLBBox test_box = pRouteDraw->GetBBox();
 
             if( b_run ) test_box.Expand( gLon, gLat );
@@ -10382,7 +10422,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
     int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
+    wxFont *plabelFont = FontMgr::Get().FindOrCreateFont( font_size, dFont->GetFamily(),
                          dFont->GetStyle(), dFont->GetWeight() );
 
     dc.SetPen( *pblack_pen );
@@ -11152,14 +11192,26 @@ int SetScreenBrightness( int brightness )
             ReleaseDC( NULL, hDC );                                             // Release the DC
         }
 
-        if( NULL == g_pcurtain ) InitScreenBrightness();
+        if(brightness < 100 ){
+            if( NULL == g_pcurtain )
+                InitScreenBrightness();
+    
+            if( g_pcurtain ) {
+                int sbrite = wxMax(1, brightness);
+                sbrite = wxMin(100, sbrite);
 
-        if( g_pcurtain ) {
-            int sbrite = wxMax(1, brightness);
-            sbrite = wxMin(100, sbrite);
-
-            g_pcurtain->SetTransparent( ( 100 - sbrite ) * 256 / 100 );
+                g_pcurtain->SetTransparent( ( 100 - sbrite ) * 256 / 100 );
+            }
         }
+        else{
+            if( g_pcurtain ) {
+                g_pcurtain->Close();
+                g_pcurtain->Destroy();
+                g_pcurtain = NULL;
+            }
+        }
+        
+            
         return 1;
     }
 
@@ -11426,8 +11478,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
             ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-                ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
+            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
         }
 #endif
 

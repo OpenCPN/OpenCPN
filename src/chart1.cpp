@@ -706,6 +706,7 @@ wxString         g_TalkerIdText;
 bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
+bool             b_reloadForPlugins;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -1471,6 +1472,8 @@ bool MyApp::OnInit()
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
         if( !b_initok ){
+            delete plocale_def_lang;
+            plocale_def_lang = new wxLocale;
             b_initok = plocale_def_lang->Init( pli->Language, 0 );
         }
         loc_lang_canonical = pli->CanonicalName;
@@ -2627,6 +2630,8 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     g_Piano->ResetRollover();
     g_Piano->SetColorScheme( cs );
 
+    if( g_options ) g_options->SetColorScheme( cs );
+
     if( console ) console->SetColorScheme( cs );
 
     if( g_pRouteMan ) g_pRouteMan->SetColorScheme( cs );
@@ -2776,7 +2781,17 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
+    bool gs = false;
+#ifdef USE_S57
+    if (ps52plib)
+        gs = ps52plib->GetShowS57Text();
+#endif
+
+    if (gs)
+        tipString = wxString( _("Hide ENC Text") ) << _T(" (T)");
+    else
+        tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
+
     if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
         tb->AddTool( ID_ENC_TEXT, _T("text"),
             style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
@@ -2849,6 +2864,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
 
 // Realize() the toolbar
+    style->Unload();
     g_FloatingToolbarDialog->Realize();
 
 //      Set up the toggle states
@@ -2938,8 +2954,13 @@ bool MyFrame::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
                     break;
             }
 
-            tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
+            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                     wxString( pttc->shortHelp ), pttc->kind );
+            
+            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
+                                   pttc->pluginRolloverIconSVG,
+                                   pttc->pluginToggledIconSVG );
+            
             bret = true;
         }
     }
@@ -2971,34 +2992,49 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
         if( pttc->position == -1 )                  // PlugIn has requested default positioning
                 {
             wxBitmap *ptool_bmp;
+            wxBitmap *ptool_bmp_Rollover;
 
             switch( global_color_scheme ){
                 case GLOBAL_COLOR_SCHEME_DAY:
                     ptool_bmp = pttc->bitmap_day;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
                     ;
                     break;
                 case GLOBAL_COLOR_SCHEME_DUSK:
                     ptool_bmp = pttc->bitmap_dusk;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_dusk;
                     break;
                 case GLOBAL_COLOR_SCHEME_NIGHT:
                     ptool_bmp = pttc->bitmap_night;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_night;
                     break;
                 default:
                     ptool_bmp = pttc->bitmap_day;
-                    ;
+                    ptool_bmp_Rollover = pttc->bitmap_Rollover_day;
                     break;
             }
 
-            tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
-                    wxString( pttc->shortHelp ), pttc->kind );
+            wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
+                                                    wxString( pttc->shortHelp ), pttc->kind );
+            
+            tb->SetToolBitmapsSVG( pttc->id, pttc->pluginNormalIconSVG,
+                                   pttc->pluginRolloverIconSVG,
+                                   pttc->pluginToggledIconSVG );
+            
             bret = true;
         }
     }
     return bret;
 }
 
+static bool b_inCloseWindow;
+
 void MyFrame::RequestNewToolbar(bool bforcenew)
 {
+    if( b_inCloseWindow ) {
+        return;
+    }
+    
     bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
         b_reshow = g_FloatingToolbarDialog->IsShown();
@@ -3020,7 +3056,7 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
             DestroyMyToolbar();
 
         g_toolbar = CreateAToolbar();
-        if (g_FloatingToolbarDialog->m_bsubmerged) {
+        if (g_FloatingToolbarDialog->isSubmergedToGrabber()) {
             g_FloatingToolbarDialog->SubmergeToGrabber();
         } else {
             g_FloatingToolbarDialog->RePosition();
@@ -3049,7 +3085,7 @@ void MyFrame::UpdateToolbar( ColorScheme cs )
             if( g_FloatingToolbarDialog->IsToolbarShown() ) {
                 DestroyMyToolbar();
                 g_toolbar = CreateAToolbar();
-                if (g_FloatingToolbarDialog->m_bsubmerged) 
+                if (g_FloatingToolbarDialog->isSubmergedToGrabber()) 
                     g_FloatingToolbarDialog->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
             
             }
@@ -3134,8 +3170,6 @@ void MyFrame::OnExit( wxCommandEvent& event )
     quitflag++;                             // signal to the timer loop
 
 }
-
-static bool b_inCloseWindow;
 
 void MyFrame::OnCloseWindow( wxCloseEvent& event )
 {
@@ -3654,7 +3688,7 @@ void MyFrame::ODoSetSize( void )
 #endif
 
 
-        wxFont *pstat_font = wxTheFontList->FindOrCreateFont( font_size,
+        wxFont *pstat_font = FontMgr::Get().FindOrCreateFont( font_size,
               wxFONTFAMILY_DEFAULT, templateFont->GetStyle(), templateFont->GetWeight(), false,
               templateFont->GetFaceName() );
 
@@ -3729,7 +3763,7 @@ void MyFrame::ODoSetSize( void )
     }
 
     if( pthumbwin )
-        pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
+        pthumbwin->SetMaxSize( cc1->GetParent()->GetClientSize() );
 
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
@@ -3959,8 +3993,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 #endif
 
         case ID_MENU_AIS_TARGETS: {
-            if ( g_bShowAIS ) SetAISDisplayStyle(0);
-            else SetAISDisplayStyle(1);
+            if ( g_bShowAIS ) SetAISDisplayStyle(2);
+            else SetAISDisplayStyle(0);
             break;
         }
          case ID_MENU_AIS_MOORED_TARGETS: {
@@ -4921,6 +4955,16 @@ void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRo
     }
 }
 
+void MyFrame::SetToolbarItemSVG( int tool_id, wxString normalSVGfile, wxString rolloverSVGfile, wxString toggledSVGfile )
+{
+    if( g_toolbar ) {
+        g_toolbar->SetToolBitmapsSVG( tool_id, normalSVGfile, rolloverSVGfile, toggledSVGfile );
+        wxRect rect = g_toolbar->GetToolRect( tool_id );
+        g_toolbar->RefreshRect( rect );
+    }
+}
+
+
 void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
 {
     //             ShowDebugWindow as a wxStatusBar
@@ -5244,12 +5288,10 @@ int MyFrame::DoOptionsDialog()
 
     g_boptionsactive = true;
 
-
-    g_Platform->ShowBusySpinner();
-
-    if(NULL == g_options)
+    if(NULL == g_options) {
+        g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
-
+    }
     g_Platform->HideBusySpinner();
 
 //    Set initial Chart Dir
@@ -5375,17 +5417,25 @@ int MyFrame::DoOptionsDialog()
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
 
-//<<<<<<< HEAD
-//    if(g_pi_manager)
-//        g_pi_manager->NotifyAuiPlugIns();
+#ifdef __OCPN__ANDROID__    
+    if(g_pi_manager)
+        g_pi_manager->NotifyAuiPlugIns();
+#endif    
     
-//=======
     //  Force reload of options dialog to pick up font changes
     if(rr & FONT_CHANGED){
         delete g_options;
         g_options = NULL;
         g_pOptions = NULL;
     }
+    
+    //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Hide();
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
+    }
+    
 
     g_boptionsactive = false;
     return ret_val;
@@ -5593,6 +5643,7 @@ bool MyFrame::ScrubGroupArray()
             {
                 ChartGroupElement *pelement = pGroup->m_element_array.Item( j );
                 pGroup->m_element_array.RemoveAt( j );
+                j--;
                 delete pelement;
                 b_change = true;
             }
@@ -5845,8 +5896,7 @@ void MyFrame::SetupQuiltMode( void )
     //    When shifting from quilt to single chart mode, select the "best" single chart to show
     if( !cc1->GetQuiltMode() ) {
         if( ChartData && ChartData->IsValid() ) {
-            ChartData->UnLockCache();
-            ChartData->UnLockAllCacheCharts();
+            cc1->UnlockQuilt();
 
             double tLat, tLon;
             if( cc1->m_bFollow == true ) {
@@ -5902,6 +5952,10 @@ void MyFrame::SetupQuiltMode( void )
                 ArrayOfInts one_array;
                 one_array.Add( dbi );
                 g_Piano->SetActiveKeyArray( one_array );
+            }
+            
+            if( Current_Ch ) {
+                cc1->GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
             }
 
         }
@@ -6141,6 +6195,15 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_pi_manager->NotifyAuiPlugIns();
             g_pi_manager->ShowDeferredBlacklistMessages(); //  Give the use dialog on any blacklisted PlugIns
             g_pi_manager->CallLateInit();
+            
+            //  If any PlugIn implements PlugIn Charts, we need to re-run the initial chart load logic
+            //  to select the correct chart as saved from the last run of the app.
+            //  This will be triggered at the next DoChartUpdate()
+            if( g_pi_manager->IsAnyPlugInChartEnabled() ){
+                bFirstAuto = true;
+                b_reloadForPlugins = true;
+            }
+                
             break;
         }
 
@@ -6170,6 +6233,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
             InitTimer.Stop(); // Initialization complete
             g_bDeferredInitDone = true;
+            
+            if(b_reloadForPlugins)
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP());            
             break;
         }
     }   // switch
@@ -6639,6 +6705,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
+    //  Make sure we get a redraw and alert sound on AnchorWatch excursions.
+    if(AnchorAlertOn1 || AnchorAlertOn2)
+        bnew_view = true;
+    
     if(g_bopengl) {
 #ifdef ocpnUSE_GL
         if(m_fixtime - cc1->GetglCanvas()->m_last_render_time > 0)
@@ -6945,7 +7015,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         wxSize parent_size = cc1->GetSize();
 
         // check to see if it would overlap if it was in its home position (upper right)
-        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, 0);
+        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
         wxRect tentative_rect( tentative_pt, rect.GetSize() );
 
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
@@ -7078,6 +7148,10 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             SelectChartFromStack( selected_index );
             g_sticky_chart = selected_dbIndex;
         }
+
+        if( Current_Ch )
+            cc1->GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
+        
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
             if( ChartData ) ChartData->PurgeCache();
@@ -7382,6 +7456,8 @@ void MyFrame::SetChartThumbnail( int index )
 
     if( NULL == cc1 ) return;
 
+    bool bneedmove = false;
+    
     if( index == -1 ) {
         wxRect thumb_rect_in_parent = pthumbwin->GetRect();
 
@@ -7407,12 +7483,7 @@ void MyFrame::SetChartThumbnail( int index )
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( FALSE );
                         pthumbwin->Move( wxPoint( 4, 4 ) );
-
-                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
-                        if( g_FloatingToolbarDialog )
-                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
-                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
-                        }
+                        bneedmove = true;
                     }
 
                     else {
@@ -7446,18 +7517,44 @@ void MyFrame::SetChartThumbnail( int index )
                         pthumbwin->Show( true );
                         pthumbwin->Refresh( true );
                         pthumbwin->Move( wxPoint( 4, 4 ) );
-
-                        // Simplistic overlap avoidance works only when toolbar is at top of screen.
-                        if( g_FloatingToolbarDialog )
-                            if( g_FloatingToolbarDialog->GetScreenRect().Intersects( pthumbwin->GetScreenRect() ) ) {
-                                pthumbwin->Move( wxPoint( 4, g_FloatingToolbarDialog->GetSize().y + 4 ) );
-                            }
+                        bneedmove = true;
                     } else
                         pthumbwin->Show( false );
 
                     cc1->Refresh( FALSE );
                 }
             }
+            
+            if(bneedmove && pthumbwin){         // Adjust position to avoid bad overlap
+                wxPoint pos = wxPoint(4,4);
+                
+                wxPoint tLocn = ClientToScreen(pos);
+                wxRect tRect = wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y);
+                
+                // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
+                // Other difficult cases simply center the thumbwin on the canvas....
+                if( g_FloatingToolbarDialog && !g_FloatingToolbarDialog->isSubmergedToGrabber()){
+                    if( g_FloatingToolbarDialog->GetScreenRect().Intersects( tRect ) ) {
+                        wxPoint tbpos = cc1->ScreenToClient(g_FloatingToolbarDialog->GetPosition());
+                        pos = wxPoint(4, g_FloatingToolbarDialog->GetSize().y + tbpos.y + 4);
+                        tLocn = ClientToScreen(pos);
+                    }
+                }
+                
+                //  We cannot let the thumbwin overlap the Piano
+                if(g_Piano){
+                    int piano_height = g_Piano->GetHeight() + 4;
+                    wxPoint cbarLocn = ClientToScreen(wxPoint(0, cc1->GetCanvasHeight() - piano_height));
+                    wxRect cbarRect = wxRect(cbarLocn.x, cbarLocn.y, cc1->GetCanvasWidth(), piano_height);
+                    if( cbarRect.Intersects( wxRect(tLocn.x, tLocn.y, pthumbwin->GetSize().x, pthumbwin->GetSize().y))){
+                        pos = wxPoint((cc1->GetCanvasWidth() - pthumbwin->GetSize().x)/2,
+                                      (cc1->GetCanvasHeight() - pthumbwin->GetSize().y)/2 - piano_height);
+                    }
+                }
+                pthumbwin->Move( pos );
+                
+            }
+            
         }
 
 }
@@ -10883,6 +10980,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
         "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;", "GREEN5;170;254;  0;",
+        "COMPT; 245;247;244",
 #ifdef __WXOSX__
         "DILG0; 255;255;255;",              // Dialog Background white
 #else
@@ -10926,13 +11024,15 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHN; 200;120;  0;",              // Dashboard Needle
         "DASH1; 204;204;255;",              // Dashboard Illustrations
         "DASH2; 122;131;172;",              // Dashboard Illustrations
-
+        "COMP1; 211;211;211;",              // Compass Window Background
+        
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
         "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;", "GREEN5; 85;128; 0;",
-
+        "COMPT; 124;126;121",
+        
         "CHGRF;  41; 46; 46;",
         "UINFM;  58; 20; 57;",
         "UINFG;  35; 76; 29;",
@@ -10971,12 +11071,14 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHN; 100; 50;  0;",              // Dashboard Needle
         "DASH1;  76; 76;113;",              // Dashboard Illustrations
         "DASH2;  48; 52; 72;",              // Dashboard Illustrations
-
+        "COMP1; 107;107;107;",              // Compass Window Background
+        
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
         "GREY1;  48; 48; 48;", "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
         "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;", "GREEN5; 44; 64; 0;",
+        "COMPT;  48; 49; 51",
         "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -11015,7 +11117,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "DASHN;  17; 80; 56;",              // Dashboard Needle
         "DASH1;  48; 52; 72;",              // Dashboard Illustrations
         "DASH2;  36; 36; 53;",              // Dashboard Illustrations
-
+        "COMP1;  24; 24; 24;",              // Compass Window Background
+        
         "*****" };
 
 int get_static_line( char *d, const char **p, int index, int n )
@@ -11720,7 +11823,7 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
             if(req_size >= nscaled_font_size)
                 return dFont;
             else{
-                wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
+                wxFont *qFont = FontMgr::Get().FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),
                                                              dFont->GetWeight());
@@ -12212,6 +12315,8 @@ bool ReloadLocale()
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
         if( !b_initok ){
+            delete plocale_def_lang;
+            plocale_def_lang = new wxLocale;
             b_initok = plocale_def_lang->Init( pli->Language, 0 );
         }
         loc_lang_canonical = pli->CanonicalName;

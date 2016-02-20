@@ -385,6 +385,8 @@ extern float            g_ChartScaleFactorExp;
 
 extern wxString         g_uiStyle;
 
+int                     g_nCPUCount;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1211,6 +1213,8 @@ int MyConfig::LoadMyConfig()
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
+        
+    Read( _T( "NCPUCount" ), &g_nCPUCount, -1);    
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
@@ -1560,9 +1564,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
 
-    g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
-    g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
-
+    Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
+    Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
@@ -2088,6 +2091,8 @@ void MyConfig::LoadS57Config()
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
     ps52plib->m_nDepthUnitDisplay = read_int;
 
 //    S57 Object Class Visibility
@@ -2995,43 +3000,17 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
     );
     
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-     int response = psaveDialog->ShowModal();
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn(path);
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
@@ -3053,34 +3032,18 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
                                                      );
 
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    
 
-#if 0        
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn( path );
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
@@ -3102,34 +3065,20 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      _T("userobjects.gpx"),
                                                      wxT ( "*.gpx" )
     );
     
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
     
     
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
     
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn(path);
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
@@ -3227,11 +3176,23 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
 
-        if(g_bresponsive)
+        if(g_bresponsive && parent)
             popenDialog = g_Platform->AdjustFileDialogFont(parent, popenDialog);
         
         popenDialog->Centre();
+        
+        #ifdef __WXOSX__
+        if(parent)
+            parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+        #endif
+            
         response = popenDialog->ShowModal();
+        
+        #ifdef __WXOSX__
+        if(parent)
+            parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+        #endif
+            
         if( response == wxID_OK ) {
             popenDialog->GetPaths( file_array );
 
@@ -4647,8 +4608,9 @@ double fromDMM( wxString sdms )
     if( sdms.Contains( _T("N") ) || sdms.Contains( _T("S") ) || sdms.Contains( _T("E") )
             || sdms.Contains( _T("W") ) ) sdms.Replace( _T("-"), _T(" ") );
 
-    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 64 );
-    len = wcslen( buf );
+    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 63 );
+    buf[63] = 0;
+    len = wxMin( wcslen( buf ), sizeof(narrowbuf)-1);;
 
     for( i = 0; i < len; i++ ) {
         wchar_t c = buf[i];

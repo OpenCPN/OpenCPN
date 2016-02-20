@@ -108,9 +108,11 @@ public:
       wxBitmap GetToolbarEnd();
       bool HasBackground() const { return hasBackground; }
       void HasBackground( bool b ) { hasBackground = b; }
-      wxBitmap GetIcon(const wxString & name);
-      wxBitmap GetToolIcon(const wxString & toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
-      wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType );
+      wxBitmap GetIcon(const wxString & name, int width = -1, int height = -1, bool bforceReload = false);
+      wxBitmap GetToolIcon(const wxString & toolname,
+                           int iconType = TOOLICON_NORMAL, bool rollover = false,
+                           int width = -1, int height = -1);
+      wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType, double scale = 1.0 );
 
       int GetTopMargin() const { return toolMarginTop[currentOrientation]; }
       int GetRightMargin() const { return toolMarginRight[currentOrientation]; }
@@ -132,8 +134,8 @@ public:
 
       bool HasToolbarStart() const { return toolbarStartLoc[currentOrientation] != wxPoint(0,0); }
       bool HasToolbarEnd() const { return toolbarEndLoc[currentOrientation] != wxPoint(0,0); }
-      void DrawToolbarLineStart( wxBitmap& bmp );
-      void DrawToolbarLineEnd( wxBitmap& bmp );
+      void DrawToolbarLineStart( wxBitmap& bmp, double scale = 1.0 );
+      void DrawToolbarLineEnd( wxBitmap& bmp, double scale = 1.0 );
 
       wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
       wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
@@ -144,6 +146,7 @@ public:
       void Unload();
 
       wxString name;
+    wxString sysname;
       wxString description;
       wxString graphicsFile;
       int toolMarginTop[2];

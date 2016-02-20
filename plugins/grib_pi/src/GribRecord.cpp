@@ -304,7 +304,7 @@ bool GribRecord::GetInterpolatedParameters
         La1 = wxMin(rec1.La1, rec2.La1), La2 = wxMax(rec1.La2, rec2.La2);
 
     Lo1 = wxMax(rec1.Lo1, rec2.Lo1), Lo2 = wxMin(rec1.Lo2, rec2.Lo2);
-    
+
     // align gribs on integer boundaries
     int i, j;
     double rec1offdi, rec2offdi;
@@ -351,7 +351,7 @@ bool GribRecord::GetInterpolatedParameters
     /* no overlap */
     if(La1*Dj > La2*Dj || Lo1 > Lo2)
         return false;
-    
+
     /* compute integer sizes for data array */
     Ni = (Lo2-Lo1)/Di + 1, Nj = (La2-La1)/Dj + 1;
 
@@ -360,7 +360,7 @@ bool GribRecord::GetInterpolatedParameters
 
     rec1offi = rec1offdi, rec2offi = rec2offdi;
     rec1offj = rec1offdj, rec2offj = rec2offdj;
- 
+
     if (!rec1.data || !rec2.data)
         return false;
 
@@ -385,7 +385,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     double *data = new double[size];
 
     zuchar *BMSbits = NULL;
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) 
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
         BMSbits = new zuchar[(Ni*Nj-1)/8+1]();
 
     for (int i=0; i<Ni; i++)
@@ -456,7 +456,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
        rec2x.Ni != rec2y.Ni ||rec2x.Nj != rec2y.Nj)
         // could also make sure lat and lon min/max are the same...
         return NULL;
- 
+
     // recopie les champs de bits
     int size = Ni*Nj;
     double *datax = new double[size], *datay = new double[size];
@@ -475,7 +475,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
                 double data1m = sqrt(pow(data1x, 2) + pow(data1y, 2));
                 double data2m = sqrt(pow(data2x, 2) + pow(data2y, 2));
                 double datam = (1-d)*data1m + d*data2m;
-                
+
                 double data1a = atan2(data1y, data1x);
                 double data2a = atan2(data2y, data2x);
                      if(data1a - data2a > M_PI) data1a -= 2*M_PI;
@@ -499,7 +499,7 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
 
     ret->La1 = La1, ret->La2 = La2;
     ret->Lo1 = Lo1, ret->Lo2 = Lo2;
-    
+
     ret->data = datax;
     ret->BMSbits = NULL;
     ret->hasBMS = false; // I don't think wind or current ever use BMS correct?
@@ -1308,7 +1308,10 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
 
     unsigned int i1 = pi+1, j1 = pj+1;
     if(i1 >= GRX->Ni)
-        i1 -= GRX->Ni;
+        i1 = i0;
+
+    if(j1 >= GRX->Nj)
+        j1 = j0;
 
     // distances to 00
     double dx = pi-i0;

@@ -148,6 +148,6 @@ void GribGrabberWin::Size( double factor )
     wxImage scaled_image = bitmap.ConvertToImage();
     m_bitmap = wxBitmap(scaled_image.Scale(width, height, wxIMAGE_QUALITY_HIGH));
 
-    SetSize(wxSize(width, height + 10));
-    SetMinSize(wxSize(width, height + 10));
+    SetSize(wxSize(width, height));
+    SetMinSize(wxSize(width, height));
 }

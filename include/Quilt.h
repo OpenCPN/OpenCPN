@@ -59,18 +59,21 @@ public:
         b_include = false;
         b_eclipsed = false;
         b_locked = false;
+        last_factor = -1;
     }
 
-    LLRegion &GetCandidateRegion();
+    const LLRegion &GetCandidateRegion();
+    LLRegion &GetReducedCandidateRegion(double factor);
     
     int dbIndex;
     int ChartScale;
     bool b_include;
     bool b_eclipsed;
     bool b_locked;
-    
-private:    
-    LLRegion candidate_region;
+
+private:
+    double last_factor;
+    LLRegion reduced_candidate_region;
 
 };
 
@@ -93,6 +96,7 @@ public:
     void EnableHighDefinitionZoom( bool value ) { m_b_hidef = value;}
     
     bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    void UnlockQuilt();
     bool Compose( const ViewPort &vp );
     bool IsComposed() {
         return m_bcomposed;

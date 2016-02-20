@@ -1439,6 +1439,20 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           //   Analyze Refpoints early because we need georef coefficient here.
           AnalyzeRefpoints( false );              // no post test needed
      
+          //  We need to compute a tentative min/max lat/lon to perform georefs
+          //  These lat/lon extents will be more accurately updated later.
+          m_LonMax = -360.0;
+          m_LonMin = 360.0;
+          m_LatMax = -90.0;
+          m_LatMin = 90.0;
+      
+          for(int i=0 ; i < nPlypoint ; i++){
+              m_LatMax = wxMax(m_LatMax, pPlyTable[i].ltp);
+              m_LatMin = wxMin(m_LatMin, pPlyTable[i].ltp);
+              m_LonMax = wxMax(m_LonMax, pPlyTable[i].lnp);
+              m_LonMin = wxMin(m_LonMin, pPlyTable[i].lnp);
+          }
+          
           int count = nPlypoint;
           nPlypoint = 0;
           Plypoint *pOldPlyTable = pPlyTable;
@@ -1484,18 +1498,56 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       free(pPlyTable);
 
 
+      //    Setup the datum transform parameters
+      char d_str[100];
+      strncpy(d_str, m_datum_str.mb_str(), 99);
+      d_str[99] = 0;
+      
+      int datum_index = GetDatumIndex(d_str);
+      m_datum_index = datum_index; 
+      
+      if(datum_index < 0)
+          m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
+ 
+      //    Establish defaults, may be overridden later
+      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
+      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
+          
       //    Adjust the PLY points to WGS84 datum
       Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);
       int cnPlypoint = GetCOVRTablenPoints(0);
 
-      //  n.b. this is not precisely right for non-wgs84 charts.
-      //  should use molodensky transform, and then consider SHOM Ver 1.1 charts
 
       for(int u=0 ; u<cnPlypoint ; u++)
       {
-            ppp->lnp += m_dtm_lon / 3600;
-            ppp->ltp += m_dtm_lat / 3600;
-            ppp++;
+          double dlat = 0;
+          double dlon = 0;
+          
+          if(m_datum_index == DATUM_INDEX_WGS84){
+          }
+          
+          else if(m_datum_index == DATUM_INDEX_UNKNOWN)
+          {
+              dlon = m_dtm_lon / 3600.;
+              dlat = m_dtm_lat / 3600.;
+          }
+          
+          
+          else{
+            double to_lat, to_lon;
+            MolodenskyTransform (ppp->ltp, ppp->lnp, &to_lat, &to_lon, m_datum_index, DATUM_INDEX_WGS84);
+            dlon = (to_lon - ppp->lnp);
+            dlat = (to_lat - ppp->ltp);
+            if(m_b_apply_dtm)
+            {
+                dlon += m_dtm_lon / 3600.;
+                dlat += m_dtm_lat / 3600.;
+            }
+          }
+          
+          ppp->lnp += dlon;
+          ppp->ltp += dlat;
+          ppp++;
       }
 
 
@@ -1604,8 +1656,6 @@ ChartBaseBSB::ChartBaseBSB()
 
       m_dtm_lat = 0.;
       m_dtm_lon = 0.;
-
-      m_bIDLcross = false;
 
       m_dx = 0.;
       m_dy = 0.;
@@ -2015,23 +2065,7 @@ InitReturn ChartBaseBSB::PostInit(void)
       else if(test_str.Find(_T("METERS")) != wxNOT_FOUND)             // Special case for "Meters and decimeters"
             m_depth_unit_id = DEPTH_UNIT_METERS;
 
-           //    Setup the datum transform parameters
-      char d_str[100];
-      strncpy(d_str, m_datum_str.mb_str(), 99);
-      d_str[99] = 0;
-
-      int datum_index = GetDatumIndex(d_str);
-      if(datum_index < 0){
-          m_datum_index = DATUM_INDEX_WGS84;
-          m_ExtraInfo = _("---<<< Warning:  Chart Datum may be incorrect. >>>---");
-      }
-      else
-          m_datum_index = datum_index;
-
-      //    Establish defaults, may be overridden later
-      m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
-      m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
-          
+           
       //   Analyze Refpoints
       int analyze_ret_val = AnalyzeRefpoints();
       if(0 != analyze_ret_val)
@@ -2646,11 +2680,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx, double
           alon = lon + m_lon_datum_adjust;
           alat = lat + m_lat_datum_adjust;
 
-          if(m_bIDLcross)
-          {
-                if(alon < 0.)
-                      alon += 360.;
-          }
+          AdjustLongitude(alon);
 
           if(1)
           {
@@ -2730,11 +2760,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx, double
 
                 //      Get e/n from  Projection
                 xlon = alon;
-                if(m_bIDLcross)
-                {
-                      if(xlon < 0.)
-                            xlon += 360.;
-                }
+                AdjustLongitude(xlon);
                 toSM_ECC(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
 
                 //      Apply poly solution to target point
@@ -2743,11 +2769,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx, double
 
                 //      Apply poly solution to vp center point
                 double xlonc = vp.clon;
-                if(m_bIDLcross)
-                {
-                      if(xlonc < 0.)
-                            xlonc += 360.;
-                }
+                AdjustLongitude(xlonc);
 
                 toSM_ECC(vp.clat + m_lat_datum_adjust, xlonc + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
                 double xc = polytrans( cPoints.wpx, easting, northing );
@@ -2771,12 +2793,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx, double
                 alat = lat + m_lat_datum_adjust;
 
                 //      Get e/n from  Projection
-                xlon = alon;
-                if(m_bIDLcross)
-                {
-                      if(xlon < 0.)
-                            xlon += 360.;
-                }
+                xlon = AdjustLongitude(alon);
                 toPOLY(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
 
                 //      Apply poly solution to target point
@@ -2784,12 +2801,7 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, double &pixx, double
                 double yd = polytrans( cPoints.wpy, easting, northing );
 
                 //      Apply poly solution to vp center point
-                double xlonc = vp.clon;
-                if(m_bIDLcross)
-                {
-                      if(xlonc < 0.)
-                            xlonc += 360.;
-                }
+                double xlonc = AdjustLongitude(vp.clon);
 
                 toPOLY(vp.clat + m_lat_datum_adjust, xlonc + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
                 double xc = polytrans( cPoints.wpx, easting, northing );
@@ -2838,12 +2850,7 @@ void ChartBaseBSB::latlong_to_chartpix(double lat, double lon, double &pixx, dou
             alon = lon + m_lon_datum_adjust;
             alat = lat + m_lat_datum_adjust;
 
-            if(m_bIDLcross)
-            {
-                  if(alon < 0.)
-                        alon += 360.;
-            }
-
+            alon = AdjustLongitude(alon);
 
             /* change longitude phase (CPH) */
             double lonp = (alon < 0) ? alon + m_cph : alon - m_cph;
@@ -2879,12 +2886,8 @@ void ChartBaseBSB::latlong_to_chartpix(double lat, double lon, double &pixx, dou
                   alat = lat + m_lat_datum_adjust;
 
                 //      Get e/n from  Projection
-                  xlon = alon;
-                  if(m_bIDLcross)
-                  {
-                        if(xlon < 0.)
-                              xlon += 360.;
-                  }
+                  xlon = AdjustLongitude(alon);
+
                   toSM_ECC(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
 
                 //      Apply poly solution to target point
@@ -2901,12 +2904,7 @@ void ChartBaseBSB::latlong_to_chartpix(double lat, double lon, double &pixx, dou
                   alat = lat + m_lat_datum_adjust;
 
                 //      Get e/n from  Projection
-                  xlon = alon;
-                  if(m_bIDLcross)
-                  {
-                        if(xlon < 0.)
-                              xlon += 360.;
-                  }
+                  xlon = AdjustLongitude(alon);
                   toPOLY(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
 
                 //      Apply poly solution to target point
@@ -4232,7 +4230,9 @@ private:
 #define FAIL \
     do { \
       free(pt->pTileOffset); \
+      pt->pTileOffset = NULL; \
       free(pt->pPix); \
+      pt->pPix = NULL; \
       pt->bValid = false; \
       return 0; \
     } while(0)
@@ -4804,7 +4804,6 @@ bool ChartBaseBSB::AnalyzeSkew(void)
                     nlatmax = n;
                 }
             }
-            m_bIDLcross = true;
         }
     }
     
@@ -5027,7 +5026,6 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
                               nlatmax = n;
                         }
                   }
-                  m_bIDLcross = true;
             }
       }
 
@@ -5373,7 +5371,9 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
         double chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
         
         //        Good enough for navigation?
-        if(chart_error_pixels > 10)
+        int max_pixel_error = 4;
+        
+        if(chart_error_pixels > max_pixel_error)
         {
                     wxString msg = _("   VP Final Check: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
@@ -5388,7 +5388,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
         //  Try again with my calculated georef
         //  This problem was found on NOAA 514_1.KAP.  The embedded coefficients are just wrong....
-        if((chart_error_pixels > 10) && bHaveEmbeddedGeoref)
+        if((chart_error_pixels > max_pixel_error) && bHaveEmbeddedGeoref)
         {
               wxString msg = _("   Trying again with internally calculated georef solution ");
               wxLogMessage(msg);
@@ -5441,7 +5441,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
               chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
               
         //        Good enough for navigation?
-              if(chart_error_pixels > 10)
+              if(chart_error_pixels > max_pixel_error)
               {
                     wxString msg = _("   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
@@ -5469,6 +5469,15 @@ int   ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution)
 
 }
 
+double ChartBaseBSB::AdjustLongitude(double lon)
+{
+    double lond = (m_LonMin + m_LonMax)/2 - lon;
+    if(lond > 180)
+        return lon + 360;
+    else if(lond < -180)
+        return lon - 360;
+    return lon;
+}
 
 /*
 *  Extracted from bsb_io.c - implementation of libbsb reading and writing

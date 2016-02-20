@@ -544,7 +544,7 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
             slatc = buffer.data();
             //  Get the LUP attribute value as a string
                         
-            if( buffer.length() < 6 )
+            if( slatc && (strlen(slatc) < 6) )
                 goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
 
             if( slatc ){
@@ -1647,7 +1647,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
   
             int old_size = ptext->pFont->GetPointSize();
             int new_size = old_size * scale_factor;
-            scaled_font = wxTheFontList->FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
+            scaled_font = FontMgr::Get().FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
                                                            ptext->pFont->GetStyle(), ptext->pFont->GetWeight(), false,
                                                            ptext->pFont->GetFaceName() );
             wxScreenDC sdc;
@@ -1884,7 +1884,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 wxFont *pf = ptext->pFont;
                 int old_size = pf->GetPointSize();
                 int new_size = old_size * scale_factor;
-                wxFont *scaled_font = wxTheFontList->FindOrCreateFont( new_size, pf->GetFamily(),
+                wxFont *scaled_font = FontMgr::Get().FindOrCreateFont( new_size, pf->GetFamily(),
                                                                        pf->GetStyle(), pf->GetWeight(), false,
                                                                        pf->GetFaceName() );
                 pdc->SetFont( *scaled_font);
@@ -2044,7 +2044,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     else
                         fontweight = wxFONTWEIGHT_BOLD;
 
-                text->pFont = wxTheFontList->FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
+                text->pFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
                         wxFONTSTYLE_NORMAL, fontweight );
             } else {
                 int spec_weight = text->weight - 0x30;
@@ -2080,7 +2080,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 // In no case should font size be less than 10, since it becomes unreadable
                 fontSize = wxMax(10, fontSize);
 
-                text->pFont = wxTheFontList->FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
+                text->pFont = FontMgr::Get().FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
                         templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
             }
         }
@@ -2128,12 +2128,12 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
             wxBoundingBox bbtext;
             double plat, plon, extent = 0;
 
-            GetPixPointSingle( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
             if(plon >= 360)
                 extent = 360;
             bbtext.SetMin( plon - extent, plat );
 
-            GetPixPointSingle( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
             bbtext.SetMax( plon - extent, plat );
 
             if( rzRules->obj->bBBObj_valid )
@@ -2297,10 +2297,10 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxBoundingBox symbox;
         double plat, plon;
 
-        GetPixPointSingle( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
         symbox.SetMin( plon, plat );
 
-        GetPixPointSingle( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
         symbox.SetMax( plon, plat );
 
         if( rzRules->obj->bBBObj_valid )
@@ -2379,9 +2379,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 {
     double scale_factor = 1.0;
  
-    if(g_bresponsive){
-        scale_factor *=  g_ChartScaleFactorExp;
-    }
+    scale_factor *=  g_ChartScaleFactorExp;
     
     if(g_oz_vector_scale && vp->b_quilt){
         double sfactor = vp->ref_scale/vp->chart_scale;
@@ -2389,9 +2387,15 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         scale_factor = wxMin(scale_factor, 20);
     }
     
-    int pivot_x = prule->pos.line.pivot_x.SYCL * scale_factor;
-    int pivot_y = prule->pos.line.pivot_y.SYRW * scale_factor;
+    int pivot_x = prule->pos.line.pivot_x.SYCL;
+    int pivot_y = prule->pos.line.pivot_y.SYRW;
 
+    //  bitmaps are not scaled down, only up.
+    if(scale_factor > 1.0){
+        pivot_x *= scale_factor;
+        pivot_y *= scale_factor;
+    }
+    
     // For opengl, hopefully the symbols are loaded in a texture
     unsigned int texture = 0;
     wxRect texrect;
@@ -4107,9 +4111,11 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     CARC_Buffer buffer;
 
     float scale_factor = 1.0;
-    if(g_bresponsive){
-        scale_factor *= g_ChartScaleFactorExp;
-    }
+    
+    // Light arcs are specified in terms of absolute dimensions on screen, and should not be scaled.
+//     if(g_bresponsive){
+//         scale_factor *= g_ChartScaleFactorExp;
+//     }
     
     if( !m_pdc ) // opengl
     {
@@ -4253,8 +4259,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glVertex2i( x0, y0 );
             glEnd();
         }
-        */
-        
+        */ 
+
 //        glTranslatef( -r.x, -r.y, 0 );
         glPopMatrix();
 #endif        
@@ -4313,9 +4319,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double plat, plon;
     wxBoundingBox symbox;
 
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
 
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -4703,9 +4709,9 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
     double plat, plon;
     wxBoundingBox symbox;
     
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
     
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -6366,19 +6372,21 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             float x_origin = rzRules->obj->x_origin;
             
-            if( ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93COMP )
-                || ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93 ) )
-            {
-                //      We may need to translate object coordinates by 360 degrees to conform.
-                if( BBView.GetMaxX() >= 180. ) {
-                    if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
-                        x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+            if(rzRules->obj->m_chart_context->chart) {          // not a PlugIn Chart
+                if( ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93COMP )
+                    || ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93 ) )
+                {
+                    //      We may need to translate object coordinates by 360 degrees to conform.
+                    if( BBView.GetMaxX() >= 180. ) {
+                        if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+                            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                    }
+                    else
+                    if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
+                    || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
+                    )
+                    x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
                 }
-                else
-                if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
-                 || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
-                  )
-                  x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
             }
             
             glTranslatef( x_origin, rzRules->obj->y_origin, 0);
@@ -7749,7 +7757,15 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
 #endif    
 }
 
-
+void s52plib::GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
+{
+    if(vpt){
+        double rotation = vpt->rotation;
+        vpt->SetRotationAngle(0);
+        vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
+        vpt->SetRotationAngle(rotation);
+    }
+}    
 
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space )
@@ -7849,11 +7865,13 @@ void RenderFromHPGL::SetPen()
     // plib->canvas_pix_per_mm;
     scaleFactor = 100.0 / plib->GetPPMM();
 
-    if(g_bresponsive){
-        double scale_factor = 1.0;
-        scale_factor *=  g_ChartScaleFactorExp;
-        scaleFactor /= scale_factor;
-    }
+    // Vector rendered (HPGL) features are specified in terms of absolute dimensions on screen, and should not be scaled.
+    
+//     if(g_bresponsive){
+//         double scale_factor = 1.0;
+//         scale_factor *=  g_ChartScaleFactorExp;
+//         scaleFactor /= scale_factor;
+//     }
     
     if( renderToDC ) {
         pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );

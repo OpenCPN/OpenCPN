@@ -1618,7 +1618,7 @@ cord_step_size, double altitude_step_size, double time_step, WMMtype_MagneticMod
 	WMMtype_GeoMagneticElements GeoMagneticElements;
 	WMMtype_LegendreFunction *LegendreFunction;
 
-	FILE *fileout;
+	FILE *fileout = NULL;
 
 	if (PrintOption == 1)
 			{

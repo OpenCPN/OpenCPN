@@ -1,0 +1,477 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-20 18:04-0600\n"
+"PO-Revision-Date: 2016-01-25 19:59-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Norwegian Bokmal\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: nb\n"
+"X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "Katalog er ikke gyldig."
+
+#: src/chartcatalog.cpp:550
+#, c-format
+msgid "%s (%s to %s), river miles %3.1f - %3.1f"
+msgstr "%s (%s to %s), elvemil %3.1f - %3.1f"
+
+#: src/chartdldr_pi.cpp:234
+msgid "ChartDownloader"
+msgstr "Kartnedlaster"
+
+#: src/chartdldr_pi.cpp:239
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "Kartnedlaster utvidelse for OpenCPN"
+
+#: src/chartdldr_pi.cpp:244
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "Kartnedlaster utvidelse for OpenCPN\n"
+"Behandler kartnedlastinger og oppdateringer fra kilder som støtter\n"
+"NOAA kartkatalog format"
+
+#: src/chartdldr_pi.cpp:251 src/chartdldr_pi.cpp:692 src/chartdldr_pi.cpp:699
+#: src/chartdldr_pi.cpp:705 src/chartdldr_pi.cpp:723 src/chartdldr_pi.cpp:758
+#: src/chartdldr_pi.cpp:821 src/chartdldr_pi.cpp:827 src/chartdldr_pi.cpp:1009
+#: src/chartdldr_pi.cpp:1080 src/chartdldr_pi.cpp:1154
+#: src/chartdldr_pi.cpp:1259 src/chartdldr_pi.cpp:1809
+msgid "Chart Downloader"
+msgstr "Kartnedlaster"
+
+#: src/chartdldr_pi.cpp:428 src/chartdldr_pi.cpp:450
+msgid "Select all"
+msgstr "Velg alle"
+
+#: src/chartdldr_pi.cpp:432 src/chartdldr_pi.cpp:451
+msgid "Deselect all"
+msgstr "Fjern all merking"
+
+#: src/chartdldr_pi.cpp:436 src/chartdldr_pi.cpp:452
+msgid "Invert selection"
+msgstr "Inverter merking"
+
+#: src/chartdldr_pi.cpp:440 src/chartdldr_pi.cpp:453
+msgid "Select updated"
+msgstr "Velg oppdaterte"
+
+#: src/chartdldr_pi.cpp:444 src/chartdldr_pi.cpp:454
+msgid "Select new"
+msgstr "Velg ny"
+
+#: src/chartdldr_pi.cpp:562
+msgid "New"
+msgstr "Ny"
+
+#: src/chartdldr_pi.cpp:571
+msgid "Update available"
+msgstr "Oppdatering tilgjengelig"
+
+#: src/chartdldr_pi.cpp:577
+msgid "Up to date"
+msgstr "Oppdatert"
+
+#: src/chartdldr_pi.cpp:584
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr "%lu karter totalt, %lu oppdatert, %lu nye"
+
+#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
+msgid "(Please update first)"
+msgstr "(Vennligst oppdater først)"
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr "Feil, adressen til kartdatakilden er tilsynelatende feil."
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740 src/chartdldr_pi.cpp:1020
+msgid "Error"
+msgstr "Feil"
+
+#: src/chartdldr_pi.cpp:691
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download all new and updated charts.\n"
+"This may take a long time."
+msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
+"Så, laste ned alle nye og oppdaterte karter.\n"
+"Dette kan ta lang tid."
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only new (but not updated) charts.\n"
+"This may take a long time."
+msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
+"Så laste ned bare nye (men ikke oppdaterte) karter.\n"
+"Dette kan ta lang tid."
+
+#: src/chartdldr_pi.cpp:704
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only updated (but not new) charts.\n"
+"This may take a long time."
+msgstr "Du har valgt å oppdatere alle kartkatalogene.\n"
+"Last ned kun oppdaterte (men ikke nye) karter.\n"
+"Dette kan ta lang tid."
+
+#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1079
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr "%d av %d kart feilet under nedlasting.\n"
+"Sjekk listen, kontroller at du har en fungerende internett forbindelse og gjenta operasjonen om nødvendig."
+
+#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1786 src/chartdldr_pi.cpp:1809
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "Mappen %s kan ikke opprettes."
+
+#: src/chartdldr_pi.cpp:793
+msgid "Downloading file"
+msgstr "Laster ned fil"
+
+#: src/chartdldr_pi.cpp:794
+msgid "Reading Headers: "
+msgstr "Leser datahoder: "
+
+#: src/chartdldr_pi.cpp:820
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "Kunne ikke finne ny katalog: %s "
+
+#: src/chartdldr_pi.cpp:826
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "Kunne ikke laste ned katalog: %s \n"
+"Sjekk om du har internett forbindelse."
+
+#: src/chartdldr_pi.cpp:976 src/chartdldr_pi.cpp:982
+msgid "No charts selected for download."
+msgstr "Ingen kart er valgt for nedlasting."
+
+#: src/chartdldr_pi.cpp:992
+msgid "Abort download"
+msgstr "Avbryt nedlasting"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Unknown"
+msgstr "Ukjent"
+
+#: src/chartdldr_pi.cpp:1008
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr "Det valgte kartet '%s' kan ikke lastes ned automatisk, vil du åpne et nettleservindu og åpne dem manuelt?\n\n"
+" Etter å ha lastet ned kartene, vennligst pakk dem ut til %s"
+
+#: src/chartdldr_pi.cpp:1020
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "Feil, URL til kart (%s) data ser ut til å være feil."
+
+#: src/chartdldr_pi.cpp:1046
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "Laster ned kart %u av %u, %u nedlastinger feilet (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
+msgid "Download\n"
+" selected charts"
+msgstr "Last ned\n"
+" valgte karter"
+
+#: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Katalog"
+
+#: src/chartdldr_pi.cpp:1105
+msgid "Released"
+msgstr "Utgitt"
+
+#: src/chartdldr_pi.cpp:1106
+msgid "Local path"
+msgstr "Lokal sti"
+
+#: src/chartdldr_pi.cpp:1110
+msgid "Title"
+msgstr "Tittel"
+
+#: src/chartdldr_pi.cpp:1111
+msgid "Status"
+msgstr "Status"
+
+#: src/chartdldr_pi.cpp:1112
+msgid "Latest"
+msgstr "Seneste"
+
+#: src/chartdldr_pi.cpp:1153
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "Vil du virkelig fjerne kartkilden?\n"
+"De lokale kartene vil ikke bli fjernet, men du vil ikke kunne oppdatere kartene lengre."
+
+#: src/chartdldr_pi.cpp:1219
+msgid "Edit Chart Source"
+msgstr "Rediger kartkilde"
+
+#: src/chartdldr_pi.cpp:1258
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "Sti %s ser ikke ut til å være dekket av dine konfigurerte kartmapper.\n"
+"For å se kartene, må du endre konfigurasjonen i 'Kartfiler' fanen."
+
+#: src/chartdldr_pi.cpp:1771 src/chartdldr_pi.cpp:1774
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "Du må velge en av de forhåndsdefinerte kartkildene eller opprette din egen.\n"
+
+#: src/chartdldr_pi.cpp:1777
+msgid "The chart source must have a name.\n"
+msgstr "Kartkilden må ha et navn.\n"
+
+#: src/chartdldr_pi.cpp:1780
+msgid "The chart source must have a valid URL.\n"
+msgstr "Kartkilden må ha en gyldig URL.\n"
+
+#: src/chartdldr_pi.cpp:1782
+msgid "You must select a local folder to store the charts.\n"
+msgstr "Du må velge en lokal mappe til å lagre kartene i.\n"
+
+#: src/chartdldr_pi.cpp:1789
+msgid "Chart source definition problem"
+msgstr "Kartkilde definisjons problem"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Forhåndsdefinert"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Navn"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Tilpasset"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Kartkatalog"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:472
+msgid "Select a folder"
+msgstr "Velg en mappe"
+
+#: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
+msgid "Choose Chart File Directory"
+msgstr "Velg kartfil mappe"
+
+#: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
+msgid "Catalogs"
+msgstr "Kataloger"
+
+#: src/chartdldrgui.cpp:245 src/chartdldrgui.cpp:346
+msgid "Add"
+msgstr "Legg til"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add a new chart catalog."
+msgstr "Legg til en ny kartkatalog."
+
+#: src/chartdldrgui.cpp:250 src/chartdldrgui.cpp:351
+msgid "Delete"
+msgstr "Slett"
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Slett kartkatalog. De nedlastede kartene blir ikke slettet."
+
+#: src/chartdldrgui.cpp:255 src/chartdldrgui.cpp:356
+msgid "Edit..."
+msgstr "Rediger..."
+
+#: src/chartdldrgui.cpp:258 src/chartdldrgui.cpp:359
+msgid "Update"
+msgstr "Oppdater"
+
+#: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
+msgid "Download the current chart catalog and update the data."
+msgstr "Last ned nåværende kartkatalog og oppdater all data."
+
+#: src/chartdldrgui.cpp:264 src/chartdldrgui.cpp:365
+msgid "Update All"
+msgstr "Oppdater alle"
+
+#: src/chartdldrgui.cpp:269 src/chartdldrgui.cpp:378
+msgid "Charts"
+msgstr "Karter"
+
+#: src/chartdldrgui.cpp:290 src/chartdldrgui.cpp:394
+msgid "Help"
+msgstr "Hjelp"
+
+#: src/chartdldrgui.cpp:296 src/chartdldrgui.cpp:403
+msgid "Show local files"
+msgstr "Vis lokale filer"
+
+#: src/chartdldrgui.cpp:302 src/chartdldrgui.cpp:387
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u karter totalt, %u oppdatert, %u nye"
+
+#: src/chartdldrgui.cpp:400
+msgid "Download selected charts"
+msgstr "Last ned valgte karter"
+
+#: src/chartdldrgui.cpp:463
+msgid "Default Path to Charts"
+msgstr "Standard sti til karter"
+
+#: src/chartdldrgui.cpp:479
+msgid "Preferences"
+msgstr "Innstillinger"
+
+#: src/chartdldrgui.cpp:483
+msgid "After catalog update select for download"
+msgstr "Etter katalogoppdatering, velg for nedlasting"
+
+#: src/chartdldrgui.cpp:487
+msgid "All updated charts"
+msgstr "Alle oppdaterte kart"
+
+#: src/chartdldrgui.cpp:491
+msgid "All new charts"
+msgstr "Alle nye kart"
+
+#: src/chartdldrgui.cpp:497
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Tillat masseoppdatering av alle konfigurerte kilder og kart"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Ny kartkilde"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Innstillinger for kartnedlaster"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "Ikke tilgjengelig"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "Fart:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Forbrukt tid:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Estimert total tid:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Estimert gjenværende tid:"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "Avbryt"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "Innstillinger"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "Pause"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "Start"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "Lukk"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "Gjenoppta"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (overføring pauset)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "Tilkoblingsinnstillinger"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "Tilkoblingsinnstillinger brukt for overføring:"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (overføring fullført)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "Nedlastet:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "Opplastet:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "Brukernavn:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "Passord:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "Port:"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Proxy-innstillinger"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "Bruk proxy"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Proxy vert:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Proxy brukernavn:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Proxy passord:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Proxy port:"
+

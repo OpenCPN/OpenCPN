@@ -203,7 +203,8 @@ enum {
 #define wxFIXED_MINSIZE 0
 #endif
 
-WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
+#include <wx/arrimpl.cpp>
+WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
 class Uncopyable {
  protected:
@@ -231,7 +232,9 @@ class options : private Uncopyable,
                    long style = SYMBOL_OPTIONS_STYLE);
 
   ~options(void);
-
+#if wxCHECK_VERSION(3,0,0)
+  bool SendIdleEvents(wxIdleEvent &event );
+#endif  
   void SetInitialPage(int page_sel);
   void Finish(void);
 

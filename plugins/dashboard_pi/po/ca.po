@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:46-0400\n"
+"POT-Creation-Date: 2015-12-20 18:04-0600\n"
+"PO-Revision-Date: 2015-12-31 15:36-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Catalan\n"
 "Language: ca_ES\n"
@@ -67,7 +67,7 @@ msgstr "Angle/Vel. Vent aparent"
 
 #: src/dashboard_pi.cpp:120
 msgid "App & True Wind Angle"
-msgstr ""
+msgstr "Angle Real i Aparent del vent"
 
 #: src/dashboard_pi.cpp:122 src/dashboard_pi.cpp:124
 msgid "App. Wind Speed"
@@ -167,15 +167,15 @@ msgstr "Des de pròpia embarcació"
 
 #: src/dashboard_pi.cpp:180
 msgid "Pitch"
-msgstr ""
+msgstr "Pitch"
 
 #: src/dashboard_pi.cpp:182
 msgid "Heel"
-msgstr ""
+msgstr "Taló"
 
 #: src/dashboard_pi.cpp:352 src/dashboard_pi.cpp:465 src/dashboard_pi.cpp:1397
-#: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1564 src/dashboard_pi.cpp:1603
-#: src/dashboard_pi.cpp:1867
+#: src/dashboard_pi.cpp:1406 src/dashboard_pi.cpp:1568
+#: src/dashboard_pi.cpp:1607 src/dashboard_pi.cpp:1871
 msgid "Dashboard"
 msgstr "Tauler d'instruments"
 
@@ -189,159 +189,160 @@ msgid "Dashboard PlugIn for OpenCPN\n"
 msgstr "El Connector Tauler d'instruments per a OpenCPN\n"
 "Mostra un panel d'instruments de navegació des d'una font NMEA."
 
-#: src/dashboard_pi.cpp:1540
+#: src/dashboard_pi.cpp:1544
 msgid "Dashboard preferences"
 msgstr "Preferències Tauler"
 
-#: src/dashboard_pi.cpp:1610
+#: src/dashboard_pi.cpp:1614
 msgid "show this dashboard"
 msgstr "mostra aquest tauler"
 
-#: src/dashboard_pi.cpp:1616
+#: src/dashboard_pi.cpp:1620
 msgid "Caption:"
 msgstr "Nom:"
 
-#: src/dashboard_pi.cpp:1624
+#: src/dashboard_pi.cpp:1628
 msgid "Orientation:"
 msgstr "Orientació:"
 
-#: src/dashboard_pi.cpp:1628 src/dashboard_pi.cpp:2060
+#: src/dashboard_pi.cpp:1632 src/dashboard_pi.cpp:2064
 msgid "Vertical"
 msgstr "Vertical"
 
-#: src/dashboard_pi.cpp:1629 src/dashboard_pi.cpp:2062
+#: src/dashboard_pi.cpp:1633 src/dashboard_pi.cpp:2066
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: src/dashboard_pi.cpp:1636 src/dashboard_pi.cpp:1644 src/dashboard_pi.cpp:1986
+#: src/dashboard_pi.cpp:1640 src/dashboard_pi.cpp:1648
+#: src/dashboard_pi.cpp:1990
 msgid "Instruments"
 msgstr "Instruments"
 
-#: src/dashboard_pi.cpp:1652
+#: src/dashboard_pi.cpp:1656
 msgid "Add"
 msgstr "Afegir"
 
-#: src/dashboard_pi.cpp:1665
+#: src/dashboard_pi.cpp:1669
 msgid "Delete"
 msgstr "Esborrar"
 
-#: src/dashboard_pi.cpp:1671
+#: src/dashboard_pi.cpp:1675
 msgid "Up"
 msgstr "Amunt"
 
-#: src/dashboard_pi.cpp:1676
+#: src/dashboard_pi.cpp:1680
 msgid "Down"
 msgstr "Avall"
 
-#: src/dashboard_pi.cpp:1686
+#: src/dashboard_pi.cpp:1690
 msgid "Appearance"
 msgstr "Aspecte"
 
-#: src/dashboard_pi.cpp:1688
+#: src/dashboard_pi.cpp:1692
 msgid "Fonts"
 msgstr "Fonts"
 
-#: src/dashboard_pi.cpp:1694
+#: src/dashboard_pi.cpp:1698
 msgid "Title:"
 msgstr "Títol:"
 
-#: src/dashboard_pi.cpp:1700
+#: src/dashboard_pi.cpp:1704
 msgid "Data:"
 msgstr "Dades:"
 
-#: src/dashboard_pi.cpp:1706
+#: src/dashboard_pi.cpp:1710
 msgid "Label:"
 msgstr "Etiqueta:"
 
-#: src/dashboard_pi.cpp:1712
+#: src/dashboard_pi.cpp:1716
 msgid "Small:"
 msgstr "Petit:"
 
-#: src/dashboard_pi.cpp:1720
+#: src/dashboard_pi.cpp:1724
 msgid "Units, Ranges, Formats"
 msgstr "Unitats, Rangs i Formats"
 
-#: src/dashboard_pi.cpp:1726
+#: src/dashboard_pi.cpp:1730
 msgid "Speedometer max value:"
 msgstr "Valor màx. velocímetre:"
 
-#: src/dashboard_pi.cpp:1731
+#: src/dashboard_pi.cpp:1735
 msgid "Boat speed units:"
 msgstr "Unitats velocitat vaixell:"
 
-#: src/dashboard_pi.cpp:1734 src/dashboard_pi.cpp:1752
+#: src/dashboard_pi.cpp:1738 src/dashboard_pi.cpp:1756
 msgid "Honor OpenCPN settings"
 msgstr "Seleccionada a OpenCPN"
 
-#: src/dashboard_pi.cpp:1734 src/dashboard_pi.cpp:1761
+#: src/dashboard_pi.cpp:1738 src/dashboard_pi.cpp:1765
 msgid "Kts"
 msgstr "Kts"
 
-#: src/dashboard_pi.cpp:1734 src/dashboard_pi.cpp:1761
+#: src/dashboard_pi.cpp:1738 src/dashboard_pi.cpp:1765
 msgid "mph"
 msgstr "mph"
 
-#: src/dashboard_pi.cpp:1734 src/dashboard_pi.cpp:1761
+#: src/dashboard_pi.cpp:1738 src/dashboard_pi.cpp:1765
 msgid "km/h"
 msgstr "km/h"
 
-#: src/dashboard_pi.cpp:1734 src/dashboard_pi.cpp:1761
+#: src/dashboard_pi.cpp:1738 src/dashboard_pi.cpp:1765
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:1740
+#: src/dashboard_pi.cpp:1744
 msgid "Depth units:"
 msgstr "Unitats de calat:"
 
-#: src/dashboard_pi.cpp:1743 src/dashboard_pi.cpp:1752
+#: src/dashboard_pi.cpp:1747 src/dashboard_pi.cpp:1756
 msgid "Meters"
 msgstr "Metres"
 
-#: src/dashboard_pi.cpp:1743
+#: src/dashboard_pi.cpp:1747
 msgid "Feet"
 msgstr "Peus"
 
-#: src/dashboard_pi.cpp:1743
+#: src/dashboard_pi.cpp:1747
 msgid "Fathoms"
 msgstr "Braces"
 
-#: src/dashboard_pi.cpp:1743
+#: src/dashboard_pi.cpp:1747
 msgid "Centimeters"
 msgstr "Centímetres"
 
-#: src/dashboard_pi.cpp:1743
+#: src/dashboard_pi.cpp:1747
 msgid "Inches"
 msgstr "Polzades"
 
-#: src/dashboard_pi.cpp:1749
+#: src/dashboard_pi.cpp:1753
 msgid "Distance units:"
 msgstr "Unitats de distància:"
 
-#: src/dashboard_pi.cpp:1752
+#: src/dashboard_pi.cpp:1756
 msgid "Nautical miles"
 msgstr "Milles nàutiques"
 
-#: src/dashboard_pi.cpp:1752
+#: src/dashboard_pi.cpp:1756
 msgid "Statute miles"
 msgstr "Milles internacionals"
 
-#: src/dashboard_pi.cpp:1752
+#: src/dashboard_pi.cpp:1756
 msgid "Kilometers"
 msgstr "Kilòmetres"
 
-#: src/dashboard_pi.cpp:1758
+#: src/dashboard_pi.cpp:1762
 msgid "Wind speed units:"
 msgstr "Unitats vel. vent:"
 
-#: src/dashboard_pi.cpp:1969
+#: src/dashboard_pi.cpp:1973
 msgid "Add instrument"
 msgstr "Afegir instrument"
 
-#: src/dashboard_pi.cpp:1975
+#: src/dashboard_pi.cpp:1979
 msgid "Select instrument to add:"
 msgstr "Seleccionar instrument a afegir:"
 
-#: src/dashboard_pi.cpp:2069
+#: src/dashboard_pi.cpp:2073
 msgid "Preferences..."
 msgstr "Preferències..."
 
@@ -425,5 +426,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr ""
+msgstr "Max %.1f %s des de %02d:%02d total %.1f %s"
 

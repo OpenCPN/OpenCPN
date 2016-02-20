@@ -2625,6 +2625,10 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     jMsg[wxS("cog")] = pTarget->COG;
     jMsg[wxS("hdg")] = pTarget->HDG;
     jMsg[wxS("mmsi")] = pTarget->MMSI;
-    jMsg[wxS("shipname")] = pTarget->ShipName;
+    wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
+    for(size_t i =0; i < l_ShipName.Len(); i++) {
+        if(l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
+    }
+    jMsg[wxS("shipname")] = l_ShipName;
     g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
 }

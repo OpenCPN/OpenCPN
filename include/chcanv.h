@@ -212,6 +212,7 @@ public:
 
       wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
       
+      void UnlockQuilt();
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
       ArrayOfInts GetQuiltIndexArray(void);
@@ -361,6 +362,7 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       
 private:
+      bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
     
       ViewPort    VPoint;
@@ -661,6 +663,7 @@ private:
       
       wxColour    m_fog_color;      
       bool        m_disable_edge_pan;
+      wxFont      *m_pgridFont;
       
       
 DECLARE_EVENT_TABLE()

@@ -203,6 +203,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
 
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
+    m_IconScaleFactor = 1.0;
     
     m_HyperlinkList = new HyperlinkList;
 
@@ -317,6 +318,8 @@ void RoutePoint::ReLoadIcon( void )
 
     m_iTextTexture = 0;
 #endif
+    
+    m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
 void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
@@ -342,11 +345,25 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
 //    Substitue icon?
     wxBitmap *pbm;
-    if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) ) pbm = pWayPointMan->GetIconBitmap(
-            _T ( "activepoint" ) );
+    if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
+        pbm = pWayPointMan->GetIconBitmap( _T ( "activepoint" ) );
     else
         pbm = m_pbmIcon;
 
+    wxBitmap *pbms = NULL;
+    if( g_ChartScaleFactorExp > 1.0){
+        if(m_IconScaleFactor != g_ChartScaleFactorExp){
+            wxImage scaled_image = pbm->ConvertToImage();
+            int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
+            int new_height = pbm->GetHeight() * g_ChartScaleFactorExp;
+            m_ScaledBMP = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+           
+            m_IconScaleFactor = g_ChartScaleFactorExp;
+        }
+        if( m_ScaledBMP.IsOk() )
+            pbm = &m_ScaledBMP;
+    }
+        
     int sx2 = pbm->GetWidth() / 2;
     int sy2 = pbm->GetHeight() / 2;
 
@@ -453,6 +470,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
 
+    delete pbms;        // the potentially scaled bitmap
 }
 
 #ifdef ocpnUSE_GL
@@ -586,9 +604,9 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
         float scale = 1.0;
-        if(g_bresponsive){
+ //       if(g_bresponsive){
             scale =  g_ChartScaleFactorExp;
-        }
+//        }
             
         float ws = r1.width * scale;
         float hs = r1.height * scale;

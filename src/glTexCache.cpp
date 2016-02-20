@@ -915,6 +915,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_CompressedCacheFilePath = CompressedCachePath(chart->GetFullPath());
     m_hdrOK = false;
     m_catalogOK = false;
+    m_newCatalog = true;
 
     m_catalogCorrupted = false;
 
@@ -1463,7 +1464,11 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         //    Upload to GPU?
         if( level >= base_level ) {
             int status = GetTextureLevel( ptd, rect, level, color_scheme );
- 
+            if (m_newCatalog) {
+                 // it's an empty catalog or it's not used, odds it's going to be slow
+                 OCPNPlatform::ShowBusySpinner();
+                 m_newCatalog = false;
+            }
             if(g_GLOptions.m_bTextureCompression) {
                 if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
                     ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
@@ -1518,13 +1523,13 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         // should be ok because the uncompressed data is only temporary anyway
                         b_use_mipmaps = false;
 
-#if 0
-                        // on systems with very little memory we could go up a mipmap level
+#ifdef ocpnUSE_GLES
+                        // on systems with little memory we can go up a mipmap level
                         // here so that the uncompressed size without mipmaps (level+1)
                         // is nearly the compressed size with all the compressed mipmaps
-                        // this way we won't require more memory than normal while we
-                        // are generating the compressed textures.
-                        // when the cache is complete the image becomes clearer
+                        // this way we won't require 5x more video memory than normal while we
+                        // are generating the compressed textures, when the cache is complete the image
+                        // becomes clearer as it is replaces with the higher resolution compressed version
                         base_level++;
                         level++;
                         if(ptd->miplevel_upload[level])
@@ -1891,76 +1896,55 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
                                    int level, ColorScheme color_scheme )
 {
     //  Already available in the texture descriptor?
-    if(g_GLOptions.m_bTextureCompression && !g_GLOptions.m_bTextureCompressionCaching) {
-        if( ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED){
-            if( ptd->CompressedArrayAccess( CA_READ, NULL, level))
-                return COMPRESSED_BUFFER_OK;
-            else{
-                if(g_CompressorPool){
-                    g_CompressorPool->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
-                    return COMPRESSED_BUFFER_OK;
-                }
-            }
-        }
-        else{
+    if(g_GLOptions.m_bTextureCompression && ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED) {
+        if( ptd->CompressedArrayAccess( CA_READ, NULL, level))
+            return COMPRESSED_BUFFER_OK;
+        else if(!g_GLOptions.m_bTextureCompressionCaching) {
             if(g_CompressorPool){
                 g_CompressorPool->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
                 return COMPRESSED_BUFFER_OK;
             }
-        }
-    }
-    else {
-        if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED){
-            if( !ptd->map_array[ level ] ){
-                GetFullMap( ptd, rect, m_ChartPath, level );
-            }
-            return MAP_BUFFER_OK;
-        }
-    }
-
-    //  If cacheing compressed textures, look in the cache
-    if(g_GLOptions.m_bTextureCompression &&
-        g_GLOptions.m_bTextureCompressionCaching) {
+        } else {
+            //  If cacheing compressed textures, look in the cache
+            //  Search for the requested texture
+            //  Search the catalog for this particular texture
+            CatalogEntryValue *p = GetCacheEntryValue(level, rect.x, rect.y, color_scheme);
         
-        //  Search for the requested texture
-        //  Search the catalog for this particular texture
-        CatalogEntryValue *p = GetCacheEntryValue(level, rect.x, rect.y, color_scheme);
-        
-        //      Requested texture level is found in the cache
-        //      so go load it
-        if( p != 0 ) {
+            //      Requested texture level is found in the cache
+            //      so go load it
+            if( p != 0 ) {
             
-            int dim = g_GLOptions.m_iTextureDimension;
-            int size = g_tile_size;
+                int dim = g_GLOptions.m_iTextureDimension;
+                int size = g_tile_size;
             
-            for(int i=0 ; i < level ; i++){
-                dim /= 2;
-                size /= 4;
-                if(size < 8) size = 8;
-            }
+                for(int i=0 ; i < level ; i++){
+                    dim /= 2;
+                    size /= 4;
+                    if(size < 8) size = 8;
+                }
             
-            if(m_fs->IsOpened()){
-                m_fs->Seek(p->texture_offset);
-                unsigned char *cb = (unsigned char*)malloc(size);
-                ptd->CompressedArrayAccess( CA_WRITE, cb, level);
+                if(m_fs->IsOpened()){
+                    m_fs->Seek(p->texture_offset);
+                    unsigned char *cb = (unsigned char*)malloc(size);
+                    ptd->CompressedArrayAccess( CA_WRITE, cb, level);
                 
-                int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-                char *compressed_data = new char[max_compressed_size];
-                m_fs->Read(compressed_data, p->compressed_size);
+                    int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
+                    char *compressed_data = new char[max_compressed_size];
+                    m_fs->Read(compressed_data, p->compressed_size);
                 
-                LZ4_decompress_fast(compressed_data, (char*)cb, size);
-                delete [] compressed_data;    
-            }
+                    LZ4_decompress_fast(compressed_data, (char*)cb, size);
+                    delete [] compressed_data;    
+                }
             
-            return COMPRESSED_BUFFER_OK;
+                return COMPRESSED_BUFFER_OK;
+            }
         }
     }
         
-        //  Requested Texture level is not in cache, and not already built
-        //  So go build it
-    if( !ptd->map_array[level] ){
+    //  Requested Texture level is not in cache, and not already built
+    //  So go build it
+    if( !ptd->map_array[level] )
         GetFullMap( ptd, rect, m_ChartPath, level );
-    }
         
     return MAP_BUFFER_OK;
 }
@@ -2060,6 +2044,7 @@ bool glTexFactory::AddCacheEntryValue(const CatalogEntry &p)
 
 bool glTexFactory::LoadCatalog(void)
 {
+    m_newCatalog = false;
     if(m_catalogOK)
         return true;
 
@@ -2069,6 +2054,7 @@ bool glTexFactory::LoadCatalog(void)
     if (n_catalog_entries == 0) {
         // new empty header
         m_catalogOK = true;
+        m_newCatalog = true;
         return true;
     }
     

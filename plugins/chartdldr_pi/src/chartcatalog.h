@@ -71,11 +71,7 @@ public:
     wxString ref_spec;
     wxString ref_spec_vers;
     wxString s62AgencyCode;
-// <<<<<<< HEAD
-//     wxArrayOfCharts *charts;
-// =======
     wxArrayOfCharts charts;
-// >>>>>>> master
 private:
     bool ParseNoaaHeader( TiXmlElement * xmldata );
 };
@@ -84,11 +80,7 @@ class Chart
 {
 public:
     Chart( TiXmlNode * xmldata );
-// <<<<<<< HEAD
-//     ~Chart();
-// =======
     virtual ~Chart();
-// >>>>>>> master
     // public methods
     virtual wxString GetChartTitle() { return title; }
     virtual wxString GetDownloadLocation() { return zipfile_location; }
@@ -113,11 +105,7 @@ public:
 
     NoticeToMariners *nm;
     NoticeToMariners *lnm;
-// <<<<<<< HEAD
-//     wxArrayOfPanels *coverage;
-// =======
     wxArrayOfPanels coverage;
-// >>>>>>> master
 };
 
 class RasterChart : public Chart //<chart>
@@ -240,10 +228,7 @@ class Vertex
 {
 public:
     Vertex( TiXmlNode * xmldata );
-// <<<<<<< HEAD
-// =======
     virtual ~Vertex() {};
-// >>>>>>> master
     // public methods
 
     //public properties
@@ -255,20 +240,12 @@ class Panel
 {
 public:
     Panel( TiXmlNode * xmldata );
-// <<<<<<< HEAD
-//     ~Panel();
-// =======
     virtual ~Panel();
-// >>>>>>> master
     // public methods
 
     //public properties
     int panel_no;
-// <<<<<<< HEAD
-//     wxArrayOfVertexes *vertexes;
-// =======
     wxArrayOfVertexes vertexes;
-// >>>>>>> master
 };
 
 class RncPanel : public Panel

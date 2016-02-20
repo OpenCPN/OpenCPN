@@ -39,6 +39,10 @@
 
 #include <wx/xml/xml.h>
 
+#ifdef ocpnUSE_SVG
+#include "wxsvg/include/wxSVG/svg.h"
+#endif // ocpnUSE_SVG
+
 class wxGLContext;
 
 //    This is the most modern API Version number
@@ -594,13 +598,20 @@ public:
 //----------------------------------------------------------------------------------------------------------
 
 
-extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled, wxItemKind kind,
+extern "C"  DECL_EXP int InsertPlugInTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover, wxItemKind kind,
                                           wxString shortHelp, wxString longHelp, wxObject *clientData, int position,
                                           int tool_sel, opencpn_plugin *pplugin);
 extern "C"  DECL_EXP void RemovePlugInTool(int tool_id);
 extern "C"  DECL_EXP void SetToolbarToolViz(int item, bool viz);      // Temporarily change toolbar tool viz
 extern "C"  DECL_EXP void SetToolbarItemState(int item, bool toggle);
-extern "C"  DECL_EXP void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
+extern "C"  DECL_EXP void SetToolbarToolBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpRollover);
+
+extern "C"  DECL_EXP int InsertPlugInToolSVG(wxString label, wxString SVGfile, wxString SVGfileRollover, wxString SVGfileToggled,
+                                          wxItemKind kind, wxString shortHelp, wxString longHelp,
+                                          wxObject *clientData, int position, int tool_sel, opencpn_plugin *pplugin);
+extern "C"  DECL_EXP void SetToolbarToolBitmapsSVG(int item, wxString SVGfile,
+                                                   wxString SVGfileRollover,
+                                                   wxString SVGfileToggled );
 
 extern "C"  DECL_EXP  int AddCanvasContextMenuItem(wxMenuItem *pitem, opencpn_plugin *pplugin );
 extern "C"  DECL_EXP void RemoveCanvasContextMenuItem(int item);      // Fully remove this item
@@ -728,7 +739,7 @@ extern  DECL_EXP wxString GetPlugInPath(opencpn_plugin *pplugin);
 
 extern "C"  DECL_EXP int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas );
 extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );
-
+extern  DECL_EXP wxString GetLocaleCanonicalName();
 
 //  API 1.11 adds access to S52 Presentation library
 //Types
@@ -832,9 +843,9 @@ public:
     float               lat_min;
     float               lon_max;
     float               lon_min;
-    void                *private0;
     int                 type;
-    
+    void                *private0;
+   
     PI_line_segment_element *next;
 };
 
@@ -997,6 +1008,8 @@ extern DECL_EXP void SetCursor_PlugIn( wxCursor *pPlugin_Cursor = NULL );
 extern DECL_EXP wxFont *GetOCPNScaledFont_PlugIn(wxString TextElement, int default_size = 0);
 extern DECL_EXP wxFont GetOCPNGUIScaledFont_PlugIn(wxString item);
 extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn(int GUIScaledFactor);
+extern DECL_EXP double GetOCPNGUIToolScaleFactor_PlugIn();
+extern DECL_EXP float  GetOCPNChartScaleFactor_Plugin();
 extern DECL_EXP wxColour GetFontColour_PlugIn(wxString TextElement);
 
 extern DECL_EXP double GetCanvasTilt();
@@ -1011,7 +1024,10 @@ extern  DECL_EXP wxDialog *GetActiveOptionsDialog();
 extern  DECL_EXP wxArrayString GetWaypointGUIDArray( void );
 
 extern  DECL_EXP bool AddPersistentFontKey(wxString TextElement);
+extern  DECL_EXP wxString GetActiveStyleName();
 
+extern  DECL_EXP wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height);
+extern  DECL_EXP bool IsTouchInterface_PlugIn(void);
 
 /*  Platform optimized File/Dir selector dialogs */
 extern  DECL_EXP int PlatformDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir);

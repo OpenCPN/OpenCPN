@@ -44,6 +44,7 @@
 #include "navutil.h"
 #include "ConnectionParams.h"
 #include "FontMgr.h"
+#include "s52s57.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -220,6 +221,7 @@ extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
+extern bool                     g_bPreserveScaleOnX;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -573,8 +575,34 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bDrawAISSize = false;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
+    g_bPreserveScaleOnX = true;
     
-
+    // Initial S52/S57 options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
+        pConfig->Write( _T ( "bShowS57Text" ), false );
+        pConfig->Write( _T ( "bShowS57ImportantTextOnly" ), false );
+        pConfig->Write( _T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD );
+        pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
+        pConfig->Write( _T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES );
+        
+        pConfig->Write( _T ( "bShowSoundg" ), false );
+        pConfig->Write( _T ( "bShowMeta" ), false );
+        pConfig->Write( _T ( "bUseSCAMIN" ), true );
+        pConfig->Write( _T ( "bShowAtonText" ), false );
+        pConfig->Write( _T ( "bShowLightDescription" ), false );
+        pConfig->Write( _T ( "bExtendLightSectors" ), true );
+        pConfig->Write( _T ( "bDeClutterText" ), true );
+        pConfig->Write( _T ( "bShowNationalText" ), false );
+        
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 5 );
+        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 2 );
+        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 10 );
+        pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
+        pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
+     }
+    
+    
 #ifdef __WXMSW__
     //  Enable some default PlugIns, and their default options
     if(pConfig){
@@ -585,7 +613,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
@@ -600,7 +629,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
@@ -615,7 +645,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
-        pConfig->Write ( _T ( "ShowIcon" ), false );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
         
     }
 #endif
@@ -962,8 +993,9 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     
     wxFileDialog *psaveDialog = new wxFileDialog( parent, Title, initDir, suggestedName, mask, flag );
 
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
     
 #ifdef __WXOSX__
     if(parent)
@@ -977,8 +1009,8 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-	if(file_spec)
-		*file_spec = psaveDialog->GetPath();
+    if(file_spec)
+        *file_spec = psaveDialog->GetPath();
     delete psaveDialog;
         
 #endif
@@ -1006,8 +1038,9 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive)
-        dirSelector = AdjustDirDialogFont(parent, dirSelector);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         dirSelector = AdjustDirDialogFont(parent, dirSelector);
     
 #ifdef __WXOSX__
     if(parent)
@@ -1170,9 +1203,11 @@ void OCPNPlatform::ShowBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
 #else 
+    #if wxCHECK_VERSION(2, 9, 0 )
     if( !::wxIsBusy() ){
         ::wxBeginBusyCursor();
     }
+    #endif
 #endif    
 }
 
@@ -1183,10 +1218,10 @@ void OCPNPlatform::HideBusySpinner( void )
 #else
     #if wxCHECK_VERSION(2, 9, 0 )
     if( ::wxIsBusy() )
-    #endif
     {
         ::wxEndBusyCursor();
     }
+    #endif
 #endif    
 }
 
@@ -1236,7 +1271,7 @@ double OCPNPlatform::getFontPointsperPixel( void )
     //  Make a measurement...
     wxScreenDC dc;
     
-    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
+    wxFont *f = FontMgr::Get().FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
     dc.SetFont(*f);
     
@@ -1385,8 +1420,8 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
     return ret_dlg;
 }
         
-        wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
-        {
+wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
+{
             wxFileDialog* ret_dlg = dlg;
             
             dlg->Show();
@@ -1422,7 +1457,7 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             ret_dlg->Hide();
             
             return ret_dlg;
-        }
+}
         
 double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
 {
@@ -1432,66 +1467,59 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     // We try to arrange matters so that at GUIScaleFactor=0, the tool icons are approximately 9 mm in size
     // and that the value may range from 0.5 -> 2.0
     
-    if(g_bresponsive ){
-        //  Get the basic size of a tool icon
-        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-        wxSize style_tool_size = style->GetToolSize();
-        double tool_size = style_tool_size.x;
+    //  Get the basic size of a tool icon
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    wxSize style_tool_size = style->GetToolSize();
+    double tool_size = style_tool_size.x;
+    
+    // unless overridden by user, we declare the "best" tool size
+    // to be roughly the same as the ActionBar height.
+    //  This may be approximated in a device orientation-independent way as:
+    //   40pixels * DENSITY
+    double premult = 1.0;
+    if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
+        double target_size = 9.0;                // mm
+    
+        double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
         
-        // unless overridden by user, we declare the "best" tool size
-        // to be roughly the same as the ActionBar height.
-        //  This may be approximated in a device orientation-independent way as:
-        //   40pixels * DENSITY
-        double premult = 1.0;
-        if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
-            double target_size = 9.0;                // mm
-        
-            double basic_tool_size_mm = tool_size / GetDisplayDPmm();
-            premult = target_size / basic_tool_size_mm;
-            
-        }
-        else{
-            premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
-        }            
-        
-        //Adjust the scale factor using the global GUI scale parameter
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        
-//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
-        
-        rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
-        
-        
+    else{
+        premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
+    }            
+    
+    //Adjust the scale factor using the global GUI scale parameter
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+    
+//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
+    
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     
 #else
-    if(g_bresponsive ){
-        
-        double premult = 1.0;
-        
-        //  Get the basic size of a tool icon
+    double premult = 1.0;
+
+    if(g_bresponsive){
+    //  Get the basic size of a tool icon
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
         double tool_size = style_tool_size.x;
 
-        // unless overridden by user, we declare the "best" tool size
-        // to be roughly 6 mm square.
-        double target_size = 6.0;                // mm
+    // unless overridden by user, we declare the "best" tool size
+    // to be roughly 9 mm square.
+        double target_size = 9.0;                // mm
 
         double basic_tool_size_mm = tool_size / GetDisplayDPmm();
         premult = target_size / basic_tool_size_mm;
-
-        //Adjust the scale factor using the global GUI scale parameter
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        
-        
-        rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
-        rv = wxMax(rv, 1.0);
-        
     }
+
+    //Adjust the scale factor using the global GUI scale parameter
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
     
+    
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMax(rv, 0.5);      //  and at 0.5  
 
 #endif
 
@@ -1529,8 +1557,9 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
     
     
 #else
+    double premult = 1.0;
+
     if(g_bresponsive ){
-        double premult = 1.0;
         
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
@@ -1541,13 +1570,13 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         
         double basic_tool_size_mm = compass_size / GetDisplayDPmm();
         premult = target_size / basic_tool_size_mm;
-        
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-
-        rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
-        rv = wxMax(rv, 1.0);
     }
+        
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMax(rv, 0.5);
     
 #endif
     

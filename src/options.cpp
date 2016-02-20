@@ -271,9 +271,6 @@ extern bool g_config_display_size_manual;
 
 extern "C" bool CheckSerialAccess(void);
 
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
-
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
 int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
@@ -711,7 +708,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   long lwidth;
 
   m_pListCtrlMMSI = new MMSIListCtrl(
-      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, 450),
+      this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
       wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
           wxBORDER_SUNKEN | wxLC_VIRTUAL);
   wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
@@ -916,6 +913,15 @@ options::~options(void) {
   delete smallFont;
   
 }
+
+// with AIS it's called very often
+#if wxCHECK_VERSION(3,0,0)
+bool options::SendIdleEvents(wxIdleEvent &event )  { 
+    if (IsShown())
+       return wxDialog::SendIdleEvents(event);
+   return false;
+}
+#endif    
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
@@ -4540,7 +4546,7 @@ void options::CreateControls(void) {
     wxListView* lv = m_pListbook->GetListView();
     wxFont* qFont = dialogFont;  // to get type, weight, etc...
 
-    wxFont* sFont = wxTheFontList->FindOrCreateFont(
+    wxFont* sFont = FontMgr::Get().FindOrCreateFont(
         10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
     lv->SetFont(*sFont);
   }
@@ -5018,6 +5024,9 @@ void options::SetInitialSettings(void) {
       }
   }
   
+  //  Reset the touch flag...
+  connectionsaved = true;
+  
 }
 
 void options::SetInitialVectorSettings(void)
@@ -5251,24 +5260,32 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     g_GLOptions.m_bUseAcceleratedPanning =
         g_bGLexpert ? dlg.GetAcceleratedPanning()
                   : cc1->GetglCanvas()->CanAcceleratePanning();
-    g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
+
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
+
     if (g_bGLexpert) {
+      // user defined
       g_GLOptions.m_bTextureCompressionCaching =
           dlg.GetTextureCompressionCaching();
       g_GLOptions.m_iTextureMemorySize = dlg.GetTextureMemorySize();
     } else {
+      // caching is on if textures are compressed
       g_GLOptions.m_bTextureCompressionCaching = dlg.GetTextureCompression();
     }
+
     if (g_bopengl &&
         g_GLOptions.m_bTextureCompression != dlg.GetTextureCompression()) {
+      // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
       ::wxBeginBusyCursor();
       cc1->GetglCanvas()->SetupCompression();
       cc1->GetglCanvas()->ClearAllRasterTextures();
       ::wxEndBusyCursor();
     }
+    else
+      g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
+    
   }
 
   if (dlg.GetRebuildCache()) {
@@ -6479,7 +6496,7 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 
 #else
   response =
-      g_Platform->DoFileSelectorDialog(NULL, &sel_file, _("Select Sound File"),
+      g_Platform->DoFileSelectorDialog(this, &sel_file, _("Select Sound File"),
                                        sound_dir, wxEmptyString, wxT("*.*"));
 #endif
 
@@ -6504,12 +6521,12 @@ void options::OnButtonTestSound(wxCommandEvent& event) {
     qDebug() << "Options play";
     AIS_Sound.Play();
 #else
-#if defined(__WXMSW__)
+#if defined(__WXMSW__) || defined(__WXOSX__)
     AIS_Sound.Play(wxSOUND_SYNC);
 #else
     AIS_Sound.Play();
     int t = 0;
-    while (AIS_Sound.IsPlaying() && (t < 10)) {
+    while (AIS_Sound.IsPlaying() && (t < 5)) {
       wxSleep(1);
       t++;
     }
@@ -6633,16 +6650,17 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
 
 void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
   if (!s) return;
-  for (unsigned int i = 0; i < s->GetCount(); i++) {
-    ChartGroup* psg = s->Item(i);
 
-    for (unsigned int j = 0; j < psg->m_element_array.GetCount(); j++) {
-      ChartGroupElement* pe = psg->m_element_array.Item(j);
+  while (s->GetCount() != 0) {
+    ChartGroup* psg = s->Item(0);
+
+    while (psg->m_element_array.GetCount() != 0) {
+      ChartGroupElement* pe = psg->m_element_array.Item(0);
       pe->m_missing_name_array.Clear();
-      psg->m_element_array.RemoveAt(j);
+      psg->m_element_array.RemoveAt(0);
       delete pe;
     }
-    s->RemoveAt(i);
+    s->RemoveAt(0);
     delete psg;
   }
 
@@ -6846,6 +6864,7 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
         }
         modified = TRUE;
         lastSelectedCtl->Unselect();
+        lastSelectedCtl = 0;
         m_pRemoveButton->Disable();
         wxLogMessage(_T("Disable"));
       }
@@ -6857,7 +6876,10 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
 void ChartGroupsUI::OnGroupPageChange(wxNotebookEvent& event) {
   m_GroupSelectedPage = event.GetSelection();
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
-  if (lastSelectedCtl) lastSelectedCtl->UnselectAll();
+  if (lastSelectedCtl) {
+      lastSelectedCtl->UnselectAll();
+      lastSelectedCtl = 0;
+  }
   m_pRemoveButton->Disable();
   m_pAddButton->Disable();
 }
@@ -7043,6 +7065,9 @@ wxTreeCtrl* ChartGroupsUI::AddEmptyGroupPage(const wxString& label) {
 
 void ChartGroupsUI::ClearGroupPages()
 {
+    if (m_GroupNB->GetPageCount() == 0)
+        return;
+
     for(unsigned int i = m_GroupNB->GetPageCount()-1 ; i > 0 ; i--){
         m_DirCtrlArray.RemoveAt(i);
         m_GroupNB->DeletePage(i);
@@ -7069,7 +7094,7 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
 
 #else
   wxString path;
-  response = g_Platform->DoFileSelectorDialog(NULL, &path,
+  response = g_Platform->DoFileSelectorDialog(this, &path,
                                               _("Select Tide/Current Data"),
                                               g_TCData_Dir, _T(""), wxT("*.*"));
   sel_file = path;
@@ -7470,6 +7495,10 @@ void options::SetConnectionParams(ConnectionParams* cp) {
     ClearNMEAForm();
 
   m_connection_enabled = cp->bEnabled;
+  
+  // Reset touch flag
+  connectionsaved = true;
+  
 }
 
 void options::SetDefaultConnectionParams(void) {
@@ -7497,6 +7526,10 @@ void options::SetDefaultConnectionParams(void) {
 
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
   m_connection_enabled = TRUE;
+  
+  // Reset touch flag
+  connectionsaved = true;
+  
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
@@ -7602,7 +7635,6 @@ void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
 }
 
 void options::OnSelectDatasource(wxListEvent& event) {
-  connectionsaved = FALSE;
   SetConnectionParams(g_pConnectionParams->Item(event.GetData()));
   m_buttonRemove->Enable();
   event.Skip();

@@ -1,0 +1,477 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-20 18:04-0600\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "Katalog ist nicht gültig."
+
+#: src/chartcatalog.cpp:550
+#, c-format
+msgid "%s (%s to %s), river miles %3.1f - %3.1f"
+msgstr "%s (%s, %s), Fluß-Meilen-%3.1f - %3.1f"
+
+#: src/chartdldr_pi.cpp:234
+msgid "ChartDownloader"
+msgstr "Karten-Downloader"
+
+#: src/chartdldr_pi.cpp:239
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "Karten-Downloader PlugIn für OpenCPN"
+
+#: src/chartdldr_pi.cpp:244
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "Karten-Downloader PlugIn für OpenCPN\n"
+"Verwaltet Karten-Downloads und -Updates von Quellen im\n"
+"NOAA Karten-Katalog Format"
+
+#: src/chartdldr_pi.cpp:251 src/chartdldr_pi.cpp:692 src/chartdldr_pi.cpp:699
+#: src/chartdldr_pi.cpp:705 src/chartdldr_pi.cpp:723 src/chartdldr_pi.cpp:758
+#: src/chartdldr_pi.cpp:821 src/chartdldr_pi.cpp:827 src/chartdldr_pi.cpp:1009
+#: src/chartdldr_pi.cpp:1080 src/chartdldr_pi.cpp:1154
+#: src/chartdldr_pi.cpp:1259 src/chartdldr_pi.cpp:1809
+msgid "Chart Downloader"
+msgstr "Karten-Downloader"
+
+#: src/chartdldr_pi.cpp:428 src/chartdldr_pi.cpp:450
+msgid "Select all"
+msgstr "Wähle alle"
+
+#: src/chartdldr_pi.cpp:432 src/chartdldr_pi.cpp:451
+msgid "Deselect all"
+msgstr "Alle abwählen"
+
+#: src/chartdldr_pi.cpp:436 src/chartdldr_pi.cpp:452
+msgid "Invert selection"
+msgstr "Auswahl umkehren"
+
+#: src/chartdldr_pi.cpp:440 src/chartdldr_pi.cpp:453
+msgid "Select updated"
+msgstr "Wähle Updates"
+
+#: src/chartdldr_pi.cpp:444 src/chartdldr_pi.cpp:454
+msgid "Select new"
+msgstr "Wähle Neu"
+
+#: src/chartdldr_pi.cpp:562
+msgid "New"
+msgstr "Neu"
+
+#: src/chartdldr_pi.cpp:571
+msgid "Update available"
+msgstr "Updates verfügbar"
+
+#: src/chartdldr_pi.cpp:577
+msgid "Up to date"
+msgstr "Aktuell"
+
+#: src/chartdldr_pi.cpp:584
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr "%lu Karten gesamt, %lu erneuert, %lu neu"
+
+#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
+msgid "(Please update first)"
+msgstr "(Bitte erst Update)"
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr "Fehler, URL für Kartenquelle scheinbar falsch."
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740 src/chartdldr_pi.cpp:1020
+msgid "Error"
+msgstr "Fehler"
+
+#: src/chartdldr_pi.cpp:691
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download all new and updated charts.\n"
+"This may take a long time."
+msgstr "Update aller Karten Kataloge gewählt.\n"
+"Danach Download aller neuen und upgedaten Karten.\n"
+"Das kann sehr lange dauern."
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only new (but not updated) charts.\n"
+"This may take a long time."
+msgstr "Update aller Karten Kataloge gewählt.\n"
+"Danach nur Download neuer (aber nicht upgedateter) Karten.\n"
+"Das kann sehr lange dauern."
+
+#: src/chartdldr_pi.cpp:704
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only updated (but not new) charts.\n"
+"This may take a long time."
+msgstr "Update aller Karten Kataloge gewählt.\n"
+"Danach nur Download upgedateter (aber nicht neuer) Karten.\n"
+"Das kann sehr lange dauern."
+
+#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1079
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr "%d von %d Karten nicht heruntergeladen.\n"
+"Prüfe die Liste, prüfe die Internet Verbindung und wiederhole den Schritt."
+
+#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1786 src/chartdldr_pi.cpp:1809
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "Ordner %s kann nicht erzeugt werden."
+
+#: src/chartdldr_pi.cpp:793
+msgid "Downloading file"
+msgstr "Downloade Datei"
+
+#: src/chartdldr_pi.cpp:794
+msgid "Reading Headers: "
+msgstr "Lese Header: "
+
+#: src/chartdldr_pi.cpp:820
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "Fehler bei Suche neuer Katalog: %s"
+
+#: src/chartdldr_pi.cpp:826
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "Fehler bei Download Katalog: %s \n"
+"Prüfe Internet Verbindung."
+
+#: src/chartdldr_pi.cpp:976 src/chartdldr_pi.cpp:982
+msgid "No charts selected for download."
+msgstr "Keine Karten zum Download gewählt."
+
+#: src/chartdldr_pi.cpp:992
+msgid "Abort download"
+msgstr "Download Abbrechen"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: src/chartdldr_pi.cpp:1008
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr "Die gewählte Karte '%s' kann nicht automatisch heruntergeladen werden. Soll sie in einem Browser manuell heruntergeladen werden?\n\n"
+" Nach dem Download bitte entpacken nach %s"
+
+#: src/chartdldr_pi.cpp:1020
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "Fehler, die URL zu den Kartendaten (%s) scheint falsch."
+
+#: src/chartdldr_pi.cpp:1046
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "Karte %u von %u herunterladen, %u Downloads fehlgeschlagen (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
+msgid "Download\n"
+" selected charts"
+msgstr "Download von \n"
+" gewählten Karten"
+
+#: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Katalog"
+
+#: src/chartdldr_pi.cpp:1105
+msgid "Released"
+msgstr "Veröffentlicht"
+
+#: src/chartdldr_pi.cpp:1106
+msgid "Local path"
+msgstr "Lokaler Pfad"
+
+#: src/chartdldr_pi.cpp:1110
+msgid "Title"
+msgstr "Titel"
+
+#: src/chartdldr_pi.cpp:1111
+msgid "Status"
+msgstr "Status"
+
+#: src/chartdldr_pi.cpp:1112
+msgid "Latest"
+msgstr "Letzte"
+
+#: src/chartdldr_pi.cpp:1153
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "Soll die Karten Quelle wirklich entfernt werden??\n"
+"Die lokalen Karten Dateien werden nicht entfernt, aber es können keine Updates der Karten mehr gemacht werden."
+
+#: src/chartdldr_pi.cpp:1219
+msgid "Edit Chart Source"
+msgstr "Editiere Karten Quelle"
+
+#: src/chartdldr_pi.cpp:1258
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "Pfad %s scheinbar nicht in den konfigurierten Karten-Verzeichnissen.\n"
+"Bearbeite die Konfiguration unter der 'Karten Dateien' Lasche."
+
+#: src/chartdldr_pi.cpp:1771 src/chartdldr_pi.cpp:1774
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "Eine der vordefinierten Kartenquellen wählen oder eine Eigene erzeugen.\n"
+
+#: src/chartdldr_pi.cpp:1777
+msgid "The chart source must have a name.\n"
+msgstr "Karten Quelle muß einen Namen haben.\n"
+
+#: src/chartdldr_pi.cpp:1780
+msgid "The chart source must have a valid URL.\n"
+msgstr "Karten Quelle muß eine gültige URL haben.\n"
+
+#: src/chartdldr_pi.cpp:1782
+msgid "You must select a local folder to store the charts.\n"
+msgstr "Lokalen Ordner zum Speichern der Karten wählen.\n"
+
+#: src/chartdldr_pi.cpp:1789
+msgid "Chart source definition problem"
+msgstr "Problem Karten Quellen Definition"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Vordefiniert"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Name"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Standard"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Karten Ordner"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:472
+msgid "Select a folder"
+msgstr "Wähle Ordner"
+
+#: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
+msgid "Choose Chart File Directory"
+msgstr "Wählen Sie den Ordner für die Karten"
+
+#: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
+msgid "Catalogs"
+msgstr "Kataloge"
+
+#: src/chartdldrgui.cpp:245 src/chartdldrgui.cpp:346
+msgid "Add"
+msgstr "Hinzu"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add a new chart catalog."
+msgstr "Neuen Karten Katalog hinzu."
+
+#: src/chartdldrgui.cpp:250 src/chartdldrgui.cpp:351
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Lösche Karten Katalog. Heruntergeladene Karten werden nicht gelöscht."
+
+#: src/chartdldrgui.cpp:255 src/chartdldrgui.cpp:356
+msgid "Edit..."
+msgstr "Editiere..."
+
+#: src/chartdldrgui.cpp:258 src/chartdldrgui.cpp:359
+msgid "Update"
+msgstr "Aktualisieren"
+
+#: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
+msgid "Download the current chart catalog and update the data."
+msgstr "Download aktuellen Karten Katalog und erneuere Daten."
+
+#: src/chartdldrgui.cpp:264 src/chartdldrgui.cpp:365
+msgid "Update All"
+msgstr "Alle updaten"
+
+#: src/chartdldrgui.cpp:269 src/chartdldrgui.cpp:378
+msgid "Charts"
+msgstr "Karten"
+
+#: src/chartdldrgui.cpp:290 src/chartdldrgui.cpp:394
+msgid "Help"
+msgstr "Hilfe"
+
+#: src/chartdldrgui.cpp:296 src/chartdldrgui.cpp:403
+msgid "Show local files"
+msgstr "Zeige kokale Dateien"
+
+#: src/chartdldrgui.cpp:302 src/chartdldrgui.cpp:387
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u Karten gesamt, %u erneuert, %u neu"
+
+#: src/chartdldrgui.cpp:400
+msgid "Download selected charts"
+msgstr "Download gewählte Karten"
+
+#: src/chartdldrgui.cpp:463
+msgid "Default Path to Charts"
+msgstr "Standard-Pfad für Karten"
+
+#: src/chartdldrgui.cpp:479
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: src/chartdldrgui.cpp:483
+msgid "After catalog update select for download"
+msgstr "Nach Katalog Update wähle den Download"
+
+#: src/chartdldrgui.cpp:487
+msgid "All updated charts"
+msgstr "Alle upgedateten Karten"
+
+#: src/chartdldrgui.cpp:491
+msgid "All new charts"
+msgstr "Alle neuen Karten"
+
+#: src/chartdldrgui.cpp:497
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Erlaube Massen-Update aller konfigurierten Quellen + Karten"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Neue Karten Quelle"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Karten Downloader Einstellungen"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "Nicht verfügbar"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "Geschw:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Verstrichene Zeit:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Voraussichtliche Gesamtdauer:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Geschätzte verbleibende Zeit:"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "Abbruch"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "Anhalten"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "Start"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "Schließen"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "Fortsetzen"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (Download angehalten)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "Verbindungseinstellungen"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "Verbindungseinstellungen dieses Transfers:"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (Download abgeschlossen)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "Heruntergeladen:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "Hochgeladen:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "Anwendername:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "Paßwort:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "Port: :"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Proxy-Einstellungen"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "Benutze Proxy-Server"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Proxy Host:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Proxy Anwendername:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Proxy Paßwort:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Proxy Port:"
+

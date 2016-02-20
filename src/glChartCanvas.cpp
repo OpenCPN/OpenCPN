@@ -181,6 +181,7 @@ extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
+extern int              g_nCPUCount;
 
 
 ocpnGLOptions g_GLOptions;
@@ -504,7 +505,16 @@ void BuildCompressedCache()
     int thread_count = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
-        thread_count = wxThread::GetCPUCount();
+        if(g_nCPUCount > 0)
+            thread_count = g_nCPUCount;
+        else
+            thread_count = wxThread::GetCPUCount();
+        
+        if (thread_count < 1) {
+            // obviously there's a least one CPU!
+            thread_count = 1;
+        }
+            
         workers = new CompressedCacheWorkerThread*[thread_count];
         for(int t = 0; t < thread_count; t++)
             workers[t] = NULL;
@@ -523,7 +533,7 @@ void BuildCompressedCache()
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
     if(csz.x < 600 || csz.y < 600){
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
-        wxFont *sFont = wxTheFontList->FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         pprog->SetFont( *sFont );
     }
     
@@ -2475,10 +2485,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
-        float scale =  1.0f;
-        if(g_bresponsive){
-            scale =  g_ChartScaleFactorExp;
-        }
+        float scale =  g_ChartScaleFactorExp;
         
         const int v = 12;
         // start with cross
@@ -2593,7 +2600,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glColor4ub(128, 128, 128, 255);
 
         /* scaled ship? */
-        float scale_factor_y = 1, scale_factor_x = 1;
+        float scale_factor_y = g_ChartScaleFactorExp, scale_factor_x = g_ChartScaleFactorExp;
         int ownShipWidth = 22; // Default values from s_ownship_icon
         int ownShipLength= 84;
         lShipMidPoint = lGPSPoint;
@@ -2622,14 +2629,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float deg = 180/PI * ( icon_rad - PI/2 );
         glRotatef(deg, 0, 0, 1);
 
-        glScalef(scale_factor_x, scale_factor_y, 1);
-
-        if(g_bresponsive){
-            float scale =  g_ChartScaleFactorExp;
-            glScalef(scale, scale, 1);
+        
+        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType < 2 )){
+            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;
         }
         
-        
+        glScalef(scale_factor_x, scale_factor_y, 1);
+
         if( g_OwnShipIconType < 2 ) { // Bitmap
 
             glEnable(GL_TEXTURE_2D);
@@ -2750,30 +2757,42 @@ void glChartCanvas::DrawChartBar( ocpnDC &dc )
 
 void glChartCanvas::DrawQuiting()
 {
-    GLubyte pattern[4 * 32];
-    for( int y = 0; y < 32; y++ ) {
-        GLubyte mask = 1 << y % 8;
-        for( int x = 0; x < 4; x++ )
-            pattern[y * 4 + x] = mask;
-    }
-    
-    glEnable( GL_POLYGON_STIPPLE );
-    glPolygonStipple( pattern );
-    glBegin( GL_QUADS );
+    GLubyte pattern[8][8];
+    for( int y = 0; y < 8; y++ )
+        for( int x = 0; x < 8; x++ ) 
+            pattern[y][x] = (y == x) * 255;
+
+    glEnable( GL_BLEND );
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_ALPHA, 8, 8,
+                  0, GL_ALPHA, GL_UNSIGNED_BYTE, pattern );
     glColor3f( 0, 0, 0 );
-    glVertex2i( 0, 0 );
-    glVertex2i( 0, GetSize().y );
-    glVertex2i( GetSize().x, GetSize().y );
-    glVertex2i( GetSize().x, 0 );
+
+    float x = GetSize().x, y = GetSize().y;
+    float u = x / 8, v = y / 8;
+
+    glBegin( GL_QUADS );
+    glTexCoord2f(0, 0); glVertex2f( 0, 0 );
+    glTexCoord2f(0, v); glVertex2f( 0, y );
+    glTexCoord2f(u, v); glVertex2f( x, y );
+    glTexCoord2f(u, 0); glVertex2f( x, 0 );
     glEnd();
-    glDisable( GL_POLYGON_STIPPLE );
+
+    glDisable( GL_TEXTURE_2D );
+    glDisable( GL_BLEND );
 }
 
 void glChartCanvas::DrawCloseMessage(wxString msg)
 {
     if(1){
         
-        wxFont *pfont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
+        wxFont *pfont = FontMgr::Get().FindOrCreateFont(12, wxFONTFAMILY_DEFAULT,
                                                         wxFONTSTYLE_NORMAL,
                                                         wxFONTWEIGHT_NORMAL);
         
@@ -3352,7 +3371,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             b_rendered = true;
                         }
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                        RenderNoDTA(vp, pqp->ActiveRegion/*pqp->quilt_region*/);
+                        RenderNoDTA(vp, get_region);
                         b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                     }
                 }
@@ -3540,11 +3559,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             pd = (unsigned char *) malloc( dim * dim * 3 );
                             HalfScaleChartBits( 2*dim, 2*dim, ps, pd );
 
-<<<<<<< HEAD
                                     MipMap_24( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
-=======
-                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB, dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, pd );
->>>>>>> 90e80c0... Initial projections support commit
                                     
                             free(ps);
                             ps = pd;
@@ -3670,6 +3685,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
             RenderRasterChartRegionGL( Current_Ch, vp, region );
         else if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+            chart_region.Intersect(region);
             RenderNoDTA(vp, chart_region);
             Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
         } 
@@ -3690,11 +3706,7 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
     else
         glColor3ub( 163, 180, 183 );
 
-    wxRect rect(0, 0, vp.pix_width, vp.pix_height);
-    LLRegion draw_region = region, screen_region = vp.GetLLRegion(rect);
-    draw_region.Intersect(screen_region);
-
-    DrawRegion(vp, draw_region);
+    DrawRegion(vp, region);
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
@@ -4349,7 +4361,7 @@ void glChartCanvas::Render()
                             m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
                             
                             if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
-                                g_Platform->ShowBusySpinner();
+                                OCPNPlatform::ShowBusySpinner();
                             
                             RenderCanvasBackingChart(gldc, m_canvasregion);
                         }
@@ -4546,6 +4558,12 @@ void glChartCanvas::Render()
     if( g_bcompression_wait)
         DrawCloseMessage( _("Waiting for raster chart compression thread exit."));
 
+#ifdef __WXMSW__    
+     //  MSW OpenGL drivers are generally very unstable.
+     //  This helps...   
+     glFinish();
+#endif    
+    
     SwapBuffers();
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
@@ -4564,7 +4582,7 @@ void glChartCanvas::Render()
     FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
-    g_Platform->HideBusySpinner();
+    OCPNPlatform::HideBusySpinner();
     
     n_render++;
 }
