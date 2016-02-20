@@ -169,9 +169,9 @@ INSTALLS += wmm_plugin_deployment
 
 # GRIB---------------------------------------------------------------
 #library
-#so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
-#so_grib_plugin_deployment.path = /assets/plugins
-#INSTALLS += so_grib_plugin_deployment
+so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
+so_grib_plugin_deployment.path = /assets/plugins
+INSTALLS += so_grib_plugin_deployment
 #------------------------------------------------------------------------------------
 
 
