@@ -49,11 +49,14 @@ GribReader::GribReader(const wxString fname)
 GribReader::~GribReader()
 {
     clean_all_vectors();
-    if (file != NULL)
-          zu_close(file);
-    free(file);
-
+    if (file != NULL) 
+    {
+        zu_close(file);
+        free(file);
+        file = NULL;
+    }
 }
+
 //-------------------------------------------------------------------------------
 void GribReader::clean_all_vectors()
 {
@@ -702,6 +705,7 @@ GribRecord * GribReader::getFirstGribRecord(int dataType,int levelType,int level
 //---------------------------------------------------
 // Délai en heures entre 2 records
 // On suppose qu'il est fixe pour tout le fichier !!!
+// NOT USED
 double GribReader::computeHoursBeetweenGribRecords()
 {
 	double res = 1;
@@ -828,6 +832,12 @@ void GribReader::openFile(const wxString fname)
       file = zu_open((const char *)fname.mb_str(), "rb", ZU_COMPRESS_NONE);
     	if (file != NULL)
     		readGribFileContent();
+    }
+    if (file != NULL) 
+    {
+        zu_close(file);
+        free(file);
+        file = NULL;
     }
 }
 

@@ -178,7 +178,7 @@ private:
     bool             m_SelectionIsSaved;
     int              m_Selection_index;
     wxString         m_Selection_label;
-    wxString         m_file_name;   /* selected file */
+    wxArrayString    m_file_names;   /* selected files */
     wxString         m_grib_dir;
 	wxSize           m_DialogsOffset;
 };
