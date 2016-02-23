@@ -927,3 +927,184 @@ void GribSettingsDialog::OnSpacingModeChange( wxCommandEvent& event )
                             _("Warning!") );
     }
 }
+
+
+#if 1
+wxString GribOverlaySettings::SettingsToJSON(wxString json)
+{
+    wxJSONValue v(json);
+    
+    for(int i=0; i<SETTINGS_COUNT; i++) {
+        
+        wxString units; units.Printf(_T("%d"), (int)Settings[i].m_Units);
+        v[name_from_index[i] + _T ( "Units" )] = units;
+        
+        if(i == WIND){
+            UpdateJSONval(v, i, B_ARROWS);
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+            UpdateJSONval(v, i, PARTICLES);
+        }
+        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+        else if(i == PRESSURE) {
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, ISO_LINE_VISI);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+        else if(i == WAVE || i == CURRENT) {
+            UpdateJSONval(v, i, D_ARROWS);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+            UpdateJSONval(v, i, PARTICLES);
+        }
+        else if( i == PRECIPITATION || i == CLOUD) {
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+    }
+    
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    return out;
+}
+#endif
+
+bool GribOverlaySettings::UpdateJSONval( wxJSONValue &v, int settings, int group)
+{
+    wxString Name=name_from_index[settings];
+    
+    switch(group) {
+    case B_ARROWS:
+        v[ Name + _T ( "BarbedArrows" )] = Settings[settings].m_bBarbedArrows;
+        v[ Name + _T ( "BarbedVisibility" )] = Settings[settings].m_iBarbedVisibility;
+        v[ Name + _T ( "BarbedColors" )] = Settings[settings].m_iBarbedColour;
+        v[ Name + _T ( "BarbedArrowFixedSpacing" )] = Settings[settings].m_bBarbArrFixSpac;
+        v[ Name + _T ( "BarbedArrowSpacing" )] = Settings[settings].m_iBarbArrSpacing;
+        break;
+    case ISO_LINE_SHORT:
+        v[ Name + _T ( "DisplayIsobars" )] = Settings[settings].m_bIsoBars;
+        v[ Name + _T ( "IsoBarSpacing" )] = Settings[settings].m_iIsoBarSpacing;
+        break;
+    case ISO_LINE_VISI:
+        v[ Name + _T ( "IsoBarVisibility" )] = Settings[settings].m_iIsoBarVisibility;
+        break;
+    case D_ARROWS:
+        v[ Name + _T ( "DirectionArrows" )] = Settings[settings].m_bDirectionArrows;
+        v[ Name + _T ( "DirectionArrowForm" )] = Settings[settings].m_iDirectionArrowForm;
+        v[ Name + _T ( "DirectionArrowSize" )] = Settings[settings].m_iDirectionArrowSize;
+        v[ Name + _T ( "DirectionArrowFixedSpacing" )] = Settings[settings].m_bDirArrFixSpac;
+        v[ Name + _T ( "DirectionArrowSpacing" )] = Settings[settings].m_iDirArrSpacing;
+        break;
+    case OVERLAY:
+        v[ Name + _T ( "OverlayMap" )] = Settings[settings].m_bOverlayMap;
+        v[ Name + _T ( "OverlayMapColors" )] = Settings[settings].m_iOverlayMapColors;
+        break;
+    case NUMBERS:
+        v[ Name + _T ( "Numbers" )] = Settings[settings].m_bNumbers;
+        v[ Name + _T ( "NumbersFixedSpacing" )] = Settings[settings].m_bNumFixSpac;
+        v[ Name + _T ( "NumbersSpacing" )] = Settings[settings].m_iNumbersSpacing;
+        break;
+    case PARTICLES:
+        v[ Name + _T ( "Particles" )] = Settings[settings].m_bParticles;
+        v[ Name + _T ( "ParticleDensity" )] = Settings[settings].m_dParticleDensity;
+        break;
+    default:
+        break;
+    }
+    
+    return true;
+}
+
+bool GribOverlaySettings::JSONToSettings(wxString json)
+{
+    // construct the JSON root object
+    wxJSONValue  root;
+    // construct a JSON parser
+    wxJSONReader reader;
+    
+    // now read the JSON text and store it in the 'root' structure
+    // check for errors before retreiving values...
+    int numErrors = reader.Parse( json, &root );
+    if ( numErrors > 0 )  {
+        //              const wxArrayString& errors = reader.GetErrors();
+        return false;
+    }
+    
+    //  Read all the JSON values, and populate the local settings
+ 
+    for(int i=0; i<SETTINGS_COUNT; i++) {
+        wxString Name=name_from_index[i];
+        wxString s;
+        
+        int units = root[Name + _T ( "Units" )].AsInt();
+//        pConf->Read ( Name + _T ( "Units" ), &units,0);
+        for( int j=0; !unit_names[unittype[i]][j].empty(); j++)
+            Settings[i].m_Units = ( units < 0 || units > j - 1 ) ? (SettingsType) 0 : (SettingsType)units;
+        
+    
+        Settings[i].m_bBarbedArrows = root[Name + _T ( "BarbedArrows" )].AsBool();
+        Settings[i].m_iBarbedVisibility = root[Name + _T ( "BarbedVisibility" )].AsBool();
+        Settings[i].m_iBarbedColour = root[Name + _T ( "BarbedColors" )].AsInt();
+        Settings[i].m_bBarbArrFixSpac = root[Name + _T ( "BarbedArrowFixedSpacing" )].AsBool();
+        Settings[i].m_iBarbArrSpacing = root[Name + _T ( "BarbedArrowSpacing" )].AsInt();
+        
+//        pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);
+//        pConf->Read ( Name + _T ( "BarbedVisibility" ), &Settings[i].m_iBarbedVisibility, i==WIND);
+//        pConf->Read ( Name + _T ( "BarbedColors" ), &Settings[i].m_iBarbedColour, 0);
+//        pConf->Read ( Name + _T ( "BarbedArrowFixedSpacing" ), &Settings[i].m_bBarbArrFixSpac, 0);
+//        pConf->Read ( Name + _T ( "BarbedArrowSpacing" ), &Settings[i].m_iBarbArrSpacing, 50);
+        
+        Settings[i].m_bIsoBars = root[Name + _T ( "DisplayIsobars" )].AsBool();
+        Settings[i].m_iIsoBarSpacing = root[Name + _T ( "IsoBarSpacing" )].AsInt();
+        Settings[i].m_iIsoBarVisibility = root[Name + _T ( "IsoBarVisibility" )].AsBool();
+        
+ //       pConf->Read ( Name + _T ( "DisplayIsobars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
+//         double defspacing[SETTINGS_COUNT] = {4, 4, 4, 0, 0, 0, 0, 2, 2, 100};
+//         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
+//         pConf->Read ( Name + _T ( "IsoBarVisibility" ), &Settings[i].m_iIsoBarVisibility, i==PRESSURE);
+        
+        Settings[i].m_bDirectionArrows = root[Name + _T ( "DirectionArrows" )].AsBool();
+        Settings[i].m_iDirectionArrowForm = root[Name + _T ( "DirectionArrowForm" )].AsInt();
+        Settings[i].m_iDirectionArrowSize = root[Name + _T ( "DirectionArrowSize" )].AsInt();
+        Settings[i].m_bDirArrFixSpac = root[Name + _T ( "DirectionArrowFixedSpacing" )].AsBool();
+        Settings[i].m_iDirArrSpacing = root[Name + _T ( "DirectionArrowSpacing" )].AsInt();
+        
+//         pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT || i==WAVE);
+//         double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+//         pConf->Read ( Name + _T ( "DirectionArrowForm" ), &Settings[i].m_iDirectionArrowForm, defform[i]);
+//         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 0);
+//         pConf->Read ( Name + _T ( "DirectionArrowFixedSpacing" ), &Settings[i].m_bDirArrFixSpac, 0);
+//         pConf->Read ( Name + _T ( "DirectionArrowSpacing" ), &Settings[i].m_iDirArrSpacing, 50);
+        
+        Settings[i].m_bOverlayMap = root[Name + _T ( "OverlayMap" )].AsBool();
+        Settings[i].m_iOverlayMapColors = root[Name + _T ( "OverlayMapColors" )].AsInt();
+        
+//         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
+//         int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 0};
+//         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Settings[i].m_iOverlayMapColors, defcolor[i]);
+        
+        Settings[i].m_bNumbers = root[Name + _T ( "Numbers" )].AsBool();
+        Settings[i].m_bNumFixSpac = root[Name + _T ( "NumbersFixedSpacing" )].AsBool();
+        Settings[i].m_iNumbersSpacing = root[Name + _T ( "NumbersSpacing" )].AsInt();
+        
+//         pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, false);
+//         pConf->Read ( Name + _T ( "NumbersFixedSpacing" ), &Settings[i].m_bNumFixSpac, 0);
+//         pConf->Read ( Name + _T ( "NumbersSpacing" ), &Settings[i].m_iNumbersSpacing, 50);
+        
+        Settings[i].m_bParticles = root[Name + _T ( "Particles" )].AsBool();
+        Settings[i].m_dParticleDensity = root[Name + _T ( "ParticleDensity" )].AsDouble();
+        
+//         pConf->Read ( Name + _T ( "Particles" ), &Settings[i].m_bParticles, false);
+//         pConf->Read ( Name + _T ( "ParticleDensity" ), &Settings[i].m_dParticleDensity, 1.0);
+    }
+ 
+    return true;    
+}
+
+

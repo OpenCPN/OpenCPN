@@ -2,6 +2,62 @@
 
 <resources>
 
+    <string-array name="GRIB_model_ListArray">
+        <item>GFS 0.50\u00B0 NOAA/NECP</item>
+        <item>GFS 1.0\u00B0 NOAA/NECP</item>
+    </string-array>
+    <string-array name="GRIB_model_ListValues">
+        <item>GFS50</item>
+        <item>GFS100</item>
+    </string-array>
+
+    <string-array name="GRIB_timestep_ListArray">
+        <item>1 Hour</item>
+        <item>3 Hours</item>
+        <item>6 Hours</item>
+        <item>12 Hours</item>
+        <item>24 Hours</item>
+        </string-array>
+    <string-array name="GRIB_timestep_ListValues">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+       </string-array>
+
+    <string-array name="GRIB_days_ListArray">
+        <item>2 days</item>
+        <item>3 days</item>
+        <item>4 days</item>
+        <item>5 days</item>
+        <item>6 days</item>
+        <item>7 days</item>
+    </string-array>
+    <string-array name="GRIB_days_ListValues">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <string-array name="GRIBwindBarbNumbersUnits" >
+        <item>Knots</item>
+        <item>m/s</item>
+    </string-array>
+
+    <string-array name="GRIBwindSpeedOverlayColors" >
+        <item>Generic</item>
+        <item>Wind</item>
+    </string-array>
+
+    <string-array name="GRIBwindBarbColor" >
+        <item>Generic</item>
+        <item>Controlled</item>
+    </string-array>
+
     <string-array name="navmodeListArray">
         <item>North Up</item>
         <item>Course Up</item>

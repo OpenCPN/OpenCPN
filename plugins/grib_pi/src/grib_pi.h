@@ -102,7 +102,10 @@ public:
       void SetCtrlBarSizeXY(wxSize p){ m_CtrlBar_Sizexy = p;}
       void SetColorScheme(PI_ColorScheme cs);
       void SetDialogFont( wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog"), 10) );
-
+      void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
+      PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
+      
+      
       void OnGribCtrlBarClose();
 
       wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
@@ -157,6 +160,7 @@ private:
       bool             m_bGRIBShowIcon;
 
       bool        m_bShowGrib;
+      PlugIn_ViewPort  m_current_vp;
 };
 
 //----------------------------------------------------------------------------------------

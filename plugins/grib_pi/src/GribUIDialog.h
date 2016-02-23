@@ -146,7 +146,8 @@ private:
     void OnAltitude( wxCommandEvent& event );
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
-
+    void OnCompositeDialog( wxCommandEvent& event );
+    
     void OnTimeline( wxScrollEvent& event );
 	void OnShowCursorData( wxCommandEvent& event );
 

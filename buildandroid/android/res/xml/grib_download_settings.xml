@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <ListPreference
+        android:title="Model"
+        android:summary="Select GRIB forecast model"
+        android:key="GRIB_prefs_model"
+        android:defaultValue="0"
+        android:entries="@array/GRIB_model_ListArray"
+        android:entryValues="@array/GRIB_model_ListValues" />
+
+    <ListPreference
+        android:key="GRIB_prefs_timestep"
+        android:title="Time step"
+        android:summary="Set the time interval between forecasts"
+        android:entries="@array/GRIB_timestep_ListArray"
+        android:entryValues="@array/GRIB_timestep_ListValues" />
+
+    <ListPreference
+        android:key="GRIB_prefs_days"
+        android:title="Days"
+        android:summary="Set the number of days in GRIB"
+        android:entries="@array/GRIB_days_ListArray"
+        android:entryValues="@array/GRIB_days_ListValues" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_wind"
+        android:title="Wind"
+        android:summary="Request wind speed and direction"
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_pressure"
+        android:title="Pressure"
+        android:summary="Request pressure data"
+        android:defaultValue="false" />
+
+
+
+
+</PreferenceScreen>

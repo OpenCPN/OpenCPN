@@ -145,6 +145,7 @@ int grib_pi::Init(void)
               WANTS_CONFIG              |
               WANTS_PREFERENCES         |
               WANTS_PLUGIN_MESSAGING    |
+              WANTS_ONPAINT_VIEWPORT    |
               WANTS_MOUSE_EVENTS
             );
 }

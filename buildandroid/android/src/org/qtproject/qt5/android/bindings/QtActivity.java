@@ -49,6 +49,8 @@ import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
 import android.os.SystemClock;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.os.Environment;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -163,6 +165,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
     private final static int OCPN_GOOGLEMAPS_REQUEST_CODE = 0xf3ed; // request code used to know when GoogleMaps activity is done
+    private final static int OCPN_GRIB_REQUEST_CODE = 0xf3ec; // request code used to know when OCPNGRIB activity is done
 
     private static final int MINISTRO_API_LEVEL = 4; // Ministro api level (check IMinistro.aidl file)
     private static final int NECESSITAS_API_LEVEL = 2; // Necessitas api level used by platform plugin
@@ -523,6 +526,25 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         String ret;
         ret = String.format("%d", pss);
         return ret;
+    }
+
+    public String doGRIBActivity(String json){
+        Log.i("DEBUGGER_TAG", "doGRIBActivity");
+        Log.i("DEBUGGER_TAG", json);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("GRIB_PREFS_JSON", json);
+        editor.apply();
+
+        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNGRIBActivity.class);
+        startActivityForResult(intent, OCPN_GRIB_REQUEST_CODE);
+
+        int pss = 666;
+        String ret;
+        ret = String.format("%d", pss);
+        return ret;
+
     }
 
     public String doAndroidSettings(String settings){

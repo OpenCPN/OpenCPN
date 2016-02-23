@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:key="grib_pref_wind"
+        android:fragment="org.opencpn.OCPNGRIBActivity$GRIBWindSettings"
+        android:title="Wind"
+        android:summary="Set Wind Display Options">
+    </PreferenceScreen>
+
+ </PreferenceScreen>

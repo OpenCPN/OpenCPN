@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showbarb"
+        android:title="Show Wind Barb Arrows"
+        android:summary=""
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showwindbarb_always"
+        android:title="Always show Wind Barb Arrows"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wind Barb Arrow Colors"
+        android:key="grib_pref_windbarb_color"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbColor"
+        android:entryValues="@array/GRIBwindBarbColor" />
+
+    <SwitchPreference
+        android:key="grib_pref_windbarb_spacing_fixed_min"
+        android:title="Wind Barb Arrow Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        />
+
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_pref_windbarb_spacing_value"
+        android:title="Wind Barb Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showwindnumbers"
+        android:title="Show Wind Speed Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wind Speed Value Units"
+        android:key="grib_pref_windbarb_numbers_units"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbNumbersUnits"
+        android:entryValues="@array/GRIBwindBarbNumbersUnits" />
+
+    <SwitchPreference
+        android:key="grib_pref_windbarb_numbers_spacing_fixed_min"
+        android:title="Wind Speed Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_pref_windbarb_numbers_spacing_value"
+        android:title="Wind Speed Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showisotachs"
+        android:title="Show Isotachs"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_pref_windbarb_isotach_spacing_value"
+        android:title="Wind Isotach Spacing (knots)"
+        android:summary=""
+        android:defaultValue="10"
+        android:max="50"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showwindoverlay"
+        android:title="Show Wind Speed Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wind Speed Overlay Colors"
+        android:key="grib_pref_windspeed_overlay_colors"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindSpeedOverlayColors"
+        android:entryValues="@array/GRIBwindSpeedOverlayColors" />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_showwindparticles"
+        android:title="Show Wind Speed Particles"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_pref_windparticledensity"
+        android:title="Wind Particle Density"
+        android:summary=""
+        android:defaultValue="5"
+        android:max="10"
+        />
+
+
+
+</PreferenceScreen>

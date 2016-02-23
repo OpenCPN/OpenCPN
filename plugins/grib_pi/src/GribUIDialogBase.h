@@ -139,7 +139,8 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnOpenFile( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSettings( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
-
+		virtual void OnCompositeDialog( wxCommandEvent& event ) { event.Skip(); }
+                
 
 	public:
 		wxBitmapButton* m_bpAltitude;
