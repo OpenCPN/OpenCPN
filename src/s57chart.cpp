@@ -4227,6 +4227,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     //    Create a hash map of VE_Element pointers as a chart class member
     int n_ve_elements = VEs.size();
     
+    double scale = gFrame->GetBestVPScale(this);
+    int nativescale = GetNativeScale();
+    
     for( int i = 0; i < n_ve_elements; i++ ) {
 
         VE_Element *vep = VEs.at( i );
@@ -4275,6 +4278,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         //      This is where Simplified or Paper-Type point features are selected
         LUPrec *LUP;
         LUPname LUP_Name = PAPER_CHART;
+        
+        wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+        if (objnam.Len() > 0) {
+            wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+            g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
+        }
         
         switch( obj->Primitive_type ){
             case GEO_POINT:
