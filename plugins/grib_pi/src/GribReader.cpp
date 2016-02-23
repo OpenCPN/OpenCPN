@@ -106,7 +106,7 @@ void GribReader::readAllGribRecords()
 
     do {
         id ++;
-        rec = new GribRecord(file, id);
+        rec = new GribV1Record(file, id);
         assert(rec);
         if (rec->isOk())
         {

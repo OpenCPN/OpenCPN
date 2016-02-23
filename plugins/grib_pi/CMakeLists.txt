@@ -108,6 +108,7 @@ SET(SRC_GRIB
             src/icons.cpp
             src/GribReader.cpp
             src/GribRecord.cpp
+            src/GribV1Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
 
