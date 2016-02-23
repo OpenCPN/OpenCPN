@@ -27,6 +27,146 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GribV1Record.h"
 
 //-------------------------------------------------------------------------------
+// Adjust data type from different mete center
+//-------------------------------------------------------------------------------
+void  GribV1Record::translateDataType()
+{
+	this->knownData = true;
+	//------------------------
+	// NOAA GFS
+	//------------------------
+	if (   idCenter==7
+		&& (idModel==96 || idModel==81)		// NOAA
+		&& (idGrid==4 || idGrid==255))		// Saildocs
+	{
+        dataCenterModel = NOAA_GFS;
+		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
+			if (periodP2 > periodP1)
+				multiplyAllData( 1.0/(periodP2-periodP1) );
+		}
+		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+			if (periodP2 > periodP1)
+				multiplyAllData( 3600.0 );
+        }
+        if (dataType == GRB_TEMP                        //gfs Water surface Temperature
+            && levelType == LV_GND_SURF
+            && levelValue == 0) dataType = GRB_WTMP;
+
+	}
+    //------------------------
+	//DNMI-NEurope.grb
+	//------------------------
+    else if ( (idCenter==88 && idModel==255 && idGrid==255)
+		|| (idCenter==88 && idModel==230 && idGrid==255)
+		|| (idCenter==88 && idModel==200 && idGrid==255)
+		|| (idCenter==88 && idModel==67 && idGrid==255) )
+    {
+        if( dataType==GRB_TEMP && levelType==LV_GND_SURF && levelValue==0 ) {       //air temperature at groud level
+            levelType = LV_ABOV_GND; levelValue = 2;
+        }
+		dataCenterModel = NORWAY_METNO;
+    }
+	//------------------------
+	// WRF NMM grib.meteorologic.net
+	//------------------------
+	else if (idCenter==7 && idModel==89 && idGrid==255)
+    {
+        // dataCenterModel ??
+		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
+			if (periodP2 > periodP1)
+				multiplyAllData( 1.0/(periodP2-periodP1) );
+		}
+		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+			if (periodP2 > periodP1)
+				multiplyAllData( 3600.0 );
+		}
+
+
+	}
+    else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
+		dataCenterModel = NOAA_NCEP_WW3;
+	}
+    //----------------------------
+    //NOAA RTOFS
+    //--------------------------------
+    else if(idCenter==7 && idModel==45 && idGrid==255) {
+        dataCenterModel = NOAA_RTOFS;
+    }
+    //----------------------------------------------
+    // NCEP sea surface temperature
+    //----------------------------------------------
+    else if ((idCenter==7 && idModel==44 && idGrid==173)
+        || (idCenter==7 && idModel==44 && idGrid==235))
+    {
+        dataCenterModel = NOAA_NCEP_SST;
+    }
+    //----------------------------------------------
+    // FNMOC WW3 mediterranean sea
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==111 && idGrid==179)
+    {
+        dataCenterModel = FNMOC_WW3_MED;
+    }
+    //----------------------------------------------
+    // FNMOC WW3
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==110 && idGrid==240)
+    {
+        dataCenterModel = FNMOC_WW3_GLB;
+    }
+	//------------------------
+	// Meteorem (Scannav)
+	//------------------------
+	else if (idCenter==59 && idModel==78 && idGrid==255)
+	{
+        //dataCenterModel = ??
+		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
+			&& getLevelType()==LV_MSL
+			&& getLevelValue()==0)
+		{
+			levelType  = LV_ABOV_GND;
+			levelValue = 10;
+		}
+		if ( getDataType()==GRB_PRECIP_TOT
+			&& getLevelType()==LV_MSL
+			&& getLevelValue()==0)
+		{
+			levelType  = LV_GND_SURF;
+			levelValue = 0;
+		}
+	}
+	//------------------------
+	// Unknown center
+	//------------------------
+	else
+	{
+        dataCenterModel = OTHER_DATA_CENTER;
+//		printf("Uncorrected GribRecord: ");
+//		this->print();
+//		this->knownData = false;
+
+	}
+    //translate significant wave height and dir
+    if (this->knownData) {
+        switch (getDataType()) {
+            case GRB_UOGRD:
+            case GRB_VOGRD:
+                levelType  = LV_GND_SURF;
+                levelValue = 0;
+                break;
+            case GRB_HTSGW:
+            case GRB_WVDIR:
+            case GRB_WVPER:
+                levelType  = LV_GND_SURF;
+                levelValue = 0;
+                break;
+        }
+    }
+    // this->print();
+}
+
+
+//-------------------------------------------------------------------------------
 // Lecture depuis un fichier
 //-------------------------------------------------------------------------------
 GribV1Record::GribV1Record(ZUFILE* file, int id_)
@@ -38,6 +178,7 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
     eof     = false;
     knownData = true;
     IsDuplicated = false;
+    long start = zu_tell(file);
 
     //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
     char strgrib[5];
@@ -96,6 +237,9 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
 		translateDataType();
 		setDataType(dataType);
 	}
+    else {
+        zu_seek(file, start, SEEK_SET);
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -199,7 +343,6 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
     timeRange = data1[20];
     periodsec = periodSeconds(data1[17],data1[18],data1[19],timeRange);
     curDate = makeDate(refyear,refmonth,refday,refhour,refminute,periodsec);
-
 //if (dataType == GRB_PRECIP_TOT) printf("P1=%d p2=%d\n", periodP1,periodP2);
 
     int decim;
@@ -291,13 +434,14 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
 	}
 
 if (false) {
-printf("====\n");
+printf("==== GV1 \n");
 printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1,Lo2,La1,La2);
 printf("Ni=%d Nj=%d\n", Ni,Nj);
 printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di,Dj);
 printf("hasBMS=%d\n", hasBMS);
 printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
                         isScanIpositive,isScanJpositive,isAdjacentI );
+
 }
     return ok;
 }

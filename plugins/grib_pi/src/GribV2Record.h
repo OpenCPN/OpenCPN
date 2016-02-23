@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /******************************************
-Elément de base d'un fichier GRIB V1
+Elément de base d'un fichier GRIB V2
 ******************************************/
 
-#ifndef GRIBV1RECORD_H
-#define GRIBV1RECORD_H
+#ifndef GRIBV2RECORD_H
+#define GRIBV2RECORD_H
 
 #include <iostream>
 #include <cmath>
@@ -30,23 +30,24 @@ Elément de base d'un fichier GRIB V1
 #include "zuFile.h"
 #include "GribRecord.h"
 
+class  GRIBMessage;
 
 //----------------------------------------------
-class GribV1Record : public GribRecord
+class GribV2Record : public GribRecord
 {
     public:
-        GribV1Record(ZUFILE* file, int id_);
-        GribV1Record(const GribRecord &rec);
-        GribV1Record() {}
+        GribV2Record(ZUFILE* file, int id_);
+        GribV2Record(const GribRecord &rec);
+        GribV2Record() { grib_msg = 0;}
 
-        ~GribV1Record();
-
-    protected:
+        ~GribV2Record();
 
     private:
-        zuint  periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range);
+        zuint  periodSeconds(zuchar unit, zuint P1, zuchar P2, zuchar range);
+        class  GRIBMessage *grib_msg;
         //-----------------------------------------
         void    translateDataType();  // adapte les codes des différents centres météo
+
         //---------------------------------------------
         // SECTION 0: THE INDICATOR SECTION (IS)
         //---------------------------------------------
@@ -71,6 +72,13 @@ class GribV1Record : public GribRecord
         zuint  sectionSize3;
         // zuchar *BMSbits;
         // SECTION 4: BINARY DATA SECTION (BDS)
+       int productTemplate;
+       int productDiscipline;
+       int gridTemplateNum;
+       int dataCat;
+       int dataNum;
+                                       
+
         zuint  fileOffset4;
         zuint  sectionSize4;
         zuchar unusedBitsEndBDS;

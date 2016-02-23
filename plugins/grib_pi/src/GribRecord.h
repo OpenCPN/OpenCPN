@@ -153,8 +153,6 @@ class GribRecord
         zuint   getLevelValue() const  { return levelValue; }
         zuint   getDataCenterModel() const { return dataCenterModel; }
         //-----------------------------------------
-        void    translateDataType();  // adapte les codes des différents centres météo
-        //-----------------------------------------
 
         zuchar   getIdCenter() const  { return idCenter; }
         zuchar   getIdModel() const   { return idModel; }
@@ -252,7 +250,8 @@ class GribRecord
 
         bool   hasBMS;
         zuint  refyear, refmonth, refday, refhour, refminute;
-        zuchar periodP1, periodP2;
+        //zuchar periodP1, periodP2;
+        zuint periodP1, periodP2;
         zuchar timeRange;
         zuint  periodsec;     // period in seconds
         time_t refDate;      // C reference date
@@ -279,7 +278,6 @@ class GribRecord
         // SECTION 5: END SECTION (ES)
 
         time_t makeDate(zuint year,zuint month,zuint day,zuint hour,zuint min,zuint sec);
-        virtual zuint periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range) { ok = false; return 0;};
         void   multiplyAllData(double k);
 
 //        void   print();

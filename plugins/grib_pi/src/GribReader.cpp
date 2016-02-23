@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "GribReader.h"
+#include "GribV1Record.h"
+#include "GribV2Record.h"
 #include <cassert>
 
 //-------------------------------------------------------------------------------
@@ -107,8 +109,17 @@ void GribReader::readAllGribRecords()
     do {
         id ++;
         rec = new GribV1Record(file, id);
-        assert(rec);
-        if (rec->isOk())
+        if (rec->isOk() == false)
+        {
+            delete rec;
+            rec = new GribV2Record(file, id);
+        }
+        if (rec->isOk() == false)
+        {
+            delete rec;
+            rec = NULL;
+        }
+        else
         {
               b_EOF = rec->isEof();
 
@@ -289,10 +300,6 @@ void GribReader::readAllGribRecords()
                               delete rec;
                         }
                   }
-        }
-        else {    // ! rec-isOk
-            delete rec;
-            rec = NULL;
         }
     } while (rec != NULL &&  !b_EOF);
 }
