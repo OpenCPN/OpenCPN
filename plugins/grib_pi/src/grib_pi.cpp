@@ -551,6 +551,16 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         delete m_pLastTimelineSet;
         m_pLastTimelineSet = set;
     }
+    
+    if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
+    {
+        wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
+        
+        if(m_pGribCtrlBar){
+            m_pGribCtrlBar->OpenFileFromJSON(message_body);
+        }
+    }
+    
 }
 
 bool grib_pi::LoadConfig(void)

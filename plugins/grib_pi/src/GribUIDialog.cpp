@@ -1061,6 +1061,30 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
     
 }
 
+void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
+{
+    // construct the JSON root object
+    wxJSONValue  root;
+    // construct a JSON parser
+    wxJSONReader reader;
+    
+    int numErrors = reader.Parse( json, &root );
+    if ( numErrors > 0 )  {
+        return;
+    }
+    
+    wxString file = root[( "grib_file" )].AsString();
+    wxLogMessage( file );
+    
+    if(wxFileExists( file )){
+        wxFileName fn(file);
+        m_grib_dir = fn.GetPath();
+        m_file_names.Clear();
+        m_file_names.Add(file);
+        OpenFile();
+        SetDialogsStyleSizePosition( true );
+    }
+}
 
 
 
@@ -1353,7 +1377,8 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     if( response == wxID_OK ) {
         wxFileName fn(file);
         m_grib_dir = fn.GetPath();
-        m_file_name = file;
+        m_file_names.Clear();
+        m_file_names.Add(file);
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
@@ -1855,6 +1880,8 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
         return return_string;
         
 }
+
+
 
 #endif
 
