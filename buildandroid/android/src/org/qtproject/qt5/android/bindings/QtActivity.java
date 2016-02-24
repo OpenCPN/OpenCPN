@@ -193,6 +193,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int ID_CMD_NULL_REFRESH = 301;
     private final static int ID_CMD_TRIGGER_RESIZE  = 302;
     private final static int ID_CMD_SETVP = 303;
+    private final static int ID_CMD_APPLY_GRIB_FILE = 304;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -302,6 +303,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private String m_downloadRet = "";
 
     OCPNNativeLib nativeLib;
+
+    private String m_GRIBReturn;
 
     // action bar
     private ActionBar actionBar;
@@ -2389,6 +2392,34 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             }
             else if (resultCode == RESULT_CANCELED){
 //                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+        if (requestCode == OCPN_GRIB_REQUEST_CODE) {
+            Log.i("DEBUGGER_TAG", "onqtActivityResultGC");
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                Log.i("DEBUGGER_TAG", "onqtActivityResultGD");
+                m_GRIBReturn = data.getStringExtra("GRIB_JSON");
+                Log.i("GRIB", m_GRIBReturn);
+
+                nativeLib.sendPluginMessage( "GRIB_APPLY_JSON_CONFIG", m_GRIBReturn);
+
+                // defer hte application of settings until the screen refreshes
+                //Handler handler = new Handler();
+                //handler.postDelayed(new Runnable() {
+                  //   public void run() {
+                    //      nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+                    // }
+               // }, 100);
+            }
+            else if (resultCode == RESULT_CANCELED){
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultGE");
             }
 
             super.onActivityResult(requestCode, resultCode, data);

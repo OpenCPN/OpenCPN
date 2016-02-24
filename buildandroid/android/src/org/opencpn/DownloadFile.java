@@ -43,6 +43,8 @@ public class DownloadFile extends Activity {
         Bundle extras = getIntent().getExtras();
         fileName = extras.getString("FILE_NAME");
         fileURL = extras.getString("URL");
+        if(null != fileName)
+            Log.i("GRIB DOWNLOAD", fileName);
 
         //executing the asynctask
         new DownloadFileAsync().execute(fileURL);
@@ -77,6 +79,8 @@ public class DownloadFile extends Activity {
                 File nFile = new File(rootDir.getAbsolutePath() , fileName);
                 nFile.createNewFile();
 
+                String fileDownloaded = nFile.getAbsolutePath();
+
                 FileOutputStream f = new FileOutputStream(nFile);
 
                 //file input is from the url
@@ -110,8 +114,14 @@ public class DownloadFile extends Activity {
                 }
                 f.close();
 
+                //  Rename the downloaded file to the passed parameter
+//                Log.d("GRIB DOWNLOAD","Rename: " + fileDownloaded + " to " + fileName);;
+
+                //File fi = new File(fileDownloaded);
+                //fi.renameTo(fileName);
+
             } catch (Exception e) {
-                Log.d("GRIB DOWNLOAD", e.getMessage());
+                Log.d("GRIB DOWNLOAD Exception", e.getMessage());
             }
 
             return null;

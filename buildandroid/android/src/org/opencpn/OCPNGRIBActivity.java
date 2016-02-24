@@ -51,6 +51,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceActivity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Environment;
 
 import ar.com.daidalos.afiledialog.*;
 
@@ -345,9 +346,10 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
    @Override
    public void finish() {
-       Log.i("DEBUGGER_TAG", "finish");
+       Log.i("DEBUGGER_TAG", "GRIB Activity finish");
 
        String json = persistJSON();
+       Log.i("GRIB", "persist json:" + json);
 
        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
        SharedPreferences.Editor editor = preferences.edit();
@@ -369,13 +371,20 @@ public class OCPNGRIBActivity extends PreferenceActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (preferences != null) {
+            Log.i("GRIB", "persisting");
+
 
 
             try {
                 m_grib_PrefsJSON.put("model", preferences.getString("GRIB_prefs_model", "?"));
                 m_grib_PrefsJSON.put("days", preferences.getString("GRIB_prefs_days", "?"));
                 m_grib_PrefsJSON.put("time_step", preferences.getString("GRIB_prefs_timestep", "?"));
-                m_grib_PrefsJSON.put("grib_file", m_dest_file);
+
+                // Prepend the global "Download" directory to the file spec.
+                File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File nFile = new File(rootDir.getAbsolutePath() , preferences.getString("GRIB_prefs_file", "?"));
+
+                m_grib_PrefsJSON.put("grib_file", nFile.getAbsolutePath());
 
                 //  GRIB Display Wind Fragment
                 m_grib_PrefsJSON.put("WindBarbedArrows", preferences.getBoolean("grib_prefb_showbarb", true));
@@ -404,7 +413,13 @@ public class OCPNGRIBActivity extends PreferenceActivity
             }
 
         }
-        return m_grib_PrefsJSON.toString();
+
+        try{
+            return m_grib_PrefsJSON.toString(2);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
@@ -553,13 +568,20 @@ public class OCPNGRIBActivity extends PreferenceActivity
         t.setToNow();
         String formattedTime = t.format("%Y%m%d_%H%M%S");
 
-        m_dest_file = "gfs_" + formattedTime + ".grb2";
-        Log.i("GRIB", "dest_file: " + m_dest_file);
+        String dest_file = "gfs_" + formattedTime + ".grb2";
+        Log.i("GRIB", "dest_file: " + dest_file);
+
+        // persist the target file name
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Editor editor = preferences.edit();
+        editor.putString("GRIB_prefs_file", dest_file);
+        editor.apply();
+
 
         Intent intent = new Intent(this, org.opencpn.DownloadFile.class);
         intent.putExtra("URL",url);
-        intent.putExtra("FILE_NAME",m_dest_file);
-        startActivityForResult(intent, 46728);
+        intent.putExtra("FILE_NAME",dest_file);
+        startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
 
 
 

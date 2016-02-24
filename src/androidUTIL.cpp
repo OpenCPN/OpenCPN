@@ -1019,6 +1019,31 @@ extern "C"{
     
 }       
 
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_sendPluginMessage(JNIEnv *env, jobject obj, jstring msgID, jstring msg)
+    {
+        const char *sparm;
+        wxString MsgID;
+        wxString Msg;
+        
+        //  Need a Java environment to decode the string parameter
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            //qDebug() << "GetEnv failed.";
+        }
+        else {
+            sparm = (jenv)->GetStringUTFChars(msgID, NULL);
+            MsgID = wxString(sparm, wxConvUTF8);
+            
+            sparm = (jenv)->GetStringUTFChars(msg, NULL);
+            Msg = wxString(sparm, wxConvUTF8);
+            
+        }
+        
+        SendPluginMessage( MsgID, Msg );
+        
+        return 74;
+    }
+}
 
 void androidTerminate(){
     callActivityMethod_vs("terminateApp");
