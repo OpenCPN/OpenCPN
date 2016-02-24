@@ -793,20 +793,20 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 
 wxString GRIBOverlayFactory::getLabelString(double value, int settings)
 {
-    int p;
+    int p;   
     switch(settings) {
-    case 2:
-        p = m_Settings.Settings[2].m_Units == 2 ? 2 : 0;
+    case GribOverlaySettings::PRESSURE: /* 2 */
+        p = m_Settings.Settings[settings].m_Units == 2 ? 2 : 0;
         break;
-    case 3:
-    case 4:
-    case 7:
-    case 8:
+    case GribOverlaySettings::WAVE: /* 3 */
+    case GribOverlaySettings::CURRENT: /* 4 */
+    case GribOverlaySettings::AIR_TEMPERATURE: /* 7 */
+    case GribOverlaySettings::SEA_TEMPERATURE: /* 8 */
         p = 1;
         break;
-    case 5:
+    case GribOverlaySettings::PRECIPITATION: /* 5 */
         p = value < 100. ? 2 : value < 10. ? 1 : 0;
-        p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
+        p += m_Settings.Settings[settings].m_Units == 1 ? 1 : 0;
             break;
 
     default :
@@ -1177,7 +1177,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                                 wdh = sh+0.5;
                             } else {
-                                if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
+                                if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat, false) )
                                     continue;
 
                                 wdh = (8/2.5*sh)+0.5;
