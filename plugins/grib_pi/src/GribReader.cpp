@@ -823,7 +823,7 @@ double GribReader::computeDewPoint(double lon, double lat, time_t now)
 //-------------------------------------------------------------------------------
 void GribReader::openFile(const wxString fname)
 {
-    debug("Open file: %s", (const char *)fname.mb_str());
+    grib_debug("Open file: %s", (const char *)fname.mb_str());
     fileName = fname;
     ok = false;
     // clean_all_vectors();
