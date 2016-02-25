@@ -12,121 +12,10 @@
 GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 
-#if 0  // test code       
-    if(m_bcompact){
-        this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-
-        m_fgCtrlBarSizer = new wxFlexGridSizer(0, 1, 0, 0 );
-
-        wxBoxSizer *mainBox = new wxBoxSizer(wxVERTICAL);
-        m_fgCtrlBarSizer->Add( mainBox, 1, wxEXPAND, 0 );
-
-
-        wxBoxSizer *fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
-        mainBox->Add( fgSizer50, 1, wxEXPAND, 5 );
-
-        m_bpPrev = new wxBitmapButton( this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpPrev->SetToolTip( _("Previous") );
-
-        fgSizer50->Add( m_bpPrev, 0, wxALL, 1 );
-
-        wxArrayString m_cRecordForecastChoices;
-        m_cRecordForecastChoices.Add(_T("Item0"));
-        m_cRecordForecast = new wxChoice( this, ID_CTRLTIME, wxDefaultPosition, wxDefaultSize,
-                                          m_cRecordForecastChoices, 0 );
-        m_cRecordForecast->SetSelection( 0 );
-        fgSizer50->Add( m_cRecordForecast, 0, wxALIGN_CENTER_VERTICAL|wxALL, 1 );
-
-        m_bpNext = new wxBitmapButton( this, ID_BTNNEXT, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpNext->SetToolTip( _("Next") );
-
-        fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
-
-
-
-
-        wxBoxSizer *fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
-        mainBox->Add( fgSizer51, 1, wxEXPAND, 5 );
-
-
-
-
-        m_bpAltitude = new wxBitmapButton( this, ID_CTRLALTITUDE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpAltitude->SetToolTip( _("Select geoptential altitude") );
-
-        fgSizer51->Add( m_bpAltitude, 0, wxALL, 1 );
-
-        m_bpNow = new wxBitmapButton( this, ID_BTNNOW, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpNow->SetToolTip( _("Now") );
-
-        fgSizer51->Add( m_bpNow, 0, wxALL, 1 );
-
-        m_bpZoomToCenter = new wxBitmapButton( this, ID_BTNZOOMTC, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpZoomToCenter->SetToolTip( _("Zoom To Center") );
-
-        fgSizer51->Add( m_bpZoomToCenter, 0, wxALL, 1 );
-
-        m_bpShowCursorData = new wxBitmapButton( this, ID_BTNSHOWCDATA, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        fgSizer51->Add( m_bpShowCursorData, 0, wxALL, 1 );
-
-
-        fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
-        m_bpPlay = new wxBitmapButton( this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        fgSizer51->Add( m_bpPlay, 0, wxBOTTOM|wxLEFT|wxTOP, 1 );
-
-        m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
-        fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
-
-
-        fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
-
-        m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpOpenFile->SetToolTip( _("Open a new file") );
-
-        fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
-
-        m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        m_bpSettings->SetToolTip( _("Settings") );
-
-        fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
-
-        m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
-
-
-        wxFlexGridSizer* fgSizer49;
-        fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
-        fgSizer49->AddGrowableCol( 0 );
-        fgSizer49->SetFlexibleDirection( wxVERTICAL );
-        fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-        //fgSizer49->Add( fgSizer50, 1, wxEXPAND, 5 );
-
-        m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
-        m_fgCDataSizer->SetFlexibleDirection( wxBOTH );
-        m_fgCDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-
-        mainBox->Add( m_fgCDataSizer, 1, wxEXPAND, 5 );
-
-
-        //m_fgCtrlBarSizer->Add( fgSizer49, 1, wxEXPAND, 0 );
-
-        m_fgCtrlGrabberSize = new wxFlexGridSizer( 0, 1, 0, 0 );
-        m_fgCtrlGrabberSize->SetFlexibleDirection( wxBOTH );
-        m_fgCtrlGrabberSize->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-
-//      m_fgCtrlBarSizer->Add( m_fgCtrlGrabberSize, 1, wxEXPAND, 0 );
-
-
-        this->SetSizer( m_fgCtrlBarSizer );
-        this->Layout();
-        m_fgCtrlBarSizer->Fit( this );
-    }
-#endif  // test code
-
     bool m_bcompact = false;
+#ifdef __OCPN__ANDROID__
+    m_bcompact = true;
+#endif    
 
     if(m_bcompact){
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -193,27 +82,26 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
         fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 
-	m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-	m_bpOpenFile->SetToolTip( _("Open a new file") );
-
-        fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
+        m_bpOpenFile = NULL;
+//         m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+//         m_bpOpenFile->SetToolTip( _("Open a new file") );
+//         fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
 
 	m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
 
         fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
 
-	m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-        fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
-
+        m_bpRequest = NULL;
+        
+//         m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+//         fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
 
         wxFlexGridSizer* fgSizer49;
         fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
         fgSizer49->AddGrowableCol( 0 );
         fgSizer49->SetFlexibleDirection( wxVERTICAL );
         fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-        //fgSizer49->Add( fgSizer50, 1, wxEXPAND, 5 );
 
  	m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
  	m_fgCDataSizer->SetFlexibleDirection( wxBOTH );
@@ -223,14 +111,12 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
  	mainBox->Add( m_fgCDataSizer, 1, wxEXPAND, 5 );
 
 
- 	//m_fgCtrlBarSizer->Add( fgSizer49, 1, wxEXPAND, 0 );
 
  	m_fgCtrlGrabberSize = new wxFlexGridSizer( 0, 1, 0, 0 );
  	m_fgCtrlGrabberSize->SetFlexibleDirection( wxBOTH );
  	m_fgCtrlGrabberSize->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 
-// 	m_fgCtrlBarSizer->Add( m_fgCtrlGrabberSize, 1, wxEXPAND, 0 );
 
 
         this->SetSizer( m_fgCtrlBarSizer );
@@ -395,8 +281,11 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	m_sTimeline->Connect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
-	m_bpOpenFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
-	m_bpOpenFile->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+
+        if(m_bpOpenFile){
+            m_bpOpenFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
+            m_bpOpenFile->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+        }
 
 #ifdef __OCPN__ANDROID__
         m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnCompositeDialog ), NULL, this );
@@ -405,8 +294,10 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	m_bpSettings->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
 #endif
         
-        m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
-	m_bpRequest->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+        if(m_bpRequest){
+            m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
+            m_bpRequest->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+        }
 }
 
 GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
@@ -454,12 +345,19 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
 	m_sTimeline->Disconnect( wxEVT_SCROLL_THUMBTRACK, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GRIBUICtrlBarBase::OnTimeline ), NULL, this );
-	m_bpOpenFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
-	m_bpOpenFile->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+
+        if(m_bpOpenFile){
+            m_bpOpenFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnOpenFile ), NULL, this );
+            m_bpOpenFile->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+        }
+        
 	m_bpSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnSettings ), NULL, this );
 	m_bpSettings->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
-	m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
-	m_bpRequest->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+
+        if(m_bpRequest){
+            m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUICtrlBarBase::OnRequest ), NULL, this );
+            m_bpRequest->Disconnect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( GRIBUICtrlBarBase::OnMouseEvent ), NULL, this );
+        }
 
 }
 
