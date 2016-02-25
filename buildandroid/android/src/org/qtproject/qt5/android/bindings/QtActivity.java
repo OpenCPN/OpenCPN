@@ -128,6 +128,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.opencpn.opencpn.R;
 
 //ANDROID-11
@@ -193,7 +196,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int ID_CMD_NULL_REFRESH = 301;
     private final static int ID_CMD_TRIGGER_RESIZE  = 302;
     private final static int ID_CMD_SETVP = 303;
-    private final static int ID_CMD_APPLY_GRIB_FILE = 304;
+    private final static int ID_CMD_POST_JSON_TO_PLUGINS = 304;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -2408,7 +2411,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 m_GRIBReturn = data.getStringExtra("GRIB_JSON");
                 Log.i("GRIB", m_GRIBReturn);
 
-                nativeLib.sendPluginMessage( "GRIB_APPLY_JSON_CONFIG", m_GRIBReturn);
+                //  Add a message ID string to the JSON for later processing
+                String json = "";
+                try {
+                    JSONObject js  = new JSONObject( m_GRIBReturn );
+                    js.put("MessageID", "GRIB_APPLY_JSON_CONFIG");
+                    json = js.toString();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+                nativeLib.invokeCmdEventCmdString( ID_CMD_POST_JSON_TO_PLUGINS, json);
+
+//                nativeLib.sendPluginMessage( "GRIB_APPLY_JSON_CONFIG", m_GRIBReturn);
 
                 // defer hte application of settings until the screen refreshes
                 //Handler handler = new Handler();
