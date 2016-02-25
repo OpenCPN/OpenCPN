@@ -889,12 +889,16 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 
 #ifdef ocpnUSE_GL
     if( !m_pdc ) {
+#ifndef __WXQT__        
         //      Enable anti-aliased lines, at best quality
         glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
         glLineWidth( 2 );
+#else
+        glLineWidth( 3 );
+#endif        
         glEnableClientState(GL_VERTEX_ARRAY);
     }
 #endif
