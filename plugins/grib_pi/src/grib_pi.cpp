@@ -145,6 +145,7 @@ int grib_pi::Init(void)
               WANTS_CONFIG              |
               WANTS_PREFERENCES         |
               WANTS_PLUGIN_MESSAGING    |
+              WANTS_ONPAINT_VIEWPORT    |
               WANTS_MOUSE_EVENTS
             );
 }
@@ -557,9 +558,10 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         
         if(m_pGribCtrlBar){
             m_pGribCtrlBar->OpenFileFromJSON(message_body);
+            
+            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
         }
     }
-    
 }
 
 bool grib_pi::LoadConfig(void)
