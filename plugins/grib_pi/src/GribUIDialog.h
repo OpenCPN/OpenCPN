@@ -112,8 +112,9 @@ public:
     GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
     bool InDataPlot (int id) { return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE; }
     void SetScaledBitmap( double factor );
-	wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
-
+    wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
+    void OpenFileFromJSON( wxString json);
+        
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
@@ -146,7 +147,8 @@ private:
     void OnAltitude( wxCommandEvent& event );
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
-
+    void OnCompositeDialog( wxCommandEvent& event );
+    
     void OnTimeline( wxScrollEvent& event );
 	void OnShowCursorData( wxCommandEvent& event );
 
