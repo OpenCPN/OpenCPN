@@ -969,6 +969,92 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     event.Skip();
 }
 
+#ifdef __OCPN__ANDROID__
+wxString callActivityMethod_ss(const char *method, wxString parm);
+#endif
+
+void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
+{
+    //  Grab the current settings values
+    GribOverlaySettings initSettings = m_OverlaySettings;
+    initSettings.Read();
+        
+    wxString json;
+    wxString json_begin = initSettings.SettingsToJSON(json);
+    wxLogMessage(json_begin);
+
+    
+    //  Pick up the required options from the Request dialog
+    //  and add them to the JSON object
+    //  Really, this just means the current viewport coordinates.
+    //  Everything else is stored in Android app preferences bundle.
+    
+    PlugIn_ViewPort current_vp = pPlugIn->GetCurrentViewPort();
+    
+    double lon_min = wxRound(current_vp.lon_min) - 1;
+    double lon_max = wxRound(current_vp.lon_max) + 1;
+    double lat_min = wxRound(current_vp.lat_min) - 1;
+    double lat_max = wxRound(current_vp.lat_max) + 1;
+    
+    wxJSONValue  v;
+    wxJSONReader reader;
+    int numErrors = reader.Parse( json_begin, &v );
+    if ( numErrors > 0 ){
+        return;
+    }
+    
+    v["latMin"] = lat_min;
+    v["latMax"] = lat_max;
+    v["lonMin"] = lon_min;
+    v["lonMax"] = lon_max;
+    
+    //  Clear the file name field, so that a retrieved or selected file name can be returned
+    v["grib_file"] = _T("");
+    
+    wxJSONWriter w;
+    wxString json_final;
+    w.Write(v, json_final);
+    wxLogMessage(json_final);
+    
+    
+#ifdef __OCPN__ANDROID__
+    wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
+    wxLogMessage(ret);
+#endif
+    
+    
+    event.Skip();
+    
+    
+}
+
+void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
+{
+    // construct the JSON root object
+    wxJSONValue  root;
+    // construct a JSON parser
+    wxJSONReader reader;
+    
+    int numErrors = reader.Parse( json, &root );
+    if ( numErrors > 0 )  {
+        return;
+    }
+    
+    wxString file = root[( "grib_file" )].AsString();
+    wxLogMessage( file );
+    
+    if(wxFileExists( file )){
+        wxFileName fn(file);
+        m_grib_dir = fn.GetPath();
+        m_file_names.Clear();
+        m_file_names.Add(file);
+        OpenFile();
+        SetDialogsStyleSizePosition( true );
+    }
+}
+
+
+
 void GRIBUICtrlBar::OnPlayStop( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) {
@@ -1225,6 +1311,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
+#ifndef __OCPN__ANDROID__
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
@@ -1243,6 +1330,25 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
+#else
+    if( !wxDir::Exists( m_grib_dir ) ) {
+        wxStandardPathsBase& path = wxStandardPaths::Get();
+        m_grib_dir = path.GetDocumentsDir();
+    }
+
+    wxString file;
+    int response = PlatformFileSelectorDialog( NULL, &file, _("Select a GRIB file"),
+                                          m_grib_dir, _T(""), _T("*.*") );
+
+    if( response == wxID_OK ) {
+        wxFileName fn(file);
+        m_grib_dir = fn.GetPath();
+        m_file_names.Clear();
+        m_file_names.Add(file);
+        OpenFile();
+        SetDialogsStyleSizePosition( true );
+    }
+#endif
 }
 
 void GRIBUICtrlBar::CreateActiveFileFromNames( const wxArrayString &filenames )
@@ -1641,3 +1747,103 @@ void GRIBUICData::OnMove( wxMoveEvent& event )
     m_gCursorData->GetScreenPosition( &w, &h );
     m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }
+
+
+//---------------------------------------------------------------------------------------
+//               Android Utility Methods
+//---------------------------------------------------------------------------------------
+#ifdef __OCPN__ANDROID__
+
+#include <QtAndroidExtras/QAndroidJniObject>
+
+extern JavaVM *java_vm;         // found in androidUtil.cpp, accidentally exported....
+JNIEnv* jenv;
+
+#if 0           // need this for the solib?
+jint JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    //qDebug() << "JNI_OnLoad";
+    java_vm = vm;
+    
+    // Get JNI Env for all function calls
+    if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+        return -1;
+    }
+    
+}
+#endif
+
+bool CheckPendingJNIException()
+{
+    if(!java_vm){
+        //qDebug() << "java_vm is NULL.";
+        return true;
+    }
+        
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+        return true;
+    }
+    
+    if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
+        //qDebug() << "Found JNI Exception Pending.";
+        return true;
+    }
+    
+    return false;
+    
+}
+
+
+wxString callActivityMethod_ss(const char *method, wxString parm)
+{
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    if ( !activity.isValid() ){
+        //qDebug() << "Activity is not valid";
+        return return_string;
+    }
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm &&(java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) ){
+        //qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p = (jenv)->NewStringUTF(parm.c_str());
+    
+    
+    //  Call the desired method
+    //qDebug() << "Calling method_ss";
+    //qDebug() << method;
+    
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    //qDebug() << "Back from method_ss";
+        
+        jstring s = data.object<jstring>();
+        
+        if( (jenv)->GetStringLength( s )){
+            const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+            return_string = wxString(ret_string, wxConvUTF8);
+        }
+        
+        return return_string;
+        
+}
+
+
+
+#endif
+
+
