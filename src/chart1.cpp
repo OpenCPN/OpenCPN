@@ -4217,7 +4217,24 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             Refresh(true);
             break;
         }
-        
+
+        case ID_CMD_POST_JSON_TO_PLUGINS:{
+            
+            // Extract the Message ID which is embedded in the JSON string passed in the event
+            wxJSONValue  root;
+            wxJSONReader reader;
+            
+            int numErrors = reader.Parse( event.GetString(), &root );
+            if ( numErrors == 0 )  {
+                if(root[_T("MessageID")].IsString()){
+                    wxString MsgID = root[_T("MessageID")].AsString();
+                    SendPluginMessage( MsgID, event.GetString() );  // Send to all PlugIns
+                }
+            }
+            
+            break;
+        }
+            
         default: {
             //        Look for PlugIn tools
             //        If found, make the callback.
