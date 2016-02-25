@@ -734,7 +734,7 @@ zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) 
             res = 0;
             ok = false;
     }
-    debug("id=%d: PDS unit %d (time range) b21=%d %d P1=%d P2=%d\n",id,unit, range,res,P1,P2);
+    grib_debug("id=%d: PDS unit %d (time range) b21=%d %d P1=%d P2=%d\n",id,unit, range,res,P1,P2);
     dur = 0;
     switch (range) {
         case 0:
