@@ -43,16 +43,26 @@
 //    variable:
 //          WXDLLIMPEXP_DATA_MYCOMP(int) myGlobalIntVar;
 //
-//#ifdef WXMAKINGDLL_JSON
-//    #define WXDLLIMPEXP_JSON                  WXEXPORT
-//    #define WXDLLIMPEXP_DATA_JSON(type)       WXEXPORT type
-//#elif defined(WXUSINGDLL)
-//    #define WXDLLIMPEXP_JSON                  WXIMPORT
-//    #define WXDLLIMPEXP_DATA_JSON(type)       WXIMPORT type
-//#else // not making nor using DLL
+#ifdef WXMAKINGDLL_JSON
+    #define WXDLLIMPEXP_JSON                  WXEXPORT
+    #define WXDLLIMPEXP_DATA_JSON(type)       WXEXPORT type
+#elif defined(WXUSINGDLL)
+    #define WXDLLIMPEXP_JSON                  WXIMPORT
+    #define WXDLLIMPEXP_DATA_JSON(type)       WXIMPORT type
+#else // not making nor using DLL
     #define WXDLLIMPEXP_JSON
     #define WXDLLIMPEXP_DATA_JSON(type)	    type
-//#endif
+#endif
+
+//dsr
+#undef WXDLLIMPEXP_JSON
+#undef WXDLLIMPEXP_DATA_JSON
+
+    #define WXDLLIMPEXP_JSON
+    #define WXDLLIMPEXP_DATA_JSON(type)	    type
+
+//dsr
+
 
 // the __PRETTY_FUNCTION__ macro expands to the full class's
 // member name in the GNU GCC.

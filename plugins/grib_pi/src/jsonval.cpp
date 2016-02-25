@@ -8,10 +8,6 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-//#ifdef __GNUG__
-//    #pragma implementation "jsonval.cpp"
-//#endif
-
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -34,6 +30,7 @@ WX_DEFINE_OBJARRAY( wxJSONInternalArray );
 #else
 #define compatibleLongLongFmtSpec wxLongLongFmtSpec
 #endif
+
 
 // the trace mask used in wxLogTrace() function
 // static const wxChar* traceMask = _T("jsonval");
@@ -1823,7 +1820,7 @@ wxJSONValue::Item( const wxString& key )
 #if !wxCHECK_VERSION(2,9,0)
     wxLogTrace( traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__, GetInfo().c_str());
 #endif
-    
+
     wxJSONRefData* data = COW();
     wxJSON_ASSERT( data );
 
@@ -1871,10 +1868,8 @@ wxJSONValue
 wxJSONValue::ItemAt( const wxString& key ) const
 {
     wxLogTrace( traceMask, _T("(%s) searched key=\'%s\'"), __PRETTY_FUNCTION__, key.c_str());
-#ifndef __WXOSX__
     wxLogTrace( traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__, GetInfo().c_str());
-#endif
-    
+
     wxJSONRefData* data = GetRefData();
     wxJSON_ASSERT( data );
 

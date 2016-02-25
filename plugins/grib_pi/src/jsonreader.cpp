@@ -8,11 +8,7 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __GNUG__
-    #pragma implementation "jsonreader.cpp"
-#endif
-
-#include "jsonreader.h"
+#include <wx/jsonreader.h>
 
 #include <wx/mstream.h>
 #include <wx/sstream.h>
@@ -1849,11 +1845,11 @@ wxJSONReader::ConvertCharByChar( wxString& s, const wxMemoryBuffer& utf8Buffer )
  @return the last char read or -1 in case of EOF
 */
 
-//union byte
-//{
-//    unsigned char c[2];
-//    short int b;
-//};
+union byte_union
+{
+    unsigned char cu[2];
+    short int bu;
+};
 
 int
 wxJSONReader::ReadMemoryBuff( wxInputStream& is, wxJSONValue& val )
@@ -1971,26 +1967,28 @@ wxJSONReader::Strtoll( const wxString& str, wxInt64* i64 )
     wxUint64 ui64;
     bool r = DoStrto_ll( str, &ui64, &sign );
 
-    // check overflow for signed long long
-    switch ( sign )  {
-        case '-' :
-            if ( ui64 > (wxUint64) LLONG_MAX + 1 )  {
-                r = false;
-            }
-            else  {
-                *i64 = (wxInt64) (ui64 * -1);
-            }
-            break;
+    if ( r) {
+        // check overflow for signed long long
+        switch ( sign )  {
+            case '-' :
+                if ( ui64 > (wxUint64) LLONG_MAX + 1 )  {
+                    r = false;
+                }
+                else  {
+                    *i64 = (wxInt64) (ui64 * -1);
+                }
+                break;
 
-        // case '+' :
-        default :
-            if ( ui64 > LLONG_MAX )  {
-                r = false;
-            }
-            else  {
-                *i64 = (wxInt64) ui64;
-            }
-            break;
+            // case '+' :
+            default :
+                if ( ui64 > LLONG_MAX )  {
+                    r = false;
+                }
+                else  {
+                    *i64 = (wxInt64) ui64;
+                }
+                break;
+        }
     }
     return r;
 }
