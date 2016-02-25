@@ -350,7 +350,8 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 	m_bpPlay->SetBitmapLabel(GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
 	m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata), 
 					m_CDataIsShown ? _T("curdata") : _T("ncurdata"),	m_ScaledFactor));
-	m_bpOpenFile->SetBitmapLabel(GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
+        if(m_bpOpenFile)
+            m_bpOpenFile->SetBitmapLabel(GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
 	m_bpSettings->SetBitmapLabel(GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
 
     SetRequestBitmap( m_ZoneSelMode );
@@ -362,21 +363,24 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
 void GRIBUICtrlBar::SetRequestBitmap( int type )
 {
+    if(NULL == m_bpRequest)
+        return;
+        
     switch( type ) {
     case AUTO_SELECTION:
     case SAVED_SELECTION:
     case START_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Start a request"));
         break;
     case DRAW_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(selzone), _T("selzone"),m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(selzone), _T("selzone"),m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Draw requested Area\nor Click here to stop request"));
         break;
     case COMPLETE_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Valid Area and Continue"));
-		break;
+        break;
     }
 }
 
@@ -534,15 +538,19 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
 
 void GRIBUICtrlBar::UpdateTrackingControl()
 {
+    qDebug() << "UTC" << m_CDataIsShown << m_gCursorData;
+    
     if( !m_CDataIsShown ) return;
 
     if( m_DialogStyle >> 1== SEPARATED ) {
+        qDebug() << "Separated";
         if( m_gGRIBUICData ) {
             if( !m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.IsRunning() )
                 m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
 
         }
     } else {
+        qDebug() << "Attached";
         if( m_gCursorData ) {
             if(!m_gCursorData->m_tCursorTrackTimer.IsRunning())
                 m_gCursorData->m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
@@ -575,7 +583,8 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     int state = (m_DialogStyle >> 1 == ATTACHED && m_CDataIsShown) ? 0 : 1;
     for( unsigned i = 0; i < m_OverlaySettings.m_iCtrlBarCtrlVisible[state].Len(); i++ ) {
         bool vis = i > 0 ? true : m_HasAltitude ? true : false;
-        FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
+        if(FindWindow( i + ID_CTRLALTITUDE ))
+            FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
     }
     //initiate tooltips
     m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide data at cursor" ) : _("Show data at cursor" ) );
@@ -792,7 +801,11 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if( m_DialogStyle >> 1 == SEPARATED ) return;
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
-    if( m_gCursorData && m_CDataIsShown ) m_gCursorData->OnMouseEvent (evt );
+    qDebug() << "attached" << m_gCursorData << m_CDataIsShown;
+    
+    if( m_gCursorData && m_CDataIsShown ){
+        m_gCursorData->OnMouseEvent (evt );
+    }
 }
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
@@ -1041,16 +1054,14 @@ void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
     }
     
     wxString file = root[( "grib_file" )].AsString();
-    wxLogMessage( file );
     
-    if(wxFileExists( file )){
-        wxFileName fn(file);
-        m_grib_dir = fn.GetPath();
-        m_file_names.Clear();
-        m_file_names.Add(file);
-        OpenFile();
-        SetDialogsStyleSizePosition( true );
-    }
+     if(file.Length() && wxFileExists( file )){
+         wxFileName fn(file);
+         m_grib_dir = fn.GetPath();
+         m_file_names.Clear();
+         m_file_names.Add(file);
+         OpenFile();
+     }
 }
 
 
