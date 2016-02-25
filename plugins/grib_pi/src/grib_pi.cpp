@@ -558,9 +558,10 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         
         if(m_pGribCtrlBar){
             m_pGribCtrlBar->OpenFileFromJSON(message_body);
+            
+            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
         }
     }
-    
 }
 
 bool grib_pi::LoadConfig(void)

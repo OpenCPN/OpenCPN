@@ -834,7 +834,6 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if( m_DialogStyle >> 1 == SEPARATED ) return;
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
-    qDebug() << "attached" << m_gCursorData << m_CDataIsShown;
     
     if( m_gCursorData && m_CDataIsShown ){
         m_gCursorData->OnMouseEvent (evt );
@@ -1355,7 +1354,6 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
-
 #ifndef __OCPN__ANDROID__
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
@@ -1796,7 +1794,6 @@ void GRIBUICData::OnMove( wxMoveEvent& event )
     m_gCursorData->GetScreenPosition( &w, &h );
     m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }
-
 
 
 //---------------------------------------------------------------------------------------
