@@ -39,6 +39,10 @@
 
 #include "grib_pi.h"
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
@@ -439,6 +443,10 @@ void grib_pi::OnGribCtrlBarClose()
     RequestRefresh(m_parent_window); // refresh main window
 
 	if (::wxIsBusy()) ::wxEndBusyCursor();
+
+#ifdef __OCPN__ANDROID__        
+    m_DialogStyleChanged = true;       //  Force a delete of the control bar dialog    
+#endif        
 
     if( m_DialogStyleChanged ) {
         m_pGribCtrlBar->Destroy();
