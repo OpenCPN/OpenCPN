@@ -571,19 +571,15 @@ void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
 
 void GRIBUICtrlBar::UpdateTrackingControl()
 {
-    qDebug() << "UTC" << m_CDataIsShown << m_gCursorData;
-    
     if( !m_CDataIsShown ) return;
 
     if( m_DialogStyle >> 1== SEPARATED ) {
-        qDebug() << "Separated";
         if( m_gGRIBUICData ) {
             if( !m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.IsRunning() )
                 m_gGRIBUICData->m_gCursorData->m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
 
         }
     } else {
-        qDebug() << "Attached";
         if( m_gCursorData ) {
             if(!m_gCursorData->m_tCursorTrackTimer.IsRunning())
                 m_gCursorData->m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
