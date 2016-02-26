@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.StringTokenizer;
-
+import java.util.Map;
 
 import android.content.Intent;
 import android.preference.EditTextPreference;
@@ -344,12 +344,15 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
    }
 
+
+
+
    @Override
    public void finish() {
        Log.i("DEBUGGER_TAG", "GRIB Activity finish");
 
        String json = persistJSON();
-       Log.i("GRIB", "persist json:" + json);
+       //Log.i("GRIB", "persist json:" + json);
 
        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
        SharedPreferences.Editor editor = preferences.edit();
@@ -365,17 +368,66 @@ public class OCPNGRIBActivity extends PreferenceActivity
        super.finish();
    }
 
+   public void JSONPersist(SharedPreferences prefs, Map<String,?> keys, String page){
+       try {
+            for(Map.Entry<String,?> entry : keys.entrySet()){
+//                    Log.d("map values",entry.getKey() + ": " + entry.getValue().toString());
+
+               String testB = "grib_prefb_" + page;
+               String testS = "grib_prefs_" + page;
+               if(entry.getKey().startsWith(testS, 0)){
+                   String jsonkey = entry.getKey().substring(11);
+                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
+                   m_grib_PrefsJSON.put(jsonkey, prefs.getString( entry.getKey(), "?"));
+               }
+               if(entry.getKey().startsWith(testB, 0)){
+                   String jsonkey = entry.getKey().substring(11);
+                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
+                   m_grib_PrefsJSON.put(jsonkey, prefs.getBoolean( entry.getKey(), true));
+
+               }
+            }
+       } catch (JSONException e) {
+           throw new RuntimeException(e);
+       }
+   }
+
     private String persistJSON() {
         //  Update everything interesting to the member JSON, and return a compact string
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         if (preferences != null) {
             Log.i("GRIB", "persisting");
 
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_display_settings, true);
+            Map<String,?> keys = preferences.getAll();
+
+            JSONPersist(preferences, keys, "Wind");
 
 
             try {
+/*
+            for(Map.Entry<String,?> entry : keys.entrySet()){
+//                    Log.d("map values",entry.getKey() + ": " + entry.getValue().toString());
+
+                    if(entry.getKey().startsWith("grib_prefs_Wind", 0)){
+                        String jsonkey = entry.getKey().substring(11);
+                        Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
+                        m_grib_PrefsJSON.put(jsonkey, preferences.getString( entry.getKey(), "?"));
+                    }
+                    if(entry.getKey().startsWith("grib_prefb_Wind", 0)){
+                        String jsonkey = entry.getKey().substring(11);
+                        Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
+                        m_grib_PrefsJSON.put(jsonkey, preferences.getBoolean( entry.getKey(), true));
+
+                    }
+            }
+*/
+
+
+
+
                 m_grib_PrefsJSON.put("model", preferences.getString("GRIB_prefs_model", "?"));
                 m_grib_PrefsJSON.put("days", preferences.getString("GRIB_prefs_days", "?"));
                 m_grib_PrefsJSON.put("time_step", preferences.getString("GRIB_prefs_timestep", "?"));
@@ -387,25 +439,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 m_grib_PrefsJSON.put("grib_file", nFile.getAbsolutePath());
 
                 //  GRIB Display Wind Fragment
-                m_grib_PrefsJSON.put("WindBarbedArrows", preferences.getBoolean("grib_prefb_showbarb", true));
-/*
-                m_grib_PrefsJSON.put("showwindbarb_always", preferences.getBoolean("grib_prefb_showwindbarb_always", false));
-                m_grib_PrefsJSON.put("windbarb_spacing_fixed_min", preferences.getBoolean("grib_pref_windbarb_spacing_fixed_min", false));
-                m_grib_PrefsJSON.put("showwindnumbers", preferences.getBoolean("grib_prefb_showwindnumbers", false));
-                m_grib_PrefsJSON.put("windbarb_numbers_spacing_fixed_min", preferences.getBoolean("grib_pref_windbarb_numbers_spacing_fixed_min", false));
-                m_grib_PrefsJSON.put("showisotachs", preferences.getBoolean("grib_prefb_showisotachs", false));
-                m_grib_PrefsJSON.put("showwindoverlay", preferences.getBoolean("grib_prefb_showwindoverlay", false));
-                m_grib_PrefsJSON.put("showwindparticles", preferences.getBoolean("grib_prefb_showwindparticles", false));
 
-                m_grib_PrefsJSON.put("windbarb_colors", preferences.getString("grib_pref_windbarb_color", "?"));
-                m_grib_PrefsJSON.put("windspeed_overlay_colors", preferences.getString("grib_pref_windspeed_overlay_colors", "?"));
-                m_grib_PrefsJSON.put("windbarb_numbers_units", preferences.getString("grib_pref_windbarb_numbers_units", "?"));
-
-                m_grib_PrefsJSON.put("windbarb_spacing_value", preferences.getInt("grib_pref_windbarb_spacing_value", 50));
-                m_grib_PrefsJSON.put("windbarb_numbers_spacing_value", preferences.getInt("grib_pref_windbarb_numbers_spacing_value", 50));
-                m_grib_PrefsJSON.put("windbarb_isotach_spacing_value", preferences.getInt("grib_pref_windbarb_isotach_spacing_value", 10));
-                m_grib_PrefsJSON.put("windparticledensity", preferences.getInt("grib_pref_windparticledensity", 4));
-*/
 
 
             } catch (JSONException e) {
@@ -650,13 +684,40 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
                 Time t = new Time(Time.getCurrentTimezone());
                 t.setToNow();
-                t. switchTimezone("UTC");
+                t.switchTimezone("UTC");
                 String startTime = t.format("%Y%m%d");
                 int tHours = t.hour;
                 int hour6 = (tHours / 6) * 6;
 
-                startTime = startTime.concat(String.format("%02d", hour6));
+                //  GFS forceast are late, sometimes, and UTC0000 forecast is not present yet
+                //  So get the 1800 for previous day.
+                if(hour6 == 0){
+                    Time tp = new Time(Time.getCurrentTimezone());
+                    tp.setToNow();
+                    tp.switchTimezone("UTC");
+                    tp.set(t.monthDay-1, t.month, t.year);
+                    startTime = tp.format("%Y%m%d");
 
+                    hour6 = 18;
+                }
+
+                startTime = startTime.concat(String.format("%02d", hour6));
+/*
+                //  Create the start time field
+                Calendar calendar = new GregorianCalendar(getTimeZone ("UTC"));
+
+
+                String dest_file = "gfs_"
+                        + calendar.get(Calendar.YEAR)
+                        + calendar.get(Calendar.MONTH)
+                        + calendar.get(Calendar.DAY_OF_MONTH)
+                        + "_"
+                        + calendar.get(Calendar.HOUR_OF_DAY)
+                        + calendar.get(Calendar.MINUTE)
+                        + calendar.get(Calendar.SECOND)
+                        + ".grb2";
+
+*/
                 serverBase = "http://192.168.37.99/get_grib.php";
                 url = serverBase + "?";
                 url = url.concat("model=" + model);

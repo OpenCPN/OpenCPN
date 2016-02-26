@@ -43,8 +43,15 @@ public class DownloadFile extends Activity {
         Bundle extras = getIntent().getExtras();
         fileName = extras.getString("FILE_NAME");
         fileURL = extras.getString("URL");
+
+        File dFile = new File(rootDir.getAbsolutePath() , fileName);
+        String fileDownloaded = dFile.getAbsolutePath();
+
         if(null != fileName)
-            Log.i("GRIB DOWNLOAD", fileName);
+            Log.i("GRIB DOWNLOAD", fileDownloaded);
+
+
+        Log.i("GRIB DOWNLOAD fileURL", fileURL);
 
         //executing the asynctask
         new DownloadFileAsync().execute(fileURL);
@@ -74,6 +81,9 @@ public class DownloadFile extends Activity {
 
                 //lenghtOfFile is used for calculating download progress
                 int lenghtOfFile = c.getContentLength();
+
+                String msg = String.format("Connection made, file length: %d\n", lenghtOfFile);
+                Log.i("GRIB DOWNLOAD", msg);
 
                 //this is where the file will be seen after the download
                 File nFile = new File(rootDir.getAbsolutePath() , fileName);

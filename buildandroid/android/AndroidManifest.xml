@@ -48,16 +48,12 @@
             <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
-        <activity android:name="org.opencpn.OCPNGRIBActivity"
-            android:theme="@android:style/Theme.Holo">
+        <activity android:name="org.opencpn.OCPNGRIBActivity" android:theme="@android:style/Theme.Holo">
+        <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
-        <activity android:name="org.opencpn.DownloadFile"
-        android:label="@string/app_name">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+        <activity android:name="org.opencpn.DownloadFile" android:label="@string/app_name">
+        <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC_Xl0ZmeX0GSvD7PDGiclzYpUml9GUkX0"/>

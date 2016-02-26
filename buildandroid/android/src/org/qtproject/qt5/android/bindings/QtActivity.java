@@ -2403,13 +2403,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         if (requestCode == OCPN_GRIB_REQUEST_CODE) {
-            Log.i("DEBUGGER_TAG", "onqtActivityResultGC");
+//            Log.i("DEBUGGER_TAG", "onqtActivityResultGC");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-                Log.i("DEBUGGER_TAG", "onqtActivityResultGD");
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultGD");
                 m_GRIBReturn = data.getStringExtra("GRIB_JSON");
-                Log.i("GRIB", m_GRIBReturn);
+//                Log.i("GRIB", m_GRIBReturn);
 
                 //  Add a message ID string to the JSON for later processing
                 String json = "";
