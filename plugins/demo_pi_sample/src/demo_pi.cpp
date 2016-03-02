@@ -33,6 +33,7 @@
 
 #include <wx/aui/aui.h>
 
+#include "wxWTranslationCatalog.h"
 #include "demo_pi.h"
 
 
@@ -69,8 +70,9 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 
 int demo_pi::Init(void)
 {
-//      printf("demo_pi Init()\n");
 
+      AddLocaleCatalog( PLUGIN_CATALOG_NAME );
+      
       m_pdemo_window = NULL;
 
       // Get a pointer to the opencpn display canvas, to use as a parent for windows created
