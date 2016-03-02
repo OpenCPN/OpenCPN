@@ -94,46 +94,46 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 
 SET(SRC_DEMO
-                demo_pi.h
- 		demo_pi.cpp
+        src/demo_pi.h
+ 		src/demo_pi.cpp
  	)
 
 SET(SRC_NMEA0183
-		nmea0183/LatLong.hpp
-		nmea0183/latlong.cpp
-		nmea0183/long.cpp
-		nmea0183/nmea0183.cpp
-		nmea0183/nmea0183.hpp
-		nmea0183/Response.hpp
-		nmea0183/response.cpp
-		nmea0183/RMB.hpp
-		nmea0183/rmb.cpp
-		nmea0183/Sentence.hpp
-		nmea0183/sentence.cpp
-		nmea0183/talkerid.cpp
-		nmea0183/RMC.HPP
-		nmea0183/rmc.cpp
-		nmea0183/hexvalue.cpp
-		nmea0183/lat.cpp
-		nmea0183/expid.cpp
-		nmea0183/wpl.hpp
-		nmea0183/wpl.cpp
-		nmea0183/rte.hpp
-		nmea0183/rte.cpp
-		nmea0183/hdt.hpp
-		nmea0183/hdt.cpp
-		nmea0183/hdg.hpp
-		nmea0183/hdg.cpp
-		nmea0183/hdm.hpp
-		nmea0183/hdm.cpp
-		nmea0183/gll.hpp
-		nmea0183/gll.cpp
-		nmea0183/vtg.hpp
-		nmea0183/vtg.cpp
-		nmea0183/gga.hpp
-		nmea0183/gga.cpp
-		nmea0183/gsv.hpp
-		nmea0183/gsv.cpp
+		src/nmea0183/LatLong.hpp
+		src/nmea0183/latlong.cpp
+		src/nmea0183/long.cpp
+		src/nmea0183/nmea0183.cpp
+		src/nmea0183/nmea0183.hpp
+		src/nmea0183/Response.hpp
+		src/nmea0183/response.cpp
+		src/nmea0183/RMB.hpp
+		src/nmea0183/rmb.cpp
+		src/nmea0183/Sentence.hpp
+		src/nmea0183/sentence.cpp
+		src/nmea0183/talkerid.cpp
+		src/nmea0183/RMC.HPP
+		src/nmea0183/rmc.cpp
+		src/nmea0183/hexvalue.cpp
+		src/nmea0183/lat.cpp
+		src/nmea0183/expid.cpp
+		src/nmea0183/wpl.hpp
+		src/nmea0183/wpl.cpp
+		src/nmea0183/rte.hpp
+		src/nmea0183/rte.cpp
+		src/nmea0183/hdt.hpp
+		src/nmea0183/hdt.cpp
+		src/nmea0183/hdg.hpp
+		src/nmea0183/hdg.cpp
+		src/nmea0183/hdm.hpp
+		src/nmea0183/hdm.cpp
+		src/nmea0183/gll.hpp
+		src/nmea0183/gll.cpp
+		src/nmea0183/vtg.hpp
+		src/nmea0183/vtg.cpp
+		src/nmea0183/gga.hpp
+		src/nmea0183/gga.cpp
+		src/nmea0183/gsv.hpp
+		src/nmea0183/gsv.cpp
 	)
 INCLUDE_DIRECTORIES(nmea0183)
 
