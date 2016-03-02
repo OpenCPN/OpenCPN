@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -50,12 +50,13 @@
 #include "wx/string.h"
 #include "wx/list.h"
 #include "wx/arrstr.h"
+#include <wx/math.h>
 
 /*
 ** Turn off the warning about precompiled headers, it is rather annoying
 */
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #pragma warning( disable : 4699 )
 #endif
 
