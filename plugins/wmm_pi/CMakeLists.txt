@@ -16,8 +16,16 @@ SET(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "1")
+SET(VERSION_PATCH "1")
+SET(VERSION_DATE "01/03/2016")
 
-#SET(CMAKE_BUILD_TYPE Debug)
+IF( NOT CMAKE_BUILD_TYPE )
+  SET( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+       FORCE )
+ENDIF( NOT CMAKE_BUILD_TYPE )
+
+MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 INCLUDE("cmake/PluginConfigure.cmake")
 
