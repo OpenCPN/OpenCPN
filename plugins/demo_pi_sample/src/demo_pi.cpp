@@ -33,9 +33,8 @@
 
 #include <wx/aui/aui.h>
 
-#include "wxWTranslationCatalog.h"
 #include "demo_pi.h"
-
+#include "wxWTranslateCatalog.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
 
