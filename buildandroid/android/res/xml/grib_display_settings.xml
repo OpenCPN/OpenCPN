@@ -25,6 +25,7 @@
         android:title="Wind Barb Arrow Spacing"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
+        android:defaultValue="false"
         />
 
 
@@ -54,6 +55,7 @@
         android:title="Wind Speed Value Spacing"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
+        android:defaultValue="false"
         />
 
     <org.opencpn.opencpn.SeekBarPreference
@@ -89,7 +91,7 @@
         android:key="grib_prefs_WindOverlayMapColors"
         android:defaultValue="0"
         android:entries="@array/GRIBwindSpeedOverlayColors"
-        android:entryValues="@array/GRIBwindSpeedOverlayColors" />
+        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
 
     <CheckBoxPreference
         android:key="grib_prefb_WindParticles"

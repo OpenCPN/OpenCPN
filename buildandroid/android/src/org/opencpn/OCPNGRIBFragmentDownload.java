@@ -88,6 +88,9 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceActivity;
 import android.preference.ListPreference;
 import android.preference.PreferenceManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 
 import android.content.SharedPreferences;
 
@@ -104,13 +107,13 @@ import android.widget.TextView;
 
 public class OCPNGRIBFragmentDownload extends PreferenceFragment {
 
-    public static final String KEY_NAVMODE_LIST_PREFERENCE = "prefs_navmode";
-    //private static OCPNSettingsFragmentDisplay m_frag;
-    public ListPreference mNavmodeListPreference;
     public OnDownloadButtonSelectedListener mListener;
     public SharedPreferences.OnSharedPreferenceChangeListener m_listener;
 
-    //public static OCPNSettingsFragmentDisplay getFragment(){ return m_frag; }
+    public ListPreference mGRIB_modelPreference;
+    public ListPreference mGRIB_TimestepPreference;
+    public ListPreference mGRIB_DaysPreference;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,16 +123,29 @@ public class OCPNGRIBFragmentDownload extends PreferenceFragment {
 
         //OCPNSettingsActivity act1 = (OCPNSettingsActivity)getActivity();
 
-        //m_frag = OCPNSettingsFragmentDisplay.this;
-
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.grib_download_settings);
 
-        // Get a reference to the NavMode preference
-         mNavmodeListPreference = (ListPreference)getPreferenceScreen().findPreference("prefs_navmode");
+        //  Set up inital values of "Summaries" fields
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-         // Set up a listener for key changes
+
+        mGRIB_modelPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_model");
+        mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+
+        mGRIB_TimestepPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_timestep");
+        String ts = "Set the time interval between forecasts";
+        String pts = mGRIB_TimestepPreference.getEntry().toString();
+        mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
+
+        mGRIB_DaysPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_days");
+        ts = "Set the number of days in GRIB";
+        pts = mGRIB_DaysPreference.getEntry().toString();
+        mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+
+
+          // Set up a listener for key changes
 
          m_listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -137,18 +153,28 @@ public class OCPNGRIBFragmentDownload extends PreferenceFragment {
              // listener implementation
 
              // Set new summary, when a preference value changes
-             if (key.equals(OCPNSettingsFragmentDisplay.KEY_NAVMODE_LIST_PREFERENCE)) {
-                 mNavmodeListPreference.setSummary(mNavmodeListPreference.getEntry().toString());
+             if (key.equals("GRIB_prefs_timestep")) {
+                 String ts = "Set the time interval between forecasts";
+                 String pts = mGRIB_TimestepPreference.getEntry().toString();
+                 mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
              }
 
-           }
+             if (key.equals("GRIB_prefs_days")) {
+                 String ts = "Set the number of days in GRIB";
+                 String pts = mGRIB_DaysPreference.getEntry().toString();
+                 mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+             }
+
+             if (key.equals("GRIB_prefs_model")) {
+                 mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+             }
+
+         }
          };
 
          getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listener);
 
 
-         // Setup some initial values
-//         mNavmodeListPreference.setSummary(mNavmodeListPreference.getEntry().toString());
 
 
 //        DialogSliderPreference a = (DialogSliderPreference)getPreferenceScreen().findPreference("prefs_UIScaleFactor");
@@ -172,12 +198,38 @@ public class OCPNGRIBFragmentDownload extends PreferenceFragment {
 
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+
                 mListener.onDownloadButtonClick();
             }
         });
 
         return v;
     }
+
+    private void ShowTextDialog(final String message){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+        builder1.setMessage(message);
+        builder1.setCancelable(false);
+        builder1.setNeutralButton("OK",
+        new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+//            if(!m_licenseOK)
+//                finish();
+            }
+        });
+   /*
+   builder1.setNegativeButton("No",
+   new DialogInterface.OnClickListener() {
+   public void onClick(DialogInterface dialog, int id) {
+   dialog.cancel();
+   }
+   });
+   */
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+   }
 
     @Override
     public void onAttach(Activity activity) {

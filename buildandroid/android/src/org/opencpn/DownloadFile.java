@@ -13,12 +13,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.TextView;
+import android.content.Intent;
+import android.net.NetworkInfo;
+import android.net.ConnectivityManager;
 
 public class DownloadFile extends Activity {
 
     //initialize our progress dialog/bar
     private ProgressDialog mProgressDialog;
     public static final int DIALOG_DOWNLOAD_PROGRESS = 0;
+    public static final int ERROR_NO_INTERNET = 1;
+    public static final int ERROR_NO_CONNECTION = 2;
+
+    public int m_result = RESULT_OK;
 
     //initialize root directory
     //File rootDir = Environment.getExternalStorageDirectory();
@@ -51,10 +58,35 @@ public class DownloadFile extends Activity {
             Log.i("GRIB DOWNLOAD", fileDownloaded);
 
 
-        Log.i("GRIB DOWNLOAD fileURL", fileURL);
+        Log.i("GRIB DOWNLOAD", fileURL);
 
+        if(!haveNetworkConnection()){
+            Intent i = getIntent(); //get the intent that called this activity
+            setResult(ERROR_NO_INTERNET, i);
+            finish();
+        }
+        else{
         //executing the asynctask
-        new DownloadFileAsync().execute(fileURL);
+            Log.i("GRIB DOWNLOAD", " new DFA");
+            new DownloadFileAsync().execute(fileURL);
+        }
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     //this is our download file asynctask
@@ -62,6 +94,7 @@ public class DownloadFile extends Activity {
 
         @Override
         protected void onPreExecute() {
+            Log.i("GRIB DOWNLOAD", "onPreExecute");
             super.onPreExecute();
             showDialog(DIALOG_DOWNLOAD_PROGRESS);
         }
@@ -70,14 +103,30 @@ public class DownloadFile extends Activity {
         @Override
         protected String doInBackground(String... aurl) {
 
+            HttpURLConnection c;
+            InputStream in;
+
             try {
                 //connecting to url
                 URL u = new URL(fileURL);
-                HttpURLConnection c = (HttpURLConnection) u.openConnection();
+                c = (HttpURLConnection) u.openConnection();
                 c.setRequestProperty("Accept-Encoding", "identity");
                 c.setRequestMethod("GET");
                 c.setDoOutput(true);
                 c.connect();
+
+                in = c.getInputStream();
+
+                } catch (Exception e) {
+                    Log.d("GRIB DOWNLOAD Exception", e.getMessage());
+                    m_result = ERROR_NO_CONNECTION;
+                    return null;
+                }
+
+            try {
+                int http_status = c.getResponseCode();
+                String statusMsg = String.format("Status: %d\n", http_status);
+                Log.i("GRIB DOWNLOAD", statusMsg);
 
                 //lenghtOfFile is used for calculating download progress
                 int lenghtOfFile = c.getContentLength();
@@ -92,24 +141,6 @@ public class DownloadFile extends Activity {
                 String fileDownloaded = nFile.getAbsolutePath();
 
                 FileOutputStream f = new FileOutputStream(nFile);
-
-                //file input is from the url
-                InputStream in = c.getInputStream();
-
- /*
-                int lenh = 0;
-
-                byte[] bufferh = new byte[1024];
-
-                lenh = in.read(bufferh, 0, 32);
-
-                while ((lenh = in.read(bufferh, 0, 32)) > 0) {
-                    String l = new String(bufferh, "ISO-8859-1");
-                    Log.i("GRIB", l);
-                    int yyp = 4;
-                }
-*/
-
 
 
                     //here’s the download code
@@ -126,13 +157,17 @@ public class DownloadFile extends Activity {
 
                 //  Rename the downloaded file to the passed parameter
 //                Log.d("GRIB DOWNLOAD","Rename: " + fileDownloaded + " to " + fileName);;
-
                 //File fi = new File(fileDownloaded);
                 //fi.renameTo(fileName);
 
+                m_result = RESULT_OK;
+
             } catch (Exception e) {
                 Log.d("GRIB DOWNLOAD Exception", e.getMessage());
+            } finally {
+              c.disconnect();
             }
+
 
             return null;
         }
@@ -144,8 +179,17 @@ public class DownloadFile extends Activity {
 
         @Override
         protected void onPostExecute(String unused) {
+            Log.i("GRIB DOWNLOAD", "onPostExecute");
+
             //dismiss the dialog after the file was downloaded
             dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+
+            Bundle b = new Bundle();
+//            b.putString("itemSelected", m_selected);
+            Intent i = getIntent(); //gets the intent that called this intent
+//            i.putExtras(b);
+            setResult(m_result, i);
+
             finish();
         }
     }

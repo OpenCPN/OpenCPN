@@ -52,6 +52,9 @@ import android.preference.PreferenceActivity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Environment;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 
 import ar.com.daidalos.afiledialog.*;
 
@@ -286,6 +289,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       Log.i("GRIB", "onActivityResult");
        // Check which request we're responding to
        if (requestCode == 0) {
            // Make sure the request was successful
@@ -317,6 +321,28 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
            }
        }
+
+       if (requestCode == 0xf3ec) {
+           Log.i("GRIB", "onActivityResult from Download");
+
+           // Make sure the request was successful
+           if (resultCode == RESULT_OK) {
+               ShowTextDialog("GRIB file downloaded OK");
+           }
+           else if(resultCode == DownloadFile.ERROR_NO_INTERNET){
+               ShowTextDialog("No Internet available\nPlease check your device's Mobile Data or WiFi settings.");
+           }
+           else if(resultCode == DownloadFile.ERROR_NO_CONNECTION){
+               ShowTextDialog("Connection Failed");
+           }
+           else {
+               ShowTextDialog("Download Failed\n  Please check logs.");
+           }
+       }
+
+
+
+
    }
 
    @Override
@@ -377,12 +403,12 @@ public class OCPNGRIBActivity extends PreferenceActivity
                String testS = "grib_prefs_" + page;
                if(entry.getKey().startsWith(testS, 0)){
                    String jsonkey = entry.getKey().substring(11);
-                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
+//                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getString( entry.getKey(), "?"));
                }
                if(entry.getKey().startsWith(testB, 0)){
                    String jsonkey = entry.getKey().substring(11);
-                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
+//                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getBoolean( entry.getKey(), true));
 
                }
@@ -433,10 +459,10 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 m_grib_PrefsJSON.put("time_step", preferences.getString("GRIB_prefs_timestep", "?"));
 
                 // Prepend the global "Download" directory to the file spec.
-                File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                File nFile = new File(rootDir.getAbsolutePath() , preferences.getString("GRIB_prefs_file", "?"));
+//                File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+//                File nFile = new File(rootDir.getAbsolutePath() , preferences.getString("GRIB_prefs_file", "?"));
 
-                m_grib_PrefsJSON.put("grib_file", nFile.getAbsolutePath());
+                m_grib_PrefsJSON.put("grib_file", preferences.getString("GRIB_dest_file", "?"));
 
                 //  GRIB Display Wind Fragment
 
@@ -579,9 +605,40 @@ public class OCPNGRIBActivity extends PreferenceActivity
         }
     };
 
+    private void ShowTextDialog(final String message){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage(message);
+        builder1.setCancelable(true);
+        builder1.setNeutralButton("OK",
+        new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+//            if(!m_licenseOK)
+//                finish();
+            }
+        });
+   /*
+   builder1.setNegativeButton("No",
+   new DialogInterface.OnClickListener() {
+   public void onClick(DialogInterface dialog, int id) {
+   dialog.cancel();
+   }
+   });
+   */
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+   }
+
     public void onDownloadButtonClick(){
-        String url = CreateDownloadURL();
-        Log.i("GRIB", "url: " + url);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String model = preferences.getString("GRIB_prefs_model", "GFS100");
+
+        if(model.startsWith("GFS", 0))
+            downloadGFSDirect();
+        else{
+            String url = CreateDownloadURL();
+//            Log.i("GRIB", "url: " + url);
 
 /*
         //  Create the destination file name
@@ -598,28 +655,28 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 + ".grb2";
 */
 
-        Time t = new Time(Time.getCurrentTimezone());
-        t.setToNow();
-        String formattedTime = t.format("%Y%m%d_%H%M%S");
+            Time t = new Time(Time.getCurrentTimezone());
+            t.setToNow();
+            String formattedTime = t.format("%Y%m%d_%H%M%S");
 
-        String dest_file = "gfs_" + formattedTime + ".grb2";
-        Log.i("GRIB", "dest_file: " + dest_file);
+            String tdest_file = "gribs/gfs_" + formattedTime + ".grb2";
+            File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
+            String dest_file = tdFile.getAbsolutePath();
 
-        // persist the target file name
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Editor editor = preferences.edit();
-        editor.putString("GRIB_prefs_file", dest_file);
-        editor.apply();
+            Log.i("GRIB", "dest_file: " + dest_file);
 
-
-        Intent intent = new Intent(this, org.opencpn.DownloadFile.class);
-        intent.putExtra("URL",url);
-        intent.putExtra("FILE_NAME",dest_file);
-        startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
+            // persist the target file name
+            Editor editor = preferences.edit();
+            editor.putString("GRIB_dest_file", dest_file);
+            editor.apply();
 
 
-
-        finish();
+            Intent intent = new Intent(this, org.opencpn.DownloadFile.class);
+            intent.putExtra("URL",url);
+            intent.putExtra("FILE_NAME",dest_file);
+            startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
+        }
 
     }
 
@@ -747,6 +804,194 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
         return url;
     }
+
+    private String downloadGFSDirect(){
+
+
+        //  Get some parameters from the Preferences.
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String model = preferences.getString("GRIB_prefs_model", "GFS100");
+        int time_step = Integer.parseInt(preferences.getString("GRIB_prefs_timestep", "3"));
+        int days = Integer.parseInt(preferences.getString("GRIB_prefs_days", "2"));
+        Boolean bWind = preferences.getBoolean("GRIB_prefb_wind", true);
+        Boolean bPressure = preferences.getBoolean("GRIB_prefb_pressure", true);
+
+        int lat_min = 0;
+        int lat_max = 1;
+        int lon_min = 0;
+        int lon_max = 1;
+        String serverBase = "";
+
+        //  Get some parameters from the JSON
+        if(null != m_grib_PrefsJSON) {
+
+            try {
+                if (m_grib_PrefsJSON.has("latMin")) {
+                    lat_min = m_grib_PrefsJSON.getInt("latMin");
+                }
+                if (m_grib_PrefsJSON.has("latMax")) {
+                    lat_max = m_grib_PrefsJSON.getInt("latMax");
+                }
+                if (m_grib_PrefsJSON.has("lonMin")) {
+                    lon_min = m_grib_PrefsJSON.getInt("lonMin");
+                }
+                if (m_grib_PrefsJSON.has("lonMax")) {
+                    lon_max = m_grib_PrefsJSON.getInt("lonMax");
+                }
+
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        Time tm = new Time(Time.getCurrentTimezone());
+        tm.setToNow();
+        tm.switchTimezone("UTC");
+        String startTime = tm.format("%Y%m%d");
+        int tHours = tm.hour;
+        int hour6 = (tHours / 6) * 6;
+
+        //  GFS forceast are late, sometimes, and UTC0000 forecast is not present yet
+        //  So get the 1800 for previous day.
+        if(hour6 == 0){
+            Time tp = new Time(Time.getCurrentTimezone());
+            tp.setToNow();
+            tp.switchTimezone("UTC");
+            if(tm.monthDay > 1)
+                tp.set(tm.monthDay-1, tm.month, tm.year);
+            else
+                tp.set(29, tm.month-1, tm.year);
+
+            startTime = tp.format("%Y%m%d");
+
+            hour6 = 18;
+        }
+
+        startTime = startTime.concat(String.format("%02d", hour6));
+        String T0 = startTime.substring( startTime.length()-2, startTime.length());
+
+        int loop_count = (days * 24) / time_step;
+//        String msga = String.format( "%d %d %d\n", days, time_step, loop_count);
+//        Log.i("GRIB", msga);
+
+
+        Time tn = new Time(Time.getCurrentTimezone());
+        tn.setToNow();
+        String formattedTime = tn.format("%Y%m%d_%H%M%S");
+
+        String tdest_file = "gribs/gfs_" + formattedTime + ".grb2";
+        File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
+        String dest_file = tdFile.getAbsolutePath();
+
+        Log.i("GRIB", "dest_file: " + dest_file);
+
+        // persist the target file name
+        Editor editor = preferences.edit();
+        editor.putString("GRIB_dest_file", dest_file);
+        editor.apply();
+
+        String gfsFilter = "";
+        if(model == "GFS25")
+            gfsFilter = "0p25.";
+        else if(model == "GFS50")
+            gfsFilter = "0p50.";
+        else
+            gfsFilter = "1p00.";
+
+
+        String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilter + "pl?";
+        String level = "lev_10_m_above_ground=on";
+        String DIR = "%2Fgfs." + startTime;
+        String fileSaveName = "gribs/";  // + $_SERVER['REQUEST_TIME'] .$_SERVER['REMOTE_ADDR'];
+
+
+        ArrayList<String> URLList = new ArrayList<String>();
+        ArrayList<String> fileNameList = new ArrayList<String>();
+
+        int t=0;
+        // in a loop, get the files
+        for(int x=0 ; x < loop_count ; x++){
+            String time = String.format("f%03d", t);
+            String fileName = "file=gfs.t" + T0 + "z.pgrb2." + gfsFilter + time;  //file=gfs.t18z.pgrb2.0p25.f000
+
+
+            //  Make the required URL
+            String URL_FETCH = URL_GETGFS + fileName + "&" + level + "&var_UGRD=on&var_VGRD=on" + "&subregion="
+                + "&leftlon=" + String.format("%d", lon_min)
+                + "&rightlon=" + String.format("%d", lon_max)
+                + "&toplat=" + String.format("%d", lat_max)
+                + "&bottomlat=" + String.format("%d", lat_min)
+                + "&dir=" + DIR;
+
+            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
+
+            // Make the server local storage file name
+            String sequence = String.format("SEQ%02d", t);
+            String localFileName = fileSaveName + sequence;
+            File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File dFile = new File(rootDir.getAbsolutePath() , localFileName);
+            String fullFileName = dFile.getAbsolutePath();
+
+            Log.i("GRIB", "localFileName: " + fullFileName);
+
+            URLList.add(URL_FETCH);
+            fileNameList.add(fullFileName);
+
+            t += time_step;
+
+        }
+
+        Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
+        intent.putExtra("URLList",URLList);
+        intent.putExtra("fileNameList",fileNameList);
+
+        intent.putExtra("GRIB_dest_file",dest_file);
+        startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
+
+
+/*
+        $t = 0;
+         for ($x = 0; $x < $loop_count; $x++) {
+
+             $TIME = sprintf("f%03d", $t);
+
+             $FILE_NAME = "file=gfs.t" . $T0 . "z.pgrb2." . $gfs_filter . $TIME;  //file=gfs.t18z.pgrb2.0p25.f000
+
+             $t += $_GET['time_step'];
+
+             //  Make the required URL
+             $URL_FETCH = $URL_GETGFS . $FILE_NAME . "&" . $LEVEL . "&var_UGRD=on&var_VGRD=on" . "&subregion="
+                 . "&leftlon=" . $LEFT_LON
+                 . "&rightlon=" . $RIGHT_LON
+                 . "&toplat=" . $TOP_LAT
+                 . "&bottomlat=" . $BOTTOM_LAT
+                 . "&dir=" . $DIR;
+
+
+#                echo $URL_FETCH . "<br>";
+
+             // Make the server local storage file name
+             $SEQ = sprintf("SEQ%02d", $x);
+             $localFileName = $fileSaveName.$SEQ;
+             #echo $localFileName . "<br>";
+
+             //  Get the file
+             get_grib( $URL_FETCH, $localFileName);
+
+             #usleep(200000);         // sleep 0.2 secs.
+
+#                echo "<br>";
+
+         }
+*/
+
+
+        return "OK";
+    }
+
+
 }
 
 
