@@ -5370,8 +5370,16 @@ int MyFrame::DoOptionsDialog()
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->DisableTooltips();
 
+    #ifdef __OCPN__ANDROID__
+    androidEnableBackButton( false );
+    #endif
+        
     int rr = g_options->ShowModal();
 
+    #ifdef __OCPN__ANDROID__
+    androidEnableBackButton( true );
+    #endif
+    
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->EnableTooltips();
 
