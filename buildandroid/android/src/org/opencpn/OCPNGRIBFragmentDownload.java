@@ -140,7 +140,7 @@ public class OCPNGRIBFragmentDownload extends PreferenceFragment {
         mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
 
         mGRIB_DaysPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_days");
-        ts = "Set the number of days in GRIB";
+        ts = "Set the number of days in forecast";
         pts = mGRIB_DaysPreference.getEntry().toString();
         mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
 
@@ -160,7 +160,7 @@ public class OCPNGRIBFragmentDownload extends PreferenceFragment {
              }
 
              if (key.equals("GRIB_prefs_days")) {
-                 String ts = "Set the number of days in GRIB";
+                 String ts = "Set the number of days in forecast";
                  String pts = mGRIB_DaysPreference.getEntry().toString();
                  mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
              }

@@ -529,6 +529,9 @@ public class OCPNGRIBActivity extends PreferenceActivity
         public org.opencpn.opencpn.SeekBarPreference mBarbNumberSpacingPixels;
         public SwitchPreference m_BarbSpacingCustom;
         public SwitchPreference m_BarbNumberSpacingCustom;
+        public ListPreference m_ArrowcolorsPreference;
+        public ListPreference m_ValueUnitsPreference;
+        public ListPreference m_OverlaycolorsPreference;
 
         public SharedPreferences.OnSharedPreferenceChangeListener m_listenerVector;
 
@@ -544,26 +547,47 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
             //  Set up listeners for a few items, so that the "summaries" will update properly
 
-            m_BarbSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_pref_windbarb_spacing_fixed_min");
-            m_BarbNumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_pref_windbarb_numbers_spacing_fixed_min");
+            m_BarbSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_WindBarbedArrowFixedSpacing");
+            mBarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_WindBarbedArrowSpacing");
 
+            m_BarbNumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_WindNumbersFixedSpacing");
+            mBarbNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_WindNumbersSpacing");
+
+            m_ArrowcolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindBarbedColors");
+            m_ArrowcolorsPreference.setSummary(m_ArrowcolorsPreference.getEntry().toString());
+
+            m_ValueUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindUnits");
+            m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
+
+            m_OverlaycolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindOverlayMapColors");
+            m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
 
             m_listenerVector = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     // listener implementation
                     // Set new summary, when a preference value changes
 
-                    if (key.equals("grib_pref_windbarb_spacing_fixed_min")) {
-                        mBarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_pref_windbarb_spacing_value");
+                    if (key.equals("grib_prefb_WindBarbedArrowFixedSpacing")) {
                         if (null != mBarbSpacingPixels) {
+                            Log.i("GRIB", "key equals");
                             mBarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
                         }
                     }
-                    if (key.equals("grib_pref_windbarb_numbers_spacing_fixed_min")) {
-                        mBarbNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_pref_windbarb_numbers_spacing_value");
+                    if (key.equals("grib_prefb_WindNumbersFixedSpacing")) {
                         if (null != mBarbNumberSpacingPixels) {
                             mBarbNumberSpacingPixels.setEnabled(m_BarbNumberSpacingCustom.isChecked());
                         }
+                    }
+                    if (key.equals("grib_prefs_WindBarbedColors")) {
+                        m_ArrowcolorsPreference.setSummary(m_ArrowcolorsPreference.getEntry().toString());
+                    }
+
+                    if (key.equals("grib_prefs_WindUnits")) {
+                        m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
+                    }
+
+                    if (key.equals("grib_prefs_WindOverlayMapColors")) {
+                        m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
                     }
 
                 }
@@ -574,6 +598,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
             // Setup initial values, checking for undefined as yet.
 
+            /*
             mBarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_pref_windbarb_spacing_value");
             if (null != mBarbSpacingPixels) {
                 mBarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
@@ -583,7 +608,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
             if (null != mBarbNumberSpacingPixels) {
                 mBarbNumberSpacingPixels.setEnabled(m_BarbNumberSpacingCustom.isChecked());
             }
-
+*/
 
 
 
