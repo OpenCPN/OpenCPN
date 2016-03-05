@@ -1711,8 +1711,14 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
                             }
                         }
                         break;
-                     }
 
+                    case GRB_PRMSL:            // Seen in NOAA_GFS GRIBV2, we masquerade as "PRESSURE"
+                        idx = Idx_PRESSURE;
+                        break;
+                        
+                    }
+
+                            
                     if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
                         if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
