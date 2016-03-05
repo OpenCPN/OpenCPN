@@ -937,6 +937,8 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
             hour6 = 18;
         }
+        else
+            hour6 -= 6;
 
         startTime = startTime.concat(String.format("%02d", hour6));
         String T0 = startTime.substring( startTime.length()-2, startTime.length());
@@ -1003,7 +1005,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 + "&bottomlat=" + String.format("%d", lat_min)
                 + "&dir=" + DIR;
 
-            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
+//            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
 
             // Make the server local storage file name
             String sequence = String.format("SEQ%02d", t);
@@ -1012,7 +1014,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-            Log.i("GRIB", "localFileName: " + fullFileName);
+//            Log.i("GRIB", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);
