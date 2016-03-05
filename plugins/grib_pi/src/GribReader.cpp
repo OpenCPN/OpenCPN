@@ -228,6 +228,9 @@ void GribReader::readAllGribRecords()
                             (rec->getDataType()==GRB_PRESSURE
                             && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
 
+                            || (rec->getDataType()==GRB_PRESSURE
+                            && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
+                            
                             || ( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
                             && rec->getLevelType()==LV_ABOV_GND
                             && rec->getLevelValue()==10)
@@ -309,7 +312,7 @@ void GribReader::readAllGribRecords()
 
                         else
                         {
-#if 0
+#if 1
                               printf(
                                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
                                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
