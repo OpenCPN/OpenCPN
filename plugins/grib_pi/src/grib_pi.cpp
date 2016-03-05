@@ -482,6 +482,11 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     if( m_pGribCtrlBar->pReq_Dialog )
         m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
     if( ::wxIsBusy() ) ::wxEndBusyCursor();
+    
+    #ifdef __OCPN__ANDROID__
+    m_pGribCtrlBar->Raise();    // Control bar should always be visible
+    #endif
+    
     return true;
 }
 
