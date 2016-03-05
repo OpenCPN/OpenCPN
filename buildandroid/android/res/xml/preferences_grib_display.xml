@@ -7,4 +7,11 @@
         android:summary="Set Wind Display Options">
     </PreferenceScreen>
 
+    <PreferenceScreen
+        android:key="grib_pref_pressure"
+        android:fragment="org.opencpn.OCPNGRIBActivity$GRIBPressureSettings"
+        android:title="Pressure"
+        android:summary="Set Pressure Display Options">
+    </PreferenceScreen>
+
  </PreferenceScreen>

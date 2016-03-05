@@ -403,12 +403,12 @@ public class OCPNGRIBActivity extends PreferenceActivity
                String testS = "grib_prefs_" + page;
                if(entry.getKey().startsWith(testS, 0)){
                    String jsonkey = entry.getKey().substring(11);
-//                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
+                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getString( entry.getKey(), "?"));
                }
                if(entry.getKey().startsWith(testB, 0)){
                    String jsonkey = entry.getKey().substring(11);
-//                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
+                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getBoolean( entry.getKey(), true));
 
                }
@@ -426,11 +426,14 @@ public class OCPNGRIBActivity extends PreferenceActivity
             Log.i("GRIB", "persisting");
 
             preferences.edit().clear();
-            PreferenceManager.setDefaultValues(this, R.xml.grib_display_settings, true);
+            PreferenceManager.setDefaultValues(this, R.xml.grib_wind_display_settings, true);
             Map<String,?> keys = preferences.getAll();
-
             JSONPersist(preferences, keys, "Wind");
 
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_pressure_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "Pressure");
 
             try {
 /*
@@ -543,7 +546,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
             Log.i("args", "Arguments: " + getArguments());
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_display_settings);
+            addPreferencesFromResource(R.xml.grib_wind_display_settings);
 
             //  Set up listeners for a few items, so that the "summaries" will update properly
 
@@ -596,20 +599,62 @@ public class OCPNGRIBActivity extends PreferenceActivity
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listenerVector);
 
 
-            // Setup initial values, checking for undefined as yet.
 
-            /*
-            mBarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_pref_windbarb_spacing_value");
-            if (null != mBarbSpacingPixels) {
-                mBarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
-            }
 
-            mBarbNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_pref_windbarb_numbers_spacing_value");
-            if (null != mBarbNumberSpacingPixels) {
-                mBarbNumberSpacingPixels.setEnabled(m_BarbNumberSpacingCustom.isChecked());
-            }
-*/
+        }
+    }
 
+
+    public static class GRIBPressureSettings extends PreferenceFragment {
+
+        public org.opencpn.opencpn.SeekBarPreference mPressureNumberSpacingPixels;
+        public SwitchPreference m_PressureNumberSpacingCustom;
+        public ListPreference m_PressureUnitsPreference;
+
+
+        public SharedPreferences.OnSharedPreferenceChangeListener m_listenerVector;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Can retrieve arguments from preference XML.
+//            Log.i("args", "Arguments: " + getArguments());
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_pressure_display_settings);
+
+            //  Set up listeners for a few items, so that the "summaries" will update properly
+
+
+            m_PressureNumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_PressureNumbersFixedSpacing");
+            mPressureNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_PressureNumbersSpacing");
+            mPressureNumberSpacingPixels.setEnabled(m_PressureNumberSpacingCustom.isChecked());
+
+            m_PressureUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_PressureUnits");
+            if(null != m_PressureUnitsPreference)
+                m_PressureUnitsPreference.setSummary(m_PressureUnitsPreference.getEntry().toString());
+
+            m_listenerVector = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    // listener implementation
+                    // Set new summary, when a preference value changes
+
+                    if (key.equals("grib_prefb_PressureNumbersFixedSpacing")) {
+                        if (null != mPressureNumberSpacingPixels)
+                            mPressureNumberSpacingPixels.setEnabled(m_PressureNumberSpacingCustom.isChecked());
+                    }
+
+                    if (key.equals("grib_prefs_PressureUnits")) {
+                        if(null != m_PressureUnitsPreference)
+                            m_PressureUnitsPreference.setSummary(m_PressureUnitsPreference.getEntry().toString());
+                    }
+
+
+                }
+            };
+
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listenerVector);
 
 
         }
@@ -943,7 +988,15 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
 
             //  Make the required URL
-            String URL_FETCH = URL_GETGFS + fileName + "&" + level + "&var_UGRD=on&var_VGRD=on" + "&subregion="
+            String URL_FETCH = URL_GETGFS + fileName;
+            if(bWind){
+                URL_FETCH += "&lev_10_m_above_ground=on&var_UGRD=on&var_VGRD=on";
+            }
+            if(bPressure){
+                URL_FETCH += "&lev_surface=on&var_PRES=on";
+            }
+
+            URL_FETCH +="&subregion="
                 + "&leftlon=" + String.format("%d", lon_min)
                 + "&rightlon=" + String.format("%d", lon_max)
                 + "&toplat=" + String.format("%d", lat_max)

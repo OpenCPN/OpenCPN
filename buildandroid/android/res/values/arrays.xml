@@ -115,4 +115,12 @@
         <item>2</item>
     </string-array>
 
+
+    <string-array name="GRIBPressureNumbersUnits" >
+        <item>milliBars</item>
+        <item>mmHG</item>
+        <item>inHG</item>
+    </string-array>
+
+
 </resources>

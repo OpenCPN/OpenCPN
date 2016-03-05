@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_PressureNumbers"
+        android:title="Show Pressure Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Pressure Value Units"
+        android:key="grib_prefs_PressureUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBPressureNumbersUnits"
+        android:entryValues="@array/GRIBPressureNumbersUnits" />
+
+    <SwitchPreference
+        android:key="grib_prefb_PressureNumbersFixedSpacing"
+        android:title="Pressure Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_PressureNumbersSpacing"
+        android:title="Pressure Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_PressureDisplayIsobars"
+        android:title="Show Isobars"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_PressureIsoBarSpacing"
+        android:title="Pressure Isotach Spacing (hPa)"
+        android:summary=""
+        android:defaultValue="10"
+        android:max="50"
+        />
+
+
+
+</PreferenceScreen>
+
