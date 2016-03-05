@@ -830,6 +830,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         case 3: // dataCat
             switch (dataNum) {
             case 0: ret = GRB_PRESSURE; break; //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
+            case 1: ret = GRB_PRESSURE; break; // PRSMSL //DATA_TO_GRBV2[DATA_PRESSURE] = grb2DataType(0,3,0);
             case 5: ret = GRB_GEOPOT_HGT; break; // DATA_TO_GRBV2[DATA_GEOPOT_HGT]= grb2DataType(0,3,5);
             }
             break;
