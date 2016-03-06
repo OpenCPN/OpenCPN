@@ -220,9 +220,17 @@ static const int windArrowSize = 26;   //set arrow size
 GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     : m_dlg(dlg), m_Settings(dlg.m_OverlaySettings)
 {
+
+#ifdef __WXQT__
+    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    m_dFont_war = new wxFont( fo );
+    m_dFont_map = new wxFont( fo );
+#else
     m_dFont_map = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     m_dFont_war = new wxFont( 16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-
+    
+#endif    
+    
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
@@ -413,7 +421,11 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 
     // setup numbers texture if needed
     if(!m_pdc) {
+        #ifdef __WXQT__
+        wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+        #else
         wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        #endif
         m_TexFontNumbers.Build(font);
     }
 
