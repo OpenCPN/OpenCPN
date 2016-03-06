@@ -922,7 +922,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
         int tHours = tm.hour;
         int hour6 = (tHours / 6) * 6;
 
-        //  GFS forceast are late, sometimes, and UTC0000 forecast is not present yet
+        //  GFS forcasts are late, sometimes, and UTC0000 forecast is not present yet
         //  So get the 1800 for previous day.
         if(hour6 == 0){
             Time tp = new Time(Time.getCurrentTimezone());
@@ -995,7 +995,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 URL_FETCH += "&lev_10_m_above_ground=on&var_UGRD=on&var_VGRD=on";
             }
             if(bPressure){
-                URL_FETCH += "&lev_surface=on&var_PRES=on";
+                URL_FETCH += "&lev_mean_sea_level=on&var_PRMSL=on";
             }
 
             URL_FETCH +="&subregion="
@@ -1023,11 +1023,35 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
         }
 
+        //  Calculate estimate block size
+        double nBlock = (lat_max - lat_min) * (lon_max - lon_min);
+        double factor = 1.0;
+        if(model == "GFS25")
+            factor = 16;;
+        if(model == "GFS50")
+            factor = 4;
+
+        nBlock *= factor;
+        int nParam = 0;
+        nParam = 0;
+        if(bWind)
+            nParam += 2;
+        if(bPressure)
+            nParam ++;
+
+        nBlock *= nParam;
+        int niBlock = (int)nBlock;
+
+        String bmsg = String.format("%d\n", niBlock);
+        Log.i("GRIB", "nBlock: " + bmsg);
+
+
         Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
         intent.putExtra("URLList",URLList);
         intent.putExtra("fileNameList",fileNameList);
 
         intent.putExtra("GRIB_dest_file",dest_file);
+        intent.putExtra("niBlock",niBlock);
         startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
 
 

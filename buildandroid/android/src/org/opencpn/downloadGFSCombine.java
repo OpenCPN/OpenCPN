@@ -34,6 +34,7 @@ public class downloadGFSCombine extends Activity {
     public ArrayList<String> fileNameList;
 
     private static final int BUFFER_SIZE = 1024;
+    public int nBlock;
 
     //initialize root directory
     //File rootDir = Environment.getExternalStorageDirectory();
@@ -61,6 +62,7 @@ public class downloadGFSCombine extends Activity {
 //        fileURL = extras.getString("URL");
         URLList = getIntent().getStringArrayListExtra("URLList");
         fileNameList = getIntent().getStringArrayListExtra("fileNameList");
+        nBlock = extras.getInt("niBlock");
 
         
 //        File dFile = new File(rootDir.getAbsolutePath() , fileName);
@@ -85,7 +87,7 @@ public class downloadGFSCombine extends Activity {
     }
 
     //this is our download file asynctask
-    class DownloadFileAsync extends AsyncTask<ArrayList<String>, String, String> {
+    class DownloadFileAsync extends AsyncTask<ArrayList<String>, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -101,11 +103,14 @@ public class downloadGFSCombine extends Activity {
 
           for (ArrayList<String> urlList : urls) {
 
+            long nAdjustedTotal = 1;
             for(int i=0 ; i < urlList.size() ; i++){
 
                 Log.d("GRIB DOWNLOAD",urlList.get(i));
                 Log.d("GRIB DOWNLOAD",fileNameList.get(i));
 
+                int nProgressChunk = 100/urlList.size();
+                int progressOffset = nProgressChunk * i;
 
                 HttpURLConnection c;
                 InputStream in;
@@ -154,14 +159,50 @@ public class downloadGFSCombine extends Activity {
                     byte[] buffer = new byte[1024];
                     int len1 = 0;
                     long total = 0;
-    
+                    boolean bGotLength = false;
+                    long lgt = 0;
+
                     while ((len1 = in.read(buffer)) > 0) {
-                        total += len1; //total = total + len1
-                        publishProgress("" + (int)((total*100)/lenghtOfFile));
+                        if(!bGotLength){
+                            int firstByte = (0x000000FF & ((int)buffer[12]));
+                            int secondByte = (0x000000FF & ((int)buffer[13]));
+                            int thirdByte = (0x000000FF & ((int)buffer[14]));
+                            int fourthByte = (0x000000FF & ((int)buffer[15]));
+                            lgt  = ((long) (firstByte << 24
+                                            | secondByte << 16
+                                            | thirdByte << 8
+                                            | fourthByte))
+                                           & 0xFFFFFFFFL;
+
+                            bGotLength = true;
+                            lenghtOfFile = (int)lgt;
+                         }
+
+                        //  After the first file is loaded, assume all following files are about the same size
+                        if(i > 0)
+                            lenghtOfFile = (int)nAdjustedTotal;
+
+                        total += len1;
+
+                        int prog = (int)((total * nProgressChunk)/lenghtOfFile);
+                        if(prog > nProgressChunk)
+                            prog = nProgressChunk;
+
+                        publishProgress(progressOffset + prog);
+                        String bmsg = String.format("%d / %d    %d %d\n", total, lenghtOfFile,  progressOffset, prog);
+                        Log.i("GRIB", "Pub: " + bmsg);
+
                         f.write(buffer, 0, len1);
                     }
+
+                    if(i == 0)
+                        nAdjustedTotal = total;
+
                     f.close();
     
+//                    String bmsg = String.format("%d %X %d %d\n", total, total, nBlock, lgt);
+//                    Log.i("GRIB", "nBlock Factors: " + bmsg);
+
                     //  Rename the downloaded file to the passed parameter
     //                Log.d("GRIB DOWNLOAD","Rename: " + fileDownloaded + " to " + fileName);;
                     //File fi = new File(fileDownloaded);
@@ -206,9 +247,10 @@ public class downloadGFSCombine extends Activity {
             return "OK";
         }
 
-        protected void onProgressUpdate(String... progress) {
-             Log.d("GRIB DOWNLOAD",progress[0]);
-             mProgressDialog.setProgress(Integer.parseInt(progress[0]));
+        protected void onProgressUpdate(Integer... progress) {
+             String msg = String.format("%d\n", progress[0]);
+             Log.d("GRIB DOWNLOAD Progress",msg);
+             mProgressDialog.setProgress(progress[0]);
         }
 
         @Override
