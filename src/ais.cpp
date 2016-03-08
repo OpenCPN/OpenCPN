@@ -1444,7 +1444,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if (g_bDrawAISSize && bcan_draw_size)
         {
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, 1.0 );
         }
 
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
