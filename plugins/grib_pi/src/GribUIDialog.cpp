@@ -1324,7 +1324,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     }
 
     wxFileDialog *dialog = new wxFileDialog(NULL, _("Select a GRIB file"), m_grib_dir,
-        _T(""), wxT ( "Grib files (*.grb;*.bz2)|*.grb;*.bz2|All files (*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
+        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.grib2;*.grb2)|*.grb;*.bz2;*.grib2;*.grb2|All files (*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
             , wxDefaultPosition, wxDefaultSize, _T("File Dialog") );
 
     if( dialog->ShowModal() == wxID_OK ) {
