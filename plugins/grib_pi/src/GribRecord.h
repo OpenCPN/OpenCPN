@@ -131,7 +131,8 @@ class GribRecord
 {
     public:
         GribRecord(const GribRecord &rec);
-        GribRecord() {}
+        GribRecord() { m_bfilled = false;}
+        
         virtual ~GribRecord();
   
   

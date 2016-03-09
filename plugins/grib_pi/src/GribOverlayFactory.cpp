@@ -1288,8 +1288,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         pGRA = pGRM;
     }
 
-    if(!pGRM->isFilled())
-        FillGrid(pGRM);
+    if(!pGRA->isFilled())
+        FillGrid(pGRA);
     
     
     wxPoint porg;
