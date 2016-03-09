@@ -216,6 +216,8 @@ class GribRecord
         const char* getStrRecordCurDate () const { return strCurDate; }
         void  setRecordCurrentDate (time_t t);
         void   print();
+        bool isFilled(){ return m_bfilled; }
+        void setFilled(bool val=true){ m_bfilled = val;}
 
     protected:
     //private:
@@ -235,6 +237,7 @@ class GribRecord
         char   strRefDate [32];
         char   strCurDate [32];
         int    dataCenterModel;
+        bool  m_bfilled;
 
         //---------------------------------------------
         // SECTION 0: THE INDICATOR SECTION (IS)

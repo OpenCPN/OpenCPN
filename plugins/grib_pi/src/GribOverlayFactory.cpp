@@ -1064,6 +1064,58 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
     }
 }
 
+void GRIBOverlayFactory::FillGrid(GribRecord *pGR)
+{
+    //    Get the the grid
+    int imax = pGR->getNi();                  // Longitude
+    int jmax = pGR->getNj();                  // Latitude
+    
+    
+    for( int i = 0; i < imax; i++ ) {
+        for( int j = 1; j < jmax-1; j++ ) {
+            if(pGR->getValue(i, j) == GRIB_NOTDEF){
+                double acc = 0;
+                double div = 0;
+                if(pGR->getValue(i, j-1) != GRIB_NOTDEF){
+                    acc += pGR->getValue(i, j-1);
+                    div += 1;
+                }
+                if(pGR->getValue(i, j+1) != GRIB_NOTDEF){
+                    acc += pGR->getValue(i, j+1);
+                    div += 1;
+                }
+                if(div > 1)
+                    pGR->setValue(i,j, acc / div);
+            }            
+        }
+    }
+
+    for( int j = 0; j < jmax; j++ ) {
+        for( int i = 1; i < imax-1; i++ ) {
+            if(pGR->getValue(i, j) == GRIB_NOTDEF){
+                double acc = 0;
+                double div = 0;
+                if(pGR->getValue(i-1, j) != GRIB_NOTDEF){
+                    acc += pGR->getValue(i-1, j);
+                    div += 1;
+                }
+                if(pGR->getValue(i+1, j) != GRIB_NOTDEF){
+                    acc += pGR->getValue(i+1, j);
+                    div += 1;
+                }
+                if(div > 1)
+                    pGR->setValue(i,j, acc / div);
+            }            
+        }
+    }
+    
+    pGR->setFilled(true);
+}
+
+
+
+
+
 void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **pGR,
                                                     PlugIn_ViewPort *vp )
 {
@@ -1083,6 +1135,11 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     if(!pGRX || !pGRY)
         return;
 
+    if(!pGRX->isFilled())
+        FillGrid(pGRX);
+    if(!pGRY->isFilled())
+        FillGrid(pGRY);
+    
     // Set arrows Size
     int arrowWidth = 2;
     int arrowSize, arrowSizeIdx = m_Settings.Settings[settings].m_iDirectionArrowSize;
@@ -1231,6 +1288,10 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         pGRA = pGRM;
     }
 
+    if(!pGRM->isFilled())
+        FillGrid(pGRM);
+    
+    
     wxPoint porg;
     GetCanvasPixLL( vp, &porg, pGRA->getLatMax(), pGRA->getLonMin() );
 
