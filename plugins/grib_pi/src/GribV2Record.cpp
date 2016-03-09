@@ -1293,6 +1293,11 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   }
   getBits(temp,&grib_msg->disc,48,8);
   getBits(temp,&grib_msg->ed_num,56,8);
+  
+  //  Bail out early if this is not GRIB2
+  if(grib_msg->ed_num != 2)
+      return false;
+  
   getBits(temp,&grib_msg->total_len,96,32);
 
   grib_msg->md.nx = grib_msg->md.ny = 0;
