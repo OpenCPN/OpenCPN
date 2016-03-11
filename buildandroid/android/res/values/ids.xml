@@ -3,4 +3,5 @@
      <item type="id" name="FragmentCharts" />
      <item type="id" name="buttonRemove" />
      <item type="id" name="listItem" />
+     <item type="id" name="FragmentGRIBfile" />
  </resources>

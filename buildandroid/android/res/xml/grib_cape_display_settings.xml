@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="grib_prefb_CAPENumbers"
+        android:title="Show CAPE Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="CAPE Value Units"
+        android:key="grib_prefs_CAPEUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbNumbersUnits"
+        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+
+    <SwitchPreference
+        android:key="grib_prefb_CAPENumbersFixedSpacing"
+        android:title="CAPE Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_CAPENumbersSpacing"
+        android:title="CAPE Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_CAPEDisplayIsobars"
+        android:title="Show Iso CAPE"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_CAPEIsoBarSpacing"
+        android:title="IsoCAPE Spacing (j/kg)"
+        android:summary=""
+        android:defaultValue="10"
+        android:max="50"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_CAPEOverlayMap"
+        android:title="Show CAPE Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="CAPE Overlay Colors"
+        android:key="grib_prefs_CAPEOverlayMapColors"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindSpeedOverlayColors"
+        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+
+
+
+
+</PreferenceScreen>
+

@@ -48,6 +48,11 @@
         <item>m/s</item>
     </string-array>
 
+    <string-array name="GRIBwindBarbNumbersUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="GRIBwindSpeedOverlayColors" >
         <item>Generic</item>
         <item>Wind</item>

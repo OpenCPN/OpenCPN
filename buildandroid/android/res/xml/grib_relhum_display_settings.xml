@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_RelativeHumidityNumbers"
+        android:title="Show Relative Humidity"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Relative Humidity Units"
+        android:key="grib_prefs_RelativeHumidityUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbNumbersUnits"
+        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+
+
+
+</PreferenceScreen>
+

@@ -5,8 +5,8 @@
         android:title="Download GRIB"
         android:summary="Set options and download GRIB directly" />
     <header
-        android:fragment="org.opencpn.OCPNSettingsFragmentCharts"
-        android:id="@id/FragmentCharts"
+        android:fragment="org.opencpn.OCPNGRIBFragmentFile"
+        android:id="@id/FragmentGRIBfile"
         android:title="GRIB File"
         android:summary="Select local GRIB file for display" />
     <header

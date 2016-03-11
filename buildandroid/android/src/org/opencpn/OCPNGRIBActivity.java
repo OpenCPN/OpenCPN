@@ -39,6 +39,7 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
+import android.preference.CheckBoxPreference;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -287,6 +288,23 @@ public class OCPNGRIBActivity extends PreferenceActivity
         cfrag.updateChartDirListView();
     }
 
+    public void selectFile()
+    {
+//        Toast.makeText(this, "OCPNsettingsactivity Add Dir ", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(OCPNGRIBActivity.this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, "/mnt/sdcard");
+        intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_ONLY_SELECTABLE, true);
+     //   startActivityForResult(intent, 0);
+
+        FileChooserDialog dialog = new FileChooserDialog(this);
+        dialog.setCanCreateFiles(false);
+        dialog.show();
+
+    }
+
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
        Log.i("GRIB", "onActivityResult");
@@ -370,6 +388,23 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
    }
 
+   public void onFileSelected(String filePath, OCPNGRIBFragmentFile frag){
+       String message = "File selected";
+       message += ": " + filePath;
+       Log.i("GRIB", message);
+
+       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+       SharedPreferences.Editor editor = preferences.edit();
+       editor.putString("GRIB_dest_file", filePath);
+       editor.apply();
+
+       //getFragmentManager().beginTransaction().remove(frag).commit();
+       getFragmentManager().popBackStackImmediate();
+
+       ShowTextDialog("Download Failed\n  Please check logs.");
+
+   }
+
 
 
 
@@ -378,7 +413,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
        Log.i("DEBUGGER_TAG", "GRIB Activity finish");
 
        String json = persistJSON();
-       //Log.i("GRIB", "persist json:" + json);
+       Log.i("GRIB", "persist json:" + json);
 
        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
        SharedPreferences.Editor editor = preferences.edit();
@@ -403,12 +438,12 @@ public class OCPNGRIBActivity extends PreferenceActivity
                String testS = "grib_prefs_" + page;
                if(entry.getKey().startsWith(testS, 0)){
                    String jsonkey = entry.getKey().substring(11);
-                   Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
+                   //Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getString( entry.getKey(), "?"));
                }
                if(entry.getKey().startsWith(testB, 0)){
                    String jsonkey = entry.getKey().substring(11);
-                   Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
+                   //Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
                    m_grib_PrefsJSON.put(jsonkey, prefs.getBoolean( entry.getKey(), true));
 
                }
@@ -527,7 +562,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
 
 
-    public static class GRIBWindSettings extends PreferenceFragment {
+    public static class junkGRIBWindSettings extends PreferenceFragment {
         public org.opencpn.opencpn.SeekBarPreference mBarbSpacingPixels;
         public org.opencpn.opencpn.SeekBarPreference mBarbNumberSpacingPixels;
         public SwitchPreference m_BarbSpacingCustom;
@@ -604,50 +639,291 @@ public class OCPNGRIBActivity extends PreferenceActivity
         }
     }
 
+    public static class GRIBWindSettings extends GRIBDisplayItemSettings {
 
-    public static class GRIBPressureSettings extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
 
-        public org.opencpn.opencpn.SeekBarPreference mPressureNumberSpacingPixels;
-        public SwitchPreference m_PressureNumberSpacingCustom;
-        public ListPreference m_PressureUnitsPreference;
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_wind_display_settings);
+            page = "Wind";
 
+            setListeners();
+        }
+
+    }
+
+
+    public static class GRIBPressureSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_pressure_display_settings);
+            page = "Pressure";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBGustSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_gust_display_settings);
+            page = "WindGust";
+
+            setListeners();
+        }
+
+    }
+
+
+    public static class GRIBWaveSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_wave_display_settings);
+            page = "Waves";
+
+            setListeners();
+        }
+
+    }
+
+
+    public static class GRIBCurrentSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_current_display_settings);
+            page = "Current";
+
+            setListeners();
+        }
+
+    }
+
+
+    public static class GRIBRainfallSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_rainfall_display_settings);
+            page = "Rainfall";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBCloudSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_cloud_display_settings);
+            page = "CloudCover";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBAirtempSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_airtemp_display_settings);
+            page = "AirTemperature";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBSeatempSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_seatemp_display_settings);
+            page = "SeaTemperature";
+
+            setListeners();
+        }
+
+    }
+
+
+    public static class GRIBCAPESettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_cape_display_settings);
+            page = "CAPE";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBAltGeoSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_altgeo_display_settings);
+            page = "Altitude";
+
+            setListeners();
+        }
+
+    }
+
+    public static class GRIBRelHumSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_relhum_display_settings);
+            page = "RelativeHumidity";
+
+            setListeners();
+        }
+
+    }
+
+
+
+
+
+
+    public static class GRIBDisplayItemSettings extends PreferenceFragment {
+
+        public SwitchPreference m_BarbSpacingCustom;
+        public org.opencpn.opencpn.SeekBarPreference m_BarbSpacingPixels;
+
+        public org.opencpn.opencpn.SeekBarPreference m_ArrowSpacingPixels;
+        public org.opencpn.opencpn.SeekBarPreference m_NumberSpacingPixels;
+        public SwitchPreference m_ArrowSpacingCustom;
+        public SwitchPreference m_NumberSpacingCustom;
+        public ListPreference m_ValueUnitsPreference;
+        public ListPreference m_OverlaycolorsPreference;
+        public CheckBoxPreference m_IsobarShow;
+        public org.opencpn.opencpn.SeekBarPreference m_IsobarDelta;
+        public ListPreference m_BarbcolorsPreference;
+
+        public String page = "";
 
         public SharedPreferences.OnSharedPreferenceChangeListener m_listenerVector;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        }
 
-            // Can retrieve arguments from preference XML.
-//            Log.i("args", "Arguments: " + getArguments());
+        public void setListeners(){
+            //  Set up initial "Summary" fields
 
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_pressure_display_settings);
+            m_BarbSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "BarbedArrowFixedSpacing");
+            m_BarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "BarbedArrowSpacing");
+            if(null != m_BarbSpacingPixels)
+                m_BarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
 
-            //  Set up listeners for a few items, so that the "summaries" will update properly
+            m_BarbcolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "BarbedColors");
+            if( (null != m_BarbcolorsPreference) && (null != m_BarbcolorsPreference.getEntry()))
+                m_BarbcolorsPreference.setSummary(m_BarbcolorsPreference.getEntry().toString());
 
+            m_NumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "NumbersFixedSpacing");
+            m_NumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "NumbersSpacing");
+            if(null != m_NumberSpacingPixels)
+                m_NumberSpacingPixels.setEnabled(m_NumberSpacingCustom.isChecked());
 
-            m_PressureNumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_PressureNumbersFixedSpacing");
-            mPressureNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_PressureNumbersSpacing");
-            mPressureNumberSpacingPixels.setEnabled(m_PressureNumberSpacingCustom.isChecked());
+            m_ArrowSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "DirectionArrowFixedSpacing");
+            m_ArrowSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "DirectionArrowSpacing");
+            if(null != m_ArrowSpacingPixels)
+                m_ArrowSpacingPixels.setEnabled(m_ArrowSpacingCustom.isChecked());
 
-            m_PressureUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_PressureUnits");
-            if(null != m_PressureUnitsPreference)
-                m_PressureUnitsPreference.setSummary(m_PressureUnitsPreference.getEntry().toString());
+            m_ValueUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "Units");
+            if( (null != m_ValueUnitsPreference) && (null != m_ValueUnitsPreference.getEntry()))
+                m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
+
+            m_OverlaycolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "OverlayMapColors");
+            if( (null != m_OverlaycolorsPreference) && (null != m_OverlaycolorsPreference.getEntry()))
+                m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
+
+            m_IsobarShow = (CheckBoxPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "DisplayIsobars");
+            m_IsobarDelta = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "IsoBarSpacing");
+            if(null != m_IsobarDelta)
+                m_IsobarDelta.setEnabled(m_IsobarShow.isChecked());
 
             m_listenerVector = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
                     // listener implementation
                     // Set new summary, when a preference value changes
 
-                    if (key.equals("grib_prefb_PressureNumbersFixedSpacing")) {
-                        if (null != mPressureNumberSpacingPixels)
-                            mPressureNumberSpacingPixels.setEnabled(m_PressureNumberSpacingCustom.isChecked());
+                    if (key.equals("grib_prefb_" + page + "BarbedArrowFixedSpacing")) {
+                        if (null != m_BarbSpacingPixels)
+                           m_BarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
+                    }
+                    else if (key.equals("grib_prefb_" + page + "DirectionArrowFixedSpacing")) {
+                        if (null != m_ArrowSpacingPixels)
+                           m_ArrowSpacingPixels.setEnabled(m_ArrowSpacingCustom.isChecked());
                     }
 
-                    if (key.equals("grib_prefs_PressureUnits")) {
-                        if(null != m_PressureUnitsPreference)
-                            m_PressureUnitsPreference.setSummary(m_PressureUnitsPreference.getEntry().toString());
+                    else if (key.equals("grib_prefb_" + page + "NumbersFixedSpacing")) {
+                        if (null != m_NumberSpacingPixels)
+                            m_NumberSpacingPixels.setEnabled(m_NumberSpacingCustom.isChecked());
+                    }
+                    else if (key.equals("grib_prefs_" + page + "Units")) {
+                        if (null != m_ValueUnitsPreference)
+                            m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
+                    }
+
+                    else if (key.equals("grib_prefs_" + page + "OverlayMapColors")) {
+                        if (null != m_OverlaycolorsPreference)
+                            m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
+                    }
+
+                    else if (key.equals("grib_prefs_" + page + "BarbedColors")) {
+                        if (null != m_BarbcolorsPreference)
+                            m_BarbcolorsPreference.setSummary(m_BarbcolorsPreference.getEntry().toString());
+                    }
+
+                    else if (key.equals("grib_prefb_" + page + "DisplayIsobars")) {
+                        if (null != m_IsobarDelta)
+                            m_IsobarDelta.setEnabled(m_IsobarShow.isChecked());
                     }
 
 
@@ -657,8 +933,16 @@ public class OCPNGRIBActivity extends PreferenceActivity
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listenerVector);
 
 
+
+
         }
     }
+
+
+
+
+
+
 
 
     public static String getSettingsString(){ return m_settings;}

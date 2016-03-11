@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WavesDirectionArrows"
+        android:title="Show Wave Direction Arrows"
+        android:summary=""
+        android:defaultValue="true" />
+
+    <SwitchPreference
+        android:key="grib_prefb_WavesDirectionArrowFixedSpacing"
+        android:title="Wave Arrow Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_WavesDirectionArrowSpacing"
+        android:title="Wave Direction Arrow Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WavesNumbers"
+        android:title="Show Wave Height Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wave Height Units"
+        android:key="grib_prefs_WavesUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbNumbersUnits"
+        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+
+    <SwitchPreference
+        android:key="grib_prefb_WavesNumbersFixedSpacing"
+        android:title="Wave Height Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_WavesNumbersSpacing"
+        android:title="Wave Height Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WavesOverlayMap"
+        android:title="Show Wave Height Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wave Height Overlay Colors"
+        android:key="grib_prefs_WavesOverlayMapColors"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindSpeedOverlayColors"
+        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+
+
+
+
+</PreferenceScreen>
+

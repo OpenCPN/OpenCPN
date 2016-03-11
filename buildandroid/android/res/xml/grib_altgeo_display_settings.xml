@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_AltitudeNumbers"
+        android:title="Show Geopotential Altitude"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Geopotential Altitude Units"
+        android:key="grib_prefs_AltitudeUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBwindBarbNumbersUnits"
+        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+
+
+
+</PreferenceScreen>
+
