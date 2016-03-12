@@ -465,9 +465,13 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     int j0 = (int) pj;
 
     unsigned int i1 = pi+1, j1 = pj+1;
-    if(i1 >= Ni)
-        i1 -= Ni;
 
+    if(i1 >= Ni)
+        i1 = i0;
+    
+    if(j1 >= Nj)
+        j1 = j0;
+    
     // distances to 00
     double dx = pi-i0;
     double dy = pj-j0;
