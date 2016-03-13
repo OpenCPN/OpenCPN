@@ -199,7 +199,8 @@ private:
     void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south=false);
 
     void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
-
+    void FillGrid(GribRecord *pGR);
+    
     wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);
 

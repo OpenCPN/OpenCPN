@@ -225,6 +225,8 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
 
+    ret->m_bfilled = false;
+    
     return ret;
 }
 
@@ -463,9 +465,13 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     int j0 = (int) pj;
 
     unsigned int i1 = pi+1, j1 = pj+1;
-    if(i1 >= Ni)
-        i1 -= Ni;
 
+    if(i1 >= Ni)
+        i1 = i0;
+    
+    if(j1 >= Nj)
+        j1 = j0;
+    
     // distances to 00
     double dx = pi-i0;
     double dy = pj-j0;
@@ -480,17 +486,31 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         return getValue(i0, j0);
     }
 
-    bool h00,h01,h10,h11;
-    int nbval = 0;     // how many values in grid ?
-    if ((h00=isDefined(i0, j0)))
-        nbval ++;
-    if ((h10=isDefined(i1, j0)))
-        nbval ++;
-    if ((h01=isDefined(i0, j1)))
-        nbval ++;
-    if ((h11=isDefined(i1, j1)))
-        nbval ++;
+//     bool h00,h01,h10,h11;
+//     int nbval = 0;     // how many values in grid ?
+//     if ((h00=isDefined(i0, j0)))
+//         nbval ++;
+//     if ((h10=isDefined(i1, j0)))
+//         nbval ++;
+//     if ((h01=isDefined(i0, j1)))
+//         nbval ++;
+//     if ((h11=isDefined(i1, j1)))
+//         nbval ++;
 
+    int nbval = 0;     // how many values in grid ?
+    if (getValue(i0, j0) != GRIB_NOTDEF)
+        nbval ++;
+    if (getValue(i1, j0) != GRIB_NOTDEF)
+        nbval ++;
+    if (getValue(i0, j1) != GRIB_NOTDEF)
+        nbval ++;
+    if (getValue(i1, j1) != GRIB_NOTDEF)
+        nbval ++;
+    
+    
+    
+    
+    
     if (nbval < 3)
         return GRIB_NOTDEF;
 
@@ -524,7 +544,7 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
 	if( dir ) return GRIB_NOTDEF;
 
     // here nbval==3, check the corner without data
-    if (!h00) {
+    if (getValue(i0, j0) == GRIB_NOTDEF) {
         //printf("! h00  %f %f\n", dx,dy);
         xa = getValue(i1, j1);   // A = point 11
         xb = getValue(i0, j1);   // B = point 01
@@ -532,7 +552,7 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         kx = 1-dx;
         ky = 1-dy;
     }
-    else if (!h01) {
+    else if (getValue(i0, j1) == GRIB_NOTDEF) {
         //printf("! h01  %f %f\n", dx,dy);
         xa = getValue(i1, j0);     // A = point 10
         xb = getValue(i1, j1);   // B = point 11
@@ -540,7 +560,7 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         kx = dy;
         ky = 1-dx;
     }
-    else if (!h10) {
+    else if (getValue(i1, j0) == GRIB_NOTDEF) {
         //printf("! h10  %f %f\n", dx,dy);
         xa = getValue(i0, j1);     // A = point 01
         xb = getValue(i0, j0);       // B = point 00
@@ -629,16 +649,26 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
         return true;
     }
 
-    bool h00,h01,h10,h11;
-    int nbval = 0;     // how many values in grid ?
-    if ((h00=GRX->isDefined(i0, j0) && GRX->isDefined(i0, j0)))
-        nbval ++;
-    if ((h10=GRX->isDefined(i1, j0) && GRY->isDefined(i1, j0)))
-        nbval ++;
-    if ((h01=GRX->isDefined(i0, j1) && GRY->isDefined(i0, j1)))
-        nbval ++;
-    if ((h11=GRX->isDefined(i1, j1) && GRY->isDefined(i1, j1)))
-        nbval ++;
+//     bool h00,h01,h10,h11;
+//     int nbval = 0;     // how many values in grid ?
+//     if ((h00=GRX->isDefined(i0, j0) && GRX->isDefined(i0, j0)))
+//         nbval ++;
+//     if ((h10=GRX->isDefined(i1, j0) && GRY->isDefined(i1, j0)))
+//         nbval ++;
+//     if ((h01=GRX->isDefined(i0, j1) && GRY->isDefined(i0, j1)))
+//         nbval ++;
+//     if ((h11=GRX->isDefined(i1, j1) && GRY->isDefined(i1, j1)))
+//         nbval ++;
+
+     int nbval = 0;     // how many values in grid ?
+     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRY->getValue(i1, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRY->getValue(i0, j1) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRY->getValue(i1, j1) != GRIB_NOTDEF)
+         nbval ++;
 
     if (nbval < 3)
         return false;

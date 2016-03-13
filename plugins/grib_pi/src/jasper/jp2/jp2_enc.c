@@ -109,7 +109,8 @@ int pos;
 int needcdef;
 int prec;
 int sgnd;
-
+        jas_cmprof_t *prof;
+        
 	box = 0;
 	tmpstream = 0;
 
@@ -225,7 +226,7 @@ int sgnd;
 		colr->method = JP2_COLR_ICC;
 		colr->pri = JP2_COLR_PRI;
 		colr->approx = 0;
-		jas_cmprof_t *prof = jas_image_cmprof(image);
+		prof = jas_image_cmprof(image);
 		assert(prof && "jas_image_t does not have an attached color profile");
 		iccprof = jas_iccprof_createfromcmprof(prof);
 		assert(iccprof);
