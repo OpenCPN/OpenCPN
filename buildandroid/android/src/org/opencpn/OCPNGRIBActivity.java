@@ -55,22 +55,26 @@ import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Activity;
 import android.content.DialogInterface;
-
+import android.widget.Button;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import ar.com.daidalos.afiledialog.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opencpn.opencpn.R;
 import org.opencpn.DownloadFile;
+import org.opencpn.OCPNGRIBDisplayPrefActivity;
 
 import static java.util.TimeZone.getTimeZone;
 
 //@ANDROID-11
 
 
-public class OCPNGRIBActivity extends PreferenceActivity
-        implements OCPNGRIBFragmentDownload.OnDownloadButtonSelectedListener
+public class OCPNGRIBActivity extends Activity
+        //implements OCPNGRIBFragmentDownload.OnDownloadButtonSelectedListener
 {
     public JSONObject  m_grib_PrefsJSON;
 
@@ -85,6 +89,47 @@ public class OCPNGRIBActivity extends PreferenceActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.grib_activity_layout);
+
+        Button button_display = (Button)findViewById(R.id.button_grib_display);
+        button_display.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Log.i("GRIB", "button_grib_display");
+
+              Intent intent = new Intent(OCPNGRIBActivity.this, org.opencpn.OCPNGRIBDisplayPrefActivity.class);
+              startActivityForResult(intent, OCPNGRIBDisplayPrefActivity.OCPN_GRIB_DISPLAY_REQUEST_CODE);
+
+          }
+        });
+
+
+        Button button_file = (Button)findViewById(R.id.button_grib_file);
+        button_file.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Log.i("GRIB", "button_grib_file");
+
+              doSelectFile();
+          }
+        });
+
+        Button button_download = (Button)findViewById(R.id.button_grib_download);
+        button_download.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Log.i("GRIB", "button_grib_download");
+
+              Intent intent = new Intent(OCPNGRIBActivity.this, org.opencpn.OCPNGRIBDownloadPrefActivity.class);
+              startActivityForResult(intent, 2 /*OCPNGRIBDisplayPrefActivity.OCPN_GRIB_DISPLAY_REQUEST_CODE*/);
+
+          }
+        });
+
+
+
+
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -115,96 +160,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
                 }
                 editor.putString("GRIB_prefs_model", model);
 
- //               if(m_grib_PrefsJSON.has("days")){
- //                   days = m_grib_PrefsJSON.getInt("days");
- //               }
- //               editor.putString("GRIB_prefs_days", String.format("%d", days));
 
- //               if(m_grib_PrefsJSON.has("time_step")){
- //                   time_step = m_grib_PrefsJSON.getInt("time_step");
- //               }
- //               editor.putString("GRIB_prefs_timestep", String.format("%d",time_step));
-
-                //  Display Fragment
-
-                //Wind Display Fragment
-
-   //             if(m_grib_PrefsJSON.has("WindBarbedArrows")){
-   //                 boolean showbarb = m_grib_PrefsJSON.getBoolean("WindBarbedArrows");
-   //                 editor.putBoolean("grib_prefb_showbarb", showbarb);
-   //             }
-
-/*
-                if(m_grib_PrefsJSON.has("showwindbarb_always")){
-                    int showwindbarb_always = m_grib_PrefsJSON.getInt("showwindbarb_always");
-                    editor.putBoolean("grib_prefb_showwindbarb_always", (showwindbarb_always==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_colors")){
-                    String windbarb_colors = m_grib_PrefsJSON.getString("windbarb_colors");
-                    editor.putString("grib_pref_windbarb_color", windbarb_colors);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_spacing_fixed_min")){
-                    int windbarb_spacing_fixed_min = m_grib_PrefsJSON.getInt("windbarb_spacing_fixed_min");
-                    editor.putBoolean("grib_pref_windbarb_spacing_fixed_min", (windbarb_spacing_fixed_min==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_spacing_value")){
-                    int windbarb_spacing_value = m_grib_PrefsJSON.getInt("windbarb_spacing_value");
-                    editor.putInt("grib_pref_windbarb_spacing_value", windbarb_spacing_value);
-                }
-
-                if(m_grib_PrefsJSON.has("showwindnumbers")){
-                    int showwindnumbers = m_grib_PrefsJSON.getInt("showwindnumbers");
-                    editor.putBoolean("grib_prefb_showwindnumbers", (showwindnumbers==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_numbers_units")){
-                    String windbarb_numbers_units = m_grib_PrefsJSON.getString("windbarb_numbers_units");
-                    editor.putString("grib_pref_windbarb_numbers_units", windbarb_numbers_units);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_numbers_spacing_fixed_min")){
-                    int windbarb_numbers_spacing_fixed_min = m_grib_PrefsJSON.getInt("windbarb_numbers_spacing_fixed_min");
-                    editor.putBoolean("grib_pref_windbarb_numbers_spacing_fixed_min", (windbarb_numbers_spacing_fixed_min==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_numbers_spacing_value")){
-                    int windbarb_numbers_spacing_value = m_grib_PrefsJSON.getInt("windbarb_numbers_spacing_value");
-                    editor.putInt("grib_pref_windbarb_numbers_spacing_value", windbarb_numbers_spacing_value);
-                }
-
-                if(m_grib_PrefsJSON.has("showisotachs")){
-                    int showisotachs = m_grib_PrefsJSON.getInt("showisotachs");
-                    editor.putBoolean("grib_prefb_showisotachs", (showisotachs==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windbarb_isotach_spacing_value")){
-                    int windbarb_isotach_spacing_value = m_grib_PrefsJSON.getInt("windbarb_isotach_spacing_value");
-                    editor.putInt("grib_pref_windbarb_isotach_spacing_value", windbarb_isotach_spacing_value);
-                }
-
-                if(m_grib_PrefsJSON.has("showwindoverlay")){
-                    int showwindoverlay = m_grib_PrefsJSON.getInt("showwindoverlay");
-                    editor.putBoolean("grib_prefb_showwindoverlay", (showwindoverlay==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windspeed_overlay_colors")){
-                    String windspeed_overlay_colors = m_grib_PrefsJSON.getString("windspeed_overlay_colors");
-                    editor.putString("grib_pref_windspeed_overlay_colors", windspeed_overlay_colors);
-                }
-
-                if(m_grib_PrefsJSON.has("showwindparticles")){
-                    int showwindparticles = m_grib_PrefsJSON.getInt("showwindparticles");
-                    editor.putBoolean("grib_prefb_showwindparticles", (showwindparticles==1)?true:false);
-                }
-
-                if(m_grib_PrefsJSON.has("windparticledensity")){
-                    int windparticledensity = m_grib_PrefsJSON.getInt("windparticledensity");
-                    editor.putInt("grib_pref_windparticledensity", windparticledensity);
-                }
-*/
 
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -225,6 +181,61 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
     }
 
+    public void doSelectFile(){
+
+        String dir = "";
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences != null) {
+            String file = preferences.getString("GRIB_dest_file", "?");
+            if(file != "?"){
+                File fp = new File(file);
+                if(null != fp){
+                    File parent = fp.getParentFile();
+                    dir = parent.getAbsolutePath();
+                }
+            }
+            else{
+                dir = "/mnt/sdcard/Download/gribs";
+            }
+
+        }
+
+        File fdir = new File(dir);
+        if((null == fdir) || !fdir.exists() )
+            dir = "/mnt/sdcard/Download/gribs";
+
+
+        Log.i("GRIB", "OCPNGRIBFragmentFile:dir: " + dir);
+
+
+
+
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, dir);
+        intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_SHOW_ONLY_SELECTABLE, true);
+        startActivityForResult(intent, 0);
+    }
+
+
+/*
+    @Override
+     public View onCreateView(LayoutInflater inflater, ViewGroup container,
+         Bundle savedInstanceState) {
+       View view = inflater.inflate(R.layout.grib_activity_layout,
+           container, false);
+       Button button = (Button) view.findViewById(R.id.button_grib_display);
+       button.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             Log.i("GRIB", "button_grib_display");
+         }
+       });
+       return view;
+     }
+*/
+/*
     @Override
     public void onBuildHeaders(List<Header> target) {
 
@@ -260,6 +271,9 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
 
     }
+*/
+
+/*
     public void addDirectory(View vw)
     {
         Toast.makeText(this, "OCPNsettingsactivity Add Dir ", Toast.LENGTH_SHORT).show();
@@ -287,7 +301,8 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
         cfrag.updateChartDirListView();
     }
-
+*/
+/*
     public void selectFile()
     {
 //        Toast.makeText(this, "OCPNsettingsactivity Add Dir ", Toast.LENGTH_SHORT).show();
@@ -304,6 +319,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
         dialog.show();
 
     }
+*/
 
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -311,35 +327,28 @@ public class OCPNGRIBActivity extends PreferenceActivity
        // Check which request we're responding to
        if (requestCode == 0) {
            // Make sure the request was successful
-           if (resultCode == RESULT_OK) {
+           if (resultCode == FileChooser.RESULT_OK) {
+               Log.i("GRIB", "onActivityResultFileSelectOK");
+
                boolean fileCreated = false;
                String filePath = "";
 
                Bundle bundle = data.getExtras();
-               if(bundle != null)
-               {
-                   if(bundle.containsKey(FileChooserActivity.OUTPUT_NEW_FILE_NAME)) {
-                       fileCreated = true;
-                       File folder = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
-                       String name = bundle.getString(FileChooserActivity.OUTPUT_NEW_FILE_NAME);
-                       filePath = folder.getAbsolutePath() + "/" + name;
-                   } else {
-                       fileCreated = false;
-                       File file = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
-                       filePath = file.getAbsolutePath();
-                   }
+               if(bundle != null){
+                   File file = (File) bundle.get(FileChooserActivity.OUTPUT_FILE_OBJECT);
+                   filePath = file.getAbsolutePath();
                }
 
-               String message = fileCreated? "File created" : "File opened";
-               message += ": " + filePath;
-               Log.i("DEBUGGER_TAG", message);
 
-                OCPNSettingsFragmentCharts cfrag = OCPNSettingsFragmentCharts.getFragment();
-                cfrag.updateChartDirListView();
+               SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+               SharedPreferences.Editor editor = preferences.edit();
+               editor.putString("GRIB_dest_file", filePath);
+               editor.apply();
 
            }
        }
 
+/*
        if (requestCode == 0xf3ec) {
            Log.i("GRIB", "onActivityResult from Download");
 
@@ -357,7 +366,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
                ShowTextDialog("Download Failed\n  Please check logs.");
            }
        }
-
+*/
 
 
 
@@ -366,6 +375,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
    @Override
     public void onResume() {
         super.onResume();
+        Log.i("DEBUGGER_TAG", "GRIB Activity onResume");
     }
 
 
@@ -375,7 +385,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
    {
        super.onPause();
 
-       Log.i("DEBUGGER_TAG", "onPause");
+       Log.i("DEBUGGER_TAG", "GRIBActivityonPause");
 
        //createSettingsString();
 
@@ -388,7 +398,8 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
    }
 
-   public void onFileSelected(String filePath, OCPNGRIBFragmentFile frag){
+/*
+   public void onFileSelected(String filePath){
        String message = "File selected";
        message += ": " + filePath;
        Log.i("GRIB", message);
@@ -398,13 +409,8 @@ public class OCPNGRIBActivity extends PreferenceActivity
        editor.putString("GRIB_dest_file", filePath);
        editor.apply();
 
-       //getFragmentManager().beginTransaction().remove(frag).commit();
-       getFragmentManager().popBackStackImmediate();
-
-       ShowTextDialog("Download Failed\n  Please check logs.");
-
-   }
-
+    }
+*/
 
 
 
@@ -521,7 +527,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
     }
 
 
-
+/*
     private String appendBoolSetting(String key, Boolean value)
     {
         String ret = key;
@@ -542,7 +548,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
         return ret;
     }
-
+*/
 
         // info at
         //http://stackoverflow.com/questions/19973034/isvalidfragment-android-api-19
@@ -553,391 +559,14 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
     //    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 
+/*
         @Override
         protected boolean isValidFragment (String fragmentName) {
 
              return true; //"com.fullpackage.MyPreferenceFragment".equals(fragmentName);
 
         }
-
-
-
-    public static class junkGRIBWindSettings extends PreferenceFragment {
-        public org.opencpn.opencpn.SeekBarPreference mBarbSpacingPixels;
-        public org.opencpn.opencpn.SeekBarPreference mBarbNumberSpacingPixels;
-        public SwitchPreference m_BarbSpacingCustom;
-        public SwitchPreference m_BarbNumberSpacingCustom;
-        public ListPreference m_ArrowcolorsPreference;
-        public ListPreference m_ValueUnitsPreference;
-        public ListPreference m_OverlaycolorsPreference;
-
-        public SharedPreferences.OnSharedPreferenceChangeListener m_listenerVector;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Can retrieve arguments from preference XML.
-            Log.i("args", "Arguments: " + getArguments());
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_wind_display_settings);
-
-            //  Set up listeners for a few items, so that the "summaries" will update properly
-
-            m_BarbSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_WindBarbedArrowFixedSpacing");
-            mBarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_WindBarbedArrowSpacing");
-
-            m_BarbNumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_WindNumbersFixedSpacing");
-            mBarbNumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_WindNumbersSpacing");
-
-            m_ArrowcolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindBarbedColors");
-            m_ArrowcolorsPreference.setSummary(m_ArrowcolorsPreference.getEntry().toString());
-
-            m_ValueUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindUnits");
-            m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
-
-            m_OverlaycolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_WindOverlayMapColors");
-            m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
-
-            m_listenerVector = new SharedPreferences.OnSharedPreferenceChangeListener() {
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    // listener implementation
-                    // Set new summary, when a preference value changes
-
-                    if (key.equals("grib_prefb_WindBarbedArrowFixedSpacing")) {
-                        if (null != mBarbSpacingPixels) {
-                            Log.i("GRIB", "key equals");
-                            mBarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
-                        }
-                    }
-                    if (key.equals("grib_prefb_WindNumbersFixedSpacing")) {
-                        if (null != mBarbNumberSpacingPixels) {
-                            mBarbNumberSpacingPixels.setEnabled(m_BarbNumberSpacingCustom.isChecked());
-                        }
-                    }
-                    if (key.equals("grib_prefs_WindBarbedColors")) {
-                        m_ArrowcolorsPreference.setSummary(m_ArrowcolorsPreference.getEntry().toString());
-                    }
-
-                    if (key.equals("grib_prefs_WindUnits")) {
-                        m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
-                    }
-
-                    if (key.equals("grib_prefs_WindOverlayMapColors")) {
-                        m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
-                    }
-
-                }
-            };
-
-            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listenerVector);
-
-
-
-
-        }
-    }
-
-    public static class GRIBWindSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_wind_display_settings);
-            page = "Wind";
-
-            setListeners();
-        }
-
-    }
-
-
-    public static class GRIBPressureSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_pressure_display_settings);
-            page = "Pressure";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBGustSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_gust_display_settings);
-            page = "WindGust";
-
-            setListeners();
-        }
-
-    }
-
-
-    public static class GRIBWaveSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_wave_display_settings);
-            page = "Waves";
-
-            setListeners();
-        }
-
-    }
-
-
-    public static class GRIBCurrentSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_current_display_settings);
-            page = "Current";
-
-            setListeners();
-        }
-
-    }
-
-
-    public static class GRIBRainfallSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_rainfall_display_settings);
-            page = "Rainfall";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBCloudSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_cloud_display_settings);
-            page = "CloudCover";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBAirtempSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_airtemp_display_settings);
-            page = "AirTemperature";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBSeatempSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_seatemp_display_settings);
-            page = "SeaTemperature";
-
-            setListeners();
-        }
-
-    }
-
-
-    public static class GRIBCAPESettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_cape_display_settings);
-            page = "CAPE";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBAltGeoSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_altgeo_display_settings);
-            page = "Altitude";
-
-            setListeners();
-        }
-
-    }
-
-    public static class GRIBRelHumSettings extends GRIBDisplayItemSettings {
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.grib_relhum_display_settings);
-            page = "RelativeHumidity";
-
-            setListeners();
-        }
-
-    }
-
-
-
-
-
-
-    public static class GRIBDisplayItemSettings extends PreferenceFragment {
-
-        public SwitchPreference m_BarbSpacingCustom;
-        public org.opencpn.opencpn.SeekBarPreference m_BarbSpacingPixels;
-
-        public org.opencpn.opencpn.SeekBarPreference m_ArrowSpacingPixels;
-        public org.opencpn.opencpn.SeekBarPreference m_NumberSpacingPixels;
-        public SwitchPreference m_ArrowSpacingCustom;
-        public SwitchPreference m_NumberSpacingCustom;
-        public ListPreference m_ValueUnitsPreference;
-        public ListPreference m_OverlaycolorsPreference;
-        public CheckBoxPreference m_IsobarShow;
-        public org.opencpn.opencpn.SeekBarPreference m_IsobarDelta;
-        public ListPreference m_BarbcolorsPreference;
-
-        public String page = "";
-
-        public SharedPreferences.OnSharedPreferenceChangeListener m_listenerVector;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        public void setListeners(){
-            //  Set up initial "Summary" fields
-
-            m_BarbSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "BarbedArrowFixedSpacing");
-            m_BarbSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "BarbedArrowSpacing");
-            if(null != m_BarbSpacingPixels)
-                m_BarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
-
-            m_BarbcolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "BarbedColors");
-            if( (null != m_BarbcolorsPreference) && (null != m_BarbcolorsPreference.getEntry()))
-                m_BarbcolorsPreference.setSummary(m_BarbcolorsPreference.getEntry().toString());
-
-            m_NumberSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "NumbersFixedSpacing");
-            m_NumberSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "NumbersSpacing");
-            if(null != m_NumberSpacingPixels)
-                m_NumberSpacingPixels.setEnabled(m_NumberSpacingCustom.isChecked());
-
-            m_ArrowSpacingCustom = (SwitchPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "DirectionArrowFixedSpacing");
-            m_ArrowSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "DirectionArrowSpacing");
-            if(null != m_ArrowSpacingPixels)
-                m_ArrowSpacingPixels.setEnabled(m_ArrowSpacingCustom.isChecked());
-
-            m_ValueUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "Units");
-            if( (null != m_ValueUnitsPreference) && (null != m_ValueUnitsPreference.getEntry()))
-                m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
-
-            m_OverlaycolorsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "OverlayMapColors");
-            if( (null != m_OverlaycolorsPreference) && (null != m_OverlaycolorsPreference.getEntry()))
-                m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
-
-            m_IsobarShow = (CheckBoxPreference)getPreferenceScreen().findPreference("grib_prefb_" + page + "DisplayIsobars");
-            m_IsobarDelta = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "IsoBarSpacing");
-            if(null != m_IsobarDelta)
-                m_IsobarDelta.setEnabled(m_IsobarShow.isChecked());
-
-            m_listenerVector = new SharedPreferences.OnSharedPreferenceChangeListener() {
-                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    // listener implementation
-                    // Set new summary, when a preference value changes
-
-                    if (key.equals("grib_prefb_" + page + "BarbedArrowFixedSpacing")) {
-                        if (null != m_BarbSpacingPixels)
-                           m_BarbSpacingPixels.setEnabled(m_BarbSpacingCustom.isChecked());
-                    }
-                    else if (key.equals("grib_prefb_" + page + "DirectionArrowFixedSpacing")) {
-                        if (null != m_ArrowSpacingPixels)
-                           m_ArrowSpacingPixels.setEnabled(m_ArrowSpacingCustom.isChecked());
-                    }
-
-                    else if (key.equals("grib_prefb_" + page + "NumbersFixedSpacing")) {
-                        if (null != m_NumberSpacingPixels)
-                            m_NumberSpacingPixels.setEnabled(m_NumberSpacingCustom.isChecked());
-                    }
-                    else if (key.equals("grib_prefs_" + page + "Units")) {
-                        if (null != m_ValueUnitsPreference)
-                            m_ValueUnitsPreference.setSummary(m_ValueUnitsPreference.getEntry().toString());
-                    }
-
-                    else if (key.equals("grib_prefs_" + page + "OverlayMapColors")) {
-                        if (null != m_OverlaycolorsPreference)
-                            m_OverlaycolorsPreference.setSummary(m_OverlaycolorsPreference.getEntry().toString());
-                    }
-
-                    else if (key.equals("grib_prefs_" + page + "BarbedColors")) {
-                        if (null != m_BarbcolorsPreference)
-                            m_BarbcolorsPreference.setSummary(m_BarbcolorsPreference.getEntry().toString());
-                    }
-
-                    else if (key.equals("grib_prefb_" + page + "DisplayIsobars")) {
-                        if (null != m_IsobarDelta)
-                            m_IsobarDelta.setEnabled(m_IsobarShow.isChecked());
-                    }
-
-
-                }
-            };
-
-            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(m_listenerVector);
-
-
-
-
-        }
-    }
-
+*/
 
 
 
@@ -988,8 +617,9 @@ public class OCPNGRIBActivity extends PreferenceActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String model = preferences.getString("GRIB_prefs_model", "GFS100");
 
-        if(model.startsWith("GFS", 0))
-            downloadGFSDirect();
+        if(model.startsWith("GFS", 0)){
+            //downloadGFSDirect();
+        }
         else{
             String url = CreateDownloadURL();
 //            Log.i("GRIB", "url: " + url);
@@ -1159,6 +789,7 @@ public class OCPNGRIBActivity extends PreferenceActivity
         return url;
     }
 
+/*
     private String downloadGFSDirect(){
 
 
@@ -1336,8 +967,8 @@ public class OCPNGRIBActivity extends PreferenceActivity
 
         intent.putExtra("GRIB_dest_file",dest_file);
         intent.putExtra("niBlock",niBlock);
-        startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
-
+        startActivityForResult(intent, 0xf3ec OCPN_GRIB_REQUEST_CODE);
+*/
 
 /*
         $t = 0;
@@ -1373,12 +1004,12 @@ public class OCPNGRIBActivity extends PreferenceActivity
 #                echo "<br>";
 
          }
-*/
+
 
 
         return "OK";
     }
-
+*/
 
 }
 

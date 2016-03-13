@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
@@ -37,7 +39,90 @@
         android:summary="Request pressure data"
         android:defaultValue="false" />
 
+    <CheckBoxPreference
+        android:key="GRIB_prefb_windgust"
+        android:title="WindGust"
+        android:summary="Request WindGust data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_waves"
+        android:title="Waves"
+        android:summary="Request Waves data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_current"
+        android:title="Current"
+        android:summary="Request Current data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_rainfall"
+        android:title="Rainfall"
+        android:summary="Request Rainfall data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_cloudcover"
+        android:title="CloudCover"
+        android:summary="Request CloudCover data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_airtemp"
+        android:title="AirTemperature"
+        android:summary="Request AirTemperature data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_seatemp"
+        android:title="SeaTemperature"
+        android:summary="Request SeaTemperature data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_CAPE"
+        android:title="CAPE"
+        android:summary="Request CAPE data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_alt"
+        android:title="Altitude"
+        android:summary="Request Altitude data"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_relhum"
+        android:title="RelativeHumidity"
+        android:summary="Request RelativeHumidity data"
+        android:defaultValue="false" />
+
 
 
 
 </PreferenceScreen>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
