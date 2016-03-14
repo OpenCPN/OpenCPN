@@ -3,7 +3,7 @@
 // Purpose:     
 // Author:      Alex Thuering
 // Created:     2005/05/09
-// RCS-ID:      $Id: SVGCanvasItem.cpp,v 1.51 2015/09/29 17:03:39 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvasItem.cpp,v 1.52 2016/01/09 23:31:14 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -1350,11 +1350,42 @@ double wxSVGCanvasText::GetRotationOfChar(unsigned long charnum)
 
 
 //////////////////////////////////////////////////////////////////////////////
+////////////////////////// wxSVGCanvasSvgImageData ///////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+wxSVGCanvasSvgImageData::wxSVGCanvasSvgImageData(const wxString& filename, wxSVGDocument* doc) {
+	m_count = 1;
+	m_svgImage = NULL;
+	wxSVGDocument imgDoc;
+	if (imgDoc.Load(filename) && imgDoc.GetRootElement() != NULL) {
+		m_svgImage = imgDoc.GetRootElement();
+		imgDoc.RemoveChild(m_svgImage);
+		
+		m_svgImage->SetOwnerDocument(doc);
+		if (m_svgImage->GetViewBox().GetBaseVal().IsEmpty()
+				&& m_svgImage->GetWidth().GetBaseVal().GetValue() > 0
+				&& m_svgImage->GetWidth().GetBaseVal().GetUnitType() != wxSVG_LENGTHTYPE_PERCENTAGE)
+			m_svgImage->SetViewBox(
+					wxSVGRect(0, 0, m_svgImage->GetWidth().GetBaseVal(), m_svgImage->GetHeight().GetBaseVal()));
+	}
+}
+
+wxSVGCanvasSvgImageData::wxSVGCanvasSvgImageData(wxSVGSVGElement* svgImage, wxSVGDocument* doc) {
+	m_count = 1;
+	m_svgImage = new wxSVGSVGElement(*svgImage);
+	m_svgImage->SetOwnerDocument(doc);
+}
+
+wxSVGCanvasSvgImageData::~wxSVGCanvasSvgImageData() {
+	if (m_svgImage)
+		delete m_svgImage;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// wxSVGCanvasImage //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 wxSVGCanvasImage::~wxSVGCanvasImage() {
-	if (m_svgImage)
-		delete m_svgImage;
+	if (m_svgImageData != NULL && m_svgImageData->DecRef() == 0)
+		delete m_svgImageData;
 }
 
 void wxSVGCanvasImage::Init(wxSVGImageElement& element, const wxCSSStyleDeclaration& style,
@@ -1370,7 +1401,10 @@ void wxSVGCanvasImage::Init(wxSVGImageElement& element, const wxCSSStyleDeclarat
 	if (prevItem != NULL && prevItem->m_href == m_href) {
 		m_image = prevItem->m_image;
 		m_defHeightScale = prevItem->m_defHeightScale;
-		m_svgImage = prevItem->m_svgImage != NULL ? new wxSVGSVGElement(*prevItem->m_svgImage) : NULL;
+		if (prevItem->m_svgImageData) {
+			m_svgImageData = prevItem->m_svgImageData;
+			m_svgImageData->IncRef();
+		}
 	} else if (m_href.length()) {
 		long pos = 0;
 		wxString filename = m_href;
@@ -1394,16 +1428,11 @@ void wxSVGCanvasImage::Init(wxSVGImageElement& element, const wxCSSStyleDeclarat
 				wxLogError(_("Can't load image from file '%s': file does not exist."), filename.c_str());
 				return;
 			}
-			if (element.GetHref().GetAnimVal().EndsWith(wxT(".svg"))) {
-				wxSVGDocument imgDoc;
-				if (imgDoc.Load(filename) && imgDoc.GetRootElement() != NULL) {
-					m_svgImage = imgDoc.GetRootElement();
-					imgDoc.RemoveChild(m_svgImage);
-					if (m_svgImage->GetViewBox().GetBaseVal().IsEmpty()
-							&& m_svgImage->GetWidth().GetBaseVal().GetValue() > 0
-							&& m_svgImage->GetWidth().GetBaseVal().GetUnitType() != wxSVG_LENGTHTYPE_PERCENTAGE)
-						m_svgImage->SetViewBox(
-								wxSVGRect(0, 0, m_svgImage->GetWidth().GetBaseVal(), m_svgImage->GetHeight().GetBaseVal()));
+			if (filename.EndsWith(wxT(".svg"))) {
+				m_svgImageData = new wxSVGCanvasSvgImageData(filename, (wxSVGDocument*) element.GetOwnerDocument());
+				if (m_svgImageData->GetSvgImage() == NULL) {
+					delete m_svgImageData;
+					m_svgImageData = NULL;
 				}
 				return;
 			}
@@ -1466,6 +1495,22 @@ int wxSVGCanvasImage::GetDefaultHeight() {
 	return m_image.Ok() ? m_image.GetHeight() * m_defHeightScale : 0;
 }
 
+wxSVGSVGElement* wxSVGCanvasImage::GetSvgImage(wxSVGDocument* doc) {
+	if (m_svgImageData == NULL)
+		return NULL;
+	if (doc != NULL) {
+		if (m_svgImageData->GetSvgImage()->GetOwnerDocument() == NULL) {
+			m_svgImageData->GetSvgImage()->SetOwnerDocument(doc);
+		} else if (m_svgImageData->GetSvgImage()->GetOwnerDocument() != doc) {
+			wxSVGCanvasSvgImageData* svgImageDataOld = m_svgImageData;
+			m_svgImageData = new wxSVGCanvasSvgImageData(m_svgImageData->GetSvgImage(), doc);
+			wxSVGDocument::ApplyAnimation(m_svgImageData->GetSvgImage());
+			if (svgImageDataOld->DecRef() == 0)
+				delete svgImageDataOld;
+		}
+	}
+	return m_svgImageData->GetSvgImage();
+}
 
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// wxSVGCanvasVideo //////////////////////////////

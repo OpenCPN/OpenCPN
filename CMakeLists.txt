@@ -719,6 +719,7 @@ IF(OCPN_USE_SVG)
       src/wxsvg/src/NodeList.cpp
       src/wxsvg/src/SVGAngle.cpp
       src/wxsvg/src/SVGAnimateTransformElement.cpp
+      src/wxsvg/src/SVGAnimateMotionElement.cpp
       src/wxsvg/src/SVGAnimatedType.cpp
       src/wxsvg/src/SVGAnimationElement.cpp
       src/wxsvg/src/SVGCanvas.cpp
