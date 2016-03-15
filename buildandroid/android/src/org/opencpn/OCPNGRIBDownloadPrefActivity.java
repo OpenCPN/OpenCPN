@@ -388,19 +388,29 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         editor.putString("GRIB_dest_file", dest_file);
         editor.apply();
 
+        Log.i("GRIB", "model: " + model);
+
         String gfsFilter = "";
-        if(model == "GFS25")
-            gfsFilter = "0p25.";
-        else if(model == "GFS50")
-            gfsFilter = "0p50.";
-        else
-            gfsFilter = "1p00.";
+        String gfsFilterPl = "";
+        if(model.equals("GFS25")){
+            gfsFilterPl = "0p25.pl?";
+            gfsFilter = "z.pgrb2full.0p25.";
+        }
+        else if(model.equals("GFS50")){
+            gfsFilterPl = "0p50.pl?";
+            gfsFilter = "z.pgrb2full.0p50.";
+        }
+        else{
+            gfsFilterPl = "1p00.pl?";
+            gfsFilter = "z.pgrb2.1p00.";
+        }
 
 
-        String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilter + "pl?";
-        String level = "lev_10_m_above_ground=on";
+        String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilterPl;
         String DIR = "%2Fgfs." + startTime;
-        String fileSaveName = "gribs/";  // + $_SERVER['REQUEST_TIME'] .$_SERVER['REMOTE_ADDR'];
+        String fileSaveName = "gribs/";
+
+        //http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl?file=gfs.t18z.pgrb2full.0p50.f003&dir=%2Fgfs.2016031418&......
 
 
         ArrayList<String> URLList = new ArrayList<String>();
@@ -410,7 +420,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         // in a loop, get the files
         for(int x=0 ; x < loop_count ; x++){
             String time = String.format("f%03d", t);
-            String fileName = "file=gfs.t" + T0 + "z.pgrb2." + gfsFilter + time;  //file=gfs.t18z.pgrb2.0p25.f000
+            String fileName = "file=gfs.t" + T0 + gfsFilter + time;
 
 
             boolean blev10m = false;
@@ -516,9 +526,9 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         //  Calculate estimate block size
         double nBlock = (lat_max - lat_min) * (lon_max - lon_min);
         double factor = 1.0;
-        if(model == "GFS25")
+        if(model.equals("GFS25"))
             factor = 16;;
-        if(model == "GFS50")
+        if(model.equals("GFS50"))
             factor = 4;
 
         nBlock *= factor;
