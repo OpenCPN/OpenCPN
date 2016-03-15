@@ -20,13 +20,16 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
         m_fgCtrlBarSizer = new wxFlexGridSizer(0, 1, 0, 0 );
-
+        m_fgCtrlBarSizer->AddGrowableCol( 0 );
+        m_fgCtrlBarSizer->SetFlexibleDirection( wxHORIZONTAL );
+        m_fgCtrlBarSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
+        
 	wxBoxSizer *mainBox = new wxBoxSizer(wxVERTICAL);
         m_fgCtrlBarSizer->Add( mainBox, 1, wxEXPAND, 0 );
 
 
 	wxBoxSizer *fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
-        mainBox->Add( fgSizer50, 1, wxEXPAND, 5 );
+        mainBox->Add( fgSizer50, 0, wxEXPAND, 5 );
 
 	m_bpPrev = new wxBitmapButton( this, ID_BTNPREV, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPrev->SetToolTip( _("Previous") );
@@ -47,7 +50,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 
         wxBoxSizer *fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
-        mainBox->Add( fgSizer51, 1, wxEXPAND, 5 );
+        mainBox->Add( fgSizer51, 0, wxEXPAND, 5 );
 
 
 
@@ -95,15 +98,16 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 //         m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 //         fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
 
-        wxFlexGridSizer* fgSizer49;
-        fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
-        fgSizer49->AddGrowableCol( 0 );
-        fgSizer49->SetFlexibleDirection( wxVERTICAL );
-        fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+//         wxFlexGridSizer* fgSizer49;
+//         fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
+//         fgSizer49->AddGrowableCol( 0 );
+//         fgSizer49->SetFlexibleDirection( wxVERTICAL );
+//         fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
  	m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
- 	m_fgCDataSizer->SetFlexibleDirection( wxBOTH );
- 	m_fgCDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+        m_fgCDataSizer->SetFlexibleDirection( wxVERTICAL );
+        m_fgCDataSizer->AddGrowableCol( 0 );
+        m_fgCDataSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 
  	mainBox->Add( m_fgCDataSizer, 1, wxEXPAND, 5 );

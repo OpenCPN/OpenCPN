@@ -574,6 +574,8 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
             
             m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
             m_pGribCtrlBar->m_OverlaySettings.Write();
+            m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
+            
         }
     }
 }
@@ -605,6 +607,7 @@ bool grib_pi::LoadConfig(void)
 
     pConf->Read( _T ( "GribCursorDataDisplayStyle" ), &m_DialogStyle, 0 );
     if( m_DialogStyle > 3 ) m_DialogStyle = 0;         //ensure validity of the .conf value
+
     return true;
 }
 

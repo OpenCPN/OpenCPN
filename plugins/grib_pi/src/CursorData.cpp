@@ -144,7 +144,16 @@ void CursorData::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxCon
 void CursorData::PopulateTrackingControls( bool vertical )
 {
     m_fgTrackingControls->Clear();
-    m_fgTrackingControls->SetCols( vertical ? 2 : 12);
+    if(!vertical){
+        wxFlexGridSizer *ps = (wxFlexGridSizer*)(m_gparent.GetSizer());
+        if(ps && (ps->GetCols() == 1))
+            m_fgTrackingControls->SetCols( 4 );         // compact mode
+        else
+            m_fgTrackingControls->SetCols( 12 );
+    }
+    else
+        m_fgTrackingControls->SetCols( 2 );
+    
     this->Fit();
     //Get text controls sizing data
     wxFont *font = OCPNGetFont(_("Dialog"), 10);
