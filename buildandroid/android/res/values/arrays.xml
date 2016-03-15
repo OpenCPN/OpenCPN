@@ -43,24 +43,60 @@
         <item>7</item>
     </string-array>
 
-    <string-array name="GRIBwindBarbNumbersUnits" >
+    <string-array name="GRIBSpeedUnits" >
         <item>Knots</item>
         <item>m/s</item>
+        <item>mph</item>
+        <item>km/h</item>
+        <item>Beaufort</item>
     </string-array>
 
-    <string-array name="GRIBwindBarbNumbersUnitsVal" >
+    <string-array name="GRIBSpeedUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="GRIBTempUnits" >
+        <item>Celsius</item>
+        <item>Fahrenheit</item>
+    </string-array>
+
+    <string-array name="GRIBTempUnitsVal" >
         <item>0</item>
         <item>1</item>
     </string-array>
 
-    <string-array name="GRIBwindSpeedOverlayColors" >
+    <string-array name="GRIBDistanceUnits" >
+        <item>Meters</item>
+        <item>Feet</item>
+    </string-array>
+
+    <string-array name="GRIBDistanceUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="GRIBOverlayColors" >
         <item>Generic</item>
         <item>Wind</item>
+        <item>Air Temp</item>
+        <item>Sea Temp</item>
+        <item>Rainfall</item>
+        <item>Cloud Cover</item>
+        <item>Current</item>
     </string-array>
 
-    <string-array name="GRIBwindSpeedOverlayColorsVal" >
+    <string-array name="GRIBOverlayColorsVal" >
         <item>0</item>
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
     </string-array>
 
     <string-array name="GRIBwindBarbColor" >
@@ -121,11 +157,57 @@
     </string-array>
 
 
-    <string-array name="GRIBPressureNumbersUnits" >
+    <string-array name="GRIBPressureUnits" >
         <item>milliBars</item>
         <item>mmHG</item>
         <item>inHG</item>
     </string-array>
 
+    <string-array name="GRIBPressureUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="GRIBPercentUnits" >
+        <item>Percentage</item>
+    </string-array>
+
+    <string-array name="GRIBPercentUnitsVal" >
+        <item>0</item>
+    </string-array>
+
+    <string-array name="GRIBCAPEUnits" >
+        <item>j/kg</item>
+    </string-array>
+
+    <string-array name="GRIBCAPEUnitsVal" >
+        <item>0</item>
+    </string-array>
+
+    <string-array name="GRIBSmallDistanceUnits" >
+        <item>Millimeters</item>
+        <item>Inches</item>
+    </string-array>
+
+    <string-array name="GRIBSmallDistanceUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+
+    <string-array name="GRIBCurrentSpeedUnits" >
+        <item>Knots</item>
+        <item>m/s</item>
+        <item>mph</item>
+        <item>km/h</item>
+    </string-array>
+
+    <string-array name="GRIBCurrentSpeedUnitsVal" >
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
 </resources>

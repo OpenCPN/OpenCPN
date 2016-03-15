@@ -12,8 +12,8 @@
         android:title="Pressure Value Units"
         android:key="grib_prefs_PressureUnits"
         android:defaultValue="0"
-        android:entries="@array/GRIBPressureNumbersUnits"
-        android:entryValues="@array/GRIBPressureNumbersUnits" />
+        android:entries="@array/GRIBPressureUnits"
+        android:entryValues="@array/GRIBPressureUnitsVal" />
 
     <SwitchPreference
         android:key="grib_prefb_PressureNumbersFixedSpacing"

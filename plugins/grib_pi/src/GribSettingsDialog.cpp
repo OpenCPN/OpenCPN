@@ -1037,15 +1037,23 @@ bool GribOverlaySettings::JSONToSettings(wxString json)
     
     //  Read all the JSON values, and populate the local settings
  
+    if(root[_T ( "overlay_transparency" )].IsString()){
+        wxString s = root[_T ( "overlay_transparency" )].AsString(); long transparency = -1; s.ToLong(&transparency);
+        transparency = wxMax(1, transparency);
+        transparency = wxMin(100, transparency);
+        m_iOverlayTransparency = transparency * (double)(254. / 100.);
+    }
+ 
     for(int i=0; i<SETTINGS_COUNT; i++) {
         wxString Name=name_from_index[i];
         wxString s;
-        
-        if(root[Name + _T ( "Units" )].IsInt()){
-            int units = root[Name + _T ( "Units" )].AsInt();
+
+        if(root[Name + _T ( "Units" )].IsString()){
+            wxString s = root[Name + _T ( "Units" )].AsString(); long units = -1; s.ToLong(&units);
             for( int j=0; !unit_names[unittype[i]][j].empty(); j++)
                 Settings[i].m_Units = ( units < 0 || units > j - 1 ) ? (SettingsType) 0 : (SettingsType)units;
         }
+        
     
         if(root[Name + _T ( "BarbedArrows" )].IsBool())
             Settings[i].m_bBarbedArrows = root[Name + _T ( "BarbedArrows" )].AsBool();

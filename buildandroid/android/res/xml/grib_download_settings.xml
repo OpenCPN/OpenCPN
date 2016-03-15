@@ -9,7 +9,7 @@
         android:title="Model"
         android:summary="Select GRIB forecast model"
         android:key="GRIB_prefs_model"
-        android:defaultValue="0"
+        android:defaultValue="GFS100"
         android:entries="@array/GRIB_model_ListArray"
         android:entryValues="@array/GRIB_model_ListValues" />
 
@@ -17,6 +17,7 @@
         android:key="GRIB_prefs_timestep"
         android:title="Time step"
         android:summary="Set the time interval between forecasts"
+        android:defaultValue="12"
         android:entries="@array/GRIB_timestep_ListArray"
         android:entryValues="@array/GRIB_timestep_ListValues" />
 
@@ -24,6 +25,7 @@
         android:key="GRIB_prefs_days"
         android:title="Days"
         android:summary="Set the number of days in GRIB"
+        android:defaultValue="2"
         android:entries="@array/GRIB_days_ListArray"
         android:entryValues="@array/GRIB_days_ListValues" />
 
@@ -86,7 +88,7 @@
         android:title="CAPE"
         android:summary="Request CAPE data"
         android:defaultValue="false" />
-
+<!--
     <CheckBoxPreference
         android:key="GRIB_prefb_alt"
         android:title="Altitude"
@@ -98,7 +100,7 @@
         android:title="RelativeHumidity"
         android:summary="Request RelativeHumidity data"
         android:defaultValue="false" />
-
+-->
 
 
 

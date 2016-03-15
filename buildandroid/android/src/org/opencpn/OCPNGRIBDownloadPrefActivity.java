@@ -160,17 +160,22 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         //  Set up inital values of "Summaries" fields
 
         mGRIB_modelPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_model");
-        mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+        if(null != mGRIB_modelPreference)
+            mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
 
         mGRIB_TimestepPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_timestep");
-        String ts = "Set the time interval between forecasts";
-        String pts = mGRIB_TimestepPreference.getEntry().toString();
-        mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
+        if(null != mGRIB_TimestepPreference){
+            String ts = "Set the time interval between forecasts";
+            String pts = mGRIB_TimestepPreference.getEntry().toString();
+            mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
+        }
 
         mGRIB_DaysPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_days");
-        ts = "Set the number of days in forecast";
-        pts = mGRIB_DaysPreference.getEntry().toString();
-        mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+        if(null != mGRIB_DaysPreference){
+            String ts = "Set the number of days in forecast";
+            String pts = mGRIB_DaysPreference.getEntry().toString();
+            mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+        }
 
 
           // Set up a listener for key changes
@@ -182,19 +187,24 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
              // Set new summary, when a preference value changes
              if (key.equals("GRIB_prefs_timestep")) {
-                 String ts = "Set the time interval between forecasts";
-                 String pts = mGRIB_TimestepPreference.getEntry().toString();
-                 mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
-             }
+                 if(null != mGRIB_TimestepPreference){
+                     String ts = "Set the time interval between forecasts";
+                     String pts = mGRIB_TimestepPreference.getEntry().toString();
+                     mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
+                 }
+              }
 
              if (key.equals("GRIB_prefs_days")) {
-                 String ts = "Set the number of days in forecast";
-                 String pts = mGRIB_DaysPreference.getEntry().toString();
-                 mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+                 if(null != mGRIB_DaysPreference){
+                     String ts = "Set the number of days in forecast";
+                     String pts = mGRIB_DaysPreference.getEntry().toString();
+                     mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
+                 }
              }
 
              if (key.equals("GRIB_prefs_model")) {
-                 mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+                 if(null != mGRIB_modelPreference)
+                    mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
              }
 
          }
@@ -406,6 +416,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             boolean blev10m = false;
             boolean blevmsl = false;
             boolean blevsurface = false;
+            boolean blev2m = false;
 
             //  Make the required URL
             String URL_FETCH = URL_GETGFS + fileName;
@@ -423,33 +434,46 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 blevsurface = true;
             }
 
-            if(preferences.getBoolean("GRIB_prefb_waves", false)){
-            }
-
-            if(preferences.getBoolean("GRIB_prefb_current", false)){
-            }
-
             if(preferences.getBoolean("GRIB_prefb_rainfall", false)){
+                URL_FETCH += "&var_APCP=on";                            // Not working March 2016...
+                blevsurface = true;
             }
 
             if(preferences.getBoolean("GRIB_prefb_cloudcover", false)){
+                URL_FETCH += "&var_TCDC=on";                            // Not working March 2016...
             }
 
             if(preferences.getBoolean("GRIB_prefb_airtemp", false)){
+                URL_FETCH += "&var_TMP=on";
+                blev2m = true;
             }
 
-            if(preferences.getBoolean("GRIB_prefb_seatemp", false)){
-            }
 
             if(preferences.getBoolean("GRIB_prefb_CAPE", false)){
+                URL_FETCH += "&var_CAPE=on";
+                blevsurface = true;
+            }
+
+
+            if(preferences.getBoolean("GRIB_prefb_relhum", false)){
+                URL_FETCH += "&var_RH=on";
+                blevsurface = true;
+            }
+
+/*
+        // Not available in GFS model
+            if(preferences.getBoolean("GRIB_prefb_seatemp", false)){
             }
 
             if(preferences.getBoolean("GRIB_prefb_alt", false)){
             }
 
-            if(preferences.getBoolean("GRIB_prefb_relhum", false)){
+            if(preferences.getBoolean("GRIB_prefb_waves", false)){
             }
 
+            if(preferences.getBoolean("GRIB_prefb_current", false)){
+            }
+*/
 
             if(blev10m)
                 URL_FETCH += "&lev_10_m_above_ground=on";
@@ -458,7 +482,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 URL_FETCH += "&lev_mean_sea_level=on";
 
             if(blevsurface)
-                    URL_FETCH += "&lev_surface=on";
+                URL_FETCH += "&lev_surface=on";
+
+            if(blev2m)
+                URL_FETCH += "&lev_2_m_above_ground=on";
+
 
             URL_FETCH +="&subregion="
                 + "&leftlon=" + String.format("%d", lon_min)

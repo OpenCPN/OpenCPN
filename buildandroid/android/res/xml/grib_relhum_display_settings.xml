@@ -12,8 +12,8 @@
         android:title="Relative Humidity Units"
         android:key="grib_prefs_RelativeHumidityUnits"
         android:defaultValue="0"
-        android:entries="@array/GRIBwindBarbNumbersUnits"
-        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+        android:entries="@array/GRIBPercentUnits"
+        android:entryValues="@array/GRIBPercentUnitsVal" />
 
 
 

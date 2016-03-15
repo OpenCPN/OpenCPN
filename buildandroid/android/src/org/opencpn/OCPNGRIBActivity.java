@@ -476,39 +476,69 @@ public class OCPNGRIBActivity extends Activity
             keys = preferences.getAll();
             JSONPersist(preferences, keys, "Pressure");
 
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_gust_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "WindGust");
+
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_wave_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "Waves");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_current_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "Current");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_rainfall_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "Rainfall");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_cloud_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "CloudCover");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_airtemp_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "AirTemperature");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_seatemp_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "SeaTemperature");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_cape_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "CAPE");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_altgeo_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "Altitude");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_relhum_display_settings, true);
+            keys = preferences.getAll();
+            JSONPersist(preferences, keys, "RelativeHumidity");
+
+
+
             try {
-/*
-            for(Map.Entry<String,?> entry : keys.entrySet()){
-//                    Log.d("map values",entry.getKey() + ": " + entry.getValue().toString());
-
-                    if(entry.getKey().startsWith("grib_prefs_Wind", 0)){
-                        String jsonkey = entry.getKey().substring(11);
-                        Log.d("jsonkey string: ",jsonkey + ": " + entry.getValue().toString());
-                        m_grib_PrefsJSON.put(jsonkey, preferences.getString( entry.getKey(), "?"));
-                    }
-                    if(entry.getKey().startsWith("grib_prefb_Wind", 0)){
-                        String jsonkey = entry.getKey().substring(11);
-                        Log.d("jsonkey bool: ",jsonkey + ": " + entry.getValue().toString());
-                        m_grib_PrefsJSON.put(jsonkey, preferences.getBoolean( entry.getKey(), true));
-
-                    }
-            }
-*/
-
-
-
 
                 m_grib_PrefsJSON.put("model", preferences.getString("GRIB_prefs_model", "?"));
                 m_grib_PrefsJSON.put("days", preferences.getString("GRIB_prefs_days", "?"));
                 m_grib_PrefsJSON.put("time_step", preferences.getString("GRIB_prefs_timestep", "?"));
 
-                // Prepend the global "Download" directory to the file spec.
-//                File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-//                File nFile = new File(rootDir.getAbsolutePath() , preferences.getString("GRIB_prefs_file", "?"));
-
                 m_grib_PrefsJSON.put("grib_file", preferences.getString("GRIB_dest_file", "?"));
 
-                //  GRIB Display Wind Fragment
+                m_grib_PrefsJSON.put("overlay_transparency", preferences.getString("grib_prefs_OverlayTransparency", "?"));
+
 
 
 
@@ -527,28 +557,6 @@ public class OCPNGRIBActivity extends Activity
     }
 
 
-/*
-    private String appendBoolSetting(String key, Boolean value)
-    {
-        String ret = key;
-        if(value)
-            ret = ret.concat(":1;");
-        else
-            ret = ret.concat(":0;");
-
-        return ret;
-    }
-
-    private String appendStringSetting(String key, String value)
-    {
-        String ret = key;
-        ret = ret.concat(":");
-        ret = ret.concat(value);
-        ret = ret.concat(";");
-
-        return ret;
-    }
-*/
 
         // info at
         //http://stackoverflow.com/questions/19973034/isvalidfragment-android-api-19

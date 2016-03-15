@@ -11,9 +11,9 @@
     <ListPreference
         android:title="Wind Gust Value Units"
         android:key="grib_prefs_WindGustUnits"
-        android:defaultValue="Knots"
-        android:entries="@array/GRIBwindBarbNumbersUnits"
-        android:entryValues="@array/GRIBwindBarbNumbersUnits" />
+        android:defaultValue="0"
+        android:entries="@array/GRIBSpeedUnits"
+        android:entryValues="@array/GRIBSpeedUnitsVal" />
 
     <SwitchPreference
         android:key="grib_prefb_WindGustNumbersFixedSpacing"
@@ -54,11 +54,17 @@
     <ListPreference
         android:title="Wind Gust Overlay Colors"
         android:key="grib_prefs_WindGustOverlayMapColors"
-        android:defaultValue="Wind"
-        android:entries="@array/GRIBwindSpeedOverlayColors"
-        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+        android:defaultValue="1"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
 
-
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
 
 
 </PreferenceScreen>

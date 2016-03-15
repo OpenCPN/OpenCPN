@@ -34,8 +34,8 @@
         android:title="Wave Height Units"
         android:key="grib_prefs_WavesUnits"
         android:defaultValue="0"
-        android:entries="@array/GRIBwindBarbNumbersUnits"
-        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+        android:entries="@array/GRIBDistanceUnits"
+        android:entryValues="@array/GRIBDistanceUnitsVal" />
 
     <SwitchPreference
         android:key="grib_prefb_WavesNumbersFixedSpacing"
@@ -63,11 +63,16 @@
         android:title="Wave Height Overlay Colors"
         android:key="grib_prefs_WavesOverlayMapColors"
         android:defaultValue="0"
-        android:entries="@array/GRIBwindSpeedOverlayColors"
-        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
 
-
-
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
 
 </PreferenceScreen>
 

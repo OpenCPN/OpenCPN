@@ -12,8 +12,8 @@
         android:title="CloudCover Value Units"
         android:key="grib_prefs_CloudCoverUnits"
         android:defaultValue="0"
-        android:entries="@array/GRIBwindBarbNumbersUnits"
-        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+        android:entries="@array/GRIBPercentUnits"
+        android:entryValues="@array/GRIBPercentUnitsVal" />
 
     <SwitchPreference
         android:key="grib_prefb_CloudCoverNumbersFixedSpacing"
@@ -40,10 +40,17 @@
     <ListPreference
         android:title="CloudCover Overlay Colors"
         android:key="grib_prefs_CloudCoverOverlayMapColors"
-        android:defaultValue="0"
-        android:entries="@array/GRIBwindSpeedOverlayColors"
-        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+        android:defaultValue="5"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
 
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
 
 
 </PreferenceScreen>

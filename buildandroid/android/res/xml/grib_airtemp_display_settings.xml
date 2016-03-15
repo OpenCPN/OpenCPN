@@ -11,8 +11,8 @@
         android:title="Air Temperature Value Units"
         android:key="grib_prefs_AirTemperatureUnits"
         android:defaultValue="0"
-        android:entries="@array/GRIBwindBarbNumbersUnits"
-        android:entryValues="@array/GRIBwindBarbNumbersUnitsVal" />
+        android:entries="@array/GRIBTempUnits"
+        android:entryValues="@array/GRIBTempUnitsVal" />
 
     <SwitchPreference
         android:key="grib_prefb_AirTemperatureNumbersFixedSpacing"
@@ -53,11 +53,17 @@
     <ListPreference
         android:title="Air Temperature Overlay Colors"
         android:key="grib_prefs_AirTemperatureOverlayMapColors"
-        android:defaultValue="0"
-        android:entries="@array/GRIBwindSpeedOverlayColors"
-        android:entryValues="@array/GRIBwindSpeedOverlayColorsVal" />
+        android:defaultValue="2"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
 
-
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
 
 
 </PreferenceScreen>
