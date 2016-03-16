@@ -1749,10 +1749,6 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
                         }
                         break;
 
-                    case GRB_PRMSL:            // Seen in NOAA_GFS GRIBV2, we masquerade as "PRESSURE"
-                        idx = Idx_PRESSURE;
-                        break;
-                        
                     }
 
                             
