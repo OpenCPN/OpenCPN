@@ -84,7 +84,6 @@ Elément de base d'un fichier GRIB
 
 #define GRB_WIND_XY2D      250   /* private : GRB_WIND_VX+GRB_WIND_VX */
 #define GRB_DIFF_TEMPDEW   251   /* private : GRB_TEMP-GRB_DEWPOINT */
-#define GRB_PRMSL          255   /* Pressure reduced to MSL */
 
 //--------------------------------------------------------
 // Levels types (altitude reference)
