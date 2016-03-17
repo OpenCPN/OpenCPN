@@ -279,6 +279,9 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
                               storeRecordInMap(rec);
 
+                        else if( rec->getDataType() == GRB_WVHGT )               // Wave Height
+                              storeRecordInMap(rec);
+                        
                         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
                               storeRecordInMap(rec);
 
