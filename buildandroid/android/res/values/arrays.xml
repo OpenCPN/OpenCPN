@@ -5,10 +5,14 @@
     <string-array name="GRIB_model_ListArray">
         <item>GFS 0.50\u00B0 NOAA/NECP</item>
         <item>GFS 1.0\u00B0 NOAA/NECP</item>
+        <item>RTOFS (Atlantic) NOAA/NECP</item>
+        <item>WW3 WaveWatch3 NOAA/NECP</item>
     </string-array>
     <string-array name="GRIB_model_ListValues">
         <item>GFS50</item>
         <item>GFS100</item>
+        <item>RTOFS</item>
+        <item>WW3</item>
     </string-array>
 
     <string-array name="GRIB_timestep_ListArray">

@@ -3,8 +3,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-
     <ListPreference
         android:title="Model"
         android:summary="Select GRIB forecast model"
@@ -29,6 +27,9 @@
         android:entries="@array/GRIB_days_ListArray"
         android:entryValues="@array/GRIB_days_ListValues" />
 
+    <PreferenceCategory android:title="General"
+        android:key="GRIB_prefcat_general"
+        >
     <CheckBoxPreference
         android:key="GRIB_prefb_wind"
         android:title="Wind"
@@ -45,18 +46,6 @@
         android:key="GRIB_prefb_windgust"
         android:title="WindGust"
         android:summary="Request WindGust data"
-        android:defaultValue="false" />
-
-    <CheckBoxPreference
-        android:key="GRIB_prefb_waves"
-        android:title="Waves"
-        android:summary="Request Waves data"
-        android:defaultValue="false" />
-
-    <CheckBoxPreference
-        android:key="GRIB_prefb_current"
-        android:title="Current"
-        android:summary="Request Current data"
         android:defaultValue="false" />
 
     <CheckBoxPreference
@@ -78,12 +67,6 @@
         android:defaultValue="false" />
 
     <CheckBoxPreference
-        android:key="GRIB_prefb_seatemp"
-        android:title="SeaTemperature"
-        android:summary="Request SeaTemperature data"
-        android:defaultValue="false" />
-
-    <CheckBoxPreference
         android:key="GRIB_prefb_CAPE"
         android:title="CAPE"
         android:summary="Request CAPE data"
@@ -102,7 +85,41 @@
         android:defaultValue="false" />
 -->
 
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="Waves"
+        android:key="GRIB_prefcat_waves"
+        >
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_waves"
+        android:title="Waves"
+        android:summary="Request Waves data"
+        android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Sea"
+        android:key="GRIB_prefcat_sea"
+        >
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_current"
+        android:title="Current"
+        android:summary="Request Current data"
+        android:defaultValue="false" />
+
+
+    <CheckBoxPreference
+        android:key="GRIB_prefb_seatemp"
+        android:title="SeaTemperature"
+        android:summary="Request SeaTemperature data"
+        android:defaultValue="false" />
+
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
 
