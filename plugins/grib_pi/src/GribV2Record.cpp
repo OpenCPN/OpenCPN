@@ -869,10 +869,16 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             break;
         case 1:
             switch (dataNum) {
-            case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
-            case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
+                case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
+                case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
             }
             break;
+         case 3:
+            switch (dataNum) {
+                case 0: ret = GRB_WTMP; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
+            }
+            break;
+            
         }
         break;
     }
