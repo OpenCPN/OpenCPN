@@ -1031,6 +1031,9 @@ index 9a9eab2..6a05d44 100644
     W/libopencpn.so(21974): /home/dsr/Projects/qt5/qtbase/src/gui/kernel/qwindowsysteminterface.cpp:604 (static void QWindowSystemInterface::flushWindowSystemEvents(QEventLoop::ProcessEventsFlags)): QWindowSystemInterface::flushWindowSystemEvents() invoked without QGuiApplicationPrivate::qt_qpa_core_dispatcher, discarding 1 events.
 
 
+    Feb 20, 2016
+
+    $ cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt -DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake -DwxQt_Build=build_android_55_rel -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets -DQt_Base=/home/dsr/Qt5.5.0/5.5 ..
 
 
 
