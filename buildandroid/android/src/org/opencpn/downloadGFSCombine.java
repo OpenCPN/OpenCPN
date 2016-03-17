@@ -127,7 +127,7 @@ public class downloadGFSCombine extends Activity {
                     in = c.getInputStream();
     
                     } catch (Exception e) {
-                        Log.d("GRIB DOWNLOAD Exception", e.getMessage());
+                        Log.d("GRIB DOWNLOAD ExceptionA", e.getMessage());
                         m_result = ERROR_NO_CONNECTION;
                         return null;
                     }
@@ -190,7 +190,7 @@ public class downloadGFSCombine extends Activity {
 
                         publishProgress(progressOffset + prog);
                         String bmsg = String.format("%d / %d    %d %d\n", total, lenghtOfFile,  progressOffset, prog);
-                        Log.i("GRIB", "Pub: " + bmsg);
+//                        Log.i("GRIB", "Pub: " + bmsg);
 
                         f.write(buffer, 0, len1);
                     }
@@ -211,7 +211,7 @@ public class downloadGFSCombine extends Activity {
                     m_result = RESULT_OK;
     
                 } catch (Exception e) {
-                    Log.d("GRIB DOWNLOAD Exception", e.getMessage());
+                    Log.d("GRIB DOWNLOAD ExceptionB", e.getMessage());
                     m_result = ERROR_EXCEPTION;
 
                 } finally {
@@ -249,7 +249,7 @@ public class downloadGFSCombine extends Activity {
 
         protected void onProgressUpdate(Integer... progress) {
              String msg = String.format("%d\n", progress[0]);
-             Log.d("GRIB DOWNLOAD Progress",msg);
+//             Log.d("GRIB DOWNLOAD Progress",msg);
              mProgressDialog.setProgress(progress[0]);
         }
 

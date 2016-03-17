@@ -686,8 +686,6 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         String model = preferences.getString("GRIB_prefs_model", "GFS100");
         int time_step = Integer.parseInt(preferences.getString("GRIB_prefs_timestep", "3"));
         int days = Integer.parseInt(preferences.getString("GRIB_prefs_days", "2"));
-        Boolean bWind = preferences.getBoolean("GRIB_prefb_wind", true);
-        Boolean bPressure = preferences.getBoolean("GRIB_prefb_pressure", true);
 
         int lat_min = 0;
         int lat_max = 1;
@@ -717,16 +715,22 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             }
         }
 
+        if(lon_min < 0)
+            lon_min += 360;
+        if(lon_max < 0)
+            lon_max += 360.;
+
         Time tm = new Time(Time.getCurrentTimezone());
         tm.setToNow();
         tm.switchTimezone("UTC");
-        String startTime = tm.format("%Y%m%d");
+        String startDate = tm.format("%Y%m%d");
         int tHours = tm.hour;
-        int hour6 = (tHours / 6) * 6;
+
+//        int hour6 = (tHours / 6) * 6;
 
         //  GFS forcasts are late, sometimes, and UTC0000 forecast is not present yet
-        //  So get the 1800 for previous day.
-        if(hour6 == 0){
+        //  So get the previous day.
+        if(tHours < 18){
             Time tp = new Time(Time.getCurrentTimezone());
             tp.setToNow();
             tp.switchTimezone("UTC");
@@ -735,15 +739,19 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             else
                 tp.set(29, tm.month-1, tm.year);
 
-            startTime = tp.format("%Y%m%d");
+            startDate = tp.format("%Y%m%d");
 
-            hour6 = 18;
+//            hour6 = 18;
         }
-        else
-            hour6 -= 6;
+//        else
+//            hour6 -= 6;
 
-        startTime = startTime.concat(String.format("%02d", hour6));
-        String T0 = startTime.substring( startTime.length()-2, startTime.length());
+//        startTime = startTime.concat(String.format("%02d", hour6));
+//        String T0 = startTime.substring( startTime.length()-2, startTime.length());
+
+
+//        startTime = startTime.concat(String.format("%02d", hour6));
+//        String T0 = startTime.substring( startTime.length()-2, startTime.length());
 
         int loop_count = (days * 24) / time_step;
 //        String msga = String.format( "%d %d %d\n", days, time_step, loop_count);
@@ -766,32 +774,14 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         editor.putString("GRIB_dest_file", dest_file);
         editor.apply();
 
-        Log.i("GRIB", "model: " + model);
 
-        String gfsFilter = "";
-        String gfsFilterPl = "";
-        if(model.equals("GFS25")){
-            gfsFilterPl = "0p25.pl?";
-            gfsFilter = "z.pgrb2full.0p25.";
-        }
-        else if(model.equals("GFS50")){
-            gfsFilterPl = "0p50.pl?";
-            gfsFilter = "z.pgrb2full.0p50.";
-        }
-        else{
-            gfsFilterPl = "1p00.pl?";
-            gfsFilter = "z.pgrb2.1p00.";
-        }
-
-
-        String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilterPl;
-        String DIR = "%2Fgfs." + startTime;
+        String URL_GET = "http://nomads.ncep.noaa.gov/cgi-bin/filter_wave.pl?";
+        String DIR = "%2Fmulti_2." + startDate;
         String fileSaveName = "gribs/";
 
-        //http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl?file=gfs.t18z.pgrb2full.0p50.f003&dir=%2Fgfs.2016031418&......
 
-        // RTOFS Model
-        //http://nomads.ncep.noaa.gov/cgi-bin/filter_rtofs_hires.pl?file=ofs_atl.t00z.f001.atl.hires.grb.std.grib2&var_WTMP=on&var_UOGRD=on&var_VOGRD=on&subregion=&leftlon=200&rightlon=360&toplat=40&bottomlat=0&dir=%2Fofs.20160315
+        // WW3 Model
+        //http://nomads.ncep.noaa.gov/cgi-bin/filter_wave.pl?file=nah.t06z.grib.grib2&all_lev=on&all_var=on&leftlon=0&rightlon=360&toplat=90&bottomlat=-90&dir=%2Fmulti_2.20160316
 
         ArrayList<String> URLList = new ArrayList<String>();
         ArrayList<String> fileNameList = new ArrayList<String>();
@@ -799,86 +789,21 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         int t=0;
         // in a loop, get the files
         for(int x=0 ; x < loop_count ; x++){
-            String time = String.format("f%03d", t);
-            String fileName = "file=gfs.t" + T0 + gfsFilter + time;
+            String time = String.format("t%02d", t);
 
+            String fileName = "file=nah." + time + "z.grib.grib2";
 
-            boolean blev10m = false;
-            boolean blevmsl = false;
-            boolean blevsurface = false;
-            boolean blev2m = false;
 
             //  Make the required URL
-            String URL_FETCH = URL_GETGFS + fileName;
-            if(bWind){
-                URL_FETCH += "&var_UGRD=on&var_VGRD=on";
-                blev10m = true;
-            }
-            if(bPressure){
-                URL_FETCH += "&var_PRMSL=on";
-                blevmsl = true;
-            }
+            String URL_FETCH = URL_GET + fileName;
 
-            if(preferences.getBoolean("GRIB_prefb_windgust", false)){
-                URL_FETCH += "&var_GUST=on";
-                blevsurface = true;
-            }
-
-            if(preferences.getBoolean("GRIB_prefb_rainfall", false)){
-                URL_FETCH += "&var_APCP=on";                            // Not working March 2016...
-                blevsurface = true;
-            }
-
-            if(preferences.getBoolean("GRIB_prefb_cloudcover", false)){
-                URL_FETCH += "&var_TCDC=on";                            // Not working March 2016...
-            }
-
-            if(preferences.getBoolean("GRIB_prefb_airtemp", false)){
-                URL_FETCH += "&var_TMP=on";
-                blev2m = true;
-            }
-
-
-            if(preferences.getBoolean("GRIB_prefb_CAPE", false)){
-                URL_FETCH += "&var_CAPE=on";
-                blevsurface = true;
-            }
-
-
-            if(preferences.getBoolean("GRIB_prefb_relhum", false)){
-                URL_FETCH += "&var_RH=on";
-                blevsurface = true;
-            }
-
-/*
-        // Not available in GFS model
-            if(preferences.getBoolean("GRIB_prefb_seatemp", false)){
-            }
-
-            if(preferences.getBoolean("GRIB_prefb_alt", false)){
-            }
 
             if(preferences.getBoolean("GRIB_prefb_waves", false)){
+                URL_FETCH += "&lev_surface=on&var_WVDIR=on&var_WVHGT=on";
             }
 
-            if(preferences.getBoolean("GRIB_prefb_current", false)){
-            }
-*/
 
-            if(blev10m)
-                URL_FETCH += "&lev_10_m_above_ground=on";
-
-            if(blevmsl)
-                URL_FETCH += "&lev_mean_sea_level=on";
-
-            if(blevsurface)
-                URL_FETCH += "&lev_surface=on";
-
-            if(blev2m)
-                URL_FETCH += "&lev_2_m_above_ground=on";
-
-
-            URL_FETCH +="&subregion="
+            URL_FETCH += "&subregion="
                 + "&leftlon=" + String.format("%d", lon_min)
                 + "&rightlon=" + String.format("%d", lon_max)
                 + "&toplat=" + String.format("%d", lat_max)
@@ -894,7 +819,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-//            Log.i("GRIB", "localFileName: " + fullFileName);
+            Log.i("GRIB", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);
@@ -902,6 +827,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             t += time_step;
 
         }
+
 
         //  Calculate estimate block size
         double nBlock = (lat_max - lat_min) * (lon_max - lon_min);
@@ -914,10 +840,10 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         nBlock *= factor;
         int nParam = 0;
         nParam = 0;
-        if(bWind)
-            nParam += 2;
-        if(bPressure)
-            nParam ++;
+//        if(bWind)
+//            nParam += 2;
+//        if(bPressure)
+//            nParam ++;
 
         nBlock *= nParam;
         int niBlock = (int)nBlock;
@@ -932,48 +858,16 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
         intent.putExtra("GRIB_dest_file",dest_file);
         intent.putExtra("niBlock",niBlock);
-        startActivityForResult(intent, 0xf3ec /*OCPN_GRIB_REQUEST_CODE*/);
+        startActivityForResult(intent, 0xf3ec );    //OCPN_GRIB_REQUEST_CODE
 
 
-/*
-        $t = 0;
-         for ($x = 0; $x < $loop_count; $x++) {
 
-             $TIME = sprintf("f%03d", $t);
-
-             $FILE_NAME = "file=gfs.t" . $T0 . "z.pgrb2." . $gfs_filter . $TIME;  //file=gfs.t18z.pgrb2.0p25.f000
-
-             $t += $_GET['time_step'];
-
-             //  Make the required URL
-             $URL_FETCH = $URL_GETGFS . $FILE_NAME . "&" . $LEVEL . "&var_UGRD=on&var_VGRD=on" . "&subregion="
-                 . "&leftlon=" . $LEFT_LON
-                 . "&rightlon=" . $RIGHT_LON
-                 . "&toplat=" . $TOP_LAT
-                 . "&bottomlat=" . $BOTTOM_LAT
-                 . "&dir=" . $DIR;
-
-
-#                echo $URL_FETCH . "<br>";
-
-             // Make the server local storage file name
-             $SEQ = sprintf("SEQ%02d", $x);
-             $localFileName = $fileSaveName.$SEQ;
-             #echo $localFileName . "<br>";
-
-             //  Get the file
-             get_grib( $URL_FETCH, $localFileName);
-
-             #usleep(200000);         // sleep 0.2 secs.
-
-#                echo "<br>";
-
-         }
-*/
 
 
         return "OK";
     }
+
+
 
     private String downloadRTOFSDirect(){
 

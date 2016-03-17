@@ -31,6 +31,7 @@
        </string-array>
 
     <string-array name="GRIB_days_ListArray">
+        <item>1 day</item>
         <item>2 days</item>
         <item>3 days</item>
         <item>4 days</item>
@@ -39,6 +40,7 @@
         <item>7 days</item>
     </string-array>
     <string-array name="GRIB_days_ListValues">
+        <item>1</item>
         <item>2</item>
         <item>3</item>
         <item>4</item>
