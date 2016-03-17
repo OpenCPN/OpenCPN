@@ -1717,6 +1717,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;

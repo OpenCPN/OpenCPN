@@ -865,8 +865,14 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             DATA_TO_GRBV2[DATA_WAVES_SEC_DIR] = grb2DataType(10,0,12);
             DATA_TO_GRBV2[DATA_WAVES_SEC_PERIOD] = grb2DataType(10,0,13);
             }
-#endif            
+#endif
+
+            switch (dataNum) {
+                case 5: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
+                case 4: ret= GRB_WVDIR; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
+            }
             break;
+
         case 1:
             switch (dataNum) {
                 case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
@@ -1023,6 +1029,7 @@ void  GribV2Record::translateDataType()
             case GRB_UOGRD:
             case GRB_VOGRD:
                 break;
+            case GRB_WVHGT:
             case GRB_HTSGW:
             case GRB_WVDIR:
             case GRB_WVPER:
