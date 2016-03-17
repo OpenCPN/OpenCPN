@@ -513,6 +513,18 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     }
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
+
+    //  Set all the data visibilities "true" on file load.
+    //  This will ensure that at least "some" data is displayed on file change,
+    //  and so avoid user confusion of no data shown.
+    //  This is especially important if cursor tracking of data is disabled.
+    //  Display priority conflicts will be resolved elsewhere before display....
+    for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
+        if (InDataPlot(i)) {
+            m_bDataPlot[i]  = true;
+        }
+    }
+    
 }
 
 bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax)
