@@ -28,6 +28,8 @@ public class downloadGFSCombine extends Activity {
     public static final int ERROR_NO_INTERNET = 1;
     public static final int ERROR_NO_CONNECTION = 2;
     public static final int ERROR_EXCEPTION = 3;
+    public static final int WARNING_PARTIAL = 4;
+    public static final int ERROR_NO_RESOLVE = 5;
 
     public int m_result = RESULT_OK;
     public ArrayList<String> URLList;
@@ -35,6 +37,7 @@ public class downloadGFSCombine extends Activity {
 
     private static final int BUFFER_SIZE = 1024;
     public int nBlock;
+    public boolean mDialogShown = false;
 
     //initialize root directory
     //File rootDir = Environment.getExternalStorageDirectory();
@@ -95,6 +98,7 @@ public class downloadGFSCombine extends Activity {
             
             super.onPreExecute();
             showDialog(DIALOG_DOWNLOAD_PROGRESS);
+            mDialogShown = true;
         }
 
 
@@ -103,7 +107,42 @@ public class downloadGFSCombine extends Activity {
 
           for (ArrayList<String> urlList : urls) {
 
+            String stat = downloadList(urlList);
+
+            if(null != stat){
+
+                //  We now concatenate the GRIB2 files
+                Log.d("GRIB DOWNLOAD", "destinationFileName: " + destinationFileName);
+                FileOutputStream outputStream = null;
+                try{
+                    outputStream = new FileOutputStream(destinationFileName, true);    // appending
+                    for(int i=0 ; i < urlList.size() ; i++){
+                        File dFile = new File(fileNameList.get(i));
+                        if(dFile.exists()){
+                            InputStream inputStream = new FileInputStream(fileNameList.get(i));
+                            Log.d("GRIB DOWNLOAD", "concatenate " + fileNameList.get(i) + " to " + destinationFileName);
+                            copyFile(inputStream, outputStream);
+
+                        //  Delete the temprary file
+                            dFile.delete();
+                        }
+
+                    }
+                }catch (Exception e) {
+                    Log.d("GRIB DOWNLOAD Copy Exception", e.getMessage());
+                    m_result = ERROR_EXCEPTION;
+                }finally {
+                }
+            }
+
+          }   //  vararg
+
+            return "OK";
+        }
+
+        protected String downloadList(ArrayList<String> urlList) {
             long nAdjustedTotal = 1;
+            int nFilesOK = 0;
             for(int i=0 ; i < urlList.size() ; i++){
 
                 Log.d("GRIB DOWNLOAD",urlList.get(i));
@@ -114,8 +153,8 @@ public class downloadGFSCombine extends Activity {
 
                 HttpURLConnection c;
                 InputStream in;
-    
-                try {
+
+                 try {
                     //connecting to url
                     URL u = new URL(urlList.get(i));
                     c = (HttpURLConnection) u.openConnection();
@@ -123,38 +162,56 @@ public class downloadGFSCombine extends Activity {
                     c.setRequestMethod("GET");
                     c.setDoOutput(true);
                     c.connect();
-    
+
                     in = c.getInputStream();
-    
+
                     } catch (Exception e) {
                         Log.d("GRIB DOWNLOAD ExceptionA", e.getMessage());
-                        m_result = ERROR_NO_CONNECTION;
+
+                        // This file may not be downloadable.  If any files have been downloaded,
+                        // then we declare this to be a "partial" download, and simply exit with warning.
+                        if(nFilesOK > 0){
+                            if(e.getMessage().equals(urlList.get(i))){
+                                Log.i("GRIB DOWNLOAD", "partial");
+                                m_result = WARNING_PARTIAL;
+                                return null;
+                            }
+                        }
+                        else{
+                            Log.i("GRIB DOWNLOAD", "ERROR_NO_CONNECTION");
+                            if(e.getMessage().contains("resolve"))
+                                m_result = ERROR_NO_RESOLVE;
+                            else
+                                m_result = ERROR_NO_CONNECTION;
+                            return null;
+                        }
                         return null;
                     }
-    
+
+
                 try {
                     int http_status = c.getResponseCode();
                     String statusMsg = String.format("Status: %d\n", http_status);
                     Log.i("GRIB DOWNLOAD", statusMsg);
-    
+
                     //lenghtOfFile is used for calculating download progress
                     int lenghtOfFile = c.getContentLength();
-    
+
                     String msg = String.format("Connection made, file length: %d\n", lenghtOfFile);
                     Log.i("GRIB DOWNLOAD", msg);
-    
+
                     //this is where the file will be seen after the download
                     File nFile = new File(fileNameList.get(i));
                     File nDir = nFile.getParentFile();
                     if(null != nDir)
                         nDir.mkdirs();
                     nFile.createNewFile();
-    
+
                     String fileDownloaded = nFile.getAbsolutePath();
-    
+
                     FileOutputStream f = new FileOutputStream(nFile);
-    
-    
+
+
                         //here’s the download code
                     byte[] buffer = new byte[1024];
                     int len1 = 0;
@@ -199,7 +256,7 @@ public class downloadGFSCombine extends Activity {
                         nAdjustedTotal = total;
 
                     f.close();
-    
+
 //                    String bmsg = String.format("%d %X %d %d\n", total, total, nBlock, lgt);
 //                    Log.i("GRIB", "nBlock Factors: " + bmsg);
 
@@ -207,9 +264,10 @@ public class downloadGFSCombine extends Activity {
     //                Log.d("GRIB DOWNLOAD","Rename: " + fileDownloaded + " to " + fileName);;
                     //File fi = new File(fileDownloaded);
                     //fi.renameTo(fileName);
-    
+
                     m_result = RESULT_OK;
-    
+                    nFilesOK++;
+
                 } catch (Exception e) {
                     Log.d("GRIB DOWNLOAD ExceptionB", e.getMessage());
                     m_result = ERROR_EXCEPTION;
@@ -218,34 +276,12 @@ public class downloadGFSCombine extends Activity {
                   c.disconnect();
                 }
 
-            }  //for  
-
-            //  We now concatenate the GRIB2 files
-            Log.d("GRIB DOWNLOAD", "destinationFileName: " + destinationFileName);
-            FileOutputStream outputStream = null;
-            try{
-                outputStream = new FileOutputStream(destinationFileName, true);    // appending
-                for(int i=0 ; i < urlList.size() ; i++){
-                    InputStream inputStream = new FileInputStream(fileNameList.get(i));
-                    Log.d("GRIB DOWNLOAD", "concatenate " + fileNameList.get(i) + " to " + destinationFileName);
-                    copyFile(inputStream, outputStream);
-
-                }
-            }catch (Exception e) {
-                Log.d("GRIB DOWNLOAD Copy Exception", e.getMessage());
-                m_result = ERROR_EXCEPTION;
-            }finally {
-            }
+            }  //for
 
 
-
-
-          }   //  vararg
-
-
-
-            return "OK";
+             return "OK";
         }
+
 
         protected void onProgressUpdate(Integer... progress) {
              String msg = String.format("%d\n", progress[0]);
@@ -258,12 +294,11 @@ public class downloadGFSCombine extends Activity {
             Log.i("GRIB DOWNLOAD", "onPostExecute");
 
             //dismiss the dialog after the file was downloaded
-            dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+            if(mDialogShown)
+                dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
 
             Bundle b = new Bundle();
-//            b.putString("itemSelected", m_selected);
             Intent i = getIntent(); //gets the intent that called this intent
-//            i.putExtras(b);
             setResult(m_result, i);
 
             finish();

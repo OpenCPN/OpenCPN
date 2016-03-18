@@ -325,11 +325,17 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             if (resultCode == RESULT_OK) {
                 ShowTextDialog("GRIB file downloaded OK");
             }
-            else if(resultCode == DownloadFile.ERROR_NO_INTERNET){
+            else if(resultCode == downloadGFSCombine.ERROR_NO_INTERNET){
                 ShowTextDialog("No Internet available\nPlease check your device's Mobile Data or WiFi settings.");
             }
-            else if(resultCode == DownloadFile.ERROR_NO_CONNECTION){
+            else if(resultCode == downloadGFSCombine.ERROR_NO_CONNECTION){
                 ShowTextDialog("Connection Failed");
+            }
+            else if(resultCode == downloadGFSCombine.WARNING_PARTIAL){
+                ShowTextDialog("Warning:  Partial GRIB download\nGRIB elements successfully downloaded are still valid.");
+            }
+            else if(resultCode == downloadGFSCombine.ERROR_NO_RESOLVE){
+                ShowTextDialog("Connection Failed\nUnable to resolve host address.");
             }
             else {
                 ShowTextDialog("Download Failed\n  Please check logs.");
@@ -726,11 +732,10 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         String startDate = tm.format("%Y%m%d");
         int tHours = tm.hour;
 
-//        int hour6 = (tHours / 6) * 6;
 
         //  GFS forcasts are late, sometimes, and UTC0000 forecast is not present yet
         //  So get the previous day.
-        if(tHours < 18){
+        if(tHours < 1){
             Time tp = new Time(Time.getCurrentTimezone());
             tp.setToNow();
             tp.switchTimezone("UTC");
@@ -741,22 +746,10 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
             startDate = tp.format("%Y%m%d");
 
-//            hour6 = 18;
         }
-//        else
-//            hour6 -= 6;
 
-//        startTime = startTime.concat(String.format("%02d", hour6));
-//        String T0 = startTime.substring( startTime.length()-2, startTime.length());
-
-
-//        startTime = startTime.concat(String.format("%02d", hour6));
-//        String T0 = startTime.substring( startTime.length()-2, startTime.length());
-
-        int loop_count = (days * 24) / time_step;
-//        String msga = String.format( "%d %d %d\n", days, time_step, loop_count);
-//        Log.i("GRIB", msga);
-
+        // Each downloaded file contains 126 hours of forecast
+        int loop_count = ((days * 24) / 126) + 1;
 
         Time tn = new Time(Time.getCurrentTimezone());
         tn.setToNow();
@@ -840,16 +833,13 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         nBlock *= factor;
         int nParam = 0;
         nParam = 0;
-//        if(bWind)
-//            nParam += 2;
-//        if(bPressure)
-//            nParam ++;
+
 
         nBlock *= nParam;
         int niBlock = (int)nBlock;
 
         String bmsg = String.format("%d\n", niBlock);
-        Log.i("GRIB", "nBlock: " + bmsg);
+//        Log.i("GRIB", "nBlock: " + bmsg);
 
 
         Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
@@ -1031,11 +1021,6 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         nBlock *= factor;
         int nParam = 0;
         nParam = 0;
-//        if(bWind)
-//            nParam += 2;
-//        if(bPressure)
-//            nParam ++;
-
         nBlock *= nParam;
         int niBlock = (int)nBlock;
 
