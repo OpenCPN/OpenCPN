@@ -868,8 +868,9 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 #endif
 
             switch (dataNum) {
-                case 5: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
-                case 4: ret= GRB_WVDIR; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
+                case 3: ret= GRB_HTSGW; break;
+                case 5: ret= GRB_WVHGT; break;
+                case 4: ret= GRB_WVDIR; break;
             }
             break;
 
