@@ -735,7 +735,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
         //  GFS forcasts are late, sometimes, and UTC0000 forecast is not present yet
         //  So get the previous day.
-        if(tHours < 1){
+        if(tHours < 18){
             Time tp = new Time(Time.getCurrentTimezone());
             tp.setToNow();
             tp.switchTimezone("UTC");
@@ -792,7 +792,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
 
             if(preferences.getBoolean("GRIB_prefb_waves", false)){
-                URL_FETCH += "&lev_surface=on&var_WVDIR=on&var_WVHGT=on";
+                URL_FETCH += "&lev_surface=on&var_WVDIR=on&var_HTSGW=on";
             }
 
 
