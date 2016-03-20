@@ -43,6 +43,7 @@ class wxSVGImageElement:
     wxSVGAnimatedLength m_width;
     wxSVGAnimatedLength m_height;
     wxSVGAnimatedPreserveAspectRatio m_preserveAspectRatio;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedLength& GetX() const { WX_SVG_ANIM_LENGTH_CALC_WIDTH(m_x, GetViewportElement()); return m_x; }
@@ -65,8 +66,6 @@ class wxSVGImageElement:
     inline void SetPreserveAspectRatio(const wxSVGAnimatedPreserveAspectRatio& n) { m_preserveAspectRatio = n; }
     inline void SetPreserveAspectRatio(const wxSVGPreserveAspectRatio& n) { m_preserveAspectRatio.SetBaseVal(n); }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);
