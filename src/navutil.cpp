@@ -366,6 +366,7 @@ extern int              g_chart_zoom_modifier;
 extern int              g_NMEAAPBPrecision;
 
 extern wxString         g_TalkerIdText;
+extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
@@ -1301,6 +1302,7 @@ int MyConfig::LoadMyConfig()
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
     
     Read( _T( "TalkerIdText" ), &g_TalkerIdText, _T("EC") );
+    Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength, 6 );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
