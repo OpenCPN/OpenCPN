@@ -846,12 +846,14 @@
     <section>
       <name>ChartCatalogs</name>
       <catalogs>
+<!-- Currently not avaialable
         <catalog>
           <name>Argentina RNC Nautical Charts</name>
           <type>RNC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/AR_RNC_Catalog.xml</location>
           <dir>{USERDATA}/RNC/ARGENTINA</dir>
         </catalog>
+-->
         <catalog>
           <name>Austria Inland ENC Charts</name>
           <type>ENC</type>
