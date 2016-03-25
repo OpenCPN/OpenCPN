@@ -189,41 +189,24 @@ void DataStream::Open(void)
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
-            comx = comx.BeforeFirst(' ');               // strip off any description provided by Windows
-            
-#if 0
- #ifdef __WXMSW__
-            wxString scomx = comx;
-            scomx.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
-
-    //  As a quick check, verify that the specified port is available
-            HANDLE hSerialComm = CreateFile(scomx.fn_str(),       // Port Name
-                                      GENERIC_READ,
-                                      0,
-                                      NULL,
-                                      OPEN_EXISTING,
-                                      0,
-                                      NULL);
-
-            if(hSerialComm == INVALID_HANDLE_VALUE) {
-                m_last_error = DS_ERROR_PORTNOTFOUND;
-                wxLogMessage( _T("   Error, comm port open failure, INVALID_HANDLE_VALUE, Datastream skipped.") );
-                return;
+#ifdef __OCPN__ANDROID__
+            if(comx.Contains(_T("AUSBSerial"))){
+                androidStartUSBSerial(comx, m_BaudRate, m_consumer);
+                m_bok = true;
             }
             else
-                CloseHandle(hSerialComm);
-#endif
-#endif
+#endif            
+            {
 
+                comx = comx.BeforeFirst(' ');               // strip off any description provided by Windows
+                
     //    Kick off the DataSource RX thread
-            m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this,
-                                                                 m_consumer,
-                                                                 comx, m_BaudRate,
-                                                                 m_io_select);
-            m_Thread_run_flag = 1;
-            m_pSecondary_Thread->Run();
+                m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this, m_consumer, comx, m_BaudRate, m_io_select);
+                m_Thread_run_flag = 1;
+                m_pSecondary_Thread->Run();
 
-            m_bok = true;
+                m_bok = true;
+            }
         }
     }
     
@@ -478,6 +461,14 @@ void DataStream::Close()
 #endif
     }
     
+    wxString port =  m_portstring.AfterFirst(':');      // strip "Serial:"
+    
+#ifdef __OCPN__ANDROID__
+    if(port.Contains(_T("AUSBSerial"))){
+        androidStopUSBSerial(port);
+        m_bok = false;
+    }
+#endif        
         
 }
 

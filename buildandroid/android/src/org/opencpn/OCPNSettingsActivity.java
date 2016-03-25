@@ -59,6 +59,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 {
 
     private boolean mbS52 = false;
+    private String m_serialString = "";
 
     @Override
     public void onBuildHeaders(List<Header> target) {
@@ -70,8 +71,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
         if (extras != null) {
             String settings = extras.getString("SETTINGS_STRING");
 
-            Log.i("DEBUGGER_TAG", "OCPNSettingsActivity");
-//            Log.i("DEBUGGER_TAG", settings);
+//            Log.i("DEBUGGER_TAG", "OCPNSettingsActivity");
+//            Log.i("OpenCPN", settings);
 
             m_settings = settings;
             m_newSettings = "";
@@ -109,6 +110,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
                     int mark = tk.indexOf(":");
                     if(mark > 0){
                         String key = tk.substring(0, mark);
+                        //Log.i("OpenCPN", key);
                         String value = tk.substring(mark+1);
                         if(value.equals("1"))
                             editor.putBoolean(key, true);
@@ -134,6 +136,11 @@ public class OCPNSettingsActivity extends PreferenceActivity
            editor.commit();
         }
 
+        // Get the serial port(s) currently detected
+        m_serialString = extras.getString("DETECTEDSERIALPORTS_STRING");
+//        Log.i("OpenCPN", "onBuildHeaders m_serialString: " + m_serialString);
+
+
     }
 
      //  We use this method to pass initial arguments to fragments
@@ -152,6 +159,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
              header.fragmentArguments.putString("S52", "FALSE");
          }
 
+
+         header.fragmentArguments.putString("DETECTEDSERIALPORTS_STRING", m_serialString);
 
          super.onHeaderClick(header, position);
 
@@ -260,7 +269,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
    {
        super.onPause();
 
-       Log.i("DEBUGGER_TAG", "SettingsActivity onPause");
+       //Log.i("DEBUGGER_TAG", "SettingsActivity onPause");
 
        createSettingsString();
 
@@ -275,7 +284,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
    @Override
    public void finish() {
-       Log.i("DEBUGGER_TAG", "SettingsActivity finish");
+       //Log.i("DEBUGGER_TAG", "SettingsActivity finish");
 
        createSettingsString();
 
@@ -316,7 +325,19 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_lockwp", preferences.getBoolean("prefb_lockwp", false)));
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_confirmdelete", preferences.getBoolean("prefb_confirmdelete", false)));
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_expertmode", preferences.getBoolean("prefb_expertmode", false)));
+
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_internalGPS", preferences.getBoolean("prefb_internalGPS", false)));
+
+        //  Add USB Serial port information to the string only if the port was detected on entry to this activity
+        if(m_serialString.contains("2303"))
+            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_PL2303", preferences.getBoolean("prefb_PL2303", false)));
+        if(m_serialString.contains("dAISy"))
+            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_dAISy", preferences.getBoolean("prefb_dAISy", false)));
+        if(m_serialString.contains("FT232R"))
+            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT232R", preferences.getBoolean("prefb_FT232R", false)));
+        if(m_serialString.contains("FT231X"))
+            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT231X", preferences.getBoolean("prefb_FT231X", false)));
+
 
         if(mbS52){
          m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_showsound", preferences.getBoolean("prefb_showsound", false)));
@@ -343,7 +364,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartScaleFactor", preferences.getString("prefs_chartScaleFactor", "?")));
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartInitDir", preferences.getString("prefs_chartInitDir", "?")));
 
-//        Log.i("DEBUGGER_TAG", m_newSettings);
+        //Log.i("OpenCPN", "createSettingsString.m_newSettings: " + m_newSettings);
+        //Log.i("OpenCPN", "createSettingsString.m_serialString: " + m_serialString);
 
     }
 

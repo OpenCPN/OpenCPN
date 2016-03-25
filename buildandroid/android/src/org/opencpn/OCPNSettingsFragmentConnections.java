@@ -86,8 +86,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
+import android.preference.CheckBoxPreference;
+import android.preference.PreferenceScreen;
+import android.content.SharedPreferences;
+
 import org.opencpn.opencpn.R;
 
 //@ANDROID-11
@@ -101,10 +107,69 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i("DEBUGGER_TAG", "SettingsFragment connections!");
+        //Log.i("OpenCPN", "SettingsFragment connections!");
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences_connections);
-    }
 
+        boolean bPL2303 = false;
+        boolean bdAISy = false;
+        boolean bFT232R = false;
+        boolean bFT231X = false;
+
+
+        // Retrieve initial arguments
+        Bundle extras = getArguments();
+
+        if (extras != null) {
+            String serialString = extras.getString("DETECTEDSERIALPORTS_STRING");
+            if(null != serialString){
+                //Log.i("OpenCPN", "OCPNSettingsFragmentConnections.DETECTEDSERIALPORTS_STRING: " + serialString);
+
+                if(serialString.contains("2303"))
+                    bPL2303 = true;
+                if(serialString.contains("dAISy"))
+                    bdAISy = true;
+                if(serialString.contains("FT232R"))
+                    bFT232R = true;
+                if(serialString.contains("FT231X"))
+                    bFT231X = true;
+
+            }
+        }
+
+
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+         PreferenceScreen screen = getPreferenceScreen();
+
+         CheckBoxPreference cPref = (CheckBoxPreference)findPreference("prefb_PL2303");
+         if(null != cPref){
+             if(!bPL2303){
+                 screen.removePreference(cPref);
+             }
+         }
+
+         cPref = (CheckBoxPreference)findPreference("prefb_dAISy");
+         if(null != cPref){
+             if(!bdAISy){
+                 screen.removePreference(cPref);
+             }
+         }
+
+         cPref = (CheckBoxPreference)findPreference("prefb_FT232R");
+         if(null != cPref){
+             if(!bFT232R){
+                 screen.removePreference(cPref);
+             }
+         }
+
+         cPref = (CheckBoxPreference)findPreference("prefb_FT231X");
+         if(null != cPref){
+             if(!bFT231X){
+                 screen.removePreference(cPref);
+             }
+         }
+
+
+    }
 }

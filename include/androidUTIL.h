@@ -32,6 +32,8 @@
 #include "wx/wx.h"
 #endif //precompiled headers
 
+class ArrayOfCDI;
+
 #include <QString>
 
 // Enumerators for OCPN menu actions requested by Android UI
@@ -89,6 +91,10 @@ extern wxArrayString androidGetBluetoothScanResults();
 extern bool androidStartBT(wxEvtHandler *consumer, wxString mac_address );
 extern bool androidStopBT();
 
+extern wxArrayString *androidGetSerialPortsArray( void );
+extern bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer);
+extern bool androidStopUSBSerial(wxString &portname);
+
 extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
@@ -120,6 +126,8 @@ bool androidSetFullscreen( bool bFull );
 
 void androidLaunchHelpView();
 void androidTerminate();
+
+int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
 
 bool androidShowDisclaimer( wxString title, wxString msg );
 

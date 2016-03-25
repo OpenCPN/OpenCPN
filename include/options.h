@@ -195,6 +195,7 @@ enum {
 #define TIDES_CHANGED 2048
 #define GL_CHANGED 4096
 #define REBUILD_RASTER_CACHE 8192
+#define NEED_NEW_OPTIONS 16384
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000

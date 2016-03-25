@@ -1717,7 +1717,6 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
 
   m_lcSources->Refresh();
   FillSourceList();
-
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEANet(FALSE);
@@ -2326,7 +2325,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   m_lcSources->Refresh();
   FillSourceList();
-
+    
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEANet(FALSE);
@@ -5425,6 +5424,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
 }
 
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
+       
   if (!m_bNMEAParams_shown) return NULL;
 
   //  Special encoding for deleted connection
@@ -7438,8 +7438,11 @@ void options::SetDSFormRWStates(void) {
 }
 
 void options::SetConnectionParams(ConnectionParams* cp) {
+  if(wxNOT_FOUND == m_comboPort->FindString(cp->Port))
+       m_comboPort->Append(cp->Port);
+    
   m_comboPort->Select(m_comboPort->FindString(cp->Port));
-  m_comboPort->SetValue(cp->Port);
+ 
   m_cbCheckCRC->SetValue(cp->ChecksumCheck);
   m_cbGarminHost->SetValue(cp->Garmin);
   m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
@@ -7521,10 +7524,16 @@ void options::SetDefaultConnectionParams(void) {
   if (!g_bserial_access_checked) bserial = FALSE;
 #endif
 
+
+#ifdef __OCPN__ANDROID__
+  m_rbTypeInternalGPS->SetValue(true);
+  SetNMEAFormToGPS();
+#else  
   m_rbTypeSerial->SetValue(bserial);
   m_rbTypeNet->SetValue(!bserial);
-
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
+#endif
+  
   m_connection_enabled = TRUE;
   
   // Reset touch flag

@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.lang.Math;
 import java.util.concurrent.Semaphore;
 import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -76,9 +78,12 @@ import android.app.DownloadManager.Request;
 import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.content.IntentFilter;
+import android.app.PendingIntent;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
+import android.app.ActivityManager.*;
+
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageInfo;
@@ -162,6 +167,27 @@ import org.opencpn.TitleNavigationAdapter;
 import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
+
+import org.opencpn.UsbSerialHelper;
+
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.driver.UsbId;
+import com.hoho.android.usbserial.util.HexDump;
+import android.os.AsyncTask;
+import java.util.ArrayList;
+import java.util.List;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 public class QtActivity extends Activity implements ActionBar.OnNavigationListener
 {
@@ -309,6 +335,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private String m_GRIBReturn;
 
+    private UsbSerialHelper uSerialHelper;
+
     // action bar
     private ActionBar actionBar;
 
@@ -344,6 +372,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private double m_gminitialZoom;
 
     private boolean m_fullScreen;
+    private String m_scannedSerial = "";
 
     public QtActivity()
     {
@@ -554,17 +583,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String doAndroidSettings(String settings){
-        //Log.i("DEBUGGER_TAG", "doAndroidSettings");
+        //Log.i("OpenCPN", "doAndroidSettings");
         //Log.i("DEBUGGER_TAG", settings);
 
+        m_scannedSerial = scanSerialPorts( UsbSerialHelper.NOSCAN );      // No scan, just report latest results.
 
         m_settingsReturn = new String();
 
         Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
         intent.putExtra("SETTINGS_STRING",settings);
-        startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
+        intent.putExtra("DETECTEDSERIALPORTS_STRING",m_scannedSerial);
+        //Log.i("OpenCPN", m_scannedSerial);
 
-        //Log.i("DEBUGGER_TAG", "after start activity");
+        startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
 
         int pss = 55;
         String ret;
@@ -1075,6 +1106,42 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         ret_str = "OK";
         return ret_str;
     }
+
+
+    public String scanSerialPorts( final int parm ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.scanSerialPorts(parm);
+        }
+
+        m_scannedSerial = ret_str;
+        return ret_str;
+    }
+
+
+    public String startSerialPort( final String name, final String baudRate ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.startUSBSerialPort( name, Integer.parseInt(baudRate) );
+        }
+
+        return ret_str;
+    }
+
+    public String stopSerialPort( final String name ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.stopUSBSerialPort(name);
+        }
+
+        return ret_str;
+    }
+
+
+
 
     private Semaphore mutex = new Semaphore(0);
     private Query m_query = new Query();
@@ -2268,12 +2335,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
 //        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
-//            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
                 m_settingsReturn = data.getStringExtra("SettingsString");
+                //Log.i("OpenCPN", "onActivityResult.SettingsString: " + m_settingsReturn);
                 nativeLib.invokeCmdEventCmdString( ID_CMD_NULL_REFRESH, m_settingsReturn);
 
                 // defer hte application of settings until the screen refreshes
@@ -2283,10 +2349,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                           nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
                      }
                 }, 100);
-//                Log.i("DEBUGGER_TAG", m_settingsReturn);
             }
             else if (resultCode == RESULT_CANCELED){
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
 
             super.onActivityResult(requestCode, resultCode, data);
@@ -2543,19 +2607,29 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
 
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-//        Log.i("DEBUGGER_TAG", "onCreate");
+//        Log.i("OpenCPN", "onCreate" + this);
+//        String action = getIntent().getAction();
+//        Log.i("OpenCPN", "onCreate Action: " + action);
+
         //Toast.makeText(getApplicationContext(), "onCreate",Toast.LENGTH_LONG).show();
 
         super.onCreate(savedInstanceState);
 
         //  Bug fix, see http://code.google.com/p/android/issues/detail?id=26658
         if(!isTaskRoot()) {
+//            Log.i("OpenCPN", "onCreate NOT ROOT");
             finish();
             return;
         }
+
+
+//        Log.i("OpenCPN", "onCreate Root");
 
 //        setContentView(R.layout.activity_main);
 
@@ -2592,6 +2666,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         nativeLib = new OCPNNativeLib();
+
+        // USB Port setup
+        uSerialHelper = new UsbSerialHelper(this, nativeLib);
+        uSerialHelper.initUSBSerial();
 
 
         if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
@@ -2873,7 +2951,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onDestroy()
     {
-        //Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
+//        Log.i("OpenCPN", "onDestroy" + this);
 
         super.onDestroy();
 
@@ -2989,6 +3068,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         if (!QtApplication.invokeDelegate(intent).invoked)
             super.onNewIntent(intent);
+
+/*
+        Log.i("DEBUGGER_TAG", "onNewIntent");
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            Log.i("DEBUGGER_TAG", "ACTION_USB_DEVICE_ATTACHED");
+
+        }
+*/
     }
     public void super_onNewIntent(Intent intent)
     {
@@ -3103,12 +3191,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onPause()
     {
-        //Log.i("DEBUGGER_TAG", "onPause");
+//        Log.i("OpenCPN", "onPause "  + this);
 
-        int i = nativeLib.onPause();
-        String aa;
-        aa = String.format("%d", i);
-        //Log.i("DEBUGGER_TAG", aa);
+        if(null != nativeLib)
+            nativeLib.onPause();
 
         super.onPause();
         QtApplication.invokeDelegate();
@@ -3204,7 +3290,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onRestart()
     {
-        //Log.i("DEBUGGER_TAG", "onRestart");
+        //Log.i("OpenCPN", "onRestart");
         super.onRestart();
         QtApplication.invokeDelegate();
     }
@@ -3225,12 +3311,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onResume()
     {
-        //Log.i("DEBUGGER_TAG", "onResume");
+        Log.i("OpenCPN", "onResume "  + this);
 
         if(null != nativeLib)
             nativeLib.onResume();
 
         super.onResume();
+
         QtApplication.invokeDelegate();
     }
     //---------------------------------------------------------------------------
@@ -3238,6 +3325,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public Object onRetainNonConfigurationInstance()
     {
+        //Log.i("DEBUGGER_TAG", "onRetainNonConfigurationInstance "  + this);
         QtApplication.InvokeResult res = QtApplication.invokeDelegate();
         if (res.invoked)
             return res.methodReturns;
@@ -3281,12 +3369,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStart()
     {
-        Log.i("DEBUGGER_TAG", "onStart");
-
-//        int i = nativeLib.onStart();
-//        String aa;
-//        aa = String.format("%d", i);
-//        Log.i("DEBUGGER_TAG", aa);
+//        Log.i("OpenCPN", "onStart");
 
         super.onStart();
         QtApplication.invokeDelegate();
@@ -3296,7 +3379,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStop()
     {
-        //Log.i("DEBUGGER_TAG", "onStop");
+        //Log.i("OpenCPN", "onStop");
 
         int i = nativeLib.onStop();
         String aa;
