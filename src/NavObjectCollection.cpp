@@ -1230,10 +1230,12 @@ bool NavObjectCollection1::CreateNavObjGPXPoints( void )
 bool NavObjectCollection1::CreateNavObjGPXRoutes( void )
 {
     // Routes
+    if(!pRouteList)
+        return false;
+    
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
         Route *pRoute = node1->GetData();
-        
         if( !pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) && (!pRoute->m_btemp) )
             GPXCreateRoute(m_gpx_root.append_child("rte"), pRoute);
         node1 = node1->GetNext();
