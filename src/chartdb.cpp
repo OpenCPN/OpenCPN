@@ -295,7 +295,7 @@ void ChartDB::DeleteCacheEntry(int i, bool bDelTexture, const wxString &msg)
 void ChartDB::PurgeCache()
 {
 //    Empty the cache
-      wxLogMessage(_T("Chart cache purge"));
+      //wxLogMessage(_T("Chart cache purge"));
 
       if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
         unsigned int nCache = pChartCache->GetCount();

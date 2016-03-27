@@ -327,7 +327,7 @@ void __CALL_CONVENTION gshhserrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
-   wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+   //wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
 }
 
 void __CALL_CONVENTION gshhsbeginCallback( GLenum type )

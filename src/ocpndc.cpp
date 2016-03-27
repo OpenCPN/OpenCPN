@@ -844,7 +844,7 @@ void APIENTRY ocpnDCerrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
-   wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
+   //wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback( GLenum type )
