@@ -3893,15 +3893,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     itemStaticBoxSizerVar->Add(0, border_size * 4);
 
-    wxStaticText* itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation") );
+    itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation") );
     itemStaticBoxSizerVar->Add(itemStaticTextUserVar, 1, wxEXPAND | wxALL, group_item_spacing);
     
-    
-    //        wxStaticText* itemStaticTextUserVar = new wxStaticText(
-    //        panelUnits, wxID_ANY, _("Assumed magnetic variation") );
-    //       wrapperSizer->Add( itemStaticTextUserVar, 1, wxEXPAND | wxALL |
-    //       wxALIGN_CENTRE_VERTICAL, group_item_spacing );
-
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     itemStaticBoxSizerVar->Add(magVarSizer, 1, wxEXPAND | wxALL, group_item_spacing);
 
