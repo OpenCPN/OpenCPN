@@ -1139,12 +1139,17 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
+
 bool MyApp::OnInit()
 {
     wxStopWatch sw;
 
     if( !wxApp::OnInit() ) return false;
 
+    #ifdef __OCPN__ANDROID__
+    androidEnableBackButton( false );
+    #endif
+    
 #if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
     // There is a race condition between cairo which is used for text rendering
     // by gtk and EGL which without the below code causes a bus error and the
@@ -1871,7 +1876,6 @@ bool MyApp::OnInit()
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
-
     bool b_SetInitialPoint = false;
 
     //   Build the initial chart dir array
@@ -2095,7 +2099,6 @@ extern ocpnGLOptions g_GLOptions;
 
     gFrame->RequestNewToolbar();
 
-
     cc1->Enable();
     cc1->SetFocus();
 
@@ -2116,7 +2119,6 @@ extern ocpnGLOptions g_GLOptions;
         }
     }
 #endif
-
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
 
@@ -2132,12 +2134,11 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Raise();
     cc1->Enable();
     cc1->SetFocus();
-
 #ifdef __WXQT__
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Raise();
 #endif
-
+        
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif
@@ -2163,11 +2164,11 @@ extern ocpnGLOptions g_GLOptions;
         
         
     // Start delayed initialization chain after 100 milliseconds
-    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
+    gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
 
-    
+   
     return TRUE;
 }
 
@@ -2501,8 +2502,17 @@ MyFrame::~MyFrame()
 
         node = node->GetNext();
     }
+
     delete pRouteList;
+    pRouteList = NULL;
+    
     delete g_FloatingToolbarConfigMenu;
+    
+    Disconnect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
+    Disconnect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
+    Disconnect( wxEVT_OCPN_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
+    
+    
 }
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
@@ -3182,9 +3192,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     // The Options dialog, and other deferred init items, are not fully initialized.
     // Best to just cancel the close request. 
-    // This is probably only reachable on slow hardware...
+    // This is probably only reachable on slow hardware, or on Android life-cycle events...
+#ifndef __OCPN__ANDROID__    
     if(!g_bDeferredInitDone)
         return;
+#endif    
     
     
     if(g_options){
@@ -3363,9 +3375,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Destroy();
-    g_FloatingToolbarDialog = NULL;
+#ifndef __OCPN__ANDROID__
+     if(g_FloatingToolbarDialog)
+         g_FloatingToolbarDialog->Destroy();
+     g_FloatingToolbarDialog = NULL;
+#endif
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
@@ -3450,7 +3464,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     NMEALogWindow::Shutdown();
 
-    g_FloatingToolbarDialog = NULL;
     g_bTempShowMenuBar = false;
 
 
@@ -6260,8 +6273,14 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());            
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP());
+            
+            #ifdef __OCPN__ANDROID__
+            androidEnableBackButton( true );
+            #endif
+
             break;
+            
         }
     }   // switch
     cc1->Refresh( true );
