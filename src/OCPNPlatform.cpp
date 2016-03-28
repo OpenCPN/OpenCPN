@@ -725,6 +725,17 @@ void OCPNPlatform::SetDefaultOptions( void )
 }
 
 
+int OCPNPlatform::platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray){
+    
+    int ret_val = 0;
+#ifdef __OCPN__ANDROID__    
+    ret_val = androidApplySettingsString( settings, pDirArray);
+#endif
+    
+    return ret_val;
+}
+
+
 void OCPNPlatform::applyExpertMode(bool mode)
 {
 #ifdef __OCPN__ANDROID__

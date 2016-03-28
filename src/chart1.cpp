@@ -9712,9 +9712,7 @@ void MyFrame::applySettingsString( wxString settings)
     bool bPrevNavMode = g_bCourseUp;
     ArrayOfCDI *pNewDirArray = new ArrayOfCDI;
     
-    //  TODO  Move this to platform::platformApplySettingsString();
-    
-    int rr = androidApplySettingsString( settings, pNewDirArray);
+    int rr = g_Platform->platformApplyPrivateSettingsString( settings, pNewDirArray);
 
     // And apply the changes
     pConfig->UpdateSettings();

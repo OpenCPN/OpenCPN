@@ -38,6 +38,7 @@
 #include <stdio.h>
 
 class MyConfig;
+class ArrayOfCDI;
 
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
@@ -141,7 +142,8 @@ public:
     void setChartTypeMaskSel(int mask, wxString &indicator);
 
     void LaunchLocalHelp();
-    
+    int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
+        
 private:
     wxString    m_homeDir;
     wxString    m_exePath;
