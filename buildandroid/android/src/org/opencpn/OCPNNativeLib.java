@@ -1,10 +1,19 @@
 package org.opencpn;
 
+
+
 public class OCPNNativeLib {
 
-//  static {
-//    System.loadLibrary("ndk_demo");
-//  }
+    private static OCPNNativeLib ourInstance = new OCPNNativeLib();
+
+    public static OCPNNativeLib getInstance() {
+        return ourInstance;
+    }
+
+    private OCPNNativeLib() {
+    }
+
+
 
   /**
    * Adds two integers, returning their sum

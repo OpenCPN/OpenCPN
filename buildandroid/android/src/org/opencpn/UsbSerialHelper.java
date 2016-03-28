@@ -79,8 +79,7 @@ public class UsbSerialHelper {
 
     private boolean usbConnected = false;
 
-    private OCPNNativeLib nativeLib;
-    private Context mContext;
+    private OCPNNativeLib nativeLib = null;
 
     private static final String ACTION_USB_PERMISSION =
         "com.android.example.USB_PERMISSION";
@@ -92,12 +91,9 @@ public class UsbSerialHelper {
     public static final int NOSCAN = 0;
     public static final int SCAN = 1;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
-    public UsbSerialHelper(Context context, OCPNNativeLib nativeLibrary) {
-        nativeLib = nativeLibrary;
-        mContext = context;
-
+    public UsbSerialHelper() {
     }
 
     private class portContainer{
@@ -152,20 +148,38 @@ public class UsbSerialHelper {
     };
 
 
-    public void initUSBSerial(){
-        mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
-        mExecutor = Executors.newSingleThreadExecutor();
+    public void initUSBSerial(Context context){
+        if(null != context){
+            mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+            mExecutor = Executors.newSingleThreadExecutor();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        mContext.registerReceiver(mUsbReceiver, filter);
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+            context.registerReceiver(mUsbReceiver, filter);
 
-        filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        mContext.registerReceiver(mUsbReceiver, filter);
+            filter = new IntentFilter();
+            filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+            context.registerReceiver(mUsbReceiver, filter);
+        }
 
-        refreshDeviceList();
+        nativeLib = OCPNNativeLib.getInstance();
     }
+
+    public void deinitUSBSerial(Context context){
+        if(null != context){
+            try {
+                context.unregisterReceiver(mUsbReceiver);
+            } catch(IllegalArgumentException e) {
+                if (e.getMessage().indexOf("Receiver not registered") >= 0) {
+                        //here you know receiver is not registered, do what you need here
+                } else {
+                        //other exceptions
+                        throw e;
+                }
+            }
+        }
+    }
+
 
     private portContainer findContainer( int listID, String friendlyName ){
         List<portContainer> list = mDetectedPorts;
@@ -385,7 +399,7 @@ public class UsbSerialHelper {
             @Override
             protected List<UsbSerialPort> doInBackground(Void... params) {
                 if(DEBUG) Log.d("OpenCPN", "Refreshing device list ...");
-                SystemClock.sleep(1000);
+//                SystemClock.sleep(1000);
 
                 final List<UsbSerialDriver> drivers =
                         UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
@@ -557,7 +571,6 @@ public class UsbSerialHelper {
         if(null != port){
             if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort,  port=" + port + " baud=" + String.valueOf(container.baudRate) );
 
-                //final UsbManager usbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
                 if(mUsbManager.hasPermission(port.getDriver().getDevice()))
                     if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort,  Permission OK" );
                 else
@@ -680,6 +693,7 @@ public class UsbSerialHelper {
         mActivePorts.remove(container);
         }
 
+/*
         //  Is this container already in the pending list?
         //  If so, don't add it again
         if(null == findContainer( PENDING, friendlyName )){
@@ -693,7 +707,7 @@ public class UsbSerialHelper {
         else{
             if(DEBUG) Log.d("OpenCPN", "stopUSBSerialPort already in PENDING list");
         }
-
+*/
         if(bFound){
             if(DEBUG) Log.d("OpenCPN", "stopUSBSerialPort OK,  device: " + port.getClass().getSimpleName());
 
