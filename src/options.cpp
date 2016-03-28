@@ -3886,22 +3886,24 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     //  Mag Heading user variation
 
-    wxStaticBox* itemStaticBoxVar =
-        new wxStaticBox(panelUnits, wxID_ANY, _("Assumed magnetic variation"));
-    wxStaticBoxSizer* itemStaticBoxSizerVar =
-        new wxStaticBoxSizer(itemStaticBoxVar, wxVERTICAL);
+    wxStaticBox* itemStaticBoxVar = new wxStaticBox(panelUnits, wxID_ANY, _T(""));
+    
+    wxStaticBoxSizer* itemStaticBoxSizerVar = new wxStaticBoxSizer(itemStaticBoxVar, wxVERTICAL);
     wrapperSizer->Add(itemStaticBoxSizerVar, 0, wxALL | wxEXPAND, 5);
 
     itemStaticBoxSizerVar->Add(0, border_size * 4);
 
+    wxStaticText* itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation") );
+    itemStaticBoxSizerVar->Add(itemStaticTextUserVar, 1, wxEXPAND | wxALL, group_item_spacing);
+    
+    
     //        wxStaticText* itemStaticTextUserVar = new wxStaticText(
     //        panelUnits, wxID_ANY, _("Assumed magnetic variation") );
     //       wrapperSizer->Add( itemStaticTextUserVar, 1, wxEXPAND | wxALL |
     //       wxALIGN_CENTRE_VERTICAL, group_item_spacing );
 
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
-    itemStaticBoxSizerVar->Add(magVarSizer, 1, wxEXPAND | wxALL,
-                               group_item_spacing);
+    itemStaticBoxSizerVar->Add(magVarSizer, 1, wxEXPAND | wxALL, group_item_spacing);
 
     pMagVar = new wxTextCtrl(panelUnits, ID_OPTEXTCTRL, _T(""),
                              wxDefaultPosition, wxSize(150, -1), wxTE_RIGHT);
@@ -3909,8 +3911,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
-    magVarSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)")),
-                     0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
+    itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
+    
+    magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
     itemStaticBoxSizerVar->Add(0, border_size * 40);
 
@@ -4005,7 +4008,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                              wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
-	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
+    itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
   }
 }
