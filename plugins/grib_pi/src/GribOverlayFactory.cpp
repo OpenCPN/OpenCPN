@@ -1337,6 +1337,10 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                     texture_format = GL_TEXTURE_RECTANGLE_ARB;
             }
 
+            #ifdef __OCPN__ANDROID__
+            texture_format = GL_TEXTURE_2D;
+            #endif
+            
             if(!texture_format) // it's very unlikely to not have any of the above extensions
                 m_Message_Hiden.Append(_("Overlays not supported by this graphics hardware (Disable OpenGL)"));
             else {
