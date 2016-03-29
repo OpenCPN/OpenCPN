@@ -468,7 +468,11 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         m_Altitude = 0;             //set altitude at std
 
         //enable buttons according with file contents to ovoid crashes
+#ifdef __OCPN__ANDROID__        
+        m_bpSettings->Enable(true);
+#else        
         m_bpSettings->Enable(m_pTimelineSet != NULL);
+#endif        
         m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
         m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
