@@ -22,8 +22,8 @@
     <header
         android:key="grib_pref_waves"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWaveSettings"
-        android:title="Wave Height"
-        android:summary="Set Wave Height Display Options">
+        android:title="Wave Height/Direction"
+        android:summary="Set Wave Display Options">
     </header>
 
     <header

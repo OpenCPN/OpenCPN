@@ -760,6 +760,7 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
         public CheckBoxPreference m_IsobarShow;
         public org.opencpn.opencpn.SeekBarPreference m_IsobarDelta;
         public ListPreference m_BarbcolorsPreference;
+        public ListPreference m_DirectionArrowForm;
 
         public String page = "";
 
@@ -794,6 +795,10 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
             m_ArrowSpacingPixels = (org.opencpn.opencpn.SeekBarPreference) getPreferenceScreen().findPreference("grib_prefs_" + page + "DirectionArrowSpacing");
             if(null != m_ArrowSpacingPixels)
                 m_ArrowSpacingPixels.setEnabled(m_ArrowSpacingCustom.isChecked());
+
+            m_DirectionArrowForm = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "DirectionArrowForm");
+            if( (null != m_DirectionArrowForm) && (null != m_DirectionArrowForm.getEntry()))
+                m_DirectionArrowForm.setSummary(m_DirectionArrowForm.getEntry().toString());
 
             m_ValueUnitsPreference = (ListPreference)getPreferenceScreen().findPreference("grib_prefs_" + page + "Units");
             if( (null != m_ValueUnitsPreference) && (null != m_ValueUnitsPreference.getEntry()))
@@ -845,6 +850,12 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
                         if (null != m_IsobarDelta)
                             m_IsobarDelta.setEnabled(m_IsobarShow.isChecked());
                     }
+
+                    else if (key.equals("grib_prefs_" + page + "DirectionArrowForm")) {
+                        if (null != m_DirectionArrowForm)
+                            m_DirectionArrowForm.setSummary(m_DirectionArrowForm.getEntry().toString());
+                    }
+
 
 
                 }

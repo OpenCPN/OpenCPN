@@ -7,6 +7,13 @@
         android:summary=""
         android:defaultValue="true" />
 
+    <ListPreference
+        android:title="Wave Arrow Form"
+        android:key="grib_prefs_WavesDirectionArrowForm"
+        android:defaultValue="1"
+        android:entries="@array/GRIBDirectionArrowForm"
+        android:entryValues="@array/GRIBDirectionArrowFormVal" />
+
     <SwitchPreference
         android:key="grib_prefb_WavesDirectionArrowFixedSpacing"
         android:title="Wave Arrow Spacing"

@@ -39,10 +39,10 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_PressureIsoBarSpacing"
-        android:title="Pressure Isotach Spacing (hPa)"
+        android:title="Pressure Isobar Spacing (hPa)"
         android:summary=""
-        android:defaultValue="10"
-        android:max="50"
+        android:defaultValue="5"
+        android:max="20"
         />
 
 
