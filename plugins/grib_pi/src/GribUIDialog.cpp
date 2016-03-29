@@ -48,10 +48,6 @@
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
 
-#ifdef __WXQT__
-#include "qdebug.h"
-#endif
-
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -107,18 +103,6 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
         default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
     }
 }
-
-#if 0
-wxBitmap GetScaledBitmap( const char **pxpm, double scale_factor){
-    wxBitmap a = wxBitmap( pxpm );
-    wxImage b = a.ConvertToImage();
-    int w = a.GetWidth() * scale_factor;
-    int h = a.GetHeight() * scale_factor;
-    b.Rescale( w, h );
-    wxBitmap c = wxBitmap( b );
-    return c;
-}
-#endif
 
 //---------------------------------------------------------------------------------------
 //          GRIB Control Implementation
@@ -266,23 +250,6 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read ( _T( "ManualRequestZoneSizing" ), &m_SavedZoneSelMode, 0 );
     }
     //init zone selection parameters
-#if 0
-    m_ZoneSelMode = m_OldZoneSelMode ? START_SELECTION : AUTO_SELECTION;                       ////init zone selection parameters
-
-    double scale_factor = 2.0;
-   //set buttons bitmap
-    m_bpPrev->SetBitmapLabel(GetScaledBitmap( prev, scale_factor ));
-    m_bpNext->SetBitmapLabel(GetScaledBitmap( next, scale_factor ));
-    m_bpAltitude->SetBitmapLabel(GetScaledBitmap( altitude, scale_factor ));
-    m_bpNow->SetBitmapLabel(GetScaledBitmap( now, scale_factor ));
-    m_bpZoomToCenter->SetBitmapLabel(GetScaledBitmap( zoomto , scale_factor));
-    m_bpPlay->SetBitmapLabel(GetScaledBitmap( play, scale_factor ));
-    m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap( m_CDataIsShown ? curdata : ncurdata, scale_factor ));
-    m_bpOpenFile->SetBitmapLabel(GetScaledBitmap( openfile, scale_factor ));
-    m_bpSettings->SetBitmapLabel(GetScaledBitmap( setting, scale_factor ));
-
-     SetRequestBitmap( m_ZoneSelMode );
-#endif     
      m_ZoneSelMode = m_SavedZoneSelMode;
 
     //connect Timer
@@ -501,7 +468,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         m_Altitude = 0;             //set altitude at std
 
         //enable buttons according with file contents to ovoid crashes
-        m_bpSettings->Enable(true); //(m_pTimelineSet != NULL);
+        //m_bpSettings->Enable(true); //(m_pTimelineSet != NULL);
+        m_bpSettings->Enable(m_pTimelineSet != NULL);
         m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
         m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
@@ -1472,10 +1440,6 @@ void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
 
     ppm = wxMin(ppm, 1.0);
 
-    wxString msg;
-    msg.Printf(_T("%g  %g  %g  %d  %d  %g  %g"), clat, clon,ppm,w, h, ow, oh);
-    wxLogMessage(msg);
-    
     JumpToPosition(clat, clon, ppm);
 
     RequestRefresh( pParent );
