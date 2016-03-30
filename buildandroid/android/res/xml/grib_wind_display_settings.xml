@@ -18,7 +18,7 @@
         android:key="grib_prefs_WindBarbedColors"
         android:defaultValue="0"
         android:entries="@array/GRIBwindBarbColor"
-        android:entryValues="@array/GRIBwindBarbColor" />
+        android:entryValues="@array/GRIBwindBarbColorVal" />
 
     <SwitchPreference
         android:key="grib_prefb_WindBarbedArrowFixedSpacing"

@@ -120,6 +120,11 @@
         <item>Controlled</item>
     </string-array>
 
+    <string-array name="GRIBwindBarbColorVal" >
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
     <string-array name="navmodeListArray">
         <item>North Up</item>
         <item>Course Up</item>
