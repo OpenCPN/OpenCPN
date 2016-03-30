@@ -146,6 +146,7 @@ extern bool             g_oz_vector_scale;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
+extern bool             g_bShowRouteTotal;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
@@ -1384,6 +1385,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
+    Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
     Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
     
@@ -2579,6 +2581,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
+    Write( _T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
