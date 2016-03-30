@@ -105,6 +105,9 @@ class FileChooserCore {
 	 */
         private boolean showFullPathInTitle = true;
 	
+
+        private boolean sortLastModified;
+
 	// ---- Static attributes ----- //
 	
 	/**
@@ -252,6 +255,7 @@ class FileChooserCore {
 		this.showConfirmationOnCreate = false;
 		this.showConfirmationOnSelect = false;
                 this.showFullPathInTitle = true;
+                this.sortLastModified = false;
 
                 LinearLayout root = this.chooser.getRootLayout();
                 m_progressBar = (ProgressBar) root.findViewById(R.id.progressBar);
@@ -497,6 +501,11 @@ class FileChooserCore {
 	public void setShowFullPathInTitle(boolean show) {
 		this.showFullPathInTitle = show;
 	}
+
+        public void setSortLastModified(boolean sort){
+            this.sortLastModified = sort;
+        }
+
 	
 	/**
 	 * Defines the value of the labels.
@@ -706,7 +715,26 @@ class FileChooserCore {
                                                         return 0;
                                                 }
                                         });
-					
+
+                                        // Order the files by reverse date.
+                                        if(sortLastModified){
+                                            Arrays.sort(fileList, new Comparator<File>() {
+                                                public int compare(File file1, File file2) {
+                                                        if(file1 != null && file2 != null) {
+                                                                if(file1.isDirectory() && (!file2.isDirectory())) return -1;
+                                                                if(file2.isDirectory() && (!file1.isDirectory())) return 1;
+                                                                int rv = 0;
+                                                                if(file1.lastModified() < file2.lastModified())
+                                                                    rv = 1;
+                                                                else
+                                                                    rv = -1;
+                                                                return rv;
+                                                        }
+                                                        return 0;
+                                                }
+                                            });
+                                        }
+
 					// Iterate all the files in the folder.
 					for(int i=0; i<fileList.length; i++) {
 						// Verify if file can be selected (is a directory or folder mode is not activated and the file pass the filter, if defined).

@@ -180,6 +180,7 @@ public class OCPNGRIBActivity extends Activity
         intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, false);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_FULL_PATH_IN_TITLE, true);
         intent.putExtra(FileChooserActivity.INPUT_SHOW_ONLY_SELECTABLE, true);
+        intent.putExtra(FileChooserActivity.INPUT_SORT_LAST_MODIFIED, true);
         startActivityForResult(intent, 0);
     }
 
