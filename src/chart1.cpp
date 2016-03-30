@@ -1383,9 +1383,10 @@ bool MyApp::OnInit()
     pWayPointMan = NULL;
 
     g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
-    double dsmm = g_display_size_mm;
 
-    if(fabs(dsmm - g_display_size_mm) > 1){
+    // User override....
+    if((g_config_display_size_mm > 0) &&(g_config_display_size_manual)){
+        g_display_size_mm = g_config_display_size_mm;
         wxString msg;
         msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
         wxLogMessage(msg);
