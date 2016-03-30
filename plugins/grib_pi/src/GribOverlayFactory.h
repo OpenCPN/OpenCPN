@@ -123,9 +123,9 @@ public:
     ~LineBuffer() { delete [] lines; }
 
     void pushLine( float x0, float y0, float x1, float y1 );
-    void pushPetiteBarbule( int b );
-    void pushGrandeBarbule( int b );
-    void pushTriangle( int b );
+    void pushPetiteBarbule( int b, int l );
+    void pushGrandeBarbule( int b, int l );
+    void pushTriangle( int b, int l );
     void Finalize();
 
     int count;
@@ -247,4 +247,8 @@ private:
 
     LineBuffer m_WindArrowCache[14];
     LineBuffer m_SingleArrow[2], m_DoubleArrow[2];
+    
+    double m_pixelMM;
+    int windArrowSize;
+    
 };
