@@ -1421,8 +1421,10 @@ bool dashboard_pi::LoadConfig( void )
                 ar.Add( ID_DBP_D_GPS );
             }
 
-            m_ArrayOfDashboardWindow.Add(
-                    new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
+            DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+            cont->m_bPersVisible = true;
+            m_ArrayOfDashboardWindow.Add(cont);
+            
         } else {
             // Version 2
             m_config_version = 2;
