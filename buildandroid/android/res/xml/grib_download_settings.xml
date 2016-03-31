@@ -96,7 +96,7 @@
         android:key="GRIB_prefb_waves"
         android:title="Waves"
         android:summary="Request Waves data"
-        android:defaultValue="false" />
+        android:defaultValue="true" />
 
     </PreferenceCategory>
 

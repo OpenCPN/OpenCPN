@@ -462,34 +462,41 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         tn.setToNow();
         String formattedTime = tn.format("%Y%m%d_%H%M%S");
 
-        String tdest_file = "gribs/gfs_" + formattedTime + ".grb2";
+
+        Log.i("GRIB", "model: " + model);
+
+        String gfsFilter = "";
+        String gfsFilterPl = "";
+        String namePrefix ="";
+
+        if(model.equals("GFS25")){
+            gfsFilterPl = "0p25.pl?";
+            gfsFilter = "z.pgrb2full.0p25.";
+            namePrefix = "gfs_025_OCPN_";
+        }
+        else if(model.equals("GFS50")){
+            gfsFilterPl = "0p50.pl?";
+            gfsFilter = "z.pgrb2full.0p50.";
+            namePrefix = "gfs_050_OCPN_";
+        }
+        else{
+            gfsFilterPl = "1p00.pl?";
+            gfsFilter = "z.pgrb2.1p00.";
+            namePrefix = "gfs_100_OCPN_";
+        }
+
+        //  Form the file name
+        String tdest_file = "gribs/" + namePrefix + formattedTime + ".grb2";
+
         File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
-
         Log.i("GRIB", "dest_file: " + dest_file);
 
         // persist the target file name
         Editor editor = preferences.edit();
         editor.putString("GRIB_dest_file", dest_file);
         editor.apply();
-
-        Log.i("GRIB", "model: " + model);
-
-        String gfsFilter = "";
-        String gfsFilterPl = "";
-        if(model.equals("GFS25")){
-            gfsFilterPl = "0p25.pl?";
-            gfsFilter = "z.pgrb2full.0p25.";
-        }
-        else if(model.equals("GFS50")){
-            gfsFilterPl = "0p50.pl?";
-            gfsFilter = "z.pgrb2full.0p50.";
-        }
-        else{
-            gfsFilterPl = "1p00.pl?";
-            gfsFilter = "z.pgrb2.1p00.";
-        }
 
 
         String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilterPl;
@@ -755,7 +762,9 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         tn.setToNow();
         String formattedTime = tn.format("%Y%m%d_%H%M%S");
 
-        String tdest_file = "gribs/gfs_" + formattedTime + ".grb2";
+        //  Form the file name
+        String tdest_file = "gribs/" + "ww3_OCPN_" + formattedTime + ".grb2";
+
         File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
@@ -936,7 +945,9 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         tn.setToNow();
         String formattedTime = tn.format("%Y%m%d_%H%M%S");
 
-        String tdest_file = "gribs/gfs_" + formattedTime + ".grb2";
+        //  Form the file name
+        String tdest_file = "gribs/" + "rtofs_OCPN_" + formattedTime + ".grb2";
+
         File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
