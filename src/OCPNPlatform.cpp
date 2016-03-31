@@ -698,13 +698,15 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->SetPath( _T ( "/PlugIns/libgrib_pi.so" ) );
         pConfig->Write( _T ( "bEnabled" ), true );
         
+        pConfig->SetPath( _T ( "/PlugIns/libdashboard_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
         pConfig->SetPath( _T ( "/PlugIns/GRIB" ) );
         pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 0 );
         pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 90 );
-        
+
         pConfig->SetPath ( _T ( "/Settings/GRIB" ) );
         pConfig->Write ( _T ( "CursorDataShown" ), 0 );
-        
         
         pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
 
