@@ -41,7 +41,7 @@
         android:title="Isotherm Spacing (\u00B0C)"
         android:summary=""
         android:defaultValue="10"
-        android:max="50"
+        android:max="20"
         />
 
     <CheckBoxPreference

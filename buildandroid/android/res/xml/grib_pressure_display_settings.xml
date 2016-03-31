@@ -35,7 +35,7 @@
         android:key="grib_prefb_PressureDisplayIsobars"
         android:title="Show Isobars"
         android:summary=""
-        android:defaultValue="false" />
+        android:defaultValue="true" />
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_PressureIsoBarSpacing"
