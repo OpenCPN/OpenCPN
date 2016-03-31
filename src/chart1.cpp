@@ -702,6 +702,7 @@ int              g_chart_zoom_modifier;
 int              g_NMEAAPBPrecision;
 
 wxString         g_TalkerIdText;
+int              g_maxWPNameLength;
 
 bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
