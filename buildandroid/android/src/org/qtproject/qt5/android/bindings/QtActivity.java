@@ -466,6 +466,22 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String launchHelpView(){
         Intent intent = new Intent(this, WebViewActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString(WebViewActivity.SELECTED_URL, "file:///android_asset/doc/doc/help_en_US.html");
+        intent.putExtras(b);
+
+        startActivity(intent);
+        return "OK";
+    }
+
+    public String launchWebView( String url){
+        Intent intent = new Intent(this, WebViewActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString(WebViewActivity.SELECTED_URL, url);
+        intent.putExtras(b);
+
         startActivity(intent);
         return "OK";
     }
@@ -1193,17 +1209,17 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 Request request = new Request( Uri.parse(url) );
                 request.setDestinationUri( Uri.parse(destination) );
 
-                Log.i("DEBUGGER_TAG", "enqueue");
+                Log.i("OpenCPN", "enqueue");
                 m_downloadRet = "PENDING";
                 try{
                      m_enqueue = m_dm.enqueue(request);
                      String result = "OK;" + String.valueOf(m_enqueue);
-                     Log.i("DEBUGGER_TAG", result);
+                     Log.i("OpenCPN", result);
                      m_downloadRet = result;
                  }
                  catch(Exception e){
                      m_downloadRet = "NOK";
-                     Log.i("DEBUGGER_TAG", "exception");
+                     Log.i("OpenCPN", "exception: " + e.getMessage());
                  }
 
 
@@ -1220,23 +1236,23 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 
-        Log.i("DEBUGGER_TAG", "m_downloadRet " + m_downloadRet);
+        Log.i("OpenCPN", "m_downloadRet " + m_downloadRet);
         return m_downloadRet;
     }
 
     public String getDownloadStatus( final int ID )
     {
-        Log.i("DEBUGGER_TAG", "getDownloadStatus "  + String.valueOf(ID));
+        Log.i("OpenCPN", "getDownloadStatus "  + String.valueOf(ID));
 
         String ret = "NOSTAT";
         if(m_dm != null){
-            //Log.i("DEBUGGER_TAG", "mdm");
+            //Log.i("OpenCPN", "mdm");
 
             m_query.setFilterById(ID);
             Cursor c = m_dm.query(m_query);
 
             if (c.moveToFirst()) {
-                //Log.i("DEBUGGER_TAG", "cmtf");
+                //Log.i("OpenCPN", "cmtf");
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int stat = c.getInt(columnIndex);
                 String sstat = String.valueOf(stat);
@@ -1251,14 +1267,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         }
 
-        Log.i("DEBUGGER_TAG", ret);
+        Log.i("OpenCPN", ret);
         return ret;
     }
 
 
     public String cancelDownload( final int ID )
     {
-        Log.i("DEBUGGER_TAG", "cancelDownload "  + String.valueOf(ID));
+        Log.i("OpenCPN", "cancelDownload "  + String.valueOf(ID));
         if(m_dm != null){
             m_dm.remove( ID );
         }
