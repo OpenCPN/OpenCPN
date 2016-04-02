@@ -2560,10 +2560,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_textDescription = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,
                                         wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
     m_textDescription->SetMinSize( wxSize( -1, 80 ) );
-#ifdef __OCPN__ANDROID__
-    m_textDescription->GetHandle()->setStyleSheet( qtStyleSheetFatSB );
-    QScroller::ungrabGesture(m_textDescription->GetHandle());
-#endif    
     bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
 
     m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _("..."),
@@ -3598,11 +3594,11 @@ void MarkInfoImpl::OnHyperLinkClick( wxHyperlinkEvent &event )
     } else
         event.Skip();
 #else
-//        qDebug() << event.GetURL().mb_str();
+
     wxString url = event.GetURL();
     url.Replace(_T(" "), _T("%20") );
-    ::wxLaunchDefaultBrowser(url);
-//    event.Skip();
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser(url);
 #endif
 }
 

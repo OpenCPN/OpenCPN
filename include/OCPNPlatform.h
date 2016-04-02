@@ -143,7 +143,8 @@ public:
 
     void LaunchLocalHelp();
     int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
-        
+    void platformLaunchDefaultBrowser( wxString URL );
+    
 private:
     wxString    m_homeDir;
     wxString    m_exePath;

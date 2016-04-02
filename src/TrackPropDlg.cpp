@@ -46,6 +46,7 @@ extern MyConfig            *pConfig;
 extern MyFrame             *gFrame;
 extern ChartCanvas         *cc1;
 extern PlugInManager       *g_pi_manager;
+extern OCPNPlatform        *g_Platform;
 
 #define    UTCINPUT         0
 #define    LTINPUT          1    // i.e. this PC local time
@@ -1534,8 +1535,9 @@ void TrackPropDlg::OnHyperLinkClick( wxHyperlinkEvent &event )
 #else
     wxString url = event.GetURL();
     url.Replace(_T(" "), _T("%20") );
-    ::wxLaunchDefaultBrowser(url);
-//    event.Skip();
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser(url);
+    
 #endif
 }
 

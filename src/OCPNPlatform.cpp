@@ -1885,4 +1885,14 @@ void OCPNPlatform::LaunchLocalHelp( void ) {
 #endif        
 }
 
+void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
+{
+#ifdef __OCPN__ANDROID__
+    androidLaunchBrowser( URL );
+#else
+    ::wxLaunchDefaultBrowser( URL );
+#endif
+}
+
+
 

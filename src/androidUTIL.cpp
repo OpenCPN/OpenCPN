@@ -1349,6 +1349,11 @@ void androidLaunchHelpView()
     callActivityMethod_vs("launchHelpView");
 }
 
+void androidLaunchBrowser( wxString URL )
+{
+    callActivityMethod_ss("launchWebView", URL);
+}
+
 
 bool androidShowDisclaimer( wxString title, wxString msg )
 {
