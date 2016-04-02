@@ -144,6 +144,8 @@ public class OCPNGRIBActivity extends Activity
 
             m_jsonString = json;
         }
+
+        purgeDatedFiles( 7 );
     }
 
     public void doSelectFile(){
@@ -507,6 +509,41 @@ public class OCPNGRIBActivity extends Activity
         }
 
     }
+
+    private void purgeDatedFiles(int days){
+
+        long tnow = System.currentTimeMillis() / 1000;         // always UTC
+        Log.i("OpenCPN", "tnow: " + tnow);
+
+        String sGribDir = "gribs/";
+        File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File gribDir = new File(trootDir.getAbsolutePath() , sGribDir);
+
+        File[] files = gribDir.listFiles();
+        if (files != null) {
+            for (int j=0; j < files.length; j++){
+                File sfile = files[j];
+                Log.i("OpenCPN", "sfile: " + sfile.getName());
+
+                if (sfile.isFile()){
+                    if(-1 != sfile.getName().indexOf("OCPN")){              // my file?
+                        long lastMod = sfile.lastModified () / 1000;        // could be in local timezone...
+                                                                            // but we are not too picky, this will be close enough...
+
+                        Log.i("OpenCPN", "lastMod: " + lastMod);
+
+                        if(( lastMod + (days * 24 * 3600)) < tnow){         // file is older than "n" days...
+                            Log.i("OpenCPN", "deleting (due to age): " + sfile.getName());
+                            sfile.delete();
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
 /*
     private String CreateDownloadURL(){
 
