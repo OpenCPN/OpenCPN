@@ -1986,6 +1986,12 @@ wxArrayString androidGetBluetoothScanResults()
     return ret_array;
 }
 
+bool androidCheckOnline()
+{
+    wxString val = callActivityMethod_vs("isNetworkAvailable");
+    return val.IsSameAs(_T("YES"));
+}
+
 wxArrayString *androidGetSerialPortsArray( void )
 {
   

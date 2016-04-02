@@ -132,5 +132,6 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
 bool androidShowDisclaimer( wxString title, wxString msg );
 
 void androidLaunchBrowser( wxString URL );
+bool androidCheckOnline();
 
 #endif   //guard

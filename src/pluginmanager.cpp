@@ -5388,7 +5388,13 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
      
     long dl_ID = -1;
     
-    int res = startAndroidFileDownload( url, outputFile, g_piEventHandler, &dl_ID );
+    // Make sure the outputfile is a file URI
+    wxString fURI = outputFile;
+    if(!fURI.StartsWith(_T("file://"))){
+        fURI.Prepend(_T("file://"));
+    }
+    
+    int res = startAndroidFileDownload( url, fURI, g_piEventHandler, &dl_ID );
     //  Started OK?
     if(res){
         finishAndroidFileDownload();
@@ -5601,6 +5607,7 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
     
 #ifdef __OCPN__ANDROID__
     //TODO
+    return OCPN_DL_FAILED;
 #else
     wxCurlHTTP post;
     post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
@@ -5623,11 +5630,15 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
 
 bool OCPN_isOnline()
 {
+#ifdef __OCPN__ANDROID__
+    qDebug() << androidCheckOnline();
+
+    return androidCheckOnline();
+#endif    
+
+#ifndef __OCPN__ANDROID__    
 #ifdef __OCPN_USE_CURL__
     
-#ifdef __OCPN__ANDROID__
-    //TODO
-#else
     if (wxDateTime::GetTimeNow() > g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY)
     {
         wxCurlHTTP get;
@@ -5637,9 +5648,9 @@ bool OCPN_isOnline()
         g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();
     }
     return g_pi_manager->m_last_online;
-#endif
 #else
     return false;
+#endif    
 #endif    
 }
 
