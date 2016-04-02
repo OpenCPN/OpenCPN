@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"PO-Revision-Date: 2016-02-28 17:40-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Catalan\n"
+"Language: ca_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: ca\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.cpp:125
+msgid "Show local sQuiddio destinations"
+msgstr "Mostra les destinacions locals sQuiddio"
+
+#: src/squiddio_pi.cpp:130
+msgid "Hide local sQuiddio destinations"
+msgstr "Amaga les destinacions locals sQuiddio"
+
+#: src/squiddio_pi.cpp:135
+msgid "Download local sQuiddio destinations"
+msgstr "Descarregar les destinacions locals sQuiddio"
+
+#: src/squiddio_pi.cpp:140
+msgid "Report a Destination at this location"
+msgstr "Notificar una destinació a aquesta ubicació"
+
+#: src/squiddio_pi.cpp:201
+msgid "sQuiddio"
+msgstr "sQuiddio"
+
+#: src/squiddio_pi.cpp:610
+msgid "Local destinations have been updated"
+msgstr "S'han actualitzat les destinacions locals"
+
+#: src/squiddio_pi.cpp:613
+msgid "No destinations available for the region"
+msgstr "No hi ha destinacions disponibles per a la regió"
+
+#: src/squiddio_pi.cpp:616
+msgid "Server not responding. Check your Internet connection"
+msgstr "El servidor no respon. Comproveu la connexió d'Internet"
+
+#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr "No s'ha pogut iniciar el navegador per defecte. Comproveu la connexió d'Internet"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading"
+msgstr "Descarregant"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading: "
+msgstr "Descarregant: "
+
+#: src/squiddio_pi.cpp:666
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: incapaç de connectar a l'amfitrió"
+
+#: src/squiddio_pi.cpp:737
+msgid "Squiddio"
+msgstr "Squiddio"
+
+#: src/squiddio_pi.cpp:741
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio per a OpenCPN"
+
+#: src/squiddio_pi.cpp:746
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "== Base de dades de les destinacions de navegacions ==\n"
+"Per descarregar les destinacions d'una regió desitjada (Això requereix una connexió a Internet):\n"
+"* Col·loqueu el cursor sobre l'àrea on voleu mostrar les destinacions i feu clic al botó dret del ratolí\n"
+"* Seleccioneu \"Descarregar destinacions locals sQuiddio\" al menú contextual.\n\n"
+"Les destinacions apareixen com a waipoints OpenCPN: \n"
+"* Feu un clic dret sobre el waypoint per accedir a l'enllaç a la pàgina sQuiddio. \n"
+"* Seguiu l'enllaç per avaluar la destinació i afegir comentaris en línia.\n\n"
+"Altres opcions del menú: \n"
+"* Canviar la visualització de les destinacions locals on/off \n"
+"* Enviar una nova destnació (requereix una connexió a Internet i un compte d'usuari gratuït)\n\n"
+"== Comparteix-cartes quadern-per creuers ==\n"
+"* Comparteix les teves coordenades GPS amb els teus amics creueristes i veure les seves posicions\n"
+"a l'àrea de la teva caarta OpenCPN (requereix compte sQuiddio gratuït)\n\n"
+"IMPORTANT: Mitjançant l'ús d'aquest connector, accepteu els Termes de sQuidd.io \n"
+"Les Condicions estan disponibles a http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:838
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Compartir quaderns no està activat. Introduïr l'identificador d'API sQuiddio i la clau d'usuari API.\n\n"
+"Per obtenir la vostra clau d'API, cal registrar-se a sQuiddio (http://squidd.io/signup) i visitar el teu perfil en línia (segueix l'enllaç \"Edita perfil\" al \"Quadre de Comandament\") pestanya \" Números i claus\"."
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Ara mateix"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "Fa un segon"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr "Fa %i segons"
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr "fa cosa d'un minut"
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr "Fa %i minuts"
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr "fa cosa d'un hora"
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr "Fa %i hores"
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr "Ahir"
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr "Fa %i dies"
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr "Quadern enviat:"
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr "Quaderns rebuts"
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr "Creat quadern d'actualització sQuiddio:"
+
+#: src/squiddioPrefsDialogBase.cpp:28
+msgid "View Destinations"
+msgstr "Veure les Destinacions"
+
+#: src/squiddioPrefsDialogBase.cpp:35
+msgid "All"
+msgstr "Tot"
+
+#: src/squiddioPrefsDialogBase.cpp:38
+msgid "Marinas"
+msgstr "Ports esportius"
+
+#: src/squiddioPrefsDialogBase.cpp:41
+msgid "Anchorages"
+msgstr "Ancoratges"
+
+#: src/squiddioPrefsDialogBase.cpp:44
+msgid "Yacht clubs"
+msgstr "Clubs nàutics"
+
+#: src/squiddioPrefsDialogBase.cpp:47
+msgid "Docks/piers"
+msgstr "Molls/pilastres"
+
+#: src/squiddioPrefsDialogBase.cpp:50
+msgid "Boat ramps"
+msgstr "Rampes d'avarada"
+
+#: src/squiddioPrefsDialogBase.cpp:53
+msgid "Fuel Stations"
+msgstr "Estacions de combustible"
+
+#: src/squiddioPrefsDialogBase.cpp:56
+msgid "Other"
+msgstr "Altres"
+
+#: src/squiddioPrefsDialogBase.cpp:59
+msgid "AIS marker"
+msgstr "Marcador AIS"
+
+#: src/squiddioPrefsDialogBase.cpp:69
+msgid "Share logs with friends"
+msgstr "Compartir quaderns amb amics"
+
+#: src/squiddioPrefsDialogBase.cpp:76
+msgid "Send"
+msgstr "Enviar"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Never"
+msgstr "Mai"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a day"
+msgstr "Un cop al dia"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a day"
+msgstr "Dos cops al dia"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once an hour"
+msgstr "Un cop per hora"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice an hour"
+msgstr "Dos cops per hora"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a minute"
+msgstr "Un cop per minut"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a minute"
+msgstr "Dos cops per minut"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Every 10 seconds"
+msgstr "Cada 10 segons"
+
+#: src/squiddioPrefsDialogBase.cpp:88
+msgid "Receive"
+msgstr "Rebre"
+
+#: src/squiddioPrefsDialogBase.cpp:100
+msgid "sQuiddio ID"
+msgstr "ID d'sQuiddio"
+
+#: src/squiddioPrefsDialogBase.cpp:106
+msgid "The email address you use to log into sQuidd.io"
+msgstr "L'adreça que utilitzeu per accedir a sQuidd.io"
+
+#: src/squiddioPrefsDialogBase.cpp:110
+msgid "API Key"
+msgstr "Clau de l'API"
+
+#: src/squiddioPrefsDialogBase.cpp:116
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "Recuperar la clau d'API de perfil de sQuidd.io. Registrar a http://squidd.io i feu clic a Edita el perfil en el quadre de comandament, llavors seleccioneu els números i claus. Feu clic a la pestanya d'ajuda per obtenir més informació. \n\n"
+"IMPORTANT! No utilitzeu la vostra contrassenya sQuiddio igual que la vostra clau d'API! "
+
