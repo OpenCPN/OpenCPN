@@ -553,6 +553,11 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 #endif
                                                         (*it)->GetHelp(),
                                                           (*it)->GetKind());
+#ifdef __WXQT__
+                        wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+                        pmi->SetFont(sFont);
+#endif
+                        
                         submenu->Append(pmi);
                         pmi->Check((*it)->IsChecked());
                     }
@@ -570,6 +575,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
 #endif
+
+#ifdef __WXQT__
+                wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+                pmi->SetFont(sFont);
+#endif
+                
                 contextMenu->Append( pmi );
                 contextMenu->Enable( pimis->id, !pimis->b_grey );
             }

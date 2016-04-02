@@ -2336,6 +2336,9 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
     m_pParentEventHandler->AddPendingEvent( up_event );
 }
 
+
+
+
 //-------------------------------------------------------------------------------
 //
 //    Mark Information Dialog Implementation
@@ -2360,7 +2363,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     SetFont( *qFont );
     int metric = GetCharHeight();
     
-    #ifdef __OCPN__ANDROID__
+#ifdef __OCPN__ANDROID__
     //  Set Dialog Font by custom crafted Qt Stylesheet.
     
     wxString wqs = getFontQtStylesheet(qFont);
@@ -2375,7 +2378,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     if(sdc.IsOk())
         sdc.GetTextExtent(_T("W"), NULL, &metric, NULL, NULL, qFont);
     
-    #endif
+#endif
     
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );
@@ -2428,9 +2431,9 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerName->Add( m_staticTextName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     wxBoxSizer* bSizerNameValue = new wxBoxSizer( wxVERTICAL );
-
+ 
     m_textName = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxDefaultSize, 0 );
+             wxDefaultSize, 0 );
     bSizerNameValue->Add( m_textName, 0, wxALL | wxEXPAND, 5 );
     bSizerName->Add( bSizerNameValue, 1, wxEXPAND, 5 );
     bSizerTextProperties->Add( bSizerName, 0, wxEXPAND, 5 );
@@ -2463,7 +2466,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     
     wxFlexGridSizer *LLGrid = new wxFlexGridSizer( 0, 2, 1, 1 );
     LLGrid->AddGrowableCol( 1 );
-    bSizerTextProperties->Add( LLGrid, 1, wxEXPAND, 0 );
+    bSizerTextProperties->Add( LLGrid, 0, wxEXPAND, 0 );
     
     int w,h;
     GetTextExtent(_T("179 59.9999 W"), &w, &h);
@@ -2482,17 +2485,13 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
                                        wxDefaultPosition, wxSize(w + 20, -1), 0 );
      LLGrid->Add( m_textLongitude, 1, wxALL , 5 );
 
+     m_staticTextArrivalRadius = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Arrival Radius"));
+     LLGrid->Add( m_staticTextArrivalRadius, 1, wxALL, 0 );
+      
+     m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
+     LLGrid->Add( m_textArrivalRadius, 1, wxALL , 5 );
      
-    wxBoxSizer* bSizerArrivalRadius;
-    bSizerArrivalRadius = new wxBoxSizer( wxHORIZONTAL );
-    m_staticTextArrivalRadius = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Arrival Radius"));
-    bSizerArrivalRadius->Add( m_staticTextArrivalRadius, 0, wxALL, 0 );
-
-    m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
-    bSizerArrivalRadius->Add( m_textArrivalRadius, 0, wxALL | wxALIGN_RIGHT, 5 );
-    bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
-
-    //  Waypoints
+     
     m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show Range Rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
     bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 0 );
@@ -2546,6 +2545,9 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_chColor->SetSelection( 0 );
     waypointradarGrid->Add( m_chColor, 0, wxALIGN_RIGHT | wxALL, 4);
     
+    waypointrrSelect->ShowItems( false );
+    waypointradarGrid->ShowItems( false );
+    
     bSizerTextProperties->AddSpacer(15);
     
     m_staticTextDescription = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Description"),
@@ -2556,9 +2558,12 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizer14 = new wxBoxSizer( wxHORIZONTAL );
 
     m_textDescription = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString,
-            wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    m_textDescription->SetMinSize( wxSize( -1, 60 ) );
-
+                                        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
+    m_textDescription->SetMinSize( wxSize( -1, 80 ) );
+#ifdef __OCPN__ANDROID__
+    m_textDescription->GetHandle()->setStyleSheet( qtStyleSheetFatSB );
+    QScroller::ungrabGesture(m_textDescription->GetHandle());
+#endif    
     bSizer14->Add( m_textDescription, 1, wxALL | wxEXPAND, 5 );
 
     m_buttonExtDescription = new wxButton( m_panelBasicProperties, wxID_ANY, _("..."),
@@ -2574,12 +2579,13 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerBasicProperties->Add( sbSizerProperties, 3, wxALL | wxEXPAND, 5 );
 
     sbSizerLinks = new wxStaticBoxSizer( new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Links") ), wxVERTICAL );
-    bSizerBasicProperties->Add( sbSizerLinks, 2, wxALL | wxEXPAND, 5 );
+    bSizerBasicProperties->Add( sbSizerLinks, 1, wxALL | wxEXPAND, 5 );
     
     m_scrolledWindowLinks = new wxScrolledWindow( m_panelBasicProperties, wxID_ANY,
-            wxDefaultPosition, wxSize(-1, 60), wxHSCROLL | wxVSCROLL );
+            wxDefaultPosition, wxDefaultSize/*wxSize(-1, 60)*/, wxHSCROLL | wxVSCROLL );
     m_scrolledWindowLinks->SetScrollRate( 2, 2 );
-    sbSizerLinks->Add( m_scrolledWindowLinks, 0, wxEXPAND | wxALL, 5 );
+    m_scrolledWindowLinks->SetMinSize( wxSize( -1, 120 ) );
+    sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
     
     bSizerLinks = new wxBoxSizer( wxVERTICAL );
     m_scrolledWindowLinks->SetSizer( bSizerLinks );
@@ -2592,16 +2598,26 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wxMenuItem* m_menuItemDelete;
     m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ), wxEmptyString,
             wxITEM_NORMAL );
+    #ifdef __WXQT__
+    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    m_menuItemDelete->SetFont(sFont);
+    #endif
     m_menuLink->Append( m_menuItemDelete );
 
     wxMenuItem* m_menuItemEdit;
     m_menuItemEdit = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Edit") ), wxEmptyString,
             wxITEM_NORMAL );
+    #ifdef __WXQT__
+    m_menuItemEdit->SetFont(sFont);
+    #endif
     m_menuLink->Append( m_menuItemEdit );
 
     wxMenuItem* m_menuItemAdd;
     m_menuItemAdd = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Add new") ), wxEmptyString,
             wxITEM_NORMAL );
+    #ifdef __WXQT__
+    m_menuItemAdd->SetFont(sFont);
+    #endif
     m_menuLink->Append( m_menuItemAdd );
 
     m_hyperlink17->Connect( wxEVT_RIGHT_DOWN,
@@ -2625,8 +2641,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_staticTextEditEnabled = new wxStaticText( m_panelBasicProperties, wxID_ANY,
                                                 _("Links are opened in the default browser."), wxDefaultPosition, wxDefaultSize,
                                                 0 );
-    sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    
+    sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, 5 );
 
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
@@ -2744,6 +2759,9 @@ void MarkInfoDef::RecalculateSize( void )
     
     Layout();
 
+    wxSize dsize = GetParent()->GetClientSize();
+    
+    
     // We change only Y size, unless X is too big for the parent client size....
     
     wxSize esize;
@@ -2751,7 +2769,6 @@ void MarkInfoDef::RecalculateSize( void )
     esize.x = -1;
     esize.y = GetCharHeight() * 30;
     
-    wxSize dsize = GetParent()->GetClientSize();
     esize.y = wxMin(esize.y, dsize.y - (2 * GetCharHeight()));
     esize.x = wxMin(esize.x, dsize.x - (1 * GetCharHeight()));
     SetSize(wxSize(esize.x, esize.y));
@@ -2760,7 +2777,15 @@ void MarkInfoDef::RecalculateSize( void )
     fsize.y = wxMin(fsize.y, dsize.y - (2 * GetCharHeight()));
     fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
     SetSize(wxSize(-1, fsize.y));
-    
+
+
+#ifdef __OCPN__ANDROID__
+    wxSize asize;
+    asize.x = dsize.x - (4 * GetCharHeight());
+    asize.y = -1;
+    asize.y =  dsize.y - (6 * GetCharHeight());
+    SetSize(asize);
+#endif    
     m_defaultClientSize = GetClientSize();
     
 }
@@ -2925,7 +2950,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             m_staticTextLayer->Enable( false );
             m_staticTextLayer->Show( false );
             m_textName->SetEditable( true );
+#ifndef __OCPN__ANDROID__            
             m_textDescription->SetEditable( true );
+#endif            
             m_textCtrlExtDescription->SetEditable( true );
             m_textLatitude->SetEditable( true );
             m_textLongitude->SetEditable( true );
@@ -3000,13 +3027,14 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                 wxString Descr = link->DescrText;
 
                 wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, Descr,
-                        Link, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
+                                                             Link, wxDefaultPosition, wxDefaultSize, wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT );
+                
                 ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
                         wxHyperlinkEventHandler( MarkInfoImpl::OnHyperLinkClick ), NULL, this );
-                if( !m_pRoutePoint->m_bIsInLayer ) ctrl->Connect( wxEVT_RIGHT_DOWN,
-                        wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ), NULL, this );
+                if( !m_pRoutePoint->m_bIsInLayer )
+                    ctrl->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ), NULL, this );
 
-                bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+                bSizerLinks->Add( ctrl, 1, wxALL | wxEXPAND, 5 );
 
                 linknode = linknode->GetNext();
             }
@@ -3110,12 +3138,15 @@ void MarkInfoImpl::SetRoutePoint( RoutePoint *pRP )
 
 void MarkInfoImpl::m_hyperlinkContextMenu( wxMouseEvent &event )
 {
-    m_pEditedLink = (wxHyperlinkCtrl*) event.GetEventObject();
-    m_scrolledWindowLinks->PopupMenu( m_menuLink,
-            m_pEditedLink->GetPosition().x + event.GetPosition().x,
-            m_pEditedLink->GetPosition().y + event.GetPosition().y );
-   
+    m_pEditedLink = wxDynamicCast(event.GetEventObject(), wxHyperlinkCtrl);
+     
+    if(m_pEditedLink){
+        m_scrolledWindowLinks->PopupMenu( m_menuLink,
+            m_pEditedLink->GetPosition().x /*+ event.GetPosition().x*/,
+            m_pEditedLink->GetPosition().y /*+ event.GetPosition().y*/ );
+    }
 }
+
 
 void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
 {
@@ -3127,41 +3158,47 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );
         wxWindow *win = node->GetData();
-        win->Hide();    
+        wxHyperlinkCtrl *dlink = wxDynamicCast(win, wxHyperlinkCtrl);
+        if(dlink && (dlink == m_pEditedLink))
+            dlink->Hide();
     }
     
-//    m_scrolledWindowLinks->DestroyChildren();
-    int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
+    
     HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
-//      int len = 0;
-    if( NbrOfLinks > 0 ) {
+    if( hyperlinklist->GetCount() > 0 ) {
         wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
         while( linknode ) {
             Hyperlink *link = linknode->GetData();
             wxString Link = link->Link;
             wxString Descr = link->DescrText;
-            if( Link == findurl
-                    && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ) nodeToDelete =
-                    linknode;
-            else {
-                wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, Descr,
-                        Link, wxDefaultPosition, wxDefaultSize, wxHL_DEFAULT_STYLE );
-                ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
-                        wxHyperlinkEventHandler( MarkInfoImpl::OnHyperLinkClick ), NULL, this );
-                ctrl->Connect( wxEVT_RIGHT_DOWN,
-                        wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ), NULL, this );
-
-                bSizerLinks->Add( ctrl, 0, wxALL, 5 );
+            if( Link == findurl && ( Descr == findlabel || ( Link == findlabel && Descr == wxEmptyString ) ) ){
+                nodeToDelete = linknode;
+                break;
             }
             linknode = linknode->GetNext();
         }
     }
-    if( nodeToDelete ) hyperlinklist->DeleteNode( nodeToDelete );
-    m_scrolledWindowLinks->InvalidateBestSize();
-    m_scrolledWindowLinks->Layout();
-    sbSizerLinks->Layout();
-    event.Skip();
+    if( nodeToDelete ){
+        hyperlinklist->DeleteNode( nodeToDelete );
+    }
+        
+    
+     //     m_scrolledWindowLinks->InvalidateBestSize();
+     //     m_scrolledWindowLinks->Layout();
+     //sbSizerLinks->Layout();
+     this->Layout();
+     event.Skip();
 }
+
+
+
+
+
+
+
+
+
+
 
 void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
 {
@@ -3169,6 +3206,7 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
     wxString findlabel = m_pEditedLink->GetLabel();
     m_pLinkProp->m_textCtrlLinkDescription->SetValue( findlabel );
     m_pLinkProp->m_textCtrlLinkUrl->SetValue( findurl );
+    m_pLinkProp->Fit();
     
 #ifdef __WXOSX__
     HideWithEffect(wxSHOW_EFFECT_BLEND );
@@ -3189,8 +3227,7 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
                     link->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
                     link->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
                     wxHyperlinkCtrl* h =
-                            (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel(
-                                    findlabel );
+                            (wxHyperlinkCtrl*) m_scrolledWindowLinks->FindWindowByLabel( findlabel );
                     if( h ) {
                         h->SetLabel( m_pLinkProp->m_textCtrlLinkDescription->GetValue() );
                         h->SetURL( m_pLinkProp->m_textCtrlLinkUrl->GetValue() );
@@ -3200,9 +3237,10 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
             }
         }
 
-        m_scrolledWindowLinks->InvalidateBestSize();
-        m_scrolledWindowLinks->Layout();
-        sbSizerLinks->Layout();
+//        m_scrolledWindowLinks->InvalidateBestSize();
+//        m_scrolledWindowLinks->Layout();
+//        sbSizerLinks->Layout();
+        this->Layout();
         event.Skip();
     }
     
@@ -3227,14 +3265,14 @@ void MarkInfoImpl::OnAddLink( wxCommandEvent& event )
         if( desc == wxEmptyString ) desc = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
         wxHyperlinkCtrl* ctrl = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, desc,
                 m_pLinkProp->m_textCtrlLinkUrl->GetValue(), wxDefaultPosition, wxDefaultSize,
-                wxHL_DEFAULT_STYLE );
+                                                     wxNO_BORDER | wxHL_CONTEXTMENU | wxHL_ALIGN_LEFT );
         ctrl->Connect( wxEVT_COMMAND_HYPERLINK,
                 wxHyperlinkEventHandler( MarkInfoImpl::OnHyperLinkClick ), NULL, this );
         ctrl->Connect( wxEVT_RIGHT_DOWN,
-                wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ), NULL, this );
+                       wxMouseEventHandler( MarkInfoImpl::m_hyperlinkContextMenu ), NULL, this );
 
-        bSizerLinks->Add( ctrl, 0, wxALL, 5 );
-        bSizerLinks->Fit( m_scrolledWindowLinks );
+        bSizerLinks->Add( ctrl, 1, wxALL | wxEXPAND, 5 );
+        bSizerLinks->Layout(); //Fit( m_scrolledWindowLinks );
 
         Hyperlink* h = new Hyperlink();
         h->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
@@ -3247,7 +3285,8 @@ void MarkInfoImpl::OnAddLink( wxCommandEvent& event )
     ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
     
-    sbSizerLinks->Layout();
+//    m_scrolledWindowLinks->InvalidateBestSize();
+    this->Layout();
 
     event.Skip();
 }
@@ -3279,6 +3318,11 @@ void MarkInfoImpl::OnExtDescriptionClick( wxCommandEvent& event )
 {
     m_notebookProperties->SetSelection( 1 );
     event.Skip();
+}
+
+void MarkInfoImpl::SetPage( int page )
+{
+    m_notebookProperties->SetSelection( page );
 }
 
 bool MarkInfoImpl::SaveChanges()
@@ -3554,6 +3598,7 @@ void MarkInfoImpl::OnHyperLinkClick( wxHyperlinkEvent &event )
     } else
         event.Skip();
 #else
+//        qDebug() << event.GetURL().mb_str();
     wxString url = event.GetURL();
     url.Replace(_T(" "), _T("%20") );
     ::wxLaunchDefaultBrowser(url);

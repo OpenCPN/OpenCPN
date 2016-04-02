@@ -8303,6 +8303,10 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
         }
     }
 
+#ifdef __OCPN__ANDROID__
+    pMarkPropDialog->Centre();
+#endif    
+
     pMarkPropDialog->SetRoutePoint( markPoint );
     pMarkPropDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
@@ -8312,6 +8316,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     } else
         pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
 
+    pMarkPropDialog->SetPage( 0 );
     pMarkPropDialog->Show();
     pMarkPropDialog->InitialFocus();
 }
