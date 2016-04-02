@@ -182,18 +182,6 @@ so_dashboard_plugin_deployment.path = /assets/plugins
 INSTALLS += so_dashboard_plugin_deployment
 #------------------------------------------------------------------------------------
 
-# Squiddio---------------------------------------------------------------
-#library
-so_squiddio_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/libsquiddio_pi.so
-so_squiddio_plugin_deployment.path = /assets/plugins
-INSTALLS += so_squiddio_plugin_deployment
-
-#data
-squiddio_plugin_deployment.files += $$PWD/../plugins/squiddio_pi/src/images/plugin_logo.png
-squiddio_plugin_deployment.path = /assets/plugins/squiddio_pi/images
-INSTALLS += squiddio_plugin_deployment
-
-#------------------------------------------------------------------------------------
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
