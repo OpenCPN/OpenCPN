@@ -79,6 +79,7 @@ import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.content.IntentFilter;
 import android.app.PendingIntent;
+import android.net.ConnectivityManager;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -1282,6 +1283,17 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "OK";
     }
 
+    public String isNetworkAvailable() {
+            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    // test for connection
+            if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+                    && cm.getActiveNetworkInfo().isConnected()) {
+                return "YES";
+            } else {
+                return "NO";
+            }
+    }
 
     public String getGMAPILicense( )
     {
