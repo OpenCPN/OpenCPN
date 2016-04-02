@@ -168,6 +168,7 @@ extern PlugInManager* g_pi_manager;
 
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
+extern TrackList        *pTrackList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
@@ -1684,9 +1685,21 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
 }
 
 
-void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
+void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
+
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
+            /* defer rendering active tracks until later */
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            continue;
+
+//        pTrackDraw->DrawGL( vp );
+        pTrackDraw->Draw( dc, vp, vp.GetBBox() );
+    }
     
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
@@ -1699,12 +1712,6 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
             continue;
     
-        if( pRouteDraw->IsTrack() ) {
-            /* defer rendering active tracks until later */
-            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
-                continue;
-        }
-    
         /* defer rendering routes being edited until later */
         if( pRouteDraw->m_bIsBeingEdited )
             continue;
@@ -1716,15 +1723,25 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
     if( vp.GetBBox().GetValid() && pWayPointMan) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
                 pWP->DrawGL( vp );
         }
     }
 }
 
-void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
+void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
+
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
+            /* defer rendering active tracks until later */
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            pTrackDraw->Draw( dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
+    }
+
     for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         
@@ -1735,16 +1752,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         /* Active routes */
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
             drawit++;
-        
-        if( pRouteDraw->IsTrack() ) {
-            /* Active tracks */
-            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
-                pRouteDraw->Draw( dc, vp );     // We need Track::Draw() to dynamically render last (ownship) point.
-         //       pRouteDraw->DrawGL( vp );
-                continue;
-            }
-        }
-        
+                
         /* Routes being edited */
         if( pRouteDraw->m_bIsBeingEdited )
             drawit++;
@@ -1766,9 +1774,8 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (pWP->m_bIsBeingEdited) && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
+            if( pWP && pWP->m_bIsBeingEdited && !pWP->m_bIsInRoute )
                 pWP->DrawGL( vp );
-            }
         }
     }
     
@@ -3722,7 +3729,7 @@ void glChartCanvas::DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp)
 {
     cc1->RenderAllChartOutlines( dc, vp );
 
-    DrawStaticRoutesAndWaypoints( vp );
+    DrawStaticRoutesTracksAndWaypoints( vp );
 
     if( cc1->m_bShowTide ) {
         LLBBox bbox = vp.GetBBox();
@@ -4360,7 +4367,7 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
-    DrawDynamicRoutesAndWaypoints( VPoint );
+    DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame

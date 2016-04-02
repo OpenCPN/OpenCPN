@@ -221,22 +221,22 @@ bool Select::AddAllSelectableRouteSegments( Route *pr )
         return false;
 }
 
-bool Select::AddAllSelectableTrackSegments( Route *pr )
+bool Select::AddAllSelectableTrackSegments( Track *pr )
 {
     wxPoint rpt, rptn;
     float slat1, slon1, slat2, slon2;
 
-    if( pr->pRoutePointList->GetCount() ) {
-        wxRoutePointListNode *node = ( pr->pRoutePointList )->GetFirst();
+    if( pr->pTrackPointList->GetCount() ) {
+        wxTrackPointListNode *node = ( pr->pTrackPointList )->GetFirst();
 
-        RoutePoint *prp0 = node->GetData();
+        TrackPoint *prp0 = node->GetData();
         slat1 = prp0->m_lat;
         slon1 = prp0->m_lon;
 
         node = node->GetNext();
 
         while( node ) {
-            RoutePoint *prp = node->GetData();
+            TrackPoint *prp = node->GetData();
             slat2 = prp->m_lat;
             slon2 = prp->m_lon;
 
@@ -411,7 +411,7 @@ bool Select::ModifySelectablePoint( float lat, float lon, void *data, int Seltyp
 }
 
 bool Select::AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
-        RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute )
+        TrackPoint *pTrackPointAdd1, TrackPoint *pTrackPointAdd2, Track *pTrack )
 {
     SelectItem *pSelItem = new SelectItem;
     pSelItem->m_slat = slat1;
@@ -420,18 +420,18 @@ bool Select::AddSelectableTrackSegment( float slat1, float slon1, float slat2, f
     pSelItem->m_slon2 = slon2;
     pSelItem->m_seltype = SELTYPE_TRACKSEGMENT;
     pSelItem->m_bIsSelected = false;
-    pSelItem->m_pData1 = pRoutePointAdd1;
-    pSelItem->m_pData2 = pRoutePointAdd2;
-    pSelItem->m_pData3 = pRoute;
+    pSelItem->m_pData1 = pTrackPointAdd1;
+    pSelItem->m_pData2 = pTrackPointAdd2;
+    pSelItem->m_pData3 = pTrack;
 
-    if( pRoute->m_bIsInLayer ) pSelectList->Append( pSelItem );
+    if( pTrack->m_bIsInLayer ) pSelectList->Append( pSelItem );
     else
         pSelectList->Insert( pSelItem );
 
     return true;
 }
 
-bool Select::DeleteAllSelectableTrackSegments( Route *pr )
+bool Select::DeleteAllSelectableTrackSegments( Track *pt )
 {
     SelectItem *pFindSel;
 
@@ -442,7 +442,7 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
 
-            if( (Route *) pFindSel->m_pData3 == pr ) {
+            if( (Track *) pFindSel->m_pData3 == pt ) {
                 delete pFindSel;
                 pSelectList->DeleteNode( node );   //delete node;
 
@@ -456,7 +456,7 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
     return true;
 }
 
-bool Select::DeletePointSelectableTrackSegments( RoutePoint *pr )
+bool Select::DeletePointSelectableTrackSegments( TrackPoint *pt )
 {
     SelectItem *pFindSel;
 
@@ -465,18 +465,15 @@ bool Select::DeletePointSelectableTrackSegments( RoutePoint *pr )
 
     while( node ) {
         pFindSel = node->GetData();
-        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
-
-            if( (RoutePoint *) pFindSel->m_pData1 == pr || (RoutePoint *) pFindSel->m_pData2 == pr ) {
+        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT &&
+            ( (TrackPoint *) pFindSel->m_pData1 == pt ||
+              (TrackPoint *) pFindSel->m_pData2 == pt ) ) {
                 delete pFindSel;
-                pSelectList->DeleteNode( node );   //delete node;
-
-                node = pSelectList->GetFirst();     // reset the top node
-                goto got_next_outer_node;
-            }
-        }
-        node = node->GetNext();
-        got_next_outer_node: continue;
+                wxSelectableItemListNode *d = node;
+                node = node->GetNext();
+                pSelectList->DeleteNode( d );   //delete node;
+        } else
+            node = node->GetNext();
     }
     return true;
 }

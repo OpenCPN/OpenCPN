@@ -119,6 +119,7 @@ enum { colWPTICON = 0, colWPTNAME, colWPTDIST };
 
 // GLOBALS :0
 extern RouteList *pRouteList;
+extern TrackList *pTrackList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
 extern RouteProp *pRoutePropDialog;
@@ -975,7 +976,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     int index = 0;
     int list_index = 0;
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
-        if( ( *it )->m_bIsTrack || !( *it )->IsListed() ) continue;
+        if( !( *it )->IsListed() ) continue;
 
         wxListItem li;
         li.SetId( list_index );
@@ -1213,22 +1214,21 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    if( !route->m_bIsTrack ) { //TODO: It's a route, we still need the new implementation here
-        pRoutePropDialog = RouteProp::getInstance( GetParent() );
+    pRoutePropDialog = RouteProp::getInstance( GetParent() );
 
-        pRoutePropDialog->SetRouteAndUpdate( route );
-        pRoutePropDialog->UpdateProperties();
-        if( !route->m_bIsInLayer )
-            pRoutePropDialog->SetDialogTitle( _("Route Properties") );
-        else {
-            wxString caption( _T("Route Properties, Layer: ") );
-            caption.Append( GetLayerName( route->m_LayerID ) );
-            pRoutePropDialog->SetDialogTitle( caption );
-        }
-
-        if( !pRoutePropDialog->IsShown() )
-            pRoutePropDialog->Show();
+    pRoutePropDialog->SetRouteAndUpdate( route );
+    pRoutePropDialog->UpdateProperties();
+    if( !route->m_bIsInLayer )
+        pRoutePropDialog->SetDialogTitle( _("Route Properties") );
+    else {
+        wxString caption( _T("Route Properties, Layer: ") );
+        caption.Append( GetLayerName( route->m_LayerID ) );
+        pRoutePropDialog->SetDialogTitle( caption );
     }
+
+    if( !pRoutePropDialog->IsShown() )
+        pRoutePropDialog->Show();
+
     m_bNeedConfigFlush = true;
 }
 
@@ -1506,8 +1506,8 @@ WX_DEFINE_ARRAY( Track*, TrackArray );
 
 static int CompareTracks( const Track** track1, const Track** track2 )
 {
-    RoutePoint* start1 = ( *track1 )->pRoutePointList->GetFirst()->GetData();
-    RoutePoint* start2 = ( *track2 )->pRoutePointList->GetFirst()->GetData();
+    TrackPoint* start1 = ( *track1 )->pTrackPointList->GetFirst()->GetData();
+    TrackPoint* start2 = ( *track2 )->pTrackPointList->GetFirst()->GetData();
     if( start1->GetCreateTime() > start2->GetCreateTime() ) return 1;
     return -1; // Two tracks starting at the same time is not possible.
 }
@@ -1521,7 +1521,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
         case TRACK_CLEAN: {
             item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
             if( item == -1 ) break;
-            Track* track = (Track*) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+            Track* track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
             if( track->IsRunning() ) {
                 wxBell();
                 break;
@@ -1565,8 +1565,8 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
                 Track* track = (Track*) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-                csvString << track->m_RouteNameString << _T("\t")
-                        << wxString::Format( _T("%.1f"), track->m_route_length ) << _T("\t")
+                csvString << track->m_TrackNameString << _T("\t")
+                          << wxString::Format( _T("%.1f"), track->Length() ) << _T("\t")
                         << _T("\n");
             }
 
@@ -1583,10 +1583,10 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
         case TRACK_MERGE: {
             Track* targetTrack = NULL;
             Track* mergeTrack = NULL;
-            RoutePoint* rPoint;
-            RoutePoint* newPoint;
-            RoutePoint* lastPoint;
-            wxRoutePointListNode* routePointNode;
+            TrackPoint* tPoint;
+            TrackPoint* newPoint;
+            TrackPoint* lastPoint;
+            wxTrackPointListNode* trackPointNode;
             TrackArray mergeList;
             TrackArray deleteList;
             bool runningSkipped = false;
@@ -1596,7 +1596,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             while( 1 ) {
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
-                Track* track = (Track*) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+                Track* track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
                 mergeList.Add( track );
             }
 
@@ -1614,37 +1614,31 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                     continue;
                 }
 
-                routePointNode = mergeTrack->pRoutePointList->GetFirst();
+                trackPointNode = mergeTrack->pTrackPointList->GetFirst();
 
-                while( routePointNode ) {
-                    rPoint = routePointNode->GetData();
-                    newPoint = new RoutePoint( rPoint->m_lat, rPoint->m_lon, wxString( _T("empty") ),
-                            wxString( _T("") ), GPX_EMPTY_STRING );
-                    newPoint->m_bShowName = false;
-                    newPoint->m_bIsVisible = true;
+                while( trackPointNode ) {
+                    tPoint = trackPointNode->GetData();
+                    newPoint = new TrackPoint( tPoint->m_lat, tPoint->m_lon );
                     newPoint->m_GPXTrkSegNo = 1;
 
-                    newPoint->SetCreateTime(rPoint->GetCreateTime());
+                    newPoint->SetCreateTime(tPoint->GetCreateTime());
 
                     targetTrack->AddPoint( newPoint );
-
-                    newPoint->m_bIsInRoute = false;
-                    newPoint->m_bIsInTrack = true;
 
                     pSelect->AddSelectableTrackSegment( lastPoint->m_lat, lastPoint->m_lon, newPoint->m_lat,
                             newPoint->m_lon, lastPoint, newPoint, targetTrack );
 
                     lastPoint = newPoint;
 
-                    routePointNode = routePointNode->GetNext();
+                    trackPointNode = trackPointNode->GetNext();
                 }
                 deleteList.Add( mergeTrack );
             }
 
             for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
-                Track* deleteTrack = (Track*) deleteList.Item( i );
+                Track* deleteTrack = deleteList.Item( i );
                 g_pAIS->DeletePersistentTrack( deleteTrack );
-                pConfig->DeleteConfigRoute( deleteTrack );
+                pConfig->DeleteConfigTrack( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );
             }
 
@@ -1681,13 +1675,13 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     // Delete existing items
     m_pTrkListCtrl->DeleteAllItems();
 
-    // then add routes to the listctrl
-    RouteList::iterator it;
+    // then add tracks to the listctrl
+    TrackList::iterator it;
     int index = 0;
     int list_index = 0;
-    for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
-        Route *trk = (Route *) ( *it );
-        if( !trk->m_bIsTrack || !trk->IsListed() ) continue;
+    for( it = ( *pTrackList ).begin(); it != ( *pTrackList ).end(); ++it, ++index ) {;
+        Track *trk = *it;
+        if( !trk->IsListed() ) continue;
 
         wxListItem li;
         li.SetId( list_index );
@@ -1702,9 +1696,9 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         }
         long idx = m_pTrkListCtrl->InsertItem( li );
 
-        wxString name = trk->m_RouteNameString;
+        wxString name = trk->m_TrackNameString;
         if( name.IsEmpty() ) {
-            RoutePoint *rp = trk->GetPoint( 1 );
+            TrackPoint *rp = trk->GetPoint( 1 );
             if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
                     + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
             else
@@ -1713,7 +1707,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         m_pTrkListCtrl->SetItem( idx, colTRKNAME, name );
 
         wxString len;
-        len.Printf( wxT("%5.2f"), trk->m_route_length );
+        len.Printf( wxT("%5.2f"), trk->Length() );
         m_pTrkListCtrl->SetItem( idx, colTRKLENGTH, len );
         
         wxListItem lic;
@@ -1815,17 +1809,17 @@ void RouteManagerDialog::OnTrkNewClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 {
-    // Show routeproperties dialog for selected route
+    // Show trackproperties dialog for selected track
     long item = -1;
     item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     if( item == -1 ) return;
 
-    Route *route = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+    Track *track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
 
-    if( !route ) return;
+    if( !track ) return;
 
     pTrackPropDialog = TrackPropDlg::getInstance( GetParent() );
-    pTrackPropDialog->SetTrackAndUpdate( route );
+    pTrackPropDialog->SetTrackAndUpdate( track );
 
     if( !pTrackPropDialog->IsShown() )
         pTrackPropDialog->Show();
@@ -1836,7 +1830,7 @@ void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 {
-    RouteList list;
+    TrackList list;
 
     int answer = OCPNMessageBox( this, _("Are you sure you want to delete the selected object(s)"), wxString( _("OpenCPN Alert") ), wxYES_NO );
     if ( answer != wxID_YES )
@@ -1856,7 +1850,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
         if ( item == -1 )
             break;
 
-        Route *ptrack_to_delete = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+        Track *ptrack_to_delete = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
 
         if( ptrack_to_delete )
             list.Append( ptrack_to_delete );
@@ -1864,16 +1858,16 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 
     if( busy ) {
         for(unsigned int i=0 ; i < list.GetCount() ; i++) {
-            Track *track = (Track *)(list.Item(i)->GetData());
+            Track *track = (list.Item(i)->GetData());
             if( track ) {
                 g_pAIS->DeletePersistentTrack( track );
-                pConfig->DeleteConfigRoute( track );
+                pConfig->DeleteConfigTrack( track );
                 g_pRouteMan->DeleteTrack( track );
             }
         }
 
         m_lastTrkItem = -1;
-        UpdateRouteListCtrl();
+//        UpdateRouteListCtrl();
         UpdateTrkListCtrl();
 
         cc1->undo->InvalidateUndo();
@@ -1884,7 +1878,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
 {
-    RouteList list;
+    TrackList list;
     wxString suggested_name = _T("tracks");
 
     long item = -1;
@@ -1894,16 +1888,16 @@ void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
         if ( item == -1 )
             break;
 
-        Route *proute_to_export = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+        Track *ptrack_to_export = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
 
-        if( proute_to_export ) {
-            list.Append( proute_to_export );
-            if( proute_to_export->m_RouteNameString != wxEmptyString )
-                suggested_name = proute_to_export->m_RouteNameString;
+        if( ptrack_to_export ) {
+            list.Append( ptrack_to_export );
+            if( ptrack_to_export->m_TrackNameString != wxEmptyString )
+                suggested_name = ptrack_to_export->m_TrackNameString;
         }
     }
 
-    pConfig->ExportGPXRoutes( this, &list, suggested_name );
+    pConfig->ExportGPXTracks( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::TrackToRoute( Track *track )
@@ -1990,11 +1984,9 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     while( node ) {
         RoutePoint *rp = node->GetData();
         if( rp && rp->IsListed() ) {
-            if( rp->m_bIsInTrack || rp->m_bIsInRoute ) {
-                if( !rp->m_bKeepXRoute ) {
-                    node = node->GetNext();
-                    continue;
-                }
+            if( rp->m_bIsInRoute && !rp->m_bKeepXRoute ) {
+                node = node->GetNext();
+                continue;
             }
 
             wxListItem li;
@@ -2272,7 +2264,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
             RoutePoint *wp = list.Item(i)->GetData();
             if( wp ) {
 
-                if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
+                if ( wp->m_bIsInRoute )
                 {
                     if ( wxID_YES == OCPNMessageBox(this,  _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
                             pWayPointMan->DestroyWaypoint( wp );
@@ -2537,35 +2529,28 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
     
     // Process Tracks and Routes in this layer
     wxRouteListNode *node1 = pRouteList->GetFirst();
-    wxRouteListNode *node2;
     while( node1 ) {
         Route *pRoute = node1->GetData();
-        node2 = node1->GetNext();
+        wxRouteListNode *next_node = node1->GetNext();
         if( pRoute->m_bIsInLayer && ( pRoute->m_LayerID == layer->m_LayerID ) ) {
             pRoute->m_bIsInLayer = false;
             pRoute->m_LayerID = 0;
-            if( !pRoute->m_bIsTrack ) {
-                //pConfig->DeleteConfigRoute(pRoute);
-                g_pRouteMan->DeleteRoute( pRoute );
-            } else {
-                //pConfig->DeleteConfigRoute(pRoute);
-                g_pRouteMan->DeleteTrack( pRoute );
-            }
+            g_pRouteMan->DeleteRoute( pRoute );
         }
-        node1 = node2;
-        node2 = NULL;
+        node1 = next_node;
     }
 
-    //m_pSelectedRoute = NULL;
-    //m_pSelectedTrack = NULL;
-    //m_pFoundRoutePoint = NULL;
-    //m_pFoundRoutePointSecond = NULL;
-
-    //if ( pRoutePropDialog )
-    //{
-    //      //pRoutePropDialog->SetRouteAndUpdate ( track );
-    //      pRoutePropDialog->UpdateProperties();
-    //}
+    wxTrackListNode *node2 = pTrackList->GetFirst();
+    while( node2 ) {
+        Track *pTrack = node2->GetData();
+        wxTrackListNode *next_node = node2->GetNext();
+        if( pTrack->m_bIsInLayer && ( pTrack->m_LayerID == layer->m_LayerID ) ) {
+            pTrack->m_bIsInLayer = false;
+            pTrack->m_LayerID = 0;
+            g_pRouteMan->DeleteTrack( pTrack );
+        }
+        node2 = next_node;
+    }
 
     // Process waypoints in this layer
     wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
@@ -2625,14 +2610,18 @@ void RouteManagerDialog::ToggleLayerContentsOnChart( Layer *layer )
     while( node1 ) {
         Route *pRoute = node1->GetData();
         if( pRoute->m_bIsInLayer && ( pRoute->m_LayerID == layer->m_LayerID ) ) {
-            if( !pRoute->m_bIsTrack ) {
-                pRoute->SetVisible( layer->IsVisibleOnChart() );
-                pConfig->UpdateRoute( pRoute );
-            } else {
-                pRoute->SetVisible( layer->IsVisibleOnChart() );
-            }
+            pRoute->SetVisible( layer->IsVisibleOnChart() );
+            pConfig->UpdateRoute( pRoute );
         }
         node1 = node1->GetNext();
+    }
+
+    wxTrackListNode *node2 = pTrackList->GetFirst();
+    while( node2 ) {
+        Track *pTrack = node2->GetData();
+        if( pTrack->m_bIsInLayer && ( pTrack->m_LayerID == layer->m_LayerID ) )
+            pTrack->SetVisible( layer->IsVisibleOnChart() );
+        node2 = node2->GetNext();
     }
 
     // Process waypoints in this layer
@@ -2731,14 +2720,17 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     while( node1 ) {
         Route *pRoute = node1->GetData();
         if( pRoute->m_bIsInLayer && ( pRoute->m_LayerID == layer->m_LayerID ) ) {
-            if( !pRoute->m_bIsTrack ) {
                 pRoute->SetListed( layer->IsVisibleOnListing() );
-                //pConfig->UpdateRoute(pRoute);
-            } else {
-                pRoute->SetListed( layer->IsVisibleOnListing() );
-            }
         }
         node1 = node1->GetNext();
+    }
+
+    wxTrackListNode *node2 = pTrackList->GetFirst();
+    while( node2 ) {
+        Track *pTrack = node2->GetData();
+        if( pTrack->m_bIsInLayer && ( pTrack->m_LayerID == layer->m_LayerID ) )
+            pTrack->SetListed( layer->IsVisibleOnListing() );
+        node2 = node2->GetNext();
     }
 
     // Process waypoints in this layer
@@ -2749,7 +2741,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
 
     while( node ) {
         RoutePoint *rp = node->GetData();
-        if( rp && !rp->m_bIsInTrack && rp->m_bIsolatedMark && ( rp->m_LayerID == layer->m_LayerID ) ) {
+        if( rp && rp->m_bIsolatedMark && ( rp->m_LayerID == layer->m_LayerID ) ) {
             rp->SetListed( layer->IsVisibleOnListing() );
         }
 

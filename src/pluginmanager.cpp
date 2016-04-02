@@ -92,6 +92,7 @@ extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
+extern TrackList       *pTrackList;
 extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
 extern wxString         ChartListFileName;
@@ -2996,28 +2997,20 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
     Track *track = new Track();
 
     PlugIn_Waypoint *pwp;
-    RoutePoint *pWP_src;
+    TrackPoint *pWP_src;
     int ip = 0;
 
     wxPlugin_WaypointListNode *pwpnode = ptrack->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
 
-        RoutePoint *pWP = new RoutePoint( pwp->m_lat, pwp->m_lon,
-                                          pwp->m_IconName, pwp->m_MarkName,
-                                          pwp->m_GUID );
-
-
-        pWP->m_MarkDescription = pwp->m_MarkDescription;
-        pWP->m_bShowName = false;
+        TrackPoint *pWP = new TrackPoint( pwp->m_lat, pwp->m_lon );
         pWP->SetCreateTime( pwp->m_CreateTime );
         
         track->AddPoint( pWP );
 
-        pSelect->AddSelectableRoutePoint( pWP->m_lat, pWP->m_lon, pWP );
-
         if(ip > 0)
-            pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
+            pSelect->AddSelectableTrackSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
                                                 pWP->m_lon, pWP_src, pWP, track );
         ip++;
         pWP_src = pWP;
@@ -3025,16 +3018,16 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
 
-    track->m_RouteNameString = ptrack->m_NameString;
-    track->m_RouteStartString = ptrack->m_StartString;
-    track->m_RouteEndString = ptrack->m_EndString;
+    track->m_TrackNameString = ptrack->m_NameString;
+    track->m_TrackStartString = ptrack->m_StartString;
+    track->m_TrackEndString = ptrack->m_EndString;
     track->m_GUID = ptrack->m_GUID;
     track->m_btemp = (b_permanent == false);
 
-    pRouteList->Append( track );
+    pTrackList->Append( track );
 
     if(b_permanent)
-        pConfig->AddNewRoute( track );
+        pConfig->AddNewTrack( track );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateTrkListCtrl();

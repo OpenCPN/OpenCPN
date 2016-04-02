@@ -153,6 +153,7 @@ extern int              g_nbrightness;
 extern ConsoleCanvas    *console;
 
 extern RouteList        *pRouteList;
+extern TrackList        *pTrackList;
 extern MyConfig         *pConfig;
 extern Select           *pSelect;
 extern Routeman         *g_pRouteMan;
@@ -165,7 +166,7 @@ extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
-extern Track            *g_pActiveTrack;
+extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 extern bool             g_bPreserveScaleOnX;
 
@@ -4353,7 +4354,7 @@ void ChartCanvas::UpdateShips()
     ShipDraw( ocpndc );
 
     if( g_pActiveTrack && g_pActiveTrack->IsRunning() ) {
-        RoutePoint* p = g_pActiveTrack->GetLastPoint();
+        TrackPoint* p = g_pActiveTrack->GetLastPoint();
         if( p ) {
             wxPoint px;
             cc1->GetCanvasPointPix( p->m_lat, p->m_lon, &px );
@@ -5134,9 +5135,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_TRACKSEGMENT );
         
         if( cursorItem ) {
-            Route *pr = (Route *) cursorItem->m_pData3;
-            if( pr->IsVisible() ) {
-                ShowTrackPropertiesDialog( pr );
+            Track *pt = (Track *) cursorItem->m_pData3;
+            if( pt->IsVisible() ) {
+                ShowTrackPropertiesDialog( pt );
                 return true;
             }
         }
@@ -5189,7 +5190,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
                 if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
-                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
+                    && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
                 {
                     wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( pNearbyPoint );
 
@@ -5620,7 +5621,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
                 if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
-                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
+                    && !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible() )
                 {
                     int dlg_return;
                     #ifndef __WXOSX__
@@ -5919,11 +5920,14 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->m_pRoute == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
-                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                }
+/* cannot edit track points anyway
+                                else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pTrack == pr ) {
                                     pTrackPropDialog->SetTrackAndUpdate( pr );
                                 }
+*/
                             }
                         }
                     }
@@ -5977,11 +5981,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
-                                if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
+                                if( pRoutePropDialog->m_pRoute == pr ) {
                                     pRoutePropDialog->SetRouteAndUpdate( pr, true );
-                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                }/* else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
                                     pTrackPropDialog->SetTrackAndUpdate( pr );
-                                }
+                                    }*/
                             }
                         }
                     }
@@ -6088,7 +6092,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 else
                     #endif
-                    m_pSelectedRoute->Draw( dc, VPoint );
+                    m_pSelectedRoute->Draw( dc, VPoint, GetVP().GetBBox() );
             }
             
             if( m_pFoundRoutePoint ) {
@@ -6251,7 +6255,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         }
                         else
                             #endif
-                            m_pSelectedRoute->Draw( dc, GetVP() );
+                            m_pSelectedRoute->Draw( dc, GetVP(), GetVP().GetBBox() );
                     }
                     
                     seltype |= SELTYPE_ROUTESEGMENT;
@@ -6269,7 +6273,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
                     
-                    Route *pt = (Route *) pFindSel->m_pData3;
+                    Track *pt = (Track *) pFindSel->m_pData3;
                     if( pt->IsVisible() ) {
                         m_pSelectedTrack = pt;
                         break;
@@ -6882,7 +6886,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                         nearby_radius_meters );
                 if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
-                        && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
+                        && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
     #ifndef __WXOSX__
@@ -7291,8 +7295,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 RoutePoint *pNearbyPoint = pWayPointMan->GetNearbyWaypoint( rlat, rlon,
                                                                             nearby_radius_meters );
-                if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
-                    && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
+                if( pNearbyPoint && pNearbyPoint != m_prev_pMousePoint
+                    && !pNearbyPoint->m_bIsInLayer )
                 {
                     int dlg_return;
                     #ifndef __WXOSX__
@@ -8365,7 +8369,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     Refresh( false );
 }
 
-void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
+void ChartCanvas::ShowTrackPropertiesDialog( Track* selected )
 {
     pTrackPropDialog = TrackPropDlg::getInstance( this );    // There is one global instance of the RouteProp Dialog
 
@@ -8391,7 +8395,7 @@ void pupHandler_PasteWaypoint() {
                                nearby_radius_meters );
 
     int answer = wxID_NO;
-    if( nearPoint && !nearPoint->m_bIsInTrack && !nearPoint->m_bIsInLayer ) {
+    if( nearPoint && !nearPoint->m_bIsInLayer ) {
         wxString msg;
         msg << _("There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n");
         msg << _("Answering 'No' will create a new waypoint at the same location.");
@@ -8516,7 +8520,7 @@ void pupHandler_PasteRoute() {
 
     if( createNewRoute ) {
         pRouteList->Append( newRoute );
-        pConfig->AddNewRoute( newRoute, -1 );    // use auto next num
+        pConfig->AddNewRoute( newRoute );    // use auto next num
         newRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
@@ -8542,30 +8546,24 @@ void pupHandler_PasteTrack() {
     Track* pasted = kml.GetParsedTrack();
     if( ! pasted ) return;
 
-    RoutePoint* curPoint;
+    TrackPoint* curPoint;
 
     Track* newTrack = new Track();
-    RoutePoint* newPoint;
-    RoutePoint* prevPoint = NULL;
+    TrackPoint* newPoint;
+    TrackPoint* prevPoint = NULL;
 
-    newTrack->m_RouteNameString = pasted->m_RouteNameString;
+    newTrack->m_TrackNameString = pasted->m_TrackNameString;
 
     for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
         curPoint = pasted->GetPoint( i );
 
-        newPoint = new RoutePoint( curPoint );
-        newPoint->m_bShowName = false;
-        newPoint->m_bIsVisible = false;
+        newPoint = new TrackPoint( curPoint );
         newPoint->m_GPXTrkSegNo = 1;
 
         wxDateTime now = wxDateTime::Now();
         newPoint->SetCreateTime(curPoint->GetCreateTime());
 
         newTrack->AddPoint( newPoint );
-
-        //    This is a hack, need to undo the action of Route::AddPoint
-        newPoint->m_bIsInRoute = false;
-        newPoint->m_bIsInTrack = true;
 
         if( prevPoint )
             pSelect->AddSelectableTrackSegment(
@@ -8576,9 +8574,8 @@ void pupHandler_PasteTrack() {
         prevPoint = newPoint;
     }
 
-    pRouteList->Append( newTrack );
-    pConfig->AddNewRoute( newTrack, -1 );    // use auto next num
-    newTrack->RebuildGUIDList(); // ensure the GUID list is intact and good
+    pTrackList->Append( newTrack );
+    pConfig->AddNewTrack( newTrack );
 
     cc1->InvalidateGL();
     cc1->Refresh( false );
@@ -8645,7 +8642,7 @@ void ChartCanvas::FinishRoute( void )
             pConfig->UpdateRoute( m_pMouseRoute );
         else {
             if( m_pMouseRoute->GetnPoints() > 1 ) {
-                pConfig->AddNewRoute( m_pMouseRoute, -1 );    // use auto next num
+                pConfig->AddNewRoute( m_pMouseRoute );
             } else {
                 g_pRouteMan->DeleteRoute( m_pMouseRoute );
                 m_pMouseRoute = NULL;
@@ -9911,8 +9908,15 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     DrawEmboss( dc, EmbossDepthScale( ) );
     DrawEmboss( dc, EmbossOverzoomIndicator( dc ) );
 
-    DrawAllRoutesInBBox( dc, GetVP().GetBBox(), ru );
-    DrawAllWaypointsInBBox( dc, GetVP().GetBBox(), ru, true ); // true draws only isolated marks
+    wxDC *pdc = dc.GetDC();
+    if( pdc ) {
+        pdc->DestroyClippingRegion();
+        wxDCClipper( *pdc, ru );
+    }
+
+    DrawAllTracksInBBox( dc, GetVP().GetBBox() );
+    DrawAllRoutesInBBox( dc, GetVP().GetBBox() );
+    DrawAllWaypointsInBBox( dc, GetVP().GetBBox() );
     DrawAnchorWatchPoints( dc );
 
     AISDraw( dc );
@@ -10137,124 +10141,49 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 }
 
 
-extern bool g_bTrackActive;
-
-void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion )
+void ChartCanvas::DrawAllTracksInBBox( ocpnDC& dc, LLBBox& BltBBox )
 {
-    Route *active_route = NULL;
-    Route *active_track = NULL;
-
-    wxDC *pdc = dc.GetDC();
-    if( pdc ) {
-        pdc->DestroyClippingRegion();
-        wxDCClipper( *pdc, clipregion );
-    }
-
-    wxRouteListNode *node = pRouteList->GetFirst();
+    Track *active_track = NULL;
+    wxTrackListNode *node = pTrackList->GetFirst();
     while( node ) {
-        bool b_run = false;
-        bool b_drawn = false;
-        Route *pRouteDraw = node->GetData();
-        if( pRouteDraw ) {
-            if( pRouteDraw->IsTrack() ) {
-                Track *trk = (Track *) pRouteDraw;
-                if( trk->IsRunning() ) {
-                    b_run = true;
-                    active_track = pRouteDraw;
-                }
+        Track *pTrackDraw = node->GetData();
 
-                if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() ) active_route = pRouteDraw;
-
-            }
-
-            if ((pRouteDraw == active_route) || (pRouteDraw == active_track)) {
-                node = node->GetNext();
-                continue;
-            }
-
-            if ( 0 == pRouteDraw->GetnPoints() ) {
-                node = node->GetNext();
-                continue;
-            }
-            
-            LLBBox test_box = pRouteDraw->GetBBox();
-
-            if( b_run ) test_box.Expand( gLon, gLat );
-
-            if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
-            {
-                b_drawn = true;
-                pRouteDraw->Draw( dc, GetVP() );
-            } else if( b_run ) {
-                /* it would be nicer to instead of what is below,
-                   append gLat, gLon to the route, compute the bbox, then remove it
-                   and just use the first test */
-                wxPoint2DDouble xlatep( 360., 0. );
-                test_box = pRouteDraw->GetBBox();
-                test_box.Translate( xlatep );
-                test_box.Expand( gLon, gLat );
-
-                if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
-                {
-                    b_drawn = true;
-                    pRouteDraw->Draw(dc, GetVP() );
-                } else {
-                    wxPoint2DDouble xlaten( -360., 0. );
-                    test_box = pRouteDraw->GetBBox();
-                    test_box.Translate( xlaten );
-                    test_box.Expand( gLon, gLat );
-
-                    if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
-                    {
-                        b_drawn = true;
-                        pRouteDraw->Draw(dc, GetVP() );
-                    }
-                }
-            }
-
-            //      Need to quick check for the case where VP crosses IDL
-            if( !b_drawn ) {
-                if( ( BltBBox.GetMinX() < -180. ) && ( BltBBox.GetMaxX() > -180. ) ) {
-                    wxPoint2DDouble xlate( -360., 0. );
-                    wxBoundingBox test_box2 = pRouteDraw->GetBBox();
-                    test_box2.Translate( xlate );
-                    if( !BltBBox.IntersectOut( test_box2 ) ) // Route is not wholly outside window
-                    {
-                        b_drawn = true;
-                        if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
-                                dc, GetVP() );
-                    }
-                } else if( !b_drawn && ( BltBBox.GetMinX() < 180. ) && ( BltBBox.GetMaxX() > 180. ) ) {
-                    wxPoint2DDouble xlate( 360., 0. );
-                    wxBoundingBox test_box3 = pRouteDraw->GetBBox();
-                    test_box3.Translate( xlate );
-                    if( !BltBBox.IntersectOut( test_box3 ) ) // Route is not wholly outside window
-                    {
-                        b_drawn = true;
-                        if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
-                                dc, GetVP() );
-                    }
-                }
-            }
+        if( g_pActiveTrack == pTrackDraw ) {
+            active_track = pTrackDraw;
+            continue;
         }
 
-        node = node->GetNext();
+        pTrackDraw->Draw( dc, GetVP(), BltBBox );
+    }
+
+    if( active_track )
+        active_track->Draw( dc, GetVP(), BltBBox );
+}
+
+
+void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox )
+{
+    Route *active_route = NULL;
+
+    for(wxRouteListNode *node = pRouteList->GetFirst();
+        node; node = node->GetNext()) {
+
+        Route *pRouteDraw = node->GetData();
+        if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() ) {
+            active_route = pRouteDraw;
+            continue;
+        }
+
+        pRouteDraw->Draw( dc, GetVP(), BltBBox );
     }
 
     //  Draw any active or selected route (or track) last, so that is is always on top
-    if( active_route ) active_route->Draw( dc, GetVP() );
-    if( active_track ) active_track->Draw( dc, GetVP() );
+    if( active_route )
+        active_route->Draw( dc, GetVP(), BltBBox );
 }
 
-void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion,
-        bool bDrawMarksOnly )
+void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox )
 {
-//        wxBoundingBox bbx;
-    wxDC *pdc = dc.GetDC();
-    if( pdc ) {
-        wxDCClipper( *pdc, clipregion );
-    }
-
     if(!pWayPointMan)
         return;
 
@@ -10263,14 +10192,14 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
     while( node ) {
         RoutePoint *pWP = node->GetData();
         if( pWP ) {
-            if( ( bDrawMarksOnly ) && ( pWP->m_bIsInRoute || pWP->m_bIsInTrack ) ) {
+            if( pWP->m_bIsInRoute ) {
                 node = node->GetNext();
                 continue;
-            } else {
-                if( BltBBox.GetValid() ) {
-                    if( BltBBox.PointInBox( pWP->m_lon, pWP->m_lat, 0 ) ) pWP->Draw( dc, NULL );
-                }
             }
+
+            /* technically incorrect... waypoint has bounding box */
+            if( BltBBox.PointInBox( pWP->m_lon, pWP->m_lat, 0 ) )
+                pWP->Draw( dc, NULL );
         }
 
         node = node->GetNext();

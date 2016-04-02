@@ -144,7 +144,7 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-            wxString point_position = toSDMM( 1, point->m_lat, point->m_bIsInTrack ) + _T( "\n" ) + toSDMM( 2, point->m_lon, point->m_bIsInTrack );
+            wxString point_position = toSDMM( 1, point->m_lat, false ) + _T( "\n" ) + toSDMM( 2, point->m_lon, false );
             string   cell( point_position.mb_str() );
             table << cell;
         }
