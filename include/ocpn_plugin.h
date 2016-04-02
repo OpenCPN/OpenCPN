@@ -50,7 +50,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           13
+#define API_VERSION_MINOR           14
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -1165,5 +1165,13 @@ private:
 //extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
 extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
+
+
+/* API 1.14  */
+/* API 1.14  adds some more common functions to avoid unnecessary code duplication */
+
+bool LaunchDefaultBrowser_Plugin( wxString url );
+    
+    
 
 #endif //_PLUGIN_H_

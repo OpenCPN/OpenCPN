@@ -5631,8 +5631,6 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
 bool OCPN_isOnline()
 {
 #ifdef __OCPN__ANDROID__
-    qDebug() << androidCheckOnline();
-
     return androidCheckOnline();
 #endif    
 
@@ -5739,3 +5737,12 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThrea
 }
 #endif
 #endif
+
+bool LaunchDefaultBrowser_Plugin( wxString url )
+{
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser( url );
+    
+    return true;
+}
+    
