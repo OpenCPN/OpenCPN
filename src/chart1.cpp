@@ -2001,7 +2001,10 @@ bool MyApp::OnInit()
 
     //  Verify any saved chart database startup index
     if(g_restore_dbindex >= 0){
-        if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
+        if(ChartData->GetChartTableEntries() == 0)
+            g_restore_dbindex = -1;
+        
+        else if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
             g_restore_dbindex = 0;
     }
 
