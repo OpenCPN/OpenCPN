@@ -4514,9 +4514,9 @@ void MyFrame::TrackOn( void )
     wxString name = g_pActiveTrack->m_TrackNameString;
     if(name.IsEmpty())
     {
-        TrackPoint *rp = g_pActiveTrack->GetPoint( 1 );
-        if( rp && rp->GetCreateTime().IsValid() )
-            name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
+        TrackPoint *tp = g_pActiveTrack->GetPoint( 0 );
+        if( tp->GetCreateTime().IsValid() )
+            name = tp->GetCreateTime().FormatISODate() + _T(" ") + tp->GetCreateTime().FormatISOTime();
         else
             name = _("(Unnamed Track)");
     }
@@ -8532,7 +8532,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 name = (*it)->m_TrackNameString;
                 if(name.IsEmpty())
                 {
-                    TrackPoint *rp = (*it)->GetPoint( 1 );
+                    TrackPoint *rp = (*it)->GetPoint( 0 );
                     if( rp && rp->GetCreateTime().IsValid() )
                         name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
                     else
@@ -8554,11 +8554,12 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 */
 /*                To avoid memory problems send a single trackpoint. It's up to the plugin to collect the data. */
                 int i = 1;     wxJSONValue v;
-                for(TrackPointList::iterator itp = (*it)->pTrackPointList->begin(); itp != (*it)->pTrackPointList->end(); itp++)
+                for(int j = 0; j< (*it)->GetnPoints(); j++)
                 {
-                    v[_T("lat")] = (*itp)->m_lat;
-                    v[_T("lon")] = (*itp)->m_lon;
-                    v[_T("TotalNodes")] = (*it)->pTrackPointList->GetCount();
+                    TrackPoint *tp = (*it)->GetPoint(j);
+                    v[_T("lat")] = tp->m_lat;
+                    v[_T("lon")] = tp->m_lon;
+                    v[_T("TotalNodes")] = (*it)->GetnPoints();
                     v[_T("NodeNr")] = i;
                     v[_T("error")] = false;
                     i++;
@@ -8673,7 +8674,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                     wxString name = (*it)->m_TrackNameString;
                     if(name.IsEmpty())
                     {
-                        TrackPoint *tp = (*it)->GetPoint( 1 );
+                        TrackPoint *tp = (*it)->GetPoint( 0 );
                         if( tp && tp->GetCreateTime().IsValid() )
                             name = tp->GetCreateTime().FormatISODate() + _T(" ")
                                 + tp->GetCreateTime().FormatISOTime();

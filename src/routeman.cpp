@@ -916,7 +916,7 @@ void Routeman::DeleteTrack( Track *pTrack )
 
         wxProgressDialog *pprog = NULL;
 
-        int count = pTrack->pTrackPointList->GetCount();
+        int count = pTrack->GetnPoints();
         if( count > 10000) {
             pprog = new wxProgressDialog( _("OpenCPN Track Delete"), _T("0/0"), count, NULL, 
                                           wxPD_APP_MODAL | wxPD_SMOOTH |

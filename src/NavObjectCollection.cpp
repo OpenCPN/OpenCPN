@@ -851,8 +851,7 @@ bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags )
     if(flags & RT_OUT_NO_RTPTS)
         return true;
     
-    TrackPointList *pTrackPointList = pTrack->pTrackPointList;
-    wxTrackPointListNode *node2 = pTrackPointList->GetFirst();
+    int node2 = 0;
     TrackPoint *prp;
         
     unsigned short int GPXTrkSegNo1 = 1;
@@ -862,19 +861,17 @@ bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags )
         
         pugi::xml_node seg = node.append_child("trkseg");
         
-        while( node2 && ( GPXTrkSegNo2 == GPXTrkSegNo1 ) ) {
-            prp = node2->GetData();
+        while( node2 < pTrack->GetnPoints() ) {
+            prp = pTrack->GetPoint(node2);
+            GPXTrkSegNo1 = prp->m_GPXTrkSegNo;
+            if(GPXTrkSegNo1 != GPXTrkSegNo2)
+                break;
             
             GPXCreateTrkpt(seg.append_child("trkpt"), prp, OPT_TRACKPT);
             
-            node2 = node2->GetNext();
-            if( node2 ) {
-                prp = node2->GetData();
-                GPXTrkSegNo2 = prp->m_GPXTrkSegNo;
-            }
+            node2++;
         }
-        GPXTrkSegNo1 = GPXTrkSegNo2;
-    } while( node2 );
+    } while( node2 < pTrack->GetnPoints() );
         
         
     return true;
@@ -1067,36 +1064,21 @@ void InsertTrack( Track *pTentTrack )
             
         //    Add the selectable points and segments
                 
-        int ip = 0;
         float prev_rlat = 0., prev_rlon = 0.;
         TrackPoint *prev_pConfPoint = NULL;
                 
-        wxTrackPointListNode *node = pTentTrack->pTrackPointList->GetFirst();
-        while( node ) {
-                    
-            TrackPoint *prp = node->GetData();
+        for(int i=0; i<pTentTrack->GetnPoints(); i++) {
+            TrackPoint *prp = pTentTrack->GetPoint(i);
             
-            if( ip ) pSelect->AddSelectableTrackSegment( prev_rlat, prev_rlon, prp->m_lat,
+            if( i ) pSelect->AddSelectableTrackSegment( prev_rlat, prev_rlon, prp->m_lat,
                                                          prp->m_lon, prev_pConfPoint, prp, pTentTrack );
                     
             prev_rlat = prp->m_lat;
             prev_rlon = prp->m_lon;
             prev_pConfPoint = prp;
-            
-            ip++;
-                    
-            node = node->GetNext();
         }
-    } else {
-        // walk the track, deleting points used only by this track
-        wxTrackPointListNode *pnode = ( pTentTrack->pTrackPointList )->GetFirst();
-        while( pnode ) {
-            delete pnode->GetData();
-            pnode = pnode->GetNext();
-        }
-             
+    } else
         delete pTentTrack;
-    }
 }                       
                        
 void UpdateRouteA( Route *pTentRoute )
@@ -1216,9 +1198,8 @@ bool NavObjectCollection1::CreateNavObjGPXTracks( void )
     wxTrackListNode *node1 = pTrackList->GetFirst();
     while( node1 ) {
         Track *pTrack = node1->GetData();
-        TrackPointList *pTrackPointList = pTrack->pTrackPointList;
         
-        if( pTrackPointList->GetCount() ) {
+        if( pTrack->GetnPoints() ) {
             if( !pTrack->m_bIsInLayer && !pTrack->m_btemp ) 
                 GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack, 0);
         }

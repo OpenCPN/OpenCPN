@@ -117,17 +117,17 @@ KmlPastebufferType Kml::ParseTrack( TiXmlNode* node, wxString& name ) {
             pointCounter++;
         }
 
-        wxTrackPointListNode* rpNode = parsedTrack->pTrackPointList->GetFirst();
         TiXmlElement* when = node->FirstChildElement( "when" );
 
         wxDateTime whenTime;
 
+        int i = 0;
         for( ; when; when=when->NextSiblingElement( "when" ) ) {
-            trackpoint = rpNode->GetData();
+            trackpoint = parsedTrack->GetPoint(i);
             if( ! trackpoint ) continue;
             whenTime.ParseFormat( wxString( when->GetText(), wxConvUTF8 ), _T("%Y-%m-%dT%H:%M:%SZ") );
             trackpoint->SetCreateTime(whenTime);
-            rpNode = rpNode->GetNext();
+            i++;
         }
 
         return KML_PASTE_TRACK;
@@ -500,12 +500,8 @@ wxString Kml::MakeKmlFromTrack( Track* track ) {
 
     std::stringstream lineStringCoords;
 
-    TrackPointList *pointList = track->pTrackPointList;
-    wxTrackPointListNode *pointnode = pointList->GetFirst();
-    TrackPoint *trackpoint;
-
-    while( pointnode ) {
-        trackpoint = pointnode->GetData();
+    for(int i=0; i<track->GetnPoints(); i++) {
+        TrackPoint *trackpoint = track->GetPoint(i);
 
         TiXmlElement* when = new TiXmlElement( "when" );
         gxTrack->LinkEndChild( when );
@@ -513,21 +509,16 @@ wxString Kml::MakeKmlFromTrack( Track* track ) {
         wxDateTime whenTime( trackpoint->GetCreateTime() );
         TiXmlText* whenVal = new TiXmlText( whenTime.Format( _T("%Y-%m-%dT%H:%M:%SZ") ).mb_str( wxConvUTF8 ) );
         when->LinkEndChild( whenVal );
-
-        pointnode = pointnode->GetNext();
     }
 
-    pointnode = pointList->GetFirst();
-    while( pointnode ) {
-        trackpoint = pointnode->GetData();
+    for(int i=0; i<track->GetnPoints(); i++) {
+        TrackPoint *trackpoint = track->GetPoint(i);
 
         TiXmlElement* coord = new TiXmlElement( "gx:coord" );
         gxTrack->LinkEndChild( coord );
         wxString coordStr = wxString::Format( _T("%f %f 0.0"), trackpoint->m_lon, trackpoint->m_lat );
         TiXmlText* coordVal = new TiXmlText( coordStr.mb_str( wxConvUTF8 ) );
         coord->LinkEndChild( coordVal );
-
-        pointnode = pointnode->GetNext();
     }
 
 

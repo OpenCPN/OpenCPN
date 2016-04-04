@@ -43,13 +43,10 @@ public:
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
       wxString          m_timestring;
-      wxString          m_GUID;
 
 private:
       wxDateTime        m_CreateTimeX;
 };
-
-WX_DECLARE_LIST(TrackPoint, TrackPointList);// establish class as list member
 
 //----------------------------------------------------------------------------
 //    Track
@@ -63,7 +60,7 @@ public:
 
     void Draw(ocpnDC& dc, ViewPort &VP, const LLBBox &box);
     TrackPoint *GetPoint( int nWhichPoint );
-    int GetnPoints(void){ return pTrackPointList->GetCount(); }
+    int GetnPoints(void){ return TrackPoints.size(); }
     TrackPoint *GetLastPoint();
     void AddPoint( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
@@ -104,18 +101,19 @@ public:
 
     HyperlinkList     *m_HyperlinkList;
 
-    TrackPointList     *pTrackPointList;
-
     void Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const wxString & suffix);
 
 protected:
-            void DouglasPeuckerReducer( std::vector<TrackPoint*>& list,
-                                        std::vector<bool> & keeplist,
-                                        int from, int to, double delta );
-            double GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to);
-            double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
+    void DouglasPeuckerReducer( std::vector<TrackPoint*>& list,
+                                std::vector<bool> & keeplist,
+                                int from, int to, double delta );
+    double GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to);
+    double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
+            
+    std::vector<TrackPoint*>     TrackPoints;
+
 private:
-            void DrawGLLines( ViewPort &vp, ocpnDC *dc );
+    void DrawGLLines( ViewPort &vp, ocpnDC *dc );
     void DrawGLTrackLines( ViewPort &vp );
 };
 

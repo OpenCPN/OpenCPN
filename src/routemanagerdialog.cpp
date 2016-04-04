@@ -1504,10 +1504,10 @@ void RouteManagerDialog::OnTrkRightClick( wxListEvent &event )
 
 WX_DEFINE_ARRAY( Track*, TrackArray );
 
-static int CompareTracks( const Track** track1, const Track** track2 )
+static int CompareTracks( Track** track1, Track** track2 )
 {
-    TrackPoint* start1 = ( *track1 )->pTrackPointList->GetFirst()->GetData();
-    TrackPoint* start2 = ( *track2 )->pTrackPointList->GetFirst()->GetData();
+    TrackPoint* start1 = ( *track1 )->GetPoint(0);
+    TrackPoint* start2 = ( *track2 )->GetPoint(0);
     if( start1->GetCreateTime() > start2->GetCreateTime() ) return 1;
     return -1; // Two tracks starting at the same time is not possible.
 }
@@ -1586,7 +1586,6 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             TrackPoint* tPoint;
             TrackPoint* newPoint;
             TrackPoint* lastPoint;
-            wxTrackPointListNode* trackPointNode;
             TrackArray mergeList;
             TrackArray deleteList;
             bool runningSkipped = false;
@@ -1614,10 +1613,8 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                     continue;
                 }
 
-                trackPointNode = mergeTrack->pTrackPointList->GetFirst();
-
-                while( trackPointNode ) {
-                    tPoint = trackPointNode->GetData();
+                for(int i=0; i<mergeTrack->GetnPoints(); i++) {
+                    tPoint = mergeTrack->GetPoint(i);
                     newPoint = new TrackPoint( tPoint->m_lat, tPoint->m_lon );
                     newPoint->m_GPXTrkSegNo = 1;
 
@@ -1629,8 +1626,6 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                             newPoint->m_lon, lastPoint, newPoint, targetTrack );
 
                     lastPoint = newPoint;
-
-                    trackPointNode = trackPointNode->GetNext();
                 }
                 deleteList.Add( mergeTrack );
             }
@@ -1698,7 +1693,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
         wxString name = trk->m_TrackNameString;
         if( name.IsEmpty() ) {
-            TrackPoint *rp = trk->GetPoint( 1 );
+            TrackPoint *rp = trk->GetPoint( 0 );
             if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
                     + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
             else

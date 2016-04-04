@@ -941,9 +941,9 @@ void TrackPropDlg::InitializeList()
         return;
 
     m_lcPoints->m_pTrack = m_pTrack;
-    wxTrackPointListNode *first_point_node = m_pTrack->pTrackPointList->GetFirst();
-    if(first_point_node){
-        TrackPoint *prp = first_point_node->GetData();
+
+    if(m_pTrack->GetnPoints()){
+        TrackPoint *prp = m_pTrack->GetPoint(0);
         if(prp)
             m_lcPoints->m_LMT_Offset = long(( prp->m_lon ) * 3600. / 15. );  // estimated
         else
@@ -954,9 +954,7 @@ void TrackPropDlg::InitializeList()
         m_lcPoints->SetItemCount( m_pTrack->GetnPoints() );
 
     else{
-        wxTrackPointListNode *pnode = m_pTrack->pTrackPointList->GetFirst();
-        int in = 0;
-        while( pnode ) {
+        for(int in = 0; in < m_pTrack->GetnPoints(); in++) {
             wxListItem item;
             item.SetId(in);
 
@@ -967,7 +965,6 @@ void TrackPropDlg::InitializeList()
                 m_lcPoints->SetItem(item);
             }
             in++;
-            pnode = pnode->GetNext();
         }
     }
 
@@ -1035,7 +1032,7 @@ bool TrackPropDlg::UpdateProperties()
 
     // Calculate AVG speed if we are showing a track and total time
     TrackPoint *last_point = m_pTrack->GetLastPoint();
-    TrackPoint *first_point = m_pTrack->GetPoint( 1 );
+    TrackPoint *first_point = m_pTrack->GetPoint( 0 );
     double total_seconds = 0.;
 
     wxString speed( _T("--") );
@@ -1139,7 +1136,7 @@ bool TrackPropDlg::IsThisTrackExtendable()
     m_pExtendPoint = NULL;
     if( m_pTrack == g_pActiveTrack || m_pTrack->m_bIsInLayer ) return false;
 
-    TrackPoint *pLastPoint = m_pTrack->GetPoint( 1 );
+    TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
     if( !pLastPoint->GetCreateTime().IsValid() ) return false;
 
     wxTrackListNode *track_node = pTrackList->GetFirst();
@@ -1167,7 +1164,7 @@ bool TrackPropDlg::IsThisTrackExtendable()
 
 void TrackPropDlg::OnExtendBtnClick( wxCommandEvent& event )
 {
-    TrackPoint *pLastPoint = m_pTrack->GetPoint( 1 );
+    TrackPoint *pLastPoint = m_pTrack->GetPoint( 0 );
 
     if( IsThisTrackExtendable() ) {
         int begin = 1;
@@ -1296,12 +1293,8 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
 
 //    m_pRoute->ClearHighlights();
 
-    wxTrackPointListNode *node = m_pTrack->pTrackPointList->GetFirst();
-    while( node && itemno-- ) {
-        node = node->GetNext();
-    }
-    if( node ) {
-        TrackPoint *prp = node->GetData();
+    if( itemno >= 0 ) {
+        TrackPoint *prp = m_pTrack->GetPoint(itemno);
         if( prp ) {
 //            prp->m_bPtIsSelected = true;                // highlight the trackpoint
 
@@ -1622,13 +1615,6 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
 //--------------------------------------------------------------------------------------
 //          OCPNTrackListCtrl Implementation
 //---------------------------------------------------------------------------------------
-wxTrackPointListNode    *g_this_point_node;
-wxTrackPointListNode    *g_prev_point_node;
-TrackPoint              *g_this_point;
-TrackPoint              *g_prev_point;
-int                     g_prev_point_index;
-int                     g_prev_item;
-double                  gt_brg, gt_leg_dist;
 
 
 OCPNTrackListCtrl::OCPNTrackListCtrl( wxWindow* parent, wxWindowID id, const wxPoint& pos,
@@ -1636,7 +1622,6 @@ OCPNTrackListCtrl::OCPNTrackListCtrl( wxWindow* parent, wxWindowID id, const wxP
         wxListCtrl( parent, id, pos, size, style )
 {
     m_parent = parent;
-    g_prev_item = -1;
     m_tz_selection = LTINPUT;
     m_LMT_Offset = 0;
 }
@@ -1649,61 +1634,16 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
 {
     wxString ret;
 
-    if( item != g_prev_item ) {
-        if( g_prev_point_index == ( item - 1 ) ) {
-            if( !g_prev_point_node ) return wxEmptyString;
-            g_prev_point = g_this_point;
-            g_this_point_node = g_prev_point_node->GetNext();
-            if( g_this_point_node )
-                g_this_point = g_this_point_node->GetData();
-            else
-                g_this_point = NULL;
-        } else {
-            wxTrackPointListNode *node = m_pTrack->pTrackPointList->GetFirst();
-            if( node ) {
-                if( item > 0 ) {
-                    int i = 0;
-                    while( node && ( i < ( item - 1 ) ) ) {
-                        node = node->GetNext();
-                        i++;
-                    }
-                    g_prev_point_node = node;
-                    if( ! node )  return wxEmptyString;
-                    g_prev_point = g_prev_point_node->GetData();
+    if(item < 0 || item >= m_pTrack->GetnPoints())
+        return wxEmptyString;
+    
+    TrackPoint              *this_point = m_pTrack->GetPoint(item);
+    TrackPoint              *prev_point = item > 0 ? m_pTrack->GetPoint(item-1) : NULL;
 
-                    g_this_point_node = g_prev_point_node->GetNext();
-                    if( g_this_point_node )
-                        g_this_point = g_this_point_node->GetData();
-                    else
-                        g_this_point = NULL;
-                } else {
-                    g_prev_point_node = NULL;
-                    g_prev_point = NULL;
-
-                    g_this_point_node = node;
-                    if( g_this_point_node )
-                        g_this_point = g_this_point_node->GetData();
-                    else
-                        g_this_point = NULL;
-                }
-            } else {
-                g_prev_point_node = NULL;
-                g_prev_point = NULL;
-                g_this_point_node = NULL;
-                g_this_point = NULL;
-            }
-        }
-
-        //    Update for next time
-        g_prev_point_node = g_this_point_node;
-        g_prev_point_index = item;
-
-        g_prev_item = item;
-    }
-
-    if( ! g_this_point )
+    if( ! this_point )
         return wxEmptyString;
 
+    double                  gt_brg, gt_leg_dist;
     switch( column )
     {
         case 0:
@@ -1720,10 +1660,10 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                 slat = gLat;
                 slon = gLon;
             }
-            else if( g_prev_point )
+            else if( prev_point )
             {
-                slat = g_prev_point->m_lat;
-                slon = g_prev_point->m_lon;
+                slat = prev_point->m_lat;
+                slon = prev_point->m_lon;
             }
             else
             {
@@ -1731,7 +1671,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                 slon = gLon;
             }
 
-            DistanceBearingMercator( g_this_point->m_lat, g_this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
+            DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
 
             ret.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( gt_leg_dist ) );
             break;
@@ -1741,16 +1681,16 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             break;
 
         case 3:
-            ret = toSDMM( 1, g_this_point->m_lat, 1 );
+            ret = toSDMM( 1, this_point->m_lat, 1 );
             break;
 
         case 4:
-            ret = toSDMM( 2, g_this_point->m_lon, 1 );
+            ret = toSDMM( 2, this_point->m_lon, 1 );
             break;
 
         case 5:
             {
-                wxDateTime timestamp = g_this_point->GetCreateTime();
+                wxDateTime timestamp = this_point->GetCreateTime();
                 if( timestamp.IsValid() )
                     ret = timestamp2s( timestamp, m_tz_selection, m_LMT_Offset, TIMESTAMP_FORMAT );
                 else
@@ -1759,12 +1699,12 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             break;
 
         case 6:
-            if( ( item > 0 ) && g_this_point->GetCreateTime().IsValid()
-                    && g_prev_point->GetCreateTime().IsValid() )
+            if( ( item > 0 ) && this_point->GetCreateTime().IsValid()
+                    && prev_point->GetCreateTime().IsValid() )
             {
                 double speed = 0.;
                 double seconds =
-                        g_this_point->GetCreateTime().Subtract( g_prev_point->GetCreateTime() ).GetSeconds().ToDouble();
+                        this_point->GetCreateTime().Subtract( prev_point->GetCreateTime() ).GetSeconds().ToDouble();
 
                 if( seconds > 0. )
                     speed = gt_leg_dist / seconds * 3600;

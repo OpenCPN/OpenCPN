@@ -226,17 +226,13 @@ bool Select::AddAllSelectableTrackSegments( Track *pr )
     wxPoint rpt, rptn;
     float slat1, slon1, slat2, slon2;
 
-    if( pr->pTrackPointList->GetCount() ) {
-        wxTrackPointListNode *node = ( pr->pTrackPointList )->GetFirst();
-
-        TrackPoint *prp0 = node->GetData();
+    if( pr->GetnPoints() ) {
+        TrackPoint *prp0 = pr->GetPoint(0);
         slat1 = prp0->m_lat;
         slon1 = prp0->m_lon;
 
-        node = node->GetNext();
-
-        while( node ) {
-            TrackPoint *prp = node->GetData();
+        for(int i=1; i<pr->GetnPoints(); i++) {
+            TrackPoint *prp = pr->GetPoint(i);
             slat2 = prp->m_lat;
             slon2 = prp->m_lon;
 
@@ -245,8 +241,6 @@ bool Select::AddAllSelectableTrackSegments( Track *pr )
             slat1 = slat2;
             slon1 = slon2;
             prp0 = prp;
-
-            node = node->GetNext();
         }
         return true;
     } else
