@@ -61,87 +61,113 @@ public class OCPNSettingsActivity extends PreferenceActivity
     private boolean mbS52 = false;
     private String m_serialString = "";
 
-    @Override
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.ocpn_preference_headers, target);
+    private static String m_settings;
+    private String m_newSettings = "";
+//    private static ArrayList<String> m_chartDirList;
 
-        m_chartDirList = new ArrayList<String>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Log.i("OpenCPN", "OCPNSettingsActivity::onCreate " + this);
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String settings = extras.getString("SETTINGS_STRING");
+            if(null != settings){
 
 //            Log.i("DEBUGGER_TAG", "OCPNSettingsActivity");
-//            Log.i("OpenCPN", settings);
+//                Log.i("OpenCPN", "settings: " + settings);
 
-            m_settings = settings;
-            m_newSettings = "";
+                m_settings = settings;
+                // Stuff the application shared preferences data from the settings string
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                Editor editor = preferences.edit();
 
-            //  Create the various settings elements
 
-            StringTokenizer tkz = new StringTokenizer(settings, ";");
+                // Extract the ChartDir list
+                String xchartDirs = "";
+                StringTokenizer tkz = new StringTokenizer(settings, ";");
 
-            while(tkz.hasMoreTokens()){
-                String tk = tkz.nextToken();
-//                Log.i("DEBUGGER_TAG", tk);
+                while(tkz.hasMoreTokens()){
+                    String tk = tkz.nextToken();
 
-                if( tk.startsWith("ChartDir") ){
-                    int mark = tk.indexOf(":");
-                    if(mark > 0){
-                        String dir = tk.substring(mark+1);
-//                        Log.i("DEBUGGER_TAG", dir);
-                        m_chartDirList.add(dir);
+                    if( tk.startsWith("ChartDir") ){
+                        int mark = tk.indexOf(":");
+                        if(mark > 0){
+                            String dir = tk.substring(mark+1);
+                            xchartDirs += dir + ";";
+                        }
                     }
                 }
+//                Log.i("OpenCPN", "OCPNSettingsActivity:onCreate extracted chartDirs: " + xchartDirs);
+                editor.putString("chartDirs", xchartDirs);
+                editor.commit();
 
+
+
+                //  Create the various settings elements
+
+                StringTokenizer tkzp = new StringTokenizer(settings, ";");
+
+                while(tkzp.hasMoreTokens()){
+                    String tk = tkzp.nextToken();
+
+                    if( tk.startsWith("prefb_") ){       // simple Boolean
+                        mbS52 |= isPrefS52(tk);
+                        int mark = tk.indexOf(":");
+                        if(mark > 0){
+                            String key = tk.substring(0, mark);
+                            //Log.i("OpenCPN", key);
+                            String value = tk.substring(mark+1);
+                            if(value.equals("1"))
+                                editor.putBoolean(key, true);
+                            else
+                                editor.putBoolean(key, false);
+                        }
+                    }
+
+                    else if( tk.startsWith("prefs_") ){       // simple string
+                        mbS52 |= isPrefS52(tk);
+                        int mark = tk.indexOf(":");
+                        if(mark > 0){
+                            String key = tk.substring(0, mark);
+    //                        Log.i("DEBUGGER_TAG", key);
+    //                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
+                            String value = tk.substring(mark+1);
+                            editor.putString(key, value);
+                        }
+                    }
+
+                }
+
+                // persist the entire settings string so that it is available to fragments
+                editor.putString("settingsString", settings);
+
+                editor.commit();
             }
-
-            // Stuff the application shared preferences data from the settings string
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            Editor editor = preferences.edit();
-
-            StringTokenizer tkzp = new StringTokenizer(settings, ";");
-
-            while(tkzp.hasMoreTokens()){
-                String tk = tkzp.nextToken();
-
-                if( tk.startsWith("prefb_") ){       // simple Boolean
-                    mbS52 |= isPrefS52(tk);
-                    int mark = tk.indexOf(":");
-                    if(mark > 0){
-                        String key = tk.substring(0, mark);
-                        //Log.i("OpenCPN", key);
-                        String value = tk.substring(mark+1);
-                        if(value.equals("1"))
-                            editor.putBoolean(key, true);
-                        else
-                            editor.putBoolean(key, false);
-                    }
-                }
-
-                else if( tk.startsWith("prefs_") ){       // simple string
-                    mbS52 |= isPrefS52(tk);
-                    int mark = tk.indexOf(":");
-                    if(mark > 0){
-                        String key = tk.substring(0, mark);
-//                        Log.i("DEBUGGER_TAG", key);
-//                        Log.i("DEBUGGER_TAG", (mbS52)?"True":"False");
-                        String value = tk.substring(mark+1);
-                        editor.putString(key, value);
-                    }
-                }
-
-            }
-
-           editor.commit();
-        }
 
         // Get the serial port(s) currently detected
-        m_serialString = extras.getString("DETECTEDSERIALPORTS_STRING");
-//        Log.i("OpenCPN", "onBuildHeaders m_serialString: " + m_serialString);
+            m_serialString = extras.getString("DETECTEDSERIALPORTS_STRING");    // save in order to pass to connections fragment
 
-
+//            Log.i("OpenCPN", "OCPNSettingsActivity:onCreate m_serialString: " + m_serialString);
+            if(null != m_serialString){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                Editor editor = preferences.edit();
+                editor.putString("detectedSerialPorts", m_serialString);
+                editor.commit();
+            }
+        }
     }
+
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        loadHeadersFromResource(R.xml.ocpn_preference_headers, target);
+    }
+
+
 
      //  We use this method to pass initial arguments to fragments
      //  Note:  Same bundle goes to all fragments.
@@ -161,6 +187,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
 
          header.fragmentArguments.putString("DETECTEDSERIALPORTS_STRING", m_serialString);
+         header.fragmentArguments.putString("SETTINGS_STRING", m_settings);
 
          super.onHeaderClick(header, position);
 
@@ -183,6 +210,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
         return false;
     }
+
 
     public void addDirectory(View vw)
     {
@@ -207,7 +235,23 @@ public class OCPNSettingsActivity extends PreferenceActivity
         OCPNSettingsFragmentCharts cfrag = OCPNSettingsFragmentCharts.getFragment();
         String removalCandidate = cfrag.getSelected();
 
-        m_chartDirList.remove(removalCandidate);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String chartDirs = preferences.getString("chartDirs", "");
+
+        StringTokenizer tkz = new StringTokenizer(chartDirs, ";");
+
+        String newDirs = "";
+        while(tkz.hasMoreTokens()){
+            String tk = tkz.nextToken();
+            if(!tk.equals(removalCandidate) )
+                newDirs += tk + ";";
+        }
+
+        Editor editor = preferences.edit();
+        editor.putString("chartDirs", newDirs);
+        editor.commit();
+
+ //       m_chartDirList.remove(removalCandidate);
 
         cfrag.updateChartDirListView();
     }
@@ -239,13 +283,17 @@ public class OCPNSettingsActivity extends PreferenceActivity
                    }
                }
 
-               String message = fileCreated? "File created" : "File opened";
-               message += ": " + filePath + " parentDir:" + parentDir;;
-//               Log.i("DEBUGGER_TAG", message);
-               m_chartDirList.add(filePath);
+//               String message = fileCreated? "File created" : "File opened";
+//               message += ": " + filePath + " parentDir:" + parentDir;;
+//               Log.i("OpenCPN", message);
 
+               // Update persisted chartDirs string
                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+               String chartDirs = preferences.getString("chartDirs", "");
+               chartDirs += filePath + ";";
+
                Editor editor = preferences.edit();
+               editor.putString("chartDirs", chartDirs);
                editor.putString("prefs_chartInitDir", parentDir);
                editor.commit();
 
@@ -284,7 +332,10 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
    @Override
    public void finish() {
-       //Log.i("DEBUGGER_TAG", "SettingsActivity finish");
+//       Log.i("OpenCPN", "SettingsActivity finish " + this);
+
+//       SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//       Log.i("OpenCPN", "SettingsActivity:onFinish.chartDirs: " + preferences.getString("chartDirs", "UNSET"));
 
        createSettingsString();
 
@@ -302,19 +353,17 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = "";
 
 
-        // Record the chart dir list contents
-        for(int i=0 ; i < m_chartDirList.size() ; ++i){
-            m_newSettings = m_newSettings.concat("ChartDir:");
-            String dir = m_chartDirList.get(i);
-//            Log.i("DEBUGGER_TAG", dir);
-            m_newSettings = m_newSettings.concat(dir);
-            m_newSettings = m_newSettings.concat(";");
-//            Log.i("DEBUGGER_TAG", m_newSettings);
-
-        }
-
         // Get the android persisted values, one-by-one
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String chartDirs =  preferences.getString("chartDirs", "");
+        StringTokenizer tkz = new StringTokenizer(chartDirs, ";");
+
+        while(tkz.hasMoreTokens()){
+            String tk = tkz.nextToken();
+            m_newSettings += "ChartDir:" + tk + ";";
+        }
+
 
         //  Simple Booleans
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_lookahead", preferences.getBoolean("prefb_lookahead", false)));
@@ -328,15 +377,17 @@ public class OCPNSettingsActivity extends PreferenceActivity
 
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_internalGPS", preferences.getBoolean("prefb_internalGPS", false)));
 
+        if(null != m_serialString){
         //  Add USB Serial port information to the string only if the port was detected on entry to this activity
-        if(m_serialString.contains("2303"))
-            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_PL2303", preferences.getBoolean("prefb_PL2303", false)));
-        if(m_serialString.contains("dAISy"))
-            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_dAISy", preferences.getBoolean("prefb_dAISy", false)));
-        if(m_serialString.contains("FT232R"))
-            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT232R", preferences.getBoolean("prefb_FT232R", false)));
-        if(m_serialString.contains("FT231X"))
-            m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT231X", preferences.getBoolean("prefb_FT231X", false)));
+            if(m_serialString.contains("2303"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_PL2303", preferences.getBoolean("prefb_PL2303", false)));
+            if(m_serialString.contains("dAISy"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_dAISy", preferences.getBoolean("prefb_dAISy", false)));
+            if(m_serialString.contains("FT232R"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT232R", preferences.getBoolean("prefb_FT232R", false)));
+            if(m_serialString.contains("FT231X"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT231X", preferences.getBoolean("prefb_FT231X", false)));
+        }
 
 
         if(mbS52){
@@ -520,13 +571,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
     }
 
 
-    public static String getSettingsString(){ return m_settings;}
-    public static ArrayList<String> getChartDirList(){ return m_chartDirList;}
-
-    private static String m_settings;
-    private String m_newSettings;
-    private static ArrayList<String> m_chartDirList;
-}
+ }
 
 
 

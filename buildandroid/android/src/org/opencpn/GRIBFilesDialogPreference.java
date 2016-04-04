@@ -56,31 +56,12 @@ public class GRIBFilesDialogPreference extends DialogPreference
         Button btn = (Button) m_vw.findViewById(R.id.buttonRemove);
         btn.setEnabled(false);
 
-        String settings = OCPNSettingsActivity.getSettingsString();
-        Log.i("DEBUGGER_TAG", "ChartFilesDialogPreference");
+       //Log.i("DEBUGGER_TAG", "ChartFilesDialogPreference");
        // Log.i("DEBUGGER_TAG", settings);
 
 
         m_lv = (ListView) vw.findViewById(R.id.chartdirlist);
 
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-            "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-            "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-            "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-            "Android", "iPhone", "WindowsMobile" };
-
-//        final ArrayList<String> list = new ArrayList<String>();
-//        for (int i = 0; i < values.length; ++i) {
-//          list.add(values[i]);
-//        }
-
-        m_chartDirList = OCPNSettingsActivity.getChartDirList();
-
-        m_adapter = new StableArrayAdapter(m_context,
-                R.layout.listitem, m_chartDirList);
-
-//        if(null != m_adapter)
-//            m_lv.setAdapter(m_adapter);
 
         m_lv.setSelector(R.drawable.selector);
 
@@ -117,7 +98,7 @@ public class GRIBFilesDialogPreference extends DialogPreference
 //     http://stackoverflow.com/questions/4505845/concise-way-of-writing-new-dialogpreference-classes
 
      public void addDirectory(View view) {
-         Log.i("DEBUGGER_TAG", "addDirectoryClick");
+         //Log.i("DEBUGGER_TAG", "addDirectoryClick");
 
          // Do something in response to button click
      }

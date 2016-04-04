@@ -13,9 +13,14 @@ import android.widget.AdapterView;
 import android.util.Log;
 import android.widget.TextView;
 
+import android.preference.PreferenceManager;
+import android.preference.Preference;
+import android.content.SharedPreferences;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.opencpn.opencpn.R;
 
@@ -56,25 +61,27 @@ public class ChartFilesDialogPreference extends DialogPreference
         Button btn = (Button) m_vw.findViewById(R.id.buttonRemove);
         btn.setEnabled(false);
 
-        String settings = OCPNSettingsActivity.getSettingsString();
-        Log.i("DEBUGGER_TAG", "ChartFilesDialogPreference");
-       // Log.i("DEBUGGER_TAG", settings);
-
+//        Log.i("OpenCPN", "ChartFilesDialogPreference");
 
         m_lv = (ListView) vw.findViewById(R.id.chartdirlist);
 
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-            "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-            "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-            "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-            "Android", "iPhone", "WindowsMobile" };
 
-//        final ArrayList<String> list = new ArrayList<String>();
-//        for (int i = 0; i < values.length; ++i) {
-//          list.add(values[i]);
-//        }
+        // Get  the initial chartDir list
+        m_chartDirList = new ArrayList<String>();
 
-        m_chartDirList = OCPNSettingsActivity.getChartDirList();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String chartDirs = preferences.getString("chartDirs", "");
+
+        StringTokenizer tkz = new StringTokenizer(chartDirs, ";");
+
+        while(tkz.hasMoreTokens()){
+            String tk = tkz.nextToken();
+            m_chartDirList.add(tk);
+            Log.i("OpenCPN", "ChartFilesDialogPreference initial adding: " + tk);
+        }
+
+
+
 
         m_adapter = new StableArrayAdapter(m_context,
                 R.layout.listitem, m_chartDirList);
@@ -174,7 +181,18 @@ public class ChartFilesDialogPreference extends DialogPreference
 
 
        public void updateListView(){
-           m_chartDirList = OCPNSettingsActivity.getChartDirList();
+           SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+           String chartDirs = preferences.getString("chartDirs", "");
+
+           StringTokenizer tkz = new StringTokenizer(chartDirs, ";");
+
+           m_chartDirList.clear();
+           while(tkz.hasMoreTokens()){
+               String tk = tkz.nextToken();
+               m_chartDirList.add(tk);
+               Log.i("OpenCPN", "ChartFilesDialogPreference later adding: " + tk);
+           }
+
 
            m_adapter = new StableArrayAdapter(m_context,
                android.R.layout.simple_list_item_1, m_chartDirList);
