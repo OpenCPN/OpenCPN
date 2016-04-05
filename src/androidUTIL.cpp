@@ -55,6 +55,7 @@
 #include "OCPNPlatform.h"
 #include "multiplexer.h"
 #include "chartdbs.h"
+#include "glChartCanvas.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -748,6 +749,8 @@ extern "C"{
             qDebug() << "endPersist";
         }
         
+        
+        
         return 98;
     }
 }
@@ -756,10 +759,6 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
-        
-        // Set initial ActionBar item states
-        androidSetFollowTool(cc1->m_bFollow);
-        androidSetRouteAnnunciator( false );
         
         return 99;
     }
@@ -772,8 +771,6 @@ extern "C"{
         
         g_bSleep = true;
         
-        
-        
         return 97;
     }
 }
@@ -782,16 +779,39 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
+
+        int ret = 96;
         
         g_bSleep = false;
 
+        if(cc1){
+            glChartCanvas *glc = cc1->GetglCanvas();
+            QGLWidget *glw = glc->GetHandle();
+            qDebug() << glw;
+            if(glw){
+                 QGLContext *context = glw->context();
+                 qDebug() << context;
+                 if(context){
+                     qDebug() << context->isValid();
+                     if(context->isValid())
+                         ret = 1;
+                     else{
+                         wxLogMessage(_T("OpenGL Lost Context"));
+                         ret = 0;
+                     }
+ 
+                 }
+            }
+        }
+        
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( ID_CMD_INVALIDATE );
         
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
+
         
-        return 96;
+        return ret;
     }
 }
 
@@ -954,6 +974,23 @@ extern "C"{
         return ret;
     }
     
+}       
+
+extern "C"{
+    JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_getTLWCount(JNIEnv *env, jobject obj)
+    {
+        int ret = 0;
+        wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
+        while (node)
+        {
+            wxWindow* win = node->GetData();
+            if(win->IsShown())
+                ret++;
+            
+            node = node->GetNext();
+        }
+        return ret;
+    }
 }       
 
 extern "C"{
