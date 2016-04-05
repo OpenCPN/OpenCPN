@@ -311,6 +311,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
+    private Boolean m_GPSRequestOn = false;
+
     public ProgressDialog ringProgressDialog;
     public boolean m_hasGPS;
     private boolean m_backButtonEnable = true;
@@ -529,7 +531,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "";
     }
 
+    public String makeToast( String msg ){
+        Toast.makeText(getApplicationContext(), msg,Toast.LENGTH_LONG).show();
 
+        return "OK";
+    }
 
 
     public String invokeGoogleMaps(){
@@ -946,9 +952,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if(!m_GPSServiceStarted){
             //Log.i("DEBUGGER_TAG", "Start GPS Server");
-            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
+            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
             m_GPSServiceStarted = true;
         }
+
+        if(parm == GPSServer.GPS_ON)
+            m_GPSRequestOn = true;
+
+        if(parm == GPSServer.GPS_OFF)
+            m_GPSRequestOn = false;
 
         return m_GPSServer.doService( parm );
     }
@@ -3000,23 +3012,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
 
-
-        if(keyCode==KeyEvent.KEYCODE_BACK){
-            //Toast.makeText(getApplicationContext(), "back press",Toast.LENGTH_LONG).show();
-            if(!m_backButtonEnable)
-                return false;
-
-            if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
-                  toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
-                  toast.show();
-                  this.lastBackPressTime = System.currentTimeMillis();
-                  return false;
-            } else {
-              if (toast != null)
-               toast.cancel();
-            }
-        }
-
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);
         else
@@ -3046,10 +3041,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-        if(keyCode==KeyEvent.KEYCODE_BACK){
-            if(!m_backButtonEnable)
-                return false;
-        }
+                if(keyCode==KeyEvent.KEYCODE_BACK){
+                    //Log.i("OpenCPN", "TLWCount " + nativeLib.getTLWCount());
+
+                    if(!m_backButtonEnable)
+                        return false;
+
+                    if(nativeLib.getTLWCount() <= 2){
+
+                       if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
+                              toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
+                              toast.show();
+                              this.lastBackPressTime = System.currentTimeMillis();
+                              return false;
+                        } else {
+                        this.lastBackPressTime = System.currentTimeMillis();
+                        if (toast != null)
+                         toast.cancel();
+                        }
+                    }
+                }
 
         if (QtApplication.m_delegateObject != null  && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyUp, keyCode, event);
@@ -3360,11 +3371,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if(null != nativeLib)
             nativeLib.onResume();
 
+
         if(null != uSerialHelper){
             uSerialHelper.initUSBSerial(this);
             m_scannedSerial = scanSerialPorts( UsbSerialHelper.SCAN );      // Full scan.
         }
-
 
         super.onResume();
 
@@ -3421,6 +3432,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     protected void onStart()
     {
         Log.i("OpenCPN", "onStart " + this);
+        nativeLib.onStart();
 
         super.onStart();
         QtApplication.invokeDelegate();

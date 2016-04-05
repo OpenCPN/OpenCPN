@@ -50,5 +50,6 @@ public class OCPNNativeLib {
   public native int notifyFullscreenChange( boolean bFull );
 
   public native int sendPluginMessage( String iD, String message);
+  public native int getTLWCount();
 
 }

@@ -27,19 +27,17 @@ import java.util.Iterator;
 
 import org.opencpn.OCPNGpsNmeaListener;
 import org.opencpn.OCPNNativeLib;
-import org.qtproject.qt5.android.bindings.QtActivity;
 
 
 
 public class GPSServer extends Service implements LocationListener {
 
-    private final static int GPS_OFF = 0;
-    private final static int GPS_ON = 1;
+    public final static int GPS_OFF = 0;
+    public final static int GPS_ON = 1;
     public  final static int GPS_PROVIDER_AVAILABLE = 2;
-    private final static int GPS_SHOWPREFERENCES = 3;
+    public final static int GPS_SHOWPREFERENCES = 3;
 
     private final Context mContext;
-    private final Activity parent_activity;
 
     public String status_string;
 
@@ -128,11 +126,9 @@ public class GPSServer extends Service implements LocationListener {
         }
     }
 
-    public GPSServer(Context context, OCPNNativeLib nativelib, Activity activity) {
+    public GPSServer(Context context, OCPNNativeLib nativelib) {
         this.mContext = context;
         this.mNativeLib = nativelib;
-        this.parent_activity = activity;
-//        getLocation();
     }
 
     public String doService( int parm )
@@ -181,22 +177,30 @@ public class GPSServer extends Service implements LocationListener {
 
                 if(!isThreadStarted){
 
-                    parent_activity.runOnUiThread(new Runnable()   {
-                        LocationManager locationManager;
-                        public void run()   {
 
-                            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
-                            Log.i("OpenCPN", "Requesting Updates");
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
+                    HandlerThread hReqThread = new HandlerThread("RequestHandlerThread");
+                    hReqThread.start();
+                    final Handler reqHandler = new Handler(hReqThread.getLooper());
 
-                            mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
-                            locationManager.addNmeaListener (mNMEAListener);
+                    Runnable Req =new Runnable()   {
+                                            LocationManager locationManager;
+                                            public void run()   {
 
-                            mMyListener = new MyListener();
-                            locationManager.addGpsStatusListener(mMyListener);
+                                                locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+                                                Log.i("OpenCPN", "Requesting Location Updates");
+                                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
 
-                        }
-                    });
+                                                mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
+                                                locationManager.addNmeaListener (mNMEAListener);
+
+                                                mMyListener = new MyListener();
+                                                locationManager.addGpsStatusListener(mMyListener);
+
+                                            }};
+
+                    // Schedule the first execution
+                    reqHandler.postDelayed(Req, 100);
+
 
 
                     HandlerThread hThread = new HandlerThread("HandlerThread");
@@ -225,6 +229,7 @@ public class GPSServer extends Service implements LocationListener {
 
                                         if(null != mNativeLib){
                                             String s = createRMC();
+                                            Log.i("OpenCPN", "ticker: " + s);
                                             mNativeLib.processNMEA( s );
                                         }
                                     }
