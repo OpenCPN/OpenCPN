@@ -3297,6 +3297,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( pCurrentStack ) {
         g_restore_stackindex = pCurrentStack->CurrentStackEntry;
         g_restore_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
+        if(cc1 && cc1->GetQuiltMode())
+            g_restore_dbindex = cc1->GetQuiltReferenceChartIndex();
     }
 
     if( g_FloatingToolbarDialog ) {
@@ -5534,6 +5536,10 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
             b_autofind = true;
         ChartsRefresh( index_hint, cc1->GetVP() );
     }
+    
+    //  The zoom-scale factor may have changed
+    //  so, trigger a recalculation of the reference chart
+    cc1->DoZoomCanvas(1.0001);
 
     return 0;
 }
@@ -5800,8 +5806,8 @@ void MyFrame::SetupQuiltMode( void )
         //    Select the proper Ref chart
         int target_new_dbindex = -1;
         if( pCurrentStack ) {
-            target_new_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
-
+            target_new_dbindex = cc1->GetQuiltReferenceChartIndex();    //pCurrentStack->GetCurrentEntrydbIndex();
+            
             if(-1 != target_new_dbindex){
                 if( !cc1->IsChartQuiltableRef( target_new_dbindex ) ){
 
@@ -7870,8 +7876,14 @@ bool MyFrame::DoChartUpdate( void )
                 if( ChartData ) {
                     ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
                     if( pc ) {
+                        
+                        // If the chart zoom modifier is greater than 1, allow corresponding underzoom (with a 10% fluff) on startup
+                        double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
+                        mod = wxMax(mod, 1.0);
+                        mod = wxMin(mod, 2.0);
+                        
                         proposed_scale_onscreen =
-                                wxMin(proposed_scale_onscreen, pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                                wxMin(proposed_scale_onscreen, mod * 1.10 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
                         proposed_scale_onscreen =
                                 wxMax(proposed_scale_onscreen, pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
                     }
