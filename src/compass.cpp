@@ -376,9 +376,9 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         int tex_w = image.GetWidth();
         int tex_h = image.GetHeight();
         
-        GLuint format = GL_RGBA;
+        GLuint format = GL_RGB;
         GLuint internalformat = format;
-        int stride = 4;
+        int stride = 3;
         
         if(imgdata){
             unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
@@ -386,7 +386,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
             for( int j = 0; j < tex_w*tex_h; j++ ){
                 for( int k = 0; k < 3; k++ )
                     teximage[j * stride + k] = imgdata[3*j + k];
-                teximage[j * stride + 3] = imgalpha ? imgalpha[j] : 255;      // alpha
+ //               teximage[j * stride + 3] = imgalpha ? imgalpha[j] : 255;      // alpha
             }
                 
             if(texobj){
