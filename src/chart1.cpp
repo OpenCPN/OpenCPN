@@ -4863,6 +4863,8 @@ void MyFrame::SetbFollow( void )
     androidSetFollowTool(true);
     #endif
 
+    JumpToPosition(gLat, gLon, cc1->GetVPScale());
+    
     DoChartUpdate();
     cc1->ReloadVP();
 }
