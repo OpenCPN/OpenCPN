@@ -1428,6 +1428,7 @@ bool dashboard_pi::LoadConfig( void )
         } else {
             // Version 2
             m_config_version = 2;
+            bool b_onePersisted = false;
             for( int i = 0; i < d_cnt; i++ ) {
                 pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
                 wxString name;
@@ -1452,9 +1453,20 @@ bool dashboard_pi::LoadConfig( void )
                 DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
                 cont->m_bPersVisible = b_persist;
 
+                if(b_persist)
+                    b_onePersisted = true;
+                
                 m_ArrayOfDashboardWindow.Add(cont);
 
             }
+            
+            // Make sure at least one dashboard is scheduled to be visible
+            if( m_ArrayOfDashboardWindow.Count() && !b_onePersisted){
+                DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(0);
+                if(cont)
+                    cont->m_bPersVisible = true;
+            }
+                
         }
 
         return true;
