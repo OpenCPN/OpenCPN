@@ -719,6 +719,7 @@ IF(OCPN_USE_SVG)
       src/wxsvg/src/NodeList.cpp
       src/wxsvg/src/SVGAngle.cpp
       src/wxsvg/src/SVGAnimateTransformElement.cpp
+      src/wxsvg/src/SVGAnimateMotionElement.cpp
       src/wxsvg/src/SVGAnimatedType.cpp
       src/wxsvg/src/SVGAnimationElement.cpp
       src/wxsvg/src/SVGCanvas.cpp
@@ -2076,6 +2077,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_DEBIAN_PACKAGE_SECTION "misc")
     SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
     SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
+    SET(CPACK_RPM_PACKAGE_RELEASE "${PACKAGE_RELEASE}")
     SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
     SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
     SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")

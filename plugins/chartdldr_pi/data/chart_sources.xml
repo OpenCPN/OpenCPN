@@ -846,12 +846,14 @@
     <section>
       <name>ChartCatalogs</name>
       <catalogs>
+<!-- Currently not avaialable
         <catalog>
           <name>Argentina RNC Nautical Charts</name>
           <type>RNC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/AR_RNC_Catalog.xml</location>
           <dir>{USERDATA}/RNC/ARGENTINA</dir>
         </catalog>
+-->
         <catalog>
           <name>Austria Inland ENC Charts</name>
           <type>ENC</type>
@@ -947,6 +949,12 @@
           <type>ENC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/RS_IENC_Catalog.xml</location>
           <dir>{USERDATA}/ENC/RS_INLAND</dir>
+        </catalog>
+        <catalog>
+          <name>Slovakia Inland ENC Charts</name>
+          <type>ENC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/SK_IENC_Catalog.xml</location>
+          <dir>{USERDATA}/ENC/SK_INLAND</dir>
         </catalog>
         <catalog>
           <name>South China Sea ENC Charts</name>

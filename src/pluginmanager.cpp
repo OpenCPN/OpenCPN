@@ -481,6 +481,9 @@ bool PlugInManager::CallLateInit(void)
         switch(pic->m_api_version)
         {
             case 110:
+            case 111:
+            case 112:
+            case 113:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;

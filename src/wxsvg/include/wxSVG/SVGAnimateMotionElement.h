@@ -21,6 +21,7 @@ class wxSVGAnimateMotionElement:
       wxSVGAnimationElement(tagName) {}
     virtual ~wxSVGAnimateMotionElement() {}
     wxSvgXmlNode* CloneNode(bool deep = true) { return new wxSVGAnimateMotionElement(*this); }
+    virtual void ApplyAnimation();
     bool HasAttribute(const wxString& name) const;
     wxString GetAttribute(const wxString& name) const;
     bool SetAttribute(const wxString& name, const wxString& value);

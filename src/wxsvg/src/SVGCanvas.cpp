@@ -3,7 +3,7 @@
 // Purpose:     wxSVGCanvas - Base class for SVG renders (backends)
 // Author:      Alex Thuering
 // Created:     2005/05/04
-// RCS-ID:      $Id: SVGCanvas.cpp,v 1.26 2014/08/09 11:13:55 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvas.cpp,v 1.27 2016/01/09 23:31:14 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -65,8 +65,10 @@ void wxSVGCanvas::DrawImage(wxSVGImageElement* element, wxSVGMatrix* matrix, con
 	if (style->GetDisplay() == wxCSS_VALUE_INLINE) {
 		if (canvasItem->GetSvgImage() != NULL) {
 			wxSVGGElement* gElem = new wxSVGGElement();
+			gElem->SetOwnerDocument(element->GetOwnerDocument());
+			gElem->SetOwnerSVGElement(element->GetOwnerSVGElement());
 			gElem->Translate(canvasItem->m_x, canvasItem->m_y);
-			wxSVGSVGElement* svgElem = canvasItem->GetSvgImage();
+			wxSVGSVGElement* svgElem = canvasItem->GetSvgImage((wxSVGDocument*) element->GetOwnerDocument());
 			svgElem->SetWidth(canvasItem->m_width);
 			svgElem->SetHeight(canvasItem->m_height);
 			gElem->AddChild(svgElem);
@@ -181,13 +183,13 @@ unsigned int wxSVGCanvas::GetGradientStops(const wxSVGSVGElement& svgElem, wxSVG
 	int i = 0;
 	while (stop_elem) {
 		if (stop_elem->GetDtd() == wxSVG_STOP_ELEMENT) {
-		        wxSVGColor color = stop_elem->GetStopColor();
-		        // no color, default is black
-		        if (color.GetColorType() == wxSVG_COLORTYPE_UNKNOWN)
-                                color = wxSVGColor(0,0,0);
+			wxSVGColor color = stop_elem->GetStopColor();
+ 			// no color, default is black
+ 			if (color.GetColorType() == wxSVG_COLORTYPE_UNKNOWN)
+				color = wxSVGColor(0,0,0);
 			SetStopValue(i++, stop_elem->GetOffset(), stop_elem->GetStopOpacity() * opacity,
 					color.GetRGBColor());
-                }
+		}
 		stop_elem = (wxSVGStopElement*) stop_elem->GetNext();
 	}
 	return stop_count;

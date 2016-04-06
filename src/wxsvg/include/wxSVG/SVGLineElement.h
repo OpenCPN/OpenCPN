@@ -38,6 +38,7 @@ class wxSVGLineElement:
     wxSVGAnimatedLength m_y1;
     wxSVGAnimatedLength m_x2;
     wxSVGAnimatedLength m_y2;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedLength& GetX1() const { WX_SVG_ANIM_LENGTH_CALC_WIDTH(m_x1, GetViewportElement()); return m_x1; }
@@ -56,8 +57,6 @@ class wxSVGLineElement:
     inline void SetY2(const wxSVGAnimatedLength& n) { m_y2 = n; }
     inline void SetY2(const wxSVGLength& n) { m_y2.SetBaseVal(n); }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);

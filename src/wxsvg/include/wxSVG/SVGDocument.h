@@ -87,9 +87,11 @@ class wxSVGDocument:
     double GetCurrentTime() { return m_time; }
     void SetCurrentTime(double seconds);
     
+    /** Renders SVG to bitmap image */
     wxImage Render(int width = -1, int height = -1, const wxSVGRect* rect = NULL, bool preserveAspectRatio = true,
 		bool alpha = false, wxProgressDialog* progressDlg = NULL);
-    wxImage RenderElementById(const wxString& id);
+    
+    static void ApplyAnimation(wxSVGElement* parent);
   private:
       DECLARE_DYNAMIC_CLASS(wxSVGDocument)
 };
