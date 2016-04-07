@@ -2078,7 +2078,8 @@ void glChartCanvas::GridDraw( )
     glEnd();
 
     glDisable( GL_LINE_SMOOTH );
-
+    glEnable( GL_BLEND );
+    
     // draw text labels
     glEnable(GL_TEXTURE_2D);
     for(lat = startlat; lat < nlat; lat += gridlatMajor) {
