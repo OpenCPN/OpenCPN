@@ -898,6 +898,8 @@ glChartCanvas::~glChartCanvas()
 void glChartCanvas::FlushFBO( void ) 
 {
     if(m_bsetup){
+        wxLogMessage(_T("BuildFBO 2"));
+        
         BuildFBO();
     }
 }
@@ -946,6 +948,8 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     if( GetSize() != cc1->GetSize() ) {
         SetSize( cc1->GetSize() );
         if( m_bsetup ){
+            wxLogMessage(_T("BuildFBO 3"));
+            
             BuildFBO();
         }
     }
@@ -1397,6 +1401,7 @@ void glChartCanvas::SetupOpenGL()
         
     //      Maybe build FBO(s)
 
+    wxLogMessage(_T("BuildFBO 1"));
     BuildFBO();
     
     
@@ -5016,6 +5021,8 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         case GestureStarted:
             m_binPinch = true;
             m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
+            m_pinchStart = event.GetCenterPoint();
+            qDebug() << "center" << event.GetCenterPoint().x << event.GetCenterPoint().y;
             break;
             
         case GestureUpdated:
@@ -5033,6 +5040,19 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                 else
                     cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
             
+             if(total_zoom_val > 1){
+                 if (g_GLOptions.m_bUseCanvasPanning){
+                     int sx = GetSize().x;
+                     int sy = GetSize().y;
+                     
+                     cc1->PanCanvas( total_zoom_val * (m_pinchStart.x - sx/2), total_zoom_val * (m_pinchStart.y - sy/2));
+                 
+                 #ifdef __OCPN__ANDROID__
+                     androidSetFollowTool(false);
+                 #endif        
+                 }
+             }
+                     
              m_binPinch = false;
              break;
         }
