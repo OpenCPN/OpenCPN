@@ -290,7 +290,9 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), radius );
         sdc.SelectObject( wxNullBitmap );
     }
+#ifndef ocpnUSE_GLES
     m_StatBmp.SetMask(new wxMask(m_MaskBmp, *wxWHITE));
+#endif
 
     wxMemoryDC mdc;
     mdc.SelectObject( m_StatBmp );
