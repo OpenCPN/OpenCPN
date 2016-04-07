@@ -298,6 +298,7 @@ int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
 bool            g_track_active;
+bool            bGPSEnabled;
 
 wxSize          config_size;
 
@@ -733,11 +734,13 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStop";
+        wxLogMessage(_T("onStop"));
+        
         
         //  App may be summarily killed after this point due to OOM condition.
         //  So we need to persist some dynamic data.
         if(pConfig){
-            qDebug() << "startPersist";
+            //qDebug() << "startPersist";
         
         //  Persist the config file, especially to capture the viewport location,scale etc.
             pConfig->UpdateSettings();
@@ -746,7 +749,7 @@ extern "C"{
         //  We commit the navobj deltas, and flush the restore file 
             pConfig->UpdateNavObj();
 
-            qDebug() << "endPersist";
+            //qDebug() << "endPersist";
         }
         
         
@@ -759,6 +762,7 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
+        wxLogMessage(_T("onStart"));
         
         return 99;
     }
@@ -768,8 +772,10 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onPause(JNIEnv *env, jobject obj)
     {
         qDebug() << "onPause";
-        
+        wxLogMessage(_T("onPause"));
         g_bSleep = true;
+        
+        androidGPSService( GPS_OFF );
         
         return 97;
     }
@@ -779,10 +785,15 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
-
+        wxLogMessage(_T("onResume"));
+        
         int ret = 96;
         
         g_bSleep = false;
+        
+        if(bGPSEnabled)
+            androidGPSService( GPS_ON );
+        
 
         if(cc1){
             glChartCanvas *glc = cc1->GetglCanvas();
@@ -1882,6 +1893,8 @@ bool androidStartNMEA(wxEvtHandler *consumer)
         androidStopNMEA();
         return false;
     }
+    else
+        bGPSEnabled = true;
     
     return true;
 }
@@ -1891,6 +1904,8 @@ bool androidStopNMEA()
     s_pAndroidNMEAMessageConsumer = NULL;
     
     wxString s = androidGPSService( GPS_OFF );
+    
+    bGPSEnabled = false;
     
     return true;
 }
