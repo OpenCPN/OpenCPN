@@ -631,7 +631,7 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
 
     if( event.LeftDown() ) {
         s_gspt = spt;
-        CaptureMouse();
+        if (!HasCapture()) CaptureMouse();
     }
 
     if( event.LeftUp() ) {
