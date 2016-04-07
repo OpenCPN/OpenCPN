@@ -934,6 +934,8 @@ void options::RecalculateSize(void) {
     SetSize(fitted_size);
 
     Fit();
+    m_nCharWidthMax = GetSize().x / GetCharWidth();
+    
     return;
   }
 
@@ -953,6 +955,8 @@ void options::RecalculateSize(void) {
   int yp = (canvas_size.y - fsize.y) / 2;
   wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
   Move(xxp.x + xp, xxp.y + yp);
+  
+  m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
 
 void options::Init(void) {
@@ -4264,12 +4268,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
                               border_size);
 
-  wxStaticBox* itemFontStaticBox =
-      new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
-  wxStaticBoxSizer* itemFontStaticBoxSizer =
-      new wxStaticBoxSizer(itemFontStaticBox, wxHORIZONTAL);
-  m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
-                               border_size);
+  wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
+  
+  int fLayout = wxHORIZONTAL;
+  if(m_nCharWidthMax <  40)
+      fLayout = wxVERTICAL;
+  
+  wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, fLayout);
+  m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size);
 
   m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_SORT);
 
@@ -4385,16 +4391,15 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pMobile, 0, wxALL, border_size);
 
   pResponsive = new wxCheckBox(itemPanelFont, ID_REPONSIVEBOX,
-                               _("Enable Tablet Scaled Graphics interface"));
+                               _("Enable Scaled Graphics interface"));
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
-  int slider_width = wxMax(m_fontHeight * 4, 150);
+  int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_GUI_Factor->Hide();
-  //#ifdef __OCPN__ANDROID__
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
                    verticleInputFlags);
@@ -4404,13 +4409,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __WXQT__
   m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  //#endif
 
   m_pSlider_Chart_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_Chart_Factor->Hide();
-  //#ifdef __OCPN__ANDROID__
   miscOptions->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
       verticleInputFlags);
@@ -4420,7 +4423,8 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __WXQT__
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  //#endif
+  
+  miscOptions->AddSpacer(20);
 }
 
 void options::CreateControls(void) {
