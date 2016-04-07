@@ -1005,7 +1005,7 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
         
     wxString json;
     wxString json_begin = initSettings.SettingsToJSON(json);
-    wxLogMessage(json_begin);
+//    wxLogMessage(json_begin);
 
     
     //  Pick up the required options from the Request dialog
@@ -1038,7 +1038,7 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
     wxJSONWriter w;
     wxString json_final;
     w.Write(v, json_final);
-    wxLogMessage(json_final);
+//    wxLogMessage(json_final);
     
     
 #ifdef __OCPN__ANDROID__
