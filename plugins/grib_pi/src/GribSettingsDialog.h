@@ -32,6 +32,8 @@
 
 #include "jsonval.h"
 
+class grib_pi;
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib OverlaySettings Specification
 //----------------------------------------------------------------------------------------------------------
@@ -44,7 +46,7 @@ struct GribOverlaySettings
     void SaveSettingGroups(wxFileConfig *pConf, int settings, int group);
 
     wxString SettingsToJSON(wxString json);
-    bool JSONToSettings(wxString json);
+    bool JSONToSettings(wxString json, grib_pi *pi);
     bool UpdateJSONval( wxJSONValue &v, int settings, int group);
     
     double CalibrationOffset(int settings);

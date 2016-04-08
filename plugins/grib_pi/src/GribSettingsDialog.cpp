@@ -1024,7 +1024,7 @@ bool GribOverlaySettings::UpdateJSONval( wxJSONValue &v, int settings, int group
     return true;
 }
 
-bool GribOverlaySettings::JSONToSettings(wxString json)
+bool GribOverlaySettings::JSONToSettings(wxString json, grib_pi *pi )
 {
     wxJSONValue  root;
     wxJSONReader reader;
@@ -1044,7 +1044,12 @@ bool GribOverlaySettings::JSONToSettings(wxString json)
         transparency = wxMin(100, transparency);
         m_iOverlayTransparency = transparency * (double)(254. / 100.);
     }
- 
+
+    if(root[ _T ( "reference_timezone" )].IsBool()){
+        if(pi)
+            pi->SetTimeZone( root[_T ( "reference_timezone" )].AsBool() );
+    }
+    
     for(int i=0; i<SETTINGS_COUNT; i++) {
         wxString Name=name_from_index[i];
         wxString s;

@@ -242,6 +242,18 @@ bool grib_pi::MouseEventHook( wxMouseEvent &event )
     return false;
 }
 
+void grib_pi::SetTimeZone(int tz)
+{ 
+    m_bTimeZone = tz;
+    if( m_pGRIBOverlayFactory )
+        m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
+    
+    if(m_pGribCtrlBar){
+        m_pGribCtrlBar->PopulateComboDataList();
+        m_pGribCtrlBar->TimelineChanged();
+    }
+}
+
 void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
@@ -572,7 +584,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         if(m_pGribCtrlBar){
             m_pGribCtrlBar->OpenFileFromJSON(message_body);
             
-            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
+            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body, this);
             m_pGribCtrlBar->m_OverlaySettings.Write();
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             

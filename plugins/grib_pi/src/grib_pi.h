@@ -110,6 +110,7 @@ public:
       wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
       wxPoint GetCursorDataXY() { return m_CursorDataxy; }
       int  GetTimeZone() { return m_bTimeZone; }
+      void SetTimeZone(int tz);
       int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
