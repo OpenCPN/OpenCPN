@@ -686,6 +686,7 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
 //        qDebug() << "onConfigChange";
+        wxLogMessage(_T("onConfigChange"));
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
@@ -1796,7 +1797,8 @@ void androidConfirmSizeCorrection()
     //  There is some confusion about the ActionBar size during configuration changes.
     //  We need to confirm the calculated display size, and fix it if necessary.
     //  This happens during staged resize events processed by gFrame->TriggerResize()
-    
+ 
+    wxLogMessage(_T("androidConfirmSizeCorrection"));
     wxSize targetSize = getAndroidDisplayDimensions();
 //    qDebug() << "Confirming" << targetSize.y << config_size.y;
     if(config_size != targetSize){
@@ -1808,6 +1810,8 @@ void androidConfirmSizeCorrection()
         
 void androidForceFullRepaint()
 {
+        wxLogMessage(_T("androidForceFullRepaint"));
+    
         wxSize targetSize = getAndroidDisplayDimensions();
         wxSize tempSize = targetSize;
         tempSize.y--;
