@@ -631,7 +631,9 @@ void CursorData::OnMouseEvent( wxMouseEvent &event )
 
     if( event.LeftDown() ) {
         s_gspt = spt;
+#ifndef __OCPN__ANDROID__        
         if (!HasCapture()) CaptureMouse();
+#endif        
     }
 
     if( event.LeftUp() ) {
