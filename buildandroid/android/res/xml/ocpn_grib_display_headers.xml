@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
     <header
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBGeneralSettings"
+        android:title="General"
+        android:summary="Set General Display Options">
+    </header>
+
+    <header
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWindSettings"
         android:title="Wind"
         android:summary="Set Wind Display Options">

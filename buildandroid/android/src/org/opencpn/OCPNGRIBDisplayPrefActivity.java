@@ -556,6 +556,22 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
         }
     }
 */
+
+    public static class GRIBGeneralSettings extends GRIBDisplayItemSettings {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.grib_general_display_settings);
+            page = "General";
+
+            setListeners();
+        }
+
+    }
+
     public static class GRIBWindSettings extends GRIBDisplayItemSettings {
 
         @Override

@@ -311,8 +311,13 @@ public class OCPNGRIBActivity extends Activity
             Log.i("GRIB", "persisting");
 
             preferences.edit().clear();
-            PreferenceManager.setDefaultValues(this, R.xml.grib_wind_display_settings, true);
+            PreferenceManager.setDefaultValues(this, R.xml.grib_general_display_settings, true);
             Map<String,?> keys = preferences.getAll();
+            JSONPersist(preferences, keys, "General");
+
+            preferences.edit().clear();
+            PreferenceManager.setDefaultValues(this, R.xml.grib_wind_display_settings, true);
+            keys = preferences.getAll();
             JSONPersist(preferences, keys, "Wind");
 
             preferences.edit().clear();
@@ -382,6 +387,8 @@ public class OCPNGRIBActivity extends Activity
                 m_grib_PrefsJSON.put("grib_file", preferences.getString("GRIB_dest_file", "?"));
 
                 m_grib_PrefsJSON.put("overlay_transparency", preferences.getString("grib_prefs_OverlayTransparency", "?"));
+
+                m_grib_PrefsJSON.put("reference_timezone", preferences.getBoolean("grib_prefb_UseLocalTZ", false));
 
 
 

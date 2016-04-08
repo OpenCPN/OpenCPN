@@ -1174,8 +1174,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         m_downloadRet = "";
 
+        //  Delete any existing file of the same name.
+        Uri fURI = Uri.parse(url);
+        try{
+            File f = new File(fURI.getPath());
+            if(f.exists())
+                f.delete();
+       }catch (Exception e) {
+       }
 
-        if( downloadBCReceiver == null){
+       if( downloadBCReceiver == null){
           downloadBCReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
