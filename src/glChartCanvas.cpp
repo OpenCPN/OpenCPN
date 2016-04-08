@@ -4363,6 +4363,8 @@ void glChartCanvas::Render()
                             m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
                             m_fbo_swidth = sx;
                             m_fbo_sheight = sy;
+ 
+                            cc1->GetCanvasPixPoint( -m_fbo_offsetx, -m_fbo_offsety, m_fbo_lat, m_fbo_lon );  // lat/lon of fbo origin
                             
                             m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
                             
@@ -4781,20 +4783,24 @@ void glChartCanvas::FastPan(int dx, int dy)
 }
 
 
-void glChartCanvas::FastZoom(float factor)
+void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y)
 {
     int sx = GetSize().x;
     int sy = GetSize().y;
    
     if(factor > 1.0f){
-        int fbo_ctr_x = m_fbo_offsetx + (m_fbo_swidth / 2);
-        int fbo_ctr_y = m_fbo_offsety + (m_fbo_sheight / 2);
+
+        double fx = (double)cp_x / sx;
+        double fy = 1.0 - (double)cp_y / sy;
         
+        int fbo_ctr_x = m_fbo_offsetx + (m_fbo_swidth * fx);
+        int fbo_ctr_y = m_fbo_offsety + (m_fbo_sheight * fy);
+
         m_fbo_swidth  = m_fbo_swidth / factor;
         m_fbo_sheight = m_fbo_sheight / factor;
-        
-        m_fbo_offsetx = fbo_ctr_x - (m_fbo_swidth / 2.);
-        m_fbo_offsety = fbo_ctr_y - (m_fbo_sheight / 2.);
+
+        m_fbo_offsetx = fbo_ctr_x - (m_fbo_swidth * fx);
+        m_fbo_offsety = fbo_ctr_y - (m_fbo_sheight * fy);
         
     }
     
@@ -4972,8 +4978,10 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             
         case GestureFinished:
             if(m_binPan){
-                if (g_GLOptions.m_bUseCanvasPanning)
+                if (g_GLOptions.m_bUseCanvasPanning){
+//                    qDebug() << "drag final pan" << -panx << pany;
                     cc1->PanCanvas( -panx, pany );
+                }
 
             #ifdef __OCPN__ANDROID__
                 androidSetFollowTool(false);
@@ -5017,36 +5025,47 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         total_zoom_val = 1.0 - ((1.0 - event.GetTotalScaleFactor()) * zoom_gain);
  
     double projected_scale = cc1->GetVP().chart_scale / total_zoom_val;
+ 
     
     switch(event.GetState()){
         case GestureStarted:
             m_binPinch = true;
             m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
             m_pinchStart = event.GetCenterPoint();
-            qDebug() << "center" << event.GetCenterPoint().x << event.GetCenterPoint().y;
+            cc1->GetCanvasPixPoint(event.GetCenterPoint().x, event.GetCenterPoint().y, m_pinchlat, m_pinchlon);
+//            qDebug() << "center" << event.GetCenterPoint().x << event.GetCenterPoint().y;
+            
+            m_cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
+            m_cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
+            
             break;
             
         case GestureUpdated:
             if(g_GLOptions.m_bUseCanvasPanning){
                 
-                if( projected_scale < 3e8)
-                    FastZoom(zoom_val);
-                
+                if( projected_scale < 3e8){
+                    FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y);
+                }
             }
             break;
             
         case GestureFinished:{
-                if( projected_scale < 3e8)
-                    cc1->ZoomCanvas( total_zoom_val, false );
-                else
-                    cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
+            int cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
+            int cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
+            
+            if( projected_scale < 3e8)
+                cc1->ZoomCanvas( total_zoom_val, false );
+            else
+                cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
             
              if(total_zoom_val > 1){
                  if (g_GLOptions.m_bUseCanvasPanning){
-                     int sx = GetSize().x;
-                     int sy = GetSize().y;
-                     
-                     cc1->PanCanvas( total_zoom_val * (m_pinchStart.x - sx/2), total_zoom_val * (m_pinchStart.y - sy/2));
+
+
+                     int dx = (cc_x - m_cc_x) * total_zoom_val;
+                     int dy = -(cc_y - m_cc_y) * total_zoom_val;
+//                     qDebug() << "final pan" << dx << dy << total_zoom_val;
+                     cc1->PanCanvas( dx, dy );
                  
                  #ifdef __OCPN__ANDROID__
                      androidSetFollowTool(false);

@@ -97,7 +97,7 @@ public:
     void OnSize ( wxSizeEvent& event );
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
-    void FastZoom(float factor);
+    void FastZoom(float factor, int cp_x, int cp_y);
     void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
@@ -206,6 +206,9 @@ protected:
     float       m_fbo_offsety;
     float       m_fbo_swidth;
     float       m_fbo_sheight;
+    double      m_fbo_lat, m_fbo_lon;
+    int         m_cc_x,m_cc_y;
+    
     bool        m_binPinch;
     bool        m_binPan;
     bool        m_bfogit;
@@ -216,6 +219,7 @@ protected:
     bool        m_bgestureGuard;
     bool        m_bpinchGuard;
     wxPoint     m_pinchStart;
+    double      m_pinchlat, m_pinchlon;
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
