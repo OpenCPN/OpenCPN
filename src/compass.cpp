@@ -358,13 +358,15 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     if( gicon.GetHeight() != sheight )
         gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
 
-    if( style->HasBackground() ) {
+    if(style->HasBackground() ) {
         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
     } else {
         iconBm = gicon;
     }
     
+#ifndef ocpnUSE_GLES
     iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
+#endif
     mdc.DrawBitmap( iconBm, offset );
     mdc.SelectObject( wxNullBitmap );
     
