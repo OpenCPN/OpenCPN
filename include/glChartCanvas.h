@@ -97,7 +97,8 @@ public:
     void OnSize ( wxSizeEvent& event );
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
-    void FastZoom(float factor, int cp_x, int cp_y);
+//    void FastZoom(float factor, int cp_x, int cp_y);
+    void FastZoom(float factor, int cp_x, int cp_y, int post_x, int post_y);
     void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
@@ -208,6 +209,7 @@ protected:
     float       m_fbo_sheight;
     double      m_fbo_lat, m_fbo_lon;
     int         m_cc_x,m_cc_y;
+    wxPoint     m_lpinchPoint;
     
     bool        m_binPinch;
     bool        m_binPan;

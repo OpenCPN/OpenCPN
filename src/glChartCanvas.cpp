@@ -4792,7 +4792,7 @@ void glChartCanvas::FastPan(int dx, int dy)
 }
 
 
-void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y)
+void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y, int post_x, int post_y)
 {
     int sx = GetSize().x;
     int sy = GetSize().y;
@@ -4824,6 +4824,9 @@ void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y)
         m_fbo_offsety = fbo_ctr_y - (m_fbo_sheight / 2.);
         
     }
+    
+    m_fbo_offsetx += post_x;
+    m_fbo_offsety += post_y;
     
     
     float tx, ty, tx0, ty0;
@@ -5041,6 +5044,8 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             m_binPinch = true;
             m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
             m_pinchStart = event.GetCenterPoint();
+            m_lpinchPoint = m_pinchStart;
+            
             cc1->GetCanvasPixPoint(event.GetCenterPoint().x, event.GetCenterPoint().y, m_pinchlat, m_pinchlon);
 //            qDebug() << "center" << event.GetCenterPoint().x << event.GetCenterPoint().y;
             
@@ -5053,7 +5058,20 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             if(g_GLOptions.m_bUseCanvasPanning){
                 
                 if( projected_scale < 3e8){
-                    FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y);
+                    wxPoint pinchPoint = event.GetCenterPoint();
+                    
+                     int dx = pinchPoint.x - m_lpinchPoint.x;
+                     int dy = pinchPoint.y - m_lpinchPoint.y;
+             
+//                     qDebug() << "pinchPan" << dx << dy;
+                     if(total_zoom_val > 1)
+                         FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, -dx, dy);
+                     else
+                         FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, 0, 0);
+                     
+                    
+                    m_lpinchPoint = pinchPoint;
+                    
                 }
             }
             break;
