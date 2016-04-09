@@ -857,8 +857,8 @@ void squiddio_pi::PreferencesDialog(wxWindow* parent) {
 
         SquiddioPrefsDialog * dialog = new SquiddioPrefsDialog(*this, m_parent_window);
         
-        wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-        dialog->SetFont(fo);
+//        wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+//        dialog->SetFont(fo);
  
 #ifdef __OCPN__ANDROID__        
         dialog->GetHandle()->setStyleSheet( qtStyleSheet );
@@ -905,6 +905,7 @@ void squiddio_pi::PreferencesDialog(wxWindow* parent) {
         wxColour cl;
         GetGlobalColor(_T("DILG1"), &cl);
         dialog->SetBackgroundColour(cl);
+        dialog->Centre();
 
         if (dialog->ShowModal() == wxID_OK) {
             g_PostPeriod = dialog->m_choiceHowOften->GetSelection();
