@@ -182,6 +182,7 @@ extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern TCMgr            *ptcmgr;
 extern int              g_nCPUCount;
+extern bool             g_running;
 
 
 ocpnGLOptions g_GLOptions;
@@ -928,6 +929,14 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
+#ifdef __OCPN__ANDROID__    
+     if(!g_running){
+         wxLogMessage(_T("Got OnSize event while NOT running"));
+         event.Skip();
+         return;
+     }
+#endif
+
     if( !g_bopengl ) {
         SetSize( GetSize().x, GetSize().y );
         event.Skip();

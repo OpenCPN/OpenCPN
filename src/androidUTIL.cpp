@@ -305,6 +305,7 @@ wxSize          config_size;
 bool            s_bdownloading;
 wxString        s_requested_url;
 wxEvtHandler    *s_download_evHandler;
+bool            g_running;
 
 wxString        g_deviceInfo;
 
@@ -753,7 +754,7 @@ extern "C"{
             //qDebug() << "endPersist";
         }
         
-        
+        g_running = false;
         
         return 98;
     }
@@ -764,6 +765,8 @@ extern "C"{
     {
         qDebug() << "onStart";
         wxLogMessage(_T("onStart"));
+        
+        g_running = true;
         
         return 99;
     }
