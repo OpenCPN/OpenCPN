@@ -744,18 +744,21 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
     double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
     mod = wxMax(mod, .2);
-    mod = wxMin(mod, 2.0);
 
+    // Apply zoom scale modifier according to chart family.
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 3 * mod;
+            mod = wxMin(mod, 1.5);
+            return scale * 1 * mod;
         }
 
         case CHART_FAMILY_VECTOR:{
+            mod = wxMin(mod, 2.0);
             return scale * 4 * mod;
         }
 
         default:{
+            mod = wxMin(mod, 2.0);
             return scale * 2 * mod;
         }
     }
