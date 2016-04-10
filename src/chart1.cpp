@@ -7960,23 +7960,21 @@ bool MyFrame::DoChartUpdate( void )
                     }
                 }
 
-                // Try to bound the inital Viewport scale to something reasonable for the selected reference chart
+                // Try to bound the initial Viewport scale to something reasonable for the selected reference chart
                 if( ChartData ) {
                     ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
                     if( pc ) {
-                        
-                        // If the chart zoom modifier is greater than 1, allow corresponding underzoom (with a 10% fluff) on startup
-                        double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
-                        mod = wxMax(mod, 1.0);
-                        mod = wxMin(mod, 2.0);
-                        
+
+                        // Use the Quilt min-scale algorithm, as it recognizes chart family differences
+                        //  This should ensure that the initial scale will not be too underzoomed.
+                        int nativeScale = pc->GetNativeScale();
+                        double scale1 = cc1->GetQuiltNomScaleMin(nativeScale, pc->GetChartType(), pc->GetChartFamily());
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen, scale1);
+ 
                         proposed_scale_onscreen =
-                                wxMin(proposed_scale_onscreen, mod * 1.10 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-                        proposed_scale_onscreen =
-                                wxMax(proposed_scale_onscreen, pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                        wxMax(proposed_scale_onscreen, cc1->GetQuiltNomScaleMax(nativeScale, pc->GetChartType(), pc->GetChartFamily()) );
                     }
                 }
-
             }
 
             bNewView |= cc1->SetViewPoint( vpLat, vpLon,

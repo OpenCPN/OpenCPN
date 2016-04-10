@@ -1332,6 +1332,17 @@ ArrayOfInts ChartCanvas::GetQuiltEclipsedStackdbIndexArray()
     return m_pQuilt->GetEclipsedStackIndexArray();
 }
 
+int ChartCanvas::GetQuiltNomScaleMin( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family)
+{
+    return m_pQuilt->GetNomScaleMin(nativeScale, type, family);
+}
+
+int ChartCanvas::GetQuiltNomScaleMax( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family)
+{
+    return m_pQuilt->GetNomScaleMax(nativeScale, type, family);
+}
+
+
 void ChartCanvas::InvalidateQuilt( void )
 {
     return m_pQuilt->Invalidate();

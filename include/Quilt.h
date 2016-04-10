@@ -213,14 +213,13 @@ public:
     bool IsQuiltVector( void );
     LLRegion GetHiliteRegion( );
     static LLRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
+    int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
+    int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
 private:
     void EmptyCandidateArray( void );
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
-
-    int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
-    int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
     bool IsChartS57Overlay( int db_index );
     

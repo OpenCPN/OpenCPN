@@ -297,7 +297,9 @@ public:
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
       int AdjustQuiltRefChart( void );
- 
+      int GetQuiltNomScaleMin( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family);
+      int GetQuiltNomScaleMax( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family);
+      
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
