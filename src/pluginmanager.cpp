@@ -5238,7 +5238,10 @@ PI_DLEvtHandler::~PI_DLEvtHandler()
 
 void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
 {
-//    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+#ifdef __OCPN__ANDROID__        
+    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+#endif
+    
     g_download_status = event.getDLEventStatus();
     g_download_condition = event.getDLEventCondition();
 
@@ -5386,6 +5389,10 @@ _OCPN_DLStatus OCPN_downloadFile( const wxString& url, const wxString &outputFil
     if(!g_piEventHandler)
         g_piEventHandler = new PI_DLEvtHandler;
 
+    //  Reset global status indicators
+    g_download_status = OCPN_DL_UNKNOWN;
+    g_download_condition = OCPN_DL_EVENT_TYPE_UNKNOWN;
+    
     //  Create a connection for the expected events from Android Activity
     g_piEventHandler->Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&PI_DLEvtHandler::onDLEvent);
      
