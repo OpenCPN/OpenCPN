@@ -1376,18 +1376,6 @@ bool GribV2Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
 //==============================================================
 // Fonctions utiles
 //==============================================================
-zuint GribV2Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
-{
-    zuint oct = first / 8;
-    zuint bit = first % 8;
-
-    zuint val = (buf[oct]<<24) + (buf[oct+1]<<16) + (buf[oct+2]<<8) + (buf[oct+3]);
-    val = val << bit;
-    val = val >> (32-nbBits);
-    return val;
-}
-
-//----------------------------------------------
 zuint GribV2Record::periodSeconds(zuchar unit,zuint P1,zuchar P2,zuchar range) {
     zuint res, dur;
 

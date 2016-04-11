@@ -103,7 +103,6 @@ class GribV1Record : public GribRecord
         zuint  readInt3(ZUFILE* file);
         double readFloat4(ZUFILE* file);
 
-        zuint  readPackedBits(zuchar *buf, zuint first, zuint nbBits);
         zuint  makeInt3(zuchar a, zuchar b, zuchar c);
         zuint  makeInt2(zuchar b, zuchar c);
 

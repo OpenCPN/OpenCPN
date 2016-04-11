@@ -96,12 +96,6 @@ class GribV2Record : public GribRecord
         //---------------------------------------------
         bool readGribSection0_IS (ZUFILE* file, bool b_skip_initial_GRIB);
 
-        //---------------------------------------------
-        // Utility functions
-        //---------------------------------------------
-
-        zuint  readPackedBits(zuchar *buf, zuint first, zuint nbBits);
-
 };
 
 
