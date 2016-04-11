@@ -1342,6 +1342,21 @@ int ChartCanvas::GetQuiltNomScaleMax( int nativeScale, ChartTypeEnum type, Chart
     return m_pQuilt->GetNomScaleMax(nativeScale, type, family);
 }
 
+ChartFamilyEnum ChartCanvas::GetQuiltFamily()
+{
+    return m_pQuilt->GetRefFamily();
+}
+
+void ChartCanvas::SetQuiltPreferredFamily( ChartFamilyEnum family)
+{
+    return m_pQuilt->SetPreferrefFamily(family);
+}
+
+
+
+void SetQuiltPreferredFamily(ChartFamilyEnum family);
+ChartFamilyEnum GetQuiltFamily();
+
 
 void ChartCanvas::InvalidateQuilt( void )
 {
@@ -3239,6 +3254,29 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
             ChartData->BuildChartStack( pCurrentStack, lat, lon );
             pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
+
+            //  If reference chart is undefined, we try to select one
+            if( -1 == m_pQuilt->GetRefChartdbIndex()){
+                //  First ,simply select the largest scale chart on the stack whose family matches the
+                //  "preferred" type
+                int newRefIndex = -1;
+                for( int i = 0; i < pCurrentStack->nEntry; i++ ) {
+                    if( m_pQuilt->GetPreferredFamily() == ChartData->GetCSChartFamily(pCurrentStack, i)){
+                        newRefIndex = pCurrentStack->GetDBIndex( i );
+                        break;
+                    }
+                }
+                if(newRefIndex < 0){            // There nothing in the stack of the right family.
+                       newRefIndex = pCurrentStack->GetDBIndex( pCurrentStack->nEntry - 1 );  // choose the smallest scale chart
+                }
+                       
+                m_pQuilt->SetReferenceChart( newRefIndex );
+                
+                //   Qualify the reference selection based on the VP scale.  Adjust ref if necessary.
+                int alt_ref = m_pQuilt->AdjustRefSelection(VPoint);
+                m_pQuilt->SetReferenceChart( alt_ref );
+                
+            }
 
             //   Check to see if the current quilt reference chart is in the new stack
             int current_ref_stack_index = -1;

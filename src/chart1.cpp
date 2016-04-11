@@ -4922,15 +4922,15 @@ void MyFrame::TogglebFollow( void )
 
 void MyFrame::SetbFollow( void )
 {
-    cc1->m_bFollow = true;
     SetToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
 
+    JumpToPosition(gLat, gLon, cc1->GetVPScale());
+    cc1->m_bFollow = true;
+    
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
-
-    JumpToPosition(gLat, gLon, cc1->GetVPScale());
     
     DoChartUpdate();
     cc1->ReloadVP();
@@ -5292,17 +5292,20 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
     vLat = lat;
     vLon = lon;
     cc1->m_bFollow = false;
-
+    
     //  is the current chart available at the target location?
     int currently_selected_index = pCurrentStack->GetCurrentEntrydbIndex();
 
-    //  If not, then select the smallest scale chart at the target location (may be empty)
+    //  If not, then select the "best" chart
     ChartData->BuildChartStack( pCurrentStack, lat, lon );
     if(!pCurrentStack->DoesStackContaindbIndex(currently_selected_index)){
-        pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry - 1;
-        int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
-        if( cc1->GetQuiltMode() )
-            cc1->SetQuiltRefChart( selected_index );
+        pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry - 1;           // in SC mode, select smallest scale chart
+
+        if( cc1->GetQuiltMode() ){
+            //  In quilt mode, require the quilt logic to select a new Reference chart, according to current family.
+            cc1->SetQuiltPreferredFamily(cc1->GetQuiltFamily());
+            cc1->SetQuiltRefChart( -1 );
+        }
     }
 
     if( !cc1->GetQuiltMode() ) {
@@ -5315,6 +5318,10 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
     SetToolbarItemState( ID_FOLLOW, false );
 
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(false);
+    #endif
+    
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
     }

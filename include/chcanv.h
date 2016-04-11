@@ -300,6 +300,9 @@ public:
       int GetQuiltNomScaleMin( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family);
       int GetQuiltNomScaleMax( int nativeScale, ChartTypeEnum type, ChartFamilyEnum family);
       
+      void SetQuiltPreferredFamily(ChartFamilyEnum family);
+      ChartFamilyEnum GetQuiltFamily();
+      
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);

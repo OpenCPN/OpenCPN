@@ -182,6 +182,7 @@ Quilt::Quilt()
 
     m_zout_family = -1;
     m_zout_type = -1;
+    m_preferred_family = CHART_FAMILY_RASTER;
 
     //  Quilting of skewed raster charts is allowed for OpenGL only
     m_bquiltskew = g_bopengl;
@@ -864,6 +865,9 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         }
     }
 
+    //  No compliant selection found, so choose the smallest scale from the array
+    if(index_array.GetCount() && (-1 == new_ref_dbIndex) )
+        new_ref_dbIndex = index_array.Item(index_array.GetCount() - 1);
 
     return new_ref_dbIndex;
 }
@@ -1242,6 +1246,45 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
     }
     return true;
 }
+
+int Quilt::AdjustRefSelection(const ViewPort &vp_in)
+{
+    //  Starting from the currently selected Ref chart,
+    //  choose a ref chart that meets the required under/overzoom limits
+    //  It might be the same, so no change required
+ 
+    if( !ChartData )
+        return false;
+ 
+    if(ChartData->IsBusy())             // This prevent recursion on chart loads that Yeild()
+        return false;
+ 
+    ViewPort vp_local = vp_in;                   // need a non-const copy
+ 
+    //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
+    vp_local.SetRotationAngle( 0. );
+ 
+    bool bfull = vp_in.b_FullScreenQuilt;
+    BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+    
+    ChartFamilyEnum family = CHART_FAMILY_RASTER;
+    ChartTypeEnum type = CHART_TYPE_KAP;
+    
+    // Get the desired family/type
+    if( m_refchart_dbIndex >= 0 ) {
+        const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
+        type = (ChartTypeEnum)cte_ref.GetChartType();
+        family = (ChartFamilyEnum)cte_ref.GetChartFamily();
+    }
+    
+    
+    int ret_index = AdjustRefOnZoom( true, family, type, vp_in.chart_scale);
+    
+    return ret_index;
+ 
+}
+
+
 
 double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
 {
