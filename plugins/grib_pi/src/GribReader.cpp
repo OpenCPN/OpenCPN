@@ -142,7 +142,11 @@ void GribReader::readAllGribRecords()
         {
               b_EOF = rec->isEof();
 
-        	if (rec->isDataKnown())
+        	if (!rec->isDataKnown())
+        	{
+        	    delete rec;
+        	}
+        	else
         	{
 				ok = true;   // au moins 1 record ok
 

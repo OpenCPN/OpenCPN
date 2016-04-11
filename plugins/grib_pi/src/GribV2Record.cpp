@@ -889,7 +889,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         }
         break;
     }
-#if 0    
+#if 1
     if (ret == 255) {
         printf("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
     }
@@ -1043,7 +1043,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     BMSbits = NULL;
     hasBMS = false;
     eof     = false;
-    knownData = true;
+    knownData = false;
     IsDuplicated = false;
     long start = seekStart;
     
@@ -1241,8 +1241,11 @@ printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",isScanIpositive,
 printf("hasBMS=%d\n", hasBMS);
 }
     if (ok) {
+        if (!skip) 
+        {
 		translateDataType();
 		setDataType(dataType);
+        }
     }
     delete grib_msg;
     grib_msg = 0;
