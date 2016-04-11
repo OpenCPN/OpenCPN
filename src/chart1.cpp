@@ -3441,6 +3441,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAIS = NULL;
     }
 
+#ifndef __OCPN__ANDROID__    
     if(g_pMUX)
         delete g_pMUX;
 
@@ -3451,7 +3452,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         delete cp;
     }
     delete g_pConnectionParams;
-
+#endif
+    
     if(pLayerList){
         LayerList::iterator it;
         while(pLayerList->GetCount()){
