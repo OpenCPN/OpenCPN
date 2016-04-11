@@ -353,8 +353,8 @@ void GribRecord::Substract(const GribRecord &rec)
     if (Ni != rec.Ni || Nj != rec.Nj) 
         return;
         
-    int size = Ni *Nj;
-    for (int i=0; i<size; i++) {
+    zuint size = Ni *Nj;
+    for (zuint i=0; i<size; i++) {
         if (rec.data[i] == GRIB_NOTDEF)
            continue; 
         if (data[i] == GRIB_NOTDEF) {
