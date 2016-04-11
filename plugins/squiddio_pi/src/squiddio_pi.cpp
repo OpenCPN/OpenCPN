@@ -735,17 +735,23 @@ wxString squiddio_pi::DownloadLayer(wxString url_path) {
              wxFile f( fn );
              f.ReadAll( &res );
              f.Close();
-             wxRemoveFile( fn );
          }
     }
     else
     {
-        wxMessageBox( _("Squiddio_pi download failed.\nVerify there is a working Internet connection and repeat the operation if needed."),
+        wxMessageBox( _("Squiddio_pi download failed.\nVerify there is a working Internet connection.\nRepeat the operation if needed."),
                                           _("Squiddio PlugIn"), wxOK | wxICON_ERROR );
         
         wxLogMessage(_("Squiddio_pi: unable to connect to host"));
     }
 
+    if(wxFileExists(fn))
+        wxRemoveFile( fn );
+        
+    if(res.Length() < 20){
+        wxMessageBox( _("Squiddio_pi download failed with short or corrupt file.\nRepeat the operation if needed."),
+                      _("Squiddio PlugIn"), wxOK | wxICON_ERROR );
+    }
     return res;
 }
 
