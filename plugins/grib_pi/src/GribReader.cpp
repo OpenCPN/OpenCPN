@@ -489,6 +489,56 @@ void  GribReader::InterpolateMissingRecords (int dataType, int levelType, int le
 }
 #endif
 
+void  GribReader::computeAccumulationRecords (int dataType, int levelType, int levelValue)
+{
+	std::set<time_t>  setdates = getListDates();
+	std::set<time_t>::reverse_iterator rit;
+    GribRecord *prev = 0;
+    int p1 = 0, p2 = 0;
+
+    if (setdates.empty())
+        return;
+
+	// XXX only work if P2 -P1 === time
+    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit)
+    {
+		time_t date = *rit;
+		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
+		if ( rec && rec->isOk() ) {
+		    
+		    // XXX double check reference date and timerange 
+		    if (prev != 0 )
+		    {
+		        double sec = 0.0;
+		        if (p2 > p1) {
+		            // seconds in one period   
+		            sec = prev->getPeriodSec()/(p2 -p1);
+                }
+		        if (rec->getTimeRange() == 4 && prev->getPeriodP1() == rec->getPeriodP1()) {
+		            // printf("substract %d %d %d\n", prev->getPeriodP1(), prev->getPeriodP2(), prev->getPeriodSec());
+		            prev->Substract(*rec);
+		            p1 = rec->getPeriodP2();
+                }
+                // printf (" %d %d %f\n", p1, p2, sec);
+                // convert to mm/h
+                if (p2 > p1) {
+                    //prev->multiplyAllData( 3600.0/sec/(p2 -p1) );
+                    prev->multiplyAllData( 1.0/(p2 -p1) );
+                }
+                p2 = p1 = 0;
+            }
+		    prev = rec;
+            p1 = prev->getPeriodP1();
+		    p2 = prev->getPeriodP2();
+		}
+	}
+	if (prev != 0 && p2 > p1) {
+	    // the last one
+        prev->multiplyAllData( 1.0/(p2 -p1) );
+	}
+	    
+}
+
 //---------------------------------------------------------------------------------
 void  GribReader::copyFirstCumulativeRecord()
 {
@@ -523,6 +573,7 @@ void GribReader::readGribFileContent()
 
     createListDates();
 //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
+
 
 	//-----------------------------------------------------
 	// Are dewpoint data in file ?

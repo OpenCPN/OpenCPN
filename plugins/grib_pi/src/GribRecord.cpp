@@ -341,6 +341,36 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
     return rec;
 }
 
+void GribRecord::Substract(const GribRecord &rec)
+{
+    // for now only substract records of same size
+    if (rec.data == 0 || !rec.isOk())
+        return;
+
+    if (data == 0 || !isOk())
+        return;
+        
+    if (Ni != rec.Ni || Nj != rec.Nj) 
+        return;
+        
+    int size = Ni *Nj;
+    for (int i=0; i<size; i++) {
+        if (rec.data[i] == GRIB_NOTDEF)
+           continue; 
+        if (data[i] == GRIB_NOTDEF) {
+            data[i] = -rec.data[i];
+            if (BMSbits != 0) {
+                if (BMSsize > i) {
+                    BMSbits[i >>3] |= 1 << (i&7);
+                }
+            }
+        }
+        else
+            data[i] -= rec.data[i];
+    } 
+}
+
+
 //------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {
