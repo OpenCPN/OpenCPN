@@ -222,7 +222,7 @@ void AISTargetAlertDialog::CreateControls()
     
 
     UpdateText();
-    
+    m_bsizeSet = false;        // force re-calculation
     RecalculateSize();
     
 }
@@ -316,7 +316,15 @@ void AISTargetAlertDialog::RecalculateSize( void )
         wxSize gSize = GetClientSize();
         if(gSize.y != esize.y)
             SetClientSize(gSize.x, esize.y);
-        
+
+
+#ifdef __OCPN__ANDROID__
+    wxSize finalSize = GetSize();
+    SetSize(finalSize.x * 110 / 100, finalSize.y);    //  Add 10% fluff, since Fit() calculation is often not right.
+    
+    g_ais_alert_dialog_sx = finalSize.x;
+    g_ais_alert_dialog_sy = finalSize.y;
+#endif
     
     g_Platform->PositionAISAlert( this );
     
