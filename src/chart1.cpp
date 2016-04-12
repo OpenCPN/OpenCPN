@@ -3043,7 +3043,7 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
     return bret;
 }
 
-static bool b_inCloseWindow;
+bool b_inCloseWindow;
 
 void MyFrame::RequestNewToolbar(bool bforcenew)
 {
@@ -3442,7 +3442,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAIS = NULL;
     }
 
-#ifndef __OCPN__ANDROID__    
     if(g_pMUX)
         delete g_pMUX;
 
@@ -3453,7 +3452,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         delete cp;
     }
     delete g_pConnectionParams;
-#endif
     
     if(pLayerList){
         LayerList::iterator it;

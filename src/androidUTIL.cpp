@@ -272,7 +272,7 @@ extern double           g_config_display_size_mm;
 extern float            g_ChartScaleFactorExp;
 
 extern Multiplexer      *g_pMUX;
-
+extern bool             b_inCloseWindow;
 
 wxString callActivityMethod_vs(const char *method);
 
@@ -2080,7 +2080,12 @@ bool androidStopUSBSerial(wxString &portname)
 {
     s_pAndroidNMEAMessageConsumer = NULL;
     
-    wxString result = callActivityMethod_ss("stopSerialPort", portname);
+    //  If app is closing down, the USB serial ports will go away automatically.
+    //  So no need here.
+    //  In fact, stopSerialPort() causes an occasional error when closing app.
+    //  Dunno why, difficult to debug.
+    if(!b_inCloseWindow)
+        wxString result = callActivityMethod_ss("stopSerialPort", portname);
     
     return true;
 }
