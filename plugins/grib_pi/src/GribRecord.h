@@ -143,7 +143,7 @@ class GribRecord
         static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
 
         void   multiplyAllData(double k);
-        void Substract(const GribRecord &rec);
+        void Substract(const GribRecord &rec, bool positive=true);
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};

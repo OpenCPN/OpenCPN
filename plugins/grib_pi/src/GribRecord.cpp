@@ -341,7 +341,7 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
     return rec;
 }
 
-void GribRecord::Substract(const GribRecord &rec)
+void GribRecord::Substract(const GribRecord &rec, bool pos)
 {
     // for now only substract records of same size
     if (rec.data == 0 || !rec.isOk())
@@ -367,6 +367,10 @@ void GribRecord::Substract(const GribRecord &rec)
         }
         else
             data[i] -= rec.data[i];
+        if (data[i] < 0. && pos) {
+            // data type should be positive...
+            data[i] = 0.;
+        }
     } 
 }
 
