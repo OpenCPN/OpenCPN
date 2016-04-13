@@ -746,10 +746,19 @@ static void InitColor(ColorMap *map, size_t maplen)
 {
     wxColour c;
     for (size_t i = 0; i < maplen; i++) {
+#ifndef __WXQT__        
         c.Set(map[i].text);
         map[i].r = c.Red();
         map[i].g = c.Green();
         map[i].b = c.Blue();
+#else        
+        long t;
+        wxString s;
+        s = map[i].text.Mid(1,2); s.ToLong(&t, 16); map[i].r = t;
+        s = map[i].text.Mid(3,2); s.ToLong(&t, 16); map[i].g = t;
+        s = map[i].text.Mid(5,2); s.ToLong(&t, 16); map[i].b = t;
+#endif
+        
     }
 }
 
