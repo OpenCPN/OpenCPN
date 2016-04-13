@@ -749,7 +749,7 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
     // Apply zoom scale modifier according to chart family.
     switch(family){
         case CHART_FAMILY_RASTER:{
-            mod = wxMin(mod, 1.5);
+            mod = wxMin(mod, 2.0);
             return scale * 1 * mod;
         }
 
