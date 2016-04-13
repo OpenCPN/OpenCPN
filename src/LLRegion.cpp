@@ -245,11 +245,19 @@ bool LLRegion::Contains(float lat, float lon) const
 struct work
 {
     work(LLRegion &r) : region(r) {
+#ifdef ocpnUSE_GL
         tobj = gluNewTess();
+#else
+#       warning Handling of USE_GL=OFF not implemented here.
+#endif
     }
 
     ~work() {
+#ifdef ocpnUSE_GL
         gluDeleteTess(tobj);
+#else
+#       warning Handling of USE_GL=OFF not implemented here.
+#endif
         for(std::list<double*>::iterator i = data.begin(); i!=data.end(); i++)
             delete [] *i;
         data.clear();
@@ -264,7 +272,11 @@ struct work
     void PutVertex(const contour_pt &j) {
         double *p = NewData();
         p[0] = j.x, p[1] = j.y, p[2] = 0;
+#ifdef ocpnUSE_GL
         gluTessVertex(tobj, p, p);
+#else
+#       warning Handling of USE_GL=OFF not implemented here.
+#endif
     }
 
     std::list<double*> data;
@@ -307,7 +319,11 @@ static void /*APIENTRY*/ LLcombineCallback( GLdouble coords[3], GLdouble *vertex
 static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
 {
     const GLubyte *estring;
+#ifdef ocpnUSE_GL
     estring = gluErrorString(errorCode);
+#else
+    estring = (const GLubyte*)_T("");   // Not applicable?
+#endif
     fprintf (stderr, "Tessellation Error: %s\n", estring);
     exit (0);
 }
@@ -466,14 +482,22 @@ bool LLRegion::NoIntersection(const LLRegion& region) const
 void LLRegion::PutContours(work &w, const LLRegion& region, bool reverse)
 {
     for(std::list<poly_contour>::const_iterator i = region.contours.begin(); i != region.contours.end(); i++) {
+#ifdef ocpnUSE_GL
         gluTessBeginContour(w.tobj);
+#else
+#       warning Handling of USE_GL=OFF not implemented here.
+#endif
         if(reverse)
             for(poly_contour::const_reverse_iterator j = i->rbegin(); j != i->rend(); j++)
                 w.PutVertex(*j);
         else
             for(poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
                 w.PutVertex(*j);
+#ifdef ocpnUSE_GL
         gluTessEndContour(w.tobj);
+#else
+#       warning Handling of USE_GL=OFF not implemented here.
+#endif
     }
 }
 
@@ -481,6 +505,7 @@ void LLRegion::Put( const LLRegion& region, int winding_rule, bool reverse)
 {
     work w(*this);
    
+#ifdef ocpnUSE_GL
     gluTessCallback( w.tobj, GLU_TESS_VERTEX_DATA, (_GLUfuncptr) &LLvertexCallback );
     gluTessCallback( w.tobj, GLU_TESS_BEGIN, (_GLUfuncptr) &LLbeginCallback );
     gluTessCallback( w.tobj, GLU_TESS_COMBINE_DATA, (_GLUfuncptr) &LLcombineCallback );
@@ -493,11 +518,19 @@ void LLRegion::Put( const LLRegion& region, int winding_rule, bool reverse)
     gluTessNormal( w.tobj, 0, 0, 1);
 
     gluTessBeginPolygon(w.tobj, &w);
+#else
+#   warning Handling of USE_GL=OFF not implemented here.
+#endif
 
     PutContours(w, *this);
     PutContours(w, region, reverse);
     contours.clear();
-    gluTessEndPolygon( w.tobj ); 
+
+#ifdef ocpnUSE_GL
+    gluTessEndPolygon( w.tobj );
+#else
+#   warning Handling of USE_GL=OFF not implemented here.
+#endif
 
     Optimize();
     m_box.SetValid(false);

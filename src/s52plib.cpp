@@ -1097,6 +1097,7 @@ void s52plib::FlushSymbolCaches( void )
         }
     }
     
+#ifdef ocpnUSE_GL
     //    OpenGL Hashmaps
     CARC_Hash::iterator ita;
     for( ita = m_CARC_hashmap.begin(); ita != m_CARC_hashmap.end(); ++ita ) {
@@ -1111,7 +1112,8 @@ void s52plib::FlushSymbolCaches( void )
         glDeleteLists( list, 1 );
     }
     m_CARC_DL_hashmap.clear();
-    
+#endif
+
 }
 
 void s52plib::DestroyPattRules( RuleHash *rh )
