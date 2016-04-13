@@ -364,9 +364,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         iconBm = gicon;
     }
     
-#ifndef ocpnUSE_GLES
     iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
-#endif
     mdc.DrawBitmap( iconBm, offset );
     mdc.SelectObject( wxNullBitmap );
     
