@@ -2085,6 +2085,7 @@ bool MyApp::OnInit()
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
     cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
     
+    g_ChartUpdatePeriod = !!cc1->m_bFollow;
     gFrame->Enable();
 
     cc1->SetFocus();
@@ -4107,14 +4108,12 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
             cc1->ZoomCanvas( 2.0, false );
-            DoChartUpdate();
             break;
         }
 
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
             cc1->ZoomCanvas( 0.5, false );
-            DoChartUpdate();
             break;
         }
 
@@ -5113,6 +5112,7 @@ void MyFrame::SetbFollow( void )
 
     DoChartUpdate();
     cc1->ReloadVP();
+    SetChartUpdatePeriod( cc1->GetVP() );
 }
 
 void MyFrame::ClearbFollow( void )
@@ -5131,6 +5131,7 @@ void MyFrame::ClearbFollow( void )
 
     DoChartUpdate();
     cc1->ReloadVP();
+    SetChartUpdatePeriod( cc1->GetVP() );
 }
 
 void MyFrame::ToggleChartOutlines( void )
@@ -6932,9 +6933,11 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //    Do the chart update based on the global update period currently set
 //    If in COG UP mode, the chart update is handled by COG Update timer
-    if( !g_bCourseUp && ( 0 == m_ChartUpdatePeriod-- ) ) {
-        bnew_view = DoChartUpdate();
-        m_ChartUpdatePeriod = g_ChartUpdatePeriod;
+    if( !g_bCourseUp && (0 != g_ChartUpdatePeriod ) ) {
+        if (0 == m_ChartUpdatePeriod--) {
+            bnew_view = DoChartUpdate();
+            m_ChartUpdatePeriod = g_ChartUpdatePeriod;
+        }
     }
 
     nBlinkerTick++;
@@ -6989,7 +6992,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             bnew_view = true;
     }
 
-    FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
     //  Make sure we get a redraw and alert sound on AnchorWatch excursions.
     if(AnchorAlertOn1 || AnchorAlertOn2)
@@ -7051,6 +7053,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
+    FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 }
 
 double MyFrame::GetMag(double a)
@@ -7715,7 +7718,7 @@ void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
 {
     //    Set the chart update period based upon chart skew and skew compensator
 
-    g_ChartUpdatePeriod = 1;            // General default
+    g_ChartUpdatePeriod = !!cc1->m_bFollow;            // General default
 
     if (!g_bopengl && !vp.b_quilt)
         if ( fabs(vp.skew) > 0.0001)
