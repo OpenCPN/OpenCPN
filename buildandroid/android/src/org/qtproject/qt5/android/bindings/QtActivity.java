@@ -1173,7 +1173,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String downloadFile( final String url, final String destination )
     {
         m_downloadRet = "";
+        Log.i("OpenCPN", url);
+        Log.i("OpenCPN", destination);
 
+/*
         //  Delete any existing file of the same name.
         Uri fURI = Uri.parse(url);
         try{
@@ -1182,13 +1185,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 f.delete();
        }catch (Exception e) {
        }
-
+*/
        if( downloadBCReceiver == null){
           downloadBCReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                Log.i("DEBUGGER_TAG", "onReceive: " + action);
+                Log.i("OpenCPN", "onReceive: " + action);
 
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
@@ -1203,7 +1206,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                            Log.i("DEBUGGER_TAG", "Download successful");
+                            Log.i("OpenCPN", "Download successful " + downloadId + m_enqueue);
+                            String totalBytes = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                            Log.i("OpenCPN", "totalBytes: " + totalBytes);
+
                         }
 
                         nativeLib.setDownloadStatus( c.getInt(columnIndex), uriString);
@@ -1267,13 +1273,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         String ret = "NOSTAT";
         if(m_dm != null){
-            //Log.i("OpenCPN", "mdm");
 
             m_query.setFilterById(ID);
             Cursor c = m_dm.query(m_query);
 
             if (c.moveToFirst()) {
-                //Log.i("OpenCPN", "cmtf");
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int stat = c.getInt(columnIndex);
                 String sstat = String.valueOf(stat);
@@ -3252,8 +3256,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if(null != nativeLib)
             nativeLib.onPause();
 
-        if(null != uSerialHelper)
-            uSerialHelper.deinitUSBSerial(this);
+        //if(null != uSerialHelper)
+         //   uSerialHelper.deinitUSBSerial(this);
 
         super.onPause();
         QtApplication.invokeDelegate();
@@ -3453,6 +3457,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Log.i("OpenCPN", "onStop " + this);
 
         int i = nativeLib.onStop();
+
+        if(null != uSerialHelper)
+            uSerialHelper.deinitUSBSerial(this);
+
         String aa;
         aa = String.format("%d", i);
         //Log.i("DEBUGGER_TAG", aa);
