@@ -168,6 +168,8 @@ extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 extern bool             g_bPreserveScaleOnX;
+extern int              g_GUIScaleFactor;
+extern int              g_ChartScaleFactor;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -10546,8 +10548,15 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                         int wx, hx;
                         dc.SetFont( *plabelFont );
                         dc.GetTextExtent( _T("99.9ft "), &wx, &hx );
+                        
+                        double scale =  exp( g_ChartScaleFactor * 0.0953101798043 ); //ln(1.1)
+                        scale = wxMax(1.0, scale);      // no minimization allowed
+                        
                         int w = r.x - 6;
                         int h = r.y - 22;
+                        int rect_height = 45 * scale;
+                        int rect_width = 12 * scale;
+                        
                         {
                             {
                                 float val, nowlev;
@@ -10596,28 +10605,30 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
                                     int hs = ( httime > lttime ) ? -5 : 5;
+                                    hs *= scale;
                                     if( ts > 0.995 || ts < 0.005 ) hs = 0;
-                                    int ht_y = (int) ( 45.0 * ts );
+                                    int ht_y = (int) ( rect_height * ts );
 
                                     //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
+                                    
                                     dc.SetPen( *pblack_pen );
                                     dc.SetBrush( *brc_2 );
-                                    dc.DrawRectangle( w, h, 12, 45 );
+                                    dc.DrawRectangle( w, h, rect_width, rect_height );
                                     //draw blue rectangle as water height
                                     dc.SetPen( *pblue_pen );
                                     dc.SetBrush( *brc_1 );
-                                    dc.DrawRectangle( w + 2, h + ht_y, 8, 45 - ht_y );
+                                    dc.DrawRectangle( w + 2, h + ht_y, rect_width-4, rect_height - ht_y );
 
                                     //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
 
                                     int hl;
                                     wxPoint arrow[3];
                                     arrow[0].x = w + 1;
-                                    arrow[1].x = w + 5;
-                                    arrow[2].x = w + 11;
+                                    arrow[1].x = w + rect_width/2;
+                                    arrow[2].x = w + rect_width - 1;
                                     if( ts > 0.35 || ts < 0.15 )      // one arrow at 3/4 hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.25 ) + h;
+                                        hl = (int) ( rect_height * 0.25 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -10629,7 +10640,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     }
                                     if( ts > 0.60 || ts < 0.40 )       //one arrow at 1/2 hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.5 ) + h;
+                                        hl = (int) ( rect_height * 0.5 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -10640,7 +10651,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     }
                                     if( ts < 0.65 || ts > 0.85 )       //one arrow at 1/4 Hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.75 ) + h;
+                                        hl = (int) ( rect_height * 0.75 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
@@ -10657,7 +10668,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                             wxString( pmsd->units_abbrv, wxConvUTF8 ) );
                                     int wx1;
                                     dc.GetTextExtent( s, &wx1, NULL );
-                                    dc.DrawText( s, r.x - ( wx1 / 2 ), h + 45 );
+                                    dc.DrawText( s, r.x - ( wx1 / 2 ), h + rect_height );
                                 }
                             }
                         }
