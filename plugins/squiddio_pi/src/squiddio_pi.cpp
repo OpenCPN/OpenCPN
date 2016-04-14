@@ -658,10 +658,17 @@ void squiddio_pi::RefreshLayer()
 
     //version << wxString::Format(wxT("%i"),PLUGIN_VERSION_MINOR);
 
-    if (CheckIsOnline())
+    if (CheckIsOnline()){
         layerContents = DownloadLayer(
         _T("/places/download_xml_layers.xml?version=")+versionMajor+versionMinor+_T("&region=")
         + m_rgn_to_dld);
+    }
+    else{
+        wxMessageBox( _("Squiddio_pi download failed.\nDevice is offline."),
+                        _("Squiddio PlugIn"), wxOK | wxICON_ERROR );
+        
+        return;
+    }
 
     wxString gpxFilePath = layerdir;
     appendOSDirSlash(&gpxFilePath);
