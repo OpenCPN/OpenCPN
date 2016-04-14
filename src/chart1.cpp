@@ -479,6 +479,7 @@ wxString                  g_TCData_Dir;
 
 bool                      g_boptionsactive;
 options                   *g_options;
+
 bool                      g_bDeferredInitDone;
 int                       options_lastPage = 0;
 wxPoint                   options_lastWindowPos( 0,0 );
@@ -5406,7 +5407,7 @@ int MyFrame::DoOptionsDialog()
     #endif
         
     int rr = g_options->ShowModal();
-
+    
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
     #endif
@@ -5470,6 +5471,9 @@ int MyFrame::DoOptionsDialog()
     Refresh( false );
 
 
+    if(g_pais_alert_dialog_active)
+        g_pais_alert_dialog_active->Raise();
+    
     if (NMEALogWindow::Get().Active())
         NMEALogWindow::Get().GetTTYWindow()->Raise();
 
@@ -9833,6 +9837,9 @@ void MyFrame::applySettingsString( wxString settings)
     if(g_pi_manager)
         g_pi_manager->NotifyAuiPlugIns();
 
+    if(g_pais_alert_dialog_active)
+        g_pais_alert_dialog_active->Raise();
+    
     //  Need a new options dialog?
     if(rr & NEED_NEW_OPTIONS){
         delete g_options;

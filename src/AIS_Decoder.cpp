@@ -2352,24 +2352,22 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 //      This is an OS specific behavior, not seen on linux or Mac.
 //      This patch will allow the audio alert to occur, and the visual alert will pop up soon
 //      after the user selects the OCPN icon from the taskbar. (on the next timer tick, probably)
+        
+            if(g_Platform->AllowAlertDialog(_T("AISTargetAlertDialog"))){
+                if( gFrame->IsIconized() || !gFrame->IsActive() )
+                    gFrame->RequestUserAttention();
             
-//#ifdef __WXMSW__            
-         if( gFrame->IsIconized() || !gFrame->IsActive() )
-                gFrame->RequestUserAttention();
-//#endif
-            
-//#ifdef __WXMSW__            
-            if( !gFrame->IsIconized() )
-//#endif                
-            {
-                AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-                pAISAlertDialog->Create( palert_target->MMSI, m_parent_frame, this,
+                if( !gFrame->IsIconized() )
+                {
+                    AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+                    pAISAlertDialog->Create( palert_target->MMSI, m_parent_frame, this,
                                          b_jumpto, b_createWP, b_ack,
                                          -1, _("AIS Alert"));
-                g_Platform->PositionAISAlert(pAISAlertDialog);
+                    g_Platform->PositionAISAlert(pAISAlertDialog);
                 
-                g_pais_alert_dialog_active = pAISAlertDialog;
-                pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
+                    g_pais_alert_dialog_active = pAISAlertDialog;
+                    pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
+                }
             }
 
             //    Audio alert if requested

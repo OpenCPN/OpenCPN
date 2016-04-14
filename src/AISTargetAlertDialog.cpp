@@ -196,11 +196,11 @@ void AISTargetAlertDialog::CreateControls()
     topSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
 
     // The Silence button
-    if( g_bAIS_CPA_Alert_Audio ){
-        wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
+    wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
             wxDefaultSize, 0 );
-        AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    }
+    AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    silence->Enable(g_bAIS_CPA_Alert_Audio);
+    
 
     // The Ack button
     if( m_back ) {
@@ -320,7 +320,7 @@ void AISTargetAlertDialog::RecalculateSize( void )
 
 #ifdef __OCPN__ANDROID__
     wxSize finalSize = GetSize();
-    SetSize(finalSize.x * 110 / 100, finalSize.y);    //  Add 10% fluff, since Fit() calculation is often not right.
+    SetSize(finalSize.x * 115 / 100, finalSize.y);    //  Add some fluff, since Fit() calculation is often not right.
     
     g_ais_alert_dialog_sx = finalSize.x;
     g_ais_alert_dialog_sy = finalSize.y;

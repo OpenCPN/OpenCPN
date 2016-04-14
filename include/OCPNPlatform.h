@@ -105,6 +105,8 @@ public:
     int GetStatusBarFieldCount();
     bool GetFullscreen();
     bool SetFullscreen( bool bFull );
+    bool AllowAlertDialog(const wxString& class_name);
+    
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support

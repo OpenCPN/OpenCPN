@@ -45,6 +45,7 @@
 #include "ConnectionParams.h"
 #include "FontMgr.h"
 #include "s52s57.h"
+#include "options.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -141,6 +142,9 @@ extern wxColour                  g_colourWaypointRangeRingsColour;
 extern bool                      g_bWayPointPreventDragging;
 extern bool                      g_bConfirmObjectDelete;
 
+extern options                   *g_options;
+extern bool                      g_boptionsactive;
+
 // AIS Global configuration
 extern bool                      g_bShowAIS;
 extern bool                      g_bCPAMax;
@@ -222,6 +226,7 @@ extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
 extern bool                     g_bPreserveScaleOnX;
+extern bool                     g_running;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -1816,6 +1821,30 @@ wxArrayString OCPNPlatform::getBluetoothScanResults()
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
+
+bool OCPNPlatform::AllowAlertDialog(const wxString& class_name)
+{
+#ifdef __OCPN__ANDROID__
+    //  allow if TopLevelWindow count is <=2, implying normal runtime screen layout
+    int nTLW = 0;
+    wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
+    while (node)
+    {
+        wxWindow* win = node->GetData();
+        if(win->IsShown())
+            nTLW++;
+        
+        node = node->GetNext();
+    }
+    
+//    qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW; 
+    return (g_running && !g_boptionsactive && (nTLW <= 2));
+    
+#else
+    return true;
+#endif
+}
+
 
 void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
 {
