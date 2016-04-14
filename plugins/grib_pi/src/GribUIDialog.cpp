@@ -923,6 +923,7 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 
     //re-activate cursor data
     m_CDataIsShown = dataisshown;
+    delete table;
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
@@ -1064,6 +1065,7 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     SetFactoryOptions();
 
     SetDialogsStyleSizePosition(true);
+    delete dialog;
 
     event.Skip();
 }
@@ -1430,6 +1432,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
+    delete dialog;
 #else
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
