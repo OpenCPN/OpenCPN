@@ -5239,7 +5239,7 @@ PI_DLEvtHandler::~PI_DLEvtHandler()
 void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
 {
 #ifdef __OCPN__ANDROID__        
-    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+    //qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
 #endif
     
     g_download_status = event.getDLEventStatus();
