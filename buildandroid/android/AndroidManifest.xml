@@ -85,7 +85,9 @@
 
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
+        <service android:name="org.opencpn.DownloadService"/>
     </application>
+
     <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="19"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
     <!-- %%INSERT_PERMISSIONS -->

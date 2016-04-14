@@ -181,9 +181,13 @@ import java.util.List;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.os.ResultReceiver;
 
+import org.opencpn.DownloadService;
+import org.opencpn.OCPNResultReceiver;
+import org.opencpn.OCPNResultReceiver.Receiver;
 
-public class QtActivity extends Activity implements ActionBar.OnNavigationListener
+public class QtActivity extends Activity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
@@ -326,6 +330,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private String m_filechooserString;
 
     private String m_downloadRet = "";
+
+    public OCPNResultReceiver mReceiver;
 
     OCPNNativeLib nativeLib;
 
@@ -1170,7 +1176,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private Semaphore mutex = new Semaphore(0);
     private Query m_query = new Query();
 
-    public String downloadFile( final String url, final String destination )
+    public String downloadFileDM( final String url, final String destination )
     {
         m_downloadRet = "";
         Log.i("OpenCPN", url);
@@ -1178,7 +1184,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 /*
         //  Delete any existing file of the same name.
-        Uri fURI = Uri.parse(url);
+        Uri fURI = Uri.parse(destination);
         try{
             File f = new File(fURI.getPath());
             if(f.exists())
@@ -1267,7 +1273,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return m_downloadRet;
     }
 
-    public String getDownloadStatus( final int ID )
+    public String getDownloadStatusDM( final int ID )
     {
         Log.i("OpenCPN", "getDownloadStatus "  + String.valueOf(ID));
 
@@ -1306,6 +1312,88 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         return "OK";
     }
+
+    public String downloadFile( final String url, final String destination ){
+
+        Log.i("OpenCPN", "downloadFile " + url + " to " + destination);
+        m_downloadURL = url;
+
+/*
+        //  Delete any existing file of the same name.
+        Uri fURI = Uri.parse(destination);
+        try{
+            File f = new File(fURI.getPath());
+            if(f.exists())
+                f.delete();
+       }catch (Exception e) {
+       }
+*/
+
+        m_downloadStatus = 1;       //STATUS_PENDING
+        m_downloadTotal = 0;
+
+        Intent intent = new Intent(this, DownloadService.class);
+        intent.putExtra("url", url);
+        intent.putExtra("file", destination);
+        intent.putExtra("receiver", mReceiver);
+        startService(intent);
+
+        //Log.i("OpenCPN", "RET OK");
+        return "OK;77";
+    }
+
+
+    public String getDownloadStatus( final int ID )
+    {
+
+        String ret = "NOSTAT";
+
+        String sstat = String.valueOf(m_downloadStatus);
+        ret =  sstat + ";" + m_downloadTotal + ";" + m_downloadFilelength;
+
+        Log.i("OpenCPN", "getDownloadStatus "  + String.valueOf(ID) + " " + ret);
+        return ret;
+    }
+
+    private int m_downloadTotal;
+    private int m_downloadFilelength;
+    private int m_downloadStatus;
+    private String m_downloadURL;
+
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        //super.onReceiveResult(resultCode, resultData);
+        if (resultCode == DownloadService.UPDATE_PROGRESS) {
+
+            int progress = resultData.getInt("progress");
+
+            m_downloadTotal = resultData.getInt("sofar");
+            m_downloadFilelength = resultData.getInt("filelength");
+            m_downloadStatus = 2;           // STATUS_RUNNING
+
+//            Log.i("OpenCPN", "UPDATE_PROGRESS " + m_downloadTotal + " " + m_downloadFilelength + " " + progress);
+
+            //mProgressDialog.setProgress(progress);
+            //if (progress == 100) {
+            //    mProgressDialog.dismiss();
+
+            nativeLib.setDownloadStatus( m_downloadStatus, m_downloadURL);
+
+        }
+        if (resultCode == DownloadService.DOWNLOAD_DONE) {
+            m_downloadTotal = resultData.getInt("sofar");
+            m_downloadFilelength = resultData.getInt("filelength");
+            m_downloadStatus = 8;           // STATUS_SUCCESSFUL
+            if(0 == m_downloadTotal)
+                m_downloadStatus = 16;      // STATUS_ERROR
+
+            nativeLib.setDownloadStatus( m_downloadStatus, m_downloadURL);
+            Log.i("OpenCPN", "DOWNLOAD_DONE " + m_downloadTotal + " " + m_downloadTotal + " " + m_downloadFilelength);
+        }
+
+    }
+
 
     public String isNetworkAvailable() {
             ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -2720,6 +2808,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         nativeLib = OCPNNativeLib.getInstance();
+
+        mReceiver = new OCPNResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+
 
         // USB Serial Port setup
         uSerialHelper = new UsbSerialHelper();
