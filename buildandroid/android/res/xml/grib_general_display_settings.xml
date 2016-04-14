@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <SwitchPreference
+        android:key="grib_prefb_UseLocalTZ"
+        android:title="GRIB Reference Timezone"
+        android:switchTextOff="Local"
+        android:switchTextOn="GMT"
+        android:defaultValue="true"
+        />
+
+
+
+
+</PreferenceScreen>
+
