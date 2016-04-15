@@ -107,7 +107,7 @@ class ViewPort
             void SetProjectionType(int type){ m_projection_type = type; }
 
             LLBBox &GetBBox() { return vpBBox; }
-            LLBBox GetBBoxView();
+
             void SetBBoxDirect( const LLBBox &bbox ) { vpBBox = bbox; }
             void SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax);
 

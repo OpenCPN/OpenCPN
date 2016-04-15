@@ -382,7 +382,7 @@ static double chart_dist(int index)
     float  clat;
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
     // if the chart contains ownship position set the distance to 0
-    if (cte.GetBBox().PointInBox(gLon, gLat, 0.))
+    if (cte.GetBBox().Contains( gLat, gLon ))
         d = 0.;
     else {
         // find the nearest edge 
@@ -1671,15 +1671,15 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
        routines works the same here (with accelerated panning) as it does without, so we
        can adjust the coordinates here */
 
-    if(bbox.GetMaxX() < cvp.GetBBox().GetMinX()) {
-        wxPoint2DDouble p360(360, 0);
-        bbox.Translate(p360);
-    } else if(bbox.GetMinX() > cvp.GetBBox().GetMaxX()) {
-        wxPoint2DDouble n360(-360, 0);
-        bbox.Translate(n360);
+    if(bbox.GetMaxLon() < cvp.GetBBox().GetMinLon()) {
+        bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() + 360,
+                 bbox.GetMaxLat(), bbox.GetMaxLon() + 360);
+        cvp.SetBBoxDirect(bbox);
+    } else if(bbox.GetMaxLon() > cvp.GetBBox().GetMaxLon()) {
+        bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() - 360,
+                 bbox.GetMaxLat(), bbox.GetMaxLon() - 360);
+        cvp.SetBBoxDirect(bbox);
     }
-
-    cvp.SetBBoxDirect(bbox);
 
     return cvp;
 }
@@ -1762,7 +1762,7 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
             drawit++;
         
         if(drawit) {
-            const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+            const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
             if(!vp_box.IntersectOut(test_box))
                 pRouteDraw->DrawGL( vp );
         }
@@ -1813,33 +1813,22 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         return;
         
     /* quick bounds check */
-    wxBoundingBox box;
-    ChartData->GetDBBoundingBox( dbIndex, &box );
+    LLBBox box;
+    ChartData->GetDBBoundingBox( dbIndex, box );
     if(!box.GetValid())
         return;
 
     
     // Don't draw an outline in the case where the chart covers the entire world */
-    double lon_diff = box.GetMaxX() - box.GetMinX();
-    if(lon_diff == 360)
+    if(box.GetLonRange() == 360)
         return;
 
-    wxBoundingBox vpbox = vp.GetBBox();
+    LLBBox vpbox = vp.GetBBox();
     
-    float lon_bias;
-    if( vpbox.IntersectOut( box ) ) {
-        wxPoint2DDouble p = wxPoint2DDouble(360, 0);
-        box.Translate( p );
-        if( vpbox.IntersectOut( box ) ) {
-            wxPoint2DDouble n = wxPoint2DDouble(-720, 0);
-            box.Translate( n );
-            if( vpbox.IntersectOut( box ) )
-                return;
-            lon_bias = -360;
-        } else
-            lon_bias = 360;
-    } else
-        lon_bias = 0;
+    double lon_bias = 0;
+    // chart is outside of viewport lat/lon bounding box
+    if( box.IntersectOutGetBias( vp.GetBBox(), lon_bias ) )
+        return;
 
     float plylat, plylon;
 
@@ -1972,10 +1961,10 @@ void glChartCanvas::GridDraw( )
     h = vp.pix_height;
 
     LLBBox llbbox = vp.GetBBox();
-    nlat = llbbox.GetMaxY();
-    slat = llbbox.GetMinY();
-    elon = llbbox.GetMaxX();
-    wlon = llbbox.GetMinX();
+    nlat = llbbox.GetMaxLat();
+    slat = llbbox.GetMinLat();
+    elon = llbbox.GetMaxLon();
+    wlon = llbbox.GetMinLon();
 
     // calculate distance between latitude grid lines
     CalcGridSpacing( vp.view_scale_ppm, gridlatMajor, gridlatMinor );
@@ -2284,7 +2273,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     int drawit = 0;
     //    Is ship in Vpoint?
-    if( cc1->GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
+    if( cc1->GetVP().GetBBox().Contains( gLat,  gLon ) )
+        drawit++;                             // yep
 
     //  COG/SOG may be undefined in NMEA data stream
     float pCog = gCog;
@@ -2308,7 +2298,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                        powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
 
     //    Is predicted point in the VPoint?
-    if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;      // yep
+    if( cc1->GetVP().GetBBox().Contains( pred_lat,  pred_lon ) )
+        drawit++;      // yep
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
@@ -2341,7 +2332,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
     //    Is head predicted point in the VPoint?
-    if( cc1->GetVP().GetBBox().PointInBox( hdg_pred_lon, hdg_pred_lat, 0 ) ) drawit++;                     // yep
+    if( cc1->GetVP().GetBBox().Contains( hdg_pred_lat,  hdg_pred_lon ) )
+        drawit++;                     // yep
 
 //    Should we draw the Head vector?
 //    Compare the points lHeadPoint and lPredPoint
@@ -2363,11 +2355,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     // And two more tests to catch the case where COG/HDG line crosses the screen,
     // but ownship and pred point are both off
-    
-    if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
-    if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( hdg_pred_lon, hdg_pred_lat ) ) ) drawit++;
+
+    LLBBox box;
+    box.SetFromSegment(gLon, gLat, pred_lon, pred_lat);
+    if( !cc1->GetVP().GetBBox().IntersectOut( box ) )
+        drawit++;
+    box.SetFromSegment(gLon, gLat, hdg_pred_lon, hdg_pred_lat);
+    if( !cc1->GetVP().GetBBox().IntersectOut(box))
+        drawit++;
     
     //    Do the draw if either the ship or prediction is within the current VPoint
     if( !drawit )
@@ -3829,23 +3824,10 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
             {
                 double lon = pIDX->IDX_lon;
                 double lat = pIDX->IDX_lat;
-                bool b_inbox = false;
-                double nlon;
                 
-                if( BBox.PointInBox( lon, lat, 0 ) ) {
-                    nlon = lon;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon + 360., lat, 0 ) ) {
-                    nlon = lon + 360.;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon - 360., lat, 0 ) ) {
-                    nlon = lon - 360.;
-                    b_inbox = true;
-                }
-  
-                if( b_inbox ) {
+                if( BBox.Contains( lat,  lon ) ) {
                     wxPoint r;
-                    cc1->GetCanvasPointPix( lat, nlon, &r );
+                    cc1->GetCanvasPointPix( lat, lon, &r );
       
                     float xp = r.x;
                     float yp = r.y;

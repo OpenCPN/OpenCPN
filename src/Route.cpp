@@ -71,9 +71,6 @@ Route::Route()
     
     m_ArrivalRadius = g_n_arrival_circle_radius;        // Nautical Miles
 
-    m_bNeedsUpdateBBox = true;
-    RBBox.Reset();
-
     m_LayerID = 0;
     m_bIsInLayer = false;
 
@@ -207,21 +204,8 @@ void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
         return;
 
     LLBBox test_box = GetBBox();
-    if( box.IntersectOut( test_box ) ) { // Route is wholly outside window
-        //      Need to quick check for the case where VP crosses IDL
-        if( ( box.GetMinX() < -180. ) && ( box.GetMaxX() > -180. ) ) {
-            wxPoint2DDouble xlate( -360., 0. );
-            test_box.Translate( xlate );
-            if( box.IntersectOut( test_box ) ) // Route is outside window
-                return;
-        } else if( ( box.GetMinX() < 180. ) && ( box.GetMaxX() > 180. ) ) {
-            wxPoint2DDouble xlate( 360., 0. );
-            test_box.Translate( xlate );
-            if( box.IntersectOut( test_box ) ) // Route is outside window
-                return;
-        } else
-            return;
-    }
+    if( box.IntersectOut( test_box ) ) // Route is wholly outside window
+        return;
 
     int width = g_route_line_width;
     if( m_width != WIDTH_UNDEFINED ) width = m_width;
@@ -281,8 +265,8 @@ void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
         if ( m_bVisible )
         {
             //    Handle offscreen points
-            bool b_2_on = vp.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
-            bool b_1_on = vp.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
+            bool b_2_on = vp.GetBBox().Contains( prp2->m_lat,  prp2->m_lon );
+            bool b_1_on = vp.GetBBox().Contains( prp1->m_lat,  prp1->m_lon );
 
             //Simple case
             if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth ); // with arrows
@@ -400,8 +384,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             // don't need to perform calculations or render segment
             // if both points are past any edge of the vp
             // TODO: use these optimizations for dc mode
-            bool lat1l = prp1->m_lat < bbox.GetMinY(), lat2l = prp2->m_lat < bbox.GetMinY();
-            bool lat1r = prp1->m_lat > bbox.GetMaxY(), lat2r = prp2->m_lat > bbox.GetMaxY();
+            bool lat1l = prp1->m_lat < bbox.GetMinLat(), lat2l = prp2->m_lat < bbox.GetMinLat();
+            bool lat1r = prp1->m_lat > bbox.GetMaxLat(), lat2r = prp2->m_lat > bbox.GetMaxLat();
             if( (lat1l && lat2l) || (lat1r && lat2r) ) {
                 r1valid = false;
                 prp1->m_pos_on_screen = false;
@@ -409,8 +393,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             }
 
             bool lon1l, lon1r, lon2l, lon2r;
-            TestLongitude(prp1->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon1l, lon1r);
-            TestLongitude(prp2->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon2l, lon2r);
+            TestLongitude(prp1->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon1l, lon1r);
+            TestLongitude(prp2->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon2l, lon2r);
             if( (lon1l && lon2l) || (lon1r && lon2r) ) {
                 r1valid = false;
                 prp1->m_pos_on_screen = false;
@@ -880,24 +864,21 @@ void Route::ReloadRoutePointIcons()
 
 void Route::FinalizeForRendering()
 {
-    m_bNeedsUpdateBBox = true;
+    RBBox.Invalidate();
 }
 
 LLBBox &Route::GetBBox( void )
 {
-    if(!m_bNeedsUpdateBBox)
+    if(RBBox.GetValid())
         return RBBox;
 
-    double bbox_xmin;
-    double bbox_xmax;
-    double bbox_ymin = 90.;
-    double bbox_ymax = -90.;
+    double bbox_lonmin, bbox_lonmax, bbox_latmin, bbox_latmax;
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *data = node->GetData();
 
-    bbox_xmax = bbox_xmin = data->m_lon;
-    bbox_ymax = bbox_ymin = data->m_lat;
+    bbox_lonmax = bbox_lonmin = data->m_lon;
+    bbox_latmax = bbox_latmin = data->m_lat;
 
     double lastlon = data->m_lon, wrap = 0;
 
@@ -912,32 +893,30 @@ LLBBox &Route::GetBBox( void )
         
         double lon = data->m_lon + wrap;
 
-        if( lon > bbox_xmax )
-            bbox_xmax = lon;
-        if( lon < bbox_xmin )
-            bbox_xmin = lon;
+        if( lon > bbox_lonmax )
+            bbox_lonmax = lon;
+        if( lon < bbox_lonmin )
+            bbox_lonmin = lon;
 
-        if( data->m_lat > bbox_ymax )
-            bbox_ymax = data->m_lat;
-        if( data->m_lat < bbox_ymin )
-            bbox_ymin = data->m_lat;
+        if( data->m_lat > bbox_latmax )
+            bbox_latmax = data->m_lat;
+        if( data->m_lat < bbox_latmin )
+            bbox_latmin = data->m_lat;
 
         lastlon = data->m_lon;
         node = node->GetNext();
     }
     
-    if(bbox_xmin < -360)
-        bbox_xmin += 360, bbox_xmax += 360;
-    else if(bbox_xmax > 360)
-        bbox_xmin -= 360, bbox_xmax -= 360;
+    if(bbox_lonmin < -360)
+        bbox_lonmin += 360, bbox_lonmax += 360;
+    else if(bbox_lonmax > 360)
+        bbox_lonmin -= 360, bbox_lonmax -= 360;
 
-    if(bbox_xmax - bbox_xmin > 360)
-       bbox_xmin = -180, bbox_xmax = 180;
+    if(bbox_lonmax - bbox_lonmin > 360)
+       bbox_lonmin = -180, bbox_lonmax = 180;
 
-    RBBox.SetMin(bbox_xmin, bbox_ymin);
-    RBBox.SetMax(bbox_xmax, bbox_ymax);
+    RBBox.Set(bbox_latmin, bbox_lonmin, bbox_latmax, bbox_lonmax);
 
-    m_bNeedsUpdateBBox = false;
     return RBBox;
 }
 

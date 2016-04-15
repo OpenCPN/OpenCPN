@@ -2774,7 +2774,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             if( ChartData && pc ) {
                 //      If Current_Ch is not on the screen, unbound the zoomout
                 LLBBox viewbox = VPoint.GetBBox();
-                wxBoundingBox chart_box;
+//                wxBoundingBox chart_box;
                 int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
                 double max_allowed_scale;
 
@@ -3758,7 +3758,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
 //    Is ship in Vpoint?
 
-    if( GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
+    if( GetVP().GetBBox().Contains( gLat, gLon ) ) drawit++;                             // yep
 
 //    Calculate ownship Position Predictor
 
@@ -3786,7 +3786,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                        powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
 
 //    Is predicted point in the VPoint?
-    if( GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
+    if( GetVP().GetBBox().Contains( pred_lat, pred_lon ) ) drawit++;                     // yep
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
@@ -3822,7 +3822,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
     //    Is head predicted point in the VPoint?
-    if( GetVP().GetBBox().PointInBox( hdg_pred_lon, hdg_pred_lat, 0 ) ) drawit++;                     // yep
+    if( GetVP().GetBBox().Contains( hdg_pred_lat, hdg_pred_lon ) ) drawit++;                     // yep
 
 //    Should we draw the Head vector?
 //    Compare the points lHeadPoint and lPredPoint
@@ -3844,11 +3844,14 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     // And two more tests to catch the case where COG/HDG line crosses the screen,
     // but ownship and pred point are both off
-    
-    if( GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
-    if( GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( hdg_pred_lon, hdg_pred_lat ) ) ) drawit++;
+
+    LLBBox box;
+    box.SetFromSegment(gLon, gLat, pred_lon, pred_lat);
+    if( !GetVP().GetBBox().IntersectOut(box))
+        drawit++;
+    box.SetFromSegment(gLon, gLat, hdg_pred_lon, hdg_pred_lat);
+    if( !GetVP().GetBBox().IntersectOut(box))
+        drawit++;
     
 //    Do the draw if either the ship or prediction is within the current VPoint
     if( !drawit )
@@ -8758,55 +8761,18 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
     float plylat1, plylon1;
 
     int pixx, pixy, pixx1, pixy1;
-    bool b_draw = false;
-    double lon_bias = 0.;
 
-    wxBoundingBox box;
-    ChartData->GetDBBoundingBox( dbIndex, &box );
+    LLBBox box;
+    ChartData->GetDBBoundingBox( dbIndex, box );
 
     // Don't draw an outline in the case where the chart covers the entire world */
-    double lon_diff = box.GetMaxX() - box.GetMinX();
-    if(lon_diff == 360)
+    if(box.GetLonRange() == 360)
         return;
 
-    if( !vp.GetBBox().IntersectOut( box ) )              // chart is not outside of viewport
-        b_draw = true;
-
-    //  Does simple test fail, and current vp cross international dateline?
-    if( !b_draw && ( ( vp.GetBBox().GetMinX() < -180. ) || ( vp.GetBBox().GetMaxX() > 180. ) ) ) {
-        //  If so, do an explicit test with alternate phasing
-        if( vp.GetBBox().GetMinX() < -180. ) {
-            wxPoint2DDouble p( -360., 0 );
-            box.Translate( p );
-            if( !vp.GetBBox().IntersectOut( box ) )       // chart is not outside of viewport
-            {
-                b_draw = true;
-                lon_bias = -360.;
-            }
-        } else {
-            wxPoint2DDouble p( 360., 0 );
-            box.Translate( p );
-            if( !vp.GetBBox().IntersectOut( box ) )       // chart is not outside of viewport
-            {
-                b_draw = true;
-                lon_bias = 360.;
-            }
-        }
-
-    }
-
-    //  Does simple test fail, and chart box cross international dateline?
-    if( !b_draw && ( box.GetMinX() < 180. ) && ( box.GetMaxX() > 180. ) ) {
-        wxPoint2DDouble p( -360., 0 );
-        box.Translate( p );
-        if( !vp.GetBBox().IntersectOut( box )  )           // chart is not outside of viewport
-        {
-            b_draw = true;
-            lon_bias = -360.;
-        }
-    }
-
-    if( !b_draw ) return;
+    double lon_bias = 0;
+    // chart is outside of viewport lat/lon bounding box
+    if( box.IntersectOutGetBias( vp.GetBBox(), lon_bias ) )
+        return;
 
     int nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
 
@@ -9145,8 +9111,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     int rx, ry, rwidth, rheight;
     ru.GetBox( rx, ry, rwidth, rheight );
 //        printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry, rwidth, rheight);
-
-    wxBoundingBox BltBBox;
 
 #ifdef ocpnUSE_DIBSECTION
     ocpnMemDC temp_dc;
@@ -10197,9 +10161,14 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox )
                 continue;
             }
 
+#if 0
             /* technically incorrect... waypoint has bounding box */
-            if( BltBBox.PointInBox( pWP->m_lon, pWP->m_lat, 0 ) )
+            if( BltBBox.Contains( pWP->m_lat, pWP->m_lon ) )
                 pWP->Draw( dc, NULL );
+#else            
+            if( !BltBBox.IntersectOut( pWP->m_wpBBox ) )
+                pWP->Draw( dc, NULL );
+#endif            
         }
 
         node = node->GetNext();
@@ -10323,7 +10292,7 @@ void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
         char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
         if( ( type == 't' ) || ( type == 'T' ) ) {
             
-            if( BBox.PointInBox( lon, lat, 0 ) ) {
+            if( BBox.Contains( lat, lon ) ) {
                 
                 //    Manage the point selection list
                 pSelectTC->AddSelectablePoint( lat, lon, pIDX, SELTYPE_TIDEPOINT );
@@ -10392,25 +10361,13 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
             {
                 double lon = pIDX->IDX_lon;
                 double lat = pIDX->IDX_lat;
-                bool b_inbox = false;
-                double nlon;
 
-                if( BBox.PointInBox( lon, lat, marge ) ) {
-                    nlon = lon;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon + 360., lat, marge ) ) {
-                    nlon = lon + 360.;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon - 360., lat, marge ) ) {
-                    nlon = lon - 360.;
-                    b_inbox = true;
-                }
-
+                if( BBox.ContainsMarge( lat, lon, marge ) &&
 //try to eliminate double entry , but the only good way is to clean the file!
-                if( b_inbox && ( lat != lat_last ) && ( lon != lon_last ) ) {
+                    ( lat != lat_last ) && ( lon != lon_last ) ) {
 
                     wxPoint r;
-                    GetCanvasPointPix( lat, nlon, &r );
+                    GetCanvasPointPix( lat, lon, &r );
 //draw standard icons
                     if( GetVP().chart_scale > 500000 ) {
                         dc.DrawBitmap( bm, r.x - bmw / 2, r.y - bmh / 2, true );
@@ -10570,7 +10527,7 @@ void ChartCanvas::RebuildCurrentSelectList( LLBBox& BBox )
             if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) )
                 b_dup = true;
                
-            if( !b_dup && ( BBox.PointInBox( lon, lat, 0 ) ) ) {
+            if( !b_dup && ( BBox.Contains( lat, lon ) ) ) {
                    
                    //    Manage the point selection list
                    pSelectTC->AddSelectablePoint( lat, lon, pIDX, SELTYPE_CURRENTPOINT );
@@ -10629,7 +10586,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                 bool b_dup = false;
                 if( ( type == 'c' ) && ( lat == lat_last ) && ( lon == lon_last ) ) b_dup = true;
 
-                if( !b_dup && ( BBox.PointInBox( lon, lat, marge ) ) ) {
+                if( !b_dup && ( BBox.ContainsMarge( lat, lon, marge ) ) ) {
 
                     wxPoint r;
                     GetCanvasPointPix( lat, lon, &r );

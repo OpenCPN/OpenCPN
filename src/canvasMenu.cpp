@@ -339,7 +339,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             if( !target_data->area_notices.empty() ) {
                 for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
                     Ais8_001_22& area_notice = ani->second;
-
                     wxBoundingBox bbox;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {

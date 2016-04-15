@@ -132,7 +132,6 @@ public:
       int         m_hiliteWidth;
 
 private:
-      bool m_bNeedsUpdateBBox;
       LLBBox     RBBox;
 
       int         m_nm_sequence;

@@ -229,9 +229,8 @@ int M_COVR_Desc:: ReadWKB ( wxFFileInputStream &ifs )
             else
                   m_buser_offsets = false;
 
-            m_covr_bbox = wxBoundingBox ( m_covr_lon_min, m_covr_lat_min, m_covr_lon_max, m_covr_lat_max );
-            
-
+            m_covr_bbox.Set( m_covr_lat_min, m_covr_lon_min,
+                             m_covr_lat_max, m_covr_lon_max );
       }
       return length;
 }
@@ -2032,13 +2031,13 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
       double yo =  obj->y_origin;
 
       if(m_vp_current.m_projection_type == PROJECTION_MERCATOR) {
-          if ( m_vp_current.GetBBox().GetMaxX() >= 180. &&
-               rzRules->obj->BBObj.GetMaxX() < m_vp_current.GetBBox().GetMinX() )
+          if ( m_vp_current.GetBBox().GetMaxLon() >= 180. &&
+               rzRules->obj->BBObj.GetMaxLon() < m_vp_current.GetBBox().GetMinLon() )
               xo += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
           else
-          if ( (m_vp_current.GetBBox().GetMinX() <= -180. &&
-                rzRules->obj->BBObj.GetMinX() > m_vp_current.GetBBox().GetMaxX()) ||
-               (rzRules->obj->BBObj.GetMaxX() >= 180 && m_vp_current.GetBBox().GetMinX() <= 0.))
+          if ( (m_vp_current.GetBBox().GetMinLon() <= -180. &&
+                rzRules->obj->BBObj.GetMinLon() > m_vp_current.GetBBox().GetMaxLon()) ||
+               (rzRules->obj->BBObj.GetMaxLon() >= 180 && m_vp_current.GetBBox().GetMinLon() <= 0.))
               xo -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
 
           for ( int i=0 ; i < nPoints ; i++ )
@@ -2166,11 +2165,11 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    Fetch the lat/lon of the screen corner points
             ViewPort vptl = vpt;
             LLBBox box = vptl.GetBBox();
-            double ll_lon = box.GetMinX();
-            double ll_lat = box.GetMinY();
+            double ll_lon = box.GetMinLon();
+            double ll_lat = box.GetMinLat();
 
-            double ur_lon = box.GetMaxX();
-            double ur_lat = box.GetMaxY();
+            double ur_lon = box.GetMaxLon();
+            double ur_lat = box.GetMaxLat();
 
             printf ( "cm93chart::SetVPParms   ll_lon: %g  ll_lat: %g   ur_lon: %g   ur_lat:  %g  m_dval: %g\n", ll_lon, ll_lat, ur_lon, ur_lat, m_dval );
       }
@@ -2245,11 +2244,11 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
       //    Fetch the lat/lon of the screen corner points
       ViewPort vptl = vpt;
       LLBBox box = vptl.GetBBox();
-      double ll_lon = box.GetMinX();
-      double ll_lat = box.GetMinY();
+      double ll_lon = box.GetMinLon();
+      double ll_lat = box.GetMinLat();
 
-      double ur_lon = box.GetMaxX();
-      double ur_lat = box.GetMaxY();
+      double ur_lon = box.GetMaxLon();
+      double ur_lat = box.GetMaxLat();
 
       //    Adjust to always positive for easier cell calculations
       if ( ll_lon < 0 )
@@ -2347,22 +2346,21 @@ void cm93chart::ProcessVectorEdges ( void )
                   }
                   
                   cm93_point p;
-                  double lat, lon;
+                  double lat1, lon1, lat2, lon2;
                   
                   //TODO  Not precisely correct, transform should account for "trans_WGS84_offset_x"
                   p.x = east_min;
                   p.y = north_min;
-                  Transform ( &p, 0, 0, &lat, &lon );
-                  vep->BBox.SetMin( lon, lat);
+                  Transform ( &p, 0, 0, &lat1, &lon1 );
                   
                   p.x = east_max;
                   p.y = north_max;
-                  Transform ( &p, 0, 0, &lat, &lon );
+                  Transform ( &p, 0, 0, &lat2, &lon2 );
 
-                  if(vep->BBox.GetMinX() > lon)
-                      lon += 360;
+//                  if(lon1 > lon2)
+                  //                    lon2 += 360;
 
-                  vep->BBox.SetMax( lon, lat);
+                  vep->BBox.Set( lat1, lon1, lat2, lon2);
                   
             }
             
@@ -3684,8 +3682,8 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                               pmcd->m_nvertices = npta;
                               pmcd->pvertices = geoPt;
 
-                              pmcd->m_covr_bbox = wxBoundingBox ( pmcd->m_covr_lon_min, pmcd->m_covr_lat_min, pmcd->m_covr_lon_max, pmcd->m_covr_lat_max );
-
+                              pmcd->m_covr_bbox.Set( pmcd->m_covr_lat_min, pmcd->m_covr_lon_min,
+                                                     pmcd->m_covr_lat_max, pmcd->m_covr_lon_max );
 
                               //    Capture and store the potential WGS transform offsets grabbed during attribute decode
                               pmcd->transform_WGS84_offset_x = tmp_transform_x;
@@ -3771,27 +3769,23 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
 
                   //  Set the s57obj bounding box as lat/lon
-                  double lat, lon;
+                  double lat1, lon1, lat2, lon2;
                   cm93_point p;
 
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->BBObj.SetMin ( lon, lat );
-
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->BBObj.SetMax ( lon, lat );
-
-                  pobj->bBBObj_valid = true;
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat2, &lon2 );
+                  pobj->BBObj.Set( lat1, lon1, lat2, lon2 );
 
                   //  Set the object base point
                   p.x = ( int ) pobj->x;
                   p.y = ( int ) pobj->y;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->m_lon = lon;
-                  pobj->m_lat = lat;
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  pobj->m_lon = lon1;
+                  pobj->m_lat = lat1;
 
 
                   if(1)
@@ -3865,8 +3859,8 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   // replace the current bounding box logic with calculating logic
                   double llsize = 1e-3 / view_scale_ppm;
 
-                  pobj->BBObj.SetMin ( lon-llsize, lat-llsize );
-                  pobj->BBObj.SetMax ( lon+llsize, lat+llsize );
+                  pobj->BBObj.Set ( lat, lon, lat, lon );
+                  pobj->BBObj.EnLarge ( llsize );
 
                   break;
             }
@@ -3880,19 +3874,17 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   pobj->Primitive_type = GEO_POINT;
 
                   //  Set the s57obj bounding box as lat/lon
-                  double lat, lon;
+                  double lat1, lon1, lat2, lon2;
                   cm93_point p;
 
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
-                  Transform ( &p, 0., 0., &lat, &lon );
-                  pobj->BBObj.SetMin ( lon, lat );
+                  Transform ( &p, 0., 0., &lat1, &lon1 );
 
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
-                  Transform ( &p, 0., 0., &lat, &lon );
-                  pobj->BBObj.SetMax ( lon, lat );
-                  pobj->bBBObj_valid = true;
+                  Transform ( &p, 0., 0., &lat2, &lon2 );
+                  pobj->BBObj.Set ( lat1, lon1, lat2, lon2 );
                   
                   //  and declare x/y of the object to be average of all cm93points
                   pobj->x = ( xgeom->xmin + xgeom->xmax ) / 2.;
@@ -3948,17 +3940,17 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         *pdd++ = depth;
 
                         //  Save offset lat/lon of point in obj->geoPtMulti for later use in decomposed bboxes
-                        Transform ( &p, snd_trans_x, snd_trans_y, &lat, &lon );
-                        *pdl++ = lon;
-                        *pdl++ = lat;
+                        Transform ( &p, snd_trans_x, snd_trans_y, &lat1, &lon1 );
+                        *pdl++ = lon1;
+                        *pdl++ = lat1;
                   }
 
                   //  Set the object base point
                   p.x = ( int ) pobj->x;
                   p.y = ( int ) pobj->y;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->m_lon = lon;
-                  pobj->m_lat = lat;
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  pobj->m_lon = lon1;
+                  pobj->m_lat = lat1;
 
 
                   delete pGeo;
@@ -4006,27 +3998,24 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
 
                   //  Set the s57obj bounding box as lat/lon
-                  double lat, lon;
+                  double lat1, lon1, lat2, lon2;
                   cm93_point p;
 
                   p.x = ( int ) xgeom->xmin;
                   p.y = ( int ) xgeom->ymin;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->BBObj.SetMin ( lon, lat );
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
 
                   p.x = ( int ) xgeom->xmax;
                   p.y = ( int ) xgeom->ymax;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->BBObj.SetMax ( lon, lat );
-
-                  pobj->bBBObj_valid = true;
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat2, &lon2 );
+                  pobj->BBObj.Set ( lat1, lon1, lat2, lon2 );
 
                   //  Set the object base point
                   p.x = ( int ) pobj->x;
                   p.y = ( int ) pobj->y;
-                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat, &lon );
-                  pobj->m_lon = lon;
-                  pobj->m_lat = lat;
+                  Transform ( &p, trans_WGS84_offset_x, trans_WGS84_offset_y, &lat1, &lon1 );
+                  pobj->m_lon = lon1;
+                  pobj->m_lat = lat1;
 
                   break;
 
@@ -4352,8 +4341,8 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     pmcd->m_nvertices = npta;
                                     pmcd->pvertices = geoPt;
 
-                                    pmcd->m_covr_bbox = wxBoundingBox ( pmcd->m_covr_lon_min, pmcd->m_covr_lat_min,
-                                                pmcd->m_covr_lon_max, pmcd->m_covr_lat_max );
+                                    pmcd->m_covr_bbox.Set( pmcd->m_covr_lat_min, pmcd->m_covr_lon_min,
+                                                           pmcd->m_covr_lat_max, pmcd->m_covr_lon_max );
 
 
                                     //    Capture and store the potential WGS transform offsets grabbed during attribute decode
@@ -5076,7 +5065,6 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
 
                   else if ( vpt.b_quilt &&  vpt.b_FullScreenQuilt )
                   {
-                        ViewPort vpa = vpt;
                         ViewPort vp = vpt;
 
                         covr_set *pcover = m_pcm93chart_current->GetCoverSet();
@@ -5087,7 +5075,7 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
                               {
                                     M_COVR_Desc *mcd = pcover->GetCover ( im );
 
-                                    if ( ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) || ! ( vpa.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) )
+                                    if ( ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) )
                                     {
                                           boverlap = true;
                                           break;
@@ -5331,13 +5319,9 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
                   M_COVR_Desc *pmcd = ( m_pcm93chart_current->m_pcovr_array_loaded.Item ( im ) );
 
                   //    We can make a quick test based on the bbox of the M_COVR and the bbox of the ViewPort
-                  wxBoundingBox rtwbb = pmcd->m_covr_bbox;
-                  wxPoint2DDouble rtw ( 360., 0. );
-                  rtwbb.Translate ( rtw );
 
-                  if ( ( vp.GetBBox().IntersectOut ( pmcd->m_covr_bbox ) ) &&
-                          ( vp.GetBBox().IntersectOut ( rtwbb ) ) )
-                        continue;
+                  if ( vp.GetBBox().IntersectOut ( pmcd->m_covr_bbox ) )
+                      continue;
 
                   wxPoint *DrawBuf = m_pcm93chart_current->GetDrawBuffer ( pmcd->m_nvertices );
 
@@ -6062,8 +6046,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                               // translating around the world
                               if( (vp.m_projection_type == PROJECTION_MERCATOR ||
                                    vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
-                                  ( vp.GetBBox().GetMinX() < -180 ||
-                                    vp.GetBBox().GetMaxX() > 180) ) {
+                                  ( vp.GetBBox().GetMinLon() < -180 ||
+                                    vp.GetBBox().GetMaxLon() > 180) ) {
                                   #define NORM_FACTOR 4096.0                                              
                                   double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
                                   glPushMatrix();

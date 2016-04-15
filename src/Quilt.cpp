@@ -427,9 +427,8 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
                                                      cte.GetScale() );
         return t_region;
 */
-        return LLRegion(vp.GetBBox().GetMinX(), -80, vp.GetBBox().GetMaxX(), 80);
+        return LLRegion(-80, vp.GetBBox().GetMinLon(), 80, vp.GetBBox().GetMaxLon());
     }
-
 
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
@@ -1082,7 +1081,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             if( type == CHART_TYPE_CM93COMP ) continue;
 
-            const wxBoundingBox &chart_box = cte.GetBBox();
+            const LLBBox &chart_box = cte.GetBBox();
             if( ( viewbox.IntersectOut( chart_box ) ) ) continue;
 
             if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;

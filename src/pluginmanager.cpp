@@ -141,10 +141,10 @@ PlugIn_ViewPort CreatePlugInViewport( const ViewPort &vp)
     pivp.b_quilt =                tvp.b_quilt;
     pivp.m_projection_type =      tvp.m_projection_type;
 
-    pivp.lat_min =                tvp.GetBBox().GetMinY();
-    pivp.lat_max =                tvp.GetBBox().GetMaxY();
-    pivp.lon_min =                tvp.GetBBox().GetMinX();
-    pivp.lon_max =                tvp.GetBBox().GetMaxX();
+    pivp.lat_min =                tvp.GetBBox().GetMinLat();
+    pivp.lat_max =                tvp.GetBBox().GetMaxLat();
+    pivp.lon_min =                tvp.GetBBox().GetMinLon();
+    pivp.lon_max =                tvp.GetBBox().GetMaxLon();
 
     pivp.bValid =                 tvp.IsValid();                 // This VP is valid
 
@@ -4529,9 +4529,10 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
-    cobj->bBBObj_valid = pContext->bBBObj_valid;
     if( pContext->bBBObj_valid )
-        cobj->BBObj = pContext->BBObj;
+        // this is ugly because plugins still use wxBoundingBox
+        cobj->BBObj.Set(pContext->BBObj.GetMinY(), pContext->BBObj.GetMinX(),
+                        pContext->BBObj.GetMaxY(), pContext->BBObj.GetMaxX());
     
     cobj->CSrules = pContext->CSrules;
     cobj->bCS_Added = pContext->bCS_Added;
@@ -4653,9 +4654,12 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     pContext->bFText_Added = cobj->bFText_Added;
     pContext->rText = cobj->rText;
     
-    if(cobj->bBBObj_valid)
-        pContext->BBObj = cobj->BBObj;
-    pContext->bBBObj_valid = cobj->bBBObj_valid;
+    if(cobj->BBObj.GetValid()) {
+        // ugly as plugins still use wxBoundingBox
+        pContext->BBObj = wxBoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
+                                        cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
+        pContext->bBBObj_valid = true;
+    }
 
     //  Render operation may have promoted the object's display category (e.g.WRECKS)
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;

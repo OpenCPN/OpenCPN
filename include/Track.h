@@ -29,7 +29,21 @@
 #include "vector2D.h"
 
 #include <vector>
+#include <list>
 #include <deque>
+
+//#define FIRST_ALG
+#ifndef FIRST_ALG
+struct SubTrack
+{
+SubTrack(const LLBBox &box) :
+    m_box(box),
+    m_scale(0) {}
+    LLBBox            m_box;
+    double            m_scale;
+};
+#endif
+
 
 class TrackPoint
 {
@@ -43,6 +57,11 @@ public:
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
       wxString          m_timestring;
+
+#ifdef FIRST_ALG
+      LLBBox            m_box;
+      double            m_scale;
+#endif
 
 private:
       wxDateTime        m_CreateTimeX;
@@ -63,6 +82,8 @@ public:
     int GetnPoints(void){ return TrackPoints.size(); }
     TrackPoint *GetLastPoint();
     void AddPoint( TrackPoint *pNewPoint );
+    void Finalize();
+    void AddPointFinalized( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
 
     void SetVisible(bool visible = true) { m_bVisible = visible; }
@@ -112,7 +133,22 @@ protected:
             
     std::vector<TrackPoint*>     TrackPoints;
 
+#ifndef FIRST_ALG
+    std::vector<std::vector <SubTrack> > SubTracks;
+#endif
 private:
+    double ComputeScale(int left, int right);
+    void InsertSubTracks(LLBBox &box, int level, int pos);
+
+    void AddPointToList(std::list<wxPoint> &pointlist, int n);
+    void AddPointToLists(std::list< std::list<wxPoint> > &pointlists, int &last, int n);
+
+#ifdef FIRST_ALG
+    void Assemble(std::list< std::list<wxPoint> > &pointlists, int &last, int n, const LLBBox &box);
+#else
+    void Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
+#endif
+
     void DrawGLLines( ViewPort &vp, ocpnDC *dc );
     void DrawGLTrackLines( ViewPort &vp );
 };

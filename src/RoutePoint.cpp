@@ -544,13 +544,11 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
-        if(lon1 > lon2) {
-            m_wpBBox.SetMin(lon1, lat1);
-            m_wpBBox.SetMax(lon2+360, lat2);
-        } else {
-            m_wpBBox.SetMin(lon1, lat1);
-            m_wpBBox.SetMax(lon2, lat2);
-        }
+        if(lon1 > lon2)
+            m_wpBBox.Set(lon1, lat1, lon2+360, lat2);
+        else
+            m_wpBBox.Set(lon1, lat1, lon2, lat2);
+
         m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
         m_wpBBox_rotation = vp.rotation;
     }
