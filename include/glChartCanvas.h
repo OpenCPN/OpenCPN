@@ -41,6 +41,7 @@
 class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
+#define ZOOM_TIMER 78335
 
 //      This is a hashmap with Chart full path as key, and glTexFactory as value
 WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
@@ -97,7 +98,6 @@ public:
     void OnSize ( wxSizeEvent& event );
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
-//    void FastZoom(float factor, int cp_x, int cp_y);
     void FastZoom(float factor, int cp_x, int cp_y, int post_x, int post_y);
     void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
     
@@ -106,6 +106,8 @@ public:
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
     void onGestureTimerEvent(wxTimerEvent &event);
 #endif
+
+    void onZoomTimerEvent(wxTimerEvent &event);
     
     wxString GetRendererString(){ return m_renderer; }
     wxString GetVersionString(){ return m_version; }
@@ -161,6 +163,8 @@ protected:
     void DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox);
     void DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
     
+    void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
+    
     wxGLContext       *m_pcontext;
 
     int max_texture_dimension;
@@ -207,6 +211,23 @@ protected:
     float       m_fbo_offsety;
     float       m_fbo_swidth;
     float       m_fbo_sheight;
+
+    float       m_lastfbo_offsetx;
+    float       m_lastfbo_offsety;
+    float       m_lastfbo_swidth;
+    float       m_lastfbo_sheight;
+    
+    float       m_offsetxStep, m_offsetyStep, m_swidthStep, m_sheightStep;
+    float       m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight;
+    float       m_nStep, m_nTotal, m_nRun;
+    bool        m_zoomFinal;
+    double      m_zoomFinalZoom;
+    int         m_zoomFinaldx, m_zoomFinaldy;
+    
+    
+    
+    wxTimer     zoomTimer;
+    
     double      m_fbo_lat, m_fbo_lon;
     int         m_cc_x,m_cc_y;
     wxPoint     m_lpinchPoint;
