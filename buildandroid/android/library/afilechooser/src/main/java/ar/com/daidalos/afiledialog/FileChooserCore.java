@@ -338,7 +338,8 @@ class FileChooserCore {
 		public void onClick(FileItem source) {
 			// Verify if the item is a folder.
 			File file = source.getFile();
-			if(file.isDirectory()) {
+                        //Log.i("DEBUGGER_TAG", "OnFileClickListener " + file);
+                        if(file.isDirectory()) {
 				// Open the folder.
                                 String[] Files = file.list();
                                 if(Files != null){
@@ -348,8 +349,10 @@ class FileChooserCore {
                                         FileChooserCore.this.loadFolder(file);
                                 }
                                 else{
+                                    //Log.i("DEBUGGER_TAG", "file.list NULL");
+
                                     //  Probably a prohibited read.  Switch to a known good directory.
-                                    FileChooserCore.this.currentFolder = Environment.getExternalStorageDirectory();
+                                    FileChooserCore.this.currentFolder = new File("/");    //Environment.getExternalStorageDirectory();
                                     // Reload the list of files.
                                     FileChooserCore.this.loadFolder(FileChooserCore.this.currentFolder);
 
@@ -668,6 +671,8 @@ class FileChooserCore {
 	 * @param folder The folder.
 	 */
 	public void loadFolder(File folder) {
+            //Log.i("DEBUGGER_TAG", "LoadFolder: " + folder);
+
 		// Remove previous files.
 		LinearLayout root = this.chooser.getRootLayout();
 		LinearLayout layout = (LinearLayout) root.findViewById(R.id.linearLayoutFiles);
@@ -686,6 +691,8 @@ class FileChooserCore {
 		
 		// Verify if the path exists.
 		if(this.currentFolder.exists() && layout != null) {
+                    //Log.i("DEBUGGER_TAG", "Exists");
+
 			List<FileItem> fileItems = new LinkedList<FileItem>();
 			
 			// Add the parent folder.
@@ -777,6 +784,8 @@ class FileChooserCore {
 
         public void loadFolderA(File folder) {
 
+            //Log.i("DEBUGGER_TAG", "LoadFolderA");
+
                 // Remove previous files.
                 LinearLayout root = this.chooser.getRootLayout();
                 LinearLayout layout = (LinearLayout) root.findViewById(R.id.linearLayoutFiles);
@@ -796,6 +805,7 @@ class FileChooserCore {
 
                 // Verify if the path exists.
                 if(this.currentFolder.exists() && layout != null) {
+                   // Log.i("DEBUGGER_TAG", "Exists");
                         List<FileItem> fileItems = new LinkedList<FileItem>();
 
                         // Add the parent folder.
