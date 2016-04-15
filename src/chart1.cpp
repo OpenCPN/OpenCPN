@@ -5315,6 +5315,26 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
         cc1->SetViewPoint( lat, lon, scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation() );
     } else {
         cc1->SetViewPoint( lat, lon, scale, 0, cc1->GetVPRotation() );
+        
+        //  Now that a reference chart is established....
+        // Double check the scale for "reasonableness" against the selected ref chart
+        int ref_index = cc1->GetQuiltReferenceChartIndex();
+        if(ref_index >= 0) {
+            // Suggest a scale so that the largest scale candidate is "nominally" scaled,
+            // meaning not overzoomed, and not underzoomed
+            ChartBase *pc = ChartData->OpenChartFromDB( ref_index, FULL_INIT );
+            if( pc ) {
+                
+                double max_ref_scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                
+                //  The scale is too small, leading to excessive underzoom.
+                //  Adjust the viewpoint scale to a nominal value
+                if((cc1->GetCanvasScaleFactor() / scale ) > max_ref_scale){
+                    double new_scale = (cc1->GetCanvasScaleFactor() / max_ref_scale) * 2.0;
+                    cc1->SetViewPoint( lat, lon, new_scale, 0, cc1->GetVPRotation() );
+                }
+            }
+        }
     }
 
     cc1->ReloadVP();
