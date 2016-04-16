@@ -575,8 +575,8 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                         m_lon = xll;
                         m_lat = yll;
 
-                        BBObj.Set( m_lon - .25, m_lat - .25,
-                                   m_lon + .25, m_lat + .25 );
+                        BBObj.Set( m_lat - .25, m_lon - .25,
+                                   m_lat + .25, m_lon + .25 );
                         BBObj.Invalidate();
                     } else {
                         Primitive_type = GEO_POINT;
@@ -623,7 +623,7 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                         float ymax = *pfs++;
                         float ymin = *pfs;
 
-                        BBObj.Set( xmin, ymin, xmax, ymax );
+                        BBObj.Set( ymin, xmin, ymax, xmax );
                     }
                     break;
                 }
@@ -675,7 +675,7 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                             free( buft );
 
                         // set s57obj bbox as lat/lon
-                        BBObj.Set( xmin, ymin, xmax, ymax );
+                        BBObj.Set( ymin, xmin, ymax, xmax );
 
                         //  and declare x/y of the object to be average east/north of all points
                         double e1, e2, n1, n2;
@@ -748,8 +748,8 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                             pPolyTessGeo = ppg;
 
                             //  Set the s57obj bounding box as lat/lon
-                            BBObj.Set( ppg->Get_xmin(), ppg->Get_ymin(),
-                                       ppg->Get_xmax(), ppg->Get_ymax() );
+                            BBObj.Set( ppg->Get_ymin(), ppg->Get_xmin(),
+                                       ppg->Get_ymax(), ppg->Get_xmax() );
 
                             //  and declare x/y of the object to be average east/north of all points
                             double e1, e2, n1, n2;
@@ -2567,8 +2567,8 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
             fromSM( temp_easting_lr, temp_northing_lr, ref_lat, ref_lon, &temp_lat_bot,
                     &temp_lon_right );
 
-            temp_vp.GetBBox().Set( temp_lon_left, temp_lat_bot,
-                                   temp_lon_right, temp_lat_top );
+            temp_vp.GetBBox().Set( temp_lat_bot, temp_lon_left,
+                                   temp_lat_top, temp_lon_right );
 
             //      Allow some slop in the viewport
             //    TODO Investigate why this fails if greater than 5 percent
@@ -3197,8 +3197,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
     vp.m_projection_type = PROJECTION_MERCATOR;
 
-    vp.GetBBox().Set( m_FullExtent.WLON, m_FullExtent.SLAT,
-                      m_FullExtent.ELON, m_FullExtent.NLAT );
+    vp.GetBBox().Set( m_FullExtent.SLAT, m_FullExtent.WLON,
+                      m_FullExtent.NLAT, m_FullExtent.ELON );
 
     vp.chart_scale = 10000000 - 1;
     vp.Validate();
@@ -4620,8 +4620,8 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
                         double lon1 = (lon - minlon) * d;
                         double lon2 = (lon - maxlon) * d;
                         
-                        top->obj->BBObj.Set( lon - lon1, lat - lat1,
-                                             lon - lon2, lat - lat2 );
+                        top->obj->BBObj.Set( lat - lat1, lon - lon1,
+                                             lat - lat2, lon - lon2 );
 
                         // this method is very close, but errors accumulate
                         top->obj->BBObj.Invalidate();

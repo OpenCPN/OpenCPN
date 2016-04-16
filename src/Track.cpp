@@ -467,11 +467,20 @@ void ActiveTrack::AddPointNow( bool do_add_point )
     m_prev_time = now;
 }
 
-void Track::AddPointToList(std::list<wxPoint> &pointlist, int n)
+void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
 {
     wxPoint r;
     cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
-    
+
+    std::list<wxPoint> &pointlist = pointlists.back();
+    if(r.x == INVALID_COORD) {
+        if(pointlist.size()) {
+            std::list<wxPoint> new_list;
+            pointlists.push_back(new_list);
+        }
+        return;
+    }
+
     if(pointlist.size() == 0)
         pointlist.push_back(r);
     else {
@@ -502,9 +511,9 @@ void Track::Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
         }
 
         if(last < pos)
-            AddPointToList(pointlists.back(), pos);
+            AddPointToList(pointlists, pos);
         last = wxMin(pos + (1<<level), TrackPoints.size() - 1);
-        AddPointToList(pointlists.back(), last);
+        AddPointToList(pointlists, last);
     } else {
         Assemble(pointlists, box, scale, last, level-1, pos<<1);
         Assemble(pointlists, box, scale, last, level-1, (pos<<1)+1);
@@ -654,7 +663,9 @@ static double heading_diff(double x)
 }
 
 /* Computes the scale factor when these particular segments
-   essentially are smaller than 1 pixel */
+   essentially are smaller than 1 pixel,  This is assuming
+   a simplistic flat projection, it might be useful to
+   add a mercator or other term, but this works in practice */
 double Track::ComputeScale(int left, int right)
 {
     const double z = WGS84_semimajor_axis_meters * mercator_k0;
@@ -752,7 +763,7 @@ void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
     if( IsRunning() ) {
         std::list<wxPoint> new_list;
         pointlists.push_back(new_list);
-        AddPointToList(pointlists.back(), TrackPoints.size()-1);
+        AddPointToList(pointlists, TrackPoints.size()-1);
         wxPoint r;
         cc1->GetCanvasPointPix( gLat, gLon, &r );
         pointlists.back().push_back(r);

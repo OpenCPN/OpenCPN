@@ -370,10 +370,7 @@ void wxBoundingBox::MapBbox( const wxTransformMatrix& matrix)
 
 void LLBBox::Set(double minlat, double minlon, double maxlat, double maxlon)
 {
-    assert (minlat <= maxlat );
-    assert (minlon <= maxlon );
-
-    #if 0
+#if 0
     // ensure average is from -180 to 180
     if(minlon + maxlon >= 360)
         minlon -= 360, maxlon -= 360;
@@ -386,17 +383,14 @@ void LLBBox::Set(double minlat, double minlon, double maxlat, double maxlon)
     m_minlon = minlon;
     m_maxlat = maxlat;
     m_maxlon = maxlon;
-    m_valid = TRUE;
+    m_valid = minlat <= maxlat && minlon <= maxlon;
 }
 
 void LLBBox::SetFromSegment(double lat1, double lon1, double lat2, double lon2)
 {
     m_minlat = wxMin(lat1, lat2);
     m_maxlat = wxMax(lat1, lat2);
-#if 0
-    m_minlon = wxMin(lon1, lon2);
-    m_maxlon = wxMax(lon1, lon2);
-#else    
+
     double minlon[3], maxlon[3];
     double lon[2][3] = {{lon1}, {lon2}};
     for(int i=0; i<2; i++) {
@@ -431,7 +425,7 @@ void LLBBox::SetFromSegment(double lat1, double lon1, double lat2, double lon2)
 
     m_minlon = minlon[mink];
     m_maxlon = maxlon[mink];
-#endif
+
     m_valid = TRUE;
 }
 
@@ -569,17 +563,13 @@ bool LLBBox::IntersectOutGetBias( const LLBBox &other, double bias ) const
     return (m_minlon + bias > other.m_maxlon) || (m_maxlon + bias < other.m_minlon);
 }
 
-#if 0 // use needed...
+#if 0 // use if needed...
 OVERLAP LLBox::Intersect( const LLBBox &other) const
 {
     if(IntersectOut(other))
         return _OUT;
 
-    // Check if other.bbox is inside this bbox
-    if ((m_minx <= other.m_minx) &&
-         (m_maxx >= other.m_maxx) &&
-         (m_maxy >= other.m_maxy) &&
-         (m_miny <= other.m_miny))
+    if(IntersectIn(other))
         return _IN;
 
     // Boundingboxes intersect

@@ -134,7 +134,7 @@ private:
     double ComputeScale(int left, int right);
     void InsertSubTracks(LLBBox &box, int level, int pos);
 
-    void AddPointToList(std::list<wxPoint> &pointlist, int n);
+    void AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n);
     void AddPointToLists(std::list< std::list<wxPoint> > &pointlists, int &last, int n);
 
     void Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);

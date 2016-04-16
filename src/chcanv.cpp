@@ -10108,8 +10108,8 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 void ChartCanvas::DrawAllTracksInBBox( ocpnDC& dc, LLBBox& BltBBox )
 {
     Track *active_track = NULL;
-    wxTrackListNode *node = pTrackList->GetFirst();
-    while( node ) {
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext()) {
         Track *pTrackDraw = node->GetData();
 
         if( g_pActiveTrack == pTrackDraw ) {
