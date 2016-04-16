@@ -35,7 +35,7 @@
 
 class glTextureDescriptor;
 
-#define COMPRESSED_CACHE_MAGIC 0xf011  // change this when the format changes
+#define COMPRESSED_CACHE_MAGIC 0xf012  // change this when the format changes
 
 #define FACTORY_TIMER                   10000
 
@@ -51,7 +51,8 @@ struct CompressedCacheHeader
     uint32_t format;
     uint32_t chartdate;
     uint32_t m_nentries;
-    uint32_t catalog_offset;    
+    uint32_t catalog_offset;
+    uint32_t chartfile_date;
 };
 
 struct CatalogEntryKey
@@ -169,6 +170,7 @@ private:
     
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
+    uint32_t    m_chartfile_date_binary;
     
     int         m_stride;
     int         m_ntex;
