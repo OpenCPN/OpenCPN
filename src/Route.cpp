@@ -362,11 +362,9 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
     if( !dc )
         glBegin(GL_LINES);
 
-//    unsigned short int FromSegNo = prp2->m_GPXTrkSegNo;
     for(node = node->GetNext(); node; node = node->GetNext()) {
         RoutePoint *prp1 = prp2;
         prp2 = node->GetData();
-//        unsigned short int ToSegNo = prp2->m_GPXTrkSegNo;
 
         // Provisional, to properly set status of last point in route
         prp2->m_pos_on_screen = false;

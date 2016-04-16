@@ -27,7 +27,53 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/* Tracks are broken into SubTracks to allow for efficient rendering and
+   selection on tracks with thousands or millions of track points
+
+   Each level of subtracks has exactly half the number of the previous level
+   forming a binary tree of subtracks.
+   The 0th level contains n-1 subtracks where n is the number of track points
+
+For example, a track with 5 points:
+
+Subtracks[2]                     0
+                            __/     \__
+                           /           \
+Subtracks[1]             0               1
+                       /   \           /   \
+Subtracks[0]         0       1       2       3
+                   /    \ /     \ /     \ /    \
+TrackPoints      0       1       2       3       5
+
+
+The BoundingBox for Subtracks[2][0] will include the entire track and is the
+starting point for assembling the track.
+
+Subtracks[1][0] is from 0 to 2
+Subtracks[1][1] is from 2 to 5
+Subtracks[0][2] is from 2 to 3
+
+The scale factor in Subtracks[2] will determine if it's allowed to just
+draw a simple line segment from 0 to 5, or if we need to recurse to find
+more detail.
+
+At large scale factors, a long track will mostly be off screen, so
+the bounding box tests quickly eliminate the invisible sections.
+
+At small scale factors, the scale test allows representing a section
+of track using a single line segment greatly reducing the number of
+segments rendered.  The scale is set so the difference is less than 1 pixel
+and mostly impossible to notice.
+
+In practice I never exceed 170 segments in all cases assembling a real track
+with over 86,000 segments.  If the track is particularly not-straight, and
+the size of the screen particularly large (lots of pixels) the number
+of segments will be higher, though it should be managable with tracks with
+millions of points.
+*/
+
 #include "wx/wxprec.h"
+
 
 #include "Route.h"
 #include "Track.h"
@@ -281,11 +327,6 @@ void Track::Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const 
         TrackPoint *ptargetpoint = new TrackPoint( psourcepoint->m_lat, psourcepoint->m_lon);
 
         AddPoint( ptargetpoint );
-        
-        int segment_shift = psourcepoint->m_GPXTrkSegNo;
-
-        if(  start_nPoint == 2 ) 
-            segment_shift = psourcepoint->m_GPXTrkSegNo - 1; // continue first segment if tracks share the first point
     }
 }
 
@@ -426,49 +467,6 @@ void ActiveTrack::AddPointNow( bool do_add_point )
     m_prev_time = now;
 }
 
-#if 0
-    wxPoint l;
-
-    for(size_t i = 0; i < TrackPoints.size(); i++) {
-        TrackPoint *prp = TrackPoints[i];
-
-        unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
-
-        wxPoint r;
-        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r );
-
-        //  We do inline decomposition of the line segments, in a simple minded way
-        //  If the line segment length is less than approximately 2 pixels, then simply don't render it,
-        //  but continue on to the next point.
-
-        int x0 = r.x, y0 = r.y, x1 = l.x, y1= l.y;
-        if(i == 0 || (abs(r.x - l.x) > 1) || (abs(r.y - l.y) > 1))
-
-
-            if( ToSegNo != FromSegNo ) {
-                if(pointlist.size()) {
-                    pointlists.push_back(pointlist);
-                    pointlist.clear();
-                }
-            }
-            pointlist.push_back(r);
-
-            l = r;
-        }
-        FromSegNo = ToSegNo;
-    }
-#endif
-
-uint32_t tp_level(uint32_t n)
-{
-    int level = 0;
-    while(n&1) {
-        n >>= 1;
-        level++;
-    }
-    return level;
-}
-
 void Track::AddPointToList(std::list<wxPoint> &pointlist, int n)
 {
     wxPoint r;
@@ -478,7 +476,8 @@ void Track::AddPointToList(std::list<wxPoint> &pointlist, int n)
         pointlist.push_back(r);
     else {
         wxPoint l = pointlist.back();
-//        if((abs(r.x - l.x) > 1) || (abs(r.y - l.y) > 1))
+        // ensure the segment is at least 2 pixels
+        if((abs(r.x - l.x) > 1) || (abs(r.y - l.y) > 1))
             pointlist.push_back(r);
     }
 }
@@ -645,22 +644,6 @@ TrackPoint *Track::GetLastPoint()
     return TrackPoints.back();
 }
 
-uint32_t tp_parent(uint32_t n)
-{
-    uint32_t v, cnt = 0;
-    for(int i=0; i<32; i++) {
-        if(!(n & 1)) {
-            v = (n & 0xfffffffc) + 1;
-            break;
-        }
-        n >>= 1;
-        cnt++;
-    }
-    v <<= cnt;
-    v += (1<<cnt) - 1;
-    return v;
-}
-
 static double heading_diff(double x)
 {
     if(x > 180)
@@ -675,8 +658,9 @@ static double heading_diff(double x)
 double Track::ComputeScale(int left, int right)
 {
     const double z = WGS84_semimajor_axis_meters * mercator_k0;
-    const double mult = DEGREE * z; // could divide by a higher factor
-    // to get better performance with loss of rendering track accuracy
+    const double mult = DEGREE * z;
+    // could multiply by a smaller factor to get
+    // better performance with loss of rendering track accuracy
 
     double max_dist = 0;
     double lata = TrackPoints[left]->m_lat, lona = TrackPoints[left]->m_lon;
@@ -687,7 +671,7 @@ double Track::ComputeScale(int left, int right)
     double lengthSquared = bx*bx + by*by;
 
     // avoid this calculation for large distances... slight optimization
-    // at building with expense rendering zoomed outneeded?
+    // at building with expense rendering zoomed out. is it needed?
     if(lengthSquared > 3)
         return INFINITY;
 
@@ -778,7 +762,7 @@ void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
 /* ensures the SubTracks are valid for assembly use */
 void Track::Finalize()
 {
-    if(SubTracks.size())
+    if(SubTracks.size()) // subtracks already computed
         return;
 
 //    OCPNStopWatch sw1;
@@ -852,7 +836,8 @@ void Track::InsertSubTracks(LLBBox &box, int level, int pos)
 /* This function adds a new point ensuring the resulting track is finalized
    The runtime of this routine is O(log(n)) which is an an improvment over
    blowing away the subtracks and calling Finalize which is O(n),
-   but should not be used for building a large track.
+   but should not be used for building a large track O(n log(n)) which
+   _is_ worse than blowing the subtracks and calling Finalize.
 */
 void Track::AddPointFinalized( TrackPoint *pNewPoint )
 {
@@ -1155,24 +1140,4 @@ double Track::GetXTE( TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to )
     if( fm2 == to ) return 0.0;
     return GetXTE( fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat, to->m_lon );
 ;
-}
-
-static void TestLongitude(double lon, double min, double max, bool &lonl, bool &lonr)
-{
-    double clon = (min + max)/2;
-    if(min - lon > 180)
-        lon += 360;
-
-    lonl = lonr = false;
-    if(lon < min) {
-        if(lon < clon - 180)
-            lonr = true;
-        else
-            lonl = true;
-    } else if(lon > max) {
-        if(lon > clon + 180)
-            lonl = true;
-        else
-            lonr = true;
-    }
 }
