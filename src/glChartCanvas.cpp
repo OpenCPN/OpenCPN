@@ -1697,7 +1697,6 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
         if(pActiveTrack && pActiveTrack->IsRunning() )
             continue;
 
-//        pTrackDraw->DrawGL( vp );
         pTrackDraw->Draw( dc, vp, vp.GetBBox() );
     }
     

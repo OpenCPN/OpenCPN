@@ -128,6 +128,8 @@ protected:
     std::vector<std::vector <SubTrack> > SubTracks;
 
 private:
+    void GetPointLists(std::list< std::list<wxPoint> > &pointlists,
+                       ViewPort &VP, const LLBBox &box );
     void Finalize();
     double ComputeScale(int left, int right);
     void InsertSubTracks(LLBBox &box, int level, int pos);
@@ -136,9 +138,6 @@ private:
     void AddPointToLists(std::list< std::list<wxPoint> > &pointlists, int &last, int n);
 
     void Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
-
-    void DrawGLLines( ViewPort &vp, ocpnDC *dc );
-    void DrawGLTrackLines( ViewPort &vp );
 };
 
 WX_DECLARE_LIST(Track, TrackList); // establish class Route as list member
