@@ -4799,8 +4799,8 @@ void glChartCanvas::FastPan(int dx, int dy)
 
 void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, float sheight)
 {
-    int sx = GetSize().x;
-    int sy = GetSize().y;
+    float sx = GetSize().x;
+    float sy = GetSize().y;
     
     float tx, ty, tx0, ty0;
     //if( GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format )
@@ -4906,6 +4906,67 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, fl
         }
     }
     
+    
+    // horizontal
+    if(m_fbo_offsetx < 0){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        float w1 = -offset_x  * sx / swidth;
+        
+        glBegin( GL_QUADS );
+        glVertex2f( 0,  0 );
+        glVertex2f( w1,  0 );
+        glVertex2f( w1, sy );
+        glVertex2f( 0, sy );
+        glEnd();
+    }
+
+
+    
+    if(m_fbo_offsetx + m_fbo_swidth > m_cache_tex_x){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        float w1 = ((offset_x + swidth) - m_cache_tex_x) * ( sx / swidth);
+        
+        glBegin( GL_QUADS );
+        glVertex2f( sx,  0 );
+        glVertex2f( sx - w1,  0 );
+        glVertex2f( sx - w1, sy );
+        glVertex2f( sx, sy );
+        glEnd();
+    }
+
+    
+    
+    // Vertical
+    if(m_fbo_offsety < 0){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        float w1 = -offset_y  * sy / sheight;
+        
+        glBegin( GL_QUADS );
+        glVertex2f( 0,  sy );
+        glVertex2f( sx,  sy );
+        glVertex2f( sx, sy - w1 );
+        glVertex2f( 0,  sy - w1 );
+        glEnd();
+    }
+    
+    
+    
+    if(m_fbo_offsety + m_fbo_sheight > m_cache_tex_y){
+        wxColour color = GetGlobalColor(_T("GREY1"));
+        glColor3ub(color.Red(), color.Green(), color.Blue());
+        float w1 = ((offset_y + sheight) - m_cache_tex_y) * ( sy / sheight);
+         
+        glBegin( GL_QUADS );
+        glVertex2f( 0,  0 );
+        glVertex2f( 0,  w1 );
+        glVertex2f( sx, w1 );
+        glVertex2f( sx, 0 );
+        glEnd();
+    }
+    
     SwapBuffers();
     
 }
@@ -4915,7 +4976,6 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 {
     
     if(m_nRun < m_nTotal){
-        //qDebug() << "onZoomTimerEvent" << m_nRun << m_nTotal;
         m_runoffsetx += m_offsetxStep; 
         if(m_offsetxStep > 0)
             m_runoffsetx = wxMin(m_runoffsetx, m_fbo_offsetx);
@@ -4939,6 +4999,8 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
             m_runsheight = wxMin(m_runsheight, m_fbo_sheight);
         else
             m_runsheight = wxMax(m_runsheight, m_fbo_sheight);
+
+//        qDebug() << "onZoomTimerEvent" << m_nRun << m_nTotal << m_runoffsetx << m_offsetxStep;
         
         ZoomProject(m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight);
         m_nRun += m_nStep;
@@ -4965,7 +5027,7 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 }
 
     
-void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y, int post_x, int post_y)
+    void glChartCanvas::FastZoom(float factor, float cp_x, float cp_y, float post_x, float post_y)
 {
     //qDebug() << "FastZoom" << factor << post_x << post_y << m_nRun;
     
@@ -4986,8 +5048,8 @@ void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y, int post_x, int p
     float fx = (float)cp_x / sx;
     float fy = 1.0 - (float)cp_y / sy;
     if(factor < 1.0f){
-        fx = 0.5;               // center screen
-        fy = 0.5;
+//        fx = 0.5;               // center screen
+//        fy = 0.5;
     }
 
     float fbo_ctr_x = curr_fbo_offset_x + (curr_fbo_swidth * fx);
@@ -5003,14 +5065,19 @@ void glChartCanvas::FastZoom(float factor, int cp_x, int cp_y, int post_x, int p
     m_fbo_offsetx += post_x;
     m_fbo_offsety += post_y;
     
-    if(factor < 1.0f){        
-        ZoomProject(m_fbo_offsetx, m_fbo_offsety, m_fbo_swidth, m_fbo_sheight);
-        zoomTimer.Stop();
-        m_zoomFinal = false;
-    }
-    else{
-    m_nStep = 20;                //was 10/100
+//     if(factor < 1.0f){        
+//         ZoomProject(m_fbo_offsetx, m_fbo_offsety, m_fbo_swidth, m_fbo_sheight);
+//         zoomTimer.Stop();
+//         m_zoomFinal = false;
+//     }
+//    else
+    {
+    m_nStep = 20; 
     m_nTotal = 100;
+    
+    m_nStep = 10; 
+    m_nTotal = 40;
+    
     m_nRun = 0;
     
     float perStep = m_nStep / m_nTotal;
@@ -5165,14 +5232,14 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                 if( projected_scale < 3e8){
                     wxPoint pinchPoint = event.GetCenterPoint();
                     
-                     int dx = pinchPoint.x - m_lpinchPoint.x;
-                     int dy = pinchPoint.y - m_lpinchPoint.y;
+                     float dx = pinchPoint.x - m_lpinchPoint.x;
+                     float dy = pinchPoint.y - m_lpinchPoint.y;
              
 //                     qDebug() << "pinchPan" << dx << dy;
-                     if(total_zoom_val > 1)
-                         FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, -dx, dy);
-                     else
-                         FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, 0, 0);
+//                     if(total_zoom_val > 1)
+                     FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, -dx / total_zoom_val, dy / total_zoom_val);
+//                     else
+//                         FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, 0, 0);
                      
                     
                     m_lpinchPoint = pinchPoint;
@@ -5182,14 +5249,15 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
             
         case GestureFinished:{
-            int cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
-            int cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
-            int dy = 0;
-            int dx = 0;
-            if(total_zoom_val > 1){
+            float cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
+            float cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
+            float dy = 0;
+            float dx = 0;
+//            if(total_zoom_val > 1){
                 dx = (cc_x - m_cc_x) * total_zoom_val;
                 dy = -(cc_y - m_cc_y) * total_zoom_val;
-            }
+ //           }
+            
                     
             float tzoom = total_zoom_val;
             
@@ -5206,13 +5274,13 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             else{
                 cc1->ZoomCanvas( tzoom, false );
             
-                if(tzoom > 1){
+//                if(tzoom > 1){
                     cc1->PanCanvas( dx, dy );
                     
                     #ifdef __OCPN__ANDROID__
                     androidSetFollowTool(false);
                     #endif        
-                }
+  //              }
             }
             
             
