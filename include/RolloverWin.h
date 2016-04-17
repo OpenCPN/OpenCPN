@@ -39,7 +39,7 @@ enum
 class RolloverWin: public wxWindow
 {
 public:
-    RolloverWin( wxWindow *parent, int timeout = -1 );
+    RolloverWin( wxWindow *parent, int timeout = -1, bool maincanvas = true );
     ~RolloverWin();
 
     void OnPaint( wxPaintEvent& event );
@@ -68,6 +68,7 @@ private:
     unsigned int m_texture;
     bool isActive;
     wxFont *m_plabelFont;
+    bool m_bmaincanvas;
 
 DECLARE_EVENT_TABLE()
 };

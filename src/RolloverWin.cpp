@@ -45,8 +45,9 @@ BEGIN_EVENT_TABLE(RolloverWin, wxWindow) EVT_PAINT(RolloverWin::OnPaint)
 END_EVENT_TABLE()
 
 // Define a constructor
-RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
-    wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER )
+RolloverWin::RolloverWin( wxWindow *parent, int timeout, bool maincanvas ) :
+wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER ),
+    m_bmaincanvas(maincanvas)
 {
     m_pbm = NULL;
 
@@ -85,12 +86,13 @@ void RolloverWin::SetBitmap( int rollover )
     m_pbm = new wxBitmap( m_size.x, m_size.y );
     mdc.SelectObject( *m_pbm );
 
-    int usegl = g_bopengl && g_texture_rectangle_format;
+    int usegl = g_bopengl && g_texture_rectangle_format && m_bmaincanvas;
     if(!usegl) {
         wxDC* cdc = new wxScreenDC();
-        wxPoint canvasPos = GetParent()->GetScreenPosition();
-        mdc.Blit( 0, 0, m_size.x, m_size.y, cdc, m_position.x + canvasPos.x,
-                  m_position.y + canvasPos.y );
+        int cpx = 0, cpy = 0;
+        GetParent()->ClientToScreen(&cpx, &cpy);
+        mdc.Blit( 0, 0, m_size.x, m_size.y, cdc,
+                  m_position.x + cpx, m_position.y + cpy);
         delete cdc;
     } else
         mdc.Clear();
@@ -180,8 +182,8 @@ void RolloverWin::Draw(ocpnDC &dc)
             tx = m_size.x, ty = m_size.y;
         else
             tx = ty = 1;
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
+        glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
         glTexCoord2f(0,  0);  glVertex2i(x0, y0);
         glTexCoord2f(tx, 0);  glVertex2i(x1, y0);
