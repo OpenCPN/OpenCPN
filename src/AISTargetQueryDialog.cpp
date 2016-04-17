@@ -465,6 +465,11 @@ void AISTargetQueryDialog::AdjustBestSize( AIS_Target_Data *td )
         if(szyv.y > m_pQueryTextCtl->GetSize().y)
             target_y = (szyv.y * 11 / 10) + yb;
     }
+    else{
+        target_y = csz;
+        if(target_x > 0)
+            target_x = GetSize().x + 20;               // accomodate vertical scroll bar
+    }
 
     
     SetSize(target_x, target_y);
