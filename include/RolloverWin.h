@@ -43,6 +43,7 @@ public:
     ~RolloverWin();
 
     void OnPaint( wxPaintEvent& event );
+    void Draw(ocpnDC &dc);
 
     void SetColorScheme( ColorScheme cs );
     void SetString(const wxString &s) { m_string = s; }
@@ -64,6 +65,7 @@ private:
     wxTimer m_timer_timeout;
     int m_timeout_sec;
     int m_mmouse_propogate;
+    unsigned int m_texture;
     bool isActive;
     wxFont *m_plabelFont;
 
