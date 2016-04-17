@@ -39,6 +39,7 @@ extern int g_cm93detail_dialog_y;
 extern ChartCanvas *cc1;
 
 BEGIN_EVENT_TABLE(CM93DSlide, wxDialog)
+    EVT_KEY_DOWN(CM93DSlide::OnKeyDown )
     EVT_MOVE( CM93DSlide::OnMove )
     EVT_COMMAND_SCROLL_THUMBRELEASE(-1, CM93DSlide::OnChangeValue)
     EVT_COMMAND_SCROLL_LINEUP(-1, CM93DSlide::OnChangeValue)
@@ -55,6 +56,8 @@ CM93DSlide::CM93DSlide( wxWindow *parent, wxWindowID id, int value, int minValue
 {
     Init();
     Create( parent, ID_CM93ZOOMG, value, minValue, maxValue, pos, size, style, title );
+
+    m_pCM93DetailSlider->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler(CM93DSlide::OnKeyDown), NULL, this);
 }
 
 CM93DSlide::~CM93DSlide()
@@ -110,6 +113,15 @@ void CM93DSlide::OnClose( wxCloseEvent& event )
 
     Destroy();
     pCM93DetailSlider = NULL;
+}
+
+void CM93DSlide::OnKeyDown( wxKeyEvent &event )
+{
+    int key_char = event.GetKeyCode();
+    if(key_char == WXK_ESCAPE || key_char == 'D') {
+        g_bShowCM93DetailSlider = false;
+        Close();
+    }
 }
 
 void CM93DSlide::OnMove( wxMoveEvent& event )
