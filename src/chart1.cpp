@@ -2124,6 +2124,7 @@ extern ocpnGLOptions g_GLOptions;
     //  We need a resize to pick up height adjustment after building android ActionBar
     if(pConfig->m_bShowMenuBar)
         gFrame->SetSize(getAndroidDisplayDimensions());
+    androidSetFollowTool(cc1->m_bFollow);
 #endif
 
     gFrame->Raise();
@@ -4855,16 +4856,16 @@ void MyFrame::TogglebFollow( void )
 
 void MyFrame::SetbFollow( void )
 {
+    JumpToPosition(gLat, gLon, cc1->GetVPScale());
     cc1->m_bFollow = true;
+
     SetToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
-
+    
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
 
-    JumpToPosition(gLat, gLon, cc1->GetVPScale());
-    
     DoChartUpdate();
     cc1->ReloadVP();
 }
