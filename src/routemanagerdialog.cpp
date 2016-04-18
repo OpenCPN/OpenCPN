@@ -947,9 +947,6 @@ void RouteManagerDialog::OnOK(wxCommandEvent& event)
 {
     Hide();
     
-    if(g_bresponsive)
-        gFrame->ShowChartBarIfEnabled();
-    
 }
 
 

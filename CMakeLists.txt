@@ -930,7 +930,7 @@ SET(HDRS
 		include/routeprintout.h
 		include/PositionParser.h
 		include/printtable.h
-		include/chartbarwin.h
+		include/piano.h
 		include/tcmgr.h
 		include/Station_Data.h
 		include/IDX_entry.h
@@ -1021,7 +1021,7 @@ SET(SRCS
 		src/routeprintout.cpp
 		src/PositionParser.cpp
 		src/printtable.cpp
-		src/chartbarwin.cpp
+		src/piano.cpp
 		src/tcmgr.cpp
 		src/Station_Data.cpp
 		src/IDX_entry.cpp
