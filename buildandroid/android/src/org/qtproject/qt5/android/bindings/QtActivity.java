@@ -448,18 +448,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
       }
 
 
-//    public static QtActivity activity()
-//    {
-//        return QtActivity.this;
-//    }
-
-
-//    public static  String appData()
-//    {
-//        Log.d("App Data is ", "Working");
-//        return data;
-//    }
-
+/
 // This really never gets called, and so dont need m_activity
     public static Activity activity()
     {
@@ -516,8 +505,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String setFullscreen( final int bfull){
- //       String aa = String.format("%d", bfull);
-//        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
         setFullscreen(bfull != 0);
         m_fullScreen = (bfull != 0);
         return "OK";
@@ -588,7 +575,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String doGRIBActivity(String json){
         Log.i("DEBUGGER_TAG", "doGRIBActivity");
-        Log.i("DEBUGGER_TAG", json);
+//        Log.i("DEBUGGER_TAG", json);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
@@ -629,9 +616,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String checkAndroidSettings(  ){
-//        Log.i("DEBUGGER_TAG", "checkAndroidSettings");
-//        Log.i("DEBUGGER_TAG", m_settingsReturn);
-
         return m_settingsReturn;
     }
 
@@ -641,18 +625,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String callFromCpp(int pid){
         //Log.i("DEBUGGER_TAG", "callFromCpp");
 
-//        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
-//        startActivity(intent);
-
 
         MemoryInfo mi = new MemoryInfo();
-//        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-//        activityManager.getMemoryInfo(mi);
         int pids[] = new int[1];
         pids[0] = pid;
-
-        //MemoryInfo[] memoryInfoArray;
-        //memoryInfoArray = activityManager.getProcessMemoryInfo( pids );
 
         android.os.Debug.MemoryInfo[] memoryInfoArray= activityManager.getProcessMemoryInfo( pids );
         int pss = memoryInfoArray[0].getTotalPss();
@@ -684,18 +660,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String getDisplayMetrics(){
         //Log.i("DEBUGGER_TAG", "getDisplayDPI");
-/*
-        int i = nativeLib.test();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
 
-        String bb = "$GPRMC...";
-        int j = nativeLib.processNMEA(bb);
-//      int j = nativeLib.processNMEA( 44);
-        aa = String.format("%d", j);
-        Log.i("DEBUGGER_TAG", aa);
-*/
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int statusBarHeight = 0;
@@ -705,10 +670,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
 
-//        TypedValue typedValue = new TypedValue();
-//        if(getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)){
-//            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
-//        }
 
         int actionBarHeight = 0;
         ActionBar actionBar = getActionBar();
@@ -796,11 +757,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String getDeviceInfo(){
         String s="Device Info:";
                 s += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
-                s += "\n OS API Level: "+android.os.Build.VERSION.RELEASE + "("+android.os.Build.VERSION.SDK_INT+")";
+                s += "\n OS API Level: "+android.os.Build.VERSION.RELEASE + "{"+android.os.Build.VERSION.SDK_INT+"}";
                 s += "\n Device: " + android.os.Build.DEVICE;
                 s += "\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+                s += "\n" + getPackageName();
 
-        //Log.i("DEBUGGER_TAG", s);
+        //Log.i("OpenCPN", s);
 
         return s;
     }
@@ -846,16 +808,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                  mutex.release();
              }});
 
-/*
-             // One way to wait for the runnable to be done...
-      try {
-             mutex.acquire();            // Cannot get mutex until runnable above exits.
-      } catch (InterruptedException e) {
-             e.printStackTrace();
-      }
-
-        this.getWindow().getDecorView().requestFocus();
-*/
         String ret = "";
         return ret;
     }
@@ -882,8 +834,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                  }});
 
-//        itemRouteAnnunciator.setVisible(viz != 0);
-//        this.invalidateOptionsMenu();
         return "OK";
      }
 //     else
@@ -895,10 +845,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String setFollowIconState( final int isActive){
         m_isFollowActive = (isActive != 0);
 
-        //if(isActive == 0)
-            //Log.i("DEBUGGER_TAG", "setFollowIconStateA");
-        //else
-            //Log.i("DEBUGGER_TAG", "setFollowIconStateB");
 
            runOnUiThread(new Runnable() {
                    @Override
@@ -918,11 +864,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
        public String setTrackIconState( final int isActive){
            m_isTrackActive = (isActive != 0);
-
-           //if(isActive == 0)
-               //Log.i("DEBUGGER_TAG", "setTrackIconStateA");
-           //else
-               //Log.i("DEBUGGER_TAG", "setTrackIconStateB");
 
               runOnUiThread(new Runnable() {
                       @Override
@@ -978,8 +919,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             ret = "No";
         }
 
-//        PackageManager pm = context.getPackageManager();
-//        boolean hasBluetooth = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
         return ret;
     }
 
@@ -1047,7 +986,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         return ret_str;
 
-   //     return ("line A;line B;"); //scanHelper.getDiscoveredDevices();
 
 
     }
@@ -1318,16 +1256,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Log.i("OpenCPN", "downloadFile " + url + " to " + destination);
         m_downloadURL = url;
 
-/*
-        //  Delete any existing file of the same name.
-        Uri fURI = Uri.parse(destination);
-        try{
-            File f = new File(fURI.getPath());
-            if(f.exists())
-                f.delete();
-       }catch (Exception e) {
-       }
-*/
 
         m_downloadStatus = 1;       //STATUS_PENDING
         m_downloadTotal = 0;
@@ -1681,8 +1609,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
    public String configureNavSpinner(int flag, int sel){
-       //Log.i("DEBUGGER_TAG", "configureNavSpinner");
-       //String aa; aa = String.format("%d %d", flag, sel ); Log.i("DEBUGGER_TAG", aa);
 
        navSpinner.clear();
        int nbits = 0;
@@ -1757,33 +1683,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
 
-//   @Override
-//   public void onTabSelected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-
-//   Log.i("DEBUGGER_TAG", "onTabSelected");
-//   Log.i("DEBUGGER_TAG", tab.getText().toString());
-
-     // When the given tab is selected, show the tab contents in the
-     // container view.
-//     Fragment fragment = new DummySectionFragment();
-//     Bundle args = new Bundle();
-//     args.putInt(DummySectionFragment.ARG_SECTION_NUMBER,
-//         tab.getPosition() + 1);
-//     fragment.setArguments(args);
-//     getFragmentManager().beginTransaction()
-//         .replace(R.id.container, fragment).commit();
-//   }
-
-//   @Override
-//   public void onTabUnselected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-//   }
-
-//   @Override
-//   public void onTabReselected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-//   }
 
 
    //  ActionBar drop-down spinner navigation
