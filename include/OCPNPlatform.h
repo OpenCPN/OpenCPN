@@ -39,6 +39,12 @@
 
 class MyConfig;
 
+typedef struct {
+    char    tsdk[20];
+    char    hn[20];
+    char    msdk[20];
+} PlatSpec;
+
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
@@ -139,7 +145,8 @@ public:
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
-
+    bool isPlatformCapable( int flag);
+#define PLATFORM_CAP_PLUGINS   1
     void LaunchLocalHelp();
     
 private:

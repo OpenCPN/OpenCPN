@@ -1832,6 +1832,27 @@ QString getQtStyleSheet( void )
 
 #endif
 
+
+PlatSpec android_plat_spc;
+
+bool OCPNPlatform::isPlatformCapable( int flag){
+
+#ifndef __OCPN__ANDROID__
+    return true;
+#else
+    if(flag == PLATFORM_CAP_PLUGINS){
+        long platver;
+        wxString tsdk(android_plat_spc.msdk);
+        if(tsdk.ToLong(&platver)){
+            if(platver >= 11)
+                return true;
+        }
+    }
+    return false;
+#endif    
+}    
+    
+    
 void OCPNPlatform::LaunchLocalHelp( void ) {
  
 #ifdef __OCPN__ANDROID__
