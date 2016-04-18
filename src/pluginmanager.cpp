@@ -313,6 +313,8 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
         return false;
     }
 
+    if(!g_Platform->isPlatformCapable(PLATFORM_CAP_PLUGINS)) return false;
+       
     wxArrayString file_list;
         
     int get_flags =  wxDIR_FILES | wxDIR_DIRS;
