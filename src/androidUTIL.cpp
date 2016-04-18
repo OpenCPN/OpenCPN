@@ -1412,7 +1412,8 @@ bool androidShowDisclaimer( wxString title, wxString msg )
     wxString ret_val = callActivityMethod_s2s("disclaimerDialog", title, msg);
     return (ret_val == _T("OK"));
 }
-    
+
+extern PlatSpec android_plat_spc;
 
 wxString androidGetDeviceInfo()
 {
@@ -1423,14 +1424,21 @@ wxString androidGetDeviceInfo()
     while( tkz.HasMoreTokens() )
     {
         wxString s1 = tkz.GetNextToken();
-        if(wxNOT_FOUND != s1.Find(_T("OS API Level")){
-            int a = s1.Find(_T"{"));
+        if(wxNOT_FOUND != s1.Find(_T("OS API Level"))){
+            int a = s1.Find(_T("{"));
             if(wxNOT_FOUND != a){
                 wxString b = s1.Mid(a+1, 2);
-                strncpy(spec, b.c_str(), 2);
+                memset(&android_plat_spc.msdk[0], 0, 3);
+                strncpy(&android_plat_spc.msdk[0], b.c_str(), 2);
+                qDebug() << android_plat_spc.msdk;
             }
         }
+        if(wxNOT_FOUND != s1.Find(_T("opencpn"))){
+            strcpy(&android_plat_spc.hn[0], s1.c_str());
+        }
     }
+    qDebug() << android_plat_spc.hn;
+    qDebug() << android_plat_spc.msdk;
     
     return g_deviceInfo;
 }

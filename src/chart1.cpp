@@ -4924,7 +4924,6 @@ void MyFrame::TogglebFollow( void )
 
 void MyFrame::SetbFollow( void )
 {
-
     JumpToPosition(gLat, gLon, cc1->GetVPScale());
     cc1->m_bFollow = true;
 
@@ -4934,7 +4933,7 @@ void MyFrame::SetbFollow( void )
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
-    
+
     DoChartUpdate();
     cc1->ReloadVP();
 }
