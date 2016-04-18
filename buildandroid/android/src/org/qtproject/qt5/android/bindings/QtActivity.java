@@ -448,18 +448,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
       }
 
 
-/
-// This really never gets called, and so dont need m_activity
-    public static Activity activity()
-    {
-//        synchronized (m_mainActivityMutex)
-        //Log.i("DEBUGGER_TAG", "activity()");
-
-        {
-            return m_activity;
-        }
-    }
-
     private String m_settingsReturn;
 
     public String launchHelpView(){
