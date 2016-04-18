@@ -1419,6 +1419,19 @@ wxString androidGetDeviceInfo()
     if(!g_deviceInfo.Length())
         g_deviceInfo = callActivityMethod_vs("getDeviceInfo");
     
+    wxStringTokenizer tkz(g_deviceInfo, _T("\n"));
+    while( tkz.HasMoreTokens() )
+    {
+        wxString s1 = tkz.GetNextToken();
+        if(wxNOT_FOUND != s1.Find(_T("OS API Level")){
+            int a = s1.Find(_T"{"));
+            if(wxNOT_FOUND != a){
+                wxString b = s1.Mid(a+1, 2);
+                strncpy(spec, b.c_str(), 2);
+            }
+        }
+    }
+    
     return g_deviceInfo;
 }
 
