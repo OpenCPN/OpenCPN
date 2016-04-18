@@ -182,13 +182,16 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
 #endif
 
     wxImage im_front = front.ConvertToImage();
-
-    unsigned char *presult = (unsigned char *)malloc(front.GetWidth() * front.GetHeight() * 3);
-    unsigned char *po_result = presult;
     unsigned char *pfront = im_front.GetData();
-
-    if(!presult || !pfront)
+    if(!pfront)
         return wxNullBitmap;
+    
+    unsigned char *presult = (unsigned char *)malloc(front.GetWidth() * front.GetHeight() * 3);
+    if(!presult)
+        return wxNullBitmap;
+    
+    unsigned char *po_result = presult;
+
     
     unsigned char *afront = NULL;
     if( im_front.HasAlpha() )
