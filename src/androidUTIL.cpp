@@ -69,8 +69,7 @@ wxT("31 Ocean Reef Dr<br>")
 wxT("# C101-449<br>")
 wxT("Key Largo, FL 33037-5282<br>")
 wxT("United States<br><br>")
-wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>")
-wxT("You may also find a copy of the source at https://github.com/OpenCPN/OpenCPN.");
+wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>");
 
 
 
@@ -233,6 +232,7 @@ extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern bool             g_bShowStatusBar;
 
+extern ocpnGLOptions    g_GLOptions;
 
 
 //#ifdef USE_S57
@@ -306,10 +306,18 @@ bool            s_bdownloading;
 wxString        s_requested_url;
 wxEvtHandler    *s_download_evHandler;
 bool            g_running;
+bool            g_bstress1;
+extern int      g_GUIScaleFactor;
 
 wxString        g_deviceInfo;
 
+int             s_androidMemTotal;
+int             s_androidMemUsed;
+
+extern int ShowNavWarning();
+
 #define ANDROID_EVENT_TIMER 4389
+#define ANDROID_STRESS_TIMER 4388
 
 #define ACTION_NONE                     -1
 #define ACTION_RESIZE_PERSISTENTS       1
@@ -322,13 +330,15 @@ class androidUtilHandler : public wxEvtHandler
     ~androidUtilHandler() {}
     
     void onTimerEvent(wxTimerEvent &event);
-    
+    void onStressTimer(wxTimerEvent &event);
+        
     wxString GetStringResult(){ return m_stringResult; }
     
     wxTimer     m_eventTimer;
     int         m_action;
     bool        m_done;
     wxString    m_stringResult;
+    wxTimer     m_stressTimer;
     
     DECLARE_EVENT_TABLE()
 };
@@ -340,6 +350,7 @@ END_EVENT_TABLE()
 androidUtilHandler::androidUtilHandler()
 {
     m_eventTimer.SetOwner( this, ANDROID_EVENT_TIMER );
+    m_stressTimer.SetOwner( this, ANDROID_STRESS_TIMER );
     
 }
 
@@ -539,12 +550,35 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
     
 }
 
+int stime;
+
+void androidUtilHandler::onStressTimer(wxTimerEvent &event){
+
+    g_GUIScaleFactor = -5;
+    g_ChartScaleFactor = -5;
+    gFrame->SetToolbarScale();
+    gFrame->SetGPSCompassScale();
+    
+    s_androidMemUsed  = 80;
+    
+    g_GLOptions.m_bTextureCompression = 0;
+    g_GLOptions.m_bTextureCompressionCaching = 0;
+    
+    if(300 == stime++) androidTerminate();
+    
+}
+
+
 
 bool androidUtilInit( void )
 {
     g_androidUtilHandler = new androidUtilHandler();
 
     //  Initialize some globals
+    
+    s_androidMemTotal  = 100;
+    s_androidMemUsed  = 50;
+    
     wxString dirs = callActivityMethod_vs("getSystemDirs");
     wxStringTokenizer tk(dirs, _T(";"));
     if( tk.HasMoreTokens() ){
@@ -567,6 +601,23 @@ bool androidUtilInit( void )
     
     g_mask = -1;
     g_sel = -1;
+    
+    
+    wxStringTokenizer tku(g_androidExtFilesDir, _T("/") );
+    while( tku.HasMoreTokens() )
+    {
+        wxString s1 = tku.GetNextToken();
+    
+        if(s1.Find(_T("org.")) != wxNOT_FOUND){
+            if(s1 != _T("org.opencpn.opencpn") ) g_bstress1 = true;
+        }
+    }
+                
+    if(g_bstress1){            
+        g_androidUtilHandler->Connect( g_androidUtilHandler->m_stressTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler( androidUtilHandler::onStressTimer ), NULL, g_androidUtilHandler );
+        g_androidUtilHandler->m_stressTimer.Start(1000, wxTIMER_CONTINUOUS);
+    }
+    
     
     return true;
 }
@@ -599,24 +650,6 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
         return -1;
     }
     
-#if 0
-    // Find the class calling native function
-    jclass NativeUsb = (*env)->FindClass(env, "com/venky/Home");
-    if (class_home == NULL) {
-        LOG_D ("FindClass failed : No class found.");
-        return -1;
-}
-
-// Register native method for getUsbPermission
-JNINativeMethod nm[1] = {
-    { "getPermission", "(Landroid/app/Activity;)I", get_permission}
-};
-
-if ((*env)->RegisterNatives(env, NativeUsb, nm , 1)) {
-    LOG_D ("RegisterNatives Failed.");
-    return -1;
-}
-#endif
     return JNI_VERSION_1_6;
 }
 
@@ -765,6 +798,8 @@ extern "C"{
     {
         qDebug() << "onStart";
         wxLogMessage(_T("onStart"));
+        
+        if(g_bstress1) ShowNavWarning();
         
         g_running = true;
         
@@ -1430,15 +1465,12 @@ wxString androidGetDeviceInfo()
                 wxString b = s1.Mid(a+1, 2);
                 memset(&android_plat_spc.msdk[0], 0, 3);
                 strncpy(&android_plat_spc.msdk[0], b.c_str(), 2);
-                qDebug() << android_plat_spc.msdk;
             }
         }
         if(wxNOT_FOUND != s1.Find(_T("opencpn"))){
             strcpy(&android_plat_spc.hn[0], s1.c_str());
         }
     }
-    qDebug() << android_plat_spc.hn;
-    qDebug() << android_plat_spc.msdk;
     
     return g_deviceInfo;
 }
@@ -1570,9 +1602,9 @@ bool androidGetMemoryStatus( int *mem_total, int *mem_used )
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.
     if(mem_total)
-        *mem_total = 100 * 1024;
+        *mem_total = s_androidMemTotal * 1024;
     if(mem_used)
-        *mem_used = 50 * 1024;
+        *mem_used = s_androidMemUsed * 1024;
     return true;
     
 #if 0
@@ -1691,17 +1723,6 @@ double GetAndroidDisplaySize()
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
 
-//    qDebug() << "g_androidDPmm" << g_androidDPmm;
-//    qDebug() << "Auto Display Size (mm)" << ret;
-//    qDebug() << "ldpi" << ldpi;
-    
-    
-//     wxString istr = return_string.BeforeFirst('.');
-//     
-//     long ldpi;
-//     if( istr.ToLong(&ldpi)){
-//         ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
-//     }
 
     return ret;
 }
@@ -2173,63 +2194,6 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
 }
 
     
-#if 0
-void invokeApp( void )
-{
-    void runApplication(const QString &packageName, const QString &className)
-{
-    qDebug() << "Start app: " <<packageName <<", "<<className;
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-                "org/qtproject/qt5/android/QtNative", "activity",
-                "()Landroid/app/Activity;");   //activity is valid
-
-    if ( activity.isValid() )
-    {
-        // Equivalent to Jave code: 'Intent intent = new Intent();'
-        QAndroidJniObject intent("android/content/Intent","()V");
-
-        if ( intent.isValid() )
-        {
-            QAndroidJniObject jPackageName = QAndroidJniObject::fromString(packageName);
-            QAndroidJniObject jClassName = QAndroidJniObject::fromString(className);
-
-            if ( jPackageName.isValid() && jClassName.isValid() )
-            {
-                // Equivalent to Jave code: 'intent.setClassName("com.android.settings", "com.android.settings.DevelopmentSettings");'
-                intent.callObjectMethod("setClassName",
-                                        "(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
-                                        jPackageName.object<jstring>(),jClassName.object<jstring>());
-
-                jint flag = QAndroidJniObject::getStaticField<jint>(
-                            "android/content/Intent",
-                            "FLAG_ACTIVITY_NEW_TASK");
-
-                intent.callObjectMethod("setFlags", "(I)V",flag);
-
-                // Equivalent to Jave code: 'startActivity(intent);'
-                QAndroidJniEnvironment env;
-                activity.callObjectMethod(
-                            "startActivity",
-                            "(Landroid/content/Intent;)V",
-                            intent.object<jobject>());
-                if (env->ExceptionCheck()) {
-                    qDebug() << "Intent not found!";
-                    env->ExceptionClear(); // TODO: stupid method! Remove this!
-                }
-            } else {
-                qDebug() << "Action is not valid";
-            }
-        } else {
-            qDebug() << "Intent is not valid";
-        }
-    } else {
-        qDebug() << "Activity is not valid";
-    }
-}
-
-
-}
-#endif
 
 bool InvokeJNIPreferences( wxString &initial_settings)
 {
@@ -2952,28 +2916,6 @@ wxString androidGetSupplementalLicense( void )
 }
 
 
-#if 0
-    // This is a way to invoke Android Settings dialog
-        QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
-                                                                               "activity", "()Landroid/app/Activity;");
-
-        if ( activity.isValid() )
-        {
-            QAndroidJniObject intent("android/content/Intent","()V");
-            if ( intent.isValid() )
-            {
-                QAndroidJniObject param1 = QAndroidJniObject::fromString("com.android.settings");
-                QAndroidJniObject param2 = QAndroidJniObject::fromString("com.android.settings.DevelopmentSettings");
-
-                if ( param1.isValid() && param2.isValid() )
-                {
-                    intent.callObjectMethod("setClassName","(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;", param1.object<jobject>(),param2.object<jobject>());
-
-                    activity.callObjectMethod("startActivity","(Landroid/content/Intent;)V",intent.object<jobject>());
-                }
-            }
-        }
-#endif
 
 
 
@@ -2994,29 +2936,5 @@ wxString androidGetSupplementalLicense( void )
 
 
 
-#if 0
-    JNIEnv *env;
-    JavaVM* lJavaVM = java_vm;     // static, comes from JNI_OnLoad
-    app->activity->vm->AttachCurrentThread(&env, NULL);
-
-    jobject lNativeActivity = app->activity->clazz;
-    jclass intentClass = env->FindClass("android/content/Intent");
-    jstring actionString =env->NewStringUTF("org.opencpn.opencpn.Settings");
-
-    jmethodID newIntent = env->GetMethodID(intentClass, "<init>", "()V");
-    jobject intent = env->AllocObject(intentClass);
-    env->CallVoidMethod(intent, newIntent);
-
-    jmethodID setAction = env->GetMethodID(intentClass, "setAction","(Ljava/lang/String;)Landroid/content/Intent;");
-    env->CallObjectMethod(intent, setAction, actionString);
-
-    jclass activityClass = env->FindClass("android/app/Activity");
-    jmethodID startActivity = env->GetMethodID(activityClass,"startActivity", "(Landroid/content/Intent;)V");
-    jobject intentObject = env->NewObject(intentClass,newIntent);
-    env->CallVoidMethod(intentObject, setAction,actionString);
-    env->CallVoidMethod(lNativeActivity, startActivity, intentObject);
-
-    app->activity->vm->DetachCurrentThread();
-#endif
 
 

@@ -507,7 +507,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String terminateApp(){
-        Log.i("OpenCPN", "terminateApp");
+        //Log.i("OpenCPN", "terminateApp");
         finish();
         return "";
     }
@@ -562,7 +562,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String doGRIBActivity(String json){
-        Log.i("DEBUGGER_TAG", "doGRIBActivity");
+//        Log.i("DEBUGGER_TAG", "doGRIBActivity");
 //        Log.i("DEBUGGER_TAG", json);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
