@@ -5736,8 +5736,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
     //  This for Bluetooth, which has strange parameters
-    pds_existing = g_pMUX->FindStream(cp->GetPortStr());
-    if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
+    if(cp->Type == INTERNAL_BT){
+        pds_existing = g_pMUX->FindStream(cp->GetPortStr());
+        if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
+    }
 
     if (!cp->bEnabled) continue;
     dsPortType port_type = cp->IOSelect;
