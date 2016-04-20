@@ -564,7 +564,7 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event){
     g_GLOptions.m_bTextureCompression = 0;
     g_GLOptions.m_bTextureCompressionCaching = 0;
     
-    if(300 == stime++) androidTerminate();
+    if(600 == stime++) androidTerminate();
     
 }
 
@@ -630,7 +630,6 @@ wxSize getAndroidConfigSize()
 
 void resizeAndroidPersistents()
 {
-//    qDebug() << "resizeAndroidPersistents";
     
      if(g_androidUtilHandler){
      
@@ -641,12 +640,10 @@ void resizeAndroidPersistents()
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-    //qDebug() << "JNI_OnLoad";
     java_vm = vm;
     
     // Get JNI Env for all function calls
     if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        //qDebug() << "GetEnv failed.";
         return -1;
     }
     
@@ -671,9 +668,6 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
     {
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
-//        wxString wstring = wxString(string, wxConvUTF8);
-        
-//        qDebug() << "processNMEA" << string;
  
         char tstr[200];
         strncpy(tstr, string, 190);
@@ -697,8 +691,6 @@ extern "C"{
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
         wxString wstring = wxString(string, wxConvUTF8);
         
-//        qDebug() << "processNMEA" << string;
-        
         char tstr[200];
         strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
@@ -719,12 +711,10 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
-//        qDebug() << "onConfigChange";
         wxLogMessage(_T("onConfigChange"));
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
-//        qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         config_size = new_size;
         
@@ -741,12 +731,10 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMouseWheel(JNIEnv *env, jobject obj, int dir)
     {
-        //qDebug() << "onMouseWheel" << dir;
         
         wxMouseEvent evt(wxEVT_MOUSEWHEEL);
         evt.m_wheelRotation = dir;
         if(cc1 && cc1->GetEventHandler()){
-            //qDebug() << "send event";
             cc1->GetEventHandler()->AddPendingEvent(evt);
         }
         
@@ -757,7 +745,6 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
-        //qDebug() << "onMenuKey";
 
         gFrame->ToggleToolbar();
             
@@ -775,7 +762,6 @@ extern "C"{
         //  App may be summarily killed after this point due to OOM condition.
         //  So we need to persist some dynamic data.
         if(pConfig){
-            //qDebug() << "startPersist";
         
         //  Persist the config file, especially to capture the viewport location,scale etc.
             pConfig->UpdateSettings();
@@ -784,7 +770,6 @@ extern "C"{
         //  We commit the navobj deltas, and flush the restore file 
             pConfig->UpdateNavObj();
 
-            //qDebug() << "endPersist";
         }
         
         g_running = false;
@@ -868,7 +853,6 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
     {
-//        qDebug() << "selectChartDisplay" << type << family;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         if(type == CHART_TYPE_CM93COMP){
