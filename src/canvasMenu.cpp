@@ -297,20 +297,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     popx = x;
     popy = y;
 
-#ifdef __WXGTK__
-#ifdef ocpnUSE_GTK_OPTIMIZE
-    //  This code changes the background color on the popup context menu
-    wxColour back_color = GetGlobalColor(_T("UIBCK"));
-    GdkColor color;
-
-    color.red = back_color.Red() << 8;
-    color.green = back_color.Green() << 8;
-    color.blue = back_color.Blue() << 8;
-
-//    gtk_widget_modify_bg (GTK_WIDGET(contextMenu->m_menu), GTK_STATE_NORMAL, &color);
-#endif
-#endif
-
     if( seltype == SELTYPE_ROUTECREATE ) {
         MenuAppend1( contextMenu, ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
     }
@@ -401,7 +387,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
 
     } else {
-        ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+        ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
         if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
@@ -490,7 +476,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
  
 #ifndef __OCPN__ANDROID__        
     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
-        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
+        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
         if( dbIndex != -1 )
             MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
@@ -547,6 +533,36 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         PlugInMenuItemContainer *pimis = item_array.Item( i );
         {
             if( pimis->b_viz ) {
+                wxMenu *submenu = NULL;
+                if(pimis->pmenu_item->GetSubMenu()) {
+                    submenu = new wxMenu();
+                    const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
+                    for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
+                        int id = -1;
+                        for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
+                            PlugInMenuItemContainer *pimis = item_array.Item( j );
+                            if(pimis->pmenu_item == *it)
+                                id = pimis->id;
+                        }
+
+                        wxMenuItem *pmi = new wxMenuItem( submenu, id,
+#if wxCHECK_VERSION(3,0,0)
+                                                        (*it)->GetItemLabelText(),
+#else
+                                                        (*it)->GetLabel(),
+#endif
+                                                        (*it)->GetHelp(),
+                                                          (*it)->GetKind());
+#ifdef __WXQT__
+                        wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+                        pmi->SetFont(sFont);
+#endif
+                        
+                        submenu->Append(pmi);
+                        pmi->Check((*it)->IsChecked());
+                    }
+                }
+                
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
 #if wxCHECK_VERSION(3,0,0)
                                                   pimis->pmenu_item->GetItemLabelText(),
@@ -554,10 +570,17 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                                                   pimis->pmenu_item->GetLabel(),
 #endif
                                                   pimis->pmenu_item->GetHelp(),
-                                                  pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
+                                                  pimis->pmenu_item->GetKind(),
+                                                  submenu );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
 #endif
+
+#ifdef __WXQT__
+                wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+                pmi->SetFont(sFont);
+#endif
+                
                 contextMenu->Append( pmi );
                 contextMenu->Enable( pimis->id, !pimis->b_grey );
             }
@@ -703,12 +726,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                         MenuAppend1( menuWaypoint, ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                 }
             }
-            if( m_pSelectedRoute->GetnPoints() > 2 )
+            if( m_pSelectedRoute && m_pSelectedRoute->GetnPoints() > 2 )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
+            if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
             wxString port = parent->FindValidUploadPort();
@@ -750,7 +773,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
             MenuAppend1( menuWaypoint, ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-            if( m_pFoundRoutePoint->GetIconName() != _T("mob") )
+            if( m_pFoundRoutePoint && m_pFoundRoutePoint->GetIconName() != _T("mob") )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
             wxString port = parent->FindValidUploadPort();
@@ -767,7 +790,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 MenuAppend1( menuWaypoint, ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
             else {
-                if( !( m_pFoundRoutePoint->m_bIsInLayer )
+                if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
                     && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
 
                     double dist;
@@ -1037,15 +1060,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         break;
 
     case ID_DEF_MENU_ACTIVATE_MEASURE:
-        parent->m_bMeasure_Active = true;
-        parent->m_nMeasureState = 1;
+        parent->StartMeasureRoute();
         break;
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
-        parent->m_bMeasure_Active = false;
-        parent->m_nMeasureState = 0;
-        g_pRouteMan->DeleteRoute( parent->m_pMeasureRoute );
-        parent->m_pMeasureRoute = NULL;
+        parent->CancelMeasureRoute();
         gFrame->SurfaceToolbar();
         parent->InvalidateGL();
         parent->Refresh( false );
@@ -1098,7 +1117,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_QUILTREMOVE: {
         if( parent->GetVP().b_quilt ) {
-            int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
+            int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
             parent->parent_frame->RemoveChartFromQuilt( dbIndex );
 
             parent->ReloadVP();

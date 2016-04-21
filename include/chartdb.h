@@ -130,7 +130,8 @@ public:
 
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);
-      ChartBase *OpenChartFromDBAndLock(int index, ChartInitFlag init_flag );
+      ChartBase *OpenChartFromDBAndLock(int index, ChartInitFlag init_flag , bool lock = true);
+      ChartBase *OpenChartFromDBAndLock(wxString chart_path, ChartInitFlag init_flag);
       ChartBase *OpenChartFromDB(wxString chart_path, ChartInitFlag init_flag);
       
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
@@ -144,7 +145,7 @@ public:
       bool IsCacheLocked(){ return m_b_locked; }
       wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
-      void LockCacheChart( int index );
+      bool LockCacheChart( int index );
       bool IsChartLocked( int index );
       
       void UnLockCacheChart( int index );
@@ -170,6 +171,7 @@ private:
       
       
       wxArrayPtrVoid    *pChartCache;
+      int              m_ticks;
 
       bool              m_b_locked;
       bool              m_b_busy;

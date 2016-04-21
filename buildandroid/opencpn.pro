@@ -169,9 +169,9 @@ INSTALLS += wmm_plugin_deployment
 
 # GRIB---------------------------------------------------------------
 #library
-#so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
-#so_grib_plugin_deployment.path = /assets/plugins
-#INSTALLS += so_grib_plugin_deployment
+so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
+so_grib_plugin_deployment.path = /assets/plugins
+INSTALLS += so_grib_plugin_deployment
 #------------------------------------------------------------------------------------
 
 
@@ -182,13 +182,19 @@ so_dashboard_plugin_deployment.path = /assets/plugins
 INSTALLS += so_dashboard_plugin_deployment
 #------------------------------------------------------------------------------------
 
+# Squiddio---------------------------------------------------------------
+#library
+so_squiddio_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/libsquiddio_pi.so
+so_squiddio_plugin_deployment.path = /assets/plugins
+INSTALLS += so_squiddio_plugin_deployment
+#------------------------------------------------------------------------------------
+
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
 
-#ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/dashboard_pi/libdashboard_pi.so
-#ANDROID_EXTRA_LIBS += /home/dsr/Projects/opencpn_sf/opencpn/build_android_53/plugins/grib_pi/libgrib_pi.so
+
 
 
 

@@ -22,12 +22,13 @@
  ***************************************************************************
  */
 
+#include <wx/textctrl.h>
 #include <wx/dcclient.h>
 
 #include "TTYScroll.h"
 
-TTYScroll::TTYScroll(wxWindow *parent, int n_lines)
-    : wxScrolledWindow(parent), m_nLines( n_lines )
+TTYScroll::TTYScroll(wxWindow *parent, int n_lines, wxTextCtrl &tFilter)
+    : wxScrolledWindow(parent), m_nLines( n_lines ), m_tFilter(tFilter)
 {
     bpause = false;
     wxClientDC dc(this);
@@ -47,7 +48,8 @@ TTYScroll::~TTYScroll()
 
 void TTYScroll::Add(const wxString &line)
 {
-    if(!bpause) {
+    wxString filter = m_tFilter.GetValue();
+    if(!bpause && (filter.IsEmpty() || line.Contains(filter))) {
         if( m_plineArray->GetCount() > m_nLines - 1 ) { // shuffle the arraystring
             wxArrayString *p_newArray = new wxArrayString;
 

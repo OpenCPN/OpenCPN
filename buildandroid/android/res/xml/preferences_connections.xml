@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
-        android:key="prefb_internalGPS"
-        android:title="Use Internal GPS"
-        android:summary="Activate GPS to enable this choice."
-        android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_internalGPS"
+            android:title="Internal GPS Receiver"
+            android:summary="Activate GPS to enable this choice."
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_PL2303"
+            android:title="Prolific PL2303"
+            android:summary="   or compatible GPS receiver"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_dAISy"
+            android:title="dAISy AIS Receiver"
+            android:summary=""
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_FT232R"
+            android:title="FTDI FT232R"
+            android:summary="   or compatible GPS receiver"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_FT231X"
+            android:title="FTDI FT231X"
+            android:summary="   or compatible GPS receiver"
+            android:defaultValue="false" />
+
 
 </PreferenceScreen>
+

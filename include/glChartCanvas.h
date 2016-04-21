@@ -28,6 +28,7 @@
 #include <wx/glcanvas.h>
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
+#include "LLRegion.h"
 #include "viewport.h"
 #include "TexFont.h"
 
@@ -37,9 +38,10 @@
 #include "wx/qt/private/wxQtGesture.h"
 #endif
 
-#include "glTexCache.h"
+class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
+#define ZOOM_TIMER 78335
 
 //      This is a hashmap with Chart full path as key, and glTexFactory as value
 WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
@@ -65,12 +67,17 @@ class ChartBaseBSB;
 class glChartCanvas : public wxGLCanvas
 {
 public:
-    static void MultMatrixViewPort(ViewPort &vp);
-    static ViewPort NormalizedViewPort(const ViewPort &vp);
+    static bool CanClipViewport(const ViewPort &vp);
+    static ViewPort ClippedViewport(const ViewPort &vp, const LLRegion &region);
+
+    static bool HasNormalizedViewPort(const ViewPort &vp);
+    static void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
+    static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);
-    static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
-                              bool apply_rotation=true, bool b_clear=false);
+    static void DrawRegion( ViewPort &vp, const LLRegion &region);
+    static void SetClipRegion( ViewPort &vp, const LLRegion &region);
+    static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);
     
@@ -91,7 +98,7 @@ public:
     void OnSize ( wxSizeEvent& event );
     void MouseEvent(wxMouseEvent& event);
     void FastPan(int dx, int dy);
-    void FastZoom(float factor);
+    void FastZoom(float factor, float cp_x, float cp_y, float post_x, float post_y);
     void RenderCanvasBackingChart( ocpnDC dc, OCPNRegion chart_get_region);
     
 #ifdef __OCPN__ANDROID__    
@@ -99,21 +106,23 @@ public:
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
     void onGestureTimerEvent(wxTimerEvent &event);
 #endif
+
+    void onZoomTimerEvent(wxTimerEvent &event);
     
     wxString GetRendererString(){ return m_renderer; }
     wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
     static void Invalidate();
-    void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
+    void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
     bool PurgeChartTextures(ChartBase *pc, bool b_purge_factory = false);
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
     
-    void DrawDynamicRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
-    void DrawStaticRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void DrawDynamicRoutesAndWaypoints( ViewPort &vp );
+    void DrawStaticRoutesAndWaypoints( ViewPort &vp );
     
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );
@@ -127,21 +136,25 @@ public:
 
     time_t m_last_render_time;
 
+    int viewport[4];
+    double mvmatrix[16], projmatrix[16];
+
 protected:
-    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region );
+    void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void BuildFBO();
     bool buildFBOSize(int fboSize);
     void SetupOpenGL();
     bool TextureCrunch(double factor);
     bool FactoryCrunch(double factor);
     
-    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
-    void RenderCharts(ocpnDC &dc, OCPNRegion &region);
-    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region, ViewPort &vp);
-    ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
+//    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
+    void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
+    void RenderNoDTA(ViewPort &vp, const LLRegion &region);
+    void RenderNoDTA(ViewPort &vp, ChartBase *chart);
+    void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 
-    void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
-    void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
+    void DrawFloatingOverlayObjects( ocpnDC &dc );
+    void DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp);
 
     void DrawChartBar( ocpnDC &dc );
     void DrawQuiting();
@@ -150,20 +163,17 @@ protected:
     void DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox);
     void DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
     
+    void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
+    
     wxGLContext       *m_pcontext;
 
     int max_texture_dimension;
-
-    unsigned char *m_data;
-    int m_datasize;
 
     bool m_bsetup;
 
     wxString m_renderer;
     wxString m_version;
     wxString m_extensions;
-
-    void GrowData(int size);
 
     //    This is a hash table
     //    key is Chart full path
@@ -188,7 +198,6 @@ protected:
     GLuint       m_cache_page;
     int          m_cache_tex_x;
     int          m_cache_tex_y;
-    OCPNRegion   m_gl_rendered_region;
 
     int		m_prevMemUsed;
 
@@ -202,6 +211,27 @@ protected:
     float       m_fbo_offsety;
     float       m_fbo_swidth;
     float       m_fbo_sheight;
+
+    float       m_lastfbo_offsetx;
+    float       m_lastfbo_offsety;
+    float       m_lastfbo_swidth;
+    float       m_lastfbo_sheight;
+    
+    float       m_offsetxStep, m_offsetyStep, m_swidthStep, m_sheightStep;
+    float       m_runoffsetx, m_runoffsety, m_runswidth, m_runsheight;
+    float       m_nStep, m_nTotal, m_nRun;
+    bool        m_zoomFinal;
+    double      m_zoomFinalZoom;
+    int         m_zoomFinaldx, m_zoomFinaldy;
+    
+    
+    
+    wxTimer     zoomTimer;
+    
+    double      m_fbo_lat, m_fbo_lon;
+    int         m_cc_x,m_cc_y;
+    wxPoint     m_lpinchPoint;
+    
     bool        m_binPinch;
     bool        m_binPan;
     bool        m_bfogit;
@@ -211,9 +241,13 @@ protected:
     wxTimer     m_gestureEeventTimer;
     bool        m_bgestureGuard;
     bool        m_bpinchGuard;
+    wxPoint     m_pinchStart;
+    double      m_pinchlat, m_pinchlon;
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;
+
+    int		m_LRUtime;
 
     GLuint       m_tideTex;
     GLuint       m_currentTex;

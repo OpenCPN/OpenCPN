@@ -46,6 +46,7 @@ extern MyConfig            *pConfig;
 extern MyFrame             *gFrame;
 extern ChartCanvas         *cc1;
 extern PlugInManager       *g_pi_manager;
+extern OCPNPlatform        *g_Platform;
 
 #define    UTCINPUT         0
 #define    LTINPUT          1    // i.e. this PC local time
@@ -1534,8 +1535,9 @@ void TrackPropDlg::OnHyperLinkClick( wxHyperlinkEvent &event )
 #else
     wxString url = event.GetURL();
     url.Replace(_T(" "), _T("%20") );
-    ::wxLaunchDefaultBrowser(url);
-//    event.Skip();
+    if(g_Platform)
+        g_Platform->platformLaunchDefaultBrowser(url);
+    
 #endif
 }
 
@@ -1571,7 +1573,7 @@ bool TrackPropDlg::SaveChanges( void )
         pConfig->UpdateSettings();
     }
 
-    if( ((Track*) m_pRoute)->IsRunning() )
+    if( m_pRoute && ((Track*) m_pRoute)->IsRunning() )
     {
         wxJSONValue v;
         v[_T("Name")] =  m_pRoute->m_RouteNameString;
@@ -1742,10 +1744,15 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                 slat = gLat;
                 slon = gLon;
             }
-            else
+            else if( g_prev_point )
             {
                 slat = g_prev_point->m_lat;
                 slon = g_prev_point->m_lon;
+            }
+            else
+            {
+                slat = gLat;
+                slon = gLon;
             }
 
             DistanceBearingMercator( g_this_point->m_lat, g_this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );

@@ -40,6 +40,7 @@ TexFont::TexFont( )
 
 TexFont::~TexFont( )
 {
+    Delete( );
 }
 
 
@@ -155,8 +156,7 @@ void TexFont::Build( wxFont &font, bool blur )
             for( int k = 0; k < stride; k++ )
                 teximage[j * stride + k] = imgdata[3*j];
 
-        if(texobj)
-            Delete();
+        Delete();
 
         glGenTextures( 1, &texobj );
         glBindTexture( GL_TEXTURE_2D, texobj );
@@ -177,15 +177,17 @@ void TexFont::Build( wxFont &font, bool blur )
 
 void TexFont::Delete( )
 {
-    glDeleteTextures(1, &texobj);
-    texobj = 0;
+    if (texobj) {
+        glDeleteTextures(1, &texobj);
+        texobj = 0;
+    }
 }
 
-void TexFont::GetTextExtent(const char *string, int len, int *width, int *height)
+void TexFont::GetTextExtent(const char *string, int *width, int *height)
 {
     int w=0, h=0;
 
-    for(int i = 0; i < len; i++ ) {
+    for(int i = 0; string[i]; i++ ) {
         unsigned char c = string[i];
         if(c == '\n') {
             h += tgi[(int)'A'].height;
@@ -209,7 +211,7 @@ void TexFont::GetTextExtent(const char *string, int len, int *width, int *height
 
 void TexFont::GetTextExtent(const wxString &string, int *width, int *height)
 {
-    GetTextExtent(string.ToUTF8(), string.size(), width, height);
+    GetTextExtent((const char*)string.ToUTF8(), width, height);
 }
 
 void TexFont::RenderGlyph( int c )

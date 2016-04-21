@@ -38,6 +38,13 @@
 #include <stdio.h>
 
 class MyConfig;
+class ArrayOfCDI;
+
+typedef struct {
+    char    tsdk[20];
+    char    hn[20];
+    char    msdk[20];
+} PlatSpec;
 
 //--------------------------------------------------------------------------
 //      Per-Platform Utility support
@@ -104,6 +111,8 @@ public:
     int GetStatusBarFieldCount();
     bool GetFullscreen();
     bool SetFullscreen( bool bFull );
+    bool AllowAlertDialog(const wxString& class_name);
+    
     
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
@@ -139,8 +148,12 @@ public:
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
     void setChartTypeMaskSel(int mask, wxString &indicator);
-
+    bool isPlatformCapable( int flag);
+#define PLATFORM_CAP_PLUGINS   1
+#define PLATFORM_CAP_FASTPAN   2
     void LaunchLocalHelp();
+    int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
+    void platformLaunchDefaultBrowser( wxString URL );
     
 private:
     wxString    m_homeDir;

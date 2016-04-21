@@ -10,10 +10,10 @@ QSlider::groove:disabled
 
 QSlider::handle
 {
- background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
+ background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #4cedef, stop:1 #4cedef);
  border: 1px solid #5c5c5c;
  border-radius: 3px;
- width: 45px;
+ width: 80px;
  height: 45px;
 }
 

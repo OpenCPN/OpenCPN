@@ -32,11 +32,11 @@ public class OCPNGpsNmeaListener implements GpsStatus.NmeaListener{
 
     @Override
     public void onNmeaReceived(long timestamp, String nmea) {
-//        Log.i("DEBUGGER_TAG", "onNmeaReceived: " + nmea);
+//        Log.i("OpenCPN", "onNmeaReceived: " + nmea);
 
         String filterNMEA = nmea;
         filterNMEA = filterNMEA.replaceAll("[^\\x0A\\x0D\\x20-\\x7E]", "");
-//        Log.i("DEBUGGER_TAG", "filterNMEA: " + filterNMEA);
+//        Log.i("OpenCPN", "Listener: " + filterNMEA);
 
 
         // Reset the dog.

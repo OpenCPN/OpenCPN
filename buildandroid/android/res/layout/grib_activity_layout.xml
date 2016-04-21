@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:orientation="vertical"
+        android:layout_height="match_parent" >
+
+         <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GRIB Display Settings"
+            android:id="@+id/button_grib_display"
+            android:layout_marginTop="93dp"
+            android:enabled="true"
+            android:textSize="26dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose local GRIB file"
+            android:id="@+id/button_grib_file"
+            android:textSize="26dp"
+            android:layout_marginTop="28dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Request new GRIB file download"
+            android:id="@+id/button_grib_download"
+            android:textSize="26dp"
+            android:layout_marginTop="28dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+             />
+
+    <FrameLayout
+        android:id="@+id/displaycontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/detailscontainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</LinearLayout>

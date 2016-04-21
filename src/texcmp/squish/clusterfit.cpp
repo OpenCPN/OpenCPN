@@ -31,7 +31,7 @@
 
 namespace squish {
 
-ClusterFit::ClusterFit( ColourSet const* colours, int flags ) 
+ClusterFit::ClusterFit( ColourSet * colours, int flags ) 
   : ColourFit( colours, flags )
 {
 	// set the iteration count

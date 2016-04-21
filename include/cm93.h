@@ -63,6 +63,11 @@ class M_COVR_Desc
 
       int         m_nvertices;
       float_2Dpt  *pvertices;
+
+      int   m_ngl_vertices;
+      float_2Dpt *gl_screen_vertices;
+      int gl_screen_projection_type;
+
       int         m_npub_year;
       double      transform_WGS84_offset_x;
       double      transform_WGS84_offset_y;
@@ -327,6 +332,7 @@ class cm93chart : public s57chart
             bool UpdateCovrSet(ViewPort *vpt);
             bool IsPointInLoadedM_COVR(double xc, double yc);
             covr_set *GetCoverSet(){ return m_pcovr_set; }
+            LLRegion GetValidRegion();
 
             const wxString & GetLastFileName(void) const { return m_LastFileName; }
 
@@ -341,9 +347,6 @@ class cm93chart : public s57chart
 
             OCPNRegion          m_render_region;
 
-#ifdef ocpnUSE_GL
-            unsigned int m_outline_display_list;
-#endif
             wxBoundingBox      m_covr_bbox; /* bounding box for entire covr_set */
 
       private:
@@ -399,6 +402,8 @@ class cm93chart : public s57chart
             int         m_nDrawBufferSize;
 
             wxString          m_LastFileName;
+
+            LLRegion            m_region;
 };
 
 //----------------------------------------------------------------------------
@@ -426,8 +431,8 @@ class cm93compchart : public s57chart
 
             void SetVPParms(const ViewPort &vpt);
             void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
-
-
+            LLRegion GetValidRegion();
+            
             ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
             ThumbData *GetThumbData() {return (ThumbData *)NULL;}
 
@@ -436,7 +441,7 @@ class cm93compchart : public s57chart
             bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
             virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                              const OCPNRegion &Region);
+                                              const OCPNRegion &RectRegion, const LLRegion &Region);
             void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
             bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
@@ -470,6 +475,7 @@ class cm93compchart : public s57chart
       private:
             void UpdateRenderRegions ( const ViewPort& VPoint );
             OCPNRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const OCPNRegion &ScreenRegion);
+
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
             InitReturn CreateHeaderData();
@@ -479,7 +485,8 @@ class cm93compchart : public s57chart
             int GetCMScaleFromVP(const ViewPort &vpt);
             bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
-            bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region );
+            bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint,
+                                         const OCPNRegion &RectRegion, const LLRegion &Region );
 
             bool RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *pwp, M_COVR_Desc *mcd );
             void RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd );

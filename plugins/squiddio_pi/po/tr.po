@@ -1,0 +1,250 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"PO-Revision-Date: 2015-12-31 15:38-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.cpp:125
+msgid "Show local sQuiddio destinations"
+msgstr ""
+
+#: src/squiddio_pi.cpp:130
+msgid "Hide local sQuiddio destinations"
+msgstr ""
+
+#: src/squiddio_pi.cpp:135
+msgid "Download local sQuiddio destinations"
+msgstr ""
+
+#: src/squiddio_pi.cpp:140
+msgid "Report a Destination at this location"
+msgstr ""
+
+#: src/squiddio_pi.cpp:201
+msgid "sQuiddio"
+msgstr ""
+
+#: src/squiddio_pi.cpp:610
+msgid "Local destinations have been updated"
+msgstr ""
+
+#: src/squiddio_pi.cpp:613
+msgid "No destinations available for the region"
+msgstr ""
+
+#: src/squiddio_pi.cpp:616
+msgid "Server not responding. Check your Internet connection"
+msgstr ""
+
+#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr ""
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading"
+msgstr "Yükleniyor"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading: "
+msgstr "Yükleniyor: "
+
+#: src/squiddio_pi.cpp:666
+msgid "Squiddio_pi: unable to connect to host"
+msgstr ""
+
+#: src/squiddio_pi.cpp:737
+msgid "Squiddio"
+msgstr ""
+
+#: src/squiddio_pi.cpp:741
+msgid "Squiddio for OpenCPN"
+msgstr ""
+
+#: src/squiddio_pi.cpp:746
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr ""
+
+#: src/squiddio_pi.cpp:838
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr ""
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Şimdi"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "Bir saniye önce"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr ""
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr ""
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr ""
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr ""
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr ""
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr ""
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr ""
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr ""
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr ""
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:28
+msgid "View Destinations"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:35
+msgid "All"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:38
+msgid "Marinas"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:41
+msgid "Anchorages"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:44
+msgid "Yacht clubs"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:47
+msgid "Docks/piers"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:50
+msgid "Boat ramps"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:53
+msgid "Fuel Stations"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:56
+msgid "Other"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:59
+msgid "AIS marker"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:69
+msgid "Share logs with friends"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:76
+msgid "Send"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Never"
+msgstr "Asla"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a day"
+msgstr "Günde bir"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a day"
+msgstr "Günde iki kez"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once an hour"
+msgstr "Saatte bir"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice an hour"
+msgstr "Saatte iki defa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a minute"
+msgstr "Dakikada bir"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a minute"
+msgstr "Dakikada iki defa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Every 10 seconds"
+msgstr "Her 10 Saniyede"
+
+#: src/squiddioPrefsDialogBase.cpp:88
+msgid "Receive"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:100
+msgid "sQuiddio ID"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:106
+msgid "The email address you use to log into sQuidd.io"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110
+msgid "API Key"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:116
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr ""
+

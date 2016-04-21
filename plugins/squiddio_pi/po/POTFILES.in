@@ -1,0 +1,6 @@
+src/squiddio_pi.h
+src/squiddio_pi.cpp
+src/logs.cpp
+src/logs.h
+src/squiddioPrefsDialogBase.cpp
+src/squiddioPrefsDialogBase.h

@@ -123,6 +123,9 @@ void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
       wxCoord y = m_cy - (m_radius * 0.5);
+      wxColour cl;
+      GetGlobalColor(_T("DASH1"), &cl);
+      dc->SetBrush( cl );
       dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
 }
 

@@ -53,7 +53,7 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
     sbSizerLnkProp->Add( m_staticTextLinkDesc, 0, wxALL, 5 );
 
     m_textCtrlLinkDescription = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxDefaultSize, 0 );
+            wxSize(400, -1), 0 );
     sbSizerLnkProp->Add( m_textCtrlLinkDescription, 0, wxALL | wxEXPAND, 5 );
 
     m_staticTextLinkUrl = new wxStaticText( this, wxID_ANY, _("URL"), wxDefaultPosition,
@@ -62,13 +62,17 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
     sbSizerLnkProp->Add( m_staticTextLinkUrl, 0, wxALL, 5 );
 
     m_textCtrlLinkUrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-            wxDefaultSize, 0 );
+                                        wxSize(400, -1), 0 );
     sbSizerLnkProp->Add( m_textCtrlLinkUrl, 0, wxALL | wxEXPAND, 5 );
 
     m_buttonBrowseLocal = new wxButton( this, wxID_ANY, _("Local file..."), wxDefaultPosition,
             wxDefaultSize, 0 );
     sbSizerLnkProp->Add( m_buttonBrowseLocal, 0, wxALL, 5 );
 
+#ifdef __OCPN__ANDROID__
+    m_buttonBrowseLocal->Hide();
+#endif    
+    
     bSizerMain->Add( sbSizerLnkProp, 1, wxALL | wxEXPAND, 5 );
 
     m_sdbSizerButtons = new wxStdDialogButtonSizer();
@@ -127,7 +131,7 @@ void LinkPropImpl::OnLocalFileClick( wxCommandEvent& event )
 void LinkPropImpl::OnOkClick( wxCommandEvent& event )
 {
     if( m_textCtrlLinkUrl->GetValue() == wxEmptyString ) 
-        OCPNMessageBox( NULL, _("Link not complete, can't be saved."), _("OpenCPN Info"), wxICON_HAND );
+        OCPNMessageBox( NULL, _("Link not complete, can't be saved."), _("OpenCPN Info"), wxICON_HAND | wxOK );
     
     else
         event.Skip();

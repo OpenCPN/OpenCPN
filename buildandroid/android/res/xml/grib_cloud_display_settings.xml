@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_CloudCoverNumbers"
+        android:title="Show CloudCover Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="CloudCover Value Units"
+        android:key="grib_prefs_CloudCoverUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBPercentUnits"
+        android:entryValues="@array/GRIBPercentUnitsVal" />
+
+    <SwitchPreference
+        android:key="grib_prefb_CloudCoverNumbersFixedSpacing"
+        android:title="CloudCover Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_CloudCoverNumbersSpacing"
+        android:title="CloudCover Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_CloudCoverOverlayMap"
+        android:title="Show CloudCover Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="CloudCover Overlay Colors"
+        android:key="grib_prefs_CloudCoverOverlayMapColors"
+        android:defaultValue="5"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
+
+
+</PreferenceScreen>
+

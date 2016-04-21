@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.lang.Math;
 import java.util.concurrent.Semaphore;
 import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -49,6 +51,8 @@ import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
 import android.os.SystemClock;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.os.Environment;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -74,9 +78,13 @@ import android.app.DownloadManager.Request;
 import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.content.IntentFilter;
+import android.app.PendingIntent;
+import android.net.ConnectivityManager;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
+import android.app.ActivityManager.*;
+
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageInfo;
@@ -126,6 +134,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.opencpn.opencpn.R;
 
 //ANDROID-11
@@ -158,11 +169,30 @@ import org.opencpn.WebViewActivity;
 
 import ar.com.daidalos.afiledialog.*;
 
-public class QtActivity extends Activity implements ActionBar.OnNavigationListener
+import org.opencpn.UsbSerialHelper;
+
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
+import android.os.AsyncTask;
+import java.util.ArrayList;
+import java.util.List;
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import android.os.ResultReceiver;
+
+import org.opencpn.DownloadService;
+import org.opencpn.OCPNResultReceiver;
+import org.opencpn.OCPNResultReceiver.Receiver;
+
+public class QtActivity extends Activity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
     private final static int OCPN_GOOGLEMAPS_REQUEST_CODE = 0xf3ed; // request code used to know when GoogleMaps activity is done
+    private final static int OCPN_GRIB_REQUEST_CODE = 0xf3ec; // request code used to know when OCPNGRIB activity is done
 
     private static final int MINISTRO_API_LEVEL = 4; // Ministro api level (check IMinistro.aidl file)
     private static final int NECESSITAS_API_LEVEL = 2; // Necessitas api level used by platform plugin
@@ -190,6 +220,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int ID_CMD_NULL_REFRESH = 301;
     private final static int ID_CMD_TRIGGER_RESIZE  = 302;
     private final static int ID_CMD_SETVP = 303;
+    private final static int ID_CMD_POST_JSON_TO_PLUGINS = 304;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -284,6 +315,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
+    private Boolean m_GPSRequestOn = false;
+
     public ProgressDialog ringProgressDialog;
     public boolean m_hasGPS;
     private boolean m_backButtonEnable = true;
@@ -298,7 +331,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private String m_downloadRet = "";
 
+    public OCPNResultReceiver mReceiver;
+
     OCPNNativeLib nativeLib;
+
+    private String m_GRIBReturn;
+
+    private UsbSerialHelper uSerialHelper;
 
     // action bar
     private ActionBar actionBar;
@@ -335,6 +374,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private double m_gminitialZoom;
 
     private boolean m_fullScreen;
+    private String m_scannedSerial = "";
 
     public QtActivity()
     {
@@ -408,33 +448,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
       }
 
 
-//    public static QtActivity activity()
-//    {
-//        return QtActivity.this;
-//    }
-
-
-//    public static  String appData()
-//    {
-//        Log.d("App Data is ", "Working");
-//        return data;
-//    }
-
-// This really never gets called, and so dont need m_activity
-    public static Activity activity()
-    {
-//        synchronized (m_mainActivityMutex)
-        //Log.i("DEBUGGER_TAG", "activity()");
-
-        {
-            return m_activity;
-        }
-    }
-
     private String m_settingsReturn;
 
     public String launchHelpView(){
         Intent intent = new Intent(this, WebViewActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString(WebViewActivity.SELECTED_URL, "file:///android_asset/doc/doc/help_en_US.html");
+        intent.putExtras(b);
+
+        startActivity(intent);
+        return "OK";
+    }
+
+    public String launchWebView( String url){
+        Intent intent = new Intent(this, WebViewActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString(WebViewActivity.SELECTED_URL, url);
+        intent.putExtras(b);
+
         startActivity(intent);
         return "OK";
     }
@@ -460,8 +493,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String setFullscreen( final int bfull){
- //       String aa = String.format("%d", bfull);
-//        Log.i("DEBUGGER_TAG", "setFullscreen " + aa);
         setFullscreen(bfull != 0);
         m_fullScreen = (bfull != 0);
         return "OK";
@@ -476,11 +507,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String terminateApp(){
+        //Log.i("OpenCPN", "terminateApp");
         finish();
         return "";
     }
 
+    public String makeToast( String msg ){
+        Toast.makeText(getApplicationContext(), msg,Toast.LENGTH_LONG).show();
 
+        return "OK";
+    }
 
 
     public String invokeGoogleMaps(){
@@ -525,18 +561,40 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return ret;
     }
 
+    public String doGRIBActivity(String json){
+//        Log.i("DEBUGGER_TAG", "doGRIBActivity");
+//        Log.i("DEBUGGER_TAG", json);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("GRIB_PREFS_JSON", json);
+        editor.apply();
+
+        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNGRIBActivity.class);
+        startActivityForResult(intent, OCPN_GRIB_REQUEST_CODE);
+
+        int pss = 666;
+        String ret;
+        ret = String.format("%d", pss);
+        return ret;
+
+    }
+
     public String doAndroidSettings(String settings){
-        //Log.i("DEBUGGER_TAG", "doAndroidSettings");
+        //Log.i("OpenCPN", "doAndroidSettings");
         //Log.i("DEBUGGER_TAG", settings);
 
+        if(null != uSerialHelper)
+            m_scannedSerial = scanSerialPorts( UsbSerialHelper.NOSCAN );      // No scan, just report latest results.
 
         m_settingsReturn = new String();
 
         Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
         intent.putExtra("SETTINGS_STRING",settings);
-        startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
+        intent.putExtra("DETECTEDSERIALPORTS_STRING",m_scannedSerial);
+        //Log.i("OpenCPN", m_scannedSerial);
 
-        //Log.i("DEBUGGER_TAG", "after start activity");
+        startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
 
         int pss = 55;
         String ret;
@@ -546,9 +604,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String checkAndroidSettings(  ){
-//        Log.i("DEBUGGER_TAG", "checkAndroidSettings");
-//        Log.i("DEBUGGER_TAG", m_settingsReturn);
-
         return m_settingsReturn;
     }
 
@@ -558,18 +613,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String callFromCpp(int pid){
         //Log.i("DEBUGGER_TAG", "callFromCpp");
 
-//        Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
-//        startActivity(intent);
-
 
         MemoryInfo mi = new MemoryInfo();
-//        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-//        activityManager.getMemoryInfo(mi);
         int pids[] = new int[1];
         pids[0] = pid;
-
-        //MemoryInfo[] memoryInfoArray;
-        //memoryInfoArray = activityManager.getProcessMemoryInfo( pids );
 
         android.os.Debug.MemoryInfo[] memoryInfoArray= activityManager.getProcessMemoryInfo( pids );
         int pss = memoryInfoArray[0].getTotalPss();
@@ -601,18 +648,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String getDisplayMetrics(){
         //Log.i("DEBUGGER_TAG", "getDisplayDPI");
-/*
-        int i = nativeLib.test();
-        String aa;
-        aa = String.format("%d", i);
-        Log.i("DEBUGGER_TAG", aa);
 
-        String bb = "$GPRMC...";
-        int j = nativeLib.processNMEA(bb);
-//      int j = nativeLib.processNMEA( 44);
-        aa = String.format("%d", j);
-        Log.i("DEBUGGER_TAG", aa);
-*/
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int statusBarHeight = 0;
@@ -622,10 +658,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
 
-//        TypedValue typedValue = new TypedValue();
-//        if(getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)){
-//            screen_h -= getResources().getDimensionPixelSize(typedValue.resourceId);
-//        }
 
         int actionBarHeight = 0;
         ActionBar actionBar = getActionBar();
@@ -713,11 +745,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String getDeviceInfo(){
         String s="Device Info:";
                 s += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
-                s += "\n OS API Level: "+android.os.Build.VERSION.RELEASE + "("+android.os.Build.VERSION.SDK_INT+")";
+                s += "\n OS API Level: "+android.os.Build.VERSION.RELEASE + "{"+android.os.Build.VERSION.SDK_INT+"}";
                 s += "\n Device: " + android.os.Build.DEVICE;
                 s += "\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+                s += "\n" + getPackageName();
 
-        //Log.i("DEBUGGER_TAG", s);
+        //Log.i("OpenCPN", s);
 
         return s;
     }
@@ -763,16 +796,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                  mutex.release();
              }});
 
-/*
-             // One way to wait for the runnable to be done...
-      try {
-             mutex.acquire();            // Cannot get mutex until runnable above exits.
-      } catch (InterruptedException e) {
-             e.printStackTrace();
-      }
-
-        this.getWindow().getDecorView().requestFocus();
-*/
         String ret = "";
         return ret;
     }
@@ -799,8 +822,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                  }});
 
-//        itemRouteAnnunciator.setVisible(viz != 0);
-//        this.invalidateOptionsMenu();
         return "OK";
      }
 //     else
@@ -812,10 +833,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String setFollowIconState( final int isActive){
         m_isFollowActive = (isActive != 0);
 
-        //if(isActive == 0)
-            //Log.i("DEBUGGER_TAG", "setFollowIconStateA");
-        //else
-            //Log.i("DEBUGGER_TAG", "setFollowIconStateB");
 
            runOnUiThread(new Runnable() {
                    @Override
@@ -836,11 +853,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        public String setTrackIconState( final int isActive){
            m_isTrackActive = (isActive != 0);
 
-           //if(isActive == 0)
-               //Log.i("DEBUGGER_TAG", "setTrackIconStateA");
-           //else
-               //Log.i("DEBUGGER_TAG", "setTrackIconStateB");
-
               runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
@@ -856,7 +868,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
        public String setBackButtonState( final int isActive){
-           //Log.i("DEBUGGER_TAG", "setBackButtonState");
+           Log.i("OpenCPN", "setBackButtonState" + isActive);
            m_backButtonEnable = (isActive != 0);
            return "OK";
           }
@@ -875,9 +887,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if(!m_GPSServiceStarted){
             //Log.i("DEBUGGER_TAG", "Start GPS Server");
-            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib, this);
+            m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
             m_GPSServiceStarted = true;
         }
+
+        if(parm == GPSServer.GPS_ON)
+            m_GPSRequestOn = true;
+
+        if(parm == GPSServer.GPS_OFF)
+            m_GPSRequestOn = false;
 
         return m_GPSServer.doService( parm );
     }
@@ -889,8 +907,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             ret = "No";
         }
 
-//        PackageManager pm = context.getPackageManager();
-//        boolean hasBluetooth = pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
         return ret;
     }
 
@@ -958,7 +974,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         return ret_str;
 
-   //     return ("line A;line B;"); //scanHelper.getDiscoveredDevices();
 
 
     }
@@ -1048,20 +1063,67 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return ret_str;
     }
 
+
+    public String scanSerialPorts( final int parm ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.scanSerialPorts(parm);
+        }
+
+        m_scannedSerial = ret_str;
+        return ret_str;
+    }
+
+
+    public String startSerialPort( final String name, final String baudRate ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.startUSBSerialPort( name, Integer.parseInt(baudRate) );
+        }
+
+        return ret_str;
+    }
+
+    public String stopSerialPort( final String name ){
+
+        String ret_str = "";
+        if(null != uSerialHelper){
+            ret_str = uSerialHelper.stopUSBSerialPort(name);
+        }
+
+        return ret_str;
+    }
+
+
+
+
     private Semaphore mutex = new Semaphore(0);
     private Query m_query = new Query();
 
-    public String downloadFile( final String url, final String destination )
+    public String downloadFileDM( final String url, final String destination )
     {
         m_downloadRet = "";
+        Log.i("OpenCPN", url);
+        Log.i("OpenCPN", destination);
 
-
-        if( downloadBCReceiver == null){
+/*
+        //  Delete any existing file of the same name.
+        Uri fURI = Uri.parse(destination);
+        try{
+            File f = new File(fURI.getPath());
+            if(f.exists())
+                f.delete();
+       }catch (Exception e) {
+       }
+*/
+       if( downloadBCReceiver == null){
           downloadBCReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                Log.i("DEBUGGER_TAG", "onReceive: " + action);
+                Log.i("OpenCPN", "onReceive: " + action);
 
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
@@ -1076,7 +1138,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                            Log.i("DEBUGGER_TAG", "Download successful");
+                            Log.i("OpenCPN", "Download successful " + downloadId + m_enqueue);
+                            String totalBytes = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                            Log.i("OpenCPN", "totalBytes: " + totalBytes);
+
                         }
 
                         nativeLib.setDownloadStatus( c.getInt(columnIndex), uriString);
@@ -1103,17 +1168,17 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 Request request = new Request( Uri.parse(url) );
                 request.setDestinationUri( Uri.parse(destination) );
 
-                Log.i("DEBUGGER_TAG", "enqueue");
+                Log.i("OpenCPN", "enqueue");
                 m_downloadRet = "PENDING";
                 try{
                      m_enqueue = m_dm.enqueue(request);
                      String result = "OK;" + String.valueOf(m_enqueue);
-                     Log.i("DEBUGGER_TAG", result);
+                     Log.i("OpenCPN", result);
                      m_downloadRet = result;
                  }
                  catch(Exception e){
                      m_downloadRet = "NOK";
-                     Log.i("DEBUGGER_TAG", "exception");
+                     Log.i("OpenCPN", "exception: " + e.getMessage());
                  }
 
 
@@ -1130,23 +1195,21 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 
-        Log.i("DEBUGGER_TAG", "m_downloadRet " + m_downloadRet);
+        Log.i("OpenCPN", "m_downloadRet " + m_downloadRet);
         return m_downloadRet;
     }
 
-    public String getDownloadStatus( final int ID )
+    public String getDownloadStatusDM( final int ID )
     {
-        Log.i("DEBUGGER_TAG", "getDownloadStatus "  + String.valueOf(ID));
+        Log.i("OpenCPN", "getDownloadStatus "  + String.valueOf(ID));
 
         String ret = "NOSTAT";
         if(m_dm != null){
-            //Log.i("DEBUGGER_TAG", "mdm");
 
             m_query.setFilterById(ID);
             Cursor c = m_dm.query(m_query);
 
             if (c.moveToFirst()) {
-                //Log.i("DEBUGGER_TAG", "cmtf");
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 int stat = c.getInt(columnIndex);
                 String sstat = String.valueOf(stat);
@@ -1161,14 +1224,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         }
 
-        Log.i("DEBUGGER_TAG", ret);
+        Log.i("OpenCPN", ret);
         return ret;
     }
 
 
     public String cancelDownload( final int ID )
     {
-        Log.i("DEBUGGER_TAG", "cancelDownload "  + String.valueOf(ID));
+        Log.i("OpenCPN", "cancelDownload "  + String.valueOf(ID));
         if(m_dm != null){
             m_dm.remove( ID );
         }
@@ -1176,6 +1239,89 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "OK";
     }
 
+    public String downloadFile( final String url, final String destination ){
+
+        Log.i("OpenCPN", "downloadFile " + url + " to " + destination);
+        m_downloadURL = url;
+
+
+        m_downloadStatus = 1;       //STATUS_PENDING
+        m_downloadTotal = 0;
+
+        Intent intent = new Intent(this, DownloadService.class);
+        intent.putExtra("url", url);
+        intent.putExtra("file", destination);
+        intent.putExtra("receiver", mReceiver);
+        startService(intent);
+
+        //Log.i("OpenCPN", "RET OK");
+        return "OK;77";
+    }
+
+
+    public String getDownloadStatus( final int ID )
+    {
+
+        String ret = "NOSTAT";
+
+        String sstat = String.valueOf(m_downloadStatus);
+        ret =  sstat + ";" + m_downloadTotal + ";" + m_downloadFilelength;
+
+        Log.i("OpenCPN", "getDownloadStatus "  + String.valueOf(ID) + " " + ret);
+        return ret;
+    }
+
+    private int m_downloadTotal;
+    private int m_downloadFilelength;
+    private int m_downloadStatus;
+    private String m_downloadURL;
+
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        //super.onReceiveResult(resultCode, resultData);
+        if (resultCode == DownloadService.UPDATE_PROGRESS) {
+
+            int progress = resultData.getInt("progress");
+
+            m_downloadTotal = resultData.getInt("sofar");
+            m_downloadFilelength = resultData.getInt("filelength");
+            m_downloadStatus = 2;           // STATUS_RUNNING
+
+//            Log.i("OpenCPN", "UPDATE_PROGRESS " + m_downloadTotal + " " + m_downloadFilelength + " " + progress);
+
+            //mProgressDialog.setProgress(progress);
+            //if (progress == 100) {
+            //    mProgressDialog.dismiss();
+
+            nativeLib.setDownloadStatus( m_downloadStatus, m_downloadURL);
+
+        }
+        if (resultCode == DownloadService.DOWNLOAD_DONE) {
+            m_downloadTotal = resultData.getInt("sofar");
+            m_downloadFilelength = resultData.getInt("filelength");
+            m_downloadStatus = 8;           // STATUS_SUCCESSFUL
+            if(0 == m_downloadTotal)
+                m_downloadStatus = 16;      // STATUS_ERROR
+
+            nativeLib.setDownloadStatus( m_downloadStatus, m_downloadURL);
+            Log.i("OpenCPN", "DOWNLOAD_DONE " + m_downloadTotal + " " + m_downloadTotal + " " + m_downloadFilelength);
+        }
+
+    }
+
+
+    public String isNetworkAvailable() {
+            ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    // test for connection
+            if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable()
+                    && cm.getActiveNetworkInfo().isConnected()) {
+                return "YES";
+            } else {
+                return "NO";
+            }
+    }
 
     public String getGMAPILicense( )
     {
@@ -1451,8 +1597,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
    public String configureNavSpinner(int flag, int sel){
-       //Log.i("DEBUGGER_TAG", "configureNavSpinner");
-       //String aa; aa = String.format("%d %d", flag, sel ); Log.i("DEBUGGER_TAG", aa);
 
        navSpinner.clear();
        int nbits = 0;
@@ -1527,33 +1671,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
 
-//   @Override
-//   public void onTabSelected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-
-//   Log.i("DEBUGGER_TAG", "onTabSelected");
-//   Log.i("DEBUGGER_TAG", tab.getText().toString());
-
-     // When the given tab is selected, show the tab contents in the
-     // container view.
-//     Fragment fragment = new DummySectionFragment();
-//     Bundle args = new Bundle();
-//     args.putInt(DummySectionFragment.ARG_SECTION_NUMBER,
-//         tab.getPosition() + 1);
-//     fragment.setArguments(args);
-//     getFragmentManager().beginTransaction()
-//         .replace(R.id.container, fragment).commit();
-//   }
-
-//   @Override
-//   public void onTabUnselected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-//   }
-
-//   @Override
-//   public void onTabReselected(ActionBar.Tab tab,
-//       FragmentTransaction fragmentTransaction) {
-//   }
 
 
    //  ActionBar drop-down spinner navigation
@@ -1661,7 +1778,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
-        Log.i("DEBUGGER_TAG", "LoadApplication");
+        Log.i("OpenCPN", "LoadApplication");
 
         relocateOCPNPlugins();
 
@@ -1906,14 +2023,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private boolean cleanCacheIfNecessary(String prefix, long packageVersion, String cacheName)
     {
-        Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary " + prefix);
+        Log.i("OpenCPN", "cleanCacheIfNecessary " + prefix);
         File versionFile = new File(prefix + cacheName);
 
-        Log.i("DEBUGGER_TAG", "version file: " + prefix + cacheName);
+        Log.i("OpenCPN", "version file: " + prefix + cacheName);
 
         long cacheVersion = 0;
         if (versionFile.exists() && versionFile.canRead()) {
-            Log.i("DEBUGGER_TAG", "version file exists ");
+            Log.i("OpenCPN", "version file exists ");
             try {
                 DataInputStream inputStream = new DataInputStream(new FileInputStream(versionFile));
                 cacheVersion = inputStream.readLong();
@@ -1925,10 +2042,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         if (cacheVersion != packageVersion) {
             //deleteRecursively(new File(prefix));
- //           Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return true");
+ //           Log.i("OpenCPN", "cleanCacheIfNecessary return true");
             return true;
         } else {
- //           Log.i("DEBUGGER_TAG", "cleanCacheIfNecessary return false");
+ //           Log.i("OpenCPN", "cleanCacheIfNecessary return false");
 
             return false;
         }
@@ -2168,6 +2285,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean dispatchKeyEvent(KeyEvent event)
     {
+        if(event.getKeyCode()==KeyEvent.KEYCODE_BACK){
+            if(!m_backButtonEnable)
+                return false;
+        }
+        Log.i("OpenCPN", "keyEvent");
+
         if (QtApplication.m_delegateObject != null && QtApplication.dispatchKeyEvent != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.dispatchKeyEvent, event);
         else
@@ -2240,12 +2363,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
 //        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
-//            Log.i("DEBUGGER_TAG", "onqtActivityResultC");
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultD");
                 m_settingsReturn = data.getStringExtra("SettingsString");
+                //Log.i("OpenCPN", "onActivityResult.SettingsString: " + m_settingsReturn);
                 nativeLib.invokeCmdEventCmdString( ID_CMD_NULL_REFRESH, m_settingsReturn);
 
                 // defer hte application of settings until the screen refreshes
@@ -2255,10 +2377,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                           nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
                      }
                 }, 100);
-//                Log.i("DEBUGGER_TAG", m_settingsReturn);
             }
             else if (resultCode == RESULT_CANCELED){
-//                Log.i("DEBUGGER_TAG", "onqtActivityResultE");
             }
 
             super.onActivityResult(requestCode, resultCode, data);
@@ -2374,6 +2494,46 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             return;
         }
 
+        if (requestCode == OCPN_GRIB_REQUEST_CODE) {
+//            Log.i("DEBUGGER_TAG", "onqtActivityResultGC");
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultGD");
+                m_GRIBReturn = data.getStringExtra("GRIB_JSON");
+//                Log.i("GRIB", m_GRIBReturn);
+
+                //  Add a message ID string to the JSON for later processing
+                String json = "";
+                try {
+                    JSONObject js  = new JSONObject( m_GRIBReturn );
+                    js.put("MessageID", "GRIB_APPLY_JSON_CONFIG");
+                    json = js.toString();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+                nativeLib.invokeCmdEventCmdString( ID_CMD_POST_JSON_TO_PLUGINS, json);
+
+//                nativeLib.sendPluginMessage( "GRIB_APPLY_JSON_CONFIG", m_GRIBReturn);
+
+                // defer hte application of settings until the screen refreshes
+                //Handler handler = new Handler();
+                //handler.postDelayed(new Runnable() {
+                  //   public void run() {
+                    //      nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
+                    // }
+               // }, 100);
+            }
+            else if (resultCode == RESULT_CANCELED){
+//                Log.i("DEBUGGER_TAG", "onqtActivityResultGE");
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
         if (QtApplication.m_delegateObject != null && QtApplication.onActivityResult != null) {
             QtApplication.invokeDelegateMethod(QtApplication.onActivityResult, requestCode, resultCode, data);
             return;
@@ -2475,20 +2635,31 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
 
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-//        Log.i("DEBUGGER_TAG", "onCreate");
+        Log.i("OpenCPN", "onCreate" + this);
+        String action = getIntent().getAction();
+        Log.i("OpenCPN", "onCreate Action: " + action);
+
         //Toast.makeText(getApplicationContext(), "onCreate",Toast.LENGTH_LONG).show();
 
         super.onCreate(savedInstanceState);
 
         //  Bug fix, see http://code.google.com/p/android/issues/detail?id=26658
         if(!isTaskRoot()) {
+            Log.i("OpenCPN", "onCreate NOT ROOT");
             finish();
             return;
         }
 
+        Log.i("OpenCPN", "onCreate Root");
+
+        m_backButtonEnable = false;
+        Log.i("OpenCPN", "back button enable: " + m_backButtonEnable);
 //        setContentView(R.layout.activity_main);
 
 
@@ -2523,10 +2694,18 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
 
-        nativeLib = new OCPNNativeLib();
+        nativeLib = OCPNNativeLib.getInstance();
 
+        mReceiver = new OCPNResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+
+
+        // USB Serial Port setup
+        uSerialHelper = new UsbSerialHelper();
+        Log.i("OpenCPN", "onCreate initUSBSerial");
 
         if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
+            Log.i("OpenCPN", "onCreate invoking delegate onCreate");
             QtApplication.invokeDelegateMethod(QtApplication.onCreate, savedInstanceState);
             return;
         }
@@ -2601,19 +2780,21 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
         if(b_needcopy){
-            Log.i("DEBUGGER_TAG", "b_needcopy true");
+            Log.i("OpenCPN", "b_needcopy true");
         }
         else{
-            Log.i("DEBUGGER_TAG", "b_needcopy false");
+            Log.i("OpenCPN", "b_needcopy false");
         }
 
 
 
 
     if (b_needcopy){
-      Log.i("DEBUGGER_TAG", "asset bridge start unpack");
+     Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
+
+      Log.i("OpenCPN", "asset bridge start unpack");
       Assetbridge.unpack(this);
-      Log.i("DEBUGGER_TAG", "asset bridge finish unpack");
+      Log.i("OpenCPN", "asset bridge finish unpack");
     }
 
 
@@ -2806,6 +2987,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     protected void onDestroy()
     {
         //Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
+        Log.i("OpenCPN", "onDestroy " + this);
 
         super.onDestroy();
 
@@ -2820,23 +3002,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
-
-
-        if(keyCode==KeyEvent.KEYCODE_BACK){
-            //Toast.makeText(getApplicationContext(), "back press",Toast.LENGTH_LONG).show();
-            if(!m_backButtonEnable)
-                return false;
-        }
-
-/*
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            //Log.i("DEBUGGER_TAG", "KEYCODE_MENU");
-
-            int i = nativeLib.onMenuKey();
-
-            return true;
-        }
-*/
 
         if (QtApplication.m_delegateObject != null && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyDown, keyCode, event);
@@ -2867,6 +3032,27 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+                if(keyCode==KeyEvent.KEYCODE_BACK){
+                    //Log.i("OpenCPN", "TLWCount " + nativeLib.getTLWCount());
+
+                    if(!m_backButtonEnable)
+                        return false;
+
+                    if(nativeLib.getTLWCount() <= 2){
+
+                       if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
+                              toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
+                              toast.show();
+                              this.lastBackPressTime = System.currentTimeMillis();
+                              return false;
+                        } else {
+                        this.lastBackPressTime = System.currentTimeMillis();
+                        if (toast != null)
+                         toast.cancel();
+                        }
+                    }
+                }
+
         if (QtApplication.m_delegateObject != null  && QtApplication.onKeyDown != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyUp, keyCode, event);
         else
@@ -2921,6 +3107,15 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         if (!QtApplication.invokeDelegate(intent).invoked)
             super.onNewIntent(intent);
+
+        Log.i("OpenCPN", "onNewIntent " + this);
+/*
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            Log.i("DEBUGGER_TAG", "ACTION_USB_DEVICE_ATTACHED");
+
+        }
+*/
     }
     public void super_onNewIntent(Intent intent)
     {
@@ -3035,15 +3230,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onPause()
     {
-        //Log.i("DEBUGGER_TAG", "onPause");
+        Log.i("OpenCPN", "onPause "  + this);
 
-        int i = nativeLib.onPause();
-        String aa;
-        aa = String.format("%d", i);
-        //Log.i("DEBUGGER_TAG", aa);
+        if(null != nativeLib)
+            nativeLib.onPause();
+
+        //if(null != uSerialHelper)
+         //   uSerialHelper.deinitUSBSerial(this);
 
         super.onPause();
         QtApplication.invokeDelegate();
+
+        Log.i("OpenCPN", "onPause done");
+
     }
     //---------------------------------------------------------------------------
 
@@ -3136,7 +3335,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onRestart()
     {
-        //Log.i("DEBUGGER_TAG", "onRestart");
+        //Log.i("OpenCPN", "onRestart");
         super.onRestart();
         QtApplication.invokeDelegate();
     }
@@ -3157,12 +3356,20 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onResume()
     {
-        //Log.i("DEBUGGER_TAG", "onResume");
+        Log.i("OpenCPN", "onResume "  + this);
+
 
         if(null != nativeLib)
             nativeLib.onResume();
 
+
+        if(null != uSerialHelper){
+            uSerialHelper.initUSBSerial(this);
+            m_scannedSerial = scanSerialPorts( UsbSerialHelper.SCAN );      // Full scan.
+        }
+
         super.onResume();
+
         QtApplication.invokeDelegate();
     }
     //---------------------------------------------------------------------------
@@ -3170,12 +3377,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public Object onRetainNonConfigurationInstance()
     {
+        Log.i("OpenCPN", "onRetainNonConfigurationInstance "  + this);
         QtApplication.InvokeResult res = QtApplication.invokeDelegate();
         if (res.invoked)
             return res.methodReturns;
         else
             return super.onRetainNonConfigurationInstance();
     }
+
     public Object super_onRetainNonConfigurationInstance()
     {
         return super.onRetainNonConfigurationInstance();
@@ -3213,12 +3422,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStart()
     {
-        Log.i("DEBUGGER_TAG", "onStart");
-
-//        int i = nativeLib.onStart();
-//        String aa;
-//        aa = String.format("%d", i);
-//        Log.i("DEBUGGER_TAG", aa);
+        Log.i("OpenCPN", "onStart " + this);
+        nativeLib.onStart();
 
         super.onStart();
         QtApplication.invokeDelegate();
@@ -3228,9 +3433,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onStop()
     {
-        //Log.i("DEBUGGER_TAG", "onStop");
+        Log.i("OpenCPN", "onStop " + this);
 
         int i = nativeLib.onStop();
+
+        if(null != uSerialHelper)
+            uSerialHelper.deinitUSBSerial(this);
+
         String aa;
         aa = String.format("%d", i);
         //Log.i("DEBUGGER_TAG", aa);
@@ -3375,6 +3584,25 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
     //---------------------------------------------------------------------------
 
+    private Toast toast;
+    private long lastBackPressTime = 0;
+
+    @Override
+    public void onBackPressed() {
+      if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
+        toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
+        toast.show();
+        this.lastBackPressTime = System.currentTimeMillis();
+      } else {
+        if (toast != null) {
+        toast.cancel();
+      }
+
+      if (!QtApplication.invokeDelegate().invoked)
+          super.onBackPressed();
+     }
+    }
+/*
     @Override
     public void onBackPressed()
     {
@@ -3382,6 +3610,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         if (!QtApplication.invokeDelegate().invoked)
             super.onBackPressed();
     }
+*/
     public void super_onBackPressed()
     {
         super.onBackPressed();

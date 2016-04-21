@@ -159,12 +159,13 @@ class  ChartBaseBSB     :public ChartBase
       bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const OCPNRegion &Region);
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
-      void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion  *pValidRegion);
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
+      virtual LLRegion GetValidRegion();
 
       virtual bool GetChartExtent(Extent *pext);
 
@@ -174,22 +175,23 @@ class  ChartBaseBSB     :public ChartBase
 
       void SetVPRasterParms(const ViewPort &vpt);
 
-      void ComputeSourceRectangle(const ViewPort &vp, wxRealPoint *pPos, wxRealPoint *pDim);
-      void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
-      double GetRasterScaleFactor() { return m_raster_scale_factor; }
+      virtual void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+      virtual double GetRasterScaleFactor(const ViewPort &vp);
       virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
-      int GetSize_X(){ return Size_X;}
-      int GetSize_Y(){ return Size_Y;}
+      virtual int GetSize_X(){ return Size_X;}
+      virtual int GetSize_Y(){ return Size_Y;}
 
-      void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
+      virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
       void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+
+      double GetPPM(){ return m_ppm_avg;}
 
 protected:
 //    Methods
 
       wxRect GetSourceRect(){ return Rsrc; }
 
-      virtual bool GetAndScaleData(unsigned char *ppn,
+      virtual bool GetAndScaleData(unsigned char *ppn, size_t data_size,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,
                                    double scale_factor, ScaleTypeEnum scale_type);
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
@@ -203,8 +205,6 @@ protected:
       int  *GetPalettePtr(BSB_Color_Capability);
 
       double GetClosestValidNaturalScalePPM(double target_scale, double scale_factor_min, double scale_factor_max);
-
-      double GetPPM(){ return m_ppm_avg;}
 
       virtual void InvalidateLineCache();
       virtual bool CreateLineIndex(void);
@@ -220,7 +220,7 @@ protected:
 
       virtual int BSBScanScanline(wxInputStream *pinStream);
       virtual int ReadBSBHdrLine( wxFFileInputStream*, char *, int );
-      virtual int AnalyzeRefpoints(void);
+      virtual int AnalyzeRefpoints(bool b_testSolution = true);
       virtual bool AnalyzeSkew(void);
       
       virtual bool SetMinMax(void);
@@ -228,6 +228,7 @@ protected:
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
       InitReturn PostInit(void);
 
+      double AdjustLongitude(double lon);
 
 
 //    Protected Data
@@ -260,7 +261,7 @@ protected:
 
 
       wxRect      Rsrc;                   // Current chart source rectangle
-
+      double      m_raster_scale_factor;
 
       int         nRefpoint;
       Refpoint    *pRefTable;
@@ -315,11 +316,6 @@ protected:
 
       double      m_ppm_avg;              // Calculated true scale factor of the 1X chart,
                                         // pixels per meter
-
-      double      m_raster_scale_factor;        // exact scaling factor for pixel oversampling calcs
-
-      bool      m_bIDLcross;
-
       OCPNRegion  m_last_region;
 
       int       m_b_cdebug;
@@ -365,6 +361,78 @@ public:
       InitReturn Init( const wxString& name, ChartInitFlag init_flags );
 
 
+};
+
+// ----------------------------------------------------------------------------
+// ChartPlugInWrapper
+//    This class is a wrapper/interface to PlugIn charts(PlugInChartBase) as defined in ocpn_plugin.h
+// ----------------------------------------------------------------------------
+
+class PlugInChartBase;                  // found in ocpn_plugin.h
+
+class ChartPlugInWrapper : public ChartBaseBSB
+{
+      public:
+            ChartPlugInWrapper();
+            ChartPlugInWrapper(const wxString &chart_class);
+            virtual ~ChartPlugInWrapper();
+
+            virtual wxString GetFileSearchMask(void);
+
+            virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
+
+//    Accessors
+            virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
+            virtual ThumbData *GetThumbData();
+            virtual bool UpdateThumbData(double lat, double lon);
+
+            double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
+            double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
+
+            virtual bool GetChartExtent(Extent *pext);
+
+            virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
+                                              const OCPNRegion &Region);
+
+            virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                              const OCPNRegion &RectRegion, const LLRegion &Region);
+
+            virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+
+            virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
+
+            virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
+
+            virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
+            
+            virtual PlugInChartBase *GetPlugInChart(void){ return m_ppicb; }
+
+            virtual int GetCOVREntries();
+            virtual int GetCOVRTablePoints(int iTable);
+            virtual int GetCOVRTablenPoints(int iTable);
+            virtual float *GetCOVRTableHead(int iTable);
+
+            virtual int GetNoCOVREntries();
+            virtual int GetNoCOVRTablePoints(int iTable);
+            virtual int  GetNoCOVRTablenPoints(int iTable);
+            virtual float *GetNoCOVRTableHead(int iTable);
+            
+            //    The following set of methods apply to BSB (i.e. Raster) type PlugIn charts only
+            //    and need not be implemented if the ChartFamily is not CHART_FAMILY_RASTER
+            virtual void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
+            virtual double GetRasterScaleFactor(const ViewPort &vp);
+            virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
+            virtual int GetSize_X();
+            virtual int GetSize_Y();
+            virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
+            virtual void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
+            
+
+      private:
+            PlugInChartBase *m_ppicb;
+            wxObject          *m_ppo;
+            wxCriticalSection m_critSect;
+            
 };
 
 #endif

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBGeneralSettings"
+        android:title="General"
+        android:summary="Set General Display Options">
+    </header>
+
+    <header
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWindSettings"
+        android:title="Wind"
+        android:summary="Set Wind Display Options">
+    </header>
+
+    <header
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBPressureSettings"
+        android:title="Pressure"
+        android:summary="Set Pressure Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_gust"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBGustSettings"
+        android:title="Wind Gust"
+        android:summary="Set Wind Gust Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_waves"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWaveSettings"
+        android:title="Wave Height/Direction"
+        android:summary="Set Wave Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_current"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCurrentSettings"
+        android:title="Current"
+        android:summary="Set Current Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_rainfall"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBRainfallSettings"
+        android:title="Rainfall"
+        android:summary="Set Rainfall Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_cloudcover"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCloudSettings"
+        android:title="Cloudcover"
+        android:summary="Set Cloudcover Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_airtemp"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBAirtempSettings"
+        android:title="Air temperature"
+        android:summary="Set Air Temperature Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_seatemp"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBSeatempSettings"
+        android:title="Sea temperature"
+        android:summary="Set Sea Temperature Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_cape"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCAPESettings"
+        android:title="CAPE"
+        android:summary="Set CAPE Display Options">
+    </header>
+
+<!--
+    <header
+        android:key="grib_pref_altgeo"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBAltGeoSettings"
+        android:title="Geopotential Altitude"
+        android:summary="Set Geopotential Altitude Display Options">
+    </header>
+
+    <header
+        android:key="grib_pref_rh"
+        android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBRelHumSettings"
+        android:title="Relative Humidity"
+        android:summary="Set Relative Humidity Display Options">
+    </header>
+-->
+
+</preference-headers>
+
+

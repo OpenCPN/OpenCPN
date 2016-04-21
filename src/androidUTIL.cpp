@@ -52,6 +52,10 @@
 #include "TCWin.h"
 #include "ocpn_plugin.h"
 #include "about.h"
+#include "OCPNPlatform.h"
+#include "multiplexer.h"
+#include "chartdbs.h"
+#include "glChartCanvas.h"
 
 const wxString AndroidSuppLicense =
 wxT("<br><br>The software included in this product contains copyrighted software that is licensed under the GPL.")
@@ -65,8 +69,8 @@ wxT("31 Ocean Reef Dr<br>")
 wxT("# C101-449<br>")
 wxT("Key Largo, FL 33037-5282<br>")
 wxT("United States<br><br>")
-wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>")
-wxT("You may also find a copy of the source at https://github.com/OpenCPN/OpenCPN.");
+wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>");
+
 
 
 
@@ -98,6 +102,7 @@ extern RouteManagerDialog        *pRouteManagerDialog;
 extern ChartCanvas               *cc1;
 extern about                     *g_pAboutDlg;
 extern bool                      g_bFullscreen;
+extern OCPNPlatform              *g_Platform;
 
 // Static globals
 extern ChartDB                   *ChartData;
@@ -141,7 +146,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
@@ -227,6 +232,7 @@ extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 extern bool             g_bShowStatusBar;
 
+extern ocpnGLOptions    g_GLOptions;
 
 
 //#ifdef USE_S57
@@ -245,7 +251,7 @@ extern bool             g_bUIexpert;
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
-extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
+//extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
@@ -263,6 +269,10 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 
 extern double           g_config_display_size_mm;
+extern float            g_ChartScaleFactorExp;
+
+extern Multiplexer      *g_pMUX;
+extern bool             b_inCloseWindow;
 
 wxString callActivityMethod_vs(const char *method);
 
@@ -288,16 +298,26 @@ int             g_sel;
 int             g_ActionBarHeight;
 bool            g_follow_active;
 bool            g_track_active;
+bool            bGPSEnabled;
 
 wxSize          config_size;
 
 bool            s_bdownloading;
 wxString        s_requested_url;
 wxEvtHandler    *s_download_evHandler;
+bool            g_running;
+bool            g_bstress1;
+extern int      g_GUIScaleFactor;
 
 wxString        g_deviceInfo;
 
+int             s_androidMemTotal;
+int             s_androidMemUsed;
+
+extern int ShowNavWarning();
+
 #define ANDROID_EVENT_TIMER 4389
+#define ANDROID_STRESS_TIMER 4388
 
 #define ACTION_NONE                     -1
 #define ACTION_RESIZE_PERSISTENTS       1
@@ -310,13 +330,15 @@ class androidUtilHandler : public wxEvtHandler
     ~androidUtilHandler() {}
     
     void onTimerEvent(wxTimerEvent &event);
-    
+    void onStressTimer(wxTimerEvent &event);
+        
     wxString GetStringResult(){ return m_stringResult; }
     
     wxTimer     m_eventTimer;
     int         m_action;
     bool        m_done;
     wxString    m_stringResult;
+    wxTimer     m_stressTimer;
     
     DECLARE_EVENT_TABLE()
 };
@@ -328,6 +350,7 @@ END_EVENT_TABLE()
 androidUtilHandler::androidUtilHandler()
 {
     m_eventTimer.SetOwner( this, ANDROID_EVENT_TIMER );
+    m_stressTimer.SetOwner( this, ANDROID_STRESS_TIMER );
     
 }
 
@@ -527,12 +550,35 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
     
 }
 
+int stime;
+
+void androidUtilHandler::onStressTimer(wxTimerEvent &event){
+
+    g_GUIScaleFactor = -5;
+    g_ChartScaleFactor = -5;
+    gFrame->SetToolbarScale();
+    gFrame->SetGPSCompassScale();
+    
+    s_androidMemUsed  = 80;
+    
+    g_GLOptions.m_bTextureCompression = 0;
+    g_GLOptions.m_bTextureCompressionCaching = 0;
+    
+    if(600 == stime++) androidTerminate();
+    
+}
+
+
 
 bool androidUtilInit( void )
 {
     g_androidUtilHandler = new androidUtilHandler();
 
     //  Initialize some globals
+    
+    s_androidMemTotal  = 100;
+    s_androidMemUsed  = 50;
+    
     wxString dirs = callActivityMethod_vs("getSystemDirs");
     wxStringTokenizer tk(dirs, _T(";"));
     if( tk.HasMoreTokens() ){
@@ -556,6 +602,23 @@ bool androidUtilInit( void )
     g_mask = -1;
     g_sel = -1;
     
+    
+    wxStringTokenizer tku(g_androidExtFilesDir, _T("/") );
+    while( tku.HasMoreTokens() )
+    {
+        wxString s1 = tku.GetNextToken();
+    
+        if(s1.Find(_T("org.")) != wxNOT_FOUND){
+            if(s1 != _T("org.opencpn.opencpn") ) g_bstress1 = true;
+        }
+    }
+                
+    if(g_bstress1){            
+        g_androidUtilHandler->Connect( g_androidUtilHandler->m_stressTimer.GetId(), wxEVT_TIMER, wxTimerEventHandler( androidUtilHandler::onStressTimer ), NULL, g_androidUtilHandler );
+        g_androidUtilHandler->m_stressTimer.Start(1000, wxTIMER_CONTINUOUS);
+    }
+    
+    
     return true;
 }
 
@@ -567,7 +630,6 @@ wxSize getAndroidConfigSize()
 
 void resizeAndroidPersistents()
 {
-//    qDebug() << "resizeAndroidPersistents";
     
      if(g_androidUtilHandler){
      
@@ -578,33 +640,13 @@ void resizeAndroidPersistents()
 
 jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
-    //qDebug() << "JNI_OnLoad";
     java_vm = vm;
     
     // Get JNI Env for all function calls
     if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        //qDebug() << "GetEnv failed.";
         return -1;
     }
     
-#if 0
-    // Find the class calling native function
-    jclass NativeUsb = (*env)->FindClass(env, "com/venky/Home");
-    if (class_home == NULL) {
-        LOG_D ("FindClass failed : No class found.");
-        return -1;
-}
-
-// Register native method for getUsbPermission
-JNINativeMethod nm[1] = {
-    { "getPermission", "(Landroid/app/Activity;)I", get_permission}
-};
-
-if ((*env)->RegisterNatives(env, NativeUsb, nm , 1)) {
-    LOG_D ("RegisterNatives Failed.");
-    return -1;
-}
-#endif
     return JNI_VERSION_1_6;
 }
 
@@ -626,9 +668,6 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
     {
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
-//        wxString wstring = wxString(string, wxConvUTF8);
-        
-//        qDebug() << "processNMEA" << string;
  
         char tstr[200];
         strncpy(tstr, string, 190);
@@ -652,8 +691,6 @@ extern "C"{
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
         wxString wstring = wxString(string, wxConvUTF8);
         
-//        qDebug() << "processNMEA" << string;
-        
         char tstr[200];
         strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
@@ -674,11 +711,10 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(JNIEnv *env, jobject obj)
     {
-//        qDebug() << "onConfigChange";
+        wxLogMessage(_T("onConfigChange"));
         GetAndroidDisplaySize();
         
         wxSize new_size = getAndroidDisplayDimensions();
-//        qDebug() << "onConfigChange" << new_size.x << new_size.y;
         
         config_size = new_size;
         
@@ -695,12 +731,10 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMouseWheel(JNIEnv *env, jobject obj, int dir)
     {
-        //qDebug() << "onMouseWheel" << dir;
         
         wxMouseEvent evt(wxEVT_MOUSEWHEEL);
         evt.m_wheelRotation = dir;
         if(cc1 && cc1->GetEventHandler()){
-            //qDebug() << "send event";
             cc1->GetEventHandler()->AddPendingEvent(evt);
         }
         
@@ -711,7 +745,6 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onMenuKey(JNIEnv *env, jobject obj)
     {
-        //qDebug() << "onMenuKey";
 
         gFrame->ToggleToolbar();
             
@@ -723,11 +756,12 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStop";
+        wxLogMessage(_T("onStop"));
+        
         
         //  App may be summarily killed after this point due to OOM condition.
         //  So we need to persist some dynamic data.
         if(pConfig){
-            qDebug() << "startPersist";
         
         //  Persist the config file, especially to capture the viewport location,scale etc.
             pConfig->UpdateSettings();
@@ -736,8 +770,9 @@ extern "C"{
         //  We commit the navobj deltas, and flush the restore file 
             pConfig->UpdateNavObj();
 
-            qDebug() << "endPersist";
         }
+        
+        g_running = false;
         
         return 98;
     }
@@ -747,10 +782,11 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env, jobject obj)
     {
         qDebug() << "onStart";
+        wxLogMessage(_T("onStart"));
         
-        // Set initial ActionBar item states
-        androidSetFollowTool(cc1->m_bFollow);
-        androidSetRouteAnnunciator( false );
+        if(g_bstress1) ShowNavWarning();
+        
+        g_running = true;
         
         return 99;
     }
@@ -760,10 +796,10 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onPause(JNIEnv *env, jobject obj)
     {
         qDebug() << "onPause";
-        
+        wxLogMessage(_T("onPause"));
         g_bSleep = true;
         
-        
+        androidGPSService( GPS_OFF );
         
         return 97;
     }
@@ -773,23 +809,50 @@ extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onResume(JNIEnv *env, jobject obj)
     {
         qDebug() << "onResume";
+        wxLogMessage(_T("onResume"));
+        
+        int ret = 96;
         
         g_bSleep = false;
+        
+        if(bGPSEnabled)
+            androidGPSService( GPS_ON );
+        
 
+        if(cc1){
+            glChartCanvas *glc = cc1->GetglCanvas();
+            QGLWidget *glw = glc->GetHandle();
+            qDebug() << glw;
+            if(glw){
+                 QGLContext *context = glw->context();
+                 qDebug() << context;
+                 if(context){
+                     qDebug() << context->isValid();
+                     if(context->isValid())
+                         ret = 1;
+                     else{
+                         wxLogMessage(_T("OpenGL Lost Context"));
+                         ret = 0;
+                     }
+ 
+                 }
+            }
+        }
+        
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( ID_CMD_INVALIDATE );
         
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
+
         
-        return 96;
+        return ret;
     }
 }
 
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_selectChartDisplay(JNIEnv *env, jobject obj, int type, int family)
     {
-//        qDebug() << "selectChartDisplay" << type << family;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         if(type == CHART_TYPE_CM93COMP){
@@ -948,6 +1011,23 @@ extern "C"{
 }       
 
 extern "C"{
+    JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_getTLWCount(JNIEnv *env, jobject obj)
+    {
+        int ret = 0;
+        wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
+        while (node)
+        {
+            wxWindow* win = node->GetData();
+            if(win->IsShown())
+                ret++;
+            
+            node = node->GetNext();
+        }
+        return ret;
+    }
+}       
+
+extern "C"{
     JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_notifyFullscreenChange(JNIEnv *env, jobject obj, bool bFull)
     {
         g_bFullscreen = bFull;
@@ -1019,6 +1099,31 @@ extern "C"{
     
 }       
 
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_sendPluginMessage(JNIEnv *env, jobject obj, jstring msgID, jstring msg)
+    {
+        const char *sparm;
+        wxString MsgID;
+        wxString Msg;
+        
+        //  Need a Java environment to decode the string parameter
+        if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+            //qDebug() << "GetEnv failed.";
+        }
+        else {
+            sparm = (jenv)->GetStringUTFChars(msgID, NULL);
+            MsgID = wxString(sparm, wxConvUTF8);
+            
+            sparm = (jenv)->GetStringUTFChars(msg, NULL);
+            Msg = wxString(sparm, wxConvUTF8);
+            
+        }
+        
+        SendPluginMessage( MsgID, Msg );
+        
+        return 74;
+    }
+}
 
 void androidTerminate(){
     callActivityMethod_vs("terminateApp");
@@ -1315,18 +1420,41 @@ void androidLaunchHelpView()
     callActivityMethod_vs("launchHelpView");
 }
 
+void androidLaunchBrowser( wxString URL )
+{
+    callActivityMethod_ss("launchWebView", URL);
+}
+
 
 bool androidShowDisclaimer( wxString title, wxString msg )
 {
     wxString ret_val = callActivityMethod_s2s("disclaimerDialog", title, msg);
     return (ret_val == _T("OK"));
 }
-    
+
+extern PlatSpec android_plat_spc;
 
 wxString androidGetDeviceInfo()
 {
     if(!g_deviceInfo.Length())
         g_deviceInfo = callActivityMethod_vs("getDeviceInfo");
+    
+    wxStringTokenizer tkz(g_deviceInfo, _T("\n"));
+    while( tkz.HasMoreTokens() )
+    {
+        wxString s1 = tkz.GetNextToken();
+        if(wxNOT_FOUND != s1.Find(_T("OS API Level"))){
+            int a = s1.Find(_T("{"));
+            if(wxNOT_FOUND != a){
+                wxString b = s1.Mid(a+1, 2);
+                memset(&android_plat_spc.msdk[0], 0, 3);
+                strncpy(&android_plat_spc.msdk[0], b.c_str(), 2);
+            }
+        }
+        if(wxNOT_FOUND != s1.Find(_T("opencpn"))){
+            strcpy(&android_plat_spc.hn[0], s1.c_str());
+        }
+    }
     
     return g_deviceInfo;
 }
@@ -1458,9 +1586,9 @@ bool androidGetMemoryStatus( int *mem_total, int *mem_used )
     
     //  On android, We arbitrarily declare that we have used 50% of available memory.
     if(mem_total)
-        *mem_total = 100 * 1024;
+        *mem_total = s_androidMemTotal * 1024;
     if(mem_used)
-        *mem_used = 50 * 1024;
+        *mem_used = s_androidMemUsed * 1024;
     return true;
     
 #if 0
@@ -1579,17 +1707,6 @@ double GetAndroidDisplaySize()
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
 
-//    qDebug() << "g_androidDPmm" << g_androidDPmm;
-//    qDebug() << "Auto Display Size (mm)" << ret;
-//    qDebug() << "ldpi" << ldpi;
-    
-    
-//     wxString istr = return_string.BeforeFirst('.');
-//     
-//     long ldpi;
-//     if( istr.ToLong(&ldpi)){
-//         ret = (::wxGetDisplaySize().x/(double)ldpi) * 25.4;
-//     }
 
     return ret;
 }
@@ -1709,7 +1826,8 @@ void androidConfirmSizeCorrection()
     //  There is some confusion about the ActionBar size during configuration changes.
     //  We need to confirm the calculated display size, and fix it if necessary.
     //  This happens during staged resize events processed by gFrame->TriggerResize()
-    
+ 
+    wxLogMessage(_T("androidConfirmSizeCorrection"));
     wxSize targetSize = getAndroidDisplayDimensions();
 //    qDebug() << "Confirming" << targetSize.y << config_size.y;
     if(config_size != targetSize){
@@ -1721,6 +1839,8 @@ void androidConfirmSizeCorrection()
         
 void androidForceFullRepaint()
 {
+        wxLogMessage(_T("androidForceFullRepaint"));
+    
         wxSize targetSize = getAndroidDisplayDimensions();
         wxSize tempSize = targetSize;
         tempSize.y--;
@@ -1800,12 +1920,14 @@ bool androidStartNMEA(wxEvtHandler *consumer)
     if(s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND){
         OCPNMessageBox(NULL,
                        _("Your android device has an internal GPS, but it is disabled.\n\
-                       Please visit android Settings/Location dialog to enabled GPS"),
+                       Please visit android Settings/Location dialog to enable GPS"),
                         _T("OpenCPN"), wxOK );        
         
         androidStopNMEA();
         return false;
     }
+    else
+        bGPSEnabled = true;
     
     return true;
 }
@@ -1815,6 +1937,8 @@ bool androidStopNMEA()
     s_pAndroidNMEAMessageConsumer = NULL;
     
     wxString s = androidGPSService( GPS_OFF );
+    
+    bGPSEnabled = false;
     
     return true;
 }
@@ -1947,6 +2071,53 @@ wxArrayString androidGetBluetoothScanResults()
     return ret_array;
 }
 
+bool androidCheckOnline()
+{
+    wxString val = callActivityMethod_vs("isNetworkAvailable");
+    return val.IsSameAs(_T("YES"));
+}
+
+wxArrayString *androidGetSerialPortsArray( void )
+{
+  
+    wxArrayString *pret_array = new wxArrayString;
+    wxString result = callActivityMethod_is("scanSerialPorts", 0);
+    
+    wxStringTokenizer tk(result, _T(";"));
+    while ( tk.HasMoreTokens() )
+    {
+        wxString token = tk.GetNextToken();
+        pret_array->Add(token);
+    }
+    
+    return pret_array;
+}
+
+bool androidStartUSBSerial(wxString &portname, wxString& baudRate, wxEvtHandler *consumer)
+{
+    wxString result = callActivityMethod_s2s("startSerialPort", portname, baudRate);
+    
+    s_pAndroidNMEAMessageConsumer = consumer;
+    
+    return true;
+}
+
+bool androidStopUSBSerial(wxString &portname)
+{
+    s_pAndroidNMEAMessageConsumer = NULL;
+    
+    //  If app is closing down, the USB serial ports will go away automatically.
+    //  So no need here.
+    //  In fact, stopSerialPort() causes an occasional error when closing app.
+    //  Dunno why, difficult to debug.
+    if(!b_inCloseWindow)
+        wxString result = callActivityMethod_ss("stopSerialPort", portname);
+    
+    return true;
+}
+
+
+
 int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
                         const wxString &suggestion, const wxString &wildcard, bool dirOnly)
 {
@@ -2007,63 +2178,6 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
 }
 
     
-#if 0
-void invokeApp( void )
-{
-    void runApplication(const QString &packageName, const QString &className)
-{
-    qDebug() << "Start app: " <<packageName <<", "<<className;
-    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-                "org/qtproject/qt5/android/QtNative", "activity",
-                "()Landroid/app/Activity;");   //activity is valid
-
-    if ( activity.isValid() )
-    {
-        // Equivalent to Jave code: 'Intent intent = new Intent();'
-        QAndroidJniObject intent("android/content/Intent","()V");
-
-        if ( intent.isValid() )
-        {
-            QAndroidJniObject jPackageName = QAndroidJniObject::fromString(packageName);
-            QAndroidJniObject jClassName = QAndroidJniObject::fromString(className);
-
-            if ( jPackageName.isValid() && jClassName.isValid() )
-            {
-                // Equivalent to Jave code: 'intent.setClassName("com.android.settings", "com.android.settings.DevelopmentSettings");'
-                intent.callObjectMethod("setClassName",
-                                        "(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
-                                        jPackageName.object<jstring>(),jClassName.object<jstring>());
-
-                jint flag = QAndroidJniObject::getStaticField<jint>(
-                            "android/content/Intent",
-                            "FLAG_ACTIVITY_NEW_TASK");
-
-                intent.callObjectMethod("setFlags", "(I)V",flag);
-
-                // Equivalent to Jave code: 'startActivity(intent);'
-                QAndroidJniEnvironment env;
-                activity.callObjectMethod(
-                            "startActivity",
-                            "(Landroid/content/Intent;)V",
-                            intent.object<jobject>());
-                if (env->ExceptionCheck()) {
-                    qDebug() << "Intent not found!";
-                    env->ExceptionClear(); // TODO: stupid method! Remove this!
-                }
-            } else {
-                qDebug() << "Action is not valid";
-            }
-        } else {
-            qDebug() << "Intent is not valid";
-        }
-    } else {
-        qDebug() << "Activity is not valid";
-    }
-}
-
-
-}
-#endif
 
 bool InvokeJNIPreferences( wxString &initial_settings)
 {
@@ -2214,7 +2328,24 @@ wxString BuildAndroidSettingsString( void )
             if(INTERNAL_GPS == cp->Type){
                 result += _T("prefb_internalGPS:");
                 result += cp->bEnabled ? _T("1;") : _T("0;");
-                break;                  // there can only be one entry for type INTERNAL_GPS
+            }                    
+            if(SERIAL == cp->Type){
+                if(wxNOT_FOUND != cp->GetPortStr().Find(_T("PL2303"))){
+                    result += _T("prefb_PL2303:");
+                    result += cp->bEnabled ? _T("1;") : _T("0;");
+                }
+                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("dAISy"))){
+                    result += _T("prefb_dAISy:");
+                    result += cp->bEnabled ? _T("1;") : _T("0;");
+                }
+                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("FT232R"))){
+                    result += _T("prefb_FT232R:");
+                    result += cp->bEnabled ? _T("1;") : _T("0;");
+                }
+                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("FT231X"))){
+                    result += _T("prefb_FT231X:");
+                    result += cp->bEnabled ? _T("1;") : _T("0;");
+                }
             }                    
         }
     
@@ -2222,6 +2353,410 @@ wxString BuildAndroidSettingsString( void )
     
     return result;
 }
+
+const wxString AUSBNames[] = { _T("AUSBSerial:Prolific_PL2303"), _T("AUSBSerial:FTDI_FT232R"), _T("AUSBSerial:FTDI_FT231X"), _T("AUSBSerial:dAISy"), _T("LASTENTRY") };
+const wxString AUSBPrefs[] = { _T("prefb_PL2303"),               _T("prefb_FT232R"),           _T("prefb_FT231X"),           _T("prefb_dAISy")     , _T("LASTENTRY") };
+
+
+int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
+{
+    
+    //  Parse the passed settings string
+    bool bproc_InternalGPS = false;
+    bool benable_InternalGPS = false;
+    
+    int rr = GENERIC_CHANGED;
+    
+    // extract chart directories
+        
+    if(ChartData){
+        wxStringTokenizer tkd(settings, _T(";"));
+        while ( tkd.HasMoreTokens() ){
+            wxString token = tkd.GetNextToken();
+            
+            if(token.StartsWith( _T("ChartDir"))){
+                wxString dir = token.AfterFirst(':');
+                if(dir.Length()){
+                    ChartDirInfo cdi;
+                    cdi.fullpath = dir.Trim();
+                    cdi.magic_number = ChartData->GetMagicNumberCached(dir.Trim());
+                    pACDI->Add(cdi);
+                }
+            }
+        }
+        
+        // Scan for changes
+        if(!ChartData->CompareChartDirArray( *pACDI )){
+            rr |= VISIT_CHARTS;
+            rr |= CHANGE_CHARTS;
+            wxLogMessage(_T("Chart Dir List change detected"));
+        }
+    }
+    
+    
+    wxStringTokenizer tk(settings, _T(";"));
+    while ( tk.HasMoreTokens() )
+    {
+        wxString token = tk.GetNextToken();
+        wxString val = token.AfterFirst(':');
+        
+        //  Binary switches
+        
+        if(token.StartsWith( _T("prefb_lookahead"))){
+            g_bLookAhead = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_quilt"))){
+            g_bQuiltEnable = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_lockwp"))){
+            g_bWayPointPreventDragging = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showdepthunits"))){
+            g_bShowDepthUnits = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_confirmdelete"))){
+            g_bConfirmObjectDelete = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showgrid"))){
+            g_bDisplayGrid = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_showoutlines"))){
+            g_bShowOutlines = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_expertmode"))){
+            g_bUIexpert = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefb_internalGPS"))){
+            bproc_InternalGPS = true;
+            benable_InternalGPS = val.IsSameAs(_T("1"));
+        }
+        else if(token.StartsWith( _T("prefs_navmode"))){
+            g_bCourseUp = val.IsSameAs(_T("Course Up"));
+        }
+        
+        
+        //  Strings, etc.
+        
+        else if(token.StartsWith( _T("prefs_UIScaleFactor"))){
+            double a;
+            if(val.ToDouble(&a))
+                g_GUIScaleFactor = wxRound( (a / 10.) - 5.);
+        }
+        
+        else if(token.StartsWith( _T("prefs_chartScaleFactor"))){
+            double a;
+            if(val.ToDouble(&a)){
+                g_ChartScaleFactor = wxRound( (a / 10.) - 5.);
+                g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
+            }
+        }
+        
+        else if(token.StartsWith( _T("prefs_chartInitDir"))){
+            *pInit_Chart_Dir = val;
+        }
+        
+        #ifdef USE_S57
+        if(ps52plib){
+            float conv = 1;
+            int depthUnit = ps52plib->m_nDepthUnitDisplay;
+            if ( depthUnit == 0 ) // feet
+                conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+                else if ( depthUnit == 2 ) // fathoms
+                conv = 0.3048f * 6; // 1 fathom is 6 feet
+                
+                if(token.StartsWith( _T("prefb_showsound"))){
+                    bool old_val = ps52plib->m_bShowSoundg;
+                    ps52plib->m_bShowSoundg = val.IsSameAs(_T("1"));
+                    if(old_val != ps52plib->m_bShowSoundg)
+                        rr |= S52_CHANGED;
+                }
+                else if(token.StartsWith( _T("prefb_showSCAMIN"))){
+                    bool old_val = ps52plib->m_bUseSCAMIN;
+                    ps52plib->m_bUseSCAMIN = val.IsSameAs(_T("1"));
+                    if(old_val != ps52plib->m_bUseSCAMIN)
+                        rr |= S52_CHANGED;
+                }
+                else if(token.StartsWith( _T("prefb_showimptext"))){
+                    bool old_val = ps52plib->m_bShowS57ImportantTextOnly;
+                    ps52plib->m_bShowS57ImportantTextOnly = val.IsSameAs(_T("1"));
+                    if(old_val != ps52plib->m_bShowS57ImportantTextOnly)
+                        rr |= S52_CHANGED;
+                }
+                else if(token.StartsWith( _T("prefb_showlightldesc"))){
+                    bool old_val = ps52plib->m_bShowLdisText;
+                    ps52plib->m_bShowLdisText = val.IsSameAs(_T("1"));
+                    if(old_val != ps52plib->m_bShowLdisText)
+                        rr |= S52_CHANGED;
+                }
+                else if(token.StartsWith( _T("prefb_showATONLabels"))){
+                    bool old_val = ps52plib->m_bShowAtonText;
+                    ps52plib->m_bShowAtonText = val.IsSameAs(_T("1"));
+                    if(old_val != ps52plib->m_bShowAtonText)
+                        rr |= S52_CHANGED;
+                }
+                
+                else if(token.StartsWith( _T("prefs_displaycategory"))){
+                    _DisCat old_nset = ps52plib->GetDisplayCategory();
+                    
+                    _DisCat nset = DISPLAYBASE;
+                    if(wxNOT_FOUND != val.Lower().Find(_T("base")))
+                        nset = DISPLAYBASE;
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("mariner")))
+                        nset = MARINERS_STANDARD;
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("standard")))
+                        nset = STANDARD;
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("all")))
+                        nset = OTHER;
+                    
+                    if(nset != old_nset){
+                        rr |= S52_CHANGED;
+                        ps52plib-> SetDisplayCategory( nset );
+                    }
+                }
+                
+                else if(token.StartsWith( _T("prefs_shallowdepth"))){
+                    double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
+                    double dval;
+                    if(val.ToDouble(&dval)){
+                        if(fabs(dval - old_dval) > .1){
+                            S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
+                            rr |= S52_CHANGED;
+                        }
+                    }
+                }
+                
+                else if(token.StartsWith( _T("prefs_safetydepth"))){
+                    double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
+                    double dval;
+                    if(val.ToDouble(&dval)){
+                        if(fabs(dval - old_dval) > .1){
+                            S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv );
+                            rr |= S52_CHANGED;
+                        }
+                    }
+                }
+                
+                else if(token.StartsWith( _T("prefs_deepdepth"))){
+                    double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
+                    double dval;
+                    if(val.ToDouble(&dval)){
+                        if(fabs(dval - old_dval) > .1){
+                            S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
+                            rr |= S52_CHANGED;
+                        }
+                    }
+                }
+                
+                else if(token.StartsWith( _T("prefs_vectorgraphicsstyle"))){
+                    LUPname old_LUP = ps52plib->m_nSymbolStyle;
+                    
+                    if(wxNOT_FOUND != val.Lower().Find(_T("paper")))
+                        ps52plib->m_nSymbolStyle = PAPER_CHART;
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("simplified")))
+                        ps52plib->m_nSymbolStyle = SIMPLIFIED;
+                    
+                    if(old_LUP != ps52plib->m_nSymbolStyle)
+                        rr |= S52_CHANGED;
+                    
+                }
+                
+                else if(token.StartsWith( _T("prefs_vectorboundarystyle"))){
+                    LUPname old_LUP = ps52plib->m_nBoundaryStyle;
+                    
+                    if(wxNOT_FOUND != val.Lower().Find(_T("plain")))
+                        ps52plib->m_nBoundaryStyle = PLAIN_BOUNDARIES;
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("symbolized")))
+                        ps52plib->m_nBoundaryStyle = SYMBOLIZED_BOUNDARIES;
+                    
+                    if(old_LUP != ps52plib->m_nBoundaryStyle)
+                        rr |= S52_CHANGED;
+                    
+                }
+                
+                else if(token.StartsWith( _T("prefs_vectorchartcolors"))){
+                    double old_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+                    
+                    if(wxNOT_FOUND != val.Lower().Find(_T("2")))
+                        S52_setMarinerParam( S52_MAR_TWO_SHADES, 1. );
+                    else if(wxNOT_FOUND != val.Lower().Find(_T("4")))
+                        S52_setMarinerParam( S52_MAR_TWO_SHADES, 0. );
+                    
+                    double new_dval = S52_getMarinerParam( S52_MAR_TWO_SHADES );
+                    if(fabs(new_dval - old_dval) > .1){
+                        rr |= S52_CHANGED;
+                    }
+                }
+        }
+        #endif        
+    }
+    
+    // Process Internal GPS Connection
+    if(g_pConnectionParams && bproc_InternalGPS){
+        
+        //  Does the connection already exist?
+        ConnectionParams *pExistingParams = NULL;
+        ConnectionParams *cp = NULL;
+        
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *xcp = g_pConnectionParams->Item(i);
+            if(INTERNAL_GPS == xcp->Type){
+                pExistingParams = xcp;
+                cp = xcp;
+                break;
+            }
+        }
+        
+        bool b_action = true;
+        if(pExistingParams){
+            if(pExistingParams->bEnabled == benable_InternalGPS)
+                b_action = false;                    // nothing to do...
+                else
+                    cp->bEnabled = benable_InternalGPS;
+        }
+        else if(benable_InternalGPS){           //  Need a new Params
+            // make a generic config string for InternalGPS.
+            wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms
+            ConnectionParams *new_params = new ConnectionParams(sGPS);
+            
+            new_params->bEnabled = benable_InternalGPS;
+            g_pConnectionParams->Add(new_params);
+            cp = new_params;
+        }
+        
+        
+        if(b_action && cp){                               // something to do?
+
+            // Terminate and remove any existing stream with the same port name
+            DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
+            if(pds_existing)
+                g_pMUX->StopAndRemoveStream( pds_existing );
+            
+            
+            if( cp->bEnabled ) {
+                dsPortType port_type = cp->IOSelect;
+                DataStream *dstr = new DataStream( g_pMUX,
+                                                   cp->Type,
+                                                   cp->GetDSPort(),
+                                                   wxString::Format(wxT("%i"), cp->Baudrate),
+                                                                    port_type,
+                                                                    cp->Priority,
+                                                                    cp->Garmin);
+                                                   dstr->SetInputFilter(cp->InputSentenceList);
+                                                   dstr->SetInputFilterType(cp->InputSentenceListType);
+                                                   dstr->SetOutputFilter(cp->OutputSentenceList);
+                                                   dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                                                   dstr->SetChecksumCheck(cp->ChecksumCheck);
+                                                   
+                                                   g_pMUX->AddStream(dstr);
+                                                   
+                                                   cp->b_IsSetup = true;
+            }
+        }
+    }
+    
+    // Process USB Serial Connections
+    bool b_newGlobalSettings = false;
+    if(g_pConnectionParams){
+        
+        int i = 0;
+        while( wxNOT_FOUND == AUSBPrefs[i].Find(_T("LASTENTRY")) ){
+            wxStringTokenizer tk(settings, _T(";"));
+            while ( tk.HasMoreTokens() )
+            {
+                wxString token = tk.GetNextToken();
+                wxString pref = token.BeforeFirst(':');
+                wxString val = token.AfterFirst(':');
+                bool benabled = false;
+                
+                if(pref.IsSameAs(AUSBPrefs[i])){
+                    
+                    //  Does the connection already exist?
+                    ConnectionParams *pExistingParams = NULL;
+                    ConnectionParams *cp = NULL;
+                    
+                    for ( unsigned int j = 0; j < g_pConnectionParams->Count(); j++ )
+                    {
+                        ConnectionParams *xcp = g_pConnectionParams->Item(j);
+                        wxLogMessage(AUSBNames[i] + " .. " +xcp->GetDSPort());
+                        
+                        if( (SERIAL == xcp->Type) && (AUSBNames[i].IsSameAs(xcp->GetDSPort().AfterFirst(':'))) ){
+                            pExistingParams = xcp;
+                            cp = xcp;
+                            benabled = val.IsSameAs(_T("1"));
+                            break;
+                        }
+                    }
+                    
+                    
+                    bool b_action = true;
+                    if(pExistingParams){
+                        if(pExistingParams->bEnabled == benabled){
+                            b_action = false;                    // nothing to do...
+                        }
+                        else
+                            cp->bEnabled = benabled;
+                    }
+                    else if(val.IsSameAs(_T("1"))){           //  Need a new Params
+                        // make a generic config string.
+                        //0;1;;0;0;/dev/ttyS0;4800;1;0;0;;0;;1;0;0;0;0        17 parms
+                        
+                        wxString sSerial = _T("0;1;;0;0;");
+                        sSerial += AUSBNames[i];
+                        sSerial += _T(";4800;1;0;0;;0;;1;0;0;0;0");
+                        
+                        
+                        ConnectionParams *new_params = new ConnectionParams(sSerial);
+                        
+                        new_params->bEnabled = true;
+                        g_pConnectionParams->Add(new_params);
+                        cp = new_params;
+                        rr |= NEED_NEW_OPTIONS;
+                    }
+                    
+                    
+                    
+                    
+                    if(b_action && cp){                               // something to do?
+                        rr |= NEED_NEW_OPTIONS;
+                        
+                        // Terminate and remove any existing stream with the same port name
+                        DataStream *pds_existing = g_pMUX->FindStream( cp->GetDSPort() );
+                        if(pds_existing)
+                            g_pMUX->StopAndRemoveStream( pds_existing );
+                        
+                        
+                        if( cp->bEnabled ) {
+                            dsPortType port_type = cp->IOSelect;
+                            DataStream *dstr = new DataStream( g_pMUX,
+                                                               cp->Type,
+                                                               cp->GetDSPort(),
+                                                               wxString::Format(wxT("%i"), cp->Baudrate),
+                                                               port_type,
+                                                               cp->Priority,
+                                                               cp->Garmin);
+                            dstr->SetInputFilter(cp->InputSentenceList);
+                            dstr->SetInputFilterType(cp->InputSentenceListType);
+                            dstr->SetOutputFilter(cp->OutputSentenceList);
+                            dstr->SetOutputFilterType(cp->OutputSentenceListType);
+                            dstr->SetChecksumCheck(cp->ChecksumCheck);
+                            
+                            g_pMUX->AddStream(dstr);
+                            
+                            cp->b_IsSetup = true;
+                        }
+                    }
+                }
+            }   // found pref
+            
+            i++;
+        }       // while
+    }
+    
+    return rr;
+}
+    
+    
 
 bool DoAndroidPreferences( void )
 {
@@ -2365,28 +2900,6 @@ wxString androidGetSupplementalLicense( void )
 }
 
 
-#if 0
-    // This is a way to invoke Android Settings dialog
-        QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
-                                                                               "activity", "()Landroid/app/Activity;");
-
-        if ( activity.isValid() )
-        {
-            QAndroidJniObject intent("android/content/Intent","()V");
-            if ( intent.isValid() )
-            {
-                QAndroidJniObject param1 = QAndroidJniObject::fromString("com.android.settings");
-                QAndroidJniObject param2 = QAndroidJniObject::fromString("com.android.settings.DevelopmentSettings");
-
-                if ( param1.isValid() && param2.isValid() )
-                {
-                    intent.callObjectMethod("setClassName","(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;", param1.object<jobject>(),param2.object<jobject>());
-
-                    activity.callObjectMethod("startActivity","(Landroid/content/Intent;)V",intent.object<jobject>());
-                }
-            }
-        }
-#endif
 
 
 
@@ -2407,29 +2920,5 @@ wxString androidGetSupplementalLicense( void )
 
 
 
-#if 0
-    JNIEnv *env;
-    JavaVM* lJavaVM = java_vm;     // static, comes from JNI_OnLoad
-    app->activity->vm->AttachCurrentThread(&env, NULL);
-
-    jobject lNativeActivity = app->activity->clazz;
-    jclass intentClass = env->FindClass("android/content/Intent");
-    jstring actionString =env->NewStringUTF("org.opencpn.opencpn.Settings");
-
-    jmethodID newIntent = env->GetMethodID(intentClass, "<init>", "()V");
-    jobject intent = env->AllocObject(intentClass);
-    env->CallVoidMethod(intent, newIntent);
-
-    jmethodID setAction = env->GetMethodID(intentClass, "setAction","(Ljava/lang/String;)Landroid/content/Intent;");
-    env->CallObjectMethod(intent, setAction, actionString);
-
-    jclass activityClass = env->FindClass("android/app/Activity");
-    jmethodID startActivity = env->GetMethodID(activityClass,"startActivity", "(Landroid/content/Intent;)V");
-    jobject intentObject = env->NewObject(intentClass,newIntent);
-    env->CallVoidMethod(intentObject, setAction,actionString);
-    env->CallVoidMethod(lNativeActivity, startActivity, intentObject);
-
-    app->activity->vm->DetachCurrentThread();
-#endif
 
 

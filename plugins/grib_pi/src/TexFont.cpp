@@ -40,21 +40,21 @@ TexFont::TexFont( )
 
 TexFont::~TexFont( )
 {
+    Delete( );
 }
 
-
-void TexFont::Build( wxFont &font, bool blur )
+void TexFont::Build( wxFont &font, bool blur, bool luminance )
 {
     /* avoid rebuilding if the parameters are the same */
     if(font == m_font && blur == m_blur)
         return;
-    
+
     m_font = font;
     m_blur = blur;
 
     m_maxglyphw = 0;
     m_maxglyphh = 0;
-    
+
     wxScreenDC sdc;
 
     sdc.SetFont( font );
@@ -73,8 +73,8 @@ void TexFont::Build( wxFont &font, bool blur )
         tgi[i].height = gh;
 
         tgi[i].advance = gw;
-        
-        
+
+
         m_maxglyphw = wxMax(tgi[i].width,  m_maxglyphw);
         m_maxglyphh = wxMax(tgi[i].height, m_maxglyphh);
     }
@@ -97,11 +97,11 @@ void TexFont::Build( wxFont &font, bool blur )
     wxMemoryDC dc;
     dc.SelectObject(tbmp);
     dc.SetFont( font );
-    
+
     /* fill bitmap with black */
     dc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
     dc.Clear();
-        
+
     /* draw the text white */
     dc.SetTextForeground( wxColour( 255, 255, 255 ) );
 
@@ -109,7 +109,7 @@ void TexFont::Build( wxFont &font, bool blur )
      wxBrush brush(wxColour( 255, 255, 255 ), wxTRANSPARENT);
      dc.SetPen(pen);
      dc.SetBrush(brush);
-  */  
+  */
     int row = 0, col = 0;
     for( int i = MIN_GLYPH; i < MAX_GLYPH; i++ ) {
         if(col == COLS_GLYPHS) {
@@ -127,13 +127,13 @@ void TexFont::Build( wxFont &font, bool blur )
             text = wxString::Format(_T("%c"), i);
 
         dc.DrawText(text, tgi[i].x, tgi[i].y );
-        
+
 //        dc.DrawRectangle(tgi[i].x, tgi[i].y, tgi[i].advance, tgi[i].height);
         col++;
     }
 
     dc.SelectObject(wxNullBitmap);
-    
+
     wxImage image = tbmp.ConvertToImage();
 
     GLuint format, internalformat;
@@ -147,7 +147,7 @@ void TexFont::Build( wxFont &font, bool blur )
         image = image.Blur(1);
 
     unsigned char *imgdata = image.GetData();
-    
+
     if(imgdata){
         unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
 
@@ -171,14 +171,16 @@ void TexFont::Build( wxFont &font, bool blur )
 
         free(teximage);
     }
-    
+
     m_built = true;
 }
 
 void TexFont::Delete( )
 {
-    glDeleteTextures(1, &texobj);
-    texobj = 0;
+    if (texobj != 0) {
+        glDeleteTextures(1, &texobj);
+        texobj = 0;
+    }
 }
 
 void TexFont::GetTextExtent(const char *string, int len, int *width, int *height)

@@ -33,9 +33,26 @@
 #ifndef __OCPNTYPES_H__
 #define __OCPNTYPES_H__
 
-//#include "bbox.h"
-//#include "OCPNRegion.h"
-//class OCPNRegion;
+
+typedef struct _S52color{
+    char colName[20];
+    unsigned char  R;
+    unsigned char  G;
+    unsigned char  B;
+}S52color;
+
+WX_DECLARE_STRING_HASH_MAP( wxColour, wxColorHashMap );
+WX_DECLARE_STRING_HASH_MAP( S52color, colorHashMap );
+
+typedef struct _colTable {
+    wxString *tableName;
+    wxString rasterFileName;
+    wxArrayPtrVoid *color;
+    colorHashMap colors;
+    wxColorHashMap wxColors;
+} colTable;
+
+
 
 WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 

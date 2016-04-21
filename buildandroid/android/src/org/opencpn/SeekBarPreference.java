@@ -26,6 +26,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
     private int mMaxValue      = 100;
     private int mMinValue      = 0;
     private int mInterval      = 1;
+    private int mDefaultValue  = 1;
     private int mCurrentValue;
     private String mUnitsLeft  = "";
     private String mUnitsRight = "";
@@ -53,10 +54,12 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
     private void setValuesFromXml(AttributeSet attrs) {
         mMaxValue = attrs.getAttributeIntValue(ANDROIDNS, "max", 100);
         mMinValue = attrs.getAttributeIntValue(APPLICATIONNS, "min", 0);
+        mDefaultValue = attrs.getAttributeIntValue(ANDROIDNS, "defaultValue", 100);
 
         mUnitsLeft = getAttributeStringValue(attrs, APPLICATIONNS, "unitsLeft", "");
         String units = getAttributeStringValue(attrs, APPLICATIONNS, "units", "");
         mUnitsRight = getAttributeStringValue(attrs, APPLICATIONNS, "unitsRight", units);
+
 
         try {
             String newInterval = attrs.getAttributeValue(APPLICATIONNS, "interval");
@@ -204,7 +207,7 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
         }
         else {
             persistString("50");
-            mCurrentValue = 50;
+            mCurrentValue = mDefaultValue;
         }
 
     }
@@ -215,7 +218,9 @@ public class SeekBarPreference extends Preference implements OnSeekBarChangeList
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        mSeekBar.setEnabled(enabled);
+        if (mSeekBar != null) {
+            mSeekBar.setEnabled(enabled);
+        }
     }
 
     @Override

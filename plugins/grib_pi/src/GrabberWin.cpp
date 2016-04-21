@@ -135,26 +135,19 @@ void GribGrabberWin::OnMouseEvent( wxMouseEvent& event )
 void GribGrabberWin::OnPaint( wxPaintEvent& event )
 {
     wxPaintDC dc( this );
-    dc.DrawBitmap( m_bitmap, 0, 0, true );
+    dc.DrawBitmap( m_bitmap, 0, 5, true );
 
 }
 
-int GribGrabberWin::Size( int height )
-
+void GribGrabberWin::Size( double factor )
 {
- //   int margin = 8;     //bitmap y will be always extended at least by 8 pix
-
     wxBitmap bitmap = (wxBitmap( grabber ));
-    int width = bitmap.GetWidth();
-
-/*    if( height < bitmap.GetHeight() + margin )
-        bitmap = bitmap.GetSubBitmap( wxRect(0, 0, width, height - margin) );*/
+    int width = (int)(bitmap.GetWidth() * factor);
+    int height = (int)(bitmap.GetHeight() * factor);
 
     wxImage scaled_image = bitmap.ConvertToImage();
     m_bitmap = wxBitmap(scaled_image.Scale(width, height, wxIMAGE_QUALITY_HIGH));
 
-    SetSize( wxSize( width, height ));
-    SetMinSize( wxSize( width, height ));
-
-    return width;
+    SetSize(wxSize(width, height));
+    SetMinSize(wxSize(width, height));
 }

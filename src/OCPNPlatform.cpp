@@ -44,6 +44,8 @@
 #include "navutil.h"
 #include "ConnectionParams.h"
 #include "FontMgr.h"
+#include "s52s57.h"
+#include "options.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -56,6 +58,8 @@
 // Include CrashRpt Header
 #ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
+#endif
+#ifdef __MSVC__
 #include <new.h>
 #endif
 
@@ -138,6 +142,9 @@ extern wxColour                  g_colourWaypointRangeRingsColour;
 extern bool                      g_bWayPointPreventDragging;
 extern bool                      g_bConfirmObjectDelete;
 
+extern options                   *g_options;
+extern bool                      g_boptionsactive;
+
 // AIS Global configuration
 extern bool                      g_bShowAIS;
 extern bool                      g_bCPAMax;
@@ -154,7 +161,7 @@ extern bool                      g_bShowCOG;
 extern double                    g_ShowCOG_Mins;
 extern bool                      g_bAISShowTracks;
 extern double                    g_AISShowTracks_Mins;
-extern bool                      g_bShowMoored;
+extern bool                      g_bHideMoored;
 extern double                    g_ShowMoored_Kts;
 extern wxString                  g_sAIS_Alert_Sound_File;
 extern bool                      g_bAIS_CPA_Alert_Suppress_Moored;
@@ -218,6 +225,8 @@ extern double                   g_overzoom_emphasis_base;
 extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
+extern bool                     g_bPreserveScaleOnX;
+extern bool                     g_running;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -346,7 +355,7 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
-    if(g_bEmailCrashReport){
+    if(1/*g_bEmailCrashReport*/){
         info.pszEmailTo = _T("opencpn@bigdumboat.com");
         info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
         info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
@@ -430,7 +439,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 #endif
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
     //  Invoke my own handler for failures of malloc/new
     _set_new_handler( MyNewHandler );
     //  configure malloc to call the New failure handler on failure
@@ -470,7 +479,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 #endif
             
-#ifdef __WXMSW__
+#ifdef __MSVC__
             
             //    Handle any Floating Point Exceptions which may leak thru from other
             //    processes.  The exception filter is in cutil.c
@@ -560,7 +569,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_RemoveLost_Mins = 10;
     g_bShowCOG = true;
     g_ShowCOG_Mins = 6;
-    g_bShowMoored = true;
+    g_bHideMoored = false;
     g_ShowMoored_Kts = 0.2;
     g_bTrackDaily = false;
     g_PlanSpeed = 6.;
@@ -571,8 +580,83 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bDrawAISSize = false;
     g_bShowAISName = false;
     g_nTrackPrecision = 2;
+    g_bPreserveScaleOnX = true;
+    
+    // Initial S52/S57 options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
+        pConfig->Write( _T ( "bShowS57Text" ), false );
+        pConfig->Write( _T ( "bShowS57ImportantTextOnly" ), false );
+        pConfig->Write( _T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD );
+        pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
+        pConfig->Write( _T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES );
+        
+        pConfig->Write( _T ( "bShowSoundg" ), false );
+        pConfig->Write( _T ( "bShowMeta" ), false );
+        pConfig->Write( _T ( "bUseSCAMIN" ), true );
+        pConfig->Write( _T ( "bShowAtonText" ), false );
+        pConfig->Write( _T ( "bShowLightDescription" ), false );
+        pConfig->Write( _T ( "bExtendLightSectors" ), true );
+        pConfig->Write( _T ( "bDeClutterText" ), true );
+        pConfig->Write( _T ( "bShowNationalText" ), false );
+        
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 5 );
+        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 2 );
+        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 10 );
+        pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
+        pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
+     }
     
     
+#ifdef __WXMSW__
+    //  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/chartdldr_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+
+        pConfig->SetPath( _T ( "/PlugIns/wmm_pi.dll" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
+        
+    }
+#endif
+
+#ifdef __WXOSX__
+//  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.dylib" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
+        
+    }
+#endif
+
+#ifdef __LINUX__
+//  Enable some default PlugIns, and their default options
+    if(pConfig){
+        pConfig->SetPath( _T ( "/PlugIns/libchartdldr_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libwmm_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath ( _T ( "/Settings/WMM" ) );
+        pConfig->Write ( _T ( "ShowIcon" ), true );
+        pConfig->Write ( _T ( "ShowLiveIcon" ), true );
+        
+    }
+#endif
+
+        
 #ifdef __OCPN__ANDROID__
     
 #ifdef ocpnUSE_GL
@@ -580,9 +664,6 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompression = 1;
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
-    
-    //[PlugIns/libchartdldr_pi.so]
-    //bEnabled=1
     
     g_btouch = true;
     g_bresponsive = true;
@@ -619,6 +700,18 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
         pConfig->Write ( _T ( "ShowIcon" ), false );
    
+        pConfig->SetPath( _T ( "/PlugIns/libgrib_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/libdashboard_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
+        pConfig->SetPath( _T ( "/PlugIns/GRIB" ) );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosX" ), 0 );
+        pConfig->Write ( _T ( "GRIBCtrlBarPosY" ), 90 );
+
+        pConfig->SetPath ( _T ( "/Settings/GRIB" ) );
+        pConfig->Write ( _T ( "CursorDataShown" ), 0 );
         
         pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
 
@@ -636,6 +729,17 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     
     
+}
+
+
+int OCPNPlatform::platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray){
+    
+    int ret_val = 0;
+#ifdef __OCPN__ANDROID__    
+    ret_val = androidApplySettingsString( settings, pDirArray);
+#endif
+    
+    return ret_val;
 }
 
 
@@ -917,8 +1021,9 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     
     wxFileDialog *psaveDialog = new wxFileDialog( parent, Title, initDir, suggestedName, mask, flag );
 
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
     
 #ifdef __WXOSX__
     if(parent)
@@ -932,8 +1037,8 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
         parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
 #endif
 
-	if(file_spec)
-		*file_spec = psaveDialog->GetPath();
+    if(file_spec)
+        *file_spec = psaveDialog->GetPath();
     delete psaveDialog;
         
 #endif
@@ -961,8 +1066,9 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     dirSelector->SetFont(*qFont);
 
-    if(g_bresponsive)
-        dirSelector = AdjustDirDialogFont(parent, dirSelector);
+//    Try to reduce the dialog size, and scale fonts down, if necessary.
+//     if(g_bresponsive && parent)
+//         dirSelector = AdjustDirDialogFont(parent, dirSelector);
     
 #ifdef __WXOSX__
     if(parent)
@@ -999,7 +1105,8 @@ bool OCPNPlatform::InitializeLogFile( void )
     
 #ifdef  __WXOSX__
     
-    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences"
+    wxFileName LibPref(mlog_file);          // starts like "~/Library/Preferences/opencpn"
+    LibPref.RemoveLastDir();// takes off "opencpn"
     LibPref.RemoveLastDir();// takes off "Preferences"
     
     mlog_file = LibPref.GetFullPath();
@@ -1124,9 +1231,11 @@ void OCPNPlatform::ShowBusySpinner( void )
 #ifdef __OCPN__ANDROID__
     androidShowBusyIcon();
 #else 
+    #if wxCHECK_VERSION(2, 9, 0 )
     if( !::wxIsBusy() ){
         ::wxBeginBusyCursor();
     }
+    #endif
 #endif    
 }
 
@@ -1137,10 +1246,10 @@ void OCPNPlatform::HideBusySpinner( void )
 #else
     #if wxCHECK_VERSION(2, 9, 0 )
     if( ::wxIsBusy() )
-    #endif
     {
         ::wxEndBusyCursor();
     }
+    #endif
 #endif    
 }
 
@@ -1190,7 +1299,7 @@ double OCPNPlatform::getFontPointsperPixel( void )
     //  Make a measurement...
     wxScreenDC dc;
     
-    wxFont *f = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
+    wxFont *f = FontMgr::Get().FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
     dc.SetFont(*f);
     
@@ -1339,8 +1448,8 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
     return ret_dlg;
 }
         
-        wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
-        {
+wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
+{
             wxFileDialog* ret_dlg = dlg;
             
             dlg->Show();
@@ -1376,7 +1485,7 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             ret_dlg->Hide();
             
             return ret_dlg;
-        }
+}
         
 double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
 {
@@ -1386,40 +1495,60 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     // We try to arrange matters so that at GUIScaleFactor=0, the tool icons are approximately 9 mm in size
     // and that the value may range from 0.5 -> 2.0
     
-    if(g_bresponsive ){
-        //  Get the basic size of a tool icon
+    //  Get the basic size of a tool icon
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    wxSize style_tool_size = style->GetToolSize();
+    double tool_size = style_tool_size.x;
+    
+    // unless overridden by user, we declare the "best" tool size
+    // to be roughly the same as the ActionBar height.
+    //  This may be approximated in a device orientation-independent way as:
+    //   40pixels * DENSITY
+    double premult = 1.0;
+    if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
+        double target_size = 9.0;                // mm
+    
+        double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
+        
+    }
+    else{
+        premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
+    }            
+    
+    //Adjust the scale factor using the global GUI scale parameter
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+    
+//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
+    
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    
+#else
+    double premult = 1.0;
+
+    if(g_bresponsive){
+    //  Get the basic size of a tool icon
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         wxSize style_tool_size = style->GetToolSize();
         double tool_size = style_tool_size.x;
-        
-        // unless overridden by user, we declare the "best" tool size
-        // to be roughly the same as the ActionBar height.
-        //  This may be approximated in a device orientation-independent way as:
-        //   40pixels * DENSITY
-        double premult = 1.0;
-        if( g_config_display_size_manual && (g_config_display_size_mm > 0) ){
-            double target_size = 9.0;                // mm
-        
-            double basic_tool_size_mm = tool_size / GetDisplayDPmm();
-            premult = target_size / basic_tool_size_mm;
-            
-        }
-        else{
-            premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
-        }            
-        
-        //Adjust the scale factor using the global GUI scale parameter
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        
-//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
-        
-        rv = premult * postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+
+    // unless overridden by user, we declare the "best" tool size
+    // to be roughly 9 mm square.
+        double target_size = 9.0;                // mm
+
+        double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
     }
-        
-        
+
+    //Adjust the scale factor using the global GUI scale parameter
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
     
-#else
+    
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMax(rv, 0.5);      //  and at 0.5  
+
 #endif
 
     return rv;
@@ -1450,18 +1579,32 @@ double OCPNPlatform::GetCompassScaleFactor( int GUIScaleFactor )
         rv = wxMin(rv, 1.5);      //  Clamp at 1.5
         
         rv = premult * postmult;
-//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult << rv;
         rv = wxMin(rv, 3.0);      //  Clamp at 3.0
     }
     
     
     
 #else
+    double premult = 1.0;
+
     if(g_bresponsive ){
-        double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-        rv *= postmult;
-        rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+        
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        wxSize style_tool_size = style->GetToolSize();
+        double compass_size = style_tool_size.x;
+
+        // We declare the "best" tool size to be roughly 6 mm.
+        double target_size = 6.0;                // mm
+        
+        double basic_tool_size_mm = compass_size / GetDisplayDPmm();
+        premult = target_size / basic_tool_size_mm;
     }
+        
+    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
+
+    rv = premult * postmult;
+    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMax(rv, 0.5);
     
 #endif
     
@@ -1679,6 +1822,30 @@ wxArrayString OCPNPlatform::getBluetoothScanResults()
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
 
+bool OCPNPlatform::AllowAlertDialog(const wxString& class_name)
+{
+#ifdef __OCPN__ANDROID__
+    //  allow if TopLevelWindow count is <=2, implying normal runtime screen layout
+    int nTLW = 0;
+    wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
+    while (node)
+    {
+        wxWindow* win = node->GetData();
+        if(win->IsShown())
+            nTLW++;
+        
+        node = node->GetNext();
+    }
+    
+//    qDebug() << "AllowAlertDialog" << g_boptionsactive << g_running << nTLW; 
+    return (g_running && !g_boptionsactive && (nTLW <= 2));
+    
+#else
+    return true;
+#endif
+}
+
+
 void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
 {
 #ifdef __OCPN__ANDROID__
@@ -1717,6 +1884,36 @@ QString getQtStyleSheet( void )
 
 #endif
 
+
+PlatSpec android_plat_spc;
+
+bool OCPNPlatform::isPlatformCapable( int flag){
+
+#ifndef __OCPN__ANDROID__
+    return true;
+#else
+    if(flag == PLATFORM_CAP_PLUGINS){
+        long platver;
+        wxString tsdk(android_plat_spc.msdk);
+        if(tsdk.ToLong(&platver)){
+            if(platver >= 11)
+                return true;
+        }
+    }
+    else if(flag == PLATFORM_CAP_FASTPAN){
+        long platver;
+        wxString tsdk(android_plat_spc.msdk);
+        if(tsdk.ToLong(&platver)){
+            if(platver >= 14)
+                return true;
+        }
+    }
+    
+    return false;
+#endif    
+}    
+    
+    
 void OCPNPlatform::LaunchLocalHelp( void ) {
  
 #ifdef __OCPN__ANDROID__
@@ -1746,5 +1943,15 @@ void OCPNPlatform::LaunchLocalHelp( void ) {
         wxLaunchDefaultBrowser(wxString( _T("file:///") ) + help_try );
 #endif        
 }
+
+void OCPNPlatform::platformLaunchDefaultBrowser( wxString URL )
+{
+#ifdef __OCPN__ANDROID__
+    androidLaunchBrowser( URL );
+#else
+    ::wxLaunchDefaultBrowser( URL );
+#endif
+}
+
 
 

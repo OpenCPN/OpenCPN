@@ -131,6 +131,8 @@ public class FileChooserActivity extends Activity implements FileChooser {
 	
         public static final String INPUT_TITLE_STRING = "Title Message";
 
+        public static final String INPUT_SORT_LAST_MODIFIED = "sort_by_last_modified";
+
 	// ---- Activity methods ----- //
 	
     /** Called when the activity is first created. */
@@ -167,6 +169,7 @@ public class FileChooserActivity extends Activity implements FileChooser {
             if(extras.containsKey(INPUT_SHOW_CONFIRMATION_ON_SELECT)) core.setShowConfirmationOnSelect(extras.getBoolean(INPUT_SHOW_CONFIRMATION_ON_SELECT));
             if(extras.containsKey(INPUT_SHOW_FULL_PATH_IN_TITLE)) core.setShowFullPathInTitle(extras.getBoolean(INPUT_SHOW_FULL_PATH_IN_TITLE));
             if(extras.containsKey(INPUT_USE_BACK_BUTTON_TO_NAVIGATE)) this.useBackButton = extras.getBoolean(INPUT_USE_BACK_BUTTON_TO_NAVIGATE);
+            if(extras.containsKey(INPUT_SORT_LAST_MODIFIED)) core.setSortLastModified(extras.getBoolean(INPUT_SORT_LAST_MODIFIED));
         }
 
         // Load the files of a folder.

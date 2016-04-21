@@ -65,6 +65,7 @@ public:
       void OnIdWptCreateClick( wxCommandEvent& event );
       void OnIdTrkCreateClick( wxCommandEvent& event );
       void OnMove( wxMoveEvent& event );
+      void OnSize( wxSizeEvent& event );
       void AdjustBestSize(AIS_Target_Data *td);
       void CreateControls();
       void RenderHTMLQuery(AIS_Target_Data *td);
@@ -77,7 +78,7 @@ public:
       void SetAutoSize( bool bval ){ m_bautosize = bval;}
       
       void UpdateText(void);
-      void SetMMSI(int mmsi){ m_MMSI = mmsi; }
+      void SetMMSI(int mmsi);
       int  GetMMSI(void){ return m_MMSI; }
 
       //    Data

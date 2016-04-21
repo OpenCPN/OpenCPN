@@ -35,6 +35,12 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
+#ifdef USE_S57
+#include <ogr_geometry.h>
+#endif
+
+#include "cutil.h"
+
 #include "vector2D.h"
 
 #include "s52s57.h"
@@ -44,108 +50,14 @@
 
 #include "triangulate.h"
 
-#ifdef ocpnUSE_GL
+#include "dychart.h"
 
-#ifdef USE_GLU_TESS
-#ifdef __WXOSX__
-#include "GL/gl.h"
-#include "GL/glu.h"
-#else
-#ifndef __OCPN__ANDROID__
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-#else
-    #include "qopengl.h"                  // this gives us the qt runtime gles2.h
-    #include "GL/gl_private.h"
-#endif
-
-#endif
-
-#endif
 
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
 
-#endif
 
-//------------------------------------------------------------------------------
-//          Some local definitions for opengl/glu types,
-//            just enough to build the glu tesselator option.
-//          Included here to avoid having to find and include
-//            the Microsoft versions of gl.h and glu.h.
-//          You are welcome.....
-//------------------------------------------------------------------------------
-/*
-#ifdef __WXMSW__
-class GLUtesselator;
-
-typedef unsigned int GLenum;
-typedef unsigned char GLboolean;
-typedef unsigned int GLbitfield;
-typedef signed char GLbyte;
-typedef short GLshort;
-typedef int GLint;
-typedef int GLsizei;
-typedef unsigned char GLubyte;
-typedef unsigned short GLushort;
-typedef unsigned int GLuint;
-typedef float GLfloat;
-typedef float GLclampf;
-typedef double GLdouble;
-typedef double GLclampd;
-typedef void GLvoid;
-
-#define GLU_TESS_BEGIN                     100100
-#define GLU_TESS_VERTEX                    100101
-#define GLU_TESS_END                       100102
-#define GLU_TESS_ERROR                     GLU_ERROR
-#define GLU_TESS_EDGE_FLAG                 100104
-#define GLU_TESS_COMBINE                   100105
-#define GLU_TESS_BEGIN_DATA                100106
-#define GLU_TESS_VERTEX_DATA               100107
-#define GLU_TESS_END_DATA                  100108
-#define GLU_TESS_ERROR_DATA                100109
-#define GLU_TESS_EDGE_FLAG_DATA            100110
-#define GLU_TESS_COMBINE_DATA              100111
-#define GLU_BEGIN                          GLU_TESS_BEGIN
-#define GLU_VERTEX                         GLU_TESS_VERTEX
-#define GLU_END                            GLU_TESS_END
-#define GLU_EDGE_FLAG                      GLU_TESS_EDGE_FLAG
-#define GLU_CW                             100120
-#define GLU_CCW                            100121
-#define GLU_INTERIOR                       100122
-#define GLU_EXTERIOR                       100123
-#define GLU_UNKNOWN                        100124
-#define GLU_TESS_WINDING_RULE              100140
-#define GLU_TESS_BOUNDARY_ONLY             100141
-#define GLU_TESS_TOLERANCE                 100142
-#define GLU_TESS_ERROR1                    100151
-#define GLU_TESS_ERROR2                    100152
-#define GLU_TESS_ERROR3                    100153
-#define GLU_TESS_ERROR4                    100154
-#define GLU_TESS_ERROR5                    100155
-#define GLU_TESS_ERROR6                    100156
-#define GLU_TESS_ERROR7                    100157
-#define GLU_TESS_ERROR8                    100158
-#define GLU_TESS_MISSING_BEGIN_POLYGON     100151
-#define GLU_TESS_MISSING_BEGIN_CONTOUR     100152
-#define GLU_TESS_MISSING_END_POLYGON       100153
-#define GLU_TESS_MISSING_END_CONTOUR       100154
-#define GLU_TESS_COORD_TOO_LARGE           100155
-#define GLU_TESS_NEED_COMBINE_CALLBACK     100156
-#define GLU_TESS_WINDING_ODD               100130
-#define GLU_TESS_WINDING_NONZERO           100131
-#define GLU_TESS_WINDING_POSITIVE          100132
-#define GLU_TESS_WINDING_NEGATIVE          100133
-#define GLU_TESS_WINDING_ABS_GEQ_TWO       100134
-
-#define GL_TRIANGLES                       0x0004
-#define GL_TRIANGLE_STRIP                  0x0005
-#define GL_TRIANGLE_FAN                    0x0006
-
-#endif
-*/
 
 //      Module Internal Prototypes
 
@@ -1553,7 +1465,7 @@ int PolyTessGeo::BuildDeferredTess(void)
 
 
 #ifdef __WXMSW__
-#define __CALL_CONVENTION __stdcall
+#define __CALL_CONVENTION /*__stdcall*/
 #else
 #define __CALL_CONVENTION
 #endif
@@ -2924,38 +2836,6 @@ PolyTrapGroup::~PolyTrapGroup()
       free (trap_array);
 }
 
-void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
-{
-// Find the point with the maximum distance
-    double dmax = 0;
-    int index = 0;
-
-    vector2D va(PointList[2*fp] - PointList[2*lp],
-                PointList[2*fp+1] - PointList[2*lp+1]);
-
-    double da = va.x*va.x + va.y*va.y;
-    for(int i = fp+1 ; i < lp ; ++i) {
-        vector2D vb(PointList[2*i] - PointList[2*fp],
-                    PointList[2*i + 1] - PointList[2*fp+1]);
-        
-        double dab = va.x*vb.x + va.y*vb.y;
-        double db = vb.x*vb.x + vb.y*vb.y;
-        double d = da - dab*dab/db;
-        if ( d > dmax ) {
-            index = i;
-            dmax = d;
-        }
-    }
-// If max distance is greater than epsilon, recursively simplify
-    if ( dmax > epsilon*epsilon ) {
-        keep->Add(index);
-        
-    // Recursive call
-        DouglasPeucker(PointList, fp, index, epsilon, keep);
-        DouglasPeucker(PointList, index, lp, epsilon, keep);
-
-    }
-}
 
 
 

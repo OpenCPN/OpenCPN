@@ -980,6 +980,16 @@ int TCMgr::GetStationTimeOffset(IDX_entry *pIDX)
     return pIDX->IDX_time_zone;
 }
 
+double  TCMgr::GetStationLat(IDX_entry *pIDX)
+{
+    return pIDX->IDX_lat;
+}
+
+double  TCMgr::GetStationLon(IDX_entry *pIDX)
+{
+    return pIDX->IDX_lon;
+}
+
 int TCMgr::GetNextBigEvent(time_t *tm, int idx)
 {
     float tcvalue[1];
@@ -1146,7 +1156,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString & prefix, double xlat, double 
 #define INFERRED_SEMI_DIURNAL_COUNT                 10
 #define INFERRED_DIURNAL_COUNT                      10
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #pragma warning (disable : 4305)                // conversion loss, double to float
 #endif
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:48-0400\n"
+"POT-Creation-Date: 2016-01-08 08:29-0300\n"
+"PO-Revision-Date: 2016-01-25 19:58-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.\n\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
 "Declination is the angle between true and magnetic north.\n"
 "Inclination is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
@@ -32,9 +32,9 @@ msgstr "\n"
 "Missvisning är avvikelsen mellan sann och magnetisk nord. \n"
 "Inklination är den vertikala vinkeln av den magnetiska fältstyrkan. (+-90 på de magnetiska polerna) \n"
 "Fältstyrka är värdet på magnetfältet uttryckt i nanoTesla från 20000 till 66000\n\n"
-"De ritade linjerna liknar en topografisk karta.  Avståndet mellan dem kan ändras. Mer avstånd tar mindre tid att beräkna och plottningen går fortare.\n"
+"De ritade linjerna liknar en topografisk karta.  Avståndet mellan dem kan ändras. Mer avstånd tar mindre tid att beräkna och de ritas fortare på skärmen.\n"
 "Med reglagen för linjeavstånd och noggrannheten vid polerna går det att ställa in en lämplig balans mellan linjernas täthet och tiden det tar rita.\n\n"
-"Modulen \"World Magnetic Model\", WMM, har utvecklats av Pavel Kalian och den grafiska plotten av Sean D'Epagnier."
+"Modulen \"World Magnetic Model\", WMM, har utvecklats av Pavel Kalian och den grafiska hanteringen av Sean D'Epagnier."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
@@ -82,7 +82,7 @@ msgstr "Båt"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
-msgstr ""
+msgstr "F "
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
@@ -90,7 +90,7 @@ msgstr "Total intensitet"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
-msgstr ""
+msgstr "H "
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
@@ -98,7 +98,7 @@ msgstr "Horisontal intensitet"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
-msgstr ""
+msgstr "X "
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
@@ -106,7 +106,7 @@ msgstr "Nordlig del"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
-msgstr ""
+msgstr "Y "
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
@@ -114,7 +114,7 @@ msgstr "Östlig del"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
-msgstr ""
+msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
@@ -142,11 +142,11 @@ msgstr "Markör"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Rita"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Använd plotttning"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -174,7 +174,7 @@ msgstr "Visa också värden för markörens position"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Visa verktygsfältsikon"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
@@ -184,7 +184,7 @@ msgstr "Visa avvikelsevärdet i verktygsradens ikon"
 msgid "Window transparency"
 msgstr "Datarutans transparens"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Missvisning"
 
@@ -192,11 +192,11 @@ msgstr "Missvisning"
 msgid "Degrees"
 msgstr "Grader"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Lutning/Inklination"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Fältstyrka"
 
@@ -224,7 +224,7 @@ msgstr "Spara"
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Skapar magnetiska kartan"
 

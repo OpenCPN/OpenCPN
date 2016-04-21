@@ -375,7 +375,8 @@ public :
       void ValidateMark(void);
       void InitialFocus(void);
       void OnRightClick( wxCommandEvent& event );
-
+      void SetPage( int page );
+      
       static MarkInfoImpl *getInstance( wxWindow* parent,
                           wxWindowID id = wxID_ANY,
                           const wxString& title = _("Waypoint Information"),

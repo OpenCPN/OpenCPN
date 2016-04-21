@@ -34,7 +34,7 @@
 
 
 /*  Wrapped interface from higher level objects   */
-int Garmin_GPS_Init( wxString &port_name);
+int Garmin_GPS_Init( const wxString &port_name);
 int Garmin_GPS_Open( wxString &port_name );
 int Garmin_GPS_PVT_On( wxString &port_name );
 int Garmin_GPS_PVT_Off( wxString &port_name );
@@ -44,8 +44,8 @@ void Garmin_GPS_ClosePortVerify(void);
 
 wxString Garmin_GPS_GetSaveString();
 
-int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist);
-int Garmin_GPS_SendRoute( wxString &port_name, Route *pr, wxGauge *pProgress);
+int Garmin_GPS_SendWaypoints( const wxString &port_name, RoutePointList *wplist);
+int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgress);
 
 wxString GetLastGarminError(void);
 

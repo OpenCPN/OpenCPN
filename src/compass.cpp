@@ -33,6 +33,8 @@
 #include "chcanv.h"
 #include "styles.h"
 
+#include "dychart.h"
+
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern ChartCanvas *cc1;
@@ -40,24 +42,24 @@ extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
 extern bool g_bCourseUp;
-extern bool g_bskew_comp;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
 ocpnCompass::ocpnCompass()
 {
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    _img_compass = style->GetIcon( _T("CompassRose") );
-    _img_gpsRed = style->GetIcon( _T("gpsRed") );
+     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+     _img_compass = style->GetIcon( _T("CompassRose") );
+     _img_gpsRed = style->GetIcon( _T("gpsRed") );
 
     m_rose_angle = -999;  // force a refresh when first used
 
     m_pStatBoxToolStaticBmp = NULL;
 
-    m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
-            _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
-                    + style->GetToolSeparation(),
-                    _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+     m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
+             _img_compass.GetWidth() + _img_gpsRed.GetWidth() + style->GetCompassLeftMargin() * 2
+                     + style->GetToolSeparation(),
+                     _img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin() );
+    
 #ifdef ocpnUSE_GL
     texobj = 0;
 #endif
@@ -79,7 +81,7 @@ ocpnCompass::~ocpnCompass()
 void ocpnCompass::Paint( ocpnDC& dc )
 {
     if(m_shown && m_StatBmp.IsOk()){
-# ifdef ocpnUSE_GLES  // GLES does not do ocpnDC::DrawBitmap(), so use texture
+# if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
         if(g_bopengl && texobj){
             glBindTexture( GL_TEXTURE_2D, texobj );
             glEnable( GL_TEXTURE_2D );
@@ -95,10 +97,15 @@ void ocpnCompass::Paint( ocpnDC& dc )
             glDisable( GL_TEXTURE_2D );
             
         }
-#else        
-        dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, true );
+        else {
+         dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, true );
+        }
+    
+#else
+    dc.DrawBitmap( m_StatBmp, m_rect.x, m_rect.y, true );
 #endif        
     }
+        
 }
 
 bool ocpnCompass::MouseEvent( wxMouseEvent& event )
@@ -122,7 +129,7 @@ void ocpnCompass::UpdateStatus( bool bnew )
         m_lastgpsIconName.Clear();        // force an update to occur
         
         //  We clear the texture so that any onPaint method will not use a stale texture
-# ifdef ocpnUSE_GLES  
+#ifdef ocpnUSE_GLES  
         if(g_bopengl){
              if(texobj){
                 glDeleteTextures(1, &texobj);
@@ -145,11 +152,37 @@ void ocpnCompass::SetScaleFactor( float factor)
     else
         m_scale = 1.0;
     
-    m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
-                    m_scale * (_img_compass.GetWidth() + _img_gpsRed.GetWidth()) + style->GetCompassLeftMargin() * 2
-                    + style->GetToolSeparation(),
-                    m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin()) + style->GetCompassBottomMargin() );
-    
+    //  Precalculate the background sizes to get m_rect width/height
+    wxBitmap compassBg, gpsBg;
+    int orient = style->GetOrientation();
+    style->SetOrientation( wxTB_HORIZONTAL );
+    if( style->HasBackground() ) {
+        compassBg = style->GetNormalBG();
+        style->DrawToolbarLineStart( compassBg );
+        compassBg = style->SetBitmapBrightness( compassBg );
+        gpsBg = style->GetNormalBG();
+        style->DrawToolbarLineEnd( gpsBg );
+        gpsBg = style->SetBitmapBrightness( gpsBg );
+    }
+
+    if(fabs(m_scale-1.0) > 0.1){
+        wxImage bg_img = compassBg.ConvertToImage();
+        bg_img.Rescale(compassBg.GetWidth() * m_scale, compassBg.GetHeight() *m_scale, wxIMAGE_QUALITY_NORMAL);
+        compassBg = wxBitmap( bg_img );
+            
+        bg_img = gpsBg.ConvertToImage();
+        bg_img.Rescale(gpsBg.GetWidth() * m_scale, gpsBg.GetHeight() *m_scale, wxIMAGE_QUALITY_NORMAL);
+        gpsBg = wxBitmap( bg_img );
+     }
+
+     int width = compassBg.GetWidth() + gpsBg.GetWidth() + style->GetCompassLeftMargin();
+     if( !style->marginsInvisible ) 
+         width += style->GetCompassLeftMargin() + style->GetToolSeparation();
+     
+     m_rect = wxRect(style->GetCompassXOffset(), style->GetCompassYOffset(),
+                    width,
+                     compassBg.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin());
+
 }
 
 
@@ -192,8 +225,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     
         leftmargin = style->GetCompassLeftMargin();
         topmargin = style->GetCompassTopMargin();
-        toolsize = style->GetToolSize();
-        toolsize.x *= 2;
         radius = style->GetCompassCornerRadius();
 
         if( orient ) style->SetOrientation( wxTB_VERTICAL );
@@ -219,10 +250,6 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         rose_angle = -cc1->GetVPRotation();
-
-        if( !g_bCourseUp && !g_bskew_comp )
-            rose_angle -= cc1->GetVPSkew();
-
     } else
         rose_angle = 0.;
 
@@ -231,10 +258,14 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     if( !b_need_refresh )
         return;
 
-    m_StatBmp.Create(
-        m_scale * ( ( _img_compass.GetWidth() + _img_gpsRed.GetWidth() ) + style->GetCompassLeftMargin() * 2
-        + style->GetToolSeparation()),
-                   m_scale * (_img_compass.GetHeight() + style->GetCompassTopMargin() + style->GetCompassBottomMargin()) );
+    int width = compassBg.GetWidth() + gpsBg.GetWidth() + leftmargin;
+    if( !style->marginsInvisible ) 
+        width += leftmargin + style->GetToolSeparation();
+        
+    m_StatBmp.Create( width, compassBg.GetHeight() + topmargin + style->GetCompassBottomMargin() );
+
+    m_rect.width = m_StatBmp.GetWidth();
+    m_rect.height = m_StatBmp.GetHeight();
     
     if( !m_StatBmp.IsOk() )
         return;
@@ -246,7 +277,9 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         sdc.Clear();
         sdc.SetBrush( *wxBLACK_BRUSH );
         sdc.SetPen( *wxBLACK_PEN );
-        sdc.DrawRoundedRectangle( wxPoint( leftmargin, topmargin ), toolsize, radius );
+        wxSize maskSize = wxSize(m_MaskBmp.GetWidth() - leftmargin,
+                                 m_MaskBmp.GetHeight() - (2 * topmargin));
+        sdc.DrawRoundedRectangle( wxPoint( leftmargin, topmargin ), maskSize, radius );
         sdc.SelectObject( wxNullBitmap );
     } else if(radius) {
         wxMemoryDC sdc( m_MaskBmp );
@@ -257,41 +290,43 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
         sdc.DrawRoundedRectangle( 0, 0, m_MaskBmp.GetWidth(), m_MaskBmp.GetHeight(), radius );
         sdc.SelectObject( wxNullBitmap );
     }
+#ifndef ocpnUSE_GLES
     m_StatBmp.SetMask(new wxMask(m_MaskBmp, *wxWHITE));
+#endif
 
     wxMemoryDC mdc;
     mdc.SelectObject( m_StatBmp );
-    mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxSOLID ) );
+    mdc.SetBackground( wxBrush( GetGlobalColor( _T("COMP1") ), wxSOLID ) );
     mdc.Clear();
 
     mdc.SetPen( wxPen( GetGlobalColor( _T("UITX1") ), 1 ) );
     mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxTRANSPARENT ) );
+    
+    if( !style->marginsInvisible )
+        mdc.DrawRoundedRectangle( 0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),radius );
 
-    mdc.DrawRoundedRectangle( 0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),
-                              style->GetCompassCornerRadius() );
-
-    wxPoint offset( style->GetCompassLeftMargin(), style->GetCompassTopMargin() );
+    wxPoint offset(leftmargin, topmargin);
 
     //    Build Compass Rose, rotated...
     wxBitmap BMPRose;
     wxPoint after_rotate;
 
-    if( g_bCourseUp ) BMPRose = style->GetIcon( _T("CompassRose") );
+    int cwidth = style->GetToolSize().x * m_scale;
+    int cheight = style->GetToolSize().y * m_scale;
+    cheight = wxMin(cheight, compassBg.GetHeight());
+    cwidth = wxMin( cwidth, cheight );
+    cheight = cwidth;
+    
+    if( g_bCourseUp )
+        BMPRose = style->GetIcon( _T("CompassRose"), cwidth, cheight );
     else
-        BMPRose = style->GetIcon( _T("CompassRoseBlue") );
-    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 )  || (fabs(m_scale-1.0) > 0.1) ) {
-        int width = BMPRose.GetWidth() * m_scale;
-        int height = BMPRose.GetHeight() * m_scale;
+        BMPRose = style->GetIcon( _T("CompassRoseBlue"), cwidth, cheight );
+    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         
         wxImage rose_img = BMPRose.ConvertToImage();
-        
-        if(fabs(m_scale-1.0) > 0.1)
-            rose_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
-        
-        wxPoint rot_ctr( width / 2, height / 2  );
- 
+        wxPoint rot_ctr( cwidth / 2, cheight / 2  );
         wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-        BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, width, height ));
+        BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, cwidth, cheight ));
     }
 
     wxBitmap iconBm;
@@ -301,44 +336,51 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     } else {
         iconBm = BMPRose;
     }
-
+    
+    iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
+        
     mdc.DrawBitmap( iconBm, offset );
     offset.x += iconBm.GetWidth();
+    offset.x += style->GetToolSeparation();
 
     m_rose_angle = rose_angle;
 
     //  GPS Icon
-    wxBitmap gicon = style->GetIcon( gpsIconName );
-    if(fabs(m_scale-1.0) > 0.1){
-        int width = gicon.GetWidth() * m_scale;
-        int height = gicon.GetHeight() * m_scale;
-        
-        wxImage gps_img = gicon.ConvertToImage();
-        gps_img.Rescale(width, height, wxIMAGE_QUALITY_NORMAL);
-        gicon = wxBitmap( gps_img );
-    }
+    int twidth = style->GetToolSize().x * m_scale;
+    int theight = style->GetToolSize().y * m_scale;
+    theight = wxMin(cheight, compassBg.GetHeight());
+    int swidth = wxMax( twidth, theight );
+    int sheight = wxMin( twidth, theight );
     
-    if( style->HasBackground() ) {
+    //  Sometimes, the SVG renderer gets the size wrong due to some internal rounding error.
+    //  If so found, it seems to work OK by just reducing the requested size by one pixel....
+    wxBitmap gicon = style->GetIcon( gpsIconName, swidth, sheight );
+    if( gicon.GetHeight() != sheight )
+        gicon = style->GetIcon( gpsIconName, swidth-1, sheight-1, true );
+
+    if(style->HasBackground() ) {
         iconBm = MergeBitmaps( gpsBg, gicon, wxSize( 0, 0 ) );
     } else {
         iconBm = gicon;
     }
     
+    iconBm = ConvertTo24Bit( wxColor(0,0,0), iconBm);
     mdc.DrawBitmap( iconBm, offset );
     mdc.SelectObject( wxNullBitmap );
+    
     m_lastgpsIconName = gpsIconName;
 
-   
-# ifdef ocpnUSE_GLES  // GLES does not do ocpnDC::DrawBitmap(), so use texture
-   if(g_bopengl){
+#if defined(ocpnUSE_GLES)   // GLES does not do ocpnDC::DrawBitmap(), so use texture
+    if(g_bopengl){
         wxImage image = m_StatBmp.ConvertToImage(); 
         unsigned char *imgdata = image.GetData();
+        unsigned char *imgalpha = image.GetAlpha();
         int tex_w = image.GetWidth();
         int tex_h = image.GetHeight();
         
-        GLuint format = GL_RGBA;
+        GLuint format = GL_RGB;
         GLuint internalformat = format;
-        int stride = 4;
+        int stride = 3;
         
         if(imgdata){
             unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
@@ -346,7 +388,7 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
             for( int j = 0; j < tex_w*tex_h; j++ ){
                 for( int k = 0; k < 3; k++ )
                     teximage[j * stride + k] = imgdata[3*j + k];
-                teximage[j * stride + 3] = (unsigned char)0x255;           // alpha
+ //               teximage[j * stride + 3] = imgalpha ? imgalpha[j] : 255;      // alpha
             }
                 
             if(texobj){

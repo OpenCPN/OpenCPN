@@ -135,6 +135,7 @@ void AISTargetAlertDialog::Init()
     m_target_mmsi = 0;
     m_max_nline = 20;
     m_adj_height = 0;
+    m_bsizeSet = false;
     
 }
 
@@ -160,7 +161,7 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
 #ifdef __WXGTK__
     face = _T("Monospace");
 #endif
-    wxFont *fp_font = wxTheFontList->FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
+    wxFont *fp_font = FontMgr::Get().FindOrCreateFont( font_size, wxFONTFAMILY_MODERN,
             wxFONTSTYLE_NORMAL, dFont->GetWeight(), false, face );
 
     SetFont( *fp_font );
@@ -195,11 +196,11 @@ void AISTargetAlertDialog::CreateControls()
     topSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
 
     // The Silence button
-    if( g_bAIS_CPA_Alert_Audio ){
-        wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
+    wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
             wxDefaultSize, 0 );
-        AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    }
+    AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    silence->Enable(g_bAIS_CPA_Alert_Audio);
+    
 
     // The Ack button
     if( m_back ) {
@@ -221,7 +222,7 @@ void AISTargetAlertDialog::CreateControls()
     
 
     UpdateText();
-    
+    m_bsizeSet = false;        // force re-calculation
     RecalculateSize();
     
 }
@@ -245,7 +246,7 @@ void AISTargetAlertDialog::UpdateText()
 {
     if( GetAlertText() ) {
         
-        wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
+        wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetAlert"), 12 );
         wxString face = dFont->GetFaceName();
         int sizes[7];
         for( int i = -2; i < 5; i++ ) {
@@ -295,14 +296,35 @@ void AISTargetAlertDialog::RecalculateSize( void )
     m_adj_height = wxMax(m_adj_height, adj_height);
     
     esize.y = wxMin(esize.y, m_adj_height);
-    SetClientSize(esize);
+///  SetClientSize(esize);
     
+/*    
     wxSize dsize = GetParent()->GetClientSize();
     
     wxSize fsize = GetSize();
     fsize.y = wxMin(fsize.y, dsize.y - (1 * GetCharHeight()));
     fsize.x = wxMin(fsize.x, dsize.x - (1 * GetCharHeight()));
     SetSize(fsize);
+    */
+
+    
+    if(!m_bsizeSet){
+        Fit();          // Sets the horizontal size OK
+        m_bsizeSet = true;
+    }
+
+        wxSize gSize = GetClientSize();
+        if(gSize.y != esize.y)
+            SetClientSize(gSize.x, esize.y);
+
+
+#ifdef __OCPN__ANDROID__
+    wxSize finalSize = GetSize();
+    SetSize(finalSize.x * 115 / 100, finalSize.y);    //  Add some fluff, since Fit() calculation is often not right.
+    
+    g_ais_alert_dialog_sx = finalSize.x;
+    g_ais_alert_dialog_sy = finalSize.y;
+#endif
     
     g_Platform->PositionAISAlert( this );
     

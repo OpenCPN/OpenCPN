@@ -127,6 +127,7 @@ AIS_Target_Data::AIS_Target_Data()
     b_isEuroInland = false;
     b_blue_paddle = false;
 
+    b_NoTrack = false;
     b_OwnShip = false;
     b_PersistTrack = false;
     b_in_ack_timeout = false;
@@ -142,6 +143,8 @@ AIS_Target_Data::AIS_Target_Data()
     b_SarAircraftPosnReport = false;
     altitude = 0;
     b_nameFromCache = false;
+    importance = 0.;
+    last_scale = 0.50; //new target starts at 50% scale
 }
 
 void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
@@ -1016,8 +1019,9 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 369: return b_CntryLongStr ? _("United States of America") : _T("US") ;
     case 370: 
     case 371: 
-    case 372: 
-    case 373: return b_CntryLongStr ? _("Panama") : _T("PA") ;
+    case 372:
+    case 373:
+    case 374: return b_CntryLongStr ? _("Panama") : _T("PA") ;
     case 375: 
     case 376: 
     case 377: return b_CntryLongStr ? _("Saint Vincent and the Grenadines") : _T("VC") ;
@@ -1137,7 +1141,7 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 636: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 637: return b_CntryLongStr ? _("Liberia") : _T("LR") ;
     case 638: return b_CntryLongStr ? _("South Sudan (Republic of)") : _T("SS") ;
-    case 642: return b_CntryLongStr ? _("Libyan Arab Jamahiriya") : _T("LY") ;
+    case 642: return b_CntryLongStr ? _("Libya") : _T("LY") ;
     case 644: return b_CntryLongStr ? _("Lesotho") : _T("LS") ;
     case 645: return b_CntryLongStr ? _("Mauritius") : _T("MU") ;
     case 647: return b_CntryLongStr ? _("Madagascar") : _T("MG") ;

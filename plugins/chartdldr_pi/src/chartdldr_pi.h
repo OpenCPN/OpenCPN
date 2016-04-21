@@ -62,7 +62,7 @@ class ChartSource;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
 
-WX_DECLARE_OBJARRAY(ChartSource *, wxArrayOfChartSources);
+WX_DEFINE_ARRAY_PTR(ChartSource *, wxArrayOfChartSources);
 WX_DECLARE_OBJARRAY(wxDateTime, wxArrayOfDateTime);
 
 //----------------------------------------------------------------------------------------------------------
@@ -129,6 +129,8 @@ class ChartSource : public wxTreeItemData
 {
 public:
     ChartSource( wxString name, wxString url, wxString localdir );
+    ~ChartSource();
+    
     wxString        GetName() { return m_name; }
     wxString        GetUrl() { return m_url; }
     wxString        GetDir() { return m_dir; }
@@ -165,7 +167,7 @@ private:
 	int             updatingAll;
     int             failed_downloads;
     bool            cancelled;
-    bool            m_bulkdownload;
+    bool            DownloadIsCancel;
     chartdldr_pi   *pPlugIn;
     bool            m_populated;
 
@@ -179,6 +181,7 @@ private:
     wxString        m_totalsize;
     wxString        m_transferredsize;
     void            DisableForDownload( bool enabled );
+    bool            m_bconnected;
 
 protected:
     // Handlers for ChartDldrPanel events.
@@ -210,12 +213,12 @@ protected:
     void            SetBulkUpdate( bool bulk_update );
 
 public:
-    ChartDldrPanelImpl() { }
+    ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();
     ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
     void            SelectCatalog( int item );
     void            onDLEvent(OCPN_downloadEvent &ev);
-    void            CancelDownload() { Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent); cancelled = true; }
+    void            CancelDownload() { Disconnect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent); cancelled = true; m_bconnected = false;}
     
 private:
     DECLARE_DYNAMIC_CLASS( ChartDldrPanelImpl )

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_RainfallNumbers"
+        android:title="Show Rainfall Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Rainfall Value Units"
+        android:key="grib_prefs_RainfallUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBSmallDistanceUnits"
+        android:entryValues="@array/GRIBSmallDistanceUnitsVal" />
+
+    <SwitchPreference
+        android:key="grib_prefb_RainfallNumbersFixedSpacing"
+        android:title="Rainfall Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_RainfallNumbersSpacing"
+        android:title="Rainfall Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_RainfallOverlayMap"
+        android:title="Show Rainfall Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Rainfall Overlay Colors"
+        android:key="grib_prefs_RainfallOverlayMapColors"
+        android:defaultValue="4"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
+
+
+
+</PreferenceScreen>
+

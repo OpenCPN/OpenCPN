@@ -43,7 +43,7 @@ wxString GetLastGarminError(void)
 */
 
 /*  Wrapped interface from higher level objects   */
-int Garmin_GPS_Init( wxString &port_name)
+int Garmin_GPS_Init( const wxString &port_name)
 {
       int ret;
 #ifdef GPS_DEBUG0
@@ -108,7 +108,7 @@ void Garmin_GPS_PrepareWptData(GPS_PWay pway, RoutePoint *prp)
       strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
 }
 
-int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist)
+int Garmin_GPS_SendWaypoints( const wxString &port_name, RoutePointList *wplist)
 {
       int ret_val = 0;
 
@@ -271,7 +271,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       return ppway;
 }
 
-int Garmin_GPS_SendRoute( wxString &port_name, Route *pr, wxGauge *pProgress)
+int Garmin_GPS_SendRoute( const wxString &port_name, Route *pr, wxGauge *pProgress)
 {
       int ret_val = 0;
 

@@ -413,7 +413,7 @@ void AISTargetListDialog::RecalculateSize()
         esize.y = GetCharHeight() * 40;
         
         wxSize dsize = gFrame->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
+        esize.y = wxMin(esize.y, dsize.y - (8 * GetCharHeight()));
         esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
         SetClientSize(esize);
         
@@ -936,7 +936,7 @@ void AISTargetListDialog::UpdateAISTargetList( void )
     if(m_pListCtrlAISTargets && !m_pListCtrlAISTargets->IsVirtual())
         return UpdateNVAISTargetList();
     
-    if( m_pdecoder ) {
+    if( m_pdecoder && m_pListCtrlAISTargets ) {
 
         //    Capture the MMSI of the curently selected list item
         long selItemID = -1;

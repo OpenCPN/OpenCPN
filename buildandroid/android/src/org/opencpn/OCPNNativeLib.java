@@ -1,10 +1,19 @@
 package org.opencpn;
 
+
+
 public class OCPNNativeLib {
 
-//  static {
-//    System.loadLibrary("ndk_demo");
-//  }
+    private static OCPNNativeLib ourInstance = new OCPNNativeLib();
+
+    public static OCPNNativeLib getInstance() {
+        return ourInstance;
+    }
+
+    private OCPNNativeLib() {
+    }
+
+
 
   /**
    * Adds two integers, returning their sum
@@ -39,5 +48,8 @@ public class OCPNNativeLib {
   public native int setDownloadStatus( int status, String url);
   public native int onMouseWheel(int dir);
   public native int notifyFullscreenChange( boolean bFull );
+
+  public native int sendPluginMessage( String iD, String message);
+  public native int getTLWCount();
 
 }

@@ -28,6 +28,10 @@
 #include "grib_pi.h"
 #include "folder.xpm"
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), _("Beaufort"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
@@ -500,15 +504,16 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
         m_sSlicesPerUpdate->Append(wxString::Format(_T("%2d "), mn / 60) + _("h") + wxString::Format(_T(" %.2d "), mn % 60) + _("mn"));
     }
     //Set Bitmap
-    m_biAltitude->SetBitmap( wxBitmap( altitude ) );
-    m_biNow->SetBitmap( wxBitmap( now ) );
-    m_biZoomToCenter->SetBitmap( wxBitmap( zoomto ) );
-    m_biShowCursorData->SetBitmap( wxBitmap( m_parent.m_CDataIsShown ? curdata : ncurdata ) );
-    m_biPlay->SetBitmap( wxBitmap( play ) );
-    m_biTimeSlider->SetBitmap( wxBitmap( slider ) );
-    m_biOpenFile->SetBitmap( wxBitmap( openfile ) );
-    m_biSettings->SetBitmap( wxBitmap( setting ) );
-    m_biRequest->SetBitmap( wxBitmap( request ) );
+	m_biAltitude->SetBitmap(parent.GetScaledBitmap(wxBitmap(altitude), _T("altitude"), parent.m_ScaledFactor));
+	m_biNow->SetBitmap(parent.GetScaledBitmap(wxBitmap(now), _T("now"), parent.m_ScaledFactor));
+	m_biZoomToCenter->SetBitmap(parent.GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), parent.m_ScaledFactor));
+	m_biShowCursorData->SetBitmap(parent.GetScaledBitmap(parent.m_CDataIsShown ? wxBitmap(curdata) : wxBitmap(ncurdata),
+		parent.m_CDataIsShown ? _T("curdata") : _T("ncurdata"), parent.m_ScaledFactor));
+	m_biPlay->SetBitmap(parent.GetScaledBitmap(wxBitmap(play), _T("play"), parent.m_ScaledFactor));
+	m_biTimeSlider->SetBitmap(parent.GetScaledBitmap(wxBitmap(slider), _T("slider"), parent.m_ScaledFactor));
+	m_biOpenFile->SetBitmap(parent.GetScaledBitmap(wxBitmap(openfile), _T("openfile"), parent.m_ScaledFactor));
+	m_biSettings->SetBitmap(parent.GetScaledBitmap(wxBitmap(setting), _T("setting"), parent.m_ScaledFactor));
+	m_biRequest->SetBitmap(parent.GetScaledBitmap(wxBitmap(request), _T("request"), parent.m_ScaledFactor));
 	//read bookpage
 	wxFileConfig *pConf = GetOCPNConfigObject();
      if(pConf) {
@@ -537,6 +542,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
         ((wxCheckBox*) FindWindow( i + 1 + AC0 ) )->SetValue( m_Settings.m_iCtrlBarCtrlVisible[1].GetChar(i / 2) == _T('X') );
     }
 
+    m_cDataType->Clear();
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_cDataType->Append( wxGetTranslation(tname_from_index[i]) );
 
@@ -544,18 +550,6 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent, GribOverlaySetting
     PopulateUnits(m_lastdatatype);
     ReadDataTypeSettings(m_lastdatatype);
     m_sButtonApply->SetLabel(_("Apply"));
-
-    //set all wxSpinCtrl width
-    int w;
-    GetTextExtent( _T("1234"), &w, NULL, 0, 0, OCPNGetFont(_("Dialog"), 10) );
-    wxWindowList list = this->GetChildren();
-    wxWindowListNode *node = list.GetFirst();
-    for( size_t i = 0; i < list.GetCount(); i++ ) {
-        wxWindow *win = node->GetData();
-        if( win->IsKindOf( CLASSINFO(wxSpinCtrl) ) )
-            win->SetMinSize( wxSize( w + 30, -1 ) );
-        node = node->GetNext();
-    }
 
     DimeWindow( this );                             //aplly global colours scheme
 
@@ -595,6 +589,7 @@ void GribSettingsDialog::OnPageChange( wxNotebookEvent& event )
 
 void GribSettingsDialog::SetSettingsDialogSize()
 {
+#ifdef __OCPN__ANDROID__
     /*Sizing do not work with wxScolledWindow so we need to compute it
     using fixed X/Y margin to try to center nicely the dialog in the screen*/
 	int wt,ht,w,h;
@@ -604,6 +599,15 @@ void GribSettingsDialog::SetSettingsDialogSize()
 	w = wt - XMargin;																	//maximum scolled window size
     h = ht - ( m_sButton->GetSize().GetY() + YMargin );
 	wxSize scroll(0, 0);
+#else        
+    /*Sizing do not work with wxScolledWindow so we need to compute it*/
+    int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
+    int h = GetOCPNCanvasWindow()->GetClientSize().y;
+    int dMargin = 80;                          //set a margin
+	w -= dMargin;								//width available for the scrolled window
+    h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window
+                                                      //two times the button's height to handle pages tab's height
+#endif
 	for( size_t i = 0; i < m_nSettingsBook->GetPageCount(); i++ ) {						//compute and set scrolled windows size
 		wxScrolledWindow *sc = ((wxScrolledWindow*) m_nSettingsBook->GetPage( i ));
 		wxSize scr;
@@ -617,11 +621,13 @@ void GribSettingsDialog::SetSettingsDialogSize()
 		}
 		sc->SetMinSize( wxSize(wxMin( scr.x, w ), h) );
 #if defined __WXMSW__ || defined ( __WXOSX__ )
-		sc->Show( i == (unsigned int) m_SetBookpageIndex );
+        sc->Show( i == (unsigned int) m_SetBookpageIndex );
 #endif
-	}																					//end compute
+       } // end compute
 
+#ifdef __OCPN__ANDROID__
 	m_nSettingsBook->SetSize( wt, -1);
+#endif        
 
 	Layout();
     Fit();
@@ -675,7 +681,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_bNumFixSpac = m_cNumFixSpac->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
     odc.m_bParticles = m_cbParticles->GetValue();
-    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7);
+    odc.m_dParticleDensity = 4.0*exp(m_sParticleDensity->GetValue() - 7.0);
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -851,6 +857,7 @@ void GribSettingsDialog::OnUnitChange( wxCommandEvent& event )
 void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_Settings.m_iOverlayTransparency = 254. - ( (long) m_sTransparency->GetValue() * 254. / 100. );
+    m_extSettings.m_iOverlayTransparency = m_Settings.m_iOverlayTransparency;
     m_parent.SetFactoryOptions();
 }
 
@@ -864,8 +871,7 @@ void GribSettingsDialog::OnCtrlandDataStyleChanged( wxCommandEvent& event )
     if( !messages.IsEmpty() ) {
         m_parent.pPlugIn->m_DialogStyleChanged = true;
         messages.Append( _("This change needs a complete reload.\nIt will be applied after closing and re-opening the plugin") );
-        wxMessageDialog mes(this, messages );
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, messages );
     }
 }
 
@@ -884,9 +890,8 @@ void GribSettingsDialog::OnApply( wxCommandEvent& event )
 void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
 {
     if( m_cInterpolate->IsChecked() ) {
-        wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                            _("Warning!"), wxOK);
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed will not be real but recomputed\nThis can decrease accuracy!"),
+                            _("Warning!") );
         m_tSlicesPerUpdate->Show();
         m_sSlicesPerUpdate->Show();
     } else {                                        //hide no suiting parameters
@@ -923,8 +928,219 @@ void GribSettingsDialog::OnSpacingModeChange( wxCommandEvent& event )
     }
 
     if( message ) {
-        wxMessageDialog mes(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed and this can decrease accuracy!"),
-                            _("Warning!"), wxOK);
-        mes.ShowModal();
+        OCPNMessageBox_PlugIn(this, _("This option imply you authorize intrepolation\nDon't forget that data displayed will not be real but recomputed\nThis can decrease accuracy!"),
+                            _("Warning!") );
     }
 }
+
+
+wxString GribOverlaySettings::SettingsToJSON(wxString json)
+{
+    wxJSONValue v(json);
+    
+    for(int i=0; i<SETTINGS_COUNT; i++) {
+        
+        wxString units; units.Printf(_T("%d"), (int)Settings[i].m_Units);
+        v[name_from_index[i] + _T ( "Units" )] = units;
+        
+        if(i == WIND){
+            UpdateJSONval(v, i, B_ARROWS);
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+            UpdateJSONval(v, i, PARTICLES);
+        }
+        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+        else if(i == PRESSURE) {
+            UpdateJSONval(v, i, ISO_LINE_SHORT);
+            UpdateJSONval(v, i, ISO_LINE_VISI);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+        else if(i == WAVE || i == CURRENT) {
+            UpdateJSONval(v, i, D_ARROWS);
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+            UpdateJSONval(v, i, PARTICLES);
+        }
+        else if( i == PRECIPITATION || i == CLOUD) {
+            UpdateJSONval(v, i, OVERLAY);
+            UpdateJSONval(v, i, NUMBERS);
+        }
+    }
+    
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    return out;
+}
+
+bool GribOverlaySettings::UpdateJSONval( wxJSONValue &v, int settings, int group)
+{
+    wxString Name=name_from_index[settings];
+    
+    switch(group) {
+    case B_ARROWS:
+        v[ Name + _T ( "BarbedArrows" )] = Settings[settings].m_bBarbedArrows;
+        v[ Name + _T ( "BarbedVisibility" )] = Settings[settings].m_iBarbedVisibility;
+        v[ Name + _T ( "BarbedColors" )] = Settings[settings].m_iBarbedColour;
+        v[ Name + _T ( "BarbedArrowFixedSpacing" )] = Settings[settings].m_bBarbArrFixSpac;
+        v[ Name + _T ( "BarbedArrowSpacing" )] = Settings[settings].m_iBarbArrSpacing;
+        break;
+    case ISO_LINE_SHORT:
+        v[ Name + _T ( "DisplayIsobars" )] = Settings[settings].m_bIsoBars;
+        v[ Name + _T ( "IsoBarSpacing" )] = Settings[settings].m_iIsoBarSpacing;
+        break;
+    case ISO_LINE_VISI:
+        v[ Name + _T ( "IsoBarVisibility" )] = Settings[settings].m_iIsoBarVisibility;
+        break;
+    case D_ARROWS:
+        v[ Name + _T ( "DirectionArrows" )] = Settings[settings].m_bDirectionArrows;
+        v[ Name + _T ( "DirectionArrowForm" )] = Settings[settings].m_iDirectionArrowForm;
+        v[ Name + _T ( "DirectionArrowSize" )] = Settings[settings].m_iDirectionArrowSize;
+        v[ Name + _T ( "DirectionArrowFixedSpacing" )] = Settings[settings].m_bDirArrFixSpac;
+        v[ Name + _T ( "DirectionArrowSpacing" )] = Settings[settings].m_iDirArrSpacing;
+        break;
+    case OVERLAY:
+        v[ Name + _T ( "OverlayMap" )] = Settings[settings].m_bOverlayMap;
+        v[ Name + _T ( "OverlayMapColors" )] = Settings[settings].m_iOverlayMapColors;
+        break;
+    case NUMBERS:
+        v[ Name + _T ( "Numbers" )] = Settings[settings].m_bNumbers;
+        v[ Name + _T ( "NumbersFixedSpacing" )] = Settings[settings].m_bNumFixSpac;
+        v[ Name + _T ( "NumbersSpacing" )] = Settings[settings].m_iNumbersSpacing;
+        break;
+    case PARTICLES:
+        v[ Name + _T ( "Particles" )] = Settings[settings].m_bParticles;
+        v[ Name + _T ( "ParticleDensity" )] = Settings[settings].m_dParticleDensity;
+        break;
+    default:
+        break;
+    }
+    
+    return true;
+}
+
+bool GribOverlaySettings::JSONToSettings(wxString json, grib_pi *pi )
+{
+    wxJSONValue  root;
+    wxJSONReader reader;
+    
+    // now read the JSON text and store it in the 'root' structure
+    // check for errors before retreiving values...
+    int numErrors = reader.Parse( json, &root );
+    if ( numErrors > 0 )  {
+        return false;
+    }
+    
+    //  Read all the JSON values, and populate the local settings
+ 
+    if(root[_T ( "overlay_transparency" )].IsString()){
+        wxString s = root[_T ( "overlay_transparency" )].AsString(); long transparency = -1; s.ToLong(&transparency);
+        transparency = wxMax(1, transparency);
+        transparency = wxMin(100, transparency);
+        m_iOverlayTransparency = transparency * (double)(254. / 100.);
+    }
+
+    if(root[ _T ( "reference_timezone" )].IsBool()){
+        if(pi)
+            pi->SetTimeZone( root[_T ( "reference_timezone" )].AsBool() );
+    }
+    
+    for(int i=0; i<SETTINGS_COUNT; i++) {
+        wxString Name=name_from_index[i];
+        wxString s;
+        if(root[Name + _T ( "Units" )].IsString()){
+            wxString s = root[Name + _T ( "Units" )].AsString(); long units = -1; s.ToLong(&units);
+            for( int j=0; !unit_names[unittype[i]][j].empty(); j++)
+                Settings[i].m_Units = ( units < 0 || units > j - 1 ) ? (SettingsType) 0 : (SettingsType)units;
+        }
+        
+    
+        if(root[Name + _T ( "BarbedArrows" )].IsBool())
+            Settings[i].m_bBarbedArrows = root[Name + _T ( "BarbedArrows" )].AsBool();
+
+        if(root[Name + _T ( "BarbedVisibility" )].IsBool())
+            Settings[i].m_iBarbedVisibility = root[Name + _T ( "BarbedVisibility" )].AsBool();
+        
+        if(root[Name + _T ( "BarbedColors" )].IsString()){
+            wxString s = root[Name + _T ( "BarbedColors" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iBarbedColour = val;
+        }
+        
+        if(root[Name + _T ( "BarbedArrowFixedSpacing" )].IsBool())
+            Settings[i].m_bBarbArrFixSpac = root[Name + _T ( "BarbedArrowFixedSpacing" )].AsBool();
+        
+         if(root[Name + _T ( "BarbedArrowSpacing" )].IsString()){
+            wxString s = root[Name + _T ( "BarbedArrowSpacing" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iBarbArrSpacing = val;
+        }
+        
+        if(root[Name + _T ( "DisplayIsobars" )].IsBool())
+            Settings[i].m_bIsoBars = root[Name + _T ( "DisplayIsobars" )].AsBool();
+        
+        if(root[Name + _T ( "IsoBarSpacing" )].IsString()){
+            wxString s = root[Name + _T ( "IsoBarSpacing" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iIsoBarSpacing = val;
+        }
+        
+        if(root[Name + _T ( "IsoBarVisibility" )].IsBool())
+            Settings[i].m_iIsoBarVisibility = root[Name + _T ( "IsoBarVisibility" )].AsBool();
+        
+        if(root[Name + _T ( "DirectionArrows" )].IsBool())
+            Settings[i].m_bDirectionArrows = root[Name + _T ( "DirectionArrows" )].AsBool();
+        
+        if(root[Name + _T ( "DirectionArrowForm" )].IsString()){
+            wxString s = root[Name + _T ( "DirectionArrowForm" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iDirectionArrowForm = val;
+        }
+        
+        if(root[Name + _T ( "DirectionArrowSize" )].IsString()){
+            wxString s = root[Name + _T ( "DirectionArrowSize" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iDirectionArrowSize = val;
+        }
+        
+        if(root[Name + _T ( "DirectionArrowFixedSpacing" )].IsBool())
+            Settings[i].m_bDirArrFixSpac = root[Name + _T ( "DirectionArrowFixedSpacing" )].AsBool();
+        
+        if(root[Name + _T ( "DirectionArrowSpacing" )].IsString()){
+            wxString s = root[Name + _T ( "DirectionArrowSpacing" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iDirArrSpacing = val;
+        }
+        
+        if(root[Name + _T ( "OverlayMap" )].IsBool())
+            Settings[i].m_bOverlayMap = root[Name + _T ( "OverlayMap" )].AsBool();
+        
+        if(root[Name + _T ( "OverlayMapColors" )].IsString()){
+            wxString s = root[Name + _T ( "OverlayMapColors" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iOverlayMapColors = val;
+        }
+        
+        if(root[Name + _T ( "Numbers" )].IsBool())
+            Settings[i].m_bNumbers = root[Name + _T ( "Numbers" )].AsBool();
+        
+        if(root[Name + _T ( "NumbersFixedSpacing" )].IsBool())
+            Settings[i].m_bNumFixSpac = root[Name + _T ( "NumbersFixedSpacing" )].AsBool();
+        
+        if(root[Name + _T ( "NumbersSpacing" )].IsString()){
+            wxString s = root[Name + _T ( "NumbersSpacing" )].AsString(); long val = -1; s.ToLong(&val);
+            Settings[i].m_iNumbersSpacing = val;
+        }
+        
+        if(root[Name + _T ( "Particles" )].IsBool())
+            Settings[i].m_bParticles = root[Name + _T ( "Particles" )].AsBool();
+        
+        if(root[Name + _T ( "ParticleDensity" )].IsString()){
+            wxString s = root[Name + _T ( "ParticleDensity" )].AsString(); double val = -1; s.ToDouble(&val);
+            Settings[i].m_dParticleDensity = val;
+        }
+        
+    }
+ 
+    return true;    
+}
+
+

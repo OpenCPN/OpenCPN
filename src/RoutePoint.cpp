@@ -203,6 +203,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
 
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
+    m_IconScaleFactor = 1.0;
     
     m_HyperlinkList = new HyperlinkList;
 
@@ -317,6 +318,8 @@ void RoutePoint::ReLoadIcon( void )
 
     m_iTextTexture = 0;
 #endif
+    
+    m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
 void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
@@ -342,11 +345,25 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
 //    Substitue icon?
     wxBitmap *pbm;
-    if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) ) pbm = pWayPointMan->GetIconBitmap(
-            _T ( "activepoint" ) );
+    if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
+        pbm = pWayPointMan->GetIconBitmap( _T ( "activepoint" ) );
     else
         pbm = m_pbmIcon;
 
+    wxBitmap *pbms = NULL;
+    if( g_ChartScaleFactorExp > 1.0){
+        if(m_IconScaleFactor != g_ChartScaleFactorExp){
+            wxImage scaled_image = pbm->ConvertToImage();
+            int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
+            int new_height = pbm->GetHeight() * g_ChartScaleFactorExp;
+            m_ScaledBMP = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+           
+            m_IconScaleFactor = g_ChartScaleFactorExp;
+        }
+        if( m_ScaledBMP.IsOk() )
+            pbm = &m_ScaledBMP;
+    }
+        
     int sx2 = pbm->GetWidth() / 2;
     int sy2 = pbm->GetHeight() / 2;
 
@@ -453,10 +470,11 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
 
+    delete pbms;        // the potentially scaled bitmap
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
         return;
@@ -469,24 +487,8 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
        vp.rotation == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
-        if( vpBBox.IntersectOut( m_wpBBox ) ) {
-            /* try with vp crossing IDL */
-            if(vpBBox.GetMinX() < -180 && vpBBox.GetMaxX() > -180) {
-                wxPoint2DDouble xlate( -360., 0. );
-                wxBoundingBox test_box2 = m_wpBBox;
-                test_box2.Translate( xlate );
-                if( vp.GetBBox().IntersectOut( test_box2 ) )
-                    return;
-            } else 
-            if(vpBBox.GetMinX() < 180 && vpBBox.GetMaxX() > 180) {
-                wxPoint2DDouble xlate( 360., 0. );
-                wxBoundingBox test_box2 = m_wpBBox;
-                test_box2.Translate( xlate );
-                if( vp.GetBBox().IntersectOut( test_box2 ) )
-                    return;
-            } else
-                return;
-        }
+        if( vpBBox.IntersectOut( m_wpBBox ) )
+            return;
     }
 
     wxPoint r;
@@ -497,6 +499,9 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
         cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+
+    if(r.x == INVALID_COORD)
+        return;
 
 //    Substitue icon?
     wxBitmap *pbm;
@@ -545,14 +550,20 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
-        m_wpBBox.SetMin(lon1, lat1);
-        m_wpBBox.SetMax(lon2, lat2);
+        if(lon1 > lon2) {
+            m_wpBBox.SetMin(lon1, lat1);
+            m_wpBBox.SetMax(lon2+360, lat2);
+        } else {
+            m_wpBBox.SetMin(lon1, lat1);
+            m_wpBBox.SetMax(lon2, lat2);
+        }
         m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
         m_wpBBox_rotation = vp.rotation;
     }
 
-    if(region.Contains(r3) == wxOutRegion)
-        return;
+//    if(region.Contains(r3) == wxOutRegion)
+//        return;
+    
 
     ocpnDC dc;
 
@@ -593,9 +604,9 @@ void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region,bool use_cached_screen
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
         float scale = 1.0;
-        if(g_bresponsive){
+ //       if(g_bresponsive){
             scale =  g_ChartScaleFactorExp;
-        }
+//        }
             
         float ws = r1.width * scale;
         float hs = r1.height * scale;

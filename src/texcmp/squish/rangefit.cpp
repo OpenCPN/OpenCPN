@@ -30,7 +30,7 @@
 
 namespace squish {
 
-RangeFit::RangeFit( ColourSet const* colours, int flags ) 
+RangeFit::RangeFit( ColourSet * colours, int flags ) 
   : ColourFit( colours, flags )
 {
 	// initialise the metric

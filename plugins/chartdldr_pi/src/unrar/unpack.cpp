@@ -94,6 +94,7 @@ void Unpack::Init(size_t WinSize,bool Solid)
   byte *NewWindow=Fragmented ? NULL : (byte *)malloc(WinSize);
 
   if (NewWindow==NULL)
+  {
     if (Grow || WinSize<0x1000000)
     {
       // We do not support growth for new fragmented window.
@@ -110,6 +111,7 @@ void Unpack::Init(size_t WinSize,bool Solid)
       FragWindow.Init(WinSize);
       Fragmented=true;
     }
+  }
 
   if (!Fragmented)
   {

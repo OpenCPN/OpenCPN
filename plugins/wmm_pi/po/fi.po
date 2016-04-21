@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"POT-Creation-Date: 2016-01-08 08:29-0300\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.\n\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
 "Declination is the angle between true and magnetic north.\n"
 "Inclination is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
@@ -28,14 +28,14 @@ msgid "\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr "\n"
-"World Magnetic Model:in graafisen esityksen avulla käyttäjät voivat tehdä ristiviittauksia eksymäarvoihin, joita on painettuna  monissa rasterikartoissa.\n\n"
-"Deklinaatio on tosisuunnan ja magneettisen pohjoisen välinen kulma. \n"
+"World Magnetic Model: in graafisen esityksen avulla käyttäjät voivat tehdä ristiviittauksia erantoarvoihin, joita on painettuna  monissa rasterikartoissa.\n\n"
+"Eranto on tosisuunnan ja magneettisen pohjoisen välinen kulma. \n"
 "Inklinaatio on magneettisen kentän pystykulma.\n"
 "\t (+-90 magneettisilla navoilla)\n"
 "Magneettikentän voimakkuuden yksikkö on nanotesla ja arvoväli on\n"
-"\t20000:sta 66000:aan\n\n"
+"\t20000: sta 66000: aan\n\n"
 "Piiretyt linjat ovat samanlaisia kuin topografisissa kartoissa.  Niiden väli on säädettävissä; isommat välit vähentävät laskenta-aikaa.\n\n"
-"Askelkoon ja navansijaintitarkkuuden liukusäätimien avulla vaikutetaan laskentanopeuden ja -ajan suhteisiin.\n\n"
+"Askelkoon ja navan sijaintitarkkuuden liukusäätimien avulla vaikutetaan laskentanopeuden ja -ajan suhteisiin.\n\n"
 "World Magnetic Model lisäosan kirjoitti Pavel Kalian ja Sean D'Epagnier lisäsi graafisen esityksen tuen."
 
 #: src/wmm_pi.cpp:102
@@ -84,7 +84,7 @@ msgstr "Vene"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
-msgstr ""
+msgstr "F "
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
@@ -92,7 +92,7 @@ msgstr "Kokonaisintensiteetti"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
-msgstr ""
+msgstr "H "
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
@@ -100,7 +100,7 @@ msgstr "Vaaka intensiteetti"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
-msgstr ""
+msgstr "X "
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
@@ -108,7 +108,7 @@ msgstr "Pohjoinen komponentti"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
-msgstr ""
+msgstr "Y "
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
@@ -116,7 +116,7 @@ msgstr "Itäinen komponentti"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
-msgstr ""
+msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
@@ -144,11 +144,11 @@ msgstr "Kohdistin"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Diagrammi"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Salli piirtäminen"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -176,7 +176,7 @@ msgstr "Näyttää myös tietoja kohdistimen sijainnista"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Näytä työkalurivikuvake"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
@@ -186,7 +186,7 @@ msgstr "Näytä tiedot työkalurivin kuvakeessa"
 msgid "Window transparency"
 msgstr "Ikkunoiden läpinäkyvyys"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Eranto"
 
@@ -194,11 +194,11 @@ msgstr "Eranto"
 msgid "Degrees"
 msgstr "Asteita"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Kaltevuus"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Kentän voimakkuus"
 
@@ -226,7 +226,7 @@ msgstr "Tallenna"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Rakennetaan magneettinen kartta"
 

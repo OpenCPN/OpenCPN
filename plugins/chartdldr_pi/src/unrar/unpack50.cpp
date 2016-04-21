@@ -22,8 +22,8 @@ void Unpack::Unpack5(bool Solid)
       // We use 'while', because for empty block containing only Huffman table,
       // we'll be on the block border once again just after reading the table.
       while (Inp.InAddr>BlockHeader.BlockStart+BlockHeader.BlockSize-1 || 
-             Inp.InAddr==BlockHeader.BlockStart+BlockHeader.BlockSize-1 && 
-             Inp.InBit>=BlockHeader.BlockBitSize)
+             (Inp.InAddr==BlockHeader.BlockStart+BlockHeader.BlockSize-1 && 
+             Inp.InBit>=BlockHeader.BlockBitSize))
       {
         if (BlockHeader.LastBlockInFile)
         {
@@ -122,10 +122,12 @@ void Unpack::Unpack5(bool Solid)
     if (MainSlot==257)
     {
       if (LastLength!=0)
+      {
         if (Fragmented)
           FragWindow.CopyString(LastLength,OldDist[0],UnpPtr,MaxWinMask);
         else
           CopyString(LastLength,OldDist[0]);
+      }
       continue;
     }
     if (MainSlot<262)
@@ -378,7 +380,7 @@ void Unpack::UnpWriteBuf()
   // Choose the nearest among WriteBorder and WrPtr actual written border.
   // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.
   if (WriteBorder==UnpPtr || 
-      WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<((WriteBorder-UnpPtr)&MaxWinMask))
+      (WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<((WriteBorder-UnpPtr)&MaxWinMask)))
     WriteBorder=WrPtr;
 }
 

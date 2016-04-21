@@ -131,6 +131,7 @@ public:
       virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
+      virtual LLRegion GetValidRegion();
 
       virtual void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
       virtual void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
@@ -189,8 +190,10 @@ public:
       double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
 
 //#ifdef ocpnUSE_GL
-      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region);
-      virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
+      virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                               const OCPNRegion &RectRegion, const LLRegion &Region);
 //#endif
       
 // Public data
@@ -217,6 +220,7 @@ public:
       virtual void InvalidateCache();
       virtual bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
+      virtual void ClearDepthContourArray(void);
       virtual void BuildDepthContourArray(void);
       int ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
                                    wxString &LastUpdateDate, bool b_copyfiles);
@@ -266,8 +270,9 @@ private:
       void FreeObjectsAndRules();
       const char *getName(OGRFeature *feature);
 
-      bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
-      bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
+      bool DoRenderOnGL(const wxGLContext &glc, const ViewPort& VPoint);
+      bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
+                                  const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 
       void AssembleLineGeometry( void );
       void BuildLineVBO( void );

@@ -6,7 +6,6 @@
  *
  ***************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
- *   sean at depagnier dot com                                             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -32,23 +31,11 @@
 #include "wx/wx.h"
 #endif
 
+#include "dychart.h"
+#include "ocpn_plugin.h"
+
 #ifdef __MSVC__
 #include <windows.h>
-#endif
-
-#ifdef __WXMSW__
-    #include "GL/gl.h"            // local copy for Windows
-    #include <GL/glu.h>
-#else
-
-    #ifndef __OCPN__ANDROID__
-        #include <GL/gl.h>
-        #include <GL/glu.h>
-    #else
-        #include "qopengl.h"                  // this gives us the qt runtime gles2.h
-        #include "GL/gl_private.h"
-    #endif
-
 #endif
 
 #ifdef ocpnUSE_GL
@@ -76,7 +63,8 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 #endif
 #ifdef ocpnUSE_GL
     m_textforegroundcolour = wxColour( 0, 0, 0 );
-#endif    
+#endif   
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::ocpnDC( wxDC &pdc ) :
@@ -92,6 +80,7 @@ ocpnDC::ocpnDC( wxDC &pdc ) :
     }
 #endif
     m_textforegroundcolour = wxColour( 0, 0, 0 );
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::ocpnDC() :
@@ -100,6 +89,7 @@ ocpnDC::ocpnDC() :
 #if wxUSE_GRAPHICS_CONTEXT
     pgc = NULL;
 #endif
+    m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
 }
 
 ocpnDC::~ocpnDC()
@@ -133,24 +123,6 @@ void ocpnDC::SetBackground( const wxBrush &brush )
         glcanvas->SetBackgroundColour( brush.GetColour() );
 #endif
     }
-}
-
-void ocpnDC::SetGLAttrs( bool highQuality )
-{
-#ifdef ocpnUSE_GL
-    
-    //      Enable anti-aliased polys, at best quality
-    if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
-        glEnable( GL_BLEND );
-    } else {
-        glDisable(GL_LINE_SMOOTH);
-        glDisable( GL_POLYGON_SMOOTH );
-        glDisable( GL_BLEND );
-    }
-    
-#endif
 }
 
 void ocpnDC::SetPen( const wxPen &pen )
@@ -211,6 +183,23 @@ void ocpnDC::GetSize( wxCoord *width, wxCoord *height ) const
         glcanvas->GetSize( width, height );
 #endif
     }
+}
+
+void ocpnDC::SetGLAttrs( bool highQuality )
+{
+#ifdef ocpnUSE_GL
+
+ // Enable anti-aliased polys, at best quality
+    if( highQuality ) {
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_POLYGON_SMOOTH );
+        glEnable( GL_BLEND );
+    } else {
+        glDisable(GL_LINE_SMOOTH);
+        glDisable( GL_POLYGON_SMOOTH );
+        glDisable( GL_BLEND );
+    }
+#endif
 }
 
 void ocpnDC::SetGLStipple() const
@@ -550,8 +539,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 #ifdef ocpnUSE_GL
     else if( ConfigurePen() ) {
 
-        SetGLAttrs( b_hiqual );
-
+        SetGLAttrs( b_hiqual ); 
         bool b_draw_thick = false;
 
         glDisable( GL_LINE_STIPPLE );
@@ -559,6 +547,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
         //      Enable anti-aliased lines, at best quality
         if( b_hiqual ) {
+            glEnable( GL_BLEND );
             if( m_pen.GetWidth() > 1 ) {
                 GLint parms[2];
                 glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
@@ -581,14 +570,22 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         if( b_draw_thick) {
             DrawGLThickLines( n, points, xoffset, yoffset, m_pen, b_hiqual );
         } else {
+
+            if( b_hiqual ) {
+                glEnable( GL_LINE_SMOOTH );
+                ;//                SetGLStipple(m_pen.GetStyle());
+            }
+
             glBegin( GL_LINE_STRIP );
             for( int i = 0; i < n; i++ )
                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
             glEnd();
         }
 
-        glDisable( GL_LINE_STIPPLE );
-        SetGLAttrs( false );
+        if( b_hiqual ) {
+            glDisable( GL_LINE_STIPPLE );
+            glDisable( GL_POLYGON_SMOOTH );
+        }
     }
 #endif    
 }
@@ -780,20 +777,25 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
 #endif        
 
         if( ConfigureBrush() ) {
+            glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
+            glDisable( GL_POLYGON_SMOOTH );
         }
 
         if( ConfigurePen() ) {
+            glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
             glEnd();
+            glDisable( GL_LINE_SMOOTH );
         }
 
-        SetGLAttrs( false );
+        SetGLAttrs( false ); 
+        
     }
 #endif    
 }
@@ -842,7 +844,7 @@ void APIENTRY ocpnDCerrorCallback( GLenum errorCode )
 {
    const GLubyte *estring;
    estring = gluErrorString(errorCode);
-   wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
+   //wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback( GLenum type )
@@ -966,6 +968,11 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
                 printf("trying to use mask to draw a bitmap without alpha or mask\n" );
             }
 
+#ifdef __WXOSX__            
+            if(image.HasMask())
+                a=0;
+#endif
+            
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){
                 for( int y = 0; y < h; y++ )
@@ -982,6 +989,7 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
 
                         e[off * 4 + 3] =
                                 a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+//                        e[off * 4 + 3] = ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
                     }
             }
 
@@ -1008,33 +1016,34 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
        wxCoord w = 0;
         wxCoord h = 0;
 
-#ifndef __WXMAC__
+        if(m_buseTex){
         
-        m_texfont.Build( m_font );      // make sure the font is ready
-        m_texfont.GetTextExtent(text, &w, &h);
-        
-        if( w && h ) {
+            m_texfont.Build( m_font );      // make sure the font is ready
+            m_texfont.GetTextExtent(text, &w, &h);
             
-            glEnable( GL_BLEND );
-            glEnable( GL_TEXTURE_2D );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+            if( w && h ) {
+                
+                glEnable( GL_BLEND );
+                glEnable( GL_TEXTURE_2D );
+                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
-            glPushMatrix();
-            glTranslatef(x, y, 0);
-            
-            glColor3ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
-                        m_textforegroundcolour.Blue() );
-            
+                glPushMatrix();
+                glTranslatef(x, y, 0);
+                
+                glColor3ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
+                            m_textforegroundcolour.Blue() );
+                
 
-            m_texfont.RenderString(text);
-            glPopMatrix();
+                m_texfont.RenderString(text);
+                glPopMatrix();
 
-            glDisable( GL_TEXTURE_2D );
-            glDisable( GL_BLEND );
+                glDisable( GL_TEXTURE_2D );
+                glDisable( GL_BLEND );
 
+            }
         }
-#else            
+        else{           
             wxScreenDC sdc;
             sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
             
@@ -1068,24 +1077,42 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                 y += dy;
             }
 
-            unsigned char *data = new unsigned char[w * h];
+            unsigned char *data = new unsigned char[w * h * 4];
             unsigned char *im = image.GetData();
+            
+            
             if(im){
-                for( int i = 0; i < w * h; i++ )
-                    data[i] = im[3 * i];
+                unsigned int r = m_textforegroundcolour.Red();
+                unsigned int g = m_textforegroundcolour.Green();
+                unsigned int b = m_textforegroundcolour.Blue();
+                for( int i = 0; i < h; i++ ){
+                    for(int j=0 ; j < w ; j++){
+                        unsigned int index = ((i*w) + j) * 4;
+                        data[index] = r;
+                        data[index+1] = g;
+                        data[index+2] = b;
+                        data[index+3] = im[((i*w) + j) * 3];
+                    }
+                }
             }
 
-            glColor4ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
-                    m_textforegroundcolour.Blue(), 255 );
-            GLDrawBlendData( x, y, w, h, GL_ALPHA, data );
+            glColor4ub( 255, 255, 255, 255 );
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            glRasterPos2i( x, y );
+            glPixelZoom( 1, -1 );
+            glDrawPixels( w, h, GL_RGBA, GL_UNSIGNED_BYTE, data );
+            glPixelZoom( 1, 1 );
+            glDisable( GL_BLEND );
+            
             delete[] data;
-#endif            
+        }            
     }
 #endif    
 }
 
 void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCoord *descent,
-        wxCoord *externalLeading, wxFont *font ) const
+        wxCoord *externalLeading, wxFont *font )
 {
     //  Give at least reasonable results on failure.
     if(w) *w = 100;
@@ -1096,9 +1123,20 @@ void ocpnDC::GetTextExtent( const wxString &string, wxCoord *w, wxCoord *h, wxCo
         wxFont f = m_font;
         if( font ) f = *font;
 
+        if(m_buseTex){
+  #ifdef ocpnUSE_GL       
+        m_texfont.Build( f );      // make sure the font is ready
+        m_texfont.GetTextExtent(string, w, h);
+  #else        
         wxMemoryDC temp_dc;
         temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
-        
+  #endif      
+        }
+        else{
+            wxMemoryDC temp_dc;
+            temp_dc.GetTextExtent( string, w, h, descent, externalLeading, &f );
+        }
+
      }
      
      //  Sometimes GetTextExtent returns really wrong, uninitialized results.

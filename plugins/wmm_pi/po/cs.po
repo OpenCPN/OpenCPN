@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"POT-Creation-Date: 2016-01-08 08:29-0300\n"
+"PO-Revision-Date: 2016-01-16 20:59-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:86
 msgid "\n"
-"World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.\n\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
 "Declination is the angle between true and magnetic north.\n"
 "Inclination is the vertical angle of the magnetic field.\n"
 "\t(+- 90 at the magnetic poles)\n"
@@ -28,7 +28,7 @@ msgid "\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr "\n"
-"Vykreslování světového magnetického modelu umožňuje uživatelům kontrolu hodnot magnetické deviace vytištěných na mnoha rastrových mapách.\n\n"
+"Vykreslování světového magnetického modelu umožňuje uživatelům kontrolu hodnot magnetické deklinace vytištěných na mnoha rastrových mapách.\n\n"
 "Deklinace je úhel mezi skutečným a magnetickým severem.\n"
 "Inklinace je vertikální úhel magnetického pole.\n"
 "\t(+- 90 na magnetických pólech)\n"
@@ -58,7 +58,13 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "World Magnetic Model PlugIn pro OpenCPN\n"
+"Implementuje NOAA World Magnetic Model\n"
+"Více informací: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"Obsahuje model WMM2015, který expiruje 31. prosince 2019.\n"
+"Potom, pokud nebude včas vzdána nová verze pluginu\n"
+"stáhni nový WMM.COF na webu NOAA a umísti ho\n"
+"na místo, které najdeš v logu OpenCPN."
 
 #: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
 msgid "Error, see log."
@@ -138,11 +144,11 @@ msgstr "Kurzor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Vykreslit"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Povolit vykreslování"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -162,7 +168,7 @@ msgstr "Zobrazit"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr ""
+msgstr "Zobrazit možnosti vykreslení"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
@@ -170,7 +176,7 @@ msgstr "Ukaž i data pro pozici kurzoru"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Zobrazit ikonu v panelu nástrojů"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
@@ -180,7 +186,7 @@ msgstr "Zobrazuj data v ikoně"
 msgid "Window transparency"
 msgstr "Průhlednost okna"
 
-#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:360
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
 msgstr "Deklinace"
 
@@ -188,11 +194,11 @@ msgstr "Deklinace"
 msgid "Degrees"
 msgstr "Stupně"
 
-#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
 msgstr "Inklinace"
 
-#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:361
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
 msgstr "Intenzita pole"
 
@@ -220,7 +226,7 @@ msgstr "Uložit"
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: src/MagneticPlotMap.cpp:359
+#: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
 msgstr "Vytváření magnetické mapy"
 

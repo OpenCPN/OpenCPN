@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-24 20:40-0500\n"
-"PO-Revision-Date: 2015-09-24 21:47-0400\n"
+"POT-Creation-Date: 2015-12-20 18:04-0600\n"
+"PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -20,20 +20,20 @@ msgstr ""
 msgid "Catalog is not valid."
 msgstr "Luettelo ei kelpaa."
 
-#: src/chartcatalog.cpp:556
+#: src/chartcatalog.cpp:550
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr "%s (%s to %s), jokimailit %3.1f - %3.1f"
 
-#: src/chartdldr_pi.cpp:235
+#: src/chartdldr_pi.cpp:234
 msgid "ChartDownloader"
 msgstr "Karttalatain"
 
-#: src/chartdldr_pi.cpp:240
+#: src/chartdldr_pi.cpp:239
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "Karttalatainlisäosa OpenCPN:lle"
 
-#: src/chartdldr_pi.cpp:245
+#: src/chartdldr_pi.cpp:244
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
@@ -41,64 +41,64 @@ msgstr "Karttalatainlisäosa OpenCPN:lle\n"
 "Käsittelee karttojen lataukset ja päivitykset lähteistä ja tukee\n"
 "NOAA:n karttaluetteloformaattia"
 
-#: src/chartdldr_pi.cpp:252 src/chartdldr_pi.cpp:680 src/chartdldr_pi.cpp:687
-#: src/chartdldr_pi.cpp:693 src/chartdldr_pi.cpp:711 src/chartdldr_pi.cpp:746
-#: src/chartdldr_pi.cpp:809 src/chartdldr_pi.cpp:815 src/chartdldr_pi.cpp:993
-#: src/chartdldr_pi.cpp:1063 src/chartdldr_pi.cpp:1138 src/chartdldr_pi.cpp:1243
-#: src/chartdldr_pi.cpp:1774
+#: src/chartdldr_pi.cpp:251 src/chartdldr_pi.cpp:692 src/chartdldr_pi.cpp:699
+#: src/chartdldr_pi.cpp:705 src/chartdldr_pi.cpp:723 src/chartdldr_pi.cpp:758
+#: src/chartdldr_pi.cpp:821 src/chartdldr_pi.cpp:827 src/chartdldr_pi.cpp:1009
+#: src/chartdldr_pi.cpp:1080 src/chartdldr_pi.cpp:1154
+#: src/chartdldr_pi.cpp:1259 src/chartdldr_pi.cpp:1809
 msgid "Chart Downloader"
 msgstr "Karttalatain"
 
-#: src/chartdldr_pi.cpp:425 src/chartdldr_pi.cpp:447
+#: src/chartdldr_pi.cpp:428 src/chartdldr_pi.cpp:450
 msgid "Select all"
 msgstr "Valitse kaikki"
 
-#: src/chartdldr_pi.cpp:429 src/chartdldr_pi.cpp:448
+#: src/chartdldr_pi.cpp:432 src/chartdldr_pi.cpp:451
 msgid "Deselect all"
 msgstr "Poista kaikki valinnat"
 
-#: src/chartdldr_pi.cpp:433 src/chartdldr_pi.cpp:449
+#: src/chartdldr_pi.cpp:436 src/chartdldr_pi.cpp:452
 msgid "Invert selection"
 msgstr "Käänteinen valinta"
 
-#: src/chartdldr_pi.cpp:437 src/chartdldr_pi.cpp:450
+#: src/chartdldr_pi.cpp:440 src/chartdldr_pi.cpp:453
 msgid "Select updated"
 msgstr "Valinnat päivitetty"
 
-#: src/chartdldr_pi.cpp:441 src/chartdldr_pi.cpp:451
+#: src/chartdldr_pi.cpp:444 src/chartdldr_pi.cpp:454
 msgid "Select new"
 msgstr "Valitse uusi"
 
-#: src/chartdldr_pi.cpp:554
+#: src/chartdldr_pi.cpp:562
 msgid "New"
 msgstr "Uusi"
 
-#: src/chartdldr_pi.cpp:563
+#: src/chartdldr_pi.cpp:571
 msgid "Update available"
 msgstr "Päivityksiä saatavilla"
 
-#: src/chartdldr_pi.cpp:569
+#: src/chartdldr_pi.cpp:577
 msgid "Up to date"
 msgstr "Ajan tasalla"
 
-#: src/chartdldr_pi.cpp:574
+#: src/chartdldr_pi.cpp:584
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu kartat yhteensä %lu päivitetty, %lu uusia"
 
-#: src/chartdldr_pi.cpp:651 src/chartdldr_pi.cpp:1217
+#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
 msgid "(Please update first)"
 msgstr "(Tee ensin päivitys)"
 
-#: src/chartdldr_pi.cpp:656 src/chartdldr_pi.cpp:728
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr "Virhe,  URL, jossa on kartan lähdetiedot näyttää väärältä."
 
-#: src/chartdldr_pi.cpp:656 src/chartdldr_pi.cpp:728 src/chartdldr_pi.cpp:1004
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740 src/chartdldr_pi.cpp:1020
 msgid "Error"
 msgstr "Virhe"
 
-#: src/chartdldr_pi.cpp:679
+#: src/chartdldr_pi.cpp:691
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
@@ -106,7 +106,7 @@ msgstr "Olet valinnut päivitä kaikki karttaluettelot. \n"
 "Sitten Lataa kaikki uudet ja päivitetyt kartat. \n"
 "Tämä voi kestää pitkään."
 
-#: src/chartdldr_pi.cpp:686
+#: src/chartdldr_pi.cpp:698
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
@@ -114,7 +114,7 @@ msgstr "Olet valinnut päivitä kaikki karttaluettelot. \n"
 "Sitten Lataa vain kaikki uudet (mutta ei päivitetyt) kartat. \n"
 "Tämä voi kestää pitkään."
 
-#: src/chartdldr_pi.cpp:692
+#: src/chartdldr_pi.cpp:704
 msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
@@ -122,130 +122,131 @@ msgstr "Olet valinnut päivitä kaikki karttaluettelot. \n"
 "Sitten Lataa vain päivitetyt (mutta ei uusia)kartat. \n"
 "Tämä voi kestää pitkään."
 
-#: src/chartdldr_pi.cpp:710 src/chartdldr_pi.cpp:1062
+#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1079
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "Lataus %d kartasta %d epäonnistui.\n"
 "Tarkista luettelo, totea, että internet-yhteytesi toimii ja toista toimenpide tarvittaessa."
 
-#: src/chartdldr_pi.cpp:746 src/chartdldr_pi.cpp:1754 src/chartdldr_pi.cpp:1774
+#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1786 src/chartdldr_pi.cpp:1809
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "Kansiota %s ei voida luoda."
 
-#: src/chartdldr_pi.cpp:781
+#: src/chartdldr_pi.cpp:793
 msgid "Downloading file"
 msgstr "Ladataan tiedostoa"
 
-#: src/chartdldr_pi.cpp:782
+#: src/chartdldr_pi.cpp:794
 msgid "Reading Headers: "
 msgstr "Luetaan otsakkeita: "
 
-#: src/chartdldr_pi.cpp:808
+#: src/chartdldr_pi.cpp:820
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "Ei löytynyt uutta luetteloa: %s "
 
-#: src/chartdldr_pi.cpp:814
+#: src/chartdldr_pi.cpp:826
 #, c-format
 msgid "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr "Luettelon lataus ei onnistunut: %s \n"
 "Tarkista Internet-yhteyden toiminta."
 
-#: src/chartdldr_pi.cpp:960 src/chartdldr_pi.cpp:966
+#: src/chartdldr_pi.cpp:976 src/chartdldr_pi.cpp:982
 msgid "No charts selected for download."
 msgstr "Karttoja ei ole valittu ladattavaksi."
 
-#: src/chartdldr_pi.cpp:976
-msgid "Abort download"
-msgstr ""
-
-#: src/chartdldr_pi.cpp:985
-msgid "Unknown"
-msgstr ""
-
 #: src/chartdldr_pi.cpp:992
+msgid "Abort download"
+msgstr "Keskeytä lataus"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Unknown"
+msgstr "Tuntematon"
+
+#: src/chartdldr_pi.cpp:1008
 #, c-format
 msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
 " After downloading the charts, please extract them to %s"
 msgstr "Valittua karttaa \"%s\" ei voida ladata automaattisesti, Haluatko avata selaimen ja ladata ne manuaalisesti? \n\n"
 " Karttojen latauksen jälkeen sijoita ne %s"
 
-#: src/chartdldr_pi.cpp:1004
+#: src/chartdldr_pi.cpp:1020
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr "Virhe, URL karttaan (%s) näyttää väärältä."
 
-#: src/chartdldr_pi.cpp:1030
+#: src/chartdldr_pi.cpp:1046
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
+msgstr "Karttojen lataaminen %u sta %u, %u hun lataus epäonnistui (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1059 src/chartdldrgui.cpp:293
+#: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Lataa\n"
+" valitut kartat"
 
-#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:95
+#: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
 msgid "Catalog"
 msgstr "Luettelo"
 
-#: src/chartdldr_pi.cpp:1086
+#: src/chartdldr_pi.cpp:1105
 msgid "Released"
 msgstr "Julkaistu"
 
-#: src/chartdldr_pi.cpp:1087
+#: src/chartdldr_pi.cpp:1106
 msgid "Local path"
 msgstr "Paikallinen polku"
 
-#: src/chartdldr_pi.cpp:1091
+#: src/chartdldr_pi.cpp:1110
 msgid "Title"
 msgstr "Otsikko"
 
-#: src/chartdldr_pi.cpp:1092
+#: src/chartdldr_pi.cpp:1111
 msgid "Status"
 msgstr "Tila"
 
-#: src/chartdldr_pi.cpp:1093
+#: src/chartdldr_pi.cpp:1112
 msgid "Latest"
 msgstr "Uusimmat"
 
-#: src/chartdldr_pi.cpp:1137
+#: src/chartdldr_pi.cpp:1153
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed, but you will not be able to update the charts anymore."
 msgstr "Haluatko varmasti poistaa karttalähteen?\n"
 "Paikallisia karttatiedostoja ei poisteta, mutta et voi päivittää karttoja enää."
 
-#: src/chartdldr_pi.cpp:1203
+#: src/chartdldr_pi.cpp:1219
 msgid "Edit Chart Source"
 msgstr "Muokkaa karttalähdettä"
 
-#: src/chartdldr_pi.cpp:1242
+#: src/chartdldr_pi.cpp:1258
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Polku %s ei näytä kattavan määritettyjä karttahakemistoja. \n"
 "Jos haluat nähdä kartat, sinun täytyy säätää kokoonpanoa karttakansioissa."
 
-#: src/chartdldr_pi.cpp:1739 src/chartdldr_pi.cpp:1742
+#: src/chartdldr_pi.cpp:1771 src/chartdldr_pi.cpp:1774
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "Valitse yksi valmiista karttalähteistä tai luo omasi. \n"
 
-#: src/chartdldr_pi.cpp:1745
+#: src/chartdldr_pi.cpp:1777
 msgid "The chart source must have a name.\n"
 msgstr "Karttalähteellä on oltava nimi. \n"
 
-#: src/chartdldr_pi.cpp:1748
+#: src/chartdldr_pi.cpp:1780
 msgid "The chart source must have a valid URL.\n"
 msgstr "Karttalähteellä on oltava kelvollinen URL-osoite. \n"
 
-#: src/chartdldr_pi.cpp:1750
+#: src/chartdldr_pi.cpp:1782
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Valitse paikallinen kansio, johon kartat tallennetaan.\n"
 
-#: src/chartdldr_pi.cpp:1757
+#: src/chartdldr_pi.cpp:1789
 msgid "Chart source definition problem"
 msgstr "Karttalähteen määrittely ongelma"
 
@@ -275,7 +276,7 @@ msgstr "Valitse kansio"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Valitse karttojen kansio"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"

@@ -65,12 +65,13 @@ class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY( GribRecordSet, ArrayOfGribRecordSets );
 
-enum ZoneSelection { AUTO_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_SELECTION };
+enum ZoneSelection { AUTO_SELECTION, SAVED_SELECTION, START_SELECTION, DRAW_SELECTION, COMPLETE_SELECTION };
 
 class GribTimelineRecordSet : public GribRecordSet
 {
 public:
-    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
+    GribTimelineRecordSet();
+//    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
     ~GribTimelineRecordSet();
 
     void ClearCachedData();
@@ -97,7 +98,7 @@ public:
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
     void StopPlayBack();
     void TimelineChanged();
-    void CreateActiveFileFromName( wxString filename );
+    void CreateActiveFileFromNames( const wxArrayString &filenames );
     void PopulateComboDataList();
     void ComputeBestForecastForNow();
     void SetViewPort( PlugIn_ViewPort *vp );
@@ -109,8 +110,11 @@ public:
     void SetRequestBitmap( int type );
     void OnMouseEvent( wxMouseEvent& event );
     GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
-    bool InDataPlot (int id) { return id >= 0 && id < (int)GribOverlaySettings::GEO_ALTITUDE; }
-
+    bool InDataPlot (int id) { return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE; }
+    void SetScaledBitmap( double factor );
+    wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
+    void OpenFileFromJSON( wxString json);
+        
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
@@ -124,9 +128,11 @@ public:
 	bool            m_CDataIsShown;
     int             m_ZoneSelAllowed;
     int             m_old_DialogStyle;
+	double			m_ScaledFactor;
 private:
     void OnClose( wxCloseEvent& event );
     void OnSize( wxSizeEvent& event );
+    void OnPaint( wxPaintEvent& event );
     void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & event);
@@ -141,7 +147,8 @@ private:
     void OnAltitude( wxCommandEvent& event );
     void OnOpenFile( wxCommandEvent& event );
     void OnRequest(  wxCommandEvent& event );
-
+    void OnCompositeDialog( wxCommandEvent& event );
+    
     void OnTimeline( wxScrollEvent& event );
 	void OnShowCursorData( wxCommandEvent& event );
 
@@ -173,7 +180,7 @@ private:
     bool             m_SelectionIsSaved;
     int              m_Selection_index;
     wxString         m_Selection_label;
-    wxString         m_file_name;   /* selected file */
+    wxArrayString    m_file_names;   /* selected files */
     wxString         m_grib_dir;
 	wxSize           m_DialogsOffset;
 };
@@ -184,16 +191,16 @@ private:
 class GRIBFile {
 public:
 
-    GRIBFile( const wxString file_name, bool CumRec, bool WaveRec );
+    GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec );
     ~GRIBFile();
 
     bool IsOK( void )
     {
         return m_bOK;
     }
-    wxString GetFileName( void )
+    wxArrayString &GetFileNames( void )
     {
-        return m_FileName;
+        return m_FileNames;
     }
     wxString GetLastMessage( void )
     {
@@ -215,7 +222,7 @@ private:
 
     bool m_bOK;
     wxString m_last_message;
-    wxString m_FileName;
+    wxArrayString m_FileNames;
     GribReader *m_pGribReader;
     time_t m_pRefDateTime;
 

@@ -15,7 +15,18 @@ ENDIF (COMMAND cmake_policy)
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
-configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
+#<<<<<<< HEAD
+#configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
+#=======
+#configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
+#  Do the version.h configuration into the build output directory,
+#  thereby allowing building from a read-only source tree.
+IF(NOT SKIP_VERSION_CONFIG)
+    configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+ENDIF(NOT SKIP_VERSION_CONFIG)
+
+#>>>>>>> master
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
 
 #SET(CMAKE_BUILD_TYPE Debug)
@@ -96,7 +107,7 @@ IF(QT_ANDROID)
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
     ADD_DEFINITIONS(-DARMHF)
-   
+
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
@@ -148,7 +159,11 @@ IF (QT_ANDROID )
         ${Qt_Base}/android_armv7/lib/libQt5Gui.so
         ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
 
+#<<<<<<< HEAD
         #${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
+#=======
+#        ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
+#>>>>>>> master
         )
 
 ENDIF(QT_ANDROID)

@@ -27,19 +27,17 @@ import java.util.Iterator;
 
 import org.opencpn.OCPNGpsNmeaListener;
 import org.opencpn.OCPNNativeLib;
-import org.qtproject.qt5.android.bindings.QtActivity;
 
 
 
 public class GPSServer extends Service implements LocationListener {
 
-    private final static int GPS_OFF = 0;
-    private final static int GPS_ON = 1;
+    public final static int GPS_OFF = 0;
+    public final static int GPS_ON = 1;
     public  final static int GPS_PROVIDER_AVAILABLE = 2;
-    private final static int GPS_SHOWPREFERENCES = 3;
+    public final static int GPS_SHOWPREFERENCES = 3;
 
     private final Context mContext;
-    private final Activity parent_activity;
 
     public String status_string;
 
@@ -128,11 +126,9 @@ public class GPSServer extends Service implements LocationListener {
         }
     }
 
-    public GPSServer(Context context, OCPNNativeLib nativelib, Activity activity) {
+    public GPSServer(Context context, OCPNNativeLib nativelib) {
         this.mContext = context;
         this.mNativeLib = nativelib;
-        this.parent_activity = activity;
-//        getLocation();
     }
 
     public String doService( int parm )
@@ -142,7 +138,7 @@ public class GPSServer extends Service implements LocationListener {
 
         switch (parm){
             case GPS_OFF:
-            Log.i("DEBUGGER_TAG", "GPS OFF");
+            Log.i("OpenCPN", "GPS OFF");
 
             if(locationManager != null){
                 if(isThreadStarted){
@@ -151,20 +147,21 @@ public class GPSServer extends Service implements LocationListener {
                     isThreadStarted = false;
                 }
             }
+            isGPSEnabled = false;
 
             ret_string = "GPS_OFF OK";
             break;
 
             case GPS_ON:
-                Log.i("DEBUGGER_TAG", "GPS ON");
+                Log.i("OpenCPN", "GPS ON");
 
                 isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
                 if(isGPSEnabled){
-                    Log.i("DEBUGGER_TAG", "GPS is Enabled");
+                    Log.i("OpenCPN", "GPS is Enabled");
                 }
                 else{
-                    Log.i("DEBUGGER_TAG", "GPS is <<<<DISABLED>>>>");
+                    Log.i("OpenCPN", "GPS is <<<<DISABLED>>>>");
                     ret_string = "GPS is disabled";
                     status_string = ret_string;
                     return ret_string;
@@ -180,22 +177,30 @@ public class GPSServer extends Service implements LocationListener {
 
                 if(!isThreadStarted){
 
-                    parent_activity.runOnUiThread(new Runnable()   {
-                        LocationManager locationManager;
-                        public void run()   {
 
-                            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
-                            Log.i("DEBUGGER_TAG", "Requesting Updates");
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
+                    HandlerThread hReqThread = new HandlerThread("RequestHandlerThread");
+                    hReqThread.start();
+                    final Handler reqHandler = new Handler(hReqThread.getLooper());
 
-                            mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
-                            locationManager.addNmeaListener (mNMEAListener);
+                    Runnable Req =new Runnable()   {
+                                            LocationManager locationManager;
+                                            public void run()   {
 
-                            mMyListener = new MyListener();
-                            locationManager.addGpsStatusListener(mMyListener);
+                                                locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+                                                Log.i("OpenCPN", "Requesting Location Updates");
+                                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, GPSServer.this);
 
-                        }
-                    });
+                                                mNMEAListener = new OCPNGpsNmeaListener(mNativeLib, GPSServer.this);
+                                                locationManager.addNmeaListener (mNMEAListener);
+
+                                                mMyListener = new MyListener();
+                                                locationManager.addGpsStatusListener(mMyListener);
+
+                                            }};
+
+                    // Schedule the first execution
+                    reqHandler.postDelayed(Req, 100);
+
 
 
                     HandlerThread hThread = new HandlerThread("HandlerThread");
@@ -206,22 +211,26 @@ public class GPSServer extends Service implements LocationListener {
                     Runnable ticker = new Runnable() {
                         @Override
                         public void run() {
-//                            Log.i("DEBUGGER_TAG", "Tick");
 
-                            m_tick++;
-                            m_watchDog++;
+                            if(isGPSEnabled){
+//                                Log.i("OpenCPN", "Tick" + m_watchDog + " " + isGPSEnabled);
 
-                            if(isGPSEnabled && (m_watchDog > 10)){
-//                                Log.i("DEBUGGER_TAG", "Dog Timeout");
-                                if(null != locationManager){
-//                                    Log.i("DEBUGGER_TAG", "locationManager OK");
-                                    mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                                    if (mLastLocation != null) {
-//                                        Log.i("DEBUGGER_TAG", "Set Posn");
-                                        latitude = mLastLocation.getLatitude();
-                                        longitude = mLastLocation.getLongitude();
-                                        course = mLastLocation.getBearing();
-                                        speed = mLastLocation.getSpeed();
+                                m_tick++;
+                                m_watchDog++;
+
+                                if(m_watchDog > 10){
+                                    if(null != locationManager){
+                                        mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                        if (mLastLocation != null) {
+                                            latitude = mLastLocation.getLatitude();
+                                            longitude = mLastLocation.getLongitude();
+                                            course = mLastLocation.getBearing();
+                                            speed = mLastLocation.getSpeed();
+                                        }
+
+/*
+        // Removed in favor of integrated USB support
+        // Also removed, might need:  <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
 
                                         // Some (most?) mock location providers like "You Are Here GPS"
                                         // do not provide position nor satellite status updates to a registered listener.
@@ -236,11 +245,13 @@ public class GPSServer extends Service implements LocationListener {
                                         }
                                         if(isMock)
                                             isGPSFix = true;
-                                    }
+*/
+                                        if(null != mNativeLib){
+                                            String s = createRMC();
+                                            //Log.i("OpenCPN", "ticker: " + s);
+                                            mNativeLib.processNMEA( s );
+                                        }
 
-                                    if(null != mNativeLib){
-                                        String s = createRMC();
-                                        mNativeLib.processNMEA( s );
                                     }
                                 }
                             }
@@ -343,7 +354,7 @@ public class GPSServer extends Service implements LocationListener {
                                 LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        Log.d("GPS Enabled", "GPS Enabled");
+                        Log.d("OpenCPN", "GPS Enabled");
                         if (locationManager != null) {
                             mLastLocation = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -535,7 +546,7 @@ public class GPSServer extends Service implements LocationListener {
 
 //        s = s.concat("\r\n");
 
-        Log.i("DEBUGGER_TAG", s);
+//        Log.i("OpenCPN", s);
 
         return s;
     }

@@ -34,8 +34,8 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    3
-#define     PLUGIN_VERSION_MINOR    0
+#define     PLUGIN_VERSION_MAJOR    4
+#define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    12
@@ -102,12 +102,15 @@ public:
       void SetCtrlBarSizeXY(wxSize p){ m_CtrlBar_Sizexy = p;}
       void SetColorScheme(PI_ColorScheme cs);
       void SetDialogFont( wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog"), 10) );
-
+      void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
+      PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
+      
       void OnGribCtrlBarClose();
 
       wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
       wxPoint GetCursorDataXY() { return m_CursorDataxy; }
       int  GetTimeZone() { return m_bTimeZone; }
+      void SetTimeZone(int tz);
       int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
@@ -152,11 +155,12 @@ private:
       wxString         m_bMailFromAddress;
       wxString         m_ZyGribLogin;
       wxString         m_ZyGribCode;
+      double           m_GUIScaleFactor;
 
       bool             m_bGRIBShowIcon;
 
       bool        m_bShowGrib;
-      bool        m_bInitIsOK;
+      PlugIn_ViewPort  m_current_vp;
 };
 
 //----------------------------------------------------------------------------------------

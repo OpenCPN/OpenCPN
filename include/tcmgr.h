@@ -106,7 +106,9 @@ public:
 
     int GetStationTimeOffset(IDX_entry *pIDX);
     int GetNextBigEvent(time_t *tm, int idx);
-
+    double GetStationLat(IDX_entry *pIDX);
+    double GetStationLon(IDX_entry *pIDX);
+    
     const IDX_entry *GetIDX_entry(int index) const;
 
     int Get_max_IDX() const

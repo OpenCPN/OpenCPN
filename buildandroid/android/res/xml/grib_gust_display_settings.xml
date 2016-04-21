@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WindGustNumbers"
+        android:title="Show WindGust Values"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wind Gust Value Units"
+        android:key="grib_prefs_WindGustUnits"
+        android:defaultValue="0"
+        android:entries="@array/GRIBSpeedUnits"
+        android:entryValues="@array/GRIBSpeedUnitsVal" />
+
+    <SwitchPreference
+        android:key="grib_prefb_WindGustNumbersFixedSpacing"
+        android:title="Wind Gust Value Spacing"
+        android:switchTextOff="Default"
+        android:switchTextOn="Custom"
+        android:defaultValue="false"
+        />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_WindGustNumbersSpacing"
+        android:title="Wind Gust Numbers Spacing (pixels)"
+        android:summary=""
+        android:defaultValue="50"
+        android:max="100"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WindGustDisplayIsobars"
+        android:title="Show Isotachs"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_WindGustIsoBarSpacing"
+        android:title="Wind Gust Isotach Spacing (knots)"
+        android:summary=""
+        android:defaultValue="10"
+        android:max="50"
+        />
+
+    <CheckBoxPreference
+        android:key="grib_prefb_WindGustOverlayMap"
+        android:title="Show Wind Gust Overlay"
+        android:summary=""
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:title="Wind Gust Overlay Colors"
+        android:key="grib_prefs_WindGustOverlayMapColors"
+        android:defaultValue="1"
+        android:entries="@array/GRIBOverlayColors"
+        android:entryValues="@array/GRIBOverlayColorsVal" />
+
+    <org.opencpn.opencpn.SeekBarPreference
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="Overlay Transparency"
+        android:summary=""
+        android:defaultValue="60"
+        android:max="100"
+        />
+
+
+</PreferenceScreen>
+

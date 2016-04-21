@@ -37,22 +37,28 @@ class ColourSet
 {
 public:
 	ColourSet( u8 const* rgba, int mask, int flags );
+	ColourSet( u8 const* rgba, int flags );
 
 	int GetCount() const { return m_count; }
-	Vec3 const* GetPoints() const { return m_points; }
-	float const* GetWeights() const { return m_weights; }
+	const u8 * GetPointsu8() const  { return (u8*)m_points; }
+	Vec3 const* GetPoints(); // { return m_points; }
+	u8 const* GetWeightsu8() const { return m_weights; }
+	float const* GetWeights();// { return m_weights; }
 	bool IsTransparent() const { return m_transparent; }
 
 	void RemapIndices( u8 const* source, u8* target ) const;
 
 private:
 	int m_count;
-	Vec3 m_points[16];
-	float m_weights[16];
+	u8 m_points[16][3];
+	u8 m_weights[16];
 	int m_remap[16];
 	bool m_transparent;
+
+        Vec3 m_vpoints[16];
+        float m_fweights[16];
 };
 
-} // namespace sqish
+} // namespace squish
 
 #endif // ndef SQUISH_COLOURSET_H

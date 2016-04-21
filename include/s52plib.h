@@ -32,7 +32,7 @@
 
 class wxGLContext;
 
-#include "OCPNRegion.h"
+#include "LLRegion.h"
 #include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
@@ -57,6 +57,7 @@ struct CARC_Buffer {
     float *data;
 };
 WX_DECLARE_STRING_HASH_MAP( CARC_Buffer, CARC_Hash );
+WX_DECLARE_STRING_HASH_MAP( int, CARC_DL_Hash );
 
 class ViewPort;
 class PixelCache;
@@ -180,10 +181,8 @@ public:
     void DestroyRulesChain( Rules *top );
     
     //    For OpenGL
-    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-                          ViewPort *vp, wxRect &render_rect );
-    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-                        ViewPort *vp, wxRect &render_rect );
+    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
+    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp );
    
     void RenderPolytessGL( ObjRazRules *rzRules, ViewPort *vp,double z_clip_geom, wxPoint *ptp );
     
@@ -193,6 +192,8 @@ public:
     void AddObjNoshow( const char *objcl);
     void RemoveObjNoshow( const char *objcl);
     void ClearNoshow(void);
+    void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
+    void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
     
     //Todo accessors
     LUPname m_nSymbolStyle;
@@ -237,7 +238,7 @@ public:
     RuleHash *_symb_sym; // symbol symbolisation rules
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
 
-    OCPNRegion m_last_clip_region;
+    wxRect m_last_clip_rect;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
@@ -267,10 +268,8 @@ private:
     int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
-    void RenderCARCGL( double sectr1, double sectr2,
-                                wxString& outline_color, long outline_width,
-                                wxString& arc_color, long arc_width,
-                                long sector_radius, long radius );
+    int RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
     void UpdateOBJLArray( S57Obj *obj );
 
@@ -278,7 +277,7 @@ private:
         Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 
     void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
-        S52color *c, wxBoundingBox &BBView, render_canvas_parms *pb_spec,
+        S52color *c, render_canvas_parms *pb_spec,
         render_canvas_parms *patt_spec, ViewPort *vp );
 
     void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
@@ -320,6 +319,7 @@ private:
     bool GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoint *pp, int nv, ViewPort *vp );
     bool GetPointPixSingle( ObjRazRules *rzRules, float north, float east, wxPoint *r, ViewPort *vp );
     void GetPixPointSingle( int pixx, int pixy, double *plat, double *plon, ViewPort *vp );
+    void GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt );
     
     wxString m_plib_file;
 
@@ -349,12 +349,11 @@ private:
 
     long m_state_hash;
 
-    wxRect m_render_rect;
-
     bool m_txf_ready;
     int m_txf_avg_char_width;
     int m_txf_avg_char_height;
     CARC_Hash m_CARC_hashmap;
+    CARC_DL_Hash m_CARC_DL_hashmap;
     RenderFromHPGL* HPGL;
 
     TexFont *m_txf;
@@ -362,6 +361,7 @@ private:
     bool m_benableGLLS;
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
+    ArrayOfNoshow m_saved_noshow;
 };
 
 

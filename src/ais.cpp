@@ -58,7 +58,6 @@ extern  double          gLat, gLon, gSog, gCog;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
-extern bool              g_bskew_comp;
 
 int                      g_ais_cog_predictor_width;
 extern AIS_Decoder              *g_pAIS;
@@ -81,7 +80,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bShowTracks;
 extern double           g_ShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
@@ -114,6 +113,18 @@ extern bool             g_bAISRolloverShowCPA;
 
 extern bool             g_bAIS_ACK_Timeout;
 extern double           g_AckTimeout_Mins;
+extern bool             g_bShowScaled;
+extern bool             g_bAllowShowScaled;
+
+int                     g_ShowScaled_Num;
+int                     ImportanceSwitchPoint = 100;
+int                     g_ScaledNumWeightSOG;
+int                     g_ScaledNumWeightCPA;
+int                     g_ScaledNumWeightTCPA;
+int                     g_ScaledNumWeightRange;
+int                     g_ScaledNumWeightSizeOfT;
+int                     g_ScaledSizeMinimal;
+
 
 extern bool             bGPSValid;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
@@ -146,8 +157,8 @@ wxString ais_get_status(int index)
         _("Under way sailing"),
         _("High Speed Craft"),
         _("Wing In Ground Effect"),
-        _("Reserved 11"),
-        _("Reserved 12"),
+        _("Power-driven vessel towing astern (regional use)"),
+        _("Power-driven vessel pushing ahead or towing alongside (regional use)"),
         _("Reserved 13"),
         _("Reserved 14"),
         _("Undefined"),
@@ -668,6 +679,24 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
                 TriPointDown[2] = wxPoint(  0, 0 );
                 TriPointDown[3] = wxPoint(  -rad1a, -rad1a );
 
+    wxPoint CircleOpen[16]; // Workaround to draw transparent circles
+                CircleOpen[0] = wxPoint(  -1, 5 );
+                CircleOpen[1] = wxPoint(  1, 5 );
+                CircleOpen[2] = wxPoint(  3, 4 );
+                CircleOpen[3] = wxPoint(  4, 3);
+                CircleOpen[4] = wxPoint(  5, 1 );
+                CircleOpen[5] = wxPoint(  5,-1  );
+                CircleOpen[6] = wxPoint(  4,-3  );
+                CircleOpen[7] = wxPoint(  3,-4  );
+                CircleOpen[8] = wxPoint(  1,-5  );
+                CircleOpen[9] = wxPoint( -1,-5 );
+                CircleOpen[10] = wxPoint( -3,-4 );
+                CircleOpen[11] = wxPoint( -4,-3 );
+                CircleOpen[12] = wxPoint( -5,-1 );
+                CircleOpen[13] = wxPoint( -4,3 );
+                CircleOpen[14] = wxPoint( -3,4 );
+                CircleOpen[15] = wxPoint( -1,5 );
+                
     switch (td->ShipType ) {
         case 9 :
         case 20://Card. N
@@ -728,16 +757,21 @@ static void AtoN_Diamond( ocpnDC &dc, int x, int y, int radius, AIS_Target_Data*
             break;
         case 17: 
         case 28: //Isolated danger
-            //TODO Draw transparant circles
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3a, rad3a);
-            dc.DrawCircle(x, y-radius-3*rad3a-1, rad3a);
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -16);
+            dc.SetPen( aton_DrawPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -16);
             break;
         case 18: 
         case 29: //Safe water
-            //TODO Draw transparant circle
+            dc.SetPen( aton_WhiteBorderPen );
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             dc.SetPen( aton_DrawPen );
-            dc.DrawCircle(x, y-radius-rad3a, rad3a);
+            dc.DrawLines( 16, CircleOpen, x, y - radius -5);
             break;
         case 19: 
         case 30:{ //Special Mark
@@ -813,6 +847,21 @@ static void SART_Render( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
+// spherical coordinates is sufficient for visually plotting with relatively small
+// distances and about 6x faster than ll_gc_ll
+static void spherical_ll_gc_ll(float lat, float lon, float brg, float dist, float *dlat, float *dlon)
+{
+    float angr = brg/180*M_PI;
+    float latr = lat*M_PI/180;
+    float D = dist/3443; // earth radius in nm
+    float sD = sinf(D), cD = cosf(D);
+    float sy = sinf(latr), cy = cosf(latr);
+    float sa = sinf(angr), ca = cosf(angr);
+
+    *dlon = lon + asinf(sa*sD/cy) * 180/M_PI;
+    *dlat = asinf(sy*cD + cy*sD*ca) * 180/M_PI;
+}
+
 static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 {
     //      Target data must be valid
@@ -822,13 +871,13 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->b_lost ) return;
     
     float scale_factor = 1.0;
-    if(g_bresponsive){
+//    if(g_bresponsive){
         scale_factor =  g_ChartScaleFactorExp;
-    }
+//    }
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
-    if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts )
+    if( ( g_bHideMoored ) && ( td->SOG <= g_ShowMoored_Kts )
             && ( td->NavStatus != NOT_UNDER_COMMAND )
             && ( ( td->Class == AIS_CLASS_A ) || ( td->Class == AIS_CLASS_B ) ) ) return;
 
@@ -846,12 +895,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     int drawit = 0;
     wxPoint TargetPoint, PredPoint;
 
-    //    Is target in Vpoint?
-    if( cc1->GetVP().GetBBox().PointInBox( td->Lon, td->Lat, 0 ) ) drawit++;                       // yep
-
     //   Always draw alert targets, even if they are off the screen
     if( td->n_alert_state == AIS_ALERT_SET ) drawit++;
-
+    else
+    //    Is target in Vpoint?
+    if( cc1->GetVP().GetBBox().PointInBox( td->Lon, td->Lat, 0 ) ) drawit++;                       // yep
+    else
     //  If AIS tracks are shown, is the first point of the track on-screen?
     if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
         wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
@@ -863,636 +912,793 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     //    Calculate AIS target Position Predictor, using global static variable for length of vector
 
-    double pred_lat, pred_lon;
-
-    ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
+    float pred_lat, pred_lon;
+    spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
 
     //    Is predicted point in the VPoint?
+    if(drawit) ;
+    else
     if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
-
+    else
     // And one more test to catch the case where target COG line crosses the screen,
     // but the target itself and its pred point are both off-screen
     if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( td->Lon, td->Lat ),
                                          wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
 
     //    Do the draw if conditions indicate
-    if( drawit ) {
-        cc1->GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
-        cc1->GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
+    if( !drawit )
+        return;
 
-        float theta;
-        //    If the target reported a valid HDG, then use it for icon
-        if( (int) ( td->HDG ) != 511 ) {
-            theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
-            if( !g_bskew_comp )
-                theta += cc1->GetVP().skew;
-        } else {
-            // question: why can we not compute similar to above using COG instead of HDG?
-            //  Calculate the relative angle for this chart orientation
-            //    Use a 100 pixel vector to calculate angle
-            double angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
-            double angle_lat, angle_lon;
-            wxPoint AnglePoint;
-            ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
-            cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+    cc1->GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
+    cc1->GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
 
-            if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
-                if( target_sog > g_ShowMoored_Kts )
-                    theta = atan2f(
-                        (double) ( AnglePoint.y - TargetPoint.y ),
-                        (double) ( AnglePoint.x - TargetPoint.x ) );
-                else
-                    theta = (float)-PI / 2.;
-            } else {
-                if( AnglePoint.y > TargetPoint.y )
-                    theta = (float)PI / 2.;             // valid COG 180
-                else
-                    theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
-            }
-        }
+    float theta;
+    //    If the target reported a valid HDG, then use it for icon
+    if( (int) ( td->HDG ) != 511 ) {
+        theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
+    } else {
+        // question: why can we not compute similar to above using COG instead of HDG?
+        //  Calculate the relative angle for this chart orientation
+        //    Use a 100 pixel vector to calculate angle
+        float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
+        float angle_lat, angle_lon;
+        spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
 
-        // only need to compute this once;
-        float sin_theta = sinf( theta ), cos_theta = cosf( theta );
+        wxPoint AnglePoint;
+        cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
 
-        wxDash dash_long[2];
-        dash_long[0] = (int) ( 1.0 * cc1->GetPixPerMM() );  // Long dash  <---------+
-        dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
-
-        //  Draw the icon rotated to the COG
-        wxPoint ais_real_size[6];
-        bool bcan_draw_size = true;
-        if (g_bDrawAISSize)
-        {
-            if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0)
-            {
-                bcan_draw_size = false;
-            }
+        if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
+            if( target_sog > g_ShowMoored_Kts )
+                theta = atan2f(
+                    (double) ( AnglePoint.y - TargetPoint.y ),
+                    (double) ( AnglePoint.x - TargetPoint.x ) );
             else
-            {
-                double ref_lat, ref_lon;
-                ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat, &ref_lon );
-                wxPoint2DDouble b_point = cc1->GetVP().GetDoublePixFromLL( td->Lat, td->Lon );
-                wxPoint2DDouble r_point = cc1->GetVP().GetDoublePixFromLL( ref_lat, ref_lon );
-                double ppm = r_point.GetDistance(b_point) / 100.;
-                double offwid = (td->DimC + td->DimD) * ppm * 0.25;
-                double offlen = (td->DimA + td->DimB) * ppm * 0.15;
-                ais_real_size[0].x = -td->DimD * ppm;
-                ais_real_size[0].y = -td->DimB * ppm;
-                ais_real_size[1].x = -td->DimD * ppm;
-                ais_real_size[1].y = td->DimA * ppm - offlen;
-                ais_real_size[2].x = -td->DimD * ppm + offwid;
-                ais_real_size[2].y = td->DimA * ppm;
-                ais_real_size[3].x = td->DimC * ppm - offwid;
-                ais_real_size[3].y = td->DimA * ppm;
-                ais_real_size[4].x = td->DimC * ppm;
-                ais_real_size[4].y = td->DimA * ppm - offlen;
-                ais_real_size[5].x = td->DimC * ppm;
-                ais_real_size[5].y = -td->DimB * ppm;
+                theta = (float)-PI / 2.;
+        } else {
+            if( AnglePoint.y > TargetPoint.y )
+                theta = (float)PI / 2.;             // valid COG 180
+            else
+                theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+        }
+    }
 
-                if (ais_real_size[4].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
-                    bcan_draw_size = false; //drawing too small does not make sense
-                else {
-                    bcan_draw_size = true;
-                    transrot_pts(6, ais_real_size, sin_theta, cos_theta);
-                }
+    // only need to compute this once;
+    float sin_theta = sinf( theta ), cos_theta = cosf( theta );
+
+    wxDash dash_long[2];
+    dash_long[0] = (int) ( 1.0 * cc1->GetPixPerMM() );  // Long dash  <---------+
+    dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
+
+    int targetscale = 100;
+    if ( g_bAllowShowScaled && g_bShowScaled ){
+            double temp_importance, So, Tcpa, Cpa, Rang, Siz = 0.; //calc the importance of target
+            So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
+            if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
+                       
+            if (td->bCPA_Valid){
+                Cpa=g_ScaledNumWeightCPA - g_ScaledNumWeightCPA/4 * td->CPA;
+                //if TCPA is positief (target is coming closer), make weight of CPA bigger
+                if (td->TCPA > .0) Cpa = Cpa + Cpa * g_ScaledNumWeightTCPA/100;
+                if ( Cpa < .0 ) Cpa = .0; //if CPA is > 4
+            }
+            else Cpa = .0;
+            
+            Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
+            if ( Rang > g_ScaledNumWeightRange ) Rang = g_ScaledNumWeightRange;
+            Rang = g_ScaledNumWeightRange - Rang;
+                                                   
+            Siz = g_ScaledNumWeightSizeOfT/30*( td->DimA + td->DimB);
+            if ( Siz > g_ScaledNumWeightSizeOfT ) Siz = g_ScaledNumWeightSizeOfT;
+            temp_importance = So + Cpa + Rang + Siz;
+            
+            td->importance=(int)temp_importance;
+            int calc_scale = 0;
+            if ( td->importance  > ImportanceSwitchPoint ) calc_scale=100; else calc_scale = 50; //50% is minium scale for target
+            //with one tick per second targets gan slink from 100 to g_ScaledSizeMinimal% in 25 seconds
+            if ( td->importance  < ImportanceSwitchPoint ) targetscale = td->last_scale -2;
+            //growing from g_ScaledSizeMinimal till 100% goes faster in 10 seconds
+            if ( td->importance  > ImportanceSwitchPoint ) targetscale = td->last_scale +5; 
+            if ( targetscale > 100 ) targetscale = 100;
+            if ( targetscale < 50 ) targetscale = 50;//g_ScaledSizeMinimal;
+            td->last_scale = targetscale;            
+        }//if (g_bShowScaled
+    
+    //  Draw the icon rotated to the COG
+    wxPoint ais_real_size[6];
+    bool bcan_draw_size = true;
+    if (g_bDrawAISSize)
+    {
+        if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0)
+        {
+            bcan_draw_size = false;
+        }
+        else
+        {
+            double ref_lat, ref_lon;
+            ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat, &ref_lon );
+            wxPoint2DDouble b_point = cc1->GetVP().GetDoublePixFromLL( td->Lat, td->Lon );
+            wxPoint2DDouble r_point = cc1->GetVP().GetDoublePixFromLL( ref_lat, ref_lon );
+            double ppm = r_point.GetDistance(b_point) / 100.;
+            double offwid = (td->DimC + td->DimD) * ppm * 0.25;
+            double offlen = (td->DimA + td->DimB) * ppm * 0.15;
+            ais_real_size[0].x = -td->DimD * ppm;
+            ais_real_size[0].y = -td->DimB * ppm;
+            ais_real_size[1].x = -td->DimD * ppm;
+            ais_real_size[1].y = td->DimA * ppm - offlen;
+            ais_real_size[2].x = -td->DimD * ppm + offwid;
+            ais_real_size[2].y = td->DimA * ppm;
+            ais_real_size[3].x = td->DimC * ppm - offwid;
+            ais_real_size[3].y = td->DimA * ppm;
+            ais_real_size[4].x = td->DimC * ppm;
+            ais_real_size[4].y = td->DimA * ppm - offlen;
+            ais_real_size[5].x = td->DimC * ppm;
+            ais_real_size[5].y = -td->DimB * ppm;
+
+            if (ais_real_size[4].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
+                bcan_draw_size = false; //drawing too small does not make sense
+            else {
+                bcan_draw_size = true;
+                transrot_pts(6, ais_real_size, sin_theta, cos_theta);
             }
         }
-
-
-        wxPoint ais_quad_icon[4];
+    }
+    
+    // to speed up we only calculate scale when not max or minimal 
+    wxPoint ais_quad_icon[4]={ wxPoint(-4, -3),  wxPoint(0, 12),  wxPoint(4, -3), wxPoint(0, -3) };
+    if (targetscale == 100){
         ais_quad_icon[0] = wxPoint(-8, -6);
         ais_quad_icon[1] = wxPoint( 0, 24);
         ais_quad_icon[2] = wxPoint( 8, -6);
         ais_quad_icon[3] = wxPoint( 0, -6);
+    }
+    else if ( targetscale != 50) {
+            ais_quad_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+            ais_quad_icon[1] = wxPoint( 0, (int)24*targetscale/100);
+            ais_quad_icon[2] = wxPoint( (int)8*targetscale/100, (int)-6*targetscale/100);
+            ais_quad_icon[3] = wxPoint( 0, (int)-6*targetscale/100);
+    }
 
-        //   If this is an AIS Class B target, so symbolize it differently
-        if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
-        else if( td->Class == AIS_GPSG_BUDDY ) {
-            ais_quad_icon[0] = wxPoint(-5, -12);
-            ais_quad_icon[1] = wxPoint(-3,  12);
-            ais_quad_icon[2] = wxPoint( 3,  12);
-            ais_quad_icon[3] = wxPoint( 5, -12);
-        }
-        else if( td->Class == AIS_DSC ) {
-            ais_quad_icon[0].y = 0;
-            ais_quad_icon[1].y = 8;
-            ais_quad_icon[2].y = 0;
-            ais_quad_icon[3].y = -8;
-        }
-        else if( td->Class == AIS_APRS ) {
-            ais_quad_icon[0] = wxPoint(-8, -8);
-            ais_quad_icon[1] = wxPoint(-8,  8);
-            ais_quad_icon[2] = wxPoint( 8,  8);
-            ais_quad_icon[3] = wxPoint( 8, -8);
-        }
+    //   If this is an AIS Class B target, so symbolize it differently
+    if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
+    else if( td->Class == AIS_GPSG_BUDDY ) {
+        ais_quad_icon[0] = wxPoint(-5, -12);
+        ais_quad_icon[1] = wxPoint(-3,  12);
+        ais_quad_icon[2] = wxPoint( 3,  12);
+        ais_quad_icon[3] = wxPoint( 5, -12);
+    }
+    else if( td->Class == AIS_DSC ) {
+        ais_quad_icon[0].y = 0;
+        ais_quad_icon[1].y = 8;
+        ais_quad_icon[2].y = 0;
+        ais_quad_icon[3].y = -8;
+    }
+    else if( td->Class == AIS_APRS ) {
+        ais_quad_icon[0] = wxPoint(-8, -8);
+        ais_quad_icon[1] = wxPoint(-8,  8);
+        ais_quad_icon[2] = wxPoint( 8,  8);
+        ais_quad_icon[3] = wxPoint( 8, -8);
+    }
 
-        transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
+    transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
 
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+    wxColour UBLCK = GetGlobalColor( _T ( "UBLCK" ));
+    dc.SetPen( wxPen( UBLCK ) );
 
-        // Default color is green
-        wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
+    // Default color is green
+    wxColour UINFG = GetGlobalColor( _T ( "UINFG" ));
+    wxBrush target_brush = wxBrush( UINFG );
 
-        // Euro Inland targets render slightly differently
-        if( td->b_isEuroInland )
-            target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
+    // Euro Inland targets render slightly differently
+    if( td->b_isEuroInland )
+        target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
 
-        // Target name comes from cache
-            if( td->b_nameFromCache )
-                target_brush = wxBrush( GetGlobalColor( _T ( "GREEN5" ) ) );
+    // Target name comes from cache
+    if( td->b_nameFromCache )
+        target_brush = wxBrush( GetGlobalColor( _T ( "GREEN5" ) ) );
             
-        //and....
-        if( !td->b_nameValid )
-            target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
-        if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )                    // distress
-            target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
-        if( td->b_SarAircraftPosnReport )
-            target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
+    //and....
+    wxColour URED = GetGlobalColor( _T ( "URED" ));
+    if( !td->b_nameValid )
+        target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
+    if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )                    // distress
+        target_brush = wxBrush( URED );
+    if( td->b_SarAircraftPosnReport )
+        target_brush = wxBrush( UINFG );
 
-        if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) )
-            target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
+    if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) )
+        target_brush = wxBrush( URED );
 
-        if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
+    if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
-        //    Check for alarms here, maintained by AIS class timer tick
-        if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
-            //  Calculate the point of CPA for target
-            double tcpa_lat, tcpa_lon;
-            ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
-            wxPoint tCPAPoint;
-            wxPoint TPoint = TargetPoint;
-            cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
+    //    Check for alarms here, maintained by AIS class timer tick
+    if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
+        //  Calculate the point of CPA for target
+        double tcpa_lat, tcpa_lon;
+        ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
+        wxPoint tCPAPoint;
+        wxPoint TPoint = TargetPoint;
+        cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
 
-            //  Draw the intercept line from target
-            ClipResult res = cohen_sutherland_line_clip_i( &TPoint.x, &TPoint.y, &tCPAPoint.x,
-                             &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+        //  Draw the intercept line from target
+        ClipResult res = cohen_sutherland_line_clip_i( &TPoint.x, &TPoint.y, &tCPAPoint.x,
+                                                       &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+
+        if( res != Invisible ) {
+            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            ppPen2.SetDashes( 2, dash_long );
+            dc.SetPen( ppPen2 );
+
+            dc.StrokeLine( TPoint.x, TPoint.y, tCPAPoint.x, tCPAPoint.y );
+        }
+
+        //  Calculate the point of CPA for ownship
+        double ocpa_lat, ocpa_lon;
+
+        //  Detect and handle the case where ownship COG is undefined....
+        if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
+            ocpa_lat = gLat;
+            ocpa_lon = gLon;
+        }
+        else {
+            ll_gc_ll( gLat, gLon, gCog, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
+        }
+
+        wxPoint oCPAPoint;
+
+        cc1->GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
+        cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
+
+        //        Save a copy of these unclipped points
+        wxPoint oCPAPoint_unclipped = oCPAPoint;
+        wxPoint tCPAPoint_unclipped = tCPAPoint;
+
+        //  Draw a line from target CPA point to ownship CPA point
+        ClipResult ores = cohen_sutherland_line_clip_i( &tCPAPoint.x, &tCPAPoint.y,
+                                                        &oCPAPoint.x, &oCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+
+        if( ores != Invisible ) {
+            wxColour yellow = GetGlobalColor( _T ( "YELO1" ) );
+            dc.SetPen( wxPen( yellow, 4 ) );
+            dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
+
+            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            ppPen2.SetDashes( 2, dash_long );
+            dc.SetPen( ppPen2 );
+            dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
+
+            //        Draw little circles at the ends of the CPA alert line
+            wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
+            dc.SetBrush( br );
+            dc.SetPen( wxPen( UBLCK ) );
+
+            //  Using the true ends, not the clipped ends
+            dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, 5 );
+            dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, 5 );
+        }
+
+        // Draw the intercept line from ownship
+        wxPoint oShipPoint;
+        cc1->GetCanvasPointPix ( gLat, gLon, &oShipPoint );
+        oCPAPoint = oCPAPoint_unclipped;    // recover the unclipped point
+
+        ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y,
+                                                           &oCPAPoint.x, &oCPAPoint.y,
+                                                           0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+
+        if ( ownres != Invisible ) {
+            wxPen ppPen2 ( URED, 2, wxPENSTYLE_USER_DASH );
+            ppPen2.SetDashes( 2, dash_long );
+            dc.SetPen(ppPen2);
+
+            dc.StrokeLine ( oShipPoint.x, oShipPoint.y, oCPAPoint.x, oCPAPoint.y );
+        } //TR : till here
+
+        dc.SetPen( wxPen( UBLCK ) );
+        dc.SetBrush( wxBrush( URED ) );
+    }
+
+    //  Highlight the AIS target symbol if an alert dialog is currently open for it
+    if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
+        if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
+            cc1->JaggyCircle( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 100 );
+    }
+
+    //  Highlight the AIS target symbol if a query dialog is currently open for it
+    if( g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown() ) {
+        if( g_pais_query_dialog_active->GetMMSI() == td->MMSI )
+            TargetFrame( dc, wxPen( UBLCK , 2 ), TargetPoint.x, TargetPoint.y, 25 );
+    }
+    
+    //       Render the COG line if the speed is greater than moored speed defined by ais options dialog
+    if( ( g_bShowCOG ) && ( target_sog > g_ShowMoored_Kts ) && td->b_active ) {
+        int pixx = TargetPoint.x;
+        int pixy = TargetPoint.y;
+        int pixx1 = PredPoint.x;
+        int pixy1 = PredPoint.y;
+
+        //  Don't draw the COG line  and predictor point if zoomed far out.... or if target lost/inactive
+        float l = sqrtf( powf( (float) ( PredPoint.x - TargetPoint.x ), 2 )
+                         + powf( (float) ( PredPoint.y - TargetPoint.y ), 2 ) );
+
+        if( l > 24 ) {
+            ClipResult res = cohen_sutherland_line_clip_i( &pixx, &pixy, &pixx1, &pixy1, 0,
+                                                           cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
             if( res != Invisible ) {
-                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
-                ppPen2.SetDashes( 2, dash_long );
-                dc.SetPen( ppPen2 );
-
-                dc.StrokeLine( TPoint.x, TPoint.y, tCPAPoint.x, tCPAPoint.y );
-            }
-
-            //  Calculate the point of CPA for ownship
-            double ocpa_lat, ocpa_lon;
-
-            //  Detect and handle the case where ownship COG is undefined....
-            if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
-                ocpa_lat = gLat;
-                ocpa_lon = gLon;
-            }
-            else {
-                ll_gc_ll( gLat, gLon, gCog, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
-            }
-
-            wxPoint oCPAPoint;
-
-            cc1->GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
-            cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
-
-            //        Save a copy of these unclipped points
-            wxPoint oCPAPoint_unclipped = oCPAPoint;
-            wxPoint tCPAPoint_unclipped = tCPAPoint;
-
-            //  Draw a line from target CPA point to ownship CPA point
-            ClipResult ores = cohen_sutherland_line_clip_i( &tCPAPoint.x, &tCPAPoint.y,
-                              &oCPAPoint.x, &oCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
-
-            if( ores != Invisible ) {
-                wxColour yellow = GetGlobalColor( _T ( "YELO1" ) );
-                dc.SetPen( wxPen( yellow, 4 ) );
-                dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
-
-                wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxPENSTYLE_USER_DASH );
-                ppPen2.SetDashes( 2, dash_long );
-                dc.SetPen( ppPen2 );
-                dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
-
-                //        Draw little circles at the ends of the CPA alert line
-                wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
-                dc.SetBrush( br );
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLK" ) ) ) );
-
-                //  Using the true ends, not the clipped ends
-                dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, 5 );
-                dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, 5 );
-            }
-
-            // Draw the intercept line from ownship
-            wxPoint oShipPoint;
-            cc1->GetCanvasPointPix ( gLat, gLon, &oShipPoint );
-            oCPAPoint = oCPAPoint_unclipped;    // recover the unclipped point
-
-            ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y,
-                                                               &oCPAPoint.x, &oCPAPoint.y,
-                                                               0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
-
-            if ( ownres != Invisible ) {
-                wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxPENSTYLE_USER_DASH );
-                ppPen2.SetDashes( 2, dash_long );
-                dc.SetPen(ppPen2);
-
-                dc.StrokeLine ( oShipPoint.x, oShipPoint.y, oCPAPoint.x, oCPAPoint.y );
-            } //TR : till here
-
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
-        }
-
-        //  Highlight the AIS target symbol if an alert dialog is currently open for it
-        if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
-            if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
-                cc1->JaggyCircle( dc, wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ),
-                                  TargetPoint.x, TargetPoint.y, 100 );
-        }
-
-        //  Highlight the AIS target symbol if a query dialog is currently open for it
-        if( g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown() ) {
-            if( g_pais_query_dialog_active->GetMMSI() == td->MMSI )
-                TargetFrame( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ),
-                             TargetPoint.x, TargetPoint.y, 25 );
-        }
-
-        //       Render the COG line if the speed is greater than moored speed defined by ais options dialog
-        if( ( g_bShowCOG ) && ( target_sog > g_ShowMoored_Kts ) ) {
-            int pixx = TargetPoint.x;
-            int pixy = TargetPoint.y;
-            int pixx1 = PredPoint.x;
-            int pixy1 = PredPoint.y;
-
-            //  Don't draw the COG line  and predictor point if zoomed far out.... or if target lost/inactive
-            float l = sqrtf( powf( (float) ( PredPoint.x - TargetPoint.x ), 2 )
-                           + powf( (float) ( PredPoint.y - TargetPoint.y ), 2 ) );
-
-            if( l > 24 ) {
-                ClipResult res = cohen_sutherland_line_clip_i( &pixx, &pixy, &pixx1, &pixy1, 0,
-                                 cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
-
-                if( ( res != Invisible ) && ( td->b_active ) ) {
                     //    Draw a wider coloured line
-                    wxPen wide_pen( target_brush.GetColour(), g_ais_cog_predictor_width );
-                    dc.SetPen( wide_pen );
-                    dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                    if (targetscale >= 75){
+                        wxPen wide_pen( target_brush.GetColour(), g_ais_cog_predictor_width );
+                        dc.SetPen( wide_pen );
+                        dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                    }
 
                     if( g_ais_cog_predictor_width > 1 ) {
                         //    Draw a 1 pixel wide black line
-                        wxPen narrow_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
+                        wxPen narrow_pen( UBLCK, 1 );
                         dc.SetPen( narrow_pen );
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
 
-                    dc.SetBrush( target_brush );
-                    dc.StrokeCircle( PredPoint.x, PredPoint.y, 5 );
-                }
+#ifdef ocpnUSE_GL
 
-                //      Draw RateOfTurn Vector
-                if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && td->b_active ) {
-                    float nv = 10;
-                    float theta2 = theta;
-                    if( td->ROTAIS > 0 ) theta2 += (float)PI / 2.;
-                    else
-                        theta2 -= (float)PI / 2.;
+/*
+                    // opengl optimized version, looks not as nice...
+                    
+                    wxColour c = target_brush.GetColour();
+                    glColor3ub(c.Red(), c.Green(), c.Blue());
+                    float dx = pixx1 - pixx, dy = pixy1 - pixy;
+                    float m = (g_ais_cog_predictor_width + 1) / 2 / sqrtf(dx*dx + dy*dy);
+                    float tx = dy * m, ty = dx * m;
+                    glBegin(GL_TRIANGLE_STRIP);
+                    glVertex2f(pixx+tx,  pixy+ty);
+                    glVertex2f(pixx1+tx, pixy1+ty);
+                    glVertex2f(pixx-tx,  pixy-ty);
+                    glVertex2f(pixx1-tx, pixy1-ty);
+                    glEnd();
 
-                    int xrot = (int) round ( pixx1 + ( nv * cosf ( theta2 ) ) );
-                    int yrot = (int) round ( pixy1 + ( nv * sinf ( theta2 ) ) );
-                    dc.StrokeLine( pixx1, pixy1, xrot, yrot );
-                }
-            }
-        }
+                    if( g_ais_cog_predictor_width > 1 ) {
+                        //    Draw a 1 pixel wide black line
+                        glLineWidth( 1 );
+                        glColor3ub(0, 0, 0);
+                        glEnable( GL_BLEND );
+                        glEnable( GL_LINE_SMOOTH );
+                        glBegin(GL_LINES);
+                        glVertex2i(pixx, pixy);
+                        glVertex2i(pixx1, pixy1);
+                        glEnd();
+                        glDisable( GL_LINE_SMOOTH );
+                        glDisable( GL_BLEND );
+                        glColor3ub(c.Red(), c.Green(), c.Blue());
+                    }
+*/
+#endif
+                    if(dc.GetDC()) {      
+                        dc.SetBrush( target_brush );
+                        if (targetscale >= 75)
+                            dc.StrokeCircle( PredPoint.x, PredPoint.y, 5 );
+                        else
+                            dc.StrokeCircle( PredPoint.x, PredPoint.y, 2 );
+                    } else {
+#ifdef ocpnUSE_GL
+                        
+                    // draw circle
+                        float points[] = {0.0f, 5.0f, 2.5f, 4.330127f, 4.330127f, 2.5f, 5.0f,
+                                      0, 4.330127f, -2.5f, 2.5f, -4.330127f, 0, -5.1f,
+                                      -2.5f, -4.330127f, -4.330127f, -2.5f, -5.0f, 0,
+                                      -4.330127f, 2.5f, -2.5f, 4.330127f, 0, 5.0f};
+                        if (targetscale <= 75){
+                            for (unsigned int i = 0; i<(sizeof points) / (sizeof *points); i++ )
+                               points[i] =  points[i]/2;
+                       }
+                                      
+                        wxColour c = target_brush.GetColour();
+                        glColor3ub(c.Red(), c.Green(), c.Blue());
+                                      
+                        glBegin(GL_TRIANGLE_FAN);
+                        for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
+                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                        glEnd();
 
-        //        Actually Draw the target
-        if( td->Class == AIS_ARPA ) {
-            wxPen target_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
-
-            dc.SetPen( target_pen );
-            dc.SetBrush( target_brush );
-
-            dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 9 );
-            dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 1 );
-            //        Draw the inactive cross-out line
-            if( !td->b_active ) {
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
-                dc.StrokeLine( TargetPoint.x - 14, TargetPoint.y, TargetPoint.x + 14, TargetPoint.y );
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
-            }
-        } else if( td->Class == AIS_ATON ) {                   // Aid to Navigation
-            AtoN_Diamond( dc, TargetPoint.x, TargetPoint.y, 12, td );
-        } else if( td->Class == AIS_BASE ) {                      // Base Station
-            Base_Square( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ), TargetPoint.x,
-                         TargetPoint.y, 8 );
-        } else if( td->Class == AIS_SART ) {                      // SART Target
-            if( td->NavStatus == 14 )       // active
-                SART_Render( dc, wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ), TargetPoint.x,
-                             TargetPoint.y, 8 );
-            else
-                SART_Render( dc, wxPen( GetGlobalColor( _T ( "UGREN" ) ), 2 ),
-                             TargetPoint.x, TargetPoint.y, 8 );
-
-        } else if(td->b_SarAircraftPosnReport) {
-            wxPoint SarIcon[10];
-            wxPoint SarRot[10];
-
-            SarIcon[0] = wxPoint(0, 12);
-            SarIcon[1] = wxPoint(4, 2);
-            SarIcon[2] = wxPoint(16, -2);
-            SarIcon[3] = wxPoint(16, -8);
-            SarIcon[4] = wxPoint(4, -8);
-            SarIcon[5] = wxPoint(3, -16);
-            SarIcon[6] = wxPoint(10, -18);
-            SarIcon[7] = wxPoint(10, -22);
-            SarIcon[8] = wxPoint(0, -22);
-
-
-            // Draw icon as two halves
-
-            //  First half
-
-            for( int i = 0; i < 9; i++ )
-                SarRot[i] = SarIcon[i];
-            transrot_pts(9, SarRot, sin_theta, cos_theta);
-
-            wxPen tri_pen( target_brush.GetColour(), 1 );
-            dc.SetPen( tri_pen );
-            dc.SetBrush( target_brush );
-
-            int mappings[7][3] = {{0, 1, 4}, {1, 2, 3}, {1, 3, 4}, {0, 4, 5}, {0, 5, 8}, {5, 6, 7}, {5, 7, 8}};
-            for(int i=0; i<7; i++) {
-                wxPoint ais_tri_icon[3];
-                for(int j=0; j<3; j++)
-                    ais_tri_icon[j] = SarRot[mappings[i][j]];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+                        glColor3ub(0, 0, 0);
+                        glLineWidth( 1 );
+                        glBegin(GL_LINE_LOOP);
+                        for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
+                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                        glEnd();
+#endif                    
+                    }
             }
 
-            wxPen target_outline_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
-            dc.SetPen( target_outline_pen );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
-
-            // second half
-
-            for( int i = 0; i < 9; i++ )
-                SarRot[i] = wxPoint(-SarIcon[i].x, SarIcon[i].y); // mirror the icon (x -> -x)
-
-            transrot_pts(9, SarRot, sin_theta, cos_theta);
-
-            dc.SetPen( tri_pen );
-            dc.SetBrush( target_brush );
-
-            for(int i=0; i<7; i++) {
-                wxPoint ais_tri_icon[3];
-                for(int j=0; j<3; j++)
-                    ais_tri_icon[j] = SarRot[mappings[i][j]];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            }
-
-            dc.SetPen( target_outline_pen );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
-
-        } else {         // ship class A or B or a Buddy or DSC
-            wxPen target_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
-
-            dc.SetPen( target_pen );
-            dc.SetBrush( target_brush );
-
-            if( td->Class == AIS_CLASS_B ) {
-                // decompose to two "convex" polygons and one combined outline to satisfy OpenGL's requirements
-                wxPen tri_pen( target_brush.GetColour(), 1 );
-                dc.SetPen( tri_pen );
-
-                wxPoint ais_tri_icon[3];
-
-                ais_tri_icon[0] = ais_quad_icon[0];
-                ais_tri_icon[1] = ais_quad_icon[1];
-                ais_tri_icon[2] = ais_quad_icon[3];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y, scale_factor );
-
-                ais_tri_icon[0] = ais_quad_icon[1];
-                ais_tri_icon[1] = ais_quad_icon[2];
-                ais_tri_icon[2] = ais_quad_icon[3];
-                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y, scale_factor );
-
-                dc.SetPen( target_pen );
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
-            }
-
-            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
-
-            if (g_bDrawAISSize && bcan_draw_size)
-            {
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
-                dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, scale_factor );
-            }
-
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
-            int navstatus = td->NavStatus;
-
-            // HSC usually have correct ShipType but navstatus == 0...
-            if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
-                    && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
-
-            switch( navstatus ) {
-                case MOORED:
-                case AT_ANCHOR: {
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
-                    break;
-                }
-                case RESTRICTED_MANOEUVRABILITY: {
-                    wxPoint diamond[4];
-                    diamond[0] = wxPoint(  4, 0 );
-                    diamond[1] = wxPoint(  0, -6 );
-                    diamond[2] = wxPoint( -4, 0 );
-                    diamond[3] = wxPoint(  0, 6 );
-                    dc.StrokePolygon( 4, diamond, TargetPoint.x, TargetPoint.y-11 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-22, 4 );
-                    break;
-                   break;
-                }
-                case CONSTRAINED_BY_DRAFT: {
-                    wxPoint can[4];
-                    can[0] = wxPoint( -3, 0 );
-                    can[1] = wxPoint(  3, 0 );
-                    can[2] = wxPoint(  3, -16 );
-                    can[3] = wxPoint( -3, -16 );
-                    dc.StrokePolygon( 4, can, TargetPoint.x, TargetPoint.y );
-                    break;
-                }
-                case NOT_UNDER_COMMAND: {
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
-                    break;
-                }
-                case FISHING: {
-                    wxPoint tri[3];
-                    tri[0] = wxPoint( -4, 0 );
-                    tri[1] = wxPoint(  4, 0 );
-                    tri[2] = wxPoint(  0, -9 );
-                    dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
-                    tri[0] = wxPoint(  0, -9 );
-                    tri[1] = wxPoint(  4, -18 );
-                    tri[2] = wxPoint( -4, -18 );
-                    dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
-                    break;
-                }
-                case AGROUND: {
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-18, 4 );
-                    break;
-                }
-                case HSC:
-                case WIG: {
-                    dc.SetBrush( target_brush );
-
-                    wxPoint arrow[3];
-                    arrow[0] = wxPoint( -4, 20 );
-                    arrow[1] = wxPoint(  0, 27 );
-                    arrow[2] = wxPoint(  4, 20 );
-                    transrot_pts(3, arrow, sin_theta, cos_theta, TargetPoint);
-                    dc.StrokePolygon( 3, arrow );
-
-                    arrow[0] = wxPoint( -4, 27 );
-                    arrow[1] = wxPoint(  0, 34 );
-                    arrow[2] = wxPoint(  4, 27 );
-                    transrot_pts(3, arrow, sin_theta, cos_theta, TargetPoint);
-                    dc.StrokePolygon( 3, arrow );
-                    break;
-                }
-            }
-
-            //        Draw the inactive cross-out line
-            if( !td->b_active ) {
-                wxPoint p1 = transrot( wxPoint( -14, 0 ), sin_theta, cos_theta, TargetPoint );
-                wxPoint p2 = transrot( wxPoint( 14, 0 ), sin_theta, cos_theta, TargetPoint );
-
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
-                dc.StrokeLine( p1.x, p1.y, p2.x, p2.y );
-            }
-
-            //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
-            //    Symbolize it if set by most recent message
-            if( td->b_blue_paddle ) {
-                wxPoint ais_flag_icon[4];
-                ais_flag_icon[0] = wxPoint(-8, -6);
-                ais_flag_icon[1] = wxPoint(-2, 18);
-                ais_flag_icon[2] = wxPoint(-2, 0);
-                ais_flag_icon[3] = wxPoint(-2, -6);
-                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
-
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), 2 ) );
-                dc.StrokePolygon( 4, ais_flag_icon);
-            }
-        }
-
-        if (g_bShowAISName) {
-            int true_scale_display = (int) (floor( cc1->GetVP().chart_scale / 100. ) * 100);
-            if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
-
-                wxString tgt_name = td->GetFullName();
-                tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "Unknown" ), 0) );
-
-                if ( tgt_name != wxEmptyString ) {
-                    dc.SetFont( *FontMgr::Get().GetFont( _( "AIS Target Name" ), 12 ) );
-                    dc.SetTextForeground( FontMgr::Get().GetFontColor( _( "AIS Target Name" ) ) );
-
-                    int w, h;
-                    dc.GetTextExtent( tgt_name, &w, &h );
-
-                    if ( ( td->COG > 90 ) && ( td->COG < 180 ) )
-                        dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y-h );
-                    else
-                        dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y+0.5*h );
-
-                } //If name do not empty
-            } // if scale
-        }
-
-        //  Draw tracks if enabled
-        //  Check the Special MMSI Properties array
-        bool b_noshow = false;
-        bool b_forceshow = false;
-        for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-            if(td->MMSI == g_MMSI_Props_Array.Item(i)->MMSI ){
-                MMSIProperties *props = g_MMSI_Props_Array.Item(i);
-                if( TRACKTYPE_NEVER == props->TrackType){
-                    b_noshow = true;
-                    break;
-                }
-                else if( TRACKTYPE_ALWAYS == props->TrackType){
-                    b_forceshow = true;
-                    break;
-                }
+            //      Draw RateOfTurn Vector
+            if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && (!g_bShowScaled) ) {
+                float nv = 10;
+                float theta2 = theta;
+                if( td->ROTAIS > 0 ) theta2 += (float)PI / 2.;
                 else
-                    break;
+                    theta2 -= (float)PI / 2.;
+
+                int xrot = (int) round ( pixx1 + ( nv * cosf ( theta2 ) ) );
+                int yrot = (int) round ( pixy1 + ( nv * sinf ( theta2 ) ) );
+                dc.StrokeLine( pixx1, pixy1, xrot, yrot );
             }
         }
+    }
+
+    //        Actually Draw the target
+    if( td->Class == AIS_ARPA ) {
+        wxPen target_pen( UBLCK, 2 );
+
+        dc.SetPen( target_pen );
+        dc.SetBrush( target_brush );
+
+        dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 9 );
+        dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 1 );
+        //        Draw the inactive cross-out line
+        if( !td->b_active ) {
+            dc.SetPen( wxPen( UBLCK, 2 ) );
+            dc.StrokeLine( TargetPoint.x - 14, TargetPoint.y, TargetPoint.x + 14, TargetPoint.y );
+            dc.SetPen( wxPen( UBLCK, 1 ) );
+        }
+    } else if( td->Class == AIS_ATON ) {                   // Aid to Navigation
+        AtoN_Diamond( dc, TargetPoint.x, TargetPoint.y, 12, td );
+    } else if( td->Class == AIS_BASE ) {                      // Base Station
+        Base_Square( dc, wxPen( UBLCK , 2 ), TargetPoint.x, TargetPoint.y, 8 );
+    } else if( td->Class == AIS_SART ) {                      // SART Target
+        if( td->NavStatus == 14 )       // active
+            SART_Render( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 8 );
+        else
+            SART_Render( dc, wxPen( GetGlobalColor( _T ( "UGREN" ) ), 2 ),
+                         TargetPoint.x, TargetPoint.y, 8 );
+
+    } else if(td->b_SarAircraftPosnReport) {
+        wxPoint SarIcon[10];
+        wxPoint SarRot[10];
+
+        SarIcon[0] = wxPoint(0, 12);
+        SarIcon[1] = wxPoint(4, 2);
+        SarIcon[2] = wxPoint(16, -2);
+        SarIcon[3] = wxPoint(16, -8);
+        SarIcon[4] = wxPoint(4, -8);
+        SarIcon[5] = wxPoint(3, -16);
+        SarIcon[6] = wxPoint(10, -18);
+        SarIcon[7] = wxPoint(10, -22);
+        SarIcon[8] = wxPoint(0, -22);
+
+
+        // Draw icon as two halves
+
+        //  First half
+
+        for( int i = 0; i < 9; i++ )
+            SarRot[i] = SarIcon[i];
+        transrot_pts(9, SarRot, sin_theta, cos_theta);
+
+        wxPen tri_pen( target_brush.GetColour(), 1 );
+        dc.SetPen( tri_pen );
+        dc.SetBrush( target_brush );
+
+        int mappings[7][3] = {{0, 1, 4}, {1, 2, 3}, {1, 3, 4}, {0, 4, 5}, {0, 5, 8}, {5, 6, 7}, {5, 7, 8}};
+        for(int i=0; i<7; i++) {
+            wxPoint ais_tri_icon[3];
+            for(int j=0; j<3; j++)
+                ais_tri_icon[j] = SarRot[mappings[i][j]];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+        }
+
+        wxPen target_outline_pen( UBLCK, 2 );
+        dc.SetPen( target_outline_pen );
+        dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+
+        // second half
+
+        for( int i = 0; i < 9; i++ )
+            SarRot[i] = wxPoint(-SarIcon[i].x, SarIcon[i].y); // mirror the icon (x -> -x)
+
+        transrot_pts(9, SarRot, sin_theta, cos_theta);
+
+        dc.SetPen( tri_pen );
+        dc.SetBrush( target_brush );
+
+        for(int i=0; i<7; i++) {
+            wxPoint ais_tri_icon[3];
+            for(int j=0; j<3; j++)
+                ais_tri_icon[j] = SarRot[mappings[i][j]];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+        }
+
+        dc.SetPen( target_outline_pen );
+        dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+
+    } else {         // ship class A or B or a Buddy or DSC
+        wxPen target_pen( UBLCK, 1 );
+
+        dc.SetBrush( target_brush );
+
+        dc.SetPen( target_pen );
+        if(dc.GetDC()) {
+            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
+        } else {
+#ifdef ocpnUSE_GL
+            wxColour c = target_brush.GetColour();
+            glColor3ub(c.Red(), c.Green(), c.Blue());
+            glBegin(GL_TRIANGLE_FAN);
+
+            glVertex2i(ais_quad_icon[3].x + TargetPoint.x, ais_quad_icon[3].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[1].x + TargetPoint.x, ais_quad_icon[1].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y);
             
-        if( (!b_noshow && td->b_show_track) || b_forceshow ) {
-            wxPoint TrackPointA;
-            wxPoint TrackPointB;
+            glEnd();
 
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHMGD" ) ), 2 ) );
+            glLineWidth(1);
+            glColor3ub(0,0,0);
+            glBegin(GL_LINE_LOOP);
+            for(int i=0; i<4; i++)
+                glVertex2i(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y  + TargetPoint.y);
+            glEnd();
+#endif
+        }
 
-            //    First point
+        if (g_bDrawAISSize && bcan_draw_size)
+        {
+            dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+            dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, 1.0 );
+        }
+
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
+        int navstatus = td->NavStatus;
+
+        // HSC usually have correct ShipType but navstatus == 0...
+        if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
+            && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
+    
+        if(targetscale > 90){
+            switch( navstatus ) {
+            case MOORED:
+            case AT_ANCHOR: {
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                break;
+            }
+            case RESTRICTED_MANOEUVRABILITY: {
+                wxPoint diamond[4];
+                diamond[0] = wxPoint(  4, 0 );
+                diamond[1] = wxPoint(  0, -6 );
+                diamond[2] = wxPoint( -4, 0 );
+                diamond[3] = wxPoint(  0, 6 );
+                dc.StrokePolygon( 4, diamond, TargetPoint.x, TargetPoint.y-11 );
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y-22, 4 );
+                break;
+                break;
+            }
+            case CONSTRAINED_BY_DRAFT: {
+                wxPoint can[4] = {wxPoint(-3, 0), wxPoint(3, 0), wxPoint(3, -16), wxPoint(-3, -16)};
+                dc.StrokePolygon( 4, can, TargetPoint.x, TargetPoint.y );
+                break;
+            }
+            case NOT_UNDER_COMMAND: {
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
+                break;
+            }
+            case FISHING: {
+                wxPoint tri[3];
+                tri[0] = wxPoint( -4, 0 );
+                tri[1] = wxPoint(  4, 0 );
+                tri[2] = wxPoint(  0, -9 );
+                dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
+                tri[0] = wxPoint(  0, -9 );
+                tri[1] = wxPoint(  4, -18 );
+                tri[2] = wxPoint( -4, -18 );
+                dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
+                break;
+            }
+            case AGROUND: {
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
+                dc.StrokeCircle( TargetPoint.x, TargetPoint.y-18, 4 );
+                break;
+            }
+            case HSC:
+            case WIG: {
+                dc.SetBrush( target_brush );
+
+                wxPoint arrow1[3] = {wxPoint( -4, 20 ), wxPoint(  0, 27 ), wxPoint(  4, 20 )};
+                transrot_pts(3, arrow1, sin_theta, cos_theta, TargetPoint);
+                dc.StrokePolygon( 3, arrow1 );
+
+                wxPoint arrow2[3] = {wxPoint( -4, 27 ), wxPoint(  0, 34 ), wxPoint(  4, 27 )};
+                transrot_pts(3, arrow2, sin_theta, cos_theta, TargetPoint);
+                dc.StrokePolygon( 3, arrow2 );
+                break;
+            }
+            }
+        }//end if (targetscale > 75)
+
+        //        Draw the inactive cross-out line
+        if( !td->b_active ) {
+            wxPoint p1 = transrot( wxPoint( (int)-14*targetscale/100, 0 ), sin_theta, cos_theta, TargetPoint );
+            wxPoint p2 = transrot( wxPoint( (int)14*targetscale/100, 0 ),  sin_theta, cos_theta, TargetPoint );
+
+            dc.SetPen( wxPen( UBLCK, 2 ) );
+            dc.StrokeLine( p1.x, p1.y, p2.x, p2.y );
+        }
+
+        //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
+        //    Symbolize it if set by most recent message
+        if( td->b_blue_paddle ) {
+            wxPoint ais_flag_icon[4];
+            ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+            ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
+            ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
+            ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
+            
+            transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+
+            int penWidth = 2;
+            if(targetscale < 100)
+                penWidth = 1;
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
+            dc.StrokePolygon( 4, ais_flag_icon);
+        }
+    }
+
+    if ( (g_bShowAISName) && (targetscale > 75) ) {
+        int true_scale_display = (int) (floor( cc1->GetVP().chart_scale / 100. ) * 100);
+        if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
+
+            wxString tgt_name = td->GetFullName();
+            tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "Unknown" ), 0) );
+
+            if ( tgt_name != wxEmptyString ) {
+                dc.SetFont( *FontMgr::Get().GetFont( _( "AIS Target Name" ), 12 ) );
+                dc.SetTextForeground( FontMgr::Get().GetFontColor( _( "AIS Target Name" ) ) );
+
+                int w, h;
+                dc.GetTextExtent( tgt_name, &w, &h );
+
+                if ( ( td->COG > 90 ) && ( td->COG < 180 ) )
+                    dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y-h );
+                else
+                    dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y+0.5*h );
+
+            } //If name do not empty
+        } // if scale
+    }
+
+    //  Draw tracks if enabled
+    //  Check the Special MMSI Properties array
+    bool b_noshow = false;
+    bool b_forceshow = false;
+    for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
+        if(td->MMSI == g_MMSI_Props_Array.Item(i)->MMSI ){
+            MMSIProperties *props = g_MMSI_Props_Array.Item(i);
+            if( TRACKTYPE_NEVER == props->TrackType){
+                b_noshow = true;
+                break;
+            }
+            else if( TRACKTYPE_ALWAYS == props->TrackType){
+                b_forceshow = true;
+                break;
+            }
+            else
+                break;
+        }
+    }
+
+    if( (!b_noshow && td->b_show_track) || b_forceshow ) {
+        wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
+        if(dc.GetDC()) {
+            dc.SetPen( wxPen( c, 2 ) );
+        } else {
+#ifdef ocpnUSE_GL
+            glLineWidth(2);
+            glColor3ub(c.Red(), c.Green(), c.Blue());
+            glBegin(GL_LINE_STRIP);
+#endif
+        }
+
+        //  create vector of x-y points
+        int TrackLength = td->m_ptrack->GetCount();
+        if (TrackLength > 1) {
+            int TrackPointCount;
+            wxPoint *TrackPoints = new wxPoint[TrackLength];
             wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-            if( node ) {
+            for (TrackPointCount = 0; node && (TrackPointCount < TrackLength); TrackPointCount++) {
                 AISTargetTrackPoint *ptrack_point = node->GetData();
-                cc1->GetCanvasPointPix( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
+                cc1->GetCanvasPointPix(ptrack_point->m_lat, ptrack_point->m_lon, &TrackPoints[TrackPointCount]);
                 node = node->GetNext();
             }
-            while( node ) {
-                AISTargetTrackPoint *ptrack_point = node->GetData();
-                cc1->GetCanvasPointPix( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
+            TrackLength = TrackPointCount;
+            if ( dc.GetDC() && (TrackLength > 1) )
+                dc.StrokeLines(TrackPointCount, TrackPoints);
+#ifdef ocpnUSE_GL
+            else
+                for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
+                    glVertex2i(TrackPoints[TrackPointCount].x, TrackPoints[TrackPointCount].y);
+#endif
+            delete[] TrackPoints;
+        }
 
-                dc.StrokeLine( TrackPointA, TrackPointB );
-
-                node = node->GetNext();
-                TrackPointA = TrackPointB;
-            }
-
-        }           // Draw tracks
-
-    }       // drawit
+#ifdef ocpnUSE_GL
+        if(!dc.GetDC())
+            glEnd();
+#endif
+    }           // Draw tracks
 }
 
 void AISDraw( ocpnDC& dc )
 {
     if( !g_pAIS ) return;
 
-// Toggling AIS display on and off
-
+    // Toggling AIS display on and off
     if( !g_bShowAIS )
         return;//
-
+    //wxArrayInt importancearray; 
     //      Iterate over the AIS Target Hashmap
     AIS_Target_Hash::iterator it;
 
     AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
-
+    // init an aray for scaling calculations
+    int NoOfElements=(int)g_ShowScaled_Num;
+    int* p_Array = NULL;   // Pointer to int, initialize to nothing.
+    p_Array = new int[NoOfElements];  // Allocate n ints and save ptr in p_Array.
+    for (int i=0; i < NoOfElements; i++) {
+        p_Array[i] = 0;}    // Initialize all elements to zero.
+    int low=0;
+    int temp;
+    
     //    Draw all targets in three pass loop, sorted on SOG, GPSGate & DSC on top
     //    This way, fast targets are not obscured by slow/stationary targets
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
         if( ( td->SOG < g_ShowMoored_Kts )
-                && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) ) AISDrawTarget(
-                        td, dc );
+                && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) ) 
+        {
+            AISDrawTarget( td, dc );
+            if( td->importance > low )
+            {
+                temp = low; low = 999999;
+                for (int i=0; i < NoOfElements; i++) 
+                {
+                    if ( p_Array[i] == temp ) { p_Array[i] = td->importance; temp=-1; }
+                    if ( p_Array[i] < low ) low = p_Array[i];
+                }
+            }
+        }
+        
     }
-
+    
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
         if( ( td->SOG >= g_ShowMoored_Kts )
-                && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) ) AISDrawTarget(
-                        td, dc );
+                && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) )
+        {
+            AISDrawTarget( td, dc ); // yes this is a doubling of code;(
+            if( td->importance > 0 )
+            AISDrawTarget( td, dc );
+            if( td->importance > low )
+            {
+                temp = low; low = 999999;
+                for (int i=0; i < NoOfElements; i++) 
+                {
+                    if ( p_Array[i] == temp ) { p_Array[i] = td->importance; temp=-1; }
+                    if ( p_Array[i] < low ) low = p_Array[i];
+                }
+            }
+        }           
     }
 
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
         if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) AISDrawTarget( td, dc );
     }
+    ImportanceSwitchPoint = low;
+    delete [] p_Array;  // When done, free memory pointed to by p_Array.
+    p_Array = NULL; 
 }
 
 bool AnyAISTargetsOnscreen( ViewPort &vp )
