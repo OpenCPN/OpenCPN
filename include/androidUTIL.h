@@ -135,6 +135,8 @@ void androidLaunchBrowser( wxString URL );
 bool androidCheckOnline();
 
 wxArrayString androidTraverseDir( wxString dir, wxString filespec);
+void androidEnableOptionsMenu( bool bEnable );
+
 
 
 #endif   //guard

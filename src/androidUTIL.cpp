@@ -2918,7 +2918,12 @@ wxArrayString androidTraverseDir( wxString dir, wxString filespec)
     return result;
 }
         
+void androidEnableOptionsMenu( bool bEnable )
+{
+    callActivityMethod_is("enableOptionsMenu", bEnable?1:0);
+}
 
+        
 
 
 

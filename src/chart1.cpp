@@ -5423,12 +5423,14 @@ int MyFrame::DoOptionsDialog()
 
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( false );
+    androidEnableOptionsMenu( false );
     #endif
         
     int rr = g_options->ShowModal();
     
     #ifdef __OCPN__ANDROID__
     androidEnableBackButton( true );
+    androidEnableOptionsMenu( true );
     #endif
     
     if( g_FloatingToolbarDialog)

@@ -341,6 +341,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     // action bar
     private ActionBar actionBar;
+    private boolean optionsMenuEnabled = true;
 
         // Title navigation Spinner data
     private ArrayList<SpinnerNavItem> navSpinner;
@@ -392,6 +393,18 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         m_activity = QtActivity.this;
 
 
+    }
+
+    public String enableOptionsMenu(int bEnable){
+        Log.i("OpenCPN", "enableOptionsMenu " + bEnable);
+
+        if(bEnable == 1)
+            optionsMenuEnabled = true;
+        else
+            optionsMenuEnabled = false;
+
+        invalidateOptionsMenu();
+        return "OK";
     }
 
     public String showDisclaimerDialog( String title, String message) {
@@ -3341,7 +3354,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
 
-        return super.onPrepareOptionsMenu(menu);
+        super.onPrepareOptionsMenu(menu);
+        return optionsMenuEnabled;
     }
     public boolean super_onPrepareOptionsMenu(Menu menu)
     {
