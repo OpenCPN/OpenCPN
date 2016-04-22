@@ -580,10 +580,42 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     }
 
+    private String getAllFilesResult;
+    private String getAllFilesFilespec;
+
+    public void traverse (File dir) {
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (int i = 0; i < files.length; ++i) {
+                File file = files[i];
+                if (file.isDirectory()) {
+                    traverse(file);
+                } else {
+                    if(file.getName().matches(getAllFilesFilespec)){
+
+                        Log.i("OpenCPN", "traverse:File: " + file.getAbsolutePath());
+                        getAllFilesResult += file.getAbsolutePath() + ";";
+                    }
+                }
+            }
+        }
+    }
+
+    public String getAllFilesWithFilespec(String dir, String filespec){
+        getAllFilesResult = "";
+        getAllFilesFilespec = "(.*)[.]" + filespec.substring( filespec.length() - 3) + "$";
+        Log.i("OpenCPN", "getAllFilesWithFilespec " + getAllFilesFilespec );
+
+        File dirt = new File( dir );
+        traverse( dirt );
+
+        return getAllFilesResult;
+    }
+
+
     public String doAndroidSettings(String settings){
         //Log.i("OpenCPN", "doAndroidSettings");
         //Log.i("DEBUGGER_TAG", settings);
-
         if(null != uSerialHelper)
             m_scannedSerial = scanSerialPorts( UsbSerialHelper.NOSCAN );      // No scan, just report latest results.
 
