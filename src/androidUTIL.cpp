@@ -2902,7 +2902,22 @@ wxString androidGetSupplementalLicense( void )
 
 
 
-
+wxArrayString androidTraverseDir( wxString dir, wxString filespec)
+{
+    wxArrayString result;
+    if(strncmp(android_plat_spc.msdk, "17", 2))   // skip unless running Android 4.2.2, especially Samsung...
+        return result;
+    
+    wxString ir = callActivityMethod_s2s("getAllFilesWithFilespec", dir, filespec);
+    
+    wxStringTokenizer tk(ir, _T(";"));
+    while( tk.HasMoreTokens() ){
+        result.Add(tk.GetNextToken());
+    }
+    
+    return result;
+}
+        
 
 
 

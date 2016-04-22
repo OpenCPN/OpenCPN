@@ -134,4 +134,7 @@ bool androidShowDisclaimer( wxString title, wxString msg );
 void androidLaunchBrowser( wxString URL );
 bool androidCheckOnline();
 
+wxArrayString androidTraverseDir( wxString dir, wxString filespec);
+
+
 #endif   //guard
