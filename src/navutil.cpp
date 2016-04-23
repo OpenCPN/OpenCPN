@@ -2451,6 +2451,11 @@ bool MyConfig::UpdateChartDirs( ArrayOfCDI& dir_array )
 
     }
 
+    // Avoid nonsense log errors...
+    #ifdef __OCPN__ANDROID__    
+    wxLogNull logNo;
+    #endif    
+    
     Flush();
     return true;
 }
