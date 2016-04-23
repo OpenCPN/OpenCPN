@@ -333,11 +333,15 @@ bool chartdldr_pi::SaveConfig(void)
 
 void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(m_parent_window);
+    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(NULL/*m_parent_window*/);
     
     if( m_parent_window ){
-        //dialog->SetSize(parent->GetSize().GetWidth(), 450);
-        //dialog->CenterOnScreen();
+        int xmax = wxMin(parent->GetSize().GetWidth() - 80, 600);
+        int ymax = wxMin(::wxGetDisplaySize().GetHeight() - 100, 450);
+        dialog->SetSize(xmax, ymax);
+        dialog->Layout();
+        
+        dialog->CenterOnScreen();
     }
     
     dialog->SetPath(m_base_chart_dir);
@@ -1543,7 +1547,11 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                     break;
                 }
                 zip.Read(file);
+                
+#ifndef __OCPN__ANDROID__
+                //  Unreliable on Android, and emits error message to log sometimes.
                 fn.SetTimes(&aMTime, &aMTime, &aMTime);
+#endif                
                 ret = true;
             }
 
