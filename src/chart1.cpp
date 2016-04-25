@@ -9160,9 +9160,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gCog = gpd.kCog;
                 gSog = gpd.kSog;
 
-                gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) )
                 {
+                    gHdt = gpd.kHdt;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
