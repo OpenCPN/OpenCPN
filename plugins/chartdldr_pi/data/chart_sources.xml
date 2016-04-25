@@ -915,12 +915,6 @@
           <dir>{USERDATA}/ENC/NL_INLAND</dir>
         </catalog>
         <catalog>
-          <name>Netherland WCI Kaarten Charts</name>
-          <type>RNC</type>
-          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/NL_WCI_Catalog.xml</location>
-          <dir>{USERDATA}/RNC/NL_WCIKAARTEN</dir>
-        </catalog>
-        <catalog>
           <name>New Zealand RNC Nautical Charts</name>
           <type>RNC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/NZ_RNC_Catalog.xml</location>
