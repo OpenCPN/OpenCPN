@@ -106,6 +106,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     int diff_mins = diff.GetMinutes();
 
+    //  Correct a bug in wx3.0.2
+    //  If the system TZ happens to be GMT, with DST active (e.g.summer in London),
+    //  then wxDateTime returns incorrect results for toGMT() method
+#if wxCHECK_VERSION(3, 0, 2)
+    if( diff_mins == 0 && this_now.IsDST() )
+        diff_mins +=60;
+#endif
     int station_offset = ptcmgr->GetStationTimeOffset( pIDX );
 
     m_corr_mins = station_offset - diff_mins;
