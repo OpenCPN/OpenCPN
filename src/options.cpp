@@ -39,6 +39,7 @@
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
 
@@ -6357,6 +6358,7 @@ void options::DoOnPageChange(size_t page) {
               FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
+          ltest.AddCatalogLookupPathPrefix( wxStandardPaths::Get().GetInstallPrefix() + _T( "/share/locale" ) );
           ltest.AddCatalog(_T("opencpn"));
 
           wxLog::EnableLogging(TRUE);
