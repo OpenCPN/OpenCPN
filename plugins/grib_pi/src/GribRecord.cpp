@@ -30,6 +30,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "GribRecord.h"
 
+// Data type conversion table from table version 128 to version 2
+zuchar grbDataTypeFromV128toV2[] = {  
+     0,   0,   0,  13,   0,   0,   0,   0,  //   0-7
+     0,   0,   0,   0,   0,   0,   0,   0,  //   8-15
+     0,   0,   0,   0,   0,   0,   0,   0,  //  16-23
+     0,   0,   0,   0,   0,   0,   0,   0,  //  24-31
+     0,   0,  80,   0,   0,   0,   0,   0,  //  32-39
+     0,   0,   0,   0,   0,   0,   0,   0,  //  40-47
+     0, 180,   0,  15,  16,   0,   0,   0,  //  48-55
+     0,   0,   0, 157,   0,   0,   0,   0,  //  56-63
+     0,   0,   0,   0,   0,   0,   0,   0,  //  64-71
+     0,   0,   0,   0,   0,   0,   0,   0,  //  72-79
+     0,   0,   0,   0,   0,   0,   0,   0,  //  80-87
+     0,   0,   0,   0,   0,   0,   0,   0,  //  88-95
+     0,   0,   0,   0,   7,   0,   0,   0,  //  96-103
+     0,   0,   0,   0,   0,   0,   0,   0,  // 104-113
+     0,   0,   0,   0,   0,   0,   0,   0,  // 112-121
+     0,   0,   0,   0,   0,   0,   0,   0,  // 120-129
+     0,   0,   0,  33,  34,  51,   0,   0,  // 128-137
+     0,   0,   0,   0,   0,  66,   0,   0,  // 136-143
+     0,   0,   0,   0,   0,   0,   0,   2,  // 144-151
+     0,   0,   0,   0,   0,  52,   0,   0,  // 152-159
+     0,   0,   0,   0,  71,   0,   0,  11,  // 160-167
+    17,   0,   0,   0,   0,   0,   0,   0,  // 168-175
+     0,   0,   0,   0,   0,   0,   0,   0,  // 176-183
+     0,   0,   0,   0,   0,   0,   0,   0,  // 184-191
+     0,   0,   0,   0,   0,   0,   0,   0,  // 192-199
+     0,   0,   0,   0,   0,   0,   0,   0,  // 200-207
+     0,   0,   0,   0,   0,   0,   0,   0,  // 208-215
+     0,   0,   0,   0,   0,   0,   0,   0,  // 216-223
+     0,   0,   0,   0,  61,   0,   0,   0,  // 224-231
+     0,   0,   0,   0,   0,   0,   0,   0,  // 232-239
+     0,   0,   0,   0,   0,   0,   0,   0,  // 240-247
+     0,   0, 250, 251,   0,   0,   0,   0   // 248-255 
+};
+
 // interpolate two angles in range +- 180 or +-PI, with resulting angle in the same range
 static double interp_angle(double a0, double a1, double d, double p)
 {
@@ -661,10 +697,16 @@ bool GribRecord::readGribSection1_PDS(ZUFILE* file) {
     hasGDS = (data1[7]&128)!=0;
     hasBMS = (data1[7]&64)!=0;
 
-    dataType = data1[8];	 // octet 9 = parameters and units
-	levelType = data1[9];
-	levelValue = makeInt2(data1[10],data1[11]);
+    if ((tableVersion) == 128) {
+        dataType = grbDataTypeFromV128toV2[data1[8]];	 // octet 9 = parameters and units. Convert to version 2
+        tableVersion = 2;
+    } else {
+        dataType = data1[8];	                         // octet 9 = parameters and units
+    }
 
+    levelType = data1[9];
+    levelValue = makeInt2(data1[10],data1[11]);
+    
     refyear   = (data1[24]-1)*100+data1[12];
     refmonth  = data1[13];
     refday    = data1[14];
