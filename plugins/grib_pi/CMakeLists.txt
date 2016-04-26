@@ -108,6 +108,8 @@ SET(SRC_GRIB
             src/icons.cpp
             src/GribReader.cpp
             src/GribRecord.cpp
+            src/GribV1Record.cpp
+            src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
 
@@ -155,6 +157,24 @@ IF(QT_ANDROID)
     MESSAGE (STATUS ${SRC_GRIB})
 
 ENDIF(QT_ANDROID)
+
+    #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
+    
+    file(GLOB jasper_base_sources "src/jasper/base/*.c")
+    file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
+    file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
+    file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
+    file(GLOB jasper_jpc_headers "src/jjasper/pc/*.h")
+    file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
+    
+    SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
+
+    ADD_DEFINITIONS(-DJASPER)
+    ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
+   
+    INCLUDE_DIRECTORIES("src/jasper/include")
+
+
 
 # On Android, PlugIns need a specific linkage set....
 IF (QT_ANDROID )
@@ -221,7 +241,8 @@ IF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
     INCLUDE_DIRECTORIES(${BZIP2_INCLUDE_DIR})
     FIND_PACKAGE(ZLIB REQUIRED)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY} )
+
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${BZIP2_LIBRARIES} ${ZLIB_LIBRARY})
 ENDIF(UNIX AND NOT APPLE AND NOT QT_ANDROID)
 
 IF(APPLE)
