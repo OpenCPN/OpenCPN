@@ -905,7 +905,10 @@ void  GribV2Record::translateDataType()
 	//------------------------
 	// NOAA GFS
 	//------------------------
-	if (   idCenter==7
+    if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+				multiplyAllData( 3600.0 );
+    }
+	else if (   idCenter==7
 		&& (idModel==96 || idModel==81)		// NOAA
 		&& (idGrid==4 || idGrid==255))		// Saildocs
 	{
@@ -914,10 +917,6 @@ void  GribV2Record::translateDataType()
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
 		}
-		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 3600.0 );
-        }
         if (dataType == GRB_TEMP                        //gfs Water surface Temperature
             && levelType == LV_GND_SURF
             && levelValue == 0) dataType = GRB_WTMP;
@@ -946,12 +945,6 @@ void  GribV2Record::translateDataType()
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
 		}
-		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 3600.0 );
-		}
-
-
 	}
     else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
 		dataCenterModel = NOAA_NCEP_WW3;
