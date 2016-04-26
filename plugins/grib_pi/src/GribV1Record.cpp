@@ -52,6 +52,11 @@ void  GribV1Record::translateDataType()
             && levelType == LV_GND_SURF
             && levelValue == 0) dataType = GRB_WTMP;
 
+        // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
+        if (levelType == LV_ATMOS_ENT) {
+            levelType = LV_ATMOS_ALL;
+        }
+                                                                                
 	}
     //------------------------
 	//DNMI-NEurope.grb
