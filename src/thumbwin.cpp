@@ -42,19 +42,7 @@
 #include "thumbwin.h"
 #include "chart1.h"
 #include "chartdb.h"
-#include "chcanv.h"
 #include "wx28compat.h"
-
-//------------------------------------------------------------------------------
-//    External Static Storage
-//------------------------------------------------------------------------------
-extern ChartDB          *ChartData;
-extern ChartStack       *pCurrentStack;
-
-extern MyFrame          *gFrame;
-extern ChartBase        *Current_Ch;
-extern ChartCanvas      *cc1;
-
 
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
