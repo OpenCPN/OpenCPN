@@ -6169,7 +6169,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
         case 4:
         {
-            g_options = new options( this, -1, _("Options") );
+            //g_options = new options( this, -1, _("Options") );
     
             if( g_toolbar )
                 g_toolbar->EnableTool( ID_SETTINGS, true );
