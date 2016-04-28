@@ -382,8 +382,10 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
         }
             
         PlugInContainer *pic = NULL;
+        wxStopWatch sw;
         if(b_compat)
             pic = LoadPlugIn(file_name);
+
         if(pic)
         {
             if(pic->m_pplugin)
@@ -398,7 +400,14 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
                 pic->m_bEnabled = enabled;
                 if(pic->m_bEnabled)
                 {
+                    wxStopWatch sw;
                     pic->m_cap_flag = pic->m_pplugin->Init();
+#ifdef __WXGTK__ // 10 milliseconds is very slow at least on linux
+                    if(sw.Time() > 10)
+                        wxLogMessage(_T("PlugInManager: ") + pic->m_common_name
+                                     + _T(" has loaded very slowly: %ld ms"),
+                                     sw.Time());
+#endif
                     pic->m_bInitState = true;
                 }
                     
@@ -1031,13 +1040,11 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(pic->m_pplugin)
     {
-        msg = _T("  ");
-        msg += plugin_file;
-        wxString msg1;
-        msg1.Printf(_T("\n              API Version detected: %d"), api_ver);
-        msg += msg1;
-        msg1.Printf(_T("\n              PlugIn Version detected: %d"), pi_ver);
-        msg += msg1;
+        msg = plug_in->GetCommonName();
+        msg += _T("  ");
+        msg += wxString::Format(_T("API Version: %d.%d"), api_major, api_minor);
+        msg += _T("  ");
+        msg += wxString::Format(_T("PlugIn Version: %d.%d"), pi_major, pi_minor);
         wxLogMessage(msg);
     }
     else
