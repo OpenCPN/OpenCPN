@@ -2084,9 +2084,6 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Refresh( false );
     gFrame->Raise();
 
-    gFrame->RequestNewToolbar();
-
-
     cc1->Enable();
     cc1->SetFocus();
 
@@ -3033,10 +3030,6 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
             g_FloatingToolbarDialog->SetColorScheme(global_color_scheme);
             g_FloatingToolbarDialog->Show(b_reshow && g_bshowToolbar);
         }
-
-#ifndef __WXQT__
-        gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
-#endif
     }
 
 #ifdef __OCPN__ANDROID__
@@ -6122,7 +6115,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             RequestNewToolbar();
             if( g_toolbar )
                 g_toolbar->EnableTool( ID_SETTINGS, false );
-            
+
             wxString perspective;
             pConfig->SetPath( _T ( "/AUI" ) );
             pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -6180,7 +6173,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     
             if( g_toolbar )
                 g_toolbar->EnableTool( ID_SETTINGS, true );
-            
+
+            // needed to ensure that the chart window starts with keyboard focus
+            SurfaceToolbar();
             break;
         }
 
