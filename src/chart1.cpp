@@ -2127,7 +2127,7 @@ extern ocpnGLOptions g_GLOptions;
 #endif
 
     // Start delayed initialization chain after 100 milliseconds
-    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
+    gFrame->InitTimer.Start( 10, wxTIMER_CONTINUOUS );
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
