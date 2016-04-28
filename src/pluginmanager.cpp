@@ -773,6 +773,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
 #ifdef __WXGTK__
+#if 0
     wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
     FILE *ldd = popen( cmd.mb_str(), "r" );
     if (ldd != NULL)
@@ -793,6 +794,26 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         }
         fclose(ldd);
     }
+#else
+    // this is 3x faster than the other method
+    FILE *f = fopen(plugin_file, "r");
+    char strver[26]; //Enough space even for very big integers...
+    sprintf( strver, "libwx_baseu-%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
+
+    b_compat = false;
+    
+    int pos = 0, len = strlen(strver), c;
+    while((c = fgetc(f)) != EOF) {
+        if(c == strver[pos]) {
+            if(++pos == len) {
+                b_compat = true;
+                break;
+            }
+        } else
+            pos = 0;
+    }
+    fclose(f);
+#endif
 #endif // __WXGTK__
 
     return b_compat;
