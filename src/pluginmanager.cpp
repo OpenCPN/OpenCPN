@@ -453,7 +453,10 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     //  Only allow the PlugIn compatibility dialogs once per instance of application.
     if(b_enable_blackdialog)
         m_benable_blackdialog_done = true;
-    
+
+    //  And then reload all catalogs.
+    ReloadLocale();
+
     return ret;
 }
 
@@ -2255,8 +2258,7 @@ bool AddLocaleCatalog( wxString catalog )
         // Add this catalog to the persistent catalog array
         g_locale_catalog_array.Add(catalog);
         
-        //  And then reload all catalogs.
-        return ReloadLocale(); // plocale_def_lang->AddCatalog( catalog );
+        return plocale_def_lang->AddCatalog( catalog );
     }
     else
 #endif        
