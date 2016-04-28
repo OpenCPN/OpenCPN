@@ -1131,10 +1131,9 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
+static wxStopWatch init_sw;
 bool MyApp::OnInit()
 {
-    wxStopWatch sw;
-
     if( !wxApp::OnInit() ) return false;
 
 #if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
@@ -2120,7 +2119,7 @@ extern ocpnGLOptions g_GLOptions;
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
-    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
@@ -6162,7 +6161,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());            
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP());
+
+            wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
         }
     }   // switch
