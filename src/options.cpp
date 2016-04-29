@@ -5732,8 +5732,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // Recreate datastreams that are new, or have been edited
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams* cp = g_pConnectionParams->Item(i);
-    if (cp->bEnabled)
-        int yyp = 4;
     
     // Stream is new, or edited
     if (cp->b_IsSetup) continue;
