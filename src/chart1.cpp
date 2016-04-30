@@ -8753,12 +8753,43 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     return bret;
 }
 
+static bool ParsePosition(const LATLONG &Position)
+{
+    bool ll_valid = true;
+    double llt = Position.Latitude.Latitude;
+    if( !wxIsNaN(llt) )
+    {
+        int lat_deg_int = (int) ( llt / 100 );
+        double lat_deg = lat_deg_int;
+        double lat_min = llt - ( lat_deg * 100 );
+        gLat = lat_deg + ( lat_min / 60. );
+        if( Position.Latitude.Northing == South )
+            gLat = -gLat;
+    }
+    else
+        ll_valid = false;
+    
+    double lln = Position.Longitude.Longitude;
+    if( !wxIsNaN(lln) )
+    {
+        int lon_deg_int = (int) ( lln / 100 );
+        double lon_deg = lon_deg_int;
+        double lon_min = lln - ( lon_deg * 100 );
+        gLon = lon_deg + ( lon_min / 60. );
+        if( Position.Longitude.Easting == West )
+            gLon = -gLon;
+    }
+    else
+        ll_valid = false;
+
+    return ll_valid;
+}
+
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
     bool pos_valid = false;
     bool bis_recognized_sentence = true;
-    bool ll_valid = true;
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
 
@@ -8816,31 +8847,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             case RMC:
                 if( m_NMEA0183.Rmc.IsDataValid == NTrue )
                 {
-                    if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) )
-                    {
-                        double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                        int lat_deg_int = (int) ( llt / 100 );
-                        double lat_deg = lat_deg_int;
-                        double lat_min = llt - ( lat_deg * 100 );
-                        gLat = lat_deg + ( lat_min / 60. );
-                        if( m_NMEA0183.Rmc.Position.Latitude.Northing == South )
-                            gLat = -gLat;
-                    }
-                    else
-                        ll_valid = false;
-
-                    if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) )
-                    {
-                        double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                        int lon_deg_int = (int) ( lln / 100 );
-                        double lon_deg = lon_deg_int;
-                        double lon_min = lln - ( lon_deg * 100 );
-                        gLon = lon_deg + ( lon_min / 60. );
-                        if( m_NMEA0183.Rmc.Position.Longitude.Easting == West )
-                            gLon = -gLon;
-                    }
-                    else
-                        ll_valid = false;
+                    pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
                     
                     gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                     gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
@@ -8858,7 +8865,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     }
                     
                     sfixtime = m_NMEA0183.Rmc.UTCTime;
-                    pos_valid = ll_valid;
                 }
                 break;
 
@@ -8912,35 +8918,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             case GGA:
                 if( m_NMEA0183.Gga.GPSQuality > 0 )
                 {
-                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Latitude.Latitude) )
-                    {
-                        double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
-                        int lat_deg_int = (int) ( llt / 100 );
-                        double lat_deg = lat_deg_int;
-                        double lat_min = llt - ( lat_deg * 100 );
-                        gLat = lat_deg + ( lat_min / 60. );
-                        if( m_NMEA0183.Gga.Position.Latitude.Northing == South )
-                            gLat = -gLat;
-                    }
-                    else
-                        ll_valid = false;
-                    
-                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) )
-                    {
-                        double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
-                        int lon_deg_int = (int) ( lln / 100 );
-                        double lon_deg = lon_deg_int;
-                        double lon_min = lln - ( lon_deg * 100 );
-                        gLon = lon_deg + ( lon_min / 60. );
-                        if( m_NMEA0183.Gga.Position.Longitude.Easting
-                            == West ) gLon = -gLon;
-                    }
-                    else
-                        ll_valid = false;
+                    pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
                     
                     sfixtime = m_NMEA0183.Gga.UTCTime;
-                    
-                    pos_valid = ll_valid;
                     
                     g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
                     gSAT_Watchdog = sat_watchdog_timeout_ticks;
@@ -8951,34 +8931,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             case GLL:
                 if( m_NMEA0183.Gll.IsDataValid == NTrue )
                 {
-                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
-                    {
-                        double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
-                        int lat_deg_int = (int) ( llt / 100 );
-                        double lat_deg = lat_deg_int;
-                        double lat_min = llt - ( lat_deg * 100 );
-                        gLat = lat_deg + ( lat_min / 60. );
-                        if( m_NMEA0183.Gll.Position.Latitude.Northing == South )
-                            gLat = -gLat;
-                    }
-                    else
-                        ll_valid = false;
-                    
-                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) )
-                    {
-                        double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
-                        int lon_deg_int = (int) ( lln / 100 );
-                        double lon_deg = lon_deg_int;
-                        double lon_min = lln - ( lon_deg * 100 );
-                        gLon = lon_deg + ( lon_min / 60. );
-                        if( m_NMEA0183.Gll.Position.Longitude.Easting == West )
-                            gLon = -gLon;
-                    }
-                    else
-                        ll_valid = false;
+                    pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
                     
                     sfixtime = m_NMEA0183.Gll.UTCTime;  
-                    pos_valid = ll_valid;
                 }
                 break;
             }
