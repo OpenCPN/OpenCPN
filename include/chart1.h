@@ -541,7 +541,6 @@ class MyFrame: public wxFrame
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
 
-    double              m_COGFilterLast;
     double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 

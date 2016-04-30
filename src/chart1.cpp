@@ -2371,10 +2371,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //    Clear the NMEA Filter tables
     for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = 0.;
-        SOGFilterTable[i] = 0.;
+        COGFilterTable[i] = NAN;
+        SOGFilterTable[i] = NAN;
     }
-    m_COGFilterLast = 0.;
     m_last_bGPSValid = false;
 
     gHdt = NAN;
@@ -2383,9 +2382,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gSog = NAN;
     gCog = NAN;
 
-    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ ) {
-        COGTable[i] = 0.;
-    }
+    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ )
+        COGTable[i] = NAN;
 
     m_fixtime = 0;
 
@@ -2438,8 +2436,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_FloatingToolbarConfigMenu = new wxMenu();
 
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
-
-    m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
     g_sticky_projection = -1;
@@ -4611,7 +4607,7 @@ void MyFrame::ToggleCourseUp( void )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
 
         if( g_COGAvgSec > 0) {
@@ -5428,7 +5424,7 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
         if( g_COGAvgSec > 0 ) {
             for( int i = 0; i < g_COGAvgSec; i++ )
@@ -5443,8 +5439,8 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
 
     //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
+    double stuffcog = NAN;
+    double stuffsog = NAN;
     if( !wxIsNaN(gCog) ) stuffcog = gCog;
     if( !wxIsNaN(gSog) ) stuffsog = gSog;
 
@@ -5452,7 +5448,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         COGFilterTable[i] = stuffcog;
         SOGFilterTable[i] = stuffsog;
     }
-    m_COGFilterLast = stuffcog;
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
@@ -9239,9 +9234,11 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
                 COGTable[i] = COGTable[i - 1];
             COGTable[0] = gCog;
 
-            double sum = 0.;
+            double sum = 0., count=0;
             for( int i = 0; i < g_COGAvgSec; i++ ) {
                 double adder = COGTable[i];
+                if(wxIsNaN(adder))
+                    continue;
 
                 if( fabs( adder - g_COGAvg ) > 180. ) {
                     if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
@@ -9250,8 +9247,9 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
                 }
 
                 sum += adder;
+                count++;
             }
-            sum /= g_COGAvgSec;
+            sum /= count;
 
             if( sum < 0. ) sum += 360.;
             else
@@ -9356,56 +9354,66 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 }
 
 void MyFrame::FilterCogSog( void )
-{
+{            
     if( g_bfilter_cogsog ) {
-        //    If the data are undefined, leave the array intact
-        if( !wxIsNaN(gCog) ) {
-            //    Simple averaging filter for COG
-            double cog_last = gCog;       // most recent reported value
+        //    Simple averaging filter for COG
+        double cog_last = gCog;       // most recent reported value
 
-            //    Make a hole in array
-            for( int i = g_COGFilterSec - 1; i > 0; i-- )
-                COGFilterTable[i] = COGFilterTable[i - 1];
-            COGFilterTable[0] = cog_last;
+        //    Make a hole in array
+        for( int i = g_COGFilterSec - 1; i > 0; i-- )
+            COGFilterTable[i] = COGFilterTable[i - 1];
+        COGFilterTable[0] = cog_last;
 
+        //    If the lastest data is undefined, leave it
+        if( !wxIsNaN(cog_last) ) {
             //
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_COGFilterSec; i++ ) {
                 double adder = COGFilterTable[i];
+                if(wxIsNaN(adder))
+                    continue;
 
-                if( fabs( adder - m_COGFilterLast ) > 180. ) {
-                    if( ( adder - m_COGFilterLast ) > 0. ) adder -= 360.;
+                if( fabs( adder - cog_last ) > 180. ) {
+                    if( ( adder - cog_last ) > 0. ) adder -= 360.;
                     else
                         adder += 360.;
                 }
 
                 sum += adder;
+                count++;
             }
-            sum /= g_COGFilterSec;
+            sum /= count;
 
             if( sum < 0. ) sum += 360.;
             else
                 if( sum >= 360. ) sum -= 360.;
 
             gCog = sum;
-            m_COGFilterLast = sum;
+
+//            printf("cog %f %f\n", cog_last, gCog);
+
         }
 
+        //    Simple averaging filter for SOG
+        double sog_last = gSog;       // most recent reported value
+
+        //    Make a hole in array
+        for( int i = g_SOGFilterSec - 1; i > 0; i-- )
+            SOGFilterTable[i] = SOGFilterTable[i - 1];
+        SOGFilterTable[0] = sog_last;
+
+        
         //    If the data are undefined, leave the array intact
         if( !wxIsNaN(gSog) ) {
-            //    Simple averaging filter for SOG
-            double sog_last = gSog;       // most recent reported value
-
-            //    Make a hole in array
-            for( int i = g_SOGFilterSec - 1; i > 0; i-- )
-                SOGFilterTable[i] = SOGFilterTable[i - 1];
-            SOGFilterTable[0] = sog_last;
-
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_SOGFilterSec; i++ ) {
+                if(wxIsNaN(SOGFilterTable[i]))
+                    continue;
+
                 sum += SOGFilterTable[i];
+                count++;
             }
-            sum /= g_SOGFilterSec;
+            sum /= count;
 
             gSog = sum;
         }
