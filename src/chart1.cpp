@@ -8788,7 +8788,7 @@ static bool ParsePosition(const LATLONG &Position)
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
-    bool pos_valid = false;
+    bool pos_valid = false, cog_sog_valid = false;
     bool bis_recognized_sentence = true;
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
@@ -8851,6 +8851,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     
                     gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                     gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+                    cog_sog_valid = true;
                     
                     if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
                     {
@@ -8901,12 +8902,17 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
 
             case VTG:
+                // should we allow either Sog or Cog but not both to be valid?
                 if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
                     gSog = m_NMEA0183.Vtg.SpeedKnots;
                 if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
+                    !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                    cog_sog_valid = true;
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                }
                 break;
 
             case GSV:
@@ -8919,7 +8925,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Gga.GPSQuality > 0 )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
-                    
                     sfixtime = m_NMEA0183.Gga.UTCTime;
                     
                     g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
@@ -8932,7 +8937,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Gll.IsDataValid == NTrue )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
-                    
                     sfixtime = m_NMEA0183.Gll.UTCTime;  
                 }
                 break;
@@ -8970,7 +8974,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             
             gCog = gpd.kCog;
             gSog = gpd.kSog;
-            
+            cog_sog_valid = true;
+
             if( !wxIsNaN(gpd.kHdt) )
             {
                 gHdt = gpd.kHdt;
@@ -9010,12 +9015,49 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         }
     }
 
-    if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, sfixtime );
+    if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
 }
 
-void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
+void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
 {
-    FilterCogSog();
+    if(cog_sog_valid) {
+        //    Maintain average COG for Course Up Mode
+        if( !wxIsNaN(gCog) ) {
+            if( g_COGAvgSec > 0 ) {
+                //    Make a hole
+                for( int i = g_COGAvgSec - 1; i > 0; i-- )
+                    COGTable[i] = COGTable[i - 1];
+                COGTable[0] = gCog;
+
+                double sum = 0., count=0;
+                for( int i = 0; i < g_COGAvgSec; i++ ) {
+                    double adder = COGTable[i];
+                    if(wxIsNaN(adder))
+                        continue;
+
+                    if( fabs( adder - g_COGAvg ) > 180. ) {
+                        if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
+                        else
+                            adder += 360.;
+                    }
+
+                    sum += adder;
+                    count++;
+                }
+                sum /= count;
+
+                if( sum < 0. ) sum += 360.;
+                else
+                    if( sum >= 360. ) sum -= 360.;
+
+                g_COGAvg = sum;
+            }
+            else
+                g_COGAvg = gCog;
+        }
+
+        FilterCogSog();
+    }
 
     //    If gSog is greater than some threshold, we determine that we are "cruising"
     if( gSog > 3.0 ) g_bCruising = true;
@@ -9057,72 +9099,40 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 //    Show gLat/gLon in StatusWindow0
 
     if( NULL != GetStatusBar() ) {
-        char tick_buf[2];
-        tick_buf[0] = nmea_tick_chars[tick_idx];
-        tick_buf[1] = 0;
+        if(pos_valid) {
+            char tick_buf[2];
+            tick_buf[0] = nmea_tick_chars[tick_idx];
+            tick_buf[1] = 0;
 
-        wxString s1( tick_buf, wxConvUTF8 );
-        s1 += _(" Ship ");
-        s1 += toSDMM( 1, gLat );
-        s1 += _T("   ");
-        s1 += toSDMM( 2, gLon );
+            wxString s1( tick_buf, wxConvUTF8 );
+            s1 += _(" Ship ");
+            s1 += toSDMM( 1, gLat );
+            s1 += _T("   ");
+            s1 += toSDMM( 2, gLon );
 
-        if(STAT_FIELD_TICK >= 0 )
-            SetStatusText( s1, STAT_FIELD_TICK );
-
-        wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
-        else
-            sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
-
-        wxString cogs;
-        if( wxIsNaN(gCog) )
-            cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
-        else {
-            if( g_bShowMag )
-                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
-            else
-                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+            if(STAT_FIELD_TICK >= 0 )
+                SetStatusText( s1, STAT_FIELD_TICK );
         }
+        
+        if(cog_sog_valid) {
+            wxString sogcog;
+            if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
+            else
+                sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
-        sogcog.Append( cogs );
-        SetStatusText( sogcog, STAT_FIELD_SOGCOG );
-    }
-
-//    Maintain average COG for Course Up Mode
-
-    if( !wxIsNaN(gCog) ) {
-        if( g_COGAvgSec > 0 ) {
-            //    Make a hole
-            for( int i = g_COGAvgSec - 1; i > 0; i-- )
-                COGTable[i] = COGTable[i - 1];
-            COGTable[0] = gCog;
-
-            double sum = 0., count=0;
-            for( int i = 0; i < g_COGAvgSec; i++ ) {
-                double adder = COGTable[i];
-                if(wxIsNaN(adder))
-                    continue;
-
-                if( fabs( adder - g_COGAvg ) > 180. ) {
-                    if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
-                    else
-                        adder += 360.;
-                }
-
-                sum += adder;
-                count++;
+            wxString cogs;
+            if( wxIsNaN(gCog) )
+                cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
+            else {
+                if( g_bShowMag )
+                    cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+                else
+                    cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
             }
-            sum /= count;
 
-            if( sum < 0. ) sum += 360.;
-            else
-                if( sum >= 360. ) sum -= 360.;
-
-            g_COGAvg = sum;
+            sogcog.Append( cogs );
+            SetStatusText( sogcog, STAT_FIELD_SOGCOG );
         }
-        else
-            g_COGAvg = gCog;
     }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
@@ -9253,9 +9263,6 @@ void MyFrame::FilterCogSog( void )
                 if( sum >= 360. ) sum -= 360.;
 
             gCog = sum;
-
-            printf("cog %f %f\n", cog_last, gCog);
-
         }
 
         //    Simple averaging filter for SOG
