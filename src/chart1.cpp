@@ -8825,6 +8825,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         return;
     
     m_NMEA0183 << str_buf;
+
     if( m_NMEA0183.PreParse() )
     {
         wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"),
@@ -8848,10 +8849,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( m_NMEA0183.Rmc.IsDataValid == NTrue )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
-                    
-                    gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                    gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-                    cog_sog_valid = true;
+
+                    // course is not valid in this case
+                    // but also my gps occasionally outputs RMC
+                    // messages with valid lat and lon but
+                    // 0.0 for speed and course which messes up the filter
+                    if(m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
+                        gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+                        gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+                        cog_sog_valid = true;
+                    }
                     
                     if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
                     {
