@@ -240,7 +240,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
                 bCont = pConf->GetNextEntry( str, dummy );
             }
         }
-                                                                                                
+
         wxStandardPathsBase& spath = wxStandardPaths::Get();
 
         pConf->SetPath ( _T ( "/Directories" ) );
@@ -348,7 +348,7 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 	m_bpNow->SetBitmapLabel(GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
 	m_bpZoomToCenter->SetBitmapLabel(GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
 	m_bpPlay->SetBitmapLabel(GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
-	m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata), 
+	m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
 					m_CDataIsShown ? _T("curdata") : _T("ncurdata"),	m_ScaledFactor));
         if(m_bpOpenFile)
             m_bpOpenFile->SetBitmapLabel(GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
@@ -365,7 +365,7 @@ void GRIBUICtrlBar::SetRequestBitmap( int type )
 {
     if(NULL == m_bpRequest)
         return;
-        
+
     switch( type ) {
     case AUTO_SELECTION:
     case SAVED_SELECTION:
@@ -404,7 +404,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     wxFileName f;
     if ( m_file_names.GetCount() != 0 )
         f = m_file_names[0];
-    if( newestFile || f.GetFullName().IsEmpty() ) 
+    if( newestFile || f.GetFullName().IsEmpty() )
         m_file_names.Add( GetNewestFileInDirectory());
 
     m_bGRIBActiveFile = new GRIBFile( m_file_names,
@@ -468,11 +468,11 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         m_Altitude = 0;             //set altitude at std
 
         //enable buttons according with file contents to ovoid crashes
-#ifdef __OCPN__ANDROID__        
+#ifdef __OCPN__ANDROID__
         m_bpSettings->Enable(true);
-#else        
+#else
         m_bpSettings->Enable(m_pTimelineSet != NULL);
-#endif        
+#endif
         m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
         m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
@@ -495,7 +495,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
             m_bDataPlot[i]  = true;
         }
     }
-    
+
 }
 
 bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax)
@@ -791,7 +791,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
         MenuAppend( xmenu, ID_BTNSHOWCDATA, m_CDataIsShown ? _("Hide data at cursor") : _("Show data at cursor"), wxITEM_NORMAL,
 			GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata), m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
 							m_ScaledFactor));
-        MenuAppend( xmenu, ID_BTNPLAY, m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"), wxITEM_NORMAL, 
+        MenuAppend( xmenu, ID_BTNPLAY, m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"), wxITEM_NORMAL,
 			GetScaledBitmap(wxBitmap(m_tPlayStop.IsRunning() ? stop : play), m_tPlayStop.IsRunning() ? _T("stop") : _T("play"),
 							m_ScaledFactor) );
 		MenuAppend(xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL, GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
@@ -813,7 +813,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if( m_DialogStyle >> 1 == SEPARATED ) return;
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
-    
+
     if( m_gCursorData && m_CDataIsShown ){
         m_gCursorData->OnMouseEvent (evt );
     }
@@ -890,7 +890,7 @@ void GRIBUICtrlBar::OnPaint( wxPaintEvent& event )
     while( node ) {
         wxWindow *win = node->GetData();
         if( win->IsKindOf(CLASSINFO(wxBitmapButton)) )
-#if wxCHECK_VERSION(3,0,0)            
+#if wxCHECK_VERSION(3,0,0)
                 dc.DrawBitmap(((wxBitmapButton*) win)->GetBitmap() , 5, 5, false );
 #else
                 dc.DrawBitmap(((wxBitmapButton*) win)->GetBitmapSelected() , 5, 5, false );
@@ -1002,54 +1002,54 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
     //  Grab the current settings values
     GribOverlaySettings initSettings = m_OverlaySettings;
     initSettings.Read();
-        
+
     wxString json;
     wxString json_begin = initSettings.SettingsToJSON(json);
     wxLogMessage(json_begin);
 
-    
+
     //  Pick up the required options from the Request dialog
     //  and add them to the JSON object
     //  Really, this just means the current viewport coordinates.
     //  Everything else is stored in Android app preferences bundle.
-    
+
     PlugIn_ViewPort current_vp = pPlugIn->GetCurrentViewPort();
-    
+
     double lon_min = wxRound(current_vp.lon_min) - 1;
     double lon_max = wxRound(current_vp.lon_max) + 1;
     double lat_min = wxRound(current_vp.lat_min) - 1;
     double lat_max = wxRound(current_vp.lat_max) + 1;
-    
+
     wxJSONValue  v;
     wxJSONReader reader;
     int numErrors = reader.Parse( json_begin, &v );
     if ( numErrors > 0 ){
         return;
     }
-    
-    v["latMin"] = lat_min;
-    v["latMax"] = lat_max;
-    v["lonMin"] = lon_min;
-    v["lonMax"] = lon_max;
-    
+
+    v[_T("latMin")] = lat_min;
+    v[_T("latMax")] = lat_max;
+    v[_T("lonMin")] = lon_min;
+    v[_T("lonMax")] = lon_max;
+
     //  Clear the file name field, so that a retrieved or selected file name can be returned
-    v["grib_file"] = _T("");
-    
+    v[_T("grib_file")] = _T("");
+
     wxJSONWriter w;
     wxString json_final;
     w.Write(v, json_final);
     wxLogMessage(json_final);
-    
-    
+
+
 #ifdef __OCPN__ANDROID__
     wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
     wxLogMessage(ret);
 #endif
-    
-    
+
+
     event.Skip();
-    
-    
+
+
 }
 
 void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
@@ -1058,14 +1058,14 @@ void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
     wxJSONValue  root;
     // construct a JSON parser
     wxJSONReader reader;
-    
+
     int numErrors = reader.Parse( json, &root );
     if ( numErrors > 0 )  {
         return;
     }
-    
-    wxString file = root[( "grib_file" )].AsString();
-    
+
+    wxString file = root[( _T("grib_file") )].AsString();
+
      if(file.Length() && wxFileExists( file )){
          wxFileName fn(file);
          m_grib_dir = fn.GetPath();
@@ -1254,14 +1254,14 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
         // already computed using polar interpolation from first axis
         if(set->m_GribRecordPtrArray[i])
             continue;
-        
+
         unsigned int j;
         for(j=0; j<rsa->GetCount(); j++) {
             GribRecordSet *GRS = &rsa->Item(j);
             GribRecord *GR = GRS->m_GribRecordPtrArray[i];
             if(!GR)
                 continue;
-            
+
             wxDateTime curtime = GRS->m_Reference_Time;
             if(curtime <= time)
                 GR1time = curtime, GRS1 = GRS, GR1 = GR;
@@ -1593,10 +1593,10 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
 
     for (unsigned int i = 0; i < file_names.GetCount(); i++) {
         wxString file_name = file_names[i];
-        if( ::wxFileExists( file_name ) ) 
+        if( ::wxFileExists( file_name ) )
             m_bOK = true;
     }
-    
+
     if ( m_bOK == false) {
         m_last_message = _( " files don't exist!" );
         return;
@@ -1735,7 +1735,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
 
                     }
 
-                            
+
                     if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
                         if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
@@ -1793,13 +1793,13 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     //qDebug() << "JNI_OnLoad";
     java_vm = vm;
-    
+
     // Get JNI Env for all function calls
     if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
         return -1;
     }
-    
+
 }
 #endif
 
@@ -1809,19 +1809,19 @@ bool CheckPendingJNIException()
         //qDebug() << "java_vm is NULL.";
         return true;
     }
-        
+
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
         return true;
     }
-    
+
     if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
         //qDebug() << "Found JNI Exception Pending.";
         return true;
     }
-    
+
     return false;
-    
+
 }
 
 
@@ -1829,46 +1829,46 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
 {
     if(CheckPendingJNIException())
         return _T("NOK");
-    
+
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
     if(CheckPendingJNIException())
         return _T("NOK");
-    
+
     if ( !activity.isValid() ){
         //qDebug() << "Activity is not valid";
         return return_string;
     }
-    
+
     //  Need a Java environment to decode the resulting string
     if (java_vm &&(java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) ){
         //qDebug() << "GetEnv failed.";
         return _T("jenv Error");
     }
-    
+
     jstring p = (jenv)->NewStringUTF(parm.c_str());
-    
-    
+
+
     //  Call the desired method
     //qDebug() << "Calling method_ss";
     //qDebug() << method;
-    
+
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
     if(CheckPendingJNIException())
         return _T("NOK");
-    
+
     //qDebug() << "Back from method_ss";
-        
+
         jstring s = data.object<jstring>();
-        
+
         if( (jenv)->GetStringLength( s )){
             const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
             return_string = wxString(ret_string, wxConvUTF8);
         }
-        
+
         return return_string;
-        
+
 }
 
 
