@@ -1377,13 +1377,28 @@ void glChartCanvas::SetupOpenGL()
     MipMap_ResolveRoutines();
     SetupCompression();
 
+    wxString lwmsg;
+    lwmsg.Printf(_T("OpenGL-> Minimum cartographic line width: %4.1f"), g_GLMinCartographicLineWidth);
+    wxLogMessage(lwmsg);
+    lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"), g_GLMinSymbolLineWidth);
+    wxLogMessage(lwmsg);
+    
+    m_benableFog = true;
+    m_benableVScale = true;
+#ifdef __OCPN__ANDROID__
+    m_benableFog = false;
+    m_benableVScale = false;
+#endif    
+
     //  Some platforms under some conditions, require a full set of MipMaps, from 0
     s_b_UploadFullMipmaps = false;
 #ifdef __WXOSX__    
     s_b_UploadFullMipmaps = true;
 #endif    
 
-#ifdef __WXMSW__    
+#ifdef __WXMSW__
+    // needed because of color flip... can we somehow fix this?
+    // it would save huge amounts of video memory
     if(g_GLOptions.m_bTextureCompression && (g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
         s_b_UploadFullMipmaps = true;
 #endif    
@@ -1418,99 +1433,84 @@ void glChartCanvas::SetupCompression()
     int dim = g_GLOptions.m_iTextureDimension;
 
 #ifdef __WXMSW__    
-    if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )){
+    if(!::IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE )) {
         wxLogMessage( _("OpenGL-> SSE2 Instruction set not available") );
         goto no_compression;
     }
 #endif
 
     g_uncompressed_tile_size = dim*dim*3;
-    if(g_GLOptions.m_bTextureCompression) {
+    if(!g_GLOptions.m_bTextureCompression)
+        goto no_compression;
 
-        g_raster_format = GL_RGB;
+    g_raster_format = GL_RGB;
     
     // On GLES, we prefer OES_ETC1 compression, if available
 #ifdef ocpnUSE_GLES
-        if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") && s_glCompressedTexImage2D) {
-            g_raster_format = GL_ETC1_RGB8_OES;
+    if(QueryExtension("GL_OES_compressed_ETC1_RGB8_texture") && s_glCompressedTexImage2D) {
+        g_raster_format = GL_ETC1_RGB8_OES;
     
         wxLogMessage( _("OpenGL-> Using oes etc1 compression") );
-        }
+    }
 #endif
     
-        if(GL_RGB == g_raster_format){
+    if(GL_RGB == g_raster_format) {
         /* because s3tc is patented, many foss drivers disable
            support by default, however the extension dxt1 allows
            us to load this texture type which is enough because we
            compress in software using libsquish for superior quality anyway */
 
-            if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
-                QueryExtension("GL_EXT_texture_compression_dxt1")) &&
-            s_glCompressedTexImage2D) {
-                /* buggy opensource nvidia driver, renders incorrectly,
-                workaround is to use format with alpha... */
-                if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
-                GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
-                    g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-                else
-                    g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-
-                wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
-            } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
-                    s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
-                g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
-
-                wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
-            } else {
-                wxLogMessage( _("OpenGL-> No Useable compression format found") );
-                goto no_compression;
-            }
-        }
-        
-#ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
-        g_tile_size = 512*512/2; /* 4bpp */
-#else
-        /* determine compressed size of a level 0 single tile */
-        GLuint texture;
-        glGenTextures( 1, &texture );
-        glBindTexture( GL_TEXTURE_2D, texture );
-        glTexImage2D( GL_TEXTURE_2D, 0, g_raster_format, dim, dim,
-                      0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
-                                 GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &g_tile_size);
-        glDeleteTextures(1, &texture);
-#endif
-
-        /* disable texture compression if the tile size is 0 */
-        if(g_tile_size == 0)
+        if((QueryExtension("GL_EXT_texture_compression_s3tc") ||
+            QueryExtension("GL_EXT_texture_compression_dxt1")) &&
+           s_glCompressedTexImage2D) {
+            /* buggy opensource nvidia driver, renders incorrectly,
+               workaround is to use format with alpha... */
+            if(GetRendererString().Find( _T("Gallium") ) != wxNOT_FOUND &&
+               GetRendererString().Find( _T("NV") ) != wxNOT_FOUND )
+                g_raster_format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+            else
+                g_raster_format = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+            
+            wxLogMessage( _("OpenGL-> Using s3tc dxt1 compression") );
+        } else if(QueryExtension("GL_3DFX_texture_compression_FXT1") &&
+                  s_glCompressedTexImage2D && s_glGetCompressedTexImage) {
+            g_raster_format = GL_COMPRESSED_RGB_FXT1_3DFX;
+            
+            wxLogMessage( _("OpenGL-> Using 3dfx fxt1 compression") );
+        } else {
+            wxLogMessage( _("OpenGL-> No Useable compression format found") );
             goto no_compression;
-
-        wxLogMessage( wxString::Format( _T("OpenGL-> Compressed tile size: %dkb (%d:1)"),
-                                        g_tile_size / 1024,
-                                        g_uncompressed_tile_size / g_tile_size));
-    } else
-    if(!g_GLOptions.m_bTextureCompression) {
-no_compression:
-        g_GLOptions.m_bTextureCompression = false;
-        
-        g_tile_size = g_uncompressed_tile_size;
-        g_raster_format = GL_RGB;
-        wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));
+        }
     }
     
-    wxString lwmsg;
-    lwmsg.Printf(_T("OpenGL-> Minimum cartographic line width: %4.1f"), g_GLMinCartographicLineWidth);
-    wxLogMessage(lwmsg);
-    lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"), g_GLMinSymbolLineWidth);
-    wxLogMessage(lwmsg);
-    
-    m_benableFog = true;
-    m_benableVScale = true;
-#ifdef __OCPN__ANDROID__
-    m_benableFog = false;
-    m_benableVScale = false;
-#endif    
-    
+#ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
+    g_tile_size = 512*512/2; /* 4bpp */
+#else
+    /* determine compressed size of a level 0 single tile */
+    GLuint texture;
+    glGenTextures( 1, &texture );
+    glBindTexture( GL_TEXTURE_2D, texture );
+    glTexImage2D( GL_TEXTURE_2D, 0, g_raster_format, dim, dim,
+                  0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
+                             GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &g_tile_size);
+    glDeleteTextures(1, &texture);
+#endif
+
+    /* disable texture compression if the tile size is 0 */
+    if(g_tile_size == 0)
+        goto no_compression;
+
+    wxLogMessage( wxString::Format( _T("OpenGL-> Compressed tile size: %dkb (%d:1)"),
+                                    g_tile_size / 1024,
+                                    g_uncompressed_tile_size / g_tile_size));
+    return;
+
+no_compression:
+    g_GLOptions.m_bTextureCompression = false;
+
+    g_tile_size = g_uncompressed_tile_size;
+    wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));    
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
