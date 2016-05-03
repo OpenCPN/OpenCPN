@@ -6370,7 +6370,9 @@ void options::DoOnPageChange(size_t page) {
               FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
+#if wxCHECK_VERSION(2, 9, 0)
           ltest.AddCatalogLookupPathPrefix( wxStandardPaths::Get().GetInstallPrefix() + _T( "/share/locale" ) );
+#endif
           ltest.AddCatalog(_T("opencpn"));
 
           wxLog::EnableLogging(TRUE);

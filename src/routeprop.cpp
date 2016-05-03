@@ -332,7 +332,7 @@ class  OCPNIconCombo : public wxOwnerDrawnComboBox
 {
 public:
     
-    OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = "",
+    OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
                   const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
                   int n = 0, const wxString choices[] = NULL,
                   long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = _T("OCPNIconCombo") );
@@ -381,21 +381,22 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
     
     if ( flags & wxODCB_PAINTING_CONTROL )
     {
-        wxString text;
-
-        if ( !ShouldUseHintText() )
-        {
-            text = GetValue();
-        }
-        else
+        wxString text = GetValue();
+        int margin_x = 2;
+        
+#if wxCHECK_VERSION(2, 9, 0)
+        if ( ShouldUseHintText() )
         {
             text = GetHint();
             wxColour col = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
             dc.SetTextForeground(col);
         }
+        
+        margin_x = GetMargins().x;
+#endif
 
         dc.DrawText( text,
-                     rect.x + GetMargins().x + offset_x,
+                     rect.x + margin_x + offset_x,
                      (rect.height-dc.GetCharHeight())/2 + rect.y );
     }
     else
