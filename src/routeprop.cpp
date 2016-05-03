@@ -419,8 +419,8 @@ wxCoord OCPNIconCombo::OnMeasureItemWidth( size_t item ) const
 
 int OCPNIconCombo::Append(const wxString& item, wxBitmap bmp)
 {
-    int idx = wxOwnerDrawnComboBox::Append(item);
     bmpArray.Add(bmp);
+    int idx = wxOwnerDrawnComboBox::Append(item);
     
     return idx;
 }
