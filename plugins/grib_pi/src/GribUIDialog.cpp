@@ -1693,6 +1693,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
+                    case GRB_PRECIP_RATE:
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
                     case GRB_TEMP:

@@ -266,6 +266,10 @@ void GribReader::readAllGribRecords()
                             && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0 )
                             storeRecordInMap(rec);
 
+                        else if (rec->getDataType()==GRB_PRECIP_RATE
+				&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
+                            storeRecordInMap(rec);
+
                         else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
                             && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
                             storeRecordInMap(rec);
