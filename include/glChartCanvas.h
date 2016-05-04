@@ -42,9 +42,6 @@ class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
 
-//      This is a hashmap with Chart full path as key, and glTexFactory as value
-WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
-
 class ocpnGLOptions
 {
 public:
@@ -112,8 +109,6 @@ public:
 
     static void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
-    bool PurgeChartTextures(ChartBase *pc, bool b_purge_factory = false);
-    void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
@@ -140,8 +135,6 @@ protected:
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
     void BuildFBO();
     void SetupOpenGL();
-    bool TextureCrunch(double factor);
-    bool FactoryCrunch(double factor);
     
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
@@ -167,13 +160,7 @@ protected:
 
     wxString m_renderer;
     wxString m_version;
-    wxString m_extensions;
-
-    //    This is a hash table
-    //    key is Chart full path
-    //    Value is glTexFactory*
-    ChartPathHashTexfactType   m_chart_texfactory_hash;
-    
+    wxString m_extensions;    
     
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
@@ -192,8 +179,6 @@ protected:
     GLuint       m_cache_page;
     int          m_cache_tex_x;
     int          m_cache_tex_y;
-
-    int		m_prevMemUsed;
 
     GLuint      ownship_tex;
     int         ownship_color;
@@ -232,5 +217,7 @@ protected:
 
 extern void BuildCompressedCache();
 
+#include "glTextureManager.h"
+extern glTextureManager   *g_glTextureManager;
 
 #endif

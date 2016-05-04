@@ -39,7 +39,8 @@ glTextureDescriptor::glTextureDescriptor()
 
     tex_name = 0;
     nGPU_compressed = GPU_TEXTURE_UNKNOWN;
-    nCache_Color = -1;          // default, unknown
+//    nCache_Color = -1;          // default, unknown
+    compdata_ticks = 0;
 }
 
 glTextureDescriptor::~glTextureDescriptor()
@@ -70,12 +71,6 @@ void glTextureDescriptor::FreeMap()
         free( map_array[i] );
         map_array[i] = 0;
     }
-}
-
-void glTextureDescriptor::FreeCompLevel(int level)
-{
-    free( comp_array[level] );
-    comp_array[level] = NULL;
 }
 
 void glTextureDescriptor::FreeComp()
@@ -156,4 +151,14 @@ size_t glTextureDescriptor::GetCompCompArrayAlloc(void)
     }
     
     return ret;
+}
+
+bool glTextureDescriptor::IsCompCompArrayComplete( int base_level )
+{
+    extern int g_mipmap_max_level;
+    for(int level = base_level; level < g_mipmap_max_level+1; level++ )
+        if(NULL == CompCompArrayAccess( CA_READ, NULL, level))
+            return false;
+
+    return true;
 }

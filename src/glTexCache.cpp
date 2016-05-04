@@ -38,6 +38,7 @@
 
 #include "chcanv.h"
 #include "glChartCanvas.h"
+#include "Quilt.h"
 #include "chartbase.h"
 #include "chartimg.h"
 #include "chartdb.h"
@@ -48,11 +49,9 @@
 #define GL_ETC1_RGB8_OES                                        0x8D64
 #endif
 
-
 #include "squish.h"
 #include "lz4.h"
 #include "lz4hc.h"
-
 
 extern OCPNPlatform *g_Platform;
 extern bool g_bopengl;
@@ -62,8 +61,9 @@ extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
-extern ChartDB      *ChartData;
 
+extern ChartCanvas *cc1;
+extern ChartBase *Current_Ch;
 
 
 extern ocpnGLOptions    g_GLOptions;
@@ -72,852 +72,11 @@ extern wxString         g_PrivateDataDir;
 extern int              g_tile_size;
 extern int              g_uncompressed_tile_size;
 
-class CompressionWorkerPool;
-CompressionWorkerPool   *g_CompressorPool;
-static wxMutex 		s_MutexPool;
-
-
-extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
 extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
-bool bthread_debug;
-bool g_throttle_squish;
-
-enum TextureDataType {COMPRESSED_BUFFER_OK, MAP_BUFFER_OK};
-
-class CompressionPoolThread;
-class JobTicket
-{
-public:
-    JobTicket();
-    ~JobTicket() { free(level0_bits); }
-    glTexFactory *pFact;
-    wxRect       rect;
-    int         level_min_request;
-    int         ident;
-    bool        b_throttle;
-    CompressionPoolThread *pthread;
-    unsigned char *level0_bits;
-    unsigned char *comp_bits_array[10];
-    wxString    m_ChartPath;
-    bool        b_abort;
-    bool        b_isaborted;
-    bool        bpost_zip_compress;
-    unsigned char *compcomp_bits_array[10];
-    int         compcomp_size_array[10];
-    
-};
-
-JobTicket::JobTicket()
-{
-    for(int i=0 ; i < 10 ; i++) {
-        compcomp_size_array[i] = 0;
-        comp_bits_array[i] = NULL;
-        compcomp_bits_array[i] = NULL;
-    }
-}
-
-
-#include "ssl/sha1.h"
-
-wxString CompressedCachePath(wxString path)
-{
-#if defined(__WXMSW__)
-    int colon = path.find(':', 0);
-    path.Remove(colon, 1);
-#endif
-    
-    /* replace path separators with ! */
-    wxChar separator = wxFileName::GetPathSeparator();
-    for(unsigned int pos = 0; pos < path.size(); pos = path.find(separator, pos))
-        path.replace(pos, 1, _T("!"));
-
-    //  Obfuscate the compressed chart file name, to (slightly) protect some encrypted raster chart data.
-    wxCharBuffer buf = path.ToUTF8();
-    unsigned char sha1_out[20];
-    sha1( (unsigned char *) buf.data(), strlen(buf.data()), sha1_out );
-
-    wxString sha1;
-    for (unsigned int i=0 ; i < 20 ; i++){
-        wxString s;
-        s.Printf(_T("%02X"), sha1_out[i]);
-        sha1 += s;
-    }
-    
-    return g_Platform->GetPrivateDataDir() + separator + _T("raster_texture_cache") + separator + sha1;
-    
-}
-
-/* reduce pixel values to 5/6/5, because this is the format they are stored
- *   when compressed anyway, and this way the compression algorithm will use
- *   the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
- *   the lz4 compressed texture is smaller as well. */
-void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=true)
-{
-    #ifdef __WXMSW__ /* undo BGR flip from ocpn_pixel (if ocpnUSE_ocpnBitmap is defined) */
-    if(swap_colors)
-        for(int i = 0; i<dim*dim; i++) {
-            int off = 3*i;
-            unsigned char t = data[off + 0];
-            data[off + 0] = data[off + 2] & 0xfc;
-            data[off + 1] &= 0xf8;
-            data[off + 2] = t & 0xfc;
-        }
-        else
-            #endif
-            for(int i = 0; i<dim*dim; i++) {
-                int off = 3*i;
-                data[off + 0] &= 0xfc;
-                data[off + 1] &= 0xf8;
-                data[off + 2] &= 0xfc;
-            }
-}
-
-/* return malloced data which is the etc compressed texture of the source */
-void CompressDataETC(const unsigned char *data, int dim, int size,
-                     unsigned char *tex_data, volatile bool &b_abort)
-{
-    wxASSERT(dim*dim == 2*size); // must be 4bpp
-    uint64_t *tex_data64 = (uint64_t*)tex_data;
-    
-    int mbrow = wxMin(4, dim), mbcol = wxMin(4, dim);
-    uint8_t block[48] = {};
-    for(int row=0; row<dim; row+=4) {
-        for(int col=0; col<dim; col+=4) {
-            for(int brow=0; brow<mbrow; brow++)
-                for(int bcol=0; bcol<mbcol; bcol++)
-                    memcpy(block + (bcol*4+brow)*3,
-                           data + ((row+brow)*dim + col+bcol)*3, 3);
-                    
-            extern uint64_t ProcessRGB( const uint8_t* src );
-            *tex_data64++ = ProcessRGB( block );
-        }
-        if(b_abort)
-            break;
-    }
-}
-
-void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &chart_path )
-{
-    // Load level 0 uncompressed data
-    wxRect ncrect(rect);
-    ptd->map_array[0] = 0;
-    
-    ChartBase *pChart = ChartData->OpenChartFromDB( chart_path, FULL_INIT );
-    if( !pChart ) {
-        ptd->map_array[0] = (unsigned char *) calloc( ncrect.width * ncrect.height * 4, 1 );
-        return;
-    }
-    
-        //    Prime the pump with the "zero" level bits, ie. 1x native chart bits
-    ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pChart );
-        
-    if( pBSBChart ) {
-        unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-        pBSBChart->GetChartBits( ncrect, t_buf, 1 );
-        
-        //    and cache them here
-        ptd->map_array[0] = t_buf;
-    } else {
-        ptd->map_array[0] = (unsigned char *) calloc( ncrect.width * ncrect.height * 4, 1 );
-        return;
-    }
-}
-
-
-
-void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_path, int level)
-{
-    
-    //  Confirm that the uncompressed bits are all available, get them if not there yet
-    if( ptd->map_array[level]) 
-        return;
-
-    int dim = g_GLOptions.m_iTextureDimension;
-    
-    for(int i=0 ; i < level ; i++)
-        dim /= 2;
-
-    if( level > 0 && ptd->map_array[level - 1] ){
-        ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
-        MipMap_24( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
-    }
-    
-    else {
-        //      Any holes in the bit pointer array below the level requested?
-        bool b_hole = false;
-        for(int i=0 ; i < level ; i++){ 
-            if( !ptd->map_array[i] ){
-                b_hole = true;
-                break;
-            }
-        }
-        
-        if( ( level == 0 ) || b_hole ){
-            //Get level 0 bits from chart?
-            if( !ptd->map_array[0] )
-                GetLevel0Map( ptd, rect, chart_path );
-                
-            int i_lev = 1;
-            int dimh = g_GLOptions.m_iTextureDimension / 2;         // starts at level 1
-            while( i_lev <= level ){
-                if( !ptd->map_array[i_lev] ) {
-                    ptd->map_array[i_lev] = (unsigned char *) malloc( dimh * dimh * 3 );
-                    MipMap_24( 2*dimh, 2*dimh, ptd->map_array[i_lev - 1], ptd->map_array[i_lev] );
-                }
-                dimh /= 2;
-                i_lev++;
-            }
-        }
-    }
-}
-
-static int TileSize(int level)
-{
-    int dim = g_GLOptions.m_iTextureDimension;
-    int size = g_tile_size;
-    
-    for(int i=0 ; i < level ; i++){
-        dim /= 2;
-        size /= 4;
-        if(size < 8)
-            size = 8;
-    }
-
-    return size;
-}
-
-bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
-{
-    int dim = g_GLOptions.m_iTextureDimension;
-    int size = TileSize(level);
-    unsigned char *tex_data = (unsigned char*)malloc(size);
-
-    if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-        // color range fit is worse quality but twice as fast
-        int flags = squish::kDxt1 | squish::kColourRangeFit;
-            
-        if( g_GLOptions.m_bTextureCompressionCaching) {
-            /* use slower cluster fit since we are building the cache for
-             * better quality, this takes roughly 25% longer and uses about
-             * 10% more disk space (result doesn't compress as well with lz4) */
-            flags = squish::kDxt1 | squish::kColourClusterFit;
-        }
-
-        bool a = false;
-        squish::CompressImageRGBpow2_Flatten_Throttle_Abort( ptd->map_array[level], dim, dim, tex_data, flags,
-                                                             true, pticket->b_throttle, a );
- 
-    }
-    else if(g_raster_format == GL_ETC1_RGB8_OES) {
-        bool a = false;
-        CompressDataETC(ptd->map_array[level], dim, size, tex_data, a);
-    }
-        
-    else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX)
-        CompressUsingGPU( ptd, level, false, false);    // no post compression
-
-    //  Store the pointer to compressed data in the ptd
-    ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
-        
-    if(pticket->bpost_zip_compress) {
-        int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-        if(max_compressed_size){
-            unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-            int compressed_size = LZ4_compressHC2( (char *)ptd->CompressedArrayAccess( CA_READ, NULL, level),
-                                                   (char *)compressed_data, size, 4);
-            ptd->CompCompArrayAccess( CA_WRITE, compressed_data, level);
-            ptd->compcomp_size[level] = compressed_size;
-        }
-    }
-        
-    return true;
-}
-
-
-
-//  On Windows, we will use a translator to convert SEH exceptions (e.g. access violations),
-//    into c++ standard exception handling method.
-//  This class and helper function facilitate the conversion.
-
-//  We only do this in the compression worker threads, as they are vulnerable due to possibly errant code in 
-//  the chart database management class, especially on low memory systems where chart cahing is stressed heavily.
-
-#ifdef __WXMSW__
-class SE_Exception
-{
-private:
-    unsigned int nSE;
-public:
-    SE_Exception() {}
-    SE_Exception( unsigned int n ) : nSE( n ) {}
-    ~SE_Exception() {}
-    unsigned int getSeNumber() { return nSE; }
-};
-
-void my_translate(unsigned int code, _EXCEPTION_POINTERS *ep)
-{
-    throw SE_Exception();
-}
-#endif
-
-
-
-
-OCPN_CompressionThreadEvent::OCPN_CompressionThreadEvent(wxEventType commandType, int id)
-:wxEvent(id, commandType)
-{
-}
-
-OCPN_CompressionThreadEvent::~OCPN_CompressionThreadEvent()
-{
-}
-
-wxEvent* OCPN_CompressionThreadEvent::Clone() const
-{
-    OCPN_CompressionThreadEvent *newevent=new OCPN_CompressionThreadEvent(*this);
-    newevent->m_ticket = this->m_ticket;
-    return newevent;
-}
-
-
-
-class CompressionPoolThread : public wxThread
-{
-public:
-    CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target);
-    void *Entry();
-    
-    wxEvtHandler        *m_pMessageTarget;
-    JobTicket           *m_pticket;
-};
-
-CompressionPoolThread::CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target)
-{
-    m_pMessageTarget = message_target;
-    m_pticket = ticket;
-    
-    Create();
-}
-
-void * CompressionPoolThread::Entry()
-{
-
-#ifdef __MSVC__
-    _set_se_translator(my_translate);
-
-    //  On Windows, if anything in this thread produces a SEH exception (like access violation)
-    //  we handle the exception locally, and simply alow the thread to exit smoothly with no results.
-    //  Upstream will notice that nothing got done, and maybe try again later.
-    
-    try
-#endif    
-    {
-    SetPriority( WXTHREAD_MIN_PRIORITY );
-
-    unsigned char       *bit_array[10];
-    for(int i=0 ; i < 10 ; i++)
-        bit_array[i] = 0;
-
-    wxRect ncrect(m_pticket->rect);
-
-    bit_array[0] = m_pticket->level0_bits;
-    m_pticket->level0_bits = NULL;
-    if(!bit_array[0]) {
-        //  Grab a copy of the level0 chart bits
-        ChartBase *pchart;
-        int index;
-    
-        if(ChartData){
-            index =  ChartData->FinddbIndex( m_pticket->m_ChartPath );
-        
-            pchart = ChartData->OpenChartFromDBAndLock(index, FULL_INIT );
-        
-            if(pchart && ChartData->IsChartLocked( index )){
-                ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-                ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pchart );
-                
-                if( pBSBChart ) {
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    bit_array[0] = t_buf;
-
-                    pBSBChart->GetChartBits( ncrect, t_buf, 1 );
-                }
-                else if( pPlugInWrapper ){
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    bit_array[0] = t_buf;
-                    
-                    pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
-                }
-                ChartData->UnLockCacheChart(index);
-            }
-            else
-                bit_array[0] = NULL;
-        }
-    }
-    
-    //OK, got the bits?
-    int ssize, dim;
-    if(!bit_array[0] ){
-        m_pticket->b_isaborted = true;
-        goto SendEvtAndReturn;
-    }
-    
-    //  Fill in the rest of the private uncompressed array
-
-    dim = g_GLOptions.m_iTextureDimension;
-    dim /= 2;
-    for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
-        bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
-        MipMap_24( 2*dim, 2*dim, bit_array[i - 1], bit_array[i] );
-        dim /= 2;
-    }
-        
-    //  Do the compression
-        
-    dim = g_GLOptions.m_iTextureDimension;
-    ssize = g_tile_size;
-    for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-        unsigned char *tex_data = (unsigned char*)malloc(ssize);
-        if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-            // color range fit is worse quality but twice as fast
-            int flags = squish::kDxt1 | squish::kColourRangeFit;
-            
-            if( g_GLOptions.m_bTextureCompressionCaching) {
-                /* use slower cluster fit since we are building the cache for
-                 * better quality, this takes roughly 25% longer and uses about
-                 * 10% more disk space (result doesn't compress as well with lz4) */
-                flags = squish::kDxt1 | squish::kColourClusterFit;
-            }
-            
-            squish::CompressImageRGBpow2_Flatten_Throttle_Abort( bit_array[i], dim, dim, tex_data, flags,
-                                                                 true, m_pticket->b_throttle, m_pticket->b_abort );
-            
-        }
-        else if(g_raster_format == GL_ETC1_RGB8_OES) 
-            CompressDataETC(bit_array[i], dim, ssize, tex_data, m_pticket->b_abort);
-            
-        m_pticket->comp_bits_array[i] = tex_data;
-            
-        dim /= 2;
-        ssize /= 4;
-        if(ssize < 8)
-            ssize = 8;
-
-        if(m_pticket->b_abort){
-            for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-                free( bit_array[i] );
-                bit_array[i] = 0;
-            }
-            m_pticket->b_isaborted = true;
-            goto SendEvtAndReturn;
-        }
-    }
-        
-    //  All done with the uncompressed data in the thread
-    for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-        free( bit_array[i] );
-        bit_array[i] = 0;
-    }
-  
-    if(m_pticket->b_abort){
-        m_pticket->b_isaborted = true;
-        goto SendEvtAndReturn;
-    }
-
-    if(m_pticket->bpost_zip_compress) {
-            
-        int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-        int csize = g_tile_size;
-        for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-            if(m_pticket->b_abort){
-                m_pticket->b_isaborted = true;
-                goto SendEvtAndReturn;
-            }
-            unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-            char *src = (char *)m_pticket->comp_bits_array[i];
-            int compressed_size = LZ4_compressHC2( src, (char *)compressed_data, csize, 4);
-            // shrink buffer to actual size.
-            // This will greatly reduce ram usage, ratio usually 10:1
-            // there might be a more efficient way than realloc...
-//                if(!g_GLOptions.m_bTextureCompressionCaching)
-            compressed_data = (unsigned char*)realloc(compressed_data, compressed_size);
-            m_pticket->compcomp_bits_array[i] = compressed_data;
-            m_pticket->compcomp_size_array[i] = compressed_size;
-                
-            csize /= 4;
-            if(csize < 8)
-                csize = 8;
-        }
-    }
-
-SendEvtAndReturn:
-    
-    if( m_pMessageTarget ) {
-        OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
-        Nevent.SetTicket(m_pticket);
-        
-        m_pMessageTarget->AddPendingEvent(Nevent);
-        // from here m_pticket is undefined (if deleted in event handler)
-    }
-
-    return 0;
-
-    }           // try
-    
-#ifdef __MSVC__    
-    catch (SE_Exception e)
-    {
-        if( m_pMessageTarget ) {
-            OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
-            m_pticket->b_isaborted = true;
-            Nevent.SetTicket(m_pticket);            
-            m_pMessageTarget->AddPendingEvent(Nevent);
-        }
-        
-        
-        return 0;
-    }
-#endif    
-    
-}
-
-
-
-
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(JobList);
-
-
-
-//      CompressionWorkerPool Implementation
-CompressionWorkerPool::CompressionWorkerPool()
-{
-    m_njobs_running = 0;
-    int nCPU =  wxMax(1, wxThread::GetCPUCount());
-    m_max_jobs =  nCPU;
-
-//    bthread_debug = true;
-
-    if(bthread_debug)
-        printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
-    
-    //  Create/connect a dynamic event handler slot for messages from the worker threads
-    Connect( wxEVT_OCPN_COMPRESSIONTHREAD,
-             (wxObjectEventFunction) (wxEventFunction) &CompressionWorkerPool::OnEvtThread );
-    
-}
-
-CompressionWorkerPool::~CompressionWorkerPool()
-{
-    ClearJobList();
-}
-
-void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
-{
-    JobTicket *ticket = event.GetTicket();
-
-    if(ticket->b_isaborted){
-
-        for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
-            free(ticket->comp_bits_array[i]);
-            free( ticket->compcomp_bits_array[i] );
-        }
-        
-        m_njobs_running--;
-        if(bthread_debug)
-            printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
-                    ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
-
-        running_list.DeleteObject(ticket);
-        delete ticket;
-        StartTopJob();
-        return;
-    }
-    
-    //   Normal completion from here
-    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
-
-    if(ptd){
-        for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
-            if(ptd->CompressedArrayAccess( CA_READ, NULL, i))
-                printf("already have comp bits\n");
-            ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
-        }
-
-        // We need to force a refresh to replace the uncompressed texture
-        // This frees video memory and is also really required if we had
-        // gone up a mipmap level
-        glChartCanvas::Invalidate(); // ensure we refresh
-        extern ChartCanvas *cc1;
-        cc1->Refresh();
-        ptd->CompDataTime = wxDateTime::UNow();
-
-        if(ticket->bpost_zip_compress){
-            for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
-                ptd->CompCompArrayAccess( CA_WRITE, ticket->compcomp_bits_array[i], i);
-                ptd->compcomp_size[i] = ticket->compcomp_size_array[i];
-            }
-        }
-    }
-    
-    m_njobs_running--;
-    
-    if(bthread_debug)
-        printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
-                ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
-
-    running_list.DeleteObject(ticket);
-
-//    int mem_used;
-//    GetMemoryStatus(0, &mem_used);
-    
-///    qDebug() << "Finished" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
-    
-    StartTopJob();
-
-    delete ticket;
-}
-
-bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect, int level,
-                                        bool b_throttle_thread, bool b_immediate, bool b_postZip)
-{
-    if(!b_immediate && (todo_list.GetCount() >= 50) ){
-//        int mem_used;
-//        GetMemoryStatus(0, &mem_used);
-        
-///        qDebug() << "Could not add, count now" << (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
-        
-//        return false;
-
-        // remove last job which is least important
-        wxJobListNode *node = todo_list.GetLast();
-        JobTicket *ticket = node->GetData();
-        todo_list.DeleteNode(node);
-        delete ticket;
-    }
-    
-    wxString chart_path = client->GetChartPath();
-
-    //  Avoid adding duplicate jobs, i.e. the same chart_path, and the same rectangle
-    wxJobListNode *node = todo_list.GetFirst();
-    while(node){
-        JobTicket *ticket = node->GetData();
-        if( (ticket->m_ChartPath == chart_path) && (ticket->rect == rect)) {
-            // bump to front
-            todo_list.DeleteNode(node);
-            todo_list.Insert(ticket);
-            return false;
-        }
-        
-        node = node->GetNext();
-    }
-
-    // avoid duplicate worker jobs
-    wxJobListNode *tnode = running_list.GetFirst();
-    while(tnode){
-        JobTicket *ticket = tnode->GetData();
-        if(ticket->rect == rect &&
-           ticket->m_ChartPath == chart_path) {
-            return false;
-        }
-        tnode = tnode->GetNext();
-    }
-    
-    JobTicket *pt = new JobTicket;
-    pt->pFact = client;
-    pt->rect = rect;
-    pt->level_min_request = level;
-    glTextureDescriptor *ptd = client->GetpTD( pt->rect );
-    if(ptd)
-        pt->ident = (ptd->tex_name << 16) + level;
-    else
-        pt->ident = -1;
-    pt->b_throttle = b_throttle_thread;
-    pt->m_ChartPath = chart_path;
-
-    pt->level0_bits = NULL;
-    pt->b_abort = false;
-    pt->b_isaborted = false;
-    pt->bpost_zip_compress = b_postZip;
-
-    if(!b_immediate){
-        todo_list.Insert(pt); // push to front as a stack
-        if(bthread_debug){
-            int mem_used;
-            GetMemoryStatus(0, &mem_used);
-            
-            if(bthread_debug)
-                printf( "Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident, (unsigned long)todo_list.GetCount(), mem_used);
-        }
- 
-//        int mem_used;
-//        GetMemoryStatus(0, &mem_used);
- 
-///        qDebug() << "Added, count now" << (unsigned long)todo_list.GetCount() << mem_used << g_tex_mem_used;
-        StartTopJob();
-        return false;
-    }
-    else{
-        DoJob(pt);
-        delete pt;
-        return true;
-    }
-}
-
-bool CompressionWorkerPool::StartTopJob()
-{
-        //  Is it possible to start another job?
-    if(m_njobs_running >= m_max_jobs)
-        return false;
-
-    wxJobListNode *node = todo_list.GetFirst();
-    if(!node)
-        return false;
-
-    JobTicket *ticket = node->GetData();
-    todo_list.DeleteNode(node);
-
-    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
-    // don't need the job if we already have the compressed data
-    if(ptd->CompressedArrayAccess( CA_READ, NULL, 0)) {
-        printf("already have copmressed data\n");
-        delete ticket;
-        return StartTopJob();
-    }
-
-    if( ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED) {
-        printf("already compressed\n");
-        exit(11);
-    }
-
-    // give level 0 buffer to the ticket
-    ticket->level0_bits = ptd->map_array[0];
-    ptd->map_array[0] = NULL;
-    
-    m_njobs_running ++;
-    running_list.Append(ticket);
-    DoThreadJob(ticket);
-
-    return true;
-}
-
-
-bool CompressionWorkerPool::DoThreadJob(JobTicket* pticket)
-{
-    if(bthread_debug)
-        printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
-    
-///    qDebug() << "Starting job" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << g_tex_mem_used;
-    CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
-    pticket->pthread = t;
-    
-    t->Run();
-    
-    return true;
-    
-}
-
-
-
-bool CompressionWorkerPool::DoJob(JobTicket* pticket)
-{   
-    bool ret = false;
-    
-    if(pticket->pFact){
-        
-        // Get the TextureDescriptor
-        glTextureDescriptor *ptd = pticket->pFact->GetpTD( pticket->rect );
-    
-        if(ptd){
-            //  Get the required chart bits for the requested compression
-            GetFullMap( ptd, pticket->rect, pticket->pFact->GetChartPath(), pticket->level_min_request );
-            
-            DoCompress( pticket, ptd, pticket->level_min_request);
-            ret = true;
-            
-        }
-    }
-    
-    return ret;
-}
-
-bool CompressionWorkerPool::AsJob( wxString const &chart_path ) const
-{
-    if(chart_path.Len()){    
-        wxJobListNode *tnode = running_list.GetFirst();
-        while(tnode){
-            JobTicket *ticket = tnode->GetData();
-            if(ticket->m_ChartPath.IsSameAs(chart_path)){
-                return true;
-            }
-            tnode = tnode->GetNext();
-        }
-    }
-    return false;
-}
-
-void CompressionWorkerPool::PurgeJobList( wxString chart_path )
-{
-    if(chart_path.Len()){    
-        //  Remove all pending jobs relating to the passed chart path
-        wxJobListNode *tnode = todo_list.GetFirst();
-        while(tnode){
-            JobTicket *ticket = tnode->GetData();
-            if(ticket->m_ChartPath.IsSameAs(chart_path)){
-                if(bthread_debug)
-                    printf("Pool:  Purge pending job for purged chart\n");
-                todo_list.DeleteNode(tnode);
-                delete ticket;
-                tnode = todo_list.GetFirst();  // restart the list
-            }
-            else{
-                tnode = tnode->GetNext();
-            }
-        }
-
-        wxJobListNode *node = running_list.GetFirst();
-        while(node){
-            JobTicket *ticket = node->GetData();
-            if(ticket->m_ChartPath.IsSameAs(chart_path)){
-                ticket->b_abort = true;
-            }
-            node = node->GetNext();
-        }
-            
-        if(bthread_debug)
-            printf("Pool:  Purge, todo count: %lu\n", (long unsigned)todo_list.GetCount());
-    }
-    else {
-        wxJobListNode *node = todo_list.GetFirst();
-        while(node){
-            JobTicket *ticket = node->GetData();
-            delete ticket;
-            node = node->GetNext();
-        }
-        todo_list.Clear();
-        //  Mark all running tasks for "abort"
-        node = running_list.GetFirst();
-        while(node){
-            JobTicket *ticket = node->GetData();
-            ticket->b_abort = true;
-            node = node->GetNext();
-        }
-    }        
-}
-
-void CompressionWorkerPool::ClearJobList()
-{
-    wxJobListNode *node = todo_list.GetFirst();
-    while(node){
-        JobTicket *ticket = node->GetData();
-        delete ticket;
-        node = node->GetNext();
-    }
-    todo_list.Clear();
-}
+glTextureManager   *g_glTextureManager;
 
 //      CatalogEntry implementation
 CatalogEntry::CatalogEntry()
@@ -969,13 +128,38 @@ void CatalogEntry::DeSerialize( unsigned char *t)
 }
     
 
+#include "ssl/sha1.h"
 
+wxString CompressedCachePath(wxString path)
+{
+#if defined(__WXMSW__)
+    int colon = path.find(':', 0);
+    path.Remove(colon, 1);
+#endif
+    
+    /* replace path separators with ! */
+    wxChar separator = wxFileName::GetPathSeparator();
+    for(unsigned int pos = 0; pos < path.size(); pos = path.find(separator, pos))
+        path.replace(pos, 1, _T("!"));
+
+    //  Obfuscate the compressed chart file name, to (slightly) protect some encrypted raster chart data.
+    wxCharBuffer buf = path.ToUTF8();
+    unsigned char sha1_out[20];
+    sha1( (unsigned char *) buf.data(), strlen(buf.data()), sha1_out );
+
+    wxString sha1;
+    for (unsigned int i=0 ; i < 20 ; i++){
+        wxString s;
+        s.Printf(_T("%02X"), sha1_out[i]);
+        sha1 += s;
+    }
+    
+    return g_Platform->GetPrivateDataDir() + separator + _T("raster_texture_cache") + separator + sha1;
+    
+}
 
 //      glTexFactory Implementation
-
-BEGIN_EVENT_TABLE(glTexFactory, wxEvtHandler)
-    EVT_TIMER(FACTORY_TIMER, glTexFactory::OnTimer)
-END_EVENT_TABLE()
+enum TextureDataType {COMPRESSED_BUFFER_OK, MAP_BUFFER_OK};
 
 glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
 {
@@ -1021,22 +205,6 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_stride = m_nx_tex;
     m_ntex = m_nx_tex * m_ny_tex;
     m_td_array = (glTextureDescriptor **)calloc(m_ntex, sizeof(glTextureDescriptor *));
-    
-    {
-        // we only want one pool but glTexFactory could be created from 
-        // many concurrent threads in rebuildCache.
-        wxMutexLocker lock(s_MutexPool);
-         
-        if(!g_CompressorPool)
-            g_CompressorPool = new CompressionWorkerPool;
-    }
-
-    m_ticks = 0;
-    // only the main thread can start timer
-    if (wxThread::IsMain()) {
-        m_timer.SetOwner(this, FACTORY_TIMER);
-        m_timer.Start( 500 );
-    }
 
     m_prepared_projection_type = 0;
     m_tiles = NULL;
@@ -1046,9 +214,7 @@ glTexFactory::~glTexFactory()
 {
     delete m_fs;
 
-    if (wxThread::IsMain()) {
-        PurgeBackgroundCompressionPool();
-    }
+    PurgeBackgroundCompressionPool();
     DeleteAllTextures();
     DeleteAllDescriptors();
 
@@ -1075,6 +241,74 @@ glTextureDescriptor *glTexFactory::GetpTD( wxRect & rect )
     return m_td_array[array_index];
 }
 
+bool glTexFactory::OnTimer()
+{
+    for(int i=0 ; i < m_ntex ; i++) {
+        glTextureDescriptor *ptd = m_td_array[i] ;
+        // sometimes compressed data is produced but by the time
+        // it arrives it is no longer needed, so with a timeout
+        // of 5 seconds free this memory to avoid ram use buildup
+        if(ptd && ptd->compdata_ticks) {
+            ptd->compdata_ticks--;
+            ptd->FreeComp();
+        }
+    }
+
+    for(int i=0 ; i < m_ntex ; i++) {
+        glTextureDescriptor *ptd = m_td_array[i];
+        if(ptd && WriteCache(ptd))
+            return true;
+    }
+    return false;
+}
+
+#ifdef __OCPN__ANDROID__
+    // delete any uncompressed textures if texture memory is more than 30
+    // on android??   Maybe this should be removed now
+    bool bGLMemCrunch = g_tex_mem_used > 30/*g_GLOptions.m_iTextureMemorySize*/ * 1024 * 1024;
+    
+    if( bGLMemCrunch ){
+        for(wxTextureListNode *node = m_texture_list.GetFirst(); node;
+            node = node->GetNext()) {
+            glTextureDescriptor *ptd = node->GetData();
+            if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED){
+                DeleteSingleTexture(ptd);
+            }
+        }
+    }
+#endif    
+
+bool glTexFactory::WriteCache(glTextureDescriptor *ptd)
+{
+    if(g_GLOptions.m_bTextureCompressionCaching &&
+       ptd->IsCompCompArrayComplete( 0 )) {
+            
+        UpdateCacheAllLevels
+            (wxRect(ptd->x, ptd->y,
+                    g_GLOptions.m_iTextureDimension,
+                    g_GLOptions.m_iTextureDimension),
+             ptd->m_colorscheme );
+            
+        // no longer need to store the compressed compressed data
+        ptd->FreeCompComp();
+        return true;
+    }
+    
+    return false;
+}
+
+
+void glTexFactory::AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size)
+{
+    for(int i=0 ; i < m_ntex ; i++) {
+        glTextureDescriptor *ptd = m_td_array[i] ;
+        if(ptd) {
+            map_size += ptd->GetMapArrayAlloc();
+            comp_size += ptd->GetCompArrayAlloc();
+            compcomp_size += ptd->GetCompCompArrayAlloc();
+        }
+    }
+}
 
 void glTexFactory::DeleteTexture(const wxRect &rect)
 {
@@ -1137,7 +371,7 @@ void glTexFactory::FreeSome( long target )
         
         if( ptd ) {
             ptd->FreeAll();
-        
+
             int mem_used;
             GetMemoryStatus(0, &mem_used);
         
@@ -1146,6 +380,7 @@ void glTexFactory::FreeSome( long target )
         }
     }
 }
+
 
 void glTexFactory::DeleteAllDescriptors( void )
 {
@@ -1161,21 +396,15 @@ void glTexFactory::DeleteAllDescriptors( void )
 
 bool glTexFactory::BackgroundCompressionAsJob() const
 {
-    if(g_CompressorPool) {
-        return g_CompressorPool->AsJob( m_ChartPath );
-    }
-    return false;
+    return g_glTextureManager->AsJob( m_ChartPath );
 }
 
 void glTexFactory::PurgeBackgroundCompressionPool()
 {
     //  Purge the "todo" list, and allow any running jobs to complete normally
-    if(g_CompressorPool) {
-        g_CompressorPool->PurgeJobList( m_ChartPath );
-    }
+    g_glTextureManager->PurgeJobList( m_ChartPath );
 }
-
-
+        
 void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
 {
     /* compute space saved */
@@ -1203,39 +432,6 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
         ptd->tex_name = 0;
     }
     ptd->nGPU_compressed = GPU_TEXTURE_UNKNOWN;
-}
-
-bool glTexFactory::IsCompressedArrayComplete( int base_level, const wxRect &rect)
-{
-    int array_index = ArrayIndex(rect.x, rect.y);
-    glTextureDescriptor *ptd = m_td_array[array_index];
-
-    return IsCompressedArrayComplete( base_level, ptd);
-}
-
-bool glTexFactory::IsCompressedArrayComplete( int base_level, glTextureDescriptor *ptd)
-{
-    bool b_all_cmm_built = false;
-    
-    if(ptd) {
-        
-        //  It may be that the compressed mipmaps have been generated , uploaded, and free'ed
-        if( ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED){
-            b_all_cmm_built = true;
-        }
-        else {
-            // are all required double-compressed levels available?
-            b_all_cmm_built = true;
-            for(int level = base_level; level < g_mipmap_max_level+1; level++ ) {
-                if(NULL == ptd->CompressedArrayAccess( CA_READ, NULL, level)){
-                    b_all_cmm_built = false;
-                    break;
-                }
-            }
-        }
-    }
-    
-    return b_all_cmm_built;
 }
 
 void  glTexFactory::ArrayXY(wxRect *r, int index) const
@@ -1289,7 +485,7 @@ void glTexFactory::DoImmediateFullCompress(const wxRect &rect)
     
     // if not found in the hash map, then get the bits as a texture descriptor
     if( !ptd ){
-        glTextureDescriptor *p = new glTextureDescriptor;
+        glTextureDescriptor *p = new glTextureDescriptor();
         p->x = rect.x;
         p->y = rect.y;
         p->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
@@ -1297,188 +493,34 @@ void glTexFactory::DoImmediateFullCompress(const wxRect &rect)
         ptd = p;
     }
     
-    if(g_CompressorPool){
-        for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
-            g_CompressorPool->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
-        }
-    }
-}
-
-void glTexFactory::OnTimer(wxTimerEvent &event)
-{
-    m_ticks++;
-    
-    //  Scrub all the TD's, looking for any completed compression jobs
-    //  that have finished
-    //  In the interest of not disturbing the GUI, process only one TD per tick
-    wxDateTime now = wxDateTime::UNow();
-    if(g_GLOptions.m_bTextureCompression)
-        for(int i=0 ; i < m_ntex ; i++){
-            glTextureDescriptor *ptd = m_td_array[i];
-            
-            if(!ptd)
-                continue;
-
-            // sometimes compressed data is produced but by the time
-            // it arrives it is no longer needed, so with a timeout
-            // of 3 seconds free this memory to avoid ram use buildup
-            if(ptd->CompDataTime.IsValid() &&
-               (now - ptd->CompDataTime).GetMilliseconds() > 3000) {
-                ptd->CompDataTime = wxInvalidDateTime;
-                ptd->FreeComp();
-            }
-            
-            if(ptd->nCache_Color != m_colorscheme &&
-               IsCompressedArrayComplete( 0, ptd) ) {
-
-                if(g_GLOptions.m_bTextureCompressionCaching) {
-                    UpdateCacheAllLevels( wxRect(ptd->x, ptd->y, g_GLOptions.m_iTextureDimension,
-                                                 g_GLOptions.m_iTextureDimension), m_colorscheme );
-                    
-                    // no longer need to store the compressed compressed data
-                    ptd->FreeCompComp();
-                }
-
-                ptd->nCache_Color = m_colorscheme;               // mark this TD as cached.
-                // we saved something reloaded the texture
-                // Now Delete the texture so it will be reloaded with compressed data
-//                if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED)
-//                    DeleteSingleTexture(ptd);
-
-                break;
-            }
-        }
-
-#ifdef __OCPN__ANDROID__    
-    bool bGLMemCrunch = g_tex_mem_used > 30/*g_GLOptions.m_iTextureMemorySize*/ * 1024 * 1024;
-    
-    if( bGLMemCrunch ){
-        for(int i=0 ; i < m_ntex ; i++){
-            glTextureDescriptor *ptd = m_td_array[i];
-            if(ptd){
-                if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED){
-                    DeleteSingleTexture(ptd);
-                }
-            }
-        }
-    }
-#endif    
-    
-    // Once every minute, do more extensive garbage collection
-    if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
-        if((m_ticks % 120) == 0){
-            
-            int mem_used;
-            GetMemoryStatus(0, &mem_used);
-            unsigned int nCache = 0;
-            unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
-            if(ChartData)
-                nCache = ChartData->GetChartCache()->GetCount();
-            
-            bool mainMemCrunch = ( ((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10)) ||
-            (g_nCacheLimit && (nCache > lcache_limit)) );
-            
-//            bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-
-            if( mainMemCrunch ){
-        //   Look for TDs where the compcomp array is full, and that the td has been marked as already cached
-        //   This means that the TD was actually ready from cache, and uploaded to GPU already.
-        //   It is thus safe to free all the memory for this TD.  If it is needed again, it will come
-        //   quickly from the cache.
-                for(int i=0 ; i < m_ntex ; i++){
-                    glTextureDescriptor *ptd = m_td_array[i];
-                    if(ptd){
-                        if(ptd->GetCompCompArrayAlloc() && ( ptd->nCache_Color == m_colorscheme) ){
-                            ptd->FreeAll();
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-#if 0
-    if((m_ticks % 4/*120*/) == 0){
-    
-    // inventory
-    int mem_total, mem_used;
-    GetMemoryStatus(&mem_total, &mem_used);
-    
-    int map_size = 0;
-    int comp_size = 0;
-    int compcomp_size = 0;
-    for(int i=0 ; i < m_ntex ; i++){
-        glTextureDescriptor *ptd = m_td_array[i];
-        if(ptd){
-            map_size += ptd->GetMapArrayAlloc();
-            comp_size += ptd->GetCompArrayAlloc();
-            compcomp_size += ptd->GetCompCompArrayAlloc();
-        }
-    }
-
-    int m1 = 1024 * 1024;
-    wxString path = wxFileName(m_ChartPath).GetName();
-    printf("%6d %6ld Map: %10d  Comp:%10d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size, comp_size, compcomp_size, path.mb_str().data());
-  
-///    qDebug() << "inv" << map_size/m1 << comp_size/m1 << compcomp_size/m1 << g_tex_mem_used/m1 << mem_used/1024;
-    }
-#endif
-
+    for(int level = 0; level < g_mipmap_max_level + 1; level++ )
+        g_glTextureManager->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
 }
 
 bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread)
 {
     int array_index = ArrayIndex(rect.x, rect.y);
     glTextureDescriptor *ptd = m_td_array[array_index];
-
-    m_colorscheme = color_scheme;
     
     try
     {
     restart:    
     // if not found in the hash map, then get the bits as a texture descriptor
     if( !ptd ){
-        glTextureDescriptor *p = new glTextureDescriptor;
+        glTextureDescriptor *p = new glTextureDescriptor();
+        
         p->x = rect.x;
         p->y = rect.y;
         p->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
         m_td_array[array_index] = p;
         ptd = p;
     }
-    else 
-    {
-        //  Now is a good time to update the cache, syncronously
-        if(g_GLOptions.m_bTextureCompression &&
-           ptd->nCache_Color != color_scheme &&
-           IsCompressedArrayComplete( 0, ptd) ) {
-///                    g_Platform->ShowBusySpinner();
 
-            if(g_GLOptions.m_bTextureCompressionCaching) {
-                UpdateCacheAllLevels( rect, color_scheme );
+    ptd->m_colorscheme = color_scheme;
+    //  Now is a good time to update the cache, syncronously
+    // not-really...
+//    WriteCache(ptd);
 
-                // no longer need to store the compressed compressed data
-                ptd->FreeCompComp();
-            }
-            // Now Delete the texture so it will be reloaded with compressed data
-
-//            if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED)
-//                DeleteSingleTexture(ptd);
-
-            ptd->nCache_Color = color_scheme;               // mark this TD as cached.
-        }
-
-        //  If we are not compressing/caching, We can do some housekeeping here, to recover some memory
-        //   Free bitmap memory that has already been uploaded to the GPU
-        if(!g_GLOptions.m_bTextureCompression) {
-            for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
-                if(ptd->miplevel_upload[level]){
-                    ptd->FreeAll();
-                    break;
-                }
-            }
-        }
-    }
-    
     //    If the GPU does not know about this texture, create it
     if( ptd->tex_name == 0 ) {
         glGenTextures( 1, &ptd->tex_name );
@@ -1512,6 +554,11 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         base_level = 0;
 
     ///    g_Platform->ShowBusySpinner();
+    if (m_newCatalog) {
+        // it's an empty catalog or it's not used, odds it's going to be slow
+        OCPNPlatform::ShowBusySpinner();
+        m_newCatalog = false;
+    }
     
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
@@ -1519,13 +566,14 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     bool b_use_mipmaps = true;
     bool b_need_compress = false;
-    bool b_lowmem = true; // the program is just much faster
+    bool b_lowmem = false;
 #ifdef ocpnUSE_GLES
-    b_lowmem = true;
+    b_lowmem = true; // the program is much faster.. maybe use in all modes?
 #endif
 
     if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED &&
        g_GLOptions.m_bTextureCompression) {
+
         if(ptd->CompressedArrayAccess( CA_READ, NULL, base_level)) {
             DeleteSingleTexture(ptd);
             goto restart;
@@ -1538,98 +586,99 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if(base_level >= ptd->level_min)
         return true;
 
-    if (m_newCatalog) {
-        // it's an empty catalog or it's not used, odds it's going to be slow
-        OCPNPlatform::ShowBusySpinner();
-        m_newCatalog = false;
-    }
-
     for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
         //    Upload to GPU?
         if( level >= base_level && !ptd->miplevel_upload[level]) {
             int status = GetTextureLevel( ptd, rect, level, color_scheme );
             if(g_GLOptions.m_bTextureCompression) {
-                if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
-                    ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
-                        s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
-                                          dim, dim, 0, size,
-                                          ptd->CompressedArrayAccess( CA_READ, NULL, level));
-                        ptd->miplevel_upload[level] = true;
-                        g_tex_mem_used += size;
-
-                } else if(ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED &&
-                          MAP_BUFFER_OK == status) {
-                    // if we have compressed data uploaded but now we need a lower
-                    // level, then we have to blow the texture away and rebuild it
-                    // as the compcomp data must have been freed
-                    DeleteSingleTexture(ptd);
-                    goto restart;
-                } else {
-                    //  This level has not been compressed yet, and is not in the cache
-                    //  So, need to start a compression job 
-                        
-                    if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
-                        // this version avoids re-uploading the data
+                if( COMPRESSED_BUFFER_OK == status) {
+                    if(ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) {
                         ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
-                        CompressUsingGPU( ptd, level, g_GLOptions.m_bTextureCompressionCaching, true);
-                        g_tex_mem_used += size;
+                        s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
+                                                  dim, dim, 0, size,
+                                                  ptd->CompressedArrayAccess( CA_READ, NULL, level));
                         ptd->miplevel_upload[level] = true;
-                            
+                        g_tex_mem_used += size;
+                    } else {
+                        // we have an uncompressed texture,
+                        // but the compressed data became available, so we should reset
+                        DeleteSingleTexture(ptd);
+                        goto restart;
                     }
-                    else {
-                        ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
-                        b_need_compress = true;
+                } else { // MAP_BUFFER_OK == status
+                    if(ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED) {
+                       // if we have compressed data uploaded but now we need a lower
+                       // level, then we have to blow the texture away and rebuild it
+                       // as the compcomp data must have been freed
+                       DeleteSingleTexture(ptd);
+                       goto restart;
+                    } else if(ptd->nGPU_compressed != GPU_TEXTURE_COMPRESSED) {
+                        //  This level has not been compressed yet, and is not in the cache
+                        //  So, need to start a compression job 
+                        
+                        if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
+                            // this version avoids re-uploading the data
+                            ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
+                            CompressUsingGPU( ptd, level, g_GLOptions.m_bTextureCompressionCaching, true);
+                            g_tex_mem_used += size;
+                            ptd->miplevel_upload[level] = true;
+                            
+                        }
+                        else {
+                            ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
+                            b_need_compress = true;
 
 #if 1
-                        // in this version, we upload only the current level and don't use mipmaps
-                        // temporarily while the compressed texture is being generated
-                        // This is significant for memory consumption on opengles where a full mipmap
-                        // stack is required in underzoom as we can avoid pushing  the uncompressed size
-                        // into texture memory which is significant
-                        // should be ok because the uncompressed data is only temporary anyway
-                        b_use_mipmaps = false;
+                            // in this version, we upload only the current level and don't use mipmaps
+                            // temporarily while the compressed texture is being generated
+                            // This is significant for memory consumption on opengles where a full mipmap
+                            // stack is required in underzoom as we can avoid pushing  the uncompressed size
+                            // into texture memory which is significant
+                            // should be ok because the uncompressed data is only temporary anyway
+                            b_use_mipmaps = false;
                         
-                        if(b_lowmem) {
-                            // on systems with little memory we can go up a mipmap level
-                            // here so that the uncompressed size without mipmaps (level+1)
-                            // is nearly the compressed size with all the compressed mipmaps
-                            // this way we won't require 5x more video memory than normal while we
-                            // are generating the compressed textures, when the cache is complete the image
-                            // becomes clearer as it is replaces with the higher resolution compressed version
-                            base_level++;
-                            level++;
-                            if(ptd->miplevel_upload[level])
-                                break;
-                            GetTextureLevel( ptd, rect, level, color_scheme );
-                            dim /= 2;
-                            uncompressed_size /= 4;
-                        }
-
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
-                                      dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                        ptd->miplevel_upload[level] = true;
-
-                        g_tex_mem_used += uncompressed_size;
-                    
-                        // recompute texture memory if we replaced an existing uncompressed level
-                        for(level++; level < g_mipmap_max_level+1; level++ ) {
-                            uncompressed_size /= 4;
-                            if(ptd->miplevel_upload[level]) {
-                                ptd->miplevel_upload[level] = false;
-                                g_tex_mem_used -= uncompressed_size;
+                            if(b_lowmem) {
+                                // on systems with little memory we can go up a mipmap level
+                                // here so that the uncompressed size without mipmaps (level+1)
+                                // is nearly the compressed size with all the compressed mipmaps
+                                // this way we won't require 5x more video memory than normal while we
+                                // are generating the compressed textures, when the cache is complete the image
+                                // becomes clearer as it is replaces with the higher resolution compressed version
+                                base_level++;
+                                level++;
+                                if(ptd->miplevel_upload[level])
+                                    break;
+                                GetTextureLevel( ptd, rect, level, color_scheme );
+                                dim /= 2;
+                                uncompressed_size /= 4;
                             }
-                        }
 
-                        //if(bthread_debug)
-                        //printf("UploadB Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB,
+                                          dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                            ptd->miplevel_upload[level] = true;
+
+                            g_tex_mem_used += uncompressed_size;
+                    
+                            // recompute texture memory if we replaced an existing uncompressed level
+                            for(level++; level < g_mipmap_max_level+1; level++ ) {
+                                uncompressed_size /= 4;
+                                if(ptd->miplevel_upload[level]) {
+                                    ptd->miplevel_upload[level] = false;
+                                    g_tex_mem_used -= uncompressed_size;
+                                }
+                            }
+
+                            //if(bthread_debug)
+                            //printf("UploadB Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                         
-                        break;
+                            break;
 #else // this version uses mipmaps
-                        glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
-                                      dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                        ptd->miplevel_upload[level] = true;
+                            glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
+                                          dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                            ptd->miplevel_upload[level] = true;
 #endif
+                        }
                     }
                 }
             } else {              // not compresssed
@@ -1649,8 +698,15 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         uncompressed_size /= 4;
     }
 
+    //  If we are not compressing/caching, We can do some housekeeping here, to recover some memory
+    //   Free bitmap memory that has already been uploaded to the GPU
+    if(!g_GLOptions.m_bTextureCompression)
+        ptd->FreeMap();
+
     // We can safely discard this level's compressed data, since the GPU has it
     ptd->FreeComp();
+
+    ptd->level_min = base_level;
 
 #ifndef ocpnUSE_GLES
     if(b_use_mipmaps) {
@@ -1658,18 +714,15 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
     }
 #endif
-    ptd->level_min = base_level;
 
     if(b_need_compress){
-    need_compress:        
-         if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
-             (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
-             (GL_ETC1_RGB8_OES == g_raster_format) ){
-             if(g_CompressorPool) {
-                    g_CompressorPool->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);
-                    // Free the map in ram
-                    ptd->FreeMap();
-             }
+    need_compress:
+        if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
+            (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
+            (GL_ETC1_RGB8_OES == g_raster_format) ){
+            g_glTextureManager->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);
+            // Free the map in ram
+            ptd->FreeMap();
         }
     }
     
@@ -1682,18 +735,19 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     int mem_used;
     GetMemoryStatus(0, &mem_used);
     //    qDebug() << mem_used;
-    
+    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10))
+       ptd->FreeAll();
+
+#if 0
+       // why is the entire chart+factory not freed instead?
     unsigned int nCache = 0;
     unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
-    if(ChartData)
+        if(ChartData) {
         nCache = ChartData->GetChartCache()->GetCount();
-    
-    if( ((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10)) ||
-        (g_nCacheLimit && (nCache > lcache_limit)) )
-      
-    {
-        ptd->FreeAll();
-    }
+        if(g_nCacheLimit && (nCache > lcache_limit))
+            ptd->FreeAll();
+        }
+#endif
     
 //    g_Platform->HideBusySpinner();
     
@@ -1932,7 +986,7 @@ bool glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
     else {
         unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
         if(source)
-            return UpdateCache(source, TileSize(level), ptd, level, color_scheme, write_catalog);
+            return UpdateCache(source, TextureTileSize(level), ptd, level, color_scheme, write_catalog);
     }
     return false;
 }
@@ -1941,6 +995,7 @@ bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_s
 {
     if( !g_GLOptions.m_bTextureCompressionCaching)
         return false;
+
     bool work = false;
     for (int level = 0; level < g_mipmap_max_level + 1; level++ )
         work |= UpdateCacheLevel( rect, level, color_scheme, false );
@@ -1957,16 +1012,15 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
     if(g_GLOptions.m_bTextureCompression) {
         if( ptd->CompressedArrayAccess( CA_READ, NULL, level))
             return COMPRESSED_BUFFER_OK;
-        if( ptd->CompCompArrayAccess( CA_READ, NULL, level)) {
+        if(ptd->CompCompArrayAccess( CA_READ, NULL, level)) {
             // If we have the compcomp bits in ram decompress them
 
-            int size = TileSize(level);
+            int size = TextureTileSize(level);
             unsigned char *cb = (unsigned char*)malloc(size);
-            ptd->CompressedArrayAccess( CA_WRITE, cb, level);
-
             unsigned char *compressed_data =
                 ptd->CompCompArrayAccess( CA_READ, NULL, level);
             LZ4_decompress_fast((char*)compressed_data, (char*)cb, size);
+            ptd->CompressedArrayAccess( CA_WRITE, cb, level);
 
             return COMPRESSED_BUFFER_OK;
         } else if(g_GLOptions.m_bTextureCompressionCaching) {
@@ -1978,7 +1032,7 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
             //      Requested texture level is found in the cache
             //      so go load it
             if( p != 0 ) {
-                int size = TileSize(level);
+                int size = TextureTileSize(level);
 
                 if(m_fs->IsOpened()){
                     m_fs->Seek(p->texture_offset);
@@ -2280,75 +1334,4 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
         WriteCatalogAndHeader();
     
     return true;
-}
-
-
-bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp, bool inplace)
-{
-    if(!ptd)
-        return false;
-    
-    if( !s_glGetCompressedTexImage )
-        return false;
-
-    bool ret = false;
-    GLuint comp_tex;
-    if(!inplace) {
-        glGenTextures(1, &comp_tex);
-        glBindTexture(GL_TEXTURE_2D, comp_tex);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    }
-    
-    int dim = g_GLOptions.m_iTextureDimension;
-    glTexImage2D(GL_TEXTURE_2D, level, GL_COMPRESSED_RGB_FXT1_3DFX,
-                 dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, ptd->map_array[level]);
-    
-    GLint compressed;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_ARB, &compressed);
-    
-    /* if the compression has been successful */
-    if (compressed == GL_TRUE){
-        
-        // If our compressed size is reasonable, save it.
-        GLint compressedSize;
-        glGetTexLevelParameteriv(GL_TEXTURE_2D, level,
-                                 GL_TEXTURE_COMPRESSED_IMAGE_SIZE,
-                                 &compressedSize);
-        
-        
-        if ((compressedSize > 0) && (compressedSize < 100000000)) {
-            
-            // Allocate a buffer to read back the compressed texture.
-            unsigned char *compressedBytes = (unsigned char *)malloc(sizeof(GLubyte) * compressedSize);
-            
-            // Read back the compressed texture.
-            s_glGetCompressedTexImage(GL_TEXTURE_2D, 0, compressedBytes);
-            
-            // Save the compressed texture pointer in the ptd
-            ptd->CompressedArrayAccess( CA_WRITE, compressedBytes, level);
-            
-            
-            // ZIP compress the data for disk storage
-            if(b_post_comp){int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-                if(max_compressed_size){
-                    unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-                    int compressed_size = LZ4_compressHC2( (char *)ptd->CompressedArrayAccess( CA_READ, NULL, level),
-                                                           (char *)compressed_data, TileSize(level), 4);
-                    ptd->CompCompArrayAccess( CA_WRITE, compressed_data, level);
-                    ptd->compcomp_size[level] = compressed_size;
-                }
-            }
-        }
-        
-        ret = true;
-    }
-
-    if(!inplace)
-        glDeleteTextures(1, &comp_tex);
-    
-    // Restore the old texture pointer
-    glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-    
-    return ret;
 }

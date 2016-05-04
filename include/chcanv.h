@@ -331,8 +331,6 @@ public:
       RoutePoint  *m_prev_pMousePoint;
       Quilt       *m_pQuilt;
       
-      bool PurgeGLCanvasChartCache(ChartBase *pc, bool b_purge_full = false);
-
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
       void DrawBlinkObjects( void );

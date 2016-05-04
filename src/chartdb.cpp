@@ -41,6 +41,10 @@
 #include "chart1.h"
 #include "thumbwin.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 #include <stdio.h>
 #include <math.h>
 
@@ -277,9 +281,12 @@ void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture, const wxString
             pthumbwin->pThumbChart = NULL;
      }
 
-     // The glCanvas may be cacheing some information for this chart
+#ifdef ocpnUSE_GL
+     // The glCanvas may be cacheing some information for this chart     
      if (g_bopengl && cc1)
-         cc1->PurgeGLCanvasChartCache(ch, bDelTexture);
+         g_glTextureManager->PurgeChartTextures(ch, bDelTexture);
+#endif
+
      pChartCache->Remove(pce);
      delete ch;
      delete pce;

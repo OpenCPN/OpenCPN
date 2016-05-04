@@ -104,7 +104,7 @@ public:
 
 #define MAX_TEX_LEVEL 10
 
-class glTexFactory : public wxEvtHandler
+class glTexFactory
 {
 public:
     glTexFactory(ChartBase *chart, int raster_format);
@@ -114,22 +114,23 @@ public:
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
     bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog = true );
     bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme );
-    bool IsCompressedArrayComplete( int base_level, const wxRect &rect);
-    bool IsCompressedArrayComplete( int base_level, glTextureDescriptor *ptd);
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
     void DoImmediateFullCompress(const wxRect &rect);
     wxString GetChartPath(){ return m_ChartPath; }
+    bool OnTimer();
+    bool WriteCache(glTextureDescriptor *ptd);
+    void AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size);
     void DeleteTexture(const wxRect &rect);
     void DeleteAllTextures( void );
     void DeleteSomeTextures( long target );
     void DeleteAllDescriptors( void );
     bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
-    void OnTimer(wxTimerEvent &event);
     void SetLRUTime(int lru) { m_LRUtime = lru; }
     int	 GetLRUTime() { return m_LRUtime; }
     void FreeSome( long target );
-    
+    void FreeIfCached();
+
     glTextureDescriptor *GetpTD( wxRect & rect );
 
     void PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase *pChart);
@@ -182,9 +183,6 @@ private:
     int         m_nx_tex;
     int         m_ny_tex;
     
-    ColorScheme m_colorscheme;
-    wxTimer     m_timer;
-    size_t      m_ticks;
     int		m_LRUtime;
     
     glTextureDescriptor  **m_td_array;
@@ -194,61 +192,7 @@ private:
     int m_prepared_projection_type;
     bool m_north; // used for polar projection
     
-    DECLARE_EVENT_TABLE()
-    
 };
 
-const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
-
-class JobTicket;
-
-WX_DECLARE_LIST(JobTicket, JobList);
-
-class OCPN_CompressionThreadEvent: public wxEvent
-{
-public:
-    OCPN_CompressionThreadEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_CompressionThreadEvent( );
-    
-    // accessors
-    void SetTicket( JobTicket *ticket ){m_ticket = ticket;}
-    JobTicket *GetTicket(void){ return m_ticket; }
-    
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
-    
-private:
-    JobTicket  * m_ticket;
-};
-
-//      CompressionWorkerPool Definition
-class CompressionWorkerPool : public wxEvtHandler
-{
-public:
-    CompressionWorkerPool();
-    ~CompressionWorkerPool();
-    
-    bool ScheduleJob( glTexFactory *client, const wxRect &rect, int level_min,
-                      bool b_throttle_thread, bool b_immediate, bool b_postZip);
-    void OnEvtThread( OCPN_CompressionThreadEvent & event );
-    int GetRunningJobCount(){ return m_njobs_running; }
-    bool AsJob( wxString const &chart_path ) const;
-    void PurgeJobList( wxString chart_path = wxEmptyString );
-    void ClearJobList();
-    
-private:
-    
-    bool DoJob( JobTicket *pticket );
-    bool DoThreadJob(JobTicket* pticket);
-    bool StartTopJob();
-    
-    JobList             running_list;
-    JobList             todo_list;
-    int                 m_njobs_running;
-    int                 m_max_jobs;
-    
-    
-    
-};
 
 #endif

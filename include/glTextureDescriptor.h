@@ -32,6 +32,7 @@
 #endif //precompiled headers
 
 #include "dychart.h"
+#include "ocpn_types.h"
 
 
 #define CA_READ         0
@@ -41,6 +42,7 @@
 #define GPU_TEXTURE_UNCOMPRESSED        1
 #define GPU_TEXTURE_COMPRESSED          2
 
+class glTexFactory;
 class glTextureDescriptor
 {
 public:
@@ -48,7 +50,6 @@ public:
     ~glTextureDescriptor();
     void FreeAll();
     void FreeMap();
-    void FreeCompLevel(int level);
     void FreeComp();
     void FreeCompComp();
 
@@ -58,18 +59,21 @@ public:
 
     unsigned char *CompressedArrayAccess( int mode, unsigned char *write_data, int level);
     unsigned char *CompCompArrayAccess( int mode, unsigned char *write_data, int level);
+    bool IsCompCompArrayComplete( int base_level );
+
     GLuint tex_name;
     int level_min;
     int x;
     int y;
     int nGPU_compressed;
-    int nCache_Color;
-    
+    ColorScheme m_colorscheme;
+//    int nCache_Color;
+
     unsigned char       *map_array[10];
     bool                miplevel_upload[10];
     int                 compcomp_size[10];
 
-    wxDateTime CompDataTime;
+    int compdata_ticks;
     
 private:    
     unsigned char *comp_array[10];

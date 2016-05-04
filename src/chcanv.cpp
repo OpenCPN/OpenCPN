@@ -2194,7 +2194,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
         m_glcc->SetColorScheme( cs );
-        m_glcc->ClearAllRasterTextures();
+        g_glTextureManager->ClearAllRasterTextures();
         m_glcc->FlushFBO(); 
     }
 #endif
@@ -8944,15 +8944,6 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
         }
     }
 
-}
-
-bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc, bool b_purge_full )
-{
-#ifdef ocpnUSE_GL
-    if( g_bopengl && m_glcc )
-        m_glcc->PurgeChartTextures( pc, b_purge_full );
-#endif
-    return true;
 }
 
 wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
