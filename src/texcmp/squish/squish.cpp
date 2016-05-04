@@ -342,8 +342,8 @@ void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int 
         if( b_throttle && !wxThread::IsMain() ) {
             //  Sleep a random time, 0-5 msec.
             //  This gives most of the processing to the main GUI thread
-            long u = (long)floor(((double)rand() / ((double)(RAND_MAX) + 1) * 5) + 0.5);
-            
+//            long u = (long)floor(((double)rand() / ((double)(RAND_MAX) + 1) * 5) + 0.5);
+            int u = 5; // always sleep 5 milliseconds
             wxThread::Sleep((int)u);
         }
 
