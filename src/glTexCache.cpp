@@ -451,99 +451,97 @@ void * CompressionPoolThread::Entry()
     }
     
     //OK, got the bits?
-    if( bit_array[0] ){        
+    int ssize, dim;
+    if(!bit_array[0] ){
+        m_pticket->b_isaborted = true;
+        goto SendEvtAndReturn;
+    }
     
-        //  Fill in the rest of the private uncompressed array
+    //  Fill in the rest of the private uncompressed array
 
-        int dim = g_GLOptions.m_iTextureDimension;
+    dim = g_GLOptions.m_iTextureDimension;
+    dim /= 2;
+    for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
+        bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
+        MipMap_24( 2*dim, 2*dim, bit_array[i - 1], bit_array[i] );
         dim /= 2;
-        for( int i = 1 ; i < g_mipmap_max_level+1 ; i++ ){
-            bit_array[i] = (unsigned char *) malloc( dim * dim * 3 );
-            MipMap_24( 2*dim, 2*dim, bit_array[i - 1], bit_array[i] );
-            dim /= 2;
-        }
+    }
         
-        //  Do the compression
+    //  Do the compression
         
-        dim = g_GLOptions.m_iTextureDimension;
-        int ssize = g_tile_size;
-        for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-            unsigned char *tex_data = (unsigned char*)malloc(ssize);
-            if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
+    dim = g_GLOptions.m_iTextureDimension;
+    ssize = g_tile_size;
+    for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
+        unsigned char *tex_data = (unsigned char*)malloc(ssize);
+        if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
             // color range fit is worse quality but twice as fast
-                int flags = squish::kDxt1 | squish::kColourRangeFit;
+            int flags = squish::kDxt1 | squish::kColourRangeFit;
             
-                if( g_GLOptions.m_bTextureCompressionCaching) {
+            if( g_GLOptions.m_bTextureCompressionCaching) {
                 /* use slower cluster fit since we are building the cache for
-                * better quality, this takes roughly 25% longer and uses about
-                * 10% more disk space (result doesn't compress as well with lz4) */
-                    flags = squish::kDxt1 | squish::kColourClusterFit;
-                }
-            
-                squish::CompressImageRGBpow2_Flatten_Throttle( bit_array[i], dim, dim, tex_data, flags,
-                                                            true, m_pticket->b_throttle );
-            
-            }
-            else if(g_raster_format == GL_ETC1_RGB8_OES) 
-                CompressDataETC(bit_array[i], dim, ssize, tex_data);
-            
-            m_pticket->comp_bits_array[i] = tex_data;
-            
-            dim /= 2;
-            ssize /= 4;
-            if(ssize < 8)
-                ssize = 8;
-
-            if(m_pticket->b_abort){
-                for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-                    free( bit_array[i] );
-                    bit_array[i] = 0;
-                }
-                m_pticket->b_isaborted = true;
-                goto SendEvtAndReturn;
+                 * better quality, this takes roughly 25% longer and uses about
+                 * 10% more disk space (result doesn't compress as well with lz4) */
+                flags = squish::kDxt1 | squish::kColourClusterFit;
             }
             
+            squish::CompressImageRGBpow2_Flatten_Throttle( bit_array[i], dim, dim, tex_data, flags,
+                                                           true, m_pticket->b_throttle );
+            
         }
+        else if(g_raster_format == GL_ETC1_RGB8_OES) 
+            CompressDataETC(bit_array[i], dim, ssize, tex_data);
+            
+        m_pticket->comp_bits_array[i] = tex_data;
+            
+        dim /= 2;
+        ssize /= 4;
+        if(ssize < 8)
+            ssize = 8;
 
-        
-        //  All done with the uncompressed data in the thread
-        for( int i = 0; i < g_mipmap_max_level+1; i++ ){
-            free( bit_array[i] );
-            bit_array[i] = 0;
-        }
-  
         if(m_pticket->b_abort){
+            for( int i = 0; i < g_mipmap_max_level+1; i++ ){
+                free( bit_array[i] );
+                bit_array[i] = 0;
+            }
             m_pticket->b_isaborted = true;
             goto SendEvtAndReturn;
         }
-
-        if(m_pticket->bpost_zip_compress) {
-            
-            int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-            int csize = g_tile_size;
-            for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-                if(m_pticket->b_abort){
-                    m_pticket->b_isaborted = true;
-                    goto SendEvtAndReturn;
-                }
-                unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-                char *src = (char *)m_pticket->comp_bits_array[i];
-                int compressed_size = LZ4_compressHC2( src, (char *)compressed_data, csize, 4);
-                // shrink buffer to actual size.
-                // This will greatly reduce ram usage, ratio usually 10:1
-                // there might be a more efficient way than realloc...
-//                if(!g_GLOptions.m_bTextureCompressionCaching)
-                compressed_data = (unsigned char*)realloc(compressed_data, compressed_size);
-                m_pticket->compcomp_bits_array[i] = compressed_data;
-                m_pticket->compcomp_size_array[i] = compressed_size;
-                
-                csize /= 4;
-                
-            }
-        }
     }
-    else {
+        
+    //  All done with the uncompressed data in the thread
+    for( int i = 0; i < g_mipmap_max_level+1; i++ ){
+        free( bit_array[i] );
+        bit_array[i] = 0;
+    }
+  
+    if(m_pticket->b_abort){
         m_pticket->b_isaborted = true;
+        goto SendEvtAndReturn;
+    }
+
+    if(m_pticket->bpost_zip_compress) {
+            
+        int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
+        int csize = g_tile_size;
+        for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
+            if(m_pticket->b_abort){
+                m_pticket->b_isaborted = true;
+                goto SendEvtAndReturn;
+            }
+            unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
+            char *src = (char *)m_pticket->comp_bits_array[i];
+            int compressed_size = LZ4_compressHC2( src, (char *)compressed_data, csize, 4);
+            // shrink buffer to actual size.
+            // This will greatly reduce ram usage, ratio usually 10:1
+            // there might be a more efficient way than realloc...
+//                if(!g_GLOptions.m_bTextureCompressionCaching)
+            compressed_data = (unsigned char*)realloc(compressed_data, compressed_size);
+            m_pticket->compcomp_bits_array[i] = compressed_data;
+            m_pticket->compcomp_size_array[i] = compressed_size;
+                
+            csize /= 4;
+                
+        }
     }
 
 SendEvtAndReturn:
