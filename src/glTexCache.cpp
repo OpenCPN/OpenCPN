@@ -653,6 +653,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         glChartCanvas::Invalidate(); // ensure we refresh
         extern ChartCanvas *cc1;
         cc1->Refresh();
+        ptd->CompDataTime = wxDateTime::UNow();
 
         if(ticket->bpost_zip_compress){
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
@@ -1310,12 +1311,24 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
     //  Scrub all the TD's, looking for any completed compression jobs
     //  that have finished
     //  In the interest of not disturbing the GUI, process only one TD per tick
+    wxDateTime now = wxDateTime::UNow();
     if(g_GLOptions.m_bTextureCompression)
         for(int i=0 ; i < m_ntex ; i++){
             glTextureDescriptor *ptd = m_td_array[i];
             
-            if(ptd &&
-               ptd->nCache_Color != m_colorscheme &&
+            if(!ptd)
+                continue;
+
+            // sometimes compressed data is produced but by the time
+            // it arrives it is no longer needed, so with a timeout
+            // of 3 seconds free this memory to avoid ram use buildup
+            if(ptd->CompDataTime.IsValid() &&
+               (now - ptd->CompDataTime).GetMilliseconds() > 3000) {
+                ptd->CompDataTime = wxInvalidDateTime;
+                ptd->FreeComp();
+            }
+            
+            if(ptd->nCache_Color != m_colorscheme &&
                IsCompressedArrayComplete( 0, ptd) ) {
 
                 if(g_GLOptions.m_bTextureCompressionCaching) {
@@ -1405,7 +1418,7 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
 
     int m1 = 1024 * 1024;
     wxString path = wxFileName(m_ChartPath).GetName();
-    printf("%6d %6ld Map: %6d  Comp:%6d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size/m1, comp_size/m1, compcomp_size, path.mb_str().data());
+    printf("%6d %6ld Map: %10d  Comp:%10d  CompComp: %10d  %s\n", mem_used/1024, g_tex_mem_used/m1, map_size, comp_size, compcomp_size, path.mb_str().data());
   
 ///    qDebug() << "inv" << map_size/m1 << comp_size/m1 << compcomp_size/m1 << g_tex_mem_used/m1 << mem_used/1024;
     }

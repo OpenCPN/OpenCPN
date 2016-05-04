@@ -68,6 +68,8 @@ public:
     unsigned char       *map_array[10];
     bool                miplevel_upload[10];
     int                 compcomp_size[10];
+
+    wxDateTime CompDataTime;
     
 private:    
     unsigned char *comp_array[10];
