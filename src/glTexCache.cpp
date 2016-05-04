@@ -646,7 +646,14 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
                 printf("already have comp bits\n");
             ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
         }
-        
+
+        // We need to force a refresh to replace the uncompressed texture
+        // This frees video memory and is also really required if we had
+        // gone up a mipmap level
+        glChartCanvas::Invalidate(); // ensure we refresh
+        extern ChartCanvas *cc1;
+        cc1->Refresh();
+
         if(ticket->bpost_zip_compress){
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
                 ptd->CompCompArrayAccess( CA_WRITE, ticket->compcomp_bits_array[i], i);
@@ -1324,13 +1331,6 @@ void glTexFactory::OnTimer(wxTimerEvent &event)
                 // Now Delete the texture so it will be reloaded with compressed data
 //                if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED)
 //                    DeleteSingleTexture(ptd);
-
-                // We need to force a refresh to replace the uncompressed texture
-                // This frees video memory and is also really required if we had
-                // gone up a mipmap level
-                glChartCanvas::Invalidate(); // ensure we refresh
-                extern ChartCanvas *cc1;
-                cc1->Refresh();
 
                 break;
             }
