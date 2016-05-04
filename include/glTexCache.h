@@ -234,6 +234,7 @@ public:
     int GetRunningJobCount(){ return m_njobs_running; }
     bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
+    void ClearJobList();
     
 private:
     

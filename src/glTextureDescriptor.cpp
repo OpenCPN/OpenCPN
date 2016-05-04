@@ -78,6 +78,14 @@ void glTextureDescriptor::FreeCompLevel(int level)
     comp_array[level] = NULL;
 }
 
+void glTextureDescriptor::FreeComp()
+{
+    for( int i = 0; i < 10; i++ ){
+        free( comp_array[i] );
+        comp_array[i] = NULL;
+    }
+}
+    
 void glTextureDescriptor::FreeCompComp()
 {
     for( int i = 0; i < 10; i++ ){

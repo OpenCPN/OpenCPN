@@ -121,7 +121,6 @@ extern wxString CompressedCachePath(wxString path);
 extern ChartCanvas *cc1;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
-extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
@@ -134,6 +133,7 @@ extern ChartBarWin     *g_ChartBarWin;
 extern Piano           *g_Piano;
 extern ocpnCompass         *g_Compass;
 extern ChartStack *pCurrentStack;
+extern CompressionWorkerPool   *g_CompressorPool;
 
 GLenum       g_texture_rectangle_format;
 
@@ -3960,7 +3960,8 @@ bool glChartCanvas::FactoryCrunch(double factor)
             {
                 if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
                 {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor * hysteresis);
+//                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor * hysteresis);
+                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
                     mem_freed = true;
                 }
             }
@@ -4048,6 +4049,13 @@ void glChartCanvas::Render()
         }
 
     m_last_render_time = wxDateTime::Now().GetTicks();
+
+    // we don't care about jobs that are now off screen
+    // clear out and it will be repopulated during render
+    if(g_GLOptions.m_bTextureCompression &&
+       !g_GLOptions.m_bTextureCompressionCaching &&
+        g_CompressorPool)
+        g_CompressorPool->ClearJobList();
 
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){

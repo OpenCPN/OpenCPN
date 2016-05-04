@@ -49,6 +49,7 @@ public:
     void FreeAll();
     void FreeMap();
     void FreeCompLevel(int level);
+    void FreeComp();
     void FreeCompComp();
 
     size_t GetMapArrayAlloc(void);
