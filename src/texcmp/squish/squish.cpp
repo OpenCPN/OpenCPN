@@ -285,8 +285,8 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
         }
 }
 
-void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                            bool b_flatten, bool b_throttle )
+void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                                  bool b_flatten, bool b_throttle, volatile bool &b_abort )
 {
     // fix any bad flags
     flags = FixFlags( flags );
@@ -346,6 +346,9 @@ void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height
             
             wxThread::Sleep((int)u);
         }
+
+        if( b_abort)
+            break;
     }
 }
 

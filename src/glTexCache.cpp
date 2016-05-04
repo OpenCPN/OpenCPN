@@ -177,14 +177,14 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 
 /* return malloced data which is the etc compressed texture of the source */
 void CompressDataETC(const unsigned char *data, int dim, int size,
-                     unsigned char *tex_data)
+                     unsigned char *tex_data, volatile bool &b_abort)
 {
     wxASSERT(dim*dim == 2*size); // must be 4bpp
     uint64_t *tex_data64 = (uint64_t*)tex_data;
     
     int mbrow = wxMin(4, dim), mbcol = wxMin(4, dim);
     uint8_t block[48] = {};
-    for(int row=0; row<dim; row+=4)
+    for(int row=0; row<dim; row+=4) {
         for(int col=0; col<dim; col+=4) {
             for(int brow=0; brow<mbrow; brow++)
                 for(int bcol=0; bcol<mbcol; bcol++)
@@ -194,6 +194,9 @@ void CompressDataETC(const unsigned char *data, int dim, int size,
             extern uint64_t ProcessRGB( const uint8_t* src );
             *tex_data64++ = ProcessRGB( block );
         }
+        if(b_abort)
+            break;
+    }
 }
 
 void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &chart_path )
@@ -301,12 +304,15 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
             flags = squish::kDxt1 | squish::kColourClusterFit;
         }
 
-        squish::CompressImageRGBpow2_Flatten_Throttle( ptd->map_array[level], dim, dim, tex_data, flags,
-                                                            true, pticket->b_throttle );
+        bool a = false;
+        squish::CompressImageRGBpow2_Flatten_Throttle_Abort( ptd->map_array[level], dim, dim, tex_data, flags,
+                                                             true, pticket->b_throttle, a );
  
     }
-    else if(g_raster_format == GL_ETC1_RGB8_OES) 
-        CompressDataETC(ptd->map_array[level], dim, size, tex_data);
+    else if(g_raster_format == GL_ETC1_RGB8_OES) {
+        bool a = false;
+        CompressDataETC(ptd->map_array[level], dim, size, tex_data, a);
+    }
         
     else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX)
         CompressUsingGPU( ptd, level, false, false);    // no post compression
@@ -484,12 +490,12 @@ void * CompressionPoolThread::Entry()
                 flags = squish::kDxt1 | squish::kColourClusterFit;
             }
             
-            squish::CompressImageRGBpow2_Flatten_Throttle( bit_array[i], dim, dim, tex_data, flags,
-                                                           true, m_pticket->b_throttle );
+            squish::CompressImageRGBpow2_Flatten_Throttle_Abort( bit_array[i], dim, dim, tex_data, flags,
+                                                                 true, m_pticket->b_throttle, m_pticket->b_abort );
             
         }
         else if(g_raster_format == GL_ETC1_RGB8_OES) 
-            CompressDataETC(bit_array[i], dim, ssize, tex_data);
+            CompressDataETC(bit_array[i], dim, ssize, tex_data, m_pticket->b_abort);
             
         m_pticket->comp_bits_array[i] = tex_data;
             
