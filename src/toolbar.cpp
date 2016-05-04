@@ -1774,7 +1774,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
     }
 
     // Left button pressed.
-    if( event.LeftDown() )
+    if( event.LeftIsDown() )
         m_leftDown = true;                      // trigger on
     
     if( event.LeftDown() && tool->IsEnabled() ) {

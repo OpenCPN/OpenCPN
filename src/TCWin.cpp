@@ -668,7 +668,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.GetTextExtent( m_stz, &w, &h );
         dc.DrawText( m_stz, x / 2 - w / 2, y - 2 * m_button_height );
 
-        wxString sdate = m_graphday.Format( _T ( "%m/%d/%Y" ) );
+        wxString sdate = m_graphday.Format( _T ( "%A %b %d, %Y" ) );
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
         dc.DrawText( sdate, x / 2 - w / 2, y - 1.5 * m_button_height );

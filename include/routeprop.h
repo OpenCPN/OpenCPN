@@ -118,6 +118,7 @@ class   OCPNIconCombo;
 #define ID_LONCTRL 8005
 #define ID_SHOWNAMECHECKBOX1 8006
 
+
 ////@end control identifiers
 
 /*!
