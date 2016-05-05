@@ -655,8 +655,10 @@ void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
   if (pRoutePrintSelection == NULL)
     pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
 
-  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal();
-    delete pRoutePrintSelection;
+  if( !pRoutePrintSelection->IsShown() ) 
+      pRoutePrintSelection->ShowModal();
+
+  delete pRoutePrintSelection;
   pRoutePrintSelection=NULL;
 }
 
