@@ -251,7 +251,7 @@ GribV1Record::~GribV1Record()
 }
 
 //----------------------------------------------
-zuint GribV1Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
+static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 {
     zuint oct = first / 8;
     zuint bit = first % 8;
