@@ -402,9 +402,10 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     //get more recent file in default directory if necessary
     wxFileName f;
-    if ( m_file_names.GetCount() != 0 )
-        f = m_file_names[0];
-    if( newestFile || f.GetFullName().IsEmpty() )
+    if( newestFile )
+        m_file_names.Clear();       //file names list must be cleared if we expect only the newest file! otherwise newest file is
+                                    //added to the previously recorded, what we don't want
+    if(m_file_names.IsEmpty() )     //in any case were there is no filename previously recorded, we must take the newest
         m_file_names.Add( GetNewestFileInDirectory());
 
     m_bGRIBActiveFile = new GRIBFile( m_file_names,
