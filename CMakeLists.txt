@@ -130,9 +130,15 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 #If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
 #cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
 
-SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
-SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
-SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+IF(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ELSE(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDIF(APPLE OR WIN32)
 
 IF(APPLE OR WIN32)
   IF(NOT BUNDLE_DOCS)
