@@ -3360,6 +3360,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
+    // pthumbwin is a cc1 child 
+    pthumbwin = NULL;
     cc1->Destroy();
     cc1 = NULL;
 
@@ -3413,7 +3415,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
     NMEA_Msg_Hash.clear();
 
-    pthumbwin = NULL;
 
     NMEALogWindow::Shutdown();
 

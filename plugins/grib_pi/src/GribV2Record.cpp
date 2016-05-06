@@ -889,7 +889,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         }
         break;
     }
-#if 0    
+#if 1
     if (ret == 255) {
         printf("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
     }
@@ -1043,7 +1043,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     BMSbits = NULL;
     hasBMS = false;
     eof     = false;
-    knownData = true;
+    knownData = false;
     IsDuplicated = false;
     long start = seekStart;
     
@@ -1241,8 +1241,11 @@ printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",isScanIpositive,
 printf("hasBMS=%d\n", hasBMS);
 }
     if (ok) {
+        if (!skip) 
+        {
 		translateDataType();
 		setDataType(dataType);
+        }
     }
     delete grib_msg;
     grib_msg = 0;
@@ -1373,18 +1376,6 @@ bool GribV2Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
 //==============================================================
 // Fonctions utiles
 //==============================================================
-zuint GribV2Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
-{
-    zuint oct = first / 8;
-    zuint bit = first % 8;
-
-    zuint val = (buf[oct]<<24) + (buf[oct+1]<<16) + (buf[oct+2]<<8) + (buf[oct+3]);
-    val = val << bit;
-    val = val >> (32-nbBits);
-    return val;
-}
-
-//----------------------------------------------
 zuint GribV2Record::periodSeconds(zuchar unit,zuint P1,zuchar P2,zuchar range) {
     zuint res, dur;
 

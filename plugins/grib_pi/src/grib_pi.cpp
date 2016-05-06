@@ -310,6 +310,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
          SaveConfig();
      }
+     delete Pref;
 }
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
