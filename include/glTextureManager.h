@@ -63,9 +63,10 @@ public:
     void OnEvtThread( OCPN_CompressionThreadEvent & event );
     void OnTimer(wxTimerEvent &event);
     bool ScheduleJob( glTexFactory *client, const wxRect &rect, int level_min,
-                      bool b_throttle_thread, bool b_immediate, bool b_postZip);
+                      bool b_throttle_thread, bool b_nolimit, bool b_postZip);
 
     int GetRunningJobCount(){ return m_njobs_running; }
+    int GetJobCount(){ return m_njobs_running + todo_list.GetCount(); }
     bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
     void ClearJobList();
@@ -98,5 +99,7 @@ private:
 class glTextureDescriptor;
 void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_path, int level);
 int TextureTileSize(int level);
+bool CompressUsingGPU(const unsigned char *data, int dim, int size,
+                      unsigned char *tex_data, int level, bool inplace);
 
 #endif

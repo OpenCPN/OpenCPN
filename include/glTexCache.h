@@ -40,7 +40,6 @@ class glTextureDescriptor;
 #define FACTORY_TIMER                   10000
 
 void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target );
-bool CompressUsingGPU( glTextureDescriptor *ptd, int level, bool b_post_comp, bool inplace);
 
 class ChartBaseBSB;
 class ChartPlugInWrapper;
@@ -110,15 +109,14 @@ public:
     glTexFactory(ChartBase *chart, int raster_format);
     ~glTexFactory();
 
+    glTextureDescriptor *GetOrCreateTD(const wxRect &rect);
     bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
     bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog = true );
     bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme );
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
-    void DoImmediateFullCompress(const wxRect &rect);
     wxString GetChartPath(){ return m_ChartPath; }
     bool OnTimer();
-    bool WriteCache(glTextureDescriptor *ptd);
     void AccumulateMemStatistics(int &map_size, int &comp_size, int &compcomp_size);
     void DeleteTexture(const wxRect &rect);
     void DeleteAllTextures( void );

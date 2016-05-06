@@ -301,11 +301,13 @@ extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
 
+#if 0
 wxProgressDialog *pprog;
 bool b_skipout;
 wxSize pprog_size;
 int pprog_count;
 wxArrayString compress_msg_array;
+#endif
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1140,7 +1142,7 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     
     
 }
-
+#if 0
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 {
     wxString msg(event.m_string.c_str(), wxConvUTF8);
@@ -1165,7 +1167,7 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
     if(skip)
         b_skipout = skip;
 }
-
+#endif
 void ChartCanvas::InvalidateGL()
 {
 #ifdef ocpnUSE_GL
