@@ -586,17 +586,15 @@ bool JobTicket::DoJob()
         for( int x = 0; x < nx_tex; x++ ) {
             if(!DoJob(rect))
                 return false;
-
-            glTextureDescriptor *ptd = pFact->GetOrCreateTD( rect );
-            for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
-                ptd->CompressedArrayAccess( CA_WRITE, comp_bits_array[i], i);
-                comp_bits_array[i] = NULL;
-                ptd->CompCompArrayAccess( CA_WRITE, compcomp_bits_array[i], i);
-                compcomp_bits_array[i] = NULL;
-                ptd->compcomp_size[i] = compcomp_size_array[i];
-            }
             
-            pFact->UpdateCacheAllLevels(rect, global_color_scheme);
+            pFact->UpdateCacheAllLevels(rect, global_color_scheme, compcomp_bits_array, compcomp_size_array);
+
+            for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
+                free(comp_bits_array[i]), comp_bits_array[i] = 0;
+                free(compcomp_bits_array[i]), compcomp_bits_array[i] = 0;
+            }
+
+            
             rect.x += rect.width;
         }
         rect.y += rect.height;
@@ -895,11 +893,11 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
         glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
         if(ptd) {
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++)
-                ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
+                ptd->comp_array[i] = ticket->comp_bits_array[i];
 
             if(ticket->bpost_zip_compress){
                 for(int i=0 ; i < g_mipmap_max_level+1 ; i++){
-                    ptd->CompCompArrayAccess( CA_WRITE, ticket->compcomp_bits_array[i], i);
+                    ptd->compcomp_array[i] = ticket->compcomp_bits_array[i];
                     ptd->compcomp_size[i] = ticket->compcomp_size_array[i];
                 }
             }
@@ -914,7 +912,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             }
             ptd->compdata_ticks = 10;
         }
-    
+
         if(bthread_debug)
             printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
                     ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
@@ -1114,8 +1112,7 @@ bool glTextureManager::StartTopJob()
 
     glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
     // don't need the job if we already have the compressed data
-    if(ptd->CompressedArrayAccess( CA_READ, NULL, 0)) {
-        printf("already have copmressed data\n");
+    if(ptd->comp_array[0]) {
         delete ticket;
         return StartTopJob();
     }

@@ -227,11 +227,10 @@ bool glTexFactory::OnTimer()
         for(int i=0 ; i < m_ntex ; i++) {
             glTextureDescriptor *ptd = m_td_array[i];
             if(ptd && ptd->IsCompCompArrayComplete( 0 )) {
+                int dim = g_GLOptions.m_iTextureDimension;
                 UpdateCacheAllLevels
-                    (wxRect(ptd->x, ptd->y,
-                            g_GLOptions.m_iTextureDimension,
-                            g_GLOptions.m_iTextureDimension),
-                     ptd->m_colorscheme );
+                    (wxRect(ptd->x, ptd->y, dim, dim),
+                     ptd->m_colorscheme, ptd->compcomp_array, ptd->compcomp_size );
 
                 // no longer need to store the compressed compressed data
                 ptd->FreeCompComp();
@@ -517,11 +516,10 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED &&
        g_GLOptions.m_bTextureCompression) {
         // Compressed data is available, free the uncompressed texture
-        if(ptd->CompressedArrayAccess( CA_READ, NULL, base_level)) {
+        if(ptd->comp_array[base_level]) {
             DeleteSingleTexture(ptd);
             goto restart;
         }
-
 #if 0
         // if we just need equal or lower detail
         if(base_level >= ptd->level_min - b_lowmem)
@@ -549,7 +547,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
                         s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                                                   dim, dim, 0, size,
-                                                  ptd->CompressedArrayAccess( CA_READ, NULL, level));
+                                                  ptd->comp_array[level]);
                         ptd->miplevel_upload[level] = true;
                         g_tex_mem_used += size;
                     } else {
@@ -572,11 +570,10 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                         if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
                             // this version avoids re-uploading the data
                             ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
-                            unsigned char *tex_data = (unsigned char*)malloc(size);
+                            free(ptd->comp_array[level]);
+                            ptd->comp_array[level] = (unsigned char*)malloc(size);
                             CompressUsingGPU(ptd->map_array[level],
-                                             dim, size, tex_data, level, true);
-
-                            ptd->CompressedArrayAccess( CA_WRITE, tex_data, level);
+                                             dim, size, ptd->comp_array[level], level, true);
                             g_tex_mem_used += size;
                             ptd->miplevel_upload[level] = true;
                         } else
@@ -918,7 +915,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 }
 
 
-bool glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog )
+bool glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, unsigned char *data, int size)
 {
     if( !g_GLOptions.m_bTextureCompressionCaching)
         return false;
@@ -930,28 +927,14 @@ bool glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
     if(v != 0)
         return false;
     
-    //    Is this texture tile already defined?
-    int array_index = ArrayIndex(rect.x, rect.y);
-    glTextureDescriptor *ptd = m_td_array[array_index];
-    
-    if(!ptd)
+    if(!data)
         return false;
 
-    unsigned char *pd = ptd->CompCompArrayAccess(CA_READ, NULL, level);
-    if(pd){
-        return UpdateCachePrecomp(pd, ptd->compcomp_size[level], ptd, level, color_scheme, write_catalog);
-    }
-#if 0
-    else {
-        unsigned char *source = ptd->CompressedArrayAccess( CA_READ, NULL, level);
-        if(source)
-            return UpdateCache(source, TextureTileSize(level), ptd, level, color_scheme, write_catalog);
-    }
-#endif
-    return false;
+    return UpdateCachePrecomp(data, size, rect, level, color_scheme);
+
 }
 
-bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme )
+bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme, unsigned char **compcomp_array, int *compcomp_size)
 {
     if( !g_GLOptions.m_bTextureCompressionCaching)
         return false;
@@ -959,7 +942,7 @@ bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_s
     bool work = false;
 
     for (int level = 0; level < g_mipmap_max_level + 1; level++ )
-        work |= UpdateCacheLevel( rect, level, color_scheme, false );
+        work |= UpdateCacheLevel( rect, level, color_scheme, compcomp_array[level], compcomp_size[level] );
     if (work) {
         WriteCatalogAndHeader();
     }
@@ -971,18 +954,14 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 {
     //  Already available in the texture descriptor?
     if(g_GLOptions.m_bTextureCompression) {
-        if( ptd->CompressedArrayAccess( CA_READ, NULL, level))
+        if( ptd->comp_array[level] )
             return COMPRESSED_BUFFER_OK;
-        if(ptd->CompCompArrayAccess( CA_READ, NULL, level)) {
+        if( ptd->compcomp_array[level] ) {
             // If we have the compcomp bits in ram decompress them
-
             int size = TextureTileSize(level);
             unsigned char *cb = (unsigned char*)malloc(size);
-            unsigned char *compressed_data =
-                ptd->CompCompArrayAccess( CA_READ, NULL, level);
-            LZ4_decompress_fast((char*)compressed_data, (char*)cb, size);
-            ptd->CompressedArrayAccess( CA_WRITE, cb, level);
-
+            LZ4_decompress_fast((char*)ptd->compcomp_array[level], (char*)cb, size);
+            ptd->comp_array[level] = cb;
             return COMPRESSED_BUFFER_OK;
         } else if(g_GLOptions.m_bTextureCompressionCaching) {
             //  If cacheing compressed textures, look in the cache
@@ -997,15 +976,12 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 
                 if(m_fs->IsOpened()){
                     m_fs->Seek(p->texture_offset);
-                    unsigned char *cb = (unsigned char*)malloc(size);
-                    ptd->CompressedArrayAccess( CA_WRITE, cb, level);
-                
+                    ptd->comp_array[level] = (unsigned char*)malloc(size);
                     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-                    char *compressed_data = new char[max_compressed_size];
+                    char *compressed_data = (char*)malloc(p->compressed_size);
                     m_fs->Read(compressed_data, p->compressed_size);
-                
-                    LZ4_decompress_fast(compressed_data, (char*)cb, size);
-                    delete [] compressed_data;    
+                    LZ4_decompress_fast(compressed_data, (char*)ptd->comp_array[level], size);
+                    free(compressed_data);
                 }
             
                 return COMPRESSED_BUFFER_OK;
@@ -1213,6 +1189,7 @@ bool glTexFactory::WriteCatalogAndHeader()
 }
 
 // return false on error (currently not used by callers)
+#if 0
 bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                ColorScheme color_scheme, bool write_catalog)
 {
@@ -1258,15 +1235,16 @@ bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDesc
     
     return true;
 }
+#endif
 
-bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                                      ColorScheme color_scheme, bool write_catalog)
+bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, const wxRect &rect,
+                                      int level, ColorScheme color_scheme, bool write_catalog)
 {
     if (level < 0 || level >= MAX_TEX_LEVEL)
         return false;	// XXX BUG
 
     //  Search the catalog for this particular texture
-    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0) 
+    if (GetCacheEntryValue(level, rect.x, rect.y, color_scheme) != 0) 
         return false;
     
     // Make sure the file exists
@@ -1276,7 +1254,7 @@ bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, glText
         return false;
 
     //      Create a new catalog entry
-    CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
+    CatalogEntry p( level, rect.x, rect.y, color_scheme);
     
     //      Write the compressed data to disk
     p.v.texture_offset = m_catalog_offset;

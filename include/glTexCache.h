@@ -112,8 +112,7 @@ public:
     glTextureDescriptor *GetOrCreateTD(const wxRect &rect);
     bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
-    bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog = true );
-    bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme );
+    bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme, unsigned char **compcomp_array, int *compcomp_size);
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
     wxString GetChartPath(){ return m_ChartPath; }
     bool OnTimer();
@@ -140,10 +139,13 @@ private:
     bool LoadHeader(void);
     bool WriteCatalogAndHeader();
 
+#if 0
     bool UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                    ColorScheme color_scheme, bool write_catalog = true);
-    bool UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
+#endif
+    bool UpdateCachePrecomp(unsigned char *data, int data_size, const wxRect &rect, int level,
                                           ColorScheme color_scheme, bool write_catalog = true);
+    bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, unsigned char *data, int size);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
 

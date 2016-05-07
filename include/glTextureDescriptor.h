@@ -57,8 +57,6 @@ public:
     size_t GetCompArrayAlloc(void);
     size_t GetCompCompArrayAlloc(void);
 
-    unsigned char *CompressedArrayAccess( int mode, unsigned char *write_data, int level);
-    unsigned char *CompCompArrayAccess( int mode, unsigned char *write_data, int level);
     bool IsCompCompArrayComplete( int base_level );
 
     GLuint tex_name;
@@ -67,17 +65,15 @@ public:
     int y;
     int nGPU_compressed;
     ColorScheme m_colorscheme;
-//    int nCache_Color;
 
-    unsigned char       *map_array[10];
     bool                miplevel_upload[10];
+
+    unsigned char      *map_array[10];
+    unsigned char      *comp_array[10];
+    unsigned char      *compcomp_array[10];
     int                 compcomp_size[10];
 
     int compdata_ticks;
-    
-private:    
-    unsigned char *comp_array[10];
-    unsigned char *compcomp_array[10];
 };
 
 
