@@ -624,19 +624,9 @@ bool JobTicket::DoJob(const wxRect &rect)
 
             if(pchart && ChartData->IsChartLocked( index )){
                 ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-                ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pchart );
-                
                 if( pBSBChart ) {
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    bit_array[0] = t_buf;
-
-                    pBSBChart->GetChartBits( ncrect, t_buf, 1 );
-                }
-                else if( pPlugInWrapper ){
-                    unsigned char *t_buf = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
-                    bit_array[0] = t_buf;
-                    
-                    pPlugInWrapper->GetChartBits( ncrect, t_buf, 1 );
+                    bit_array[0] = (unsigned char *) malloc( ncrect.width * ncrect.height * 4 );
+                    pBSBChart->GetChartBits( ncrect, bit_array[0], 1 );
                 }
                 ChartData->UnLockCacheChart(index);
             }
