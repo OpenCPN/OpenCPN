@@ -342,14 +342,17 @@ void BuildCompressedCache()
 
             int cnt;
             do {
-                wxThread::Sleep(10);
+                wxThread::Sleep(40);
                 ::wxYield();
                 cnt = g_glTextureManager->GetJobCount() - g_glTextureManager->GetRunningJobCount();
             } while(cnt && !skip);
-                    }
+        }
     }
 
-    //g_glTextureManager->PurgeJobList();
+    while(g_glTextureManager->GetRunningJobCount()) {
+        wxThread::Sleep(40);
+        ::wxYield();
+    }
     
     b_inCompressAllCharts = false;
 }
