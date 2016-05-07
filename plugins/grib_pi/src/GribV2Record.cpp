@@ -774,7 +774,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	len=len-5;
 	jvals=(int *)malloc(grib_msg->md.ny*grib_msg->md.nx*sizeof(int));
 	(grib_msg->grids[grid_num]).gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
-	if (len > 0)
+	if (len > 0 && sizeof(grib_msg->buffer) >=∫ grib_msg->offset / 8 + 5 + len)
 	  dec_jpeg2000((char *)&grib_msg->buffer[grib_msg->offset/8+5],len,jvals);
 	cnt=0;
 	for (n=0; n < grib_msg->md.ny*grib_msg->md.nx; n++) {
