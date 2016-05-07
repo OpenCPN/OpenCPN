@@ -234,7 +234,7 @@ bool glTexFactory::OnTimer()
 
                 // no longer need to store the compressed compressed data
                 ptd->FreeCompComp();
-                return true;
+//                return true;
             }
         }
 
@@ -565,17 +565,17 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                        goto restart;
                     } else if(ptd->nGPU_compressed != GPU_TEXTURE_COMPRESSED) {
                         //  This level has not been compressed yet, and is not in the cache
-#if 0                   // perhaps we should eliminate this case
+#if 1                   // perhaps we should eliminate this case
                         // and build compressed fxt1 textures one per tick
                         if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format ){
                             // this version avoids re-uploading the data
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                            g_glTextureManager->ScheduleJob( this, rect, 0/*level*/, b_throttle_thread, false, true, true);
+                            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+                            for(int level = 0; level < g_mipmap_max_level+1; level++ )
+                                ptd->miplevel_upload[level] = true;
                             ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
-                            free(ptd->comp_array[level]);
-                            ptd->comp_array[level] = (unsigned char*)malloc(size);
-                            CompressUsingGPU(ptd->map_array[level],
-                                             dim, size, ptd->comp_array[level], level, true);
-                            g_tex_mem_used += size;
-                            ptd->miplevel_upload[level] = true;
+                            break;
                         } else
 #endif
                         {
@@ -651,7 +651,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         if(size < 8) size = 8;
         uncompressed_size /= 4;
     }
-
+    
     //   Free bitmap memory that has already been uploaded to the GPU
     if(!g_GLOptions.m_bTextureCompression)
         ptd->FreeMap();
@@ -672,10 +672,16 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     if(b_need_compress){
     need_compress:
+#if 0
         if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
             (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_ETC1_RGB8_OES == g_raster_format) ){
-            g_glTextureManager->ScheduleJob( this, rect, 0, b_throttle_thread, false, true);
+            (GL_ETC1_RGB8_OES == g_raster_format) )
+#endif            
+        {
+
+            g_glTextureManager->ScheduleJob( this, rect, 0, b_throttle_thread, false, true, false);
+            if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format )
+                glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
             // Free the map in ram
             ptd->FreeMap();
         }

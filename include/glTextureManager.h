@@ -63,10 +63,10 @@ public:
     void OnEvtThread( OCPN_CompressionThreadEvent & event );
     void OnTimer(wxTimerEvent &event);
     bool ScheduleJob( glTexFactory *client, const wxRect &rect, int level_min,
-                      bool b_throttle_thread, bool b_nolimit, bool b_postZip);
+                      bool b_throttle_thread, bool b_nolimit, bool b_postZip, bool b_inplace);
 
-    int GetRunningJobCount(){ return m_njobs_running; }
-    int GetJobCount(){ return m_njobs_running + todo_list.GetCount(); }
+    int GetRunningJobCount(){ return running_list.GetCount(); }
+    int GetJobCount(){ return GetRunningJobCount() + todo_list.GetCount(); }
     bool AsJob( wxString const &chart_path ) const;
     void PurgeJobList( wxString chart_path = wxEmptyString );
     void ClearJobList();
@@ -87,7 +87,6 @@ private:
     
     JobList             running_list;
     JobList             todo_list;
-    int                 m_njobs_running;
     int                 m_max_jobs;
 
     int		m_prevMemUsed;

@@ -322,7 +322,7 @@ void BuildCompressedCache()
             continue;
 
             schedule:
-            g_glTextureManager->ScheduleJob(tex_fact, wxRect(), 0, false, true, true);
+
             bool skip = false;
             wxString msg;
             msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
@@ -330,7 +330,8 @@ void BuildCompressedCache()
                 msg += _T("   Chart:");
                 msg += pchart->GetFullPath();
             }
-            
+
+            g_glTextureManager->ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);            
 //            wxString cntmsg = wxString::Format(_T("%04d/%04d "), 0, origcnt);
             prog.Update(j, msg, &skip );
             prog.SetSize(pprog_size);
@@ -379,6 +380,7 @@ public:
     bool        b_abort;
     bool        b_isaborted;
     bool        bpost_zip_compress;
+    bool        binplace;
     unsigned char *compcomp_bits_array[10];
     int         compcomp_size_array[10];
     
@@ -447,16 +449,16 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
 {
     if( !s_glGetCompressedTexImage )
         return false;
-
-    bool ret = false;
+    
     GLuint comp_tex;
     if(!inplace) {
         glGenTextures(1, &comp_tex);
         glBindTexture(GL_TEXTURE_2D, comp_tex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        level = 0;
     }
-    
+
     glTexImage2D(GL_TEXTURE_2D, level, g_raster_format,
                  dim, dim, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     
@@ -480,7 +482,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
     if(!inplace)
         glDeleteTextures(1, &comp_tex);
     
-    return ret;
+    return true;
 }
 
 void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &chart_path )
@@ -672,9 +674,15 @@ bool JobTicket::DoJob(const wxRect &rect)
             
         } else if(g_raster_format == GL_ETC1_RGB8_OES) 
             CompressDataETC(bit_array[i], dim, ssize, tex_data, b_abort);
-        else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX)
-            CompressUsingGPU(bit_array[i], dim, ssize, tex_data, 0, false);
+        else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
+            if(!CompressUsingGPU(bit_array[i], dim, ssize, tex_data, i, binplace)) {
+                b_abort = true;
+                break;
+            }
 
+            if(binplace)
+                g_tex_mem_used += ssize;
+        }
         comp_bits_array[i] = tex_data;
             
         dim /= 2;
@@ -812,8 +820,7 @@ void * CompressionPoolThread::Entry()
     if( m_pMessageTarget ) {
         OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
         Nevent.SetTicket(m_ticket);
-        
-        m_pMessageTarget->AddPendingEvent(Nevent);
+        m_pMessageTarget->QueueEvent(Nevent.Clone());
         // from here m_ticket is undefined (if deleted in event handler)
     }
 
@@ -828,7 +835,7 @@ void * CompressionPoolThread::Entry()
             OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
             m_ticket->b_isaborted = true;
             Nevent.SetTicket(m_ticket);            
-            m_pMessageTarget->AddPendingEvent(Nevent);
+            m_pMessageTarget->QueueEvent(Nevent.Clone());
         }
         
         
@@ -841,7 +848,6 @@ void * CompressionPoolThread::Entry()
 //      glTextureManager Implementation
 glTextureManager::glTextureManager()
 {
-    m_njobs_running = 0;
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
     m_prevMemUsed = 0;    
@@ -869,10 +875,8 @@ glTextureManager::~glTextureManager()
 void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
 {
     JobTicket *ticket = event.GetTicket();
-    m_njobs_running--;
 
     if(ticket->b_isaborted){
-
         for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
             free(ticket->comp_bits_array[i]);
             free( ticket->compcomp_bits_array[i] );
@@ -880,7 +884,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
         
         if(bthread_debug)
             printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
-                    ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
+                    ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
     } else if(!b_inCompressAllCharts) { // if compressing all write cache here
         //   Normal completion from here
         glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
@@ -908,10 +912,8 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
 
         if(bthread_debug)
             printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
-                    ticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
+                    ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
     }
-    
-    running_list.DeleteObject(ticket);
 
     //      Free all possible memory
     if(b_inCompressAllCharts) { // if compressing all write cache here
@@ -921,7 +923,11 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
     }
 
     delete ticket;
-    StartTopJob();
+
+    if(g_raster_format != GL_COMPRESSED_RGB_FXT1_3DFX) {
+        running_list.DeleteObject(ticket);
+        StartTopJob();
+    }
 }
 
 void glTextureManager::OnTimer(wxTimerEvent &event)
@@ -999,7 +1005,7 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
 
 
 bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int level,
-                                   bool b_throttle_thread, bool b_nolimit, bool b_postZip)
+                                   bool b_throttle_thread, bool b_nolimit, bool b_postZip, bool b_inplace)
 {
     wxString chart_path = client->GetChartPath();
     if(!b_nolimit) {
@@ -1057,6 +1063,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
     pt->b_abort = false;
     pt->b_isaborted = false;
     pt->bpost_zip_compress = b_postZip;
+    pt->binplace = b_inplace;
 
     /* do we compress in ram using builtin libraries, or do we
        upload to the gpu and use the driver to perform compression?
@@ -1084,8 +1091,16 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
         StartTopJob();
     }
     else {
+        // give level 0 buffer to the ticket
+        pt->level0_bits = ptd->map_array[0];
+        ptd->map_array[0] = NULL;
+        
         pt->DoJob();
-        delete pt;
+
+        OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
+        Nevent.SetTicket(pt);
+        ProcessEventLocally(Nevent);
+        // from here m_ticket is undefined (if deleted in event handler)
     }
     return true;
 }
@@ -1093,7 +1108,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
 bool glTextureManager::StartTopJob()
 {
         //  Is it possible to start another job?
-    if(m_njobs_running >= m_max_jobs)
+    if(GetRunningJobCount() >= m_max_jobs)
         return false;
 
     wxJobListNode *node = todo_list.GetFirst();
@@ -1114,7 +1129,6 @@ bool glTextureManager::StartTopJob()
     ticket->level0_bits = ptd->map_array[0];
     ptd->map_array[0] = NULL;
 
-    m_njobs_running ++;
     running_list.Append(ticket);
     DoThreadJob(ticket);
 
@@ -1125,9 +1139,9 @@ bool glTextureManager::StartTopJob()
 bool glTextureManager::DoThreadJob(JobTicket* pticket)
 {
     if(bthread_debug)
-        printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, m_njobs_running, (unsigned long)todo_list.GetCount());
+        printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
     
-///    qDebug() << "Starting job" << m_njobs_running <<  (unsigned long)todo_list.GetCount() << g_tex_mem_used;
+///    qDebug() << "Starting job" << GetRunningJobCount() <<  (unsigned long)todo_list.GetCount() << g_tex_mem_used;
     CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
     pticket->pthread = t;
     
