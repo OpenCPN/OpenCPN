@@ -516,20 +516,14 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED &&
        g_GLOptions.m_bTextureCompression) {
         // Compressed data is available, free the uncompressed texture
-        if(ptd->comp_array[base_level]) {
+        if(ptd->comp_array[base_level] ||
+           // we need different detail level data
+           base_level != ptd->level_min - b_lowmem) {
             DeleteSingleTexture(ptd);
             goto restart;
         }
-#if 0
-        // if we just need equal or lower detail
-        if(base_level >= ptd->level_min - b_lowmem)
-            goto need_compress;
-#else
-        // if the detail is less than 1 (or 2 for lowmem) levels difference
-        // then we just requeue compression, otherwise must upload the right level
-        if(abs(base_level - (ptd->level_min - b_lowmem)) < 1 + b_lowmem)
-            goto need_compress;
-#endif
+        
+        goto need_compress; // requeue compression
     }
     
     //  Texture requested has already been physically uploaded to the GPU
@@ -672,19 +666,11 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     if(b_need_compress){
     need_compress:
-#if 0
-        if( (GL_COMPRESSED_RGBA_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_COMPRESSED_RGB_S3TC_DXT1_EXT == g_raster_format) ||
-            (GL_ETC1_RGB8_OES == g_raster_format) )
-#endif            
-        {
-
-            g_glTextureManager->ScheduleJob( this, rect, 0, b_throttle_thread, false, true, false);
-            if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format )
-                glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-            // Free the map in ram
-            ptd->FreeMap();
-        }
+        g_glTextureManager->ScheduleJob( this, rect, 0, b_throttle_thread, false, true, false);
+        if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format )
+            glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
+        // Free the map in ram
+        ptd->FreeMap();
     }
     
     //   If global memory is getting short, we can crunch here.
