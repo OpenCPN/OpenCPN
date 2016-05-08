@@ -169,6 +169,7 @@ OCPNPlatform              *g_Platform;
 bool                      g_bFirstRun;
 
 int                       g_unit_test_1;
+int                       g_unit_test_2;
 bool                      g_start_fullscreen;
 bool                      g_rebuild_gl_cache;
 bool                      g_parse_all_enc;
@@ -938,11 +939,15 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
     parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
     parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
+
+    parser.AddSwitch( _T("unit_test_2") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
     long number;
+
+    g_unit_test_2 = parser.Found( _T("unit_test_2") );
     g_bportable = parser.Found( _T("p") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
@@ -6804,7 +6809,8 @@ int ut_index;
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
 
-    if( g_unit_test_1 ) {
+
+    if( g_unit_test_1 || g_unit_test_2) {
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();
 
@@ -6815,6 +6821,11 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
+            if( g_GroupIndex > 0 ) {
+                while (ut_index < ChartData->GetChartTableEntries() && !ChartData->IsChartInGroup( ut_index, g_GroupIndex ) ) {
+                    ut_index++;
+                }
+            }
             if( ut_index < ChartData->GetChartTableEntries() ) {
                 printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
                 const ChartTableEntry *cte = &ChartData->GetChartTableEntry( ut_index );
@@ -6831,8 +6842,25 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 } else
                     SelectdbChart( ut_index );
 
-                double ppm = cc1->GetCanvasScaleFactor() / cte->GetScale();
-                ppm /= 2;
+                double ppm;
+                if (g_unit_test_1) {
+                    ppm = cc1->GetCanvasScaleFactor() / cte->GetScale();
+                    ppm /= 2;
+                }
+                else {
+                    // for full chart choose use max width or heigh
+                    //ChartBase *pc = ChartData->OpenChartFromDB( ut_index, FULL_INIT );
+                    
+                    //double scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                    double dlat = fabs( (cte->GetLatMax() - cte->GetLatMin() ));
+                    double scale = cte->GetScale()*10;
+                    //double ppm1 = dlat
+                    double ppm1 =cc1->GetCanvasScaleFactor() / scale;
+                    //ppm = (dlat*1852.0)/**cc1->GetCanvasScaleFactor() *//;
+                    ppm = (double)cc1->GetCanvasHeight()/(dlat*1852.0*100);
+                    // printf("%f %f %d %f %f %f\n", dlat, cc1->GetCanvasScaleFactor(), cc1->GetCanvasHeight(), scale, ppm, ppm1);
+
+                }
                 cc1->SetVPScale( ppm );
 
                 cc1->ReloadVP();
@@ -6841,8 +6869,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 if( ut_index > ut_index_max )
                     exit(0);
             }
-            else
-                exit(0);
+            else {
+                _exit(0);
+            }
         }
     }
     g_tick++;
@@ -7221,7 +7250,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
-    FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
+    if (g_unit_test_2)
+        FrameTimer1.Start( TIMER_GFRAME_1*3, wxTIMER_CONTINUOUS );
+    else 
+        FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 }
 
 double MyFrame::GetMag(double a)
