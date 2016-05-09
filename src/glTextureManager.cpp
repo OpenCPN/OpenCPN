@@ -607,6 +607,38 @@ bool JobTicket::DoJob()
     return true;
 }
 
+#if 0// defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for pro
+class OCPNStopWatch
+{
+public:
+    OCPNStopWatch() { Start(); }
+    void Start() { clock_gettime(CLOCK_REALTIME, &tp); }
+
+    double Time() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+
+private:
+    timespec tp;
+};
+#else
+class OCPNStopWatch : public wxStopWatch
+{ };
+#endif
+
+static void throttle_func(void *data)
+{
+    if(!wxThread::IsMain() ) {
+        OCPNStopWatch *sww = (OCPNStopWatch *)data;
+        if(sww->Time() > 1) {
+            sww->Start();
+            wxThread::Sleep(2);
+        }
+    }
+}
+
 bool JobTicket::DoJob(const wxRect &rect)
 {
     unsigned char *bit_array[10];
@@ -669,8 +701,9 @@ bool JobTicket::DoJob(const wxRect &rect)
                 flags = squish::kDxt1 | squish::kColourClusterFit;
             }
             
+            OCPNStopWatch sww;
             squish::CompressImageRGBpow2_Flatten_Throttle_Abort( bit_array[i], dim, dim, tex_data, flags,
-                                                                 true, b_throttle, b_abort );
+                                                                 true, b_throttle ? throttle_func : 0, &sww, b_abort );
             
         } else if(g_raster_format == GL_ETC1_RGB8_OES) 
             CompressDataETC(bit_array[i], dim, ssize, tex_data, b_abort);
@@ -848,6 +881,8 @@ void * CompressionPoolThread::Entry()
 //      glTextureManager Implementation
 glTextureManager::glTextureManager()
 {
+    // ideally we would use the cpu count -1, and only launch jobs
+    // when the idle load average is sufficient (greater than 1)
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
     m_prevMemUsed = 0;    
@@ -861,7 +896,6 @@ glTextureManager::glTextureManager()
     
     m_ticks = 0;
     
-//    m_timer.SetOwner(this, FACTORY_TIMER);
     m_timer.Connect(wxEVT_TIMER, wxTimerEventHandler( glTextureManager::OnTimer ), NULL, this);
     m_timer.Start(500);
 }
@@ -942,41 +976,11 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
             itt != m_chart_texfactory_hash.end(); ++itt ) {
             glTexFactory *ptf = itt->second;
             if(ptf && ptf->OnTimer())
-                break;
+                ;//break;
         }
     }
 
-    // Once every minute, do more extensive garbage collection
-#if 0    
-    if(g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching) {
-        if((m_ticks % 120) == 0){            
-            int mem_used;
-            GetMemoryStatus(0, &mem_used);
-            unsigned int nCache = 0;
-            unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
-            if(ChartData)
-                nCache = ChartData->GetChartCache()->GetCount();
-            
-            bool mainMemCrunch = ( ((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10)) ||
-            (g_nCacheLimit && (nCache > lcache_limit)) );
-            
-//            bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-
-            if( mainMemCrunch ){
-        //   Look for TDs where the compcomp array is full, and that the td has been marked as already cached
-        //   This means that the TD was actually ready from cache, and uploaded to GPU already.
-        //   It is thus safe to free all the memory for this TD.  If it is needed again, it will come
-        //   quickly from the cache.
-                for(ChartPathHashTexfactType::iterator itt = m_chart_texfactory_hash.begin();
-                    itt != m_chart_texfactory_hash.end(); ++itt ) {
-                    glTexFactory *ptf = itt->second;
-                    ptf->FreeIfCached();
-                }
-            }
-        }
-    }
-#endif
-#if 0
+#if 1
     if((m_ticks % 4/*120*/) == 0){
     
     // inventory
@@ -1323,49 +1327,9 @@ bool glTextureManager::FactoryCrunch(double factor)
     GetMemoryStatus(0, &mem_used);
     double hysteresis = 0.90;
     mem_start = mem_used;
-    
-    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor && mem_used > (double)(m_prevMemUsed) *factor;
-    if( ! bGLMemCrunch && (m_chart_texfactory_hash.size() <= MAX_CACHE_FACTORY))
-        return false;
-    
     ChartPathHashTexfactType::iterator it0;
-    if( bGLMemCrunch) {
-        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-            wxString chart_full_path = it0->first;
-            glTexFactory *ptf = it0->second;
-            bool mem_freed = false;
-            if(!ptf)
-                continue;
-        
-            if( cc1->GetVP().b_quilt )          // quilted
-            {
-                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
-                {
-                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
-                    mem_freed = true;
-                }
-            }
-            else      // not quilted
-            {
-                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
-                {
-//                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor * hysteresis);
-                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
-                    mem_freed = true;
-                }
-            }
-            if (mem_freed) {
-                GetMemoryStatus(0, &mem_used);
-                bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor * hysteresis;
-                m_prevMemUsed = mem_used;
-                if(!bGLMemCrunch)
-                    break;
-            }
-        }
-    }
 
-    bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
+    bool bGLMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
                     mem_used > (double)(m_prevMemUsed) * factor *hysteresis
                     )  || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
     //  Need more, so delete the oldest factory
@@ -1416,6 +1380,47 @@ bool glTextureManager::FactoryCrunch(double factor)
 //            GetMemoryStatus(0, &mem_now);
 //            printf("-------------FactoryDelete\n");
        }                
+    }
+
+    
+    bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor && mem_used > (double)(m_prevMemUsed) *factor;
+    if( ! bGLMemCrunch && (m_chart_texfactory_hash.size() <= MAX_CACHE_FACTORY))
+        return false;
+
+    if( bGLMemCrunch) {
+        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+            wxString chart_full_path = it0->first;
+            glTexFactory *ptf = it0->second;
+            bool mem_freed = false;
+            if(!ptf)
+                continue;
+        
+            if( cc1->GetVP().b_quilt )          // quilted
+            {
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) 
+                {
+                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
+                    mem_freed = true;
+                }
+            }
+            else      // not quilted
+            {
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                {
+//                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor * hysteresis);
+                    ptf->FreeSome( g_memCacheLimit * factor * hysteresis);
+                    mem_freed = true;
+                }
+            }
+            if (mem_freed) {
+                GetMemoryStatus(0, &mem_used);
+                bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor * hysteresis;
+                m_prevMemUsed = mem_used;
+                if(!bGLMemCrunch)
+                    break;
+            }
+        }
     }
     
 //    int mem_now;

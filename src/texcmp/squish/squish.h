@@ -222,7 +222,7 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
  *
  */
 void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                                  bool b_flatten, bool b_throttle, volatile bool &b_abort );
+                                                  bool b_flatten, void (*throttle)(void*), void *throttle_data, volatile bool &b_abort );
 
 // -----------------------------------------------------------------------------
 
