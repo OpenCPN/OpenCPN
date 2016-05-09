@@ -39,6 +39,7 @@
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
 #include <wx/clrpicker.h>
+#include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
 
@@ -934,6 +935,8 @@ void options::RecalculateSize(void) {
     SetSize(fitted_size);
 
     Fit();
+    m_nCharWidthMax = GetSize().x / GetCharWidth();
+    
     return;
   }
 
@@ -953,6 +956,8 @@ void options::RecalculateSize(void) {
   int yp = (canvas_size.y - fsize.y) / 2;
   wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
   Move(xxp.x + xp, xxp.y + yp);
+  
+  m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
 
 void options::Init(void) {
@@ -4264,12 +4269,14 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
                               border_size);
 
-  wxStaticBox* itemFontStaticBox =
-      new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
-  wxStaticBoxSizer* itemFontStaticBoxSizer =
-      new wxStaticBoxSizer(itemFontStaticBox, wxHORIZONTAL);
-  m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
-                               border_size);
+  wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
+  
+  int fLayout = wxHORIZONTAL;
+  if(m_nCharWidthMax <  40)
+      fLayout = wxVERTICAL;
+  
+  wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, fLayout);
+  m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size);
 
   m_itemFontElementListBox = new wxChoice(itemPanelFont, ID_CHOICE_FONTELEMENT, wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_SORT);
 
@@ -4385,16 +4392,15 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pMobile, 0, wxALL, border_size);
 
   pResponsive = new wxCheckBox(itemPanelFont, ID_REPONSIVEBOX,
-                               _("Enable Tablet Scaled Graphics interface"));
+                               _("Enable Scaled Graphics interface"));
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
-  int slider_width = wxMax(m_fontHeight * 4, 150);
+  int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_GUI_Factor->Hide();
-  //#ifdef __OCPN__ANDROID__
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
                    verticleInputFlags);
@@ -4404,13 +4410,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __WXQT__
   m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  //#endif
 
   m_pSlider_Chart_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_Chart_Factor->Hide();
-  //#ifdef __OCPN__ANDROID__
   miscOptions->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
       verticleInputFlags);
@@ -4420,7 +4424,8 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __WXQT__
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  //#endif
+  
+  miscOptions->AddSpacer(20);
 }
 
 void options::CreateControls(void) {
@@ -5481,7 +5486,8 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   //  Save the existing addr/port to allow closing of existing port
   pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
   pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
-
+  pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
+  
   pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
   pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
   if (m_rbNetProtoTCP->GetValue())
@@ -5683,12 +5689,15 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  to facility identification and allow stop and restart of the stream
   wxString lastAddr;
   int lastPort = 0;
+  NetworkProtocol lastNetProtocol;
+  
   if (itemIndex >= 0) {
     int params_index = m_lcSources->GetItemData(itemIndex);
     ConnectionParams* cpo = g_pConnectionParams->Item(params_index);
     if (cpo) {
       lastAddr = cpo->NetworkAddress;
       lastPort = cpo->NetworkPort;
+      lastNetProtocol = cpo->NetProtocol;
     }
   }
 
@@ -5705,6 +5714,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
       }
 
       //  Record the previous parameters, if any
+      cp->LastNetProtocol = lastNetProtocol;
       cp->LastNetworkAddress = lastAddr;
       cp->LastNetworkPort = lastPort;
 
@@ -5722,6 +5732,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // Recreate datastreams that are new, or have been edited
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams* cp = g_pConnectionParams->Item(i);
+    
     // Stream is new, or edited
     if (cp->b_IsSetup) continue;
     // Terminate and remove any existing stream with the same port name
@@ -5733,8 +5744,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
     //  This for Bluetooth, which has strange parameters
-    pds_existing = g_pMUX->FindStream(cp->GetPortStr());
-    if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
+    if(cp->Type == INTERNAL_BT){
+        pds_existing = g_pMUX->FindStream(cp->GetPortStr());
+        if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
+    }
 
     if (!cp->bEnabled) continue;
     dsPortType port_type = cp->IOSelect;
@@ -6357,6 +6370,9 @@ void options::DoOnPageChange(size_t page) {
               FALSE);  // avoid "Cannot set locale to..." log message
 
           wxLocale ltest(lang_list[it], 0);
+#if wxCHECK_VERSION(2, 9, 0)
+          ltest.AddCatalogLookupPathPrefix( wxStandardPaths::Get().GetInstallPrefix() + _T( "/share/locale" ) );
+#endif
           ltest.AddCatalog(_T("opencpn"));
 
           wxLog::EnableLogging(TRUE);

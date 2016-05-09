@@ -177,40 +177,44 @@ wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
     if( front.GetDepth() == 24 ) return front;
 
-    wxBitmap result( front.GetWidth(), front.GetHeight(), 24 );
 #if !wxCHECK_VERSION(2,9,4)
     front.UseAlpha();
 #endif
 
     wxImage im_front = front.ConvertToImage();
-    wxImage im_result = result.ConvertToImage();
-
-    unsigned char *presult = im_result.GetData();
     unsigned char *pfront = im_front.GetData();
-
-    if(!presult || !pfront)
+    if(!pfront)
         return wxNullBitmap;
+    
+    unsigned char *presult = (unsigned char *)malloc(front.GetWidth() * front.GetHeight() * 3);
+    if(!presult)
+        return wxNullBitmap;
+    
+    unsigned char *po_result = presult;
+
     
     unsigned char *afront = NULL;
     if( im_front.HasAlpha() )
     afront = im_front.GetAlpha();
 
-    for( int i = 0; i < result.GetWidth(); i++ ) {
-        for( int j = 0; j < result.GetHeight(); j++ ) {
+    for( int i = 0; i < front.GetWidth(); i++ ) {
+        for( int j = 0; j < front.GetHeight(); j++ ) {
 
             double alphaF = 1.0;
             if(afront)
                 alphaF = (double) ( *afront++ ) / 256.0;
-            unsigned char r = *pfront++ * alphaF + bgColor.Red() * ( 1.0 - alphaF );
-            *presult++ = r;
-            unsigned char g = *pfront++ * alphaF + bgColor.Green() * ( 1.0 - alphaF );
-            *presult++ = g;
-            unsigned char b = *pfront++ * alphaF + bgColor.Blue() * ( 1.0 - alphaF );
-            *presult++ = b;
+             unsigned char r = *pfront++ * alphaF + bgColor.Red() * ( 1.0 - alphaF );
+             *presult++ = r;
+             unsigned char g = *pfront++ * alphaF + bgColor.Green() * ( 1.0 - alphaF );
+             *presult++ = g;
+             unsigned char b = *pfront++ * alphaF + bgColor.Blue() * ( 1.0 - alphaF );
+             *presult++ = b;
         }
     }
 
-    result = wxBitmap( im_result );
+    wxImage im_result(front.GetWidth(), front.GetHeight(), po_result);
+    
+    wxBitmap result = wxBitmap( im_result );
     return result;
 }
 

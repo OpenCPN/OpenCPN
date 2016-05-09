@@ -228,7 +228,18 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
 
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
-        pConf->Read ( _T ( "Filename" ), &m_file_name );
+        pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
+        m_file_names.Clear();
+        if( pConf->GetNumberOfEntries() ) {
+            wxString str, val;
+            long dummy;
+            bool bCont = pConf->GetFirstEntry( str, dummy );
+            while( bCont ) {
+                pConf->Read( str, &val );              // Get a file name
+                m_file_names.Add(val);
+                bCont = pConf->GetNextEntry( str, dummy );
+            }
+        }
 
         wxStandardPathsBase& spath = wxStandardPaths::Get();
 
@@ -276,7 +287,22 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
 
         pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
-        pConf->Write ( _T ( "Filename" ), m_file_name );
+        pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
+        int iFileMax = pConf->GetNumberOfEntries();
+        if ( iFileMax ) {
+           wxString key;
+           long dummy;
+           for( int i = 0; i < iFileMax; i++ ) {
+               pConf->GetFirstEntry( key, dummy );
+               pConf->DeleteEntry( key, false );
+           }
+        }
+
+        for( unsigned int i = 0 ; i < m_file_names.GetCount() ; i++ ) {
+            wxString key;
+            key.Printf(_T("Filename%d"), i);
+            pConf->Write ( key, m_file_names[i] );
+        }
 
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
@@ -322,9 +348,10 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 	m_bpNow->SetBitmapLabel(GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
 	m_bpZoomToCenter->SetBitmapLabel(GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
 	m_bpPlay->SetBitmapLabel(GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
-	m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata), 
+	m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
 					m_CDataIsShown ? _T("curdata") : _T("ncurdata"),	m_ScaledFactor));
-	m_bpOpenFile->SetBitmapLabel(GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
+        if(m_bpOpenFile)
+            m_bpOpenFile->SetBitmapLabel(GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
 	m_bpSettings->SetBitmapLabel(GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
 
     SetRequestBitmap( m_ZoneSelMode );
@@ -336,21 +363,24 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
 void GRIBUICtrlBar::SetRequestBitmap( int type )
 {
+    if(NULL == m_bpRequest)
+        return;
+
     switch( type ) {
     case AUTO_SELECTION:
     case SAVED_SELECTION:
     case START_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Start a request"));
         break;
     case DRAW_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(selzone), _T("selzone"),m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(selzone), _T("selzone"),m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Draw requested Area\nor Click here to stop request"));
         break;
     case COMPLETE_SELECTION:
-		m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
+        m_bpRequest->SetBitmapLabel(GetScaledBitmap(wxBitmap(request_end), _T("request_end"), m_ScaledFactor));
         m_bpRequest->SetToolTip(_("Valid Area and Continue"));
-		break;
+        break;
     }
 }
 
@@ -371,16 +401,20 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     m_HasAltitude = false;
 
     //get more recent file in default directory if necessary
-    wxFileName f( m_file_name );
-    if( newestFile || f.GetFullName().IsEmpty() ) m_file_name = GetNewestFileInDirectory();
+    wxFileName f;
+    if( newestFile )
+        m_file_names.Clear();       //file names list must be cleared if we expect only the newest file! otherwise newest file is
+                                    //added to the previously recorded, what we don't want
+    if(m_file_names.IsEmpty() )     //in any case were there is no filename previously recorded, we must take the newest
+        m_file_names.Add( GetNewestFileInDirectory());
 
-    m_bGRIBActiveFile = new GRIBFile( m_file_name,
+    m_bGRIBActiveFile = new GRIBFile( m_file_names,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-
-    wxFileName fn( m_file_name );
+    // XXX
+    wxFileName fn( m_file_names[0] );
     wxString title( _("File") );
 	title.Append( _T(": ") ).Append( fn.GetFullName() );
 
@@ -405,7 +439,8 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
                     for( m_FileIntervalIndex = 0;; m_FileIntervalIndex++){
                         if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halfintermin) break;
                     }
-                    m_FileIntervalIndex--;
+                    if (m_FileIntervalIndex > 0)
+                        m_FileIntervalIndex--;
                     if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
                 }
             }
@@ -434,7 +469,11 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         m_Altitude = 0;             //set altitude at std
 
         //enable buttons according with file contents to ovoid crashes
+#ifdef __OCPN__ANDROID__
+        m_bpSettings->Enable(true);
+#else
         m_bpSettings->Enable(m_pTimelineSet != NULL);
+#endif
         m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
         m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
@@ -446,6 +485,18 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     }
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
+
+    //  Set all the data visibilities "true" on file load.
+    //  This will ensure that at least "some" data is displayed on file change,
+    //  and so avoid user confusion of no data shown.
+    //  This is especially important if cursor tracking of data is disabled.
+    //  Display priority conflicts will be resolved elsewhere before display....
+    for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
+        if (InDataPlot(i)) {
+            m_bDataPlot[i]  = true;
+        }
+    }
+
 }
 
 bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax)
@@ -545,7 +596,8 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     int state = (m_DialogStyle >> 1 == ATTACHED && m_CDataIsShown) ? 0 : 1;
     for( unsigned i = 0; i < m_OverlaySettings.m_iCtrlBarCtrlVisible[state].Len(); i++ ) {
         bool vis = i > 0 ? true : m_HasAltitude ? true : false;
-        FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
+        if(FindWindow( i + ID_CTRLALTITUDE ))
+            FindWindow( i + ID_CTRLALTITUDE )->Show( m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) == _T('X') && vis );
     }
     //initiate tooltips
     m_bpShowCursorData->SetToolTip( m_CDataIsShown ? _("Hide data at cursor" ) : _("Show data at cursor" ) );
@@ -740,7 +792,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
         MenuAppend( xmenu, ID_BTNSHOWCDATA, m_CDataIsShown ? _("Hide data at cursor") : _("Show data at cursor"), wxITEM_NORMAL,
 			GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata), m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
 							m_ScaledFactor));
-        MenuAppend( xmenu, ID_BTNPLAY, m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"), wxITEM_NORMAL, 
+        MenuAppend( xmenu, ID_BTNPLAY, m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"), wxITEM_NORMAL,
 			GetScaledBitmap(wxBitmap(m_tPlayStop.IsRunning() ? stop : play), m_tPlayStop.IsRunning() ? _T("stop") : _T("play"),
 							m_ScaledFactor) );
 		MenuAppend(xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL, GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
@@ -762,7 +814,10 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if( m_DialogStyle >> 1 == SEPARATED ) return;
     wxMouseEvent evt(event);
     evt.SetId( 1000 );
-    if( m_gCursorData && m_CDataIsShown ) m_gCursorData->OnMouseEvent (evt );
+
+    if( m_gCursorData && m_CDataIsShown ){
+        m_gCursorData->OnMouseEvent (evt );
+    }
 }
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
@@ -836,7 +891,7 @@ void GRIBUICtrlBar::OnPaint( wxPaintEvent& event )
     while( node ) {
         wxWindow *win = node->GetData();
         if( win->IsKindOf(CLASSINFO(wxBitmapButton)) )
-#if wxCHECK_VERSION(3,0,0)            
+#if wxCHECK_VERSION(3,0,0)
                 dc.DrawBitmap(((wxBitmapButton*) win)->GetBitmap() , 5, 5, false );
 #else
                 dc.DrawBitmap(((wxBitmapButton*) win)->GetBitmapSelected() , 5, 5, false );
@@ -938,6 +993,90 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
 
     event.Skip();
 }
+
+#ifdef __OCPN__ANDROID__
+wxString callActivityMethod_ss(const char *method, wxString parm);
+#endif
+
+void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
+{
+    //  Grab the current settings values
+    GribOverlaySettings initSettings = m_OverlaySettings;
+    initSettings.Read();
+
+    wxString json;
+    wxString json_begin = initSettings.SettingsToJSON(json);
+    wxLogMessage(json_begin);
+
+
+    //  Pick up the required options from the Request dialog
+    //  and add them to the JSON object
+    //  Really, this just means the current viewport coordinates.
+    //  Everything else is stored in Android app preferences bundle.
+
+    PlugIn_ViewPort current_vp = pPlugIn->GetCurrentViewPort();
+
+    double lon_min = wxRound(current_vp.lon_min) - 1;
+    double lon_max = wxRound(current_vp.lon_max) + 1;
+    double lat_min = wxRound(current_vp.lat_min) - 1;
+    double lat_max = wxRound(current_vp.lat_max) + 1;
+
+    wxJSONValue  v;
+    wxJSONReader reader;
+    int numErrors = reader.Parse( json_begin, &v );
+    if ( numErrors > 0 ){
+        return;
+    }
+
+    v[_T("latMin")] = lat_min;
+    v[_T("latMax")] = lat_max;
+    v[_T("lonMin")] = lon_min;
+    v[_T("lonMax")] = lon_max;
+
+    //  Clear the file name field, so that a retrieved or selected file name can be returned
+    v[_T("grib_file")] = _T("");
+
+    wxJSONWriter w;
+    wxString json_final;
+    w.Write(v, json_final);
+    wxLogMessage(json_final);
+
+
+#ifdef __OCPN__ANDROID__
+    wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
+    wxLogMessage(ret);
+#endif
+
+
+    event.Skip();
+
+
+}
+
+void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
+{
+    // construct the JSON root object
+    wxJSONValue  root;
+    // construct a JSON parser
+    wxJSONReader reader;
+
+    int numErrors = reader.Parse( json, &root );
+    if ( numErrors > 0 )  {
+        return;
+    }
+
+    wxString file = root[( _T("grib_file") )].AsString();
+
+     if(file.Length() && wxFileExists( file )){
+         wxFileName fn(file);
+         m_grib_dir = fn.GetPath();
+         m_file_names.Clear();
+         m_file_names.Add(file);
+         OpenFile();
+     }
+}
+
+
 
 void GRIBUICtrlBar::OnPlayStop( wxCommandEvent& event )
 {
@@ -1116,14 +1255,14 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
         // already computed using polar interpolation from first axis
         if(set->m_GribRecordPtrArray[i])
             continue;
-        
+
         unsigned int j;
         for(j=0; j<rsa->GetCount(); j++) {
             GribRecordSet *GRS = &rsa->Item(j);
             GribRecord *GR = GRS->m_GribRecordPtrArray[i];
             if(!GR)
                 continue;
-            
+
             wxDateTime curtime = GRS->m_Reference_Time;
             if(curtime <= time)
                 GR1time = curtime, GRS1 = GRS, GR1 = GR;
@@ -1195,31 +1334,51 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
 {
     if( m_tPlayStop.IsRunning() ) return;      // do nothing when play back is running !
 
+#ifndef __OCPN__ANDROID__
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();
         m_grib_dir = path.GetDocumentsDir();
     }
 
     wxFileDialog *dialog = new wxFileDialog(NULL, _("Select a GRIB file"), m_grib_dir,
-        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.gz)|*.grb;*.bz2;*.gz|All files (*)|*.*"), wxFD_OPEN, wxDefaultPosition,
-        wxDefaultSize, _T("File Dialog") );
+        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.grib2;*.grb2)|*.grb;*.bz2;*.grib2;*.grb2|All files (*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
+            , wxDefaultPosition, wxDefaultSize, _T("File Dialog") );
 
     if( dialog->ShowModal() == wxID_OK ) {
 
         ::wxBeginBusyCursor();
 
         m_grib_dir = dialog->GetDirectory();
-        m_file_name = dialog->GetPath();
+        dialog->GetPaths(m_file_names);
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
+#else
+    if( !wxDir::Exists( m_grib_dir ) ) {
+        wxStandardPathsBase& path = wxStandardPaths::Get();
+        m_grib_dir = path.GetDocumentsDir();
+    }
+
+    wxString file;
+    int response = PlatformFileSelectorDialog( NULL, &file, _("Select a GRIB file"),
+                                          m_grib_dir, _T(""), _T("*.*") );
+
+    if( response == wxID_OK ) {
+        wxFileName fn(file);
+        m_grib_dir = fn.GetPath();
+        m_file_names.Clear();
+        m_file_names.Add(file);
+        OpenFile();
+        SetDialogsStyleSizePosition( true );
+    }
+#endif
 }
 
-void GRIBUICtrlBar::CreateActiveFileFromName( wxString filename )
+void GRIBUICtrlBar::CreateActiveFileFromNames( const wxArrayString &filenames )
 {
-    if( !filename.IsEmpty() ) {
+    if( filenames.GetCount() != 0 ) {
         m_bGRIBActiveFile = NULL;
-        m_bGRIBActiveFile = new GRIBFile( filename , pPlugIn->GetCopyFirstCumRec(),
+        m_bGRIBActiveFile = new GRIBFile( filenames , pPlugIn->GetCopyFirstCumRec(),
                                           pPlugIn->GetCopyMissWaveRec() );
     }
 }
@@ -1427,32 +1586,46 @@ void GRIBUICtrlBar::SetFactoryOptions()
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec )
 {
-    m_bOK = true;           // Assume ok until proven otherwise
+    m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
     m_last_message = wxEmptyString;
 
-    if( !::wxFileExists( file_name ) ) {
-        m_last_message = _( " does not exist!" );
-        m_bOK = false;
-        return;
+    for (unsigned int i = 0; i < file_names.GetCount(); i++) {
+        wxString file_name = file_names[i];
+        if( ::wxFileExists( file_name ) )
+            m_bOK = true;
     }
 
+    if ( m_bOK == false) {
+        m_last_message = _( " files don't exist!" );
+        return;
+    }
     //    Use the zyGrib support classes, as (slightly) modified locally....
 
     m_pGribReader = new GribReader();
 
     //    Read and ingest the entire GRIB file.......
-    m_pGribReader->openFile( file_name );
+    m_bOK = false;
+    for (unsigned int i = 0; i < file_names.GetCount(); i++) {
+        wxString file_name = file_names[i];
+        m_pGribReader->openFile( file_name );
 
-    if( !m_pGribReader->isOk() ) {
+        if( m_pGribReader->isOk() ) {
+            m_bOK = true;
+         }
+    }
+    if ( m_bOK == false) {
         m_last_message = _( " can't be read!" );
-        m_bOK = false;
         return;
     }
 
-    m_FileName = file_name;
+    m_FileNames = file_names;
+
+    // fixup Accumulation records
+    m_pGribReader->computeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
+
 
     if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
     if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""
@@ -1516,10 +1689,12 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_WVHGT:    idx = Idx_HTSIGW;  break;                // Translation from NOAA WW3
                     case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
+                    case GRB_PRECIP_RATE:
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
                     case GRB_TEMP:
@@ -1559,7 +1734,9 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                             }
                         }
                         break;
-                     }
+
+                    }
+
 
                     if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
@@ -1601,3 +1778,103 @@ void GRIBUICData::OnMove( wxMoveEvent& event )
     m_gCursorData->GetScreenPosition( &w, &h );
     m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }
+
+
+//---------------------------------------------------------------------------------------
+//               Android Utility Methods
+//---------------------------------------------------------------------------------------
+#ifdef __OCPN__ANDROID__
+
+#include <QtAndroidExtras/QAndroidJniObject>
+
+extern JavaVM *java_vm;         // found in androidUtil.cpp, accidentally exported....
+JNIEnv* jenv;
+
+#if 0           // need this for the solib?
+jint JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    //qDebug() << "JNI_OnLoad";
+    java_vm = vm;
+
+    // Get JNI Env for all function calls
+    if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+        return -1;
+    }
+
+}
+#endif
+
+bool CheckPendingJNIException()
+{
+    if(!java_vm){
+        //qDebug() << "java_vm is NULL.";
+        return true;
+    }
+
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+        return true;
+    }
+
+    if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
+        //qDebug() << "Found JNI Exception Pending.";
+        return true;
+    }
+
+    return false;
+
+}
+
+
+wxString callActivityMethod_ss(const char *method, wxString parm)
+{
+    if(CheckPendingJNIException())
+        return _T("NOK");
+
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
+
+    if ( !activity.isValid() ){
+        //qDebug() << "Activity is not valid";
+        return return_string;
+    }
+
+    //  Need a Java environment to decode the resulting string
+    if (java_vm &&(java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) ){
+        //qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+
+    jstring p = (jenv)->NewStringUTF(parm.c_str());
+
+
+    //  Call the desired method
+    //qDebug() << "Calling method_ss";
+    //qDebug() << method;
+
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+    if(CheckPendingJNIException())
+        return _T("NOK");
+
+    //qDebug() << "Back from method_ss";
+
+        jstring s = data.object<jstring>();
+
+        if( (jenv)->GetStringLength( s )){
+            const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+            return_string = wxString(ret_string, wxConvUTF8);
+        }
+
+        return return_string;
+
+}
+
+
+
+#endif
+
+

@@ -120,6 +120,7 @@ public:
       void OnContextMenu( wxContextMenuEvent& event );
       void OnContextMenuSelection( wxCommandEvent& event );
       void RefreshConsoleData(void);
+      void ToggleRouteTotalDisplay();
       
       wxWindow          *m_pParent;
       wxStaticText       *pThisLegText;
@@ -133,7 +134,6 @@ public:
       CDI               *pCDI;
 
       wxFont            *pThisLegFont;
-      bool              m_bShowRouteTotal;
       bool              m_bNeedClear;
       wxBrush           *pbackBrush;
 
