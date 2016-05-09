@@ -14,8 +14,6 @@
 
 class wxSVGRect
 {
-  public:
-
   protected:
     double m_x;
     double m_y;
@@ -38,7 +36,7 @@ class wxSVGRect
     
     inline bool IsEmpty() const { return m_empty; }
     inline void Clear() { m_x = m_y = m_width = m_height = 0; m_empty = true; }
-    
+
   public:
     wxSVGRect(): m_x(0), m_y(0), m_width(0), m_height(0), m_empty(true) {}
     wxSVGRect(double x, double y, double width, double height):

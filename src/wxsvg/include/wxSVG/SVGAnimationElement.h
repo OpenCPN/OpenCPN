@@ -9,8 +9,6 @@
 #ifndef WX_SVG_ANIMATION_ELEMENT_H
 #define WX_SVG_ANIMATION_ELEMENT_H
 
-class wxSVGElement;
-
 #include "SVGElement.h"
 #include "SVGTests.h"
 #include "SVGExternalResourcesRequired.h"
@@ -52,7 +50,7 @@ class wxSVGAnimationElement:
   public wxEventTarget
 {
   protected:
-    wxSVGElement* m_targetElement;
+    wxString m_href;
     wxString m_attributeName;
     double m_begin;
     double m_dur;
@@ -61,10 +59,16 @@ class wxSVGAnimationElement:
     wxSVG_ANIMATION_FILL m_fill;
     wxSVG_ANIMATION_ADDITIVE m_additive;
     wxSVG_ANIMATION_ACCUMULATE m_accumulate;
+    int m_repeatCount;
+    wxSVGStringList m_values;
+    bool HasCustomAttribute(const wxString& name) const;
+    wxString GetCustomAttribute(const wxString& name) const;
+    bool SetCustomAttribute(const wxString& name, const wxString& value);
+    wxSvgXmlAttrHash GetCustomAttributes() const;
 
   public:
-    inline wxSVGElement* GetTargetElement() const { return m_targetElement; }
-    inline void SetTargetElement(wxSVGElement* n) { m_targetElement = n; }
+    inline const wxString& GetHref() const { return m_href; }
+    inline void SetHref(const wxString& n) { m_href = n; }
 
     inline const wxString& GetAttributeName() const { return m_attributeName; }
     inline void SetAttributeName(const wxString& n) { m_attributeName = n; }
@@ -92,11 +96,11 @@ class wxSVGAnimationElement:
 
   public:
     wxSVGAnimationElement(wxString tagName = wxT("")):
-      wxSVGElement(tagName), m_targetElement(NULL), m_begin(0), m_dur(0), m_fill(wxSVG_ANIMATION_FILL(0)), m_additive(wxSVG_ANIMATION_ADDITIVE(0)), m_accumulate(wxSVG_ANIMATION_ACCUMULATE(0)) {}
+      wxSVGElement(tagName), m_begin(0), m_dur(0), m_fill(wxSVG_ANIMATION_FILL(0)), m_additive(wxSVG_ANIMATION_ADDITIVE(0)), m_accumulate(wxSVG_ANIMATION_ACCUMULATE(0)), m_repeatCount(1) {}
     virtual ~wxSVGAnimationElement() {}
 
     virtual void ApplyAnimation();
-
+    wxSVGElement* GetTargetElement() const;
     virtual double GetStartTime();
     virtual double GetCurrentTime();
     virtual double GetSimpleDuration();

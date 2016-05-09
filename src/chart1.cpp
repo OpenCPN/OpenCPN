@@ -702,6 +702,7 @@ int              g_chart_zoom_modifier;
 int              g_NMEAAPBPrecision;
 
 wxString         g_TalkerIdText;
+int              g_maxWPNameLength;
 
 bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
@@ -1382,9 +1383,10 @@ bool MyApp::OnInit()
     pWayPointMan = NULL;
 
     g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
-    double dsmm = g_display_size_mm;
 
-    if(fabs(dsmm - g_display_size_mm) > 1){
+    // User override....
+    if((g_config_display_size_mm > 0) &&(g_config_display_size_manual)){
+        g_display_size_mm = g_config_display_size_mm;
         wxString msg;
         msg.Printf(_T("Display size (horizontal) config override: %d mm"), (int) g_display_size_mm);
         wxLogMessage(msg);
@@ -1999,7 +2001,10 @@ bool MyApp::OnInit()
 
     //  Verify any saved chart database startup index
     if(g_restore_dbindex >= 0){
-        if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
+        if(ChartData->GetChartTableEntries() == 0)
+            g_restore_dbindex = -1;
+        
+        else if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
             g_restore_dbindex = 0;
     }
 
@@ -2119,6 +2124,7 @@ extern ocpnGLOptions g_GLOptions;
     //  We need a resize to pick up height adjustment after building android ActionBar
     if(pConfig->m_bShowMenuBar)
         gFrame->SetSize(getAndroidDisplayDimensions());
+    androidSetFollowTool(cc1->m_bFollow);
 #endif
 
     gFrame->Raise();
@@ -2586,17 +2592,15 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     SetSystemColors( cs );
 
-    if( cc1 ) cc1->SetColorScheme( cs );
+    cc1->SetColorScheme( cs );
 
     if( pWayPointMan ) pWayPointMan->SetColorScheme( cs );
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
     SetChartThumbnail( -1 );
-    if ( cc1 ) {
-        cc1->HideChartInfoWindow();
-        cc1->SetQuiltChartHiLiteIndex( -1 );
-    }
+    cc1->HideChartInfoWindow();
+    cc1->SetQuiltChartHiLiteIndex( -1 );
 
     g_Piano->ResetRollover();
     g_Piano->SetColorScheme( cs );
@@ -3202,13 +3206,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
-    if( cc1 ) {
-//        cc1->SetCursor( wxCURSOR_WAIT );
+//  cc1->SetCursor( wxCURSOR_WAIT );
 
-        cc1->Refresh( true );
-        cc1->Update();
-        wxYield();
-    }
+    cc1->Refresh( true );
+    cc1->Update();
+    wxYield();
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
@@ -3292,6 +3294,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( pCurrentStack ) {
         g_restore_stackindex = pCurrentStack->CurrentStackEntry;
         g_restore_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
+        if(cc1 && cc1->GetQuiltMode())
+            g_restore_dbindex = cc1->GetQuiltReferenceChartIndex();
     }
 
     if( g_FloatingToolbarDialog ) {
@@ -3356,6 +3360,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
+    // pthumbwin is a cc1 child 
+    pthumbwin = NULL;
     cc1->Destroy();
     cc1 = NULL;
 
@@ -3409,7 +3415,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
     NMEA_Msg_Hash.clear();
 
-    pthumbwin = NULL;
 
     NMEALogWindow::Shutdown();
 
@@ -4217,7 +4222,24 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             Refresh(true);
             break;
         }
-        
+
+        case ID_CMD_POST_JSON_TO_PLUGINS:{
+            
+            // Extract the Message ID which is embedded in the JSON string passed in the event
+            wxJSONValue  root;
+            wxJSONReader reader;
+            
+            int numErrors = reader.Parse( event.GetString(), &root );
+            if ( numErrors == 0 )  {
+                if(root[_T("MessageID")].IsString()){
+                    wxString MsgID = root[_T("MessageID")].AsString();
+                    SendPluginMessage( MsgID, event.GetString() );  // Send to all PlugIns
+                }
+            }
+            
+            break;
+        }
+            
         default: {
             //        Look for PlugIn tools
             //        If found, make the callback.
@@ -4848,10 +4870,12 @@ void MyFrame::TogglebFollow( void )
 
 void MyFrame::SetbFollow( void )
 {
+    JumpToPosition(gLat, gLon, cc1->GetVPScale());
     cc1->m_bFollow = true;
+
     SetToolbarItemState( ID_FOLLOW, true );
     SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
-
+    
     #ifdef __OCPN__ANDROID__
     androidSetFollowTool(true);
     #endif
@@ -5487,10 +5511,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     }
     m_COGFilterLast = stuffcog;
 
-    if(cc1)
-        SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
+    SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-     if(rr & GL_CHANGED){
+    if(rr & GL_CHANGED){
         //    Refresh the chart display, after flushing cache.
         //      This will allow all charts to recognise new OpenGL configuration, if any
         b_need_refresh = true;
@@ -5529,6 +5552,10 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
             b_autofind = true;
         ChartsRefresh( index_hint, cc1->GetVP() );
     }
+    
+    //  The zoom-scale factor may have changed
+    //  so, trigger a recalculation of the reference chart
+    cc1->DoZoomCanvas(1.0001);
 
     return 0;
 }
@@ -5795,8 +5822,8 @@ void MyFrame::SetupQuiltMode( void )
         //    Select the proper Ref chart
         int target_new_dbindex = -1;
         if( pCurrentStack ) {
-            target_new_dbindex = pCurrentStack->GetCurrentEntrydbIndex();
-
+            target_new_dbindex = cc1->GetQuiltReferenceChartIndex();    //pCurrentStack->GetCurrentEntrydbIndex();
+            
             if(-1 != target_new_dbindex){
                 if( !cc1->IsChartQuiltableRef( target_new_dbindex ) ){
 
@@ -6039,10 +6066,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             pWayPointMan = new WayPointman();
             
             // Reload the ownship icon from UserIcons, if present
-            if(cc1){
-                if(cc1->SetUserOwnship())
-                    cc1->SetColorScheme(global_color_scheme);
-            }
+            if(cc1->SetUserOwnship())
+                cc1->SetColorScheme(global_color_scheme);
             
             pConfig->LoadNavObjects();
 
@@ -6584,13 +6609,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
     }
 
-    if( cc1 ) {
 #if !defined(__WXGTK__) && !defined(__WXQT__)
+    {
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);
-#endif
     }
+#endif
 //      Update the chart database and displayed chart
     bool bnew_view = false;
 
@@ -6602,8 +6627,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     nBlinkerTick++;
-    if( cc1 )
-        cc1->DrawBlinkObjects();
+    cc1->DrawBlinkObjects();
 
 //      Update the active route, if any
     if( g_pRouteMan->UpdateProgress() ) {
@@ -7760,7 +7784,7 @@ bool MyFrame::DoChartUpdate( void )
         vpLon = gLon;
 
         // on lookahead mode, adjust the vp center point
-        if( cc1 && g_bLookAhead ) {
+        if( g_bLookAhead ) {
             double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
 
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
@@ -7865,8 +7889,14 @@ bool MyFrame::DoChartUpdate( void )
                 if( ChartData ) {
                     ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
                     if( pc ) {
+                        
+                        // If the chart zoom modifier is greater than 1, allow corresponding underzoom (with a 10% fluff) on startup
+                        double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
+                        mod = wxMax(mod, 1.0);
+                        mod = wxMin(mod, 2.0);
+                        
                         proposed_scale_onscreen =
-                                wxMin(proposed_scale_onscreen, pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                                wxMin(proposed_scale_onscreen, mod * 1.10 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
                         proposed_scale_onscreen =
                                 wxMax(proposed_scale_onscreen, pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
                     }
@@ -9140,9 +9170,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gCog = gpd.kCog;
                 gSog = gpd.kSog;
 
-                gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) )
                 {
+                    gHdt = gpd.kHdt;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }

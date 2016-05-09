@@ -246,7 +246,9 @@ wxString wxSVGAnimatedPoints::GetAttribute(const wxString& attrName) const {
 
 // wxSVGAnimationElement
 wxString wxSVGAnimationElement::GetAttribute(const wxString& attrName) const {
-  if (attrName == wxT("attributeName"))
+  if (attrName == wxT("xlink:href"))
+    return m_href;
+  else if (attrName == wxT("attributeName"))
     return m_attributeName;
   else if (attrName == wxT("begin"))
     return wxString::Format(wxT("%g"), m_begin);
@@ -289,7 +291,9 @@ wxString wxSVGAnimationElement::GetAttribute(const wxString& attrName) const {
     return wxSVGTests::GetAttribute(attrName);
   else if (wxSVGExternalResourcesRequired::HasAttribute(attrName))
     return wxSVGExternalResourcesRequired::GetAttribute(attrName);
-  else 
+  else if (HasCustomAttribute(attrName))
+    return GetCustomAttribute(attrName);
+  else
     return wxT("");
 
   return wxT("");

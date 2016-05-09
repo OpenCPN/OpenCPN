@@ -77,8 +77,10 @@ public:
     NetworkProtocol NetProtocol;
     wxString        NetworkAddress;
     int             NetworkPort;
+    
     wxString        LastNetworkAddress;
     int             LastNetworkPort;
+    NetworkProtocol LastNetProtocol;
     
     DataProtocol    Protocol;
     wxString        Port;

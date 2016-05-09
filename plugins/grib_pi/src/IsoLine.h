@@ -145,6 +145,8 @@ class IsoLine
 
         MySegList       m_seglist;
         MySegListList   m_SegListList;
+        
+        double m_pixelMM;
 };
 
 

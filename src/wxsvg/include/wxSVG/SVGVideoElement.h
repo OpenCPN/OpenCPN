@@ -41,6 +41,7 @@ class wxSVGVideoElement:
     double m_dur;
     double m_clipBegin;
     double m_clipEnd;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedLength& GetX() const { WX_SVG_ANIM_LENGTH_CALC_WIDTH(m_x, GetViewportElement()); return m_x; }
@@ -75,8 +76,6 @@ class wxSVGVideoElement:
     inline double GetClipEnd() const { return m_clipEnd; }
     inline void SetClipEnd(double n) { m_clipEnd = n; }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);

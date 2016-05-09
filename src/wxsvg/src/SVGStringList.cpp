@@ -11,17 +11,16 @@
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(wxSVGStringListBase);
 
-wxString wxSVGStringList::GetValueAsString() const
-{
-  wxString value;
-  for (int i=0; i<(int)GetCount(); i++)
-    value += (i==0 ? wxT("") : wxT(",")) + Item(i);
-  return value;
+wxString wxSVGStringList::GetValueAsString() const {
+	wxString value;
+	for (int i = 0; i < (int) GetCount(); i++)
+		value += (i == 0 ? wxT("") : wxT(",")) + Item(i);
+	return value;
 }
 
-void wxSVGStringList::SetValueAsString(const wxString& value)
-{
-  wxStringTokenizer tkz(value, wxT(","));
-  while (tkz.HasMoreTokens()) 
-    Add(tkz.GetNextToken());
+void wxSVGStringList::SetValueAsString(const wxString& value, wxChar delimiter) {
+	wxStringTokenizer tkz(value, delimiter);
+	while (tkz.HasMoreTokens()) {
+		Add(tkz.GetNextToken().Strip(wxString::both));
+	}
 }

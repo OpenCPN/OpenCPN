@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "GribReader.h"
+#include "GribV1Record.h"
+#include "GribV2Record.h"
 #include <cassert>
 
 //-------------------------------------------------------------------------------
@@ -49,11 +51,14 @@ GribReader::GribReader(const wxString fname)
 GribReader::~GribReader()
 {
     clean_all_vectors();
-    if (file != NULL)
-          zu_close(file);
-    free(file);
-
+    if (file != NULL) 
+    {
+        zu_close(file);
+        free(file);
+        file = NULL;
+    }
 }
+
 //-------------------------------------------------------------------------------
 void GribReader::clean_all_vectors()
 {
@@ -100,16 +105,48 @@ void GribReader::readAllGribRecords()
     int id = 0;
     time_t firstdate = -1;
     bool b_EOF;
+    bool is_v2 = false;
 
     do {
         id ++;
-        rec = new GribRecord(file, id);
-        assert(rec);
-        if (rec->isOk())
+        // use the previously seen record type first
+        // a miss with compressed file is really slow as
+        // seek may mean re reading and decompressing the
+        // file from the start
+
+        if (is_v2 == false) {
+            rec = new GribV1Record(file, id);
+            if (rec->isOk() == false) {
+                delete rec;
+                rec = new GribV2Record(file, id);
+                if (rec->isOk() == true)
+                    is_v2 = true;
+            }
+        }
+        else {
+            is_v2 = false;
+            rec = new GribV2Record(file, id);
+            if (rec->isOk() == false) {
+                delete rec;
+                rec = new GribV1Record(file, id);
+            }
+            else 
+                is_v2 = true;
+        }
+        if (rec->isOk() == false)
+        {
+            delete rec;
+            rec = NULL;
+        }
+        else
         {
               b_EOF = rec->isEof();
 
-        	if (rec->isDataKnown())
+        	if (!rec->isDataKnown())
+        	{
+        	    delete rec;
+        	}
+        	else
         	{
 				ok = true;   // au moins 1 record ok
 
@@ -233,6 +270,10 @@ void GribReader::readAllGribRecords()
                             && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0 )
                             storeRecordInMap(rec);
 
+                        else if (rec->getDataType()==GRB_PRECIP_RATE
+				&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
+                            storeRecordInMap(rec);
+
                         else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
                             && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
                             storeRecordInMap(rec);
@@ -246,6 +287,9 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
                               storeRecordInMap(rec);
 
+                        else if( rec->getDataType() == GRB_WVHGT )               // Wave Height
+                              storeRecordInMap(rec);
+                        
                         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
                               storeRecordInMap(rec);
 
@@ -276,20 +320,16 @@ void GribReader::readAllGribRecords()
 
                         else
                         {
-/*
-                              fprintf(stderr,
+#if 1
+                              printf(
                                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
                                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
                               rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
                               );
-                              */
+#endif
                               delete rec;
                         }
                   }
-        }
-        else {    // ! rec-isOk
-            delete rec;
-            rec = NULL;
         }
     } while (rec != NULL &&  !b_EOF);
 }
@@ -362,6 +402,144 @@ void  GribReader::copyMissingWaveRecords (int dataType, int levelType, int level
 	}
 }
 
+#if 0
+bool GribReader::get_gribY(GribRecord *&ret, int dataType, int levelType, int levelValue, time_t date)
+{
+    switch (dataType) {
+    case GRB_WIND_VX:
+        ret = getGribRecord( GRB_WIND_VY, levelType, levelValue, date );
+        if (ret == 0 || ret->isOk() == false)
+            return false;
+        break;
+    case GRB_UOGRD:
+        ret = getGribRecord( GRB_VOGRD, levelType, levelValue, date );
+        if (ret == 0 || ret->isOk() == false)
+            return false;
+        break;
+    }
+    return true;
+}
+
+void  GribReader::InterpolateMissingRecords (int dataType, int levelType, int levelValue)
+{
+	std::set<time_t>  setdates = getListDates();
+	std::set<time_t>::iterator itd, itd2;
+    GribRecord *REC1 = 0;
+    GribRecord *REC1Y = 0;
+    time_t date1;
+    itd=setdates.begin();
+	while (itd!=setdates.end())
+	{
+		time_t date = *itd;
+		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
+		if ( rec && rec->isOk() ) {
+		    REC1 = 0;
+		    if (get_gribY(REC1Y, dataType, levelType, levelValue, date) == true)
+		    {
+    		    // there's a valid record or no need for one
+	    	    REC1  = rec;
+		        date1 = date;
+		        itd ++;
+		        continue;
+            }
+		}
+		else if (REC1 == 0 || REC1->isOk() == false)
+		{
+		    // no record but no first record
+		    itd++;
+		    continue;
+        }
+        // the record is empty
+		itd2 = itd;
+        time_t date2 = *itd2;
+        itd2 ++;	// next date
+        int cnt = 2;
+		while (itd2 != setdates.end()) {
+			GribRecord *rec2 = getGribRecord( dataType, levelType, levelValue, *itd2 );
+			GribRecord *rec2y;
+			if (rec2 && rec2->isOk() ) {
+		        if (get_gribY(rec2y, dataType, levelType, levelValue, *itd2) == true)
+		        {
+		            double interp = 1./(double)cnt;
+		            double j = 1.;
+		            for (; itd != itd2; itd++)
+		            {
+    		            GribRecord *r2y = 0, *ret;
+	    	            switch (dataType) { 
+		                case GRB_WIND_VX:
+		                case GRB_UOGRD:
+		                    ret = GribRecord::Interpolated2DRecord(r2y, *REC1, *REC1Y, *rec2, *rec2y, interp*j);
+		                    break;
+                        default:
+                            ret = GribRecord::InterpolatedRecord(*REC1, *rec2, interp*j);
+                            break;
+                        }
+                        if (ret) {
+					        ret->setRecordCurrentDate (*itd);
+					        storeRecordInMap (ret);
+					        if (r2y) {
+					            r2y->setRecordCurrentDate (*itd);
+					            storeRecordInMap (r2y);
+                            }
+                        }
+                        j += 1.;
+
+                    }
+					break;
+                }
+			}
+			cnt++;
+			itd2 ++;	// next date
+		}
+		if (itd2 == setdates.end())
+		    break;
+	}
+}
+#endif
+
+void  GribReader::computeAccumulationRecords (int dataType, int levelType, int levelValue)
+{
+	std::set<time_t>  setdates = getListDates();
+	std::set<time_t>::reverse_iterator rit;
+    GribRecord *prev = 0;
+    int p1 = 0, p2 = 0;
+
+    if (setdates.empty())
+        return;
+
+	// XXX only work if P2 -P1 === time
+    for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit)
+    {
+		time_t date = *rit;
+		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
+		if ( rec && rec->isOk() ) {
+		    
+		    // XXX double check reference date and timerange 
+		    if (prev != 0 )
+		    {
+		        if (rec->getTimeRange() == 4 && prev->getPeriodP1() == rec->getPeriodP1()) {
+		            // printf("substract %d %d %d\n", prev->getPeriodP1(), prev->getPeriodP2(), prev->getPeriodSec());
+		            prev->Substract(*rec);
+		            p1 = rec->getPeriodP2();
+                }
+                // convert to mm/h
+                if (p2 > p1) {
+                    prev->multiplyAllData( 1.0/(p2 -p1) );
+                }
+                p2 = p1 = 0;
+            }
+		    prev = rec;
+            p1 = prev->getPeriodP1();
+		    p2 = prev->getPeriodP2();
+		}
+	}
+	if (prev != 0 && p2 > p1) {
+	    // the last one
+        prev->multiplyAllData( 1.0/(p2 -p1) );
+	}
+	    
+}
+
 //---------------------------------------------------------------------------------
 void  GribReader::copyFirstCumulativeRecord()
 {
@@ -396,6 +574,7 @@ void GribReader::readGribFileContent()
 
     createListDates();
 //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
+
 
 	//-----------------------------------------------------
 	// Are dewpoint data in file ?
@@ -607,6 +786,7 @@ GribRecord * GribReader::getFirstGribRecord(int dataType,int levelType,int level
 //---------------------------------------------------
 // Délai en heures entre 2 records
 // On suppose qu'il est fixe pour tout le fichier !!!
+// NOT USED
 double GribReader::computeHoursBeetweenGribRecords()
 {
 	double res = 1;
@@ -698,10 +878,10 @@ double GribReader::computeDewPoint(double lon, double lat, time_t now)
 //-------------------------------------------------------------------------------
 void GribReader::openFile(const wxString fname)
 {
-    debug("Open file: %s", (const char *)fname.mb_str());
+    grib_debug("Open file: %s", (const char *)fname.mb_str());
     fileName = fname;
     ok = false;
-    clean_all_vectors();
+    // clean_all_vectors();
     //--------------------------------------------------------
     // Open the file
     //--------------------------------------------------------
@@ -733,6 +913,12 @@ void GribReader::openFile(const wxString fname)
       file = zu_open((const char *)fname.mb_str(), "rb", ZU_COMPRESS_NONE);
     	if (file != NULL)
     		readGribFileContent();
+    }
+    if (file != NULL) 
+    {
+        zu_close(file);
+        free(file);
+        file = NULL;
     }
 }
 

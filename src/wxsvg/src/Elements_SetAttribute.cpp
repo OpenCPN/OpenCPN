@@ -278,7 +278,9 @@ bool wxSVGAnimatedPoints::SetAttribute(const wxString& attrName, const wxString&
 
 // wxSVGAnimationElement
 bool wxSVGAnimationElement::SetAttribute(const wxString& attrName, const wxString& attrValue) {
-  if (attrName == wxT("attributeName"))
+  if (attrName == wxT("xlink:href") || attrName == wxT("href"))
+	m_href = attrValue;
+  else if (attrName == wxT("attributeName"))
 	m_attributeName = attrValue;
   else if (attrName == wxT("begin"))
   {
@@ -326,7 +328,8 @@ bool wxSVGAnimationElement::SetAttribute(const wxString& attrName, const wxStrin
   else if (wxSVGElement::SetAttribute(attrName, attrValue));
   else if (wxSVGTests::SetAttribute(attrName, attrValue));
   else if (wxSVGExternalResourcesRequired::SetAttribute(attrName, attrValue));
-  else 
+  else if (SetCustomAttribute(attrName, attrValue));
+  else
       return false;
 
   return true;
@@ -3447,7 +3450,7 @@ bool wxSVGTransformable::SetAnimatedValue(const wxString& attrName, const wxSVGA
 
 // wxSVGURIReference
 bool wxSVGURIReference::SetAttribute(const wxString& attrName, const wxString& attrValue) {
-  if (attrName == wxT("xlink:href"))
+  if (attrName == wxT("xlink:href") || attrName == wxT("href"))
 	m_href.GetBaseVal() = attrValue;
   else 
       return false;
