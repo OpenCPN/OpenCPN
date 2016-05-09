@@ -33,9 +33,10 @@ class wxSVGPolygonElement:
   public wxEventTarget,
   public wxSVGAnimatedPoints
 {
-  public:
   protected:
     wxSVGCanvasItem* m_canvasItem;
+
+  public:
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);

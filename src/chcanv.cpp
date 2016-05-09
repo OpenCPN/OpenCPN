@@ -1194,7 +1194,7 @@ ChartBase* ChartCanvas::GetChartAtCursor() {
         target_chart = Current_Ch;
     else
         if( VPoint.b_quilt )
-            target_chart = cc1->m_pQuilt->GetChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
+            target_chart = m_pQuilt->GetChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
         else
             target_chart = NULL;
     return target_chart;
@@ -1203,7 +1203,7 @@ ChartBase* ChartCanvas::GetChartAtCursor() {
 ChartBase* ChartCanvas::GetOverlayChartAtCursor() {
     ChartBase* target_chart;
     if( VPoint.b_quilt )
-        target_chart = cc1->m_pQuilt->GetOverlayChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
+        target_chart = m_pQuilt->GetOverlayChartAtPix( VPoint, wxPoint( mouse_x, mouse_y ) );
     else
         target_chart = NULL;
     return target_chart;
@@ -2504,7 +2504,7 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
         //    Check the absolute range of the cursor position
         //    There could be a window wherein the chart geoereferencing is not valid....
         double cursor_lat, cursor_lon;
-        cc1->GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
+        GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
 
         if((fabs(cursor_lat) < 90.) && (fabs(cursor_lon) < 360.))
         {
@@ -3072,7 +3072,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
 
     if( m_pQuilt ) {
         m_pQuilt->Compose( VPoint );
-        cc1->SetFocus();
+        SetFocus();
     }
 }
 
@@ -3255,7 +3255,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             bool renderable = true;
             ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
             if( referenceChart ) {
-                double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                double chartMaxScale = referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
                 renderable = chartMaxScale * 64 >= VPoint.chart_scale;
             }
             if( !renderable )
@@ -3286,7 +3286,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                         ChartBase* tentative_referenceChart = ChartData->OpenChartFromDB( pCurrentStack->GetDBIndex( candidate_stack_index ),
                                                                                 FULL_INIT );
                         if( tentative_referenceChart ) {
-                            double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                            double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
                             renderable = chartMaxScale*1.5 > VPoint.chart_scale;
                         }
                         
@@ -3333,7 +3333,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 bool renderable = true;
                 ChartBase* referenceChart = ChartData->OpenChartFromDB( ref_db_index, FULL_INIT );
                 if( referenceChart ) {
-                    double chartMaxScale = referenceChart->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
+                    double chartMaxScale = referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
                     renderable = chartMaxScale*1.5 > VPoint.chart_scale;
                     proj = ChartData->GetDBChartProj( ref_db_index );
                 } else
@@ -4356,7 +4356,7 @@ void ChartCanvas::UpdateShips()
         RoutePoint* p = g_pActiveTrack->GetLastPoint();
         if( p ) {
             wxPoint px;
-            cc1->GetCanvasPointPix( p->m_lat, p->m_lon, &px );
+            GetCanvasPointPix( p->m_lat, p->m_lon, &px );
             ocpndc.CalcBoundingBox( px.x, px.y );
         }
     }
@@ -8322,8 +8322,8 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
 
     if( g_bresponsive ) {
 
-        wxSize canvas_size = cc1->GetSize();
-        wxPoint canvas_pos = cc1->GetPosition();
+        wxSize canvas_size = GetSize();
+        wxPoint canvas_pos = GetPosition();
         wxSize fitted_size = pRoutePropDialog->GetSize();;
 
         if(canvas_size.x < fitted_size.x){
@@ -9400,7 +9400,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
             /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
                clipping regions with more than 1 rectangle so... */
-            wxColour water = cc1->pWorldBackgroundChart->water;
+            wxColour water = pWorldBackgroundChart->water;
             temp_dc.SetPen( *wxTRANSPARENT_PEN );
             temp_dc.SetBrush( wxBrush( water ) );
             OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
