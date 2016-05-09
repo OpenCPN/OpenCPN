@@ -626,20 +626,8 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
 // slot on pressed button "Print Route" with selection of the route properties to print
 void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
 {
-<<<<<<< HEAD
     RoutePrintSelection dlg( GetParent(), m_pRoute );
     dlg.ShowModal();
-=======
-
-  if (pRoutePrintSelection == NULL)
-    pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
-
-  if( !pRoutePrintSelection->IsShown() ) 
-      pRoutePrintSelection->ShowModal();
-
-  delete pRoutePrintSelection;
-  pRoutePrintSelection=NULL;
->>>>>>> upstream/master
 }
 
 void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
