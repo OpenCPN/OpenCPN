@@ -37,6 +37,7 @@ class wxSVGCircleElement:
     wxSVGAnimatedLength m_cx;
     wxSVGAnimatedLength m_cy;
     wxSVGAnimatedLength m_r;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedLength& GetCx() const { WX_SVG_ANIM_LENGTH_CALC_WIDTH(m_cx, GetViewportElement()); return m_cx; }
@@ -51,8 +52,6 @@ class wxSVGCircleElement:
     inline void SetR(const wxSVGAnimatedLength& n) { m_r = n; }
     inline void SetR(const wxSVGLength& n) { m_r.SetBaseVal(n); }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);

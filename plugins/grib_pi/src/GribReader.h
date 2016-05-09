@@ -37,6 +37,7 @@ Reader for a GRIB file
 #include <set>
 #include <map>
 
+
 #include "GribRecord.h"
 #include "zuFile.h"
 
@@ -90,6 +91,8 @@ class GribReader
       void  copyFirstCumulativeRecord   (int dataType,int levelType,int levelValue);
       //void  removeFirstCumulativeRecord (int dataType,int levelType,int levelValue);
       void  copyMissingWaveRecords (int dataType,int levelType,int levelValue);
+
+      void  computeAccumulationRecords (int dataType, int levelType, int levelValue);
 
       std::map < std::string, std::vector<GribRecord *>* > * getGribMap(){ return  &mapGribRecords; }              //dsr
 

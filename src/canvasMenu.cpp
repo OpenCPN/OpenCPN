@@ -583,7 +583,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         if( g_pAIS ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
 
-            if( seltype & SELTYPE_AISTARGET ) {
+            if( g_bShowAIS && (seltype & SELTYPE_AISTARGET) ) {
                 MenuAppend1( menuAIS, ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
                 AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
                 if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alert_state != AIS_ALERT_SET) ) {
@@ -599,6 +599,22 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                     else
                         MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
                 }
+                
+                menuAIS->AppendSeparator();
+                
+                if( !parent->GetVP().b_quilt ) {
+                    if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
+                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+                    }
+                    
+                } else {
+                    ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
+                    if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
+                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+                    }
+                }
+                        
+                
                 menuFocus = menuAIS;
             }
         }

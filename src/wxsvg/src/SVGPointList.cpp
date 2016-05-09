@@ -16,7 +16,7 @@ wxString wxSVGPointList::GetValueAsString() const
   wxString value;
   for (int i=0; i<(int)GetCount(); i++)
     value += (i==0 ? wxT("") : wxT(" ")) + 
-      wxString::Format(wxT("%%f,%%f"), Item(i).GetX(), Item(i).GetY());
+      wxString::Format(wxT("%g,%g"), Item(i).GetX(), Item(i).GetY());
   return value;
 }
 

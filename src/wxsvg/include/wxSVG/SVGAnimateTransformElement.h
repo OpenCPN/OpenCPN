@@ -28,13 +28,11 @@ class wxSVGAnimateTransformElement:
 {
   protected:
     wxSVG_ANIMATETRANSFORM m_type;
+    int m_transformIdx;
 
   public:
     inline wxSVG_ANIMATETRANSFORM GetType() const { return m_type; }
     inline void SetType(const wxSVG_ANIMATETRANSFORM& n) { m_type = n; }
-
-  protected:
-    int m_transformIdx;
 
   public:
     wxSVGAnimateTransformElement(wxString tagName = wxT("animateTransform")):

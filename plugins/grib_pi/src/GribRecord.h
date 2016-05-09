@@ -27,11 +27,9 @@ Elément de base d'un fichier GRIB
 #include <iostream>
 #include <cmath>
 
-#include "zuFile.h"
-
 #define DEBUG_INFO    false
 #define DEBUG_ERROR   true
-#define debug(format, ...)  {if(DEBUG_INFO)  {fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
+#define grib_debug(format, ...)  {if(DEBUG_INFO)  {fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
 #define erreur(format, ...) {if(DEBUG_ERROR) {fprintf(stderr,"ERROR: ");fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
 
 #define zuint  unsigned int
@@ -96,6 +94,7 @@ Elément de base d'un fichier GRIB
 #define LV_MSL       102
 #define LV_ABOV_GND  105
 #define LV_SIGMA     107
+#define LV_ATMOS_ENT  10
 #define LV_ATMOS_ALL 200
 //---------------------------------------------------------
 enum DataCenterModel {
@@ -131,17 +130,21 @@ class GribCode
 class GribRecord
 {
     public:
-        GribRecord(ZUFILE* file, int id_);
         GribRecord(const GribRecord &rec);
-        GribRecord() {}
-
+        GribRecord() { m_bfilled = false;}
+        
+        virtual ~GribRecord();
+  
+  
         static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d, bool dir=false);
         static GribRecord *Interpolated2DRecord(GribRecord *&rety,
                                                 const GribRecord &rec1x, const GribRecord &rec1y,
                                                 const GribRecord &rec2x, const GribRecord &rec2y, double d);
 
         static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
-        ~GribRecord();
+
+        void   multiplyAllData(double k);
+        void Substract(const GribRecord &rec, bool positive=true);
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
@@ -155,8 +158,6 @@ class GribRecord
         zuint   getLevelValue() const  { return levelValue; }
         zuint   getDataCenterModel() const { return dataCenterModel; }
         //-----------------------------------------
-        void    translateDataType();  // adapte les codes des différents centres météo
-        //-----------------------------------------
 
         zuchar   getIdCenter() const  { return idCenter; }
         zuchar   getIdModel() const   { return idModel; }
@@ -169,6 +170,8 @@ class GribRecord
         //-----------------------------------------
         int    getPeriodP1() const  { return periodP1; }
         int    getPeriodP2() const  { return periodP2; }
+        zuint  getPeriodSec() const  { return periodsec; }
+        zuchar getTimeRange() const { return timeRange; }
 
         // Number of points in the grid
         int    getNi() const     { return Ni; }
@@ -218,7 +221,12 @@ class GribRecord
         time_t getRecordCurrentDate () const     { return curDate; }
         const char* getStrRecordCurDate () const { return strCurDate; }
         void  setRecordCurrentDate (time_t t);
-    private:
+        void   print();
+        bool isFilled(){ return m_bfilled; }
+        void setFilled(bool val=true){ m_bfilled = val;}
+
+    protected:
+    //private:
         static bool GetInterpolatedParameters
             (const GribRecord &rec1, const GribRecord &rec2,
              double &La1, double &Lo1, double &La2, double &Lo2, double &Di, double &Dj,
@@ -235,37 +243,30 @@ class GribRecord
         char   strRefDate [32];
         char   strCurDate [32];
         int    dataCenterModel;
+        bool  m_bfilled;
+
         //---------------------------------------------
         // SECTION 0: THE INDICATOR SECTION (IS)
         //---------------------------------------------
-        zuint  fileOffset0;
-        zuint  seekStart, totalSize;
         zuchar editionNumber;
-        bool   b_len_add_8;
 
         // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
-        zuint  fileOffset1;
-        zuint  sectionSize1;
-        zuchar tableVersion;
-        zuchar data1[28];
         zuchar idCenter;
         zuchar idModel;
         zuchar idGrid;
         zuchar dataType;      // octet 9 = parameters and units
         zuchar levelType;
         zuint  levelValue;
-        bool   hasGDS;
+
         bool   hasBMS;
         zuint  refyear, refmonth, refday, refhour, refminute;
-        zuchar periodP1, periodP2;
+        //zuchar periodP1, periodP2;
+        zuint periodP1, periodP2;
         zuchar timeRange;
         zuint  periodsec;     // period in seconds
         time_t refDate;      // C reference date
         time_t curDate;      // C current date
-        double  decimalFactorD;
         // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
-        zuint  fileOffset2;
-        zuint  sectionSize2;
         zuchar NV, PV;
         zuchar gridType;
         zuint  Ni, Nj;
@@ -280,52 +281,15 @@ class GribRecord
         bool  isScanJpositive;
         bool  isAdjacentI;
         // SECTION 3: BIT MAP SECTION (BMS)
-        zuint  fileOffset3;
-        zuint  sectionSize3;
+        zuint  BMSsize;
         zuchar *BMSbits;
         // SECTION 4: BINARY DATA SECTION (BDS)
-        zuint  fileOffset4;
-        zuint  sectionSize4;
-        zuchar unusedBitsEndBDS;
-        bool  isGridData;          // not spherical harmonics
-        bool  isSimplePacking;
-        bool  isFloatValues;
-        int   scaleFactorE;
-        double scaleFactorEpow2;
-        double refValue;
-        zuint  nbBitsInPack;
         double  *data;
         // SECTION 5: END SECTION (ES)
 
-        //---------------------------------------------
-        // Data Access
-        //---------------------------------------------
-        bool readGribSection0_IS (ZUFILE* file, bool b_skip_initial_GRIB);
-        bool readGribSection1_PDS(ZUFILE* file);
-        bool readGribSection2_GDS(ZUFILE* file);
-        bool readGribSection3_BMS(ZUFILE* file);
-        bool readGribSection4_BDS(ZUFILE* file);
-        bool readGribSection5_ES (ZUFILE* file);
-
-        //---------------------------------------------
-        // Utility functions
-        //---------------------------------------------
-        zuchar readChar(ZUFILE* file);
-        int    readSignedInt3(ZUFILE* file);
-        int    readSignedInt2(ZUFILE* file);
-        zuint  readInt2(ZUFILE* file);
-        zuint  readInt3(ZUFILE* file);
-        double readFloat4(ZUFILE* file);
-
-        zuint  readPackedBits(zuchar *buf, zuint first, zuint nbBits);
-        zuint  makeInt3(zuchar a, zuchar b, zuchar c);
-        zuint  makeInt2(zuchar b, zuchar c);
-
         time_t makeDate(zuint year,zuint month,zuint day,zuint hour,zuint min,zuint sec);
-        zuint  periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range);
-        void   multiplyAllData(double k);
 
-        void   print();
+//        void   print();
 };
 
 //==========================================================================

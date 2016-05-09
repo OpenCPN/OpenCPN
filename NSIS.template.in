@@ -702,6 +702,7 @@ CMake variables
 Section "-Topmost Section" SecTopmost ;# this needs to be always the first section to be executed!
 	SetShellVarContext all
 	SetOutPath $INSTDIR
+        LogSet on
 
 	${If} $INSTALL_TYPE == 1
 	${OrIf} $INSTALL_TYPE == 2
@@ -855,7 +856,8 @@ Section "-Install Section" SecInstall
 	;# Save the log file
 	StrCpy $0 "$INSTDIR\install.log"
 	Push $0
-	Call DumpLog
+        IfSilent +2 0
+	  Call DumpLog
 SectionEnd
 
 ;--------------------------------

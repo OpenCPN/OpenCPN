@@ -20,7 +20,7 @@ class wxSVGStringList: public wxSVGStringListBase
     wxSVGStringList() {}
     
     wxString GetValueAsString() const;
-    void SetValueAsString(const wxString& value);
+    void SetValueAsString(const wxString& value, wxChar delimiter = wxT(','));
 };
 
 #endif // WX_SVG_STRING_LIST_H

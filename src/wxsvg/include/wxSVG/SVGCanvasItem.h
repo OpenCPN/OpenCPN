@@ -3,7 +3,7 @@
 // Purpose:     Canvas items
 // Author:      Alex Thuering
 // Created:     2005/05/09
-// RCS-ID:      $Id: SVGCanvasItem.h,v 1.27 2015/09/29 17:03:39 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvasItem.h,v 1.28 2016/01/09 23:31:15 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
@@ -162,19 +162,35 @@ class wxSVGCanvasText: public wxSVGCanvasItem
     virtual void InitText(const wxString& text, const wxCSSStyleDeclaration& style, wxSVGMatrix* matrix) = 0;
 };
 
+class wxSVGCanvasSvgImageData {
+public:
+	wxSVGCanvasSvgImageData(const wxString& filename, wxSVGDocument* doc);
+	wxSVGCanvasSvgImageData(wxSVGSVGElement* svgImage, wxSVGDocument* doc);
+	~wxSVGCanvasSvgImageData();
+	
+	void IncRef() { m_count++; }
+	int DecRef() { return (--m_count); }
+	
+	inline wxSVGSVGElement* GetSvgImage() { return m_svgImage; }
+	
+private:
+    int m_count;
+    wxSVGSVGElement* m_svgImage;
+};
+
 /** Canvas item, that saves image (SVGImageElement) */
 class wxSVGCanvasImage: public wxSVGCanvasItem {
 public:
 	wxSVGCanvasImage(): wxSVGCanvasItem(wxSVG_CANVAS_ITEM_IMAGE), m_x(0), m_y(0), m_width(0), m_height(0),
-		m_defHeightScale(1), m_svgImage(NULL) {}
+		m_defHeightScale(1), m_svgImageData(NULL) {}
 	wxSVGCanvasImage(wxSVGCanvasItemType type): wxSVGCanvasItem(type), m_x(0), m_y(0), m_width(0), m_height(0),
-		m_defHeightScale(1), m_svgImage(NULL) {}
+		m_defHeightScale(1), m_svgImageData(NULL) {}
 	virtual ~wxSVGCanvasImage();
 	virtual void Init(wxSVGImageElement& element, const wxCSSStyleDeclaration& style, wxProgressDialog* progressDlg);
 	virtual int GetDefaultWidth();
 	virtual int GetDefaultHeight();
 	const wxSVGPreserveAspectRatio& GetPreserveAspectRatio() { return m_preserveAspectRatio; }
-	wxSVGSVGElement* GetSvgImage() { return m_svgImage; }
+	wxSVGSVGElement* GetSvgImage(wxSVGDocument* doc = NULL);
 	
 public:
 	double m_x, m_y, m_width, m_height; /** position and size of image */
@@ -182,7 +198,7 @@ public:
 	wxImage m_image; /** image data */
 	double m_defHeightScale;
 	wxSVGPreserveAspectRatio m_preserveAspectRatio;
-	wxSVGSVGElement* m_svgImage;
+	wxSVGCanvasSvgImageData* m_svgImageData;
 };
 
 class wxFfmpegMediaDecoder;
