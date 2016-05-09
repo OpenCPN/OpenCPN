@@ -3,7 +3,7 @@
 // Purpose:     wxSVGDocument - SVG render & data holder class
 // Author:      Alex Thuering
 // Created:     2005/01/17
-// RCS-ID:      $Id: SVGDocument.cpp,v 1.49 2014/04/06 10:18:15 ntalex Exp $
+// RCS-ID:      $Id: SVGDocument.cpp,v 1.51 2016/02/29 11:09:17 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -101,23 +101,36 @@ double wxSVGDocument::GetDuration(wxSVGElement* parent) {
 		if (elem->GetType() == wxSVGXML_ELEMENT_NODE) {
 			double duration = 0;
 			switch (elem->GetDtd()) {
-				case wxSVG_VIDEO_ELEMENT:
-					duration = ((wxSVGVideoElement*) elem)->GetBegin() + ((wxSVGVideoElement*) elem)->GetDuration();
-					break;
 				case wxSVG_ANIMATE_ELEMENT:
 				case wxSVG_ANIMATECOLOR_ELEMENT:
 				case wxSVG_ANIMATEMOTION_ELEMENT:
 				case wxSVG_ANIMATETRANSFORM_ELEMENT:
 					duration = ((wxSVGAnimateElement*) elem)->GetBegin() + ((wxSVGAnimateElement*) elem)->GetDur();
 					break;
-				default:
-					if (elem->GetChildren()) {
-						duration = GetDuration(elem);
+				case wxSVG_VIDEO_ELEMENT:
+					duration = ((wxSVGVideoElement*) elem)->GetBegin() + ((wxSVGVideoElement*) elem)->GetDuration();
+					break;
+				case wxSVG_IMAGE_ELEMENT: {
+					wxSVGCanvasImage* canvasItem = (wxSVGCanvasImage*) ((wxSVGImageElement*) elem)->GetCanvasItem();
+					if (canvasItem != NULL && canvasItem->GetSvgImage() != NULL) {
+						duration = GetDuration(canvasItem->GetSvgImage());
+						if (result < duration) {
+							result = duration;
+						}
 					}
+					break;
+				}
+				default:
 					break;
 			}
 			if (result < duration) {
 				result = duration;
+			}
+			if (elem->GetChildren()) {
+				duration = GetDuration(elem);
+				if (result < duration) {
+					result = duration;
+				}
 			}
 		}
 		elem = (wxSVGElement*) elem->GetNext();
@@ -129,10 +142,16 @@ double wxSVGDocument::GetDuration() {
 	return GetDuration(GetRootElement());
 }
 
-void ApplyAnimation(wxSVGElement* parent) {
+void wxSVGDocument::ApplyAnimation(wxSVGElement* parent) {
 	wxSVGElement* elem = (wxSVGElement*) parent->GetChildren();
 	while (elem) {
 		if (elem->GetType() == wxSVGXML_ELEMENT_NODE) {
+			if (elem->GetDtd() == wxSVG_IMAGE_ELEMENT) {
+				wxSVGCanvasImage* canvasItem = (wxSVGCanvasImage*) ((wxSVGImageElement*) elem)->GetCanvasItem();
+				if (canvasItem != NULL && canvasItem->GetSvgImage() != NULL) {
+					ApplyAnimation(canvasItem->GetSvgImage((wxSVGDocument*) elem->GetOwnerDocument()));
+				}
+			}
 			switch (elem->GetDtd()) {
 				case wxSVG_ANIMATE_ELEMENT:
 					((wxSVGAnimateElement*) elem)->ApplyAnimation();
@@ -162,6 +181,7 @@ void wxSVGDocument::SetCurrentTime(double seconds) {
 		ApplyAnimation(GetRootElement());
 }
 
+/** Renders SVG to bitmap image */
 wxImage wxSVGDocument::Render(int width, int height, const wxSVGRect* rect, bool preserveAspectRatio, bool alpha,
 		wxProgressDialog* progressDlg) {
 	if (!GetRootElement())
@@ -233,16 +253,5 @@ wxImage wxSVGDocument::Render(int width, int height, const wxSVGRect* rect, bool
 	GetCanvas()->RenderElement(GetRootElement(), rect, &m_screenCTM, &GetRootElement()->GetStyle(), NULL, NULL,
 			progressDlg);
 
-	return m_canvas->GetImage();
-}
-
-wxImage wxSVGDocument::RenderElementById(const wxString& id) {
-	wxSVGElement* element = GetElementById(id);
-	const wxSVGRect* rect = NULL;
-	m_screenCTM = wxSVGMatrix();
-	m_screenCTM = m_screenCTM.Translate(-10, -10);
-	
-	m_canvas->Clear();
-	GetCanvas()->RenderElement(element, rect, &m_screenCTM, &GetRootElement()->GetStyle(), NULL, NULL, NULL);
 	return m_canvas->GetImage();
 }

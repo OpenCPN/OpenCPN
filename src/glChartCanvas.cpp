@@ -1280,7 +1280,7 @@ void glChartCanvas::SetupOpenGL()
     
     g_GLOptions.m_bUseCanvasPanning = false;
 #ifdef __OCPN__ANDROID__
-    g_GLOptions.m_bUseCanvasPanning = true;
+    g_GLOptions.m_bUseCanvasPanning = isPlatformCapable(PLATFORM_CAP_FASTPAN);
 #endif
         
     //      Maybe build FBO(s)
@@ -2077,7 +2077,8 @@ void glChartCanvas::GridDraw( )
     glEnd();
 
     glDisable( GL_LINE_SMOOTH );
-
+    glEnable( GL_BLEND );
+    
     // draw text labels
     glEnable(GL_TEXTURE_2D);
     for(lat = startlat; lat < nlat; lat += gridlatMajor) {
@@ -4947,8 +4948,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             
         case GestureFinished:
             if(m_binPan){
-                if (g_GLOptions.m_bUseCanvasPanning)
-                    cc1->PanCanvas( -panx, pany );
+                cc1->PanCanvas( -panx, pany );
 
             #ifdef __OCPN__ANDROID__
                 androidSetFollowTool(false);

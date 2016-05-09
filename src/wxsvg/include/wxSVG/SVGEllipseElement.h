@@ -38,6 +38,7 @@ class wxSVGEllipseElement:
     wxSVGAnimatedLength m_cy;
     wxSVGAnimatedLength m_rx;
     wxSVGAnimatedLength m_ry;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedLength& GetCx() const { WX_SVG_ANIM_LENGTH_CALC_WIDTH(m_cx, GetViewportElement()); return m_cx; }
@@ -56,8 +57,6 @@ class wxSVGEllipseElement:
     inline void SetRy(const wxSVGAnimatedLength& n) { m_ry = n; }
     inline void SetRy(const wxSVGLength& n) { m_ry.SetBaseVal(n); }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);

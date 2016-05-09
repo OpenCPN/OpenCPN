@@ -3,7 +3,7 @@
 // Purpose:     Implementation of SVGAnimateTransformElement
 // Author:      Alex Thuering
 // Created:     2014/02/24
-// RCS-ID:      $Id: SVGAnimateTransformElement.cpp,v 1.2 2014/03/27 08:42:16 ntalex Exp $
+// RCS-ID:      $Id: SVGAnimateTransformElement.cpp,v 1.3 2016/01/09 23:31:14 ntalex Exp $
 // Copyright:   (c) 2014 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -42,11 +42,10 @@ void UpdateTransform(wxSVGTransform& transform, wxSVG_ANIMATETRANSFORM type, con
 }
 
 void wxSVGAnimateTransformElement::ApplyAnimation() {
-	if (GetDur() <= 0 || (GetTo().GetPropertyType() != wxSVG_ANIMATED_LENGTH
+	wxSVGElement* targetElement = GetTargetElement();
+	if (targetElement == NULL || GetDur() <= 0 || (GetTo().GetPropertyType() != wxSVG_ANIMATED_LENGTH
 			&& GetTo().GetPropertyType() != wxSVG_ANIMATED_LENGTH_LIST))
 		return;
-	if (GetTargetElement() == NULL)
-		SetTargetElement((wxSVGElement*) GetParent());
 	wxSVGLengthList values;
 	if (GetCurrentTime() >= GetStartTime() + GetDur()) {
 		if (GetTo().GetPropertyType() == wxSVG_ANIMATED_LENGTH) {
@@ -71,7 +70,7 @@ void wxSVGAnimateTransformElement::ApplyAnimation() {
 	} else {
 		return;
 	}
-	wxSVGTransformable* transformable = wxSVGTransformable::GetSVGTransformable(*GetTargetElement());
+	wxSVGTransformable* transformable = wxSVGTransformable::GetSVGTransformable(*targetElement);
 	if (transformable != NULL) {
 		if (m_transformIdx == -1 || m_transformIdx >= (int) transformable->GetTransformList().GetAnimVal().size()) {
 			wxSVGTransformList& transforms = transformable->GetTransformList().GetAnimVal();
@@ -90,6 +89,6 @@ void wxSVGAnimateTransformElement::ApplyAnimation() {
 		wxSVGTransform* transform = new wxSVGTransform();
 		UpdateTransform(*transform, GetType(), values);
 		transforms.Add(transform);
-		GetTargetElement()->SetAnimatedValue(GetAttributeName(), wxSVGAnimatedType(transforms));
+		targetElement->SetAnimatedValue(GetAttributeName(), wxSVGAnimatedType(transforms));
 	}
 }

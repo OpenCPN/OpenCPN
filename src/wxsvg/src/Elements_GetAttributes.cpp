@@ -210,6 +210,8 @@ wxSvgXmlAttrHash wxSVGAnimatedPoints::GetAttributes() const
 wxSvgXmlAttrHash wxSVGAnimationElement::GetAttributes() const
 {
   wxSvgXmlAttrHash attrs;
+  if (!m_href.IsEmpty())
+    attrs.Add(wxT("xlink:href"), m_href);
   if (!m_attributeName.IsEmpty())
     attrs.Add(wxT("attributeName"), m_attributeName);
   if (m_begin > 0)
@@ -226,6 +228,7 @@ wxSvgXmlAttrHash wxSVGAnimationElement::GetAttributes() const
     attrs.Add(wxT("additive"), GetAttribute(wxT("additive")));
   if (m_accumulate != wxSVG_ANIMATION_ACCUMULATE_UNKNOWN)
     attrs.Add(wxT("accumulate"), GetAttribute(wxT("accumulate")));
+  attrs.Add(GetCustomAttributes());
   attrs.Add(wxSVGElement::GetAttributes());
   attrs.Add(wxSVGTests::GetAttributes());
   attrs.Add(wxSVGExternalResourcesRequired::GetAttributes());
@@ -1230,7 +1233,6 @@ wxSvgXmlAttrHash wxSVGStylable::GetAttributes() const
   wxSvgXmlAttrHash attrs;
   if (!m_className.GetBaseVal().IsEmpty())
     attrs.Add(wxT("class"), m_className.GetBaseVal());
-  attrs.Add(GetCustomAttributes());
   if (!m_style.empty())
     attrs.Add(wxT("style"), m_style.GetCSSText());
   attrs.Add(GetCustomAttributes());

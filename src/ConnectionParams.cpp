@@ -274,9 +274,9 @@ wxString ConnectionParams::GetLastDSPort()
     else
     {
         wxString proto;
-        if ( NetProtocol == TCP )
+        if ( LastNetProtocol == TCP )
             proto = _T("TCP");
-        else if (NetProtocol == UDP)
+        else if (LastNetProtocol == UDP)
             proto = _T("UDP");
         else
             proto = _T("GPSD");

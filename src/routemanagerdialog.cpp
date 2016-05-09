@@ -1525,14 +1525,14 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             }
 
             wxString choices[] = { _T("5.0"), _T("10.0"), _T("20.0"), _T("50.0"), _T("100.0") };
-            wxSingleChoiceDialog* precisionDlg = new wxSingleChoiceDialog( this,
+            wxSingleChoiceDialog precisionDlg ( this,
                     _("Select the maximum error allowed (in meters)\nafter data reduction:"),
                     _("Reduce Data Precision"), 5, choices );
 
-            int result = precisionDlg->ShowModal();
+            int result = precisionDlg.ShowModal();
             if( result == wxID_CANCEL ) break;
             double precision = 5.0;
-            switch( precisionDlg->GetSelection() ) {
+            switch( precisionDlg.GetSelection() ) {
                 case 0: precision = 5.0; break;
                 case 1: precision = 10.0; break;
                 case 2: precision = 20.0; break;
