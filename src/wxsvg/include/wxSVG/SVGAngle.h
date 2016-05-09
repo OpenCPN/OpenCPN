@@ -33,8 +33,8 @@ class wxSVGAngle
     inline void SetUnitType(const wxSVG_ANGLETYPE& n) { m_unitType = n; }
 
   public:
-    wxSVGAngle() : m_unitType(wxSVG_ANGLETYPE_UNKNOWN), m_value(0) {}
-    wxSVGAngle(double v) : m_unitType(wxSVG_ANGLETYPE_UNSPECIFIED), m_value(v) {}
+    wxSVGAngle() : m_unitType(wxSVG_ANGLETYPE_UNKNOWN), m_value(0), m_valueInSpecifiedUnits(0) {}
+    wxSVGAngle(double v) : m_unitType(wxSVG_ANGLETYPE_UNSPECIFIED), m_value(v), m_valueInSpecifiedUnits(0) {}
     virtual ~wxSVGAngle() {}
     
     inline double GetValue() const { return m_value; }

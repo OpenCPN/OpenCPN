@@ -129,6 +129,17 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 #If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
 #cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+
+IF(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ELSE(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDIF(APPLE OR WIN32)
+
 IF(APPLE OR WIN32)
   IF(NOT BUNDLE_DOCS)
     SET (BUNDLE_DOCS "ON")
@@ -152,6 +163,7 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs OFF")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
+
 IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
   # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
   MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
@@ -719,6 +731,7 @@ IF(OCPN_USE_SVG)
       src/wxsvg/src/NodeList.cpp
       src/wxsvg/src/SVGAngle.cpp
       src/wxsvg/src/SVGAnimateTransformElement.cpp
+      src/wxsvg/src/SVGAnimateMotionElement.cpp
       src/wxsvg/src/SVGAnimatedType.cpp
       src/wxsvg/src/SVGAnimationElement.cpp
       src/wxsvg/src/SVGCanvas.cpp
@@ -2077,6 +2090,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_DEBIAN_PACKAGE_SECTION "misc")
     SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
     SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
+    SET(CPACK_RPM_PACKAGE_RELEASE "${PACKAGE_RELEASE}")
     SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
     SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
     SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")
@@ -2150,15 +2164,13 @@ IF(APPLE)
 
  ADD_CUSTOM_COMMAND(
    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg
-   COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+   COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
    DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
    COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
-)
+ )
 
  ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg)
-
-
 ENDIF(APPLE)
 
 MESSAGE(STATUS "Writing spec file...")

@@ -316,6 +316,120 @@ wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, int format)
     return(s);
 }
 
+WX_DECLARE_LIST(wxBitmap, BitmapList);
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST(BitmapList);
+
+WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
+#include <wx/arrimpl.cpp> 
+WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
+
+
+class  OCPNIconCombo : public wxOwnerDrawnComboBox
+{
+public:
+    
+    OCPNIconCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
+                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                  int n = 0, const wxString choices[] = NULL,
+                  long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = _T("OCPNIconCombo") );
+    
+    
+    
+    ~OCPNIconCombo ();
+    
+    void OnDrawItem(wxDC& dc, const wxRect& rect, int item, int flags) const;
+    wxCoord OnMeasureItem(size_t item) const;
+    wxCoord OnMeasureItemWidth(size_t item) const;
+    
+    int Append(const wxString& item, wxBitmap bmp);
+    void Clear( void );
+    
+private:
+    int         itemHeight;
+    ArrayOfBitmaps  bmpArray;
+    
+};
+
+
+OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& value,
+                                  const wxPoint& pos, const wxSize& size, int n, const wxString choices[],
+                                  long style, const wxValidator& validator, const wxString& name)
+                        :wxOwnerDrawnComboBox(parent, id, value, pos, size, n, choices, style, validator, name)
+{
+    double fontHeight = GetFont().GetPointSize() / g_Platform->getFontPointsperPixel();
+    itemHeight = (int)wxRound(fontHeight);
+    
+}
+
+OCPNIconCombo::~OCPNIconCombo ()
+{
+}
+
+void OCPNIconCombo::OnDrawItem( wxDC& dc,
+                                       const wxRect& rect,
+                                       int item,
+                                       int flags ) const
+{
+    
+    int offset_x = bmpArray.Item(item).GetWidth();
+    int bmpHeight = bmpArray.Item(item).GetHeight();
+    dc.DrawBitmap(bmpArray.Item(item), rect.x, rect.y + (rect.height - bmpHeight)/2, true);
+    
+    if ( flags & wxODCB_PAINTING_CONTROL )
+    {
+        wxString text = GetValue();
+        int margin_x = 2;
+        
+#if wxCHECK_VERSION(2, 9, 0)
+        if ( ShouldUseHintText() )
+        {
+            text = GetHint();
+            wxColour col = wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT);
+            dc.SetTextForeground(col);
+        }
+        
+        margin_x = GetMargins().x;
+#endif
+
+        dc.DrawText( text,
+                     rect.x + margin_x + offset_x,
+                     (rect.height-dc.GetCharHeight())/2 + rect.y );
+    }
+    else
+    {
+        dc.DrawText( GetVListBoxComboPopup()->GetString(item), rect.x + 2 + offset_x, (rect.height-dc.GetCharHeight())/2 + rect.y );
+    }
+}
+
+wxCoord OCPNIconCombo::OnMeasureItem( size_t item ) const
+{
+    int bmpHeight = bmpArray.Item(item).GetHeight();
+    
+    return wxMax(itemHeight, bmpHeight);
+}
+
+wxCoord OCPNIconCombo::OnMeasureItemWidth( size_t item ) const
+{
+    return -1;
+}
+
+int OCPNIconCombo::Append(const wxString& item, wxBitmap bmp)
+{
+    bmpArray.Add(bmp);
+    int idx = wxOwnerDrawnComboBox::Append(item);
+    
+    return idx;
+}
+
+void OCPNIconCombo::Clear( void )
+{
+    wxOwnerDrawnComboBox::Clear();
+    bmpArray.Clear();
+}
+    
+
+
 /*!
  * RouteProp type definition
  */
@@ -512,8 +626,20 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
 // slot on pressed button "Print Route" with selection of the route properties to print
 void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
 {
+<<<<<<< HEAD
     RoutePrintSelection dlg( GetParent(), m_pRoute );
     dlg.ShowModal();
+=======
+
+  if (pRoutePrintSelection == NULL)
+    pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
+
+  if( !pRoutePrintSelection->IsShown() ) 
+      pRoutePrintSelection->ShowModal();
+
+  delete pRoutePrintSelection;
+  pRoutePrintSelection=NULL;
+>>>>>>> upstream/master
 }
 
 void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
@@ -2395,15 +2521,15 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
             wxDefaultPosition, wxDefaultSize, 0 );
     bSizer8->Add( m_staticTextIcon, 0, wxALL, 5 );
 
-    m_bcomboBoxIcon = new wxBitmapComboBox( m_panelBasicProperties, wxID_ANY, _("Combo!"),
-            wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
-
-#ifdef __WXMSW__    
+    m_bcomboBoxIcon = new OCPNIconCombo( m_panelBasicProperties, wxID_ANY, _("Combo!"),
+                                        wxDefaultPosition, wxDefaultSize, 0, NULL, wxCB_READONLY );
+    
+    m_bcomboBoxIcon->SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+    
     //  Accomodate scaling of icon
-    int min_size = metric * 3;
-    min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 8 );
+    int min_size = metric * 2;
+    min_size = wxMax( min_size, (32 *g_ChartScaleFactorExp) + 4 );
     m_bcomboBoxIcon->SetMinSize( wxSize(-1, min_size) );
-#endif
     
     bSizer8->Add( m_bcomboBoxIcon, 1, wxALL, 5 );
 
@@ -2626,15 +2752,16 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizer1->Add( m_notebookProperties, 1, wxEXPAND | wxALL, 5 );
 
-    m_sdbSizerButtons = new wxStdDialogButtonSizer();
-    m_sdbSizerButtonsOK = new wxButton( this, wxID_OK );
-    m_sdbSizerButtons->AddButton( m_sdbSizerButtonsOK );
-    m_sdbSizerButtonsCancel = new wxButton( this, wxID_CANCEL );
-    m_sdbSizerButtons->AddButton( m_sdbSizerButtonsCancel );
-    m_sdbSizerButtons->Realize();
-
-    bSizer1->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
+    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+    bSizer1->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 3 );
     
+    m_sdbSizerButtonsCancel = new wxButton( this, ID_MARKPROP_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_sdbSizerButtonsCancel, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+    m_sdbSizerButtonsOK = new wxButton( this, ID_MARKPROP_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_sdbSizerButtonsOK, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1);
+
+    m_sdbSizerButtonsOK->SetDefault();
+
     Fit();
 
     SetMinSize(wxSize(-1, 600));
@@ -2974,7 +3101,6 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                 wxString *ps = pWayPointMan->GetIconDescription( i );
                 wxBitmap bmp = icons->GetBitmap( i );
 
-#ifdef __WXMSW__
                 if(g_ChartScaleFactorExp > 1.0){
                     target = bmp.GetHeight() * g_ChartScaleFactorExp;
                     wxImage img = bmp.ConvertToImage();
@@ -2982,16 +3108,8 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                     bmp = wxBitmap(img);
                 }
                 
-#endif                
                 m_bcomboBoxIcon->Append( *ps, bmp );
             }
-#ifdef __WXMSW__ 
-            int metric = GetCharHeight();
-            target = wxMax( target, metric /** 15 / 10*/);
-
-            HWND hWnd = GetHwndOf(m_bcomboBoxIcon);
-            ::SendMessage(hWnd, CB_SETITEMHEIGHT, -1, target);     //  Set selection box size
-#endif            
         }
         
         // find the correct item in the combo box

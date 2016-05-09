@@ -314,6 +314,8 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
         return false;
     }
 
+    if(!g_Platform->isPlatformCapable(PLATFORM_CAP_PLUGINS)) return false;
+       
     wxArrayString file_list;
         
     int get_flags =  wxDIR_FILES | wxDIR_DIRS;
@@ -466,6 +468,9 @@ bool PlugInManager::CallLateInit(void)
         switch(pic->m_api_version)
         {
             case 110:
+            case 111:
+            case 112:
+            case 113:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;

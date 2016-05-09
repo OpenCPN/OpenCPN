@@ -1594,8 +1594,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     }
 
     if( (!b_noshow && td->b_show_track) || b_forceshow ) {
-        wxPoint TrackPointA;
-        wxPoint TrackPointB;
         wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
         if(dc.GetDC()) {
             dc.SetPen( wxPen( c, 2 ) );
@@ -1607,25 +1605,26 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 #endif
         }
 
-        //    First point
-        wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
-        if( node && dc.GetDC()) {
-            AISTargetTrackPoint *ptrack_point = node->GetData();
-            cc1->GetCanvasPointPix( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointA );
-            node = node->GetNext();
-        }
-        while( node ) {
-            AISTargetTrackPoint *ptrack_point = node->GetData();
-            cc1->GetCanvasPointPix( ptrack_point->m_lat, ptrack_point->m_lon, &TrackPointB );
-
-            if(dc.GetDC())
-                dc.StrokeLine( TrackPointA, TrackPointB );
+        //  create vector of x-y points
+        int TrackLength = td->m_ptrack->GetCount();
+        if (TrackLength > 1) {
+            int TrackPointCount;
+            wxPoint *TrackPoints = new wxPoint[TrackLength];
+            wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
+            for (TrackPointCount = 0; node && (TrackPointCount < TrackLength); TrackPointCount++) {
+                AISTargetTrackPoint *ptrack_point = node->GetData();
+                cc1->GetCanvasPointPix(ptrack_point->m_lat, ptrack_point->m_lon, &TrackPoints[TrackPointCount]);
+                node = node->GetNext();
+            }
+            TrackLength = TrackPointCount;
+            if ( dc.GetDC() && (TrackLength > 1) )
+                dc.StrokeLines(TrackPointCount, TrackPoints);
 #ifdef ocpnUSE_GL
             else
-                glVertex2i(TrackPointB.x, TrackPointB.y);
+                for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
+                    glVertex2i(TrackPoints[TrackPointCount].x, TrackPoints[TrackPointCount].y);
 #endif
-            node = node->GetNext();
-            TrackPointA = TrackPointB;
+            delete[] TrackPoints;
         }
 
 #ifdef ocpnUSE_GL

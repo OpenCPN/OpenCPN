@@ -39,6 +39,10 @@
 
 #include "grib_pi.h"
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
@@ -145,6 +149,7 @@ int grib_pi::Init(void)
               WANTS_CONFIG              |
               WANTS_PREFERENCES         |
               WANTS_PLUGIN_MESSAGING    |
+              WANTS_ONPAINT_VIEWPORT    |
               WANTS_MOUSE_EVENTS
             );
 }
@@ -287,7 +292,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                  break;
              case 3:
                  //rebuild current activefile with new parameters and rebuil data list with current index
-                 m_pGribCtrlBar->CreateActiveFileFromName( m_pGribCtrlBar->m_bGRIBActiveFile->GetFileName() );
+                 m_pGribCtrlBar->CreateActiveFileFromNames( m_pGribCtrlBar->m_bGRIBActiveFile->GetFileNames() );
                  m_pGribCtrlBar->PopulateComboDataList();
                  m_pGribCtrlBar->TimelineChanged();
                  break;
@@ -305,6 +310,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
          SaveConfig();
      }
+     delete Pref;
 }
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
@@ -439,6 +445,10 @@ void grib_pi::OnGribCtrlBarClose()
 
 	if (::wxIsBusy()) ::wxEndBusyCursor();
 
+#ifdef __OCPN__ANDROID__        
+    m_DialogStyleChanged = true;       //  Force a delete of the control bar dialog    
+#endif        
+
     if( m_DialogStyleChanged ) {
         m_pGribCtrlBar->Destroy();
         m_pGribCtrlBar = NULL;
@@ -473,6 +483,11 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
     if( m_pGribCtrlBar->pReq_Dialog )
         m_pGribCtrlBar->pReq_Dialog->RenderGlZoneOverlay();
     if( ::wxIsBusy() ) ::wxEndBusyCursor();
+    
+    #ifdef __OCPN__ANDROID__
+    m_pGribCtrlBar->Raise();    // Control bar should always be visible
+    #endif
+    
     return true;
 }
 
@@ -550,6 +565,20 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         delete m_pLastTimelineSet;
         m_pLastTimelineSet = set;
     }
+    
+    if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
+    {
+        wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
+        
+        if(m_pGribCtrlBar){
+            m_pGribCtrlBar->OpenFileFromJSON(message_body);
+            
+            m_pGribCtrlBar->m_OverlaySettings.JSONToSettings(message_body);
+            m_pGribCtrlBar->m_OverlaySettings.Write();
+            m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
+            
+        }
+    }
 }
 
 bool grib_pi::LoadConfig(void)
@@ -579,6 +608,7 @@ bool grib_pi::LoadConfig(void)
 
     pConf->Read( _T ( "GribCursorDataDisplayStyle" ), &m_DialogStyle, 0 );
     if( m_DialogStyle > 3 ) m_DialogStyle = 0;         //ensure validity of the .conf value
+
     return true;
 }
 

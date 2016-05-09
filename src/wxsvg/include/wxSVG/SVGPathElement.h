@@ -56,14 +56,13 @@ class wxSVGPathElement:
 {
   protected:
     wxSVGAnimatedNumber m_pathLength;
+    wxSVGCanvasItem* m_canvasItem;
 
   public:
     inline const wxSVGAnimatedNumber& GetPathLength() const { return m_pathLength; }
     inline void SetPathLength(const wxSVGAnimatedNumber& n) { m_pathLength = n; }
     inline void SetPathLength(float n) { m_pathLength.SetBaseVal(n); }
 
-  protected:
-    wxSVGCanvasItem* m_canvasItem;
   public:
     inline wxSVGCanvasItem* GetCanvasItem() { return m_canvasItem; }
     void SetCanvasItem(wxSVGCanvasItem* canvasItem);
