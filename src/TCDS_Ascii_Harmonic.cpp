@@ -92,7 +92,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadData(const wxString &data_file_path)
 
     wxFileName f(data_file_path);
     m_harmfile_name = f.GetPath( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME );
-    m_harmfile_name += f.GetFullName();
+    m_harmfile_name += f.GetName();
     error_return = LoadHarmonicConstants(m_harmfile_name);
 
     //  Mark the index entries individually with invariant harmonic constants
