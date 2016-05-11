@@ -168,6 +168,7 @@ OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
 
+bool                      g_bPauseTest;
 int                       g_unit_test_1;
 int                       g_unit_test_2;
 bool                      g_start_fullscreen;
@@ -5281,6 +5282,11 @@ void MyFrame::ToggleChartOutlines( void )
     SetMenubarItemState( ID_MENU_CHART_OUTLINES, g_bShowOutlines );
 }
 
+void MyFrame::ToggleTestPause( void )
+{
+    g_bPauseTest = !g_bPauseTest;
+}
+
 void MyFrame::SetMenubarItemState( int item_id, bool state )
 {
     if( m_pMenuBar ) {
@@ -6810,7 +6816,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
 
 
-    if( g_unit_test_1 || g_unit_test_2) {
+    if( ! g_bPauseTest && (g_unit_test_1 || g_unit_test_2) ) {
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();
 
