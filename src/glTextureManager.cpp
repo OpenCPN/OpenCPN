@@ -706,9 +706,7 @@ bool JobTicket::DoJob(const wxRect &rect)
         dim /= 2;
     }
         
-    int texture_level = glChartCanvas::s_b_UploadFullMipmaps ||
-        !binplace ? 0 : level_min_request;
-
+    int texture_level = 0;
     for( int level = level_min_request; level < g_mipmap_max_level+1 ; level++ ){
         int dim = TextureDim(level);
         int size = TextureTileSize(level, true);
@@ -1000,7 +998,7 @@ void glTextureManager::OnTimer(wxTimerEvent &event)
         }
     }
 
-#if 1
+#if 0
     if((m_ticks % 4/*120*/) == 0){
     
     // inventory

@@ -481,13 +481,9 @@ static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 
-    if(b_use_mipmaps) {
-#ifdef ocpnUSE_GLES /* this is slightly faster */
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-#else /* looks nicer */
+    if(b_use_mipmaps)
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-#endif
-    } else
+    else
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 #ifdef __OCPN__ANDROID__
@@ -501,14 +497,15 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     // the quality is only slightly worse because linear_mipmap_linear
     // is impossible, but still replace the texture data with the
     // correct level data and using only texture level 0
-#ifdef __OCPN__ANDROID__
+
+#ifdef ocpnUSE_GLES
     bool b_use_compressed_mipmaps = false;
     bool b_use_uncompressed_mipmaps = false;
 #else
-    bool b_use_compressed_mipmaps = true;
+    bool b_use_compressed_mipmaps = true; // best possible quality
     // don't use uncompressed mipmaps as they are temporary
     // we upload only the correct level so the image quality is good anyways
-    bool b_use_uncompressed_mipmaps = true;//!g_GLOptions.m_bTextureCompression;
+    bool b_use_uncompressed_mipmaps = !g_GLOptions.m_bTextureCompression;
 #endif    
 
     // on systems with little memory we can go up a mipmap level
@@ -517,9 +514,8 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     // this way we won't require 5x more video memory than normal while we
     // are generating the compressed textures, when the cache is complete the image
     // becomes clearer as it is replaces with the higher resolution compressed version
-    bool b_lowmem = false;
+    bool b_lowmem = false; // maybe instead decide based on how much texture memory we have
 #ifdef ocpnUSE_GLES
-    // maybe instead decide based on how much texture memory we have
     b_lowmem = g_GLOptions.m_bTextureCompression;
 #endif
     if(g_GLOptions.m_bTextureCompression &&
@@ -540,50 +536,25 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         bool b_use_mipmaps = ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED ?
             b_use_compressed_mipmaps : b_use_uncompressed_mipmaps;
         if(b_use_mipmaps) {
-            double factor = 0.5;
+            double factor = 0.5; // we should free uncompressed textures earliest
             bool bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
             if(!bGLMemCrunch)
                 return false; // we already have the data in vram
         }
-        // we don't need the extra detail, so free it
-        DeleteSingleTexture(ptd);
-    } else if(glChartCanvas::s_b_UploadFullMipmaps)
-        DeleteSingleTexture(ptd);
+    }    
     
     int status = GetTextureLevel( ptd, rect, base_level, ptd->m_colorscheme );
-
-    // if texture data is wrong compression, delete it
-    if( COMPRESSED_BUFFER_OK == status) {
-        if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED )
-            DeleteSingleTexture(ptd);
-    } else { // MAP_BUFFER_OK == status
-        if(ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED)
-            // if we have compressed data uploaded but now we need a lower
-            // level, then we have to blow the texture away and rebuild it
-            // as the compcomp data must have been freed
-            DeleteSingleTexture(ptd);
-    }
 
     bool b_use_mipmaps = COMPRESSED_BUFFER_OK == status ?
         b_use_compressed_mipmaps : b_use_uncompressed_mipmaps;
 
-    if(ptd->tex_name == 0) {
-        CreateTexture(ptd->tex_name, b_use_mipmaps);
-        ptd->nGPU_compressed = COMPRESSED_BUFFER_OK == status ?
-            GPU_TEXTURE_COMPRESSED : GPU_TEXTURE_UNCOMPRESSED;
-    } else {
-        // in this case we don't recreate the texture as we
-        // are either overwriting the data (no mipmaps)
-        // or we are filling in lower levels if we have hardware that can
-        glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-        if(!b_use_mipmaps) {
-            g_tex_mem_used -= ptd->tex_mem_used;
-            ptd->tex_mem_used = 0;
-        }
-    }
+    DeleteSingleTexture(ptd);
+    CreateTexture(ptd->tex_name, b_use_mipmaps);
+    ptd->nGPU_compressed = COMPRESSED_BUFFER_OK == status ?
+        GPU_TEXTURE_COMPRESSED : GPU_TEXTURE_UNCOMPRESSED;
 
     if( COMPRESSED_BUFFER_OK == status) {
-        int texture_level = glChartCanvas::s_b_UploadFullMipmaps || !b_use_mipmaps ? 0 : base_level;
+        int texture_level = 0;
         for(int level = base_level; level < ptd->level_min; level++ ) {
             int size = TextureTileSize(level, true);
             int status = GetTextureLevel( ptd, rect, level, ptd->m_colorscheme );
@@ -627,7 +598,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
             int uc_base_level = base_level;
             if(b_lowmem)
                 uc_base_level++;
-            int texture_level = glChartCanvas::s_b_UploadFullMipmaps || !b_use_mipmaps ? 0 : uc_base_level;
+            int texture_level = 0;
             for(int level = uc_base_level; level < ptd->level_min + b_lowmem; level++) {
                 int status = GetTextureLevel( ptd, rect, level, ptd->m_colorscheme );
                 int dim = TextureDim(level);
@@ -652,21 +623,6 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         ptd->map_array[i] = 0;
     }
     
-#ifndef ocpnUSE_GLES
-    if(b_use_mipmaps) {
-        if(glChartCanvas::s_b_UploadFullMipmaps) {
-            // maybe these aren't needed
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level - base_level );
-
-//            if(g_mipmap_max_level == base_level)
-            //             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        } else {
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
-        }
-    }
-#endif
     return true;
 }
 

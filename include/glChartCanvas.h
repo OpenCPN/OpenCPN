@@ -80,7 +80,6 @@ public:
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
-    static bool         s_b_UploadFullMipmaps;
     
     glChartCanvas(wxWindow *parent);
     ~glChartCanvas();

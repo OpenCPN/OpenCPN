@@ -227,7 +227,6 @@ int g_uncompressed_tile_size;
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
-bool glChartCanvas::s_b_UploadFullMipmaps;
 //static int s_nquickbind;
 
 /* for debugging */
@@ -930,15 +929,6 @@ void glChartCanvas::SetupOpenGL()
     /* we upload non-aligned memory */
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
-#ifdef ocpnUSE_GLES /* gles requires all levels */
-    int max_level = 0;
-    int tex_dim = g_GLOptions.m_iTextureDimension;
-    for(int dim=tex_dim; dim>0; dim/=2)
-        max_level++;
-    g_mipmap_max_level = max_level - 1;
-    
-#endif
-
     MipMap_ResolveRoutines();
     SetupCompression();
 
@@ -954,41 +944,29 @@ void glChartCanvas::SetupOpenGL()
     m_benableFog = false;
     m_benableVScale = false;
 #endif    
-
-//    s_b_UploadFullMipmaps = true;
-    //  Some platforms under some conditions, require a full set of MipMaps, from 0
-#ifdef __WXOSX__    
-    s_b_UploadFullMipmaps = true;
-#endif    
-
-#ifdef __WXMSW__
-    // needed because of color flip... can we somehow fix this?
-    if(g_GLOptions.m_bTextureCompression && (g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
-        s_b_UploadFullMipmaps = true;
-#endif    
-    //  Parallels virtual machine on Mac host.    
-    if( GetRendererString().Find( _T("Parallels") ) != wxNOT_FOUND )
-        s_b_UploadFullMipmaps = true;
-        
-#ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
-    s_b_UploadFullMipmaps = true;
-#endif
         
     if(!g_bGLexpert)
         g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
     
     //  Windows GDI Generic OpenGL driver is non-compliant in mipmap support.
     //  It needs the entire mipmap pyramid to be complete, and fully uploaded.    
+    if(
 #ifdef __WXMSW__        
-    if( GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND ) {
-        s_b_UploadFullMipmaps = true;
+        GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND
+#else
+# ifdef ocpnUSE_GLES /* gles requires all levels */
+        1
+# else
+        1 // for now upload all levels
+# endif
+#endif
+        ) {
         int max_level = 0;
         int tex_dim = g_GLOptions.m_iTextureDimension;
         for(int dim=tex_dim; dim>0; dim/=2)
             max_level++;
         g_mipmap_max_level = max_level - 1;
     }   
-#endif 
 }
 
 void glChartCanvas::SetupCompression()
