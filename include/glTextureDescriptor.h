@@ -66,7 +66,7 @@ public:
     int nGPU_compressed;
     ColorScheme m_colorscheme;
 
-    bool                miplevel_upload[10];
+    int                tex_mem_used;
 
     unsigned char      *map_array[10];
     unsigned char      *comp_array[10];

@@ -543,16 +543,31 @@ void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_p
     }
 }
 
-int TextureTileSize(int level)
+int TextureDim(int level)
 {
     int dim = g_GLOptions.m_iTextureDimension;
-    int size = g_tile_size;
-    
-    for(int i=0 ; i < level ; i++){
+    for(int i=0 ; i < level ; i++)
         dim /= 2;
-        size /= 4;
-        if(size < 8)
-            size = 8;
+    return dim;
+}
+
+int TextureTileSize(int level, bool compressed)
+{
+    if(level == g_mipmap_max_level + 1)
+        return 0;
+
+    int size;
+    if(compressed) {
+        size = g_tile_size;
+        for(int i=0 ; i < level ; i++){
+            size /= 4;
+            if(size < 8)
+                size = 8;
+        }
+    } else {
+        size = g_uncompressed_tile_size;
+        for(int i=0 ; i < level ; i++)
+            size /= 4;
     }
 
     return size;
@@ -652,6 +667,8 @@ bool JobTicket::DoJob(const wxRect &rect)
 
     if(!bit_array[0]) {
         //  Grab a copy of the level0 chart bits
+        // we could alternately subsample grabbing leveln chart bits
+        // directly here to speed things up...
         ChartBase *pchart;
         int index;
     
@@ -686,10 +703,13 @@ bool JobTicket::DoJob(const wxRect &rect)
         dim /= 2;
     }
         
-    dim = g_GLOptions.m_iTextureDimension;
-    ssize = g_tile_size;
-    for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
-        unsigned char *tex_data = (unsigned char*)malloc(ssize);
+    int texture_level = glChartCanvas::s_b_UploadFullMipmaps ||
+        !binplace ? 0 : level_min_request;
+
+    for( int level = level_min_request; level < g_mipmap_max_level+1 ; level++ ){
+        int dim = TextureDim(level);
+        int size = TextureTileSize(level, true);
+        unsigned char *tex_data = (unsigned char*)malloc(size);
         if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
             // color range fit is worse quality but twice as fast
             int flags = squish::kDxt1 | squish::kColourRangeFit;
@@ -702,27 +722,24 @@ bool JobTicket::DoJob(const wxRect &rect)
             }
             
             OCPNStopWatch sww;
-            squish::CompressImageRGBpow2_Flatten_Throttle_Abort( bit_array[i], dim, dim, tex_data, flags,
+            squish::CompressImageRGBpow2_Flatten_Throttle_Abort( bit_array[level], dim, dim, tex_data, flags,
                                                                  true, b_throttle ? throttle_func : 0, &sww, b_abort );
             
         } else if(g_raster_format == GL_ETC1_RGB8_OES) 
-            CompressDataETC(bit_array[i], dim, ssize, tex_data, b_abort);
+            CompressDataETC(bit_array[level], dim, size, tex_data, b_abort);
         else if(g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
-            if(!CompressUsingGPU(bit_array[i], dim, ssize, tex_data, i, binplace)) {
+            if(!CompressUsingGPU(bit_array[level], dim, size, tex_data, texture_level, binplace)) {
                 b_abort = true;
                 break;
             }
 
             if(binplace)
-                g_tex_mem_used += ssize;
-        }
-        comp_bits_array[i] = tex_data;
-            
-        dim /= 2;
-        ssize /= 4;
-        if(ssize < 8)
-            ssize = 8;
+                g_tex_mem_used += size;
 
+            texture_level++;
+        }
+        comp_bits_array[level] = tex_data;
+            
         if(b_abort){
             for( int i = 0; i < g_mipmap_max_level+1; i++ ){
                 free( bit_array[i] );
@@ -744,24 +761,21 @@ bool JobTicket::DoJob(const wxRect &rect)
     if(bpost_zip_compress) {
             
         int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-        int csize = g_tile_size;
-        for( int i = 0 ; i < g_mipmap_max_level+1 ; i++ ){
+        for(int level = level_min_request; level < g_mipmap_max_level+1 ; level++){
             if(b_abort)
                 return false;
 
             unsigned char *compressed_data = (unsigned char *)malloc(max_compressed_size);
-            char *src = (char *)comp_bits_array[i];
+            int csize = TextureTileSize(level, true);
+
+            char *src = (char *)comp_bits_array[level];
             int compressed_size = LZ4_compressHC2( src, (char *)compressed_data, csize, 4);
             // shrink buffer to actual size.
             // This will greatly reduce ram usage, ratio usually 10:1
             // there might be a more efficient way than realloc...
             compressed_data = (unsigned char*)realloc(compressed_data, compressed_size);
-            compcomp_bits_array[i] = compressed_data;
-            compcomp_size_array[i] = compressed_size;
-                
-            csize /= 4;
-            if(csize < 8)
-                csize = 8;
+            compcomp_bits_array[level] = compressed_data;
+            compcomp_size_array[level] = compressed_size;
         }
     }
 

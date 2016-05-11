@@ -936,10 +936,6 @@ void glChartCanvas::SetupOpenGL()
     for(int dim=tex_dim; dim>0; dim/=2)
         max_level++;
     g_mipmap_max_level = max_level - 1;
-
-#ifdef __OCPN__ANDROID__    
-    g_mipmap_max_level = 0;
-#endif
     
 #endif
 
@@ -960,18 +956,15 @@ void glChartCanvas::SetupOpenGL()
 #endif    
 
     //  Some platforms under some conditions, require a full set of MipMaps, from 0
-    s_b_UploadFullMipmaps = false;
 #ifdef __WXOSX__    
     s_b_UploadFullMipmaps = true;
 #endif    
 
 #ifdef __WXMSW__
     // needed because of color flip... can we somehow fix this?
-    // it would save huge amounts of video memory
     if(g_GLOptions.m_bTextureCompression && (g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
         s_b_UploadFullMipmaps = true;
 #endif    
-
     //  Parallels virtual machine on Mac host.    
     if( GetRendererString().Find( _T("Parallels") ) != wxNOT_FOUND )
         s_b_UploadFullMipmaps = true;
@@ -994,7 +987,7 @@ void glChartCanvas::SetupOpenGL()
             max_level++;
         g_mipmap_max_level = max_level - 1;
     }   
-#endif            
+#endif 
 }
 
 void glChartCanvas::SetupCompression()
@@ -1008,7 +1001,7 @@ void glChartCanvas::SetupCompression()
     }
 #endif
 
-    g_uncompressed_tile_size = dim*dim*3;
+    g_uncompressed_tile_size = dim*dim*4; // stored as 32bpp in vram
     if(!g_GLOptions.m_bTextureCompression)
         goto no_compression;
 
@@ -1051,7 +1044,7 @@ void glChartCanvas::SetupCompression()
             goto no_compression;
         }
     }
-    
+
 #ifdef ocpnUSE_GLES /* gles doesn't have GetTexLevelParameter */
     g_tile_size = 512*512/2; /* 4bpp */
 #else
@@ -2706,7 +2699,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
             if( bGLMemCrunch)
                 pTexFact->DeleteTexture( tile->rect );
         } else {
-            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme, true );
+            bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme );
             if(!texture) { // failed to load, draw red
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(1, 0, 0);

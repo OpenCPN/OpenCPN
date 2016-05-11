@@ -33,12 +33,12 @@ glTextureDescriptor::glTextureDescriptor()
         map_array[i] = NULL;
         comp_array[i] = NULL;
         compcomp_array[i] = NULL;
-        miplevel_upload[i] = 0;
         compcomp_size[i] = 0;
     }
 
     tex_name = 0;
     nGPU_compressed = GPU_TEXTURE_UNKNOWN;
+    tex_mem_used = 0;
 //    nCache_Color = -1;          // default, unknown
     compdata_ticks = 0;
 }
@@ -123,9 +123,8 @@ size_t glTextureDescriptor::GetCompCompArrayAlloc(void)
 {
     size_t ret = 0;
     for( int i = 0; i < 10; i++ ){
-        if( compcomp_size[i] ){
+        if( compcomp_size[i] )
             ret += compcomp_size[i];
-        }
     }
     
     return ret;
