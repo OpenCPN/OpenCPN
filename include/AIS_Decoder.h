@@ -49,7 +49,9 @@ public:
     bool        m_bignore;
     bool        m_bMOB;
     bool        m_bVDM;
+    bool        m_bFollower;
     bool        m_bPersistentTrack;
+    wxString    m_ShipName;
 };
 
 WX_DECLARE_OBJARRAY(MMSIProperties *,      ArrayOfMMSIProperties);
@@ -75,6 +77,9 @@ public:
     std::map<int, Track*> m_persistent_tracks;
     
 private:
+    wxString GetShipNameFromFile(int nmmsi);
+    wxString ProcessNMEA4Tags( wxString msg);
+    
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
     void OnTimerAISAudio(wxTimerEvent& event);
@@ -89,6 +94,7 @@ private:
     void UpdateOneTrack(AIS_Target_Data *ptarget);
     void BuildERIShipTypeHash(void);
     AIS_Target_Data *ProcessDSx( const wxString& str, bool b_take_dsc = false );
+    void SendJSONMsg( AIS_Target_Data *pTarget );
     
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;

@@ -166,6 +166,13 @@ double      round_msvc (double x)
 //---------------------------------------------------------------
 IsoLine::IsoLine(double val, double coeff, double offset, const GribRecord *rec_)
 {
+    if(wxGetDisplaySize().x > 0){
+        m_pixelMM = (double)wxGetDisplaySizeMM().x / wxGetDisplaySize().x;
+        m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
+    }
+    else
+        m_pixelMM = 0.27;               // semi-standard number...
+    
     value = val/coeff-offset;
 
     rec = rec_;
@@ -397,13 +404,18 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
 #endif
           dc->SetPen(ppISO);
       } else { /* opengl */
-#ifdef ocpnUSE_GL          
+#ifdef ocpnUSE_GL
+          if(m_pixelMM > 0.2){        // pixel size large enough to render well
           //      Enable anti-aliased lines, at best quality
-          glEnable( GL_LINE_SMOOTH );
-          glEnable( GL_BLEND );
-          glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-          glLineWidth( 2 );
+            glEnable( GL_LINE_SMOOTH );
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+            glLineWidth( 2 );
+          }
+          else{
+            glLineWidth( 0.4/m_pixelMM);        //  set a target line width by MM
+          }
           
           glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
                      255/*isoLineColor.Alpha()*/);

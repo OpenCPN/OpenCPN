@@ -146,6 +146,58 @@ static bool s_ProgressCallBack( void )
     return ret;
 }
 
+static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
+{
+    const uint64_t	m = 0x880355f21e6d1965ULL;
+    const uint64_t *pos = (const uint64_t *)buf;
+    const uint64_t *end = pos + (len >> 3);
+    const unsigned char *pc;
+    uint64_t h = len * m ^ seed;
+    uint64_t v;
+    while (pos != end) {
+        v = *pos++;
+        v ^= v >> 23;
+        v *= 0x2127599bf4325c37ULL;
+        h ^= v ^ (v >> 47);
+        h *= m;
+    }
+    pc = (const unsigned char*)pos;
+    v = 0;
+    switch (len & 7) {
+        case 7: v ^= (uint64_t)pc[6] << 48;
+        case 6: v ^= (uint64_t)pc[5] << 40;
+        case 5: v ^= (uint64_t)pc[4] << 32;
+        case 4: v ^= (uint64_t)pc[3] << 24;
+        case 3: v ^= (uint64_t)pc[2] << 16;
+        case 2: v ^= (uint64_t)pc[1] << 8;
+        case 1: v ^= (uint64_t)pc[0];
+            v ^= v >> 23;
+            v *= 0x2127599bf4325c37ULL;
+            h ^= v ^ (v >> 47);
+            h *= m;
+    }
+
+    h ^= h >> 23;
+    h *= 0x2127599bf4325c37ULL;
+    h ^= h >> 47;
+    return h;
+}
+
+static unsigned int hash_fast32(const void *buf, size_t len, unsigned int seed)
+{
+    uint64_t h = hash_fast64(buf, len, seed);
+    /* The following trick converts the 64-bit hashcode to a
+     * residue over a Fermat Number, in which information from
+     * both the higher and lower parts of hashcode shall be
+     * retained. */
+    return h - (h >> 32);
+}
+
+unsigned long connector_key::hash() const
+{
+    return hash_fast32(k, sizeof k, 0);
+}
+
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
 //----------------------------------------------------------------------------------
@@ -247,7 +299,7 @@ S57Obj::~S57Obj()
 //      S57Obj CTOR from SENC file
 //----------------------------------------------------------------------------------
 
-S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
+S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
 {
     att_array = NULL;
     attVal = NULL;
@@ -282,12 +334,11 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     x_origin = 0.0;
     y_origin = 0.0;
 
-    if( strlen( first_line ) == 0 ) return;
+    if( strlen( buf ) == 0 ) return;
 
     int FEIndex;
 
-    int MAX_LINE = 499999;
-    char *buf = (char *) malloc( MAX_LINE + 1 );
+    int MAX_LINE = size;
     int llmax = 0;
 
     char *br;
@@ -297,8 +348,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     bool bMulti = false;
 
     char *hdr_buf = (char *) malloc( 1 );
-
-    strcpy( buf, first_line );
 
 //    while(!dun)
     {
@@ -400,8 +449,10 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                 bool iua = IsUsefulAttribute( buf );
 
                 szAtt[0] = 0;
-
-                if( iua ) {
+                char t = buf[10];
+                // there's enough other types, testing first is faster 
+                // than new/delete
+                if( iua && (t == 'I' || t == 'S' || t == 'R')) {
                     S57attVal *pattValTmp = new S57attVal;
 
                     if( buf[10] == 'I' ) {
@@ -753,7 +804,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
         }               //OGRF
     }                       //while(!dun)
 
-    free( buf );
     free( hdr_buf );
 
 }
@@ -1586,26 +1636,19 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     }
     
     //  Allocate the buffer
-    float *ret_temp = (float *)malloc(nPoints * 2 * sizeof(float));
-    
+    float *br = (float *)malloc(nPoints * 2 * sizeof(float));
+    *ret_array = br;
+
     // populate the buffer
     unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
-    float *br = ret_temp;
     ls_list = obj->m_ls_list;
     while( ls_list){
-        float *pt = (float *)(source_buffer + ls_list->vbo_offset);
-        float a = *pt++;
-        float b = *pt++;
-        
         memcpy(br, source_buffer + ls_list->vbo_offset, ls_list->n_points * 2 * sizeof(float));
         br += ls_list->n_points * 2;
         ls_list = ls_list->next;
     }
     
-    *ret_array = ret_temp;
-    
     return nPoints;
-        
     
 }
 
@@ -1624,8 +1667,8 @@ void s57chart::AssembleLineGeometry( void )
                     nPoints += pedge->nCount;
                 }
             }
-            
-            
+
+            connector_key key;            
             int ndelta = 0;
             //  Get the end node connected segments.  To do this, we
             //  walk the Feature array and process each feature that potetially has a LINE type element
@@ -1644,18 +1687,18 @@ void s57chart::AssembleLineGeometry( void )
                             
                             //  Get the edge
                             unsigned int venode = *index_run++;
-                            VE_Element *pedge = 0;
+                            VE_Element *pedge;
                             pedge = m_ve_hash[venode];
                             
                             //  Get end connected node
                             unsigned int enode = *index_run++;
                             
                             //  Get first connected node
-                            VC_Element *ipnode = 0;
+                            VC_Element *ipnode;
                             ipnode = m_vc_hash[inode];
                             
                             //  Get end connected node
-                            VC_Element *epnode = 0;
+                            VC_Element *epnode;
                             epnode = m_vc_hash[enode];
                             
                             double e0, n0, e1, n1;
@@ -1670,9 +1713,7 @@ void s57chart::AssembleLineGeometry( void )
                                     n1 = pedge->pPoints[1];
                                     
                                     //      The initial node exists and connects to the start of an edge
-                                    wxString key;
-                                    key.Printf(_T("CE%d%d"), inode, venode);
-                                    
+                                    key.set(TYPE_CE, inode, venode);
                                     if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                         ndelta += 2;
                                         connector_segment *pcs = new connector_segment;
@@ -1699,9 +1740,8 @@ void s57chart::AssembleLineGeometry( void )
                                 if(ipnode){
                                     if(pedge && pedge->nCount){
                                         
-                                        wxString key;
-                                        key.Printf(_T("EC%d%d"), venode, enode);
-                                        
+                                        key.set(TYPE_EC, venode, enode);
+
                                         if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                             ndelta += 2;
                                             connector_segment *pcs = new connector_segment;
@@ -1712,8 +1752,7 @@ void s57chart::AssembleLineGeometry( void )
                                         }
                                     }
                                     else {
-                                        wxString key;
-                                        key.Printf(_T("CC%d%d"), inode, enode);
+                                        key.set(TYPE_CC, inode, enode);
                                         
                                         if(m_connector_hash.find( key ) == m_connector_hash.end()){
                                             ndelta += 2;
@@ -1773,7 +1812,6 @@ void s57chart::AssembleLineGeometry( void )
                     connected_segment_hash::iterator itc;
                     for( itc = m_connector_hash.begin(); itc != m_connector_hash.end(); ++itc )
                     {
-                        wxString key = itc->first;
                         connector_segment *pcs = itc->second;
                         
                         switch(pcs->type){
@@ -1864,18 +1902,18 @@ void s57chart::AssembleLineGeometry( void )
                                     
                                     //  Get the edge
                                     unsigned int venode = *index_run++;
-                                    VE_Element *pedge = 0;
+                                    VE_Element *pedge;
                                     pedge = m_ve_hash[venode];
                                     
                                     //  Get end connected node
                                     unsigned int enode = *index_run++;
                                     
                                     //  Get first connected node
-                                    VC_Element *ipnode = 0;
+                                    VC_Element *ipnode;
                                     ipnode = m_vc_hash[inode];
                                     
                                     //  Get end connected node
-                                    VC_Element *epnode = 0;
+                                    VC_Element *epnode;
                                     epnode = m_vc_hash[enode];
                                     
                                     double e0=0, n0=0, e1, n1;
@@ -1887,12 +1925,12 @@ void s57chart::AssembleLineGeometry( void )
                                         
                                         if(pedge && pedge->nCount)
                                         {
-                                            wxString key;
-                                            key.Printf(_T("CE%d%d"), inode, venode);
+                                            key.set(TYPE_CE, inode, venode);
                                             
-                                            if(m_connector_hash.find( key ) != m_connector_hash.end()){
+                                            connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                            if(itcs != m_connector_hash.end()){
                                                 
-                                                connector_segment *pcs = m_connector_hash[key];
+                                                connector_segment *pcs = itcs->second;
                                                 
                                                 line_segment_element *pls = new line_segment_element;
                                                 pls->next = 0;
@@ -1956,11 +1994,11 @@ void s57chart::AssembleLineGeometry( void )
                                         if(ipnode){
                                             if(pedge && pedge->nCount){
                                                 
-                                                wxString key;
-                                                key.Printf(_T("EC%d%d"), venode, enode);
+                                                key.set(TYPE_EC, venode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
@@ -1987,11 +2025,11 @@ void s57chart::AssembleLineGeometry( void )
                                                 }
                                             }
                                             else {
-                                                wxString key;
-                                                key.Printf(_T("CC%d%d"), inode, enode);
+                                                key.set(TYPE_CC, inode, enode);
                                                 
-                                                if(m_connector_hash.find( key ) != m_connector_hash.end()){
-                                                    connector_segment *pcs = m_connector_hash[key];
+                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
+                                                if(itcs != m_connector_hash.end()){
+                                                    connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
                                                     pls->next = 0;
@@ -2158,14 +2196,21 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
         LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
         chart_region.Intersect(Region);
-
+        
         if(!chart_region.Empty()) {
             
             //TODO  I think this needs nore work for alternate Projections...
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
-            glChartCanvas::SetClipRect(cvp, upd.GetRect(), false/*!b_overlay*/);
+            if(CHART_TYPE_CM93 == GetChartType()){
+                // for now I will revert to the faster rectangle clipping now that rendering order is resolved
+//                glChartCanvas::SetClipRegion(cvp, chart_region);
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            }
+            else
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+            
             ps52plib->m_last_clip_rect = upd.GetRect();
             glPushMatrix(); //    Adjust for rotation
             glChartCanvas::RotateToViewPort(VPoint);
@@ -2354,6 +2399,7 @@ bool s57chart::RenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint )
         m_bLinePrioritySet = false;                     // need to reset line priorities
         UpdateLUPs( this );                               // and update the LUPs
         ClearRenderedTextCache();                       // and reset the text renderer
+        SetSafetyContour();
     }
 
     SetLinePriorities();
@@ -2853,7 +2899,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             } else
                 ret_value = PostInit( flags, m_global_color_scheme );
 
-            OCPNPlatform::HideBusySpinner();
         }
 
     }
@@ -2863,8 +2908,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
         m_SENCFileName = name;
         ret_value = PostInit( flags, m_global_color_scheme );
-
-        OCPNPlatform::HideBusySpinner();
 
     }
 
@@ -3044,6 +3087,17 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
     return INIT_OK;
 }
 
+void s57chart::ClearDepthContourArray( void )
+{
+    
+    if( m_nvaldco_alloc ) {
+        free (m_pvaldco_array);
+    }
+    m_nvaldco_alloc = 5;
+    m_nvaldco = 0;
+    m_pvaldco_array = (double *) calloc( m_nvaldco_alloc, sizeof(double) );
+}
+
 void s57chart::BuildDepthContourArray( void )
 {
     //    Build array of contour values for later use by conditional symbology
@@ -3085,6 +3139,7 @@ void s57chart::BuildDepthContourArray( void )
         }
     }
     std::sort( m_pvaldco_array, m_pvaldco_array + m_nvaldco );
+    SetSafetyContour();
 }
 
 
@@ -3183,6 +3238,9 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
+    
+    // SetDisplayCategory may clear Noshow array
+    ps52plib->SaveObjNoshow();
 
 //      Now, set up what I want for this render
     for( iPtr = 0; iPtr < OBJLCount; iPtr++ ) {
@@ -3220,6 +3278,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     }
 
     ps52plib->SetDisplayCategory(dsave);
+    ps52plib->RestoreObjNoshow();
+
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
 
 //      Reset the color scheme
@@ -3252,7 +3312,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 }
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
+WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
@@ -3329,70 +3389,55 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
             delete pFeat;
             pFeat = GetChartNextM_COVR( catcov );
-        }         // while
+    }         // while
 
-        //    Allocate the storage
+    //    Allocate the storage
 
-        m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = pAuxCntArray->GetCount();
 
-        //    If only one M_COVR,CATCOV=1 object was found,
-        //    assign the geometry to the one and only COVR
+    //    Create new COVR entries
 
-        if( m_nCOVREntries == 1 ) {
-            m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-            *m_pCOVRTablePoints = pAuxCntArray->Item( 0 );
-            m_pCOVRTable = (float **) malloc( sizeof(float *) );
-            *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-            memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
-                    pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
+    if( m_nCOVREntries >= 1 ) {
+        m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
+        m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
+            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
+            m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
+    }
 
-        else if( m_nCOVREntries > 1 ) {
-            //    Create new COVR entries
-            m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
-            m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+    else                                     // strange case, found no CATCOV=1 M_COVR objects
+    {
+        wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
+        msg.Append( m_FullPath );
+        wxLogMessage( msg );
+    }
 
-            for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-                m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
-                m_pCOVRTable[j] = (float *) malloc( pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-                memcpy( m_pCOVRTable[j], pAuxPtrArray->Item( j ),
-                        pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-            }
+
+    //      And for the NoCovr regions
+    m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+
+    if( m_nNoCOVREntries ) {
+        //    Create new NoCOVR entries
+        m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
+        m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
+
+        for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
+            int npoints = pNoCovrCntArray->Item( j );
+            m_pNoCOVRTablePoints[j] = npoints;
+            m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
+    }
+    else {
+        m_pNoCOVRTablePoints = NULL;
+        m_pNoCOVRTable = NULL;
+    }
 
-        else                                     // strange case, found no CATCOV=1 M_COVR objects
-        {
-            wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
-            msg.Append( m_FullPath );
-            wxLogMessage( msg );
-        }
-
-
-        //      And for the NoCovr regions
-        m_nNoCOVREntries = pNoCovrCntArray->GetCount();
-
-        if( m_nNoCOVREntries ) {
-            //    Create new NoCOVR entries
-            m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
-            m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
-
-            for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-                int npoints = pNoCovrCntArray->Item( j );
-                m_pNoCOVRTablePoints[j] = npoints;
-                m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-                memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
-                        npoints * 2 * sizeof(float) );
-            }
-        }
-        else {
-            m_pNoCOVRTablePoints = NULL;
-            m_pNoCOVRTable = NULL;
-        }
-
-        delete pAuxPtrArray;
-        delete pAuxCntArray;
-        delete pNoCovrPtrArray;
-        delete pNoCovrCntArray;
+    delete pAuxPtrArray;
+    delete pAuxCntArray;
+    delete pNoCovrPtrArray;
+    delete pNoCovrCntArray;
 
 
     if( 0 == m_nCOVREntries ) {                        // fallback
@@ -4182,16 +4227,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     //    Create a hash map of VE_Element pointers as a chart class member
     int n_ve_elements = VEs.size();
     
+    double scale = gFrame->GetBestVPScale(this);
+    int nativescale = GetNativeScale();
+    
     for( int i = 0; i < n_ve_elements; i++ ) {
-        VE_Element *pve_from_array = VEs.at( i );
-        
- //       VE_Element ve_from_array = VEs.at( i );
-        VE_Element *vep = new VE_Element;
-        vep->index = pve_from_array->index;
-        vep->nCount = pve_from_array->nCount;
-        vep->pPoints = pve_from_array->pPoints;
-        vep->max_priority = 0;            // Default
-        
+
+        VE_Element *vep = VEs.at( i );
         if(vep->nCount){
             //  Get a bounding box for the edge
             double east_max = -1e7; double east_min = 1e7;
@@ -4218,18 +4259,14 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         m_ve_hash[vep->index] = vep;
     }
     
+        
     //    Create a hash map VC_Element pointers as a chart class member
     int n_vc_elements = VCs.size();
     
     for( int i = 0; i < n_vc_elements; i++ ) {
-        VC_Element *vc_from_array = VCs.at( i );
-        VC_Element *vcp = new VC_Element;
-        vcp->index = vc_from_array->index;
-        vcp->pPoint = vc_from_array->pPoint;
-        
+        VC_Element *vcp = VCs.at( i );
         m_vc_hash[vcp->index] = vcp;
     }
-    
     
     
     //Walk the vector of S57Objs, associating LUPS, instructions, etc...
@@ -4241,6 +4278,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         //      This is where Simplified or Paper-Type point features are selected
         LUPrec *LUP;
         LUPname LUP_Name = PAPER_CHART;
+        
+        wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+        if (objnam.Len() > 0) {
+            wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+            g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
+        }
         
         switch( obj->Primitive_type ){
             case GEO_POINT:
@@ -4276,6 +4319,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 LogMessageOnce( msg );
             }
             delete obj;
+            obj = NULL;
             Objects[i] = NULL;
         } else {
             //              Convert LUP to rules set
@@ -4304,7 +4348,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
 
         //      Build/Maintain the ATON floating/rigid arrays
-        if( GEO_POINT == obj->Primitive_type ) {
+        if( obj && (GEO_POINT == obj->Primitive_type) ) {
             
             // set floating platform
             if( ( !strncmp( obj->FeatureName, "LITFLT", 6 ) )
@@ -4705,6 +4749,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                if (top->LUP)
+                    top->obj->m_DisplayCat = top->LUP->DISC;
 
                 nxx = top->next;
                 top = nxx;
@@ -4722,6 +4768,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        if (ctop->LUP)
+                            ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
                     }
                 }
@@ -5623,13 +5671,15 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 
                 double easting, northing;
                 toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
+#if 0
                 float *ptest;
                 int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
-                
+
                 if(!ntp)
                     return false;
                 
+                float *pfree = ptest;
+#endif
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -5640,19 +5690,20 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 double north0 = ( ppt->y * yr ) + yo;
                 double east0 = ( ppt->x * xr ) + xo;
+#if 0
                 float a0 = *ptest++;
                 float b0 = *ptest++;
-                
+#endif                
                 ppt++;
 
                 for( int ip = 1; ip < npt; ip++ ) {
-                    
+#if 0                    
                     float a = *ptest++;
                     float b = *ptest++;
                     float c = ppt->y;
                     float d = ppt->x;
                     printf("%g %g %g %g\n", a,b,c,d);
-                    
+#endif                    
                     
                     double north = ( ppt->y * yr ) + yo;
                     double east = ( ppt->x * xr ) + xo;
@@ -5663,6 +5714,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                         >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
                         <= ( fmax(east, east0) + sel_rad_meters ) ) {
                         //                                                    index = ip;
+                        //free (pfree);
                         return true;
                     }
 
@@ -5670,6 +5722,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     east0 = east;
                     ppt++;
                 }
+                //free (pfree);
             }
 
             break;
@@ -6240,7 +6293,7 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             }
 
             else if( ( curAttrName == _T("VALSOU") ) || ( curAttrName == _T("DRVAL1") )
-                    || ( curAttrName == _T("DRVAL2") ) ) {
+                    || ( curAttrName == _T("DRVAL2") ) || ( curAttrName == _T("VALDCO") ) ) {
                 switch( ps52plib->m_nDepthUnitDisplay ){
                     case 0:                       // feet
                         dval = dval * 3 * 39.37 / 36;              // feet
@@ -6439,6 +6492,29 @@ int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
     return -1;
 }
 
+static const char *type2str( GeoPrim_t type)
+{
+    const char *r = "Uknown";
+    switch(type) {
+    case GEO_POINT:
+        return "Point";
+        break;
+    case GEO_LINE:
+        return "Line";
+        break;
+    case GEO_AREA:
+        return "Area";
+        break;
+    case GEO_META:
+        return "Meta";
+        break;
+    case GEO_PRIM:
+        return "Prim";
+        break;
+    }
+    return r;
+}
+
 wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 {
     wxString ret_val;
@@ -6495,21 +6571,32 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         //    Show LUP
         if( g_bDebugS57 ) {
             wxString index;
-            index.Printf( _T("Feature Index: %d\n"), current->obj->Index );
+            
+            classAttributes = _T("");
+            index.Printf( _T("Feature Index: %d<br>"), current->obj->Index );
             classAttributes << index;
 
             wxString LUPstring;
-            LUPstring.Printf( _T("LUP RCID:  %d\n"), current->LUP->RCID );
+            LUPstring.Printf( _T("LUP RCID:  %d<br>"), current->LUP->RCID );
             classAttributes << LUPstring;
+
+            wxString Bbox;
+            wxBoundingBox bbox = current->obj->BBObj;
+            Bbox.Printf( _T("Bounding box:  %g %g %g %g<br>"), bbox.GetMinY(), bbox.GetMaxY() , bbox.GetMinX(), bbox.GetMaxX() );
+            classAttributes << Bbox;
+
+            wxString Type;
+            Type.Printf( _T(" Type:  %s<br>"), type2str(current->obj->Primitive_type));
+            classAttributes << Type;
 
             LUPstring = _T("    LUP ATTC: ");
             if( current->LUP->ATTCArray ) LUPstring += current->LUP->ATTCArray->Item( 0 );
-            LUPstring += _T("\n");
+            LUPstring += _T("<br>");
             classAttributes << LUPstring;
 
             LUPstring = _T("    LUP INST: ");
             if( current->LUP->INST ) LUPstring += *( current->LUP->INST );
-            LUPstring += _T("\n\n");
+            LUPstring += _T("<br><br>");
             classAttributes << LUPstring;
 
         }
@@ -6544,6 +6631,10 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             wxString attribStr;
             int noAttr = 0;
             attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
+
+            if( g_bDebugS57 ) {
+                ret_val << _T("<p>") << classAttributes;
+            }
 
             bool inDepthRange = false;
 

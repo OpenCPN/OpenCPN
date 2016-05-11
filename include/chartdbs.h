@@ -29,6 +29,7 @@
 //#include "chart1.h"
 #include "ocpn_types.h"
 #include "bbox.h"
+#include "LLRegion.h"
 
 class wxProgressDialog;
 class ChartBase;
@@ -229,7 +230,8 @@ struct ChartTableEntry
     void ClearGroupArray(void) { m_GroupArray.Clear(); }
     void AddIntToGroupArray( int val ) { m_GroupArray.Add( val ); }
     void SetAvailable(bool avail ){ m_bavail = avail;}
-    
+
+    LLRegion quilt_candidate_region;
   private:
     int         EntryOffset;
     int         ChartType;
@@ -385,8 +387,8 @@ private:
 class ChartGroupElement;
 class ChartGroup;
 
-WX_DECLARE_OBJARRAY(ChartGroupElement*, ChartGroupElementArray);
-WX_DECLARE_OBJARRAY(ChartGroup*, ChartGroupArray);
+WX_DEFINE_ARRAY_PTR(ChartGroupElement*, ChartGroupElementArray);
+WX_DEFINE_ARRAY_PTR(ChartGroup*, ChartGroupArray);
 
 class ChartGroupElement
 {

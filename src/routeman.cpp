@@ -535,19 +535,19 @@ bool Routeman::DeactivateRoute( bool b_arrival )
     if( pActiveRoute ) {
         pActiveRoute->m_bRtIsActive = false;
         pActiveRoute->m_pRouteActivePoint = NULL;
-    }
 
-    wxJSONValue v;
-    if( !b_arrival ) {
-        v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
-        v[_T("GUID")] = pActiveRoute->m_GUID;
-        wxString msg_id( _T("OCPN_RTE_DEACTIVATED") );
-        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
-    } else {
-        v[_T("GUID")] = pActiveRoute->m_GUID;
-        v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
-        wxString msg_id( _T("OCPN_RTE_ENDED") );
-        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+        wxJSONValue v;
+        if( !b_arrival ) {
+            v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            wxString msg_id( _T("OCPN_RTE_DEACTIVATED") );
+            g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+        } else {
+            v[_T("GUID")] = pActiveRoute->m_GUID;
+            v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
+            wxString msg_id( _T("OCPN_RTE_ENDED") );
+            g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+        }
     }
 
     pActiveRoute = NULL;
@@ -1378,6 +1378,8 @@ wxBitmap *WayPointman::CreateDimBitmap( wxBitmap *pBitmap, double factor )
 
 void WayPointman::SetColorScheme( ColorScheme cs )
 {
+    ProcessIcons( g_StyleManager->GetCurrentStyle() );
+    
     //    Iterate on the RoutePoint list, requiring each to reload icon
 
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();

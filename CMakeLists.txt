@@ -21,7 +21,6 @@
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ## ***************************************************************************
 
-
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -32,7 +31,6 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-# This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0002 OLD)
   CMAKE_POLICY(SET CMP0003 OLD)
@@ -131,6 +129,17 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 #If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
 #cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+
+IF(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ELSE(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDIF(APPLE OR WIN32)
+
 IF(APPLE OR WIN32)
   IF(NOT BUNDLE_DOCS)
     SET (BUNDLE_DOCS "ON")
@@ -154,6 +163,7 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs OFF")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
+
 IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
   # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
   MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
@@ -270,13 +280,6 @@ ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
 
-IF(UNIX)
-  if(NOT QT)
-   MESSAGE (STATUS "Building for wxGTK2")
-   SET(GTK2 "ON")
-  ENDIF(NOT QT)
-ENDIF(UNIX)
-
 IF((_wx_selected_config MATCHES "qt-armv7"))
 #SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
@@ -307,7 +310,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" )
+    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2" )
   ENDIF()
 ENDIF()
 
@@ -320,7 +323,7 @@ IF(QT_ANDROID)
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
     ADD_DEFINITIONS(-DARMHF)
-   
+
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
 
@@ -345,11 +348,28 @@ IF(OPENGL_FOUND)
     SET(wxWidgets_USE_LIBS gl ${wxWidgets_USE_LIBS} )
     INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
 
-    MESSAGE (STATUS "Found OpenGL..." )
-    MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
-    MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+    MESSAGE (STATUS "Found OpenGL...." )
+    MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
+    MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
+
+    # We need to remove GLU from the OPENGL_LIBRARIES list
+    FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
+        #MESSAGE (STATUS "    Lib File: " ${_currentLibFile})
+        SET(UCNAME ${_currentLibFile})
+        string(TOUPPER ${UCNAME} UCNAME)
+        IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+            SET( REVISED_OPENGL_LIBRARIES ${_currentLibFile} ${REVISED_OPENGL_LIBRARIES})
+        ENDIF()
+    ENDFOREACH (_currentLibFile )
+
+    MESSAGE (STATUS "    Adding local GLU" )
+    add_subdirectory(src/glu)
+
+    SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
+    MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
+
 
 ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
@@ -374,7 +394,20 @@ ENDIF(MSYS)
 
 INCLUDE(${wxWidgets_USE_FILE})
     MESSAGE (STATUS "Found wxWidgets..." )
-    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
+    MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
+
+    # We need to remove GLU from the wxWidgets_LIBRARIES list
+    # It only appears to get on the list for MSW...
+    FOREACH (_currentLibFile ${wxWidgets_LIBRARIES})
+        SET(UCNAME ${_currentLibFile})
+        string(TOUPPER ${UCNAME} UCNAME)
+        IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
+            SET( REVISED_wxWidgets_LIBRARIES  ${REVISED_wxWidgets_LIBRARIES} ${_currentLibFile}) 
+        ENDIF()
+    ENDFOREACH (_currentLibFile )
+    SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES}) 
+
+    MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 ENDIF(NOT QT_ANDROID)
 
 MESSAGE (STATUS "")
@@ -409,7 +442,10 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-
+  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+    ADD_DEFINITIONS( " -O0")
+  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
 #    ADD_DEFINITIONS( -pg )
@@ -470,25 +506,6 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
-IF(GTK2)
-FIND_PACKAGE(GTK2 2.6)
-IF (GTK2_FOUND)
-    MESSAGE (STATUS "Found GTK2")
-    ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
-    ADD_DEFINITIONS(-DocpnHAS_GTK)
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
-
-    # Add a definition to satisfy some linux system builds, avoiding Apple builds
-    IF (NOT WIN32 AND NOT APPLE)
-       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
-    ENDIF (NOT WIN32 AND NOT APPLE)
-
-ELSE(GTK2_FOUND)
-    MESSAGE (STATUS "GTK2 Not found...")
-ENDIF (GTK2_FOUND)
-ENDIF(GTK2)
-
 IF(QT_ANDROID)
   SET(CMAKE_BUILD_TYPE Debug)
   ADD_DEFINITIONS(-D__WXQT__)
@@ -503,7 +520,7 @@ IF(QT_ANDROID)
  #       set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
         set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
  #   endif()
-    
+
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
   INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
@@ -535,6 +552,11 @@ ENDIF (PORTAUDIO_FOUND)
 ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
+
+OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
+
+IF(OCPN_USE_CURL)
+    ADD_DEFINITIONS(-D__OCPN_USE_CURL__)
 
 IF(WIN32)
     OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
@@ -581,6 +603,200 @@ IF(NOT QT_ANDROID)
     INSTALL(FILES ${CURL_LIBRARY_DLL} DESTINATION ".")
     ENDIF(WIN32 AND OCPN_USE_EXTERN_CURL)
 ENDIF(NOT QT_ANDROID)
+ENDIF(OCPN_USE_CURL)
+
+OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
+
+IF(OCPN_USE_SVG)
+  MESSAGE(STATUS "SVG support enabled...")
+  IF(NOT QT_ANDROID)
+
+    IF(NOT WIN32)
+      #Find Cairo
+      IF( CAIRO_INCLUDE_DIR )
+        # Already in cache, be silent
+        SET( CAIRO_FIND_QUIETLY TRUE )
+      ENDIF( CAIRO_INCLUDE_DIR )
+
+      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
+              PATHS /usr/local/include /usr/include
+              PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/ )
+
+      SET( CAIRO_NAMES libcairo cairo )
+      FIND_LIBRARY( CAIRO_LIBRARY
+              NAMES ${CAIRO_NAMES}
+              PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+
+      GET_FILENAME_COMPONENT( CAIRO_LIBRARY_DIR ${CAIRO_LIBRARY} PATH )
+
+      # handle the QUIETLY and REQUIRED arguments and set CAIRO_FOUND to TRUE if
+      # all listed variables are TRUE
+      INCLUDE( "FindPackageHandleStandardArgs" )
+      FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO" DEFAULT_MSG CAIRO_INCLUDE_DIR CAIRO_LIBRARY )
+
+      MARK_AS_ADVANCED( CAIRO_INCLUDE_DIR CAIRO_LIBRARY )
+      if ( NOT CAIRO_FOUND )
+        message(FATAL_ERROR "Cairo component required, but not found!")
+      endif()
+
+      #  Some systems (e.g ARMHF RPI2) require some extra libraries
+      #  This is not exactly a general solution, but probably harmless where not needed.
+      FIND_LIBRARY( PANGOCAIRO_LIBRARY  NAMES pangocairo-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS /usr/lib /usr/local/lib)
+      FIND_LIBRARY( GDK_PIXBUF_LIBRARY NAMES gdk_pixbuf-2.0 PATHS /usr/lib /usr/local/lib)
+      FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
+                                            PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
+      IF ( CAIRO_EXTRAS_FOUND )                                           
+        SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
+        message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
+      ENDIF ( CAIRO_EXTRAS_FOUND ) 
+
+ 
+      IF(NOT WIN32 AND NOT APPLE)
+        OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
+
+        IF(NOT OCPN_FORCE_GTK3)
+          FIND_PACKAGE(GTK2)
+        ENDIF(NOT OCPN_FORCE_GTK3)
+
+        IF(GTK2_FOUND)
+          INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+          SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
+          MESSAGE(STATUS "Building against GTK2...")
+        ELSE(GTK2_FOUND)
+          FIND_PACKAGE(GTK3)
+          INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
+          SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
+          MESSAGE(STATUS "Building against GTK3...")
+        ENDIF(GTK2_FOUND)
+      ENDIF(NOT WIN32 AND NOT APPLE)
+
+      # Find FFMPEG - we have it disabled in our wxSVG
+      #set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL SWSCALE SWRESAMPLE AVRESAMPLE)
+      #unset(FFMPEG_LIBRARIES CACHE)
+      #find_package(FFmpeg)
+      #if ( NOT AVCODEC_FOUND OR NOT AVFORMAT_FOUND OR NOT AVUTIL_FOUND OR NOT SWSCALE_FOUND )
+      #  message(FATAL_ERROR "FFmpeg component required, but not found!")
+      #endif()
+      #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
+
+       FIND_PACKAGE(EXPAT REQUIRED)
+    ELSE(NOT WIN32)
+      #On Windows, we have our own expat
+      SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.1.0/include)
+      INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIR})
+      #And cairo
+      SET(CAIRO_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/gtk/include)
+    ENDIF(NOT WIN32)
+
+    INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIR})
+    IF(APPLE)
+      INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIR}/..)
+    ENDIF(APPLE)
+    #INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
+
+    ADD_DEFINITIONS(-DUSE_RENDER_CAIRO)
+
+    ADD_DEFINITIONS(-DocpnUSE_SVG)
+    IF(WIN32)
+      SET(SVG_LIBS
+        ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
+	${CMAKE_SOURCE_DIR}/buildwin/expat-2.1.0/expat.lib
+      )
+      FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
+      INSTALL(FILES ${gtkdll_files} DESTINATION ".")
+      FILE(GLOB expatdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/expat-2.1.0/*.dll")
+      INSTALL(FILES ${expatdll_files} DESTINATION ".")
+      MESSAGE(STATUS "GTK and Expat DLLs bundled into the installer package...")
+    ELSE(WIN32)
+      SET(SVG_LIBS
+        ${CAIRO_LIBRARY}
+        ${CAIRO_EXTRA_LIBRARIES}
+#        ${FFMPEG_LIBRARIES}
+        ${EXPAT_LIBRARIES}
+        ${GTK_LIBRARIES}
+      )
+    ENDIF(WIN32)
+
+    SET(SRC_WXSVG
+      src/wxsvg/src/CSSStyleDeclaration.cpp
+      src/wxsvg/src/CSSValue.cpp
+      src/wxsvg/src/Elements_CopyConstructors.cpp
+      src/wxsvg/src/Elements_GetAttribute.cpp
+      src/wxsvg/src/Elements_GetAttributes.cpp
+      src/wxsvg/src/Elements_HasAttribute.cpp
+      src/wxsvg/src/Elements_SetAttribute.cpp
+      src/wxsvg/src/GetSVGDocument.cpp
+      src/wxsvg/src/NodeList.cpp
+      src/wxsvg/src/SVGAngle.cpp
+      src/wxsvg/src/SVGAnimateTransformElement.cpp
+      src/wxsvg/src/SVGAnimateMotionElement.cpp
+      src/wxsvg/src/SVGAnimatedType.cpp
+      src/wxsvg/src/SVGAnimationElement.cpp
+      src/wxsvg/src/SVGCanvas.cpp
+      src/wxsvg/src/SVGCanvasItem.cpp
+      src/wxsvg/src/SVGCircleElement.cpp
+      src/wxsvg/src/SVGColor.cpp
+      src/wxsvg/src/SVGDocument.cpp
+      src/wxsvg/src/SVGElementInstanceList.cpp
+      src/wxsvg/src/SVGEllipseElement.cpp
+      src/wxsvg/src/SVGFEGaussianBlurElement.cpp
+      src/wxsvg/src/SVGFilterElement.cpp
+      src/wxsvg/src/SVGFitToViewBox.cpp
+      src/wxsvg/src/SVGImageElement.cpp
+      src/wxsvg/src/SVGLength.cpp
+      src/wxsvg/src/SVGLengthList.cpp
+      src/wxsvg/src/SVGLineElement.cpp
+      src/wxsvg/src/SVGLocatable.cpp
+      src/wxsvg/src/SVGMarkerElement.cpp
+      src/wxsvg/src/SVGMatrix.cpp
+      src/wxsvg/src/SVGNumberList.cpp
+      src/wxsvg/src/SVGPaint.cpp
+      src/wxsvg/src/SVGPathElement.cpp
+      src/wxsvg/src/SVGPathSegList.cpp
+      src/wxsvg/src/SVGPoint.cpp
+      src/wxsvg/src/SVGPointList.cpp
+      src/wxsvg/src/SVGPolygonElement.cpp
+      src/wxsvg/src/SVGPolylineElement.cpp
+      src/wxsvg/src/SVGPreserveAspectRatio.cpp
+      src/wxsvg/src/SVGRadialGradientElement.cpp
+      src/wxsvg/src/SVGRect.cpp
+      src/wxsvg/src/SVGRectElement.cpp
+      src/wxsvg/src/SVGSVGElement.cpp
+      src/wxsvg/src/SVGStringList.cpp
+      src/wxsvg/src/SVGStylable.cpp
+      src/wxsvg/src/SVGTests.cpp
+      src/wxsvg/src/SVGTextContentElement.cpp
+      src/wxsvg/src/SVGTextElement.cpp
+      src/wxsvg/src/SVGTransform.cpp
+      src/wxsvg/src/SVGTransformList.cpp
+      src/wxsvg/src/SVGTransformable.cpp
+      src/wxsvg/src/SVGUseElement.cpp
+      src/wxsvg/src/SVGVideoElement.cpp
+      src/wxsvg/src/imagsvg.cpp
+      #src/wxsvg/src/mediadec_ffmpeg.cpp
+      src/wxsvg/src/svgctrl.cpp
+      src/wxsvg/src/cairo/SVGCanvasCairo.cpp
+      src/wxsvg/src/cairo/SVGCanvasCairo.h
+      src/wxsvg/src/cairo/SVGCanvasImageCairo.cpp
+      src/wxsvg/src/cairo/SVGCanvasImageCairo.h
+      src/wxsvg/src/cairo/SVGCanvasPathCairo.cpp
+      src/wxsvg/src/cairo/SVGCanvasPathCairo.h
+      src/wxsvg/src/cairo/SVGCanvasTextCairo.cpp
+      src/wxsvg/src/cairo/SVGCanvasTextCairo.h
+      src/wxsvg/src/svgxml/svgxml.cpp
+      src/wxsvg/src/svgxml/svgxmlhelpr.cpp
+    )
+    ADD_LIBRARY(WXSVG ${SRC_WXSVG})
+    TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVG)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVGXML)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
+    SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
+  ENDIF(NOT QT_ANDROID)
+ENDIF(OCPN_USE_SVG)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -592,7 +808,7 @@ IF(UNIX)
     FIND_PACKAGE(X11)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
     FIND_PACKAGE(TinyXML)
-  ENDIF(NOT QT_ANDROID)  
+  ENDIF(NOT QT_ANDROID)
 ENDIF(UNIX)
 
 # For convenience we define the sources as a variable. You can add
@@ -693,7 +909,6 @@ SET(HDRS
 		include/S57QueryDialog.h
 		include/S57ObjectDesc.h
 		include/S57Light.h
-		include/s57RegistrarMgr.h
 		include/S57ClassRegistrar.h
 		include/MarkIcon.h
 		include/SendToGpsDlg.h
@@ -782,7 +997,6 @@ SET(SRCS
 		src/ocpCursor.cpp
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
-		src/s57RegistrarMgr.cpp
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp
@@ -857,7 +1071,7 @@ SET(SRCS
                 src/ssl/sha1.c
                 src/viewport.cpp
                 src/canvasMenu.cpp
-                src/OCPNPlatform.cpp
+                src/OCPNPlatform.cpp 
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -935,6 +1149,9 @@ IF (USE_S57)
 		src/tri.c
 		src/Osenc.cpp
 		include/Osenc.h
+                include/s57RegistrarMgr.h
+                src/s57RegistrarMgr.cpp
+
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
 		src/myiso8211/ddfrecord.cpp
@@ -1155,7 +1372,7 @@ IF (OPENGL_FOUND)
             set_source_files_properties(src/mipmap/mipmap_avx2.c PROPERTIES COMPILE_FLAGS "-mavx2")
         ENDIF(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        
+
       ELSE ()
 #        neon version not yet tested or implemented
 #        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
@@ -1327,16 +1544,19 @@ IF(xAPPLE)
     SET(EXTRA_LIBS ${EXTRA_LIBS} "iconv")
 ENDIF(xAPPLE)
 
+
 IF(WIN32)
     IF(MSVC)
         SET(CMAKE_C_FLAGS_DEBUG               "/MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1" )
         SET(CMAKE_C_FLAGS_MINSIZEREL          "/MD  /O1  /Ob1 /D NDEBUG")
-        SET(CMAKE_C_FLAGS_RELEASE             "/MD  /O2  /Ob2 /D NDEBUG")
+        SET(CMAKE_C_FLAGS_RELEASE             "/MD  /O2  /Ob2 /D NDEBUG /Zi")
         SET(CMAKE_C_FLAGS_RELWITHDEBINFO      "/MD  /O2  /Ob1 /D NDEBUG /Zi")
         SET(CMAKE_CXX_FLAGS_DEBUG             "/MDd /Ob0 /Od  /D_DEBUG  /Zi /RTC1 /EHa")
         SET(CMAKE_CXX_FLAGS_MINSIZEREL        "/MD  /O1  /Ob1 /D NDEBUG /EHa")
-        SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG /EHa")
+        SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG /Zi /EHa")
         SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MD  /O2  /Ob1 /D NDEBUG /Zi /EHa" )
+        SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
+
     ENDIF(MSVC)
 ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
 ENDIF(WIN32)
@@ -1366,6 +1586,39 @@ FOREACH (_currentSoundFile ${SOUND_FILES})
   SET_SOURCE_FILES_PROPERTIES(
            ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
 ENDFOREACH (_currentSoundFile )
+
+IF(OCPN_USE_SVG)
+  #Traditional theme SVG icons
+  FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/traditional/*")
+  FOREACH (_currentSvgFile ${TRADITIONAL_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+	    ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/traditional )
+  ENDFOREACH (_currentSvgFile )
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+    ${TRADITIONAL_SVG_FILES}
+  )
+
+  #Journeyman theme SVG icons
+  FILE(GLOB JOURNEYMAN_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman/*")
+  FOREACH (_currentSvgFile ${JOURNEYMAN_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman )
+  ENDFOREACH (_currentSvgFile )
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+    ${JOURNEYMAN_SVG_FILES}
+  )
+  
+  #Journeyman_flat theme SVG icons
+  FILE(GLOB JOURNEYMAN_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman_flat/*")
+  FOREACH (_currentSvgFile ${JOURNEYMAN_FLAT_SVG_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
+            ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman_flat )
+  ENDFOREACH (_currentSvgFile )
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+    ${JOURNEYMAN_FLAT_SVG_FILES}
+  )
+  
+ENDIF(OCPN_USE_SVG)
 
 SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
@@ -1447,11 +1700,10 @@ ADD_LIBRARY(gorp ${HDRS} ${SRCS}
         ${SRC_MIPMAP}
         ${SRC_SYMBOLS}
         )
-        
-TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
-      
-ENDIF()
 
+TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
+
+ENDIF()
 
 
 
@@ -1468,7 +1720,8 @@ ENDIF(NOT APPLE AND NOT QT_ANDROID)
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 	setupapi.lib
-	glu32.lib
+#	glu32.lib
+        "GLU_static"
         psapi.lib
         )
 
@@ -1519,10 +1772,6 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
 
-IF(GTK2_FOUND)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
-ENDIF(GTK2_FOUND)
-
 IF(QT_LINUX)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
 ENDIF(QT_LINUX)
@@ -1547,6 +1796,13 @@ IF(NOT BUNDLE_GSHHS MATCHES "NONE")
 ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
 
 INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+
+IF(OCPN_USE_SVG)
+  #Traditional theme SVG icons
+  INSTALL(DIRECTORY data/svg/traditional/ DESTINATION ${PREFIX_PKGDATA}/uidata/traditional)
+  INSTALL(DIRECTORY data/svg/journeyman/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman)
+  INSTALL(DIRECTORY data/svg/journeyman_flat/ DESTINATION ${PREFIX_PKGDATA}/uidata/journeyman_flat)
+ENDIF(OCPN_USE_SVG)
 
 IF (USE_S57)
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -1750,7 +2006,6 @@ SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};${PACKAGE_NAME};AL
 SET(CPACK_PACKAGE_EXECUTABLES ${PACKAGE_NAME} "OpenCPN")
 
 
-
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
@@ -1833,6 +2088,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_DEBIAN_PACKAGE_SECTION "misc")
     SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
     SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
+    SET(CPACK_RPM_PACKAGE_RELEASE "${PACKAGE_RELEASE}")
     SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
     SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
     SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")
@@ -1867,8 +2123,15 @@ IF(NOT SKIP_VERSION_CONFIG)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 ENDIF(WIN32 AND NOT UNIX)
 
+#IF(NOT SKIP_VERSION_CONFIG)
+#   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+#ENDIF(NOT SKIP_VERSION_CONFIG)
+
+#  Do the version.h configuration into the build output directory,
+#  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+    configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
@@ -1899,17 +2162,13 @@ IF(APPLE)
 
  ADD_CUSTOM_COMMAND(
    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg
-   COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
+   COMMAND ${CMAKE_SOURCE_DIR}/buildosx/create-dmg --volname "OpenCPN Installer" --background ${CMAKE_SOURCE_DIR}/buildosx/background.png --window-pos 200 120 --window-size 500 300 --icon-size 80 --icon OpenCPN.app 120 150 --hide-extension OpenCPN.app --app-drop-link 390 145 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg ${CMAKE_INSTALL_PREFIX}/bin/
    DEPENDS ${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
    COMMENT "create-dmg [${PACKAGE_NAME}]: Generated dmg file."
-)
+ )
 
  ADD_CUSTOM_TARGET(create-dmg COMMENT "create-dmg: Done." DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.dmg)
-
-
 ENDIF(APPLE)
 
 MESSAGE(STATUS "Writing spec file...")
-
-

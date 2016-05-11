@@ -191,7 +191,7 @@ protected:
 
       wxRect GetSourceRect(){ return Rsrc; }
 
-      virtual bool GetAndScaleData(unsigned char *ppn,
+      virtual bool GetAndScaleData(unsigned char *ppn, size_t data_size,
                                    wxRect& source, int source_stride, wxRect& dest, int dest_stride,
                                    double scale_factor, ScaleTypeEnum scale_type);
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
@@ -228,6 +228,7 @@ protected:
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
       InitReturn PostInit(void);
 
+      double AdjustLongitude(double lon);
 
 
 //    Protected Data
@@ -315,8 +316,6 @@ protected:
 
       double      m_ppm_avg;              // Calculated true scale factor of the 1X chart,
                                         // pixels per meter
-      bool      m_bIDLcross;
-
       OCPNRegion  m_last_region;
 
       int       m_b_cdebug;

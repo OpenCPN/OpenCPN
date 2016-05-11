@@ -47,7 +47,8 @@
 #include "AISTargetQueryDialog.h"
 #include "timers.h"
 #include "emboss_data.h"
-#include "s57chart.h"
+
+//#include "s57chart.h"
 
 class wxGLContext;
 class GSHHSChart;

@@ -268,8 +268,7 @@ void wxCurlTransferDialog::EndModal(wxCurlDialogReturnFlag retCode)
     // otherwise it will try to send events to a non-existent handler
     // NB: this must be done *after* calling wxDialog::EndModal
     //     so that while we wait we are hidden
-    if (m_pThread->IsAlive())
-        HandleCurlThreadError(m_pThread->Wait(), m_pThread);
+    HandleCurlThreadError(m_pThread->Wait(), m_pThread);
 }
 
 void wxCurlTransferDialog::UpdateLabels(wxCurlProgressBaseEvent *ev)

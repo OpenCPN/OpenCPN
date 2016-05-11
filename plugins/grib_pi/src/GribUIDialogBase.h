@@ -41,6 +41,7 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
+//GRIBUICtrlBarBase
 #define CONTROL_BAR 1000
 #define ID_BTNPREV 1001
 #define ID_CTRLTIME 1002
@@ -54,6 +55,7 @@
 #define ID_BTNOPENFILE 1010
 #define ID_BTNSETTING 1011
 #define ID_BTNREQUEST 1012
+//GRIBUICDataBase
 #define CURSOR_DATA 1013
 #define ID_CB_WIND 1014
 #define ID_CB_WIND_GUSTS 1015
@@ -65,6 +67,7 @@
 #define ID_CB_AIR_TEMP 1021
 #define ID_CB_SEA_TEMP 1022
 #define ID_CB_CAPE 1023
+//GribSettingsDialogBase
 #define BARBFIXSPACING 1024
 #define BARBMINSPACING 1025
 #define DIRFIXSPACING 1026
@@ -89,10 +92,13 @@
 #define STS1 1045
 #define RQ0 1046
 #define RQ1 1047
+//GribRequestDialogBase
 #define MAXLAT 1048
 #define MAXLON 1049
 #define MINLAT 1050
 #define MINLON 1051
+#define MANSELECT 1052
+#define SAVEDZONE 1053
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUICtrlBarBase
@@ -120,6 +126,7 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
+        virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
@@ -132,7 +139,8 @@ class GRIBUICtrlBarBase : public wxDialog
 		virtual void OnOpenFile( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSettings( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
-
+		virtual void OnCompositeDialog( wxCommandEvent& event ) { event.Skip(); }
+		
 
 	public:
 		wxBitmapButton* m_bpAltitude;
@@ -303,7 +311,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxButton* m_sButtonApply;
 		wxButton* m_sButtonCancel;
 
-		GribSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
+		GribSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE );
 		~GribSettingsDialogBase();
 
 };
@@ -330,7 +338,7 @@ class GribPreferencesDialogBase : public wxDialog
 		wxRadioBox* m_rbStartOptions;
 		wxRadioBox* m_rbTimeFormat;
 
-		GribPreferencesDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
+		GribPreferencesDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE );
 		~GribPreferencesDialogBase();
 
 };
@@ -363,6 +371,7 @@ class GribRequestSettingBase : public wxDialog
 		wxStaticText* m_staticText21;
 		wxCheckBox* m_cManualZoneSel;
 		wxFlexGridSizer* fgZoneCoordinatesSizer;
+        wxCheckBox* m_cUseSavedZone;
 		wxSpinCtrl* m_spMaxLat;
 		wxStaticText* m_stMaxLatNS;
 		wxStaticText* m_staticText36;

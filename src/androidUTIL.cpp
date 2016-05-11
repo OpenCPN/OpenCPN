@@ -123,7 +123,7 @@ extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
@@ -1765,7 +1765,7 @@ bool androidStartNMEA(wxEvtHandler *consumer)
     if(s.Upper().Find(_T("DISABLED")) != wxNOT_FOUND){
         OCPNMessageBox(NULL,
                        _("Your android device has an internal GPS, but it is disabled.\n\
-                       Please visit android Settings/Location dialog to enabled GPS"),
+                       Please visit android Settings/Location dialog to enable GPS"),
                         _T("OpenCPN"), wxOK );        
         
         androidStopNMEA();

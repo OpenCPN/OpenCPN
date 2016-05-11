@@ -119,7 +119,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
       wxColour cf;
       GetGlobalColor(_T("DASHF"), &cf);
       pen.SetColour(cf);
-      pen.SetWidth(2);
+      pen.SetWidth(1);
       dc->SetPen(pen);
 
       dc->DrawCircle(m_cx, m_cy, m_radius);

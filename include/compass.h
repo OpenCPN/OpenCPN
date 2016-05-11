@@ -23,22 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifdef ocpnUSE_GL
-#ifdef __WXMSW__
-#include "GL/gl.h"            // local copy for Windows
-#include <GL/glu.h>
-#else
-
-#ifndef __OCPN__ANDROID__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#include "qopengl.h"                  // this gives us the qt runtime gles2.h
-#include "GL/gl_private.h"
-#endif
-
-#endif
-#endif
 
 class ocpnDC;
 
@@ -82,7 +66,7 @@ private:
       wxRect m_rect;
       bool m_shown;
 #ifdef ocpnUSE_GL
-      GLuint texobj;
+      unsigned int texobj;
 #endif
       
 };

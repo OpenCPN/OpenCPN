@@ -1,0 +1,1058 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-20 18:03-0600\n"
+"PO-Revision-Date: 2016-01-25 19:59-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Estonian\n"
+"Language: et_EE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: et\n"
+"X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
+
+#: src/GribUIDialog.cpp:330 src/GribUIDialog.cpp:733
+msgid "Start a request"
+msgstr "Saada päring"
+
+#: src/GribUIDialog.cpp:334 src/GribUIDialog.cpp:733
+msgid "Stop request"
+msgstr "Lõpeta päring"
+
+#: src/GribUIDialog.cpp:338 src/GribUIDialog.cpp:733
+msgid "Valid request"
+msgstr "Kehtiv päring"
+
+#: src/GribUIDialog.cpp:369
+msgid "File"
+msgstr "Fail"
+
+#: src/GribUIDialog.cpp:376 src/GribUIDialog.cpp:402
+msgid "Error! "
+msgstr "Viga! "
+
+#: src/GribUIDialog.cpp:376
+msgid " contains no valid data!"
+msgstr " sisaldab kehtetuid andmeid!"
+
+#: src/GribUIDialog.cpp:399
+msgid "Warning:  Empty directory!"
+msgstr "Hoiatus: Tühi kataloog!"
+
+#: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
+msgid "Hide data at cursor"
+msgstr "Peida andmed kursori juures"
+
+#: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:726
+msgid "Show data at cursor"
+msgstr "Kuva andmed kursori juures"
+
+#: src/GribUIDialog.cpp:538 src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:966
+msgid "Start play back"
+msgstr "Käivita taasesitus"
+
+#: src/GribUIDialog.cpp:685 src/grib_pi.cpp:366 src/CursorData.cpp:560
+msgid "Menu"
+msgstr "Menuu"
+
+#: src/GribUIDialog.cpp:722
+msgid "Select geopotential altitude"
+msgstr "Vali geopotentiaalne kõrgus"
+
+#: src/GribUIDialog.cpp:724 src/GribUIDialogBase.cpp:58
+#: src/GribUIDialogBase.cpp:170 src/GribUIDialogBase.cpp:1094
+msgid "Now"
+msgstr "Nüüd"
+
+#: src/GribUIDialog.cpp:725 src/GribUIDialogBase.cpp:63
+#: src/GribUIDialogBase.cpp:175
+msgid "Zoom To Center"
+msgstr "Suumi keskele"
+
+#: src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:930
+msgid "Stop play back"
+msgstr "Lõpeta taasesitus"
+
+#: src/GribUIDialog.cpp:730 src/GribUIDialogBase.cpp:81
+#: src/GribUIDialogBase.cpp:195
+msgid "Open a new file"
+msgstr "Ava uus fail"
+
+#: src/GribUIDialog.cpp:731 src/GribUIDialogBase.cpp:86
+#: src/GribUIDialogBase.cpp:200 src/GribUIDialogBase.cpp:1190
+#: src/GribUIDialogBase.h:313
+msgid "Settings"
+msgstr "Sätted"
+
+#: src/GribUIDialog.cpp:774
+msgid "Close"
+msgstr "Sulge"
+
+#: src/GribUIDialog.cpp:1185
+msgid "Select a GRIB file"
+msgstr "Vali GRIB-i fail"
+
+#: src/GribUIDialog.cpp:1419
+msgid " does not exist!"
+msgstr " pole olemas!"
+
+#: src/GribUIDialog.cpp:1432
+msgid " can't be read!"
+msgstr " ei ole loetav!"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "Knots"
+msgstr "sõlmed"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "m/s"
+msgstr "m/s"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "mph"
+msgstr "mph"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "km/h"
+msgstr "km/h"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "Beaufort"
+msgstr "Beaufort"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "MilliBars"
+msgstr "Millibaarid"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "mmHG"
+msgstr "mm HG"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "inHG"
+msgstr "tolli HG"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Meters"
+msgstr "Meetrid"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Feet"
+msgstr "Jalad"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Celsius"
+msgstr "Celsius"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Fahrenheit"
+msgstr "Fahrenheit"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Millimeters"
+msgstr "Millimeetrid"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Inches"
+msgstr "Tollid"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "Percentage"
+msgstr "Osakaal"
+
+#: src/GribSettingsDialog.cpp:37
+msgid "j/kg"
+msgstr "j/kg"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:390
+#: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1683
+#: src/GribOverlayFactory.cpp:1028 src/GribTable.cpp:121
+msgid "Wind"
+msgstr "Tuul"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:402
+#: src/GribUIDialogBase.cpp:1689 src/GribTable.cpp:139
+msgid "Wind Gust"
+msgstr "Tuuleiil"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:414
+#: src/GribUIDialogBase.cpp:1686 src/GribTable.cpp:133
+msgid "Pressure"
+msgstr "Õhurõhk"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:428
+#: src/GribUIDialogBase.cpp:1716 src/GribTable.cpp:147
+msgid "Waves"
+msgstr "Lained"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:446
+#: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1705
+#: src/GribTable.cpp:190
+msgid "Current"
+msgstr "Hoovus"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:462
+#: src/GribUIDialogBase.cpp:870 src/GribUIDialogBase.cpp:1692
+#: src/GribTable.cpp:154
+msgid "Rainfall"
+msgstr "Sademed"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:476
+#: src/GribUIDialogBase.cpp:480 src/GribUIDialogBase.cpp:870
+#: src/GribUIDialogBase.cpp:1695 src/GribTable.cpp:161
+msgid "Cloud Cover"
+msgstr "Pilvekate"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Air Temperature"
+msgstr "Õhu temperatuur"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Sea Temperature"
+msgstr "Mere temperatuur"
+
+#: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:516
+#: src/GribUIDialogBase.cpp:1708 src/GribTable.cpp:182
+msgid "CAPE"
+msgstr "CAPE"
+
+#: src/GribSettingsDialog.cpp:51
+msgid "Altitude(Geopotential)"
+msgstr "Kõrgus (geoptentsiaalne)"
+
+#: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:234
+msgid "Relative Humidity"
+msgstr "Suhteline niiskus"
+
+#: src/GribSettingsDialog.cpp:436
+msgid "h"
+msgstr "t"
+
+#: src/GribSettingsDialog.cpp:436
+msgid "mn"
+msgstr "mn"
+
+#: src/GribSettingsDialog.cpp:482
+msgid "Apply"
+msgstr "Lisa"
+
+#: src/GribSettingsDialog.cpp:486 src/grib_pi.h:104 src/grib_pi.cpp:382
+#: src/GribRequestDialog.cpp:121 src/GribRequestDialog.cpp:190
+#: src/GribRequestDialog.cpp:446 src/CursorData.cpp:146
+msgid "Dialog"
+msgstr "Dialoog"
+
+#: src/GribSettingsDialog.cpp:660 src/GribSettingsDialog.cpp:669
+#: src/CursorData.cpp:478 src/CursorData.cpp:484
+msgid "Display Isotachs"
+msgstr "Kuva isotahhe"
+
+#: src/GribSettingsDialog.cpp:676 src/CursorData.cpp:489
+msgid "Display Isobars"
+msgstr "Kuva isobaare"
+
+#: src/GribSettingsDialog.cpp:695 src/CursorData.cpp:494
+msgid "Display Isotherms"
+msgstr "Kuva isoterme"
+
+#: src/GribSettingsDialog.cpp:702 src/CursorData.cpp:501
+msgid "Display Iso CAPE"
+msgstr "Kuva iso-CAPE"
+
+#: src/GribSettingsDialog.cpp:708 src/GribSettingsDialog.cpp:776
+#: src/GribUIDialogBase.cpp:789
+msgid "Spacing"
+msgstr "Vahe"
+
+#: src/GribSettingsDialog.cpp:791
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Sa soovid dialoogitiitli/lohistmisriba eemaldada\n"
+
+#: src/GribSettingsDialog.cpp:793
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Sa soovid dialoogile lisada tiitli/lohistamisriba\n"
+
+#: src/GribSettingsDialog.cpp:796
+msgid "This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr "See muudatus vajab täielikku taaskäivitust.\n"
+"See lisatakse pärast plugina sulgemist ja taasavamist"
+
+#: src/GribSettingsDialog.cpp:816
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "Oled otsustanud lubada interpolatsiooni.\n"
+"Ära unustada, et kuvatud andmed ei ole reaalsed, vaid ümberarvutatud\n"
+"See võib vähendada täpsust!"
+
+#: src/GribSettingsDialog.cpp:817 src/GribSettingsDialog.cpp:855
+#: src/grib_pi.cpp:637 src/GribRequestDialog.cpp:618
+msgid "Warning!"
+msgstr "Hoiatus!"
+
+#: src/GribSettingsDialog.cpp:854
+msgid "This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "See valik eeldab interpolatsiooni lubamist\n"
+"Ära unustada, et kuvatud andmed ei ole reaalsed, vaid ümberarvutatud\n"
+"See võib vähendada täpsust!"
+
+#: src/GribUIDialogBase.cpp:29 src/GribUIDialogBase.cpp:147
+msgid "Previous"
+msgstr "Eelmine"
+
+#: src/GribUIDialogBase.cpp:39 src/GribUIDialogBase.cpp:157
+msgid "Next"
+msgstr "Järgmine"
+
+#: src/GribUIDialogBase.cpp:53 src/GribUIDialogBase.cpp:165
+msgid "Select geoptential altitude"
+msgstr "Vali geopotentiaalne kõrgus"
+
+#: src/GribUIDialogBase.cpp:418
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Rõhk keskmise meretaseme juures (MSLP)"
+
+#: src/GribUIDialogBase.cpp:432
+msgid "Significant Wave Height"
+msgstr "Oluline laine kõrgus"
+
+#: src/GribUIDialogBase.cpp:437
+msgid "Waves period"
+msgstr "Laine periood"
+
+#: src/GribUIDialogBase.cpp:442
+msgid "Waves Direction"
+msgstr "Lainete suund"
+
+#: src/GribUIDialogBase.cpp:450
+msgid "Surface Current Speed"
+msgstr "Pinnahoovuse kiirus"
+
+#: src/GribUIDialogBase.cpp:455
+msgid "Surface Current Direction"
+msgstr "Pinnahoovuse suund"
+
+#: src/GribUIDialogBase.cpp:466
+msgid "Cumulative Rainfall per Hour"
+msgstr "Kumulatiivne sadu tunnis"
+
+#: src/GribUIDialogBase.cpp:490 src/GribUIDialogBase.cpp:870
+msgid "Air Temp"
+msgstr "Õhu temp."
+
+#: src/GribUIDialogBase.cpp:502 src/GribUIDialogBase.cpp:870
+msgid "Sea Temp"
+msgstr "Mere temp."
+
+#: src/GribUIDialogBase.cpp:506
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Mere või õhu temperatuur veepinnal"
+
+#: src/GribUIDialogBase.cpp:520
+msgid "Convective Available Potential Energy"
+msgstr "Soojusjuhtiv saadaval olev potentsiaalne energia"
+
+#: src/GribUIDialogBase.cpp:530 src/CursorData.cpp:232
+msgid "Altitude"
+msgstr "Kõrgus"
+
+#: src/GribUIDialogBase.cpp:547
+msgid "Temp."
+msgstr "Temp."
+
+#: src/GribUIDialogBase.cpp:564
+msgid "Relat. Hum."
+msgstr "Suhtel. niisk."
+
+#: src/GribUIDialogBase.cpp:707
+msgid "Data Display Options"
+msgstr "Andmete kuvamise valikud"
+
+#: src/GribUIDialogBase.cpp:720
+msgid "Units"
+msgstr "Ühikud"
+
+#: src/GribUIDialogBase.cpp:731 src/CursorData.cpp:477
+msgid "Barbed Arrows"
+msgstr "Ogalised nooled"
+
+#: src/GribUIDialogBase.cpp:738
+msgid "Default Colour"
+msgstr "Vaikimisi värv"
+
+#: src/GribUIDialogBase.cpp:738
+msgid "Controled Colours"
+msgstr "Kontrollitud värvid"
+
+#: src/GribUIDialogBase.cpp:750 src/GribUIDialogBase.cpp:828
+#: src/GribUIDialogBase.cpp:884
+msgid "Spacing(pixels)"
+msgstr "Vahemik (pikslid)"
+
+#: src/GribUIDialogBase.cpp:754 src/GribUIDialogBase.cpp:832
+#: src/GribUIDialogBase.cpp:888
+msgid "Fixed"
+msgstr "Fikseeritud"
+
+#: src/GribUIDialogBase.cpp:760 src/GribUIDialogBase.cpp:838
+#: src/GribUIDialogBase.cpp:894
+msgid "Minimum"
+msgstr "Minimaalne"
+
+#: src/GribUIDialogBase.cpp:773 src/GribUIDialogBase.cpp:803
+msgid "Always visible"
+msgstr "Alati nähtav"
+
+#: src/GribUIDialogBase.cpp:782
+msgid "IsoBars"
+msgstr "Isobaarid"
+
+#: src/GribUIDialogBase.cpp:809 src/CursorData.cpp:506 src/CursorData.cpp:511
+msgid "Direction Arrows"
+msgstr "Suuna nooled"
+
+#: src/GribUIDialogBase.cpp:816
+msgid "Single Arrow"
+msgstr "Üksik nool"
+
+#: src/GribUIDialogBase.cpp:816
+msgid "Double Arrow"
+msgstr "Topeltnooled"
+
+#: src/GribUIDialogBase.cpp:816
+msgid "Proportional Arrow"
+msgstr "Võrdeline nool"
+
+#: src/GribUIDialogBase.cpp:851
+msgid "Default Size"
+msgstr "Vaikimisi suurus"
+
+#: src/GribUIDialogBase.cpp:851
+msgid "Small Size"
+msgstr "Väike suurus"
+
+#: src/GribUIDialogBase.cpp:863 src/CursorData.cpp:479 src/CursorData.cpp:485
+#: src/CursorData.cpp:497 src/CursorData.cpp:502 src/CursorData.cpp:507
+#: src/CursorData.cpp:512
+msgid "OverlayMap"
+msgstr "Ülekattekaart"
+
+#: src/GribUIDialogBase.cpp:866
+msgid "Colors"
+msgstr "Värvid"
+
+#: src/GribUIDialogBase.cpp:870
+msgid "Generic"
+msgstr "Üldine"
+
+#: src/GribUIDialogBase.cpp:876 src/CursorData.cpp:480 src/CursorData.cpp:486
+#: src/CursorData.cpp:490 src/CursorData.cpp:498 src/CursorData.cpp:503
+#: src/CursorData.cpp:508 src/CursorData.cpp:513
+msgid "Numbers"
+msgstr "Numbrid"
+
+#: src/GribUIDialogBase.cpp:903 src/CursorData.cpp:481 src/CursorData.cpp:514
+msgid "Particle Map"
+msgstr "Osakeste kaart"
+
+#: src/GribUIDialogBase.cpp:906
+msgid "Density"
+msgstr "Tihedus"
+
+#: src/GribUIDialogBase.cpp:923
+msgid "Transparency for all Overlay Maps"
+msgstr "Kõikide ülekatte kaartide läbipaistvus"
+
+#: src/GribUIDialogBase.cpp:930
+msgid "Overlay Transparency (%)"
+msgstr "Ülekatte läbipaistvus (%)"
+
+#: src/GribUIDialogBase.cpp:949
+msgid "Data"
+msgstr "Andmed"
+
+#: src/GribUIDialogBase.cpp:959
+msgid "Playback Options"
+msgstr "Taasesituse valikud"
+
+#: src/GribUIDialogBase.cpp:966
+msgid "Loop Mode"
+msgstr "Kordav viis"
+
+#: src/GribUIDialogBase.cpp:969
+msgid "Loop Start"
+msgstr "Korduse algus"
+
+#: src/GribUIDialogBase.cpp:973
+msgid "Top of Grib File"
+msgstr "Grib-faili algus"
+
+#: src/GribUIDialogBase.cpp:973
+msgid "Current time forecast"
+msgstr "Preguse aja ilmaennustus"
+
+#: src/GribUIDialogBase.cpp:983
+msgid "Updates per Second"
+msgstr "Uuendust sekundis"
+
+#: src/GribUIDialogBase.cpp:990
+msgid "Interpolate between gribs"
+msgstr "Interpoleeri Grib'de vahel"
+
+#: src/GribUIDialogBase.cpp:993
+msgid "Time Interval"
+msgstr "Aja intervall"
+
+#: src/GribUIDialogBase.cpp:1012 src/GribUIDialogBase.cpp:1142
+msgid "Playback"
+msgstr "Taasesitus"
+
+#: src/GribUIDialogBase.cpp:1022
+msgid "Dialogs Style"
+msgstr "Dialoogide stiil"
+
+#: src/GribUIDialogBase.cpp:1029
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr "Andemd kursori dialoogi juures on lisatud ikooniribale - koos tiitel-/lohistamisribaga."
+
+#: src/GribUIDialogBase.cpp:1032
+msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr "Andemd kursori dialoogi juures on lisatud ikooniribale - ilma tiitel-/lohistamisribata"
+
+#: src/GribUIDialogBase.cpp:1035
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr "Andemd kursori dialoogi juures on isoleeritud ja kuvatud horisontaalselt"
+
+#: src/GribUIDialogBase.cpp:1038
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr "Andemd kursori dialoogi juures on isoleeritud ja kuvatud vertikaalselt"
+
+#: src/GribUIDialogBase.cpp:1051
+msgid "Buttons Visibility"
+msgstr "Nuppude nähtavus"
+
+#: src/GribUIDialogBase.cpp:1065
+msgid "Attached icon bar"
+msgstr "Lisatud ikooniriba"
+
+#: src/GribUIDialogBase.cpp:1070
+msgid "Isolated icon bar"
+msgstr "Isoleeritud ikooniriba"
+
+#: src/GribUIDialogBase.cpp:1078
+msgid "Geopot. Height Choice"
+msgstr "Geopot.kõrguse valik"
+
+#: src/GribUIDialogBase.cpp:1110
+msgid "Zoom to Center"
+msgstr "Suumi keskele"
+
+#: src/GribUIDialogBase.cpp:1126
+msgid "Show Cursor Data"
+msgstr "Näita kursori andmed"
+
+#: src/GribUIDialogBase.cpp:1158
+msgid "Time Slider"
+msgstr "Aja liugur"
+
+#: src/GribUIDialogBase.cpp:1174
+msgid "Open File"
+msgstr "Ava fail"
+
+#: src/GribUIDialogBase.cpp:1206
+msgid "Request"
+msgstr "Päring"
+
+#: src/GribUIDialogBase.cpp:1228
+msgid "GUI"
+msgstr "GKL"
+
+#: src/GribUIDialogBase.cpp:1317
+msgid "General Options"
+msgstr "Üldised valikud"
+
+#: src/GribUIDialogBase.cpp:1324
+msgid "Use High Definition Graphics"
+msgstr "Kasuta kõrgresulutsioonil graafikat"
+
+#: src/GribUIDialogBase.cpp:1327
+msgid "Use Gradual Colors"
+msgstr "Kasuta astmelisi värve"
+
+#: src/GribUIDialogBase.cpp:1330
+msgid "Copy First Cumulative Missing Record"
+msgstr "Kopeeri esimene puuduv koondkirje"
+
+#: src/GribUIDialogBase.cpp:1333
+msgid "Copy Missing Wave Records"
+msgstr "Kopeeri puuduvad lainekirjed"
+
+#: src/GribUIDialogBase.cpp:1342
+msgid "Load the More Recent File in Directory"
+msgstr "lae kõige uuem fail kaustas"
+
+#: src/GribUIDialogBase.cpp:1342
+msgid "Load the Last Opened File"
+msgstr "lae viimati avatud fail"
+
+#: src/GribUIDialogBase.cpp:1344
+msgid "Load File Options"
+msgstr "Faili laadimise valikud"
+
+#: src/GribUIDialogBase.cpp:1348
+msgid "Start at the first forecast in GRIB file"
+msgstr "käivita GRIB-faili esimese ennustuse juures"
+
+#: src/GribUIDialogBase.cpp:1348
+msgid "Start at the nearest forecast to current time"
+msgstr "käivita praegusele ajale lähima ennustuse juures"
+
+#: src/GribUIDialogBase.cpp:1348
+msgid "Authorize Interpolation to start at current time"
+msgstr "kinnita interpolatsioon alustamisek praegusest ajahektest"
+
+#: src/GribUIDialogBase.cpp:1350
+msgid "Start Options"
+msgstr "Käivitamise valikud"
+
+#: src/GribUIDialogBase.cpp:1354
+msgid "Local Time"
+msgstr "kohalik aeg"
+
+#: src/GribUIDialogBase.cpp:1354
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:1356
+msgid "Time Options"
+msgstr "Aja valikud"
+
+#: src/GribUIDialogBase.cpp:1406
+msgid "Profile"
+msgstr "Profiil"
+
+#: src/GribUIDialogBase.cpp:1419
+msgid "Sender eMail Address"
+msgstr "Saatja e-kirja aadress"
+
+#: src/GribUIDialogBase.cpp:1448
+msgid "Mail To "
+msgstr "Kiri (kuhu)"
+
+#: src/GribUIDialogBase.cpp:1458
+msgid "Forecast Model "
+msgstr "Ilmaennustuse mudel"
+
+#: src/GribUIDialogBase.cpp:1475
+msgid "Moving Grib"
+msgstr "Liigutan Grib'i"
+
+#: src/GribUIDialogBase.cpp:1483
+msgid "Speed"
+msgstr "Kiirus"
+
+#: src/GribUIDialogBase.cpp:1491
+msgid "Kts"
+msgstr "slm"
+
+#: src/GribUIDialogBase.cpp:1496
+msgid "Course"
+msgstr "Kurss"
+
+#: src/GribUIDialogBase.cpp:1503 src/GribUIDialogBase.cpp:1554
+msgid "Deg"
+msgstr "Krd"
+
+#: src/GribUIDialogBase.cpp:1518
+msgid "zyGrib Login"
+msgstr "zyGrib logimisnimi"
+
+#: src/GribUIDialogBase.cpp:1526
+msgid "zyGrib Code"
+msgstr "zyGrib kood"
+
+#: src/GribUIDialogBase.cpp:1545
+msgid "Resolution"
+msgstr "Resolutsioon"
+
+#: src/GribUIDialogBase.cpp:1559
+msgid "Interval"
+msgstr "Intervall"
+
+#: src/GribUIDialogBase.cpp:1569
+msgid "Hours"
+msgstr "Tunnid"
+
+#: src/GribUIDialogBase.cpp:1574
+msgid "Time Range"
+msgstr "Aja vahemik"
+
+#: src/GribUIDialogBase.cpp:1583
+msgid "Days"
+msgstr "Päevad"
+
+#: src/GribUIDialogBase.cpp:1597
+msgid "Area Selection"
+msgstr "Ala valik"
+
+#: src/GribUIDialogBase.cpp:1609
+msgid "Manual Selection"
+msgstr "Käsitsi valik"
+
+#: src/GribUIDialogBase.cpp:1612
+msgid "Use Always this Area"
+msgstr "Kasuta alati seda ala"
+
+#: src/GribUIDialogBase.cpp:1622
+msgid "Max Lat"
+msgstr "Max laius"
+
+#: src/GribUIDialogBase.cpp:1629 src/GribRequestDialog.cpp:292
+#: src/GribRequestDialog.cpp:295
+msgid "N"
+msgstr "N"
+
+#: src/GribUIDialogBase.cpp:1633
+msgid "Max Long"
+msgstr "Max pikkus"
+
+#: src/GribUIDialogBase.cpp:1640 src/GribRequestDialog.cpp:293
+#: src/GribRequestDialog.cpp:294
+msgid "E"
+msgstr "E"
+
+#: src/GribUIDialogBase.cpp:1645
+msgid "Min Lat"
+msgstr "Min laius"
+
+#: src/GribUIDialogBase.cpp:1652 src/GribRequestDialog.cpp:292
+#: src/GribRequestDialog.cpp:295
+msgid "S"
+msgstr "S"
+
+#: src/GribUIDialogBase.cpp:1657
+msgid "Min Long"
+msgstr "Min pikkus"
+
+#: src/GribUIDialogBase.cpp:1664 src/GribRequestDialog.cpp:293
+#: src/GribRequestDialog.cpp:294
+msgid "W"
+msgstr "W"
+
+#: src/GribUIDialogBase.cpp:1676
+msgid "Data Selection"
+msgstr "Andmete valimine"
+
+#: src/GribUIDialogBase.cpp:1698
+msgid "Air Temperature(2m)"
+msgstr "Õhu temperattur (2 m)"
+
+#: src/GribUIDialogBase.cpp:1702
+msgid "Sea Temperature(surf.)"
+msgstr "Mere temperatuur(pind.)"
+
+#: src/GribUIDialogBase.cpp:1732
+msgid "Geopotential Height"
+msgstr "Geopotentsiaalne kõrgus"
+
+#: src/GribUIDialogBase.cpp:1742
+msgid "850 hPa"
+msgstr "850 hPa"
+
+#: src/GribUIDialogBase.cpp:1745
+msgid "700 hPa"
+msgstr "700 hPa"
+
+#: src/GribUIDialogBase.cpp:1748
+msgid "500 hPa"
+msgstr "500 hPa"
+
+#: src/GribUIDialogBase.cpp:1751
+msgid "300 hPa"
+msgstr "300 hPa"
+
+#: src/GribUIDialogBase.cpp:1764
+msgid "Mail"
+msgstr "E-kiri"
+
+#: src/GribUIDialogBase.cpp:1792
+msgid "Estimated File Size"
+msgstr "Eeldatav faili suurus"
+
+#: src/GribUIDialogBase.cpp:1800
+msgid " (Max size )"
+msgstr "(max suurus)"
+
+#: src/GribUIDialogBase.cpp:1924
+msgid "Data at Position:"
+msgstr "Andmed asukohas:"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Maili viga: MAPI32.DLL pole paigaldatud või on kehtetu selles kompuutris!"
+
+#: src/GribUIDialogBase.h:165
+msgid "GRIB Display Control"
+msgstr "GRIB-i kuvamise kontroll"
+
+#: src/GribUIDialogBase.h:340
+msgid "Preferences"
+msgstr "Eelistused"
+
+#: src/GribUIDialogBase.h:426
+msgid "Write and send eMail request"
+msgstr "Kirjuta ja saada e-kirja päring"
+
+#: src/GribUIDialogBase.h:454
+msgid "Grib Data Table"
+msgstr "GRIB-andmete tabel"
+
+#: src/GribOverlayFactory.cpp:476
+msgid "Warning : Data at Geopotential Height"
+msgstr "Hoiatus: andmed geopotentsiaalkõrgusel"
+
+#: src/GribOverlayFactory.cpp:1028
+msgid "Building Isobar map"
+msgstr "Loon isobaaride kaarti"
+
+#: src/GribOverlayFactory.cpp:1264
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Ülekatted ei ole selle graafilise riistvaraga toetatud (keela OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1274
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Ülekate on liiga lai ja ei ole võimalik kuvada:"
+
+#: src/GribOverlayFactory.cpp:1283
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "ülekatted on tõkestatud kui pole DC-mooduses N-ülal (luba OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1300
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Palun vähenda mõõtkava nägemaks peidetud kihte:"
+
+#: src/grib_pi.cpp:115
+msgid "Grib"
+msgstr "Grib"
+
+#: src/grib_pi.cpp:182
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "GRIB'i plugin OpenCPN-ile"
+
+#: src/grib_pi.cpp:188
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "GRIB plugin OpenCPN-ile\n"
+"Hoolitseb GRIB failide ülekatte võimalused mitmete GRIB-faili tüüpidele\n"
+"ja päringu funktsiooni GRIB-failide saamiseks e-posti teel.\n\n"
+"Toetatud GRIB-andmed sisaldavad:\n"
+"- tuule suund ja kiirus (10 m kõrgusel)\n"
+"- tuuleiil\n"
+"- pilvekate\n"
+"- oluline laine kõrgus ja suund\n"
+"- õhupinna temperatuur (2 m kõrgusel)\n"
+"- veepinna temperatuur\n"
+"- pinnahoovuse suund ja kiirus\n"
+"- soojusjuhtiv saadaval olev potentsiaalne energia (CAPE)\n"
+"- tuul, kõrgus, temperatuur ja suhteline niiskus 300, 500, 700 850 hPa juures."
+
+#: src/grib_pi.cpp:364
+msgid "Weather table"
+msgstr "Ilmatabel"
+
+#: src/grib_pi.cpp:636
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but Recomputed\n"
+"This can decrease accuracy!"
+msgstr "Oled otsustanud lubada interpolatsiooni.\n"
+"Ära unustada, et praeguse ajamomendi kuvatud andmed ei ole reaalsed, vaid ümberarvutatud\n"
+"See võib vähendada täpsust!"
+
+#: src/GribTable.cpp:168
+msgid "Air\n"
+"Temperature"
+msgstr "Õhu\n"
+"temperatuur"
+
+#: src/GribTable.cpp:175
+msgid "Sea\n"
+"Temperature"
+msgstr "Mere\n"
+"temperatuur"
+
+#: src/GribRequestDialog.cpp:114 src/GribRequestDialog.cpp:927
+msgid "Send"
+msgstr "Saada"
+
+#: src/GribRequestDialog.cpp:115
+msgid "Save"
+msgstr "Säilita"
+
+#: src/GribRequestDialog.cpp:130
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "E-kirja päringu saatmisel kasutatud aadress. (Kohustuslik Linux'l)"
+
+#: src/GribRequestDialog.cpp:131
+msgid "This is your zyGrib's forum access Login"
+msgstr "See on teie zyGrib foorumi pääsu logimisnimi."
+
+#: src/GribRequestDialog.cpp:132
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Saate selle koodi zyGrib'i foorumist ( See pole Teie salasõna! )"
+
+#: src/GribRequestDialog.cpp:133
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Sisesta oma eeldatav kiirus (sõlmedes)"
+
+#: src/GribRequestDialog.cpp:134
+msgid "Enter your forecasted Course"
+msgstr "Sisesta oma eeldatav kurss"
+
+#: src/GribRequestDialog.cpp:456
+msgid "Coord. "
+msgstr "Koord. "
+
+#: src/GribRequestDialog.cpp:461 src/GribRequestDialog.cpp:822
+#: src/GribRequestDialog.cpp:825
+msgid "MB"
+msgstr "MB"
+
+#: src/GribRequestDialog.cpp:617
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
+"and the time intervall 12 hours."
+msgstr "Te palusite ilmaennustuse rohkem kui 8 päeva ette.\n"
+"See on vastuolus laine andmetege, mis kõrvaldatakse te päringust,\n"
+"Ärge unustage, et peale esimesi 8 päeva saab eraldus olema ainult 2.5°x2.5°\n"
+"ja ajaintervall 12 tundi."
+
+#: src/GribRequestDialog.cpp:825
+msgid "Max"
+msgstr "max"
+
+#: src/GribRequestDialog.cpp:938
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Enne Zygrib'i e-kirja saatmist peate sisestama Teie logimisnime ja koodi.\n"
+"Palun külastage www.zygrib.org/ ja järgige juhendeid..."
+
+#: src/GribRequestDialog.cpp:939
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "Liiga suur fail! zyGrib piir on 2MB!"
+
+#: src/GribRequestDialog.cpp:939
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr "Viga! Max. laius on vähem kui min. laius või max. pikkus on vähem kui min. pikkus!"
+
+#: src/GribRequestDialog.cpp:940
+msgid "Too large area! Each side must be less than 180°!"
+msgstr "Liiga suur ala! Kumbgi külg peab olema vähem kui 180°!"
+
+#: src/GribRequestDialog.cpp:940
+msgid "Too small area for this resolution!"
+msgstr "Liiga väike ala selle resolutsiooni jaoks!"
+
+#: src/GribRequestDialog.cpp:957 src/GribRequestDialog.cpp:992
+msgid "Continue..."
+msgstr "Jätka..."
+
+#: src/GribRequestDialog.cpp:977 src/GribRequestDialog.cpp:981
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Teie päring on valmis. E-kiri on te e-kirja keskkonnas ettevalmistatud. \n"
+"Te peate selle ainult üle kontrollima ja saatma...\n"
+"Säilita või Tühista lõpetamiseks... või Jätka..."
+
+#: src/GribRequestDialog.cpp:984
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Teie päring saadeti \n"
+"(kui te süsteemis on MTA seadistatud ning on võimeline saatma e-kirju).\n"
+"Säilita või Tühista lõpetamiseks... või Jätka..."
+
+#: src/GribRequestDialog.cpp:989
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Päringut pole võimalik saata. Palun kontrolli oma e-kirja süsteemi parameetrid üle.\n"
+"Peaksite vaatama ka oma logifaili.\n"
+"Säilita või Tühista lõpetamiseks..."
+
+#: src/CursorData.cpp:216
+msgid "Data at cursor position"
+msgstr "Andmed kursori asukohas"
+
+#: src/CursorData.cpp:230
+msgid "at Geopotential Height"
+msgstr "Geopotentsiaalkõrgusel"
+
+#: src/CursorData.cpp:233
+msgid "Temperature"
+msgstr "Temperatuur"
+
+#: src/CursorData.cpp:236
+msgid "at"
+msgstr "kohas"
+
+#: src/CursorData.cpp:241
+msgid "Wind Speed"
+msgstr "Tuule kiirus"
+
+#: src/CursorData.cpp:242
+msgid "Wind Speed in Bf"
+msgstr "Tuule kiirus Bf"
+
+#: src/CursorData.cpp:243
+msgid "Wind Direction"
+msgstr "Tuule suund"
+
+#: src/CursorData.cpp:246
+msgid "Wind Gust at"
+msgstr "Tuuleiil (juures)"
+
+#: src/CursorData.cpp:249
+msgid "Air Temperature at"
+msgstr "Õhu temperatuur (juures)"
+
+#: src/CursorData.cpp:249
+msgid "surface level"
+msgstr "pinna tase"
+
+#: src/CursorData.cpp:249
+msgid "Sea Surface Temperature"
+msgstr "Merepinna temperatuur"
+
+#: src/CursorData.cpp:290 src/CursorData.cpp:291 src/CursorData.cpp:292
+#: src/CursorData.cpp:304 src/CursorData.cpp:317 src/CursorData.cpp:337
+#: src/CursorData.cpp:339 src/CursorData.cpp:343 src/CursorData.cpp:353
+#: src/CursorData.cpp:367 src/CursorData.cpp:368 src/CursorData.cpp:382
+#: src/CursorData.cpp:395 src/CursorData.cpp:407 src/CursorData.cpp:419
+#: src/CursorData.cpp:431 src/CursorData.cpp:443 src/CursorData.cpp:455
+#: src/CursorData.cpp:466
+msgid "N/A"
+msgstr "N/A"
+

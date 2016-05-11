@@ -33,7 +33,9 @@
 #include <wx/choice.h>
 #include <wx/collpane.h>
 #include <wx/clrpicker.h>
-
+#if wxCHECK_VERSION(2, 9, 0)
+ #include <wx/timectrl.h>
+#endif
 #include <vector>
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -168,7 +170,11 @@ enum {
   ID_SIZEMANUALRADIOBUTTON,
   ID_OPWAYPOINTRANGERINGS,
   xID_OK,
-  ID_BT_SCANTIMER
+  ID_BT_SCANTIMER,
+  ID_TRACKROTATETIME,
+  ID_TRACKROTATEUTC,
+  ID_TRACKROTATELMT,
+  ID_TRACKROTATECOMPUTER
 };
 
 /* Define an int bit field for dialog return value
@@ -195,7 +201,8 @@ enum {
 #define wxFIXED_MINSIZE 0
 #endif
 
-WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
+#include <wx/arrimpl.cpp>
+WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
 
 class Uncopyable {
  protected:
@@ -223,7 +230,9 @@ class options : private Uncopyable,
                    long style = SYMBOL_OPTIONS_STYLE);
 
   ~options(void);
-
+#if wxCHECK_VERSION(3,0,0)
+  bool SendIdleEvents(wxIdleEvent &event );
+#endif  
   void SetInitialPage(int page_sel);
   void Finish(void);
 
@@ -238,6 +247,8 @@ class options : private Uncopyable,
 
   void SetInitChartDir(const wxString &dir) { m_init_chart_dir = dir; }
   void SetInitialSettings(void);
+  void SetInitialVectorSettings(void);
+  
   void SetCurrentDirList(ArrayOfCDI p) { m_CurrentDirList = p; }
   void SetWorkDirListPtr(ArrayOfCDI *p) { m_pWorkDirList = p; }
   ArrayOfCDI *GetWorkDirListPtr(void) { return m_pWorkDirList; }
@@ -350,7 +361,11 @@ class options : private Uncopyable,
   wxStaticText *m_stTalkerIdText;
   wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
   wxChoice *m_choicePriority, *m_choicePrecision;
-
+  
+  // For the Display\Units page
+  wxStaticText* itemStaticTextUserVar;
+  wxStaticText* itemStaticTextUserVar2;
+  
   wxGridSizer *gSizerNetProps, *gSizerSerProps;
   wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc, *m_TalkerIdText;
@@ -425,14 +440,15 @@ class options : private Uncopyable,
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *m_removeBtn;
   int k_charts;
-
+  int m_nCharWidthMax;
+  
   // For the "Charts->Display Options" page
   wxScrolledWindow *m_ChartDisplayPage;
 
   // For the "AIS" page
   wxCheckBox *m_pCheck_CPA_Max, *m_pCheck_CPA_Warn, *m_pCheck_CPA_WarnT;
   wxCheckBox *m_pCheck_Mark_Lost, *m_pCheck_Remove_Lost, *m_pCheck_Show_COG;
-  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Show_Moored;
+  wxCheckBox *m_pCheck_Show_Tracks, *m_pCheck_Hide_Moored, *m_pCheck_Scale_Priority;
   wxCheckBox *m_pCheck_AlertDialog, *m_pCheck_AlertAudio;
   wxCheckBox *m_pCheck_Alert_Moored, *m_pCheck_Rollover_Class;
   wxCheckBox *m_pCheck_Rollover_COG, *m_pCheck_Rollover_CPA;
@@ -441,7 +457,7 @@ class options : private Uncopyable,
   wxCheckBox *m_pCheck_Wpl_Aprs, *m_pCheck_ShowAllCPA;
   wxTextCtrl *m_pText_CPA_Max, *m_pText_CPA_Warn, *m_pText_CPA_WarnT;
   wxTextCtrl *m_pText_Mark_Lost, *m_pText_Remove_Lost, *m_pText_COG_Predictor;
-  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed;
+  wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
 
   // For the ship page
@@ -475,6 +491,10 @@ class options : private Uncopyable,
   wxCheckBox *pFullScreenToolbar, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
+#if wxCHECK_VERSION(2, 9, 0)
+  wxTimePickerCtrl *pTrackRotateTime;
+#endif  
+  wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
   wxSpinCtrl *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
@@ -549,7 +569,9 @@ class options : private Uncopyable,
   bool m_bcompact;
   int m_fontHeight, m_scrollRate, m_BTscanning, m_btNoChangeCounter;
   int m_btlastResultCount;
-
+  bool m_bfontChanged;
+  bool m_bVectorInit;
+  
   DECLARE_EVENT_TABLE()
 };
 
@@ -571,6 +593,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
                         const wxColour &col, wxFont *pFont = NULL);
   void BuildNotebookPages(ChartGroupArray *pGroupArray);
   void EmptyChartGroupArray(ChartGroupArray *s);
+  void ClearGroupPages();
+  
 
   void OnNodeExpanded(wxTreeEvent &event);
   void OnAvailableSelection(wxTreeEvent &event);
@@ -758,11 +782,13 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
 #define ID_MMSI_PROPS_LIST 10073
 
 enum {
-  mlMMSI = 0,
-  mlTrackMode,
-  mlIgnore,
-  mlMOB,
-  mlVDM
+    mlMMSI = 0,
+    mlTrackMode,
+    mlIgnore,
+    mlMOB,
+    mlVDM,
+    mlFollower,
+    mlShipName
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
@@ -805,10 +831,10 @@ class MMSIEditDialog : private Uncopyable, public wxDialog {
   void OnCtlUpdated(wxCommandEvent &event);
 
   MMSIProperties *m_props;
-  wxTextCtrl *m_MMSICtl;
+  wxTextCtrl *m_MMSICtl, m_ShipNameCtl; //Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
-  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton;
+  wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton, *m_FollowerButton;
   wxButton *m_CancelButton, *m_OKButton;
 
   DECLARE_EVENT_TABLE()

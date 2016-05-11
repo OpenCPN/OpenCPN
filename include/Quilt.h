@@ -29,6 +29,8 @@
 #include "LLRegion.h"
 #include "OCPNRegion.h"
 
+extern bool g_bopengl;
+
 struct ChartTableEntry;
 
 class QuiltPatch
@@ -56,17 +58,22 @@ public:
     {
         b_include = false;
         b_eclipsed = false;
+        b_locked = false;
+        last_factor = -1;
     }
 
-    LLRegion &GetCandidateRegion();
+    const LLRegion &GetCandidateRegion();
+    LLRegion &GetReducedCandidateRegion(double factor);
     
     int dbIndex;
     int ChartScale;
     bool b_include;
     bool b_eclipsed;
-    
-private:    
-    LLRegion candidate_region;
+    bool b_locked;
+
+private:
+    double last_factor;
+    LLRegion reduced_candidate_region;
 
 };
 
@@ -89,6 +96,7 @@ public:
     void EnableHighDefinitionZoom( bool value ) { m_b_hidef = value;}
     
     bool BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_db_index, ViewPort &vp_in);
+    void UnlockQuilt();
     bool Compose( const ViewPort &vp );
     bool IsComposed() {
         return m_bcomposed;
@@ -134,6 +142,11 @@ public:
         m_bcomposed = false;
         m_vp_quilt.Invalidate();
         m_zout_dbindex = -1;
+
+        //  Quilting of skewed raster charts is allowed for OpenGL only
+        m_bquiltskew = g_bopengl;
+        //  Quilting of different projections is allowed for OpenGL only
+        m_bquiltanyproj = g_bopengl;
     }
     void AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed );
 
@@ -154,6 +167,9 @@ public:
     }
     void SetReferenceChart( int dbIndex ) {
         m_refchart_dbIndex = dbIndex;
+        if (dbIndex >= 0) {
+            m_zout_family = -1;
+        }
     }
     int GetRefChartdbIndex( void ) {
         return m_refchart_dbIndex;

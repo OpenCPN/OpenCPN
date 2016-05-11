@@ -16,10 +16,12 @@ bool ReadTextFile(
   *FileName=0;
 
   if (Name!=NULL)
+  {
     if (Config)
       GetConfigName(Name,FileName,ASIZE(FileName),true,false);
     else
       wcsncpyz(FileName,Name,ASIZE(FileName));
+  }
 
   File SrcFile;
   if (*FileName!=0)

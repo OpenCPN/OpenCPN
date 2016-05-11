@@ -173,7 +173,9 @@ private:
       
       void              *m_SelectNode;
       void              *m_ManagerNode;
-      
+
+      float             m_IconScaleFactor;
+      wxBitmap          m_ScaledBMP;
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member

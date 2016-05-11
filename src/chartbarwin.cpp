@@ -212,6 +212,7 @@ Piano::Piano()
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
     
     m_tex = m_tex_piano_height = 0;
+    m_texh = 0;
 }
 
 Piano::~Piano()
@@ -728,7 +729,8 @@ void Piano::DrawGL(int off)
         return;
 
 #ifdef ocpnUSE_GL
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx;
+    unsigned int w = cc1->GetClientSize().x, h = GetHeight();
+    unsigned int endx = 0;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
@@ -1087,8 +1089,8 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( -1 != sel_index ){
                 m_click_sel_index = sel_index;
                 m_click_sel_dbindex = sel_dbindex;
+                m_action = DEFERRED_KEY_CLICK_UP;
                 if(!m_eventTimer.IsRunning()){
-                    m_action = DEFERRED_KEY_CLICK_UP;
                     m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
                 }
             }

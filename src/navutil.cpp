@@ -146,6 +146,7 @@ extern bool             g_oz_vector_scale;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
+extern bool             g_bShowRouteTotal;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
@@ -184,9 +185,14 @@ extern double           g_ShowCOG_Mins;
 extern bool             g_bAISShowTracks;
 extern bool             g_bTrackCarryOver;
 extern bool             g_bTrackDaily;
+extern int              g_track_rotate_time;
+extern int              g_track_rotate_time_type;
 extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
+extern bool             g_bHideMoored;
 extern double           g_ShowMoored_Kts;
+extern bool             g_bAllowShowScaled;
+extern bool             g_bShowScaled;
+extern int              g_ShowScaled_Num;
 extern bool             g_bAIS_CPA_Alert;
 extern bool             g_bAIS_CPA_Alert_Audio;
 extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
@@ -207,6 +213,12 @@ extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
 extern bool             g_bWplIsAprsPosition;
 extern bool             g_benableAISNameCache;
+extern int              g_ScaledNumWeightSOG;
+extern int              g_ScaledNumWeightCPA;
+extern int              g_ScaledNumWeightTCPA;
+extern int              g_ScaledNumWeightRange;
+extern int              g_ScaledNumWeightSizeOfT;
+extern int              g_ScaledSizeMinimal;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -355,6 +367,7 @@ extern int              g_chart_zoom_modifier;
 extern int              g_NMEAAPBPrecision;
 
 extern wxString         g_TalkerIdText;
+extern int              g_maxWPNameLength;
 
 extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern double           g_display_size_mm;
@@ -373,6 +386,8 @@ extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
 
 extern wxString         g_uiStyle;
+
+int                     g_nCPUCount;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1101,7 +1116,7 @@ wxString GetLayerName( int id )
 
 MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
         const wxString &LocalFileName ) :
-        wxFileConfig( appName, vendorName, LocalFileName, wxString( _T ( "" ) ) )
+        wxFileConfig( appName, vendorName, LocalFileName, _T (""),  wxCONFIG_USE_LOCAL_FILE )
 {
     //    Create the default NavObjectCollection FileName
     wxFileName config_file( LocalFileName );
@@ -1200,6 +1215,8 @@ int MyConfig::LoadMyConfig()
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
+        
+    Read( _T( "NCPUCount" ), &g_nCPUCount, -1);    
 
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
@@ -1286,6 +1303,7 @@ int MyConfig::LoadMyConfig()
     Read( _T( "NMEAAPBPrecision" ), &g_NMEAAPBPrecision, 3 );
     
     Read( _T( "TalkerIdText" ), &g_TalkerIdText, _T("EC") );
+    Read( _T( "MaxWaypointNameLength" ), &g_maxWPNameLength, 6 );
 
     /* opengl options */
 #ifdef ocpnUSE_GL
@@ -1367,6 +1385,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
+    Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
     Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
     
@@ -1397,6 +1416,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
     Read( _T ( "AutomaticDailyTracks" ), &g_bTrackDaily, 0 );
+    Read( _T ( "TrackRotateAt" ), &g_track_rotate_time, 0 );
+    Read( _T ( "TrackRotateTimeType" ), &g_track_rotate_time_type, TIME_TYPE_COMPUTER );
     Read( _T ( "HighlightTracks" ), &g_bHighliteTracks, 1 );
 
     wxString stps;
@@ -1489,11 +1510,20 @@ int MyConfig::LoadMyConfig()
     } else
         g_AISShowTracks_Mins = 20;
 
-    Read( _T ( "bShowMooredTargets" ), &g_bShowMoored );
-
+    Read( _T ( "bHideMooredTargets" ), &g_bHideMoored, false );
     Read( _T ( "MooredTargetMaxSpeedKnots" ), &s );
     s.ToDouble( &g_ShowMoored_Kts );
-
+    
+    Read(_T ("bShowScaledTargets"), &g_bAllowShowScaled, false );
+    g_ShowScaled_Num = Read( _T ( "AISScaledNumber" ), 10L );
+    g_ScaledNumWeightSOG = Read( _T ( "AISScaledNumberWeightSOG" ), 50L );
+    g_ScaledNumWeightCPA = Read( _T ( "AISScaledNumberWeightCPA" ), 60L );
+    g_ScaledNumWeightTCPA = Read( _T ( "AISScaledNumberWeightTCPA" ), 25L );
+    g_ScaledNumWeightRange = Read( _T ( "AISScaledNumberWeightRange" ), 75L );
+    g_ScaledNumWeightSizeOfT = Read( _T ( "AISScaledNumberWeightSizeOfTarget" ), 25L );
+    g_ScaledSizeMinimal = Read( _T ( "AISScaledSizeMinimal" ), 50L );
+    Read(_T("AISShowScaled"), &g_bShowScaled, false );
+    
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
     Read( _T ( "bShowAISName" ), &g_bShowAISName );
@@ -1538,9 +1568,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
 
-    g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
-    g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
-
+    Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
+    Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
@@ -1810,7 +1839,25 @@ int MyConfig::LoadMyConfig()
     wxLogMessage( s );
 
 //    Fonts
-
+    
+    //  Load the persistent Auxiliary Font descriptor Keys
+    SetPath ( _T ( "/Settings/AuxFontKeys" ) );
+    
+    wxString strk;
+    long dummyk;
+    wxString kval;
+    bool bContk = GetFirstEntry( strk, dummyk );
+    bool bNewKey = false;
+    while( bContk ) {
+        Read( strk, &kval );
+        bNewKey = FontMgr::Get().AddAuxKey(kval);
+        if(!bNewKey) {
+            DeleteEntry( strk );
+            dummyk--;
+        }
+        bContk = GetNextEntry( strk, dummyk );
+    }
+        
 #ifdef __WXX11__
     SetPath ( _T ( "/Settings/X11Fonts" ) );
 #endif
@@ -2048,6 +2095,8 @@ void MyConfig::LoadS57Config()
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
     ps52plib->m_nDepthUnitDisplay = read_int;
 
 //    S57 Object Class Visibility
@@ -2532,6 +2581,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
+    Write( _T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
@@ -2613,6 +2663,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "StartWithTrackActive" ), g_bTrackCarryOver );
     Write( _T ( "AutomaticDailyTracks" ), g_bTrackDaily );
+    Write( _T ( "TrackRotateAt" ), g_track_rotate_time );
+    Write( _T ( "TrackRotateTimeType" ), g_track_rotate_time_type );
     Write( _T ( "HighlightTracks" ), g_bHighliteTracks );
 
     Write( _T ( "InitialStackIndex" ), g_restore_stackindex );
@@ -2739,8 +2791,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CogArrowMinutes" ), g_ShowCOG_Mins );
     Write( _T ( "bShowTargetTracks" ), g_bAISShowTracks );
     Write( _T ( "TargetTracksMinutes" ), g_AISShowTracks_Mins );
-    Write( _T ( "bShowMooredTargets" ), g_bShowMoored );
+
+    Write( _T ( "bHideMooredTargets" ), g_bHideMoored );
     Write( _T ( "MooredTargetMaxSpeedKnots" ), g_ShowMoored_Kts );
+    
     Write( _T ( "bAISAlertDialog" ), g_bAIS_CPA_Alert );
     Write( _T ( "bAISAlertAudio" ), g_bAIS_CPA_Alert_Audio );
     Write( _T ( "AISAlertAudioFile" ), g_sAIS_Alert_Sound_File );
@@ -2751,6 +2805,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
     Write( _T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width );
+    Write( _T ( "bShowScaledTargets" ), g_bAllowShowScaled );
+    Write( _T ( "AISScaledNumber" ), g_ShowScaled_Num );    
+    Write( _T ( "AISScaledNumberWeightSOG" ), g_ScaledNumWeightSOG );
+    Write( _T ( "AISScaledNumberWeightCPA" ), g_ScaledNumWeightCPA );
+    Write( _T ( "AISScaledNumberWeightTCPA" ), g_ScaledNumWeightTCPA );
+    Write( _T ( "AISScaledNumberWeightRange" ), g_ScaledNumWeightRange );
+    Write( _T ( "AISScaledNumberWeightSizeOfTarget" ), g_ScaledNumWeightSizeOfT ); 
+    Write( _T ( "AISScaledSizeMinimal" ), g_ScaledSizeMinimal );
+    Write( _T ( "AISShowScaled"), g_bShowScaled);
 
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
@@ -2820,6 +2883,18 @@ void MyConfig::UpdateSettings()
     Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
+    
+    //  Store the persistent Auxiliary Font descriptor Keys
+    SetPath( _T ( "/Settings/AuxFontKeys" ) );
+    
+    wxArrayString keyArray = FontMgr::Get().GetAuxKeyArray();
+    for(unsigned int i=0 ; i <  keyArray.GetCount() ; i++){
+        wxString key;
+        key.Printf(_T("Key%i"), i);
+        wxString keyval = keyArray[i];
+        Write( key, keyval );
+    }
+    
     wxString font_path;
 #ifdef __WXX11__
     font_path = ( _T ( "/Settings/X11Fonts" ) );
@@ -2916,8 +2991,10 @@ void MyConfig::UpdateNavObj( void )
 
     delete pNavObjectSet;
 
-    if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+    if( ::wxFileExists( m_sNavObjSetChangesFile ) ){
+        wxLogNull logNo;                // avoid silly log error message.
         wxRemoveFile( m_sNavObjSetChangesFile );
+    }
 
     //delete m_pNavObjectChangesSet;
     //m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
@@ -2928,43 +3005,17 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
     );
     
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-     int response = psaveDialog->ShowModal();
-
-#ifdef __WXOSX__
-    if(parent)
-        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn(path);
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
@@ -2986,34 +3037,18 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      suggestedName,
                                                      wxT ( "*.gpx" )
                                                      );
 
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    
 
-#if 0        
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, suggestedName,
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
-    
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn( path );
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
@@ -3035,34 +3070,20 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
     wxString path;
     
-    int response = g_Platform->DoFileSelectorDialog( NULL, &path,
+    int response = g_Platform->DoFileSelectorDialog( parent, &path,
                                                      _( "Export GPX file" ),
                                                      m_gpx_path,
                                                      _T("userobjects.gpx"),
                                                      wxT ( "*.gpx" )
     );
     
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
     
     
-#if 0    
-    wxFileDialog *psaveDialog = new wxFileDialog( NULL, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
-            wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
-
-    if(g_bresponsive)
-        psaveDialog = g_Platform->AdjustFileDialogFont(parent, psaveDialog);
-    
-    int response = psaveDialog->ShowModal();
-
-    wxString path = psaveDialog->GetPath();
-    wxFileName fn( path );
-    m_gpx_path = fn.GetPath();
-    delete psaveDialog;
-#endif
     
     if( response == wxID_OK ) {
-        fn.SetExt( _T ( "gpx" ) );
+        wxFileName fn(path);
+        m_gpx_path = fn.GetPath();
+        fn.SetExt(_T("gpx"));
 
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
@@ -3160,11 +3181,23 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
 
-        if(g_bresponsive)
+        if(g_bresponsive && parent)
             popenDialog = g_Platform->AdjustFileDialogFont(parent, popenDialog);
         
         popenDialog->Centre();
+        
+        #ifdef __WXOSX__
+        if(parent)
+            parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+        #endif
+            
         response = popenDialog->ShowModal();
+        
+        #ifdef __WXOSX__
+        if(parent)
+            parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+        #endif
+            
         if( response == wxID_OK ) {
             popenDialog->GetPaths( file_array );
 
@@ -4580,8 +4613,9 @@ double fromDMM( wxString sdms )
     if( sdms.Contains( _T("N") ) || sdms.Contains( _T("S") ) || sdms.Contains( _T("E") )
             || sdms.Contains( _T("W") ) ) sdms.Replace( _T("-"), _T(" ") );
 
-    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 64 );
-    len = wcslen( buf );
+    wcsncpy( buf, sdms.wc_str( wxConvUTF8 ), 63 );
+    buf[63] = 0;
+    len = wxMin( wcslen( buf ), sizeof(narrowbuf)-1);;
 
     for( i = 0; i < len; i++ ) {
         wchar_t c = buf[i];
@@ -4647,8 +4681,10 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 
         //  Sometimes, on Windows, the destination image is corrupt...
         if(NULL == box)
+        {
+            free(d);
             return;
-
+        }
         float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
         for( int i = 0; i < sb; i++ ) {

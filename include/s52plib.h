@@ -192,6 +192,8 @@ public:
     void AddObjNoshow( const char *objcl);
     void RemoveObjNoshow( const char *objcl);
     void ClearNoshow(void);
+    void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
+    void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
     
     //Todo accessors
     LUPname m_nSymbolStyle;
@@ -317,6 +319,7 @@ private:
     bool GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoint *pp, int nv, ViewPort *vp );
     bool GetPointPixSingle( ObjRazRules *rzRules, float north, float east, wxPoint *r, ViewPort *vp );
     void GetPixPointSingle( int pixx, int pixy, double *plat, double *plon, ViewPort *vp );
+    void GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt );
     
     wxString m_plib_file;
 
@@ -358,6 +361,7 @@ private:
     bool m_benableGLLS;
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
+    ArrayOfNoshow m_saved_noshow;
 };
 
 

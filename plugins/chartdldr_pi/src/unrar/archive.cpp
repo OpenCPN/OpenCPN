@@ -102,6 +102,7 @@ RARFORMAT Archive::IsSignature(const byte *D,size_t Size)
 {
   RARFORMAT Type=RARFMT_NONE;
   if (Size>=1 && D[0]==0x52)
+  {
 #ifndef SFX_MODULE
     if (Size>=4 && D[1]==0x45 && D[2]==0x7e && D[3]==0x5e)
       Type=RARFMT14;
@@ -121,6 +122,7 @@ RARFORMAT Archive::IsSignature(const byte *D,size_t Size)
             if (D[6]==2)
               Type=RARFMT_FUTURE;
       }
+  }
   return Type;
 }
 

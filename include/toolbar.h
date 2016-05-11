@@ -136,7 +136,8 @@ public:
       int GetVisibleToolCount();
 
       void SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconname);
-
+      void SetToolNormalBitmapSVG(wxToolBarToolBase *tool, wxString fileSVG);
+      
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
 
@@ -166,6 +167,10 @@ public:
       virtual void ToggleTool( int toolid, bool toggle );
 
       virtual void SetToolBitmaps( int toolid, wxBitmap *bmp, wxBitmap *bmpRollover );
+      virtual void SetToolBitmapsSVG( int id, wxString fileSVGNormal,
+                                      wxString fileSVGRollover,
+                                      wxString fileSVGToggled );
+      
       void InvalidateBitmaps();
 
       // set/get tools client data (not for controls)
@@ -187,7 +192,7 @@ public:
 
       virtual void SetToolTooltipHiViz( int id, bool b_hiviz );
 
-      virtual void SetSizeFactor( float factor){ m_sizefactor = factor; }
+      virtual void SetSizeFactor( float factor){ m_sizefactor = factor; InvalidateBitmaps(); }
       // toolbar geometry
       // ----------------
 
@@ -303,6 +308,7 @@ protected:
       float m_sizefactor;
 
       int m_last_plugin_down_id;
+      bool m_leftDown;
 
 private:
 DECLARE_EVENT_TABLE()
@@ -336,6 +342,7 @@ public:
       ocpnToolBarSimple *GetToolbar();
       void Submerge();
       void SubmergeToGrabber();
+      bool isSubmergedToGrabber();
       void Surface();
       void SurfaceFromGrabber();
       void HideTooltip();
@@ -349,6 +356,7 @@ public:
       void RePosition();
       void LockPosition(bool lock){ m_block = lock; }
       void SetColorScheme( ColorScheme cs );
+      ColorScheme GetColorScheme(){ return m_cs; }
       bool CheckSurfaceRequest( wxMouseEvent &event );
       
       void SetGeometry(bool bAvoid, wxRect rectAvoid);
@@ -368,11 +376,13 @@ public:
       bool toolbarConfigChanged;
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
-      bool  m_bsubmerged;
       
 private:
       void DoFade( int value );
 
+      bool  m_bsubmerged;
+      bool  m_bsubmergedToGrabber;
+      
       wxWindow *m_pparent;
       ocpnToolBarSimple *m_ptoolbar;
       wxBoxSizer *m_topSizer;

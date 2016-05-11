@@ -951,8 +951,12 @@ wxString ChartSymbols::HashKey( const char* symbolName )
 wxImage ChartSymbols::GetImage( const char* symbolName )
 {
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
-    wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
-    return bitmap.ConvertToImage();
+    if(rasterSymbols.IsOk()){
+        wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
+        return bitmap.ConvertToImage();
+    }
+    else
+        return wxImage(1,1);
 }
 
 unsigned int ChartSymbols::GetGLTextureRect( wxRect &rect, const char* symbolName )

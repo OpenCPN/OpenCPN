@@ -35,7 +35,7 @@
 
 class glTextureDescriptor;
 
-#define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
+#define COMPRESSED_CACHE_MAGIC 0xf013  // change this when the format changes
 
 #define FACTORY_TIMER                   10000
 
@@ -51,7 +51,9 @@ struct CompressedCacheHeader
     uint32_t format;
     uint32_t chartdate;
     uint32_t m_nentries;
-    uint32_t catalog_offset;    
+    uint32_t catalog_offset;
+    uint32_t chartfile_date;
+    uint32_t chartfile_size;
 };
 
 struct CatalogEntryKey
@@ -89,7 +91,7 @@ WX_DEFINE_ARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 class glTexTile
 {
 public:
-    glTexTile() { m_coords = m_texcoords = NULL; }
+    glTexTile() { m_coords = m_texcoords = NULL;  m_ncoords = 0;}
     virtual ~glTexTile() { delete [] m_coords; delete [] m_texcoords; }
 
     wxRect rect;
@@ -100,7 +102,7 @@ public:
     float *m_coords, *m_texcoords;
 };
 
-#define MAX_TEX_LEVEL 5
+#define MAX_TEX_LEVEL 10
 
 class glTexFactory : public wxEvtHandler
 {
@@ -110,7 +112,8 @@ public:
 
     bool PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
-    void UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme );
+    bool UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme, bool write_catalog = true );
+    bool UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_scheme );
     bool IsCompressedArrayComplete( int base_level, const wxRect &rect);
     bool IsCompressedArrayComplete( int base_level, glTextureDescriptor *ptd);
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
@@ -123,8 +126,8 @@ public:
     bool BackgroundCompressionAsJob() const;
     void PurgeBackgroundCompressionPool();
     void OnTimer(wxTimerEvent &event);
-    void SetLRUTime(wxDateTime time) { m_LRUtime = time; }
-    wxDateTime &GetLRUTime() { return m_LRUtime; }
+    void SetLRUTime(int lru) { m_LRUtime = lru; }
+    int	 GetLRUTime() { return m_LRUtime; }
     void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
@@ -139,9 +142,9 @@ private:
     bool WriteCatalogAndHeader();
 
     bool UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                                   ColorScheme color_scheme);
+                                   ColorScheme color_scheme, bool write_catalog = true);
     bool UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                                          ColorScheme color_scheme);
+                                          ColorScheme color_scheme, bool write_catalog = true);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
 
@@ -162,11 +165,14 @@ private:
     int         m_catalog_offset;
     bool        m_hdrOK;
     bool        m_catalogOK;
+    bool        m_newCatalog;
 
     bool	m_catalogCorrupted;
     
     wxFFile     *m_fs;
     uint32_t    m_chart_date_binary;
+    uint32_t    m_chartfile_date_binary;
+    uint32_t    m_chartfile_size;
     
     int         m_stride;
     int         m_ntex;
@@ -179,7 +185,7 @@ private:
     ColorScheme m_colorscheme;
     wxTimer     m_timer;
     size_t      m_ticks;
-    wxDateTime  m_LRUtime;
+    int		m_LRUtime;
     
     glTextureDescriptor  **m_td_array;
 

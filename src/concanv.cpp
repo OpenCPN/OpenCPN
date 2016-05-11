@@ -56,6 +56,8 @@ extern double           gCog;
 extern double           gSog;
 extern bool             g_bShowMag;
 
+bool             g_bShowRouteTotal;
+
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 enum eMenuItems {
@@ -101,7 +103,7 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     
-    wxFont *pThisLegFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
+    wxFont *pThisLegFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
                                                           qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
                                                           qFont->GetFaceName() );
     pThisLegText->SetFont( *pThisLegFont );
@@ -132,13 +134,16 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
     m_pitemBoxSizerLeg->AddSpacer( 5 );
     m_pitemBoxSizerLeg->Add( pCDI, 0, wxALL | wxEXPAND, 2 );
 
-    m_bShowRouteTotal = false;
-
     SetSizer( m_pitemBoxSizerLeg );      // use the sizer for layout
     m_pitemBoxSizerLeg->SetSizeHints( this );
     Layout();
     Fit();
 
+    if( g_bShowRouteTotal )
+        pThisLegText->SetLabel( _("Route") );
+    else
+        pThisLegText->SetLabel( _("This Leg") );
+    
     Hide();
 }
 
@@ -190,7 +195,7 @@ void ConsoleCanvas::OnShow( wxShowEvent& event )
 
 void ConsoleCanvas::LegRoute()
 {
-    if( m_bShowRouteTotal )
+    if( g_bShowRouteTotal )
         pThisLegText->SetLabel( _("Route") );
     else
         pThisLegText->SetLabel( _("This Leg") );
@@ -209,8 +214,8 @@ void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
     contextMenu->AppendSeparator();
     contextMenu->Append( btnHighw );
 
-    btnLeg->Check( ! m_bShowRouteTotal );
-    btnRoute->Check( m_bShowRouteTotal );
+    btnLeg->Check( ! g_bShowRouteTotal );
+    btnRoute->Check( g_bShowRouteTotal );
     btnHighw->Check( g_bShowActiveRouteHighway );
 
     PopupMenu( contextMenu );
@@ -221,12 +226,12 @@ void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
 void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
     switch( event.GetId() ) {
         case ID_NAVLEG: {
-            m_bShowRouteTotal = false;
+            g_bShowRouteTotal = false;
             LegRoute();
             break;
         }
         case ID_NAVROUTE: {
-            m_bShowRouteTotal = true;
+            g_bShowRouteTotal = true;
             LegRoute();
             break;
         }
@@ -243,6 +248,12 @@ void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
     }
 }
 
+void ConsoleCanvas::ToggleRouteTotalDisplay()
+{
+    g_bShowRouteTotal = !g_bShowRouteTotal;
+    LegRoute();
+}
+    
 void ConsoleCanvas::UpdateRouteData()
 {
     wxString str_buf;
@@ -283,7 +294,7 @@ void ConsoleCanvas::UpdateRouteData()
 
             pVMG->SetAValue( str_buf );
 
-            if( !m_bShowRouteTotal )
+            if( !g_bShowRouteTotal )
             {
                 float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
                 wxString srng;
@@ -454,9 +465,9 @@ AnnunText::AnnunText( wxWindow *parent, wxWindowID id, const wxString& LegendEle
     m_label = _T("Label");
     m_value = _T("-----");
 
-    m_plabelFont = wxTheFontList->FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
+    m_plabelFont = FontMgr::Get().FindOrCreateFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
             wxString( _T("Arial Bold") ) );
-    m_pvalueFont = wxTheFontList->FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
+    m_pvalueFont = FontMgr::Get().FindOrCreateFont( 24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
             FALSE, wxString( _T("helvetica") ), wxFONTENCODING_ISO8859_1 );
 
     m_LegendTextElement = LegendElement;
@@ -470,10 +481,7 @@ AnnunText::~AnnunText()
 }
 void AnnunText::MouseEvent( wxMouseEvent& event )
 {
-#ifdef __OCPN__ANDROID__    
     if( event.RightDown() ) {
-        qDebug() << "right down";
-        
         wxContextMenuEvent cevt;
         cevt.SetPosition( event.GetPosition());
         
@@ -482,7 +490,13 @@ void AnnunText::MouseEvent( wxMouseEvent& event )
             ccp->OnContextMenu( cevt );
         
     }
-#endif    
+    else if( event.LeftDown() ) {
+        ConsoleCanvas *ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
+        if(ccp){
+            ccp->ToggleRouteTotalDisplay();
+        }
+    }
+    
 }
 
 void AnnunText::CalculateMinSize( void )

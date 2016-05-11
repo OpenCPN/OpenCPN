@@ -1,0 +1,477 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-20 18:04-0600\n"
+"PO-Revision-Date: 2016-01-25 19:58-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: sv-SE\n"
+"X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "Katalogen är inte giltig."
+
+#: src/chartcatalog.cpp:550
+#, c-format
+msgid "%s (%s to %s), river miles %3.1f - %3.1f"
+msgstr "%s (%s till %s), flodkilometer %3.1f - %3.1f"
+
+#: src/chartdldr_pi.cpp:234
+msgid "ChartDownloader"
+msgstr "Sjökortsnedladdare"
+
+#: src/chartdldr_pi.cpp:239
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "Sjökortsnedladdning. Modul för OpenCPN"
+
+#: src/chartdldr_pi.cpp:244
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "Sjökortsnedladdningsmodul för OpenCPN\n"
+"Hanterar nedladdning och uppdatering av sjökort från källor som stöder\n"
+" NOAAs format för kortkataloger"
+
+#: src/chartdldr_pi.cpp:251 src/chartdldr_pi.cpp:692 src/chartdldr_pi.cpp:699
+#: src/chartdldr_pi.cpp:705 src/chartdldr_pi.cpp:723 src/chartdldr_pi.cpp:758
+#: src/chartdldr_pi.cpp:821 src/chartdldr_pi.cpp:827 src/chartdldr_pi.cpp:1009
+#: src/chartdldr_pi.cpp:1080 src/chartdldr_pi.cpp:1154
+#: src/chartdldr_pi.cpp:1259 src/chartdldr_pi.cpp:1809
+msgid "Chart Downloader"
+msgstr "Sjökortshämtare"
+
+#: src/chartdldr_pi.cpp:428 src/chartdldr_pi.cpp:450
+msgid "Select all"
+msgstr "Markera allt"
+
+#: src/chartdldr_pi.cpp:432 src/chartdldr_pi.cpp:451
+msgid "Deselect all"
+msgstr "Avmarkera alla"
+
+#: src/chartdldr_pi.cpp:436 src/chartdldr_pi.cpp:452
+msgid "Invert selection"
+msgstr "Omvänd markering"
+
+#: src/chartdldr_pi.cpp:440 src/chartdldr_pi.cpp:453
+msgid "Select updated"
+msgstr "Markera uppdaterade"
+
+#: src/chartdldr_pi.cpp:444 src/chartdldr_pi.cpp:454
+msgid "Select new"
+msgstr "Markera nya"
+
+#: src/chartdldr_pi.cpp:562
+msgid "New"
+msgstr "Ny"
+
+#: src/chartdldr_pi.cpp:571
+msgid "Update available"
+msgstr "Uppdatering finns"
+
+#: src/chartdldr_pi.cpp:577
+msgid "Up to date"
+msgstr "Aktuell"
+
+#: src/chartdldr_pi.cpp:584
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr "%lu sjökort totalt, %lu uppdaterade, %lu nya"
+
+#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
+msgid "(Please update first)"
+msgstr "(Vänligen uppdatera först)"
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr "Fel, adressen(URL) till kortens källa verkar vara fel."
+
+#: src/chartdldr_pi.cpp:668 src/chartdldr_pi.cpp:740 src/chartdldr_pi.cpp:1020
+msgid "Error"
+msgstr "Fel"
+
+#: src/chartdldr_pi.cpp:691
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download all new and updated charts.\n"
+"This may take a long time."
+msgstr "Du har valt att uppdatera alla kortkataloger. \n"
+"Då hämtas alla nya och uppdaterade sjökort. \n"
+"Det kan ta lång tid."
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only new (but not updated) charts.\n"
+"This may take a long time."
+msgstr "Du har valt att uppdatera alla kortkataloger. \n"
+"Då hämtas alla nya (men inte uppdaterade) sjökort. \n"
+"Det kan ta lång tid."
+
+#: src/chartdldr_pi.cpp:704
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only updated (but not new) charts.\n"
+"This may take a long time."
+msgstr "Du har valt att uppdatera alla kortkataloger. \n"
+"Då hämtas bara uppdaterade (men inte nya) sjökort. \n"
+"Det kan ta lång tid."
+
+#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1079
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr "%d av %d sjökort kunde inte hämtas. \n"
+"Kontrollera listan, kontrollera att det finns en fungerande Internetanslutning och försök igen om det är lämpligt."
+
+#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1786 src/chartdldr_pi.cpp:1809
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "Katalog %s kan inte skapas."
+
+#: src/chartdldr_pi.cpp:793
+msgid "Downloading file"
+msgstr "Laddar ner filer"
+
+#: src/chartdldr_pi.cpp:794
+msgid "Reading Headers: "
+msgstr "Läser rubriker: "
+
+#: src/chartdldr_pi.cpp:820
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "Det gick inte att hitta den nya katalogen: %s "
+
+#: src/chartdldr_pi.cpp:826
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "Det gick inte att hämta katalogen: %s \n"
+" Kontrollera att internetanslutningen fungerar."
+
+#: src/chartdldr_pi.cpp:976 src/chartdldr_pi.cpp:982
+msgid "No charts selected for download."
+msgstr "Inga kort är markerade för nedladdning."
+
+#: src/chartdldr_pi.cpp:992
+msgid "Abort download"
+msgstr "Avbryt nedladdning"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Unknown"
+msgstr "Okänd"
+
+#: src/chartdldr_pi.cpp:1008
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr "De markerade sjökorten \"%s\" kan inte hämtas automatiskt, vill du jag ska öppna ett webbläsarfönster där du får hämta dem manuellt? \n\n"
+"Vänligen packa sedan upp dem till %s efter nedladdningen"
+
+#: src/chartdldr_pi.cpp:1020
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "Fel, adressen till sjökort(en) (%s) verkar vara fel."
+
+#: src/chartdldr_pi.cpp:1046
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "Laddar kort %u av %u, %u nedladdningar misslyckades (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
+msgid "Download\n"
+" selected charts"
+msgstr "Laddar ner\n"
+" valda sjökort"
+
+#: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Katalog"
+
+#: src/chartdldr_pi.cpp:1105
+msgid "Released"
+msgstr "Publicerad"
+
+#: src/chartdldr_pi.cpp:1106
+msgid "Local path"
+msgstr "Lokal sökväg"
+
+#: src/chartdldr_pi.cpp:1110
+msgid "Title"
+msgstr "Titel"
+
+#: src/chartdldr_pi.cpp:1111
+msgid "Status"
+msgstr "Status"
+
+#: src/chartdldr_pi.cpp:1112
+msgid "Latest"
+msgstr "Senaste"
+
+#: src/chartdldr_pi.cpp:1153
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "Vill du verkligen ta bort källan för dessa sjökort? \n"
+"Lokala kortfiler kommer inte att tas bort, men du kommer inte att kunna uppdatera korten automatiskt."
+
+#: src/chartdldr_pi.cpp:1219
+msgid "Edit Chart Source"
+msgstr "Redigera källan för sjökorten"
+
+#: src/chartdldr_pi.cpp:1258
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "Sökvägen %s verkar inte finnas bland dina sjökortsfiler. \n"
+"För att se sjökorten behöver du justera inställningarna i fliken \"Sjökortsfiler\"."
+
+#: src/chartdldr_pi.cpp:1771 src/chartdldr_pi.cpp:1774
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "Du måste antingen välja en av de fördefinierade källorna eller skapa en egen. \n"
+
+#: src/chartdldr_pi.cpp:1777
+msgid "The chart source must have a name.\n"
+msgstr "Sjökortskällan måste ha ett namn. \n"
+
+#: src/chartdldr_pi.cpp:1780
+msgid "The chart source must have a valid URL.\n"
+msgstr "Sjökortskällan måste ha en giltig adress. \n"
+
+#: src/chartdldr_pi.cpp:1782
+msgid "You must select a local folder to store the charts.\n"
+msgstr "Du måste välja en lokal mapp att lagra korten i. \n"
+
+#: src/chartdldr_pi.cpp:1789
+msgid "Chart source definition problem"
+msgstr "Problem med att hitta källan för sjökorten"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Fördefinierade"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Namn"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "Webbadress"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Anpassad"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Sjökortskatalog"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:472
+msgid "Select a folder"
+msgstr "Välj en mapp"
+
+#: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
+msgid "Choose Chart File Directory"
+msgstr "Välj filkatalog för sjökorten"
+
+#: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
+msgid "Catalogs"
+msgstr "Kataloger"
+
+#: src/chartdldrgui.cpp:245 src/chartdldrgui.cpp:346
+msgid "Add"
+msgstr "Lägg till"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add a new chart catalog."
+msgstr "Lägg till en ny kortkatalog."
+
+#: src/chartdldrgui.cpp:250 src/chartdldrgui.cpp:351
+msgid "Delete"
+msgstr "Ta bort"
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Ta bort denna kortkatalogen. Redan nedladdade sjökort tas inte bort."
+
+#: src/chartdldrgui.cpp:255 src/chartdldrgui.cpp:356
+msgid "Edit..."
+msgstr "Ändra..."
+
+#: src/chartdldrgui.cpp:258 src/chartdldrgui.cpp:359
+msgid "Update"
+msgstr "Uppdatera"
+
+#: src/chartdldrgui.cpp:260 src/chartdldrgui.cpp:361
+msgid "Download the current chart catalog and update the data."
+msgstr "Ladda ner och uppdatera denna kortkatalogen."
+
+#: src/chartdldrgui.cpp:264 src/chartdldrgui.cpp:365
+msgid "Update All"
+msgstr "Uppdatera alla"
+
+#: src/chartdldrgui.cpp:269 src/chartdldrgui.cpp:378
+msgid "Charts"
+msgstr "Sjökort"
+
+#: src/chartdldrgui.cpp:290 src/chartdldrgui.cpp:394
+msgid "Help"
+msgstr "Hjälp"
+
+#: src/chartdldrgui.cpp:296 src/chartdldrgui.cpp:403
+msgid "Show local files"
+msgstr "Visa lokala filer"
+
+#: src/chartdldrgui.cpp:302 src/chartdldrgui.cpp:387
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u kort totalt, %u uppdaterade, %u nya"
+
+#: src/chartdldrgui.cpp:400
+msgid "Download selected charts"
+msgstr "Laddar ner valda sjökort"
+
+#: src/chartdldrgui.cpp:463
+msgid "Default Path to Charts"
+msgstr "Sjökortens standardsökväg"
+
+#: src/chartdldrgui.cpp:479
+msgid "Preferences"
+msgstr "Inställningar"
+
+#: src/chartdldrgui.cpp:483
+msgid "After catalog update select for download"
+msgstr "Välj nedladdning när katalogen är uppdaterad"
+
+#: src/chartdldrgui.cpp:487
+msgid "All updated charts"
+msgstr "Alla uppdaterade sjökort"
+
+#: src/chartdldrgui.cpp:491
+msgid "All new charts"
+msgstr "Alla nya sjökort"
+
+#: src/chartdldrgui.cpp:497
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Tillåt samtidig uppdatering av alla angivna sökvägar och sjökort"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Ny källa för sjökort"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Inställningar för nedladdning"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "Inte tillängligt"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "Webbadress:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "Fart:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Förfluten tid:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Beräknad total tid:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Beräknad återstående tid:"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "Avbryt"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "Inställningar"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "Paus"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "Starta"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "Stäng"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "Återuppta"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (överföring har pausats)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "Anslutningsinställningar"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "Anslutningsinställningar som används för överföringen:"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (överföringar klara)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "Nedladdade:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "Uppladdad:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "Användarnanm:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "Lösenord:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "Port:"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Proxyinställningar"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "Använd proxy"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Proxyvärd:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Användarnamn för proxy:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Lösenord för proxy:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Proxyport:"
+

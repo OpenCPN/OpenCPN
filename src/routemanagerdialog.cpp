@@ -1528,14 +1528,14 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             }
 
             wxString choices[] = { _T("5.0"), _T("10.0"), _T("20.0"), _T("50.0"), _T("100.0") };
-            wxSingleChoiceDialog* precisionDlg = new wxSingleChoiceDialog( this,
+            wxSingleChoiceDialog precisionDlg ( this,
                     _("Select the maximum error allowed (in meters)\nafter data reduction:"),
                     _("Reduce Data Precision"), 5, choices );
 
-            int result = precisionDlg->ShowModal();
+            int result = precisionDlg.ShowModal();
             if( result == wxID_CANCEL ) break;
             double precision = 5.0;
-            switch( precisionDlg->GetSelection() ) {
+            switch( precisionDlg.GetSelection() ) {
                 case 0: precision = 5.0; break;
                 case 1: precision = 10.0; break;
                 case 2: precision = 20.0; break;
@@ -2501,16 +2501,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
     bool show_flag = g_bShowLayers;
     g_bShowLayers = true;
     
-#ifdef __WXOSX__
-    HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-    
     pConfig->UI_ImportGPX( this, true, _T("") );
-    
-#ifdef __WXOSX__
-    ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-    
     
     g_bShowLayers = show_flag;
 
@@ -2852,15 +2843,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     // FIXME there is no way to instruct this function about what to import.
     // Suggest to add that!
     
-#ifdef __WXOSX__
-    HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-    
     pConfig->UI_ImportGPX( this );
-
-#ifdef __WXOSX__
-    ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
     
     UpdateRouteListCtrl();
     UpdateTrkListCtrl();

@@ -162,6 +162,7 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
 
+      bool MouseEventOverlayWindows( wxMouseEvent& event );
       bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
       bool MouseEventProcessObjects( wxMouseEvent& event );
@@ -195,6 +196,7 @@ public:
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
+      double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);
 
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
@@ -210,6 +212,7 @@ public:
 
       wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
       
+      void UnlockQuilt();
       void SetQuiltMode(bool b_quilt);
       bool GetQuiltMode(void);
       ArrayOfInts GetQuiltIndexArray(void);
@@ -270,6 +273,7 @@ public:
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );
+      void DoTiltCanvas( double tilt );
 
       void ShowAISTargetList(void);
 
@@ -332,6 +336,8 @@ public:
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
       void DrawBlinkObjects( void );
+
+      void StartRoute(void);
       void FinishRoute(void);
       
       void InvalidateGL();
@@ -356,6 +362,7 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       
 private:
+      bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
     
       ViewPort    VPoint;
@@ -656,6 +663,7 @@ private:
       
       wxColour    m_fog_color;      
       bool        m_disable_edge_pan;
+      wxFont      *m_pgridFont;
       
       
 DECLARE_EVENT_TABLE()

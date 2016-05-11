@@ -245,9 +245,21 @@ void datumParams(short datum, double *a, double *es)
     extern struct DATUM const gDatum[];
     extern struct ELLIPSOID const gEllipsoid[];
 
-    double f = 1.0 / gEllipsoid[gDatum[datum].ellipsoid].invf;    // flattening
-    *es = 2 * f - f * f;                                          // eccentricity^2
-    *a = gEllipsoid[gDatum[datum].ellipsoid].a;                   // semimajor axis
+    
+    if( datum < nDatums){
+        double f = 1.0 / gEllipsoid[gDatum[datum].ellipsoid].invf;    // flattening
+        if(es)
+            *es = 2 * f - f * f;                                          // eccentricity^2
+        if(a)
+            *a = gEllipsoid[gDatum[datum].ellipsoid].a;                   // semimajor axis
+    }
+    else{
+        double f = 1.0 / 298.257223563;    // WGS84
+        if(es)
+            *es = 2 * f - f * f;              
+        if(a)
+            *a = 6378137.0;                   
+    }
 }
 
 static int datumNameCmp(const char *n1, const char *n2)
@@ -400,8 +412,8 @@ void toSMcache(double lat, double lon, double y30, double lon0, double *x, doubl
     *x = (xlon - lon0) * DEGREE * z;
 
      // y =.5 ln( (1 + sin t) / (1 - sin t) )
-    const double s = sinf(lat * DEGREE);
-    const double y3 = (.5 * logf((1 + s) / (1 - s))) * z;
+    const double s = sin(lat * DEGREE);
+    const double y3 = (.5 * log((1 + s) / (1 - s))) * z;
 
     *y = y3 - y30;
 }
@@ -502,9 +514,9 @@ toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y)
       }
       else
       {
-          const double E = (lon - lon0) * DEGREE;
+          const double E = (lon - lon0) * DEGREE * sin(lat * DEGREE);
           const double cot = 1. / tan(lat * DEGREE);
-          *x = sin(E * sin((lat * DEGREE))) * cot;
+          *x = sin(E) * cot;
           *y = (lat * DEGREE) - (lat0 * DEGREE) + cot * (1. - cos(E));
 
           *x *= z;
@@ -546,8 +558,8 @@ fromPOLY(double x, double y, double lat0, double lon0, double *lat, double *lon)
             double dphi;
             do {
                   double tp = tan(lat3);
-                  dphi = ((yp) * (lat3 * tp + 1.) - lat3 - .5 * ( lat3 * lat3 + B) * tp);
-                  lat3 -= (dphi / ((lat3 - (yp)) / tp - 1.));
+                  dphi = (yp * (lat3 * tp + 1.) - lat3 - .5 * ( lat3 * lat3 + B) * tp) / ((lat3 - yp) / tp - 1.);
+                  lat3 -= dphi;
             } while (fabs(dphi) > CONV && --i);
             if (! i)
             {
@@ -678,16 +690,16 @@ void toORTHO(double lat, double lon, double sin_phi0, double cos_phi0, double lo
 
     double theta = (xlon - lon0) * DEGREE;
     double phi = lat * DEGREE;
-    double cos_phi = cosf(phi);
+    double cos_phi = cos(phi);
 
-    float vy = sinf(phi), vz = cosf(theta)*cos_phi;
+    double vy = sin(phi), vz = cos(theta)*cos_phi;
 
     if(vy*sin_phi0 + vz*cos_phi0 < 0) { // on the far side of the earth
         *x = *y = NAN;
         return;
     }
 
-    double vx = sinf(theta)*cos_phi;
+    double vx = sin(theta)*cos_phi;
     double vw = vy*cos_phi0 - vz*sin_phi0;
 
     *x = vx*z;
@@ -738,10 +750,10 @@ void toPOLAR(double lat, double lon, double e, double lat0, double lon0, double 
     double theta = (xlon - lon0) * DEGREE;
     double pole = lat0 > 0 ? 90 : -90;
 
-    double d = tanf((pole - lat) * DEGREE / 2);
+    double d = tan((pole - lat) * DEGREE / 2);
 
-    *x = fabs(d)*sinf(theta)*z;
-    *y = (e-d*cosf(theta))*z;
+    *x = fabs(d)*sin(theta)*z;
+    *y = (e-d*cos(theta))*z;
 }
 
 
@@ -773,9 +785,9 @@ static inline void toSTEREO1(double &u, double &v, double &w, double lat, double
         lon < 0.0 ? xlon += 360.0 : xlon -= 360.0;
 
     double theta = (xlon - lon0) * DEGREE, phi = lat*DEGREE;
-    double cos_phi = cos(phi), v0 = sinf(phi), w0 = cosf(theta)*cos_phi;
+    double cos_phi = cos(phi), v0 = sin(phi), w0 = cos(theta)*cos_phi;
 
-    u = sinf(theta)*cos_phi;
+    u = sin(theta)*cos_phi;
     v = cos_phi0*v0 - sin_phi0*w0;
     w = sin_phi0*v0 + cos_phi0*w0;
 }
@@ -887,6 +899,10 @@ void fromEQUIRECT(double x, double y, double lat0, double lon0, double *lat, dou
 
 void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon, int from_datum_index, int to_datum_index)
 {
+    double dlat = 0;
+    double dlon = 0;
+    
+    if( from_datum_index < nDatums){
       const double from_lat = lat * DEGREE;
       const double from_lon = lon * DEGREE;
       const double from_f = 1.0 / gEllipsoid[gDatum[from_datum_index].ellipsoid].invf;    // flattening
@@ -912,18 +928,20 @@ void MolodenskyTransform (double lat, double lon, double *to_lat, double *to_lon
       const double rn = from_a / sqrt (1.0 - from_esq * ssqlat);
       const double rm = from_a * (1. - from_esq) / pow ((1.0 - from_esq * ssqlat), 1.5);
 
-      const double dlat = (((((-dx * slat * clon - dy * slat * slon) + dz * clat)
+      dlat = (((((-dx * slat * clon - dy * slat * slon) + dz * clat)
                   + (da * ((rn * from_esq * slat * clat) / from_a)))
                   + (df * (rm * adb + rn / adb) * slat * clat)))
             / (rm + from_h);
 
-      const double dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
+      dlon = (-dx * slon + dy * clon) / ((rn + from_h) * clat);
 
       const double dh = (dx * clat * clon) + (dy * clat * slon) + (dz * slat)
                   - (da * (from_a / rn)) + ((df * rn * ssqlat) / adb);
 
-      *to_lon = lon + dlon/DEGREE;
-      *to_lat = lat + dlat/DEGREE;
+    } 
+    
+    *to_lon = lon + dlon/DEGREE;
+    *to_lat = lat + dlat/DEGREE;
 //
       return;
 }

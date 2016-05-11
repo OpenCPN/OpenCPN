@@ -32,8 +32,6 @@ CMake variables
 ----------------------------------------------------------------------------------------------------------*/
 ;# Set compression
 	SetCompressor /FINAL lzma
-;# Set unicode
-;        Unicode true
 
 ;--------------------------------
 ;# You must define these values
@@ -187,7 +185,7 @@ CMake variables
   ;# Default installation folder
   InstallDir "$PROGRAMFILES\OpenCPN"
 
-  BrandingText "OpenCPN $(Installer) v${OCPN_INSTALLER_VERSION}"
+  BrandingText /TRIMLEFT "OpenCPN $(Installer) v${OCPN_INSTALLER_VERSION}"
 ;--------------------------------
 ;# Interface Settings
   !define MUI_CUSTOMFUNCTION_GUIINIT myGuiInit
@@ -704,6 +702,7 @@ CMake variables
 Section "-Topmost Section" SecTopmost ;# this needs to be always the first section to be executed!
 	SetShellVarContext all
 	SetOutPath $INSTDIR
+        LogSet on
 
 	${If} $INSTALL_TYPE == 1
 	${OrIf} $INSTALL_TYPE == 2
@@ -786,7 +785,7 @@ SectionGroup /e "!Shortcuts Section Group" SecGrpShortcuts
 			;# Create shortcuts
 			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@.lnk" "$INSTDIR\opencpn.exe"
-			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@ - No OpenGL.lnk" "$INSTDIR\opencpn.exe" "/no_opengl" 
+			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\OpenCPN @CPACK_PACKAGE_VERSION@ - No OpenGL.lnk" "$INSTDIR\opencpn.exe" "/no_opengl"
 			CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)"
 			CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\$(Uninstall_Folder_Name)\$(Uninstall_Link).lnk" "$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe"
 		!insertmacro MUI_STARTMENU_WRITE_END
@@ -857,7 +856,8 @@ Section "-Install Section" SecInstall
 	;# Save the log file
 	StrCpy $0 "$INSTDIR\install.log"
 	Push $0
-	Call DumpLog
+        IfSilent +2 0
+	  Call DumpLog
 SectionEnd
 
 ;--------------------------------
@@ -3344,7 +3344,7 @@ FunctionEnd
 
 ;!define LVM_GETITEMCOUNT 0x1004 ;# ANSI
 ;!define LVM_GETITEMTEXT 0x102D ;# ANSI
-;!define LVM_GETITEMCOUNT 0x1004
+!define LVM_GETITEMCOUNT 0x1004
 !define LVM_GETITEMTEXT 0x1073
 
 Function DumpLog

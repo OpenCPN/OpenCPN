@@ -39,9 +39,12 @@
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
 #include "OCPN_Sound.h"
+#include "chartimg.h"
+
+#ifdef USE_S57
 #include "s52s57.h"
 #include "s57chart.h"               // for Object list
-#include "chartimg.h"
+#endif
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -50,7 +53,10 @@
 #include <wx/bmpcbox.h>
 
 #ifndef __OCPN__ANDROID__
+#ifdef __OCPN_USE_CURL__
+#include "wx/curl/http.h"
 #include "wx/curl/dialog.h"
+#endif
 #endif
 
 //    Include wxJSON headers
@@ -195,8 +201,10 @@ class PlugInToolbarToolContainer
             wxBitmap          *bitmap_day;
             wxBitmap          *bitmap_dusk;
             wxBitmap          *bitmap_night;
-            wxBitmap          *bitmap_Rollover;
-
+            wxBitmap          *bitmap_Rollover_day;
+            wxBitmap          *bitmap_Rollover_dusk;
+            wxBitmap          *bitmap_Rollover_night;
+            
             wxItemKind        kind;
             wxString          shortHelp;
             wxString          longHelp;
@@ -205,7 +213,10 @@ class PlugInToolbarToolContainer
             bool              b_viz;
             bool              b_toggle;
             int               tool_sel;
-
+            wxString          pluginNormalIconSVG;
+            wxString          pluginRolloverIconSVG;
+            wxString          pluginToggledIconSVG;
+            
 };
 
 //    Define an array of PlugIn ToolbarTool Containers
@@ -245,7 +256,7 @@ public:
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }
-      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpDisabled,
+      int AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bmpRollover,
                          wxItemKind kind, wxString shortHelp, wxString longHelp,
                          wxObject *clientData, int position,
                          int tool_sel, opencpn_plugin *pplugin );
@@ -254,6 +265,16 @@ public:
       void SetToolbarToolViz(int tool_id, bool viz);
       void SetToolbarItemState(int tool_id, bool toggle);
       void SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *bmpDisabled);
+      
+      int AddToolbarTool(wxString label, wxString SVGfile, wxString SVGRolloverfile, wxString SVGToggledfile,
+                         wxItemKind kind, wxString shortHelp, wxString longHelp,
+                         wxObject *clientData, int position,
+                         int tool_sel, opencpn_plugin *pplugin );
+      
+      void SetToolbarItemBitmaps(int item, wxString SVGfile,
+                                 wxString SVGfileRollover,
+                                 wxString SVGfileToggled);
+      
       opencpn_plugin *FindToolOwner(const int id);
       wxString GetToolOwnerCommonName(const int id);
       void ShowDeferredBlacklistMessages();
@@ -269,11 +290,15 @@ public:
       void SendAISSentenceToAllPlugIns(const wxString &sentence);
       void SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v);
       void SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body);
-
+      int GetJSONMessageTargetCount();
+      
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
       bool CallLateInit(void);
+      
+      bool IsPlugInAvailable(wxString commonName);
+      bool IsAnyPlugInChartEnabled();
       
       void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
@@ -314,13 +339,16 @@ private:
       wxBitmap          m_cached_overlay_bm;
 
       bool              m_benable_blackdialog;
+      bool              m_benable_blackdialog_done;
       wxArrayString     m_deferred_blacklist_messages;
       
       wxArrayString     m_plugin_order;
       void SetPluginOrder( wxString serialized_names );
       wxString GetPluginOrder();
-      
+    
 #ifndef __OCPN__ANDROID__
+#ifdef __OCPN_USE_CURL__
+      
 public:
       wxCurlDownloadThread *m_pCurlThread;
       // returns true if the error can be ignored
@@ -331,6 +359,9 @@ public:
       
       wxEvtHandler   *m_download_evHandler;
       long           *m_downloadHandle;
+      bool m_last_online;
+      long m_last_online_chk;
+#endif
 #endif
 
 DECLARE_EVENT_TABLE()
@@ -394,6 +425,8 @@ private:
 //  API 1.11 adds access to S52 Presentation library
 //  These are some wrapper conversion utilities
 
+#ifdef USE_S57
+
 class S52PLIB_Context
 {
 public:
@@ -429,6 +462,7 @@ public:
 
 void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pctx );
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
+#endif
 
 #endif            // _PLUGINMGR_H_
 

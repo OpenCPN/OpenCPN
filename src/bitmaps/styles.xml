@@ -1,5 +1,5 @@
 <styles>
-	<style name="Traditional">
+	<style name="Traditional" sysname="traditional">
 		<graphics-file name="toolicons_traditional.png" />
 		<active-route>
 			<font-color r="50" g="240" b="50" />
@@ -9,14 +9,14 @@
 			<horizontal>
 				<separation distance="8"/>
 				<margin top="6" bottom="6" left="6" right="6" invisible="false"/>
-				<toggled-location x="660" y="60" width="36" height="36"/>
+				<toggled-location x="660" y="60" width="32" height="32"/>
 				<background-location x="340" y="100" />
 				<size x="32" y="32"/>
 			</horizontal>
 			<vertical>
 				<separation distance="8"/>
 				<margin top="8" bottom="8" left="8" right="8" invisible="false"/>
-				<toggled-location x="660" y="60" width="36" height="36"/>
+				<toggled-location x="660" y="60" width="32" height="32"/>
 				<background-location x="340" y="100" />
 				<size x="32" y="32"/>
 			</vertical>
@@ -480,7 +480,7 @@
 			</icon>
 		</icons>
 	</style>
-	<style name="Journeyman">
+	<style name="Journeyman" sysname="journeyman">
 		<description>Inspired by the grey winter skies over Rio de la Plata</description>
 		<graphics-file name="toolicons_journeyman.png" />
 		<chart-status-icon width="40"/>
@@ -701,21 +701,27 @@
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps2Bar">
 				<icon-location x="380" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps3Bar">
 				<icon-location x="420" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGrn">
 				<icon-location x="460" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGry">
 				<icon-location x="500" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsRed">
 				<icon-location x="540" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>
@@ -987,7 +993,7 @@
 		</icons>
 	</style>
 
-	<style name="Journeyman Flat">
+	<style name="Journeyman Flat" sysname="journeyman_flat">
 		<description>Inspired by the grey winter skies over Rio de la Plata</description>
 		<graphics-file name="toolicons_journeyman_flat.png" />
 		<chart-status-icon width="30"/>
@@ -1195,21 +1201,27 @@
 			</icon>
 			<icon name="gps1Bar">
 				<icon-location x="340" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps2Bar">
 				<icon-location x="380" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gps3Bar">
 				<icon-location x="420" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGrn">
 				<icon-location x="460" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsGry">
 				<icon-location x="500" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="gpsRed">
 				<icon-location x="540" y="60"/>
+				<size x="38" y="32"/>
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>

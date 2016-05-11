@@ -54,13 +54,6 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 
-#ifdef __OCPN__ANDROID__
-#include <qopengl.h>
-#include "GL/gl_private.h"
-#else
-#include "GL/gl.h"
-#endif
-
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -549,18 +542,17 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
             char *slatc = NULL;
             wxCharBuffer buffer=LATTC.ToUTF8();
             slatc = buffer.data();
+            //  Get the LUP attribute value as a string
+                        
+            if( slatc && (strlen(slatc) < 6) )
+                goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
 
             if( slatc ){
+                char *slatv = slatc + 6;
                 while( attIdx < pObj->n_attr ) {
                     if( 0 == strncmp( slatc, currATT, 6 ) ) {
                         //OK we have an attribute name match
                         
-                        //  Get the LUP attribute value as a string
-                        wxCharBuffer vbuffer=LATTC.Mid(6).ToUTF8();
-                        char *slatv = vbuffer.data();
-                        
-                        if( !slatv )
-                            goto next_LUP_Attr;         // LUP attribute value not UTF8 convertible (never seen in PLIB 3.x)
                         
                         bool attValMatch = false;
                         
@@ -628,8 +620,9 @@ LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex
                                 //    Strings must be exact match
                                 //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
                                 
-                                wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
-                                if( LATTC.Mid( 6 ) == cs )
+                                //wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
+                                //if( LATTC.Mid( 6 ) == cs )
+                                if( !strcmp((char *) v->value, slatv))
                                     attValMatch = true;
                                 break;
                             }
@@ -1546,7 +1539,6 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
     S52_TextC *text = NULL;
 
     char *str = (char*) rules->INSTstr;
-    *b = 0;
 
     if( str && *str ) {
         str = _getParamVal( rzRules, str, fmt, MAXL ); // get FORMAT
@@ -1600,12 +1592,25 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
                 *b++ = *pf++;
         }
 
+        *b = 0;
         text = new S52_TextC;
         str = _parseTEXT( rzRules, text, str );
         if( NULL != text ) text->frmtd = wxString( buf, wxConvUTF8 );
     }
 
     return text;
+}
+
+static void rotate(wxRect *r, ViewPort const &vp)
+{
+    float cx = vp.pix_width/2.;
+    float cy = vp.pix_height/2.;
+    float c = cosf(vp.rotation );
+    float s = sinf(vp.rotation );
+    float x = r->GetX() -cx;
+    float y = r->GetY() -cy;
+    r->SetX( x*c - y*s +cx);
+    r->SetY( x*s + y*c +cy);
 }
 
 bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
@@ -1628,7 +1633,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
     
     if(!g_oz_vector_scale || !vp->b_quilt)
         scale_factor = 1.0;
-        
+    
+    //  Place an upper bound on the scaled text size
+    scale_factor = wxMin(scale_factor, 4);
+    
     if( !pdc ) // OpenGL
     {
 #ifdef ocpnUSE_GL
@@ -1639,7 +1647,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
   
             int old_size = ptext->pFont->GetPointSize();
             int new_size = old_size * scale_factor;
-            scaled_font = wxTheFontList->FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
+            scaled_font = FontMgr::Get().FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
                                                            ptext->pFont->GetStyle(), ptext->pFont->GetWeight(), false,
                                                            ptext->pFont->GetFaceName() );
             wxScreenDC sdc;
@@ -1829,15 +1837,18 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( ptext->rendered_char_height );
             xp += ptext->xoffs * ( ptext->rendered_char_height );
-    
+
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
             pRectDrawn->SetHeight( h );
 
-            if( bCheckOverlap )
+            if( bCheckOverlap ) {
+                if(fabs( vp->rotation ) > .01){
+                    rotate(pRectDrawn, *vp );
+                }
                 if( CheckTextRectList( *pRectDrawn, ptext ) ) bdraw = false;
-
+            }
 
             if( bdraw ) {
                 wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
@@ -1873,7 +1884,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 wxFont *pf = ptext->pFont;
                 int old_size = pf->GetPointSize();
                 int new_size = old_size * scale_factor;
-                wxFont *scaled_font = wxTheFontList->FindOrCreateFont( new_size, pf->GetFamily(),
+                wxFont *scaled_font = FontMgr::Get().FindOrCreateFont( new_size, pf->GetFamily(),
                                                                        pf->GetStyle(), pf->GetWeight(), false,
                                                                        pf->GetFaceName() );
                 pdc->SetFont( *scaled_font);
@@ -2033,7 +2044,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     else
                         fontweight = wxFONTWEIGHT_BOLD;
 
-                text->pFont = wxTheFontList->FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
+                text->pFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
                         wxFONTSTYLE_NORMAL, fontweight );
             } else {
                 int spec_weight = text->weight - 0x30;
@@ -2069,7 +2080,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 // In no case should font size be less than 10, since it becomes unreadable
                 fontSize = wxMax(10, fontSize);
 
-                text->pFont = wxTheFontList->FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
+                text->pFont = FontMgr::Get().FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
                         templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
             }
         }
@@ -2117,12 +2128,12 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
             wxBoundingBox bbtext;
             double plat, plon, extent = 0;
 
-            GetPixPointSingle( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
             if(plon >= 360)
                 extent = 360;
             bbtext.SetMin( plon - extent, plat );
 
-            GetPixPointSingle( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
+            GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
             bbtext.SetMax( plon - extent, plat );
 
             if( rzRules->obj->bBBObj_valid )
@@ -2286,10 +2297,10 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxBoundingBox symbox;
         double plat, plon;
 
-        GetPixPointSingle( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
         symbox.SetMin( plon, plat );
 
-        GetPixPointSingle( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
         symbox.SetMax( plon, plat );
 
         if( rzRules->obj->bBBObj_valid )
@@ -2368,9 +2379,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 {
     double scale_factor = 1.0;
  
-    if(g_bresponsive){
-        scale_factor *=  g_ChartScaleFactorExp;
-    }
+    scale_factor *=  g_ChartScaleFactorExp;
     
     if(g_oz_vector_scale && vp->b_quilt){
         double sfactor = vp->ref_scale/vp->chart_scale;
@@ -2378,9 +2387,15 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         scale_factor = wxMin(scale_factor, 20);
     }
     
-    int pivot_x = prule->pos.line.pivot_x.SYCL * scale_factor;
-    int pivot_y = prule->pos.line.pivot_y.SYRW * scale_factor;
+    int pivot_x = prule->pos.line.pivot_x.SYCL;
+    int pivot_y = prule->pos.line.pivot_y.SYRW;
 
+    //  bitmaps are not scaled down, only up.
+    if(scale_factor > 1.0){
+        pivot_x *= scale_factor;
+        pivot_y *= scale_factor;
+    }
+    
     // For opengl, hopefully the symbols are loaded in a texture
     unsigned int texture = 0;
     wxRect texrect;
@@ -2540,12 +2555,30 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     wxBoundingBox symbox;
     double plat, plon;
 
-    GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &plat, &plon, vp );
-    symbox.SetMin( plon, plat );
+    if( !m_pdc && fabs( vp->rotation ) > .01)          // opengl
+    {
+        float cx = vp->pix_width/2.;
+        float cy = vp->pix_height/2.;
+        float c = cosf(vp->rotation );
+        float s = sinf(vp->rotation );
+        float x = r.x - pivot_x -cx;
+        float y = r.y - pivot_y + b_height -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
+        symbox.SetMin( plon, plat );
 
-    GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &plat, &plon, vp );
-    symbox.SetMax( plon, plat );
+        x = r.x - pivot_x + b_width -cx;
+        y = r.y - pivot_y -cy;
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
+        symbox.SetMax( plon, plat );
+    
+    }
+    else {
+        GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &plat, &plon, vp );
+        symbox.SetMin( plon, plat );
 
+        GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &plat, &plon, vp );
+        symbox.SetMax( plon, plat );
+    }
     //  Special case for GEO_AREA objects with centred symbols
     if( rzRules->obj->Primitive_type == GEO_AREA ) {
         if( rzRules->obj->BBObj.Intersect( symbox, 0 ) != _IN ) // Symbol is wholly outside base object
@@ -4078,9 +4111,11 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     CARC_Buffer buffer;
 
     float scale_factor = 1.0;
-    if(g_bresponsive){
-        scale_factor *= g_ChartScaleFactorExp;
-    }
+    
+    // Light arcs are specified in terms of absolute dimensions on screen, and should not be scaled.
+//     if(g_bresponsive){
+//         scale_factor *= g_ChartScaleFactorExp;
+//     }
     
     if( !m_pdc ) // opengl
     {
@@ -4224,8 +4259,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glVertex2i( x0, y0 );
             glEnd();
         }
-        */
-        
+        */ 
+
 //        glTranslatef( -r.x, -r.y, 0 );
         glPopMatrix();
 #endif        
@@ -4284,9 +4319,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double plat, plon;
     wxBoundingBox symbox;
 
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
 
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -4425,7 +4460,7 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                 {
                     mdc.ResetBoundingBox();
                     
-                    wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxSOLID );
+                    wxPen *pblockpen = wxThePenList->FindOrCreatePen( *wxBLACK, 10, wxPENSTYLE_SOLID );
                     mdc.SetPen( *pblockpen );
                     
                     float start_angle, end_angle;
@@ -4471,9 +4506,9 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                     //    Draw the outer border
                     wxColour color = getwxColour( outline_color );
                     
-                    wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxSOLID );
+                    wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxPENSTYLE_SOLID );
                     mdc.SetPen( *pthispen );
-                    wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxTRANSPARENT );
+                    wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxBRUSHSTYLE_TRANSPARENT );
                     mdc.SetBrush( *pthisbrush );
                     
                     mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4483,7 +4518,7 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
                         
                         if( !colorb.IsOk() ) colorb = getwxColour( _T("CHMGD") );
                         
-                        pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxSOLID );
+                        pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxPENSTYLE_SOLID );
                         mdc.SetPen( *pthispen );
                         
                         mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -4674,9 +4709,9 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
     double plat, plon;
     wxBoundingBox symbox;
     
-    GetPixPointSingle( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
     symbox.SetMin( plon, plat );
-    GetPixPointSingle( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
     symbox.SetMax( plon, plat );
     
     if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
@@ -4739,12 +4774,6 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
-    if( !ObjectRenderCheckCat( rzRules, vp ) )
-        return 0;
-        
-    if( !ObjectRenderCheckPos( rzRules, vp ) )
-        return 0;
-
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
     
@@ -4758,26 +4787,30 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
         if(!rzRules->obj->m_bcategory_mutable)
             return 0;
 
+        // already added, nothing below can change its display category        
+        if(rzRules->obj->bCS_Added ) 
+            return 0;
+
         //  Otherwise, make sure the CS, if present, has been evaluated,
         //  and then check the category again    
-        if( ObjectRenderCheckCS( rzRules, vp ) ){
-            if(!rzRules->obj->bCS_Added ) {
-                rzRules->obj->CSrules = NULL;
-                Rules *rules = rzRules->LUP->ruleList;
-                while( rules != NULL ) {
-                    if( RUL_CND_SY ==  rules->ruleType ){
-                        GetAndAddCSRules( rzRules, rules );
-                        rzRules->obj->bCS_Added = 1; // mark the object
-                        break;
-                    }
-                    rules = rules->next;
-                }
+        //  no rules 
+        if( !ObjectRenderCheckCS( rzRules, vp ) )
+            return 0;
+
+
+        rzRules->obj->CSrules = NULL;
+        Rules *rules = rzRules->LUP->ruleList;
+        while( rules != NULL ) {
+            if( RUL_CND_SY ==  rules->ruleType ){
+                GetAndAddCSRules( rzRules, rules );
+                rzRules->obj->bCS_Added = 1; // mark the object
+                break;
             }
-            
-            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
-                return 0;
+            rules = rules->next;
         }
-        else
+        
+        // still not displayable    
+        if( !ObjectRenderCheckCat( rzRules, vp ) ) 
             return 0;
     }
 
@@ -6338,15 +6371,24 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //  Next, the per-object transform
 
             float x_origin = rzRules->obj->x_origin;
-            //      We may need to translate object coordinates by 360 degrees to conform.
-            if( BBView.GetMaxX() >= 180. ) {
-                if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
-                    x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-            } else
-            if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
-                (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
-                x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-
+            
+            if(rzRules->obj->m_chart_context->chart) {          // not a PlugIn Chart
+                if( ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93COMP )
+                    || ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93 ) )
+                {
+                    //      We may need to translate object coordinates by 360 degrees to conform.
+                    if( BBView.GetMaxX() >= 180. ) {
+                        if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+                            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                    }
+                    else
+                    if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
+                    || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
+                    )
+                    x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                }
+            }
+            
             glTranslatef( x_origin, rzRules->obj->y_origin, 0);
             glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
         }
@@ -6930,26 +6972,30 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
         if(!rzRules->obj->m_bcategory_mutable)
             return 0;
 
+        // already added, nothing below can change its display category        
+        if(rzRules->obj->bCS_Added ) 
+            return 0;
+
         //  Otherwise, make sure the CS, if present, has been evaluated,
         //  and then check the category again    
-        if( ObjectRenderCheckCS( rzRules, vp ) ){
-            if(!rzRules->obj->bCS_Added ) {
-                rzRules->obj->CSrules = NULL;
-                Rules *rules = rzRules->LUP->ruleList;
-                while( rules != NULL ) {
-                    if( RUL_CND_SY ==  rules->ruleType ){
-                        GetAndAddCSRules( rzRules, rules );
-                        rzRules->obj->bCS_Added = 1; // mark the object
-                        break;
-                    }
-                    rules = rules->next;
-                }
+        //  no rules 
+        if( !ObjectRenderCheckCS( rzRules, vp ) )
+            return 0;
+
+
+        rzRules->obj->CSrules = NULL;
+        Rules *rules = rzRules->LUP->ruleList;
+        while( rules != NULL ) {
+            if( RUL_CND_SY ==  rules->ruleType ){
+                GetAndAddCSRules( rzRules, rules );
+                rzRules->obj->bCS_Added = 1; // mark the object
+                break;
             }
-            
-            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
-                return 0;
+            rules = rules->next;
         }
-        else
+        
+        // still not displayable    
+        if( !ObjectRenderCheckCat( rzRules, vp ) ) 
             return 0;
     }
 
@@ -6958,14 +7004,10 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_ARE_CO:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
-                    break;
                 RenderToGLAC( rzRules, rules, vp );
                 break; // AC
 
             case RUL_ARE_PA:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
-                        break;
                 RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
@@ -7290,26 +7332,29 @@ int s52plib::RenderAreaToDC( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
         if(!rzRules->obj->m_bcategory_mutable)
             return 0;
 
+        // already added, nothing below can change its display category        
+        if(rzRules->obj->bCS_Added ) 
+            return 0;
+
         //  Otherwise, make sure the CS, if present, has been evaluated,
         //  and then check the category again    
-        if( ObjectRenderCheckCS( rzRules, vp ) ){
-            if(!rzRules->obj->bCS_Added ) {
-                rzRules->obj->CSrules = NULL;
-                Rules *rules = rzRules->LUP->ruleList;
-                while( rules != NULL ) {
-                    if( RUL_CND_SY ==  rules->ruleType ){
-                        GetAndAddCSRules( rzRules, rules );
-                        rzRules->obj->bCS_Added = 1; // mark the object
-                        break;
-                    }
-                    rules = rules->next;
-                }
+        //  no rules 
+        if( !ObjectRenderCheckCS( rzRules, vp ) )
+            return 0;
+
+        rzRules->obj->CSrules = NULL;
+        Rules *rules = rzRules->LUP->ruleList;
+        while( rules != NULL ) {
+            if( RUL_CND_SY ==  rules->ruleType ){
+                GetAndAddCSRules( rzRules, rules );
+                rzRules->obj->bCS_Added = 1; // mark the object
+                break;
             }
-            
-            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
-                return 0;
+            rules = rules->next;
         }
-        else
+        
+        // still not displayable    
+        if( !ObjectRenderCheckCat( rzRules, vp ) ) 
             return 0;
     }
 
@@ -7712,7 +7757,15 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
 #endif    
 }
 
-
+void s52plib::GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
+{
+    if(vpt){
+        double rotation = vpt->rotation;
+        vpt->SetRotationAngle(0);
+        vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
+        vpt->SetRotationAngle(rotation);
+    }
+}    
 
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space )
@@ -7805,11 +7858,13 @@ void RenderFromHPGL::SetPen()
     // plib->canvas_pix_per_mm;
     scaleFactor = 100.0 / plib->GetPPMM();
 
-    if(g_bresponsive){
-        double scale_factor = 1.0;
-        scale_factor *=  g_ChartScaleFactorExp;
-        scaleFactor /= scale_factor;
-    }
+    // Vector rendered (HPGL) features are specified in terms of absolute dimensions on screen, and should not be scaled.
+    
+//     if(g_bresponsive){
+//         double scale_factor = 1.0;
+//         scale_factor *=  g_ChartScaleFactorExp;
+//         scaleFactor /= scale_factor;
+//     }
     
     if( renderToDC ) {
         pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
@@ -7933,6 +7988,10 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
 //      double radius = 0.0;
     wxPoint lineStart;
     wxPoint lineEnd;
+
+    scaleFactor = 100.0 / plib->GetPPMM();
+    // SW is not always defined, cf. US/US4CA17M/US4CA17M.000
+    penWidth = 1;
 
     wxStringTokenizer commands( wxString( str, wxConvUTF8 ), _T(";") );
     while( commands.HasMoreTokens() ) {
