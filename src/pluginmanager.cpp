@@ -289,6 +289,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     m_benable_blackdialog = b_enable_blackdialog && !m_benable_blackdialog_done;
     
     m_plugin_location = plugin_dir;
+	m_plugin_location = _T("C:\\Development\\RaceMan_pi\\build\\Debug");
 
     wxString msg(_T("PlugInManager searching for PlugIns in location "));
     msg += m_plugin_location;
