@@ -39,30 +39,19 @@ glTextureDescriptor::glTextureDescriptor()
     tex_name = 0;
     nGPU_compressed = GPU_TEXTURE_UNKNOWN;
     tex_mem_used = 0;
-//    nCache_Color = -1;          // default, unknown
     compdata_ticks = 0;
 }
 
 glTextureDescriptor::~glTextureDescriptor()
 {
-    for( int i = 0; i < 10; i++ ){
-        free( map_array[i] );
-        free( comp_array[i] );
-        free( compcomp_array[i] );
-    }
+    FreeAll();
 }
 
 void glTextureDescriptor::FreeAll()
 {
-    for( int i = 0; i < 10; i++ ){
-        free( map_array[i] );
-        free( comp_array[i] );
-        free( compcomp_array[i] );
-        map_array[i] = NULL;
-        comp_array[i] = NULL;
-        compcomp_array[i] = NULL;
-        compcomp_size[i] = 0;
-    }
+    FreeMap();
+    FreeComp();
+    FreeCompComp();
 }
 
 void glTextureDescriptor::FreeMap()

@@ -65,6 +65,7 @@ extern ChartCanvas *cc1;
 extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 
+extern ChartDB      *ChartData;
 extern ocpnGLOptions    g_GLOptions;
 extern wxString         g_PrivateDataDir;
 
@@ -139,6 +140,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_chart_date_binary = (uint32_t)ed.GetTicks();
     m_chartfile_date_binary = ::wxFileModificationTime(chart->GetFullPath());
     m_chartfile_size = (uint32_t)wxFileName::GetSize(chart->GetFullPath()).GetLo();
+    m_ChartPath = chart->GetFullPath();
     
     m_CompressedCacheFilePath = CompressedCachePath(chart->GetFullPath());
     m_hdrOK = false;
@@ -163,9 +165,7 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     
     m_size_X = pBSBChart->GetSize_X();
     m_size_Y = pBSBChart->GetSize_Y();
-    
-    m_ChartPath = chart->GetFullPath();
-    
+        
     //  Calculate the number of textures needed
     m_tex_dim = g_GLOptions.m_iTextureDimension;
     m_nx_tex = ( m_size_X / m_tex_dim ) + ((m_size_X % m_tex_dim) == 0 ? 0:1);
@@ -223,6 +223,45 @@ bool glTexFactory::OnTimer()
         }
     }
 
+#if 1
+    // if we have the data in the catalog of level 0 or doubly compressed
+    // for an entire row of tiles, then we can free rows from the linebuffer
+    if(g_GLOptions.m_bTextureCompression) {
+        if(!ChartData->IsChartInCache( m_ChartPath ))
+            printf("Not in cache111!!!\n");
+        ChartBase *pChart = ChartData->OpenChartFromDB( m_ChartPath, FULL_INIT );
+        ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pChart );
+
+        if(pBSBChart) {
+            for(int y = 0; y<m_ny_tex; y++) {
+                int dim = g_GLOptions.m_iTextureDimension;
+
+                if(!pBSBChart->HaveLineCacheRow(y*dim))
+                    continue;
+
+                for(int x = 0; x<m_nx_tex; x++) {
+                    int i = ArrayIndex(x, y);
+                    glTextureDescriptor *ptd = m_td_array[i];
+                    
+                    if( !ptd )
+                        goto keeplines;
+                    
+                    if( ptd->compcomp_array[0] )
+                        continue; // ok
+                    
+                    CatalogEntryValue *p = GetCacheEntryValue(0, x*dim, y*dim, ptd->m_colorscheme);
+                    if(!p)
+                        goto keeplines;
+                }
+
+                pBSBChart->FreeLineCacheRows(y*dim, (y+1)*dim);
+            }
+        keeplines:;
+        }
+    }
+#endif
+    
+    // write doubly compressed data to disk
     if(g_GLOptions.m_bTextureCompressionCaching)
         for(int i=0 ; i < m_ntex ; i++) {
             glTextureDescriptor *ptd = m_td_array[i];
@@ -316,10 +355,10 @@ void glTexFactory::DeleteSomeTextures( long target )
             
             if(ptd->tex_name)
                 DeleteSingleTexture( ptd);
-        }
         
-        if(g_tex_mem_used <= target)
-            break;
+            if(g_tex_mem_used <= target)
+                break;
+        }
     }
 }
 
@@ -328,15 +367,8 @@ void glTexFactory::FreeSome( long target )
     for(int i=0 ; i < m_ntex ; i++){
         glTextureDescriptor *ptd = m_td_array[i] ;
         
-        if( ptd ) {
-            ptd->FreeAll();
-
-            int mem_used;
-            GetMemoryStatus(0, &mem_used);
-        
-            if(mem_used <= target)
-                break;
-        }
+        if( ptd )
+            ptd->FreeMap();
     }
 }
 
@@ -466,6 +498,9 @@ static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps)
 
 bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const wxRect &rect)
 {
+    // the quality is only slightly worse because linear_mipmap_linear
+    // is impossible, but still replace the texture data with the
+    // correct level data and using only texture level 0
 #ifdef __OCPN__ANDROID__
     bool b_use_compressed_mipmaps = false;
     bool b_use_uncompressed_mipmaps = false;
@@ -473,27 +508,25 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
     bool b_use_compressed_mipmaps = true;
     // don't use uncompressed mipmaps as they are temporary
     // we upload only the correct level so the image quality is good anyways
-    bool b_use_uncompressed_mipmaps = !g_GLOptions.m_bTextureCompression;
+    bool b_use_uncompressed_mipmaps = true;//!g_GLOptions.m_bTextureCompression;
 #endif    
+
+    // on systems with little memory we can go up a mipmap level
+    // here so that the uncompressed size without mipmaps (level+1)
+    // is nearly the compressed size with all the compressed mipmaps
+    // this way we won't require 5x more video memory than normal while we
+    // are generating the compressed textures, when the cache is complete the image
+    // becomes clearer as it is replaces with the higher resolution compressed version
     bool b_lowmem = false;
 #ifdef ocpnUSE_GLES
-    b_lowmem = g_GLOptions.m_bTextureCompression; // the program is much faster.. maybe use in all modes?
+    // maybe instead decide based on how much texture memory we have
+    b_lowmem = g_GLOptions.m_bTextureCompression;
 #endif
-
     if(g_GLOptions.m_bTextureCompression &&
        ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED) {
         // if compressed data became available we blow away the texture
         if(ptd->comp_array[base_level])
             DeleteSingleTexture(ptd);
-        if(b_lowmem) {
-            // on systems with little memory we can go up a mipmap level
-            // here so that the uncompressed size without mipmaps (level+1)
-            // is nearly the compressed size with all the compressed mipmaps
-            // this way we won't require 5x more video memory than normal while we
-            // are generating the compressed textures, when the cache is complete the image
-            // becomes clearer as it is replaces with the higher resolution compressed version
-            base_level++;
-        }
     }
 
     // we are done if the data is already in the texture
@@ -510,15 +543,11 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
             double factor = 0.5;
             bool bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
             if(!bGLMemCrunch)
-                return false;
-
-            // we don't need the extra detail, so free it
-            if(!glChartCanvas::s_b_UploadFullMipmaps)
-                DeleteSingleTexture(ptd);
+                return false; // we already have the data in vram
         }
-    }
-
-    if(glChartCanvas::s_b_UploadFullMipmaps)
+        // we don't need the extra detail, so free it
+        DeleteSingleTexture(ptd);
+    } else if(glChartCanvas::s_b_UploadFullMipmaps)
         DeleteSingleTexture(ptd);
     
     int status = GetTextureLevel( ptd, rect, base_level, ptd->m_colorscheme );
@@ -542,17 +571,22 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         CreateTexture(ptd->tex_name, b_use_mipmaps);
         ptd->nGPU_compressed = COMPRESSED_BUFFER_OK == status ?
             GPU_TEXTURE_COMPRESSED : GPU_TEXTURE_UNCOMPRESSED;
-    } else
+    } else {
+        // in this case we don't recreate the texture as we
+        // are either overwriting the data (no mipmaps)
+        // or we are filling in lower levels if we have hardware that can
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
+        if(!b_use_mipmaps) {
+            g_tex_mem_used -= ptd->tex_mem_used;
+            ptd->tex_mem_used = 0;
+        }
+    }
 
     if( COMPRESSED_BUFFER_OK == status) {
         int texture_level = glChartCanvas::s_b_UploadFullMipmaps || !b_use_mipmaps ? 0 : base_level;
         for(int level = base_level; level < ptd->level_min; level++ ) {
             int size = TextureTileSize(level, true);
             int status = GetTextureLevel( ptd, rect, level, ptd->m_colorscheme );
-            if( COMPRESSED_BUFFER_OK != status)
-                printf("unpossible\n");
-            
             int dim = TextureDim(level);
             s_glCompressedTexImage2D( GL_TEXTURE_2D, texture_level,
                                       g_raster_format, dim, dim, 0, size,
@@ -570,6 +604,12 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         ptd->FreeMap();
         ptd->FreeComp();
     } else { // COMPRESSED_BUFFER_OK == status
+        if (m_newCatalog) {
+            // it's an empty catalog or it's not used, odds it's going to be slow
+            OCPNPlatform::ShowBusySpinner();
+            m_newCatalog = false;
+        }
+
         //  This level has not been compressed yet, and is not in the cache
 #if 1   // perhaps we should eliminate this case
         // and build compressed fxt1 textures one per tick
@@ -584,15 +624,15 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         } else
 #endif
         {
-            int texture_level = glChartCanvas::s_b_UploadFullMipmaps || !b_use_mipmaps ? 0 : base_level;
-            for(int level = base_level; level < ptd->level_min; level++) {
+            int uc_base_level = base_level;
+            if(b_lowmem)
+                uc_base_level++;
+            int texture_level = glChartCanvas::s_b_UploadFullMipmaps || !b_use_mipmaps ? 0 : uc_base_level;
+            for(int level = uc_base_level; level < ptd->level_min + b_lowmem; level++) {
                 int status = GetTextureLevel( ptd, rect, level, ptd->m_colorscheme );
-                if( MAP_BUFFER_OK != status)
-                    printf("unpossible\n");
                 int dim = TextureDim(level);
                 glTexImage2D( GL_TEXTURE_2D, texture_level, GL_RGB,
                               dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                // recompute texture memory if we replaced an existing uncompressed level
                 int size = TextureTileSize(level, false);
                 ptd->tex_mem_used += size;
                 g_tex_mem_used += size;
@@ -606,9 +646,16 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
 
     ptd->level_min = base_level;
 
+    // free all mipmaps more than a level less than this
+    for( int i = 0; i < base_level-1; i++ ) {
+        free( ptd->map_array[i] );
+        ptd->map_array[i] = 0;
+    }
+    
 #ifndef ocpnUSE_GLES
     if(b_use_mipmaps) {
         if(glChartCanvas::s_b_UploadFullMipmaps) {
+            // maybe these aren't needed
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level - base_level );
 
@@ -625,7 +672,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
 
 bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme )
 {    
-    glTextureDescriptor *ptd;
+    glTextureDescriptor *ptd = NULL;
 
     try
     {
@@ -635,23 +682,19 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
     
-    ///    g_Platform->ShowBusySpinner();
-    if (m_newCatalog) {
-        // it's an empty catalog or it's not used, odds it's going to be slow
-        OCPNPlatform::ShowBusySpinner();
-        m_newCatalog = false;
-    }
-
     if(!BuildTexture(ptd, base_level, rect))
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
 
     // should we schedule compression?
     if(g_GLOptions.m_bTextureCompression &&
        ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED) {
-        g_glTextureManager->ScheduleJob( this, rect, base_level,
+        // scheduling at base_level reduces vram usage but is slower overall
+        // probably shouldn't be used for caching until it can cache each level
+        g_glTextureManager->ScheduleJob( this, rect, 0/*base_level*/,
                                          true, false, true, false);
         if( GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format )
             glBindTexture( GL_TEXTURE_2D, ptd->tex_name ); // reset texture binding
+
         // Free the map in ram
         ptd->FreeMap();
     }
@@ -666,7 +709,10 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     GetMemoryStatus(0, &mem_used);
     //    qDebug() << mem_used;
     if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 7 / 10))
-       ptd->FreeAll();
+        ptd->FreeMap();
+
+    if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 9 / 10))
+        ptd->FreeAll();
 
 #if 0
        // why is the entire chart+factory not freed instead?
@@ -921,7 +967,8 @@ bool glTexFactory::UpdateCacheAllLevels( const wxRect &rect, ColorScheme color_s
         work |= UpdateCacheLevel( rect, level, color_scheme, compcomp_array[level], compcomp_size[level] );
     if (work) {
         WriteCatalogAndHeader();
-    }
+    }    
+    
     return work;
 }
 

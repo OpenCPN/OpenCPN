@@ -955,6 +955,7 @@ void glChartCanvas::SetupOpenGL()
     m_benableVScale = false;
 #endif    
 
+//    s_b_UploadFullMipmaps = true;
     //  Some platforms under some conditions, require a full set of MipMaps, from 0
 #ifdef __WXOSX__    
     s_b_UploadFullMipmaps = true;
