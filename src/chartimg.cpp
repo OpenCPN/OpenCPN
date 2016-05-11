@@ -4345,7 +4345,8 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
           unsigned int tileindex = 1, nextTile = TILE_SIZE;
 #endif
           unsigned int nRunCount;
-          while( ((byNext = *lp++) != 0 ) && (iPixel < (unsigned int)Size_X))
+          unsigned char *end = pt->pPix+thisline_size;
+          while(iPixel < (unsigned int)Size_X)
 #ifdef USE_OLD_CACHE
           {
               nPixValue = (byNext & byValueMask) >> nValueShift;
@@ -4370,7 +4371,18 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
 #else
           // build tile offset table for faster random access
           {
+              byNext = *lp++;
               unsigned char *offset = lp - 1;
+              if(byNext == 0 || lp == end) {
+                  // finished early...corrupt?
+                  while(tileindex < Size_X/TILE_SIZE + 1) {
+                      pt->pTileOffset[tileindex].offset = pt->pTileOffset[0].offset;
+                      pt->pTileOffset[tileindex].pixel = 0;
+                      tileindex++;
+                  }
+                  break;
+              }
+
               nRunCount = byNext & byCountMask;
 
               while( (byNext & 0x80) != 0 )
@@ -4533,15 +4545,20 @@ nocachestart:
           byNext = *lp++;
 
           nPixValue = (byNext & byValueMask) >> nValueShift;
-          unsigned int nRunCount = byNext & byCountMask;
+          unsigned int nRunCount;
 
-          while( (byNext & 0x80) != 0 )
-          {
-              byNext = *lp++;
-              nRunCount = nRunCount * 128 + (byNext & 0x7f);
+          if(byNext == 0)
+              nRunCount = xl - ix; // corrupted chart, just run to the end
+          else {
+              nRunCount = byNext & byCountMask;
+              while( (byNext & 0x80) != 0 )
+              {
+                  byNext = *lp++;
+                  nRunCount = nRunCount * 128 + (byNext & 0x7f);
+              }
+
+              nRunCount++;
           }
-
-          nRunCount++;
 
           if(ix < xs) {
               if(ix + nRunCount <= (unsigned int)xs) {
