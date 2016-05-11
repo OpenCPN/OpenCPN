@@ -1504,8 +1504,13 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 		uvp.rotation = uvp.skew = 0;
 
 		wxPoint ptl, pbr;
-		GetCanvasPixLL( &uvp, &ptl, pGRA->getLatMax(), pGRA->getLonMin() );				//top left corner position
-		GetCanvasPixLL( &uvp, &pbr, pGRA->getLatMin(), pGRA->getLonMax() );				//bottom right corner position
+		GetCanvasPixLL( &uvp, &ptl, wxMin(pGRA->getLatMax(), 89.0), pGRA->getLonMin() );	 //top left corner position
+		GetCanvasPixLL( &uvp, &pbr, wxMax(pGRA->getLatMin(), -89.0), pGRA->getLonMax() ); //bottom right corner position
+		if (ptl.x >= pbr.x) {
+		    // 360
+		    ptl.x = 0;
+		    pbr.x = m_ParentSize.GetWidth();
+		}
 
 		for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + wstring) ) {
 			for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + wstring) ) {
