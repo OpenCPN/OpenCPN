@@ -166,6 +166,7 @@ bool                      g_bFirstRun;
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
 bool                      g_rebuild_gl_cache;
+bool                      g_parse_all_enc;
 
 MyFrame                   *gFrame;
 
@@ -843,6 +844,7 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("no_opengl") );
     parser.AddSwitch( _T("fullscreen") );
     parser.AddSwitch( _T("rebuild_gl_raster_cache") );
+    parser.AddSwitch( _T("parse_all_enc") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -852,6 +854,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
     g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
+    g_parse_all_enc = parser.Found( _T("parse_all_enc") );
 
     return true;
 }
@@ -1133,6 +1136,33 @@ static char *get_X11_property (Display *disp, Window win,
     return ret;
 }
 #endif
+
+static void ParseAllENC()
+{
+    int count = 0;
+    for( int i = 0; i < ChartData->GetChartTableEntries(); i++ ) {
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
+        if(cte.GetChartType() == CHART_TYPE_S57)
+            count++;
+    }
+
+    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
+    wxProgressDialog prog(_("OpenCPN Parse ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+    count = 0;
+    for( int i = 0; i < ChartData->GetChartTableEntries(); i++ ) {
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
+        if(cte.GetChartType() == CHART_TYPE_S57) {
+            ChartBase *pchart = ChartData->OpenChartFromDB(i, FULL_INIT);
+            ChartData->DeleteCacheChart(pchart);
+
+            ::wxYield();
+            bool skip = false;
+            prog.Update(count++, cte.GetpFullPath(), &skip);
+            if(skip)
+                break;
+        }
+    }
+}
 
 bool MyApp::OnInit()
 {
@@ -2039,6 +2069,8 @@ extern ocpnGLOptions g_GLOptions;
     }
 #endif
 
+    if(g_parse_all_enc )
+        ParseAllENC();
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
