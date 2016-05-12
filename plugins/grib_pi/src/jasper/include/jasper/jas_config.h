@@ -97,9 +97,12 @@
 #endif
 
 /* Have variable length arrays */
-#ifndef __MSVC__
-#define HAVE_VLA 1
-#endif
+/* This can also cause trouble with some GNU compilers  */
+/* Especially with large or stangely formed images  */
+/* So disable entirely */
+//#ifndef __MSVC__
+//#define HAVE_VLA 1
+//#endif
 
 /* Define to 1 if you have the `vprintf' function. */
 #define HAVE_VPRINTF 1
