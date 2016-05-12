@@ -1137,7 +1137,7 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
-static void ParseAllENC()
+void ParseAllENC()
 {
     int count = 0;
     for( int i = 0; i < ChartData->GetChartTableEntries(); i++ ) {
@@ -1148,6 +1148,14 @@ static void ParseAllENC()
 
     long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
     wxProgressDialog prog(_("OpenCPN Parse ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+
+    // make wider to show long filenames
+    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+    wxSize sz = prog.GetSize();
+    sz.x = csz.x * 8 / 10;
+    prog.SetSize( sz );
+    prog.Centre();
+
     count = 0;
     for( int i = 0; i < ChartData->GetChartTableEntries(); i++ ) {
         const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
