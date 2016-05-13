@@ -1001,6 +1001,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
         int imax = pGRX->getNi();                  // Longitude
         int jmax = pGRX->getNj();                  // Latitude
 
+        wxPoint firstpx(-1000, -1000);
         wxPoint oldpx(-1000, -1000);
         wxPoint oldpy(-1000, -1000);
 
@@ -1013,8 +1014,13 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
             wxPoint pl;
             GetCanvasPixLL( vp, &pl, latl, lonl );
 
+            if (pl.x <= firstpx.x && hypot( pl.x - firstpx.x, pl.y - firstpx.y ) < minspace/1.2) 
+                continue;
+
             if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= minspace ) {
                 oldpx = pl;
+                if (i == 0)
+                    firstpx = pl;
                 for( int j = 0; j < jmax; j++ ) {
                     double lon = pGRX->getX( i );
                     double lat = pGRX->getY( j );
@@ -1285,6 +1291,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
         int imax = pGRX->getNi();                  // Longitude
         int jmax = pGRX->getNj();                  // Latitude
 
+        wxPoint firstpx(-1000, -1000);
         wxPoint oldpx(-1000, -1000);
         wxPoint oldpy(-1000, -1000);
 
@@ -1294,8 +1301,14 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
             wxPoint pl;
             GetCanvasPixLL( vp, &pl, latl, lonl );
 
-            if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= minspace ) {
+            if (pl.x <= firstpx.x && hypot( pl.x - firstpx.x, pl.y - firstpx.y ) < minspace/1.2) 
+                continue;
+
+            if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= minspace) {
                 oldpx = pl;
+                if (i == 0)
+                    firstpx = pl;
+                
                 for( int j = 0; j < jmax; j++ ) {
                     double lon = pGRX->getX( i );
                     double lat = pGRX->getY( j );
@@ -1491,8 +1504,13 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 		uvp.rotation = uvp.skew = 0;
 
 		wxPoint ptl, pbr;
-		GetCanvasPixLL( &uvp, &ptl, pGRA->getLatMax(), pGRA->getLonMin() );				//top left corner position
-		GetCanvasPixLL( &uvp, &pbr, pGRA->getLatMin(), pGRA->getLonMax() );				//bottom right corner position
+		GetCanvasPixLL( &uvp, &ptl, wxMin(pGRA->getLatMax(), 89.0), pGRA->getLonMin() );	 //top left corner position
+		GetCanvasPixLL( &uvp, &pbr, wxMax(pGRA->getLatMin(), -89.0), pGRA->getLonMax() ); //bottom right corner position
+		if (ptl.x >= pbr.x) {
+		    // 360
+		    ptl.x = 0;
+		    pbr.x = m_ParentSize.GetWidth();
+		}
 
 		for( int i = wxMax(ptl.x, 0); i < wxMin(pbr.x, m_ParentSize.GetWidth() ) ; i+= (space + wstring) ) {
 			for( int j = wxMax(ptl.y, 0); j < wxMin(pbr.y, m_ParentSize.GetHeight() ); j+= (space + wstring) ) {
@@ -1516,6 +1534,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 		int imax = pGRA->getNi();                  // Longitude
 		int jmax = pGRA->getNj();                  // Latitude
 
+		wxPoint firstpx(-1000, -1000);
 		wxPoint oldpx(-1000, -1000);
 		wxPoint oldpy(-1000, -1000);
 
@@ -1525,8 +1544,14 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 			wxPoint pl;
 			GetCanvasPixLL( vp, &pl, latl, lonl );
 
+			if (pl.x <= firstpx.x && hypot( pl.x - firstpx.x, pl.y - firstpx.y ) < minspace/1.2) 
+			    continue;
+
 			if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= minspace ) {
 				oldpx = pl;
+				if (i == 0)
+				    firstpx = pl;
+				
 				for( int j = 0; j < jmax; j++ ) {
 					double lon = pGRA->getX( i );
 					double lat = pGRA->getY( j );
