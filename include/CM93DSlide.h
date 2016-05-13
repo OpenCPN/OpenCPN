@@ -41,6 +41,7 @@ public:
             const wxPoint& pos, const wxSize& size, long style, const wxString& title );
 
     void OnCancelClick( wxCommandEvent& event );
+    void OnKeyDown( wxKeyEvent &event );
     void OnMove( wxMoveEvent& event );
     void OnChangeValue( wxScrollEvent& event );
     void OnClose( wxCloseEvent& event );
