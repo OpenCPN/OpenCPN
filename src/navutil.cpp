@@ -957,8 +957,8 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
         if( !( ( delta_dist > ( g_TrackDeltaDistance ) ) && !prp_OK ) ) {
             prpnode = prpnode->GetNext(); //RoutePoint
             next_ic++;
+            ic++;
         }
-        ic++;
         if( pprog ) pprog->Update( ( ic * 100 ) / nPoints );
     }
 
