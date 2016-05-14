@@ -310,7 +310,9 @@ wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 
-ColorScheme               global_color_scheme;
+// Set default color scheme
+ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+
 int                       Usercolortable_index;
 wxArrayPtrVoid            *UserColorTableArray;
 wxArrayPtrVoid            *UserColourHashTableArray;
@@ -1086,10 +1088,10 @@ void LoadS57()
         }
 
         pConfig->LoadS57Config();
+        ps52plib->SetPLIBColorScheme( global_color_scheme );
         
         if(cc1)
             ps52plib->SetPPMM( cc1->GetPixPerMM() );
-            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
@@ -1582,8 +1584,6 @@ bool MyApp::OnInit()
 #endif
 #endif
 
-// Set default color scheme
-    global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
     // On Windows platforms, establish a default cache managment policy
     // as allowing OpenCPN a percentage of available physical memory,
