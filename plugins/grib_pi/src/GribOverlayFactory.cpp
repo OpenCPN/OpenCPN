@@ -540,6 +540,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     wxPoint pmax;
     int width;
     int height;
+
+    int maxx = wxMin(1024, pGR->getNi() );
+    int maxy = wxMin(1024, pGR->getNj() );
+    int maxt = wxMax(maxx, maxy);
+    maxt = wxMax(256, maxt);
     // find the biggest texture
     do {
         GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
@@ -551,7 +556,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
         if (settings != GribOverlaySettings::CURRENT && settings != GribOverlaySettings::WAVE)
             break;
 #endif            
-        if( width > 1024 || height > 1024 ) {
+        if( width > maxt || height > maxt ) {
             if (tp_scale == scalef)
                 break;
             tp_scale /= 2.0;
