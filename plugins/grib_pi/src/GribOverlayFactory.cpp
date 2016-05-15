@@ -584,12 +584,19 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
-                wxColour c = GetGraphicColor(settings, v);
-                r = c.Red();
-                g = c.Green();
-                b = c.Blue();
                 //set full transparency if no rain or no clouds at all
-                a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 : m_Settings.m_iOverlayTransparency;
+                if (( settings == GribOverlaySettings::PRECIPITATION || settings == GribOverlaySettings::CLOUD ) && v < 0.01) 
+                {
+                    r = g = b = 255;
+                    a = 0;
+                }
+                else {
+                    a = m_Settings.m_iOverlayTransparency;
+                    wxColour c = GetGraphicColor(settings, v);
+                    r = c.Red();
+                    g = c.Green();
+                    b = c.Blue();
+                }
             } else {
                 r = 255;
                 g = 255;
