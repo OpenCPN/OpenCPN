@@ -2407,6 +2407,7 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     }
 
     Hide();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     event.Skip();
