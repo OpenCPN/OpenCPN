@@ -241,6 +241,8 @@ bool GribRequestSetting::MouseEventHook( wxMouseEvent &event )
         m_parent.SetRequestBitmap( m_ZoneSelMode );
         if( this->IsShown() ) this->Hide();                     //eventually hide diaog in case of mode change
         m_RenderZoneOverlay = 0;                                //eventually hide previous drawing
+        GetCanvasLLPix( m_Vp, event.GetPosition(), &m_Lat, &m_Lon);
+        if( !m_tMouseEventTimer.IsRunning() ) m_tMouseEventTimer.Start( 20, wxTIMER_ONE_SHOT );
     }
 
     if( event.LeftUp () && m_RenderZoneOverlay == 2 ) {
