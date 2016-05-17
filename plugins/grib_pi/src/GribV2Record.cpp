@@ -1012,6 +1012,12 @@ void  GribV2Record::translateDataType()
     //translate significant wave height and dir
     if (this->knownData) {
         switch (levelType) {
+            case 100: // LV_ISOBARIC
+                /* GRIB1 is in hectoPascal 
+                   GRIB2 in Pascal, convert to GRIB1
+                */
+                levelValue = levelValue /100;
+                break;
             case 103: levelType = LV_ABOV_GND;break;
             case 101: levelType = LV_MSL;break;
         }
