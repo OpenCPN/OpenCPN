@@ -239,7 +239,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     }
     else
         m_pixelMM = 0.27;               // semi-standard number...
-        
+
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
@@ -957,16 +957,16 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 #ifdef ocpnUSE_GL
     if( !m_pdc ) {
 
-        if(m_pixelMM > 0.2){
+#ifndef __OCPN__ANDROID__
         //      Enable anti-aliased lines, at best quality
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
             glLineWidth( 2 );
-        }
-        else
+#else
             glLineWidth( 5 );                       // 5 pixels for dense displays
+#endif            
        
         glEnableClientState(GL_VERTEX_ARRAY);
     }
