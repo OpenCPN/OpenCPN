@@ -2073,6 +2073,10 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
@@ -2087,6 +2091,10 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, arrowWidth );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
