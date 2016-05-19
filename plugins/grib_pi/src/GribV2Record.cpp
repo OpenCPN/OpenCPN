@@ -903,7 +903,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
     case 0:
 	return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:
-         return grid->md.stat_proc.time_length[0];
+         return grid->md.fcst_time +grid->md.stat_proc.time_length[0];
 	 // return (grid->md.stat_proc.etime/10000- grid->time/10000);
     case 2:
 	return (grid->md.stat_proc.edy -grid->dy);
