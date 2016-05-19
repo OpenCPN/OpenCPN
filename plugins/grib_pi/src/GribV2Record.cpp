@@ -1083,11 +1083,13 @@ void  GribV2Record::translateDataType()
     if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
         multiplyAllData( 3600.0 );
     }
-    else if (   idCenter==7
-		&& (idModel==96 || idModel==81)		// NOAA
-		&& (idGrid==4 || idGrid==255))		// Saildocs
+    else if (   idCenter==7 && idModel==2 )		// NOAA
     {
         dataCenterModel = NOAA_GFS;
+        // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
+        if (levelType == LV_ATMOS_ENT) {
+            levelType = LV_ATMOS_ALL;
+        }
     }
     //------------------------
 	//DNMI-NEurope.grb
