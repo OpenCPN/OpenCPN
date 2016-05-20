@@ -239,7 +239,7 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     }
     else
         m_pixelMM = 0.27;               // semi-standard number...
-        
+
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
@@ -540,6 +540,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     wxPoint pmax;
     int width;
     int height;
+
+    int maxx = wxMin(1024, pGR->getNi() );
+    int maxy = wxMin(1024, pGR->getNj() );
+    int maxt = wxMax(maxx, maxy);
+    maxt = wxMax(256, maxt);
     // find the biggest texture
     do {
         GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
@@ -551,7 +556,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
         if (settings != GribOverlaySettings::CURRENT && settings != GribOverlaySettings::WAVE)
             break;
 #endif            
-        if( width > 1024 || height > 1024 ) {
+        if( width > maxt || height > maxt ) {
             if (tp_scale == scalef)
                 break;
             tp_scale /= 2.0;
@@ -584,12 +589,19 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
-                wxColour c = GetGraphicColor(settings, v);
-                r = c.Red();
-                g = c.Green();
-                b = c.Blue();
                 //set full transparency if no rain or no clouds at all
-                a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 : m_Settings.m_iOverlayTransparency;
+                if (( settings == GribOverlaySettings::PRECIPITATION || settings == GribOverlaySettings::CLOUD ) && v < 0.01) 
+                {
+                    r = g = b = 255;
+                    a = 0;
+                }
+                else {
+                    a = m_Settings.m_iOverlayTransparency;
+                    wxColour c = GetGraphicColor(settings, v);
+                    r = c.Red();
+                    g = c.Green();
+                    b = c.Blue();
+                }
             } else {
                 r = 255;
                 g = 255;
@@ -957,16 +969,16 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
 #ifdef ocpnUSE_GL
     if( !m_pdc ) {
 
-        if(m_pixelMM > 0.2){
+#ifndef __OCPN__ANDROID__
         //      Enable anti-aliased lines, at best quality
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
             glLineWidth( 2 );
-        }
-        else
+#else
             glLineWidth( 5 );                       // 5 pixels for dense displays
+#endif            
        
         glEnableClientState(GL_VERTEX_ARRAY);
     }
