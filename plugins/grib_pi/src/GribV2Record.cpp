@@ -57,12 +57,12 @@ public:
   };
 
   ~GRIBMetadata() {
-        delete [] stat_proc.proc_code;
-		delete [] stat_proc.incr_type;
-		delete [] stat_proc.time_unit;
-		delete [] stat_proc.time_length;
-		delete [] stat_proc.incr_unit;
-		delete [] stat_proc.incr_length;
+    delete [] stat_proc.proc_code;
+    delete [] stat_proc.incr_type;
+    delete [] stat_proc.time_unit;
+    delete [] stat_proc.time_length;
+    delete [] stat_proc.incr_unit;
+    delete [] stat_proc.incr_length;
   };
 
   int gds_templ_num;
@@ -114,7 +114,6 @@ public:
   GRIB2Grid() : gridpoints(0) { };
   ~GRIB2Grid() { delete [] gridpoints; };
   
-  GRIBMetadata md;
   double *gridpoints;
 };
 
@@ -649,12 +648,12 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 		delete [] grib_msg->md.stat_proc.incr_length;
 		grib_msg->md.stat_proc.proc_code=NULL;
 	    }
-		grib_msg->md.stat_proc.proc_code = new int[grib_msg->md.stat_proc.num_ranges];
-		grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
-		grib_msg->md.stat_proc.time_unit = new int[grib_msg->md.stat_proc.num_ranges];
-		grib_msg->md.stat_proc.time_length = new int[grib_msg->md.stat_proc.num_ranges];
-		grib_msg->md.stat_proc.incr_unit = new int[grib_msg->md.stat_proc.num_ranges];
-		grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.proc_code = new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.time_unit = new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.time_length = new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.incr_unit = new int[grib_msg->md.stat_proc.num_ranges];
+            grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
 	    off=368;
 	    for (n=0; n  < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
 		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.proc_code[n],grib_msg->offset+off,8);
@@ -814,6 +813,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 0: ret = GRB_HUMID_SPEC; break; //DATA_TO_GRBV2[DATA_HUMID_SPEC] = grb2DataType(0,1,0);
             case 1: ret = GRB_HUMID_REL; break; // DATA_TO_GRBV2[DATA_HUMID_REL] = grb2DataType(0,1,1);
             case 7: ret= GRB_PRECIP_RATE; break; // DATA_TO_GRBV2[DATA_PRECIP_RATE] = grb2DataType(0,1,7);
+            case 52:                             // Total precipitation rate kg m–2 s–1
             case 8: ret = GRB_PRECIP_TOT; break; // DATA_TO_GRBV2[DATA_PRECIP_TOT] = grb2DataType(0,1,8);
             case 11: ret = GRB_SNOW_DEPTH; break; // DATA_TO_GRBV2[DATA_SNOW_DEPTH] = grb2DataType(0,1,11);
             case 193: ret = GRB_FRZRAIN_CATEG; break; // DATA_TO_GRBV2[DATA_FRZRAIN_CATEG] = grb2DataType(0,1,193);
@@ -896,59 +896,207 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 #endif    
     return ret;    
 }
+
+static int mapStatisticalEndTime(GRIBMessage *grid)
+{
+  switch (grid->md.time_unit) {
+    case 0:
+	return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
+    case 1:
+         return grid->md.fcst_time +grid->md.stat_proc.time_length[0];
+	 // return (grid->md.stat_proc.etime/10000- grid->time/10000);
+    case 2:
+	return (grid->md.stat_proc.edy -grid->dy);
+    case 3:
+	return (grid->md.stat_proc.emo -grid->mo);
+    case 4:
+	return (grid->md.stat_proc.eyr -grid->yr);
+    default:
+	fprintf(stderr,"Unable to map end time with units %d to GRIB1\n",grid->md.time_unit);
+	exit(1);
+  }
+}
+
+static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_range,int *n_avg,int *n_missing, int center)
+{
+  switch (grid->md.pds_templ_num) {
+    case 0:
+    case 1:
+    case 2:
+    case 15:
+	*t_range=0;
+	*p1=grid->md.fcst_time;
+	*p2=0;
+	*n_avg=*n_missing=0;
+	break;
+    case 8:
+    case 11:
+    case 12:
+	if (grid->md.stat_proc.num_ranges > 1) {
+	  if (center == 7 && grid->md.stat_proc.num_ranges == 2) {
+/* NCEP CFSR monthly grids */
+	    *p2=grid->md.stat_proc.incr_length[0];
+	    *p1=*p2 -grid->md.stat_proc.time_length[1];
+	    *n_avg=grid->md.stat_proc.time_length[0];
+	    switch (grid->md.stat_proc.proc_code[0]) {
+		case 193:
+		  *t_range=113;
+		  break;
+		case 194:
+		  *t_range=123;
+		  break;
+		case 195:
+		  *t_range=128;
+		  break;
+		case 196:
+		  *t_range=129;
+		  break;
+		case 197:
+		  *t_range=130;
+		  break;
+		case 198:
+		  *t_range=131;
+		  break;
+		case 199:
+		  *t_range=132;
+		  break;
+		case 200:
+		  *t_range=133;
+		  break;
+		case 201:
+		  *t_range=134;
+		  break;
+		case 202:
+		  *t_range=135;
+		  break;
+		case 203:
+		  *t_range=136;
+		  break;
+		case 204:
+		  *t_range=137;
+		  break;
+		case 205:
+		  *t_range=138;
+		  break;
+		case 206:
+		  *t_range=139;
+		  break;
+		case 207:
+		  *t_range=140;
+		  break;
+		default:
+		  fprintf(stderr,"Unable to map NCEP statistical process code %d to GRIB1\n",grid->md.stat_proc.proc_code[0]);
+		  return false;
+	    }
+	  }
+	  else {
+	    fprintf(stderr,"Unable to map multiple statistical processes to GRIB1\n");
+	    return false;
+	  }
+	}
+	else {
+	  switch (grid->md.stat_proc.proc_code[0]) {
+	    case 0:
+	    case 1:
+	    case 4:
+		switch (grid->md.stat_proc.proc_code[0]) {
+		  case 0: /* average */
+		    *t_range=3;
+		    break;
+		  case 1: /* accumulation */
+		    *t_range=4;
+		    break;
+		  case 4: /* difference */
+		    *t_range=5;
+		    break;
+		}
+		*p1=grid->md.fcst_time;
+		*p2=mapStatisticalEndTime(grid);
+		if (grid->md.stat_proc.incr_length[0] == 0)
+		  *n_avg=0;
+		else {
+		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+		  return false;
+		}
+		break;
+
+	    case 2: // maximum
+	    case 3: // minimum 
+		*t_range=2;
+		*p1=grid->md.fcst_time;
+		*p2=mapStatisticalEndTime(grid);
+		if (grid->md.stat_proc.incr_length[0] == 0)
+		  *n_avg=0;
+		else {
+		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+		  return false;
+		}
+		break;
+	    default:
+// patch for NCEP grids
+		if (grid->md.stat_proc.proc_code[0] == 255 && center == 7) {
+ 		  if (grid->disc == 0) {
+		    if (grid->md.param_cat == 0) {
+			switch (grid->md.param_num) {
+			  case 4:
+			  case 5:
+			    *t_range=2;
+			    *p1=grid->md.fcst_time;
+			    *p2=mapStatisticalEndTime(grid);
+			    if (grid->md.stat_proc.incr_length[0] == 0)
+				*n_avg=0;
+			    else {
+				fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
+				return false;
+			    }
+			    break;
+			}
+		    }
+		  }
+		}
+		else {
+		  fprintf(stderr,"Unable to map statistical process %d to GRIB1\n",grid->md.stat_proc.proc_code[0]);
+		  return false;
+		}
+	  }
+	}
+	*n_missing=grid->md.stat_proc.nmiss;
+	break;
+    default:
+	fprintf(stderr,"Unable to map time range for Product Definition Template %d into GRIB1\n",grid->md.pds_templ_num);
+	return false;
+  }
+  if (*p2 < 0)
+      return false;
+  return true;
+}
+
 //-------------------------------------------------------------------------------
 // Adjust data type from different mete center
 //-------------------------------------------------------------------------------
 void  GribV2Record::translateDataType()
 {
-	this->knownData = true;
-	//------------------------
-	// NOAA GFS
-	//------------------------
+    this->knownData = true;
+    //------------------------
+    // NOAA GFS
+    //------------------------
     if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
-				multiplyAllData( 3600.0 );
+        multiplyAllData( 3600.0 );
     }
-	else if (   idCenter==7
-		&& (idModel==96 || idModel==81)		// NOAA
-		&& (idGrid==4 || idGrid==255))		// Saildocs
-	{
+    else if (   idCenter==7 && idModel==2 )		// NOAA
+    {
         dataCenterModel = NOAA_GFS;
-		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 1.0/(periodP2-periodP1) );
-		}
-        if (dataType == GRB_TEMP                        //gfs Water surface Temperature
-            && levelType == LV_GND_SURF
-            && levelValue == 0) dataType = GRB_WTMP;
-
-	}
+        // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
+        if (levelType == LV_ATMOS_ENT) {
+            levelType = LV_ATMOS_ALL;
+        }
+    }
     //------------------------
 	//DNMI-NEurope.grb
-	//------------------------
-    else if ( (idCenter==88 && idModel==255 && idGrid==255)
-		|| (idCenter==88 && idModel==230 && idGrid==255)
-		|| (idCenter==88 && idModel==200 && idGrid==255)
-		|| (idCenter==88 && idModel==67 && idGrid==255) )
-    {
-        if( dataType==GRB_TEMP && levelType==LV_GND_SURF && levelValue==0 ) {       //air temperature at groud level
-            levelType = LV_ABOV_GND; levelValue = 2;
-        }
-		dataCenterModel = NORWAY_METNO;
-    }
-	//------------------------
-	// WRF NMM grib.meteorologic.net
-	//------------------------
-	else if (idCenter==7 && idModel==89 && idGrid==255)
-    {
-        // dataCenterModel ??
-		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 1.0/(periodP2-periodP1) );
-		}
-	}
+    //------------------------
     else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
-		dataCenterModel = NOAA_NCEP_WW3;
-	}
+        dataCenterModel = NOAA_NCEP_WW3;
+    }
     //----------------------------
     //NOAA RTOFS
     //--------------------------------
@@ -980,8 +1128,8 @@ void  GribV2Record::translateDataType()
 	//------------------------
 	// Meteorem (Scannav)
 	//------------------------
-	else if (idCenter==59 && idModel==78 && idGrid==255)
-	{
+    else if (idCenter==59 && idModel==78 && idGrid==255)
+    {
         //dataCenterModel = ??
 		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
 			&& getLevelType()==LV_MSL
@@ -1193,9 +1341,13 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	             levelType = LV_ATMOS_ALL;
 	             levelValue = 0.;
 	         }
-	         periodP1 = grib_msg->md.fcst_time;
-	         periodP2 = 0;
-	         periodsec = periodSeconds(grib_msg->md.time_unit, periodP1, periodP2, 0/*timeRange*/);
+	         int n_avg, n_missing;
+	          
+	         if (!mapTimeRange(grib_msg, &periodP1 , &periodP2, &timeRange , &n_avg, &n_missing, idCenter)) {
+	             skip = true;
+	             break;
+                 }
+	         periodsec = periodSeconds(grib_msg->md.time_unit, periodP1, periodP2, timeRange);
 	         setRecordCurrentDate(makeDate(refyear,refmonth,refday,refhour,refminute,periodsec));
 	         //printf("%d %d %d %d %d %d \n", refyear,refmonth,refday,refhour,refminute,periodsec);
 	         //printf("%d Periode %d P1=%d p2=%d %s\n", grib_msg->md.time_unit, periodsec, periodP1,periodP2, strCurDate);
@@ -1217,7 +1369,6 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     }
 	     break;
 	case 7:
-	     grib_msg->grids[n].md=grib_msg->md;
 	     ok = unpackDS(grib_msg,n);
 	     if (ok) {
 	         data = grib_msg->grids[n].gridpoints;
@@ -1282,14 +1433,9 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   }
   else {
     grib_msg->grids=NULL;
-    grib_msg->md.stat_proc.proc_code=NULL;
   }
   if (grib_msg->grids != NULL) {
     for (n = 0; n < grib_msg->num_grids; n++) {
-	if (grib_msg->grids[n].md.bitmap != NULL) {
-	  delete [] grib_msg->grids[n].md.bitmap;
-	  grib_msg->grids[n].md.bitmap = 0;
-	}
 	delete grib_msg->grids[n].gridpoints;
     }
     delete [] grib_msg->grids;
