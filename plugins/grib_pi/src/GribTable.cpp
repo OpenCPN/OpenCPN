@@ -100,19 +100,20 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
     m_pGribTable->SetRowAttr(1, timerow);
 
     //populate grib
-    wxDateTime day(rsa->Item(0).m_Reference_Time);
-    wxDateTime time;
+    wxString day, time, day_time;
     int ncols = -1,nrows,dcol = 0;
 
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
-        time = rsa->Item(i).m_Reference_Time;
-   
+		time = GetTimeRowsStrings(rsa->Item(i).m_Reference_Time, zone, 0);
+		day_time = GetTimeRowsStrings(rsa->Item(i).m_Reference_Time, zone, 1);
+		if (i == 0) day = day_time;
+
         //populate 'time' row
-        m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
+		m_pGribTable->SetCellValue(1, i, time);
         
         nrows = 2;
 
-        m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
+		m_pTimeset = m_pGDialog->GetTimeLineRecordSet(rsa->Item(i).m_Reference_Time);
         GribRecord **RecordArray = m_pTimeset->m_GribRecordPtrArray;
 
         //create and polulate wind data row
@@ -197,21 +198,20 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         ncols++;
 
         //write 'days' row
-        if(time.GetDateOnly() != day.GetDateOnly() || i == rsa->GetCount()- 1){
-            if( i == 0 ) continue;                                      //not the first item
+		if (day_time != day || i == rsa->GetCount() - 1) {
 
             if(i == rsa->GetCount() - 1 && ncols != 1) ncols++;         ////if end of time range don't forgett the last col
 
             m_pGribTable->SetCellSize(0, dcol, 1, ncols);
-            m_pGribTable->SetCellValue(0, dcol, GetTimeRowsStrings(day, zone, 1));
+            m_pGribTable->SetCellValue(0, dcol, day);
 
-            day = rsa->Item(i).m_Reference_Time;
+			day = day_time;
             dcol = i;
 
             if( ncols == 1){                                            //if only one item per day
                 m_pGribTable->AutoSizeColumn(i-1, false);
                 if(i == rsa->GetCount() - 1 ) {                         //if end of time range
-                    m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings(day, zone, 1));
+                    m_pGribTable->SetCellValue(0, i, day);
                     m_pGribTable->AutoSizeColumn(i, false);
                 }
             }  
