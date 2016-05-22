@@ -685,6 +685,7 @@ static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
 int               g_sticky_chart;
+int               g_sticky_projection;
 
 extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
@@ -2458,6 +2459,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    g_sticky_projection = -1;
     m_BellsToPlay = 0;
 
     m_resizeTimer.SetOwner(this, RESIZE_TIMER);
@@ -5860,6 +5862,14 @@ void MyFrame::SetupQuiltMode( void )
 
         //  Re-qualify the quilt reference chart selection
         cc1->AdjustQuiltRefChart(  );
+       
+        //  Restore projection type saved on last quilt mode toggle
+        if(g_sticky_projection != -1)
+            cc1->GetVP().SetProjectionType(g_sticky_projection);
+        else
+            cc1->GetVP().SetProjectionType(PROJECTION_MERCATOR);
+        
+        
 
     } else                                                  // going to SC Mode
     {
@@ -5875,6 +5885,7 @@ void MyFrame::SetupQuiltMode( void )
         g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
         g_Piano->SetRoundedRectangles( false );
+        g_sticky_projection = cc1->GetVP().m_projection_type;
 
     }
 
