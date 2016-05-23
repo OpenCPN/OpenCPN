@@ -176,32 +176,47 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
     long start = zu_tell(file);
 
     //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
+    //but some Gribs has the "GRIB" header starting in second, third or fourth bytes. So for these cases
+    //let's read its one by one. If 'G' is found in 1st byte or not found at all then
+    //process as before, but if 'G' is not found in 1st byte but found in one of the next three bytes, stop reading
+    //then the read can be continued from that position in the file in the section 0 read
     char strgrib[5];
-    if (zu_read(file, strgrib, 4) != 4)
-    {
+
+    unsigned int b_haveReadGRIB = 0;				    // already read the "GRIB" of section 0 ?
+
+	for (unsigned i = 0; i < 4; i++) {		            //read the four first bytes one by one
+        if (zu_read(file, strgrib + i, 1) != 1) {       //detect end of file?
             ok = false;
             eof = true;
             return;
-    }
+		} else {                            //search "GRIB" or at least "G"
+			if (strgrib[0] != 'G') {		//if no 'G' found in the 1st byte
+				if (strgrib[i] == 'G') {    //but found in the next 3 bytes
+					b_haveReadGRIB = 1;		//stop reading.The 3 following bytes will be read in section 0 read starting at that position
+					b_len_add_8 = false;
+					break;
+				} // end 'G' found in the next bytes
+			} // end no 'G' found in 1st byte.
+		}
+	}// end reading four bytes
 
-    bool b_haveReadGRIB = false;         // already read the "GRIB" of section 0 ??
+    if (b_haveReadGRIB == 0) {						//the four bytes have been read
+		if (strncmp(strgrib, "GRIB", 4) != 0)
+			b_len_add_8 = true;                 //"GRIB" header no valid so apply length adder. Further reading will happen
+		else {
+			b_haveReadGRIB = 2;					//"GRIB" header is valid so no further reading
+			b_len_add_8 = false;
+		}
 
-    if (strncmp(strgrib, "GRIB", 4) != 0)
-            b_len_add_8 = true;
-    else
-    {
+        // Another special case, where zero padding is used between records.
+        if((strgrib[0] == 0) &&
+            (strgrib[1] == 0) &&
+            (strgrib[2] == 0) &&
+            (strgrib[3] == 0))
+        {
             b_len_add_8 = false;
-            b_haveReadGRIB = true;
-    }
-
-    // Another special case, where zero padding is used between records.
-    if((strgrib[0] == 0) &&
-        (strgrib[1] == 0) &&
-        (strgrib[2] == 0) &&
-        (strgrib[3] == 0))
-    {
-          b_len_add_8 = false;
-          b_haveReadGRIB = false;
+            b_haveReadGRIB = 0;
+        }
     }
 
     ok = readGribSection0_IS(file, b_haveReadGRIB );
@@ -268,11 +283,11 @@ static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 //----------------------------------------------
 // SECTION 0: THE INDICATOR SECTION (IS)
 //----------------------------------------------
-bool GribV1Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
+bool GribV1Record::readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial_GRIB) {
     char strgrib[4];
     fileOffset0 = zu_tell(file);
 
-    if(!b_skip_initial_GRIB)
+    if( b_skip_initial_GRIB == 0 )
     {
             // Cherche le 1er 'G'
             while ( (zu_read(file, strgrib, 1) == 1)
@@ -284,6 +299,10 @@ bool GribV1Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
             eof = true;
             return false;
       }
+    } else if(b_skip_initial_GRIB == 1)			//the first 'G' has been found previously
+		strgrib[0] = 'G';
+
+    if( b_skip_initial_GRIB == 0 || b_skip_initial_GRIB == 1 ) {    // contine to search the end of "GRIB" in the next three bytes
       if (zu_read(file, strgrib+1, 3) != 3) {
             ok = false;
             eof = true;

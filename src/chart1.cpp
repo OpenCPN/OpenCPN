@@ -8490,6 +8490,11 @@ void MyFrame::DoPrint( void )
      frame->Show();
      */
 
+    #ifdef __WXGTK__
+    SurfaceToolbar();
+    cc1->SetFocus();
+    Raise();                      // I dunno why...
+    #endif
 }
 
 void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )

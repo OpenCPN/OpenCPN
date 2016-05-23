@@ -939,12 +939,18 @@ void RouteManagerDialog::RecalculateSize()
 
 void RouteManagerDialog::OnClose(wxCloseEvent& event)
 {
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
     //    pRouteManagerDialog = NULL;
 }
 
 void RouteManagerDialog::OnOK(wxCommandEvent& event)
 {
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
     
     if(g_bresponsive)

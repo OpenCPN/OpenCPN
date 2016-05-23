@@ -2368,6 +2368,9 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
 
     m_bStartNow = false;
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
     cc1->Refresh( false );
 
@@ -2406,6 +2409,9 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
             pRouteManagerDialog->UpdateTrkListCtrl();
     }
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
     cc1->InvalidateGL();
     cc1->Refresh( false );
@@ -3477,6 +3483,11 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
         SaveChanges(); // write changes to globals and update config
         cc1->RefreshRect( m_pRoutePoint->CurrentRect_in_DC.Inflate( 1000, 100 ), false );
     }
+
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
+    
     Show( false );
     if( m_pMyLinkList ) {
         delete m_pMyLinkList;
@@ -3526,6 +3537,10 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
         }
     }
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
+    
     Show( false );
     delete m_pMyLinkList;
     m_pMyLinkList = NULL;
