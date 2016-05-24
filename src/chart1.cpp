@@ -5239,8 +5239,11 @@ void MyFrame::ToggleToolbar( bool b_smooth )
 
 void MyFrame::JumpToPosition( double lat, double lon, double scale )
 {
+    if (lon > 180.0)
+        lon -= 360.0;
     vLat = lat;
     vLon = lon;
+    cc1->StopMovement();
     cc1->m_bFollow = false;
 
     //  is the current chart available at the target location?
