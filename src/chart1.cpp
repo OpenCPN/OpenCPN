@@ -6024,6 +6024,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
         if( ChartData ) {
             if( ut_index < ChartData->GetChartTableEntries() ) {
+                printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
                 const ChartTableEntry *cte = &ChartData->GetChartTableEntry( ut_index );
                 double lat = ( cte->GetLatMax() + cte->GetLatMin() ) / 2;
                 double lon = ( cte->GetLonMax() + cte->GetLonMin() ) / 2;
@@ -6045,7 +6046,11 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 cc1->ReloadVP();
 
                 ut_index++;
+                if(ut_index > 100)
+                    exit(0);
             }
+            else
+                exit(0);
         }
     }
     g_tick++;

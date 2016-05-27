@@ -199,12 +199,19 @@ class PolyTessGeo
         double Get_xmax(){ return xmax;}
         double Get_ymin(){ return ymin;}
         double Get_ymax(){ return ymax;}
+        void SetExtents(double x_left, double y_bot, double x_right, double y_top);
+        
+        
         PolyTriGroup *Get_PolyTriGroup_head(){ return m_ppg_head;}
         int GetnVertexMax(){ return m_nvertex_max; }
+        void SetnVertexMax( int max ){ m_nvertex_max = max; }
+        int GetnContours(){ return m_ncnt; }
+        
         int     ErrorCode;
         void Set_PolyTriGroup_head( PolyTriGroup *head ){ m_ppg_head = head;}
         void Set_OK( bool bok ){ m_bOK = bok;}
         
+        void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
 
     private:
         int BuildTessGL(void);
@@ -262,6 +269,7 @@ class PolyTessGeoTrap
             double Get_ymax(){ return ymax;}
             PolyTrapGroup *Get_PolyTrapGroup_head(){ return m_ptg_head;}
             int GetnVertexMax(){ return m_nvertex_max; }
+            void SetnVertexMax( int max ){ m_nvertex_max = max; }
             bool IsOk(){ return m_bOK;}
             int     ErrorCode;
 

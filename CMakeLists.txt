@@ -408,7 +408,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing -O0")
 
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
@@ -1734,7 +1734,7 @@ ENDIF(MSVC AND OCPN_USE_CRASHREPORT)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
- add_subdirectory (plugins)
+# add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
 
 # build a CPack driven installer package

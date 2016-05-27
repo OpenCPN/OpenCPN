@@ -84,11 +84,6 @@ extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      
 void OpenCPN_OGRErrorHandler( CPLErr eErrClass, int nError,
                               const char * pszErrorMsg );               // installed GDAL OGR library error handler
 
-const char *MyCSVGetField( const char * pszFilename,
-                         const char * pszKeyFieldName,
-                         const char * pszKeyFieldValue,
-                         CSVCompareCriteria eCriteria,
-                         const char * pszTargetField ) ;
 
 #ifdef ocpnUSE_GL                         
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
@@ -152,43 +147,7 @@ static bool s_ProgressCallBack( void )
 
 S57Obj::S57Obj()
 {
-    att_array = NULL;
-    attVal = NULL;
-    n_attr = 0;
-
-    pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
-
-    bCS_Added = 0;
-    CSrules = NULL;
-    FText = NULL;
-    bFText_Added = 0;
-    geoPtMulti = NULL;
-    geoPtz = NULL;
-    geoPt = NULL;
-    bIsClone = false;
-    Scamin = 10000000;                              // ten million enough?
-    nRef = 0;
-
-    bIsAton = false;
-    bIsAssociable = false;
-    m_n_lsindex = 0;
-    m_lsindex_array = NULL;
-    m_n_edge_max_points = 0;
-    m_ls_list = 0;
-    
-    bBBObj_valid = false;
-
-    //        Set default (unity) auxiliary transform coefficients
-    x_rate = 1.0;
-    y_rate = 1.0;
-    x_origin = 0.0;
-    y_origin = 0.0;
-    
-    auxParm0 = 0;
-    auxParm1 = 0;
-    auxParm2 = 0;
-    auxParm3 = 0;
+    Init();
 }
 
 //----------------------------------------------------------------------------------
@@ -243,6 +202,256 @@ S57Obj::~S57Obj()
     }
 }
 
+
+void S57Obj::Init()
+{
+    att_array = NULL;
+    attVal = NULL;
+    n_attr = 0;
+    
+    pPolyTessGeo = NULL;
+    pPolyTrapGeo = NULL;
+    
+    bCS_Added = 0;
+    CSrules = NULL;
+    FText = NULL;
+    bFText_Added = 0;
+    geoPtMulti = NULL;
+    geoPtz = NULL;
+    geoPt = NULL;
+    bIsClone = false;
+    Scamin = 10000000;                              // ten million enough?
+    nRef = 0;
+    
+    bIsAton = false;
+    bIsAssociable = false;
+    m_n_lsindex = 0;
+    m_lsindex_array = NULL;
+    m_n_edge_max_points = 0;
+    m_ls_list = 0;
+
+    iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
+    bBBObj_valid = false;
+    
+    //        Set default (unity) auxiliary transform coefficients
+    x_rate = 1.0;
+    y_rate = 1.0;
+    x_origin = 0.0;
+    y_origin = 0.0;
+    
+    auxParm0 = 0;
+    auxParm1 = 0;
+    auxParm2 = 0;
+    auxParm3 = 0;
+}
+
+//----------------------------------------------------------------------------------
+//      S57Obj CTOR from FeatureName
+//----------------------------------------------------------------------------------
+S57Obj::S57Obj( const char* featureName )
+{
+    Init();
+    
+    attVal = new wxArrayOfS57attVal();
+    
+    strncpy( FeatureName, featureName, 6 );
+    FeatureName[6] = 0;
+}
+    
+
+bool S57Obj::AddIntegerAttribute( const char *acronym, int val ){
+
+    S57attVal *pattValTmp = new S57attVal;
+    
+    int *pAVI = (int *) malloc( sizeof(int) );         //new int;
+    *pAVI = val;
+
+    pattValTmp->valType = OGR_INT;
+    pattValTmp->value = pAVI;
+        
+    att_array = (char *)realloc(att_array, 6*(n_attr + 1));
+    strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+    n_attr++;
+    
+    attVal->Add( pattValTmp );
+    
+    return true;
+}
+
+bool S57Obj::AddIntegerListAttribute( const char *acronym, int *pval, int nValue ){
+    
+    return true;
+}
+
+bool S57Obj::AddDoubleAttribute( const char *acronym, double val ){
+    
+    S57attVal *pattValTmp = new S57attVal;
+    
+    double *pAVI = (double *) malloc( sizeof(double) );         //new double;
+    *pAVI = val;
+    
+    pattValTmp->valType = OGR_REAL;
+    pattValTmp->value = pAVI;
+    
+    att_array = (char *)realloc(att_array, 6*(n_attr + 1));
+    strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+    n_attr++;
+    
+    attVal->Add( pattValTmp );
+    
+    return true;
+}
+
+bool S57Obj::AddDoubleListAttribute( const char *acronym, double *pval, int nValue ){
+    
+    return true;
+}
+
+bool S57Obj::AddStringAttribute( const char *acronym, char *val ){
+
+    S57attVal *pattValTmp = new S57attVal;
+    
+    char *pAVS = (char *)malloc(strlen(val) + 1);   //new string
+    strcpy(pAVS, val);
+ 
+    pattValTmp->valType = OGR_STR;
+    pattValTmp->value = pAVS;
+    
+    att_array = (char *)realloc(att_array, 6*(n_attr + 1));
+    strncpy(att_array + (6 * sizeof(char) * n_attr), acronym, 6);
+    n_attr++;
+    
+    attVal->Add( pattValTmp );
+    
+    return true;
+}
+
+bool S57Obj::SetPointGeometry( double lat, double lon, double ref_lat, double ref_lon)
+{
+    Primitive_type = GEO_POINT;
+    
+    m_lon = lon;
+    m_lat = lat;
+    
+    //  Set initial BoundingBox limits fairly large...
+    BBObj.SetMin( m_lon - .25, m_lat - .25 );
+    BBObj.SetMax( m_lon + .25, m_lat + .25 );
+    bBBObj_valid = false;
+
+    //  Calculate SM from chart common reference point
+    double easting, northing;
+    toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
+    
+    x = easting;
+    y = northing;
+    
+    npt = 1;
+    
+    return true;
+}
+
+
+bool S57Obj::SetLineGeometry( LineGeometryDescriptor *pGeo, GeoPrim_t geoType, double ref_lat, double ref_lon)
+{
+    Primitive_type = geoType;
+    
+    // set s57obj bbox as lat/lon
+    BBObj.SetMin( pGeo->extent_w_lon, pGeo->extent_s_lat );
+    BBObj.SetMax( pGeo->extent_e_lon, pGeo->extent_n_lat );
+    bBBObj_valid = true;
+    
+    //  and declare x/y of the object to be average east/north of all points
+    double e1, e2, n1, n2;
+    toSM( pGeo->extent_n_lat, pGeo->extent_e_lon, ref_lat, ref_lon, &e1, &n1 );
+    toSM( pGeo->extent_s_lat, pGeo->extent_w_lon, ref_lat, ref_lon, &e2, &n2 );
+    
+    x = ( e1 + e2 ) / 2.;
+    y = ( n1 + n2 ) / 2.;
+    
+    //  Set the object base point
+    double xll, yll;
+    fromSM( x, y, ref_lat, ref_lon, &yll, &xll );
+    m_lon = xll;
+    m_lat = yll;
+    
+    //  Set the edge and connected node table indices
+    m_n_lsindex = pGeo->indexCount;
+    m_lsindex_array = pGeo->indexTable;
+    
+    m_n_edge_max_points = 0; //TODO this could be precalulated and added to next SENC format
+
+    return true;
+}    
+
+
+bool S57Obj::SetAreaGeometry( PolyTessGeo *ppg, double ref_lat, double ref_lon)
+{ 
+    Primitive_type = GEO_AREA;
+    pPolyTessGeo = ppg;
+    
+    //  Set the s57obj bounding box as lat/lon
+    BBObj.SetMin( ppg->Get_xmin(), ppg->Get_ymin() );
+    BBObj.SetMax( ppg->Get_xmax(), ppg->Get_ymax() );
+    bBBObj_valid = true;
+    
+    //  and declare x/y of the object to be average east/north of all points
+    double e1, e2, n1, n2;
+    toSM( ppg->Get_ymax(), ppg->Get_xmax(), ref_lat, ref_lon, &e1,&n1 );
+    toSM( ppg->Get_ymin(), ppg->Get_xmin(), ref_lat, ref_lon, &e2,&n2 );
+    
+    x = ( e1 + e2 ) / 2.;
+    y = ( n1 + n2 ) / 2.;
+    
+    //  Set the object base point
+    double xll, yll;
+    fromSM( x, y, ref_lat, ref_lon, &yll, &xll );
+    m_lon = xll;
+    m_lat = yll;
+    
+    
+    return true;
+}
+    
+bool S57Obj::SetMultipointGeometry( MultipointGeometryDescriptor *pGeo, double ref_lat, double ref_lon)
+{
+    Primitive_type = GEO_POINT;
+    
+    npt = pGeo->pointCount;
+    
+    geoPtz = (double *) malloc( npt * 3 * sizeof(double) );
+    geoPtMulti = (double *) malloc( npt * 2 * sizeof(double) );
+    
+    double *pdd = geoPtz;
+    double *pdl = geoPtMulti;
+    
+    float *pfs = (float *) ( pGeo->pointTable);                 // start of point data
+    for( int ip = 0; ip < npt; ip++ ) {
+        float easting, northing;
+        easting = *pfs++;
+        northing = *pfs++;
+        float depth = *pfs++;
+        
+        *pdd++ = easting;
+        *pdd++ = northing;
+        *pdd++ = depth;
+        
+        //  Convert point from SM to lat/lon for later use in decomposed bboxes
+        double xll, yll;
+        fromSM( easting, northing, ref_lat, ref_lon, &yll, &xll );
+        
+        *pdl++ = xll;
+        *pdl++ = yll;
+    }
+    
+    // set s57obj bbox as lat/lon
+    BBObj.SetMin( pGeo->extent_w_lon, pGeo->extent_s_lat );
+    BBObj.SetMax( pGeo->extent_e_lon, pGeo->extent_n_lat );
+    bBBObj_valid = true;
+    
+    return true;
+}
+
+    
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR from SENC file
 //----------------------------------------------------------------------------------
@@ -1035,6 +1244,8 @@ s57chart::s57chart()
     m_LineVBO_name = -1;
     m_line_vertex_buffer = 0;
     m_this_chart_context =  0;
+    m_Chart_Skew = 0;
+    
 }
 
 s57chart::~s57chart()
@@ -2916,20 +3127,21 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
             }
             else{
             
-                int senc_file_version = senc.getSencVersion();
+                int senc_file_version = senc.getSencReadVersion();
             
-                int last_update = senc.getLastUpdate();
+                int last_update = senc.getSENCReadLastUpdate();
             
-                wxString str = senc.getFileModTime();
-                wxDateTime ModTime000;
-                if( !ModTime000.ParseFormat( str, _T("%Y%m%d")/*(const wxChar *)"%Y%m%d"*/) )
-                    ModTime000.SetToCurrent();
-                ModTime000.ResetTime();                   // to midnight
+                wxString str = senc.getSENCFileCreateDate();
+                wxDateTime SENCCreateDate;
+                SENCCreateDate.ParseFormat( str, _T("%Y%m%d"));
+
+                if( SENCCreateDate.IsValid() )
+                    SENCCreateDate.ResetTime();                   // to midnight
             
-                wxULongLong size000 = senc.getFileSize000();
-                wxString ssize000 = senc.getsFileSize000();
+//                wxULongLong size000 = senc.getFileSize000();
+//                wxString ssize000 = senc.getsFileSize000();
                 
-                wxString senc_base_edtn = senc.getEdition();
+                wxString senc_base_edtn = senc.getSENCReadBaseEdition();
             
 //              Anything to do?
 //force_make_senc = 1;
@@ -2950,22 +3162,25 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                     if( last_update != most_recent_update_file )
                         bbuild_new_senc = true;
 
-//          Make two simple tests to see if the .000 file is "newer" than the SENC file representation
+//          Make simple tests to see if the .000 file is "newer" than the SENC file representation
 //          These tests may be redundant, since the DSID:EDTN test above should catch new base files
                     wxDateTime OModTime000;
                     FileName000.GetTimes( NULL, &OModTime000, NULL );
                     OModTime000.ResetTime();                      // to midnight
-                    if( ModTime000.IsValid() ){
-                        if( OModTime000.IsLaterThan( ModTime000 ) )
+                    if( SENCCreateDate.IsValid() ){
+                        if( OModTime000.IsLaterThan( SENCCreateDate ) )
                             bbuild_new_senc = true;
                     }
-
-                    int Osize000l = FileName000.GetSize().GetLo();
-                    int Osize000h = FileName000.GetSize().GetHi();
-                    wxString t;
-                    t.Printf(_T("%d%d"), Osize000h, Osize000l);
-                    if( !t.IsSameAs( ssize000) )
+                    else
                         bbuild_new_senc = true;
+                    
+
+//                     int Osize000l = FileName000.GetSize().GetLo();
+//                     int Osize000h = FileName000.GetSize().GetHi();
+//                     wxString t;
+//                     t.Printf(_T("%d%d"), Osize000h, Osize000l);
+//                     if( !t.IsSameAs( ssize000) )
+//                         bbuild_new_senc = true;
                     
                 }
 
@@ -3006,15 +3221,15 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-
+#if 0
     wxString SENCdir = g_SENCPrefix;
-    if( SENCdir.Last() != m_SENCFileName.GetPathSeparator() ) SENCdir.Append(
-            m_SENCFileName.GetPathSeparator() );
+    if( SENCdir.Last() != m_SENCFileName.GetPathSeparator() )
+        SENCdir.Append( m_SENCFileName.GetPathSeparator() );
 
     wxFileName ThumbFileName( SENCdir, m_SENCFileName.GetName(), _T("BMP") );
 
-    if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail ) BuildThumbnail(
-            ThumbFileName.GetFullPath() );
+    if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
+        BuildThumbnail( ThumbFileName.GetFullPath() );
 
 //  Update the member thumbdata structure
     if( ThumbFileName.FileExists() ) {
@@ -3031,6 +3246,7 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 //                    pThumbData->pDIBThumb = pBMP_NEW;
         }
     }
+#endif
 
 //    Set the color scheme
     m_global_color_scheme = cs;
@@ -3462,10 +3678,117 @@ bool s57chart::CreateHeaderDataFromENC( void )
     return true;
 }
 
+//    Read the .S57 oSENC file (CURRENT_SENC_FORMAT_VERSION >= 200) and create required Chartbase data structures
+bool s57chart::CreateHeaderDataFromoSENC( void )
+{
+    bool ret_val = true;
+
+    wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+    if (!fpx.IsOk()) {
+        if( !m_SENCFileName.FileExists() ) {
+            wxString msg( _T("   Cannot open SENC file ") );
+            msg.Append( m_SENCFileName.GetFullPath() );
+            wxLogMessage( msg );
+
+        }
+        return false;
+    }
+    
+    Osenc senc;
+    if(senc.ingestHeader( m_SENCFileName.GetFullPath() ) ){
+        return false;
+    }
+    else{
+        
+        // Get Chartbase member elements from the oSENC file records in the header
+        
+        // Scale
+        m_Chart_Scale = senc.getSENCReadScale();
+        
+        // Nice Name
+        m_Name = senc.getReadName();
+        
+        // ID
+        m_ID = senc.getReadID();
+        
+        // Extents
+        Extent &ext = senc.getReadExtent();
+        
+        m_FullExtent.ELON = ext.ELON;
+        m_FullExtent.WLON = ext.WLON;
+        m_FullExtent.NLAT = ext.NLAT;
+        m_FullExtent.SLAT = ext.SLAT;
+        m_bExtentSet = true;
+        
+        
+        //Coverage areas
+        SENCFloatPtrArray &AuxPtrArray = senc.getSENCReadAuxPointArray();
+        wxArrayInt &AuxCntArray = senc.getSENCReadAuxPointCountArray();
+        
+        m_nCOVREntries = AuxCntArray.GetCount();
+        
+        m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
+        m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
+        
+        for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
+            m_pCOVRTablePoints[j] = AuxCntArray.Item( j );
+            m_pCOVRTable[j] = (float *) malloc( AuxCntArray.Item( j ) * 2 * sizeof(float) );
+            memcpy( m_pCOVRTable[j], AuxPtrArray.Item( j ),
+                    AuxCntArray.Item( j ) * 2 * sizeof(float) );
+        }
+        
+        // NoCoverage areas
+        SENCFloatPtrArray &NoCovrPtrArray = senc.getSENCReadNOCOVRPointArray();
+        wxArrayInt &NoCovrCntArray = senc.getSENCReadNOCOVRPointCountArray();
+
+        m_nNoCOVREntries = NoCovrCntArray.GetCount();
+        
+        if( m_nNoCOVREntries ) {
+            //    Create new NoCOVR entries
+            m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
+            m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
+            
+            for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
+                int npoints = NoCovrCntArray.Item( j );
+                m_pNoCOVRTablePoints[j] = npoints;
+                m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
+                memcpy( m_pNoCOVRTable[j], NoCovrPtrArray.Item( j ),
+                        npoints * 2 * sizeof(float) );
+            }
+        }
+        
+        
+        //  Misc
+        m_SE = m_edtn000;
+        m_datum_str = _T("WGS84");
+        m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
+        
+        
+        int senc_file_version = senc.getSencReadVersion();
+        
+        int last_update = senc.getSENCReadLastUpdate();
+        
+        wxString str = senc.getSENCFileCreateDate();
+        wxDateTime SENCCreateDate;
+        SENCCreateDate.ParseFormat( str, _T("%Y%m%d"));
+        
+        if( SENCCreateDate.IsValid() )
+            SENCCreateDate.ResetTime();                   // to midnight
+            
+         wxString senc_base_edtn = senc.getSENCReadBaseEdition();
+    }
+
+    return ret_val;
+}
+
+
+    
 //    Read the .S57 SENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromSENC( void )
 {
     bool ret_val = true;
+    if(CURRENT_SENC_FORMAT_VERSION >= 200)
+        return CreateHeaderDataFromoSENC();
 
     wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
     if (!fpx.IsOk()) {
@@ -4149,7 +4472,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     senc.setRefLocn(ref_lat, ref_lon);
     senc.SetLODMeters(m_LOD_meters);
 
-    int ret = senc.createSenc124( FullPath000, SENCFileName );
+    int ret = senc.createSenc200( FullPath000, SENCFileName );
+//    int ret = senc.createSenc124( FullPath000, SENCFileName );
     
     return ret;
 }
@@ -4169,7 +4493,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     VE_ElementVector VEs;
     VC_ElementVector VCs;
     
-    int srv = sencfile.ingest(FullPath, &Objects, &VEs, &VCs);
+    sencfile.setRefLocn(ref_lat, ref_lon);
+    
+    int srv = sencfile.ingest200(FullPath, &Objects, &VEs, &VCs);
     
     if(srv != SENC_NO_ERROR){
         wxLogMessage( sencfile.getLastError() );
@@ -4335,11 +4661,13 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     
     wxDateTime d000;
     d000.ParseFormat( sencfile.getBaseDate(), _T("%Y%m%d") );
-    if( !d000.IsValid() ) d000.ParseFormat( _T("20000101"), _T("%Y%m%d") );
+    if( !d000.IsValid() )
+        d000.ParseFormat( _T("20000101"), _T("%Y%m%d") );
     
     wxDateTime updt;
     updt.ParseFormat( sencfile.getUpdateDate(), _T("%Y%m%d") );
-    if( !updt.IsValid() ) updt.ParseFormat( _T("20000101"), _T("%Y%m%d") );
+    if( !updt.IsValid() )
+        updt.ParseFormat( _T("20000101"), _T("%Y%m%d") );
     
     if(updt.IsLaterThan(d000))
         m_PubYear.Printf(_T("%4d"), updt.GetYear());
@@ -4350,17 +4678,24 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
 //    Set some base class values
      wxDateTime upd = updt;
-     if( !upd.IsValid() ) upd.ParseFormat( _T("20000101"), _T("%Y%m%d") );
+     if( !upd.IsValid() )
+         upd.ParseFormat( _T("20000101"), _T("%Y%m%d") );
 
      upd.ResetTime();
      m_EdDate = upd;
 
-    m_SE = m_edtn000;
+     m_SE = sencfile.getSENCReadBaseEdition();
+
+    wxString supdate;
+    supdate.Printf(_T(" / %d"), sencfile.getSENCReadLastUpdate());
+    m_SE += supdate;
+    
+    
     m_datum_str = _T("WGS84");
 
     m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
-    m_ID = sencfile.getID();
-    m_Name = sencfile.getName();
+    m_ID = sencfile.getReadID();
+    m_Name = sencfile.getReadName();
     
 
     // Validate hash maps....
@@ -6151,7 +6486,8 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                 wxString val_str( (char *) ( pval->value ), wxConvUTF8 );
                 long ival;
                 if( val_str.ToLong( &ival ) ) {
-                    if( 0 == ival ) value = _T("Unknown");
+                    if( 0 == ival )
+                        value = _T("Unknown");
                     else {
                         wxString decode_val = GetAttributeDecode( curAttrName, ival );
                         if( !decode_val.IsEmpty() ) {
@@ -6164,7 +6500,8 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
                     }
                 }
 
-                else if( val_str.IsEmpty() ) value = _T("Unknown");
+                else if( val_str.IsEmpty() )
+                    value = _T("Unknown");
 
                 else {
                     value.Clear();
