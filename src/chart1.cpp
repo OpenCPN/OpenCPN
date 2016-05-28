@@ -845,18 +845,25 @@ public:
 // Opens a file passed from another instance
 bool stConnection::OnExec(const wxString& topic, const wxString& data)
 {
+    // not setup yet
+    if (!gFrame)
+        return false;
+
     wxString path(data);
     if (path.IsEmpty()) {
-        if (gFrame) {
-            gFrame->InvalidateAllGL();
-            gFrame->RefreshAllCanvas( false );
-            gFrame->Raise();
-        }
+       gFrame->InvalidateAllGL();
+       gFrame->RefreshAllCanvas( false );
+       gFrame->Raise();
     }
     else {
         NavObjectCollection1 *pSet = new NavObjectCollection1;
         pSet->load_file(path.fn_str());
-        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN() ); // Import with full vizibility of names and objects
+        int wpt_dups;
+        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(), wpt_dups, true ); // Import with full vizibility of names and objects
+        LLBBox box = pSet->GetBBox();
+        if (box.GetValid()) {
+            gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
+        }
         delete pSet;
         return true;
     }
@@ -1651,14 +1658,20 @@ bool MyApp::OnInit()
 #endif
     m_checker = 0;
 
+    // Instantiate the global OCPNPlatform class
+    g_Platform = new OCPNPlatform;
+
     //  On Windows
     //  We allow only one instance unless the portable option is used
     if(!g_bportable) {
+        wxChar separator = wxFileName::GetPathSeparator();
+        wxString service_name = g_Platform->GetPrivateDataDir() + separator + _T("opencpn-ipc");
+
         m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
         if ( !m_checker->IsAnotherRunning() )
         {
             stServer *m_server = new stServer;
-            if ( !m_server->Create(wxT("/tmp/.opencpn")) ) {
+            if ( !m_server->Create(service_name) ) {
 		wxLogDebug(wxT("Failed to create an IPC service."));
             }
         }
@@ -1668,7 +1681,7 @@ bool MyApp::OnInit()
     	    // ignored under DDE, host name in TCP/IP based classes
     	    wxString hostName = wxT("localhost");
     	    // Create the connection service, topic
-    	    wxConnectionBase* connection = client->MakeConnection(hostName, wxT("/tmp/.opencpn"), wxT("OpenCPN"));
+    	    wxConnectionBase* connection = client->MakeConnection(hostName, service_name, _T("OpenCPN"));
     	    if (connection) {
     	        // Ask the other instance to open a file or raise itself
     	        if ( !g_params.empty() ) {
@@ -1693,8 +1706,6 @@ bool MyApp::OnInit()
             return false;               // exit quietly
         }
     }
-    // Instantiate the global OCPNPlatform class
-    g_Platform = new OCPNPlatform;
 
     //  Perform first stage initialization
     OCPNPlatform::Initialize_1( );
@@ -5902,6 +5913,43 @@ void MyFrame::UpdateCanvasConfigDescriptors()
 
 
 
+
+void MyFrame::CenterView(ChartCanvas *cc, const LLBBox& RBBox)
+{
+    if ( !RBBox.GetValid() )
+        return;
+    // Calculate bbox center
+    double clat = (RBBox.GetMinLat() + RBBox.GetMaxLat()) / 2;
+    double clon = (RBBox.GetMinLon() + RBBox.GetMaxLon()) / 2;
+    double ppm; // final ppm scale to use
+
+    if (RBBox.GetMinLat() == RBBox.GetMaxLat() && RBBox.GetMinLon() == RBBox.GetMaxLon() )
+    {
+        // only one point, (should be a box?)
+        ppm = cc->GetVPScale();
+    }
+    else
+    {
+        // Calculate ppm
+        double rw, rh; // route width, height
+        int ww, wh; // chart window width, height
+        // route bbox width in nm
+        DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMinLat(),
+                                 RBBox.GetMaxLon(), NULL, &rw );
+                             // route bbox height in nm
+        DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMaxLat(),
+                                RBBox.GetMinLon(), NULL, &rh );
+
+        cc->GetSize( &ww, &wh );
+
+        ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+        ppm = wxMin(ppm, 1.0);
+    }
+
+    JumpToPosition(cc, clat, clon, ppm );
+}
+
 int MyFrame::DoOptionsDialog()
 {
     if (g_boptionsactive)
@@ -6960,9 +7008,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(path.fn_str());
+                        int wpt_dups;
 
-                        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN() ); // Import with full vizibility of names and objects
-
+                        pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(),wpt_dups , true ); // Import with full vizibility of names and objects
+                        LLBBox box = pSet->GetBBox();
+                        if (box.GetValid()) {
+                            CenterView(GetPrimaryCanvas(), box);
+                        }
                         delete pSet;
                     }
                 }

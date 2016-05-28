@@ -407,6 +407,7 @@ class MyFrame: public wxFrame
 //     void SelectdbChart(int dbindex);
 //     void SelectQuiltRefChart(int selected_index);
 //     void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
+    void CenterView(ChartCanvas *cc, const LLBBox& bbox);
 
     void JumpToPosition( ChartCanvas *cc, double lat, double lon, double scale );
     
