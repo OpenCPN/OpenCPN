@@ -860,6 +860,9 @@ bool stConnection::OnExec(const wxString& topic, const wxString& data)
         pSet->load_file(path.fn_str());
         int wpt_dups;
         pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(), wpt_dups, true ); // Import with full vizibility of names and objects
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateLists();
+
         LLBBox box = pSet->GetBBox();
         if (box.GetValid()) {
             gFrame->CenterView(gFrame->GetPrimaryCanvas(), box);
@@ -4643,10 +4646,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             if( pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->Hide();
             else {
-                pRouteManagerDialog->UpdateRouteListCtrl();
-                pRouteManagerDialog->UpdateTrkListCtrl();
-                pRouteManagerDialog->UpdateWptListCtrl();
-                pRouteManagerDialog->UpdateLayListCtrl();
+            pRouteManagerDialog->UpdateLists();
 
                 pRouteManagerDialog->Show();
 
