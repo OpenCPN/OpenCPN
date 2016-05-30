@@ -128,6 +128,7 @@ void DashboardInstrument_AppTrueWindAngle::SetData(int st, double data, wxString
 		m_ExtraValueTrueUnit = unit;
 		m_ExtraValueOption2 = DIAL_POSITION_BOTTOMRIGHT;
 	}
+	Refresh();
 }
 void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc)
 {
