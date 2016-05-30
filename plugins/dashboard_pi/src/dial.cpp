@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * $Id: dial.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -25,6 +25,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
+
 
 #include "dial.h"
 #include "wx28compat.h"
@@ -93,12 +94,12 @@ wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
-      if ( (st == m_MainValueCap) && (data < 200.0) )
+      if ( (st == m_MainValueCap) && (data < 1200.0) )
       {
             m_MainValue = data;
             m_MainValueUnit = unit;
       }
-      else if ( (st == m_ExtraValueCap) && (data < 200.0) )
+      else if ( (st == m_ExtraValueCap) && (data < 1200.0) )
       {
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;
