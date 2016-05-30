@@ -674,7 +674,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             m_gGRIBUICData->Update();
             m_gGRIBUICData->Show();
 
-            pPlugIn->MoveDialog( m_gGRIBUICData, pPlugIn->GetCursorDataXY(), wxPoint(20, 170) );
+			pPlugIn->MoveDialog(m_gGRIBUICData, pPlugIn->GetCursorDataXY() );
         }
 
     }
@@ -683,7 +683,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     SetMinSize( GetBestSize() );
     SetSize( GetBestSize() );
     Update();
-    pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY(), wxPoint(20, 60) );
+    pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
 

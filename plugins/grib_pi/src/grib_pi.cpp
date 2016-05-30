@@ -344,19 +344,19 @@ bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
     return !b_reset_pos;
 }
 
-void grib_pi::MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault )
+void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
-    wxPoint p = position;
+	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-    if( p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX() || p.x < 0 )
-        p.x = wxMin( (GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX()), dfault.x );
-    if( p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY() )
-        p.y = dfault.y;
+	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
+		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
+	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
+		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
-    dialog->Move(p);
+	dialog->Move(GetOCPNCanvasWindow()->ClientToScreen(p));
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
@@ -409,9 +409,9 @@ void grib_pi::OnToolbarToolCallback(int id)
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             m_pGribCtrlBar->Refresh();
         } else {
-            MoveDialog( m_pGribCtrlBar, GetCtrlBarXY(), wxPoint( 20, 60) );
+			MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
             if( m_DialogStyle >> 1 == SEPARATED ) {
-                MoveDialog( m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY(), wxPoint( 20, 170));
+				MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
                 }
         }
