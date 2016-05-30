@@ -44,6 +44,31 @@ import java.util.concurrent.Semaphore;
 import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
+import android.util.Base64;
+
+import javax.crypto.spec.DESKeySpec;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.SecretKey;
+import javax.crypto.Cipher;
+import javax.crypto.BadPaddingException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
+import java.security.InvalidKeyException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.NoSuchAlgorithmException;
+
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -486,6 +511,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private void toggleFullscreen(){
+
+        new TheTask().execute("https://www.sailtimermaps.com/getHash.php");
+
         m_fullScreen = !m_fullScreen;
         setFullscreen(m_fullScreen);
         nativeLib.notifyFullscreenChange(m_fullScreen);
@@ -2596,6 +2624,167 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     //---------------------------------------------------------------------------
+    //  Support for SailTimer Anemometer
+
+    //Define strings for data received action
+
+    public final static String ACTION_DATA_AVAILABLE = "com.ST.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String AWD_DATA = "com.ST.bluetooth.le.AWD_DATA";
+    public final static String AWS_DATA = "com.ST.bluetooth.le.AWS_DATA";
+
+    double windSpeed = 0;
+    double windDirection = 0;
+
+    //Define string for hash code used to decrypt data
+    public String hash = "v^2gUAZV7u=wS6xaD^hCxSGT";
+
+    class TheTask extends AsyncTask<String,Void,String>
+     {
+
+      @Override
+      protected String doInBackground(String... arg0) {
+          String text =null;
+          try {
+              Log.i("DEBUGGER_TAG", "TheTask");
+              HttpClient httpclient = new DefaultHttpClient();
+              HttpPost httppost = new HttpPost(arg0[0]);
+
+              List < NameValuePair > nameValuePairs = new ArrayList < NameValuePair > (5);
+              nameValuePairs.add(new BasicNameValuePair("user", "OpenCPN"));
+              nameValuePairs.add(new BasicNameValuePair("password", "<(d!.U5}j6._]CHH"));
+              httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+
+              HttpResponse resp = httpclient.execute(httppost);
+              HttpEntity ent = resp.getEntity();
+              text = EntityUtils.toString(ent);
+          }
+          catch (Exception e)
+          {
+               e.printStackTrace();
+          }
+
+          Log.i("DEBUGGER_TAG", "TheTask Text:" + text);
+          return text;
+      }
+
+      @Override
+      protected void onPostExecute(String result) {
+          // TODO Auto-generated method stub
+          super.onPostExecute(result);
+      }
+
+     }
+
+    //BroadcastReceiver which receives broadcasted Intents
+    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+//                Log.i("DEBUGGER_TAG", "mGattUpdateReceiver");
+
+                final String action = intent.getAction();
+                if (ACTION_DATA_AVAILABLE.equals(action)) {
+                     if (intent.getExtras().containsKey(AWD_DATA)) {
+                         Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWD_DATA");
+                            String awd = intent.getStringExtra(AWD_DATA);
+
+                            try {
+                                 windDirection = Double.parseDouble(decryptIt(awd,hash));
+                            } catch (Exception e) {
+                            }
+                     }
+
+                    if (intent.getExtras().containsKey(AWS_DATA)) {
+                        Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWS_DATA");
+                            String aws = intent.getStringExtra(AWS_DATA);
+                            try {
+                                windSpeed = Double.parseDouble(decryptIt(aws,hash));
+                            } catch (Exception e) {
+                            }
+                    }
+                }
+                String s = createMWD( windDirection, windSpeed);
+                Log.i("DEBUGGER_TAG", s);
+                if(null != nativeLib)
+                    nativeLib.processNMEA(s);
+
+            }
+    };
+
+
+    public static String decryptIt(String value, String cryptoPass) {
+            try {
+
+                DESKeySpec keySpec = new DESKeySpec(cryptoPass.getBytes("UTF8"));
+                SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+                SecretKey key = keyFactory.generateSecret(keySpec);
+                byte[] encrypedPwdBytes = Base64.decode(value, Base64.DEFAULT);
+                Cipher cipher = Cipher.getInstance("DES");
+                cipher.init(Cipher.DECRYPT_MODE, key);
+                byte[] decrypedValueBytes = (cipher.doFinal(encrypedPwdBytes));
+                String decrypedValue = new String(decrypedValueBytes);
+                return decrypedValue;
+
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+
+            } catch (InvalidKeySpecException e) {
+                e.printStackTrace();
+
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+
+            } catch (BadPaddingException e) {
+                e.printStackTrace();
+
+            } catch (NoSuchPaddingException e) {
+                e.printStackTrace();
+
+            } catch (IllegalBlockSizeException e) {
+                e.printStackTrace();
+
+            }
+
+        return value;
+
+    }
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
+
+    private String createMWD( double magDirection, double speedKnots){
+        // Create an NMEA sentence
+        String s = "$OCMWD,,,";
+
+        String sDir = "";
+        sDir=sDir.format("%.1f,M,%.1f,N,,M", magDirection, speedKnots);
+
+        s = s.concat(sDir);
+
+        byte[] sb = s.getBytes();
+
+        int sum = 0;
+        for(int i=1 ; i < s.length() ;i++){
+            sum = sum ^ sb[i];
+        }
+        int xsum = sum; // % 256;
+        String ssum = "";
+        ssum =ssum.format("*%2X", xsum);
+
+        s = s.concat(ssum);    // checksum
+
+        return s;
+    }
+
+
+    //---------------------------------------------------------------------------
 
     @Override
     protected void onApplyThemeResource(Theme theme, int resid, boolean first)
@@ -3283,6 +3472,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         //if(null != uSerialHelper)
          //   uSerialHelper.deinitUSBSerial(this);
 
+        // Disconnect the SailTimer API broadcast receiver
+        unregisterReceiver(mGattUpdateReceiver);
+
         super.onPause();
         QtApplication.invokeDelegate();
 
@@ -3415,6 +3607,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         super.onResume();
+
+        //Register SailTimer broadcast receiver for updates
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+
 
         QtApplication.invokeDelegate();
     }
