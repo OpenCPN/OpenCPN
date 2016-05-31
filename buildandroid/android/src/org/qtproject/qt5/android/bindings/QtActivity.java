@@ -511,9 +511,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     private void toggleFullscreen(){
-
-        new TheTask().execute("https://www.sailtimermaps.com/getHash.php");
-
         m_fullScreen = !m_fullScreen;
         setFullscreen(m_fullScreen);
         nativeLib.notifyFullscreenChange(m_fullScreen);
@@ -2635,9 +2632,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     double windSpeed = 0;
     double windDirection = 0;
 
-    //Define string for hash code used to decrypt data
-    public String hash = "v^2gUAZV7u=wS6xaD^hCxSGT";
+    //  Define string for hash code used to decrypt data
+    //  This was obtained by executing "TheTask" just once, to get the hash results from SailTimer.com
+    //  e.g. new TheTask().execute("https://www.sailtimermaps.com/getHash.php");
 
+    public String hash = "v^2gUAZV7u=wS6xaD^hCxSGT";
+/*
     class TheTask extends AsyncTask<String,Void,String>
      {
 
@@ -2675,7 +2675,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
       }
 
      }
-
+*/
     //BroadcastReceiver which receives broadcasted Intents
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
 
@@ -2686,7 +2686,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 final String action = intent.getAction();
                 if (ACTION_DATA_AVAILABLE.equals(action)) {
                      if (intent.getExtras().containsKey(AWD_DATA)) {
-                         Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWD_DATA");
+//                         Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWD_DATA");
                             String awd = intent.getStringExtra(AWD_DATA);
 
                             try {
@@ -2696,7 +2696,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                      }
 
                     if (intent.getExtras().containsKey(AWS_DATA)) {
-                        Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWS_DATA");
+//                        Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWS_DATA");
                             String aws = intent.getStringExtra(AWS_DATA);
                             try {
                                 windSpeed = Double.parseDouble(decryptIt(aws,hash));
@@ -2705,7 +2705,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                     }
                 }
                 String s = createMWD( windDirection, windSpeed);
-                Log.i("DEBUGGER_TAG", s);
+//                Log.i("DEBUGGER_TAG", s);
                 if(null != nativeLib)
                     nativeLib.processNMEA(s);
 
