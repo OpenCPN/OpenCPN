@@ -242,11 +242,13 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 
 static void getBits(unsigned char *buf,int *loc,size_t off,size_t bits)
 {
-  unsigned char bmask;
-  int lmask,temp;
-  size_t buf_size=sizeof(unsigned char)*8,loc_size=sizeof(int)*8,wskip;
+  static unsigned char bmask = 0;
+  static int lmask;
+  int temp;
+  size_t buf_size = sizeof(unsigned char)*8;
+  size_t loc_size = sizeof(int)*8;
+  size_t wskip;
   int rshift;
-  size_t n;
 
   /* no work to do */
   if (bits == 0)
@@ -257,17 +259,22 @@ static void getBits(unsigned char *buf,int *loc,size_t off,size_t bits)
     exit(1);
   }
   else {
-  /* create masks to use when right-shifting (necessary because different
-   compilers do different things when right-shifting a signed bit-field) */
-    bmask=1;
-    for (n=1; n < buf_size; n++) {
-	bmask<<=1;
-	bmask++;
-    }
-    lmask=1;
-    for (n=1; n < loc_size; n++) {
-	lmask<<=1;
-	lmask++;
+    /* create masks to use when right-shifting (necessary because different
+       compilers do different things when right-shifting a signed bit-field) 
+       do it only once...
+    */
+    if (bmask == 0) {
+        size_t n;
+        bmask=1;
+        for (n=1; n < buf_size; n++) {
+	    bmask<<=1;
+            bmask++;
+        }
+        lmask=1;
+        for (n=1; n < loc_size; n++) {
+	    lmask<<=1;
+	    lmask++;
+        }
     }
     /* get number of words to skip before unpacking begins */
     wskip=off/buf_size;
