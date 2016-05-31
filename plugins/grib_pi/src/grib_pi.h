@@ -94,7 +94,7 @@ public:
       void ShowPreferencesDialog( wxWindow* parent );
       void OnToolbarToolCallback(int id);
       bool QualifyCtrlBarPosition( wxPoint position, wxSize size );
-      void MoveDialog( wxDialog *dialog, wxPoint position, wxPoint dfault );
+	  void MoveDialog(wxDialog *dialog, wxPoint position);
 
 // Other public methods
       void SetCtrlBarXY   (wxPoint p){ m_CtrlBarxy = p;}
