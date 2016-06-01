@@ -307,7 +307,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
     }
-
+    delete m_vp;
     delete m_pTimelineSet;
 }
 
@@ -886,6 +886,7 @@ void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
 {
     if(m_vp == vp)  return;
 
+    delete m_vp;
     m_vp = new PlugIn_ViewPort(*vp);
 
     if(pReq_Dialog)
