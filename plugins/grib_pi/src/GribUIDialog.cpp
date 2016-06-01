@@ -392,6 +392,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 	m_Altitude = 0;
     m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
     delete m_bGRIBActiveFile;
+    delete m_pTimelineSet;
     m_pTimelineSet = NULL;
     m_sTimeline->SetValue(0);
     m_TimeLineHours = 0;
