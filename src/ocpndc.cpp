@@ -539,7 +539,11 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 #ifdef ocpnUSE_GL
     else if( ConfigurePen() ) {
 
-        SetGLAttrs( b_hiqual ); 
+#ifdef __WXQT__        
+        SetGLAttrs( false );            // Some QT platforms (Android) have trouble with GL_BLEND / GL_LINE_SMOOTH 
+#else
+        SetGLAttrs( b_hiqual );
+#endif        
         bool b_draw_thick = false;
 
         glDisable( GL_LINE_STIPPLE );
