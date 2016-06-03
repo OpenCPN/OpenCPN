@@ -5965,7 +5965,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
           
+#ifndef __WXQT__               // Some QT platforms (Android) have trouble with GL_LINE_SMOOTH
           glEnable( GL_LINE_SMOOTH );
+#endif                    
           glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
           glEnable( GL_BLEND );
           glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
