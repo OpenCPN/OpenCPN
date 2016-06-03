@@ -405,12 +405,15 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     if( newestFile )
         m_file_names.Clear();       //file names list must be cleared if we expect only the newest file! otherwise newest file is
                                     //added to the previously recorded, what we don't want
-    if(m_file_names.IsEmpty() )     //in any case were there is no filename previously recorded, we must take the newest
-        m_file_names.Add( GetNewestFileInDirectory());
+    if( m_file_names.IsEmpty() ) {    //in any case were there is no filename previously recorded, we must take the newest
+        m_file_names = GetFilesInDirectory();
+	newestFile = true;
+    }
 
     m_bGRIBActiveFile = new GRIBFile( m_file_names,
                                       pPlugIn->GetCopyFirstCumRec(),
-                                      pPlugIn->GetCopyMissWaveRec() );
+                                      pPlugIn->GetCopyMissWaveRec(),
+				      newestFile );
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     // XXX
@@ -550,7 +553,7 @@ bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double
     return true;
 }
 
-wxString GRIBUICtrlBar::GetNewestFileInDirectory()
+wxArrayString GRIBUICtrlBar::GetFilesInDirectory()
 {
     if( !wxDir::Exists( m_grib_dir ) ) {
          wxStandardPathsBase& path = wxStandardPaths::Get();
@@ -566,12 +569,8 @@ wxString GRIBUICtrlBar::GetNewestFileInDirectory()
     m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb2" ), wxDIR_FILES );
     if( m_n_files ) {
         file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date
-
-        return file_array[0];                                  //return the first file (the more recent one)
-    } else {
-        wxFileName d(m_grib_dir);
-        return wxString( m_grib_dir.Append(d.GetPathSeparator()) );                                      //this directory is empty
     }
+    return file_array;
 }
 
 void GRIBUICtrlBar::SetCursorLatLon( double lat, double lon )
@@ -1615,7 +1614,7 @@ void GRIBUICtrlBar::SetFactoryOptions()
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile )
 {
     m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
@@ -1637,12 +1636,16 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
 
     //    Read and ingest the entire GRIB file.......
     m_bOK = false;
+    wxString file_name;
     for (unsigned int i = 0; i < file_names.GetCount(); i++) {
-        wxString file_name = file_names[i];
+        file_name = file_names[i];
         m_pGribReader->openFile( file_name );
 
         if( m_pGribReader->isOk() ) {
             m_bOK = true;
+	    if( newestFile ) {
+	       break;
+	    }
          }
     }
     if ( m_bOK == false) {
@@ -1650,7 +1653,12 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec 
         return;
     }
 
-    m_FileNames = file_names;
+    if( newestFile ) {
+       m_FileNames.Clear();
+       m_FileNames.Add(file_name);
+    } else {
+       m_FileNames = file_names;
+    }
 
     // fixup Accumulation records
     m_pGribReader->computeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
