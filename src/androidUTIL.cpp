@@ -315,6 +315,7 @@ int             s_androidMemTotal;
 int             s_androidMemUsed;
 
 extern int ShowNavWarning();
+extern bool     g_btrackContinuous;
 
 #define ANDROID_EVENT_TIMER 4389
 #define ANDROID_STRESS_TIMER 4388
@@ -799,7 +800,8 @@ extern "C"{
         wxLogMessage(_T("onPause"));
         g_bSleep = true;
         
-        androidGPSService( GPS_OFF );
+        if(!g_btrackContinuous)
+            androidGPSService( GPS_OFF );
         
         return 97;
     }
@@ -2432,6 +2434,9 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
         }
         else if(token.StartsWith( _T("prefs_navmode"))){
             g_bCourseUp = val.IsSameAs(_T("Course Up"));
+        }
+        else if(token.StartsWith( _T("prefb_trackOnPause"))){
+            g_btrackContinuous = val.IsSameAs(_T("1"));
         }
         
         

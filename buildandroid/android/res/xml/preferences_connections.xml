@@ -31,6 +31,11 @@
             android:summary="   or compatible GPS receiver"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="prefb_trackOnPause"
+            android:title="Enable continuous GPS tracking"
+            android:summary="   ...even while paused/asleep"
+            android:defaultValue="false" />
 
 </PreferenceScreen>
 

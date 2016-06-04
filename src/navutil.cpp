@@ -386,6 +386,7 @@ extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
 
 extern wxString         g_uiStyle;
+extern bool             g_btrackContinuous;
 
 int                     g_nCPUCount;
 
@@ -1230,6 +1231,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
+
+    Read( _T ( "TrackContinuous" ), &g_btrackContinuous, 0 );
     
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
     g_b_overzoom_x = true;
@@ -2600,6 +2603,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
+    Write( _T ( "TrackContinuous" ), g_btrackContinuous );
+    
     Write( _T ( "ShowMag" ), g_bShowMag );
     Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
 

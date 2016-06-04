@@ -376,6 +376,7 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_expertmode", preferences.getBoolean("prefb_expertmode", false)));
 
         m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_internalGPS", preferences.getBoolean("prefb_internalGPS", false)));
+        m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_trackOnPause", preferences.getBoolean("prefb_trackOnPause", false)));
 
         if(null != m_serialString){
         //  Add USB Serial port information to the string only if the port was detected on entry to this activity

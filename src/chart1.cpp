@@ -709,6 +709,7 @@ bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
 wxArrayString    g_locale_catalog_array;
 bool             b_reloadForPlugins;
+bool             g_btrackContinuous;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

@@ -340,7 +340,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
-    private Boolean m_GPSRequestOn = false;
 
     public ProgressDialog ringProgressDialog;
     public boolean m_hasGPS;
@@ -960,12 +959,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             m_GPSServer = new GPSServer(getApplicationContext(), nativeLib);
             m_GPSServiceStarted = true;
         }
-
-        if(parm == GPSServer.GPS_ON)
-            m_GPSRequestOn = true;
-
-        if(parm == GPSServer.GPS_OFF)
-            m_GPSRequestOn = false;
 
         return m_GPSServer.doService( parm );
     }
