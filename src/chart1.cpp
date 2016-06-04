@@ -8006,11 +8006,10 @@ bool MyFrame::DoChartUpdate( void )
                         proposed_scale_onscreen = wxMin(proposed_scale_onscreen, scale1);
  
                         proposed_scale_onscreen =
-                        wxMax(proposed_scale_onscreen, cc1->GetQuiltNomScaleMax(nativeScale, pc->GetChartType(), pc->GetChartFamily()) );
+                        wxMax(proposed_scale_onscreen, pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
                     }
                 }
             }
-
             bNewView |= cc1->SetViewPoint( vpLat, vpLon,
                     cc1->GetCanvasScaleFactor() / proposed_scale_onscreen, 0,
                     cc1->GetVPRotation() );
