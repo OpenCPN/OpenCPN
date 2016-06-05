@@ -3688,7 +3688,6 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSmoothPanZoom = new wxCheckBox(pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                     _("Smooth Panning / Zooming"));
     boxCtrls->Add(pSmoothPanZoom, verticleInputFlags);
-
     pEnableZoomToCursor =
         new wxCheckBox(pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor"));
     pEnableZoomToCursor->SetValue(FALSE);
@@ -3771,27 +3770,33 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(0, border_size * 4);
 
     // Control Options
-    // generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY,
-    // _("Controls") ), groupLabelFlags );
     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxCtrls, groupInputFlags);
 
     pSmoothPanZoom = new wxCheckBox(pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                     _("Smooth Panning / Zooming"));
     boxCtrls->Add(pSmoothPanZoom, inputFlags);
-
+    
+#ifdef __OCPN__ANDROID__
+    pSmoothPanZoom->Hide();
+#endif
+    
     pEnableZoomToCursor =
         new wxCheckBox(pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor"));
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, inputFlags);
-
+    
+#ifdef __OCPN__ANDROID__
+    pEnableZoomToCursor->Hide();
+#endif
+    
+#ifndef __OCPN__ANDROID__    
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
-
+#endif
+    
     // Display Options
-    // generalSizer->Add( new wxStaticText( pDisplayPanel, wxID_ANY, _("Display
-    // Features") ), groupLabelFlags );
     wxBoxSizer* boxDisp = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDisp, groupInputFlags);
 
@@ -5787,7 +5792,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_oz_vector_scale = !pOZScaleVector->GetValue();
 
   g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
-
+  #ifdef __OCPN__ANDROID__
+  g_bsmoothpanzoom = false;
+  #endif
+  
   long update_val = 1;
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
   g_COGAvgSec = wxMin(static_cast<int>(update_val), MAX_COG_AVERAGE_SECONDS);
@@ -5853,7 +5861,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bHighliteTracks = pTrackHighlite->GetValue();
 
   g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
-
+#ifdef __OCPN__ANDROID__
+  g_bEnableZoomToCursor = false;
+#endif
+  
+  
   // AIS Parameters
   //   CPA Box
   g_bCPAMax = m_pCheck_CPA_Max->GetValue();
