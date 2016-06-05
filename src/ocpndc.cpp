@@ -574,12 +574,6 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         if( b_draw_thick) {
             DrawGLThickLines( n, points, xoffset, yoffset, m_pen, b_hiqual );
         } else {
-
-            if( b_hiqual ) {
-                glEnable( GL_LINE_SMOOTH );
-                ;//                SetGLStipple(m_pen.GetStyle());
-            }
-
             glBegin( GL_LINE_STRIP );
             for( int i = 0; i < n; i++ )
                 glVertex2i( points[i].x + xoffset, points[i].y + yoffset );
