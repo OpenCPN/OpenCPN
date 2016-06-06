@@ -235,6 +235,7 @@ extern int pprog_count;
 //const
 //#endif
 int g_mipmap_max_level = 4;
+int panx, pany;
 
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
@@ -991,10 +992,27 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
  
 #else
 
-    if(m_bgestureGuard){
-        cc1->r_rband.x = 0;             // turn off rubberband temporarily
-        return;
-    }
+     if(m_bgestureGuard){
+         cc1->r_rband.x = 0;             // turn off rubberband temporarily
+         
+         // Sometimes we get a Gesture Pan start on a simple tap operation.
+         // When this happens, we usually get no Gesture Finished event.
+         // So, we need to process the next LeftUp event normally, to handle things like Measure and Route Create.
+         
+         // Allow LeftUp() event through if the pan action is very small
+         //  Otherwise, drop the LeftUp() event, since it is not wanted for a Pan Gesture.
+         if(event.LeftUp()){
+             qDebug() << panx << pany;
+             if((abs(panx) > 2) || (abs(pany) > 2)){
+                return;
+             }
+             else{                      // Cancel the in=process Gesture state
+                m_gestureEeventTimer.Start(10, wxTIMER_ONE_SHOT);       // Short Circuit
+             }
+         }
+         else
+             return;
+     }
         
             
     if(cc1->MouseEventSetup( event, false )) {
@@ -5110,7 +5128,6 @@ void glChartCanvas::onZoomTimerEvent(wxTimerEvent &event)
 
 #ifdef __OCPN__ANDROID__
 
-int panx, pany;
 
 void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 {
@@ -5169,7 +5186,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             #endif        
             
             }
-            panx = pany = 0;
+            //panx = pany = 0;
             m_binPan = false;
             
             break;
