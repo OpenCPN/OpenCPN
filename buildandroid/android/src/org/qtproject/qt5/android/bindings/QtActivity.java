@@ -2928,8 +2928,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
         // USB Serial Port setup
-        uSerialHelper = new UsbSerialHelper();
-        Log.i("OpenCPN", "onCreate initUSBSerial");
+        PackageManager pm = getPackageManager();
+        if (pm.hasSystemFeature(PackageManager.FEATURE_USB_HOST)) {
+            uSerialHelper = new UsbSerialHelper();
+            Log.i("OpenCPN", "onCreate initUSBSerial");
+        }
 
         if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
             Log.i("OpenCPN", "onCreate invoking delegate onCreate");
