@@ -486,17 +486,44 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     }
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
-    //  Set all the data visibilities "true" on file load.
+
+    //  Try to verify that there will be at least one parameter in the GRIB file that is enabled for display
     //  This will ensure that at least "some" data is displayed on file change,
     //  and so avoid user confusion of no data shown.
     //  This is especially important if cursor tracking of data is disabled.
-    //  Display priority conflicts will be resolved elsewhere before display....
-    for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
-        if (InDataPlot(i)) {
-            m_bDataPlot[i]  = true;
+    
+    bool bconfigOK = false;
+    if(m_bDataPlot[GribOverlaySettings::WIND] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::WIND_GUST] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::PRESSURE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::WAVE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::WAVE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::CURRENT] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::PRECIPITATION] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::CLOUD] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND))
+        bconfigOK = true;
+    if(m_bDataPlot[GribOverlaySettings::CAPE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
+        bconfigOK = true;
+    
+    //  If no parameter seems to be enabled by config, enable them all just to be sure something shows.
+    if(!bconfigOK){
+        for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
+            if (InDataPlot(i)) {
+                m_bDataPlot[i]  = true;
+            }
         }
     }
-
 }
 
 bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax)
@@ -535,6 +562,8 @@ wxString GRIBUICtrlBar::GetNewestFileInDirectory()
     m_n_files = wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
     m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.bz2" ), wxDIR_FILES );
     m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.gz" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grib2" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb2" ), wxDIR_FILES );
     if( m_n_files ) {
         file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date
 
@@ -645,7 +674,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             m_gGRIBUICData->Update();
             m_gGRIBUICData->Show();
 
-            pPlugIn->MoveDialog( m_gGRIBUICData, pPlugIn->GetCursorDataXY(), wxPoint(20, 170) );
+			pPlugIn->MoveDialog(m_gGRIBUICData, pPlugIn->GetCursorDataXY() );
         }
 
     }
@@ -654,7 +683,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     SetMinSize( GetBestSize() );
     SetSize( GetBestSize() );
     Update();
-    pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY(), wxPoint(20, 60) );
+    pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
 
@@ -1341,7 +1370,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
     }
 
     wxFileDialog *dialog = new wxFileDialog(NULL, _("Select a GRIB file"), m_grib_dir,
-        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.grib2;*.grb2)|*.grb;*.bz2;*.grib2;*.grb2|All files (*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
+        _T(""), wxT ( "Grib files (*.grb;*.bz2;*.gz;*.grib2;*.grb2)|*.grb;*.bz2;*.gz;*.grib2;*.grb2|All files (*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
             , wxDefaultPosition, wxDefaultSize, _T("File Dialog") );
 
     if( dialog->ShowModal() == wxID_OK ) {
