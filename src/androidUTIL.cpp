@@ -668,6 +668,14 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env, jobject 
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
     {
+        //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
+        //  But we may get synthesized messages from the Java app, even without a definite connection, and we want to process these messages too.
+        //  One example of this type of message is the SailTImer anemometer, which data arrives by means of a private API interface.
+        //  So assume that the global MUX, if present, will handle these messages.
+        if( !s_pAndroidNMEAMessageConsumer ) 
+            s_pAndroidNMEAMessageConsumer = g_pMUX;
+                
+            
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
  
         char tstr[200];
