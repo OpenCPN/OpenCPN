@@ -240,7 +240,7 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 }
 #endif
 
-static void getBits(unsigned char *buf, int *loc, size_t first, size_t nbBits)
+static inline void getBits(unsigned char *buf, int *loc, size_t first, size_t nbBits)
 {
     zuint oct = first / 8;
     zuint bit = first % 8;
