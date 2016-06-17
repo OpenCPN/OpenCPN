@@ -2625,6 +2625,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     double windSpeed = 0;
     double windDirection = 0;
 
+    double windSpeedAvg = 0;
+    double windDirectionAvg = 0;
+
+    double averageCount = 10;
+
     //  Define string for hash code used to decrypt data
     //  This was obtained by executing "TheTask" just once, to get the hash results from SailTimer.com
     //  e.g. new TheTask().execute("https://www.sailtimermaps.com/getHash.php");
@@ -2697,11 +2702,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                             }
                     }
                 }
-                String s = createMWD( windDirection, windSpeed);
-//                Log.i("DEBUGGER_TAG", s);
-                if(null != nativeLib)
-                    nativeLib.processNMEA(s);
 
+                //  Low pass filter...
+                windSpeedAvg = (windSpeedAvg * (averageCount-1) / averageCount) + ( windSpeed / averageCount );
+                windDirectionAvg = (windDirectionAvg * (averageCount-1) / averageCount) + ( windDirection / averageCount );
+
+                final double wsa = windSpeedAvg;
+                final double wda = windDirectionAvg;
+
+                if(null != nativeLib){
+                    Thread thread = new Thread() {
+                         @Override
+                         public void run() {
+                             nativeLib.processSailTimer(wda, wsa);
+                         }
+                    };
+
+                    // Don't forget to start the thread.
+                    thread.start();
+
+                }
             }
     };
 
@@ -2754,7 +2774,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private String createMWD( double magDirection, double speedKnots){
         // Create an NMEA sentence
-        String s = "$OCMWD,,,";
+        String s = "$STMWD,,,";
 
         String sDir = "";
         sDir=sDir.format("%.1f,M,%.1f,N,,M", magDirection, speedKnots);

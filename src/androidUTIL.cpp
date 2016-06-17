@@ -72,6 +72,11 @@ wxT("United States<br><br>")
 wxT("Please write “source for OpenCPN Version {insert version here} in the memo line of your payment.<br><br>");
 
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
 
 
 
@@ -205,7 +210,7 @@ extern bool             g_bLookAhead;
 
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
-extern double           gLat, gLon, gCog, gSog, gHdt;
+extern double           gLat, gLon, gCog, gSog, gHdt, gVar;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -313,6 +318,7 @@ wxString        g_deviceInfo;
 
 int             s_androidMemTotal;
 int             s_androidMemUsed;
+
 
 extern int ShowNavWarning();
 extern bool     g_btrackContinuous;
@@ -619,7 +625,6 @@ bool androidUtilInit( void )
         g_androidUtilHandler->m_stressTimer.Start(1000, wxTIMER_CONTINUOUS);
     }
     
-    
     return true;
 }
 
@@ -651,7 +656,21 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
     return JNI_VERSION_1_6;
 }
 
-
+void sendNMEAMessageEvent(wxString &msg)
+{
+    wxCharBuffer abuf = msg.ToUTF8();
+    if( abuf.data() ){                            // OK conversion?
+        std::string s(abuf.data());              
+//    qDebug() << tstr;
+        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+        Nevent.SetNMEAString( s );
+        Nevent.SetStream( NULL );
+        if(s_pAndroidNMEAMessageConsumer)
+            s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
+    }
+}
+    
+    
 
 //      OCPNNativeLib
 //      This is a set of methods which can be called from the android activity context.
@@ -666,18 +685,165 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env, jobject 
 }
 
 extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(JNIEnv *env, jobject obj, double WindAngleMagnetic, double WindSpeedKnots)
+    {
+        //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
+        //  But we may want to synthesize messages from the Java app, even without a definite connection, and we want to process these messages too.
+        //  So assume that the global MUX, if present, will handle these synthesized messages.
+        if( !s_pAndroidNMEAMessageConsumer ) 
+            s_pAndroidNMEAMessageConsumer = g_pMUX;
+        
+        
+        double wind_angle_mag = 0;
+        double apparent_wind_angle = 0;
+        
+        double app_windSpeed = 0;
+        double true_windSpeed = 0;
+        double true_windDirection = 0;
+        
+        {
+            {
+                
+                // Need to correct the Magnetic wind angle to True
+                // TODO  Punt for mow
+                double variation = gVar;
+                //qDebug() << "gVar" << gVar;
+                
+                //  What to use for TRUE ownship head?
+                //TODO Look for HDT message contents, if available
+                double osHead = gCog;
+                bool buseCOG = true;
+                //qDebug() << "gHdt" << gHdt;
+                
+                if( !wxIsNaN(gHdt) ){
+                    osHead = gHdt;
+                    buseCOG = false;
+                }
+                
+                // What SOG to use?
+                double osSog = gSog;
+                
+                wind_angle_mag = WindAngleMagnetic;
+                app_windSpeed = WindSpeedKnots;
+                
+                // Compute the apparent wind angle
+                // If using gCog for ownship head, require speed to be > 0.2 knots
+                // If not useing cGog for head, assume we must be using a true heading sensor, so always valid
+                if( !wxIsNaN(osHead) && ( (!buseCOG)  ||  (buseCOG && osSog > 0.2) ) ){
+                    apparent_wind_angle = wind_angle_mag - (osHead - variation);
+                }
+                else{
+                    apparent_wind_angle = 0;
+                }
+                if(apparent_wind_angle < 0)
+                    apparent_wind_angle += 360.;
+                if(apparent_wind_angle > 360.)
+                    apparent_wind_angle -= 360.;
+                
+                
+                //  Using the "Law of cosines", compute the true wind speed
+                if( !wxIsNaN(osSog) ){
+                        true_windSpeed = sqrt( (osSog * osSog) + (app_windSpeed * app_windSpeed) - (2 * osSog * app_windSpeed * cos(apparent_wind_angle * PI / 180.)) );
+                }
+                else{
+                        true_windSpeed = app_windSpeed;
+                }
+                    
+                    // Rearranging the Law of cosines, we calculate True Wind Direction
+                if( ( !wxIsNaN(osSog) ) && ( !wxIsNaN(osHead) )  && ( osSog > 0.2)  &&  (true_windSpeed > 1) ){
+                        double acosTW = ((osSog * osSog) + (true_windSpeed * true_windSpeed) - (app_windSpeed * app_windSpeed)) / (2 * osSog * true_windSpeed);
+                        
+                        double twd0 = acos( acosTW) *  ( 180. / PI );
+                        
+                        // OK on the beat...
+                        if(apparent_wind_angle > 180.){
+                            true_windDirection = osHead + 180 + twd0;
+                        }
+                        else{
+                            true_windDirection = osHead + 180 - twd0;
+                        }                    
+                }
+                else{
+                        true_windDirection = wind_angle_mag + variation;
+                }
+                    
+                if(true_windDirection < 0)
+                        true_windDirection += 360.;
+                if(true_windDirection > 360.)
+                        true_windDirection -= 360.;
+                    
+                //qDebug() << wind_angle_mag << app_windSpeed << apparent_wind_angle << true_windSpeed << true_windDirection;
+                    
+                if( s_pAndroidNMEAMessageConsumer ) {
+                        
+                        NMEA0183        parser;
+                    
+                        // Now make some NMEA messages
+                        // We dont want to pass the incoming MWD message thru directly, since it is not really correct.  The angle is correct, but the speed is relative.
+                        //  Make a new MWD sentence with calculated values
+                        parser.TalkerID = _T("OS");
+                        
+                        // MWD
+                        SENTENCE sntd;
+                        parser.Mwd.WindAngleTrue = true_windDirection; 
+                        parser.Mwd.WindAngleMagnetic = wind_angle_mag;
+                        parser.Mwd.WindSpeedKnots = true_windSpeed;
+                        parser.Mwd.WindSpeedms = true_windSpeed * 0.5144;           // convert kts to m/s
+                        parser.Mwd.Write( sntd );
+                        sendNMEAMessageEvent(sntd.Sentence);
+                        
+                        // Now make two MWV sentences
+                        // Apparent
+                        SENTENCE snt;
+                        parser.Mwv.WindAngle = apparent_wind_angle;
+                        parser.Mwv.WindSpeed = app_windSpeed;
+                        parser.Mwv.WindSpeedUnits = _T("N");
+                        parser.Mwv.Reference = _T("R");
+                        parser.Mwv.IsDataValid = NTrue;
+                        parser.Mwv.Write( snt );
+                        sendNMEAMessageEvent(snt.Sentence);
+                        
+                        // True
+                        SENTENCE sntt;
+                        double true_relHead = 0;
+                        if( !wxIsNaN(osHead) && ( (!buseCOG)  ||  (buseCOG && osSog > 0.2) ) )
+                            true_relHead = true_windDirection - osHead;
+                        
+                        if(true_relHead < 0)
+                            true_relHead += 360.;
+                        if(true_relHead > 360.)
+                            true_relHead -= 360.;
+                        
+                        parser.Mwv.WindAngle = true_relHead;
+                        parser.Mwv.WindSpeed = true_windSpeed;
+                        parser.Mwv.WindSpeedUnits = _T("N");
+                        parser.Mwv.Reference = _T("T");
+                        parser.Mwv.IsDataValid = NTrue;
+                        parser.Mwv.Write( sntt );
+                        sendNMEAMessageEvent(sntt.Sentence);
+                        
+                }
+            }
+        }
+        
+        return 52;
+    }
+}
+
+extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(JNIEnv *env, jobject obj, jstring nmea_string)
     {
         //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
         //  But we may get synthesized messages from the Java app, even without a definite connection, and we want to process these messages too.
-        //  One example of this type of message is the SailTImer anemometer, which data arrives by means of a private API interface.
         //  So assume that the global MUX, if present, will handle these messages.
         if( !s_pAndroidNMEAMessageConsumer ) 
             s_pAndroidNMEAMessageConsumer = g_pMUX;
                 
             
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
- 
+
+        //qDebug() << string;
+        
         char tstr[200];
         strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
