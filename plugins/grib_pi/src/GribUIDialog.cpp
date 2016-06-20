@@ -422,6 +422,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) {
             if( rsa->GetCount() == 0 ) {                        //valid but empty file
+                delete m_bGRIBActiveFile;
                 m_bGRIBActiveFile = NULL;
                 title.Prepend( _("Error! ") ).Append( _(" contains no valid data!") );
             } else {
@@ -487,7 +488,12 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     }
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
-
+    // 
+    if( m_bGRIBActiveFile == 0)
+    {
+        // there's no data we can use in this file
+        return;
+    }
     //  Try to verify that there will be at least one parameter in the GRIB file that is enabled for display
     //  This will ensure that at least "some" data is displayed on file change,
     //  and so avoid user confusion of no data shown.
