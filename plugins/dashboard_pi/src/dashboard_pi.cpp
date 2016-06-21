@@ -1072,6 +1072,13 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
 						SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
 					}
+					// NKE style of XDR air pressure
+					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Barometer")){
+						if( xdrdata > .8 && xdrdata < 1.1 ) {
+                    					xdrdata = xdrdata * 1000; //Convert to hpa befor sending to instruments.
+						}
+						SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, xdrdata,  _T("hPa") );
+					}
 				}
 
 			}
