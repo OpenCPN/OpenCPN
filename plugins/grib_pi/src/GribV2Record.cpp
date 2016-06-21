@@ -166,7 +166,7 @@ public:
 
 
 #ifdef JASPER
-int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
+static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 /*$$$  SUBPROGRAM DOCUMENTATION BLOCK
 *                .      .    .                                       .
 * SUBPROGRAM:    dec_jpeg2000      Decodes JPEG2000 code stream
