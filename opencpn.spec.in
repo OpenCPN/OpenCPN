@@ -56,8 +56,10 @@ desktop-file-install \
 --dir=%{buildroot}%{_datadir}/applications              \
 %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %find_lang %{name}
-%find_lang %{name}-grib_pi
+%find_lang %{name}-chartdldr_pi
 %find_lang %{name}-dashboard_pi
+%find_lang %{name}-grib_pi
+%find_lang %{name}-wmm_pi
 
 %clean
 
@@ -75,13 +77,17 @@ desktop-file-install \
 
 %files
 %files -f %{name}.lang
-%files -f %{name}-grib_pi.lang
+%files -f %{name}-chartdldr_pi.lang
 %files -f %{name}-dashboard_pi.lang
+%files -f %{name}-grib_pi.lang
+%files -f %{name}-wmm_pi.lang
 %defattr(-,root,root,-)
 %{_bindir}/opencpn
 %dir %{_libdir}/%{name}
+%{_libdir}/%{name}/libchartdldr_pi.so
 %{_libdir}/%{name}/libdashboard_pi.so
 %{_libdir}/%{name}/libgrib_pi.so
+%{_libdir}/%{name}/libwmm_pi.so
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
