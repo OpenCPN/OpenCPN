@@ -142,7 +142,7 @@ desktop-file-install \
 %doc %{_datadir}/%{name}/sounds/README.bells
 %doc %{_datadir}/%{name}/doc
 %dir %{_datadir}/doc/%{name}
-%{_datadir}/doc/%{name}/changelog.Debian.gz
+%doc %{_datadir}/doc/%{name}/changelog
 %doc %{_datadir}/doc/%{name}/copyright
 
 
