@@ -10,7 +10,9 @@ iirfilter::iirfilter(double fc, int tp) {
 }
 
 double iirfilter::filter(double data) {
-    if (!wxIsNaN(data)) {
+    if (!wxIsNaN(data) && !wxIsNaN(b1)) {
+        if (wxIsNaN(accum))
+            accum = 0.0;
         switch (type) {
             case IIRFILTER_TYPE_LINEAR:
                 accum = accum * b1 + a0 * data;
@@ -31,8 +33,9 @@ double iirfilter::filter(double data) {
         }
 
     }
-    else
-        return data;
+    else {
+        accum = data;
+    }
     return get();
 
 }
@@ -45,10 +48,13 @@ void iirfilter::reset(double a) {
 }
 
 void iirfilter::setFC(double fc) {
-    if (fc < 0.000001)
-        fc = 0.000001;
-    b1 = exp(-2.0 * 3.1415926535897932384626433832795 * fc);
-    a0 = 1 - b1;
+    if (wxIsNaN(fc) || fc <= 0.0)
+        a0 = b1 = NAN;  // NAN means no filtering will be done
+    else {
+        reset();
+        b1 = exp(-2.0 * 3.1415926535897932384626433832795 * fc);
+        a0 = 1 - b1;
+    }
 }
 
 void iirfilter::setType(int tp)
@@ -59,6 +65,8 @@ void iirfilter::setType(int tp)
 
 double iirfilter::getFc(void)
 {
+    if (wxIsNaN(b1))
+        return 0.0;
     double fc = log(b1) / (-2.0 * 3.1415926535897932384626433832795);
     return fc;
 }
@@ -69,17 +77,19 @@ int iirfilter::getType(void)
 }
 
 double iirfilter::get(void) {
+    if (wxIsNaN(accum))
+        return accum;
     double res = accum;
     switch (type) {
         case IIRFILTER_TYPE_DEG:
             while (res < 0) res += 360.0;
             while (res > 360) res -= 360.0;
-            return res;
+            break;
                 
         case IIRFILTER_TYPE_RAD:
             while (res < 0) res += 2.0*M_PI;
             while (res > 2.0*M_PI) res -= 2.0*M_PI;
-            return res;
+            break;
     }
     return res;
 }
