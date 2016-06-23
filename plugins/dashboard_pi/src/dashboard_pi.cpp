@@ -1391,9 +1391,9 @@ bool dashboard_pi::LoadConfig( void )
         if( !config.IsEmpty() ) g_pFontSmall->SetNativeFontInfo( config );
 
         pConf->Read( _T("SpeedometerMax"), &g_iDashSpeedMax, 12 );
-        pConf->Read( _T("COGDamp"), &g_iDashCOGDamp, 1);
+        pConf->Read( _T("COGDamp"), &g_iDashCOGDamp, 0);
         pConf->Read( _T("SpeedUnit"), &g_iDashSpeedUnit, 0 );
-        pConf->Read( _T("SOGDamp"), &g_iDashSOGDamp, 1);
+        pConf->Read( _T("SOGDamp"), &g_iDashSOGDamp, 0);
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
         g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
@@ -1567,8 +1567,8 @@ void dashboard_pi::ApplyConfig( void )
         }
     }
     m_pauimgr->Update();
-    mSOGFilter.setFC(1.0 / (2.0*g_iDashSOGDamp));
-    mCOGFilter.setFC(1.0 / (2.0*g_iDashCOGDamp));
+    mSOGFilter.setFC(g_iDashSOGDamp ? 1.0 / (2.0*g_iDashSOGDamp) : 0.0);
+    mCOGFilter.setFC(g_iDashCOGDamp ? 1.0 / (2.0*g_iDashCOGDamp) : 0.0);
     mCOGFilter.setType(IIRFILTER_TYPE_DEG);
 }
 
@@ -1793,13 +1793,13 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxStaticText* itemStaticText10 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Speed Over Ground Damping Factor:"),
         wxDefaultPosition, wxDefaultSize, 0);
     itemFlexGridSizer04->Add(itemStaticText10, 0, wxEXPAND | wxALL, border_size);
-    m_pSpinSOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, g_iDashSOGDamp);
+    m_pSpinSOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, g_iDashSOGDamp);
     itemFlexGridSizer04->Add(m_pSpinSOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
 
     wxStaticText* itemStaticText11 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("COG Damping Factor:"),
         wxDefaultPosition, wxDefaultSize, 0);
     itemFlexGridSizer04->Add(itemStaticText11, 0, wxEXPAND | wxALL, border_size);
-    m_pSpinCOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, g_iDashCOGDamp);
+    m_pSpinCOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, g_iDashCOGDamp);
     itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
     wxStaticText* itemStaticText09 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Boat speed units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
