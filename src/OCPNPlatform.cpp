@@ -1513,16 +1513,16 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
         
     }
     else{
-        premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;
+        premult = wxMax(40 * getAndroidDisplayDensity(), 50) / tool_size;       // make sure not too small
     }            
     
-    //Adjust the scale factor using the global GUI scale parameter
-    double postmult =  exp( GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
-    
-//        qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
+    //Adjust the scale factor using the global GUI scale parameter, ranging from 0.5 -> 2.0
+    double postmult =  exp( GUIScaleFactor * (log(2.0) / 5.0) );       
+        
+//    qDebug() << "parmsF" << GUIScaleFactor << premult << postmult;
     
     rv = premult * postmult;
-    rv = wxMin(rv, 3.0);      //  Clamp at 3.0
+    rv = wxMin(rv, getAndroidDisplayDensity() * 3);      //  Clamp at density * 3
     
 #else
     double premult = 1.0;
