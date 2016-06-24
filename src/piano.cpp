@@ -42,6 +42,7 @@
 #include "ocpndc.h"
 #include "cutil.h"
 #include "wx28compat.h"
+#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -61,6 +62,7 @@ extern int  g_GUIScaleFactor;
 
 extern ChartCanvas               *cc1;
 extern Piano                     *g_Piano;
+extern OCPNPlatform              *g_Platform;
 
 //------------------------------------------------------------------------------
 //          Piano Window Implementation
@@ -1026,9 +1028,11 @@ int Piano::GetHeight()
     if(g_btouch){
         double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
         height *= size_mult;
-        height = wxMin(height, 50);     // absolute boundaries
+        height = wxMin(height, 100);     // absolute boundaries
         height = wxMax(height, 10);
     }
+    height *= g_Platform->GetDisplayDensityFactor();
+    
     return height;
 }
 
