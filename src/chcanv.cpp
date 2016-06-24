@@ -10549,7 +10549,11 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                         dc.SetFont( *plabelFont );
                         dc.GetTextExtent( _T("99.9ft "), &wx, &hx );
                         
+                        //  scale the icons a little bit "softer" than the general scale factor
                         double scale =  exp( g_ChartScaleFactor * 0.0953101798043 ); //ln(1.1)
+#ifdef __OCPN__ANDROID__
+                        scale *= getAndroidDisplayDensity();
+#endif                        
                         scale = wxMax(1.0, scale);      // no minimization allowed
                         
                         int w = r.x - 6;

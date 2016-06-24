@@ -3989,11 +3989,18 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
                     float xp = r.x;
                     float yp = r.y;
         
+                    double scale = 1.0;
+                    #ifdef __OCPN__ANDROID__
+                    scale *= getAndroidDisplayDensity();
+                    #endif                        
+                    double width2 = scale * m_tideTexWidth/2;
+                    double height2 = scale * m_tideTexHeight/2;
+                    
                     glBegin( GL_QUADS );
-                    glTexCoord2f( 0,  0 );  glVertex2f( xp - m_tideTexWidth/2,  yp - m_tideTexHeight/2 );
-                    glTexCoord2f( 0,  1 );  glVertex2f( xp - m_tideTexWidth/2,  yp + m_tideTexHeight/2);
-                    glTexCoord2f( 1,  1 );  glVertex2f( xp + m_tideTexWidth/2,  yp + m_tideTexHeight/2 );
-                    glTexCoord2f( 1,  0 );  glVertex2f( xp + m_tideTexWidth/2,  yp - m_tideTexHeight/2 );
+                    glTexCoord2f( 0,  0 );  glVertex2f( xp - width2,  yp - height2 );
+                    glTexCoord2f( 0,  1 );  glVertex2f( xp - width2,  yp + height2 );
+                    glTexCoord2f( 1,  1 );  glVertex2f( xp + width2,  yp + height2 );
+                    glTexCoord2f( 1,  0 );  glVertex2f( xp + width2,  yp - height2 );
                     glEnd();
                 }
             } // type 'T"
