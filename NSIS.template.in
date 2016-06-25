@@ -3767,26 +3767,26 @@ Var Patch_Date
 		${If} $0 != $1
 			${StrFilter} "$Patch_Version" "-2" "" "" $PATCH_ND
 			${If} $1 == 3
-				StrCpy $Version_Unified "b${YEAR}0$Patch_Version"
+				StrCpy $Version_Unified "s${YEAR}0$Patch_Version"
 			${ElseIf} $1 == 2
 				StrCpy $Version_Unified "s${YEAR}00$Patch_Version"
 			${ElseIf} $1 == 1
 				StrCpy $Version_Unified "s${YEAR}000$Patch_Version"
 			${Else}
-				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
+				StrCpy $Version_Unified "s${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date"
 		;# Patch version contains only digits
 		${Else}
 			${If} $0 == 3
-				StrCpy $Version_Unified "b${YEAR}0$Patch_Version"
+				StrCpy $Version_Unified "s${YEAR}0$Patch_Version"
 			${ElseIf} $0 == 2
 				StrCpy $Version_Unified "s${YEAR}00$Patch_Version"
 			${ElseIf} $0 == 1
 				StrCpy $Version_Unified "s${YEAR}000$Patch_Version"
 			${Else}
-				StrCpy $Version_Unified "b${YEAR}$Patch_Version"
+				StrCpy $Version_Unified "s${YEAR}$Patch_Version"
 			${EndIf}
 			${VersionConvert} $Version_Unified "" $Patch_Date
 			StrCpy $VERSION_DATE "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.$Patch_Date.00"
