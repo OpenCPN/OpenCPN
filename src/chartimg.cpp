@@ -1523,10 +1523,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
           double dlat = 0;
           double dlon = 0;
           
-          if(m_datum_index == DATUM_INDEX_WGS84){
-          }
-          
-          else if(m_datum_index == DATUM_INDEX_UNKNOWN)
+          if(m_datum_index == DATUM_INDEX_WGS84 || m_datum_index == DATUM_INDEX_UNKNOWN)
           {
               dlon = m_dtm_lon / 3600.;
               dlat = m_dtm_lat / 3600.;
@@ -3023,13 +3020,7 @@ void ChartBaseBSB::SetVPRasterParms(const ViewPort &vpt)
 {
       //    Calculate the potential datum offset parameters for this viewport, if not WGS84
 
-      if(m_datum_index == DATUM_INDEX_WGS84)
-      {
-            m_lon_datum_adjust = 0.;
-            m_lat_datum_adjust = 0.;
-      }
-
-      else if(m_datum_index == DATUM_INDEX_UNKNOWN)
+      if(m_datum_index == DATUM_INDEX_WGS84 || m_datum_index == DATUM_INDEX_UNKNOWN)
       {
             m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
             m_lat_datum_adjust = (-m_dtm_lat) / 3600.;
