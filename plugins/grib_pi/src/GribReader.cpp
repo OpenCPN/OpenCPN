@@ -346,10 +346,8 @@ void  GribReader::copyFirstCumulativeRecord (int dataType,int levelType,int leve
 		if (rec != NULL)
 		{
 			GribRecord *r2 = new GribRecord(*rec);
-			if (r2 != NULL) {
-				r2->setRecordCurrentDate (dateref);    // 1er enregistrement factice
-				storeRecordInMap(r2);
-			}
+                        r2->setRecordCurrentDate (dateref);    // 1er enregistrement factice
+			storeRecordInMap(r2);
 		}
 
 	}
@@ -392,10 +390,8 @@ void  GribReader::copyMissingWaveRecords (int dataType, int levelType, int level
 				if (rec2 && rec2->isOk() ) {
 					// create a copied record from date2
 					GribRecord *r2 = new GribRecord (*rec2);
-					if (r2 != NULL) {
-						r2->setRecordCurrentDate (date);
-						storeRecordInMap (r2);
-					}
+                                        r2->setRecordCurrentDate (date);
+					storeRecordInMap (r2);
 				}
 			}
 		}
@@ -597,19 +593,16 @@ void GribReader::readGribFileContent()
 				{
 					// Crée un GribRecord avec les dewpoints calculés
 					GribRecord *recDewpoint = new GribRecord(*recModel);
-					if (recDewpoint != NULL)
-					{
-						recDewpoint->setDataType(GRB_DEWPOINT);
-						for (zuint i=0; i<(zuint)recModel->getNi(); i++)
-							for (zuint j=0; j<(zuint)recModel->getNj(); j++)
-							{
-								double x = recModel->getX(i);
-								double y = recModel->getY(j);
-								double dp = computeDewPoint(x, y, date);
-								recDewpoint->setValue(i, j, dp);
-							}
-						storeRecordInMap(recDewpoint);
-					}
+                                        recDewpoint->setDataType(GRB_DEWPOINT);
+					for (zuint i=0; i<(zuint)recModel->getNi(); i++)
+					    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
+					    {
+					        double x = recModel->getX(i);
+						double y = recModel->getY(j);
+						double dp = computeDewPoint(x, y, date);
+						recDewpoint->setValue(i, j, dp);
+                                            }
+                                        storeRecordInMap(recDewpoint);
 				}
 			}
 		}
