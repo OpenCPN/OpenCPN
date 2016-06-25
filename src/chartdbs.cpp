@@ -1576,15 +1576,6 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       wxDir dir(dir_path);
       int n_files = dir.GetAllFiles(dir_path, &FileList);
 
-      //    Arbitrarily, we decide if the dir has more than a specified number of files
-      //    then don't scan it.  Takes too long....
-
-      if(n_files > 10000)
-      {
-            new_magic = _T("");
-            return true;
-      }
-
       //Traverse the list of files, getting their interesting stuff to add to accumulator
       for(int ifile=0 ; ifile < n_files ; ifile++)
       {
