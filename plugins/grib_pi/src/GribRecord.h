@@ -180,7 +180,7 @@ class GribRecord
         double  getDj() const    { return Dj; }
 
         // Value at one point of the grid
-        double getValue(int i, int j) const  { return ok ? data[j*Ni+i] : GRIB_NOTDEF;}
+        double getValue(int i, int j) const  { return data[j*Ni+i];}
 
         void setValue(zuint i, zuint j, double v)
                         { if (i<Ni && j<Nj)
@@ -195,8 +195,8 @@ class GribRecord
                                           double px, double py, bool numericalInterpolation=true);
         
         // coordiantes of grid point
-        inline double  getX(int i) const   { return ok ? Lo1+i*Di : GRIB_NOTDEF;}
-        inline double  getY(int j) const   { return ok ? La1+j*Dj : GRIB_NOTDEF;}
+        inline double  getX(int i) const   { return Lo1+i*Di;}
+        inline double  getY(int j) const   { return La1+j*Dj;}
 
         double  getLatMin() const   { return latMin;}
         double  getLonMin() const   { return lonMin;}
@@ -296,9 +296,6 @@ class GribRecord
 inline bool   GribRecord::hasValue(int i, int j) const
 {
     // is data present in BMS ?
-    if (!ok) {
-        return false;
-    }
     if (!hasBMS) {
         return true;
     }
