@@ -416,7 +416,6 @@ class MyFrame: public wxFrame
     void ToggleToolbar( bool b_smooth = false );
     void RaiseToolbarRecoveryWindow();
     bool IsToolbarShown();
-    void ShowChartBarIfEnabled(void);
     void SetToolbarScale(void);
     void SetGPSCompassScale(void);
     
