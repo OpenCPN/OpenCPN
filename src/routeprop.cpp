@@ -1920,8 +1920,8 @@ bool RouteProp::UpdateProperties()
         bool enroute = true; // for active route, skip all points up to the active point
 
         if( m_pRoute->m_bRtIsActive ) {
-            if( m_pEnroutePoint && m_bStartNow ) enroute = ( m_pRoute->GetPoint( 1 )->m_GUID
-                    == m_pEnroutePoint->m_GUID );
+            if( m_pEnroutePoint && m_bStartNow )
+                enroute = ( m_pRoute->GetPoint( 1 )->m_GUID == m_pEnroutePoint->m_GUID );
         }
 
         wxString nullify = _T("----");
@@ -1973,12 +1973,12 @@ bool RouteProp::UpdateProperties()
                     leg_speed = m_planspeed;
                 if( m_bStartNow ) {
                     DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
-                    if( i == 0 ) joining_time = wxTimeSpan::Seconds(
-                            (long) wxRound( ( leg_dist * 3600. ) / leg_speed ) );
+                    joining_time = wxTimeSpan::Seconds( (long) wxRound( ( leg_dist * 3600. ) / leg_speed ) );
                 }
                 enroute = true;
             } else {
-                if( prp->m_seg_vmg > 0. ) leg_speed = prp->m_seg_vmg;
+                if( prp->m_seg_vmg > 0. )
+                    leg_speed = prp->m_seg_vmg;
                 else
                     leg_speed = m_planspeed;
             }
@@ -2368,6 +2368,9 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
 
     m_bStartNow = false;
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
     cc1->Refresh( false );
 
@@ -2406,7 +2409,11 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
             pRouteManagerDialog->UpdateTrkListCtrl();
     }
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Hide();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     event.Skip();
@@ -3476,6 +3483,11 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
         SaveChanges(); // write changes to globals and update config
         cc1->RefreshRect( m_pRoutePoint->CurrentRect_in_DC.Inflate( 1000, 100 ), false );
     }
+
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
+    
     Show( false );
     if( m_pMyLinkList ) {
         delete m_pMyLinkList;
@@ -3525,6 +3537,10 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
         }
     }
 
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
+    
     Show( false );
     delete m_pMyLinkList;
     m_pMyLinkList = NULL;

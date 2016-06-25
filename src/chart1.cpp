@@ -73,7 +73,7 @@
 #include "navutil.h"
 #include "styles.h"
 #include "routeman.h"
-#include "chartbarwin.h"
+#include "piano.h"
 #include "concanv.h"
 #include "options.h"
 #include "about.h"
@@ -171,7 +171,6 @@ MyFrame                   *gFrame;
 
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
-ChartBarWin               *g_ChartBarWin;
 Piano                     *g_Piano;
 wxWindowList              AppActivateList;
 
@@ -310,7 +309,9 @@ wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 
-ColorScheme               global_color_scheme;
+// Set default color scheme
+ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+
 int                       Usercolortable_index;
 wxArrayPtrVoid            *UserColorTableArray;
 wxArrayPtrVoid            *UserColourHashTableArray;
@@ -683,6 +684,7 @@ static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
 int               g_sticky_chart;
+int               g_sticky_projection;
 
 extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
@@ -1086,10 +1088,10 @@ void LoadS57()
         }
 
         pConfig->LoadS57Config();
+        ps52plib->SetPLIBColorScheme( global_color_scheme );
         
         if(cc1)
             ps52plib->SetPPMM( cc1->GetPixPerMM() );
-            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
@@ -1582,8 +1584,6 @@ bool MyApp::OnInit()
 #endif
 #endif
 
-// Set default color scheme
-    global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
     // On Windows platforms, establish a default cache managment policy
     // as allowing OpenCPN a percentage of available physical memory,
@@ -1855,14 +1855,6 @@ bool MyApp::OnInit()
     if( g_bresponsive  && ( cc1->GetPixPerMM() > 4.0))
         gFrame->Maximize( true );
 
-    // enable this to use a window for the chart bar instead of rendering it
-    // to the chart canvas.  If it can be determined that rendering works well
-    // in all cases for all platforms we can remove the ChartBarWin class completely
-#if 0
-    g_ChartBarWin = new ChartBarWin( cc1 );
-    g_ChartBarWin->Show();
-#endif
-
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
 
@@ -2116,9 +2108,6 @@ extern ocpnGLOptions g_GLOptions;
 
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
-
-    if(g_ChartBarWin)
-        g_ChartBarWin->Show( g_bShowChartBar );
 
 #ifdef __OCPN__ANDROID__
     //  We need a resize to pick up height adjustment after building android ActionBar
@@ -2458,6 +2447,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    g_sticky_projection = -1;
     m_BellsToPlay = 0;
 
     m_resizeTimer.SetOwner(this, RESIZE_TIMER);
@@ -2505,12 +2495,7 @@ void MyFrame::OnActivate( wxActivateEvent& event )
 
 #ifdef __WXOSX__
     if(event.GetActive())
-    {
         SurfaceToolbar();
-
-        if(g_ChartBarWin)
-            g_ChartBarWin->Show(g_bShowChartBar);
-    }
 #endif
 
     event.Skip();
@@ -3351,7 +3336,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #ifndef __OCPN__ANDROID__
     SetStatusBar( NULL );
 #endif
-    g_ChartBarWin = NULL;
 
     if(RouteManagerDialog::getInstanceFlag()){
         if( pRouteManagerDialog ) {
@@ -3471,8 +3455,6 @@ void MyFrame::OnMove( wxMoveEvent& event )
 {
     if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RePosition();
 
-    if( g_ChartBarWin && g_ChartBarWin->IsVisible()) g_ChartBarWin->RePosition();
-
 //    UpdateGPSCompassStatusBox( );
 
     if( console && console->IsShown() ) PositionConsole();
@@ -3487,11 +3469,6 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
 void MyFrame::ProcessCanvasResize( void )
 {
-    if( g_ChartBarWin ) {
-        g_ChartBarWin->ReSize();
-        g_ChartBarWin->RePosition();
-    }
-
     if( g_FloatingToolbarDialog ) {
         g_FloatingToolbarDialog->RePosition();
         g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
@@ -3706,13 +3683,8 @@ void MyFrame::ODoSetSize( void )
 
     if( console ) PositionConsole();
 
-    if( cc1 ) {
+    if( cc1 )
         g_Piano->FormatKeys();
-        if( g_ChartBarWin ) {
-            g_ChartBarWin->ReSize();
-            g_ChartBarWin->RePosition();
-        }
-    }
 
 //  Update the stored window size
     GetSize( &x, &y );
@@ -4140,10 +4112,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             pRouteManagerDialog->UpdateWptListCtrl();
             pRouteManagerDialog->UpdateLayListCtrl();
 
-            if(g_bresponsive){
-                if(g_ChartBarWin && g_ChartBarWin->IsShown() )
-                    g_ChartBarWin->Hide();
-            }
             pRouteManagerDialog->Show();
 
             //    Required if RMDialog is not STAY_ON_TOP
@@ -4368,33 +4336,11 @@ void MyFrame::DoSettings()
 
 }
 
-void MyFrame::ShowChartBarIfEnabled()
-{
-    if(g_ChartBarWin){
-        g_ChartBarWin->Show(g_bShowChartBar);
-        if(g_bShowChartBar){
-            g_ChartBarWin->Move(0,0);
-            g_ChartBarWin->RePosition();
-         }
-    }
-
-}
-
-
 void MyFrame::ToggleChartBar()
 {
     g_bShowChartBar = !g_bShowChartBar;
 
-    if( g_ChartBarWin ) {
-        g_ChartBarWin->Show(g_bShowChartBar);
-
-        if(g_bShowChartBar) {
-            g_ChartBarWin->Move(0,0);
-            g_ChartBarWin->RePosition();
-            gFrame->Raise();
-        }
-        SendSizeEvent();
-    } else if(g_bShowChartBar)
+    if(g_bShowChartBar)
         cc1->m_brepaint_piano = true;
 
     cc1->ReloadVP(); // needed to set VP.pix_height
@@ -5237,8 +5183,11 @@ void MyFrame::ToggleToolbar( bool b_smooth )
 
 void MyFrame::JumpToPosition( double lat, double lon, double scale )
 {
+    if (lon > 180.0)
+        lon -= 360.0;
     vLat = lat;
     vLon = lon;
+    cc1->StopMovement();
     cc1->m_bFollow = false;
 
     //  is the current chart available at the target location?
@@ -5312,8 +5261,6 @@ int MyFrame::DoOptionsDialog()
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if(g_ChartBarWin) g_ChartBarWin->Hide();
-
     bool b_restoreAIS = false;
     if( g_pAISTargetList  && g_pAISTargetList->IsShown() ){
         b_restoreAIS = true;
@@ -5366,8 +5313,6 @@ int MyFrame::DoOptionsDialog()
     }
 
     delete pWorkDirArray;
-
-    ShowChartBarIfEnabled();
 
     gFrame->Raise();
     DoChartUpdate();
@@ -5692,9 +5637,6 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
         piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
         g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
 
-        if( g_ChartBarWin )
-            g_ChartBarWin->Refresh( true );
-
     } else {
         //    Select reference chart from the stack, as though clicked by user
         //    Make it the smallest scale chart on the stack
@@ -5860,6 +5802,14 @@ void MyFrame::SetupQuiltMode( void )
 
         //  Re-qualify the quilt reference chart selection
         cc1->AdjustQuiltRefChart(  );
+       
+        //  Restore projection type saved on last quilt mode toggle
+        if(g_sticky_projection != -1)
+            cc1->GetVP().SetProjectionType(g_sticky_projection);
+        else
+            cc1->GetVP().SetProjectionType(PROJECTION_MERCATOR);
+        
+        
 
     } else                                                  // going to SC Mode
     {
@@ -5875,6 +5825,7 @@ void MyFrame::SetupQuiltMode( void )
         g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
         g_Piano->SetRoundedRectangles( false );
+        g_sticky_projection = cc1->GetVP().m_projection_type;
 
     }
 
@@ -7359,9 +7310,6 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
     ArrayOfInts piano_active_chart_index_array;
     piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
     g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
-
-    if( g_ChartBarWin )
-        g_ChartBarWin->Refresh( true );
 }
 
 void MyFrame::SelectdbChart( int dbindex )
@@ -7411,8 +7359,6 @@ void MyFrame::SelectdbChart( int dbindex )
     ArrayOfInts piano_active_chart_index_array;
     piano_active_chart_index_array.Add( pCurrentStack->GetCurrentEntrydbIndex() );
     g_Piano->SetActiveKeyArray( piano_active_chart_index_array );
-    if( g_ChartBarWin )
-        g_ChartBarWin->Refresh( true );
 }
 
 void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
@@ -7625,8 +7571,6 @@ void MyFrame::UpdateControlBar( void )
         cc1->HideChartInfoWindow();
         g_Piano->ResetRollover();
         cc1->SetQuiltChartHiLiteIndex( -1 );
-        if( g_ChartBarWin )
-            g_ChartBarWin->Refresh( false );
         cc1->m_brepaint_piano = true;
     }
 
@@ -8203,17 +8147,7 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
 
-    wxPoint pos;
-    if(g_ChartBarWin) {
-        int sx, sy;
-        g_ChartBarWin->GetPosition( &sx, &sy );
-        pos = g_ChartBarWin->GetParent()->ScreenToClient( wxPoint( sx, sy ) );
-        wxPoint key_location = g_Piano->GetKeyOrigin( selected_index );
-        pos.x += key_location.x;
-    } else
-        pos = wxPoint(x, y);
-
-    pos.y -= 30;
+    wxPoint pos = wxPoint(x, y - 30);
 
 //        Invoke the drop-down menu
     if( piano_ctx_menu->GetMenuItems().GetCount() ) PopupMenu( piano_ctx_menu, pos );
@@ -8479,6 +8413,11 @@ void MyFrame::DoPrint( void )
      frame->Show();
      */
 
+    #ifdef __WXGTK__
+    SurfaceToolbar();
+    cc1->SetFocus();
+    Raise();                      // I dunno why...
+    #endif
 }
 
 void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
@@ -10021,9 +9960,6 @@ void MyFrame::applySettingsString( wxString settings)
     DoChartUpdate();
     UpdateControlBar();
     Refresh();
-
-
-    ShowChartBarIfEnabled();
 
 
 #if defined(__WXOSX__) || defined(__WXQT__)
@@ -11582,16 +11518,10 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #ifdef __WXOSX__
     long parent_style;
     bool b_toolviz = false;
-    bool b_g_ChartBarWinviz = false;
 
     if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
         g_FloatingToolbarDialog->Hide();
         b_toolviz = true;
-    }
-
-    if( g_ChartBarWin && g_ChartBarWin->IsShown()) {
-        g_ChartBarWin->Hide();
-        b_g_ChartBarWinviz = true;
     }
 
     if(parent) {
@@ -11612,9 +11542,6 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #ifdef __WXOSX__
     if(gFrame && b_toolviz)
         gFrame->SurfaceToolbar();
-
-    if( g_ChartBarWin && b_g_ChartBarWinviz)
-        g_ChartBarWin->Show();
 
     if(parent){
         parent->Raise();

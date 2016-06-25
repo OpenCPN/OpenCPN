@@ -473,6 +473,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                                     
                                     if (dwWritten != dwToWrite) {
                                         //ErrorReporter("Error writing data to port (overlapped)");
+                                        fWaitingOnWrite = false;        //Stop waiting for this op to complete.  Just abort it.
                                     }
                                     else {
                                         // Delayed write completed

@@ -83,7 +83,7 @@ struct GeoRef {
 #define DEGREE    (PI/180.0)
 #define RADIAN    (180.0/PI)
 
-#define DATUM_INDEX_WGS84     100
+#define DATUM_INDEX_WGS84     101
 #define DATUM_INDEX_UNKNOWN   -1
 
 
