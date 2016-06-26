@@ -63,6 +63,8 @@ public:
     delete [] stat_proc.time_length;
     delete [] stat_proc.incr_unit;
     delete [] stat_proc.incr_length;
+    delete [] bitmap;
+    delete [] bms;
   };
 
   int gds_templ_num;
