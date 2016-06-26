@@ -3103,7 +3103,244 @@ void androidEnableOptionsMenu( bool bEnable )
 }
 
         
+//    Android specific style sheet management
 
+//  ------------Runtime modified globals
+QString qtStyleSheetDialog;
+
+
+//--------------Stylesheet prototypes
+
+//  Generic dialog stylesheet
+//  Typically adjusted at runtime for display density
+
+QString qtStyleSheetDialogProto = "\
+QSlider::groove\
+{\
+    border: 1px solid #999999;\
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #E6E6E6, stop:1 #EEEEEE);\
+}\
+QSlider::groove:disabled\
+{\
+    background: #efefef;\
+}\
+\
+QSlider::handle\
+{\
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #61a2ea, stop:1 #61a2ea);\
+    border: 1px solid #5c5c5c;\
+    border-radius: 3px;\
+    width: 80px;\
+    height: 45px;\
+}\
+\
+QSlider::handle:disabled\
+{\
+    background: #D3D0CD;\
+}\
+\
+QScrollBar:horizontal {\
+    border: 0px solid grey;\
+    background-color: transparent;\
+    height: 4px;\
+    margin: 0px 1px 0 1px;\
+}\
+QScrollBar::handle:horizontal {\
+    background-color: rgb(150, 150, 150);\
+    min-width: 20px;\
+}\
+QScrollBar::add-line:horizontal {\
+    border: 0px solid grey;\
+    background: transparent;\
+    width: 1px;\
+    subcontrol-position: right;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar::sub-line:horizontal {\
+    border: 0px solid grey;\
+    background: transparent;\
+    width: 1px;\
+    subcontrol-position: left;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar:vertical {\
+    border: 0px solid grey;\
+    background-color: transparent;\
+    width: 4px;\
+    margin: 1px 0px 1px 0px;\
+}\
+QScrollBar::handle:vertical {\
+    background-color: rgb(150, 150, 150);\
+    min-height: 20px;\
+}\
+QScrollBar::add-line:vertical {\
+    border: 0px solid grey;\
+    background: transparent;\
+    height: 1px;\
+    subcontrol-position: top;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar::sub-line:vertical {\
+    border: 0px solid grey;\
+    background: transparent;\
+    height: 1px;\
+    subcontrol-position: bottom;\
+    subcontrol-origin: margin;\
+}\
+\
+QTreeWidget QScrollBar:vertical {\
+    border: 0px solid grey;\
+    background-color: rgb(240, 240, 240);\
+    width: 35px;\
+    margin: 1px 0px 1px 0px;\
+}\
+QTreeWidget QScrollBar::handle:vertical {\
+    background-color: rgb(200, 200, 200);\
+    min-height: 20px;\
+    border-radius: 10px;\
+}\
+QTreeWidget QScrollBar::add-line:vertical {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    height: 0px;\
+    subcontrol-position: top;\
+    subcontrol-origin: margin;\
+}\
+\
+QTreeWidget QScrollBar::sub-line:vertical {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    height: 0px;\
+    subcontrol-position: bottom;\
+    subcontrol-origin: margin;\
+}\
+\
+QTreeWidget QScrollBar:horizontal {\
+    border: 0px solid grey;\
+    background-color: rgb(240, 240, 240);\
+    height: 35px;\
+    margin: 0px 1px 0 1px;\
+}\
+QTreeWidget QScrollBar::handle:horizontal {\
+    background-color: rgb(200, 200, 200);\
+    min-width: 20px;\
+    border-radius: 10px;\
+}\
+QTreeWidget QScrollBar::add-line:horizontal {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    width: 0px;\
+    subcontrol-position: right;\
+    subcontrol-origin: margin;\
+}\
+\
+QTreeWidget QScrollBar::sub-line:horizontal {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    width: 0px;\
+    subcontrol-position: left;\
+    subcontrol-origin: margin;\
+}\
+\
+#OCPNCheckedListCtrl QScrollBar::vertical {\
+    border: 0px solid grey;\
+    background-color: rgb(240, 240, 240);\
+    width: 45px;\
+    margin: 1px 0px 1px 0px;\
+}\
+#OCPNCheckedListCtrl QScrollBar::handle:vertical {\
+    background-color: rgb(180, 180, 180);\
+    min-height: 45px;\
+    border-radius: 6px;\
+}\
+#OCPNCheckedListCtrl QScrollBar::add-line:vertical {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    height: 0px;\
+    subcontrol-position: top;\
+    subcontrol-origin: margin;\
+}\
+\
+#OCPNCheckedListCtrl QScrollBar::sub-line:vertical {\
+    border: 0px solid grey;\
+    background: #32CC99;\
+    height: 0px;\
+    subcontrol-position: bottom;\
+    subcontrol-origin: margin;\
+}\
+";
+
+void prepareAndroidStyleSheets()
+{
+    
+    //  Create and fix up the qtStyleSheetDialog
+    qtStyleSheetDialog.clear();
+    qtStyleSheetDialog.append(qtStyleSheetDialogProto);
+    
+    // add the checkbox specification
+    int cbSize = 30 * getAndroidDisplayDensity();
+    char cb[400];
+    
+    // icons
+    wxString data_locn = g_Platform->GetSharedDataDir();
+    data_locn.Append( _T("styles/") );
+    
+    // Checked box
+    wxString check_file = data_locn + _T("chek_full.png");
+    
+    wxImage checkImage(check_file, wxBITMAP_TYPE_PNG);
+    wxImage scaled_checkImage = checkImage.Scale( cbSize, cbSize, wxIMAGE_QUALITY_HIGH );
+    
+    wxString save_check_file = g_Platform->GetPrivateDataDir() + _T("/chek_full.png");
+    scaled_checkImage.SaveFile(save_check_file, wxBITMAP_TYPE_PNG);
+    
+    //  Empty box
+    wxString ucheck_file = data_locn + _T("chek_empty.png");
+    
+    wxImage ucheckImage(ucheck_file, wxBITMAP_TYPE_PNG);
+    wxImage scaled_ucheckImage = ucheckImage.Scale( cbSize, cbSize, wxIMAGE_QUALITY_HIGH );
+    
+    wxString save_ucheck_file = g_Platform->GetPrivateDataDir() + _T("/chek_empty.png");
+    scaled_ucheckImage.SaveFile(save_ucheck_file, wxBITMAP_TYPE_PNG);
+    
+    
+    wxCharBuffer checkbuf = save_check_file.ToUTF8();
+    std::string cbs(checkbuf);
+
+    wxCharBuffer ucheckbuf = save_ucheck_file.ToUTF8();
+    std::string ucbs(ucheckbuf);
+    
+    snprintf(cb, sizeof(cb), "QCheckBox { spacing: 25px;}\
+    QCheckBox::indicator { width: %dpx;   height: %dpx;}\
+    QCheckBox::indicator:checked {image: url(%s);}\
+    QCheckBox::indicator:unchecked {image: url(%s);}", cbSize, cbSize, cbs.c_str(), ucbs.c_str());
+    
+    qtStyleSheetDialog.append(cb);
+
+    qDebug() << cb;
+}
+    
+    
+
+
+#if 0
+QCheckBox {
+    spacing: 25px;
+}
+
+QCheckBox::indicator {
+    width: 130px;
+    height: 130px;
+}
+#endif
+
+QString getAdjustedDialogStyleSheet()
+{
+    return qtStyleSheetDialog;
+}
 
 
 

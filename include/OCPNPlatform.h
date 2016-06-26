@@ -50,10 +50,10 @@ typedef struct {
 //      Per-Platform Utility support
 //--------------------------------------------------------------------------
 
-#ifdef __WXQT__
-extern bool LoadQtStyleSheet(wxString &sheet_file);
-extern QString getQtStyleSheet( void );
-#endif
+// #ifdef __WXQT__
+// extern bool LoadQtStyleSheet(wxString &sheet_file);
+// extern QString getQtStyleSheet( void );
+// #endif
 
 
 class OCPNPlatform

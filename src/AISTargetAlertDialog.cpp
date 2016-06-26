@@ -33,6 +33,10 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
@@ -184,7 +188,7 @@ void AISTargetAlertDialog::CreateControls()
     m_pAlertTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                         wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     #ifdef __OCPN__ANDROID__
-    m_pAlertTextCtl->GetHandle()->setStyleSheet( getQtStyleSheet());
+    m_pAlertTextCtl->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
     #endif
     
     m_pAlertTextCtl->SetBorders( 5 );

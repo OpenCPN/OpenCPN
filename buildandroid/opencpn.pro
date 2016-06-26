@@ -117,6 +117,10 @@ gshhs_deployment.path = /assets/gshhs
 INSTALLS += gshhs_deployment
 
 styles_deployment.files += $$PWD/../data/styles/qtstylesheet.qss
+styles_deployment.files += $$PWD/../data/styles/checkbox_selected.png
+styles_deployment.files += $$PWD/../data/styles/checkbox.png
+styles_deployment.files += $$PWD/../data/styles/chek_full.png
+styles_deployment.files += $$PWD/../data/styles/chek_empty.png
 styles_deployment.path = /assets/styles
 INSTALLS += styles_deployment
 

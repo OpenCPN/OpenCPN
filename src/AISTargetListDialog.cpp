@@ -36,6 +36,10 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 static AIS_Decoder *s_p_sort_decoder;
 
 extern int g_AisTargetList_count;
@@ -443,7 +447,7 @@ void AISTargetListDialog::CreateControls()
     wxBoxSizer* topSizer = new wxBoxSizer( wxHORIZONTAL );
     SetSizer( topSizer );
 #ifdef __OCPN__ANDROID__
-    this->GetHandle()->setStyleSheet( getQtStyleSheet());
+    this->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
 #endif    
     
     

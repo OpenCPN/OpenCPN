@@ -719,7 +719,7 @@ void RouteProp::CreateControlsCompact()
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
     
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
     
     itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     
@@ -906,7 +906,7 @@ void RouteProp::CreateControlsCompact()
     
     
 #ifdef __OCPN__ANDROID__
-        m_wpList->GetHandle()->setStyleSheet( getQtStyleSheet());
+    m_wpList->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
 #endif    
         //  Buttons, etc...
 
@@ -1061,7 +1061,6 @@ void RouteProp::CreateControls()
     itemDialog1->SetScrollRate(2, 2);
     
     #ifdef __OCPN__ANDROID__
-    //itemDialog1->GetHandle()->setStyleSheet( getQtStyleSheet());
     
     //  Set Dialog Font by custom crafted Qt Stylesheet.
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -1070,7 +1069,7 @@ void RouteProp::CreateControls()
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
     
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
     
     itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     
@@ -1246,7 +1245,7 @@ void RouteProp::CreateControls()
         
         
         #ifdef __OCPN__ANDROID__
-        m_wpList->GetHandle()->setStyleSheet( getQtStyleSheet());
+        m_wpList->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
         #endif    
         
         
@@ -2370,7 +2369,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
     
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
     
     this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     
@@ -2390,7 +2389,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_panelBasicProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
                                                    wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
     #ifdef __OCPN__ANDROID__
-    m_panelBasicProperties->GetHandle()->setStyleSheet( getQtStyleSheet());
+    m_panelBasicProperties->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
     #endif
     
     m_panelBasicProperties->SetScrollRate(0, 2);

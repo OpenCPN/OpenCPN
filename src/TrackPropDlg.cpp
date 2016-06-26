@@ -242,7 +242,7 @@ void TrackPropDlg::CreateControlsCompact()
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
 
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
 
     itemDialog1->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
 
@@ -569,15 +569,11 @@ void TrackPropDlg::CreateControls( void )
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
 
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
 
     m_panelBasic->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
 
 #endif
-
-//#ifdef __OCPN__ANDROID__
-//    m_panelBasic->GetHandle()->setStyleSheet( getQtStyleSheet());
-//#endif
 
     wxBoxSizer* bSizerBasic = new wxBoxSizer( wxVERTICAL );
     m_panelBasic->SetSizer( bSizerBasic );
@@ -742,7 +738,7 @@ void TrackPropDlg::CreateControls( void )
       m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
-      m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
+      m_lcPoints->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
 #endif
 
 

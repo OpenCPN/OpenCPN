@@ -137,6 +137,7 @@ bool androidCheckOnline();
 wxArrayString androidTraverseDir( wxString dir, wxString filespec);
 void androidEnableOptionsMenu( bool bEnable );
 
-
+void prepareAndroidStyleSheets();
+QString getAdjustedDialogStyleSheet();
 
 #endif   //guard

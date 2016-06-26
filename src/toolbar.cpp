@@ -2550,7 +2550,7 @@ END_EVENT_TABLE()
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
     
-    QString qsbq = getQtStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
     
     this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     

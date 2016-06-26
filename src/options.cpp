@@ -344,7 +344,7 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
 
 #ifdef __OCPN__ANDROID__
   GetHandle()->setObjectName("OCPNCheckedListCtrl");
-  GetHandle()->setStyleSheet(getQtStyleSheet());
+  GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
   SetScrollRate(0, 2);
@@ -1086,7 +1086,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
   }
 
 #ifdef __OCPN__ANDROID__
-//    sw->GetHandle()->setStyleSheet(getQtStyleSheet());
+    sw->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
   return sw;
@@ -2805,7 +2805,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
@@ -2923,7 +2923,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
@@ -3216,7 +3216,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                        border_size);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
 #endif
@@ -3424,7 +3424,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                        border_size);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
 #endif
@@ -4410,7 +4410,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_GUI_Factor->Show();
 
 #ifdef __WXQT__
-  m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+  m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
   m_pSlider_Chart_Factor = new wxSlider(
@@ -4424,7 +4424,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_Chart_Factor->Show();
 
 #ifdef __WXQT__
-  m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+  m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
   
   miscOptions->AddSpacer(20);
@@ -5071,7 +5071,7 @@ void options::SetInitialVectorSettings(void)
                  }
         }
         #ifdef __OCPN__ANDROID__
-        ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
+        ps57CtlListBox->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
         #endif
         
         int nset = 2;  // default OTHER

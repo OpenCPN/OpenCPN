@@ -47,6 +47,10 @@
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 #define DIALOG_MARGIN 3
 
 /* XPM */
@@ -499,7 +503,7 @@ void RouteManagerDialog::Create()
                                        wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                                        | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pRouteListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pRouteListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -591,7 +595,7 @@ void RouteManagerDialog::Create()
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     
     #ifdef __OCPN__ANDROID__    
-    m_pTrkListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pTrkListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pTrkListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -669,7 +673,7 @@ void RouteManagerDialog::Create()
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pWptListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pWptListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -774,7 +778,7 @@ void RouteManagerDialog::Create()
                                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
                                      | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
-    m_pLayListCtrl->GetHandle()->setStyleSheet(getQtStyleSheet());
+    m_pLayListCtrl->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
     #endif    
     
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,

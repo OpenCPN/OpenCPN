@@ -1284,19 +1284,8 @@ bool MyApp::OnInit()
     wxLogMessage( imsg );
 
 #ifdef __WXQT__
-    //  Now we can load a Qt StyleSheet, if present
-    wxString style_file = g_Platform->GetSharedDataDir();
-    style_file += _T("styles");
-    appendOSDirSlash( &style_file );
-    style_file += _T("qtstylesheet.qss");
-    if(LoadQtStyleSheet(style_file)){
-        wxString smsg = _T("Loaded Qt Stylesheet: ") + style_file;
-        wxLogMessage( smsg );
-    }
-    else{
-        wxString smsg = _T("Qt Stylesheet not found: ") + style_file;
-        wxLogMessage( smsg );
-    }
+    //  Now we can configure the Qt StyleSheets, if present
+    prepareAndroidStyleSheets();
 #endif
 
     //      Create some static strings
