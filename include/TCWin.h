@@ -108,6 +108,7 @@ private:
       wxPen *pblack_1;
       wxPen *pblack_2;
       wxPen *pblack_3;
+      wxPen *pblack_4;
       wxPen *pred_2;
       wxBrush *pltgray;
       wxBrush *pltgray2;

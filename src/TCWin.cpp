@@ -10,6 +10,8 @@
 #include "cutil.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
+#include "chart1.h"
+#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -19,6 +21,8 @@ extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
 extern int gpIDXn;
 extern TCMgr *ptcmgr;
+extern MyFrame *gFrame;
+extern OCPNPlatform *g_Platform;
 
 enum
 {
@@ -68,6 +72,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_y = y;
     
     m_created = false;
+    m_tList = NULL;
+    m_ptextctrl = NULL;
+    
     RecalculateSize();
      
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
@@ -88,7 +95,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxCharBuffer sbuf = wqs.ToUTF8();
     QString qsb = QString(sbuf.data());
     
-    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
+    QString qsbq = getScrollBarsStyleSheet();           // basic scrollbars, etc
     
     this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
     
@@ -97,7 +104,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         sdc.GetTextExtent(_T("W"), NULL, &m_refDIM, NULL, NULL, qFont);
     #endif
     
-    
+    wxString* TClist = NULL;
+    m_tList = new wxListBox( this, -1, wxPoint( 0, 0), wxSize( -1, -1 ), 0, TClist,  wxLB_SINGLE  );
+        
     RecalculateSize();
 
     pIDX = (IDX_entry *) pvIDX;
@@ -150,10 +159,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     btc_valid = false;
 
-    wxString* TClist = NULL;
-    m_tList = new wxListBox( this, -1, wxPoint( sx * 65 / 100, 11 ),
-                             wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), 0, TClist,
-                             wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_HSCROLL  );
 
     //  Measure the size of a generic button, with label
 //    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
@@ -212,18 +217,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     pLFont = FontMgr::Get().FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
-    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
-                                                                          wxPENSTYLE_SOLID );
-    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2,
-                                                                          wxPENSTYLE_SOLID );
-    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1,
-                                                                          wxPENSTYLE_SOLID );
-    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4,
-                                                                        wxPENSTYLE_SOLID );
-    pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
-                                                                               wxBRUSHSTYLE_SOLID );
-    pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
-                                                                                wxBRUSHSTYLE_SOLID );
+    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1, wxPENSTYLE_SOLID );
+    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2, wxPENSTYLE_SOLID );
+    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1, wxPENSTYLE_SOLID );
+    pblack_4 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 4, wxPENSTYLE_SOLID );
+    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4, wxPENSTYLE_SOLID );
+    pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),wxBRUSHSTYLE_SOLID );
+    pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ), wxBRUSHSTYLE_SOLID );
 
     DimeControl( this );
 
@@ -286,6 +286,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     }
     
     m_ptextctrl->ShowPosition( 0 );
+    m_ptextctrl->SetInsertionPoint(0);
 }
 
 TCWin::~TCWin()
@@ -300,14 +301,19 @@ void TCWin::RecalculateSize()
         parent_size = pParent->GetClientSize();
     
     if(m_created){
-        if(parent_size.x > parent_size.y){
-            m_tc_size.x = m_refDIM * 30;
-            m_tc_size.y = m_refDIM * 20;
+        m_tc_size.x = m_refDIM * 22;
+        m_tc_size.y = m_refDIM * 20;
+#ifdef __OCPN__ANDROID__
+        if(GetAndroidDisplaySize() < 120){  // a phone or a tablet?
+            m_tc_size.x = parent_size.x - 40;
+            m_tc_size.y = parent_size.y - 40;
         }
         else{
-            m_tc_size.x = m_refDIM * 22;
-            m_tc_size.y = m_refDIM * 20;
+            m_tc_size.x = parent_size.x - 200;
+            m_tc_size.y = parent_size.y - 200;
         }
+        
+#endif        
     }
     else{
         m_tc_size.x = 650;
@@ -331,6 +337,48 @@ void TCWin::RecalculateSize()
     //  Don't let the window origin move out of client area.  Center if necessary
     if( yc < 0 ) yc = (parent_size.y - m_tc_size.y) / 2;
     if( xc < 0 ) xc = (parent_size.x - m_tc_size.x) / 2;
+
+    // Recalculate the graph size
+    int x_graph = m_tc_size.x * 1 / 10;
+    int y_graph = m_tc_size.y * 32 / 100;
+    int x_graph_w = m_tc_size.x * 8 / 10;
+    int y_graph_h = (m_tc_size.y * .7)  - (3 * m_button_height);
+#ifdef __OCPN__ANDROID__    
+    if(m_tc_size.x > m_tc_size.y){              // landscape?
+        x_graph_w = m_tc_size.x * 6 / 10;
+    }
+#endif    
+    ///m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
+    
+    
+    // Recalculate text window sizes
+    if( m_created && m_tList ){
+        m_tList->Move( wxPoint( m_tc_size.x * 65 / 100, 11 ) );
+        m_tList->Show();
+        
+    }
+    
+#ifdef __OCPN__ANDROID__ 
+    // Don't show the tide status list on portrait phones
+    if( m_created && m_tList ){
+        if(GetAndroidDisplaySize() < 120){  // a phone?
+            if(m_tc_size.x < m_tc_size.y)              // portrait?
+                m_tList->Hide();
+        }
+        
+        m_tList->SetSize( wxSize( ( m_tc_size.x * 32 / 100 ), ( m_tc_size.y * 20 / 100 ) ) );
+        if(m_tc_size.x > m_tc_size.y)              // landscape?
+            m_tList->SetSize( wxSize( ( m_tc_size.x * 32 / 100 ), ( m_tc_size.y * 40 / 100 ) ) );
+    }
+#endif    
+
+    wxSize texc_size = wxSize( ( m_tc_size.x * 60 / 100 ), ( m_tc_size.y *29 / 100 ) );
+    if( m_created && m_tList && !m_tList->IsShown()){
+        texc_size = wxSize( ( m_tc_size.x * 90 / 100 ), ( m_tc_size.y *29 / 100 ) );
+    }
+    if(m_ptextctrl)
+        m_ptextctrl->SetSize(texc_size);
+
     
     if( pParent )
         pParent->ClientToScreen( &xc, &yc );
@@ -354,6 +402,8 @@ void TCWin::OKEvent( wxCommandEvent& event )
     delete m_tList;
     pParent->Refresh( false );
     Destroy();                          // that hurts
+    gFrame->SurfaceToolbar();
+    
 }
 
 void TCWin::OnCloseWindow( wxCloseEvent& event )
@@ -365,6 +415,7 @@ void TCWin::OnCloseWindow( wxCloseEvent& event )
     delete m_tList;
 
     Destroy();                          // that hurts
+    gFrame->SurfaceToolbar();
 }
 
 void TCWin::NXEvent( wxCommandEvent& event )
@@ -656,7 +707,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         wxList *list = (wxList *) &m_sList;
 #endif
 
-        dc.SetPen( *pblack_2 );
+        dc.SetPen( *pblack_4 );
 #if wxUSE_SPLINES
         dc.DrawSpline( list );
 #else
@@ -704,7 +755,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         wxString sdate = m_graphday.Format( _T ( "%m/%d/%Y" ) );
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
-        dc.DrawText( sdate, x / 2 - w / 2, y - 1.5 * m_button_height );
+        dc.DrawText( sdate, x / 2 - w / 2, y - 1.2 * m_button_height );
 
         Station_Data *pmsd = pIDX->pref_sta_data;
         if( pmsd ) {
@@ -765,12 +816,12 @@ void TCWin::OnSize( wxSizeEvent& event )
     //  In the interest of readability, if the width of the dialog is too narrow, 
     //  simply skip showing the "Hi/Lo" list control.
     
-    if( (m_refDIM * 23) > x )
-        m_tList->Hide();
-    else{
-        m_tList->Move(wxPoint( x * 65 / 100, 11 ) );
-        m_tList->Show();
-    }
+//     if( (m_refDIM * 23) > x )
+//         m_tList->Hide();
+//     else{
+//         m_tList->Move(wxPoint( x * 65 / 100, 11 ) );
+//         m_tList->Show();
+//     }
     
     //  Similar logic for the text info box
     m_bcompactText = false;
@@ -778,11 +829,11 @@ void TCWin::OnSize( wxSizeEvent& event )
         m_bcompactText = true;
         
     
-    wxSize texc_size = wxSize( ( x * 60 / 100 ), ( y *29 / 100 ) );
-    if( !m_tList->IsShown()){
-        texc_size = wxSize( ( x * 90 / 100 ), ( y *29 / 100 ) );
-    }
-    m_ptextctrl->SetSize(texc_size);
+//     wxSize texc_size = wxSize( ( x * 60 / 100 ), ( y *29 / 100 ) );
+//     if( !m_tList->IsShown()){
+//         texc_size = wxSize( ( x * 90 / 100 ), ( y *29 / 100 ) );
+//     }
+//     m_ptextctrl->SetSize(texc_size);
     
     wxSize okbs = OK_button->GetSize();
     OK_button->Move( wxPoint( x - (okbs.x + 10), y - (okbs.y + 10) ));                            

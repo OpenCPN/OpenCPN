@@ -10849,6 +10849,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
 void ChartCanvas::DrawTCWindow( int x, int y, void *pvIDX )
 {
+    gFrame->SubmergeToolbar();
     pCwin = new TCWin( this, x, y, pvIDX );
 
 }
