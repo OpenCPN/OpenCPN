@@ -4518,20 +4518,8 @@ void options::CreateControls(void) {
 #ifdef __OCPN__ANDROID__
   //  In wxQT, we can dynamically style the little scroll buttons on a small
   //  display, to make them bigger
-  wxString qtstyle;
-  qtstyle.Printf(_T("QTabBar::scroller { width: %dpx; }"),
-                 m_fontHeight * 3 / 4);
-  wxCharBuffer buf = qtstyle.ToUTF8();
-  m_pListbook->GetHandle()->setStyleSheet(buf.data());
-
-//     QTabBar QToolButton::right-arrow { /* the arrow mark in the tool buttons
-//     */
-//     image: url(rightarrow.png);
-//     }
-//
-//     QTabBar QToolButton::left-arrow {
-//         image: url(leftarrow.png);
-//     }
+  m_pListbook->GetHandle()->setStyleSheet( getListBookStyleSheet() );
+  
 #endif
 
 #ifdef __WXMSW__

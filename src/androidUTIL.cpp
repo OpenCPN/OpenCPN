@@ -3273,10 +3273,33 @@ QTreeWidget QScrollBar::sub-line:horizontal {\
 }\
 ";
 
+QString qtStyleSheetListBook;
+
+
+std::string prepareStyleIcon( wxString icon_file, int size )
+{
+    wxString data_locn = g_Platform->GetSharedDataDir();
+    data_locn.Append( _T("styles/") );
+
+    wxString file = data_locn + icon_file;
+    
+    wxImage Image(file, wxBITMAP_TYPE_PNG);
+    wxImage scaledImage = Image.Scale( size, size, wxIMAGE_QUALITY_HIGH );
+    
+    wxString save_file = g_Platform->GetPrivateDataDir() + _T("/") + icon_file;
+    scaledImage.SaveFile(save_file, wxBITMAP_TYPE_PNG);
+
+    wxCharBuffer buf = save_file.ToUTF8();
+    std::string ret(buf);
+    return ret;
+}
+    
+    
+    
 void prepareAndroidStyleSheets()
 {
     
-    //  Create and fix up the qtStyleSheetDialog
+    //  Create and fix up the qtStyleSheetDialog for generic dialog
     qtStyleSheetDialog.clear();
     qtStyleSheetDialog.append(qtStyleSheetDialogProto);
     
@@ -3285,33 +3308,10 @@ void prepareAndroidStyleSheets()
     char cb[400];
     
     // icons
-    wxString data_locn = g_Platform->GetSharedDataDir();
-    data_locn.Append( _T("styles/") );
-    
-    // Checked box
-    wxString check_file = data_locn + _T("chek_full.png");
-    
-    wxImage checkImage(check_file, wxBITMAP_TYPE_PNG);
-    wxImage scaled_checkImage = checkImage.Scale( cbSize, cbSize, wxIMAGE_QUALITY_HIGH );
-    
-    wxString save_check_file = g_Platform->GetPrivateDataDir() + _T("/chek_full.png");
-    scaled_checkImage.SaveFile(save_check_file, wxBITMAP_TYPE_PNG);
-    
+     // Checked box
+    std::string cbs = prepareStyleIcon(_T("chek_full.png"), cbSize);
     //  Empty box
-    wxString ucheck_file = data_locn + _T("chek_empty.png");
-    
-    wxImage ucheckImage(ucheck_file, wxBITMAP_TYPE_PNG);
-    wxImage scaled_ucheckImage = ucheckImage.Scale( cbSize, cbSize, wxIMAGE_QUALITY_HIGH );
-    
-    wxString save_ucheck_file = g_Platform->GetPrivateDataDir() + _T("/chek_empty.png");
-    scaled_ucheckImage.SaveFile(save_ucheck_file, wxBITMAP_TYPE_PNG);
-    
-    
-    wxCharBuffer checkbuf = save_check_file.ToUTF8();
-    std::string cbs(checkbuf);
-
-    wxCharBuffer ucheckbuf = save_ucheck_file.ToUTF8();
-    std::string ucbs(ucheckbuf);
+    std::string ucbs = prepareStyleIcon(_T("chek_empty.png"), cbSize);
     
     snprintf(cb, sizeof(cb), "QCheckBox { spacing: 25px;}\
     QCheckBox::indicator { width: %dpx;   height: %dpx;}\
@@ -3320,29 +3320,37 @@ void prepareAndroidStyleSheets()
     
     qtStyleSheetDialog.append(cb);
 
-    qDebug() << cb;
-}
     
+    //   The qTabBar buttons as in a listbook
+    qtStyleSheetListBook.clear();
+    
+    // compute the tabbar button size
+    int tbbSize = 50 * getAndroidDisplayDensity();
+    char tbb[400];
     
 
+    std::string tbbl = prepareStyleIcon(_T("tabbar_button_left.png"), tbbSize);
+    std::string tbbr = prepareStyleIcon(_T("tabbar_button_right.png"), tbbSize);
+    
+    snprintf(tbb, sizeof(tbb), "QTabBar::scroller { width: %dpx; }\
+    QTabBar QToolButton::right-arrow { image: url(%s); }\
+    QTabBar QToolButton::left-arrow { image: url(%s); }", tbbSize, tbbr.c_str(), tbbl.c_str());
+    
+    qtStyleSheetListBook.append(tbb);
 
-#if 0
-QCheckBox {
-    spacing: 25px;
-}
+}    
+    
 
-QCheckBox::indicator {
-    width: 130px;
-    height: 130px;
-}
-#endif
 
 QString getAdjustedDialogStyleSheet()
 {
     return qtStyleSheetDialog;
 }
 
-
+QString getListBookStyleSheet()
+{
+    return qtStyleSheetListBook;
+}
 
 
 
