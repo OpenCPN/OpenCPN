@@ -11,6 +11,10 @@
 #include "FontMgr.h"
 #include "wx28compat.h"
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
 extern int gpIDXn;
@@ -70,9 +74,31 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
                       m_tc_size, wstyle );
 
     m_created = true;
+    
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
     
+    wxScreenDC dc;
+    dc.GetTextExtent(_T("W"), NULL, &m_refDIM);
+
+    #ifdef __OCPN__ANDROID__
+    //  Set Dialog Font by custom crafted Qt Stylesheet.
+    
+    wxString wqs = getFontQtStylesheet(qFont);
+    wxCharBuffer sbuf = wqs.ToUTF8();
+    QString qsb = QString(sbuf.data());
+    
+    QString qsbq = getAdjustedDialogStyleSheet();           // basic scrollbars, etc
+    
+    this->GetHandle()->setStyleSheet( qsb + qsbq );      // Concatenated style sheets
+    
+    wxScreenDC sdc;
+    if(sdc.IsOk())
+        sdc.GetTextExtent(_T("W"), NULL, &m_refDIM, NULL, NULL, qFont);
+    #endif
+    
+    
+    RecalculateSize();
 
     pIDX = (IDX_entry *) pvIDX;
     gpIDXn++;
@@ -130,21 +156,26 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
                              wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_HSCROLL  );
 
     //  Measure the size of a generic button, with label
-    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
-    test_button->GetSize( &m_tsx, &m_tsy );
-    delete test_button;
-    
+//    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
+//    test_button->GetSize( &m_tsx, &m_refBTN );
+//    delete test_button;
+
     //  In the interest of readability, if the width of the dialog is too narrow, 
     //  simply skip showing the "Hi/Lo" list control.
     
-    if( (m_tsy * 15) > sx )
+    if( (m_refDIM * 22) > sx )
         m_tList->Hide();
     
+    //  Similar logic for the text info box
+    m_bcompactText = false;
+    if( (m_refDIM * 23) > sx )
+        m_bcompactText = true;
+        
     
-    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - (m_tsy + 10) ),
+    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( 0,0 /*sx - (m_refDIM + 5), sy - (m_refBTN + 10)*/ ),
                               wxDefaultSize );
 
-    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (m_tsy + 10) ),
+    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 0,0 /*10, sy - (m_refBTN + 10)*/ ),
                               wxSize( -1, -1 ) );
 
     wxSize texc_size = wxSize( ( sx * 60 / 100 ), ( sy *29 / 100 ) );
@@ -159,15 +190,12 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
 
-    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, sy - (m_tsy + 10) ),
+    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( 0,0 /*bpx + bsx + 5, sy - (m_refDIM + 10)*/ ),
                               wxSize( -1, -1 ) );
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 
-    wxScreenDC dc;
-    int text_height;
-    dc.GetTextExtent(_T("W"), NULL, &text_height);
-    m_button_height = text_height + 20;
+    m_button_height = OK_button->GetSize().y;
 
 
     // Build graphics tools
@@ -201,7 +229,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     //  Fill in some static text control information
 
-    //  Tidi station information
+    //  Tide station information
     m_ptextctrl->Clear();
 
     wxString locn( pIDX->IDX_station_name, wxConvUTF8 );
@@ -230,31 +258,33 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_ptextctrl->AppendText(_T("\n"));
 
 
-    //Reference to the master station
-    if(( 't' == pIDX->IDX_type ) || ( 'c' == pIDX->IDX_type )) {
-        wxString mref( pIDX->IDX_reference_name, wxConvUTF8 );
-        mref.Prepend(_T(" "));
+    if(!m_bcompactText){
+        //Reference to the master station
+        if(( 't' == pIDX->IDX_type ) || ( 'c' == pIDX->IDX_type )) {
+            wxString mref( pIDX->IDX_reference_name, wxConvUTF8 );
+            mref.Prepend(_T(" "));
 
-        m_ptextctrl->AppendText( _( "Reference Station :" ) );
+            m_ptextctrl->AppendText( _( "Reference Station :" ) );
+            m_ptextctrl->AppendText(_T("\n"));
+
+            m_ptextctrl->AppendText( mref );
+            m_ptextctrl->AppendText(_T("\n"));
+
+        }
+        else {
+            m_ptextctrl->AppendText(_T("\n"));
+        }
+
+        //      Show the data source
+        wxString dsource( pIDX->source_ident, wxConvUTF8 );
+        dsource.Prepend(_T(" "));
+
+        m_ptextctrl->AppendText( _( "Data Source :" ) );
         m_ptextctrl->AppendText(_T("\n"));
 
-        m_ptextctrl->AppendText( mref );
-        m_ptextctrl->AppendText(_T("\n"));
-
+        m_ptextctrl->AppendText( dsource );
     }
-    else {
-        m_ptextctrl->AppendText(_T("\n"));
-    }
-
-    //      Show the data source
-    wxString dsource( pIDX->source_ident, wxConvUTF8 );
-    dsource.Prepend(_T(" "));
-
-    m_ptextctrl->AppendText( _( "Data Source :" ) );
-    m_ptextctrl->AppendText(_T("\n"));
-
-    m_ptextctrl->AppendText( dsource );
-
+    
     m_ptextctrl->ShowPosition( 0 );
 }
 
@@ -269,28 +299,38 @@ void TCWin::RecalculateSize()
     if( pParent )
         parent_size = pParent->GetClientSize();
     
-    if(m_created)
-        m_tc_size.x = GetCharWidth() * 50;
-    else
+    if(m_created){
+        if(parent_size.x > parent_size.y){
+            m_tc_size.x = m_refDIM * 30;
+            m_tc_size.y = m_refDIM * 20;
+        }
+        else{
+            m_tc_size.x = m_refDIM * 22;
+            m_tc_size.y = m_refDIM * 20;
+        }
+    }
+    else{
         m_tc_size.x = 650;
-        
+        m_tc_size.x = 480;
+    }
     
-    m_tc_size.x = wxMin(m_tc_size.x, parent_size.x);
-    m_tc_size.y = wxMin(480, parent_size.y);
     
-
+    m_tc_size.x = wxMin(m_tc_size.x, parent_size.x-20);
+    m_tc_size.y = wxMin(m_tc_size.y, parent_size.y-20);
+    
+    //qDebug() << m_refDIM << m_tc_size.x << m_tc_size.y;
    
     int xc = m_x + 8;
     int yc = m_y;
     
     //  Arrange for tcWindow to be always totally visible
-    //  by shifting left and/or up
-    if( ( m_x + 8 + m_tc_size.x ) > parent_size.x ) xc = xc - m_tc_size.x - 16;
-    if( ( m_y + m_tc_size.y ) > parent_size.y ) yc = yc - m_tc_size.y;
+    //  by centering if necessary
+    if( ( m_x + 8 + m_tc_size.x ) > parent_size.x ) xc = (parent_size.x - m_tc_size.x) / 2;
+    if( ( m_y + m_tc_size.y ) > parent_size.y ) yc = (parent_size.y - m_tc_size.y) / 2;
     
-    //  Don't let the window origin move out of client area
-    if( yc < 0 ) yc = 0;
-    if( xc < 0 ) xc = 0;
+    //  Don't let the window origin move out of client area.  Center if necessary
+    if( yc < 0 ) yc = (parent_size.y - m_tc_size.y) / 2;
+    if( xc < 0 ) xc = (parent_size.x - m_tc_size.x) / 2;
     
     if( pParent )
         pParent->ClientToScreen( &xc, &yc );
@@ -702,10 +742,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
                            _( "Tomorrow" ) );
 
         dc.SetFont( *pSFont );
-//                dc.GetTextExtent ( wxString ( sday, wxConvUTF8 ), &w, &h );       2.9.1
-//                dc.DrawText ( wxString ( sday, wxConvUTF8 ), 55 - w/2, y * 88/100 );    2.9.1
-        dc.GetTextExtent( sday, &w, &h );
-        dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
+        dc.DrawText( sday, 10, y - 2 * m_button_height );
 
     }
 }
@@ -728,12 +765,18 @@ void TCWin::OnSize( wxSizeEvent& event )
     //  In the interest of readability, if the width of the dialog is too narrow, 
     //  simply skip showing the "Hi/Lo" list control.
     
-    if( (m_tsy * 15) > x )
+    if( (m_refDIM * 23) > x )
         m_tList->Hide();
     else{
         m_tList->Move(wxPoint( x * 65 / 100, 11 ) );
         m_tList->Show();
     }
+    
+    //  Similar logic for the text info box
+    m_bcompactText = false;
+    if( (m_refDIM * 23) > x )
+        m_bcompactText = true;
+        
     
     wxSize texc_size = wxSize( ( x * 60 / 100 ), ( y *29 / 100 ) );
     if( !m_tList->IsShown()){
@@ -741,14 +784,15 @@ void TCWin::OnSize( wxSizeEvent& event )
     }
     m_ptextctrl->SetSize(texc_size);
     
-    OK_button->Move( wxPoint( x - 100, y - (m_tsy + 10) ));                            
-    PR_button->Move( wxPoint( 10, y - (m_tsy + 10) ) );
+    wxSize okbs = OK_button->GetSize();
+    OK_button->Move( wxPoint( x - (okbs.x + 10), y - (okbs.y + 10) ));                            
+    PR_button->Move( wxPoint( 10, y - (okbs.y + 10) ) );
  
     int bsx, bsy, bpx, bpy;
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
     
-    NX_button->Move( wxPoint( bpx + bsx + 5, y - (m_tsy + 10) ) );
+    NX_button->Move( wxPoint( bpx + bsx + 5, y - (okbs.y + 10) ) );
     
     btc_valid = false;
     

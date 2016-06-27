@@ -73,8 +73,8 @@ private:
     int           m_x;
     int           m_y;
     bool          m_created;
-    int           m_tsx;
-    int           m_tsy;
+    int           m_refDIM;
+    bool          m_bcompactText;
     
       IDX_entry   *pIDX;
       wxButton    *OK_button;
