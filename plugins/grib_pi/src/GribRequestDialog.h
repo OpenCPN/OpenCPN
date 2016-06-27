@@ -45,7 +45,7 @@ class GribRequestSetting : public GribRequestSettingBase
 public:
       GribRequestSetting( GRIBUICtrlBar &parent );
 
-      ~GribRequestSetting() {}
+      ~GribRequestSetting();
 
       void OnClose( wxCloseEvent& event );
       void SetVpSize(PlugIn_ViewPort *vp);

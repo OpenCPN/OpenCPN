@@ -307,7 +307,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
     }
-
+    delete m_vp;
     delete m_pTimelineSet;
 }
 
@@ -392,6 +392,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 	m_Altitude = 0;
     m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
     delete m_bGRIBActiveFile;
+    delete m_pTimelineSet;
     m_pTimelineSet = NULL;
     m_sTimeline->SetValue(0);
     m_TimeLineHours = 0;
@@ -885,6 +886,7 @@ void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
 {
     if(m_vp == vp)  return;
 
+    delete m_vp;
     m_vp = new PlugIn_ViewPort(*vp);
 
     if(pReq_Dialog)

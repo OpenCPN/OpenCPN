@@ -278,13 +278,37 @@ static int datumNameCmp(const char *n1, const char *n2)
 	return 0;	// String match
 }
 
+static int isWGS84(int i)
+{
+    // DATUM_INDEX_WGS84 is an optimization
+    // but there's more than on in gDatum table
+    if (i == DATUM_INDEX_WGS84)
+        return i;
+
+    if (gDatum[i].ellipsoid != gDatum[DATUM_INDEX_WGS84].ellipsoid)
+        return i;
+
+    if (gDatum[i].dx != gDatum[DATUM_INDEX_WGS84].dx)
+        return i;
+
+    if (gDatum[i].dy != gDatum[DATUM_INDEX_WGS84].dy)
+        return i;
+
+    if (gDatum[i].dz != gDatum[DATUM_INDEX_WGS84].dz)
+        return i;
+        
+    return DATUM_INDEX_WGS84;
+}
+
 int GetDatumIndex(const char *str)
 {
       int i = 0;
       while (i < (int)nDatums)
       {
             if(!datumNameCmp(str, gDatum[i].name))
-                  return i;
+            {
+                  return isWGS84(i);
+            }
             i++;
       }
 

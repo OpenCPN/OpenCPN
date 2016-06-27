@@ -45,7 +45,7 @@
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
-#include "chartbarwin.h"
+#include "piano.h"
 #include "routeman.h"
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
