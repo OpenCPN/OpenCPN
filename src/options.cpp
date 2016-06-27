@@ -1355,9 +1355,9 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   fgSizer1a->Add(m_stNetAddr, 0, wxALL, 5);
 
   m_tNetAddress = new wxTextCtrl(m_pNMEAForm, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxSize(200, -1), 0);
+                                 wxDefaultPosition, wxSize(m_fontHeight * 4, -1), 0);
   fgSizer1a->Add(m_tNetAddress, 1, wxTOP | wxALIGN_RIGHT, 5);
-
+ 
   m_stNetPort = new wxStaticText(m_pNMEAForm, wxID_ANY, _("DataPort"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   fgSizer1a->Add(m_stNetPort, 1, wxALL, 5);
