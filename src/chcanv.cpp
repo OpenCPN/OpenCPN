@@ -10775,7 +10775,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     GetCanvasPointPix( lat, lon, &r );
 
                     wxPoint d[4];
-                    int dd = 6;
+                    int dd = 6 * g_ChartScaleFactorExp;
                     d[0].x = r.x;
                     d[0].y = r.y + dd;
                     d[1].x = r.x + dd;
@@ -10793,7 +10793,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
                         if( type == 'C' ) {
                             dc.SetBrush( *pblack_brush );
-                            dc.DrawCircle( r.x, r.y, 2 );
+                            dc.DrawCircle( r.x, r.y, 2 * g_ChartScaleFactorExp );
                         }
 
                         else if( ( type == 'c' ) && ( GetVP().chart_scale < 1000000 ) )
