@@ -4397,6 +4397,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                                _("Enable Scaled Graphics interface"));
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
+  //  This two options are always needed for Android
+#ifdef __OCPN__ANDROID__
+  pMobile->Hide();
+  pResponsive->Hide();
+#endif
+  
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
