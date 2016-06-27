@@ -140,5 +140,6 @@ void androidEnableOptionsMenu( bool bEnable );
 void prepareAndroidStyleSheets();
 QString getAdjustedDialogStyleSheet();
 QString getListBookStyleSheet();
+QString getScrollBarsStyleSheet();
 
 #endif   //guard

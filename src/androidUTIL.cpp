@@ -3107,7 +3107,8 @@ void androidEnableOptionsMenu( bool bEnable )
 
 //  ------------Runtime modified globals
 QString qtStyleSheetDialog;
-
+QString qtStyleSheetListBook;
+QString qtStyleSheetScrollbars;
 
 //--------------Stylesheet prototypes
 
@@ -3127,7 +3128,7 @@ QSlider::groove:disabled\
 \
 QSlider::handle\
 {\
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #61a2ea, stop:1 #61a2ea);\
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #7cb0e9, stop:1 #7cb0e9);\
     border: 1px solid #5c5c5c;\
     border-radius: 3px;\
     width: 80px;\
@@ -3273,7 +3274,59 @@ QTreeWidget QScrollBar::sub-line:horizontal {\
 }\
 ";
 
-QString qtStyleSheetListBook;
+QString qtStyleSheetScrollbarsProto ="\
+QScrollBar:horizontal {\
+    border: 0px solid grey;\
+    background-color: transparent;\
+    height: 35px;\
+    margin: 0px 1px 0 1px;\
+}\
+QScrollBar::handle:horizontal {\
+    background-color: #7cb0e9;\
+    min-width: 20px;\
+}\
+QScrollBar::add-line:horizontal {\
+    border: 0px solid grey;\
+    background: transparent;\
+    width: 1px;\
+    subcontrol-position: right;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar::sub-line:horizontal {\
+    border: 0px solid grey;\
+    background: transparent;\
+    width: 1px;\
+    subcontrol-position: left;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar:vertical {\
+    border: 0px solid grey;\
+    background-color: transparent;\
+    width: 35px;\
+    margin: 1px 0px 1px 0px;\
+}\
+QScrollBar::handle:vertical {\
+    background-color: #7cb0e9;\
+    min-height: 20px;\
+}\
+QScrollBar::add-line:vertical {\
+    border: 0px solid grey;\
+    background: transparent;\
+    height: 1px;\
+    subcontrol-position: top;\
+    subcontrol-origin: margin;\
+}\
+\
+QScrollBar::sub-line:vertical {\
+    border: 0px solid grey;\
+    background: transparent;\
+    height: 1px;\
+    subcontrol-position: bottom;\
+    subcontrol-origin: margin;\
+}";
+
 
 
 std::string prepareStyleIcon( wxString icon_file, int size )
@@ -3338,6 +3391,10 @@ void prepareAndroidStyleSheets()
     
     qtStyleSheetListBook.append(tbb);
 
+    
+    // A simple stylesheet with scrollbars only
+    qtStyleSheetScrollbars.clear();
+    qtStyleSheetScrollbars.append(qtStyleSheetScrollbarsProto);
 }    
     
 
@@ -3352,6 +3409,10 @@ QString getListBookStyleSheet()
     return qtStyleSheetListBook;
 }
 
+QString getScrollBarsStyleSheet()
+{
+    return qtStyleSheetScrollbars;
+}
 
 
 

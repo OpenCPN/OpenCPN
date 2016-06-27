@@ -2650,6 +2650,10 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       new wxListBox(chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
                     0, pListBoxStrings, wxLB_MULTIPLE);
 
+#ifdef __OCPN__ANDROID__
+  pActiveChartsList->GetHandle()->setStyleSheet( getScrollBarsStyleSheet() );            
+#endif
+      
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
@@ -7614,13 +7618,14 @@ void options::FillSourceList(void) {
   m_lcSources->SetColumnWidth(6, wxLIST_AUTOSIZE);
 #endif
 #else
-  m_lcSources->SetColumnWidth(0, 60);
-  m_lcSources->SetColumnWidth(1, 90);
-  m_lcSources->SetColumnWidth(2, 90);
-  m_lcSources->SetColumnWidth(3, 90);
-  m_lcSources->SetColumnWidth(4, 90);
-  m_lcSources->SetColumnWidth(5, 90);
-  m_lcSources->SetColumnWidth(6, 90);
+  int ref = GetCharWidth();
+  m_lcSources->SetColumnWidth(0, ref * 2);
+  m_lcSources->SetColumnWidth(1, ref * 5);
+  m_lcSources->SetColumnWidth(2, ref * 20);
+  m_lcSources->SetColumnWidth(3, ref * 5);
+  m_lcSources->SetColumnWidth(4, ref * 5);
+  m_lcSources->SetColumnWidth(5, ref * 5);
+  m_lcSources->SetColumnWidth(6, ref * 2);
 #endif
 
   m_lcSources->SortItems(SortConnectionOnPriority, (long)m_lcSources);
