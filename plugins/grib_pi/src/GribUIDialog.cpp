@@ -486,7 +486,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
-    // 
+    //
     if( m_bGRIBActiveFile == 0)
     {
         // there's no data we can use in this file
@@ -496,7 +496,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     //  This will ensure that at least "some" data is displayed on file change,
     //  and so avoid user confusion of no data shown.
     //  This is especially important if cursor tracking of data is disabled.
-    
+
     bool bconfigOK = false;
     if(m_bDataPlot[GribOverlaySettings::WIND] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND))
         bconfigOK = true;
@@ -520,7 +520,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
         bconfigOK = true;
     if(m_bDataPlot[GribOverlaySettings::CAPE] && (m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND))
         bconfigOK = true;
-    
+
     //  If no parameter seems to be enabled by config, enable them all just to be sure something shows.
     if(!bconfigOK){
         for(int i=0 ; i < (int)GribOverlaySettings::GEO_ALTITUDE ; i++){
@@ -699,7 +699,7 @@ void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
     wxMenu* amenu = new wxMenu();
     amenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
 
-    const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+///    const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
     for( int i = 0; i<5; i++) {
         if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
                     && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {
@@ -806,7 +806,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
             wxMenu* smenu = new wxMenu();
             smenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
 
-            const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+///            const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
             for( int i = 0; i<5; i++) {
                 if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
                         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {
@@ -1258,11 +1258,11 @@ wxDateTime GRIBUICtrlBar::TimelineTime()
         int stepmin = m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
         return MinTime() + wxTimeSpan( tl * stepmin / 60, (tl * stepmin) % 60 );
     }
-    
+
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    int index = m_cRecordForecast->GetCurrentSelection() < 1 ? 0 : m_cRecordForecast->GetCurrentSelection();
+    unsigned int index = m_cRecordForecast->GetCurrentSelection() < 1 ? 0 : m_cRecordForecast->GetCurrentSelection();
     if(rsa && index<rsa->GetCount())
-        return rsa->Item(index).m_Reference_Time;        
+        return rsa->Item(index).m_Reference_Time;
 
     return wxDateTime::Now();
 }
