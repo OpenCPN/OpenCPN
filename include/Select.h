@@ -26,6 +26,7 @@
 
 #include "SelectItem.h"
 #include "Route.h"
+#include "Track.h"
 
 #define SELTYPE_UNKNOWN              0x0001
 #define SELTYPE_ROUTEPOINT           0x0002
@@ -51,19 +52,19 @@ public:
             RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
     bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
-            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
+                                    TrackPoint *pTrackPointAdd1, TrackPoint *pTrackPointAdd2, Track *pTrack );
 
     SelectItem *FindSelection( float slat, float slon, int fseltype );
     SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
 
     bool DeleteAllSelectableRouteSegments( Route * );
-    bool DeleteAllSelectableTrackSegments( Route * );
+    bool DeleteAllSelectableTrackSegments( Track * );
     bool DeleteAllSelectableRoutePoints( Route * );
     bool AddAllSelectableRouteSegments( Route *pr );
-    bool AddAllSelectableTrackSegments( Route *pr );
+    bool AddAllSelectableTrackSegments( Track *pr );
     bool AddAllSelectableRoutePoints( Route *pr );
     bool UpdateSelectableRouteSegments( RoutePoint *prp );
-    bool DeletePointSelectableTrackSegments( RoutePoint *pr );
+    bool DeletePointSelectableTrackSegments( TrackPoint *pt );
     bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
     bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );
 

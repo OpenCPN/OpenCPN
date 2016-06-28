@@ -924,6 +924,7 @@ SET(HDRS
 		include/NavObjectCollection.h
 		include/RoutePoint.h
 		include/Route.h
+                include/Track.h
 		include/SelectItem.h
 		include/Select.h
 		include/FontMgr.h
@@ -1016,6 +1017,7 @@ SET(SRCS
 		src/NavObjectCollection.cpp
 		src/RoutePoint.cpp
 		src/Route.cpp
+                src/Track.cpp
 		src/SelectItem.cpp
 		src/Select.cpp
 		src/FontMgr.cpp

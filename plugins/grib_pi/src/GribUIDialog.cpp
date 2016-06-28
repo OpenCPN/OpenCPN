@@ -699,7 +699,9 @@ void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
     wxMenu* amenu = new wxMenu();
     amenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
 
-///    const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+#ifdef __WXMSW__
+    const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+#endif
     for( int i = 0; i<5; i++) {
         if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
                     && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {
@@ -806,7 +808,9 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
             wxMenu* smenu = new wxMenu();
             smenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
 
-///            const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+#ifdef __WXMSW__
+            const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
+#endif
             for( int i = 0; i<5; i++) {
                 if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
                         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 ) {

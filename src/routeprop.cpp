@@ -86,9 +86,6 @@ extern wxPrintData               *g_printData;
 // Global page setup data
 extern wxPageSetupData*          g_pageSetupData;
 
-// Global print route selection dialog
-extern RoutePrintSelection * pRoutePrintSelection;
-
 extern float g_ChartScaleFactorExp;
 
 /*!
@@ -553,36 +550,32 @@ void RouteProp::OnRoutePropRightClick( wxListEvent &event )
 {
     wxMenu menu;
 
-    if( m_pRoute->m_bIsTrack ) {
-        // No track specific items so far.
-    } else {
-        if( ! m_pRoute->m_bIsInLayer ) {
+    if( ! m_pRoute->m_bIsInLayer ) {
             
-            #ifdef __WXQT__    
-            wxFont *pf = OCPNGetFont(_T("Menu"), 0);
+#ifdef __WXQT__    
+        wxFont *pf = OCPNGetFont(_T("Menu"), 0);
             
-            // add stuff
-            wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties..."));
-            editItem->SetFont(*pf);
-            menu.Append(editItem);
+        // add stuff
+        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties..."));
+        editItem->SetFont(*pf);
+        menu.Append(editItem);
+        
+        wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
+        delItem->SetFont(*pf);
+        menu.Append(delItem);
+        
+        
+#else    
             
-            wxMenuItem *delItem = new wxMenuItem(&menu, ID_RCLK_MENU_DELETE, _("Remove Selected"));
-            delItem->SetFont(*pf);
-            menu.Append(delItem);
+        wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
+        
+        wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
+        
+#endif
             
-           
-            #else    
-            
-            wxMenuItem* editItem = menu.Append( ID_RCLK_MENU_EDIT_WP, _("&Waypoint Properties...") );
-
-            wxMenuItem* delItem = menu.Append( ID_RCLK_MENU_DELETE, _("&Remove Selected") );
-            
-            #endif
-            
-            editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
-            delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
-            
-        }
+        editItem->Enable( m_wpList->GetSelectedItemCount() == 1 );
+        delItem->Enable( m_wpList->GetSelectedItemCount() > 0 && m_wpList->GetItemCount() > 2 );
+        
     }
 
     #ifndef __WXQT__    
@@ -599,51 +592,33 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
     if( m_pRoute->m_bIsInLayer ) return;
 
     if( ( m_nSelected > 1 ) && ( m_nSelected < m_pRoute->GetnPoints() ) ) {
-        if( m_pRoute->m_bIsTrack ) {
-            m_pHead = new Track();
-            m_pTail = new Track();
-            m_pHead->CloneTrack( m_pRoute, 1, m_nSelected, _("_A") );
-            m_pTail->CloneTrack( m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B") );
-        } else {
-            m_pHead = new Route();
-            m_pTail = new Route();
-            m_pHead->CloneRoute( m_pRoute, 1, m_nSelected, _("_A") );
-            m_pTail->CloneRoute( m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B") );
-        }
+        m_pHead = new Route();
+        m_pTail = new Route();
+        m_pHead->CloneRoute( m_pRoute, 1, m_nSelected, _("_A") );
+        m_pTail->CloneRoute( m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B") );
         pRouteList->Append( m_pHead );
-        pConfig->AddNewRoute( m_pHead, -1 );
+        pConfig->AddNewRoute( m_pHead );
         m_pHead->RebuildGUIDList();
 
         pRouteList->Append( m_pTail );
-        pConfig->AddNewRoute( m_pTail, -1 );
+        pConfig->AddNewRoute( m_pTail );
         m_pTail->RebuildGUIDList();
 
         pConfig->DeleteConfigRoute( m_pRoute );
 
-        if( !m_pTail->m_bIsTrack ) {
-            pSelect->DeleteAllSelectableRoutePoints( m_pRoute );
-            pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
-            g_pRouteMan->DeleteRoute( m_pRoute );
-            pSelect->AddAllSelectableRouteSegments( m_pTail );
-            pSelect->AddAllSelectableRoutePoints( m_pTail );
-            pSelect->AddAllSelectableRouteSegments( m_pHead );
-            pSelect->AddAllSelectableRoutePoints( m_pHead );
-        } else {
-            pSelect->DeleteAllSelectableTrackSegments( m_pRoute );
-            m_pRoute->ClearHighlights();
-            g_pRouteMan->DeleteTrack( m_pRoute );
-            pSelect->AddAllSelectableTrackSegments( m_pTail );
-            pSelect->AddAllSelectableTrackSegments( m_pHead );
-        }
-
+        pSelect->DeleteAllSelectableRoutePoints( m_pRoute );
+        pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
+        g_pRouteMan->DeleteRoute( m_pRoute );
+        pSelect->AddAllSelectableRouteSegments( m_pTail );
+        pSelect->AddAllSelectableRoutePoints( m_pTail );
+        pSelect->AddAllSelectableRouteSegments( m_pHead );
+        pSelect->AddAllSelectableRoutePoints( m_pHead );
+        
         SetRouteAndUpdate( m_pTail );
         UpdateProperties();
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-            if( !m_pTail->m_bIsTrack ) pRouteManagerDialog->UpdateRouteListCtrl();
-            else
-                pRouteManagerDialog->UpdateTrkListCtrl();
-        }
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateRouteListCtrl();
     }
 }
 
@@ -651,34 +626,25 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
 // slot on pressed button "Print Route" with selection of the route properties to print
 void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
 {
-
-  if (pRoutePrintSelection == NULL)
-    pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
-
-  if( !pRoutePrintSelection->IsShown() ) 
-      pRoutePrintSelection->ShowModal();
-
-  delete pRoutePrintSelection;
-  pRoutePrintSelection=NULL;
+    RoutePrintSelection dlg( GetParent(), m_pRoute );
+    dlg.ShowModal();
 }
 
 void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
 {
     m_ExtendButton->Enable( false );
 
-    if( !m_pRoute->m_bIsTrack ) {
-        if( IsThisRouteExtendable() ) {
-            int fm = m_pExtendRoute->GetIndexOf( m_pExtendPoint ) + 1;
-            int to = m_pExtendRoute->GetnPoints();
-            if( fm <= to ) {
-                pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
-                m_pRoute->CloneRoute( m_pExtendRoute, fm, to, _("_plus") );
-                pSelect->AddAllSelectableRouteSegments( m_pRoute );
-                SetRouteAndUpdate( m_pRoute );
-                UpdateProperties();
-            }
+    if( IsThisRouteExtendable() ) {
+        int fm = m_pExtendRoute->GetIndexOf( m_pExtendPoint ) + 1;
+        int to = m_pExtendRoute->GetnPoints();
+        if( fm <= to ) {
+            pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
+            m_pRoute->CloneRoute( m_pExtendRoute, fm, to, _("_plus") );
+            pSelect->AddAllSelectableRouteSegments( m_pRoute );
+            SetRouteAndUpdate( m_pRoute );
+            UpdateProperties();
         }
-    } // end route extend
+    }
 }
 
 void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
@@ -735,58 +701,56 @@ bool RouteProp::IsThisRouteExtendable()
     m_pExtendPoint = NULL;
     if( m_pRoute->m_bRtIsActive || m_pRoute->m_bIsInLayer ) return false;
 
-    if( !m_pRoute->m_bIsTrack ) {
-        RoutePoint *pLastPoint = m_pRoute->GetLastPoint();
-        wxArrayPtrVoid *pEditRouteArray;
+    RoutePoint *pLastPoint = m_pRoute->GetLastPoint();
+    wxArrayPtrVoid *pEditRouteArray;
 
-        pEditRouteArray = g_pRouteMan->GetRouteArrayContaining( pLastPoint );
-        // remove invisible & own routes from choices
-        int i;
-        for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
-            Route *p = (Route *) pEditRouteArray->Item( i - 1 );
-            if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt(
-                    i - 1 );
-        }
-        if( pEditRouteArray->GetCount() == 1 ) m_pExtendPoint = pLastPoint;
-        else
-            if( pEditRouteArray->GetCount() == 0 ) {
+    pEditRouteArray = g_pRouteMan->GetRouteArrayContaining( pLastPoint );
+    // remove invisible & own routes from choices
+    int i;
+    for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+        Route *p = (Route *) pEditRouteArray->Item( i - 1 );
+        if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt(
+            i - 1 );
+    }
+    if( pEditRouteArray->GetCount() == 1 ) m_pExtendPoint = pLastPoint;
+    else
+        if( pEditRouteArray->GetCount() == 0 ) {
 
-                //int nearby_radius_meters = 8./cc1->GetCanvasScaleFactor(); // "nearby" means 8 pixels away
-                int nearby_radius_meters = (int) ( 8. / cc1->GetCanvasTrueScale() );
-                double rlat = pLastPoint->m_lat;
-                double rlon = pLastPoint->m_lon;
+            //int nearby_radius_meters = 8./cc1->GetCanvasScaleFactor(); // "nearby" means 8 pixels away
+            int nearby_radius_meters = (int) ( 8. / cc1->GetCanvasTrueScale() );
+            double rlat = pLastPoint->m_lat;
+            double rlon = pLastPoint->m_lon;
 
-                m_pExtendPoint = pWayPointMan->GetOtherNearbyWaypoint( rlat, rlon,
-                        nearby_radius_meters, pLastPoint->m_GUID );
-                if( m_pExtendPoint && !m_pExtendPoint->m_bIsInTrack ) {
-                    wxArrayPtrVoid *pCloseWPRouteArray = g_pRouteMan->GetRouteArrayContaining(
-                            m_pExtendPoint );
-                    if( pCloseWPRouteArray ) {
-                        pEditRouteArray = pCloseWPRouteArray;
+            m_pExtendPoint = pWayPointMan->GetOtherNearbyWaypoint( rlat, rlon,
+                                                                   nearby_radius_meters, pLastPoint->m_GUID );
+            if( m_pExtendPoint ) {
+                wxArrayPtrVoid *pCloseWPRouteArray = g_pRouteMan->GetRouteArrayContaining(
+                    m_pExtendPoint );
+                if( pCloseWPRouteArray ) {
+                    pEditRouteArray = pCloseWPRouteArray;
 
-                        // remove invisible & own routes from choices
-                        for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
-                            Route *p = (Route *) pEditRouteArray->Item( i - 1 );
-                            if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt(
-                                    i - 1 );
-                        }
+                    // remove invisible & own routes from choices
+                    for( i = pEditRouteArray->GetCount(); i > 0; i-- ) {
+                        Route *p = (Route *) pEditRouteArray->Item( i - 1 );
+                        if( !p->IsVisible() || ( p->m_GUID == m_pRoute->m_GUID ) ) pEditRouteArray->RemoveAt(
+                            i - 1 );
                     }
                 }
             }
-
-        if( pEditRouteArray->GetCount() == 1 ) {
-            Route *p = (Route *) pEditRouteArray->Item( 0 );
-            int fm = p->GetIndexOf( m_pExtendPoint ) + 1;
-            int to = p->GetnPoints();
-            if( fm <= to ) {
-                m_pExtendRoute = p;
-                delete pEditRouteArray;
-                return true;
-            }
         }
-        delete pEditRouteArray;
 
-    } // end route extend
+    if( pEditRouteArray->GetCount() == 1 ) {
+        Route *p = (Route *) pEditRouteArray->Item( 0 );
+        int fm = p->GetIndexOf( m_pExtendPoint ) + 1;
+        int to = p->GetnPoints();
+        if( fm <= to ) {
+            m_pExtendRoute = p;
+            delete pEditRouteArray;
+            return true;
+        }
+    }
+    delete pEditRouteArray;
+
     return false;
 }
 
@@ -805,8 +769,6 @@ RouteProp::~RouteProp()
 
     delete m_wpList;
 
-    // delete global print route selection dialog
-    delete pRoutePrintSelection;
     instanceFlag = false;
 }
 
@@ -1494,8 +1456,7 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
         if( prp ) {
             prp->m_bPtIsSelected = true;                // highlight the routepoint
 
-            if( !( m_pRoute->m_bIsInLayer ) && !( m_pRoute == g_pActiveTrack )
-                    && !( m_pRoute->m_bRtIsActive ) ) {
+            if( !m_pRoute->m_bIsInLayer && !m_pRoute->m_bRtIsActive ) {
                 m_nSelected = selected_no + 1;
                 m_SplitButton->Enable( true );
             }
@@ -1624,18 +1585,10 @@ void RouteProp::SetRouteAndUpdate( Route *pR, bool only_points )
 
         // Reorganize dialog for route or track display
         if( m_pRoute ) {
-            if( m_pRoute->m_bIsTrack ) {
-                m_PlanSpeedLabel->SetLabel( _("Avg. speed") );
-                m_PlanSpeedCtl->SetEditable( false );
-                m_ExtendButton->SetLabel( _("Extend Track") );
-                m_SplitButton->SetLabel( _("Split Track") );
-
-            } else {
-                m_PlanSpeedLabel->SetLabel( _("Plan speed") );
-                m_PlanSpeedCtl->SetEditable( true );
-                m_ExtendButton->SetLabel( _("Extend Route") );
-                m_SplitButton->SetLabel( _("Split Route") );
-            }
+            m_PlanSpeedLabel->SetLabel( _("Plan speed") );
+            m_PlanSpeedCtl->SetEditable( true );
+            m_ExtendButton->SetLabel( _("Extend Route") );
+            m_SplitButton->SetLabel( _("Split Route") );
 
             //    Fill in some top pane properties from the Route member elements
             m_RouteNameCtl->SetValue( m_pRoute->m_RouteNameString );
@@ -1688,36 +1641,31 @@ void RouteProp::InitializeList()
 {
     if( NULL == m_pRoute ) return;
 
-    if( !m_pRoute->m_bIsTrack ) {
-        m_pRoute->UpdateSegmentDistances( m_planspeed );           // to fix ETD properties
-
-        //  Iterate on Route Points, inserting blank fields starting with index 0
-        wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
-        int in = 0;
-        while( pnode ) {
+    m_pRoute->UpdateSegmentDistances( m_planspeed );           // to fix ETD properties
+    //  Iterate on Route Points, inserting blank fields starting with index 0
+    wxRoutePointListNode *pnode = m_pRoute->pRoutePointList->GetFirst();
+    int in = 0;
+    while( pnode ) {
+        m_wpList->InsertItem( in, _T(""), -1 );
+        m_wpList->SetItemPtrData( in, (wxUIntPtr)pnode->GetData() );
+        in++;
+        if( pnode->GetData()->m_seg_etd.IsValid() ) {
             m_wpList->InsertItem( in, _T(""), -1 );
-            m_wpList->SetItemPtrData( in, (wxUIntPtr)pnode->GetData() );
             in++;
-            if( pnode->GetData()->m_seg_etd.IsValid() ) {
-                m_wpList->InsertItem( in, _T(""), -1 );
-                in++;
-            }
-            pnode = pnode->GetNext();
         }
-
-        //      Update the plan speed and route start time controls
-        wxString s;
-        s.Printf( _T("%5.2f"), m_planspeed );
-        m_PlanSpeedCtl->SetValue( s );
-
-        if( m_starttime.IsValid() ) {
-            wxString s = ts2s( m_starttime, m_tz_selection, (int) gStart_LMT_Offset, INPUT_FORMAT );
-            m_StartTimeCtl->SetValue( s );
-        } else
-            m_StartTimeCtl->Clear();
+        pnode = pnode->GetNext();
     }
 
-    
+    //      Update the plan speed and route start time controls
+    wxString s;
+    s.Printf( _T("%5.2f"), m_planspeed );
+    m_PlanSpeedCtl->SetValue( s );
+
+    if( m_starttime.IsValid() ) {
+        wxString s = ts2s( m_starttime, m_tz_selection, (int) gStart_LMT_Offset, INPUT_FORMAT );
+        m_StartTimeCtl->SetValue( s );
+    } else
+        m_StartTimeCtl->Clear();
 }
 
 bool RouteProp::UpdateProperties()
@@ -1734,6 +1682,7 @@ bool RouteProp::UpdateProperties()
     m_SplitButton->Enable( false );
     m_ExtendButton->Enable( false );
 
+#if 0
     if( m_pRoute->m_bIsTrack ) {
         m_pRoute->UpdateSegmentDistances();           // get segment and total distance
         // but ignore leg speed calcs
@@ -1790,6 +1739,7 @@ bool RouteProp::UpdateProperties()
         m_TimeEnrouteCtl->SetValue( time_form );
 
     } else        // Route
+#endif        
     {
         double brg;
         double join_distance = 0.;
@@ -2050,10 +2000,10 @@ bool RouteProp::UpdateProperties()
             m_wpList->SetItem( item_line_index, 10, nullify );
 
             //  Lat/Lon
-            wxString tlat = toSDMM( 1, prp->m_lat, prp->m_bIsInTrack );  // low precision for routes
+            wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
             if( arrival ) m_wpList->SetItem( item_line_index, 4, tlat );
 
-            wxString tlon = toSDMM( 2, prp->m_lon, prp->m_bIsInTrack );
+            wxString tlon = toSDMM( 2, prp->m_lon, false );
             if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
 
 
@@ -2293,7 +2243,7 @@ void RouteProp::OnPlanSpeedCtlUpdated( wxCommandEvent& event )
     wxString spd = m_PlanSpeedCtl->GetValue();
     double s;
     spd.ToDouble( &s );
-    if( ( 0.1 < s ) && ( s < 1000.0 ) && !m_pRoute->m_bIsTrack ) {
+    if( ( 0.1 < s ) && ( s < 1000.0 ) ) {
         m_planspeed = fromUsrSpeed( s );
 
         UpdateProperties();
@@ -2402,12 +2352,8 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
 
-    if( RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog->IsShown() ) {
-        if( !m_pRoute->m_bIsTrack )
-            pRouteManagerDialog->UpdateRouteListCtrl();
-        else
-            pRouteManagerDialog->UpdateTrkListCtrl();
-    }
+    if( RouteManagerDialog::getInstanceFlag() && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateRouteListCtrl();
 
     #ifdef __WXGTK__ 
     gFrame->Raise();
