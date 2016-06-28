@@ -417,77 +417,81 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     // XXX
     wxFileName fn( m_file_names[0] );
     wxString title( _("File") );
-	title.Append( _T(": ") ).Append( fn.GetFullName() );
+    title.Append( _T(": ") ).Append( fn.GetFullName() );
 
-    if( m_bGRIBActiveFile ) {
-        if( m_bGRIBActiveFile->IsOK() ) {
-            if( rsa->GetCount() == 0 ) {                        //valid but empty file
-                m_bGRIBActiveFile = NULL;
-                title.Prepend( _("Error! ") ).Append( _(" contains no valid data!") );
-            } else {
-                PopulateComboDataList();
-                title.append( _T(" (") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(" )"));
-
-                if( rsa->GetCount() > 1 ) {
-                    GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
-
-                    //compute ntotal time span
-                    wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
-                    m_TimeLineHours = span.GetHours();
-
-                    //get file interval index and update intervale choice if necessary
-                    int halfintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
-                    for( m_FileIntervalIndex = 0;; m_FileIntervalIndex++){
-                        if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halfintermin) break;
-                    }
-                    if (m_FileIntervalIndex > 0)
-                        m_FileIntervalIndex--;
-                    if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
-                }
-            }
+    if( m_bGRIBActiveFile->IsOK() ) {
+        if( rsa->GetCount() == 0 ) {                        //valid but empty file
+            delete m_bGRIBActiveFile;
+            m_bGRIBActiveFile = NULL;
+            title.Prepend( _("Error! ") ).Append( _(" contains no valid data!") );
         } else {
-            if( fn.IsDir() ) {
-                pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
+            PopulateComboDataList();
+            title.append( _T(" (") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(" )"));
+
+            if( rsa->GetCount() > 1 ) {
+                GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
+
+                //compute ntotal time span
+                wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
+                m_TimeLineHours = span.GetHours();
+
+                //get file interval index and update intervale choice if necessary
+                int halfintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
+                for( m_FileIntervalIndex = 0;; m_FileIntervalIndex++){
+                    if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halfintermin) break;
+                }
+                if (m_FileIntervalIndex > 0)
+                    m_FileIntervalIndex--;
+                if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
             }
-            else
-                title.Prepend( _("Error! ") ).Append( m_bGRIBActiveFile->GetLastMessage() );
         }
-        pPlugIn->GetGRIBOverlayFactory()->SetMessage( title );
-        SetTitle( title );
-        SetTimeLineMax(false);
-        SetFactoryOptions();
-        if( pPlugIn->GetStartOptions() && m_TimeLineHours != 0)                             //fix a crash for one date files
-            ComputeBestForecastForNow();
+    } else {
+        if( fn.IsDir() ) {
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
+        }
         else
-            TimelineChanged();
-
-		//populate  altitude choice and show if necessary
-        for( int i = 1; i<5; i++) {
-            if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
-                && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) )
-                    m_HasAltitude = true;
-        }
-        m_Altitude = 0;             //set altitude at std
-
-        //enable buttons according with file contents to ovoid crashes
-#ifdef __OCPN__ANDROID__
-        m_bpSettings->Enable(true);
-#else
-        m_bpSettings->Enable(m_pTimelineSet != NULL);
-#endif
-        m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
-
-        m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-        m_bpPlay->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-
-        m_bpPrev->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-        m_bpNext->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-        m_bpNow->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
-
+            title.Prepend( _("Error! ") ).Append( m_bGRIBActiveFile->GetLastMessage() );
     }
+    pPlugIn->GetGRIBOverlayFactory()->SetMessage( title );
+    SetTitle( title );
+    SetTimeLineMax(false);
+    SetFactoryOptions();
+    if( pPlugIn->GetStartOptions() && m_TimeLineHours != 0)                             //fix a crash for one date files
+        ComputeBestForecastForNow();
+    else
+        TimelineChanged();
+
+	//populate  altitude choice and show if necessary
+    if (m_pTimelineSet && m_bGRIBActiveFile) for( int i = 1; i<5; i++) {
+        if( m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
+            && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )
+                m_HasAltitude = true;
+    }
+    m_Altitude = 0;             //set altitude at std
+
+    //enable buttons according with file contents to ovoid crashes
+#ifdef __OCPN__ANDROID__
+    m_bpSettings->Enable(true);
+#else
+    m_bpSettings->Enable(m_pTimelineSet != NULL);
+#endif
+    m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
+
+    m_sTimeline->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpPlay->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+
+    m_bpPrev->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpNext->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpNow->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
 
-
+    // 
+    if( m_bGRIBActiveFile == 0)
+    {
+        // there's no data we can use in this file
+        return;
+    }
     //  Try to verify that there will be at least one parameter in the GRIB file that is enabled for display
     //  This will ensure that at least "some" data is displayed on file change,
     //  and so avoid user confusion of no data shown.
