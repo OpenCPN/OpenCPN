@@ -184,6 +184,9 @@ fail:
 
 void GshhsPolyCell::ReadPolygonFile()
 {
+    if(!fpoly)
+        return;
+
     int pos_data;
     int tab_data;
 
