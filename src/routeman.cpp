@@ -81,7 +81,7 @@ extern bool             g_bMagneticAPB;
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
 
-extern Track            *g_pActiveTrack;
+extern ActiveTrack      *g_pActiveTrack;
 extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;

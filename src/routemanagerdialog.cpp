@@ -128,7 +128,7 @@ extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
 extern ChartCanvas *cc1;
 extern ChartBase *Current_Ch;
-extern Track     *g_pActiveTrack;
+extern ActiveTrack      *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoImpl     *pMarkPropDialog;
 extern MyFrame          *gFrame;

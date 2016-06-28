@@ -99,6 +99,7 @@ extern double           g_TrackDeltaDistance;
 extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
 
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
 {
 public:
@@ -114,6 +115,7 @@ public:
 private:
     timespec tp;
 };
+#endif
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( TrackList );

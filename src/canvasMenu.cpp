@@ -113,7 +113,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
-extern Track            *g_pActiveTrack;
+extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 extern WayPointman      *pWayPointMan;
 extern MyConfig         *pConfig;
