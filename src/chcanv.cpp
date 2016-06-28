@@ -304,6 +304,7 @@ wxProgressDialog *pprog;
 bool b_skipout;
 wxSize pprog_size;
 int pprog_count;
+int pprog_threads;
 wxArrayString compress_msg_array;
 
 //  TODO why are these static?
@@ -1143,6 +1144,11 @@ void ChartCanvas::SetDisplaySizeMM( double size )
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 {
     wxString msg(event.m_string.c_str(), wxConvUTF8);
+    // if cpus are removed between runs
+    if(pprog_threads > 0 && compress_msg_array.GetCount() >  (unsigned int)pprog_threads) {
+        compress_msg_array.RemoveAt(pprog_threads, compress_msg_array.GetCount() - pprog_threads);
+    }
+
     if(compress_msg_array.GetCount() > (unsigned int)event.thread )
     {
         compress_msg_array.RemoveAt(event.thread);
