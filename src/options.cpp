@@ -4440,6 +4440,8 @@ void options::CreateControls(void) {
   m_small_button_size =
       wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 
+  m_nCharWidthMax = GetSize().x / GetCharWidth();
+      
   // Some members (pointers to controls) need to initialized
   pEnableZoomToCursor = NULL;
   pSmoothPanZoom = NULL;
