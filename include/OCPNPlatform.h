@@ -110,7 +110,7 @@ public:
     int GetStatusBarFieldCount();
     bool GetFullscreen();
     bool SetFullscreen( bool bFull );
-    
+    double GetDisplayDensityFactor();
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
