@@ -84,6 +84,8 @@ SET(SRC_DASHBOARD
     src/dashboard_pi.cpp
     src/instrument.cpp
     src/instrument.h
+    src/iirfilter.h
+    src/iirfilter.cpp
     src/compass.cpp
     src/compass.h
     src/dial.cpp
