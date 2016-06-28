@@ -31,13 +31,10 @@ double iirfilter::filter(double data) {
             default:
                 wxASSERT(false);
         }
-
     }
-    else {
+    else
         accum = data;
-    }
     return get();
-
 }
 
 void iirfilter::reset(double a) {
@@ -101,7 +98,6 @@ void iirfilter::unwrapDeg(double deg) {
     else if (deg - oldDeg < -180) {
         wraps++;
     }
-
     oldDeg = deg;
 }
 
