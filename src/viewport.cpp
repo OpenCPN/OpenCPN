@@ -480,13 +480,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     //    So, look for this case and handle appropriately with respect to the given Region
 
     if( chart_scale < chart_native_scale / 10 ) {
-        //    Make a positive definite vp
-        ViewPort vp_positive = *this;
-        while( vp_positive.vpBBox.GetMinX() < 0 ) {
-            vp_positive.clon += 360.;
-            wxPoint2DDouble t( 360., 0. );
-            vp_positive.vpBBox.Translate( t );
-        }
 
         //    Scan the points one-by-one, so that we can get min/max to make a bbox
         float *pfp = llpoints;
@@ -504,24 +497,13 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             pfp += 2;
         }
 
-        wxBoundingBox chart_box( lon_min, lat_min, lon_max, lat_max );
+        LLBBox chart_box;
+        chart_box.Set( lat_min, lon_min, lat_max, lon_max );
 
         //    Case:  vpBBox is completely outside the chart box, or vice versa
         //    Return an empty region
-        if( chart_box.IntersectOut( (wxBoundingBox&) vp_positive.vpBBox ) ) {
-            if( chart_box.IntersectOut( (wxBoundingBox&) vpBBox ) ) {
-                // try again with the chart translated 360
-                wxPoint2DDouble rtw( 360., 0. );
-                wxBoundingBox trans_box = chart_box;
-                trans_box.Translate( rtw );
-
-                if( trans_box.IntersectOut( (wxBoundingBox&) vp_positive.vpBBox ) ) {
-                    if( trans_box.IntersectOut( (wxBoundingBox&) vpBBox ) ) {
-                        return OCPNRegion();
-                    }
-                }
-            }
-        }
+        if( chart_box.IntersectOut( vpBBox ) )
+            return OCPNRegion();
 
         //    Case:  vpBBox is completely inside the chart box
         //      Note that this test is not perfect, and will fail for some charts.
@@ -531,32 +513,11 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         //      How to fix: maybe scrub the chart points and see if it is likely that
         //      a region may be safely built and intersection tested.
 
-        if( _IN == chart_box.Intersect( (wxBoundingBox&) vp_positive.vpBBox ) ) {
+        if( chart_box.IntersectIn( vpBBox ) )
             return Region;
-        }
 
-        if(_IN == chart_box.Intersect((wxBoundingBox&)vpBBox))
-        {
-            return Region;
-        }
-
-        //    The ViewPort and the chart region overlap in some way....
-        //    Create the intersection of the two bboxes
-        //    Boxes must be same phase
-        while( chart_box.GetMinX() < 0 ) {
-            wxPoint2DDouble t( 360., 0. );
-            chart_box.Translate( t );
-        }
-
-        double cb_minlon = wxMax(chart_box.GetMinX(), vp_positive.vpBBox.GetMinX());
-        double cb_maxlon = wxMin(chart_box.GetMaxX(), vp_positive.vpBBox.GetMaxX());
-        double cb_minlat = wxMax(chart_box.GetMinY(), vp_positive.vpBBox.GetMinY());
-        double cb_maxlat = wxMin(chart_box.GetMaxY(), vp_positive.vpBBox.GetMaxY());
-
-        if( cb_maxlon < cb_minlon ) cb_maxlon += 360.;
-
-        wxPoint p1 = GetPixFromLL( cb_maxlat, cb_minlon );  // upper left
-        wxPoint p2 = GetPixFromLL( cb_minlat, cb_maxlon );   // lower right
+        wxPoint p1 = GetPixFromLL( lat_max, lon_min );  // upper left
+        wxPoint p2 = GetPixFromLL( lat_min, lon_max );   // lower right
 
         OCPNRegion r( p1, p2 );
         r.Intersect( Region );
@@ -974,30 +935,15 @@ void ViewPort::SetBoxes( void )
         dlon_max += 360;
 
     //  Set the viewport lat/lon bounding box appropriately
-    vpBBox.SetMin( dlon_min, dlat_min );
-    vpBBox.SetMax( dlon_max, dlat_max );
+    vpBBox.Set( dlat_min, dlon_min, dlat_max, dlon_max );
 
     // Restore the rotation angle
     SetRotationAngle( rotation_save );
 }
 
-LLBBox ViewPort::GetBBoxView()
-{
-    LLBBox BBView = vpBBox;
-
-    wxPoint2DDouble pos(360, 0), neg(-360, 0);
-    if(BBView.GetMaxX()+180 < clon)
-        BBView.Translate(pos);
-    else if(BBView.GetMinX()-180 > clon)
-        BBView.Translate(neg);
-
-    return BBView;
-}
-
 void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax)
 {
-    vpBBox.SetMin( lonmin, latmin );
-    vpBBox.SetMax( lonmax, latmax );
+    vpBBox.Set( latmin, lonmin, latmax, lonmax );
 }
 
 ViewPort ViewPort::BuildExpandedVP(int width, int height)
