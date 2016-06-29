@@ -319,6 +319,11 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     wxArrayString file_list;
         
     int get_flags =  wxDIR_FILES | wxDIR_DIRS;
+#ifdef __WXMSW__
+#ifdef _DEBUG
+    get_flags =  wxDIR_FILES;
+#endif        
+#endif        
 
 #ifdef __OCPN__ANDROID__
     get_flags =  wxDIR_FILES;           // No subdirs, especially "/files" where PlugIns are initially placed in APK
@@ -329,12 +334,6 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
-#ifdef __WXMSW__
-#ifdef _DEBUG
-		if (file_name.Lower().find("\\release") != wxNOT_FOUND || file_name.Lower().find("\\_cpack_packages") != wxNOT_FOUND)
-			continue;  // Only load the debug version of plugin to stop duplicate loads
-#endif        
-#endif        
 		wxString plugin_file = wxFileName(file_name).GetFullName();
         wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
 
