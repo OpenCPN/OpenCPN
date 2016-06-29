@@ -72,9 +72,7 @@ RoutePoint::RoutePoint()
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
-    m_bIsInTrack = false;
     m_CreateTimeX = wxDateTime::Now();
-    m_GPXTrkSegNo = 1;
     m_bIsolatedMark = false;
     m_bShowName = true;
     m_bKeepXRoute = false;
@@ -129,9 +127,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_bIsActive = orig->m_bIsActive;
     m_bBlink = orig->m_bBlink;
     m_bIsInRoute = orig->m_bIsInRoute;
-    m_bIsInTrack = orig->m_bIsInTrack;
     m_CreateTimeX = orig->m_CreateTimeX;
-    m_GPXTrkSegNo = orig->m_GPXTrkSegNo;
     m_bIsolatedMark = orig->m_bIsolatedMark;
     m_bShowName = orig->m_bShowName;
     m_bKeepXRoute = orig->m_bKeepXRoute;
@@ -187,9 +183,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_bIsActive = false;
     m_bBlink = false;
     m_bIsInRoute = false;
-    m_bIsInTrack = false;
     m_CreateTimeX = wxDateTime::Now();
-    m_GPXTrkSegNo = 1;
     m_bIsolatedMark = false;
     m_bShowName = true;
     m_bKeepXRoute = false;
@@ -265,7 +259,6 @@ void RoutePoint::SetCreateTime( wxDateTime dt )
     m_CreateTimeX = dt;
 }
 
-
 void RoutePoint::SetName(const wxString & name)
 {
     m_MarkName = name;
@@ -332,14 +325,15 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     //  return the home point in this dc to allow "connect the dots"
     if( NULL != rpn ) *rpn = r;
 
-    if( !m_bIsVisible /*&& !m_bIsInTrack*/)     // pjotrc 2010.02.13, 2011.02.24
+    if( !m_bIsVisible )     // pjotrc 2010.02.13, 2011.02.24
         return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
 
     wxPen *pen;
-    if( m_bBlink ) pen = g_pRouteMan->GetActiveRoutePointPen();
+    if( m_bBlink )
+        pen = g_pRouteMan->GetActiveRoutePointPen();
     else
         pen = g_pRouteMan->GetRoutePointPen();
 
@@ -550,13 +544,11 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
-        if(lon1 > lon2) {
-            m_wpBBox.SetMin(lon1, lat1);
-            m_wpBBox.SetMax(lon2+360, lat2);
-        } else {
-            m_wpBBox.SetMin(lon1, lat1);
-            m_wpBBox.SetMax(lon2, lat2);
-        }
+        if(lon1 > lon2)
+            m_wpBBox.Set(lat1, lon1, lat2, lon2+360);
+        else
+            m_wpBBox.Set(lat1, lon1, lat2, lon2);
+
         m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
         m_wpBBox_rotation = vp.rotation;
     }

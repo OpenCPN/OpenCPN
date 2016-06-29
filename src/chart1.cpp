@@ -186,6 +186,7 @@ int                       g_restore_dbindex;
 double                    g_ChartNotRenderScaleFactor;
 
 RouteList                 *pRouteList;
+TrackList                 *pTrackList;
 LayerList                 *pLayerList;
 bool                      g_bIsNewLayer;
 int                       g_LayerIdx;
@@ -569,7 +570,7 @@ int                       g_route_line_width;
 int                       g_track_line_width;
 wxString                  g_default_wp_icon;
 
-Track                     *g_pActiveTrack;
+ActiveTrack              *g_pActiveTrack;
 double                    g_TrackIntervalSeconds;
 double                    g_TrackDeltaDistance;
 int                       g_nTrackPrecision;
@@ -643,8 +644,6 @@ wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 bool                      g_blocale_changed;
-
-RoutePrintSelection       *pRoutePrintSelection;
 
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -4452,11 +4451,11 @@ void MyFrame::ActivateMOB( void )
 void MyFrame::TrackOn( void )
 {
     g_bTrackActive = true;
-    g_pActiveTrack = new Track();
+    g_pActiveTrack = new ActiveTrack();
 
-    pRouteList->Append( g_pActiveTrack );
+    pTrackList->Append( g_pActiveTrack );
     if(pConfig)
-        pConfig->AddNewRoute( g_pActiveTrack, 0 );
+        pConfig->AddNewTrack( g_pActiveTrack );
 
     g_pActiveTrack->Start();
 
@@ -4480,12 +4479,12 @@ void MyFrame::TrackOn( void )
     wxJSONValue v;
     wxDateTime now;
     now = now.Now().ToUTC();
-    wxString name = g_pActiveTrack->m_RouteNameString;
+    wxString name = g_pActiveTrack->m_TrackNameString;
     if(name.IsEmpty())
     {
-        RoutePoint *rp = g_pActiveTrack->GetPoint( 1 );
-        if( rp && rp->GetCreateTime().IsValid() )
-            name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
+        TrackPoint *tp = g_pActiveTrack->GetPoint( 0 );
+        if( tp->GetCreateTime().IsValid() )
+            name = tp->GetCreateTime().FormatISODate() + _T(" ") + tp->GetCreateTime().FormatISOTime();
         else
             name = _("(Unnamed Track)");
     }
@@ -4509,14 +4508,14 @@ Track *MyFrame::TrackOff( bool do_add_point )
         g_pActiveTrack->Stop( do_add_point );
 
         if( g_pActiveTrack->GetnPoints() < 2 ) {
-            g_pRouteMan->DeleteRoute( g_pActiveTrack );
+            g_pRouteMan->DeleteTrack( g_pActiveTrack );
             return_val = NULL;
         }
         else {
             if( g_bTrackDaily ) {
                 Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
                 if(pExtendTrack) {
-                    g_pRouteMan->DeleteRoute( g_pActiveTrack );
+                    g_pRouteMan->DeleteTrack( g_pActiveTrack );
                     return_val = pExtendTrack;
                 }
             }
@@ -4599,7 +4598,7 @@ void MyFrame::TrackDailyRestart( void )
     //  attributes of the last point of the track that was just stopped at midnight.
 
     if( pPreviousTrack ) {
-        RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
+        TrackPoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
         g_pActiveTrack->AdjustCurrentTrackPoint(pMidnightPoint);
     }
 
@@ -8494,15 +8493,15 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
         if(root.HasMember(_T("Track_ID")))
             trk_id = root[_T("Track_ID")].AsString();
 
-        for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
+        for(TrackList::iterator it = pTrackList->begin(); it != pTrackList->end(); it++)
         {
             wxString name = wxEmptyString;
-            if((*it)->IsTrack() && (*it)->m_GUID == trk_id)
+            if((*it)->m_GUID == trk_id)
             {
-                name = (*it)->m_RouteNameString;
+                name = (*it)->m_TrackNameString;
                 if(name.IsEmpty())
                 {
-                    RoutePoint *rp = (*it)->GetPoint( 1 );
+                    TrackPoint *rp = (*it)->GetPoint( 0 );
                     if( rp && rp->GetCreateTime().IsValid() )
                         name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
                     else
@@ -8512,7 +8511,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 /*                Tracks can be huge e.g merged tracks. On Compüters with small memory this can produce a crash by insufficient memory !!
 
                 wxJSONValue v; unsigned long i = 0;
-                for(RoutePointList::iterator itp = (*it)->pRoutePointList->begin(); itp != (*it)->pRoutePointList->end(); itp++)
+                for(TrackPointList::iterator itp = (*it)->pTrackPointList->begin(); itp != (*it)->pTrackPointList->end(); itp++)
                 {
                     v[i][0] = (*itp)->m_lat;
                     v[i][1] = (*itp)->m_lon;
@@ -8524,11 +8523,12 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 */
 /*                To avoid memory problems send a single trackpoint. It's up to the plugin to collect the data. */
                 int i = 1;     wxJSONValue v;
-                for(RoutePointList::iterator itp = (*it)->pRoutePointList->begin(); itp != (*it)->pRoutePointList->end(); itp++)
+                for(int j = 0; j< (*it)->GetnPoints(); j++)
                 {
-                    v[_T("lat")] = (*itp)->m_lat;
-                    v[_T("lon")] = (*itp)->m_lon;
-                    v[_T("TotalNodes")] = (*it)->pRoutePointList->GetCount();
+                    TrackPoint *tp = (*it)->GetPoint(j);
+                    v[_T("lat")] = tp->m_lat;
+                    v[_T("lon")] = tp->m_lon;
+                    v[_T("TotalNodes")] = (*it)->GetnPoints();
                     v[_T("NodeNr")] = i;
                     v[_T("error")] = false;
                     i++;
@@ -8565,7 +8565,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             wxString name = wxEmptyString;
             wxJSONValue v;
 
-            if(!(*it)->IsTrack() && (*it)->m_GUID == route_id)
+            if((*it)->m_GUID == route_id)
             {
                 name = (*it)->m_RouteNameString;
                 if(name.IsEmpty())
@@ -8612,7 +8612,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
     {
         wxJSONValue  root;
         wxJSONReader reader;
-        bool mode = true, error = false;
+        bool route = true, error = false;
 
         int numErrors = reader.Parse( message_JSONText, &root );
         if ( numErrors > 0 )
@@ -8621,39 +8621,42 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
         if(root.HasMember(_T("mode")))
         {
             wxString str = root[_T("mode")].AsString();
-            if( str == _T("Track")) mode = false;
+            if( str == _T("Track")) route = false;
 
             wxJSONValue v; int i = 1;
-            for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
-            {
-                if((*it)->IsTrack())
-                    if(mode == true) continue;
-                if(!(*it)->IsTrack())
-                    if(mode == false) continue;
-                v[0][_T("isTrack")] = !mode;
-
-                wxString name = (*it)->m_RouteNameString;
-                if(name.IsEmpty() && !mode)
+            if(route) {
+                for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
                 {
-                    RoutePoint *rp = (*it)->GetPoint( 1 );
-                    if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
-                        + rp->GetCreateTime().FormatISOTime();
-                    else
-                        name = _("(Unnamed Track)");
-                }
-                else if(name.IsEmpty() && mode)
-                    name = _("(Unnamed Route)");
+                    wxString name = (*it)->m_RouteNameString;
+                    if(name.IsEmpty())
+                        name = _("(Unnamed Route)");
 
-
-                v[i][_T("error")] = false;
-                v[i][_T("name")] = name;
-                v[i][_T("GUID")] = (*it)->m_GUID;
-                bool l = (*it)->IsTrack();
-                if(g_pActiveTrack == (*it) && !mode)
-                    v[i][_T("active")] = true;
-                else
+                    v[i][_T("error")] = false;
+                    v[i][_T("name")] = name;
+                    v[i][_T("GUID")] = (*it)->m_GUID;
                     v[i][_T("active")] = (*it)->IsActive();
-                i++;
+                    i++;
+                }
+            } else { // track
+                for(TrackList::iterator it = pTrackList->begin(); it != pTrackList->end(); it++)
+                {
+                    wxString name = (*it)->m_TrackNameString;
+                    if(name.IsEmpty())
+                    {
+                        TrackPoint *tp = (*it)->GetPoint( 0 );
+                        if( tp && tp->GetCreateTime().IsValid() )
+                            name = tp->GetCreateTime().FormatISODate() + _T(" ")
+                                + tp->GetCreateTime().FormatISOTime();
+                        else
+                            name = _("(Unnamed Track)");
+                    }
+                    v[i][_T("error")] = false;
+                    v[i][_T("name")] = name;
+                    v[i][_T("GUID")] = (*it)->m_GUID;
+                    v[i][_T("active")] = g_pActiveTrack == (*it);
+                    i++;
+
+                }
             }
             wxString msg_id( _T("OCPN_ROUTELIST_RESPONSE") );
             g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );

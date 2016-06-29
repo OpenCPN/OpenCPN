@@ -108,7 +108,7 @@ public:
         int         nVert;
         double      *p_vertex;              //  Pointer to vertex array, x,y,x,y.....
 
-        double      minx, miny, maxx, maxy;
+        LLBBox      box;
 
         TriPrim     *p_next;                // chain link
         

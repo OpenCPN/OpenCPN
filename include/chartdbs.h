@@ -208,7 +208,7 @@ struct ChartTableEntry
     float *GetpNoCovrPlyTableEntry(int index) const { return pNoCovrPlyTable[index];}
     int GetNoCovrCntTableEntry(int index) const { return pNoCovrCntTable[index];}
     
-    const wxBoundingBox &GetBBox() const { return m_bbox; } 
+    const LLBBox &GetBBox() const { return m_bbox; } 
     
     char *GetpFullPath() const { return pFullPath; }
     float GetLonMax() const { return LonMax; }
@@ -259,7 +259,7 @@ struct ChartTableEntry
     ArrayOfInts m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
-    wxBoundingBox m_bbox;
+    LLBBox m_bbox;
     bool        m_bavail;
 };
 
@@ -329,8 +329,8 @@ public:
     int GetDBChartProj(int dbIndex);
     int GetDBChartScale(int dbIndex);
 
-    bool GetDBBoundingBox(int dbindex, wxBoundingBox *box);
-    const wxBoundingBox &GetDBBoundingBox(int dbIndex);
+    bool GetDBBoundingBox(int dbindex, LLBBox &box);
+    const LLBBox &GetDBBoundingBox(int dbIndex);
     
     int  GetnAuxPlyEntries(int dbIndex);
     int  GetDBPlyPoint(int dbIndex, int plyindex, float *lat, float *lon);
@@ -377,7 +377,7 @@ private:
     
     int         m_nentries;
 
-    wxBoundingBox m_dummy_bbox;
+    LLBBox m_dummy_bbox;
 };
 
 

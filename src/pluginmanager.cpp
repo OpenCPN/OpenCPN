@@ -92,6 +92,7 @@ extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
+extern TrackList       *pTrackList;
 extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
 extern wxString         ChartListFileName;
@@ -140,10 +141,10 @@ PlugIn_ViewPort CreatePlugInViewport( const ViewPort &vp)
     pivp.b_quilt =                tvp.b_quilt;
     pivp.m_projection_type =      tvp.m_projection_type;
 
-    pivp.lat_min =                tvp.GetBBox().GetMinY();
-    pivp.lat_max =                tvp.GetBBox().GetMaxY();
-    pivp.lon_min =                tvp.GetBBox().GetMinX();
-    pivp.lon_max =                tvp.GetBBox().GetMaxX();
+    pivp.lat_min =                tvp.GetBBox().GetMinLat();
+    pivp.lat_max =                tvp.GetBBox().GetMaxLat();
+    pivp.lon_min =                tvp.GetBBox().GetMinLon();
+    pivp.lon_max =                tvp.GetBBox().GetMaxLon();
 
     pivp.bValid =                 tvp.IsValid();                 // This VP is valid
 
@@ -3002,28 +3003,20 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
     Track *track = new Track();
 
     PlugIn_Waypoint *pwp;
-    RoutePoint *pWP_src;
+    TrackPoint *pWP_src;
     int ip = 0;
 
     wxPlugin_WaypointListNode *pwpnode = ptrack->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
 
-        RoutePoint *pWP = new RoutePoint( pwp->m_lat, pwp->m_lon,
-                                          pwp->m_IconName, pwp->m_MarkName,
-                                          pwp->m_GUID );
-
-
-        pWP->m_MarkDescription = pwp->m_MarkDescription;
-        pWP->m_bShowName = false;
+        TrackPoint *pWP = new TrackPoint( pwp->m_lat, pwp->m_lon );
         pWP->SetCreateTime( pwp->m_CreateTime );
         
         track->AddPoint( pWP );
 
-        pSelect->AddSelectableRoutePoint( pWP->m_lat, pWP->m_lon, pWP );
-
         if(ip > 0)
-            pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
+            pSelect->AddSelectableTrackSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
                                                 pWP->m_lon, pWP_src, pWP, track );
         ip++;
         pWP_src = pWP;
@@ -3031,16 +3024,16 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
 
-    track->m_RouteNameString = ptrack->m_NameString;
-    track->m_RouteStartString = ptrack->m_StartString;
-    track->m_RouteEndString = ptrack->m_EndString;
+    track->m_TrackNameString = ptrack->m_NameString;
+    track->m_TrackStartString = ptrack->m_StartString;
+    track->m_TrackEndString = ptrack->m_EndString;
     track->m_GUID = ptrack->m_GUID;
     track->m_btemp = (b_permanent == false);
 
-    pRouteList->Append( track );
+    pTrackList->Append( track );
 
     if(b_permanent)
-        pConfig->AddNewRoute( track );
+        pConfig->AddNewTrack( track );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateTrkListCtrl();
@@ -4542,9 +4535,10 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
-    cobj->bBBObj_valid = pContext->bBBObj_valid;
     if( pContext->bBBObj_valid )
-        cobj->BBObj = pContext->BBObj;
+        // this is ugly because plugins still use wxBoundingBox
+        cobj->BBObj.Set(pContext->BBObj.GetMinY(), pContext->BBObj.GetMinX(),
+                        pContext->BBObj.GetMaxY(), pContext->BBObj.GetMaxX());
     
     cobj->CSrules = pContext->CSrules;
     cobj->bCS_Added = pContext->bCS_Added;
@@ -4666,9 +4660,12 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     pContext->bFText_Added = cobj->bFText_Added;
     pContext->rText = cobj->rText;
     
-    if(cobj->bBBObj_valid)
-        pContext->BBObj = cobj->BBObj;
-    pContext->bBBObj_valid = cobj->bBBObj_valid;
+    if(cobj->BBObj.GetValid()) {
+        // ugly as plugins still use wxBoundingBox
+        pContext->BBObj = wxBoundingBox(cobj->BBObj.GetMinLon(), cobj->BBObj.GetMinLat(),
+                                        cobj->BBObj.GetMaxLon(), cobj->BBObj.GetMaxLat());
+        pContext->bBBObj_valid = true;
+    }
 
     //  Render operation may have promoted the object's display category (e.g.WRECKS)
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;

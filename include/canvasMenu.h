@@ -87,7 +87,7 @@ class CanvasMenuHandler: public wxEvtHandler
 public:
     CanvasMenuHandler(ChartCanvas *parentCanvas,
           Route *selectedRoute,
-          Route *selectedTrack,
+          Track *selectedTrack,
           RoutePoint *selectedPoint,
           int selectedAIS_MMSI,
           void *selectedTCIndex);
@@ -102,7 +102,7 @@ public:
       int               popx, popy;
       ChartCanvas       *parent;
       Route             *m_pSelectedRoute;
-      Route             *m_pSelectedTrack;
+      Track             *m_pSelectedTrack;
       RoutePoint        *m_pFoundRoutePoint;
       int               m_FoundAIS_MMSI;
       void *            m_pIDXCandidate;
