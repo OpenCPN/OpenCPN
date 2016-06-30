@@ -92,7 +92,10 @@ IF (NOT WIN32)
     #    SET (PACKAGE_DEPS  "libwx_baseu-2_8-0-wxcontainer MesaGLw libbz2-1 portaudio")
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "x86_64")
-      SET (LIB_INSTALL_DIR "lib64")
+      SET (LIB_INSTALL_DIR "lib")
+        # In recent openSUSE versions (as of 2016), lib64 is mostly used when there are both 32-bit and 64-bit versions, although not limited to that.
+        # This CMake variable only affects the location of OpenCPN plugins at installation time, and nothing more than that.
+        # At run time, the plugin directory is determined by wxStandardPaths::GetPluginsDir(), which returns "lib", so this can be considered canonical.
     ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "i386")
       SET (LIB_INSTALL_DIR "lib")
@@ -921,6 +924,7 @@ SET(HDRS
 		include/NavObjectCollection.h
 		include/RoutePoint.h
 		include/Route.h
+                include/Track.h
 		include/SelectItem.h
 		include/Select.h
 		include/FontMgr.h
@@ -943,7 +947,7 @@ SET(HDRS
 		include/routeprintout.h
 		include/PositionParser.h
 		include/printtable.h
-		include/chartbarwin.h
+		include/piano.h
 		include/tcmgr.h
 		include/Station_Data.h
 		include/IDX_entry.h
@@ -1013,6 +1017,7 @@ SET(SRCS
 		src/NavObjectCollection.cpp
 		src/RoutePoint.cpp
 		src/Route.cpp
+                src/Track.cpp
 		src/SelectItem.cpp
 		src/Select.cpp
 		src/FontMgr.cpp
@@ -1034,7 +1039,7 @@ SET(SRCS
 		src/routeprintout.cpp
 		src/PositionParser.cpp
 		src/printtable.cpp
-		src/chartbarwin.cpp
+		src/piano.cpp
 		src/tcmgr.cpp
 		src/Station_Data.cpp
 		src/IDX_entry.cpp

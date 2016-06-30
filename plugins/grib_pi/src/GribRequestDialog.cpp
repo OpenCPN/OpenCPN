@@ -57,7 +57,13 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent )
     : GribRequestSettingBase(&parent),
       m_parent(parent)
 {
+    m_Vp = 0;
     InitRequestConfig();
+}
+
+GribRequestSetting::~GribRequestSetting( )
+{
+    delete m_Vp;
 }
 
 void GribRequestSetting::InitRequestConfig()
@@ -307,6 +313,7 @@ void GribRequestSetting::StopGraphicalZoneSelection()
 
 void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 {
+    delete m_Vp;
     m_Vp = new PlugIn_ViewPort(*vp);
 
     if(!m_AllowSend) return;

@@ -59,7 +59,7 @@ LLRegion::LLRegion( float minlat, float minlon, float maxlat, float maxlon)
 
 LLRegion::LLRegion( const LLBBox& llbbox )
 {
-    InitBox(llbbox.GetMinY(), llbbox.GetMinX(), llbbox.GetMaxY(), llbbox.GetMaxX());
+    InitBox(llbbox.GetMinLat(), llbbox.GetMinLon(), llbbox.GetMaxLat(), llbbox.GetMaxLon());
 }
 
 LLRegion::LLRegion( size_t n, const float *points )
@@ -167,23 +167,22 @@ LLBBox LLRegion::GetBox() const
             mink = k;
 
     LLBBox &box = const_cast<LLBBox&>(m_box);
-    box.SetMin(minlon[mink], minlat);
-    box.SetMax(maxlon[mink], maxlat);
+    box.Set(minlat, minlon[mink], maxlat, maxlon[mink]);
     return m_box;
 }
 
 static inline int ComputeState(const LLBBox &box, const contour_pt &p)
 {
     int state = 0;
-    if(p.x >= box.GetMinX()) {
-        if(p.x > box.GetMaxX())
+    if(p.x >= box.GetMinLon()) {
+        if(p.x > box.GetMaxLon())
             state = 2;
         else
             state = 1;
     }
 
-    if(p.y >= box.GetMinY()) {
-        if(p.y > box.GetMaxY())
+    if(p.y >= box.GetMinLat()) {
+        if(p.y > box.GetMaxLat())
             state += 6;
         else
             state += 3;
@@ -379,7 +378,7 @@ bool LLRegion::NoIntersection(const LLBBox& box) const
     return false; // there are occasional false positives we must fix first
 
 #if 0    
-    double minx = box.GetMinX(), maxx = box.GetMaxX(), miny = box.GetMinY(), maxy = box.GetMaxY();
+    double minx = box.GetMinLon(), maxx = box.GetMaxLon(), miny = box.GetMinLat(), maxy = box.GetMaxLat();
     if(Contains(miny, minx))
         return false;
 
@@ -500,7 +499,7 @@ void LLRegion::Put( const LLRegion& region, int winding_rule, bool reverse)
     gluTessEndPolygon( w.tobj ); 
 
     Optimize();
-    m_box.SetValid(false);
+    m_box.Invalidate();
 }
 
 // same result as union, but only allowed if there is no intersection
@@ -508,7 +507,7 @@ void LLRegion::Combine(const LLRegion& region)
 {
     for(std::list<poly_contour>::const_iterator i = region.contours.begin(); i != region.contours.end(); i++)
         contours.push_back(*i);
-    m_box.SetValid(false);
+    m_box.Invalidate();
 }
 
 void LLRegion::InitBox( float minlat, float minlon, float maxlat, float maxlon)

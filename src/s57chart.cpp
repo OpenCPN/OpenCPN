@@ -229,8 +229,6 @@ S57Obj::S57Obj()
     m_n_edge_max_points = 0;
     m_ls_list = 0;
     
-    bBBObj_valid = false;
-
     //        Set default (unity) auxiliary transform coefficients
     x_rate = 1.0;
     y_rate = 1.0;
@@ -577,10 +575,9 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                         m_lon = xll;
                         m_lat = yll;
 
-                        BBObj.SetMin( m_lon - .25, m_lat - .25 );
-                        BBObj.SetMax( m_lon + .25, m_lat + .25 );
-                        bBBObj_valid = false;
-
+                        BBObj.Set( m_lat - .25, m_lon - .25,
+                                   m_lat + .25, m_lon + .25 );
+                        BBObj.Invalidate();
                     } else {
                         Primitive_type = GEO_POINT;
 
@@ -626,10 +623,7 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                         float ymax = *pfs++;
                         float ymin = *pfs;
 
-                        BBObj.SetMin( xmin, ymin );
-                        BBObj.SetMax( xmax, ymax );
-                        bBBObj_valid = true;
-
+                        BBObj.Set( ymin, xmin, ymax, xmax );
                     }
                     break;
                 }
@@ -677,13 +671,11 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                         ymax = *pf++;
                         ymin = *pf;
 
-						if (sb_len > MAX_LINE +align) 
+                        if (sb_len > MAX_LINE +align) 
                             free( buft );
 
                         // set s57obj bbox as lat/lon
-                        BBObj.SetMin( xmin, ymin );
-                        BBObj.SetMax( xmax, ymax );
-                        bBBObj_valid = true;
+                        BBObj.Set( ymin, xmin, ymax, xmax );
 
                         //  and declare x/y of the object to be average east/north of all points
                         double e1, e2, n1, n2;
@@ -756,9 +748,8 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
                             pPolyTessGeo = ppg;
 
                             //  Set the s57obj bounding box as lat/lon
-                            BBObj.SetMin( ppg->Get_xmin(), ppg->Get_ymin() );
-                            BBObj.SetMax( ppg->Get_xmax(), ppg->Get_ymax() );
-                            bBBObj_valid = true;
+                            BBObj.Set( ppg->Get_ymin(), ppg->Get_xmin(),
+                                       ppg->Get_ymax(), ppg->Get_xmax() );
 
                             //  and declare x/y of the object to be average east/north of all points
                             double e1, e2, n1, n2;
@@ -1969,10 +1960,10 @@ void s57chart::AssembleLineGeometry( void )
                                         pls->vbo_offset = pedge->vbo_offset;
                                         pls->n_points = pedge->nCount;
                                         pls->priority = 0;
-                                        pls->lat_max = pedge->BBox.GetMaxY();
-                                        pls->lat_min = pedge->BBox.GetMinY();
-                                        pls->lon_max = pedge->BBox.GetMaxX();
-                                        pls->lon_min = pedge->BBox.GetMinX();
+                                        pls->lat_max = pedge->BBox.GetMaxLat();
+                                        pls->lat_min = pedge->BBox.GetMinLat();
+                                        pls->lon_max = pedge->BBox.GetMaxLon();
+                                        pls->lon_min = pedge->BBox.GetMinLon();
                                         pls->private0 = pedge;
                                         pls->type = TYPE_EE;
                                         
@@ -2008,17 +1999,16 @@ void s57chart::AssembleLineGeometry( void )
                                                     pls->private0 = pcs;
                                                     pls->type = TYPE_EC;
                                                     
-                                                    wxBoundingBox box;
-                                                    double lat, lon;
-                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                    box.Expand(lon, lat);
-                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                    box.Expand(lon, lat);
+                                                    double lat1, lon1, lat2, lon2;
+                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat1, &lon1 );
+                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat2, &lon2 );
 
-                                                    pls->lat_max = box.GetMaxY();
-                                                    pls->lat_min = box.GetMinY();
-                                                    pls->lon_max = box.GetMaxX();
-                                                    pls->lon_min = box.GetMinX();
+                                                    LLBBox box;
+                                                    box.SetFromSegment(lat1, lon1, lat2, lon2);
+pls->lat_max = box.GetMaxLat();
+                                                    pls->lat_min = box.GetMinLat();
+                                                    pls->lon_max = box.GetMaxLon();
+                                                    pls->lon_min = box.GetMinLon();
                                                     
                                                     le_current->next = pls;             // hook it up
                                                     le_current = pls;
@@ -2039,17 +2029,17 @@ void s57chart::AssembleLineGeometry( void )
                                                     pls->private0 = pcs;
                                                     pls->type = TYPE_CC;
 
-                                                    wxBoundingBox box;
-                                                    double lat, lon;
-                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                    box.Expand(lon, lat);
-                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                    box.Expand(lon, lat);
+                                                    double lat1, lon1, lat2, lon2;
+                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat1, &lon1 );
+                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat2, &lon2 );
 
-                                                    pls->lat_max = box.GetMaxY();
-                                                    pls->lat_min = box.GetMinY();
-                                                    pls->lon_max = box.GetMaxX();
-                                                    pls->lon_min = box.GetMinX();
+                                                    LLBBox box;
+                                                    box.SetFromSegment(lat1, lon1, lat2, lon2);
+
+                                                    pls->lat_max = box.GetMaxLat();
+                                                    pls->lat_min = box.GetMinLat();
+                                                    pls->lon_max = box.GetMaxLon();
+                                                    pls->lon_min = box.GetMinLon();
                                                     
                                                     le_current->next = pls;             // hook it up
                                                     le_current = pls;
@@ -2577,12 +2567,12 @@ bool s57chart::DoRenderViewOnDC( wxMemoryDC& dc, const ViewPort& VPoint, RenderT
             fromSM( temp_easting_lr, temp_northing_lr, ref_lat, ref_lon, &temp_lat_bot,
                     &temp_lon_right );
 
-            temp_vp.GetBBox().SetMin( temp_lon_left, temp_lat_bot );
-            temp_vp.GetBBox().SetMax( temp_lon_right, temp_lat_top );
+            temp_vp.GetBBox().Set( temp_lat_bot, temp_lon_left,
+                                   temp_lat_top, temp_lon_right );
 
             //      Allow some slop in the viewport
             //    TODO Investigate why this fails if greater than 5 percent
-            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight())
+            double margin = wxMin(temp_vp.GetBBox().GetLonRange(), temp_vp.GetBBox().GetLatRange())
                     * 0.05;
             temp_vp.GetBBox().EnLarge( margin );
 
@@ -3207,8 +3197,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
     vp.m_projection_type = PROJECTION_MERCATOR;
 
-    vp.GetBBox().SetMin( m_FullExtent.WLON, m_FullExtent.SLAT );
-    vp.GetBBox().SetMax( m_FullExtent.ELON, m_FullExtent.NLAT );
+    vp.GetBBox().Set( m_FullExtent.SLAT, m_FullExtent.WLON,
+                      m_FullExtent.NLAT, m_FullExtent.ELON );
 
     vp.chart_scale = 10000000 - 1;
     vp.Validate();
@@ -3705,7 +3695,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects( S57Obj *obj )
             top = razRules[disPrioIdx][3];     // PLAIN_BOUNDARIES
             while( top != NULL ) {
                 if( top->obj->bIsAssociable ) {
-                    if( top->obj->BBObj.PointInBox( lon, lat, 0.0 ) ) {
+                    if( top->obj->BBObj.Contains( lat, lon ) ) {
                         if( IsPointInObjArea( lat, lon, 0.0, top->obj ) ) {
                             pobj_list->Append( top->obj );
                             gotit = true;
@@ -3722,7 +3712,7 @@ ListOfS57Obj *s57chart::GetAssociatedObjects( S57Obj *obj )
                 top = razRules[disPrioIdx][4];     // SYMBOLIZED_BOUNDARIES
                 while( top != NULL ) {
                     if( top->obj->bIsAssociable ) {
-                        if( top->obj->BBObj.PointInBox( lon, lat, 0.0 ) ) {
+                        if( top->obj->BBObj.Contains( lat, lon ) ) {
                             if( IsPointInObjArea( lat, lon, 0.0, top->obj ) ) {
                                 pobj_list->Append( top->obj );
                                 break;
@@ -4249,11 +4239,10 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 vrun++;
             }
             
-            double lat, lon;
-            fromSM( east_min, north_min, ref_lat, ref_lon, &lat, &lon );
-            vep->BBox.SetMin( lon, lat);
-            fromSM( east_max, north_max, ref_lat, ref_lon, &lat, &lon );
-            vep->BBox.SetMax( lon, lat);
+            double lat1, lon1, lat2, lon2;
+            fromSM( east_min, north_min, ref_lat, ref_lon, &lat1, &lon1 );
+            fromSM( east_max, north_max, ref_lat, ref_lon, &lat2, &lon2 );
+            vep->BBox.Set( lat1, lon1, lat2, lon2);
         }
         
         m_ve_hash[vep->index] = vep;
@@ -4619,23 +4608,23 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
             while( top != NULL ) {
                 if( !top->obj->geoPtMulti )                      // do not reset multipoints
                 {
-                    if(top->obj->bBBObj_valid) { // scale bbobj
+                    if(top->obj->BBObj.GetValid()) { // scale bbobj
                         double lat = top->obj->m_lat, lon = top->obj->m_lon;
 
-                        double lat1 = (lat - top->obj->BBObj.GetMinY()) * d;
-                        double lat2 = (lat - top->obj->BBObj.GetMaxY()) * d;
+                        double lat1 = (lat - top->obj->BBObj.GetMinLat()) * d;
+                        double lat2 = (lat - top->obj->BBObj.GetMaxLat()) * d;
 
-                        double minx = top->obj->BBObj.GetMinX();
-                        double maxx = top->obj->BBObj.GetMaxX();
+                        double minlon = top->obj->BBObj.GetMinLon();
+                        double maxlon = top->obj->BBObj.GetMaxLon();
 
-                        double lon1 = (lon - minx) * d;
-                        double lon2 = (lon - maxx) * d;
+                        double lon1 = (lon - minlon) * d;
+                        double lon2 = (lon - maxlon) * d;
                         
-                        top->obj->BBObj.SetMin( lon - lon1, lat - lat1 );
-                        top->obj->BBObj.SetMax( lon - lon2, lat - lat2 );
+                        top->obj->BBObj.Set( lat - lat1, lon - lon1,
+                                             lat - lat2, lon - lon2 );
 
                         // this method is very close, but errors accumulate
-                        top->obj->bBBObj_valid = false;
+                        top->obj->BBObj.Invalidate();
                     }
                 }
                 
@@ -5605,7 +5594,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
         //  possibly expanded by text or symbol rendering
         case GEO_POINT: {
-            if( !obj->bBBObj_valid ) return false;
+            if( !obj->BBObj.GetValid() ) return false;
             
             if( 1 == obj->npt ) {
                 //  Special case for LIGHTS
@@ -5621,29 +5610,30 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     // Double the select radius to adjust for the fact that LIGHTS has
                     // a 0x0 BBox to start with, which makes it smaller than all other
                     // rendered objects.
-                    wxBoundingBox sbox( olon - 2*select_radius, olat - 2*select_radius,
-                            olon + 2*select_radius, olat + 2*select_radius );
+                    LLBBox sbox;
+                    sbox.Set(olat, olon, olat, olon);
 
-                    if( sbox.PointInBox( lon, lat, 0 ) ) return true;
+                    if( sbox.ContainsMarge( lat, lon, select_radius ) ) return true;
                 }
 
-                else if( obj->BBObj.PointInBox( lon, lat, select_radius ) ) return true;
+                else if( obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return true;
             }
 
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
             //  and check it
             else {
-                if( !obj->bBBObj_valid ) return false;
+                if( !obj->BBObj.GetValid() ) return false;
 
                 //  Coarse test first
-                if( !obj->BBObj.PointInBox( lon, lat, select_radius ) ) return false;
+                if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
                 //  Now decomposed soundings, one by one
                 double *pdl = obj->geoPtMulti;
                 for( int ip = 0; ip < obj->npt; ip++ ) {
                     double lon_point = *pdl++;
                     double lat_point = *pdl++;
-                    wxBoundingBox BB_point( lon_point, lat_point, lon_point, lat_point );
-                    if( BB_point.PointInBox( lon, lat, select_radius ) ) {
+                    LLBBox BB_point;
+                    BB_point.Set( lat_point, lon_point, lat_point, lon_point );
+                    if( BB_point.ContainsMarge( lat, lon, select_radius ) ) {
 //                                  index = ip;
                         return true;
                     }
@@ -5654,7 +5644,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         }
         case GEO_AREA: {
             //  Coarse test first
-            if( !obj->BBObj.PointInBox( lon, lat, select_radius ) ) return false;
+            if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
             else
                 return IsPointInObjArea( lat, lon, select_radius, obj );
         }
@@ -5662,7 +5652,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         case GEO_LINE: {
             if( obj->geoPt ) {
                 //  Coarse test first
-                if( !obj->BBObj.PointInBox( lon, lat, select_radius ) ) return false;
+                if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
 
                 //  Line geometry is carried in SM or CM93 coordinates, so...
                 //  make the hit test using SM coordinates, converting from object points to SM using per-object conversion factors.
@@ -5837,13 +5827,9 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
             easting = easting_scaled;
         }
 
-        wxBoundingBox tp_box;
         while( pTP ) {
 //  Coarse test
-            tp_box.SetMin(pTP->minx, pTP->miny);
-            tp_box.SetMax(pTP->maxx, pTP->maxy);
-
-            if( tp_box.PointInBox( lon, lat, 0 ) ) {
+            if( pTP->box.Contains( lat, lon ) ) {
                 
                 if(ppg->data_type == DATA_TYPE_DOUBLE) {
                     double *p_vertex = pTP->p_vertex;
@@ -6581,8 +6567,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             classAttributes << LUPstring;
 
             wxString Bbox;
-            wxBoundingBox bbox = current->obj->BBObj;
-            Bbox.Printf( _T("Bounding box:  %g %g %g %g<br>"), bbox.GetMinY(), bbox.GetMaxY() , bbox.GetMinX(), bbox.GetMaxX() );
+            LLBBox bbox = current->obj->BBObj;
+            Bbox.Printf( _T("Lat/Lon box:  %g %g %g %g<br>"), bbox.GetMinLat(), bbox.GetMaxLat() , bbox.GetMinLon(), bbox.GetMaxLon() );
             classAttributes << Bbox;
 
             wxString Type;

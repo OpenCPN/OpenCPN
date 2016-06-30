@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * $Id: dial.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -25,6 +25,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
+
 
 #include "dial.h"
 #include "wx28compat.h"
@@ -95,12 +96,12 @@ void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 {
     // Filter out undefined data, normally comes through as "999".
     // Test value must be greater than 360 to enable some compass-type displays.
-      if ( (st == m_MainValueCap) && (data < 400.0) )
+      if ( (st == m_MainValueCap) && (data < 1200.0) )
       {
             m_MainValue = data;
             m_MainValueUnit = unit;
       }
-      else if ( (st == m_ExtraValueCap) && (data < 400.0) )
+      else if ( (st == m_ExtraValueCap) && (data < 1200.0) )
       {
             m_ExtraValue = data;
             m_ExtraValueUnit = unit;

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  * $Id: dashboard_pi.cpp, v1.0 2010/08/05 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -24,6 +24,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+
 
 #include "wx/wxprec.h"
 
@@ -1028,63 +1029,74 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
             }
         }
-		else if (m_NMEA0183.LastSentenceIDReceived == _T("XDR")) {  //Transducer measurement
-			if (m_NMEA0183.Parse())
-			{   //SendSentenceToAllInstruments( OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerCnt,_T("\u00B0") );
-				wxString xdrunit;
-				double xdrdata;
-				for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
 
-					xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
-					// NKE style of XDR Airtemp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("AirTemp")){  
-						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					} //Nasa style air temp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTAIR_T") || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_OUTSIDE_T") ){
-						SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData, m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					}
-					// NKE style of XDR Pitch (=Nose up/down)
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
-						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
-							xdrunit = _T("\u00B0 Nose up");
-						}
-						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-							xdrunit = _T("\u00B0 Nose down");
-							xdrdata *= -1;
-						}
-						else {
-							xdrunit = _T("\u00B0");
-						}
-						SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
-					}
-					// NKE style of XDR Heel
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) {
-						if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0)
-							xdrunit = _T("\u00B0R");
-						else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-							xdrunit = _T("\u00B0L");
-							xdrdata *= -1;
-						}
-						else
-							xdrunit = _T("\u00B0");
-						SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-					} //Nasa style water temp
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
-						SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-					}
-					// NKE style of XDR air pressure
-					if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Barometer")){
-						if( xdrdata > 0.8 && xdrdata < 1.1 ) {
-                    					xdrdata *= 1000; //Convert to hPascal befor sending to instruments.
-						}
-						SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, xdrdata,  _T("hPa") );
-					}
-				}
+        else if (m_NMEA0183.LastSentenceIDReceived == _T("XDR")) { //Transducer measurement
+             /* XDR Transducer types
+              * AngularDisplacementTransducer = 'A',
+              * TemperatureTransducer = 'C',
+              * LinearDisplacementTransducer = 'D',
+              * FrequencyTransducer = 'F',
+              * HumidityTransducer = 'H',
+              * ForceTransducer = 'N',
+              * PressureTransducer = 'P',
+              * FlowRateTransducer = 'R',
+              * TachometerTransducer = 'T',
+              * VolumeTransducer = 'V'
+             */
 
-			}
-		}
-		else if (m_NMEA0183.LastSentenceIDReceived == _T("ZDA")) {
-            if( m_NMEA0183.Parse() ) {
+            if (m_NMEA0183.Parse()) { 
+                wxString xdrunit;
+                double xdrdata;
+		for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
+                     xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
+                     // XDR Airtemp
+                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")){
+                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                     }
+                     // XDR Pressure
+                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")){
+                         if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")){
+  			     xdrdata *= 1000;
+                             SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
+                         }
+		     }
+                     // XDR Pitch (=Nose up/down)
+                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("D")) {
+                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
+                             xdrunit = _T("\u00B0 Nose up");
+                         }
+                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                             xdrunit = _T("\u00B0 Nose down");
+                             xdrdata *= -1;
+                         }
+                         else {
+                             xdrunit = _T("\u00B0");
+                         }
+                         SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
+                     }
+                     // XDR Heel
+                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                             xdrunit = _T("\u00B0 to Starboard");
+		         }
+                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                             xdrunit = _T("\u00B0 to Port");
+                             xdrdata *= -1;
+                         }
+                         else {
+                            xdrunit = _T("\u00B0");
+			 }
+                         SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                     } 
+		     //Nasa style water temp
+                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+                         SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                     }
+                }
+            }
+        }
+        else if (m_NMEA0183.LastSentenceIDReceived == _T("ZDA")) {
+           if( m_NMEA0183.Parse() ) {
                 if( mPriDateTime >= 2 ) {
                     mPriDateTime = 2;
 
@@ -2363,16 +2375,16 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_I_MDA: //barometric pressure
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, _T("%5.1f") );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, _T("%5.3f") );
                 break;
                case ID_DBP_D_MDA: //barometric pressure
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, 930, 1080 );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_MDA, 940, 1040 );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 10,
                         DIAL_LABEL_HORIZONTAL );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 5,
                         DIAL_MARKER_SIMPLE, 1 );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%5.1f"),
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%5.3f"),
                         DIAL_POSITION_INSIDE );
                 break;
             case ID_DBP_I_ATMP: //air temperature

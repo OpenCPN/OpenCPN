@@ -41,8 +41,6 @@
 #include "chart1.h"
 #include "statwin.h"
 
-extern ChartBarWin     *g_ChartBarWin;
-
 static int              wifi_s_dns_test_flag;
 
 

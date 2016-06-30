@@ -113,7 +113,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern TrackPropDlg     *pTrackPropDialog;
-extern Track            *g_pActiveTrack;
+extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
 extern WayPointman      *pWayPointMan;
 extern MyConfig         *pConfig;
@@ -216,7 +216,7 @@ enum
 // Define a constructor for my canvas
 CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
                   Route *selectedRoute,
-                  Route *selectedTrack,
+                  Track *selectedTrack,
                   RoutePoint *selectedPoint,
                   int selectedAIS_MMSI,
                   void *selectedTCIndex )
@@ -339,7 +339,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             if( !target_data->area_notices.empty() ) {
                 for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
                     Ais8_001_22& area_notice = ani->second;
-
                     wxBoundingBox bbox;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
@@ -1290,7 +1289,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         break;
 
     case ID_TK_MENU_COPY:
-        if( m_pSelectedTrack ) Kml::CopyTrackToClipboard( (Track*)m_pSelectedTrack );
+        if( m_pSelectedTrack ) Kml::CopyTrackToClipboard( m_pSelectedTrack );
         break;
 
     case ID_WPT_MENU_COPY:
@@ -1430,9 +1429,10 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
         if( dlg_return == wxID_YES ) {
 
-            if( (Track *) ( m_pSelectedTrack ) == g_pActiveTrack ) parent->parent_frame->TrackOff();
-            g_pAIS->DeletePersistentTrack( (Track *) m_pSelectedTrack );
-            pConfig->DeleteConfigRoute( m_pSelectedTrack );
+            if( m_pSelectedTrack == g_pActiveTrack )
+                parent->parent_frame->TrackOff();
+            g_pAIS->DeletePersistentTrack( m_pSelectedTrack );
+            pConfig->DeleteConfigTrack( m_pSelectedTrack );
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
 
             if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {

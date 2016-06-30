@@ -40,7 +40,6 @@
 class wxArrayOfS57attVal;
 class OGREnvelope;
 class OGRGeometry;
-class wxBoundingBox;
 
 // name of the addressed look up table set (fifth letter)
 typedef enum _LUPname{
@@ -344,10 +343,9 @@ public:
       PolyTessGeo             *pPolyTessGeo;
       PolyTessGeoTrap         *pPolyTrapGeo;
 
-      wxBoundingBox           BBObj;                  // lat/lon BBox of the rendered object
+      LLBBox           BBObj;                  // lat/lon BBox of the rendered object
       double                  m_lat;                  // The lat/lon of the object's "reference" point
       double                  m_lon;
-      bool                    bBBObj_valid;           // set after the BBObj has been calculated once.
 
       Rules                   *CSrules;               // per object conditional symbology
       int                     bCS_Added;
@@ -456,7 +454,7 @@ public:
       double      *pPoints;
       int         max_priority;
       size_t      vbo_offset;
-      wxBoundingBox BBox;
+      LLBBox BBox;
 };
 
 class VC_Element
