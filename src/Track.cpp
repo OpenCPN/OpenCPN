@@ -161,6 +161,7 @@ Track::Track()
 
     m_GUID = pWayPointMan->CreateGUID( NULL );
     m_bIsInLayer = false;
+    m_btemp = false;
 
     m_HyperlinkList = new HyperlinkList;
 }
