@@ -79,7 +79,7 @@ class M_COVR_Desc
       double      user_yoff;
       double      m_centerlat_cos;
       
-      wxBoundingBox m_covr_bbox;
+      LLBBox m_covr_bbox;
       bool        m_buser_offsets;
 
 };
@@ -347,7 +347,7 @@ class cm93chart : public s57chart
 
             OCPNRegion          m_render_region;
 
-            wxBoundingBox      m_covr_bbox; /* bounding box for entire covr_set */
+            LLBBox      m_covr_bbox; /* bounding box for entire covr_set */
 
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);

@@ -59,7 +59,7 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "Route.h"
+#include "Track.h"
 #include "LinkPropDlg.h"
 
 #define ID_RCLK_MENU_COPY_TEXT 7014
@@ -71,7 +71,7 @@
 class   wxListCtrl;
 class   OCPNTrackListCtrl;
 class   Track;
-class   RoutePoint;
+class   TrackPoint;
 class   HyperlinkList;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,11 +86,9 @@ private:
                       const wxPoint& pos, const wxSize& size,
                       long style ); 
         
-        Route      *m_pHead; // for route splitting
-        Route      *m_pTail;
-        RoutePoint *m_pExtendPoint;
-        Route      *m_pExtendRoute;
-        RoutePoint *m_pEnroutePoint;
+        TrackPoint *m_pExtendPoint;
+        Track      *m_pExtendTrack;
+        TrackPoint *m_pEntrackPoint;
         bool        m_bStartNow;
 
         double      m_planspeed;
@@ -190,14 +188,14 @@ public:
             m_hyperlink1->PopupMenu( m_menuLink, event.GetPosition() );
         }
         
-        void SetTrackAndUpdate( Route *pR );
+        void SetTrackAndUpdate( Track *pt );
         bool UpdateProperties();
         void InitializeList();
-        Route *GetTrack(void){return m_pRoute;}
+        Track *GetTrack() { return m_pTrack; }
         
         void RecalculateSize( void );
         
-        Route      *m_pRoute;
+        Track      *m_pTrack;
         
         void m_hyperlinkContextMenu( wxMouseEvent &event );
 };
@@ -211,7 +209,7 @@ class OCPNTrackListCtrl: public wxListCtrl
         wxString OnGetItemText(long item, long column) const;
         int OnGetItemColumnImage(long item, long column) const;
 
-        Route                   *m_pRoute;
+        Track                   *m_pTrack;
         int                     m_tz_selection;
         int                     m_LMT_Offset;
 };

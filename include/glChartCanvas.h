@@ -118,8 +118,8 @@ public:
     void GridDraw( );
     void FlushFBO( void );
     
-    void DrawDynamicRoutesAndWaypoints( ViewPort &vp );
-    void DrawStaticRoutesAndWaypoints( ViewPort &vp );
+    void DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp );
+    void DrawStaticRoutesTracksAndWaypoints( ViewPort &vp );
     
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
     void RenderChartOutline( int dbIndex, ViewPort &VP );

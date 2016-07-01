@@ -49,6 +49,7 @@ extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
+extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
 
 #define xID_OK 10009
@@ -138,30 +139,30 @@ void AISTargetQueryDialog::OnIdTrkCreateClick( wxCommandEvent& event )
             }
             else
             {
-                RoutePoint *rp = NULL;
-                RoutePoint *rp1 = NULL;
+                TrackPoint *tp = NULL;
+                TrackPoint *tp1 = NULL;
                     
                 Track *t = new Track();
 
-                t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+                t->m_TrackNameString = wxString::Format( _T("AIS %s (%u) %s %s"), td->GetFullName().c_str(), td->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
                 wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
                 while( node )
                 {
                     AISTargetTrackPoint *ptrack_point = node->GetData();
                     vector2D point( ptrack_point->m_lon, ptrack_point->m_lat );
-                    rp1 = t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
-                    if( rp )
+                    tp1 = t->AddNewPoint( point, wxDateTime(ptrack_point->m_time).ToUTC() );
+                    if( tp )
                     {
-                        pSelect->AddSelectableTrackSegment( rp->m_lat, rp->m_lon, rp1->m_lat,
-                            rp1->m_lon, rp, rp1, t );
+                        pSelect->AddSelectableTrackSegment( tp->m_lat, tp->m_lon, tp1->m_lat,
+                            tp1->m_lon, tp, tp1, t );
                     }
-                    rp = rp1;
+                    tp = tp1;
                     node = node->GetNext();
                 }
                 
-                pRouteList->Append( t );
-                pConfig->AddNewRoute( t, -1 );
-                t->RebuildGUIDList(); // ensure the GUID list is intact and good
+                pTrackList->Append( t );
+                pConfig->AddNewTrack( t );
+//                t->RebuildGUIDList(); // ensure the GUID list is intact and good
 
                 if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                     pRouteManagerDialog->UpdateTrkListCtrl();

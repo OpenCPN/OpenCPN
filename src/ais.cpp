@@ -899,14 +899,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->n_alert_state == AIS_ALERT_SET ) drawit++;
     else
     //    Is target in Vpoint?
-    if( cc1->GetVP().GetBBox().PointInBox( td->Lon, td->Lat, 0 ) ) drawit++;                       // yep
+    if( cc1->GetVP().GetBBox().Contains( td->Lat,  td->Lon ))
+        drawit++;                       // yep
     else
     //  If AIS tracks are shown, is the first point of the track on-screen?
     if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
         wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
         if( node ) {
             AISTargetTrackPoint *ptrack_point = node->GetData();
-            if( cc1->GetVP().GetBBox().PointInBox( ptrack_point->m_lon, ptrack_point->m_lat, 0 ) ) drawit++;
+            if( cc1->GetVP().GetBBox().Contains( ptrack_point->m_lat,  ptrack_point->m_lon ) )
+                drawit++;
         }
     }
 
@@ -916,14 +918,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
 
     //    Is predicted point in the VPoint?
-    if(drawit) ;
-    else
-    if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
-    else
+    if( cc1->GetVP().GetBBox().Contains( pred_lat,  pred_lon ) )
+        drawit++;                     // yep
+    else {
+        LLBBox box;
+        box.SetFromSegment(td->Lon, td->Lat, pred_lon, pred_lat);
     // And one more test to catch the case where target COG line crosses the screen,
     // but the target itself and its pred point are both off-screen
-    if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( td->Lon, td->Lat ),
-                                         wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
+        if( !cc1->GetVP().GetBBox().IntersectOut(box))
+            drawit++;
+    }
 
     //    Do the draw if conditions indicate
     if( !drawit )
@@ -1715,7 +1719,7 @@ bool AnyAISTargetsOnscreen( ViewPort &vp )
     
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
-        if( vp.GetBBox().PointInBox( td->Lon, td->Lat, 0 ) )
+        if( vp.GetBBox().Contains( td->Lat,  td->Lon ) )
             return true;                       // yep
     }
     

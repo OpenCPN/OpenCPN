@@ -25,7 +25,6 @@
  ***************************************************************************
  */
 
-
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -228,7 +227,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
       if (m_cap_flag & st){
-            if(!wxIsNaN(data) && (data < 999)){
+            if(!wxIsNaN(data) && (data < 9999)){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
                 else if (unit == _T("\u00B0"))
