@@ -294,8 +294,15 @@ public class downloadGFSCombine extends Activity {
             Log.i("GRIB DOWNLOAD", "onPostExecute");
 
             //dismiss the dialog after the file was downloaded
-            if(mDialogShown)
-                dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+            if(mDialogShown){
+                try{
+                    dismissDialog(DIALOG_DOWNLOAD_PROGRESS);
+                }
+                catch(java.lang.IllegalArgumentException exception){
+                    Log.d("GRIB DOWNLOAD onPostExecute", "dialog illegal arg exception");
+                }
+            }
+
 
             Bundle b = new Bundle();
             Intent i = getIntent(); //gets the intent that called this intent
