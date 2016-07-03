@@ -1937,7 +1937,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
             //  Maintain General Alert
             if( !m_bGeneralAlert ) {
                 //    Quick check on basic condition
-                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) )
+                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) && ( td->Class != AIS_BASE ) )
                     m_bGeneralAlert = true;
 
                 //    Some options can suppress general alerts
@@ -2007,7 +2007,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     }
                 }
 
-                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) ) {
+                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) && ( td->Class != AIS_BASE )) {
                     if( g_bTCPA_Max ) {
                         if( td->TCPA < g_TCPA_Max ) this_alarm = AIS_ALERT_SET;
                     } else

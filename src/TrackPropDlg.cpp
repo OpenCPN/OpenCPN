@@ -1610,6 +1610,7 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateTrkListCtrl();
 
     Hide();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     event.Skip();

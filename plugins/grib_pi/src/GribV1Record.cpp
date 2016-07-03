@@ -40,18 +40,18 @@ void  GribV1Record::translateDataType()
 		&& (idGrid==4 || idGrid==255))		// Saildocs
 	{
         dataCenterModel = NOAA_GFS;
-		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 1.0/(periodP2-periodP1) );
-		}
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 3600.0 );
+            multiplyAllData( 3600.0 );
         }
         if (dataType == GRB_TEMP                        //gfs Water surface Temperature
             && levelType == LV_GND_SURF
             && levelValue == 0) dataType = GRB_WTMP;
 
+        // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
+        if (levelType == LV_ATMOS_ENT) {
+            levelType = LV_ATMOS_ALL;
+        }
+                                                                                
 	}
     //------------------------
 	//DNMI-NEurope.grb
@@ -72,13 +72,8 @@ void  GribV1Record::translateDataType()
 	else if (idCenter==7 && idModel==89 && idGrid==255)
     {
         // dataCenterModel ??
-		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 1.0/(periodP2-periodP1) );
-		}
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
-			if (periodP2 > periodP1)
-				multiplyAllData( 3600.0 );
+            multiplyAllData( 3600.0 );
 		}
 
 
@@ -181,32 +176,47 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_)
     long start = zu_tell(file);
 
     //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
+    //but some Gribs has the "GRIB" header starting in second, third or fourth bytes. So for these cases
+    //let's read its one by one. If 'G' is found in 1st byte or not found at all then
+    //process as before, but if 'G' is not found in 1st byte but found in one of the next three bytes, stop reading
+    //then the read can be continued from that position in the file in the section 0 read
     char strgrib[5];
-    if (zu_read(file, strgrib, 4) != 4)
-    {
+
+    unsigned int b_haveReadGRIB = 0;				    // already read the "GRIB" of section 0 ?
+
+	for (unsigned i = 0; i < 4; i++) {		            //read the four first bytes one by one
+        if (zu_read(file, strgrib + i, 1) != 1) {       //detect end of file?
             ok = false;
             eof = true;
             return;
-    }
+		} else {                            //search "GRIB" or at least "G"
+			if (strgrib[0] != 'G') {		//if no 'G' found in the 1st byte
+				if (strgrib[i] == 'G') {    //but found in the next 3 bytes
+					b_haveReadGRIB = 1;		//stop reading.The 3 following bytes will be read in section 0 read starting at that position
+					b_len_add_8 = false;
+					break;
+				} // end 'G' found in the next bytes
+			} // end no 'G' found in 1st byte.
+		}
+	}// end reading four bytes
 
-    bool b_haveReadGRIB = false;         // already read the "GRIB" of section 0 ??
+    if (b_haveReadGRIB == 0) {						//the four bytes have been read
+		if (strncmp(strgrib, "GRIB", 4) != 0)
+			b_len_add_8 = true;                 //"GRIB" header no valid so apply length adder. Further reading will happen
+		else {
+			b_haveReadGRIB = 2;					//"GRIB" header is valid so no further reading
+			b_len_add_8 = false;
+		}
 
-    if (strncmp(strgrib, "GRIB", 4) != 0)
-            b_len_add_8 = true;
-    else
-    {
+        // Another special case, where zero padding is used between records.
+        if((strgrib[0] == 0) &&
+            (strgrib[1] == 0) &&
+            (strgrib[2] == 0) &&
+            (strgrib[3] == 0))
+        {
             b_len_add_8 = false;
-            b_haveReadGRIB = true;
-    }
-
-    // Another special case, where zero padding is used between records.
-    if((strgrib[0] == 0) &&
-        (strgrib[1] == 0) &&
-        (strgrib[2] == 0) &&
-        (strgrib[3] == 0))
-    {
-          b_len_add_8 = false;
-          b_haveReadGRIB = false;
+            b_haveReadGRIB = 0;
+        }
     }
 
     ok = readGribSection0_IS(file, b_haveReadGRIB );
@@ -256,7 +266,7 @@ GribV1Record::~GribV1Record()
 }
 
 //----------------------------------------------
-zuint GribV1Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
+static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 {
     zuint oct = first / 8;
     zuint bit = first % 8;
@@ -273,11 +283,11 @@ zuint GribV1Record::readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 //----------------------------------------------
 // SECTION 0: THE INDICATOR SECTION (IS)
 //----------------------------------------------
-bool GribV1Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
+bool GribV1Record::readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial_GRIB) {
     char strgrib[4];
     fileOffset0 = zu_tell(file);
 
-    if(!b_skip_initial_GRIB)
+    if( b_skip_initial_GRIB == 0 )
     {
             // Cherche le 1er 'G'
             while ( (zu_read(file, strgrib, 1) == 1)
@@ -289,6 +299,10 @@ bool GribV1Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
             eof = true;
             return false;
       }
+    } else if(b_skip_initial_GRIB == 1)			//the first 'G' has been found previously
+		strgrib[0] = 'G';
+
+    if( b_skip_initial_GRIB == 0 || b_skip_initial_GRIB == 1 ) {    // contine to search the end of "GRIB" in the next three bytes
       if (zu_read(file, strgrib+1, 3) != 3) {
             ok = false;
             eof = true;
@@ -736,18 +750,22 @@ zuint GribV1Record::periodSeconds(zuchar unit,zuchar P1,zuchar P2,zuchar range) 
     }
     grib_debug("id=%d: PDS unit %d (time range) b21=%d %d P1=%d P2=%d\n",id,unit, range,res,P1,P2);
     dur = 0;
+    // (grib1/5.table)
     switch (range) {
         case 0:
             dur = (zuint)P1; break;
         case 1:
             dur = 0; break;
+
         case 2:
-        case 3:
+        case 3:  // Average  (reference time + P1 to reference time + P2)
             // dur = ((zuint)P1+(zuint)P2)/2; break;     // TODO
             dur = (zuint)P2; break;
-         case 4:
+
+         case 4: // Accumulation  (reference time + P1 to reference time + P2)
             dur = (zuint)P2; break;
-        case 10:
+
+        case 10: // P1 occupies octets 19 and 20; product valid at reference time + P1 
             dur = ((zuint)P1<<8) + (zuint)P2; break;
         default:
             erreur("id=%d: unknown time range in PDS b21=%d",id,range);

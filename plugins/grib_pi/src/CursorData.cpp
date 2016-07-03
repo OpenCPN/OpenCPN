@@ -371,6 +371,14 @@ void CursorData::UpdateTrackingControls( void )
                                          RecordArray[Idx_SEACURRENT_VX],
                                          RecordArray[Idx_SEACURRENT_VY],
                                          m_cursor_lon, m_cursor_lat)) {
+       
+        // Current direction is generally reported as the "flow" direction, 
+        // which is opposite from wind convention.
+        // So, adjust.
+        ang += 180;
+        if(ang >= 360) ang -= 360;
+        if( ang < 0 ) ang += 360;
+        
         vkn = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
         m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );

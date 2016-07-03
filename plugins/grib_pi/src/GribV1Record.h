@@ -86,7 +86,7 @@ class GribV1Record : public GribRecord
         //---------------------------------------------
         // Data Access
         //---------------------------------------------
-        bool readGribSection0_IS (ZUFILE* file, bool b_skip_initial_GRIB);
+        bool readGribSection0_IS (ZUFILE* file, unsigned int b_skip_initial_GRIB);
         bool readGribSection1_PDS(ZUFILE* file);
         bool readGribSection2_GDS(ZUFILE* file);
         bool readGribSection3_BMS(ZUFILE* file);
@@ -103,7 +103,6 @@ class GribV1Record : public GribRecord
         zuint  readInt3(ZUFILE* file);
         double readFloat4(ZUFILE* file);
 
-        zuint  readPackedBits(zuchar *buf, zuint first, zuint nbBits);
         zuint  makeInt3(zuchar a, zuchar b, zuchar c);
         zuint  makeInt2(zuchar b, zuchar c);
 

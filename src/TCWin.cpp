@@ -23,6 +23,7 @@ extern int gpIDXn;
 extern TCMgr *ptcmgr;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
+extern wxString g_locale;
 
 enum
 {
@@ -141,6 +142,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     int diff_mins = diff.GetMinutes();
 
+    //  Correct a bug in wx3.0.2
+    //  If the system TZ happens to be GMT, with DST active (e.g.summer in London),
+    //  then wxDateTime returns incorrect results for toGMT() method
+#if wxCHECK_VERSION(3, 0, 2)
+    if( diff_mins == 0 && this_now.IsDST() )
+        diff_mins +=60;
+#endif
     int station_offset = ptcmgr->GetStationTimeOffset( pIDX );
 
     m_corr_mins = station_offset - diff_mins;
@@ -720,7 +728,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         int h = station_offset / 60;
         int m = station_offset - ( h * 60 );
         if( m_graphday.IsDST() ) h += 1;
-        m_stz.Printf( _T("Z %+03d:%02d"), h, m );
+        m_stz.Printf( _T("UTC %+03d:%02d"), h, m );
 
          
         
@@ -752,7 +760,12 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.GetTextExtent( m_stz, &w, &h );
         dc.DrawText( m_stz, x / 2 - w / 2, y - 2 * m_button_height );
 
-        wxString sdate = m_graphday.Format( _T ( "%m/%d/%Y" ) );
+        wxString sdate;
+        if(g_locale == _T("en_US"))
+            sdate = m_graphday.Format( _T ( "%A %b %d, %Y" ) );
+        else
+            sdate =  m_graphday.Format( _T ( "%A %d %b %Y" ) );
+        
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
         dc.DrawText( sdate, x / 2 - w / 2, y - 1.2 * m_button_height );

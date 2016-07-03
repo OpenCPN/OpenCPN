@@ -310,7 +310,9 @@ wxColour                  g_colourWaypointRangeRingsColour;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 
-ColorScheme               global_color_scheme;
+// Set default color scheme
+ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+
 int                       Usercolortable_index;
 wxArrayPtrVoid            *UserColorTableArray;
 wxArrayPtrVoid            *UserColourHashTableArray;
@@ -684,6 +686,7 @@ static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
 int               g_sticky_chart;
+int               g_sticky_projection;
 
 extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
@@ -1094,10 +1097,10 @@ void LoadS57()
         }
 
         pConfig->LoadS57Config();
+        ps52plib->SetPLIBColorScheme( global_color_scheme );
         
         if(cc1)
             ps52plib->SetPPMM( cc1->GetPixPerMM() );
-            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
@@ -1586,8 +1589,6 @@ bool MyApp::OnInit()
 #endif
 #endif
 
-// Set default color scheme
-    global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
     // On Windows platforms, establish a default cache managment policy
     // as allowing OpenCPN a percentage of available physical memory,
@@ -2479,6 +2480,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
+    g_sticky_projection = -1;
     m_BellsToPlay = 0;
 
     m_resizeTimer.SetOwner(this, RESIZE_TIMER);
@@ -2622,17 +2624,15 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     SetSystemColors( cs );
 
-    if( cc1 ) cc1->SetColorScheme( cs );
+    cc1->SetColorScheme( cs );
 
     if( pWayPointMan ) pWayPointMan->SetColorScheme( cs );
 
     if( ChartData ) ChartData->ApplyColorSchemeToCachedCharts( cs );
 
     SetChartThumbnail( -1 );
-    if ( cc1 ) {
-        cc1->HideChartInfoWindow();
-        cc1->SetQuiltChartHiLiteIndex( -1 );
-    }
+    cc1->HideChartInfoWindow();
+    cc1->SetQuiltChartHiLiteIndex( -1 );
 
     g_Piano->ResetRollover();
     g_Piano->SetColorScheme( cs );
@@ -3243,13 +3243,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
-    if( cc1 ) {
-//        cc1->SetCursor( wxCURSOR_WAIT );
+//  cc1->SetCursor( wxCURSOR_WAIT );
 
-        cc1->Refresh( true );
-        cc1->Update();
-        wxYield();
-    }
+    cc1->Refresh( true );
+    cc1->Update();
+    wxYield();
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
@@ -3401,6 +3399,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
+    // pthumbwin is a cc1 child 
+    pthumbwin = NULL;
     if(cc1){
         cc1->Destroy();
         cc1 = NULL;
@@ -3459,7 +3459,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
     NMEA_Msg_Hash.clear();
 
-    pthumbwin = NULL;
 
     NMEALogWindow::Shutdown();
 
@@ -5281,8 +5280,11 @@ void MyFrame::ToggleToolbar( bool b_smooth )
 
 void MyFrame::JumpToPosition( double lat, double lon, double scale )
 {
+    if (lon > 180.0)
+        lon -= 360.0;
     vLat = lat;
     vLon = lon;
+    cc1->StopMovement();
     cc1->m_bFollow = false;
     
     //  is the current chart available at the target location?
@@ -5600,10 +5602,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     }
     m_COGFilterLast = stuffcog;
 
-    if(cc1)
-        SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
+    SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-     if(rr & GL_CHANGED){
+    if(rr & GL_CHANGED){
         //    Refresh the chart display, after flushing cache.
         //      This will allow all charts to recognise new OpenGL configuration, if any
         b_need_refresh = true;
@@ -5950,6 +5951,14 @@ void MyFrame::SetupQuiltMode( void )
 
         //  Re-qualify the quilt reference chart selection
         cc1->AdjustQuiltRefChart(  );
+       
+        //  Restore projection type saved on last quilt mode toggle
+        if(g_sticky_projection != -1)
+            cc1->GetVP().SetProjectionType(g_sticky_projection);
+        else
+            cc1->GetVP().SetProjectionType(PROJECTION_MERCATOR);
+        
+        
 
     } else                                                  // going to SC Mode
     {
@@ -5965,6 +5974,7 @@ void MyFrame::SetupQuiltMode( void )
         g_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
         g_Piano->SetRoundedRectangles( false );
+        g_sticky_projection = cc1->GetVP().m_projection_type;
 
     }
 
@@ -6156,10 +6166,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             pWayPointMan = new WayPointman();
             
             // Reload the ownship icon from UserIcons, if present
-            if(cc1){
-                if(cc1->SetUserOwnship())
-                    cc1->SetColorScheme(global_color_scheme);
-            }
+            if(cc1->SetUserOwnship())
+                cc1->SetColorScheme(global_color_scheme);
             
             pConfig->LoadNavObjects();
 
@@ -6707,13 +6715,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
     }
 
-    if( cc1 ) {
 #if !defined(__WXGTK__) && !defined(__WXQT__)
+    {
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);
-#endif
     }
+#endif
 //      Update the chart database and displayed chart
     bool bnew_view = false;
 
@@ -6725,8 +6733,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     nBlinkerTick++;
-    if( cc1 )
-        cc1->DrawBlinkObjects();
+    cc1->DrawBlinkObjects();
 
 //      Update the active route, if any
     if( g_pRouteMan->UpdateProgress() ) {
@@ -7883,7 +7890,7 @@ bool MyFrame::DoChartUpdate( void )
         vpLon = gLon;
 
         // on lookahead mode, adjust the vp center point
-        if( cc1 && g_bLookAhead ) {
+        if( g_bLookAhead ) {
             double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
 
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
@@ -8575,6 +8582,11 @@ void MyFrame::DoPrint( void )
      frame->Show();
      */
 
+    #ifdef __WXGTK__
+    SurfaceToolbar();
+    cc1->SetFocus();
+    Raise();                      // I dunno why...
+    #endif
 }
 
 void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
@@ -9266,9 +9278,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gCog = gpd.kCog;
                 gSog = gpd.kSog;
 
-                gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) )
                 {
+                    gHdt = gpd.kHdt;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }

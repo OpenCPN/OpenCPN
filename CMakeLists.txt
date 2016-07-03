@@ -129,6 +129,17 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 #If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
 #cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+
+IF(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "ON" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "ON" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "CRUDE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ELSE(APPLE OR WIN32)
+  SET(BUNDLE_DOCS "OFF" CACHE BOOL "Include documentation in package")
+  SET(BUNDLE_TCDATA "OFF" CACHE BOOL "Include tide/current harmonics data in package")
+  SET(BUNDLE_GSHHS "NONE" CACHE STRING "Include GSHHS wallpaper map in package (NONE,MIN,[CRUDE],LOW,INTERMEDIATE,HIGH,FULL)")
+ENDIF(APPLE OR WIN32)
+
 IF(APPLE OR WIN32)
   IF(NOT BUNDLE_DOCS)
     SET (BUNDLE_DOCS "ON")
@@ -152,6 +163,7 @@ ELSE(BUNDLE_DOCS MATCHES "ON")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_docs OFF")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
+
 IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
   # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
   MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")

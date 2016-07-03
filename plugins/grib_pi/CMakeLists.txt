@@ -150,7 +150,7 @@ ENDIF(QT_ANDROID)
     file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
     file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
     file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
-    file(GLOB jasper_jpc_headers "src/jjasper/pc/*.h")
+    file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
     file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
     
     SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})

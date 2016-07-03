@@ -645,10 +645,10 @@ void Route::DrawGLRouteLines( ViewPort &vp )
     wxColour col;
 
     int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
-    if( m_width != wxPENSTYLE_INVALID )
-        width = m_width;
     if(m_bIsTrack)
         width = g_pRouteMan->GetTrackPen()->GetWidth();
+    if( m_width != WIDTH_UNDEFINED )
+        width = m_width;
     
     if( m_bRtIsActive )
     {

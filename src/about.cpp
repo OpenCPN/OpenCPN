@@ -495,6 +495,9 @@ void about::OnXidOkClick( wxCommandEvent& event )
 
 void about::OnClose( wxCloseEvent& event )
 {
+    #ifdef __WXGTK__ 
+    gFrame->Raise();
+    #endif
     Destroy();
     g_pAboutDlg = NULL;
 }
