@@ -142,4 +142,9 @@ QString getAdjustedDialogStyleSheet();
 QString getListBookStyleSheet();
 QString getScrollBarsStyleSheet();
 
+//      SVG Support
+wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );
+
+
+
 #endif   //guard

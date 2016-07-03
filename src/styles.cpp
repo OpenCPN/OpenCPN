@@ -42,6 +42,10 @@
 #include "wxsvg/include/wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
+
 extern OCPNPlatform     *g_Platform;
 
 using namespace ocpnStyle;
@@ -55,11 +59,15 @@ void bmdump(wxBitmap bm, wxString name)
 static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned int height )
 {
 #ifdef ocpnUSE_SVG
+#ifdef __OCPN__ANDROID__
+    return loadAndroidSVG( filename, width, height );
+#else    
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
     else
         return wxBitmap(width, height);
+#endif    
 #else
     return wxBitmap(width, height);
 #endif // ocpnUSE_SVG

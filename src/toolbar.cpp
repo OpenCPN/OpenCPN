@@ -76,16 +76,16 @@ GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, fl
 {
     m_icon_name = icon_name;
     m_style = g_StyleManager->GetCurrentStyle();
-    wxBitmap bitmap = m_style->GetIcon( icon_name );
-    if(scale_factor > 1.0f){
-        int new_width = bitmap.GetWidth() * scale_factor;
-        int new_height = bitmap.GetHeight() * scale_factor;
-        wxImage scaled_image = bitmap.ConvertToImage();
-        m_bitmap = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
-    }
-    else
-        m_bitmap = bitmap;
-
+    int width = m_style->GetToolSize().x * scale_factor;
+    int height = m_style->GetToolSize().y * scale_factor;
+    
+    // Special case for small grabber tools
+    if( wxNOT_FOUND == icon_name.Find(_T("ext")) )
+        width = 12 * scale_factor;
+    
+    m_bitmap = m_style->GetIcon( icon_name, width, height, true );
+    
+    
     SetSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
     SetMinSize( wxSize( m_bitmap.GetWidth(), m_bitmap.GetHeight() ) );
 
@@ -121,8 +121,7 @@ void GrabberWin::SetColorScheme( ColorScheme cs )
     if(m_scale_factor > 1.0f){
         int new_width = bitmap.GetWidth() * m_scale_factor;
         int new_height = bitmap.GetHeight() * m_scale_factor;
-        wxImage scaled_image = bitmap.ConvertToImage();
-        m_bitmap = wxBitmap(scaled_image.Scale(new_width, new_height, wxIMAGE_QUALITY_HIGH));
+        m_bitmap = m_style->GetIcon( m_icon_name, new_width, new_height, true );
     }
     else
         m_bitmap = bitmap;
@@ -1888,6 +1887,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             
             if(svgFile.Length()){         // try SVG
 #ifdef ocpnUSE_SVG
+#ifndef __OCPN__ANDROID__
                 if( wxFileExists( svgFile ) ){
                     wxSVGDocument svgDoc;
                     if( svgDoc.Load(svgFile) ){
@@ -1898,6 +1898,10 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
                 }
+#else
+                bmp = loadAndroidSVG( svgFile,tool->m_width, tool->m_height );
+                bmp = m_style->BuildPluginIcon( &bmp, toggleFlag, m_sizefactor );
+#endif
 #endif           
             }
 

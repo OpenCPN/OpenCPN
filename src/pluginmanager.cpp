@@ -2193,14 +2193,17 @@ wxString GetActiveStyleName()
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width, unsigned int height)
 {
 #ifdef ocpnUSE_SVG
+#ifndef __OCPN__ANDROID__
     wxSVGDocument svgDoc;
     if ( (width > 0) && (height > 0) && svgDoc.Load(filename))
         return wxBitmap(svgDoc.Render(width, height, NULL, false, true));
     else
-        return wxBitmap();
-    
+        return wxBitmap(1, 1);
+#else
+        return loadAndroidSVG( filename, width, height );
+#endif        
 #else        
-        return wxBitmap();
+        return wxBitmap(width, height);
 #endif // ocpnUSE_SVG   
 }
 

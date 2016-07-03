@@ -212,6 +212,9 @@ import org.opencpn.DownloadService;
 import org.opencpn.OCPNResultReceiver;
 import org.opencpn.OCPNResultReceiver.Receiver;
 
+import com.caverock.androidsvg.SVG;
+import android.graphics.Bitmap;
+
 public class QtActivity extends Activity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -418,6 +421,82 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     }
+
+    public String buildSVGIcon(String inFile, String outFile, int width, int height){
+
+        Log.i("OpenCPN", inFile + " " + outFile);
+
+        // Read an SVG file
+        File file = new File( inFile);
+        SVG svg = null;
+        if (file.exists()) {
+            FileInputStream inStream = null;
+            try{
+                inStream = new FileInputStream(inFile);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Log.i("OpenCPN", "buildSVGIcon Read Stream Exception");
+            }
+
+        //SVG  svg = SVG.getFromAsset(getContext().getAssets(), inFile);
+            try{
+                svg = SVG.getFromInputStream(inStream);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Log.i("OpenCPN", "buildSVGIcon SVG Parse ExceptionA");
+            }
+
+            //  Inkscape SVG Documents must be saved in "optimized SVG" format, with viewbox enabled....
+            // https://code.google.com/archive/p/androidsvg/wikis/FAQ.wiki#My_SVG_won%27t_scale_to_fit_the_canvas_or_my_ImageView
+            try{
+                svg.setDocumentWidth(width);
+                svg.setDocumentHeight(height);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                Log.i("OpenCPN", "buildSVGIcon SVG Parse ExceptionB");
+            }
+
+        // Create a canvas to draw onto
+            if (svg.getDocumentWidth() != -1) {
+                Bitmap  newBM = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Canvas  bmcanvas = new Canvas(newBM);
+
+           // Clear background to white
+                //bmcanvas.drawRGB(255, 255, 255);
+
+           // Render our document onto our canvas
+                svg.renderToCanvas(bmcanvas);
+
+           //  Write the file out
+               FileOutputStream out = null;
+               try {
+                   out = new FileOutputStream(outFile);
+                   newBM.compress(Bitmap.CompressFormat.PNG, 100, out);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        else{
+            Log.i("OpenCPN", "FileNotFound: " + inFile);
+            return "FileNotFound";
+        }
+
+        return "OK";
+    }
+
 
     public String enableOptionsMenu(int bEnable){
         Log.i("OpenCPN", "enableOptionsMenu " + bEnable);

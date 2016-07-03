@@ -1576,6 +1576,49 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
 }
 
+wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString parm2, int parm3, int parm4)
+{
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    if ( !activity.isValid() ){
+        return return_string;
+    }
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+        return _T("jenv Error");
+    }
+    
+    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
+    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
+
+    //qDebug() << "Calling method_s2s2i" << " (" << method << ")";
+    //qDebug() << parm3 << parm4;
+    
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;II)Ljava/lang/String;",
+                                                       p1, p2, parm3, parm4);
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    jstring s = data.object<jstring>();
+        
+     if( (jenv)->GetStringLength( s )){
+             const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+             return_string = wxString(ret_string, wxConvUTF8);
+     }
+        
+    return return_string;
+        
+}
+
 
 bool androidGetFullscreen()
 {
@@ -3415,7 +3458,34 @@ QString getScrollBarsStyleSheet()
 }
 
 
-
+//      SVG Support
+wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height )
+{
+    wxCharBuffer abuf = filename.ToUTF8();
+    if( abuf.data() ){                            // OK conversion?
+        std::string s(abuf.data());              
+        qDebug() << s.c_str();
+    }
+    
+    // Destination file location
+    wxString save_file_dir = g_Platform->GetPrivateDataDir() + _T("/") + _T("icons");
+    if( !wxDirExists(save_file_dir) )
+        wxMkdir( save_file_dir);
+    
+    wxFileName fsvg(filename);
+    wxFileName fn(save_file_dir + _T("/") + fsvg.GetFullName());
+    fn.SetExt(_T("png"));
+    
+    wxString val = callActivityMethod_s2s2i("buildSVGIcon", filename, fn.GetFullPath(), width, height);
+    if( val == _T("OK") ){
+        qDebug() << "OK";
+        
+        return wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    }
+    else{
+        return wxBitmap(width, height);
+    }
+}
 
 
 
