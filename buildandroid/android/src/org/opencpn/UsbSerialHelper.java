@@ -302,38 +302,41 @@ public class UsbSerialHelper {
                      if(DEBUG) Log.d("OpenCPN", "USB Attached: ");
 
                      UsbSerialDriver driver = UsbSerialProber.getDefaultProber().probeDevice(device);
-                     List<UsbSerialPort> ports = driver.getPorts();
-                     UsbSerialPort port = null;
-                     if(ports.size() > 0)
-                        port = ports.get(0);
+                     if(null != driver){
+                        List<UsbSerialPort> portsList = driver.getPorts();
+                        UsbSerialPort port = null;
+                        if(null != portsList){
+                            if(portsList.size() > 0)
+                                port = portsList.get(0);
 
-                      if(DEBUG) Log.d("OpenCPN", "USB Attached: Probe found port: " + port);
+                            if(DEBUG) Log.d("OpenCPN", "USB Attached: Probe found port: " + port);
 
-                      portContainer tentPort = new portContainer();
-                      tentPort.friendlyName = "";
-                      tentPort.port = port;
-                      tentPort.sioManager = null;
-                      tentPort.vendorID = device.getVendorId();
-                      tentPort.productID = device.getProductId();
-                      tentPort.updateFriendlyName(device.getVendorId(), device.getProductId());
+                            portContainer tentPort = new portContainer();
+                            tentPort.friendlyName = "";
+                            tentPort.port = port;
+                            tentPort.sioManager = null;
+                            tentPort.vendorID = device.getVendorId();
+                            tentPort.productID = device.getProductId();
+                            tentPort.updateFriendlyName(device.getVendorId(), device.getProductId());
 
                       //  Refresh the entry in the DETECTED list
-                      portContainer p = findContainer( DETECTED, tentPort.friendlyName );
-                      if(null != p)
-                         mDetectedPorts.remove(p);
-                      mDetectedPorts.add(tentPort);
+                            portContainer p = findContainer( DETECTED, tentPort.friendlyName );
+                            if(null != p)
+                                mDetectedPorts.remove(p);
+                            mDetectedPorts.add(tentPort);
 
                      //  Refresh the entry in the PENDING list
-                     p = findContainer( PENDING, tentPort.friendlyName );
-                     if(null != p)
-                         mPendingPorts.remove(p);
-                     mPendingPorts.add(tentPort);
+                            p = findContainer( PENDING, tentPort.friendlyName );
+                            if(null != p)
+                                mPendingPorts.remove(p);
+                            mPendingPorts.add(tentPort);
 
                      // and start it
-                     p = findContainer( PENDING, tentPort.friendlyName );
-                     if(null != p)
-                        startUSBSerialPort( p.friendlyName, p.baudRate );
-
+                            p = findContainer( PENDING, tentPort.friendlyName );
+                            if(null != p)
+                                startUSBSerialPort( p.friendlyName, p.baudRate );
+                        }
+                    }
                  }
 
                  usbConnected=true;
