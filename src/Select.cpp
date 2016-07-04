@@ -116,17 +116,13 @@ bool Select::DeleteAllSelectableRouteSegments( Route *pr )
 
     while( node ) {
         pFindSel = node->GetData();
-        if( pFindSel->m_seltype == SELTYPE_ROUTESEGMENT ) {
-
-//                  RoutePoint *ps1 = (RoutePoint *)pFindSel->m_pData1;
-//                  RoutePoint *ps2 = (RoutePoint *)pFindSel->m_pData2;
-
-            if( (Route *) pFindSel->m_pData3 == pr ) {
+        if( pFindSel->m_seltype == SELTYPE_ROUTESEGMENT && 
+            (Route *) pFindSel->m_pData3 == pr ) 
+        {
                 delete pFindSel;
                 wxSelectableItemListNode *d = node;
                 node = node->GetNext();
                 pSelectList->DeleteNode( d );   //delete node;
-            }
         }
         else 
             node = node->GetNext();
