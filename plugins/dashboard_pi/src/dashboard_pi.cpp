@@ -1049,51 +1049,53 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if (m_NMEA0183.Parse()) { 
                 wxString xdrunit;
                 double xdrdata;
-		for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
-                     xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
-                     // XDR Airtemp
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")){
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-                     }
-                     // XDR Pressure
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")){
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")){
-  			     xdrdata *= 1000;
-                             SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
-                         }
-		     }
-                     // XDR Pitch (=Nose up/down)
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("D")) {
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
-                             xdrunit = _T("\u00B0 Nose up");
-                         }
-                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                             xdrunit = _T("\u00B0 Nose down");
-                             xdrdata *= -1;
-                         }
-                         else {
-                             xdrunit = _T("\u00B0");
-                         }
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
-                     }
-                     // XDR Heel
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                             xdrunit = _T("\u00B0 to Starboard");
-		         }
-                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                             xdrunit = _T("\u00B0 to Port");
-                             xdrdata *= -1;
-                         }
-                         else {
-                            xdrunit = _T("\u00B0");
-			 }
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-                     } 
+                for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++) {
+                    xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
+                    // XDR Airtemp
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                    }
+                    // XDR Pressure
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")) {
+                            xdrdata *= 1000;
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
+                        }
+                    }
+                    // XDR Pitch (=Nose up/down) or Heel (stb/port)
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
+                            if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                                xdrunit = _T("\u00B0 Nose up");
+                            }
+                            else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                                xdrunit = _T("\u00B0 Nose down");
+                                xdrdata *= -1;
+                            }
+                            else {
+                                xdrunit = _T("\u00B0");
+                            }
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
+                        }
+                        // XDR Heel
+                        else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) {
+                            if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                                xdrunit = _T("\u00B0 to Starboard");
+                            }
+                            else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                                xdrunit = _T("\u00B0 to Port");
+                                xdrdata *= -1;
+                            }
+                            else {
+                                xdrunit = _T("\u00B0");
+                            }
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                        }
+                    }
 		     //Nasa style water temp
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-                     }
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                    }
                 }
             }
         }
