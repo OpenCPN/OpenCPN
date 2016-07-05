@@ -972,7 +972,6 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     wxString icon = _T("xmblue");
     if( g_TrackDeltaDistance >= 0.1 ) icon = _T("diamond");
 
-    int ic = 0;
     int next_ic = 0;
     int back_ic = 0;
     int nPoints = TrackPoints.size();
@@ -992,23 +991,23 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     route->AddPoint( pWP_dst );
 
     pWP_dst->m_bShowName = false;
-
+    
     pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
-
+    pWP_prev = pWP_dst;
 // add intermediate points as needed
 
     for(size_t i = 1; i < TrackPoints.size();) {
         TrackPoint *prp = TrackPoints[i];
         prpnodeX = i;
-        pWP_dst->m_lat = pWP_src->m_lat;
-        pWP_dst->m_lon = pWP_src->m_lon;
+        pWP_dst->m_lat = pWP_prev->m_lat;
+        pWP_dst->m_lon = pWP_prev->m_lon;
         pWP_prev = pWP_dst;
 
         delta_dist = 0.0;
         delta_hdg = 0.0;
         back_ic = next_ic;
 
-        DistanceBearingMercator( prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, &delta_hdg,
+        DistanceBearingMercator( prp->m_lat, prp->m_lon, pWP_prev->m_lat, pWP_prev->m_lon, &delta_hdg,
                 &delta_dist );
 
         if( ( delta_dist > ( leg_speed * 6.0 ) ) && !prp_OK ) {
@@ -1018,13 +1017,13 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
             double tlon = 0.0;
 
             while( delta_inserts-- ) {
-                ll_gc_ll( pWP_src->m_lat, pWP_src->m_lon, delta_hdg, delta_dist, &tlat, &tlon );
+                ll_gc_ll( pWP_prev->m_lat, pWP_prev->m_lon, delta_hdg, delta_dist, &tlat, &tlon );
                 pWP_dst = new RoutePoint( tlat, tlon, icon, _T ( "" ), GPX_EMPTY_STRING );
                 route->AddPoint( pWP_dst );
                 pWP_dst->m_bShowName = false;
                 pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
-                pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat,
+                pSelect->AddSelectableRouteSegment( pWP_prev->m_lat, pWP_prev->m_lon, pWP_dst->m_lat,
                         pWP_dst->m_lon, pWP_prev, pWP_dst, route );
 
                 pWP_prev = pWP_dst;
@@ -1041,10 +1040,10 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
             if( delta_dist >= ( leg_speed * 4.0 ) ) isProminent = true;
             if( !prp_OK ) prp_OK = prp;
         }
-
         while( prpnodeX < TrackPoints.size() ) {
 
             TrackPoint *prpX = TrackPoints[prpnodeX];
+            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
             xte = GetXTE( pWP_src, prpX, prp );
             if( isProminent || ( xte > g_TrackDeltaDistance ) ) {
 
@@ -1056,7 +1055,7 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
 
                 pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
-                pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat,
+                pSelect->AddSelectableRouteSegment( pWP_prev->m_lat, pWP_prev->m_lon, pWP_dst->m_lat,
                         pWP_dst->m_lon, pWP_prev, pWP_dst, route );
 
                 pWP_prev = pWP_dst;
@@ -1065,7 +1064,7 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
                 prp_OK = NULL;
             }
 
-            if( prpnodeX ) prpnodeX--;
+            if( prpnodeX != TrackPoints.size()) prpnodeX--;
             if( back_ic-- <= 0 ) {
                 prpnodeX = TrackPoints.size();
             }
@@ -1075,15 +1074,14 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
             prp_OK = prp;
         }
 
-        DistanceBearingMercator( prp->m_lat, prp->m_lon, pWP_src->m_lat, pWP_src->m_lon, NULL,
+        DistanceBearingMercator( prp->m_lat, prp->m_lon, pWP_prev->m_lat, pWP_prev->m_lon, NULL,
                 &delta_dist );
 
         if( !( ( delta_dist > ( g_TrackDeltaDistance ) ) && !prp_OK ) ) {
             i++;
             next_ic++;
         }
-        ic++;
-        if( pprog ) pprog->Update( ( ic * 100 ) / nPoints );
+        if( pprog ) pprog->Update( ( i * 100 ) / nPoints );
     }
 
 // add last point, if needed
@@ -1097,7 +1095,7 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
 
         pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
 
-        pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP_dst->m_lat,
+        pSelect->AddSelectableRouteSegment( pWP_prev->m_lat, pWP_prev->m_lon, pWP_dst->m_lat,
                 pWP_dst->m_lon, pWP_prev, pWP_dst, route );
     }
     route->m_RouteNameString = m_TrackNameString;
