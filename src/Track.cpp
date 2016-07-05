@@ -972,7 +972,6 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     wxString icon = _T("xmblue");
     if( g_TrackDeltaDistance >= 0.1 ) icon = _T("diamond");
 
-    int ic = 0;
     int next_ic = 0;
     int back_ic = 0;
     int nPoints = TrackPoints.size();
@@ -1082,8 +1081,7 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
             i++;
             next_ic++;
         }
-        ic++;
-        if( pprog ) pprog->Update( ( ic * 100 ) / nPoints );
+        if( pprog ) pprog->Update( ( i * 100 ) / nPoints );
     }
 
 // add last point, if needed
