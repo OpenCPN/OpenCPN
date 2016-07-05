@@ -1645,6 +1645,23 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
         return wxEmptyString;
 
     double                  gt_brg, gt_leg_dist;
+    double slat, slon;
+    if( item == 0 )
+    {
+        slat = gLat;
+        slon = gLon;
+    }
+    else if( prev_point )
+    {
+        slat = prev_point->m_lat;
+        slon = prev_point->m_lon;
+    }
+    else
+    {
+        slat = gLat;
+        slon = gLon;
+    }
+
     switch( column )
     {
         case 0:
@@ -1655,29 +1672,13 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             break;
 
         case 1:
-            double slat, slon;
-            if( item == 0 )
-            {
-                slat = gLat;
-                slon = gLon;
-            }
-            else if( prev_point )
-            {
-                slat = prev_point->m_lat;
-                slon = prev_point->m_lon;
-            }
-            else
-            {
-                slat = gLat;
-                slon = gLon;
-            }
-
             DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
 
             ret.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( gt_leg_dist ) );
             break;
 
         case 2:
+            DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
             ret.Printf( _T("%03.0f \u00B0T"), gt_brg );
             break;
 
@@ -1703,6 +1704,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             if( ( item > 0 ) && this_point->GetCreateTime().IsValid()
                     && prev_point->GetCreateTime().IsValid() )
             {
+                DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
                 double speed = 0.;
                 double seconds =
                         this_point->GetCreateTime().Subtract( prev_point->GetCreateTime() ).GetSeconds().ToDouble();
