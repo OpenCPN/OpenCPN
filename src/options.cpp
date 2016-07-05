@@ -5028,6 +5028,10 @@ void options::SetInitialSettings(void) {
       }
   }
   
+  //  On some platforms, the global connections list may be changed outside of the options dialog.
+  //  Pick up any changes here, and re-populate the dialog list.
+  FillSourceList();
+  
   //  Reset the touch flag...
   connectionsaved = true;
   
