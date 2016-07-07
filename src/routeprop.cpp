@@ -2613,7 +2613,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
      m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
      LLGrid->Add( m_textArrivalRadius, 1, wxALL , 5 );
      
-     
+    int box_size = 140 * g_Platform->GetDisplayDensityFactor();
+    
     m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show Range Rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
     bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 0 );
@@ -2627,7 +2628,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
         
     wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
     m_choiceWaypointRangeRingsNumber = new wxChoice( m_panelBasicProperties, ID_WAYPOINTRANGERINGS, wxDefaultPosition,
-                                                     wxSize(250, -1), 11, rrAlt );
+                                                     wxSize(box_size, -1), 11, rrAlt );
     waypointrrSelect->Add( m_choiceWaypointRangeRingsNumber, 0, wxALIGN_RIGHT | wxALL, 4 );
 
     waypointradarGrid = new wxFlexGridSizer( 0, 2, 1, 1 );
@@ -2638,7 +2639,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, 1 );
 
     m_textWaypointRangeRingsStep = new wxTextCtrl( m_panelBasicProperties, ID_TEXTCTRL, _T(""), wxDefaultPosition,
-                                                   wxSize( 100, -1 ), 0 );
+                                                   wxSize( box_size, -1 ), 0 );
     waypointradarGrid->Add( m_textWaypointRangeRingsStep, 0, wxALIGN_RIGHT | wxALL, 4 );
 
     wxStaticText* waypointunitText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Distance Unit") );
@@ -2646,7 +2647,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     wxString pDistUnitsStrings[] = { _T("Nautical Miles"), _T("Kilometers") };
     m_choiceWaypointRangeRingsUnits = new wxChoice( m_panelBasicProperties, wxID_ANY, wxDefaultPosition,
-                                                    wxSize(250, -1), 2, pDistUnitsStrings );
+                                                    wxSize(box_size, -1), 2, pDistUnitsStrings );
     waypointradarGrid->Add( m_choiceWaypointRangeRingsUnits, 0, wxALIGN_RIGHT | wxALL, 4 );
 
         
@@ -2662,7 +2663,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
                                     _("Light Gray"), _("Dark Gray"), _("Red"), _("Green"), _("Yellow"), _("Blue"),
                                     _("Magenta"), _("Cyan"), _("White") };
     int chColorNChoices = sizeof( chColorChoices ) / sizeof(wxString);
-    m_chColor = new wxChoice( m_panelBasicProperties, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+    m_chColor = new wxChoice( m_panelBasicProperties, wxID_ANY, wxDefaultPosition, wxSize( box_size, -1 ),
                               chColorNChoices,  chColorChoices, 0 );
     m_chColor->SetSelection( 0 );
     waypointradarGrid->Add( m_chColor, 0, wxALIGN_RIGHT | wxALL, 4);
@@ -2901,7 +2902,10 @@ void MarkInfoDef::RecalculateSize( void )
 #ifdef __OCPN__ANDROID__
     wxSize asize;
     asize.x = dsize.x - (4 * GetCharHeight());
-    asize.y = -1;
+    
+    //  If resulting size seems too small, expand to full screen width
+    if(asize.x < 300 * g_Platform->GetDisplayDensityFactor())
+        asize.x = dsize.x - 20;
     asize.y =  dsize.y - (6 * GetCharHeight());
     SetSize(asize);
 #endif    
