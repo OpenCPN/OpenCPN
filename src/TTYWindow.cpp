@@ -94,7 +94,9 @@ TTYWindow::~TTYWindow()
 
 void TTYWindow::CreateLegendBitmap()
 {
-    m_bm_legend.Create(400, 130);
+    int ref = GetCharHeight();
+    
+    m_bm_legend.Create(ref * 15, ref * 6 ); //400, 130);
     wxMemoryDC dc;
     dc.SelectObject( m_bm_legend );
     if( m_bm_legend.IsOk()) {
@@ -105,7 +107,7 @@ void TTYWindow::CreateLegendBitmap()
         wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
         dc.SetFont(f);
 
-        int yp = 25;
+        int yp = GetCharHeight();
         int y = 5;
 
         wxBrush b1(wxColour( _T("DARK GREEN")) );

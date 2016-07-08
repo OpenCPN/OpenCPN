@@ -24,6 +24,13 @@
 
 #include "NMEALogWindow.h"
 #include "TTYWindow.h"
+#include "OCPNPlatform.h"
+
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
+extern OCPNPlatform *g_Platform;
 
 NMEALogWindow * NMEALogWindow::instance = NULL;
 
@@ -88,7 +95,12 @@ void NMEALogWindow::Refresh(bool do_refresh)
 void NMEALogWindow::SetSize(const wxSize & size)
 {
     width = size.GetWidth();
+    width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
+    width = wxMin(width, g_Platform->getDisplaySize().x - 20);
     height = size.GetHeight();
+    height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
+    height = wxMin(height, g_Platform->getDisplaySize().y - 20);
+    
 }
 
 void NMEALogWindow::SetPos(const wxPoint & pos)
@@ -124,7 +136,13 @@ int NMEALogWindow::GetPosY()
 void NMEALogWindow::SetSize(int w, int h)
 {
     width = w;
+    width = wxMax(width, 400 * g_Platform->GetDisplayDensityFactor());
+    width = wxMin(width, g_Platform->getDisplaySize().x - 20);
+
     height = h;
+    height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
+    height = wxMin(height, g_Platform->getDisplaySize().y - 20);
+    qDebug() << w << h << width << height;
 }
 
 void NMEALogWindow::SetPos(int x, int y)
