@@ -46,7 +46,9 @@ wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
 int g_iDashSpeedMax;
+int g_iDashCOGDamp;
 int g_iDashSpeedUnit;
+int g_iDashSOGDamp;
 int g_iDashDepthUnit;
 int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
@@ -874,24 +876,24 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         mPriCOGSOG = 3;
                         if( m_NMEA0183.Rmc.SpeedOverGroundKnots < 999. ) {
                             SendSentenceToAllInstruments( OCPN_DBP_STC_SOG,
-                                    toUsrSpeed_Plugin( m_NMEA0183.Rmc.SpeedOverGroundKnots, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
+                                    toUsrSpeed_Plugin( mSOGFilter.filter(m_NMEA0183.Rmc.SpeedOverGroundKnots), g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                         } else {
                             //->SetData(_T("---"));
                         }
                         if( m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue < 999. ) {
                             SendSentenceToAllInstruments( OCPN_DBP_STC_COG,
-                                    m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue, _T("\u00B0") );
+                                    mCOGFilter.filter(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue), _T("\u00B0") );
                         } else {
                             //->SetData(_T("---"));
                         }
                         if( m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue < 999. && m_NMEA0183.Rmc.MagneticVariation < 999.) {
                             double dMagneticCOG;
                             if (m_NMEA0183.Rmc.MagneticVariationDirection == East) {
-                                dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue - m_NMEA0183.Rmc.MagneticVariation;
+                                dMagneticCOG = mCOGFilter.get() - m_NMEA0183.Rmc.MagneticVariation;
                                 if ( dMagneticCOG < 0.0 ) dMagneticCOG = 360.0 + dMagneticCOG;
                             }
                             else {
-                                dMagneticCOG = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue + m_NMEA0183.Rmc.MagneticVariation;
+                                dMagneticCOG = mCOGFilter.get() + m_NMEA0183.Rmc.MagneticVariation;
                                 if ( dMagneticCOG > 360.0 ) dMagneticCOG = dMagneticCOG - 360.0;
                             }
                             SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG,
@@ -968,7 +970,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mPriCOGSOG = 2;
                     //    Special check for unintialized values, as opposed to zero values
                     if( m_NMEA0183.Vtg.SpeedKnots < 999. ) {
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( m_NMEA0183.Vtg.SpeedKnots, g_iDashSpeedUnit ),
+                        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( mSOGFilter.filter(m_NMEA0183.Vtg.SpeedKnots), g_iDashSpeedUnit ),
                                 getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                     } else {
                         //->SetData(_T("---"));
@@ -976,7 +978,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     // Vtg.SpeedKilometersPerHour;
                     if( m_NMEA0183.Vtg.TrackDegreesTrue < 999. ) {
                         SendSentenceToAllInstruments( OCPN_DBP_STC_COG,
-                                m_NMEA0183.Vtg.TrackDegreesTrue, _T("\u00B0") );
+                                mCOGFilter.filter(m_NMEA0183.Vtg.TrackDegreesTrue), _T("\u00B0") );
                     } else {
                         //->SetData(_T("---"));
                     }
@@ -1047,51 +1049,53 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if (m_NMEA0183.Parse()) { 
                 wxString xdrunit;
                 double xdrdata;
-		for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++){
-                     xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
-                     // XDR Airtemp
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")){
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-                     }
-                     // XDR Pressure
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")){
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")){
-  			     xdrdata *= 1000;
-                             SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
-                         }
-		     }
-                     // XDR Pitch (=Nose up/down)
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("D")) {
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0){
-                             xdrunit = _T("\u00B0 Nose up");
-                         }
-                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                             xdrunit = _T("\u00B0 Nose down");
-                             xdrdata *= -1;
-                         }
-                         else {
-                             xdrunit = _T("\u00B0");
-                         }
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
-                     }
-                     // XDR Heel
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
-                         if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                             xdrunit = _T("\u00B0 to Starboard");
-		         }
-                         else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
-                             xdrunit = _T("\u00B0 to Port");
-                             xdrdata *= -1;
-                         }
-                         else {
-                            xdrunit = _T("\u00B0");
-			 }
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
-                     } 
+                for (int i = 0; i<m_NMEA0183.Xdr.TransducerCnt; i++) {
+                    xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
+                    // XDR Airtemp
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, xdrdata , m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                    }
+                    // XDR Pressure
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("P")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == _T("B")) {
+                            xdrdata *= 1000;
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata , _T("mBar") );
+                        }
+                    }
+                    // XDR Pitch (=Nose up/down) or Heel (stb/port)
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
+                            if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                                xdrunit = _T("\u00B0 Nose up");
+                            }
+                            else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                                xdrunit = _T("\u00B0 Nose down");
+                                xdrdata *= -1;
+                            }
+                            else {
+                                xdrunit = _T("\u00B0");
+                            }
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata, xdrunit);
+                        }
+                        // XDR Heel
+                        else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ROLL")) {
+                            if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
+                                xdrunit = _T("\u00B0 to Starboard");
+                            }
+                            else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData < 0) {
+                                xdrunit = _T("\u00B0 to Port");
+                                xdrdata *= -1;
+                            }
+                            else {
+                                xdrunit = _T("\u00B0");
+                            }
+                            SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata, xdrunit);
+                        }
+                    }
 		     //Nasa style water temp
-                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
-                         SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
-                     }
+                    if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("ENV_WATER_T")){
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_TMP, m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData,m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement);
+                    }
                 }
             }
         }
@@ -1128,8 +1132,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if( !wxIsNaN(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
-            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( gpd.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
-            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("\u00B0") );
+            SendSentenceToAllInstruments(OCPN_DBP_STC_SOG, toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit), getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
+            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog), _T("\u00B0") );
             if( !wxIsNaN(gpd.Hdt) ) {
                 SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
                 mHDT_Watchdog = gps_watchdog_timeout_ticks;
@@ -1148,9 +1152,9 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
     if( mPriCOGSOG >= 1 ) {
         double dMagneticCOG;
         mPriCOGSOG = 1;
-        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( pfix.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
-        SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("\u00B0") );
-        dMagneticCOG = pfix.Cog - pfix.Var;
+        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( mSOGFilter.filter(pfix.Sog), g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
+        SendSentenceToAllInstruments( OCPN_DBP_STC_COG, mCOGFilter.filter(pfix.Cog), _T("\u00B0") );
+        dMagneticCOG = mCOGFilter.get() - pfix.Var;
         if ( dMagneticCOG < 0.0 ) dMagneticCOG = 360.0 + dMagneticCOG;
         if ( dMagneticCOG > 360.0 ) dMagneticCOG = dMagneticCOG - 360.0;
         SendSentenceToAllInstruments( OCPN_DBP_STC_MCOG, dMagneticCOG , _T("\u00B0M") );
@@ -1408,8 +1412,9 @@ bool dashboard_pi::LoadConfig( void )
         if( !config.IsEmpty() ) g_pFontSmall->SetNativeFontInfo( config );
 
         pConf->Read( _T("SpeedometerMax"), &g_iDashSpeedMax, 12 );
+        pConf->Read( _T("COGDamp"), &g_iDashCOGDamp, 0);
         pConf->Read( _T("SpeedUnit"), &g_iDashSpeedUnit, 0 );
-
+        pConf->Read( _T("SOGDamp"), &g_iDashSOGDamp, 0);
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
         g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
@@ -1506,7 +1511,9 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("FontSmall"), g_pFontSmall->GetNativeFontInfoDesc() );
 
         pConf->Write( _T("SpeedometerMax"), g_iDashSpeedMax );
+        pConf->Write( _T("COGDamp"), g_iDashCOGDamp );
         pConf->Write( _T("SpeedUnit"), g_iDashSpeedUnit );
+        pConf->Write( _T("SOGDamp"), g_iDashSOGDamp );
         pConf->Write( _T("DepthUnit"), g_iDashDepthUnit );
         pConf->Write( _T("DistanceUnit"), g_iDashDistanceUnit );
         pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
@@ -1581,6 +1588,9 @@ void dashboard_pi::ApplyConfig( void )
         }
     }
     m_pauimgr->Update();
+    mSOGFilter.setFC(g_iDashSOGDamp ? 1.0 / (2.0*g_iDashSOGDamp) : 0.0);
+    mCOGFilter.setFC(g_iDashCOGDamp ? 1.0 / (2.0*g_iDashCOGDamp) : 0.0);
+    mCOGFilter.setType(IIRFILTER_TYPE_DEG);
 }
 
 void dashboard_pi::PopulateContextMenu( wxMenu* menu )
@@ -1800,6 +1810,18 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer04->Add( itemStaticText08, 0, wxEXPAND | wxALL, border_size );
     m_pSpinSpeedMax = new wxSpinCtrl( itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 10, 100, g_iDashSpeedMax );
     itemFlexGridSizer04->Add( m_pSpinSpeedMax, 0, wxALIGN_RIGHT | wxALL, 0 );
+
+    wxStaticText* itemStaticText10 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Speed Over Ground Damping Factor:"),
+        wxDefaultPosition, wxDefaultSize, 0);
+    itemFlexGridSizer04->Add(itemStaticText10, 0, wxEXPAND | wxALL, border_size);
+    m_pSpinSOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, g_iDashSOGDamp);
+    itemFlexGridSizer04->Add(m_pSpinSOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
+
+    wxStaticText* itemStaticText11 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("COG Damping Factor:"),
+        wxDefaultPosition, wxDefaultSize, 0);
+    itemFlexGridSizer04->Add(itemStaticText11, 0, wxEXPAND | wxALL, border_size);
+    m_pSpinCOGDamp = new wxSpinCtrl(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, g_iDashCOGDamp);
+    itemFlexGridSizer04->Add(m_pSpinCOGDamp, 0, wxALIGN_RIGHT | wxALL, 0);
     wxStaticText* itemStaticText09 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Boat speed units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticText09, 0, wxEXPAND | wxALL, border_size );
@@ -1863,6 +1885,8 @@ void DashboardPreferencesDialog::OnCloseDialog( wxCloseEvent& event )
 void DashboardPreferencesDialog::SaveDashboardConfig()
 {
     g_iDashSpeedMax = m_pSpinSpeedMax->GetValue();
+    g_iDashCOGDamp = m_pSpinCOGDamp->GetValue();
+    g_iDashSOGDamp = m_pSpinSOGDamp->GetValue();
     g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
     g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
