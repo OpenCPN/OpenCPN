@@ -2813,7 +2813,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     Fit();
 
-    SetMinSize(wxSize(-1, 600));
+    SetMinSize(wxSize(-1, min(600, wxSystemSettings::GetMetric( wxSYS_SCREEN_Y ))));
     RecalculateSize();
     
     // Connect Events
@@ -3185,7 +3185,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
     #endif
     
     Fit();
-    SetMinSize(wxSize(-1, 600));
+    SetMinSize(wxSize(-1, min(600, wxSystemSettings::GetMetric( wxSYS_SCREEN_Y ))));
     RecalculateSize();
     
     return true;
