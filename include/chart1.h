@@ -532,18 +532,12 @@ class MyFrame: public wxFrame
     wxString         m_last_reported_chart_name;
     wxString         m_last_reported_chart_pubdate;
 
-    double           COGTable[MAX_COG_AVERAGE_SECONDS];
-
     wxString         m_lastAISiconName;
 
     bool             m_toolbar_scale_tools_shown;
 
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
-
-    double              m_COGFilterLast;
-    double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
-    double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;

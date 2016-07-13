@@ -81,6 +81,7 @@
 #include "gshhs.h"
 #include "canvasMenu.h"
 #include "wx28compat.h"
+#include "filterobj.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -248,7 +249,9 @@ extern bool             g_bUseVector;
 extern bool             g_bUseCM93;
 
 extern bool             g_bCourseUp;
-extern double           g_COGAvg;               // only needed for debug....
+//extern double           g_COGAvg;               // only needed for debug....
+extern filterobj        g_fCOG;
+extern filterobj        g_fSOG;
 
 extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;

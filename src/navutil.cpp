@@ -73,6 +73,7 @@
 #include "NMEALogWindow.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
+#include "filterobj.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -311,6 +312,8 @@ extern bool             g_bDebugGPSD;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
+extern filterobj        g_fCOG;
+extern filterobj        g_fSOG;
 
 int                     g_navobjbackups;
 
@@ -564,6 +567,8 @@ int MyConfig::LoadMyConfig()
     g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
+    g_fSOG.setFC(g_bfilter_cogsog ? 1.0 / (2.0*g_SOGFilterSec) : 0.0);
+    g_fCOG.setFC(g_bfilter_cogsog ? 1.0 / (2.0*g_COGFilterSec) : 0.0);
 
     Read( _T ( "ShowMag" ), &g_bShowMag, 0 );
     g_UserVar = 0.0;

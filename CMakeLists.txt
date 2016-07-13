@@ -999,6 +999,7 @@ SET(HDRS
                 include/canvasMenu.h
                 include/OCPNPlatform.h
                 include/S57Sector.h
+		include/filterobj.h
 )
 
 SET(SRCS
@@ -1090,6 +1091,7 @@ SET(SRCS
                 src/viewport.cpp
                 src/canvasMenu.cpp
                 src/OCPNPlatform.cpp 
+		src/filterobj.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
