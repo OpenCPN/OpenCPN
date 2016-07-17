@@ -1,30 +1,34 @@
 #include "array.h"
+#include "eval.h"
+#include "gl_str.h"
 
-GLvoid *copy_gl_array(const GLvoid *src,
+GLvoid *gl_copy_array(const GLvoid *src,
                       GLenum from, GLsizei width, GLsizei stride,
-                      GLenum to, GLsizei to_width, GLsizei skip, GLsizei count) {
+                      GLenum to, GLsizei to_width, GLsizei skip, GLsizei count,
+                      GLboolean normalize) {
     if (! src || !count)
         return NULL;
 
     if (! stride)
         stride = width * gl_sizeof(from);
 
-    const char *unknown_str = "libGL: copy_gl_array -> unknown type: %x\n";
+    const char *unknown_str = "libGL: gl_copy_array -> unsupported type %s\n";
     GLvoid *dst = malloc(count * to_width * gl_sizeof(to));
     GLsizei from_size = gl_sizeof(from) * width;
     GLsizei to_size = gl_sizeof(to) * to_width;
 
     if (to_width < width) {
-        printf("Warning: copy_gl_array: %i < %i\n", to_width, width);
+        printf("Warning: gl_copy_array: %i < %i\n", to_width, width);
         return NULL;
     }
 
     // if stride is weird, we need to be able to arbitrarily shift src
     // so we leave it in a uintptr_t and cast after incrementing
     uintptr_t in = (uintptr_t)src;
+    in += stride * skip;
     if (from == to && to_width >= width) {
         GL_TYPE_SWITCH(out, dst, to,
-            for (int i = skip; i < count; i++) {
+            for (int i = skip; i < (skip + count); i++) {
                 memcpy(out, (GLvoid *)in, from_size);
                 for (int j = width; j < to_width; j++) {
                     out[j] = 0;
@@ -33,29 +37,35 @@ GLvoid *copy_gl_array(const GLvoid *src,
                 in += stride;
             },
             default:
-                printf(unknown_str, from);
+                printf(unknown_str, gl_str(from));
                 return NULL;
         )
     } else {
         GL_TYPE_SWITCH(out, dst, to,
-            for (int i = skip; i < count; i++) {
+            for (int i = skip; i < (skip + count); i++) {
                 GL_TYPE_SWITCH(input, in, from,
                     for (int j = 0; j < width; j++) {
-                        out[j] = input[j];
+                        if (from != to && normalize) {
+                            out[j] = input[j] * gl_max_value(to);
+                            out[j] /= gl_max_value(from);
+                        } else {
+                            out[j] = input[j];
+                        }
                     }
                     for (int j = width; j < to_width; j++) {
-                        out[j] = 0;
+                        if (j == 3) out[j] = 1;
+                        else out[j] = 0;
                     }
                     out += to_width;
                     in += stride;
                 ,
                     default:
-                        printf(unknown_str, from);
+                        printf(unknown_str, gl_str(from));
                         return NULL;
                 )
             },
             default:
-                printf(unknown_str, to);
+                printf(unknown_str, gl_str(to));
                 return NULL;
         )
     }
@@ -63,9 +73,8 @@ GLvoid *copy_gl_array(const GLvoid *src,
     return dst;
 }
 
-GLvoid *copy_gl_pointer(pointer_state_t *ptr, GLsizei width, GLsizei skip, GLsizei count) {
-    return copy_gl_array(ptr->pointer, ptr->type, ptr->size, ptr->stride,
-                         GL_FLOAT, width, skip, count);
+GLvoid *gl_copy_pointer(pointer_state_t *ptr, GLsizei width, GLsizei skip, GLsizei count, GLboolean normalize) {
+    return gl_copy_array(ptr->pointer, ptr->type, ptr->size, ptr->stride, GL_FLOAT, width, skip, count, normalize);
 }
 
 GLfloat *gl_pointer_index(pointer_state_t *p, GLint index) {
@@ -83,7 +92,7 @@ GLfloat *gl_pointer_index(pointer_state_t *p, GLint index) {
             buf[i] = 0;
         },
         default:
-            printf("libGL: unknown pointer type: 0x%x\n", p->type);
+            printf("libGL: unsupported pointer type: %s\n", gl_str(p->type));
     )
     return buf;
 }

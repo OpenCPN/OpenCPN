@@ -1,7 +1,7 @@
-#include "gl.h"
-
 #ifndef GL_MAP_H
 #define GL_MAP_H
+
+#include <GL/gl.h>
 
 void glMap1d(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, const GLdouble *points);
 void glMap1f(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order, const GLfloat *points);
@@ -24,36 +24,6 @@ void glMapGrid2f(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat
 void glGetMapdv(GLenum target, GLenum query, GLdouble *v);
 void glGetMapfv(GLenum target, GLenum query, GLfloat *v);
 void glGetMapiv(GLenum target, GLenum query, GLint *v);
-
-typedef struct {
-    GLenum type;
-} map_state_t;
-
-typedef struct {
-    GLdouble _1, _2, n, d;
-    GLint stride, order;
-} mapcoordd_t;
-
-typedef struct {
-    GLdouble _1, _2, n, d;
-    GLint stride, order;
-} mapcoordf_t;
-
-typedef struct {
-    GLenum type;
-    GLint dims, width;
-    mapcoordd_t u, v;
-    GLboolean free;
-    const GLdouble *points;
-} map_stated_t;
-
-typedef struct {
-    GLenum type;
-    GLint dims, width;
-    mapcoordf_t u, v;
-    GLboolean free;
-    const GLfloat *points;
-} map_statef_t;
 
 static const GLsizei get_map_width(GLenum target) {
     switch (target) {

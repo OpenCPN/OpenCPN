@@ -35,6 +35,9 @@
 #include "chartsymbols.h"
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
+
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
 #endif
 
 extern bool g_bopengl;
@@ -873,16 +876,28 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
                 glGenTextures(1, &rasterSymbolsTexture);
 
             glBindTexture(g_texture_rectangle_format, rasterSymbolsTexture);
-
+            
             /* unfortunately this texture looks terrible with compression */
-            GLuint format = GL_RGBA;
-            glTexImage2D(g_texture_rectangle_format, 0, format, w, h,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, e);
+	    GLuint format = GL_RGBA;
+	    if(g_GLOptions.m_bbcmhost) {
+                // apparently broadcom IV drivers
+                // cannot handle npot textures above a certain size, but 2048x2048 is ok
+                // this is unfortunate but easy fix wastes 10M of video memory
+                rasterSymbolsTextureSize = wxSize(NextPow2(w), NextPow2(h));
+                glTexImage2D(g_texture_rectangle_format, 0, format,
+                             rasterSymbolsTextureSize.x, rasterSymbolsTextureSize.y,
+                             0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
+                glTexSubImage2D(g_texture_rectangle_format, 0, 0, 0, w, h,
+                                GL_RGBA, GL_UNSIGNED_BYTE, e);
+	    } else {
+                rasterSymbolsTextureSize = wxSize(w, h);
+                glTexImage2D(g_texture_rectangle_format, 0, format, w, h,
+                             0, GL_RGBA, GL_UNSIGNED_BYTE, e);
+            }
+            
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-            rasterSymbolsTextureSize = wxSize(w, h);
 
             free(e);
         } 

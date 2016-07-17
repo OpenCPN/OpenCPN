@@ -1,0 +1,43 @@
+{% from "base/util.j2" import fprint %}
+{% extends "base/base.j2" %}
+{% block main %}
+{% include "base/indexed_call.j2" %}
+
+const int INDEX_RET_SIZE[] = {
+    0,
+{% for func in functions %}
+    [{{ func.name }}_INDEX] = {% if func.void %}    0{% else %}    sizeof({{ func.return }}){% endif %},
+{% endfor %}
+};
+
+const int INDEX_PACKED_SIZE[] = {
+    0,
+{% for func in functions %}
+    [{{ func.name }}_INDEX] = sizeof({{ func.name }}_PACKED),
+{% endfor %}
+};
+
+const char *INDEX_NAME[] = {
+    0,
+{% for func in functions %}
+    [{{ func.name }}_INDEX] = "{{ func.name }}",
+{% endfor %}
+};
+
+{% for func in functions %}
+{{ func.return }} stub_{{ func.name }}({{ func.args|args }}) {
+    {{ fprint(func, prefix='stub ') }}
+    {%- if not func.void %}    return 0;
+    {% endif %}
+}
+packed_call_t *pack_{{ func.name }}({{ func.name }}_PACKED *_dst{% if func.args %}, {{ func.args|args }}{% endif %}) {
+    if (_dst == NULL) _dst = malloc(sizeof({{ func.name }}_PACKED));
+    _dst->index = {{ func.name }}_INDEX;
+    {% for arg in func.args %}
+    _dst->args.{{ arg.name }} = ({{ arg.type|unconst }}){{ arg.name }};
+    {% endfor %}
+    return (packed_call_t *)_dst;
+}
+{% endfor %}
+
+{% endblock %}

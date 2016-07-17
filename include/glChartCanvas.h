@@ -56,6 +56,8 @@ public:
 
     int m_iTextureDimension;
     int m_iTextureMemorySize;
+
+    bool m_bbcmhost;
 };
 
 class ocpnDC;

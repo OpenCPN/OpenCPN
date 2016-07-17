@@ -1,6 +1,4 @@
-#include "gl.h"
-#include <math.h>
+#include <GL/gl.h>
+#include "block.h"
 
-extern void glTexGenfv(GLenum coord, GLenum pname, GLfloat *params);
-extern void glTexGeni(GLenum coord, GLenum pname, GLint param);
-extern void gen_tex_coords(GLfloat *verts, GLfloat **coords, GLint count);
+extern void gen_tex_coords(block_t *block, GLuint texture);

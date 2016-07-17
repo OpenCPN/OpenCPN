@@ -2,6 +2,9 @@
 {% endif %}
 {% if ifndef %}#ifndef {{ ifndef }}
 {% endif %}
+{% block headers %}
+{% include "base/headers.j2" %}
+{% endblock %}
 {% block main %}{% endblock %}
 {% if ifdef %}#endif{% endif %}
 {% if ifndef %}#endif{% endif %}

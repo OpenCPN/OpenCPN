@@ -1,7 +1,8 @@
-#include "gl.h"
-
 #ifndef PIXEL_H
 #define PIXEL_H
+
+#include <GL/gl.h>
+#include <stdbool.h>
 
 typedef struct {
     GLenum type;
@@ -16,6 +17,10 @@ bool pixel_convert(const GLvoid *src, GLvoid **dst,
                    GLuint width, GLuint height,
                    GLenum src_format, GLenum src_type,
                    GLenum dst_format, GLenum dst_type);
+
+bool pixel_convert_direct(const GLvoid *src, GLvoid *dst, GLuint pixels,
+                          GLenum src_format, GLenum src_type, GLsizei src_stride,
+                          GLenum dst_format, GLenum dst_type, GLsizei dst_stride);
 
 bool pixel_scale(const GLvoid *src, GLvoid **dst,
                   GLuint width, GLuint height,

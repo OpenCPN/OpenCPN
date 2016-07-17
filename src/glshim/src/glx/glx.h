@@ -1,16 +1,9 @@
-#ifdef BCMHOST
-#include "bcm_host.h"
-#endif
-
-#include <EGL/egl.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "../gl/gl.h"
 
 // defines yoinked from Mesa glx.h
 #define GLX_VERSION_1_1     1
@@ -125,78 +118,11 @@
 #define GLX_SAMPLE_BUFFERS              0x186a0 /*100000*/
 #define GLX_SAMPLES                     0x186a1 /*100001*/
 
-struct __GLXContextRec {
-    Display *display;
-    unsigned char direct;
-    int currentWritable;
-    int currentReadable;
-    XID xid;
-};
-typedef struct __GLXContextRec *GLXContext;
-
-struct __GLXFBConfigRec {
-    int visualType;
-    int transparentType;
-                                /*    colors are floats scaled to ints */
-    int transparentRed, transparentGreen, transparentBlue, transparentAlpha;
-    int transparentIndex;
-
-    int visualCaveat;
-
-    int associatedVisualId;
-    int screen;
-
-    int drawableType;
-    int renderType;
-
-    int maxPbufferWidth, maxPbufferHeight, maxPbufferPixels;
-    int optimalPbufferWidth, optimalPbufferHeight;  /* for SGIX_pbuffer */
-
-    int visualSelectGroup;  /* visuals grouped by select priority */
-
-    unsigned int id;
-
-    unsigned char rgbMode;
-    unsigned char colorIndexMode;
-    unsigned char doubleBufferMode;
-    unsigned char stereoMode;
-    unsigned char haveAccumBuffer;
-    unsigned char haveDepthBuffer;
-    unsigned char haveStencilBuffer;
-
-    /* The number of bits present in various buffers */
-    int accumRedBits, accumGreenBits, accumBlueBits, accumAlphaBits;
-    int depthBits;
-    int stencilBits;
-    int indexBits;
-    int redBits, greenBits, blueBits, alphaBits;
-    unsigned int redMask, greenMask, blueMask, alphaMask;
-
-    unsigned int multiSampleSize; /* Number of samples per pixel (0 if no ms) */
-
-    unsigned int nMultiSampleBuffers; /* Number of availble ms buffers */
-    int maxAuxBuffers;
-
-    /* frame buffer level */
-    int level;
-
-    /* color ranges (for SGI_color_range) */
-    unsigned char extendedRange;
-    double minRed, maxRed;
-    double minGreen, maxGreen;
-    double minBlue, maxBlue;
-    double minAlpha, maxAlpha;
-};
-typedef struct __GLXFBConfigRec *GLXFBConfig;
-
+/*
 GLXContext glXCreateContext(Display *dpy,
                             XVisualInfo *visual,
                             GLXContext shareList,
                             Bool direct);
-
-GLXContext glXCreateContextAttribsARB(Display *display, void *config,
-                                      GLXContext share_context, Bool direct,
-                                      const int *attrib_list);
 
 void glXSwapIntervalEXT(Display *display, int drawable, int interval);
 void glXSwapIntervalMESA(int interval);
@@ -232,6 +158,5 @@ GLXFBConfig *glXChooseFBConfig(Display *display, int screen, const int *attrib_l
 GLXFBConfig *glXGetFBConfigs(Display *display, int screen, int *count);
 int glXGetFBConfigAttrib(Display *display, GLXFBConfig config, int attribute, int *value);
 
-void glXCreateWindow(Display *display, GLXFBConfig config, Window win, int *attrib_list);
-void glXDestroyWindow(Display *display, void *win);
-
+GLXContext glXCreateContextAttribsARB(Display *display, void *config, GLXContext share_context, Bool direct, const int *attrib_list);
+*/

@@ -1,19 +1,13 @@
+#include "error.h"
 #include "stack.h"
-
-glstack_t *stack = NULL;
-glclientstack_t *clientStack = NULL;
+#include "loader.h"
+#include "remote.h"
 
 void glPushAttrib(GLbitfield mask) {
-    if (stack == NULL) {
-        stack = (glstack_t *)malloc(STACK_SIZE * sizeof(glstack_t));
-        stack->len = 0;
-        stack->cap = STACK_SIZE;
-    } else if (stack->len == stack->cap) {
-        stack->cap += STACK_SIZE;
-        stack = (glstack_t *)realloc(stack, stack->cap * sizeof(glstack_t));
-    }
+    ERROR_IN_BLOCK();
+    FORWARD_IF_REMOTE(glPushAttrib);
+    glstack_t *cur = malloc(sizeof(glstack_t));
 
-    glstack_t *cur = stack + stack->len;
     cur->mask = mask;
     cur->clip_planes_enabled = NULL;
     cur->clip_planes = NULL;
@@ -43,7 +37,9 @@ void glPushAttrib(GLbitfield mask) {
     if (mask & GL_CURRENT_BIT) {
         glGetFloatv(GL_CURRENT_COLOR, cur->color);
         glGetFloatv(GL_CURRENT_NORMAL, cur->normal);
-        glGetFloatv(GL_CURRENT_TEXTURE_COORDS, cur->tex);
+        for (int i = 0; i < MAX_TEX; i++) {
+            memcpy(cur->tex[i], state.current.tex[i], 2 * sizeof(GLfloat));
+        }
     }
 
     if (mask & GL_DEPTH_BUFFER_BIT) {
@@ -89,7 +85,6 @@ void glPushAttrib(GLbitfield mask) {
         cur->sample_coverage = glIsEnabled(GL_SAMPLE_COVERAGE);
         cur->scissor_test = glIsEnabled(GL_SCISSOR_TEST);
         cur->stencil_test = glIsEnabled(GL_STENCIL_TEST);
-        cur->texture_2d = glIsEnabled(GL_TEXTURE_2D);
     }
 
     // TODO: GL_EVAL_BIT
@@ -164,55 +159,62 @@ void glPushAttrib(GLbitfield mask) {
 
     // TODO: GL_STENCIL_BUFFER_BIT
 
-    // TODO: incomplete
-    if (mask & GL_TEXTURE_BIT) {
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &cur->texture);
+    // TODO: GL_TEXTURE_BIT (incomplete)
+    if (mask & GL_ENABLE_BIT || mask & GL_TEXTURE_BIT) {
+        glGetIntegerv(GL_ACTIVE_TEXTURE, &cur->active_texture);
+        for (int i = 0; i < MAX_TEX; i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            cur->texture[i].texgen.s = state.enable.texgen_s[i];
+            cur->texture[i].texgen.t = state.enable.texgen_t[i];
+            cur->texture[i].texgen.r = state.enable.texgen_r[i];
+            cur->texture[i].texgen.q = state.enable.texgen_q[i];
+            cur->texture[i].enable_2d = glIsEnabled(GL_TEXTURE_2D);
+        }
+        if (mask & GL_TEXTURE_BIT) {
+            for (int i = 0; i < MAX_TEX; i++) {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &cur->texture[i].min_filter);
+                glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &cur->texture[i].mag_filter);
+                glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &cur->texture[i].wrap_s);
+                glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, &cur->texture[i].wrap_t);
+                glGetIntegerv(GL_TEXTURE_BINDING_2D, &cur->texture[i].bind);
+                memcpy(&cur->texture[i].texgen.state, &state.texgen[i], sizeof(texgen_state_t));
+            }
+        }
+        glActiveTexture(cur->active_texture);
     }
 
-    // TODO: GL_TRANSFORM_BIT
+    // TODO: GL_TRANSFORM_BIT (incomplete)
+    if (mask & GL_TRANSFORM_BIT) {
+        glGetIntegerv(GL_MATRIX_MODE, &cur->matrix_mode);
+    }
+
     // TODO: GL_VIEWPORT_BIT
 
-    stack->len++;
+    tack_push(&state.stack.attrib, cur);
 }
 
 void glPushClientAttrib(GLbitfield mask) {
-    if (clientStack == NULL) {
-        clientStack = (glclientstack_t *)malloc(STACK_SIZE * sizeof(glclientstack_t));
-        clientStack->len = 0;
-        clientStack->cap = STACK_SIZE;
-    } else if (clientStack->len == clientStack->cap) {
-        clientStack->cap += STACK_SIZE;
-        clientStack = (glclientstack_t *)realloc(clientStack, clientStack->cap * sizeof(glclientstack_t));
-    }
-
-    glclientstack_t *cur = clientStack + clientStack->len;
+    glclientstack_t *cur = malloc(sizeof(glclientstack_t));
     cur->mask = mask;
 
     if (mask & GL_CLIENT_PIXEL_STORE_BIT) {
         glGetIntegerv(GL_PACK_ALIGNMENT, &cur->pack_align);
         glGetIntegerv(GL_UNPACK_ALIGNMENT, &cur->unpack_align);
-        cur->unpack_row_length = state.texture.unpack_row_length;
-        cur->unpack_skip_pixels = state.texture.unpack_skip_pixels;
-        cur->unpack_skip_rows = state.texture.unpack_skip_rows;
+        glGetIntegerv(GL_UNPACK_ROW_LENGTH, &cur->unpack_row_length);
+        glGetIntegerv(GL_UNPACK_SKIP_PIXELS, &cur->unpack_skip_pixels);
+        glGetIntegerv(GL_UNPACK_SKIP_ROWS, &cur->unpack_skip_rows);
     }
 
     if (mask & GL_CLIENT_VERTEX_ARRAY_BIT) {
         cur->vert_enable = state.enable.vertex_array;
         cur->color_enable = state.enable.color_array;
         cur->normal_enable = state.enable.normal_array;
-        cur->tex_enable = state.enable.tex_coord_array;
-
-        memcpy(&cur->verts, &state.pointers.vertex, sizeof(pointer_state_t));
-        memcpy(&cur->color, &state.pointers.color, sizeof(pointer_state_t));
-        memcpy(&cur->normal, &state.pointers.normal, sizeof(pointer_state_t));
-        memcpy(&cur->tex, &state.pointers.tex_coord, sizeof(pointer_state_t));
+        memcpy(&cur->tex_enable, &state.enable.tex_coord_array, sizeof(GLboolean) * MAX_TEX);
+        memcpy(&cur->pointers, &state.pointers, sizeof(pointer_states_t));
     }
-
-    clientStack->len++;
+    tack_push(&state.stack.client, cur);
 }
-
-#define maybe_free(x) \
-    if (x) free(x)
 
 #define enable_disable(pname, enabled) \
     if (enabled) glEnable(pname);      \
@@ -223,10 +225,12 @@ void glPushClientAttrib(GLbitfield mask) {
 #define v4(c) v3(c), c[3]
 
 void glPopAttrib() {
-    if (stack == NULL || stack->len == 0)
-        return;
-
-    glstack_t *cur = stack + stack->len-1;
+    ERROR_IN_BLOCK();
+    FORWARD_IF_REMOTE(glPopAttrib);
+    glstack_t *cur = tack_pop(&state.stack.attrib);
+    if (cur == NULL) {
+        ERROR(GL_STACK_UNDERFLOW);
+    }
 
     if (cur->mask & GL_COLOR_BUFFER_BIT) {
 #ifndef USE_ES2
@@ -253,7 +257,9 @@ void glPopAttrib() {
 #ifndef USE_ES2
         glNormal3f(v3(cur->normal));
 #endif
-        glTexCoord2f(v2(cur->tex));
+        for (int i = 0; i < MAX_TEX; i++) {
+            glMultiTexCoord2f(GL_TEXTURE0 + i, v2(cur->tex[i]));
+        }
     }
 
     if (cur->mask & GL_DEPTH_BUFFER_BIT) {
@@ -296,7 +302,6 @@ void glPopAttrib() {
         enable_disable(GL_SAMPLE_COVERAGE, cur->sample_coverage);
         enable_disable(GL_SCISSOR_TEST, cur->scissor_test);
         enable_disable(GL_STENCIL_TEST, cur->stencil_test);
-        enable_disable(GL_TEXTURE_2D, cur->texture_2d);
     }
 
 #ifndef USE_ES2
@@ -311,11 +316,11 @@ void glPopAttrib() {
 #endif
 
     if (cur->mask & GL_HINT_BIT) {
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, cur->perspective_hint);
-        glHint(GL_POINT_SMOOTH_HINT, cur->point_smooth_hint);
-        glHint(GL_LINE_SMOOTH_HINT, cur->line_smooth_hint);
-        glHint(GL_FOG_HINT, cur->fog_hint);
-        glHint(GL_GENERATE_MIPMAP_HINT, cur->mipmap_hint);
+        enable_disable(GL_PERSPECTIVE_CORRECTION_HINT, cur->perspective_hint);
+        enable_disable(GL_POINT_SMOOTH_HINT, cur->point_smooth_hint);
+        enable_disable(GL_LINE_SMOOTH_HINT, cur->line_smooth_hint);
+        enable_disable(GL_FOG_HINT, cur->fog_hint);
+        enable_disable(GL_GENERATE_MIPMAP_HINT, cur->mipmap_hint);
     }
 
     if (cur->mask & GL_LINE_BIT) {
@@ -333,7 +338,9 @@ void glPopAttrib() {
 
 #ifndef USE_ES2
     if (cur->mask & GL_POINT_BIT) {
-        enable_disable(GL_POINT_SMOOTH, cur->point_smooth);
+        if (! cur->mask & GL_ENABLE_BIT) {
+            enable_disable(GL_POINT_SMOOTH, cur->point_smooth);
+        }
         glPointSize(cur->point_size);
     }
 #endif
@@ -343,15 +350,41 @@ void glPopAttrib() {
         glScissor(v4(cur->scissor_box));
     }
 
-    if (cur->mask & GL_TEXTURE_BIT) {
-        glBindTexture(GL_TEXTURE_2D, cur->texture);
+    if (cur->mask & GL_TEXTURE_BIT || cur->mask & GL_ENABLE_BIT) {
+        GLint active_texture;
+        glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
+        for (int i = 0; i < MAX_TEX; i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            enable_disable(GL_TEXTURE_GEN_S, cur->texture[i].texgen.s);
+            enable_disable(GL_TEXTURE_GEN_T, cur->texture[i].texgen.t);
+            enable_disable(GL_TEXTURE_GEN_R, cur->texture[i].texgen.r);
+            enable_disable(GL_TEXTURE_GEN_Q, cur->texture[i].texgen.q);
+            enable_disable(GL_TEXTURE_2D, cur->texture[i].enable_2d);
+        }
+        if (cur->mask & GL_TEXTURE_BIT) {
+            for (int i = 0; i < MAX_TEX; i++) {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, cur->texture[i].bind);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cur->texture[i].min_filter);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cur->texture[i].mag_filter);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, cur->texture[i].wrap_s);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, cur->texture[i].wrap_t);
+            }
+            glActiveTexture(cur->active_texture);
+        } else {
+            glActiveTexture(active_texture);
+        }
     }
 
-    maybe_free(cur->clip_planes_enabled);
-    maybe_free(cur->clip_planes);
-    maybe_free(cur->lights_enabled);
-    maybe_free(cur->lights);
-    stack->len--;
+    if (cur->mask & GL_TRANSFORM_BIT) {
+        glMatrixMode(cur->matrix_mode);
+    }
+
+    free(cur->clip_planes_enabled);
+    free(cur->clip_planes);
+    free(cur->lights_enabled);
+    free(cur->lights);
+    free(cur);
 }
 
 #undef enable_disable
@@ -360,10 +393,11 @@ void glPopAttrib() {
     else glDisableClientState(pname)
 
 void glPopClientAttrib() {
-    if (clientStack == NULL || clientStack->len == 0)
-        return;
+    glclientstack_t *cur = tack_pop(&state.stack.client);
+    if (cur == NULL) {
+        ERROR(GL_STACK_UNDERFLOW);
+    }
 
-    glclientstack_t *cur = clientStack + clientStack->len-1;
     if (cur->mask & GL_CLIENT_PIXEL_STORE_BIT) {
         glPixelStorei(GL_PACK_ALIGNMENT, cur->pack_align);
         glPixelStorei(GL_UNPACK_ALIGNMENT, cur->unpack_align);
@@ -376,18 +410,17 @@ void glPopClientAttrib() {
         enable_disable(GL_VERTEX_ARRAY, cur->vert_enable);
         enable_disable(GL_NORMAL_ARRAY, cur->normal_enable);
         enable_disable(GL_COLOR_ARRAY, cur->color_enable);
-        enable_disable(GL_TEXTURE_COORD_ARRAY, cur->tex_enable);
-
-        memcpy(&state.pointers.vertex, &cur->verts, sizeof(pointer_state_t));
-        memcpy(&state.pointers.color, &cur->color, sizeof(pointer_state_t));
-        memcpy(&state.pointers.normal, &cur->normal, sizeof(pointer_state_t));
-        memcpy(&state.pointers.tex_coord, &cur->tex, sizeof(pointer_state_t));
+        for (int i = 0; i < MAX_TEX; i++) {
+            GLboolean bit = cur->tex_enable[i];
+            if (bit != state.enable.tex_coord_array[i]) {
+                enable_disable(GL_TEXTURE_COORD_ARRAY, bit);
+            }
+        }
+        memcpy(&state.pointers, &cur->pointers, sizeof(pointer_states_t));
     }
-
-    clientStack->len--;
+    free(cur);
 }
 
-#undef maybe_free
 #undef enable_disable
 #undef v2
 #undef v3

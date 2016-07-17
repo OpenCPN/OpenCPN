@@ -24,9 +24,13 @@
  ***************************************************************************
  */
 
+#include <string.h>
+#include "mipmap.h"
+
 #ifdef __ARM_NEON__
 #include <arm_neon.h>
 
+// about twice as fast as generic
 void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char *target )
 {
     if(width < 8) {
@@ -42,9 +46,10 @@ void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char
     unsigned char *t = source;
     unsigned char *u = t+stride;
 
-    for( int y = 0; y < newheight; y++ ) {
-        for( int x = 0; x < newwidth; x+=4 ) {
-            uint16x8_t a0, a1, a2, a3;
+    int y, x;
+    for( y = 0; y < newheight; y++ ) {
+        for( x = 0; x < newwidth; x+=4 ) {
+            uint8x16_t a0, a1, a2, a3;
 
             memcpy(&a0, t,    16);
             memcpy(&a1, t+16, 16);
@@ -55,11 +60,11 @@ void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char
             a0 = vhaddq_u8(a0, a2);
             a1 = vhaddq_u8(a1, a3);
 
-            // shuffle
-            uint16x8x2_t z = vzip_u32(a0, a1);
+            // repack
+            uint32x4x2_t z = vuzpq_u32(vreinterpretq_u32_u8(a0), vreinterpretq_u32_u8(a1));
 
             // average even and odd x pixels
-            a0 = vhaddq_u8(z.val[0], z.val[1]);
+            a0 = vhaddq_u8(vreinterpretq_u8_u32(z.val[0]), vreinterpretq_u8_u32(z.val[1]));
 
             memcpy(s, &a0, 16);
 
@@ -71,5 +76,4 @@ void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char
         u += stride;
     }
 }
-#endif
 #endif

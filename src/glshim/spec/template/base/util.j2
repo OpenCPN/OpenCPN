@@ -1,0 +1,17 @@
+{% macro fprint(f, prefix='') %}
+{% if f.args %}
+    printf("{{ prefix + f.name }}({{ f.args|printf }});\n", {{ f.args|args(0) }});
+{% else %}
+    printf("{{ prefix + f.name }}();\n");
+{% endif %}
+{% endmacro %}
+
+{% macro args(f) -%}
+{% for arg in f.args -%}
+    args->{{ arg.name }}{% if not arg.last %}, {% endif %}
+{% endfor %}
+{%- endmacro %}
+
+{% macro call(f) -%}
+{{ f.name }}({{ args(f) }});
+{%- endmacro %}

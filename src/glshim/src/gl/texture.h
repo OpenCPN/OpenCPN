@@ -1,7 +1,7 @@
-#include "gl.h"
-
 #ifndef GL_TEXTURE_H
 #define GL_TEXTURE_H
+
+#include <GL/gl.h>
 
 void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
                   GLsizei width, GLsizei height, GLint border,
@@ -26,18 +26,6 @@ void tex_coord_npot(GLfloat *tex, GLsizei len,
                     GLsizei width, GLsizei height,
                     GLsizei nwidth, GLsizei nheight);
 int npot(int n);
-
-typedef struct {
-    GLuint texture;
-    GLenum target;
-    GLsizei width;
-    GLsizei height;
-    GLsizei nwidth;
-    GLsizei nheight;
-    GLboolean uploaded;
-} gltexture_t;
-
-KHASH_MAP_INIT_INT(tex, gltexture_t *)
 
 static inline GLenum map_tex_target(GLenum target) {
     switch (target) {

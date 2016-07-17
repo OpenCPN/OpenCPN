@@ -5,15 +5,7 @@ GLushort stipplePattern = 0xFFFF;
 GLubyte *stippleData = NULL;
 GLuint stippleTexture = 0;
 
-void glLineStipple(GLuint factor, GLushort pattern) {
-    /* glTexImage2D is not allowed in a display list, but glLineStipple is,
-       this causes it to clobber the current texture since binding stippleTexture is
-       only added to the list.
-
-       for now, simply abort to avoid this case */
-    if (state.list.active)
-        return;
-
+void glLineStipple(GLint factor, GLushort pattern) {
     stippleFactor = factor;
     stipplePattern = pattern;
     if (stippleData != NULL) {

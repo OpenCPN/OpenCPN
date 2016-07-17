@@ -1,8 +1,10 @@
+#include "error.h"
+#include "loader.h"
+#include "pixel.h"
 #include "raster.h"
-
-rasterpos_t rPos = {0, 0, 0};
-viewport_t viewport = {0, 0, 0, 0};
-GLubyte *raster = NULL;
+#include "texture.h"
+#include "matrix.h"
+#include "remote.h"
 
 /* raster engine:
     we render pixels to memory somewhere
@@ -11,75 +13,140 @@ GLubyte *raster = NULL;
     then let the other function do their thing
 */
 
-void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
-    rPos.x = x;
-    rPos.y = y;
-    rPos.z = z;
+static void update_viewport(GLint x, GLint y, GLsizei width, GLsizei height) {
+    viewport_state_t *vs = &state.viewport;
+    vs->x = x, vs->y = y;
+    vs->width = width, vs->height = height;
+    vs->nwidth = npot(width);
+    vs->nheight = npot(height);
+}
+
+static void init_raster() {
+    viewport_state_t *vp = &state.viewport;
+    if (!vp->width || !vp->height) {
+        GLint tmp[4];
+        glGetIntegerv(GL_VIEWPORT, tmp);
+        update_viewport(tmp[0], tmp[1], tmp[2], tmp[3]);
+    }
+    if (! state.raster.buf) {
+        state.raster.buf = (GLubyte *)malloc(4 * vp->nwidth * vp->nheight * sizeof(GLubyte));
+    }
 }
 
 void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
     PUSH_IF_COMPILING(glViewport);
-    LOAD_GLES(glViewport);
-    if (raster) {
+    if (state.raster.buf) {
         render_raster();
     }
+    if (width < 0 || height < 0) {
+        ERROR(GL_INVALID_VALUE);
+    }
+    update_viewport(x, y, width, height);
+    LOAD_GLES(glViewport);
     gles_glViewport(x, y, width, height);
-    viewport.x = x;
-    viewport.y = y;
-    viewport.width = width;
-    viewport.height = height;
 }
 
-void init_raster() {
-    if (!viewport.width || !viewport.height) {
-        glGetIntegerv(GL_VIEWPORT, (GLint *)&viewport);
+void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z) {
+    ERROR_IN_BLOCK();
+    PUSH_IF_COMPILING(glRasterPos3f);
+    PROXY_GLES(glRasterPos3f);
+    GLfloat v[3] = {x, y, z};
+    gl_transform_vertex(v, v);
+    init_raster();
+    viewport_state_t *vs = &state.viewport;
+    v[0] = (((v[0] + 1.0f) * 0.5f) * vs->width) + vs->x;
+    v[1] = (((-v[1] + 1.0f) * 0.5f) * vs->height) + vs->y;
+    // TODO: deal with Z
+    glWindowPos3f(v[0], v[1], v[2]);
+}
+
+void glWindowPos3f(GLfloat x, GLfloat y, GLfloat z) {
+    ERROR_IN_BLOCK();
+    PUSH_IF_COMPILING(glWindowPos3f);
+    PROXY_GLES(glWindowPos3f);
+    raster_state_t *raster = &state.raster;
+    raster->pos.x = x;
+    raster->pos.y = y;
+    raster->pos.z = z;
+    init_raster();
+    viewport_state_t *v = &state.viewport;
+    if (x < v->x || x >= v->width || y < v->y || y >= v->height) {
+        raster->valid = 0;
+    } else {
+        raster->valid = 1;
     }
-    if (!raster)
-        raster = (GLubyte *)malloc(4 * viewport.width * viewport.height * sizeof(GLubyte));
+    GLuint *dst = NULL;
+    GLfloat *color = raster->color;
+    if (pixel_convert(CURRENT->color, (GLvoid **)&dst, 1, 1, GL_RGBA, GL_FLOAT, GL_RGBA, GL_UNSIGNED_BYTE)) {
+        memcpy(color, CURRENT->color, sizeof(GLfloat) * 4);
+        raster->pixel = *dst;
+        free(dst);
+    } else {
+        for (int i = 0; i < 4; i++) {
+            color[i] = 1.0f;
+        }
+        raster->pixel = 0xFFFFFFFF;
+    }
 }
 
 void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig,
               GLfloat xmove, GLfloat ymove, const GLubyte *bitmap) {
-    // TODO: shouldn't be drawn if the raster pos is outside the viewport?
+    // TODO: support xorig/yorig
+    PUSH_IF_COMPILING(glBitmap);
+    PROXY_GLES(glBitmap);
+    raster_state_t *raster = &state.raster;
+    struct { GLfloat x, y, z, w; } *pos = (void *)&raster->pos;
+    if (! raster->valid) {
+        return;
+    }
     // TODO: negative width/height mirrors bitmap?
     if (!width && !height) {
-        rPos.x += xmove;
-        rPos.y -= ymove;
+        pos->x += xmove;
+        pos->y += ymove;
         return;
     }
     init_raster();
 
     const GLubyte *from;
-    GLubyte *to;
+    GLuint *to;
     int x, y;
 
     // copy to pixel data
     // TODO: strip blank lines and mirror vertically?
     for (y = 0; y < height; y++) {
-        to = raster + 4 * (GLuint)(rPos.x + ((rPos.y - y) * viewport.width));
+        float dy = pos->y - y;
+        to = (GLuint *)raster->buf + (GLuint)(pos->x + (dy * state.viewport.nwidth));
         from = bitmap + (y * 2);
-        for (x = 0; x < (width + 7 / 8); x++) {
-            if (rPos.x + x > viewport.width || rPos.y + y > viewport.height)
+        for (x = 0; x < width; x += 8) {
+            float dx = pos->x + x;
+            if (dx < 0 || dx > state.viewport.width ||
+                dy < 0 || dy > state.viewport.height)
                 continue;
-            // TODO: wasteful, unroll this?
-            GLubyte b = from[(x / 8)];
-            int p = (b & (1 << (7 - (x % 8)))) ? 1 : 0;
-            // r, g, b, a
-            p = (p ? 255 : 0);
-            *to++ = p;
-            *to++ = p;
-            *to++ = p;
-            *to++ = p;
+            int max = 8;
+            if (dx + 8 > state.viewport.width)
+                max = state.viewport.width - dx;
+
+            GLubyte b = *from++;
+            for (int j = max - 1; j >= 0; j--) {
+                *to++ = (b & (1 << j)) ? raster->pixel : 0;
+            }
         }
     }
 
-    rPos.x += xmove;
-    rPos.y += ymove;
+    pos->x += xmove;
+    pos->y += ymove;
 }
 
 void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
                   GLenum type, const GLvoid *data) {
-    GLubyte *pixels, *from, *to;
+    const GLubyte *from, *pixels = data;
+    PUSH_IF_COMPILING(glDrawPixels);
+    PROXY_GLES(glDrawPixels);
+    raster_state_t *raster = &state.raster;
+    if (! raster->valid) {
+        return;
+    }
+    GLubyte *to;
     GLvoid *dst = NULL;
 
     init_raster();
@@ -89,33 +156,29 @@ void glDrawPixels(GLsizei width, GLsizei height, GLenum format,
     }
     pixels = (GLubyte *)dst;
 
-    for (int y = 0; y < height; y++) {
-        if(rPos.y - y < 0 || rPos.y - y >= viewport.height)
-            continue;
+    // shrink our pixel ranges to stay inside the viewport
+    int ystart = MAX(0, -raster->pos.y);
+    height = MIN(state.viewport.height - raster->pos.y, height);
 
-        to = raster + 4 * (GLuint)(rPos.x + ((rPos.y - y) * viewport.width));
-        from = pixels + 4 * (y * width);
-        for (int x = 0; x < width; x++) {
-            if(rPos.x + x < 0 || rPos.x + x >= viewport.width)
-                continue;
+    int xstart = MAX(0, -raster->pos.x);
+    int screen_width = MIN(state.viewport.width - raster->pos.x, width);
 
-            *to++ = *from++;
-            *to++ = *from++;
-            *to++ = *from++;
-            *to++ = *from++;
-        }
+    for (int y = ystart; y < height; y++) {
+        to = raster->buf + 4 * (GLuint)(raster->pos.x + ((raster->pos.y + y) * state.viewport.nwidth));
+        from = pixels + 4 * (xstart + y * width);
+        memcpy(to, from, 4 * screen_width);
     }
     if (pixels != data)
-        free(pixels);
+        free((void *)pixels);
 }
 
 void render_raster() {
-    if (!viewport.width || !viewport.height || !raster)
+    if (!state.viewport.width || !state.viewport.height || !state.raster.buf || state.remote)
         return;
 
 // FIXME
 #ifndef USE_ES2
-    glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT);
+    glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT | GL_TRANSFORM_BIT | GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -130,8 +193,8 @@ void render_raster() {
         -1, 1, 0,
     };
 
-    float sw = viewport.width / (GLfloat)npot(viewport.width);
-    float sh = viewport.height / (GLfloat)npot(viewport.height);
+    float sw = state.viewport.width / (GLfloat)state.viewport.nwidth;
+    float sh = state.viewport.height / (GLfloat)state.viewport.nheight;
 
     GLfloat tex[] = {
         0, sh,
@@ -165,10 +228,8 @@ void render_raster() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, npot(viewport.width), npot(viewport.height),
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport.width, viewport.height,
-                    GL_RGBA, GL_UNSIGNED_BYTE, raster);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, state.viewport.nwidth, state.viewport.nheight,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, state.raster.buf);
 
     LOAD_GLES(glDrawArrays);
     gles_glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -185,6 +246,6 @@ void render_raster() {
     glPopMatrix();
     glPopAttrib();
 #endif
-    free(raster);
-    raster = NULL;
+    free(state.raster.buf);
+    state.raster.buf = NULL;
 }

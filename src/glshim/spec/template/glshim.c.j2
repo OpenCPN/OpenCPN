@@ -1,0 +1,19 @@
+{% from "base/util.j2" import fprint %}
+{% extends "base/base.j2" %}
+{% block main %}
+
+{% for func in functions %}
+#ifndef skip_{{ func.name }}
+{{ func.return }} {{ func.name }}({{ func.args|args }}) {
+    {% block call scoped %}
+#ifndef direct_{{ func.name }}
+    PUSH_IF_COMPILING({{ func.name }});
+#endif
+    FORWARD_IF_REMOTE({{ func.name }});
+    LOAD_GLES({{ func.name }});
+    {%+ if not func.void %}return {% endif %}gles_{{ func.name }}({{ func.args|args(0) }});
+    {% endblock %}
+}
+#endif
+{% endfor %}
+{% endblock %}

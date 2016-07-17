@@ -1,9 +1,11 @@
 {% extends "base/base.j2" %}
 {% block main %}
+{% block headers %}
 {% include "base/headers.j2" %}
+{% endblock %}
 {% for func in functions %}
 {% block definition scoped %}
-{{ func.return }} {{ func.name }}({{ func.args|args }}) {
+{{ func.return }} {% block func_prefix scoped %}{% endblock %}{{ func.name }}({{ func.args|args }}) {
     {% block load scoped %}{% endblock %}
     {% block call scoped %}
     {% if not func.void %}return {% endif %}{% block prefix %}wrap{% endblock %}_{{ func.name }}({{ func.args|args(0) }});

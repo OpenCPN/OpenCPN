@@ -179,7 +179,6 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 void CompressDataETC(const unsigned char *data, int dim, int size,
                      unsigned char *tex_data)
 {
-    wxASSERT(dim*dim == 2*size); // must be 4bpp
     uint64_t *tex_data64 = (uint64_t*)tex_data;
     
     int mbrow = wxMin(4, dim), mbcol = wxMin(4, dim);
@@ -1418,6 +1417,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #else /* looks nicer */
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
 #endif
+
+        if(g_mipmap_max_level == 0)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         
 #ifdef __OCPN__ANDROID__
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

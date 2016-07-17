@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lunixbochs/glshim.svg?branch=master)](https://travis-ci.org/lunixbochs/glshim)
+
 glshim
 ====
 
@@ -9,10 +11,6 @@ Compiling
 ----
 
     cmake .; make GL
-
-*or for the Raspberry Pi*
-
-    cmake . -DBCMHOST=1; make GL
 
 ----
 

@@ -1,5 +1,13 @@
 #include <GL/gl.h>
 
+#ifndef MIN
+#define MIN(a, b) (((a) < (b) ? (a) : (b)))
+#endif
+
+#ifndef MAX
+#define MAX(a, b) (((a) > (b) ? (a) : (b)))
+#endif
+
 // newly-defined GL functions
 GLboolean glIsList(GLuint list);
 GLuint glGenLists(GLsizei range);

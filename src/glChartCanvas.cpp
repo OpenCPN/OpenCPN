@@ -708,7 +708,7 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
     if(!extension)
         return (GenericFunction)NULL;
 
-#ifndef __OCPN__ANDROID__    
+#ifndef ocpnUSE_GLES
     //  If this is an extension entry point,
     //  We look explicitly in the extensions list to confirm
     //  that the request is actually supported.
@@ -744,7 +744,7 @@ static void GetglEntryPoints( void )
     // (I don't know that it could ever happen, but if it did, bad things would happen)
 
 #ifndef __OCPN__ANDROID__
-    const char *extensions[] = {"", "ARB", "EXT", 0 };
+    const char *extensions[] = {"", "ARB", "EXT", "OES", 0 };
 #else
     const char *extensions[] = {"OES", 0 };
 #endif
@@ -1021,9 +1021,17 @@ void glChartCanvas::BuildFBO( )
         m_cache_tex_y = wxMax(rb_x, rb_y);
         m_cache_tex_x = wxMax(2048, m_cache_tex_x);
         m_cache_tex_y = wxMax(2048, m_cache_tex_y);
-    } else {            
+    } else {
         m_cache_tex_x = GetSize().x;
         m_cache_tex_y = GetSize().y;
+
+        if(g_GLOptions.m_bbcmhost) {
+            if(m_cache_tex_x > 2048 || m_cache_tex_y > 2048)
+                return; // no fbo
+
+            m_cache_tex_x = NextPow2(m_cache_tex_x);
+            m_cache_tex_y = NextPow2(m_cache_tex_y);
+        }
     }        
         
     ( s_glGenFramebuffers )( 1, &m_fb0 );
@@ -1125,7 +1133,7 @@ void glChartCanvas::SetupOpenGL()
     
     const GLubyte *ext_str = glGetString(GL_EXTENSIONS);
     m_extensions = wxString( (const char *)ext_str, wxConvUTF8 );
-#ifdef __WXQT__    
+#ifdef ocpnUSE_GLES
     wxLogMessage( _T("OpenGL extensions available: ") );
     wxLogMessage(m_extensions );
 #endif    
@@ -1208,7 +1216,8 @@ void glChartCanvas::SetupOpenGL()
         if(!g_texture_rectangle_format)
             m_b_DisableFBO = true;
         
-        if(!QueryExtension( "GL_EXT_framebuffer_object" ))
+        if(!QueryExtension( "GL_EXT_framebuffer_object" ) &&
+           !QueryExtension( "GL_OES_framebuffer_object" ))
             m_b_DisableFBO = true;
 #endif
  
@@ -1233,9 +1242,7 @@ void glChartCanvas::SetupOpenGL()
 #ifdef __WXMSW__
         if( GetRendererString().Upper().Find( _T("INTEL") ) != wxNOT_FOUND )
             s_glGenerateMipmap = 0;
-#endif        
-            
-            
+#endif
 
     if( !s_glGenerateMipmap )
         wxLogMessage( _T("OpenGL-> glGenerateMipmap unavailable") );
@@ -1286,7 +1293,13 @@ void glChartCanvas::SetupOpenGL()
 #ifdef __OCPN__ANDROID__
     g_GLOptions.m_bUseCanvasPanning = isPlatformCapable(PLATFORM_CAP_FASTPAN);
 #endif
-        
+    // This driver found on raspberry PI does not not support really large texture rectangles
+    if( GetRendererString().Find( _T("VideoCore IV HW") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> VideoCore IV detected, not using large npot textures") );
+        g_GLOptions.m_bbcmhost = true;
+//                g_GLOptions.m_bUseCanvasPanning = true;
+    }
+
     //      Maybe build FBO(s)
 
     BuildFBO();
@@ -1371,10 +1384,11 @@ void glChartCanvas::SetupOpenGL()
         max_level++;
     g_mipmap_max_level = max_level - 1;
 
+    if(g_GLOptions.m_bbcmhost)
+        g_mipmap_max_level = 0;
 #ifdef __OCPN__ANDROID__    
-    g_mipmap_max_level = 0;
+     g_mipmap_max_level = 0;
 #endif
-    
 #endif
 
     MipMap_ResolveRoutines();
@@ -1525,15 +1539,15 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
         event.Skip();
         return;
     }
-
+    
+    if( !m_bsetup ) {
 #if wxCHECK_VERSION(2, 9, 0)
     SetCurrent(*m_pcontext);
 #else
     SetCurrent();
 #endif
-    
-    if( !m_bsetup ) {
-        SetupOpenGL();
+
+    SetupOpenGL();
         
         #ifdef USE_S57
         if( ps52plib )
@@ -4101,7 +4115,10 @@ void glChartCanvas::Render()
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
-    if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
+    if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite &&
+       (!g_GLOptions.m_bbcmhost || VPoint.b_quilt ||  // slight optimization (33% speedup)
+        Current_Ch->GetChartFamily() != CHART_FAMILY_RASTER) // for single chart raster to not use fbo
+
        //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality but slower
         ) {
         //  Is this viewpoint the same as the previously painted one?
@@ -4151,8 +4168,8 @@ void glChartCanvas::Render()
                 if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
                     b_whole_pixel = false;
                     
-                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y
-                                  && sx == m_cache_tex_x && sy == m_cache_tex_y;
+                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+//                                  && sx == m_cache_tex_x && sy == m_cache_tex_y
             }
 
             // do we allow accelerated panning?  can we perform it here?
@@ -4185,7 +4202,7 @@ void glChartCanvas::Render()
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
                     glEnable( g_texture_rectangle_format );
                     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                                
+
                     //    Render the reuseable portion of the cached texture
                                 
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
@@ -4206,7 +4223,7 @@ void glChartCanvas::Render()
                     // normalize to texture coordinates range from 0 to 1
                     float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
                     if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
-                        tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
+                        tx1 /= m_cache_tex_x, tx2 /= m_cache_tex_x, ty1 /= m_cache_tex_y, ty2 /= m_cache_tex_y;
 
                         glBegin( GL_QUADS );
                         glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );

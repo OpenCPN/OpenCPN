@@ -107,8 +107,8 @@ APPLE_vertex_program_evaluators:
       u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint
       vorder, const GLfloat *points]
 ARB_ES2_compatibility:
-  glClearDepthf: [void, GLfloat d]
-  glDepthRangef: [void, GLfloat n, GLfloat f]
+  glClearDepthf: [void, GLfloat depth]
+  glDepthRangef: [void, GLfloat near, GLfloat far]
   glGetShaderPrecisionFormat: [void, GLenum shadertype, GLenum precisiontype, GLint
       *range, GLint *precision]
   glReleaseShaderCompiler: [void]
@@ -793,7 +793,7 @@ ARB_vertex_program:
   glGetProgramLocalParameterfvARB: [void, GLenum target, GLuint index, GLfloat *params]
   glGetProgramStringARB: [void, GLenum target, GLenum pname, GLvoid *string]
   glGetProgramivARB: [void, GLenum target, GLenum pname, GLint *params]
-  glGetVertexAttribPointervARB: [void, GLuint index, GLenum pname, GLvoid *pointer]
+  glGetVertexAttribPointervARB: [void, GLuint index, GLenum pname, GLvoid **pointer]
   glGetVertexAttribdvARB: [void, GLuint index, GLenum pname, GLdouble *params]
   glGetVertexAttribfvARB: [void, GLuint index, GLenum pname, GLfloat *params]
   glGetVertexAttribivARB: [void, GLuint index, GLenum pname, GLint *params]
@@ -2438,7 +2438,7 @@ NV_vertex_program:
   glGetProgramivNV: [void, GLuint id, GLenum pname, GLint *params]
   glGetTrackMatrixivNV: [void, GLenum target, GLuint address, GLenum pname, GLint
       *params]
-  glGetVertexAttribPointervNV: [void, GLuint index, GLenum pname, GLvoid *pointer]
+  glGetVertexAttribPointervNV: [void, GLuint index, GLenum pname, GLvoid **pointer]
   glGetVertexAttribdvNV: [void, GLuint index, GLenum pname, GLdouble *params]
   glGetVertexAttribfvNV: [void, GLuint index, GLenum pname, GLfloat *params]
   glGetVertexAttribivNV: [void, GLuint index, GLenum pname, GLint *params]
@@ -3494,14 +3494,14 @@ VERSION_2_0:
   glGetUniformLocation: [GLint, GLuint program, const GLchar *name]
   glGetUniformfv: [void, GLuint program, GLint location, GLfloat *params]
   glGetUniformiv: [void, GLuint program, GLint location, GLint *params]
-  glGetVertexAttribPointerv: [void, GLuint index, GLenum pname, GLvoid *pointer]
+  glGetVertexAttribPointerv: [void, GLuint index, GLenum pname, GLvoid **pointer]
   glGetVertexAttribdv: [void, GLuint index, GLenum pname, GLdouble *params]
   glGetVertexAttribfv: [void, GLuint index, GLenum pname, GLfloat *params]
   glGetVertexAttribiv: [void, GLuint index, GLenum pname, GLint *params]
   glIsProgram: [GLboolean, GLuint program]
   glIsShader: [GLboolean, GLuint shader]
   glLinkProgram: [void, GLuint program]
-  glShaderSource: [void, GLuint shader, GLsizei count, GLchar*const *string, const
+  glShaderSource: [void, GLuint shader, GLsizei count, const GLchar * const *string, const
       GLint *length]
   glStencilFuncSeparate: [void, GLenum face, GLenum func, GLint ref, GLuint mask]
   glStencilMaskSeparate: [void, GLenum face, GLuint mask]
