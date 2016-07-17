@@ -645,7 +645,10 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
 TrackPoint *Track::GetPoint( int nWhichPoint )
 {
-    return TrackPoints[nWhichPoint];
+    if(nWhichPoint < (int) TrackPoints.size())
+        return TrackPoints[nWhichPoint];
+    else
+        return NULL;
 }
 
 TrackPoint *Track::GetLastPoint()
