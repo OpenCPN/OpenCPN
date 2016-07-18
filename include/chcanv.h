@@ -122,29 +122,6 @@ enum {
       ID_AISDIALOGOK
 };
 
-const wxEventType wxEVT_OCPN_COMPRESSPROGRESS = wxNewEventType();
-
-//----------------------------------------------------------------------------
-// OCPN_CompressProgressEvent
-//----------------------------------------------------------------------------
-class OCPN_CompressProgressEvent: public wxEvent
-{
-public:
-    OCPN_CompressProgressEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_CompressProgressEvent( );
-    
-    // accessors
-    void SetString(std::string string) { m_string = string; }
-    std::string GetString() { return m_string; }
-    
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
-    int count;
-    int thread;
-    
-    std::string m_string;
-};
-
 //----------------------------------------------------------------------------
 // ChartCanvas
 //----------------------------------------------------------------------------
@@ -332,8 +309,6 @@ public:
       RoutePoint  *m_prev_pMousePoint;
       Quilt       *m_pQuilt;
       
-      bool PurgeGLCanvasChartCache(ChartBase *pc, bool b_purge_full = false);
-
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
       void DrawBlinkObjects( void );
@@ -347,7 +322,6 @@ public:
       glChartCanvas *GetglCanvas(){ return m_glcc; }
 #endif      
 
-      void OnEvtCompressProgress( OCPN_CompressProgressEvent & event );
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       
       bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
