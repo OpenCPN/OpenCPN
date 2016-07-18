@@ -285,8 +285,8 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
         }
 }
 
-void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                            bool b_flatten, bool b_throttle )
+void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                                  bool b_flatten, void (*throttle)(void*), void *throttle_data, volatile bool &b_abort )
 {
     // fix any bad flags
     flags = FixFlags( flags );
@@ -306,6 +306,7 @@ void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height
     }
     
     // loop over blocks
+    double tt = 0;
     for( int y = 0; y < height; y += 4 )
     {
         for( int x = 0; x < width; x += 4 )
@@ -339,13 +340,11 @@ void CompressImageRGBpow2_Flatten_Throttle( u8 const* rgb, int width, int height
             // advance
             targetBlock += bytesPerBlock;
         }
-        if( b_throttle && !wxThread::IsMain() ) {
-            //  Sleep a random time, 0-5 msec.
-            //  This gives most of the processing to the main GUI thread
-            long u = (long)floor(((double)rand() / ((double)(RAND_MAX) + 1) * 5) + 0.5);
-            
-            wxThread::Sleep((int)u);
-        }
+        if( throttle )
+            throttle(throttle_data);
+
+        if( b_abort)
+            break;
     }
 }
 

@@ -33,35 +33,25 @@ glTextureDescriptor::glTextureDescriptor()
         map_array[i] = NULL;
         comp_array[i] = NULL;
         compcomp_array[i] = NULL;
-        miplevel_upload[i] = 0;
         compcomp_size[i] = 0;
     }
 
     tex_name = 0;
     nGPU_compressed = GPU_TEXTURE_UNKNOWN;
-    nCache_Color = -1;          // default, unknown
+    tex_mem_used = 0;
+    compdata_ticks = 0;
 }
 
 glTextureDescriptor::~glTextureDescriptor()
 {
-    for( int i = 0; i < 10; i++ ){
-        free( map_array[i] );
-        free( comp_array[i] );
-        free( compcomp_array[i] );
-    }
+    FreeAll();
 }
 
 void glTextureDescriptor::FreeAll()
 {
-    for( int i = 0; i < 10; i++ ){
-        free( map_array[i] );
-        free( comp_array[i] );
-        free( compcomp_array[i] );
-        map_array[i] = NULL;
-        comp_array[i] = NULL;
-        compcomp_array[i] = NULL;
-        compcomp_size[i] = 0;
-    }
+    FreeMap();
+    FreeComp();
+    FreeCompComp();
 }
 
 void glTextureDescriptor::FreeMap()
@@ -72,12 +62,14 @@ void glTextureDescriptor::FreeMap()
     }
 }
 
-void glTextureDescriptor::FreeCompLevel(int level)
+void glTextureDescriptor::FreeComp()
 {
-    free( comp_array[level] );
-    comp_array[level] = NULL;
+    for( int i = 0; i < 10; i++ ){
+        free( comp_array[i] );
+        comp_array[i] = NULL;
+    }
 }
-
+    
 void glTextureDescriptor::FreeCompComp()
 {
     for( int i = 0; i < 10; i++ ){
@@ -85,28 +77,6 @@ void glTextureDescriptor::FreeCompComp()
         compcomp_array[i] = NULL;
         compcomp_size[i] = 0;
     }
-}
-    
-
-unsigned char *glTextureDescriptor::CompressedArrayAccess( int mode, unsigned char *write_data, int level)
-{
-    wxCriticalSectionLocker locker(gs_critSect);
-    if(mode == CA_WRITE) {
-        free( comp_array[level] );
-        comp_array[level] = write_data;
-    }
-    return comp_array[level];
-}
-
-unsigned char *glTextureDescriptor::CompCompArrayAccess( int mode, unsigned char *write_data, int level)
-{
-    wxCriticalSectionLocker locker(gs_critSect);
-    
-    if(mode == CA_WRITE) {
-        // XXX Call free here ? currently compcomp_array is always 0
-        compcomp_array[level] = write_data;
-    }    
-    return compcomp_array[level];
 }
 
 size_t glTextureDescriptor::GetMapArrayAlloc(void)
@@ -142,10 +112,19 @@ size_t glTextureDescriptor::GetCompCompArrayAlloc(void)
 {
     size_t ret = 0;
     for( int i = 0; i < 10; i++ ){
-        if( compcomp_size[i] ){
+        if( compcomp_size[i] )
             ret += compcomp_size[i];
-        }
     }
     
     return ret;
+}
+
+bool glTextureDescriptor::IsCompCompArrayComplete( int base_level )
+{
+    extern int g_mipmap_max_level;
+    for(int level = base_level; level < g_mipmap_max_level+1; level++ )
+        if(!compcomp_array[level])
+            return false;
+
+    return true;
 }

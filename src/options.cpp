@@ -5285,7 +5285,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
       ::wxBeginBusyCursor();
       cc1->GetglCanvas()->SetupCompression();
-      cc1->GetglCanvas()->ClearAllRasterTextures();
+      g_glTextureManager->ClearAllRasterTextures();
       ::wxEndBusyCursor();
     }
     else
@@ -8023,7 +8023,7 @@ void OpenGLOptionsDlg::OnButtonRebuild(wxCommandEvent& event) {
 
 void OpenGLOptionsDlg::OnButtonClear(wxCommandEvent& event) {
   ::wxBeginBusyCursor();
-  if (g_bopengl) cc1->GetglCanvas()->ClearAllRasterTextures();
+  if (g_bopengl) g_glTextureManager->ClearAllRasterTextures();
 
   wxString path = g_Platform->GetPrivateDataDir() +
                   wxFileName::GetPathSeparator() + _T( "raster_texture_cache" );

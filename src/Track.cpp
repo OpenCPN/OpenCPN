@@ -327,9 +327,11 @@ void Track::Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const 
     for( i = start_nPoint; i <= end_nPoint; i++ ) {
 
         TrackPoint *psourcepoint = psourcetrack->GetPoint( i );
-        TrackPoint *ptargetpoint = new TrackPoint( psourcepoint->m_lat, psourcepoint->m_lon);
+        if(psourcepoint){
+            TrackPoint *ptargetpoint = new TrackPoint( psourcepoint->m_lat, psourcepoint->m_lon);
 
-        AddPoint( ptargetpoint );
+            AddPoint( ptargetpoint );
+        }
     }
 }
 

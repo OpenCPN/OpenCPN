@@ -141,6 +141,8 @@ class  ChartBaseBSB     :public ChartBase
 
       ChartBaseBSB();
       virtual ~ChartBaseBSB();
+      void FreeLineCacheRows(int start=0, int end=-1);
+      bool HaveLineCacheRow(int row);
 
       //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
