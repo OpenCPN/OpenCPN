@@ -29,18 +29,21 @@
  *                                                                        *
  * To create a filter object declare on instance of filterobj. There are  *
  * 2 optional parameters to the constructor. The first (Fc) determines    *
- * the filter cutoff frequency. A value of 0.5 is basically no filtering  *
+ * the filter cutoff frequency. A value of 0.5 is almost no filtering     *
  * and smaller values decrease the cutoff frequency. If you think of the  *
  * filter as being "fast" or "slow" then 0.5 is fastest and smaller values*
- * are "slower". The second parameter (tp) selects whether the underlying *
- * filtered values represent a linear value (such as speed) or a circular *
- * angle such as direction. The angle can be either in radians or degrees.*
+ * are "slower". If you truly want no filtering set the Fc paramter to    *
+ * 0.0. This will tell the filter to just return each input unfiltered.   *
+ * The second parameter (tp) selects whether the underlying filtered      *
+ * values represent a linear value (such as speed) or a circular angle    *
+ * such as direction. The angle can be either in radians or degrees.      *
  * These values can be changed on the "fly" with the setFC() and setType()*
  * methods.                                                               *
  * The main method is filter() which accepts a new unfiltered value and   *
  * returns a fitered value. To obtain the most recent filter output use   *
  * the get() method. Lesser used methods are getType (returns tp) and     *
- * getFC() (returns FC). The reset() method resets the filter to zero.    *
+ * getFC() (returns FC). The reset() method resets the filter to zero or  *
+ * to some other arbitrary value provided as the first argument.          *
  **************************************************************************
  */
 #if ! defined( FILTEROBJ_CLASS_HEADER )
@@ -57,8 +60,6 @@ enum
 class filterobj
 {
 public:
-
-//    filterobj() {setFC(0.5); type = FILTEROBJ_TYPE_LINEAR; reset();};
 
     filterobj(double fc = 0.5, int tp = FILTEROBJ_TYPE_LINEAR);
     ~filterobj(){};

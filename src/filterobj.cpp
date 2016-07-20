@@ -48,8 +48,7 @@ void filterobj::setFC(double fc) {
     if (wxIsNaN(fc) || fc <= 0.0) {
         a0 = b1 = NAN;  // NAN means no filtering will be done
         reset();
-    }
-    else {
+    } else {
         b1 = exp(-2.0 * 3.1415926535897932384626433832795 * fc);
         a0 = 1 - b1;
     }
