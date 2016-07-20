@@ -27,6 +27,10 @@
 #ifndef __GLTEXTUREMANAGER_H__
 #define __GLTEXTUREMANAGER_H__
 
+#ifndef PFNGLGETCOMPRESSEDTEXIMAGEPROC
+  #include "GL/gl_private.h"
+#endif
+
 const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 
 class JobTicket;
