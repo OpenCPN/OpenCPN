@@ -949,19 +949,8 @@ void glChartCanvas::SetupOpenGL()
     if(!g_bGLexpert)
         g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
     
-    //  Windows GDI Generic OpenGL driver is non-compliant in mipmap support.
-    //  It needs the entire mipmap pyramid to be complete, and fully uploaded.    
-    if(
-#ifdef __WXMSW__        
-        GetRendererString().Find( _T("Generic") ) != wxNOT_FOUND
-#else
-# ifdef ocpnUSE_GLES /* gles requires all levels */
-        1
-# else
-        1 // for now upload all levels
-# endif
-#endif
-        ) {
+    if(1)     // for now upload all levels
+    {
         int max_level = 0;
         int tex_dim = g_GLOptions.m_iTextureDimension;
         for(int dim=tex_dim; dim>0; dim/=2)
