@@ -1446,7 +1446,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
 //          1 = station compliant with Recommendation ITU-R M.1371-3
 //          2-3 = station compliant with future editions
             int AIS_version_indicator = bstr->GetInt( 39, 2 );
-            if( AIS_version_indicator < 2 ) {
+            if( AIS_version_indicator < 4 ) {
                 ptd->IMO = bstr->GetInt( 41, 30 );
 
                 bstr->GetStr( 71, 42, &ptd->CallSign[0], 7 );
