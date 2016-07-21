@@ -56,6 +56,7 @@
 
 #include "chartimg.h"
 #include "ocpn_pixel.h"
+#include "ChartDataInputStream.h"
 
 #ifndef __WXMSW__
 #include <signal.h>
@@ -344,7 +345,7 @@ ChartGEO::~ChartGEO()
 
 InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 {
-      #define BUF_LEN_MAX 4000
+      #define BUF_LEN_MAX 4096
 
       PreInit(name, init_flags, GLOBAL_COLOR_SCHEME_DAY);
 
@@ -354,7 +355,7 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 
       m_filesize = wxFileName::GetSize( name );
       
-      if(!ifs_hdr->Ok())
+      if(!ifs_hdr->IsOk())
             return INIT_FAIL_REMOVE;
 
       int nPlypoint = 0;
@@ -661,7 +662,7 @@ found_uclc_file:
           return INIT_FAIL_REMOVE;
       }
 
-      if(!ifss_bitmap->Ok())
+      if(!ifss_bitmap->IsOk())
       {
           free(pPlyTable);
           return INIT_FAIL_REMOVE;
@@ -834,8 +835,14 @@ ChartKAP::~ChartKAP()
 
 InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 {
-      #define BUF_LEN_MAX 4000
+      #define BUF_LEN_MAX 4096
 
+      ifs_hdr = new ChartDataNonSeekableInputStream(name);          // open the Header file as a read-only stream
+      
+      if(!ifs_hdr->IsOk())
+            return INIT_FAIL_REMOVE;
+
+    
       int nPlypoint = 0;
       Plypoint *pPlyTable = (Plypoint *)malloc(sizeof(Plypoint));
 
@@ -843,21 +850,9 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       char buffer[BUF_LEN_MAX];
 
-      ifs_hdr = new wxFFileInputStream(name);          // open the Header file as a read-only stream
-
-      m_filesize = wxFileName::GetSize( name );
-      
-      if(!ifs_hdr->Ok())
-	  {
-            free(pPlyTable);
-            return INIT_FAIL_REMOVE;
-      }
 
       m_FullPath = name;
       m_Description = m_FullPath;
-
-      ifss_bitmap = new wxFFileInputStream(name); // Open again, as the bitmap
-      ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
 
       //    Clear georeferencing coefficients
       for(int icl=0 ; icl< 12 ; icl++)
@@ -1585,6 +1580,20 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       nColorSize = ifs_hdr->GetC();
 
       nFileOffsetDataStart = ifs_hdr->TellI();
+      delete ifs_hdr;
+      ifs_hdr = NULL;
+
+      
+      ChartDataInputStream *stream = new ChartDataInputStream(name); // Open again, as the bitmap
+      wxString tempfile;
+#ifdef USE_LZMA      
+      tempfile = stream->TempFileName();
+#endif
+      m_filesize = wxFileName::GetSize( tempfile.empty() ? name : tempfile );
+
+      ifss_bitmap = stream;
+      ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
+
 
 //    Perform common post-init actions in ChartBaseBSB
       InitReturn pi_ret = PostInit();
@@ -4053,7 +4062,7 @@ bool ChartBaseBSB::GetChartBits(wxRect& source, unsigned char *pPix, int sub_sam
 //    Read and return count of a line of BSB header file
 //-----------------------------------------------------------------------------------------------
 
-int ChartBaseBSB::ReadBSBHdrLine(wxFFileInputStream* ifs, char* buf, int buf_len_max)
+int ChartBaseBSB::ReadBSBHdrLine(wxInputStream* ifs, char* buf, int buf_len_max)
 
 {
       char  read_char;

@@ -50,6 +50,7 @@
 #include "ocpndc.h"
 #include "s52utils.h"
 #include "wx28compat.h"
+#include "ChartDataInputStream.h"
 
 #include "cpl_csv.h"
 #include "setjmp.h"
@@ -1133,6 +1134,9 @@ s57chart::~s57chart()
         s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
     free (m_this_chart_context);    
+
+    if(m_FullPath != m_TempFilePath)
+        wxRemoveFile(m_TempFilePath);
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
@@ -2797,6 +2801,24 @@ bool s57chart::IsCellOverlayType( char *pFullPath )
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 {
+    wxString ext;
+    if(name.Upper().EndsWith(".XZ")) {
+        ext = wxFileName(name.Left(name.Length()-3)).GetExt();
+        
+        // decompress to temp file to allow seeking
+        m_TempFilePath = wxFileName::GetTempDir() + wxFileName::GetPathSeparator() +
+            wxFileName(name).GetName();
+
+        if(!DecompressXZFile(name, m_TempFilePath)) {
+            wxRemoveFile(m_TempFilePath);
+            return INIT_FAIL_REMOVE;
+        }
+    } else {
+        m_TempFilePath = name;
+        ext = wxFileName(name).GetExt();
+    }
+    m_FullPath = name;
+
     //    Use a static semaphore flag to prevent recursion
     if( s_bInS57 ) {
 //          printf("s57chart::Init() recursion..., retry\n");
@@ -2808,10 +2830,9 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     InitReturn ret_value = INIT_OK;
 
-    m_FullPath = name;
-    m_Description = m_FullPath;
+    m_Description = name;
 
-    wxFileName fn( name );
+    wxFileName fn( m_TempFilePath );
 
     //      Get the "Usage" character
     wxString cname = fn.GetName();
@@ -2848,7 +2869,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     }
 
     if( flags == HEADER_ONLY ) {
-        if( fn.GetExt() == _T("000") ) {
+        if( ext == _T("000") ) {
             if( !GetBaseFileAttr( fn ) )
                 ret_value = INIT_FAIL_REMOVE;
             else {
@@ -2857,8 +2878,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
                 else
                     ret_value = INIT_OK;
             }
-        } else if( fn.GetExt() == _T("S57") ) {
-            m_SENCFileName = name;
+        } else if( ext == _T("S57") ) {
+            m_SENCFileName = m_TempFilePath;
             if( !CreateHeaderDataFromSENC() ) ret_value = INIT_FAIL_REMOVE;
             else
                 ret_value = INIT_OK;
@@ -2877,11 +2898,11 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             m_bbase_file_attr_known = true;
     }
 
-    if( fn.GetExt() == _T("000") ) {
+    if( ext == _T("000") ) {
         if( m_bbase_file_attr_known ) {
             OCPNPlatform::ShowBusySpinner();
 
-            int sret = FindOrCreateSenc( name );
+            int sret = FindOrCreateSenc( m_FullPath );
             if( sret != BUILD_SENC_OK ) {
                 if( sret == BUILD_SENC_NOK_RETRY ) ret_value = INIT_FAIL_RETRY;
                 else
@@ -2893,10 +2914,10 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     }
 
-    else if( fn.GetExt() == _T("S57") ) {
+    else if( ext == _T("S57") ) {
         OCPNPlatform::ShowBusySpinner();
 
-        m_SENCFileName = name;
+        m_SENCFileName = m_TempFilePath;
         ret_value = PostInit( flags, m_global_color_scheme );
 
     }
@@ -2934,7 +2955,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
     bool bbuild_new_senc = false;
     m_bneed_new_thumbnail = false;
 
-    wxFileName FileName000( name );
+    wxFileName FileName000( m_TempFilePath );
 
 //      Look for SENC file in the target directory
 
@@ -3015,7 +3036,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
     if( bbuild_new_senc ) {
         m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
+        build_ret_val = BuildSENCFile( m_TempFilePath, m_SENCFileName.GetFullPath() );
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) 
             return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val ) 
@@ -3307,9 +3328,9 @@ WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
 {
-    if( !InitENCMinimal( m_FullPath ) ) {
+    if( !InitENCMinimal( m_TempFilePath ) ) {
         wxString msg( _T("   Cannot initialize ENC file ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
 
         return false;
@@ -3400,7 +3421,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     else                                     // strange case, found no CATCOV=1 M_COVR objects
     {
         wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
     }
 
@@ -3432,7 +3453,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     if( 0 == m_nCOVREntries ) {                        // fallback
         wxString msg( _T("   ENC contains no M_COVR features:  ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
 
         msg =  _T("   Calculating Chart Extents as fallback.");
@@ -3472,7 +3493,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
         } else {
             wxString msg( _T("   Cannot calculate Extents for ENC:  ") );
-            msg.Append( m_FullPath );
+            msg.Append( m_TempFilePath );
             wxLogMessage( msg );
 
             return false;                     // chart is completely unusable
@@ -3490,7 +3511,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     m_Chart_Scale = GetENCScale();
 
     wxString nice_name;
-    GetChartNameFromTXT( m_FullPath, nice_name );
+    GetChartNameFromTXT( m_TempFilePath, nice_name );
     m_Name = nice_name;
 
 
@@ -3977,7 +3998,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
             m_tmpup_array = new wxArrayString;       // save a list of created files for later erase
 
             for( int iff = 0; iff < retval + 1; iff++ ) {
-                wxFileName ufile( m_FullPath );
+                wxFileName ufile( m_TempFilePath );
                 wxString sext;
                 sext.Printf( _T("%03d"), iff );
                 ufile.SetExt( sext );
@@ -4049,7 +4070,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
         //      Extract the date field from the last of the update files
         //      which is by definition a valid, present update file....
 
-        wxFileName lastfile( m_FullPath );
+        wxFileName lastfile( m_TempFilePath );
         wxString last_sext;
         last_sext.Printf( _T("%03d"), retval );
         lastfile.SetExt( last_sext );

@@ -6167,7 +6167,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());            
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP(), false);
             break;
         }
     }   // switch

@@ -334,6 +334,8 @@ private:
       double      m_LOD_meters;
 
       int         m_LineVBO_name;
+
+      wxString    m_TempFilePath;
 protected:      
       sm_parms    vp_transform;
       
