@@ -98,7 +98,7 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp )
     if( ! reader ) {
         reader = new GshhsReader( );
         if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 220 ) {
-            wxLogMessage( _T("GSHHS World chart files have wrong version. Found %ld, expected 210-220."),
+            wxLogMessage( _T("GSHHS World chart files have wrong version. Found %d, expected 210-220."),
                     reader->GetPolyVersion() );
         } else {
             wxLogMessage(
