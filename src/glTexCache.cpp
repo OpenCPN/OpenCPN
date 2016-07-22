@@ -227,8 +227,6 @@ bool glTexFactory::OnTimer()
     // if we have the data in the catalog of level 0 or doubly compressed
     // for an entire row of tiles, then we can free rows from the linebuffer
     if(g_GLOptions.m_bTextureCompression) {
-        if(!ChartData->IsChartInCache( m_ChartPath ))
-            printf("Not in cache111!!!\n");
         ChartBase *pChart = ChartData->OpenChartFromDB( m_ChartPath, FULL_INIT );
         ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pChart );
 
