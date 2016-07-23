@@ -929,7 +929,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
 {
     JobTicket *ticket = event.GetTicket();
 
-    if(ticket->b_isaborted){
+    if(ticket->b_isaborted || ticket->b_abort){
         for(int i=0 ; i < g_mipmap_max_level+1 ; i++) {
             free(ticket->comp_bits_array[i]);
             free( ticket->compcomp_bits_array[i] );
@@ -938,7 +938,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
         if(bthread_debug)
             printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
                     ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
-    } else if(!b_inCompressAllCharts) { // if compressing all write cache here
+    } else if(!b_inCompressAllCharts) {
         //   Normal completion from here
         glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
         if(ptd) {
