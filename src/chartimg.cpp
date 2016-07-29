@@ -4384,7 +4384,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
               unsigned char *offset = lp - 1;
               if(byNext == 0 || lp == end) {
                   // finished early...corrupt?
-                  while(tileindex < Size_X/TILE_SIZE + 1) {
+                  while(tileindex < static_cast<size_t>(Size_X)/TILE_SIZE + 1u) {
                       pt->pTileOffset[tileindex].offset = pt->pTileOffset[0].offset;
                       pt->pTileOffset[tileindex].pixel = 0;
                       tileindex++;

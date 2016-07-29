@@ -902,6 +902,7 @@ static int jpc_qcc_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	uint_fast8_t tmp;
 	int len;
 	len = ms->len;
+    tmp = 0;
 	if (cstate->numcomps <= 256) {
 		jpc_getuint8(in, &tmp);
 		qcc->compno = tmp;
@@ -969,6 +970,7 @@ static int jpc_qcx_getcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
 
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
+    tmp = 0;
 
 	n = 0;
 	jpc_getuint8(in, &tmp);
