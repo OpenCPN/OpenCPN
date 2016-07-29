@@ -8765,7 +8765,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool bis_recognized_sentence = true;
     bool ll_valid = true;
 
-    wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    wxString str_buf = event.ProcessNMEA4Tags();
 
     if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
     {
