@@ -559,7 +559,7 @@ bool Unpack::ReadTables(BitInput &Inp,UnpackBlockHeader &Header,UnpackBlockTable
       return false;
 
   byte BitLength[BC];
-  for (int I=0;I<BC;I++)
+  for (size_t I=0;I<BC;I++)
   {
     int Length=(byte)(Inp.fgetbits() >> 12);
     Inp.faddbits(4);
