@@ -27,7 +27,7 @@ void Unpack::Unpack29(bool Solid)
   if (DDecode[1]==0)
   {
     int Dist=0,BitLength=0,Slot=0;
-    for (int I=0;I<ASIZE(DBitLengthCounts);I++,BitLength++)
+    for (size_t I=0;I<ASIZE(DBitLengthCounts);I++,BitLength++)
       for (int J=0;J<DBitLengthCounts[I];J++,Slot++,Dist+=(1<<BitLength))
       {
         DDecode[Slot]=Dist;
@@ -723,7 +723,7 @@ bool Unpack::ReadTables30()
     memset(UnpOldTable,0,sizeof(UnpOldTable));
   Inp.faddbits(2);
 
-  for (int I=0;I<BC;I++)
+  for (size_t I=0;I<BC;I++)
   {
     int Length=(byte)(Inp.fgetbits() >> 12);
     Inp.faddbits(4);

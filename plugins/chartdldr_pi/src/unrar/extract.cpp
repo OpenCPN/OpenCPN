@@ -323,7 +323,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       if (Cmd->VersionControl==0)
         MatchFound=false;
       int Version=ParseVersionFileName(ArcFileName,false);
-      if (Cmd->VersionControl-1==Version)
+      if (Cmd->VersionControl-1==static_cast<uint>(Version))
         ParseVersionFileName(ArcFileName,true);
       else
         MatchFound=false;

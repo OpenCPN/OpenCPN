@@ -142,7 +142,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
     {
       mbstate_t ps;
       memset(&ps,0,sizeof(ps));
-      if (wcrtomb(Dest+DestPos,Src[SrcPos],&ps)==-1)
+      if (wcrtomb(Dest+DestPos,Src[SrcPos],&ps)==static_cast<size_t>(-1))
         Success=false;
       SrcPos++;
       memset(&ps,0,sizeof(ps));
@@ -176,7 +176,7 @@ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
     }
     mbstate_t ps;
     memset(&ps,0,sizeof(ps));
-    if (mbrtowc(Dest+DestPos,Src+SrcPos,MB_CUR_MAX,&ps)==-1)
+    if (mbrtowc(Dest+DestPos,Src+SrcPos,MB_CUR_MAX,&ps)==static_cast<size_t>(-1))
     {
       // For security reasons we do not want to map low ASCII characters,
       // so we do not have additional .. and path separator codes.
