@@ -1935,69 +1935,69 @@ bool RouteProp::UpdateProperties()
 
             DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
 
-        // calculation of course at current WayPoint.
-        double course=10, tmp_leg_dist=23;
-        wxRoutePointListNode *next_node = node->GetNext();
-        RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
-        if (_next_prp )
-        {
-        DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
-        }else
-        {
-          course = 0.0;
-          tmp_leg_dist = 0.0;
-        }
+            // calculation of course at current WayPoint.
+            double course=10, tmp_leg_dist=23;
+            wxRoutePointListNode *next_node = node->GetNext();
+            RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
+            if (_next_prp )
+            {
+            DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+            }else
+            {
+              course = 0.0;
+              tmp_leg_dist = 0.0;
+            }
 
-        prp->SetCourse(course); // save the course to the next waypoint for printing.
-        // end of calculation
+            prp->SetCourse(course); // save the course to the next waypoint for printing.
+            // end of calculation
 
 
-        t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
-        if( arrival )
-            m_wpList->SetItem( item_line_index, 2, t );
-        if( !enroute )
-            m_wpList->SetItem( item_line_index, 2, nullify );
-        prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
+            t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
+            if( arrival )
+                m_wpList->SetItem( item_line_index, 2, t );
+            if( !enroute )
+                m_wpList->SetItem( item_line_index, 2, nullify );
+            prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
-            //  Bearing
-        if( g_bShowMag ){
-            double latAverage = (prp->m_lat + slat)/2;
-            double lonAverage = (prp->m_lon + slon)/2;
-            double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
-            
-            t.Printf( _T("%03.0f Deg. M"), varBrg );
-        }
-        else
-            t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
-
-        if( arrival )
-            m_wpList->SetItem( item_line_index, 3, t );
-        if( !enroute )
-            m_wpList->SetItem( item_line_index, 3, nullify );
-
-        // Course (bearing of next )
-        if (_next_prp){
+                //  Bearing
             if( g_bShowMag ){
-                double next_lat = prp->m_lat;
-                double next_lon = prp->m_lon;
-                if (_next_prp ){
-                    next_lat = _next_prp->m_lat;
-                    next_lon = _next_prp->m_lon;
-                }
-                    
-                double latAverage = (prp->m_lat + next_lat)/2;
-                double lonAverage = (prp->m_lon + next_lon)/2;
-                double varCourse = gFrame->GetTrueOrMag( course, latAverage, lonAverage);
+                double latAverage = (prp->m_lat + slat)/2;
+                double lonAverage = (prp->m_lon + slon)/2;
+                double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
                 
-                t.Printf( _T("%03.0f Deg. M"), varCourse );
+                t.Printf( _T("%03.0f Deg. M"), varBrg );
             }
             else
-                t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+                t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
+
             if( arrival )
-                m_wpList->SetItem( item_line_index, 10, t );
-        }
-        else
-            m_wpList->SetItem( item_line_index, 10, nullify );
+                m_wpList->SetItem( item_line_index, 3, t );
+            if( !enroute )
+                m_wpList->SetItem( item_line_index, 3, nullify );
+
+            // Course (bearing of next )
+            if (_next_prp){
+                if( g_bShowMag ){
+                    double next_lat = prp->m_lat;
+                    double next_lon = prp->m_lon;
+                    if (_next_prp ){
+                        next_lat = _next_prp->m_lat;
+                        next_lon = _next_prp->m_lon;
+                    }
+
+                    double latAverage = (prp->m_lat + next_lat)/2;
+                    double lonAverage = (prp->m_lon + next_lon)/2;
+                    double varCourse = gFrame->GetTrueOrMag( course, latAverage, lonAverage);
+
+                    t.Printf( _T("%03.0f Deg. M"), varCourse );
+                }
+                else
+                    t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+                if( arrival )
+                    m_wpList->SetItem( item_line_index, 10, t );
+            }
+            else
+                m_wpList->SetItem( item_line_index, 10, nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
