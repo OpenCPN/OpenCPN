@@ -1563,7 +1563,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             while( 1 ) {
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
-                Track* track = (Track*) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+                Track *track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
                 csvString << track->m_TrackNameString << _T("\t")
                           << wxString::Format( _T("%.1f"), track->Length() ) << _T("\t")
                         << _T("\n");
@@ -1924,7 +1924,7 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
     item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     if( item == -1 ) return;
 
-    Track *track = (Track *) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+    Track *track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
     
     TrackToRoute( track );
     
