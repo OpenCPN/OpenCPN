@@ -4103,18 +4103,22 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_ROUTEMANAGER: {
             pRouteManagerDialog = RouteManagerDialog::getInstance( cc1 ); // There is one global instance of the Dialog
 
-            pRouteManagerDialog->UpdateRouteListCtrl();
-            pRouteManagerDialog->UpdateTrkListCtrl();
-            pRouteManagerDialog->UpdateWptListCtrl();
-            pRouteManagerDialog->UpdateLayListCtrl();
+            if( pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->Hide();
+            else {
+                pRouteManagerDialog->UpdateRouteListCtrl();
+                pRouteManagerDialog->UpdateTrkListCtrl();
+                pRouteManagerDialog->UpdateWptListCtrl();
+                pRouteManagerDialog->UpdateLayListCtrl();
 
-            pRouteManagerDialog->Show();
+                pRouteManagerDialog->Show();
 
             //    Required if RMDialog is not STAY_ON_TOP
 #ifdef __WXOSX__
-            pRouteManagerDialog->Centre();
-            pRouteManagerDialog->Raise();
+                pRouteManagerDialog->Centre();
+                pRouteManagerDialog->Raise();
 #endif
+            }
             break;
         }
 
