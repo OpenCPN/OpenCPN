@@ -5951,6 +5951,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
+      bool secondpass = false;
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
@@ -5977,6 +5978,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
               nvp = glChartCanvas::NormalizedViewPort(vp);
           } else
               nvp = vp;
+
+          // test viewport for accelerated panning and idl crossing
+          if((vp.m_projection_type == PROJECTION_MERCATOR ||
+              vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
+             ( vp.GetBBox().GetMinLon() < -180 ||
+               vp.GetBBox().GetMaxLon() > 180 ))
+              secondpass = true;
       }
 #endif
 
@@ -5993,6 +6001,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       bool bdrawn = false;
 
       nss_max = 7;
+      int cnt = 0;
 
 #if 0 /* only if chart outlines are rendered grounded to the charts */
       if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
@@ -6037,54 +6046,38 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
               if( !psc->m_covr_bbox.GetValid() ||
                   !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
               {
-                  if ( psc ) 
-                  {
-                      //    Render the chart outlines
-                      covr_set *pcover = psc->GetCoverSet();
+                  //    Render the chart outlines
+                  covr_set *pcover = psc->GetCoverSet();
                                   
-                      for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
-                          M_COVR_Desc *mcd = pcover->GetCover ( im );
-#ifdef ocpnUSE_GL        
-                          if (g_bopengl) {
-                              RenderCellOutlinesOnGL(nvp, mcd); 
-                                      
-                              // if signs don't agree we need to render a second pass
-                              // translating around the world
-                              if( (vp.m_projection_type == PROJECTION_MERCATOR ||
-                                   vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
-                                  ( vp.GetBBox().GetMinLon() < -180 ||
-                                    vp.GetBBox().GetMaxLon() > 180) ) {
-                                  #define NORM_FACTOR 4096.0                                              
-                                  double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
-                                  glPushMatrix();
-                                  glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
-                                  RenderCellOutlinesOnGL(nvp, mcd); 
-                                  glPopMatrix();
-                              }
-    
-                              // TODO: this calculation doesn't work crossing IDL
-                              // was anything actually drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                  bdrawn = true;
+                  for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
+                      M_COVR_Desc *mcd = pcover->GetCover ( im );
 
-                                  //  Does current vp cross international dateline?
-                                  // if so, translate to the other side of it.
-                              }
-                          } else
+                      if(vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ))
+                          continue;
+#ifdef ocpnUSE_GL        
+                      if (g_bopengl) {
+                          RenderCellOutlinesOnGL(nvp, mcd);
+                                      
+                          // if signs don't agree we need to render a second pass
+                          // translating around the world
+                          if( secondpass ) {
+#define NORM_FACTOR 4096.0                                              
+                              double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+                              glPushMatrix();
+                              glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
+                              RenderCellOutlinesOnGL(nvp, mcd); 
+                              glPopMatrix();
+                          }
+    
+                      } else
 #endif
-                              //    Anything actually to be drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                            
-                                  wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
-                                  bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
-                              }
-                      }
+                          RenderCellOutlinesOnDC(dc, vp, psc->GetDrawBuffer ( mcd->m_nvertices ), mcd);
                   }                          
               }
           }
           nss ++;
       }
-
+      
 #ifdef ocpnUSE_GL        
       if(g_bopengl) {
           glPopMatrix();
