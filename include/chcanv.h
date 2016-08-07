@@ -300,7 +300,6 @@ public:
       wxCursor    *pPlugIn_Cursor;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
-      bool        m_brepaint_piano;
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
       wxPoint     r_rband;
@@ -606,8 +605,8 @@ private:
       int         m_wheel_x,m_wheel_y;
 
       ViewPort    m_bm_cache_vp;
-      wxBitmap    m_working_bm;           // Used to build quilt in OnPaint()
-      wxBitmap    m_cached_chart_bm;      // A cached copy of the fully drawn quilt
+      wxBitmap    *m_working_bm;           // Used to build quilt in OnPaint()
+      wxBitmap    *m_cached_chart_bm;      // A cached copy of the fully drawn quilt
 
       bool        m_bbrightdir;
       int         m_brightmod;
