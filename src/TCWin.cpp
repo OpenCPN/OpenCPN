@@ -786,7 +786,7 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         ShowRollover = true;
         SetCursor( *pParent->pCursorCross );
         if( NULL == m_pTCRolloverWin ) {
-            m_pTCRolloverWin = new RolloverWin( this );
+            m_pTCRolloverWin = new RolloverWin( this, -1, false );
             m_pTCRolloverWin->SetMousePropogation( 1 );
             m_pTCRolloverWin->Hide();
         }

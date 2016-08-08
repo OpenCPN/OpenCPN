@@ -8958,7 +8958,6 @@ static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, int row, wxString s )
 
     dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
-    
     AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
     dc.DrawText( s, xp, yp );
@@ -9891,16 +9890,13 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 #endif
 
-    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) {
-        dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
-                       m_pRouteRolloverWin->GetPosition().x,
-                       m_pRouteRolloverWin->GetPosition().y, false );
+    if( m_pRouteRolloverWin ) {
+        m_pRouteRolloverWin->Draw(dc);
         m_brepaint_piano = true;
     }
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
-        dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
-                m_pAISRolloverWin->GetPosition().x,
-                m_pAISRolloverWin->GetPosition().y, false );
+
+    if( m_pAISRolloverWin ) {
+        m_pAISRolloverWin->Draw(dc);
         m_brepaint_piano = true;
     }
 }
