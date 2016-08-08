@@ -770,6 +770,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_b_rot_hidef = true;
     
     proute_bm = NULL;
+    m_cached_chart_bm = NULL;
+    m_working_bm = NULL;
 
     m_prot_bm = NULL;
 
@@ -1880,7 +1882,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 g_Compass->Show(!g_Compass->IsShown());
                 if (g_Compass->IsShown())
                     g_Compass->UpdateStatus();
-                m_brepaint_piano = true;
                 Refresh( false );
             }
             break;
@@ -2208,7 +2209,6 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
-    m_brepaint_piano = true;
 
     ReloadVP();
 
@@ -3810,7 +3810,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     ll_gc_ll( gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat, &osd_head_lon );
 
-    GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
     GetCanvasPointPix( osd_head_lat, osd_head_lon, &osd_head_point );
 
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
@@ -3826,7 +3825,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
               &hdg_pred_lon );
 
-    GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
     GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
     //    Is head predicted point in the VPoint?
@@ -4353,12 +4351,9 @@ void ChartCanvas::UpdateShips()
     wxClientDC dc( this );
     if( !dc.IsOk() ) return;
 
-    wxBitmap test_bitmap( dc.GetSize().x, dc.GetSize().y );
+    wxSize s(VPoint.pix_width, VPoint.pix_height);
+    wxBitmap test_bitmap( s );
     wxMemoryDC temp_dc( test_bitmap );
-
-    temp_dc.ResetBoundingBox();
-    temp_dc.DestroyClippingRegion();
-    temp_dc.SetClippingRegion( 0, 0, dc.GetSize().x, dc.GetSize().y );
 
     // Draw the ownship on the temp_dc
     ocpnDC ocpndc = ocpnDC( temp_dc );
@@ -4539,31 +4534,27 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     VPoint.pix_width = m_canvas_width;
     VPoint.pix_height = m_canvas_height;
 
-    // Resize the scratch BM
-    delete pscratch_bm;
-    pscratch_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
-    m_brepaint_piano = true;
-
-    // Resize the Route Calculation BM
-    m_dc_route.SelectObject( wxNullBitmap );
-    delete proute_bm;
-    proute_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
-    m_dc_route.SelectObject( *proute_bm );
-
-    //  Resize the saved Bitmap
-    m_cached_chart_bm.Create( VPoint.pix_width, VPoint.pix_height, -1 );
-
-    //  Resize the working Bitmap
-    m_working_bm.Create( VPoint.pix_width, VPoint.pix_height, -1 );
-
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
+
+    delete pscratch_bm;
+    pscratch_bm = NULL;
+
+    delete proute_bm;
+    proute_bm = NULL;
+
+    delete m_cached_chart_bm;
+    m_cached_chart_bm = NULL;
+
+    delete m_working_bm;
+    m_working_bm = NULL;
 
 #ifdef ocpnUSE_GL
     if( /*g_bopengl &&*/ m_glcc ) {
         m_glcc->OnSize( event );
     }
 #endif
+
     //  Invalidate the whole window
     ReloadVP();
 }
@@ -9061,7 +9052,6 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
         RouteLegInfo( dc, r_rband, 1, s0 );
-        m_brepaint_piano = true;
     }
 }
 
@@ -9103,6 +9093,24 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     if( ( GetVP().pix_width == 0 ) || ( GetVP().pix_height == 0 ) ) return;
 
+    if(!pscratch_bm) {
+        // Resize the scratch BM
+        pscratch_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+
+        // Resize the Route Calculation BM
+        m_dc_route.SelectObject( wxNullBitmap );
+        proute_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+        m_dc_route.SelectObject( *proute_bm );
+
+        //  Resize the saved Bitmap
+        m_cached_chart_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+
+        //  Resize the working Bitmap
+        m_working_bm = new wxBitmap( VPoint.pix_width, VPoint.pix_height, -1 );
+    } else // ensure the scratch bm is exactly the viewport size (so stuff isn't rendered over the chartbar)
+    if((pscratch_bm->GetWidth() != VPoint.pix_width) || (pscratch_bm->GetHeight() != VPoint.pix_height))
+        pscratch_bm->Create(VPoint.pix_width, VPoint.pix_height, -1); // target wxBitmap is big enou
+
     wxRegion ru = GetUpdateRegion();
 
     int rx, ry, rwidth, rheight;
@@ -9139,19 +9147,17 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     }
 
     // subtract the chart bar if it isn't transparent, and determine if we need to paint it
-    wxRegion rgn_blit = ru;
     if(g_bShowChartBar) {
         wxRect chart_bar_rect(0, GetClientSize().y - g_Piano->GetHeight(),
                               GetClientSize().x, g_Piano->GetHeight());
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         if(ru.Contains(chart_bar_rect) != wxOutRegion) {
-            if(style->chartStatusWindowTransparent)
-                m_brepaint_piano = true;
-            else
+            if(!style->chartStatusWindowTransparent)
                 ru.Subtract(chart_bar_rect);
         }        
     }
+    wxRegion rgn_blit = ru;
 
     //  Is this viewpoint the same as the previously painted one?
     bool b_newview = true;
@@ -9188,9 +9194,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     {
         if( m_pQuilt && !m_pQuilt->IsComposed() ) return;
 
-        if( ( m_working_bm.GetWidth() != svp.pix_width )
-                || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
-                        svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug
+        if( ( m_working_bm->GetWidth() != svp.pix_width )
+                || ( m_working_bm->GetHeight() != svp.pix_height ) )
+            m_working_bm->Create(svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug
 
         if( fabs( VPoint.rotation ) < 0.01 ) {
             bool b_save = true;
@@ -9218,10 +9224,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                     if( m_pQuilt->IsVPBlittable( VPoint, dx, dy, true ) ) {
                         if( dx || dy ) {
                             //  Blit the reuseable portion of the cached wxBitmap to a working bitmap
-                            temp_dc.SelectObject( m_working_bm );
+                            temp_dc.SelectObject( *m_working_bm );
 
                             wxMemoryDC cache_dc;
-                            cache_dc.SelectObject( m_cached_chart_bm );
+                            cache_dc.SelectObject( *m_cached_chart_bm );
 
                             if( dy > 0 ) {
                                 if( dx > 0 ) {
@@ -9264,7 +9270,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                             cache_dc.SelectObject( wxNullBitmap );
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
-                            temp_dc.SelectObject( m_cached_chart_bm );
+                            temp_dc.SelectObject( *m_cached_chart_bm );
                             b_save = false;
 
                         }
@@ -9272,26 +9278,26 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
                     } else              // not blitable
                     {
-                        temp_dc.SelectObject( m_working_bm );
+                        temp_dc.SelectObject( *m_working_bm );
                         m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
                     }
                 } else {
                     //    No change in the view, so use the cached member bitmap2
-                    temp_dc.SelectObject( m_cached_chart_bm );
+                    temp_dc.SelectObject( *m_cached_chart_bm );
                     b_save = false;
                 }
             } else      //cached bitmap is not yet valid
             {
-                temp_dc.SelectObject( m_working_bm );
+                temp_dc.SelectObject( *m_working_bm );
                 m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
             }
 
             //  Save the fully rendered quilt image as a wxBitmap member of this class
             if( b_save ) {
-//                        if((m_cached_chart_bm.GetWidth() != svp.pix_width) || (m_cached_chart_bm.GetHeight() != svp.pix_height))
-//                              m_cached_chart_bm.Create(svp.pix_width, svp.pix_height, -1); // target wxBitmap is big enough
+//                        if((*m_cached_chart_bm.GetWidth() != svp.pix_width) || (*m_cached_chart_bm.GetHeight() != svp.pix_height))
+//                              *m_cached_chart_bm.Create(svp.pix_width, svp.pix_height, -1); // target wxBitmap is big enough
                 wxMemoryDC scratch_dc_0;
-                scratch_dc_0.SelectObject( m_cached_chart_bm );
+                scratch_dc_0.SelectObject( *m_cached_chart_bm );
                 scratch_dc_0.Blit( 0, 0, svp.pix_width, svp.pix_height, &temp_dc, 0, 0 );
 
                 scratch_dc_0.SelectObject( wxNullBitmap );
@@ -9302,7 +9308,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         else            // quilted, rotated
         {
-            temp_dc.SelectObject( m_working_bm );
+            temp_dc.SelectObject( *m_working_bm );
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
             m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
         }
@@ -9485,11 +9491,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         DrawAllCurrentsInBBox( scratch_dc, GetVP().GetBBox() );
     }
 
-    if( m_brepaint_piano && g_bShowChartBar ) {
-        g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
-        //m_brepaint_piano = false;
-    }
-
     if(g_Compass)
         g_Compass->Paint(scratch_dc);
 
@@ -9525,6 +9526,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         dc.Blit( rect.x, rect.y, rect.width, rect.height, &mscratch_dc, rect.x, rect.y );
         upd_final++;
     }
+
+    g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), dc);
 
     //  Test code to validate the dc drawing rectangle....
     /*
@@ -9891,18 +9894,15 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 #endif
 
-    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) {
+    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
         dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
                        m_pRouteRolloverWin->GetPosition().x,
                        m_pRouteRolloverWin->GetPosition().y, false );
-        m_brepaint_piano = true;
-    }
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
+
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() )
         dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
                 m_pAISRolloverWin->GetPosition().x,
                 m_pAISRolloverWin->GetPosition().y, false );
-        m_brepaint_piano = true;
-    }
 }
 
 emboss_data *ChartCanvas::EmbossDepthScale()
