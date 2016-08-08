@@ -1131,10 +1131,9 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
+static wxStopWatch init_sw;
 bool MyApp::OnInit()
 {
-    wxStopWatch sw;
-
     if( !wxApp::OnInit() ) return false;
 
 #if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
@@ -2077,9 +2076,6 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->Refresh( false );
     gFrame->Raise();
 
-    gFrame->RequestNewToolbar();
-
-
     cc1->Enable();
     cc1->SetFocus();
 
@@ -2123,7 +2119,7 @@ extern ocpnGLOptions g_GLOptions;
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
-    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
@@ -3018,10 +3014,6 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
             g_FloatingToolbarDialog->SetColorScheme(global_color_scheme);
             g_FloatingToolbarDialog->Show(b_reshow && g_bshowToolbar);
         }
-
-#ifndef __WXQT__
-        gFrame->Raise(); // ensure keyboard focus to the chart window (needed by gtk+)
-#endif
     }
 
 #ifdef __OCPN__ANDROID__
@@ -6097,7 +6089,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             RequestNewToolbar();
             if( g_toolbar )
                 g_toolbar->EnableTool( ID_SETTINGS, false );
-            
+
             wxString perspective;
             pConfig->SetPath( _T ( "/AUI" ) );
             pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -6155,7 +6147,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     
             if( g_toolbar )
                 g_toolbar->EnableTool( ID_SETTINGS, true );
-            
+
+            // needed to ensure that the chart window starts with keyboard focus
+            SurfaceToolbar();
             break;
         }
 
@@ -6167,7 +6161,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());            
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP());
+
+            wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
         }
     }   // switch

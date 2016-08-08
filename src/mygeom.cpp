@@ -1195,8 +1195,8 @@ int PolyTessGeo::BuildTessTri(void)
             if(pr->nvert > m_nvertex_max)
                 m_nvertex_max = pr->nvert;                         // keep track of largest vertex count
                 
-                //  Convert to SM
-                pTP->p_vertex = (double *)malloc(pr->nvert * 2 * sizeof(double));
+            //  Convert to SM
+            pTP->p_vertex = (double *)malloc(pr->nvert * 2 * sizeof(double));
             double *pdd = pTP->p_vertex;
             int *ivr = pr->vertex_index_list;
             if(bSENC_SM)

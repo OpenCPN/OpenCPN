@@ -1072,7 +1072,11 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
             break;
     }
     DisableForDownload( true );
+#ifdef __OCPN__ANDROID__
     m_bDnldCharts->SetLabel( _("Download\n selected charts") );
+#else
+    m_bDnldCharts->SetLabel( _("Download selected charts") );
+#endif
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
     if( failed_downloads > 0 && !updatingAll )
@@ -1153,8 +1157,8 @@ void ChartDldrPanelImpl::DeleteSource( wxCommandEvent& event )
     if( wxYES != wxMessageBox(_("Do you really want to remove the chart source?\nThe local chart files will not be removed, but you will not be able to update the charts anymore."),
                                  _("Chart Downloader"), wxYES_NO | wxCENTRE, this) )
         return;
-	int ToBeRemoved = GetSelectedCatalog();
-	m_lbChartSources->SetItemState(ToBeRemoved,  0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
+    int ToBeRemoved = GetSelectedCatalog();
+    m_lbChartSources->SetItemState(ToBeRemoved, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED);
     pPlugIn->m_chartSources->RemoveAt(ToBeRemoved);
     m_lbChartSources->DeleteItem(ToBeRemoved);
     CleanForm();

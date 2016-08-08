@@ -2062,7 +2062,10 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint
               double lat, lon;
               fromSM(valx - m_easting_vp_center, valy - m_northing_vp_center, m_vp_current.clat, m_vp_current.clon, &lat, &lon);
 
+              double rotation = m_vp_current.rotation;
+              m_vp_current.SetRotationAngle(0);
               r[i] = m_vp_current.GetPixFromLL(lat, lon);
+              m_vp_current.SetRotationAngle(rotation);
           }
       }
 }
