@@ -971,8 +971,8 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     int api_major = plug_in->GetAPIVersionMajor();
     int api_minor = plug_in->GetAPIVersionMinor();
-    int ver = (api_major * 100) + api_minor;
-    pic->m_api_version = ver;
+    int api_ver = (api_major * 100) + api_minor;
+    pic->m_api_version = api_ver;
 
     int pi_major = plug_in->GetPlugInVersionMajor();
     int pi_minor = plug_in->GetPlugInVersionMinor();
@@ -984,7 +984,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         return NULL;
     }
 
-    switch(ver)
+    switch(api_ver)
     {
     case 105:
         pic->m_pplugin = dynamic_cast<opencpn_plugin*>(plug_in);
@@ -1028,11 +1028,13 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(pic->m_pplugin)
     {
-        msg = plug_in->GetCommonName();
-        msg += _T("  ");
-        msg += wxString::Format(_T("API Version: %d.%d"), api_major, api_minor);
-        msg += _T("  ");
-        msg += wxString::Format(_T("PlugIn Version: %d.%d"), pi_major, pi_minor);
+        msg = _T("  ");
+        msg += plugin_file;
+        wxString msg1;
+        msg1.Printf(_T("\n              API Version detected: %d"), api_ver);
+        msg += msg1;
+        msg1.Printf(_T("\n              PlugIn Version detected: %d"), pi_ver);
+        msg += msg1;
         wxLogMessage(msg);
     }
     else
