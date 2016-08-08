@@ -28,12 +28,15 @@
 #include <wx/dcmemory.h>
 #include <wx/dcscreen.h>
 
-#include "RolloverWin.h"
 #include "ocpndc.h"
+#include "RolloverWin.h"
 #include "timers.h"
 #include "chart1.h"
 #include "navutil.h"
 #include "FontMgr.h"
+
+extern bool             g_bopengl;
+extern GLenum       g_texture_rectangle_format;
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow) EVT_PAINT(RolloverWin::OnPaint)
     EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
@@ -42,8 +45,9 @@ BEGIN_EVENT_TABLE(RolloverWin, wxWindow) EVT_PAINT(RolloverWin::OnPaint)
 END_EVENT_TABLE()
 
 // Define a constructor
-RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
-    wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER )
+RolloverWin::RolloverWin( wxWindow *parent, int timeout, bool maincanvas ) :
+wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER ),
+    m_bmaincanvas(maincanvas)
 {
     m_pbm = NULL;
 
@@ -52,6 +56,7 @@ RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
     m_mmouse_propogate = 0;
     isActive = false;
     m_plabelFont = NULL;
+    m_texture = 0;
     Hide();
 }
 
@@ -76,37 +81,36 @@ void RolloverWin::OnMouseEvent( wxMouseEvent& event )
 
 void RolloverWin::SetBitmap( int rollover )
 {
-    wxDC* cdc = new wxScreenDC();
-    wxPoint canvasPos = GetParent()->GetScreenPosition();
-
     wxMemoryDC mdc;
     delete m_pbm;
-    m_pbm = new wxBitmap( m_size.x, m_size.y, -1 );
+    m_pbm = new wxBitmap( m_size.x, m_size.y );
     mdc.SelectObject( *m_pbm );
 
-    mdc.Blit( 0, 0, m_size.x, m_size.y, cdc, m_position.x + canvasPos.x,
-              m_position.y + canvasPos.y );
-    delete cdc;
+    int usegl = g_bopengl && g_texture_rectangle_format && m_bmaincanvas;
+    if(!usegl) {
+        wxDC* cdc = new wxScreenDC();
+        int cpx = 0, cpy = 0;
+        GetParent()->ClientToScreen(&cpx, &cpy);
+        mdc.Blit( 0, 0, m_size.x, m_size.y, cdc,
+                  m_position.x + cpx, m_position.y + cpy);
+        delete cdc;
+    } else
+        mdc.Clear();
 
     ocpnDC dc( mdc );
 
+    wxString text;
+    double radius = 6.0;
     switch( rollover ) {
-        case AIS_ROLLOVER:
-            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("AISRollover") ) );
-            break;
-
-        case TC_ROLLOVER:
-            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("TideCurrentGraphRollover") ) );
-            break;
-        default:
-        case LEG_ROLLOVER:
-            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
-            break;
+    case AIS_ROLLOVER: text = _("AISRollover");   break;
+    case TC_ROLLOVER:  text = _("TideCurrentGraphRollover"), radius = 0; break;
+    default:
+    case LEG_ROLLOVER: text = _("RouteLegInfoRollover");  break;
     }
 
+    AlphaBlending( dc, 0, 0, m_size.x, m_size.y, radius,
+                   GetGlobalColor( _T ( "YELO1" ) ), usegl ? 255 : 172 );
+    mdc.SetTextForeground( FontMgr::Get().GetFontColor( text ) );
 
     if(m_plabelFont && m_plabelFont->IsOk()) {
 
@@ -117,6 +121,33 @@ void RolloverWin::SetBitmap( int rollover )
     }
 
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
+
+#ifdef ocpnUSE_GL
+    if(usegl) {
+        if(!m_texture) {
+            glGenTextures( 1, &m_texture );
+            glBindTexture( g_texture_rectangle_format, m_texture );
+            glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        }
+        mdc.SelectObject( wxNullBitmap );
+
+        // make texture data
+        wxImage image = m_pbm->ConvertToImage();
+
+        unsigned char *d = image.GetData();
+        unsigned char *e = new unsigned char[4*m_size.x*m_size.y];
+        for(int y = 0; y<m_size.y; y++)
+            for(int x = 0; x<m_size.x; x++) {
+                int i = y * m_size.x + x;
+                memcpy(e+4*i, d+3*i, 3);
+                e[4*i+3] = 255 - d[3*i+2];
+            }
+        glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA,
+                      m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
+        delete [] e;
+    }
+#endif
 
     // Retrigger the auto timeout
     if( m_timeout_sec > 0 ) m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
@@ -133,6 +164,38 @@ void RolloverWin::OnPaint( wxPaintEvent& event )
         mdc.SelectObject( *m_pbm );
         dc.Blit( 0, 0, width, height, &mdc, 0, 0 );
     }
+}
+
+void RolloverWin::Draw(ocpnDC &dc)
+{
+    if(!IsActive())
+        return;
+#ifdef ocpnUSE_GL
+    if(g_bopengl && m_texture) {
+        glBindTexture( g_texture_rectangle_format, m_texture );
+        glEnable(g_texture_rectangle_format);
+        glEnable(GL_BLEND);
+        int x0 = m_position.x, x1 = x0 + m_size.x;
+        int y0 = m_position.y, y1 = y0 + m_size.y;
+        float tx, ty;
+        if( GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format )
+            tx = m_size.x, ty = m_size.y;
+        else
+            tx = ty = 1;
+
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0,  0);  glVertex2i(x0, y0);
+        glTexCoord2f(tx, 0);  glVertex2i(x1, y0);
+        glTexCoord2f(tx, ty); glVertex2i(x1, y1);
+        glTexCoord2f(0,  ty); glVertex2i(x0, y1);
+        glEnd();
+
+        glDisable(g_texture_rectangle_format);
+        glDisable(GL_BLEND);
+    } else
+#endif    
+    dc.DrawBitmap( *m_pbm, m_position.x, m_position.y, false );
 }
 
 void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollover,
