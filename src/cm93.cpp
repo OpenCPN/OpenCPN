@@ -4361,9 +4361,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     m_pcovr_set->Add_Update_MCD ( pmcd );
 
                                     
-                                    //  Update the parent cell mcovr bounding box
-                                    m_covr_bbox.Expand(pmcd->m_covr_bbox);
-                                    
                                     //    Clean up the xgeom
                                     free ( xgeom->pvector_index );
 
@@ -4741,8 +4738,6 @@ cm93compchart::cm93compchart()
       m_last_cell_adjustvp = NULL;
 
       m_pcm93mgr = new cm93manager();
-
-
 }
 
 cm93compchart::~cm93compchart()
@@ -6043,41 +6038,36 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
               //      Make sure the covr bounding box is complete
               psc->UpdateCovrSet ( &vp );
                               
-              /* test rectangle for entire set to reduce number of tests */
-              if( !psc->m_covr_bbox.GetValid() ||
-                  !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
-              {
-                  //    Render the chart outlines
-                  covr_set *pcover = psc->GetCoverSet();
+              //    Render the chart outlines
+              covr_set *pcover = psc->GetCoverSet();
                                   
-                  for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
-                      M_COVR_Desc *mcd = pcover->GetCover ( im );
+              for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
+                  M_COVR_Desc *mcd = pcover->GetCover ( im );
 
-                      if(vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ))
-                          continue;
+                  if(vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ))
+                      continue;
 #ifdef ocpnUSE_GL        
-                      if (g_bopengl) {
-                          RenderCellOutlinesOnGL(nvp, mcd);
+                  if (g_bopengl) {
+                      RenderCellOutlinesOnGL(nvp, mcd);
                                       
-                          // if signs don't agree we need to render a second pass
-                          // translating around the world
-                          if( secondpass ) {
+                      // if signs don't agree we need to render a second pass
+                      // translating around the world
+                      if( secondpass ) {
 #define NORM_FACTOR 4096.0                                              
-                              double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
-                              glPushMatrix();
-                              glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
-                              RenderCellOutlinesOnGL(nvp, mcd); 
-                              glPopMatrix();
-                          }
-                          bdrawn = true;
-                      } else
-#endif
-                      {
-                          wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
-                          bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
+                          double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+                          glPushMatrix();
+                          glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
+                          RenderCellOutlinesOnGL(nvp, mcd); 
+                          glPopMatrix();
                       }
-                  }                          
-              }
+                      bdrawn = true;
+                  } else
+#endif
+                  {
+                      wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
+                      bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
+                  }
+              }                          
           }
           nss ++;
       }
@@ -6092,7 +6082,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           glDisable( GL_BLEND );
       }
 #endif
-
       return true;
 }
 
