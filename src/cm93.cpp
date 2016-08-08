@@ -4398,6 +4398,7 @@ bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
                         ProcessMCOVRObjects ( vpcells.Item ( i ), '0' );
                         Unload_CM93_Cell();           // all done with this (sub)cell
                   }
+                  m_pcovr_set->m_cell_hash[vpcells.Item ( i )] = 1;
 
                   char loadcell_key = 'A';               // starting subcells
 
