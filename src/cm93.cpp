@@ -6069,10 +6069,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                               RenderCellOutlinesOnGL(nvp, mcd); 
                               glPopMatrix();
                           }
-    
+                          bdrawn = true;
                       } else
 #endif
-                          RenderCellOutlinesOnDC(dc, vp, psc->GetDrawBuffer ( mcd->m_nvertices ), mcd);
+                      {
+                          wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
+                          bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
+                      }
                   }                          
               }
           }
@@ -6129,7 +6132,8 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
 #ifdef ocpnUSE_GL
     // cannot reuse coordinates
     if(vp.m_projection_type != mcd->gl_screen_projection_type ||
-       !glChartCanvas::HasNormalizedViewPort(vp)) {
+       !glChartCanvas::HasNormalizedViewPort(vp) ||
+       vp.m_projection_type == PROJECTION_POLAR /* could speed up by also testing for n-s switch */) {
         delete [] mcd->gl_screen_vertices;
         mcd->gl_screen_vertices = NULL;
     }
