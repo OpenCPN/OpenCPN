@@ -851,6 +851,7 @@ BEGIN_EVENT_TABLE(options, wxDialog)
 EVT_CHECKBOX(ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click)
 EVT_BUTTON(ID_BUTTONADD, options::OnButtonaddClick)
 EVT_BUTTON(ID_BUTTONDELETE, options::OnButtondeleteClick)
+EVT_BUTTON(ID_PARSEENCBUTTON, options::OnButtonParseENC)
 EVT_BUTTON(ID_TCDATAADD, options::OnInsertTideDataLocation)
 EVT_BUTTON(ID_TCDATADEL, options::OnRemoveTideDataLocation)
 EVT_BUTTON(ID_APPLY, options::OnApplyClick)
@@ -972,6 +973,7 @@ void options::Init(void) {
   pDispCat = NULL;
   m_pSerialArray = NULL;
   pUpdateCheckBox = NULL;
+  pParseENCButton = NULL;
   k_charts = 0;
   k_vectorcharts = 0;
   k_plugins = 0;
@@ -2685,14 +2687,24 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
   chartPanel->Add(itemStaticBoxSizerUpdate, 0, wxGROW | wxALL, 5);
 
+  wxFlexGridSizer* itemFlexGridSizerUpdate = new wxFlexGridSizer(2);
+  itemFlexGridSizerUpdate->SetFlexibleDirection( wxHORIZONTAL );
+
   pScanCheckBox = new wxCheckBox(chartPanelWin, ID_SCANCHECKBOX,
                                  _("Scan Charts and Update Database"));
-  itemStaticBoxSizerUpdate->Add(pScanCheckBox, 1, wxALL, 5);
+  itemFlexGridSizerUpdate->Add(pScanCheckBox, 1, wxALL, 5);
+
+  pParseENCButton = new wxButton(chartPanelWin, ID_PARSEENCBUTTON,
+                                   _("Parse all ENC Charts"));
+  itemFlexGridSizerUpdate->Add(pParseENCButton, 1, wxALL, 5);
 
   pUpdateCheckBox = new wxCheckBox(chartPanelWin, ID_UPDCHECKBOX,
                                    _("Force Full Database Rebuild"));
-  itemStaticBoxSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+  itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
 
+  itemStaticBoxSizerUpdate->Add( itemFlexGridSizerUpdate, 1, wxEXPAND, 5 );
+  
+  
   chartPanel->Layout();
 }
 
@@ -6164,6 +6176,12 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
   pScanCheckBox->Disable();
 
   event.Skip();
+}
+
+void options::OnButtonParseENC(wxCommandEvent &event)
+{
+    extern void ParseAllENC();
+    ParseAllENC();
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
