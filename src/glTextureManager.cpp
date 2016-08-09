@@ -139,7 +139,7 @@ static double chart_dist(int index)
     float  clat;
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
     // if the chart contains ownship position set the distance to 0
-    if (0/*cte.GetBBox().PointInBox(gLon, gLat, 0.)*/)
+    if (cte.GetBBox().Contains(gLon, gLat))
         d = 0.;
     else {
         // find the nearest edge 
