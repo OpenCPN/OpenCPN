@@ -43,7 +43,6 @@
 #include "ocpCursor.h"
 #include "GoToPositionDialog.h"
 #include "CM93DSlide.h"
-#include "RolloverWin.h"
 #include "timers.h"
 #include "emboss_data.h"
 #include "S57Sector.h"
