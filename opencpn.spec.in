@@ -56,8 +56,10 @@ desktop-file-install \
 --dir=%{buildroot}%{_datadir}/applications              \
 %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %find_lang %{name}
-%find_lang %{name}-grib_pi
+%find_lang %{name}-chartdldr_pi
 %find_lang %{name}-dashboard_pi
+%find_lang %{name}-grib_pi
+%find_lang %{name}-wmm_pi
 
 %clean
 
@@ -75,57 +77,78 @@ desktop-file-install \
 
 %files
 %files -f %{name}.lang
-%files -f %{name}-grib_pi.lang
+%files -f %{name}-chartdldr_pi.lang
 %files -f %{name}-dashboard_pi.lang
+%files -f %{name}-grib_pi.lang
+%files -f %{name}-wmm_pi.lang
 %defattr(-,root,root,-)
+
+%dir %{_bindir}
 %{_bindir}/opencpn
+
 %dir %{_libdir}/%{name}
+%{_libdir}/%{name}/libchartdldr_pi.so
 %{_libdir}/%{name}/libdashboard_pi.so
 %{_libdir}/%{name}/libgrib_pi.so
+%{_libdir}/%{name}/libwmm_pi.so
+
+%dir %{_datadir}/applications
 %{_datadir}/applications/%{name}.desktop
+
+%dir %{_datadir}/icons/hicolor/48x48/apps
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+%dir %{_datadir}/icons/hicolor/scalable/apps
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+
 %dir %{_datadir}/%{name}
 %doc %{_datadir}/%{name}/license.txt
+
 %dir %{_datadir}/%{name}/uidata
 %{_datadir}/%{name}/uidata/toolicons_traditional.png
 %{_datadir}/%{name}/uidata/toolicons_journeyman_flat.png
 %{_datadir}/%{name}/uidata/toolicons_journeyman.png
-%{_datadir}/%{name}/uidata/styles.xml
+%config %{_datadir}/%{name}/uidata/styles.xml
+
 %dir %{_datadir}/%{name}/s57data
-%{_datadir}/%{name}/s57data/rastersymbols-dark.png
-%{_datadir}/%{name}/s57data/s57attributes.csv
+%config %{_datadir}/%{name}/s57data/s57objectclasses.csv
+%config %{_datadir}/%{name}/s57data/s57attributes.csv
+%config %{_datadir}/%{name}/s57data/s57expectedinput.csv
+%config %{_datadir}/%{name}/s57data/attdecode.csv
+%config %{_datadir}/%{name}/s57data/S52RAZDS.RLE
+%config %{_datadir}/%{name}/s57data/chartsymbols.xml
 %{_datadir}/%{name}/s57data/rastersymbols-day.png
-%{_datadir}/%{name}/s57data/chartsymbols.xml
-%{_datadir}/%{name}/s57data/attdecode.csv
-%{_datadir}/%{name}/s57data/S52RAZDS.RLE
-%{_datadir}/%{name}/s57data/s57expectedinput.csv
-%{_datadir}/%{name}/s57data/s57objectclasses.csv
 %{_datadir}/%{name}/s57data/rastersymbols-dusk.png
+%{_datadir}/%{name}/s57data/rastersymbols-dark.png
+
 %if %{_include_gshhs_min} == "ON"
   %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/poly-c-1.dat
 %endif
 %if %{_include_gshhs_crude} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_c.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_c.b
 %endif
 %if %{_include_gshhs_low} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_l.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_l.b
   %{_datadir}/%{name}/gshhs/poly-l-1.dat
 %endif
 %if %{_include_gshhs_intermediate} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_i.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_i.b
   %{_datadir}/%{name}/gshhs/poly-i-1.dat
 %endif
 %if %{_include_gshhs_high} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_h.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_h.b
   %{_datadir}/%{name}/gshhs/poly-h-1.dat
 %endif
 %if %{_include_gshhs_full} == "ON"
+  %dir %{_datadir}/%{name}/gshhs
   %{_datadir}/%{name}/gshhs/wdb_borders_f.b
   %{_datadir}/%{name}/gshhs/wdb_rivers_f.b
   %{_datadir}/%{name}/gshhs/poly-f-1.dat
@@ -136,14 +159,42 @@ desktop-file-install \
   %{_datadir}/%{name}/tcdata/HARMONIC.IDX
   %doc %{_datadir}/%{name}/tcdata/README.harmonics
 %endif
+
 %dir %{_datadir}/%{name}/sounds
 %{_datadir}/%{name}/sounds/1bells.wav
 %{_datadir}/%{name}/sounds/2bells.wav
 %doc %{_datadir}/%{name}/sounds/README.bells
-%doc %{_datadir}/%{name}/doc
-%dir %{_datadir}/doc/%{name}
-%doc %{_datadir}/doc/%{name}/changelog
+
+%docdir %{_datadir}/%{name}/doc
+%doc %{_datadir}/%{name}/doc/help_web.html
+%if %{_include_docs} == "ON"
+  %doc %{_datadir}/%{name}/doc/help_en_US.html
+  %doc %{_datadir}/%{name}/doc/images/*
+%endif
+
+%docdir %{_datadir}/doc/%{name}
 %doc %{_datadir}/doc/%{name}/copyright
+%doc %{_datadir}/doc/%{name}/changelog
+
+%dir %{_datadir}/%{name}/plugins/chartdldr_pi/data
+%config %{_datadir}/%{name}/plugins/chartdldr_pi/data/chart_sources.xml
+%{_datadir}/%{name}/plugins/chartdldr_pi/data/folder215.png
+%{_datadir}/%{name}/plugins/chartdldr_pi/data/open182.png
+%if %{_include_docs} == "ON"
+  %docdir %{_datadir}/%{name}/plugins/chartdldr_pi/data/doc
+  %doc %{_datadir}/%{name}/plugins/chartdldr_pi/data/doc/*
+%endif
+
+%dir %{_datadir}/%{name}/plugins/dashboard_pi/data
+%{_datadir}/%{name}/plugins/dashboard_pi/data/*.svg
+
+%dir %{_datadir}/%{name}/plugins/grib_pi/data
+%{_datadir}/%{name}/plugins/grib_pi/data/*.svg
+
+%dir %{_datadir}/%{name}/plugins/wmm_pi/data
+%config %{_datadir}/%{name}/plugins/wmm_pi/data/WMM.COF
+%{_datadir}/%{name}/plugins/wmm_pi/data/wmm_live.svg
+%{_datadir}/%{name}/plugins/wmm_pi/data/wmm_pi.svg
 
 
 
