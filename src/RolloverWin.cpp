@@ -79,18 +79,6 @@ void RolloverWin::OnMouseEvent( wxMouseEvent& event )
     }
 }
 
-void RolloverWin::SetString(const wxString &s)
-{ 
-    m_string = s;
-    
-#ifdef ocpnUSE_GL
-    int usegl = g_bopengl && g_texture_rectangle_format && m_bmaincanvas;
-    if(usegl)
-        glDeleteTextures( 1, (GLuint *) &m_texture );
-    m_texture = 0;
-#endif    
-}
-
 void RolloverWin::SetBitmap( int rollover )
 {
     wxMemoryDC mdc;

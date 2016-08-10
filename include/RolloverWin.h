@@ -46,7 +46,7 @@ public:
     void Draw(ocpnDC &dc);
 
     void SetColorScheme( ColorScheme cs );
-    void SetString(const wxString &s);
+    void SetString(const wxString &s) { m_string = s; }
     void SetPosition( wxPoint pt ) { m_position = pt; }
     void SetBitmap( int rollover );
     wxBitmap* GetBitmap() { return m_pbm; }
