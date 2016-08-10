@@ -1606,7 +1606,7 @@ bool NavObjectChanges::ApplyChanges(void)
                         pugi::xml_node guid_child = xchild.child("opencpn:track_GUID");
                         wxString track_GUID(guid_child.first_child().value(), wxConvUTF8);
 
-                        Track *pExistingTrack = (Track *)RouteExists( track_GUID );
+                        Track *pExistingTrack = TrackExists( track_GUID );
                         
                         if(!strcmp(child.first_child().value(), "add") ){
                             if( pExistingTrack ) {

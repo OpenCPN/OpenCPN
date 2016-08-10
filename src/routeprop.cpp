@@ -2225,15 +2225,6 @@ bool RouteProp::SaveChanges( void )
         pConfig->UpdateSettings();
     }
 
-    if( m_pRoute && ( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() ) )
-    {
-        wxJSONValue v;
-        v[_T("Name")] =  m_pRoute->m_RouteNameString;
-        v[_T("GUID")] =  m_pRoute->m_GUID;
-        wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
-        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
-    }
-
     return true;
 }
 
