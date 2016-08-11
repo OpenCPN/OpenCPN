@@ -75,6 +75,7 @@ public:
       bool IsRouteValid(Route *pRoute);
 
       Route *FindRouteByGUID(wxString &guid);
+      Track *FindTrackByGUID(wxString &guid);
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );

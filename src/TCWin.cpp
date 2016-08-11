@@ -10,7 +10,6 @@
 #include "cutil.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
-#include "RolloverWin.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;

@@ -1021,6 +1021,21 @@ Route *Routeman::FindRouteByGUID(wxString &guid)
     return pRoute;
 }
 
+Track *Routeman::FindTrackByGUID(wxString &guid)
+{
+    Track *pTrack = NULL;
+    wxTrackListNode *node1 = pTrackList->GetFirst();
+    while( node1 ) {
+        pTrack = node1->GetData();
+        
+        if( pTrack->m_GUID == guid )
+            break;
+        node1 = node1->GetNext();
+    }
+ 
+    return pTrack;
+}
+
 void Routeman::ZeroCurrentXTEToActivePoint()
 {
     // When zeroing XTE create a "virtual" waypoint at present position
