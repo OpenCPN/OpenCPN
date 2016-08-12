@@ -67,7 +67,7 @@ public:
     void reset(double a = 0.0); // Clear filter
     void setFC(double fc = 0.1);// Set cutoff frequency
     void setType(int tp);       // Set type of filter (linear or angle type)
-    double getFc(void) const;         // Return cutoff frequency
+    double getFC(void) const;         // Return cutoff frequency
     int getType(void) const;          // Return type of filter
     double get(void) const;           // Return the current filtered data
 

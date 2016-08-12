@@ -5660,8 +5660,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
 
     //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
     if( !wxIsNaN(gCog) ) g_fCOG.reset(gCog);
     if( !wxIsNaN(gSog) ) g_fSOG.reset(gSog);
 

@@ -60,7 +60,7 @@ void filterobj::setType(int tp)
     type = tp;
 }
 
-double filterobj::getFc(void) const
+double filterobj::getFC(void) const
 {
     if (wxIsNaN(b1))
         return 0.0;
