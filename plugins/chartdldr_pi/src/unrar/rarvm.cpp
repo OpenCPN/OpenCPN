@@ -854,8 +854,8 @@ VM_StandardFilters RarVM::IsStandardFilter(byte *Code,uint CodeSize)
 {
   struct StandardFilterSignature
   {
-    int Length;
-    uint CRC;
+    size_t Length;
+    uint32 CRC;
     VM_StandardFilters Type;
   } static StdList[]={
     {53, 0xad576887, VMSF_E8},
@@ -865,8 +865,8 @@ VM_StandardFilters RarVM::IsStandardFilter(byte *Code,uint CodeSize)
    {149, 0x1c2c5dc8, VMSF_RGB},
    {216, 0xbc85e701, VMSF_AUDIO}
   };
-  uint CodeCRC=CRC32(0xffffffff,Code,CodeSize)^0xffffffff;
-  for (uint I=0;I<ASIZE(StdList);I++)
+  uint32 CodeCRC=CRC32(0xffffffff,Code,CodeSize)^0xffffffff;
+  for (size_t I=0;I<ASIZE(StdList);I++)
     if (StdList[I].CRC==CodeCRC && StdList[I].Length==CodeSize)
       return(StdList[I].Type);
   return(VMSF_NONE);
@@ -1070,7 +1070,7 @@ void RarVM::ExecuteStandardFilter(VM_StandardFilters FilterType)
             {
               uint MinDif=Dif[0],NumMinDif=0;
               Dif[0]=0;
-              for (int J=1;J<sizeof(Dif)/sizeof(Dif[0]);J++)
+              for (size_t J=1;J<sizeof(Dif)/sizeof(Dif[0]);J++)
               {
                 if (Dif[J]<MinDif)
                 {

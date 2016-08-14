@@ -94,6 +94,10 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
       uKeyLenInBytes = 32;
       m_uRounds = 14;
       break;
+    default:
+      uKeyLenInBytes = 0;
+      m_uRounds = 0;
+      break;
   }
 
   byte keyMatrix[_MAX_KEY_COLUMNS][4];
@@ -339,7 +343,7 @@ void Rijndael::GenerateTables()
     w ^=  (w << 1) ^ (w & ff_hi ? ff_poly : 0);
   } while (w != 1);
  
-  for (int i = 0,w = 1; i < sizeof(rcon)/sizeof(rcon[0]); i++)
+  for (size_t i = 0,w = 1; i < sizeof(rcon)/sizeof(rcon[0]); i++)
   {
     rcon[i] = w;
     w = (w << 1) ^ (w & ff_hi ? ff_poly : 0);
