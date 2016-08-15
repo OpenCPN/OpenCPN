@@ -422,23 +422,23 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
     case GribOverlaySettings::WIND:
         idx = Idx_WIND_VX + m_Altitude, idy = Idx_WIND_VY + m_Altitude; break;
     case GribOverlaySettings::WIND_GUST:
-        if( !m_Altitude ) idx = Idx_WIND_GUST; break;
+        if( !m_Altitude ) { idx = Idx_WIND_GUST; } break;
     case GribOverlaySettings::PRESSURE:
-        if( !m_Altitude ) idx = Idx_PRESSURE; break;
+        if( !m_Altitude ) { idx = Idx_PRESSURE; } break;
     case GribOverlaySettings::WAVE:
         if( !m_Altitude ) { idx = Idx_HTSIGW, idy = Idx_WVDIR, polar = true; } break;
     case GribOverlaySettings::CURRENT:
         if( !m_Altitude ) {  idx = Idx_SEACURRENT_VX, idy = Idx_SEACURRENT_VY; } break;
     case GribOverlaySettings::PRECIPITATION:
-        if( !m_Altitude ) idx = Idx_PRECIP_TOT; break;
+        if( !m_Altitude ) { idx = Idx_PRECIP_TOT; } break;
     case GribOverlaySettings::CLOUD:
-        if( !m_Altitude ) idx = Idx_CLOUD_TOT; break;
+        if( !m_Altitude ) { idx = Idx_CLOUD_TOT; } break;
     case GribOverlaySettings::AIR_TEMPERATURE:
-        if( !m_Altitude ) idx = Idx_AIR_TEMP; break;
+        if( !m_Altitude ) { idx = Idx_AIR_TEMP; } break;
     case GribOverlaySettings::SEA_TEMPERATURE:
-        if( !m_Altitude ) idx = Idx_SEA_TEMP; break;
+        if( !m_Altitude ) { idx = Idx_SEA_TEMP; } break;
     case GribOverlaySettings::CAPE:
-        if( !m_Altitude ) idx = Idx_CAPE; break;
+        if( !m_Altitude ) { idx = Idx_CAPE; } break;
     }
 }
 
@@ -1237,8 +1237,8 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     else
         arrowSize = 16;
 
-	//set default colour
-	wxColour colour;
+    //set default colour
+    wxColour colour;
     GetGlobalColor( _T ( "DILG3" ), &colour );
 
 #ifdef ocpnUSE_GL
