@@ -249,7 +249,6 @@ extern bool             g_bUseVector;
 extern bool             g_bUseCM93;
 
 extern bool             g_bCourseUp;
-//extern double           g_COGAvg;               // only needed for debug....
 extern filterobj        g_fCOG;
 extern filterobj        g_fSOG;
 
