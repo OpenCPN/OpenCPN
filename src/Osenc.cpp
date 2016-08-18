@@ -506,7 +506,7 @@ int Osenc::createSenc124(const wxString& FullPath000, const wxString& SENCFileNa
     wxStopWatch progsw;
     int nProg = poReader->GetFeatureCount();
     
-    if(b_showProg){
+    if(wxThread::IsMain() && b_showProg){
          s_ProgDialog = new wxProgressDialog( Title, Message, nProg, NULL,
                                          wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
     }
