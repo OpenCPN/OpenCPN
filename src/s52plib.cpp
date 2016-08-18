@@ -6148,7 +6148,15 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
 
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
-            if(!BBView.IntersectOut(p_tp->box)) {
+            LLBBox box;
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
+            }                
+            else
+                box = p_tp->box;
+
+            if(!BBView.IntersectOut(box)) {
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
@@ -6225,7 +6233,13 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
                     }
                 }
             } // if bbox
-            p_tp = p_tp->p_next; // pick up the next in chain
+            TriPrim *next = p_tp->p_next;
+            
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                next = (TriPrim *)p_ltp->p_next;
+            }
+            p_tp = next; // pick up the next in chain
         } // while
         free( ptp );
         free( pp3 );
@@ -6478,7 +6492,15 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
             
         while( p_tp ) {
-            if(!BBView.IntersectOut(p_tp->box)) {
+            LLBBox box;
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
+            }                
+            else
+                box = p_tp->box;
+            
+            if(!BBView.IntersectOut(box)) {
                 if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
@@ -6515,7 +6537,13 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
             
             vbo_offset += p_tp->nVert * 2 * array_data_size;
-            p_tp = p_tp->p_next; // pick up the next in chain
+            TriPrim *next = p_tp->p_next;
+            
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                next = (TriPrim *)p_ltp->p_next;
+            }
+            p_tp = next; // pick up the next in chain
             
         } // while
         
@@ -6613,8 +6641,15 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
-
-            if(!BBView.IntersectOut(p_tp->box)) {
+            LLBBox box;
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
+            }                
+            else
+                box = p_tp->box;
+            
+            if(!BBView.IntersectOut(box)) {
                 //      Get and convert the points
 
                 wxPoint *pr = ptp;
@@ -6689,7 +6724,14 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     }
                 }
             } // if bbox
-            p_tp = p_tp->p_next; // pick up the next in chain
+            TriPrim *next = p_tp->p_next;
+            
+            if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
+                LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
+                next = (TriPrim *)p_ltp->p_next;
+            }
+            p_tp = next; // pick up the next in chain
+            
         } // while
 
 //        obj_xmin = 0;
