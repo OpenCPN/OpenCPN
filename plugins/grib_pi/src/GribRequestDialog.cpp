@@ -854,7 +854,7 @@ int GribRequestSetting::EstimateFileSize( double *size )
     double maxlat = m_spMaxLat->GetValue(), minlat = m_spMinLat->GetValue();
     if( maxlat - minlat < 0 )
         return 3;                               // maxlat must be > minlat
-	double wlon = (maxlon > minlon ? 0 : 360) + maxlon - minlon;
+    double wlon = (maxlon > minlon ? 0 : 360) + maxlon - minlon;
     if (wlon > 180 || ( maxlat - minlat > 180 ))
         return 4;                           //ovoid too big area
 

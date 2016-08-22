@@ -592,16 +592,16 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
             LinkSuccess=false;
           }
           
-          if (!LinkSuccess || (Arc.Format==RARFMT15 && !FileCreateMode))
-          {
-            // RAR 5.x links have a valid data checksum even in case of
-            // failure, because they do not store any data.
-            // We do not want to display "OK" in this case.
-            // For 4.x symlinks we verify the checksum only when extracting,
-            // but not when testing an archive.
-            ShowChecksum=false;
-          }
-          PrevExtracted=FileCreateMode && LinkSuccess;
+        if (!LinkSuccess || (Arc.Format==RARFMT15 && !FileCreateMode))
+        {
+          // RAR 5.x links have a valid data checksum even in case of
+          // failure, because they do not store any data.
+          // We do not want to display "OK" in this case.
+          // For 4.x symlinks we verify the checksum only when extracting,
+          // but not when testing an archive.
+          ShowChecksum=false;
+        }
+        PrevExtracted=FileCreateMode && LinkSuccess;
       }
       else
         if (!Arc.FileHead.SplitBefore && !WrongPassword)

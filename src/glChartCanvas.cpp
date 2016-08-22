@@ -3045,7 +3045,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
                 for(int i=1; i<8; i+=2)
                     if(ll[i] < 0)
                         ll[i] += 360;
-                    break;
+                break;
             }
             
         chart_region = LLRegion(4, ll);
@@ -3553,15 +3553,15 @@ void glChartCanvas::Render()
                     if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
                         tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
 
-                        glBegin( GL_QUADS );
-                        glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
-                        glTexCoord2f( tx2, ty1 );  glVertex2f( x2 + ow, y2 );
-                        glTexCoord2f( tx2, ty2 );  glVertex2f( x2 + ow, y2 + oh );
-                        glTexCoord2f( tx1, ty2 );  glVertex2f( x2, y2 + oh );
-                        glEnd();
+                    glBegin( GL_QUADS );
+                    glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
+                    glTexCoord2f( tx2, ty1 );  glVertex2f( x2 + ow, y2 );
+                    glTexCoord2f( tx2, ty2 );  glVertex2f( x2 + ow, y2 + oh );
+                    glTexCoord2f( tx1, ty2 );  glVertex2f( x2, y2 + oh );
+                    glEnd();
 
-                        //   Done with cached texture "blit"
-                        glDisable( g_texture_rectangle_format );
+                    //   Done with cached texture "blit"
+                    glDisable( g_texture_rectangle_format );
                 }
 
                 } else { // must redraw the entire screen

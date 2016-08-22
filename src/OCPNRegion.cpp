@@ -1544,13 +1544,13 @@ else gdk_region_intersect (a,b)
                 miRegionOp (source1, source1, source2,
                             miIntersectO, (nonOverlapFunc) NULL, (nonOverlapFunc) NULL);
                 
-                /*
-                 * Can't alter source1's extents before miRegionOp depends on the
-                 * extents of the regions being unchanged. Besides, this way there's
-                 * no checking against rectangles that will be nuked due to
-                 * coalescing, so we have to examine fewer rectangles.
-                 */
-                miSetExtents(source1);
+            /*
+             * Can't alter source1's extents before miRegionOp depends on the
+             * extents of the regions being unchanged. Besides, this way there's
+             * no checking against rectangles that will be nuked due to
+             * coalescing, so we have to examine fewer rectangles.
+             */
+            miSetExtents(source1);
         }
         
         static void
@@ -2503,20 +2503,19 @@ else gdk_region_intersect (a,b)
  //                      g_return_val_if_fail (region2 != NULL, FALSE);
                        
                        if (region1->numRects != region2->numRects) return FALSE;
-                       else if (region1->numRects == 0) return TRUE;
-                       else if (region1->extents.x1 != region2->extents.x1) return FALSE;
-                       else if (region1->extents.x2 != region2->extents.x2) return FALSE;
-                       else if (region1->extents.y1 != region2->extents.y1) return FALSE;
-                       else if (region1->extents.y2 != region2->extents.y2) return FALSE;
-                       else
-                           for(i = 0; i < region1->numRects; i++ )
-                           {
-                               if (region1->rects[i].x1 != region2->rects[i].x1) return FALSE;
-                               else if (region1->rects[i].x2 != region2->rects[i].x2) return FALSE;
-                               else if (region1->rects[i].y1 != region2->rects[i].y1) return FALSE;
-                               else if (region1->rects[i].y2 != region2->rects[i].y2) return FALSE;
-                           }
-                           return TRUE;
+                       if (region1->numRects == 0) return TRUE;
+                       if (region1->extents.x1 != region2->extents.x1) return FALSE;
+                       if (region1->extents.x2 != region2->extents.x2) return FALSE;
+                       if (region1->extents.y1 != region2->extents.y1) return FALSE;
+                       if (region1->extents.y2 != region2->extents.y2) return FALSE;
+                       for(i = 0; i < region1->numRects; i++ )
+                       {
+                           if (region1->rects[i].x1 != region2->rects[i].x1) return FALSE;
+                           if (region1->rects[i].x2 != region2->rects[i].x2) return FALSE;
+                           if (region1->rects[i].y1 != region2->rects[i].y1) return FALSE;
+                           if (region1->rects[i].y2 != region2->rects[i].y2) return FALSE;
+                       }
+                       return TRUE;
                    }
                    
                    /**
@@ -2592,64 +2591,62 @@ else gdk_region_intersect (a,b)
                        partIn = FALSE;
                        
                        /* can stop when both partOut and partIn are TRUE, or we reach prect->y2 */
-                       for (pbox = region->rects, pboxEnd = pbox + region->numRects;
-                            pbox < pboxEnd;
-                       pbox++)
-                            {
+                       for (pbox = region->rects, pboxEnd = pbox + region->numRects; pbox < pboxEnd; pbox++)
+                       {
                                 
-                                if (pbox->y2 <= ry)
-                                    continue;       /* getting up to speed or skipping remainder of band */
+                           if (pbox->y2 <= ry)
+                               continue;       /* getting up to speed or skipping remainder of band */
+
+                           if (pbox->y1 > ry)
+                           {
+                               partOut = TRUE;       /* missed part of rectangle above */
+                               if (partIn || (pbox->y1 >= prect->y2))
+                                   break;
+                               ry = pbox->y1;        /* x guaranteed to be == prect->x1 */
+                           }
+                           
+                           if (pbox->x2 <= rx)
+                                continue;               /* not far enough over yet */
                                     
-                                    if (pbox->y1 > ry)
-                                    {
-                                        partOut = TRUE;       /* missed part of rectangle above */
-                                        if (partIn || (pbox->y1 >= prect->y2))
-                                            break;
-                                        ry = pbox->y1;        /* x guaranteed to be == prect->x1 */
-                                    }
-                                    
-                                    if (pbox->x2 <= rx)
-                                        continue;               /* not far enough over yet */
+                           if (pbox->x1 > rx)
+                           {
+                               partOut = TRUE;       /* missed part of rectangle to left */
+                               if (partIn)
+                                   break;
+                           }
+                           
+                           if (pbox->x1 < prect->x2)
+                           {
+                               partIn = TRUE;        /* definitely overlap */
+                               if (partOut)
+                                   break;
+                           }
+                           
+                           if (pbox->x2 >= prect->x2)
+                           {
+                               ry = pbox->y2;        /* finished with this band */
+                               if (ry >= prect->y2)
+                                   break;
+                               rx = prect->x1;       /* reset x out to left again */
+                           }
+                           else
+                           {
+                               /*
+                                * Because boxes in a band are maximal width, if the first box
+                                * to overlap the rectangle doesn't completely cover it in that
+                                * band, the rectangle must be partially out, since some of it
+                                * will be uncovered in that band. partIn will have been set true
+                                * by now...
+                                */
+                               break;
+                           }
                                         
-                                        if (pbox->x1 > rx)
-                                        {
-                                            partOut = TRUE;       /* missed part of rectangle to left */
-                                            if (partIn)
-                                                break;
-                                        }
-                                        
-                                        if (pbox->x1 < prect->x2)
-                                        {
-                                            partIn = TRUE;        /* definitely overlap */
-                                            if (partOut)
-                                                break;
-                                        }
-                                        
-                                        if (pbox->x2 >= prect->x2)
-                                        {
-                                            ry = pbox->y2;        /* finished with this band */
-                                            if (ry >= prect->y2)
-                                                break;
-                                            rx = prect->x1;       /* reset x out to left again */
-                                        }
-                                        else
-                                        {
-                                            /*
-                                             * Because boxes in a band are maximal width, if the first box
-                                             * to overlap the rectangle doesn't completely cover it in that
-                                             * band, the rectangle must be partially out, since some of it
-                                             * will be uncovered in that band. partIn will have been set true
-                                             * by now...
-                                             */
-                                            break;
-                                        }
-                                        
-                            }
+                       }
                             
-                            return (partIn ?
-                            ((ry < prect->y2) ?
-                            OGDK_OVERLAP_RECTANGLE_PART : OGDK_OVERLAP_RECTANGLE_IN) : 
-                            OGDK_OVERLAP_RECTANGLE_OUT);
+                       return (partIn ?
+                           ((ry < prect->y2) ?
+                           OGDK_OVERLAP_RECTANGLE_PART : OGDK_OVERLAP_RECTANGLE_IN) : 
+                           OGDK_OVERLAP_RECTANGLE_OUT);
                    }
                    
 #if 0                   
