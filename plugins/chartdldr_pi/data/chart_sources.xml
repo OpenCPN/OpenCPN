@@ -915,6 +915,12 @@
           <dir>{USERDATA}/ENC/NL_INLAND</dir>
         </catalog>
         <catalog>
+          <name>Netherland OSM Raster Charts</name>
+          <type>RNC</type>
+          <location>http://www.openwaterkaart.nl/charts/OSM-raster-nl/OSM-raster-nl-catalog.xml</location>
+          <dir>{USERDATA}/ENC/NL_OSMRASTER</dir>
+        </catalog>
+        <catalog>
           <name>New Zealand RNC Nautical Charts</name>
           <type>RNC</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/NZ_RNC_Catalog.xml</location>
