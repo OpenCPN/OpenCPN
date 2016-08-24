@@ -53,8 +53,10 @@ private:
 #endif
 
 
-#ifdef __OCPN__ANDROID__
+#if defined(__OCPN__ANDROID__)
 #include "androidUTIL.h"
+#elif defined(__WXQT__)
+#include <GL/glx.h>
 #endif
 
 #include "dychart.h"

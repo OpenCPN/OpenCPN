@@ -1435,7 +1435,7 @@ bool MyApp::OnInit()
     wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
     wxString os_name;
-#ifndef __WXQT__
+#ifndef __OCPN_ANDROID__
     os_name = platforminfo.GetOperatingSystemIdName();
 #else
     os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1458,7 +1458,7 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __WXQT__
+#ifdef __OCPN_ANDROID__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
@@ -3515,7 +3515,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_Compass = NULL;
 
 
-#ifndef __OCPN__ANDROID__
+#ifndef __WXQT__
     SetStatusBar( NULL );
 #endif
 
