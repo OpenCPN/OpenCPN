@@ -28,10 +28,6 @@
 #include "grib_pi.h"
 #include "folder.xpm"
 
-#ifdef __WXQT__
-#include "qdebug.h"
-#endif
-
 static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), _("Beaufort"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};

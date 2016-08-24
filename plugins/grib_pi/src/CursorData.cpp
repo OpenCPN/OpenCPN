@@ -28,10 +28,6 @@
 
 #include "folder.xpm"
 
-#ifdef __WXQT__
-#include "qdebug.h"
-#endif
-
 extern int m_Altitude;
 extern double m_cursor_lat, m_cursor_lon;
 extern int m_DialogStyle;
