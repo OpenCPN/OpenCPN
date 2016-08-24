@@ -669,8 +669,15 @@ void glChartCanvas::BuildFBO( )
 
 void glChartCanvas::SetupOpenGL()
 {
+    char *str = (char *) glGetString( GL_RENDERER );
+    if (str == NULL) {
+        // perhaps we should edit the config and turn off opengl now
+        wxLogMessage(_("Failed to initialize OpenGL"));
+        exit(1);
+    }
+    
     char render_string[80];
-    strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
+    strncpy( render_string, str, 79 );
     m_renderer = wxString( render_string, wxConvUTF8 );
 
     wxString msg;
@@ -3357,6 +3364,9 @@ void glChartCanvas::DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox)
 
 void glChartCanvas::SetColorScheme(ColorScheme cs)
 {
+    if(!m_bsetup)
+        return;
+
     glDeleteTextures(1, &m_tideTex);
     glDeleteTextures(1, &m_currentTex);
     m_tideTex = 0;
