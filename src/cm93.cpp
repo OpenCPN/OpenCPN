@@ -3477,7 +3477,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   case 'R':
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                         float tf1;
                         memcpy(&tf1, pf, sizeof(float));
                         *pAVR = tf1;
@@ -4288,7 +4288,7 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     if ( vtype == 'R' )
                                     {
                                           float *pf = ( float * ) aval;
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                                           float tf1;
                                           memcpy(&tf1, pf, sizeof(float));
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
