@@ -1358,7 +1358,8 @@ IF (OPENGL_FOUND)
     src/mipmap/mipmap_sse.c
     src/mipmap/mipmap_sse2.c
     src/mipmap/mipmap_ssse3.c
-    src/mipmap/mipmap_avx2.c)
+    src/mipmap/mipmap_avx2.c
+    src/mipmap/mipmap_neon.c)
 
   ADD_LIBRARY(MIPMAP ${SRC_MIPMAP})
   SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
@@ -1381,7 +1382,6 @@ IF (OPENGL_FOUND)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
       ELSE ()
-#        neon version not yet tested or implemented
 #        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       ENDIF ()
   ELSE (NOT MSVC)
