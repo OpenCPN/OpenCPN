@@ -964,7 +964,6 @@ void TrackPropDlg::InitializeList()
                 item.SetText(m_lcPoints->OnGetItemText( in, j) );
                 m_lcPoints->SetItem(item);
             }
-            in++;
         }
     }
 
