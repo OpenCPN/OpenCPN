@@ -278,7 +278,6 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 #-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
 #-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #-DQt_Base /home/dsr/Qt/5.3) ..
-
 IF(DEFINED _wx_selected_config)
 
 MESSAGE (STATUS "selected config ${_wx_selected_config}")
@@ -288,15 +287,6 @@ IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
   MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
-  SET(QT_LINUX "OFF")
-  SET(QT "ON")
-ELSE(_wx_selected_config MATCHES "androideabi-qt")
-  IF(_wx_selected_config MATCHES "qt")
-    MESSAGE (STATUS "Building for wxQt-linux")
-    SET(QT_ANDROID "OFF")
-    SET(QT_LINUX "ON")
-    SET(QT "ON")
-  ENDIF(_wx_selected_config MATCHES "qt")
 ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
@@ -413,7 +403,8 @@ STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_
 ENDIF(MSYS)
 
 INCLUDE(${wxWidgets_USE_FILE})
-    MESSAGE (STATUS "Found wxWidgets..." )
+MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
     # We need to remove GLU from the wxWidgets_LIBRARIES list
@@ -1795,10 +1786,6 @@ ENDIF(UNIX)
 IF(UNIX)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
-
-IF(QT_LINUX)
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
-ENDIF(QT_LINUX)
 
 IF(NOT APPLE)
 
