@@ -47,7 +47,7 @@
                     4) /* does this work in 2.8 too.. do we need a test? */
 #include <wx/renderer.h>
 #endif
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include <wx/colordlg.h>
 #endif
 
@@ -860,7 +860,7 @@ EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
 EVT_CLOSE(options::OnClose)
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 EVT_BUTTON(ID_BUTTONFONTCOLOR, options::OnChooseFontColor)
 #endif
 #ifdef ocpnUSE_GL
@@ -4309,7 +4309,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       new wxButton(itemPanelFont, ID_BUTTONFONTCHOOSE, _("Choose Font..."),
                    wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(itemFontChooseButton, 0, wxALL, border_size);
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
   wxButton* itemFontColorButton =
       new wxButton(itemPanelFont, ID_BUTTONFONTCOLOR, _("Choose Font Color..."),
                    wxDefaultPosition, wxDefaultSize, 0);
@@ -6264,7 +6264,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
   event.Skip();
 }
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 void options::OnChooseFontColor(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
 
