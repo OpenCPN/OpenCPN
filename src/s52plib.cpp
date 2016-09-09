@@ -2191,6 +2191,29 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 {
     float fsf = 100 / canvas_pix_per_mm;
 
+
+    float xscale = 1.0;
+    
+    if( (!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6)) || (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6)) ){
+        // assume the symbol length 
+        float sym_length = 30;
+        float scaled_length = sym_length / vp->view_scale_ppm;
+        
+        double fac1 = scaled_length / fsf;
+        
+        
+        float target_length = 1852;
+        
+        xscale = target_length / scaled_length;
+        xscale = wxMin(xscale, 1.0);
+        xscale = wxMax(.4, xscale);
+        
+        printf("scaled length: %g   xscale: %g\n", scaled_length, xscale);
+        
+        
+        fsf *= xscale;
+    }
+    
     int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
     width *= 4; // Grow the drawing bitmap to allow for rotation of symbols with highly offset pivot points
     width = (int) ( width / fsf );
@@ -2209,7 +2232,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
     if( !m_pdc ) { // OpenGL Mode, do a direct render
         HPGL->SetTargetOpenGl();
-        HPGL->Render( str, col, r, pivot, (double) rot_angle );
+        HPGL->Render( str, col, r, pivot, xscale, (double) rot_angle );
 
     } else {
 
@@ -2236,7 +2259,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxMemoryDC &gdc( mdc );
         HPGL->SetTargetDC( &gdc );
 #endif
-        HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+        HPGL->Render( str, col, r0, pivot, xscale, (double) rot_angle );
 
         int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4;
         int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 4;
@@ -2264,7 +2287,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxGCDC targetGcdc( targetDc );
         r0 -= wxPoint( bm_orgx, bm_orgy );
         HPGL->SetTargetGCDC( &targetGcdc );
-        HPGL->Render( str, col, r0, pivot, (double) rot_angle );
+        HPGL->Render( str, col, r0, pivot, xscale, (double) rot_angle );
 #else
         //  We can use the bitmap already rendered
         //  Get smallest containing bitmap
@@ -3550,7 +3573,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
 
                         HPGL->SetTargetDC( pdc );
                         theta = atan2f( dy, dx );
-                        HPGL->Render( str, col, r, pivot, theta * 180. / PI );
+                        HPGL->Render( str, col, r, pivot, 1.0, theta * 180. / PI );
 
                         xs += sym_len * dx / seg_len * sym_factor;
                         ys += sym_len * dy / seg_len * sym_factor;
@@ -3653,7 +3676,7 @@ next_seg_dc:
 
                         HPGL->SetTargetOpenGl();
                         theta = atan2f( dy, dx );
-                        HPGL->Render( str, col, r, pivot, theta * 180. / PI );
+                        HPGL->Render( str, col, r, pivot, 1.0, theta * 180. / PI );
 
                         xs += sym_len * dx / seg_len * sym_factor;
                         ys += sym_len * dy / seg_len * sym_factor;
@@ -7114,7 +7137,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
                         (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
 
             HPGL->SetTargetDC( &mdc );
-            HPGL->Render( str, col, r0, pivot, 0 );
+            HPGL->Render( str, col, r0, pivot, 1.0, 0 );
         } else {
             pbm = new wxBitmap( 2, 2 );       // substitute small, blank pattern
             mdc.SelectObject( *pbm );
@@ -7852,8 +7875,6 @@ wxPoint RenderFromHPGL::ParsePoint( wxString& argument )
 
 void RenderFromHPGL::SetPen()
 {
-    // plib->canvas_pix_per_mm;
-    scaleFactor = 100.0 / plib->GetPPMM();
 
     // Vector rendered (HPGL) features are specified in terms of absolute dimensions on screen, and should not be scaled.
     
@@ -7979,7 +8000,7 @@ void RenderFromHPGL::RotatePoint( wxPoint& point, double angle )
     point.y = (int) yp;
 }
 
-bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle )
+bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, float scale, double rot_angle )
 {
 //      int width = 1;
 //      double radius = 0.0;
@@ -7987,6 +8008,8 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
     wxPoint lineEnd;
 
     scaleFactor = 100.0 / plib->GetPPMM();
+    scaleFactor /= scale;
+    
     // SW is not always defined, cf. US/US4CA17M/US4CA17M.000
     penWidth = 1;
 
