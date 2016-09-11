@@ -224,6 +224,8 @@ Extended_Geometry::~Extended_Geometry()
 //------------------------------------------------------------------------------
 PolyTessGeo::PolyTessGeo()
 {
+    m_pxgeom = NULL;
+    
 }
 
 //      Build PolyTessGeo Object from Extended_Geometry
@@ -872,6 +874,15 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
     m_bOK = true;
 
     return 0;
+}
+
+
+void PolyTessGeo::SetExtents(double x_left, double y_bot, double x_right, double y_top)
+{
+    xmin = x_left;
+    ymin = y_bot;
+    xmax = x_right;
+    ymax = y_top;
 }
 
 

@@ -257,6 +257,7 @@ private:
       bool BuildThumbnail(const wxString &bmpname);
       bool CreateHeaderDataFromENC(void);
       bool CreateHeaderDataFromSENC(void);
+      bool CreateHeaderDataFromoSENC(void);
       bool GetBaseFileAttr(wxFileName fn);
 
       void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);

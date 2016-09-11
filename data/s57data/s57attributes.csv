@@ -304,6 +304,8 @@
 22227,New type 1,NEWTY1,S,F
 33066,Type of Ship,shptyp,E,F
 40000,Update message,updmsg,S,F
+50000,Geometry Primitive Category,catgeo,E,F
+
 
 
 

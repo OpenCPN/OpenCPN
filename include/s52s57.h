@@ -34,7 +34,7 @@
 
 #include <vector>
 
-#define CURRENT_SENC_FORMAT_VERSION  124
+#define CURRENT_SENC_FORMAT_VERSION  200
 
 //    Fwd Defns
 class wxArrayOfS57attVal;
@@ -302,6 +302,26 @@ typedef struct _chart_context{
 }chart_context;
 
 
+typedef struct _LineGeometryDescriptor{
+    double          extent_s_lat;
+    double          extent_n_lat;
+    double          extent_w_lon;
+    double          extent_e_lon;
+    int             indexCount;
+    int *           indexTable;
+}LineGeometryDescriptor;
+
+
+typedef struct _MultipointGeometryDescriptor{
+    double          extent_s_lat;
+    double          extent_n_lat;
+    double          extent_w_lon;
+    double          extent_e_lon;
+    int             pointCount;
+    void *          pointTable;
+}MultipointGeometryDescriptor;
+
+
 class S57Obj
 {
 public:
@@ -310,12 +330,30 @@ public:
       S57Obj();
       ~S57Obj();
       S57Obj(char *first_line, int size, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
+      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
+      S57Obj( const char* featureName );
+      
       wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
+      
+      bool AddIntegerAttribute( const char *acronym, int val );
+      bool AddIntegerListAttribute( const char *acronym, int *pval, int nValue );
+      bool AddDoubleAttribute( const char *acronym, double val );
+      bool AddDoubleListAttribute( const char *acronym, double *pval, int nValue );
+      bool AddStringAttribute( const char *acronym, char *val );
+
+      bool SetPointGeometry( double lat, double lon, double ref_lat, double ref_lon);
+      bool SetLineGeometry( LineGeometryDescriptor *pGeo, GeoPrim_t geoType, double ref_lat, double ref_lon);
+      bool SetAreaGeometry( PolyTessGeo *ppg, double ref_lat, double ref_lon);
+      bool SetMultipointGeometry( MultipointGeometryDescriptor *pGeo, double ref_lat, double ref_lon);
+      
+      
           
       // Private Methods
 private:
+      void Init();
+    
       bool IsUsefulAttribute(char *buf);
       int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
       int my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max );
@@ -383,6 +421,8 @@ public:
       int auxParm1;
       int auxParm2;
       int auxParm3;
+      
+      bool                    bBBObj_valid;
 };
 
 typedef std::vector<S57Obj *> S57ObjVector;
