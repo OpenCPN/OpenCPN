@@ -2581,10 +2581,10 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     symbox.Set( latmin, lonmin, latmax, lonmax );
 
     //  Special case for GEO_AREA objects with centred symbols
-    if( rzRules->obj->Primitive_type == GEO_AREA ) {
-        if( !rzRules->obj->BBObj.IntersectIn( symbox ) ) // Symbol is wholly outside base object
-            return true;
-    }
+     if( rzRules->obj->Primitive_type == GEO_AREA ) {
+         if( !rzRules->obj->BBObj.IntersectIn( symbox ) ) // Symbol is wholly outside base object
+             return true;
+     }
 
     //      Now render the symbol
 
@@ -3387,34 +3387,35 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else
         if( rzRules->obj->pPolyTessGeo ) {
             if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
 
             PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             float *ppolygeo = pptg->pgroup_geom;
+            if(ppolygeo){
+                int ctr_offset = 0;
+                for( int ic = 0; ic < pptg->nContours; ic++ ) {
 
-            int ctr_offset = 0;
-            for( int ic = 0; ic < pptg->nContours; ic++ ) {
+                    int npt = pptg->pn_vertex[ic];
+                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
+                    wxPoint *pr = ptp;
+                    for( int ip = 0; ip < npt; ip++ ) {
+                        float plon = ppolygeo[( 2 * ip ) + ctr_offset];
+                        float plat = ppolygeo[( 2 * ip ) + ctr_offset + 1];
 
-                int npt = pptg->pn_vertex[ic];
-                wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                wxPoint *pr = ptp;
-                for( int ip = 0; ip < npt; ip++ ) {
-                    float plon = ppolygeo[( 2 * ip ) + ctr_offset];
-                    float plat = ppolygeo[( 2 * ip ) + ctr_offset + 1];
-
+                        GetPointPixSingle( rzRules, plat, plon, pr, vp );
+                        pr++;
+                    }
+                    float plon = ppolygeo[ctr_offset]; // close the polyline
+                    float plat = ppolygeo[ctr_offset + 1];
                     GetPointPixSingle( rzRules, plat, plon, pr, vp );
-                    pr++;
+
+                    draw_lc_poly( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule,
+                            vp );
+
+                    free( ptp );
+
+                    ctr_offset += npt * 2;
                 }
-                float plon = ppolygeo[ctr_offset]; // close the polyline
-                float plat = ppolygeo[ctr_offset + 1];
-                GetPointPixSingle( rzRules, plat, plon, pr, vp );
-
-                draw_lc_poly( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule,
-                        vp );
-
-                free( ptp );
-
-                ctr_offset += npt * 2;
             }
         }
 
@@ -4758,6 +4759,10 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
+    //TODO  Debugging
+ //   if(rzRules->obj->Index == 534)
+ //       int yyp = 0;
+    
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
     
@@ -6372,7 +6377,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         // We transform from SENC SM vertex data to screen.
 
         //  First, the VP transform
-        if(vp->m_projection_type == PROJECTION_MERCATOR) {
+        if(0/*vp->m_projection_type == PROJECTION_MERCATOR*/) {
             glPushMatrix();
 
             glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
@@ -6529,7 +6534,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else {
-                    if(vp->m_projection_type == PROJECTION_MERCATOR) {
+                    if(0/*vp->m_projection_type == PROJECTION_MERCATOR*/) {
                         glVertexPointer(2, array_gl_type, 2 * array_data_size, p_tp->p_vertex);
                         glDrawArrays(p_tp->type, 0, p_tp->nVert);
                     } else {

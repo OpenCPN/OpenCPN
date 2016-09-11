@@ -827,6 +827,8 @@ void glChartCanvas::SetupOpenGL()
     g_b_EnableVBO = false;
 #endif
 
+    g_b_EnableVBO = false;
+    
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
