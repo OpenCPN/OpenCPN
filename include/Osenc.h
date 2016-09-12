@@ -84,6 +84,7 @@ WX_DECLARE_OBJARRAY(float *,   SENCFloatPtrArray);
 //--------------------------------------------------------------------------
 //      Utility Structures
 //--------------------------------------------------------------------------
+#pragma pack(push,1)
 
 typedef struct _OSENC_Record_Base{
     uint16_t        record_type;
@@ -289,7 +290,8 @@ typedef struct _OSENC_EXTENT_Record_Payload{
      double          extent_se_lon;
  }_OSENC_EXTENT_Record_Payload;
  
-
+ #pragma pack(pop)
+ 
 
 
 
