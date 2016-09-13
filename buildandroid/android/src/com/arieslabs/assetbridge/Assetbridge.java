@@ -33,9 +33,12 @@ public class Assetbridge {
             else
                 tmpdir = c.getFilesDir().getPath();
 
- //            String tmpdir = c.getCacheDir().getPath();
- //           Log.i("DEBUGGER_TAG", "assetbridge target " + tmpdir);
+            // String tmpdir = c.getCacheDir().getPath();
+            Log.i("OpenCPN", "assetbridge target " + tmpdir);
 
+
+            if(tmpdir.isEmpty())
+                tmpdir = "/data/data/org.opencpn.opencpn/files";
 
             // now we need the assetmanager
             AssetManager am = c.getAssets();
@@ -43,7 +46,7 @@ public class Assetbridge {
 
             // iterate on the files...
             for(String asset : assets) {
- //               Log.i("DEBUGGER_TAG", "assetbridge asset: " + asset);
+                Log.i("OpenCPN", "assetbridge asset: " + asset);
                 copyAssetFolder(am, asset, tmpdir + "/" + asset);
             }
 
@@ -52,7 +55,7 @@ public class Assetbridge {
 //            setassetdir(c.getCacheDir().getPath());
 
         } catch (IOException e) {
-            Log.e("Assetbridge", "Can't unpack assets from APK", e);
+            Log.e("OpenCPN", "Can't unpack assets from APK", e);
         }
 
     }
@@ -61,7 +64,7 @@ public class Assetbridge {
     public static void copyAssetFolder(AssetManager am, String src, String dest)
     	throws IOException{
 
- //       Log.i("DEBUGGER_TAG", "assetbridge copyAssetFolder " + src + " " + dest);
+        Log.i("OpenCPN", "assetbridge copyAssetFolder " + src + " " + dest);
 
         InputStream srcIS = null;
         File destfh;
