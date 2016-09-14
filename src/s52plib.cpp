@@ -6377,7 +6377,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         // We transform from SENC SM vertex data to screen.
 
         //  First, the VP transform
-        if(0/*vp->m_projection_type == PROJECTION_MERCATOR*/) {
+        if(vp->m_projection_type == PROJECTION_MERCATOR) {
             glPushMatrix();
 
             glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
