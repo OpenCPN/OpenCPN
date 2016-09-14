@@ -1908,7 +1908,7 @@ void s57chart::AssembleLineGeometry( void )
                             double e0, n0, e1, n1;
                             
                             if( ipnode ) {
-                                double *ppt = ipnode->pPoint;
+                                float *ppt = ipnode->pPoint;
                                 e0 = *ppt++;
                                 n0 = *ppt;
                                 if(pedge && pedge->nCount)
@@ -1937,7 +1937,7 @@ void s57chart::AssembleLineGeometry( void )
                             
                             // end node
                             if( epnode ) {
-                                double *ppt = epnode->pPoint;
+                                float *ppt = epnode->pPoint;
                                 e1 = *ppt++;
                                 n1 = *ppt;
                                 
@@ -1992,10 +1992,10 @@ void s57chart::AssembleLineGeometry( void )
                     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
                         VE_Element *pedge = it->second;
                         if( pedge ) {
-                            double *pp = pedge->pPoints;
+                            float *pp = pedge->pPoints;
                             for(size_t i = 0 ; i < pedge->nCount ; i++){
-                                double x = *pp++;
-                                double y = *pp++;
+                                float x = *pp++;
+                                float y = *pp++;
                                 
                                 *lvr++ = (float)x;
                                 *lvr++ = (float)y;
@@ -2009,7 +2009,7 @@ void s57chart::AssembleLineGeometry( void )
                     
                     //      Now iterate on the hashmap, adding the connector segments in the hashmap to the VBO buffer
                     double e0, n0, e1, n1;
-                    double *ppt;
+                    float *ppt;
                     VC_Element *ipnode;
                     VC_Element *epnode;
                     VE_Element *pedge;
@@ -2123,7 +2123,7 @@ void s57chart::AssembleLineGeometry( void )
                                     double e0=0, n0=0, e1, n1;
                                     
                                     if( ipnode ) {
-                                        double *ppt = ipnode->pPoint;
+                                        float *ppt = ipnode->pPoint;
                                         e0 = *ppt++;
                                         n0 = *ppt;
                                         
@@ -2191,7 +2191,7 @@ void s57chart::AssembleLineGeometry( void )
                                     
                                     // end node
                                     if( epnode ) {
-                                        double *ppt = epnode->pPoint;
+                                        float *ppt = epnode->pPoint;
                                         e1 = *ppt++;
                                         n1 = *ppt;
                                         
@@ -4540,6 +4540,18 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         return 1;
     }
     
+    //  Get the cell Ref point as recorded in the SENC
+    Extent ext = sencfile.getReadExtent();
+    
+    m_FullExtent.ELON = ext.ELON;
+    m_FullExtent.WLON = ext.WLON;
+    m_FullExtent.NLAT = ext.NLAT;
+    m_FullExtent.SLAT = ext.SLAT;
+    m_bExtentSet = true;
+    
+    ref_lat = (ext.NLAT + ext.SLAT) / 2.;
+    ref_lon = (ext.ELON + ext.WLON) / 2.;
+    
     //  Process the Edge feature arrays.
     
     //    Create a hash map of VE_Element pointers as a chart class member
@@ -4556,7 +4568,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             double east_max = -1e7; double east_min = 1e7;
             double north_max = -1e7; double north_min = 1e7;
             
-            double *vrun = vep->pPoints;
+            float *vrun = vep->pPoints;
             for(size_t i=0 ; i < vep->nCount; i++){
                 east_max = wxMax(east_max, *vrun);
                 east_min = wxMin(east_min, *vrun);

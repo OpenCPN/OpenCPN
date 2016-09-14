@@ -458,6 +458,26 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 break;
             }
             
+            case CELL_EXTENT_RECORD:
+            {
+                unsigned char *buf = getBuffer( record.record_length - sizeof(OSENC_Record_Base));
+                if(!fpx.Read(buf, record.record_length - sizeof(OSENC_Record_Base)).IsOk()){
+                    dun = 1; break;
+                }
+                _OSENC_EXTENT_Record_Payload *pPayload = (_OSENC_EXTENT_Record_Payload *)buf;
+                m_extent.NLAT = pPayload->extent_nw_lat;
+                m_extent.SLAT = pPayload->extent_se_lat;
+                m_extent.WLON = pPayload->extent_nw_lon;
+                m_extent.ELON = pPayload->extent_se_lon;
+                
+                //  We declare the ref_lat/ref_lon to be the centroid of the extents
+                //  This is how the SENC was created....
+                m_ref_lat = (m_extent.NLAT + m_extent.SLAT) / 2.;
+                m_ref_lon = (m_extent.ELON + m_extent.WLON) / 2.;
+                
+                break;
+            }
+            
             case CELL_COVR_RECORD:
             {
                 unsigned char *buf = getBuffer( record.record_length - sizeof(OSENC_Record_Base));
@@ -493,12 +513,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 featureID = pPayload->feature_ID;
 
                 //  Look up the FeatureName from the Registrar
-//                if(!m_poRegistrar){
-//                    errorMessage = _T("S57 Registrar not set.");
-//                    return ERROR_REGISTRAR_NOT_SET;
-//                }
-                
-                
+               
                 std::string acronym = GetFeatureAcronymFromTypecode( featureTypeCode );
                 
                 //TODO debugging
@@ -531,7 +546,8 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 
                 //  The primitive type of the Feature is encoded in the SENC as an attribute of defined type.
                 if( ATTRIBUTE_ID_PRIM == attributeTypeCode ){
-                    primitiveType = *(int*)&(pPayload->attribute_value);
+//                    primitiveType = *(int*)&(pPayload->attribute_value);
+                    primitiveType = pPayload->attribute_value_int;
                 }
                 
                     
@@ -544,7 +560,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
                     switch(attributeValueType){
                         case 0:
                         {
-                            int val = *(int*)&(pPayload->attribute_value);
+                            uint32_t val = pPayload->attribute_value_int;
                             if(obj){
                                 obj->AddIntegerAttribute( acronym.c_str(), val );
                             }
@@ -561,7 +577,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
                         }
                         case 2:             // Single double precision real
                         {
-                            double val = *(double*)&(pPayload->attribute_value);
+                            double val = pPayload->attribute_value_double;
                             if(obj)
                                 obj->AddDoubleAttribute( acronym.c_str(), val );
                             break;
@@ -575,7 +591,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
                         
                         case 4:             // Ascii String
                         {
-                            char *val = (char *)&pPayload->attribute_value;
+                            char *val = (char *)&pPayload->attribute_value_char_ptr;
                             if(obj)
                                 obj->AddStringAttribute( acronym.c_str(), val );
                                 
@@ -720,17 +736,17 @@ int Osenc::ingest200(const wxString &senc_file_name,
                     int pointCount = *(int*)pRun;
                     pRun += sizeof(int);
                     
-                    double *pPoints = NULL;
+                    float *pPoints = NULL;
                     if( pointCount ) {
-                        pPoints = (double *) malloc( pointCount * 2 * sizeof(double) );
-                        memcpy(pPoints, pRun, pointCount * 2 * sizeof(double));
+                        pPoints = (float *) malloc( pointCount * 2 * sizeof(float) );
+                        memcpy(pPoints, pRun, pointCount * 2 * sizeof(float));
                     }
-                    pRun += pointCount * 2 * sizeof(double);
+                    pRun += pointCount * 2 * sizeof(float);
                     
                     VE_Element *pvee = new VE_Element;
                     pvee->index = featureIndex;
                     pvee->nCount = pointCount;
-                    pvee->pPoints = pPoints;
+                    pvee->pPoints = pPoints; 
                     pvee->max_priority = 0;            // Default
                     
                     pVEArray->push_back(pvee);
@@ -759,9 +775,9 @@ int Osenc::ingest200(const wxString &senc_file_name,
                     int featureIndex = *(int*)pRun;
                     pRun += sizeof(int);
                     
-                    double *pPoint = (double *) malloc( 2 * sizeof(double) );
-                    memcpy(pPoint, pRun, 2 * sizeof(double));
-                    pRun += 2 * sizeof(double);
+                    float *pPoint = (float *) malloc( 2 * sizeof(float) );
+                    memcpy(pPoint, pRun, 2 * sizeof(float));
+                    pRun += 2 * sizeof(float);
                     
                     VC_Element *pvce = new VC_Element;
                     pvce->index = featureIndex;
@@ -2152,14 +2168,14 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
             //  transcribe the (possibly) reduced linestring to the payload
             
             //  Grow the payload buffer
-            int new_size = payloadSize + (nPointReduced* 2 * sizeof(double)) ;
+            int new_size = payloadSize + (nPointReduced* 2 * sizeof(float)) ;
             pPayload = (uint8_t *)realloc(pPayload, new_size );
             pRun = pPayload + payloadSize;              //  recalculate the running pointer,
                                                         //  since realloc may have moved memory
             payloadSize = new_size;
             
-            double *npp = (double *)pRun;
-            double *npp_run = npp;
+            float *npp = (float *)pRun;
+            float *npp_run = npp;
             ppr = ppd;  
             for(int ip = 0 ; ip < nPoints ; ip++)
             {
@@ -2170,7 +2186,7 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
                     if(index_keep.Item(j) == ip){
                         *npp_run++ = x;
                         *npp_run++ = y;
-                        pRun += 2 * sizeof(double);
+                        pRun += 2 * sizeof(float);
                         break;
                     }
                 }
@@ -2250,7 +2266,7 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( FILE * fpOut, S57Reader *po
             if( pGeo->getGeometryType() == wkbPoint ) {
                 
                 
-                int new_size = payloadSize + sizeof(int) + (2 * sizeof(double));
+                int new_size = payloadSize + sizeof(int) + (2 * sizeof(float));
                 pPayload = (uint8_t *)realloc(pPayload, new_size );
                 pRun = pPayload + payloadSize;                   //  recalculate the running pointer,
                                                                  //  since realloc may have moved memory
@@ -2269,10 +2285,13 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( FILE * fpOut, S57Reader *po
                 double easting, northing;
                 toSM( pP->getY(), pP->getX(), m_ref_lat, m_ref_lon, &easting, &northing );
                 
-                MyPoint pd;
-                pd.x = easting;
-                pd.y = northing;
-                memcpy(pRun, &pd, sizeof(MyPoint));
+//                 MyPoint pd;
+//                 pd.x = easting;
+//                 pd.y = northing;
+//                 memcpy(pRun, &pd, sizeof(MyPoint));
+                float *ps = (float *)pRun;
+                *ps++ = easting;
+                *ps = northing;
                 
                 featureCount++;
             }

@@ -2332,7 +2332,7 @@ void cm93chart::ProcessVectorEdges ( void )
 
             if ( pgd->n_points )
             {
-                  double *pPoints = ( double * ) malloc ( pgd->n_points * 2 * sizeof ( double ) );
+                float *pPoints = ( float * ) malloc ( pgd->n_points * 2 * sizeof ( float ) );
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;

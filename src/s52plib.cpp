@@ -3132,7 +3132,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
 
         int *index_run;
-        double *ppt;
+        float *ppt;
 
         VC_Element *pnode;
 
@@ -3308,7 +3308,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
 
         int *index_run;
-        double *ppt;
+        float *ppt;
         double easting, northing;
         wxPoint pra( 0, 0 );
         VC_Element *pnode;

@@ -491,7 +491,7 @@ class VE_Element
 public:
       unsigned int index;
       unsigned int nCount;
-      double      *pPoints;
+      float      *pPoints;
       int         max_priority;
       size_t      vbo_offset;
       LLBBox BBox;
@@ -501,7 +501,7 @@ class VC_Element
 {
 public:
       unsigned int index;
-      double      *pPoint;
+      float      *pPoint;
 };
 
 WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
