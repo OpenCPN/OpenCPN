@@ -73,6 +73,8 @@
 #endif
 
 #include <algorithm>          // for std::sort
+#include <map>
+#include <unordered_map>
 
 #ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
@@ -281,7 +283,8 @@ void S57Obj::Init()
     m_lsindex_array = NULL;
     m_n_edge_max_points = 0;
     m_ls_list = 0;
-
+    m_ls_list_legacy = 0;
+    
     iOBJL = -1; // deferred, done by OBJL filtering in the PLIB as needed
     bBBObj_valid = false;
     
@@ -1312,35 +1315,38 @@ s57chart::~s57chart()
     
     delete m_pDIBThumbOrphan;
 
+#if 0 //TODO    
     VE_Hash::iterator it;
-    for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+    for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
         VE_Element *value = it->second;
         if( value ) {
             free( value->pPoints );
             delete value;
         }
     }
-    m_ve_hash.clear();
+    old_m_ve_hash.clear();
 
     connected_segment_hash::iterator itcsc;
-    for( itcsc = m_connector_hash.begin(); itcsc != m_connector_hash.end(); ++itcsc ) {
+    for( itcsc = old_m_connector_hash.begin(); itcsc != old_m_connector_hash.end(); ++itcsc ) {
         connector_segment *value = itcsc->second;
         if( value ) {
             delete value;
         }
     }
-    m_connector_hash.clear();
+    old_m_connector_hash.clear();
     
     VC_Hash::iterator itc;
-    for( itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc ) {
+    for( itc = old_m_vc_hash.begin(); itc != old_m_vc_hash.end(); ++itc ) {
         VC_Element *value = itc->second;
         if( value ) {
             free( value->pPoint );
             delete value;
         }
     }
-    m_vc_hash.clear();
+    old_m_vc_hash.clear();
 
+#endif
+    
 #ifdef ocpnUSE_GL 
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
         s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
@@ -1747,6 +1753,85 @@ void s57chart::ForceEdgePriorityEvaluate( void )
 void s57chart::SetLinePriorities( void )
 {
     if( !ps52plib ) return;
+    
+    //      If necessary.....
+    //      Establish line feature rendering priorities
+    
+    if( !m_bLinePrioritySet ) {
+        ObjRazRules *top;
+        ObjRazRules *crnt;
+        
+        for( int i = 0; i < PRIO_NUM; ++i ) {
+            
+            top = razRules[i][2];           //LINES
+            while( top != NULL ) {
+                ObjRazRules *crnt = top;
+                top = top->next;
+                ps52plib->SetLineFeaturePriority( crnt, i );
+            }
+            
+            //    In the interest of speed, choose only the one necessary area boundary style index
+            int j;
+            if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES )
+                j = 4;
+            else
+                j = 3;
+            
+            top = razRules[i][j];
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                ps52plib->SetLineFeaturePriority( crnt, i );
+            }
+            
+        }
+        
+        
+        // Traverse the entire object list again, setting the priority of each line_segment_element
+        // to the maximum priority seen for that segment
+        for( int i = 0; i < PRIO_NUM; ++i ) {
+            for( int j = 0; j < LUPNAME_NUM; j++ ) {
+                ObjRazRules *top = razRules[i][j];
+                while( top != NULL ) {
+                    S57Obj *obj = top->obj;
+                    
+                    VE_Element *pedge;
+                    connector_segment *pcs;
+                    line_segment_element *list = obj->m_ls_list;
+                    while( list ){
+                        switch (list->ls_type){
+                            case TYPE_EE:
+                                
+                                pedge = list->pedge;// (VE_Element *)list->private0;
+                                if(pedge)
+                                    list->priority = pedge->max_priority;
+                                break;
+                                
+                            default:
+                                pcs = list->pcs; //(connector_segment *)list->private0;
+                                if(pcs)
+                                    list->priority = pcs->max_priority_cs;
+                                break;
+                        }
+                        
+                        list = list->next;
+                    }
+                    
+                    top = top->next;
+                }
+            }
+        }
+    }
+    
+    //      Mark the priority as set.
+    //      Generally only reset by Options Dialog post processing
+    m_bLinePrioritySet = true;
+}
+
+#if 0
+void s57chart::SetLinePriorities( void )
+{
+    if( !ps52plib ) return;
 
     //      If necessary.....
     //      Establish line feature rendering priorities
@@ -1821,8 +1906,57 @@ void s57chart::SetLinePriorities( void )
     //      Generally only reset by Options Dialog post processing
     m_bLinePrioritySet = true;
 }
+#endif
+
+int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
+{
+    //  Walk the line segment list once to get the required array size
+    
+    int nPoints = 0;
+    line_segment_element *ls_list = obj->m_ls_list;
+    while( ls_list){
+        if(ls_list->ls_type == TYPE_EE)
+            nPoints += ls_list->pedge->nCount;
+        else
+            nPoints += 2;
+        ls_list = ls_list->next;
+    }
+    
+    if(!nPoints){
+        *ret_array = 0;
+        return 0;
+    }
+    
+    //  Allocate the buffer
+    float *br = (float *)malloc(nPoints * 2 * sizeof(float));
+    *ret_array = br;
+    
+    // populate the buffer
+    unsigned char *source_buffer = (unsigned char *)GetLineVertexBuffer();
+    ls_list = obj->m_ls_list;
+    while( ls_list){
+        size_t vbo_offset = 0;
+        size_t count = 0;
+        if(ls_list->ls_type == TYPE_EE){
+            vbo_offset = ls_list->pedge->vbo_offset;
+            count = ls_list->pedge->nCount;
+        }
+        else{
+            vbo_offset = ls_list->pcs->vbo_offset;
+            count = 2;
+        }
+        
+        memcpy(br, source_buffer + vbo_offset, count * 2 * sizeof(float));
+        br += count * 2;
+        ls_list = ls_list->next;
+    }
+    
+    return nPoints;
+    
+}
 
 
+#if 0
 int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
 {
     //  Walk the line segment list once to get the required array size
@@ -1855,9 +1989,416 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     return nPoints;
     
 }
+#endif
+
+void s57chart::AssembleLineGeometry( void )
+{
+    // Walk the hash tables to get the required buffer size
+    
+    //  Start with the edge hash table
+    size_t nPoints = 0;
+    VE_Hash::iterator it;
+    for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        if( pedge ) {
+            nPoints += pedge->nCount;
+        }
+    }
+    
+    //    printf("time0 %f\n", sw.GetTime());
+    
+    
+    
+    std::unordered_map<std::string, connector_segment *> ce_connector_hash;
+    std::unordered_map<std::string, connector_segment *> ec_connector_hash;
+    std::unordered_map<std::string, connector_segment *> cc_connector_hash;
+    
+    int ndelta = 0;
+    
+    //  Define a vector to temporarily hold the geometry for the created pcs elements
+    
+    typedef struct segment_pair{
+        float e0, n0, e1, n1;
+    }_segment_pair;
+    
+    std::vector<segment_pair> connector_segment_vector;
+    size_t seg_pair_index = 0;
+    
+    
+    
+    //  Get the end node connected segments.  To do this, we
+    //  walk the Feature array and process each feature that potentially has a LINE type element
+    for( int i = 0; i < PRIO_NUM; ++i ) {
+        for( int j = 0; j < LUPNAME_NUM; j++ ) {
+            ObjRazRules *top = razRules[i][j];
+            while( top != NULL ) {
+                S57Obj *obj = top->obj;
+                
+                line_segment_element list_top;
+                list_top.next = 0;
+                
+                line_segment_element *le_current = &list_top;
+                
+                for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
+                    
+                    if(!obj->m_lsindex_array)
+                        continue;
+                    
+                    int seg_index = iseg * 3;
+                    int *index_run = &obj->m_lsindex_array[seg_index];
+                    
+                    //  Get first connected node
+                    unsigned int inode = *index_run++;
+                    
+                    //  Get the edge
+                    bool edge_dir = true;
+                    int venode = *index_run++;
+                    if(venode < 0){
+                        venode = -venode;
+                        edge_dir = false;
+                    }
+                    
+                    
+                    VE_Element *pedge = 0;
+                    pedge = m_ve_hash[venode];
+                    
+                    //  Get end connected node
+                    unsigned int enode = *index_run++;
+                    
+                    //  Get first connected node
+                    VC_Element *ipnode = 0;
+                    ipnode = m_vc_hash[inode];
+                    
+                    //  Get end connected node
+                    VC_Element *epnode = 0;
+                    epnode = m_vc_hash[enode];
+                    
+                    
+                    if( ipnode ) {
+                        if(pedge && pedge->nCount)
+                        {
+                            
+                            //      The initial node exists and connects to the start of an edge
+                            
+                            char buf[40];
+                            snprintf(buf, sizeof(buf), "%d_%d", inode, venode);
+                            std::string key(buf);
+                            
+                            connector_segment *pcs = NULL;
+                            std::unordered_map<std::string, connector_segment *>::iterator itce;
+                            itce = ce_connector_hash.find( key );
+                            if( itce == ce_connector_hash.end() ){
+                                ndelta += 2;
+                                pcs = new connector_segment;
+                                //                                pcs->type = TYPE_CE;
+                                //                                pcs->start = ipnode;
+                                //                                pcs->end = pedge;
+                                ce_connector_hash[key] = pcs;
+                                
+                                // capture and store geometry
+                                segment_pair pair;
+                                float *ppt = ipnode->pPoint;
+                                pair.e0 = *ppt++;
+                                pair.n0 = *ppt;
+                                
+                                if(edge_dir){
+                                    pair.e1 = pedge->pPoints[ 0 ];
+                                    pair.n1 = pedge->pPoints[ 1 ];
+                                }
+                                else{
+                                    int last_point_index = (pedge->nCount -1) * 2;
+                                    pair.e1 = pedge->pPoints[ last_point_index ];
+                                    pair.n1 = pedge->pPoints[ last_point_index + 1 ];
+                                }
+                                
+                                connector_segment_vector.push_back(pair);
+                                pcs->vbo_offset = seg_pair_index;               // use temporarily
+                                seg_pair_index ++;
+                                
+                                // calculate the centroid of this connector segment, used for viz testing
+                                double lat, lon;
+                                fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
+                                pcs->cs_lat_avg = lat;
+                                pcs->cs_lon_avg = lon;
+                                
+                            }
+                            else
+                                pcs = itce->second;
+                            
+                            
+                            line_segment_element *pls = new line_segment_element;
+                            pls->next = 0;
+                            //                            pls->n_points = 2;
+                            pls->priority = 0;
+                            pls->pcs = pcs;
+                            pls->ls_type = TYPE_CE;
+                            
+                            le_current->next = pls;             // hook it up
+                            le_current = pls;
+                            
+                        }
+                    }
+                    
+                    if(pedge && pedge->nCount){
+                        line_segment_element *pls = new line_segment_element;
+                        pls->next = 0;
+                        //                        pls->n_points = pedge->nCount;
+                        pls->priority = 0;
+                        pls->pedge = pedge;
+                        pls->ls_type = TYPE_EE;
+                        
+                        le_current->next = pls;             // hook it up
+                        le_current = pls;
+                        
+                    }   //pedge
+                    
+                    // end node
+                    if( epnode ) {
+                        
+                        if(ipnode){
+                            if(pedge && pedge->nCount){
+                                
+                                //wxString key;
+                                //key.Printf(_T("EC%d%d"), venode, enode);
+                                char buf[40];
+                                snprintf(buf, sizeof(buf), "%d_%d", venode, enode);
+                                std::string key(buf);
+                                
+                                connector_segment *pcs = NULL;
+                                std::unordered_map<std::string, connector_segment *>::iterator itec;
+                                itec = ec_connector_hash.find( key );
+                                if( itec == ec_connector_hash.end() ){
+                                    ndelta += 2;
+                                    pcs = new connector_segment;
+                                    //                                    pcs->type = TYPE_EC;
+                                    ec_connector_hash[key] = pcs;
+                                    
+                                    // capture and store geometry
+                                    segment_pair pair;
+                                    
+                                    if(!edge_dir){
+                                        pair.e0 = pedge->pPoints[ 0 ];
+                                        pair.n0 = pedge->pPoints[ 1 ];
+                                    }
+                                    else{
+                                        int last_point_index = (pedge->nCount -1) * 2;
+                                        pair.e0 = pedge->pPoints[ last_point_index ];
+                                        pair.n0 = pedge->pPoints[ last_point_index + 1 ];
+                                    }
+                                    
+                                    
+                                    float *ppt = epnode->pPoint;
+                                    pair.e1 = *ppt++;
+                                    pair.n1 = *ppt;
+                                    
+                                    connector_segment_vector.push_back(pair);
+                                    pcs->vbo_offset = seg_pair_index;               // use temporarily
+                                    seg_pair_index ++;
+                                    
+                                    // calculate the centroid of this connector segment, used for viz testing
+                                    double lat, lon;
+                                    fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
+                                    pcs->cs_lat_avg = lat;
+                                    pcs->cs_lon_avg = lon;
+                                    
+                                }
+                                else
+                                    pcs = itec->second;
+                                
+                                line_segment_element *pls = new line_segment_element;
+                                pls->next = 0;
+                                //                                pls->n_points = 2;
+                                pls->priority = 0;
+                                pls->pcs = pcs;
+                                pls->ls_type = TYPE_EC;
+                                
+                                le_current->next = pls;             // hook it up
+                                le_current = pls;
+                                
+                                
+                            }
+                            else {
+                                //wxString key;
+                                //key.Printf(_T("CC%d%d"), inode, enode);
+                                char buf[40];
+                                snprintf(buf, sizeof(buf), "%d_%d", inode, enode);
+                                std::string key(buf);
+                                
+                                
+                                connector_segment *pcs = NULL;
+                                std::unordered_map<std::string, connector_segment *>::iterator itcc;
+                                itcc = cc_connector_hash.find( key );
+                                if( itcc == cc_connector_hash.end() ){
+                                    ndelta += 2;
+                                    pcs = new connector_segment;
+                                    //                                    pcs->type = TYPE_CC;
+                                    //                                    pcs->start = ipnode;
+                                    //                                    pcs->end = epnode;
+                                    cc_connector_hash[key] = pcs;
+                                    
+                                    // capture and store geometry
+                                    segment_pair pair;
+                                    
+                                    float *ppt = ipnode->pPoint;
+                                    pair.e0 = *ppt++;
+                                    pair.n0 = *ppt;
+                                    
+                                    ppt = epnode->pPoint;
+                                    pair.e1 = *ppt++;
+                                    pair.n1 = *ppt;
+                                    
+                                    connector_segment_vector.push_back(pair);
+                                    pcs->vbo_offset = seg_pair_index;               // use temporarily
+                                    seg_pair_index ++;
+                                    
+                                    // calculate the centroid of this connector segment, used for viz testing
+                                    double lat, lon;
+                                    fromSM_Plugin( (pair.e0 + pair.e1)/2, (pair.n0 + pair.n1)/2, ref_lat, ref_lon, &lat, &lon );
+                                    pcs->cs_lat_avg = lat;
+                                    pcs->cs_lon_avg = lon;
+                                    
+                                }
+                                else
+                                    pcs = itcc->second;
+                                
+                                line_segment_element *pls = new line_segment_element;
+                                pls->next = 0;
+                                //                                pls->n_points = 2;
+                                pls->priority = 0;
+                                pls->pcs = pcs;
+                                pls->ls_type = TYPE_CC;
+                                
+                                le_current->next = pls;             // hook it up
+                                le_current = pls;
+                                
+                                
+                            }
+                        }
+                    }
+                    
+                    
+                }  // for
+                
+                //  All done, so assign the list to the object
+                obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
+                
+                // we are all finished with the line segment index array, per object
+                free(obj->m_lsindex_array);
+                obj->m_lsindex_array = NULL;
+                
+                top = top->next;
+            }
+        }
+    }
+    //    printf("time1 %f\n", sw.GetTime());
+    
+    //  We have the total VBO point count, and a nice hashmap of the connector segments
+    nPoints += ndelta;          // allow for the connector segments
+    
+    size_t vbo_byte_length = 2 * nPoints * sizeof(float);
+    m_vbo_byte_length = vbo_byte_length;
+    
+    m_line_vertex_buffer = (float *)malloc( vbo_byte_length);
+    float *lvr = m_line_vertex_buffer;
+    size_t offset = 0;
+    
+    //      Copy and edge points as floats,
+    //      and recording each segment's offset in the array
+    for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        if( pedge ) {
+            memcpy(lvr, pedge->pPoints, pedge->nCount * 2 * sizeof(float));
+            lvr += pedge->nCount * 2;
+            
+            pedge->vbo_offset = offset;
+            offset += pedge->nCount * 2 * sizeof(float);
+        }
+    }
+    
+    //      Now iterate on the hashmaps, adding the connector segments in the temporary vector to the VBO buffer
+    //      At the  same time, populate a vector, storing the pcs pointers to allow destruction at this class dtor.
+    //      This will allow us to destroy (automatically) the pcs hashmaps, and save some storage
+    
+    std::unordered_map<std::string, connector_segment *>::iterator iter;
+    
+    for( iter = ce_connector_hash.begin(); iter != ce_connector_hash.end(); ++iter )
+    {
+        connector_segment *pcs = iter->second;
+        m_pcs_vector.push_back(pcs);
+        
+        segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
+        *lvr++ = pair.e0;
+        *lvr++ = pair.n0;
+        *lvr++ = pair.e1;
+        *lvr++ = pair.n1;
+        
+        pcs->vbo_offset = offset;
+        offset += 4 * sizeof(float);
+    }
+    
+    for( iter = ec_connector_hash.begin(); iter != ec_connector_hash.end(); ++iter )
+    {
+        connector_segment *pcs = iter->second;
+        m_pcs_vector.push_back(pcs);
+        
+        segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
+        *lvr++ = pair.e0;
+        *lvr++ = pair.n0;
+        *lvr++ = pair.e1;
+        *lvr++ = pair.n1;
+        
+        pcs->vbo_offset = offset;
+        offset += 4 * sizeof(float);
+    }
+    
+    for( iter = cc_connector_hash.begin(); iter != cc_connector_hash.end(); ++iter )
+    {
+        connector_segment *pcs = iter->second;
+        m_pcs_vector.push_back(pcs);
+        
+        segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
+        *lvr++ = pair.e0;
+        *lvr++ = pair.n0;
+        *lvr++ = pair.e1;
+        *lvr++ = pair.n1;
+        
+        pcs->vbo_offset = offset;
+        offset += 4 * sizeof(float);
+    }
+    
+    // And so we can empty the temp buffer
+    connector_segment_vector.clear();
+    
+    // Wwe can convert the edge hashmap to a vector, to allow  us to destroy the hashmap
+    // and at the same time free up the point storage in the VE_Elements, since all the points
+    // are now in the VBO buffer
+    for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        m_pve_vector.push_back(pedge);
+        
+        free(pedge->pPoints);
+    }
+    m_ve_hash.clear();
+    
+    
+    // and we can empty the connector hashmap,
+    // and at the same time free up the point storage in the VC_Elements, since all the points
+    // are now in the VBO buffer
+    for( VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc ) {
+        VC_Element *pcs = itc->second;
+        if(pcs)
+            free(pcs->pPoint);
+    }
+    m_vc_hash.clear();
+    
+    
+    
+    
+}
 
 
 
+#if 0
 void s57chart::AssembleLineGeometry( void )
 {
             // Walk the hash tables to get the required buffer size
@@ -1865,7 +2406,7 @@ void s57chart::AssembleLineGeometry( void )
             //  Start with the edge hash table
             size_t nPoints = 0;
             VE_Hash::iterator it;
-            for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+            for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
                 VE_Element *pedge = it->second;
                 if( pedge ) {
                     nPoints += pedge->nCount;
@@ -1892,18 +2433,18 @@ void s57chart::AssembleLineGeometry( void )
                             //  Get the edge
                             unsigned int venode = *index_run++;
                             VE_Element *pedge;
-                            pedge = m_ve_hash[venode];
+                            pedge = old_m_ve_hash[venode];
                             
                             //  Get end connected node
                             unsigned int enode = *index_run++;
                             
                             //  Get first connected node
                             VC_Element *ipnode;
-                            ipnode = m_vc_hash[inode];
+                            ipnode = old_m_vc_hash[inode];
                             
                             //  Get end connected node
                             VC_Element *epnode;
-                            epnode = m_vc_hash[enode];
+                            epnode = old_m_vc_hash[enode];
                             
                             double e0, n0, e1, n1;
                             
@@ -1918,13 +2459,13 @@ void s57chart::AssembleLineGeometry( void )
                                     
                                     //      The initial node exists and connects to the start of an edge
                                     key.set(TYPE_CE, inode, venode);
-                                    if(m_connector_hash.find( key ) == m_connector_hash.end()){
+                                    if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
                                         ndelta += 2;
                                         connector_segment *pcs = new connector_segment;
                                         pcs->type = TYPE_CE;
                                         pcs->start = ipnode;
                                         pcs->end = pedge;
-                                        m_connector_hash[key] = pcs;
+                                        old_m_connector_hash[key] = pcs;
                                     }
                                 }
                             }
@@ -1946,25 +2487,25 @@ void s57chart::AssembleLineGeometry( void )
                                         
                                         key.set(TYPE_EC, venode, enode);
 
-                                        if(m_connector_hash.find( key ) == m_connector_hash.end()){
+                                        if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
                                             ndelta += 2;
                                             connector_segment *pcs = new connector_segment;
                                             pcs->type = TYPE_EC;
                                             pcs->start = pedge;
                                             pcs->end = epnode;
-                                            m_connector_hash[key] = pcs;
+                                            old_m_connector_hash[key] = pcs;
                                         }
                                     }
                                     else {
                                         key.set(TYPE_CC, inode, enode);
                                         
-                                        if(m_connector_hash.find( key ) == m_connector_hash.end()){
+                                        if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
                                             ndelta += 2;
                                             connector_segment *pcs = new connector_segment;
                                             pcs->type = TYPE_CC;
                                             pcs->start = ipnode;
                                             pcs->end = epnode;
-                                            m_connector_hash[key] = pcs;
+                                            old_m_connector_hash[key] = pcs;
                                         }
                                     }
                                 }
@@ -1989,7 +2530,7 @@ void s57chart::AssembleLineGeometry( void )
                     
                     //      Copy and convert the edge points from doubles to floats,
                     //      and recording each segment's offset in the array
-                    for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+                    for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
                         VE_Element *pedge = it->second;
                         if( pedge ) {
                             float *pp = pedge->pPoints;
@@ -2014,7 +2555,7 @@ void s57chart::AssembleLineGeometry( void )
                     VC_Element *epnode;
                     VE_Element *pedge;
                     connected_segment_hash::iterator itc;
-                    for( itc = m_connector_hash.begin(); itc != m_connector_hash.end(); ++itc )
+                    for( itc = old_m_connector_hash.begin(); itc != old_m_connector_hash.end(); ++itc )
                     {
                         connector_segment *pcs = itc->second;
                         
@@ -2107,18 +2648,18 @@ void s57chart::AssembleLineGeometry( void )
                                     //  Get the edge
                                     unsigned int venode = *index_run++;
                                     VE_Element *pedge;
-                                    pedge = m_ve_hash[venode];
+                                    pedge = old_m_ve_hash[venode];
                                     
                                     //  Get end connected node
                                     unsigned int enode = *index_run++;
                                     
                                     //  Get first connected node
                                     VC_Element *ipnode;
-                                    ipnode = m_vc_hash[inode];
+                                    ipnode = old_m_vc_hash[inode];
                                     
                                     //  Get end connected node
                                     VC_Element *epnode;
-                                    epnode = m_vc_hash[enode];
+                                    epnode = old_m_vc_hash[enode];
                                     
                                     double e0=0, n0=0, e1, n1;
                                     
@@ -2131,8 +2672,8 @@ void s57chart::AssembleLineGeometry( void )
                                         {
                                             key.set(TYPE_CE, inode, venode);
                                             
-                                            connected_segment_hash::iterator itcs = m_connector_hash.find( key );
-                                            if(itcs != m_connector_hash.end()){
+                                            connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
+                                            if(itcs != old_m_connector_hash.end()){
                                                 
                                                 connector_segment *pcs = itcs->second;
                                                 
@@ -2200,8 +2741,8 @@ void s57chart::AssembleLineGeometry( void )
                                                 
                                                 key.set(TYPE_EC, venode, enode);
                                                 
-                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
-                                                if(itcs != m_connector_hash.end()){
+                                                connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
+                                                if(itcs != old_m_connector_hash.end()){
                                                     connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
@@ -2230,8 +2771,8 @@ pls->lat_max = box.GetMaxLat();
                                             else {
                                                 key.set(TYPE_CC, inode, enode);
                                                 
-                                                connected_segment_hash::iterator itcs = m_connector_hash.find( key );
-                                                if(itcs != m_connector_hash.end()){
+                                                connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
+                                                if(itcs != old_m_connector_hash.end()){
                                                     connector_segment *pcs = itcs->second;
                                                     
                                                     line_segment_element *pls = new line_segment_element;
@@ -2272,7 +2813,7 @@ pls->lat_max = box.GetMaxLat();
                     }
 
 }
-            
+#endif           
 
 void s57chart::BuildLineVBO( void )
 {
@@ -4582,7 +5123,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             double lat1, lon1, lat2, lon2;
             fromSM( east_min, north_min, ref_lat, ref_lon, &lat1, &lon1 );
             fromSM( east_max, north_max, ref_lat, ref_lon, &lat2, &lon2 );
-            vep->BBox.Set( lat1, lon1, lat2, lon2);
+            vep->edgeBBox.Set( lat1, lon1, lat2, lon2);
         }
         
         m_ve_hash[vep->index] = vep;
@@ -4744,11 +5285,12 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     m_ID = sencfile.getReadID();
     m_Name = sencfile.getReadName();
     
-
-    // Validate hash maps....
-
     ObjRazRules *top;
     ObjRazRules *nxx;
+    
+#if 0 //TODO
+    // Validate hash maps....
+
 
     for( int i = 0; i < PRIO_NUM; ++i ) {
         for( int j = 0; j < LUPNAME_NUM; j++ ) {
@@ -4764,11 +5306,11 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                     //  Get first connected node
                     int inode = *index_run;
                     if( ( inode ) ) {
-                        if( m_vc_hash.find( inode ) == m_vc_hash.end() ) {
+                        if( old_m_vc_hash.find( inode ) == old_m_vc_hash.end() ) {
                             //    Must be a bad index in the SENC file
                             //    Stuff a recognizable flag to indicate invalidity
                             *index_run = 0;
-                            m_vc_hash[0] = 0;
+                            old_m_vc_hash[0] = 0;
                         }
                     }
                     index_run++;
@@ -4776,11 +5318,11 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                     //  Get the edge
                     int enode = *index_run;
                     if( ( enode ) ) {
-                        if( m_ve_hash.find( enode ) == m_ve_hash.end() ) {
+                        if( old_m_ve_hash.find( enode ) == old_m_ve_hash.end() ) {
                     //    Must be a bad index in the SENC file
                     //    Stuff a recognizable flag to indicate invalidity
                             *index_run = 0;
-                            m_ve_hash[0] = 0;
+                            old_m_ve_hash[0] = 0;
                         }
                     }
 
@@ -4789,11 +5331,11 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                     //  Get last connected node
                     int jnode = *index_run;
                     if( ( jnode ) ) {
-                        if( m_vc_hash.find( jnode ) == m_vc_hash.end() ) {
+                        if( old_m_vc_hash.find( jnode ) == old_m_vc_hash.end() ) {
                             //    Must be a bad index in the SENC file
                             //    Stuff a recognizable flag to indicate invalidity
                             *index_run = 0;
-                            m_vc_hash[0] = 0;
+                            old_m_vc_hash[0] = 0;
                         }
                     }
                     index_run++;
@@ -4805,7 +5347,8 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             }
         }
     }
-    
+#endif
+
     //  Set up the chart context
     m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
     m_this_chart_context->chart = this;

@@ -1145,19 +1145,12 @@ bool ChartSymbols::LoadConfigFile(s52plib* plibArg, const wxString & s52ilePath)
         return false;
     }
 
-    if( !doc.LoadFile( (const char *) fullFilePath.mb_str() ) ) {
-        wxString msg( _T("    ChartSymbols ConfigFile Failed to load ") );
-        msg += fullFilePath;
-        wxLogMessage( msg );
-        return false;
-    }
-
-    wxString msg( _T("ChartSymbols loaded from ") );
-    msg += fullFilePath;
-    wxLogMessage( msg );
-
 #if 1   
     if(m_symbolsDoc.load_file( fullFilePath.fn_str() ) ){
+        wxString msg( _T("ChartSymbols loaded from ") );
+        msg += fullFilePath;
+        wxLogMessage( msg );
+        
         pugi::xml_node elements = m_symbolsDoc.child("chartsymbols");
         
         for (pugi::xml_node element = elements.first_child(); element; element = element.next_sibling()){
@@ -1173,6 +1166,17 @@ bool ChartSymbols::LoadConfigFile(s52plib* plibArg, const wxString & s52ilePath)
     }    
     
 #else
+    if( !doc.LoadFile( (const char *) fullFilePath.mb_str() ) ) {
+        wxString msg( _T("    ChartSymbols ConfigFile Failed to load ") );
+        msg += fullFilePath;
+        wxLogMessage( msg );
+        return false;
+    }
+
+    wxString msg( _T("ChartSymbols loaded from ") );
+    msg += fullFilePath;
+    wxLogMessage( msg );
+    
     TiXmlHandle hRoot( doc.RootElement() );
     
     wxString root = wxString( doc.RootElement()->Value(), wxConvUTF8 );

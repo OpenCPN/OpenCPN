@@ -287,6 +287,7 @@ class OGRFeature;
 class PolyTessGeo;
 class PolyTessGeoTrap;
 class line_segment_element;
+class PI_line_segment_element;
 
 typedef struct _chart_context{
     void                    *m_pvc_hash;
@@ -402,6 +403,7 @@ public:
       int                     *m_lsindex_array;
       int                     m_n_edge_max_points;
       line_segment_element    *m_ls_list;
+      PI_line_segment_element *m_ls_list_legacy;
       
       DisCat                  m_DisplayCat;
       int                     m_DPRI;                 // display priority, assigned from initial LUP
@@ -494,7 +496,9 @@ public:
       float      *pPoints;
       int         max_priority;
       size_t      vbo_offset;
-      LLBBox BBox;
+      LLBBox edgeBBox;
+      //wxBoundingBox edgeBBox;
+      
 };
 
 class VC_Element
@@ -510,8 +514,38 @@ WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
 typedef std::vector<VE_Element *> VE_ElementVector;
 typedef std::vector<VC_Element *> VC_ElementVector;
 
+typedef enum
+{
+    TYPE_CE = 0,
+    TYPE_CC,
+    TYPE_EC,
+    TYPE_EE
+} SegmentType;
+
+class connector_segment
+{
+public:
+    int vbo_offset;
+    int max_priority_cs;
+    float               cs_lat_avg;                // segment centroid
+    float               cs_lon_avg;
+    
+};
 
 class line_segment_element
+{
+public:
+    int                 priority;
+    union{              connector_segment   *pcs;
+    VE_Element          *pedge;
+    };
+    SegmentType         ls_type;
+    
+    line_segment_element *next;
+};
+
+#if 0 //TODO
+class line_segment_element_legacy
 {
 public:
     size_t              vbo_offset;
@@ -527,13 +561,6 @@ public:
     line_segment_element *next;
 };
 
-typedef enum
-{
-    TYPE_CE = 0,
-    TYPE_CC,
-    TYPE_EC,
-    TYPE_EE
-} SegmentType;
 
 class connector_segment
 {
@@ -544,6 +571,8 @@ public:
     int vbo_offset;
     int max_priority;
 };
+
+#endif
 
 WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 

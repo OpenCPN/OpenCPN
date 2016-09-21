@@ -2212,7 +2212,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) '0', vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
                         recalc_depth = true;
 
@@ -2229,7 +2229,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
                         if ( wxNOT_FOUND == m_cells_loaded_array.Index ( cell_index ) )
@@ -2241,6 +2241,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   }
             }
       }
+      
       if (recalc_depth) {
           ClearDepthContourArray();
           BuildDepthContourArray();
@@ -2369,7 +2370,7 @@ void cm93chart::ProcessVectorEdges ( void )
 //                  if(lon1 > lon2)
                   //                    lon2 += 360;
 
-                  vep->BBox.Set( lat1, lon1, lat2, lon2);
+                  vep->edgeBBox.Set( lat1, lon1, lat2, lon2);
                   
             }
             

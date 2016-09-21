@@ -235,7 +235,10 @@ public:
       bool        m_b2lineLUPS;
       
       struct _chart_context     *m_this_chart_context;
-      
+
+protected:
+    void AssembleLineGeometry( void );
+    
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
       void SetSafetyContour(void);
@@ -275,7 +278,6 @@ private:
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                   const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 
-      void AssembleLineGeometry( void );
       void BuildLineVBO( void );
       
  // Private Data
@@ -316,10 +318,7 @@ private:
 
       VectorHelperHash        m_vector_helper_hash;
 
-      VE_Hash     m_ve_hash;
-      VC_Hash     m_vc_hash;
       
-      connected_segment_hash m_connector_hash;
       
       float      *m_line_vertex_buffer;
       size_t      m_vbo_byte_length;
@@ -335,6 +334,16 @@ private:
       double      m_LOD_meters;
 
       int         m_LineVBO_name;
+      
+//       connected_segment_hash old_m_connector_hash;
+//       VE_Hash     old_m_ve_hash;
+//       VC_Hash     old_m_vc_hash;
+
+      VE_Hash     m_ve_hash;
+      VC_Hash     m_vc_hash;
+      std::vector<connector_segment *> m_pcs_vector;
+      std::vector<VE_Element *> m_pve_vector;
+      
 protected:      
       sm_parms    vp_transform;
       
