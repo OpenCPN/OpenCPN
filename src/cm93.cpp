@@ -2206,6 +2206,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+                OCPNPlatform::ShowBusySpinner();
                   int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
@@ -2240,6 +2241,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         loadcell_key++;
                   }
             }
+            OCPNPlatform::HideBusySpinner();
       }
       
       if (recalc_depth) {
@@ -4550,7 +4552,6 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       //    File is known to exist
 
-      OCPNPlatform::ShowBusySpinner();
       
       wxString msg ( _T ( "Loading CM93 cell " ) );
       msg += file;
