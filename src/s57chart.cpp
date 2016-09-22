@@ -3667,6 +3667,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     }
 
+    OCPNPlatform::HideBusySpinner();
+    
     s_bInS57--;
     return ret_value;
 
