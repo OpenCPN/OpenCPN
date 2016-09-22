@@ -1268,7 +1268,7 @@ void ParseAllENC()
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
 
-    long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP | wxPD_CAN_ABORT;
+    long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
     wxProgressDialog prog(_("OpenCPN Prepare ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
 
     // make wider to show long filenames
@@ -1292,10 +1292,8 @@ void ParseAllENC()
             msg += filename;
         }
 
-        if(!prog.Update(count++, msg, &skip )){
-            j=10000;                                      // abort the loop
+        if(!prog.Update(count++, msg, &skip ))
             break;
-        }
         if(skip)
             break;
 
