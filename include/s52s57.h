@@ -303,14 +303,16 @@ typedef struct _chart_context{
 }chart_context;
 
 
-typedef struct _LineGeometryDescriptor{
+
+class LineGeometryDescriptor{
+public:
     double          extent_s_lat;
     double          extent_n_lat;
     double          extent_w_lon;
     double          extent_e_lon;
     int             indexCount;
     int *           indexTable;
-}LineGeometryDescriptor;
+};
 
 
 typedef struct _MultipointGeometryDescriptor{
@@ -330,8 +332,6 @@ public:
       //  Public Methods
       S57Obj();
       ~S57Obj();
-      S57Obj(char *first_line, int size, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
-      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
       S57Obj( const char* featureName );
       
@@ -355,10 +355,6 @@ public:
 private:
       void Init();
     
-      bool IsUsefulAttribute(char *buf);
-      int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
-      int my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max );
-
 public:
       // Instance Data
       char                    FeatureName[8];
@@ -375,21 +371,23 @@ public:
       double                  y;
       double                  z;
       int                     npt;                    // number of points as needed by arrays
-      pt                      *geoPt;                 // for LINE & AREA not described by PolyTessGeo
+      
+      pt                      *mgeoPt;                 // used for cm93 line feature select check
+      
       double                  *geoPtz;                // an array[3] for MultiPoint, SM with Z, i.e. depth
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
       PolyTessGeo             *pPolyTessGeo;
       PolyTessGeoTrap         *pPolyTrapGeo;
 
-      LLBBox           BBObj;                  // lat/lon BBox of the rendered object
+      LLBBox                  BBObj;                  // lat/lon BBox of the rendered object
       double                  m_lat;                  // The lat/lon of the object's "reference" point
       double                  m_lon;
 
       Rules                   *CSrules;               // per object conditional symbology
       int                     bCS_Added;
 
-      S52_TextC                *FText;
+      S52_TextC               *FText;
       int                     bFText_Added;
       wxRect                  rText;
 
@@ -445,9 +443,6 @@ typedef struct _mps_container{
 typedef struct _ObjRazRules{
    LUPrec          *LUP;
    S57Obj          *obj;
-//   void         (*GetPointPixel)(void *, float, float, wxPoint *);
-   
-//   s57chart        *chart;                //dsr ... chart object owning this rule set
    sm_parms        *sm_transform_parms;
    struct _ObjRazRules *child;            // child list, used only for MultiPoint Soundings
    struct _ObjRazRules *next;
@@ -574,7 +569,6 @@ public:
 
 #endif
 
-WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 
 WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
 WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );

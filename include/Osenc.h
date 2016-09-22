@@ -33,13 +33,13 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include "s52s57.h"
 #include "mygdal/ogr_s57.h"
 #include "cpl_csv.h"
 #include "chartbase.h"
 
 #include <string.h>
 #include <stdint.h>
+#include <vector>
 
 WX_DECLARE_OBJARRAY(float *,   SENCFloatPtrArray);
 
@@ -322,6 +322,17 @@ const char *MyCSVGetField( const char * pszFilename,
 
 //      Fwd Definitions
 class wxProgressDialog;
+class S57Obj;
+class VE_Element;
+class VC_Element;
+class PolyTessGeo;
+class LineGeometryDescriptor;
+
+typedef std::vector<S57Obj *> S57ObjVector;
+typedef std::vector<VE_Element *> VE_ElementVector;
+typedef std::vector<VC_Element *> VC_ElementVector;
+
+WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 
 //--------------------------------------------------------------------------
 //      Osenc definition

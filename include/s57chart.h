@@ -316,9 +316,6 @@ private:
       int         m_nvaldco_alloc;
       double       *m_pvaldco_array;
 
-      VectorHelperHash        m_vector_helper_hash;
-
-      
       
       float      *m_line_vertex_buffer;
       size_t      m_vbo_byte_length;
@@ -335,10 +332,6 @@ private:
 
       int         m_LineVBO_name;
       
-//       connected_segment_hash old_m_connector_hash;
-//       VE_Hash     old_m_ve_hash;
-//       VC_Hash     old_m_vc_hash;
-
       VE_Hash     m_ve_hash;
       VC_Hash     m_vc_hash;
       std::vector<connector_segment *> m_pcs_vector;

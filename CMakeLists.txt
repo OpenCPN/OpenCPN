@@ -1159,6 +1159,7 @@ IF (USE_S57)
 		include/Osenc.h
                 include/s57RegistrarMgr.h
                 src/s57RegistrarMgr.cpp
+                src/s57obj.cpp
 
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp

@@ -4187,10 +4187,11 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
             }
 #endif
+#if 0
             else
-                if( rzRules->obj->geoPt ) // if the object is not described by a poly structure
+                if( rzRules->obj->mgeoPt ) // if the object is not described by a poly structure
                 {
-                    pt *ppt = rzRules->obj->geoPt;
+                    pt *ppt = rzRules->obj->mgeoPt;
 
                     npt = rzRules->obj->npt;
                     ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
@@ -4213,7 +4214,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                     free( ptp );
                 }
-
+#endif
     return 1;
 }
 
@@ -4420,10 +4421,11 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
             }
 
+#if 0            
             else
-                if( rzRules->obj->geoPt ) // if the object is not described by a poly structure
+                if( rzRules->obj->mgeoPt ) // if the object is not described by a poly structure
                 {
-                    pt *ppt = rzRules->obj->geoPt;
+                    pt *ppt = rzRules->obj->mgeoPt;
 
                     npt = rzRules->obj->npt;
                     ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
@@ -4446,6 +4448,7 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                     free( ptp );
                 }
+#endif
 
     return 1;
 }
@@ -5218,7 +5221,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     // We need a pixel bounding rectangle of the passed ViewPort.
     // Very important for partial screen renders, as with dc mode pans or OpenGL FBO operation.
-    
+   
     wxPoint cr0 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMaxLat(), vp_local.GetBBox().GetMinLon());
     wxPoint cr1 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMinLat(), vp_local.GetBBox().GetMaxLon());
     wxRect clip_rect(cr0, cr1);
