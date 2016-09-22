@@ -491,8 +491,7 @@ public:
       float      *pPoints;
       int         max_priority;
       size_t      vbo_offset;
-      LLBBox edgeBBox;
-      //wxBoundingBox edgeBBox;
+      LLBBox      edgeBBox;
       
 };
 

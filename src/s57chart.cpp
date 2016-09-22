@@ -195,6 +195,7 @@ unsigned long connector_key::hash() const
     return hash_fast32(k, sizeof k, 0);
 }
 #if 0
+//TODO
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
 //----------------------------------------------------------------------------------
@@ -1316,6 +1317,15 @@ s57chart::~s57chart()
 
     delete m_pDIBThumbOrphan;
 
+    for (unsigned i=0; i<m_pcs_vector.size(); i++)
+        delete m_pcs_vector.at(i);
+ 
+    for (unsigned i=0; i<m_pve_vector.size(); i++)
+        delete m_pve_vector.at(i);
+    
+    m_pcs_vector.clear();
+    m_pve_vector.clear();
+    
 #if 0 //TODO
     VE_Hash::iterator it;
     for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
@@ -2389,6 +2399,7 @@ void s57chart::AssembleLineGeometry( void )
         VC_Element *pcs = itc->second;
         if(pcs)
             free(pcs->pPoint);
+        delete pcs;
     }
     m_vc_hash.clear();
 
@@ -5140,6 +5151,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     }
 
 
+    VEs.clear();        // destroy contents, no longer needed
+    VCs.clear();
+    
     //Walk the vector of S57Objs, associating LUPS, instructions, etc...
 
     for(unsigned int i=0 ; i < Objects.size() ; i++){
