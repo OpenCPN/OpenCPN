@@ -3977,7 +3977,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   pobj->Primitive_type = GEO_LINE;
 
                   pobj->npt = xgeom->n_max_vertex;
-                  pobj->mgeoPt = ( pt * ) xgeom->vertex_array;
+                  pobj->geoPt = ( pt * ) xgeom->vertex_array;
                   xgeom->vertex_array = NULL;               // object now owns the array
 
                   //  Declare x/y of the object to be average of all cm93points

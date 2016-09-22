@@ -372,7 +372,7 @@ public:
       double                  z;
       int                     npt;                    // number of points as needed by arrays
       
-      pt                      *mgeoPt;                 // used for cm93 line feature select check
+      pt                      *geoPt;                 // used for cm93 line feature select check
       
       double                  *geoPtz;                // an array[3] for MultiPoint, SM with Z, i.e. depth
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox

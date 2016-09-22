@@ -6543,7 +6543,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         }
 
         case GEO_LINE: {
-            if( obj->mgeoPt ) {
+            if( obj->geoPt ) {
                 //  Coarse test first
                 if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
 
@@ -6564,7 +6564,7 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 float *pfree = ptest;
 #endif
-                pt *ppt = obj->mgeoPt;
+                pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
                 double xr = obj->x_rate;

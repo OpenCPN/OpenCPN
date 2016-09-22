@@ -4511,7 +4511,7 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     cobj->iOBJL = pObj->iOBJL;
     cobj->Index = pObj->Index;
     
-    cobj->mgeoPt = (pt *)pObj->geoPt;
+    cobj->geoPt = (pt *)pObj->geoPt;
     cobj->geoPtz = pObj->geoPtz;
     cobj->geoPtMulti = pObj->geoPtMulti;
     
