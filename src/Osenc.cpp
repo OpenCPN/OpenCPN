@@ -72,6 +72,7 @@ Osenc::Osenc()
 
 Osenc::~Osenc()
 {
+    free(pBuffer);
 }
 
 void Osenc::init( void )
@@ -85,6 +86,7 @@ void Osenc::init( void )
     m_ref_lat = 0;
     m_ref_lon = 0;
     
+    m_read_base_edtn = _T("-1");
 }
 
 
@@ -1243,7 +1245,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     wxStopWatch progsw;
     int nProg = poReader->GetFeatureCount();
     
-    if(b_showProg){
+    if(wxThread::IsMain() && b_showProg){
         s_ProgDialog = new wxProgressDialog( Title, Message, nProg, NULL,
                                              wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
     }
@@ -2873,6 +2875,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
     unsigned char *p_run = vbuf;
     while( p_tp ) {
             memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float));
+            free(p_tp->p_vertex);
             p_tp->p_vertex = (double  *)p_run;
             p_run += p_tp->nVert * 2 * sizeof(float);
             p_tp = p_tp->p_next; // pick up the next in chain

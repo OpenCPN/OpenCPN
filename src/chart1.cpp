@@ -1209,10 +1209,10 @@ void ParseAllENC()
     // Building the cache may take a long time....
     // Be a little smarter.
     // Build a sorted array of chart database indices, sorted on distance from the ownship currently.
-    // This way, a user may build a few charts textures for immediate use, then "skip" out on the rest until later.
+    // This way, a user may build a few chart SENCs for immediate use, then "skip" or "cancel"out on the rest until later.
     int count = 0;
     for(int i = 0; i<ChartData->GetChartTableEntries(); i++) {
-        /* skip if not kap */
+        /* skip if not ENC */
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         if(CHART_TYPE_S57 != cte.GetChartType())
             continue;
@@ -1268,8 +1268,8 @@ void ParseAllENC()
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
 
-    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
-    wxProgressDialog prog(_("OpenCPN Parse ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+    long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP | wxPD_CAN_ABORT;
+    wxProgressDialog prog(_("OpenCPN Prepare ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
 
     // make wider to show long filenames
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
@@ -1292,7 +1292,10 @@ void ParseAllENC()
             msg += filename;
         }
 
-        prog.Update(count++, msg, &skip );
+        if(!prog.Update(count++, msg, &skip )){
+            j=10000;                                      // abort the loop
+            break;
+        }
         if(skip)
             break;
 
