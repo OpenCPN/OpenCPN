@@ -236,6 +236,8 @@ public:
       
       struct _chart_context     *m_this_chart_context;
 
+      InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
+      
 protected:
     void AssembleLineGeometry( void );
     
@@ -252,8 +254,7 @@ private:
 
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
-      InitReturn FindOrCreateSenc( const wxString& name );
-      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName);
+      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
       
       void SetLinePriorities(void);
 
@@ -261,8 +262,8 @@ private:
       bool CreateHeaderDataFromENC(void);
       bool CreateHeaderDataFromSENC(void);
       bool CreateHeaderDataFromoSENC(void);
-      bool GetBaseFileAttr(wxFileName fn);
-
+      bool GetBaseFileAttr( const wxString& file000 );
+      
       void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
 
            //    Access to raw ENC DataSet
