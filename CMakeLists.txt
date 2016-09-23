@@ -2018,7 +2018,7 @@ ENDIF(MSVC AND OCPN_USE_CRASHREPORT)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
-# add_subdirectory (plugins)
+ add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
 
 # build a CPack driven installer package
