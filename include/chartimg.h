@@ -221,7 +221,7 @@ protected:
 
 
       virtual int BSBScanScanline(wxInputStream *pinStream);
-      virtual int ReadBSBHdrLine( wxFFileInputStream*, char *, int );
+      virtual int ReadBSBHdrLine( wxInputStream*, char *, int );
       virtual int AnalyzeRefpoints(bool b_testSolution = true);
       virtual bool AnalyzeSkew(void);
       
@@ -274,8 +274,8 @@ protected:
 
       CachedLine  *pLineCache;
 
-      wxFFileInputStream    *ifs_hdr;
-      wxFFileInputStream    *ifss_bitmap;
+      wxInputStream    *ifs_hdr;
+      wxInputStream    *ifss_bitmap;
       wxBufferedInputStream *ifs_bitmap;
 
       wxString          *pBitmapFilePath;

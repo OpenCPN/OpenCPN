@@ -445,6 +445,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -std=c++0x")
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -814,6 +815,15 @@ IF(UNIX)
   ENDIF(NOT QT_ANDROID)
 ENDIF(UNIX)
 
+# check for lzma support for reading compressed charts
+FIND_PACKAGE(LibLZMA)
+IF(LIBLZMA_FOUND)
+    message (STATUS "Building with lzma support")
+    ADD_DEFINITIONS(-DUSE_LZMA)
+ELSE(LIBLZMA_FOUND)
+    message (STATUS "lzma library not found")
+ENDIF(LIBLZMA_FOUND)
+
 # For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
@@ -896,6 +906,7 @@ SET(HDRS
 		include/chartdb.h
 		include/chartdbs.h
 		include/chartimg.h
+                include/ChartDataInputStream.h
 		include/chcanv.h
 		include/timers.h
 		include/emboss_data.h
@@ -997,6 +1008,7 @@ SET(SRCS
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp
+                src/ChartDataInputStream.cpp
 		src/chcanv.cpp
 		src/ocpCursor.cpp
 		src/TCWin.cpp
@@ -1158,6 +1170,7 @@ IF (USE_S57)
 		include/Osenc.h
                 include/s57RegistrarMgr.h
                 src/s57RegistrarMgr.cpp
+                src/s57obj.cpp
 
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
@@ -1682,7 +1695,6 @@ ENDIF(BUNDLE_DOCS MATCHES "ON")
     ${PACKAGE_NAME}
     BUNDLE DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       NMEA0183
       ${EXTRA_LIBS}
@@ -1773,6 +1785,10 @@ IF(TINYXML_FOUND)
 ENDIF(TINYXML_FOUND)
 ENDIF(UNIX)
 
+IF(LIBLZMA_FOUND)
+   TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LIBLZMA_LIBRARY} )
+ENDIF(LIBLZMA_FOUND)
+
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.  These declarations may be redundant in some architectures, but do no harm.
 IF(UNIX)
@@ -1782,6 +1798,7 @@ ENDIF(UNIX)
 IF(QT_LINUX)
   TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
 ENDIF(QT_LINUX)
+
 
 IF(NOT APPLE)
 
@@ -2001,7 +2018,7 @@ ENDIF(MSVC AND OCPN_USE_CRASHREPORT)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
- add_subdirectory (plugins)
+# add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
 
 # build a CPack driven installer package

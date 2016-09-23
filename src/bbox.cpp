@@ -541,7 +541,7 @@ bool LLBBox::IntersectIn( const LLBBox &other ) const
     else if(m_minlon > other.m_maxlon)
         minlon -= 360, maxlon -= 360;
 
-    return (minlon > other.m_minlon) && (maxlon < other.m_maxlon);
+    return (other.m_minlon > minlon) && (other.m_maxlon < maxlon);
 }
 
 bool LLBBox::IntersectOutGetBias( const LLBBox &other, double bias ) const

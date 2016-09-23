@@ -34,7 +34,7 @@
 
 #include <vector>
 
-#define CURRENT_SENC_FORMAT_VERSION  124
+#define CURRENT_SENC_FORMAT_VERSION  200
 
 //    Fwd Defns
 class wxArrayOfS57attVal;
@@ -287,6 +287,7 @@ class OGRFeature;
 class PolyTessGeo;
 class PolyTessGeoTrap;
 class line_segment_element;
+class PI_line_segment_element;
 
 typedef struct _chart_context{
     void                    *m_pvc_hash;
@@ -302,6 +303,28 @@ typedef struct _chart_context{
 }chart_context;
 
 
+
+class LineGeometryDescriptor{
+public:
+    double          extent_s_lat;
+    double          extent_n_lat;
+    double          extent_w_lon;
+    double          extent_e_lon;
+    int             indexCount;
+    int *           indexTable;
+};
+
+
+typedef struct _MultipointGeometryDescriptor{
+    double          extent_s_lat;
+    double          extent_n_lat;
+    double          extent_w_lon;
+    double          extent_e_lon;
+    int             pointCount;
+    void *          pointTable;
+}MultipointGeometryDescriptor;
+
+
 class S57Obj
 {
 public:
@@ -309,17 +332,29 @@ public:
       //  Public Methods
       S57Obj();
       ~S57Obj();
-      S57Obj(char *first_line, int size, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
+      S57Obj( const char* featureName );
+      
       wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
+      
+      bool AddIntegerAttribute( const char *acronym, int val );
+      bool AddIntegerListAttribute( const char *acronym, int *pval, int nValue );
+      bool AddDoubleAttribute( const char *acronym, double val );
+      bool AddDoubleListAttribute( const char *acronym, double *pval, int nValue );
+      bool AddStringAttribute( const char *acronym, char *val );
+
+      bool SetPointGeometry( double lat, double lon, double ref_lat, double ref_lon);
+      bool SetLineGeometry( LineGeometryDescriptor *pGeo, GeoPrim_t geoType, double ref_lat, double ref_lon);
+      bool SetAreaGeometry( PolyTessGeo *ppg, double ref_lat, double ref_lon);
+      bool SetMultipointGeometry( MultipointGeometryDescriptor *pGeo, double ref_lat, double ref_lon);
+      
+      
           
       // Private Methods
 private:
-      bool IsUsefulAttribute(char *buf);
-      int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
-      int my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max );
-
+      void Init();
+    
 public:
       // Instance Data
       char                    FeatureName[8];
@@ -336,21 +371,23 @@ public:
       double                  y;
       double                  z;
       int                     npt;                    // number of points as needed by arrays
-      pt                      *geoPt;                 // for LINE & AREA not described by PolyTessGeo
+      
+      pt                      *geoPt;                 // used for cm93 line feature select check
+      
       double                  *geoPtz;                // an array[3] for MultiPoint, SM with Z, i.e. depth
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
       PolyTessGeo             *pPolyTessGeo;
       PolyTessGeoTrap         *pPolyTrapGeo;
 
-      LLBBox           BBObj;                  // lat/lon BBox of the rendered object
+      LLBBox                  BBObj;                  // lat/lon BBox of the rendered object
       double                  m_lat;                  // The lat/lon of the object's "reference" point
       double                  m_lon;
 
       Rules                   *CSrules;               // per object conditional symbology
       int                     bCS_Added;
 
-      S52_TextC                *FText;
+      S52_TextC               *FText;
       int                     bFText_Added;
       wxRect                  rText;
 
@@ -364,6 +401,7 @@ public:
       int                     *m_lsindex_array;
       int                     m_n_edge_max_points;
       line_segment_element    *m_ls_list;
+      PI_line_segment_element *m_ls_list_legacy;
       
       DisCat                  m_DisplayCat;
       int                     m_DPRI;                 // display priority, assigned from initial LUP
@@ -383,6 +421,8 @@ public:
       int auxParm1;
       int auxParm2;
       int auxParm3;
+      
+      bool                    bBBObj_valid;
 };
 
 typedef std::vector<S57Obj *> S57ObjVector;
@@ -403,9 +443,6 @@ typedef struct _mps_container{
 typedef struct _ObjRazRules{
    LUPrec          *LUP;
    S57Obj          *obj;
-//   void         (*GetPointPixel)(void *, float, float, wxPoint *);
-   
-//   s57chart        *chart;                //dsr ... chart object owning this rule set
    sm_parms        *sm_transform_parms;
    struct _ObjRazRules *child;            // child list, used only for MultiPoint Soundings
    struct _ObjRazRules *next;
@@ -451,17 +488,18 @@ class VE_Element
 public:
       unsigned int index;
       unsigned int nCount;
-      double      *pPoints;
+      float      *pPoints;
       int         max_priority;
       size_t      vbo_offset;
-      LLBBox BBox;
+      LLBBox      edgeBBox;
+      
 };
 
 class VC_Element
 {
 public:
       unsigned int index;
-      double      *pPoint;
+      float      *pPoint;
 };
 
 WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
@@ -470,8 +508,38 @@ WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
 typedef std::vector<VE_Element *> VE_ElementVector;
 typedef std::vector<VC_Element *> VC_ElementVector;
 
+typedef enum
+{
+    TYPE_CE = 0,
+    TYPE_CC,
+    TYPE_EC,
+    TYPE_EE
+} SegmentType;
+
+class connector_segment
+{
+public:
+    int vbo_offset;
+    int max_priority_cs;
+    float               cs_lat_avg;                // segment centroid
+    float               cs_lon_avg;
+    
+};
 
 class line_segment_element
+{
+public:
+    int                 priority;
+    union{              connector_segment   *pcs;
+    VE_Element          *pedge;
+    };
+    SegmentType         ls_type;
+    
+    line_segment_element *next;
+};
+
+#if 0 //TODO
+class line_segment_element_legacy
 {
 public:
     size_t              vbo_offset;
@@ -487,13 +555,6 @@ public:
     line_segment_element *next;
 };
 
-typedef enum
-{
-    TYPE_CE = 0,
-    TYPE_CC,
-    TYPE_EC,
-    TYPE_EE
-} SegmentType;
 
 class connector_segment
 {
@@ -505,7 +566,8 @@ public:
     int max_priority;
 };
 
-WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
+#endif
+
 
 WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
 WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );

@@ -918,7 +918,7 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void)
       m_ChartClassDescriptorArray.Add(pcd);
       pcd = new ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR);
       m_ChartClassDescriptorArray.Add(pcd);
-
+      
       //    If the PlugIn Manager exists, get the array of dynamically loadable chart class names
       if(g_pi_manager)
       {
@@ -1430,7 +1430,8 @@ int ChartDatabase::FinddbIndex(wxString PathToFind)
       //    Find the chart
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
       {
-          if(active_chartTable[i].GetpsFullPath()->IsSameAs(PathToFind))
+          wxString s = wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8);
+          if(s.IsSameAs(PathToFind))
             {
                   return i;
             }
@@ -1848,15 +1849,32 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
       {
             wxDir dir(dir_name);
             dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
+
+            // add xz compressed files;
+            wxArrayString compressedFileList;
+            dir.GetAllFiles(dir_name, &compressedFileList, filespec+_T(".xz"), gaf_flags);
+            for (wxArrayString::const_iterator item = compressedFileList.begin(); item != compressedFileList.end(); item++)
+                FileList.Add(*item);
+
 #ifndef __WXMSW__
+
+            
             if (filespec != lowerFileSpec)
             {
-            // add lowercase filespec files too
-            wxArrayString lowerFileList;
-            dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
-            for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
-                  FileList.Add(*item);
+                // add lowercase filespec files too
+                wxArrayString lowerFileList;
+                dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
+                for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
+                    FileList.Add(*item);
+
+
+                dir.GetAllFiles(dir_name, &compressedFileList, lowerFileSpec+_T(".xz"), gaf_flags);
+                for (wxArrayString::const_iterator item = compressedFileList.begin(); item != compressedFileList.end(); item++)
+                    FileList.Add(*item);
             }
+
+
+            
 #endif
       }
       else {                            // This is a cm93 dataset, specified as yada/yada/cm93
@@ -1899,8 +1917,12 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             wxString file_name = file.GetFullName();
             //    Validate the file name again, considering MSW's semi-random treatment of case....
             // TODO...something fishy here - may need to normalize saved name?
-            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) && !b_found_cm93)
+            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
+               !file_name.Matches(lowerFileSpec+_T(".xz")) && !file_name.Matches(filespec+_T(".xz")) &&
+               !b_found_cm93) {
+                wxLogMessage(_T("FileSpec test failed for:") + file_name);
                 continue;
+            }
 
             if(pprog && (ifile % (nFile / 60 + 1)) == 0)
                   pprog->Update(wxMin((ifile * 100) / nFile, 100), full_name);

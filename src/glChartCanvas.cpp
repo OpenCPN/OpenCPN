@@ -827,6 +827,8 @@ void glChartCanvas::SetupOpenGL()
     g_b_EnableVBO = false;
 #endif
 
+///    g_b_EnableVBO = false;
+    
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
     else
@@ -3590,8 +3592,8 @@ void glChartCanvas::Render()
                             
                             m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
                             
-                            if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
-                                OCPNPlatform::ShowBusySpinner();
+//                             if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
+//                                 OCPNPlatform::ShowBusySpinner();
                             
                             RenderCanvasBackingChart(gldc, m_canvasregion);
                         }
@@ -3811,7 +3813,7 @@ void glChartCanvas::Render()
     g_glTextureManager->FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
-    OCPNPlatform::HideBusySpinner();
+    //OCPNPlatform::HideBusySpinner();
     
     n_render++;
 }

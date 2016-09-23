@@ -50,6 +50,7 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
+#include "ChartDataInputStream.h"
 
 #include <stdio.h>
 
@@ -1311,24 +1312,27 @@ bool Is_CM93Cell_Present ( wxString &fileprefix, double lat, double lon, int sca
             if ( n_files )
                   return true;
 
-            else
-            {
+            //    Try with alternate case of m_scalechar
+            wxString old_scalechar ( scale_char );
+            wxString new_scalechar = old_scalechar.Lower();
+            
+            wxString tfile1;
+            tfile1.Printf ( _T ( "?%03d%04d." ), jlat, jlon );
+            tfile1 += new_scalechar;
+            
+            int n_files1 = dir.GetAllFiles ( sdir, &file_array, tfile1, wxDIR_FILES );
 
-                  //    Try with alternate case of m_scalechar
-                  wxString old_scalechar ( scale_char );
-                  wxString new_scalechar = old_scalechar.Lower();
+            if ( n_files1 )
+                  return true;
 
-                  wxString tfile1;
-                  tfile1.Printf ( _T ( "?%03d%04d." ), jlat, jlon );
-                  tfile1 += new_scalechar;
+            // try compressed
+            n_files = dir.GetAllFiles ( sdir, &file_array, tfile+_T(".xz"), wxDIR_FILES );
 
-                  int n_files1 = dir.GetAllFiles ( sdir, &file_array, tfile1, wxDIR_FILES );
-
-                  return ( n_files1 > 0 );
-            }
+            if ( n_files )
+                  return true;
       }
-      else
-            return false;
+
+      return false;
 }
 
 
@@ -2206,13 +2210,14 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+                OCPNPlatform::ShowBusySpinner();
                   int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) '0', vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
                         recalc_depth = true;
 
@@ -2229,7 +2234,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
                         if ( wxNOT_FOUND == m_cells_loaded_array.Index ( cell_index ) )
@@ -2240,7 +2245,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         loadcell_key++;
                   }
             }
+            OCPNPlatform::HideBusySpinner();
       }
+      
       if (recalc_depth) {
           ClearDepthContourArray();
           BuildDepthContourArray();
@@ -2332,7 +2339,7 @@ void cm93chart::ProcessVectorEdges ( void )
 
             if ( pgd->n_points )
             {
-                  double *pPoints = ( double * ) malloc ( pgd->n_points * 2 * sizeof ( double ) );
+                float *pPoints = ( float * ) malloc ( pgd->n_points * 2 * sizeof ( float ) );
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;
@@ -2369,7 +2376,7 @@ void cm93chart::ProcessVectorEdges ( void )
 //                  if(lon1 > lon2)
                   //                    lon2 += 360;
 
-                  vep->BBox.Set( lat1, lon1, lat2, lon2);
+                  vep->edgeBBox.Set( lat1, lon1, lat2, lon2);
                   
             }
             
@@ -4503,8 +4510,12 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             printf ( "    filename: %s\n", sfile );
       }
 
-      if ( !::wxFileExists ( file ) )
-      {
+      wxString compfile;
+      if ( !::wxFileExists ( file ) ) {
+          if(::wxFileExists ( file+_T(".xz")))
+              compfile = file + _T(".xz");
+          else {
+          
             //    Try with alternate case of m_scalechar
             wxString new_scalechar = m_scalechar.Lower();
 
@@ -4529,8 +4540,10 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
                   printf ( "    alternate filename: %s\n", sfile );
             }
 
-            if ( !::wxFileExists ( file1 ) )
-            {
+            if ( !::wxFileExists ( file1 ) ) {
+                if(::wxFileExists ( file1+_T(".xz")))
+                    compfile = file1 + _T(".xz");
+                else {
 
                   //    This is not really an error if the sub_char is not '0'.  It just means there are no more subcells....
                   if ( g_bDebugCM93 )
@@ -4542,21 +4555,29 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
                   }
 
                   return 0;
+                }
             }
-            else
-                  file = file1;                       // found the file as lowercase, substitute the name
+            file = file1;                       // found the file as lowercase, substitute the name
+          }
       }
 
       //    File is known to exist
 
-      OCPNPlatform::ShowBusySpinner();
-      
       wxString msg ( _T ( "Loading CM93 cell " ) );
       msg += file;
       wxLogMessage ( msg );
-
+      
       //    Set the member variable to be the actual file name for use in single chart mode info display
       m_LastFileName = file;
+
+      // Decompress if needed
+      if(compfile.Length()) {
+          file = wxFileName::CreateTempFileName(wxFileName(compfile).GetFullName());
+          if(!DecompressXZFile(compfile, file)) {
+              wxRemoveFile(file);
+              return 0;
+          }
+      }
 
       if ( g_bDebugCM93 )
       {
@@ -4572,9 +4593,14 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             wxString msg ( _T ( "   cm93chart  Error ingesting " ) );
             msg.Append ( file );
             wxLogMessage ( msg );
+
+            if(compfile.Length())
+                wxRemoveFile(file);
             return 0;
       }
 
+      if(compfile.Length())
+          wxRemoveFile(file);
 
       return 1;
 }
