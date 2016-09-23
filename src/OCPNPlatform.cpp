@@ -1337,9 +1337,9 @@ double  OCPNPlatform::GetDisplaySizeMM()
     ret = GetAndroidDisplaySize();
 #endif    
     
-    wxString msg;
-    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
-    wxLogMessage(msg);
+//     wxString msg;
+//     msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
+//     wxLogMessage(msg);
     
     return ret;
 }
