@@ -81,6 +81,7 @@ enum {
   ID_BELLSCHECKBOX,
   ID_BUTTONADD,
   ID_BUTTONDELETE,
+  ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
@@ -265,6 +266,7 @@ class options : private Uncopyable,
   void OnButtonaddClick(wxCommandEvent &event);
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
+  void OnButtoncompressClick(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -441,7 +443,7 @@ class options : private Uncopyable,
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
   wxButton *pParseENCButton;
-  wxButton *m_removeBtn;
+  wxButton *m_removeBtn, *m_compressBtn;
   int k_charts;
   int m_nCharWidthMax;
   

@@ -338,6 +338,8 @@ private:
       std::vector<connector_segment *> m_pcs_vector;
       std::vector<VE_Element *> m_pve_vector;
       
+
+      wxString    m_TempFilePath;
 protected:      
       sm_parms    vp_transform;
       

@@ -6399,9 +6399,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());
-
-            wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP(), false);
             break;
         }
     }   // switch
