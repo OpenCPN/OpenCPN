@@ -223,4 +223,12 @@
 #include "qdebug.h"
 #endif
 
+#ifndef __WXMSW__
+using namespace std;
+#include <cmath>
+
+#undef wxIsNaN
+#define wxIsNaN std::isnan
+#endif
+
 #endif      // __FILE__
