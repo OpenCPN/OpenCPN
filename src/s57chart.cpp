@@ -3567,6 +3567,10 @@ bool s57chart::IsCellOverlayType( char *pFullPath )
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 {
+    // Really can only Init and use S57 chart if the S52 Presentation Library is present and OK
+    if( (NULL ==ps52plib) || !(ps52plib->m_bOK) )
+        return INIT_FAIL_REMOVE;
+    
     wxString ext;
     if(name.Upper().EndsWith(".XZ")) {
         ext = wxFileName(name.Left(name.Length()-3)).GetExt();
@@ -3741,9 +3745,6 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
     wxFileName tsfn( SENCdir );
     tsfn.SetFullName( m_SENCFileName.GetFullName() );
     m_SENCFileName = tsfn;
-
-    // Really can only Init and use S57 chart if the S52 Presentation Library is OK
-    if( !ps52plib->m_bOK ) return INIT_FAIL_REMOVE;
 
     int build_ret_val = 1;
 
