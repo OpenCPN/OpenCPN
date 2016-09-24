@@ -3362,7 +3362,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         line_segment_element *ls = rzRules->obj->m_ls_list;
 
 #ifdef ocpnUSE_GL
-        if(!b_wide_line)
+        if( !m_pdc && !b_wide_line)
             glBegin( GL_LINES );
 #endif
             
@@ -3424,7 +3424,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             ls = ls->next;
         }
 #ifdef ocpnUSE_GL
-        if(!b_wide_line)
+    if(!m_pdc && !b_wide_line)
             glEnd();
 #endif              
     }
