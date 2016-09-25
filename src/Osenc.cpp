@@ -72,7 +72,35 @@ Osenc::Osenc()
 
 Osenc::~Osenc()
 {
+    // Free the coverage arrays, if they exist
+    SENCFloatPtrArray &AuxPtrArray = getSENCReadAuxPointArray();
+    wxArrayInt &AuxCntArray = getSENCReadAuxPointCountArray();
+    int nCOVREntries = AuxCntArray.GetCount();
+        for( unsigned int j = 0; j < (unsigned int) nCOVREntries; j++ ) {
+        free(AuxPtrArray.Item(j));
+    }
+
+    SENCFloatPtrArray &AuxNoPtrArray = getSENCReadNOCOVRPointArray();
+    wxArrayInt &AuxNoCntArray = getSENCReadNOCOVRPointCountArray();
+    int nNoCOVREntries = AuxNoCntArray.GetCount();
+    for( unsigned int j = 0; j < (unsigned int) nNoCOVREntries; j++ ) {
+        free(AuxNoPtrArray.Item(j));
+    }
+    
     free(pBuffer);
+
+    
+    for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) 
+        free (m_pNoCOVRTable[j]);
+
+    for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) 
+        free (m_pCOVRTable[j]);
+    
+    free( m_pCOVRTablePoints );
+    free( m_pCOVRTable );
+    free( m_pNoCOVRTablePoints );
+    free( m_pNoCOVRTable );
+    
 }
 
 void Osenc::init( void )
@@ -87,6 +115,14 @@ void Osenc::init( void )
     m_ref_lon = 0;
     
     m_read_base_edtn = _T("-1");
+    
+    m_nNoCOVREntries = 0;
+    m_nCOVREntries = 0;
+    m_pCOVRTablePoints = NULL;
+    m_pCOVRTable = NULL;
+    m_pNoCOVRTablePoints = NULL;
+    m_pNoCOVRTable = NULL;
+    
 }
 
 
@@ -1342,6 +1378,8 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     delete s_ProgDialog;
     
+    delete poS57DS;
+    
     return ret_code;
  
    
@@ -2555,6 +2593,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
             }
         }
     }
+
+    free( payloadBuffer );
     
     
 #if 0    
@@ -2960,6 +3000,8 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
                 pNoCovrPtrArray->Add( pf );
                 pNoCovrCntArray->Add( npt );
             }
+            else
+                free( pf );
         }
         
         
@@ -3024,6 +3066,12 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
         m_pNoCOVRTablePoints = NULL;
         m_pNoCOVRTable = NULL;
     }
+
+     for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) 
+         free(pNoCovrPtrArray->Item(j));
+     for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ )
+         free(pAuxPtrArray->Item(j));
+     
     
     delete pAuxPtrArray;
     delete pAuxCntArray;
@@ -3108,6 +3156,8 @@ OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57C
                     catcov = pobjectDef->GetFieldAsInteger( "CATCOV" );
                     return pobjectDef;
                 }
+                else
+                    delete pobjectDef;
             }
             else
                 return NULL;
@@ -3137,6 +3187,9 @@ OGRFeature *Osenc::GetChartNextM_COVR( int &catcov, S57Reader *pENCReader )
                     catcov = pobjectDef->GetFieldAsInteger( "CATCOV" );
                     return pobjectDef;
                 }
+                else
+                    delete pobjectDef;
+                
             }
             else
                 return NULL;
