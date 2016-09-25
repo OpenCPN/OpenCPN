@@ -174,6 +174,8 @@ AIS_Decoder::~AIS_Decoder( void )
 
     AISTargetNames->clear();
     delete AISTargetNames;
+
+    clear_hash_ERI();
     
     m_dsc_timer.Stop();
     m_AIS_Audio_Alert_Timer.Stop();

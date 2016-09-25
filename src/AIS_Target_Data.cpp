@@ -44,6 +44,11 @@ void make_hash_ERI(int key, const wxString & description)
 	s_ERI_hash[key] = description;
 }
 
+void clear_hash_ERI()
+{
+    s_ERI_hash.clear();
+}
+
 static wxString FormatTimeAdaptive( int seconds )
 {
     int s = seconds % 60;
