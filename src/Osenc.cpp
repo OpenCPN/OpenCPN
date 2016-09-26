@@ -849,7 +849,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //      Alternatively, we can explicitely find and apply updates from any source directory.
     //      We need to keep track of the last sequential update applied, to look out for new updates
     
-    int last_applied_update = 0;
+//    int last_applied_update = 0;
     wxString LastUpdateDate = m_date000.Format( _T("%Y%m%d") );
     
     m_last_applied_update = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
@@ -857,7 +857,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     
     if( m_last_applied_update > 0 ){
         wxString msg1;
-        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), last_applied_update );
+        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), m_last_applied_update );
         wxLogMessage( msg1 );
     }
     
@@ -2721,7 +2721,6 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     //      Alternatively, we can explicitely find and apply updates from any source directory.
     //      We need to keep track of the last sequential update applied, to look out for new updates
     
-    int last_applied_update = 0;
     wxString LastUpdateDate = m_date000.Format( _T("%Y%m%d") );
     
     m_last_applied_update = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
@@ -2729,7 +2728,7 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     
     if( m_last_applied_update > 0 ){
         wxString msg1;
-        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), last_applied_update );
+        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), m_last_applied_update );
         wxLogMessage( msg1 );
     }
     
@@ -3144,9 +3143,11 @@ OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57C
         //      Select the proper class
         poRegistrar->SelectClass( "M_COVR" );
 
+//        OGRFeatureDefn *M_COVRdef = S57GenerateObjectClassDefn( poRegistrar, 302, 0);                           
+        
         //      find this feature
         bool bFound = false;
-        OGRFeature *pobjectDef = pENCReader->ReadNextFeature( );
+        OGRFeature *pobjectDef = pENCReader->ReadNextFeature(/*M_COVRdef*/ );
         while(!bFound){
             if( pobjectDef ) {
             

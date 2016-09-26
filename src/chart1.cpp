@@ -1238,7 +1238,7 @@ void ParseAllENC()
                                    
     if(count == 0)
         return;
-
+    
     wxLogMessage(wxString::Format(_T("ParseAllENC() count = %d"), count ));
     
     //  Build another array of sorted compression targets.
@@ -1277,11 +1277,13 @@ void ParseAllENC()
     }
 */
     thread_count = 1; // for now because there is a problem with more than 1
-            
+
+#if 0    
     workers = new ParseENCWorkerThread*[thread_count];
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
-
+#endif
+        
     long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
     wxProgressDialog prog(_("OpenCPN  ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
 
@@ -1322,16 +1324,17 @@ void ParseAllENC()
             if(skip)
                 break;
         }
-        printf("count: %d\n", count);
 
 #if 1
-        s57chart *newChart = new s57chart;
+        if(ps52plib){
+            s57chart *newChart = new s57chart;
         
-        newChart->SetNativeScale(scale);
-        newChart->SetFullExtent(ext);
+            newChart->SetNativeScale(scale);
+            newChart->SetFullExtent(ext);
         
-        newChart->FindOrCreateSenc(filename, false);
-        delete newChart;
+            newChart->FindOrCreateSenc(filename, false);
+            delete newChart;
+        }
         
 #else        
         for(int t = 0;; t=(t+1)%thread_count) {
@@ -1354,6 +1357,7 @@ void ParseAllENC()
 #endif        
     }
 
+#if 0    
     /* wait for workers to finish, and clean up after then */
     for(int t = 0; t<thread_count; t++) {
         if(workers[t]) {
@@ -1362,6 +1366,7 @@ void ParseAllENC()
         }
     }
     delete [] workers;
+#endif    
 }
 
 bool MyApp::OnInit()

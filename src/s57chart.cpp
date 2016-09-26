@@ -1365,8 +1365,10 @@ s57chart::~s57chart()
 #endif
     free (m_this_chart_context);    
 
-    if(m_FullPath != m_TempFilePath)
-        wxRemoveFile(m_TempFilePath);
+    if(m_TempFilePath.Length() && (m_FullPath != m_TempFilePath)){
+        if( ::wxFileExists(m_TempFilePath) )
+            wxRemoveFile(m_TempFilePath);
+    }
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
@@ -3755,6 +3757,10 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 
 //      Look for SENC file in the target directory
 
+    wxString msg( _T("S57chart::Checking SENC file: ") );
+    msg.Append( m_SENCFileName.GetFullPath() );
+    wxLogMessage( msg );
+    
     {
         int force_make_senc = 0;
 
@@ -3763,6 +3769,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
             Osenc senc;
             if(senc.ingestHeader( m_SENCFileName.GetFullPath() ) ){
                 bbuild_new_senc = true;
+                wxLogMessage(_T("    Rebuilding SENC due to ingestHeader failure."));
             }
             else{
 
@@ -3785,21 +3792,26 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 //              Anything to do?
 //force_make_senc = 1;
                 //  SENC file version has to be correct for other tests to make sense
-                if( senc_file_version != CURRENT_SENC_FORMAT_VERSION )
+                if( senc_file_version != CURRENT_SENC_FORMAT_VERSION ){
                     bbuild_new_senc = true;
+                    wxLogMessage(_T("    Rebuilding SENC due to SENC format update."));
+                }
 
                 //  Senc EDTN must be the same as .000 file EDTN.
                 //  This test catches the usual case where the .000 file is updated from the web,
                 //  and all updates (.001, .002, etc.)  are subsumed.
-                else if( !senc_base_edtn.IsSameAs( m_edtn000 ) )
+                else if( !senc_base_edtn.IsSameAs( m_edtn000 ) ){
                     bbuild_new_senc = true;
-
+                    wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
+                }
                 else {
                     //    See if there are any new update files  in the ENC directory
                     int most_recent_update_file = GetUpdateFileArray( FileName000, NULL, m_date000, m_edtn000 );
 
-                    if( last_update != most_recent_update_file )
+                    if( last_update != most_recent_update_file ){
                         bbuild_new_senc = true;
+                        wxLogMessage(_T("    Rebuilding SENC due to incremental cell update."));
+                    }
 
 //          Make simple tests to see if the .000 file is "newer" than the SENC file representation
 //          These tests may be redundant, since the DSID:EDTN test above should catch new base files
@@ -3807,11 +3819,15 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
                     FileName000.GetTimes( NULL, &OModTime000, NULL );
                     OModTime000.ResetTime();                      // to midnight
                     if( SENCCreateDate.IsValid() ){
-                        if( OModTime000.IsLaterThan( SENCCreateDate ) )
+                        if( OModTime000.IsLaterThan( SENCCreateDate ) ){
+                            wxLogMessage(_T("    Rebuilding SENC due to Senc vs cell file time check."));
                             bbuild_new_senc = true;
+                        }
                     }
-                    else
+                    else{
                         bbuild_new_senc = true;
+                        wxLogMessage(_T("    Rebuilding SENC due to SENC create time invalid."));
+                    }
 
 
 //                     int Osize000l = FileName000.GetSize().GetLo();
@@ -3830,6 +3846,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
         }
         else if( !m_SENCFileName.FileExists() )                    // SENC file does not exist
         {
+            wxLogMessage(_T("    Rebuilding SENC due to missing SENC file."));
             bbuild_new_senc = true;
         }
     }
