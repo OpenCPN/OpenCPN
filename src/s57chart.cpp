@@ -1365,8 +1365,10 @@ s57chart::~s57chart()
 #endif
     free (m_this_chart_context);    
 
-    if(m_FullPath != m_TempFilePath)
-        wxRemoveFile(m_TempFilePath);
+    if(m_TempFilePath.Length() && (m_FullPath != m_TempFilePath)){
+        if( ::wxFileExists(m_TempFilePath) )
+            wxRemoveFile(m_TempFilePath);
+    }
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
