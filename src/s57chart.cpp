@@ -3807,6 +3807,12 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
                 else if( !senc_base_edtn.IsSameAs( m_edtn000 ) ){
                     bbuild_new_senc = true;
                     wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
+                    wxString msg;
+                    msg = _T("    Last edition recorded in SENC: ");
+                    msg += senc_base_edtn;
+                    msg += _T("  most recent edition cell file: ");
+                    msg += m_edtn000;
+                    wxLogMessage(msg);
                 }
                 else {
                     //    See if there are any new update files  in the ENC directory
@@ -3815,6 +3821,9 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
                     if( last_update != most_recent_update_file ){
                         bbuild_new_senc = true;
                         wxLogMessage(_T("    Rebuilding SENC due to incremental cell update."));
+                        wxString msg;
+                        msg.Printf(_T("    Last update recorded in SENC: %d   most recent update file: %d"), last_update, most_recent_update_file);
+                        wxLogMessage(msg);
                     }
 
 //          Make simple tests to see if the .000 file is "newer" than the SENC file representation
