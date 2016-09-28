@@ -409,6 +409,7 @@ private:
                                  wxString &LastUpdateDate, bool b_copyfiles);
     int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles);
     bool GetBaseFileAttr( const wxString &FullPath000 );
+    unsigned char *getObjectVectorIndexTable( S57Reader *poReader, OGRFeature *poFeature, int &nEntries );
     
     OGRFeature *GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57ClassRegistrar *poRegistrar );
     OGRFeature *GetChartNextM_COVR( int &catcov, S57Reader *pENCReader );
