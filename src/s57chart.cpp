@@ -3794,7 +3794,11 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 //                wxString ssize000 = senc.getsFileSize000();
 
                 wxString senc_base_edtn = senc.getSENCReadBaseEdition();
-
+                long isenc_edition;
+                senc_base_edtn.ToLong(&isenc_edition);
+                long ifile_edition;
+                m_edtn000.ToLong(&ifile_edition);
+                
 //              Anything to do?
 //force_make_senc = 1;
                 //  SENC file version has to be correct for other tests to make sense
@@ -3806,7 +3810,8 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
                 //  Senc EDTN must be the same as .000 file EDTN.
                 //  This test catches the usual case where the .000 file is updated from the web,
                 //  and all updates (.001, .002, etc.)  are subsumed.
-                else if( !senc_base_edtn.IsSameAs( m_edtn000 ) ){
+                
+                else if( ifile_edition > isenc_edition ){
                     bbuild_new_senc = true;
                     wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
                     wxString msg;
@@ -3820,7 +3825,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
                     //    See if there are any new update files  in the ENC directory
                     int most_recent_update_file = GetUpdateFileArray( FileName000, NULL, m_date000, m_edtn000 );
 
-                    if( last_update != most_recent_update_file ){
+                    if( most_recent_update_file > last_update ){
                         bbuild_new_senc = true;
                         wxLogMessage(_T("    Rebuilding SENC due to incremental cell update."));
                         wxString msg;
