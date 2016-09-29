@@ -5159,6 +5159,9 @@ void options::SetInitialVectorSettings(void)
 void options::UpdateOptionsUnits(void) {
   int depthUnit = pDepthUnitSelect->GetSelection();
 
+  depthUnit = wxMax(depthUnit, 0);
+  depthUnit = wxMin(depthUnit, 2);
+  
   // depth unit conversion factor
   float conv = 1;
   if (depthUnit == 0)  // feet
