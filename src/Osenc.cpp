@@ -2184,7 +2184,7 @@ unsigned char *Osenc::getObjectVectorIndexTable( S57Reader *poReader, OGRFeature
             else if(poLS->getNumPoints() < 1)
                 edge_rcid = 0;
             
-            int edge_ornt = 1;
+            int edge_ornt = pORNT[i];
             
             if( edge_ornt == 1 ){                                    // forward
                 *pI++ = start_rcid;
@@ -2192,7 +2192,7 @@ unsigned char *Osenc::getObjectVectorIndexTable( S57Reader *poReader, OGRFeature
                 *pI++ = end_rcid;
             } else {                                                  // reverse
                 *pI++ = end_rcid;
-                *pI++ = edge_rcid;
+                *pI++ = -edge_rcid;
                 *pI++ = start_rcid;
             }
             

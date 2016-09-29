@@ -2076,8 +2076,10 @@ void s57chart::AssembleLineGeometry( void )
                     }
 
                     VE_Element *pedge = 0;
-                    if(venode)
-                        pedge = m_ve_hash[venode];
+                    if(venode){
+                        if(m_ve_hash.find(venode) != m_ve_hash.end())
+                            pedge = m_ve_hash[venode];
+                    }
 
                     //  Get end connected node
                     unsigned int enode = *index_run++;
