@@ -840,9 +840,9 @@
               <dir>{USERDATA}/ENC/US_INLAND</dir>
             </catalog>
             <catalog>
-              <name>US ACE Inland bouys</name>
+              <name>US ACE Inland buoys</name>
               <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/ACE_BUOY_Catalog.xml</location>
-              <dir>{USERDATA}/ENC/US_INLAND_BOUYS</dir>
+              <dir>{USERDATA}/ENC/US_INLAND_BUOYS</dir>
             </catalog>
           </catalogs>
         </section>
