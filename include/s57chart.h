@@ -162,17 +162,10 @@ public:
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
       static wxString GetAttributeDecode(wxString& att, int ival);
 
-      wxFileName GetSENCFileName(){ return m_SENCFileName; }
-      void SetSENCFileName(wxFileName fn){ m_SENCFileName = fn;}
-
       int BuildRAZFromSENCFile(const wxString& SENCPath);
       static void GetChartNameFromTXT(const wxString& FullPath, wxString &Name);
+      wxString buildSENCName( const wxString& name);
       
-      int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
-
-      //    Initialize from an existing SENC file
-      bool InitFromSENCMinimal( const wxString& FullPath );
-
       //    DEPCNT VALDCO array access
       bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
@@ -285,7 +278,7 @@ private:
       char        *hdr_buf;
       char        *mybuf_ptr;
       int         hdr_len;
-      wxFileName  m_SENCFileName;
+      wxString    m_SENCFileName;
       ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
 
 
