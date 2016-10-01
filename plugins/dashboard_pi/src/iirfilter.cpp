@@ -10,8 +10,8 @@ iirfilter::iirfilter(double fc, int tp) {
 }
 
 double iirfilter::filter(double data) {
-    if (!wxIsNaN(data) && !wxIsNaN(b1)) {
-        if (wxIsNaN(accum))
+    if (!std::isnan(data) && !std::isnan(b1)) {
+        if (std::isnan(accum))
             accum = 0.0;
         switch (type) {
             case IIRFILTER_TYPE_LINEAR:
@@ -45,7 +45,7 @@ void iirfilter::reset(double a) {
 }
 
 void iirfilter::setFC(double fc) {
-    if (wxIsNaN(fc) || fc <= 0.0)
+    if (std::isnan(fc) || fc <= 0.0)
         a0 = b1 = NAN;  // NAN means no filtering will be done
     else {
         reset();
@@ -62,7 +62,7 @@ void iirfilter::setType(int tp)
 
 double iirfilter::getFc(void)
 {
-    if (wxIsNaN(b1))
+    if (std::isnan(b1))
         return 0.0;
     double fc = log(b1) / (-2.0 * 3.1415926535897932384626433832795);
     return fc;
@@ -74,7 +74,7 @@ int iirfilter::getType(void)
 }
 
 double iirfilter::get(void) {
-    if (wxIsNaN(accum))
+    if (std::isnan(accum))
         return accum;
     double res = accum;
     switch (type) {
