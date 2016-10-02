@@ -31,7 +31,6 @@
 #include "s57mgr.h"
 
 #include "s57chart.h"
-#include <ogrsf_frmts.h>
 
 #include "cpl_port.h"
 #include "cpl_csv.h"

@@ -120,7 +120,7 @@
  */
 
 #include "iso8211.h"
-#include "cpl_conv.h"
+#include "mygdal/cpl_conv.h"
 
 static const size_t nLeaderSize = 24;
 

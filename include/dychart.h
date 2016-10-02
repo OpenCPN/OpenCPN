@@ -168,7 +168,7 @@
 
 #ifdef USE_S57
 #define USE_CPL
-#include "cpl_port.h"
+#include "mygdal/cpl_port.h"
 #endif
 
 #ifndef NULL
