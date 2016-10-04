@@ -1328,37 +1328,6 @@ s57chart::~s57chart()
     m_pcs_vector.clear();
     m_pve_vector.clear();
     
-#if 0 //TODO
-    VE_Hash::iterator it;
-    for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
-        VE_Element *value = it->second;
-        if( value ) {
-            free( value->pPoints );
-            delete value;
-        }
-    }
-    old_m_ve_hash.clear();
-
-    connected_segment_hash::iterator itcsc;
-    for( itcsc = old_m_connector_hash.begin(); itcsc != old_m_connector_hash.end(); ++itcsc ) {
-        connector_segment *value = itcsc->second;
-        if( value ) {
-            delete value;
-        }
-    }
-    old_m_connector_hash.clear();
-
-    VC_Hash::iterator itc;
-    for( itc = old_m_vc_hash.begin(); itc != old_m_vc_hash.end(); ++itc ) {
-        VC_Element *value = itc->second;
-        if( value ) {
-            free( value->pPoint );
-            delete value;
-        }
-    }
-    old_m_vc_hash.clear();
-
-#endif
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
@@ -2032,10 +2001,12 @@ void s57chart::AssembleLineGeometry( void )
 
 
 
-    std::map<std::string, connector_segment *> ce_connector_hash;
-    std::map<std::string, connector_segment *> ec_connector_hash;
-    std::map<std::string, connector_segment *> cc_connector_hash;
+    std::map<long long, connector_segment *> ce_connector_hash;
+    std::map<long long, connector_segment *> ec_connector_hash;
+    std::map<long long, connector_segment *> cc_connector_hash;
 
+    std::map<long long, connector_segment *>::iterator csit;
+    
     int ndelta = 0;
 
     //  Define a vector to temporarily hold the geometry for the created pcs elements
@@ -2103,19 +2074,13 @@ void s57chart::AssembleLineGeometry( void )
 
                             //      The initial node exists and connects to the start of an edge
 
-                            char buf[40];
-                            snprintf(buf, sizeof(buf), "%d_%d", inode, venode);
-                            std::string key(buf);
-
+                            long long key = ((unsigned long long)inode << 32) + venode;
+                            
                             connector_segment *pcs = NULL;
-                            std::map<std::string, connector_segment *>::iterator itce;
-                            itce = ce_connector_hash.find( key );
-                            if( itce == ce_connector_hash.end() ){
+                            csit = ce_connector_hash.find( key );
+                            if( csit == ce_connector_hash.end() ){
                                 ndelta += 2;
                                 pcs = new connector_segment;
-                                //                                pcs->type = TYPE_CE;
-                                //                                pcs->start = ipnode;
-                                //                                pcs->end = pedge;
                                 ce_connector_hash[key] = pcs;
 
                                 // capture and store geometry
@@ -2146,7 +2111,7 @@ void s57chart::AssembleLineGeometry( void )
 
                             }
                             else
-                                pcs = itce->second;
+                                pcs = csit->second;
 
 
                             line_segment_element *pls = new line_segment_element;
@@ -2184,19 +2149,13 @@ void s57chart::AssembleLineGeometry( void )
                         if(ipnode){
                             if(pedge && pedge->nCount){
 
-                                //wxString key;
-                                //key.Printf(_T("EC%d%d"), venode, enode);
-                                char buf[40];
-                                snprintf(buf, sizeof(buf), "%d_%d", venode, enode);
-                                std::string key(buf);
-
+                                long long key = ((unsigned long long)venode << 32) + enode;
+                                
                                 connector_segment *pcs = NULL;
-                                std::map<std::string, connector_segment *>::iterator itec;
-                                itec = ec_connector_hash.find( key );
-                                if( itec == ec_connector_hash.end() ){
+                                csit = ec_connector_hash.find( key );
+                                if( csit == ec_connector_hash.end() ){
                                     ndelta += 2;
                                     pcs = new connector_segment;
-                                    //                                    pcs->type = TYPE_EC;
                                     ec_connector_hash[key] = pcs;
 
                                     // capture and store geometry
@@ -2229,11 +2188,10 @@ void s57chart::AssembleLineGeometry( void )
 
                                 }
                                 else
-                                    pcs = itec->second;
+                                    pcs = csit->second;
 
                                 line_segment_element *pls = new line_segment_element;
                                 pls->next = 0;
-                                //                                pls->n_points = 2;
                                 pls->priority = 0;
                                 pls->pcs = pcs;
                                 pls->ls_type = TYPE_EC;
@@ -2244,22 +2202,13 @@ void s57chart::AssembleLineGeometry( void )
 
                             }
                             else {
-                                //wxString key;
-                                //key.Printf(_T("CC%d%d"), inode, enode);
-                                char buf[40];
-                                snprintf(buf, sizeof(buf), "%d_%d", inode, enode);
-                                std::string key(buf);
-
-
+                                long long key = ((unsigned long long)inode << 32) + enode;
+                                
                                 connector_segment *pcs = NULL;
-                                std::map<std::string, connector_segment *>::iterator itcc;
-                                itcc = cc_connector_hash.find( key );
-                                if( itcc == cc_connector_hash.end() ){
+                                csit = cc_connector_hash.find( key );
+                                if( csit == cc_connector_hash.end() ){
                                     ndelta += 2;
                                     pcs = new connector_segment;
-                                    //                                    pcs->type = TYPE_CC;
-                                    //                                    pcs->start = ipnode;
-                                    //                                    pcs->end = epnode;
                                     cc_connector_hash[key] = pcs;
 
                                     // capture and store geometry
@@ -2285,11 +2234,10 @@ void s57chart::AssembleLineGeometry( void )
 
                                 }
                                 else
-                                    pcs = itcc->second;
+                                    pcs = csit->second;
 
                                 line_segment_element *pls = new line_segment_element;
                                 pls->next = 0;
-                                //                                pls->n_points = 2;
                                 pls->priority = 0;
                                 pls->pcs = pcs;
                                 pls->ls_type = TYPE_CC;
@@ -2348,11 +2296,10 @@ void s57chart::AssembleLineGeometry( void )
     //      At the  same time, populate a vector, storing the pcs pointers to allow destruction at this class dtor.
     //      This will allow us to destroy (automatically) the pcs hashmaps, and save some storage
 
-    std::map<std::string, connector_segment *>::iterator iter;
 
-    for( iter = ce_connector_hash.begin(); iter != ce_connector_hash.end(); ++iter )
+    for( csit = ce_connector_hash.begin(); csit != ce_connector_hash.end(); ++csit )
     {
-        connector_segment *pcs = iter->second;
+        connector_segment *pcs = csit->second;
         m_pcs_vector.push_back(pcs);
 
         segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
@@ -2365,9 +2312,9 @@ void s57chart::AssembleLineGeometry( void )
         offset += 4 * sizeof(float);
     }
 
-    for( iter = ec_connector_hash.begin(); iter != ec_connector_hash.end(); ++iter )
+    for( csit = ec_connector_hash.begin(); csit != ec_connector_hash.end(); ++csit )
     {
-        connector_segment *pcs = iter->second;
+        connector_segment *pcs = csit->second;
         m_pcs_vector.push_back(pcs);
 
         segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
@@ -2380,9 +2327,9 @@ void s57chart::AssembleLineGeometry( void )
         offset += 4 * sizeof(float);
     }
 
-    for( iter = cc_connector_hash.begin(); iter != cc_connector_hash.end(); ++iter )
+    for( csit = cc_connector_hash.begin(); csit != cc_connector_hash.end(); ++csit )
     {
-        connector_segment *pcs = iter->second;
+        connector_segment *pcs = csit->second;
         m_pcs_vector.push_back(pcs);
 
         segment_pair pair = connector_segment_vector.at(pcs->vbo_offset);
@@ -4879,68 +4826,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     m_Name = sencfile.getReadName();
 
     ObjRazRules *top;
-    ObjRazRules *nxx;
-
-#if 0 //TODO
-    // Validate hash maps....
-
-
-    for( int i = 0; i < PRIO_NUM; ++i ) {
-        for( int j = 0; j < LUPNAME_NUM; j++ ) {
-            top = razRules[i][j];
-            while( top != NULL ) {
-                S57Obj *obj = top->obj;
-
-///
-                for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
-                    int seg_index = iseg * 3;
-                    int *index_run = &obj->m_lsindex_array[seg_index];
-
-                    //  Get first connected node
-                    int inode = *index_run;
-                    if( ( inode ) ) {
-                        if( old_m_vc_hash.find( inode ) == old_m_vc_hash.end() ) {
-                            //    Must be a bad index in the SENC file
-                            //    Stuff a recognizable flag to indicate invalidity
-                            *index_run = 0;
-                            old_m_vc_hash[0] = 0;
-                        }
-                    }
-                    index_run++;
-
-                    //  Get the edge
-                    int enode = *index_run;
-                    if( ( enode ) ) {
-                        if( old_m_ve_hash.find( enode ) == old_m_ve_hash.end() ) {
-                    //    Must be a bad index in the SENC file
-                    //    Stuff a recognizable flag to indicate invalidity
-                            *index_run = 0;
-                            old_m_ve_hash[0] = 0;
-                        }
-                    }
-
-                    index_run++;
-
-                    //  Get last connected node
-                    int jnode = *index_run;
-                    if( ( jnode ) ) {
-                        if( old_m_vc_hash.find( jnode ) == old_m_vc_hash.end() ) {
-                            //    Must be a bad index in the SENC file
-                            //    Stuff a recognizable flag to indicate invalidity
-                            *index_run = 0;
-                            old_m_vc_hash[0] = 0;
-                        }
-                    }
-                    index_run++;
-
-                }
-///
-                nxx = top->next;
-                top = nxx;
-            }
-        }
-    }
-#endif
 
     //  Set up the chart context
     m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
