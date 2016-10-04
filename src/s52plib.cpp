@@ -2890,7 +2890,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( (ls_list->priority == priority_current) )   
         {
             //  Check visibility of the segment
-            if(ls_list->ls_type == TYPE_EE){
+            if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) ){
                 if((BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() && BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat()) &&
                     ((BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() && BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon()) ||
                     (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
@@ -3000,7 +3000,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             
             //  Check visibility of the segment
             bool b_drawit = false;
-            if(ls_list->ls_type == TYPE_EE){
+            if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) ){
                 if((BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() && BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat()) &&
                     ((BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() && BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon()) ||
                     (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
@@ -3371,7 +3371,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                 int nPoints;
             // fetch the first point
-                if(ls->ls_type == TYPE_EE){
+                if( (ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV) ){
                     ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
                     nPoints = ls->pedge->nCount;
                 }
@@ -3887,8 +3887,8 @@ int s52plib::RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-//     if(rzRules->obj->Index != 7574)
-//         return 0;
+    //     if(rzRules->obj->Index != 7574)
+    //         return 0;
     
     // catch cm93 and legacy PlugIns (e.g.s63_pi)
     if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
@@ -3897,150 +3897,92 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     wxPoint *ptp;
     int npt;
     wxPoint r;
-
+    
     
     int isym_len = rules->razRule->pos.line.bnbox_w.SYHL + (rules->razRule->pos.line.bnbox_x.LBXC - rules->razRule->pos.line.pivot_x.LICL);
     float sym_len = isym_len * canvas_pix_per_mm / 100;
     float sym_factor = 1.0; ///1.50;                        // gives nicer effect
-
-//      Create a color for drawing adjustments outside of HPGL renderer
+    
+    //      Create a color for drawing adjustments outside of HPGL renderer
     char *tcolptr = rules->razRule->colRef.LCRF;
     S52color *c = getColor( tcolptr + 1 ); // +1 skips "n" in HPGL SPn format
     int w = 1; // arbitrary width
     wxColour color( c->R, c->G, c->B );
-
+    double LOD = 2.0 / vp->view_scale_ppm;              // empirical value, by experiment
+    LOD = wxMin(LOD, 10.0);
+    
     //  Get the current display priority
     //  Default comes from the LUP, unless overridden
     int priority_current = rzRules->LUP->DPRI - '0';
     if(rzRules->obj->m_DPRI >= 0)
         priority_current = rzRules->obj->m_DPRI;
-
+    
     if( rzRules->obj->m_n_lsindex ) {
         
-
+        
         // Calculate the size of a work buffer
         int max_points = 0;
         if( rzRules->obj->m_n_edge_max_points > 0 ) 
             max_points = rzRules->obj->m_n_edge_max_points;
         else{
             line_segment_element *lsa = rzRules->obj->m_ls_list;
-
+            
             while(lsa){
-                    
-                if(lsa->ls_type == TYPE_EE)
+                
+                if( (lsa->ls_type == TYPE_EE) || (lsa->ls_type == TYPE_EE_REV) )
                     max_points += lsa->pedge->nCount;
                 else
                     max_points += 2;
-
+                
                 lsa = lsa->next;
             }
         }
-                
-                
+        
+        
         //  Allocate some storage for converted points
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
         double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
-
+        
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();;
         line_segment_element *ls = rzRules->obj->m_ls_list;
-
+        
         unsigned int index = 0;
         unsigned int idouble = 0;
         int nls = 0;
         wxPoint lp;
         float *ppt;
         
-        int direction;
+        int direction = 1;
         int ndraw = 0;
         while(ls){
             if( ls->priority == priority_current  ) {  
-
-                //  We need to get the direction for the first segment
-                if(index == 0){
-                    
-                    // But we only care if there is another segment following
-                    if(ls->next){
-                       
-                        int nPoints;
-                        // fetch the first point
-                        if(ls->ls_type == TYPE_EE){
-                            ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
-                            nPoints = ls->pedge->nCount;
-                        }
-                        else{
-                            ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
-                            nPoints = 2;
-                        }
-                        wxPoint pfirst;
-//                        wxPoint pfirst(ppt[1], ppt[0]);
-                        GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst, vp );
-
-                        // fetch the last point
-                        int index_last = (nPoints-1) * 2;
-//                        wxPoint plast(ppt[index_last +1], ppt[index_last]);
-                        wxPoint plast;
-                        GetPointPixSingle( rzRules, ppt[index_last +1], ppt[index_last], &plast, vp );
-                        
-                        //  Now fetch the first and last point of the following segment
-
-                        int nPoints_next;
-                        line_segment_element *lsn = ls->next;
-                        // fetch the first point
-                        if(lsn->ls_type == TYPE_EE){
-                            ppt = (float *)(vbo_point + lsn->pedge->vbo_offset);
-                            nPoints_next = lsn->pedge->nCount;
-                        }
-                        else{
-                            ppt = (float *)(vbo_point + lsn->pcs->vbo_offset);
-                            nPoints_next = 2;
-                        }
-                        wxPoint pfirst_next;
-//                        wxPoint pfirst_next(ppt[1], ppt[0]);
-                        GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst_next, vp );
-                        
-                        // fetch the last point
-                        int index_last_next = (nPoints_next-1) * 2;
-                        wxPoint plast_next;
-                        GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &plast_next, vp );
-//                        wxPoint plast_next(ppt[index_last_next +1], ppt[index_last_next]);
-                        
-                        // Now find the correct match
-                        // That is, what order(direction) of the first segmenta allows direct hookup to the next segment
-                        // we don't care about the direction of the next segment, only that it can be connected
-                        if( (plast == pfirst_next) || (plast == plast_next) )
-                            direction = 1;
-                        else if( (pfirst == pfirst_next) || (pfirst == plast_next) )
-                            direction = -1;
-                        else{
-                            color = wxColour(255,0,0);
-                        }
-                    }
-                }
-                    
+ 
                 
                 //transcribe the segment in the proper order into the output buffer
                 int nPoints;
+                int idir = 1;
                 // fetch the first point
-                if(ls->ls_type == TYPE_EE){
+                if( (ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV) ){
                     ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
                     nPoints = ls->pedge->nCount;
+                    if(ls->ls_type == TYPE_EE_REV)
+                        idir = -1;
                     
                 }
                 else{
                     ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
                     nPoints = 2;
-                 }
-            
-
+                }
+                
+                
                 int vbo_index = 0;
                 int vbo_inc = 2;
-                if(direction == -1){
+                if(idir == -1){
                     vbo_index = (nPoints-1) * 2;
                     vbo_inc = -2;
                 }
                 for(int ip=0 ; ip < nPoints ; ip++){
                     wxPoint r;
-                    //                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
                     GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
                     if( (r.x != lp.x) || (r.y != lp.y) ){
                         ptp[index++] = r;
@@ -4056,228 +3998,91 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     vbo_index += vbo_inc;
                 }            
                 
-#if 0                
-                if(direction == 1){
-                    int vbo_index = 0;
-                    for(int ip=0 ; ip < nPoints ; ip++){
-                        wxPoint r;
-//                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
-                        GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
-                        if( (r.x != lp.x) || (r.y != lp.y) ){
-                            ptp[index++] = r;
-                            pdp[idouble++] = ppt[vbo_index];
-                            pdp[idouble++] = ppt[vbo_index + 1];
-                            
-                            nls++;
-                        }
-                        else{
-                        }
-                            
-                        lp = r;
-                        vbo_index += 2;
-                    }            
-                }
-                else{
-                    int vbo_index = (nPoints-1) * 2;
-                    for(int ip=0 ; ip < nPoints ; ip++){
-                        wxPoint r;
-                        GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
-//                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
-                        if( (r.x != lp.x) || (r.y != lp.y) ){
-                            ptp[index++] = r;
-//                            printf("REVerse %d %d\n", r.x, r.y);
-                            pdp[idouble++] = ppt[vbo_index];
-                            pdp[idouble++] = ppt[vbo_index + 1];
-                            
-                            nls++;
-                        }
-                        lp = r;
-                        vbo_index -= 2;
-                    }
-                }
-#endif
-
             }  // priority
             
             // inspect the next segment to see if it can be connected, or if the chain breaks
+            int idir = 1;
             if(ls->next){
                 
                 int nPoints_next;
                 line_segment_element *lsn = ls->next;
                 // fetch the first point
-                if(lsn->ls_type == TYPE_EE){
+                if( (lsn->ls_type == TYPE_EE) || (lsn->ls_type == TYPE_EE_REV) ){
                     ppt = (float *)(vbo_point + lsn->pedge->vbo_offset);
                     nPoints_next = lsn->pedge->nCount;
+                    if(lsn->ls_type == TYPE_EE_REV)
+                        idir = -1;
+                    
                 }
                 else{
                     ppt = (float *)(vbo_point + lsn->pcs->vbo_offset);
                     nPoints_next = 2;
                 }
-                wxPoint pfirst_next;
-                GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst_next, vp );
-//                wxPoint pfirst_next(ppt[1], ppt[0]);
                 
-                // fetch the last point
-                int index_last_next = (nPoints_next-1) * 2;
-                wxPoint plast_next;
-                GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &plast_next, vp );
-//                wxPoint plast_next(ppt[index_last_next +1], ppt[index_last_next]);
-                
-                // try to match a point in this segment with the last point in the previous segment, and set direction for the next loop
-                
-                if(lp == pfirst_next)
-                    direction = 1;
-                 else if (lp == plast_next)
-                     direction = -1;
-                else{
-//                    color = wxColour(0, 0, 255);
-                    
-                   // next segment is discontinuous, so render what is available
-//                     if(ndraw > 0)
-//                         color = wxColour(0, 255, 255);
+                wxPoint ptest;
+                if(idir == 1)
+                    GetPointPixSingle( rzRules, ppt[1], ppt[0], &ptest, vp );
 
-     
-                    wxPoint2DDouble *pReduced = 0;
-                    int nPointReduced = reduceLOD( 3.0, nls, pdp, &pReduced);
+                else{
+                // fetch the last point
+                    int index_last_next = (nPoints_next-1) * 2;
+                    GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &ptest, vp );
+                }
+                
+                // try to match the correct point in this segment with the last point in the previous segment
+
+                if(lp != ptest)         // not connectable?
+                {
                     
-                    wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
-                    GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
-                    free(pReduced);
+                    if(nls){
+                        wxPoint2DDouble *pReduced = 0;
+                        int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
                     
-                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
-                    free(ptestp);
-                   
-                     ndraw++;
+                        wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
+                        GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
+                        free(pReduced);
                     
-                     nls = 0;
-                     index = 0;
-                     idouble = 0;
-                 }
+                        draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                        free(ptestp);
                     
+                        ndraw++;
+                    }
+                    
+                    nls = 0;
+                    index = 0;
+                    idouble = 0;
+                    lp = wxPoint(0,0);
+                    direction = 1;
+                }
+                
                 
             }
             else{
                 // no more segments, so render what is available
                 if(nls){
                     wxPoint2DDouble *pReduced = 0;
-                    int nPointReduced = reduceLOD( 3.0, nls, pdp, &pReduced);
-
+                    int nPointReduced = reduceLOD( LOD, nls, pdp, &pReduced);
+                    
                     wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
                     GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
                     free(pReduced);
-                
-                    draw_lc_poly( m_pdc, color, w, ptp, nls, sym_len, sym_factor, rules->razRule, vp );
+                    
+                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
                     free( ptestp );
                 }
             }
             
             ls = ls->next;
         }
-
-
+        
+        
         free( ptp );
         free(pdp);
     }
     
-
-#if 0 
-    // Not needed, all lines described by m_lsindex_array
-    else
-        if( rzRules->obj->pPolyTessGeo ) {
-            if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
-
-            PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-            float *ppolygeo = pptg->pgroup_geom;
-            if(ppolygeo){
-                int ctr_offset = 0;
-                for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                    int npt = pptg->pn_vertex[ic];
-                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    for( int ip = 0; ip < npt; ip++ ) {
-                        float plon = ppolygeo[( 2 * ip ) + ctr_offset];
-                        float plat = ppolygeo[( 2 * ip ) + ctr_offset + 1];
-
-                        GetPointPixSingle( rzRules, plat, plon, pr, vp );
-                        pr++;
-                    }
-                    float plon = ppolygeo[ctr_offset]; // close the polyline
-                    float plat = ppolygeo[ctr_offset + 1];
-                    GetPointPixSingle( rzRules, plat, plon, pr, vp );
-
-                    draw_lc_poly( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor, rules->razRule,
-                            vp );
-
-                    free( ptp );
-
-                    ctr_offset += npt * 2;
-                }
-            }
-        }
-#endif
-#if 0        
-        else
-            if( rzRules->obj->pPolyTrapGeo ) {
-                if( !rzRules->obj->pPolyTrapGeo->IsOk() ) rzRules->obj->pPolyTrapGeo->BuildTess();
-
-                PolyTrapGroup *pptg = rzRules->obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-                wxPoint2DDouble *ppolygeo = pptg->ptrapgroup_geom;
-
-                int ctr_offset = 0;
-                for( int ic = 0; ic < pptg->nContours; ic++ ) {
-
-                    npt = pptg->pn_vertex[ic];
-                    wxPoint *ptp = (wxPoint *) malloc( ( npt + 1 ) * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    for( int ip = 0; ip < npt; ip++, pr++ )
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset + ip].m_y,
-                                           ppolygeo[ctr_offset + ip].m_x, pr, vp );
-
-                    //  Close polyline
-                        GetPointPixSingle( rzRules, ppolygeo[ctr_offset].m_y,
-                                           ppolygeo[ctr_offset].m_x, pr, vp );
-
-                    draw_lc_poly( m_pdc, color, w, ptp, npt + 1, sym_len, sym_factor,
-                            rules->razRule, vp );
-
-                    free( ptp );
-                    ctr_offset += ( npt + 1 ) * 2;
-                }
-            }
-#endif
-#if 0
-            else
-                if( rzRules->obj->mgeoPt ) // if the object is not described by a poly structure
-                {
-                    pt *ppt = rzRules->obj->mgeoPt;
-
-                    npt = rzRules->obj->npt;
-                    ptp = (wxPoint *) malloc( npt * sizeof(wxPoint) );
-                    wxPoint *pr = ptp;
-                    wxPoint p;
-                    for( int ip = 0; ip < npt; ip++ ) {
-                        float plat = ppt->y;
-                        float plon = ppt->x;
-
-                        GetPointPixSingle( rzRules, plat, plon, &p, vp );
-
-                        *pr = p;
-
-                        pr++;
-                        ppt++;
-                    }
-
-                    draw_lc_poly( m_pdc, color, w, ptp, npt, sym_len, sym_factor, rules->razRule,
-                            vp );
-
-                    free( ptp );
-                }
-#endif
     return 1;
 }
+
 
 int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest)
 {
@@ -5099,8 +4904,12 @@ next_seg_dc:
     {
         //    Set up the color
         glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
-        glLineWidth( wxMax(g_GLMinCartographicLineWidth, (float)width * 0.7) );
-
+        
+        // Adjust line width up a bit, to improve render quality for GL_BLEND/GL_LINE_SMOOTH
+        float awidth = wxMax(g_GLMinCartographicLineWidth, (float)width * 0.7);
+        awidth = wxMax(awidth, 1.5);
+        glLineWidth( awidth );
+        
         int start_seg = 0;
         int end_seg = npt - 1;
         int inc = 1;
@@ -5149,12 +4958,12 @@ next_seg_dc:
 
                     //      Enable anti-aliased lines, at best quality
 #ifndef __OCPN__ANDROID__
-//                    glEnable( GL_BLEND );
-//                    glEnable( GL_LINE_SMOOTH );
+                    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glEnable (GL_BLEND);
+                    
+                    glEnable (GL_LINE_SMOOTH);
+                    glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 #endif
-                    // if(m_pen.GetWidth() > 1)
-                    //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
-                    //  else
                     {
                         glBegin( GL_LINES );
                         glVertex2i( xst1, yst1 );
@@ -5186,12 +4995,13 @@ next_seg_dc:
                         s += sym_len * sym_factor;
                     }
 #ifndef __OCPN__ANDROID__
-//                    glEnable( GL_BLEND );
-//                    glEnable( GL_LINE_SMOOTH );
+                    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glEnable (GL_BLEND);
+
+                    glEnable (GL_LINE_SMOOTH);
+                    glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+
 #endif
-                    // if(m_pen.GetWidth() > 1)
-                    //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
-                    //  else
                     {
                         glBegin( GL_LINES );
                         glVertex2i( xs, ys );
@@ -6575,6 +6385,7 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
         while( ls ){
             switch (ls->ls_type){
                 case TYPE_EE:
+                case TYPE_EE_REV:
                     
                     pedge = ls->pedge; //(VE_Element *)ls->private0;
                     if(pedge)

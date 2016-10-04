@@ -1820,7 +1820,7 @@ void s57chart::SetLinePriorities( void )
                     while( list ){
                         switch (list->ls_type){
                             case TYPE_EE:
-
+                            case TYPE_EE_REV:
                                 pedge = list->pedge;// (VE_Element *)list->private0;
                                 if(pedge)
                                     list->priority = pedge->max_priority;
@@ -1934,7 +1934,7 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     int nPoints = 0;
     line_segment_element *ls_list = obj->m_ls_list;
     while( ls_list){
-        if(ls_list->ls_type == TYPE_EE)
+        if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) )
             nPoints += ls_list->pedge->nCount;
         else
             nPoints += 2;
@@ -1956,7 +1956,7 @@ int s57chart::GetLineFeaturePointArray(S57Obj *obj, void **ret_array)
     while( ls_list){
         size_t vbo_offset = 0;
         size_t count = 0;
-        if(ls_list->ls_type == TYPE_EE){
+        if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) ){
             vbo_offset = ls_list->pedge->vbo_offset;
             count = ls_list->pedge->nCount;
         }
@@ -2052,6 +2052,8 @@ void s57chart::AssembleLineGeometry( void )
             ObjRazRules *top = razRules[i][j];
             while( top != NULL ) {
                 S57Obj *obj = top->obj;
+                if(obj->Index == 5601)
+                    int yyp = 3;
 
                 line_segment_element list_top;
                 list_top.next = 0;
@@ -2167,6 +2169,9 @@ void s57chart::AssembleLineGeometry( void )
                         pls->priority = 0;
                         pls->pedge = pedge;
                         pls->ls_type = TYPE_EE;
+                        if( !edge_dir )
+                              pls->ls_type = TYPE_EE_REV;
+                              
 
                         le_current->next = pls;             // hook it up
                         le_current = pls;
@@ -2424,422 +2429,6 @@ void s57chart::AssembleLineGeometry( void )
 
 
 
-#if 0
-void s57chart::AssembleLineGeometry( void )
-{
-            // Walk the hash tables to get the required buffer size
-
-            //  Start with the edge hash table
-            size_t nPoints = 0;
-            VE_Hash::iterator it;
-            for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
-                VE_Element *pedge = it->second;
-                if( pedge ) {
-                    nPoints += pedge->nCount;
-                }
-            }
-
-            connector_key key;
-            int ndelta = 0;
-            //  Get the end node connected segments.  To do this, we
-            //  walk the Feature array and process each feature that potetially has a LINE type element
-            for( int i = 0; i < PRIO_NUM; ++i ) {
-                for( int j = 0; j < LUPNAME_NUM; j++ ) {
-                    ObjRazRules *top = razRules[i][j];
-                    while( top != NULL ) {
-                        S57Obj *obj = top->obj;
-
-                        for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
-                            int seg_index = iseg * 3;
-                            int *index_run = &obj->m_lsindex_array[seg_index];
-
-                            //  Get first connected node
-                            unsigned int inode = *index_run++;
-
-                            //  Get the edge
-                            unsigned int venode = *index_run++;
-                            VE_Element *pedge;
-                            pedge = old_m_ve_hash[venode];
-
-                            //  Get end connected node
-                            unsigned int enode = *index_run++;
-
-                            //  Get first connected node
-                            VC_Element *ipnode;
-                            ipnode = old_m_vc_hash[inode];
-
-                            //  Get end connected node
-                            VC_Element *epnode;
-                            epnode = old_m_vc_hash[enode];
-
-                            double e0, n0, e1, n1;
-
-                            if( ipnode ) {
-                                float *ppt = ipnode->pPoint;
-                                e0 = *ppt++;
-                                n0 = *ppt;
-                                if(pedge && pedge->nCount)
-                                {
-                                    e1 = pedge->pPoints[0];
-                                    n1 = pedge->pPoints[1];
-
-                                    //      The initial node exists and connects to the start of an edge
-                                    key.set(TYPE_CE, inode, venode);
-                                    if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
-                                        ndelta += 2;
-                                        connector_segment *pcs = new connector_segment;
-                                        pcs->type = TYPE_CE;
-                                        pcs->start = ipnode;
-                                        pcs->end = pedge;
-                                        old_m_connector_hash[key] = pcs;
-                                    }
-                                }
-                            }
-
-                            if(pedge && pedge->nCount){
-                                e0 = pedge->pPoints[ (2 * (pedge->nCount - 1))];
-                                n0 = pedge->pPoints[ (2 * (pedge->nCount - 1)) + 1];
-
-                            }   //pedge
-
-                            // end node
-                            if( epnode ) {
-                                float *ppt = epnode->pPoint;
-                                e1 = *ppt++;
-                                n1 = *ppt;
-
-                                if(ipnode){
-                                    if(pedge && pedge->nCount){
-
-                                        key.set(TYPE_EC, venode, enode);
-
-                                        if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
-                                            ndelta += 2;
-                                            connector_segment *pcs = new connector_segment;
-                                            pcs->type = TYPE_EC;
-                                            pcs->start = pedge;
-                                            pcs->end = epnode;
-                                            old_m_connector_hash[key] = pcs;
-                                        }
-                                    }
-                                    else {
-                                        key.set(TYPE_CC, inode, enode);
-
-                                        if(old_m_connector_hash.find( key ) == old_m_connector_hash.end()){
-                                            ndelta += 2;
-                                            connector_segment *pcs = new connector_segment;
-                                            pcs->type = TYPE_CC;
-                                            pcs->start = ipnode;
-                                            pcs->end = epnode;
-                                            old_m_connector_hash[key] = pcs;
-                                        }
-                                    }
-                                }
-                            }
-                            }  // for
-
-
-                            top = top->next;
-                            }
-                        }
-                    }
-
-                    //  We have the total VBO point count, and a nice hashmap of the connector segments
-                    nPoints += ndelta;
-
-                    size_t vbo_byte_length = 2 * nPoints * sizeof(float);
-                    m_vbo_byte_length = vbo_byte_length;
-
-                    m_line_vertex_buffer = (float *)malloc( vbo_byte_length);
-                    float *lvr = m_line_vertex_buffer;
-                    size_t offset = 0;
-
-                    //      Copy and convert the edge points from doubles to floats,
-                    //      and recording each segment's offset in the array
-                    for( it = old_m_ve_hash.begin(); it != old_m_ve_hash.end(); ++it ) {
-                        VE_Element *pedge = it->second;
-                        if( pedge ) {
-                            float *pp = pedge->pPoints;
-                            for(size_t i = 0 ; i < pedge->nCount ; i++){
-                                float x = *pp++;
-                                float y = *pp++;
-
-                                *lvr++ = (float)x;
-                                *lvr++ = (float)y;
-                            }
-
-                            pedge->vbo_offset = offset;
-                            offset += pedge->nCount * 2 * sizeof(float);
-
-                        }
-                    }
-
-                    //      Now iterate on the hashmap, adding the connector segments in the hashmap to the VBO buffer
-                    double e0, n0, e1, n1;
-                    float *ppt;
-                    VC_Element *ipnode;
-                    VC_Element *epnode;
-                    VE_Element *pedge;
-                    connected_segment_hash::iterator itc;
-                    for( itc = old_m_connector_hash.begin(); itc != old_m_connector_hash.end(); ++itc )
-                    {
-                        connector_segment *pcs = itc->second;
-
-                        switch(pcs->type){
-                            case TYPE_CC:
-                                ipnode = (VC_Element *)pcs->start;
-                                epnode = (VC_Element *)pcs->end;
-
-                                ppt = ipnode->pPoint;
-                                e0 = *ppt++;
-                                n0 = *ppt;
-
-                                ppt = epnode->pPoint;
-                                e1 = *ppt++;
-                                n1 = *ppt;
-
-                                *lvr++ = (float)e0;
-                                *lvr++ = (float)n0;
-                                *lvr++ = (float)e1;
-                                *lvr++ = (float)n1;
-
-                                pcs->vbo_offset = offset;
-                                offset += 4 * sizeof(float);
-
-                                break;
-
-                            case TYPE_CE:
-                                ipnode = (VC_Element *)pcs->start;
-                                ppt = ipnode->pPoint;
-                                e0 = *ppt++;
-                                n0 = *ppt;
-
-                                pedge = (VE_Element *)pcs->end;
-                                e1 = pedge->pPoints[ 0 ];
-                                n1 = pedge->pPoints[ 1 ];
-
-                                *lvr++ = (float)e0;
-                                *lvr++ = (float)n0;
-                                *lvr++ = (float)e1;
-                                *lvr++ = (float)n1;
-
-                                pcs->vbo_offset = offset;
-                                offset += 4 * sizeof(float);
-                                break;
-
-                            case TYPE_EC:
-                                pedge = (VE_Element *)pcs->start;
-                                e0 = pedge->pPoints[ (2 * (pedge->nCount - 1))];
-                                n0 = pedge->pPoints[ (2 * (pedge->nCount - 1)) + 1];
-
-                                epnode = (VC_Element *)pcs->end;
-                                ppt = epnode->pPoint;
-                                e1 = *ppt++;
-                                n1 = *ppt;
-
-                                *lvr++ = (float)e0;
-                                *lvr++ = (float)n0;
-                                *lvr++ = (float)e1;
-                                *lvr++ = (float)n1;
-
-                                pcs->vbo_offset = offset;
-                                offset += 4 * sizeof(float);
-
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-
-                    // Now ready to walk the object array again, building the per-object list of renderable segments
-                    for( int i = 0; i < PRIO_NUM; ++i ) {
-                        for( int j = 0; j < LUPNAME_NUM; j++ ) {
-                            ObjRazRules *top = razRules[i][j];
-                            while( top != NULL ) {
-                                S57Obj *obj = top->obj;
-
-                                line_segment_element list_top;
-                                list_top.n_points = 0;
-                                list_top.next = 0;
-
-                                line_segment_element *le_current = &list_top;
-
-                                for( int iseg = 0; iseg < obj->m_n_lsindex; iseg++ ) {
-                                    int seg_index = iseg * 3;
-                                    int *index_run = &obj->m_lsindex_array[seg_index];
-
-                                    //  Get first connected node
-                                    unsigned int inode = *index_run++;
-
-                                    //  Get the edge
-                                    unsigned int venode = *index_run++;
-                                    VE_Element *pedge;
-                                    pedge = old_m_ve_hash[venode];
-
-                                    //  Get end connected node
-                                    unsigned int enode = *index_run++;
-
-                                    //  Get first connected node
-                                    VC_Element *ipnode;
-                                    ipnode = old_m_vc_hash[inode];
-
-                                    //  Get end connected node
-                                    VC_Element *epnode;
-                                    epnode = old_m_vc_hash[enode];
-
-                                    double e0=0, n0=0, e1, n1;
-
-                                    if( ipnode ) {
-                                        float *ppt = ipnode->pPoint;
-                                        e0 = *ppt++;
-                                        n0 = *ppt;
-
-                                        if(pedge && pedge->nCount)
-                                        {
-                                            key.set(TYPE_CE, inode, venode);
-
-                                            connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
-                                            if(itcs != old_m_connector_hash.end()){
-
-                                                connector_segment *pcs = itcs->second;
-
-                                                line_segment_element *pls = new line_segment_element;
-                                                pls->next = 0;
-                                                pls->vbo_offset = pcs->vbo_offset;
-                                                pls->n_points = 2;
-                                                pls->priority = 0;
-                                                pls->private0 = pcs;
-                                                pls->type = TYPE_CE;
-
-                                                //  Get the bounding box
-                                                e1 = pedge->pPoints[0];
-                                                n1 = pedge->pPoints[1];
-
-                                                wxBoundingBox box;
-                                                double lat, lon;
-                                                fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                box.Expand(lon, lat);
-                                                fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                box.Expand(lon, lat);
-
-                                                pls->lat_max = box.GetMaxY();
-                                                pls->lat_min = box.GetMinY();
-                                                pls->lon_max = box.GetMaxX();
-                                                pls->lon_min = box.GetMinX();
-
-
-                                                le_current->next = pls;             // hook it up
-                                                le_current = pls;
-                                            }
-                                        }
-                                    }
-
-                                    if(pedge && pedge->nCount){
-                                        line_segment_element *pls = new line_segment_element;
-                                        pls->next = 0;
-                                        pls->vbo_offset = pedge->vbo_offset;
-                                        pls->n_points = pedge->nCount;
-                                        pls->priority = 0;
-                                        pls->lat_max = pedge->BBox.GetMaxLat();
-                                        pls->lat_min = pedge->BBox.GetMinLat();
-                                        pls->lon_max = pedge->BBox.GetMaxLon();
-                                        pls->lon_min = pedge->BBox.GetMinLon();
-                                        pls->private0 = pedge;
-                                        pls->type = TYPE_EE;
-
-                                        le_current->next = pls;             // hook it up
-                                        le_current = pls;
-
-                                        e0 = pedge->pPoints[ (2 * (pedge->nCount - 1))];
-                                        n0 = pedge->pPoints[ (2 * (pedge->nCount - 1)) + 1];
-
-
-                                    }   //pedge
-
-                                    // end node
-                                    if( epnode ) {
-                                        float *ppt = epnode->pPoint;
-                                        e1 = *ppt++;
-                                        n1 = *ppt;
-
-                                        if(ipnode){
-                                            if(pedge && pedge->nCount){
-
-                                                key.set(TYPE_EC, venode, enode);
-
-                                                connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
-                                                if(itcs != old_m_connector_hash.end()){
-                                                    connector_segment *pcs = itcs->second;
-
-                                                    line_segment_element *pls = new line_segment_element;
-                                                    pls->next = 0;
-                                                    pls->vbo_offset = pcs->vbo_offset;
-                                                    pls->n_points = 2;
-                                                    pls->priority = 0;
-                                                    pls->private0 = pcs;
-                                                    pls->type = TYPE_EC;
-
-                                                    double lat1, lon1, lat2, lon2;
-                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat1, &lon1 );
-                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat2, &lon2 );
-
-                                                    LLBBox box;
-                                                    box.SetFromSegment(lat1, lon1, lat2, lon2);
-pls->lat_max = box.GetMaxLat();
-                                                    pls->lat_min = box.GetMinLat();
-                                                    pls->lon_max = box.GetMaxLon();
-                                                    pls->lon_min = box.GetMinLon();
-
-                                                    le_current->next = pls;             // hook it up
-                                                    le_current = pls;
-                                                }
-                                            }
-                                            else {
-                                                key.set(TYPE_CC, inode, enode);
-
-                                                connected_segment_hash::iterator itcs = old_m_connector_hash.find( key );
-                                                if(itcs != old_m_connector_hash.end()){
-                                                    connector_segment *pcs = itcs->second;
-
-                                                    line_segment_element *pls = new line_segment_element;
-                                                    pls->next = 0;
-                                                    pls->vbo_offset = pcs->vbo_offset;
-                                                    pls->n_points = 2;
-                                                    pls->priority = 0;
-                                                    pls->private0 = pcs;
-                                                    pls->type = TYPE_CC;
-
-                                                    double lat1, lon1, lat2, lon2;
-                                                    fromSM( e0, n0, ref_lat, ref_lon, &lat1, &lon1 );
-                                                    fromSM( e1, n1, ref_lat, ref_lon, &lat2, &lon2 );
-
-                                                    LLBBox box;
-                                                    box.SetFromSegment(lat1, lon1, lat2, lon2);
-
-                                                    pls->lat_max = box.GetMaxLat();
-                                                    pls->lat_min = box.GetMinLat();
-                                                    pls->lon_max = box.GetMaxLon();
-                                                    pls->lon_min = box.GetMinLon();
-
-                                                    le_current->next = pls;             // hook it up
-                                                    le_current = pls;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }  // for
-
-                                //  All done, so assign the list to the object
-                                obj->m_ls_list = list_top.next;    // skipping the empty first placeholder element
-
-
-                                top = top->next;
-                            }
-                        }
-                    }
-
-}
-#endif
 
 void s57chart::BuildLineVBO( void )
 {
