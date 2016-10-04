@@ -513,7 +513,8 @@ typedef enum
     TYPE_CE = 0,
     TYPE_CC,
     TYPE_EC,
-    TYPE_EE
+    TYPE_EE,
+    TYPE_EE_REV
 } SegmentType;
 
 class connector_segment

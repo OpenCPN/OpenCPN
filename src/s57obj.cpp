@@ -51,7 +51,7 @@
 #include "s52utils.h"
 #include "wx28compat.h"
 
-#include "cpl_csv.h"
+#include "mygdal/cpl_csv.h"
 #include "setjmp.h"
 
 #include "mygdal/ogr_s57.h"
@@ -74,7 +74,6 @@
 
 #include <algorithm>          // for std::sort
 #include <map>
-#include <unordered_map>
 
 #ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)

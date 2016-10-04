@@ -74,6 +74,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
+#ifndef PRIxFAST16
+#include <inttypes.h>
+#endif
 
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_debug.h"
