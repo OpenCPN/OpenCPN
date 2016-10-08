@@ -1074,6 +1074,13 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                     m_projection = PROJECTION_TRANSVERSE_MERCATOR;
                                     bp_set = true;
                               }
+
+                              if(stru.Matches(_T("*GAUSS CONFORMAL*")))
+                              {
+                                    m_projection = PROJECTION_TRANSVERSE_MERCATOR;
+                                    bp_set = true;
+                              }
+
                               if(!bp_set)
                               {
                                   m_projection = PROJECTION_UNKNOWN;
