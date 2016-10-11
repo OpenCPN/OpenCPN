@@ -5542,6 +5542,7 @@ int MyFrame::DoOptionsDialog()
     rr = g_options->GetReturnCode();
     if( rr ) {
         ProcessOptionsDialog( rr,  g_options->GetWorkDirListPtr() );
+        ChartData->GetChartDirArray() = *(g_options->GetWorkDirListPtr()); // Perform a deep copy back to main database.
         ret_val = true;
     }
 
