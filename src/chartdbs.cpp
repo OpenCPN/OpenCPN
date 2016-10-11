@@ -40,6 +40,7 @@
 #include "chartbase.h"
 #include "pluginmanager.h"
 #include "mygeom.h"                     // For DouglasPeucker();
+#include "FlexHash.h"
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif
@@ -1571,6 +1572,10 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       wxArrayString FileList;
       wxDir dir(dir_path);
       int n_files = dir.GetAllFiles(dir_path, &FileList);
+      FileList.Sort();
+
+      FlexHash hash( sizeof nacc );
+      hash.Reset();
 
       //Traverse the list of files, getting their interesting stuff to add to accumulator
       for(int ifile=0 ; ifile < n_files ; ifile++)
@@ -1580,23 +1585,26 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
 
             wxFileName file(FileList.Item(ifile));
 
+            // NOTE. Do not ever try to optimize this code by combining `wxString` calls.
+            // Otherwise `fileNameUTF8` will point to a stale buffer overwritten by garbage.
+            wxString fileNameNative = file.GetFullPath();
+            wxScopedCharBuffer fileNameUTF8 = fileNameNative.ToUTF8();
+            hash.Update( fileNameUTF8.data(), fileNameUTF8.length() );
+
             //    File Size;
             wxULongLong size = file.GetSize();
-            if(wxInvalidSize != size)
-                  nacc = nacc + size;
+            wxULongLong fileSize = ( ( size != wxInvalidSize ) ? size : 0 );
+            hash.Update( &fileSize, ( sizeof fileSize ) );
 
             //    Mod time, in ticks
             wxDateTime t = file.GetModificationTime();
-            nacc += t.GetTicks();
-
-            //    File name
-            wxString n = file.GetFullName();
-            for(unsigned int in=0 ; in < n.Len() ; in++)
-            {
-                  nacc += (unsigned char)n[in];
-            }
+            wxULongLong fileTime = t.GetTicks();
+            hash.Update( &fileTime, ( sizeof fileTime ) );
 
       }
+
+      hash.Finish();
+      hash.Receive( &nacc );
 
       //    Return the calculated magic number
       new_magic = nacc.ToString();
