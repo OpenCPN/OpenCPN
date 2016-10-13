@@ -1569,7 +1569,7 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       wxArrayString FileList;
       wxDir dir(dir_path);
       int n_files = dir.GetAllFiles(dir_path, &FileList);
-      FileList.Sort();
+      FileList.Sort();  // Ensure persistent order of items being hashed.
 
       FlexHash hash( sizeof nacc );
       hash.Reset();
@@ -1865,7 +1865,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
             }
 #endif
-            FileList.Sort();
+            FileList.Sort();    // Sorted processing order makes the progress bar more meaningful to the user.
       }
       else {                            // This is a cm93 dataset, specified as yada/yada/cm93
             wxString dir_plus = dir_name;
@@ -1928,7 +1928,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             ChartCollisionsHashMap::const_iterator collision_ptr = collision_map.find( file_name );
             bool collision = ( collision_ptr != collision_map.end() );
             bool file_path_is_same = false;
-            bool file_data_is_same = false;
+            bool file_time_is_same = false;
             ChartTableEntry *pEntry = NULL;
             wxString table_file_name;
 
@@ -1947,7 +1947,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 
                     if( t_newFile <= t_oldFile )
                     {
-                        file_data_is_same = true;
+                        file_time_is_same = true;
                         bAddFinal = false;
                         pEntry->SetValid(true);
                     }
@@ -1959,7 +1959,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 }
             }
 
-            if( file_data_is_same ) {
+            if( file_time_is_same ) {
                 // Produce the same output without actually calling `CreateChartTableEntry()`.
                 wxString msg = wxT("Loading chart data for ");
                 msg.Append(full_name);
@@ -1985,7 +1985,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 msg.Append(full_name);
                 wxLogMessage(msg);
             }
-            else if( !file_data_is_same )
+            else if( !file_time_is_same )
             {
                 //  Look at the chart file name (without directory prefix) for a further check for duplicates
                 //  This catches the case in which the "same" chart is in different locations,
