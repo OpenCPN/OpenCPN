@@ -6799,14 +6799,14 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
       wxBoxSizer* boxSizer02 = new wxBoxSizer ( wxVERTICAL );
       boxSizer02->AddSpacer ( 22 );
 
-      wxStaticText *pStaticTextXoff = new wxStaticText ( this, wxID_ANY, _ ( "User X Offset (Metres)" ), wxDefaultPosition, wxDefaultSize, 0 );
+      wxStaticText *pStaticTextXoff = new wxStaticText ( this, wxID_ANY, wxString::Format(_T( "%s (%s)" ), _( "User X Offset" ), _( "meters" ) ), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add ( pStaticTextXoff, 0, wxALL, 0 );
 
       m_pSpinCtrlXoff = new wxSpinCtrl ( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize ( 50, -1 ), wxSP_ARROW_KEYS, -10000, 10000, 0 );
       m_pSpinCtrlXoff->Connect ( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler ( CM93OffsetDialog::OnOffSetSet ), NULL, this );
       boxSizer02->Add ( m_pSpinCtrlXoff, 0, wxEXPAND|wxALL, 0 );
 
-      wxStaticText *pStaticTextYoff = new wxStaticText ( this, wxID_ANY, _ ( "User Y Offset (Metres)" ), wxDefaultPosition, wxDefaultSize, 0 );
+      wxStaticText *pStaticTextYoff = new wxStaticText ( this, wxID_ANY, wxString::Format(_T( "%s (%s)" ), _( "User Y Offset" ), _( "meters" ) ), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add ( pStaticTextYoff, 0, wxALL, 0 );
 
       m_pSpinCtrlYoff = new wxSpinCtrl ( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize ( 50, -1 ), wxSP_ARROW_KEYS, -10000, 10000, 0 );

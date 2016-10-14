@@ -298,7 +298,7 @@ void BuildCompressedCache()
 
             bool skip = false;
             wxString msg;
-            msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
+            msg.Printf( _T("%s:  %4.0f %s"), _("Distance from own ship"), distance, _("NMi") );
             if(pprog_size.x > 600){
                 msg += _T("   Chart:");
                 msg += pchart->GetFullPath();

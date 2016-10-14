@@ -2978,9 +2978,9 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 #endif
 
     if (gs)
-        tipString = wxString( _("Hide ENC Text") ) << _T(" (T)");
+        tipString = wxString( _("Hide ENC text") ) << _T(" (T)");
     else
-        tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
+        tipString = wxString( _("Show ENC text") ) << _T(" (T)");
 
     if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
         tb->AddTool( ID_ENC_TEXT, _T("text"),
@@ -3077,7 +3077,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( g_bShowAIS ) {
         if (g_bAllowShowScaled){
             if(!g_bShowScaled)
-                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS Targets") );
+                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS targets") );
             else
                 tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
         }
@@ -4474,9 +4474,9 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
     bool g_bShowAIS_Array[3] = {true, true, false}; 
     bool g_bShowScaled_Array[3] = {false, true, true};
     wxString ToolShortHelp_Array[3] = { _("Show all AIS Targets"),
-                                        _("Attenuate less critical AIS Targets"),
+                                        _("Attenuate less critical AIS targets"),
                                         _("Hide AIS Targets") };
-    wxString iconName_Array[3] = { _("AIS"),  _("AIS_Suppressed"), _("AIS_Disabled")};
+    wxString iconName_Array[3] = { _T("AIS"),  _T("AIS_Suppressed"), _T("AIS_Disabled")};
     int ArraySize = 3;
     int AIS_Toolbar_Switch = 0;
     if (StyleIndx == -1){// -1 means coming from toolbar button
@@ -4881,9 +4881,9 @@ void MyFrame::ToggleENCText( void )
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
         SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
-        wxString tip = _("Show ENC Text (T)");
+        wxString tip = _("Show ENC text") + _T(" (T)");
         if(ps52plib->GetShowS57Text())
-            tip = _("Hide ENC Text (T)");
+            tip = _("Hide ENC text") + _T(" (T)");
         if( g_toolbar )
             g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
 
@@ -5244,12 +5244,12 @@ void MyFrame::RegisterGlobalMenuItems()
 #ifdef USE_S57
     view_menu->AppendSeparator();
 #ifndef __WXOSX__
-    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
 #else
-    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("Alt-T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("Alt-T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("Alt-L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("Alt-S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
@@ -5277,12 +5277,12 @@ void MyFrame::RegisterGlobalMenuItems()
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate Less Critical AIS Targets") );    
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate less critical AIS targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
     ais_menu->AppendSeparator();
-    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
+    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("...") );
     m_pMenuBar->Append( ais_menu, _("&AIS") );
 
     wxMenu* tools_menu = new wxMenu();
@@ -5302,11 +5302,11 @@ void MyFrame::RegisterGlobalMenuItems()
 #ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
     tools_menu->AppendSeparator();
-    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences") + _T("..."), _T("Ctrl-,")) );
 #else
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
     tools_menu->AppendSeparator();
-    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options..."), _T("Ctrl-,")) );
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options") + _T("..."), _T("Ctrl-,")) );
 #endif
 
     m_pMenuBar->Append( tools_menu, _("&Tools") );
@@ -9731,7 +9731,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
 
     if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
-                                              wxString( _( "Ownship" ) ), GPX_EMPTY_STRING );
+                                              wxString( _( "Own ship" ) ), GPX_EMPTY_STRING );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
 
         pAISMOBRoute = new Route();
@@ -9743,7 +9743,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         pSelect->AddSelectableRouteSegment(ptarget->Lat, ptarget->Lon, gLat, gLon, pWP_src, pWP_MOB, pAISMOBRoute );
 
         pAISMOBRoute->m_RouteNameString = _("Temporary AISMOB Route");
-        pAISMOBRoute->m_RouteStartString = _("Present Ownship");
+        pAISMOBRoute->m_RouteStartString = _("Present own ship");
         pAISMOBRoute->m_RouteEndString = mob_label;
 
         pAISMOBRoute->m_bDeleteOnArrival = false;

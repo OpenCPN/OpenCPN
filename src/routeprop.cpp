@@ -556,7 +556,7 @@ void RouteProp::OnRoutePropRightClick( wxListEvent &event )
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
             
         // add stuff
-        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties..."));
+        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
         editItem->SetFont(*pf);
         menu.Append(editItem);
         
@@ -657,10 +657,10 @@ void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
             << _("Name") << tab << m_pRoute->m_RouteNameString << eol
             << _("Depart From") << tab << m_pRoute->m_RouteStartString << eol
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
-            << _("Total Distance") << tab << m_TotalDistCtl->GetValue() << eol
+            << _("Total distance") << tab << m_TotalDistCtl->GetValue() << eol
             << _("Speed (Kts)") << tab << m_PlanSpeedCtl->GetValue() << eol
-            << _("Departure Time (m/d/y h:m)") << tab << m_StartTimeCtl->GetValue() << eol
-            << _("Time Enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
+            << _("Departure Time") + _T(" ") + _("(m/d/y h:m)") << tab << m_StartTimeCtl->GetValue() << eol
+            << _("Time enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
 
     int noCols;
     int noRows;
@@ -847,7 +847,7 @@ void RouteProp::CreateControlsCompact()
     itemBoxSizer2->Add( itemFlexGridSizer6a, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
 
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-            _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+            _("Total distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
@@ -860,7 +860,7 @@ void RouteProp::CreateControlsCompact()
     
     
     
-    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
+    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan speed"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -874,7 +874,7 @@ void RouteProp::CreateControlsCompact()
     
     
     
-    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
+    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time enroute"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -899,7 +899,7 @@ void RouteProp::CreateControlsCompact()
 
     wxString pDispTimeZone[] = { _("UTC"), _("Local @ PC"), _("LMT @ Location") };
     
-    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Times shown as"),
+    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Time shown as"),
                                                                                     wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer2->Add( itemStaticText12b, 0, wxEXPAND | wxALL, 5 );
     
@@ -917,7 +917,7 @@ void RouteProp::CreateControlsCompact()
     wxFlexGridSizer* itemFlexGridSizer6b = new wxFlexGridSizer( 3, 2, 0, 0 );
     itemBoxSizer2->Add( itemFlexGridSizer6b, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
     
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -931,7 +931,7 @@ void RouteProp::CreateControlsCompact()
     m_chColor->SetSelection( 0 );
     itemFlexGridSizer6b->Add( m_chColor, 0,  wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -949,7 +949,7 @@ void RouteProp::CreateControlsCompact()
 #endif    
     
     
-    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -1201,24 +1201,24 @@ void RouteProp::CreateControls()
     itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
     
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-                                                       _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+                                                       _("Total distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
+    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan speed"),
                                          wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
+    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time enroute"),
                                                         wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),
+    m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time") + _T(" ") + _("(m/d/y h:m)"),
                                          wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_StartTimeLabel, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -1248,7 +1248,7 @@ void RouteProp::CreateControls()
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );
     
-    wxStaticBox* itemStaticBoxTZ = new wxStaticBox( itemDialog1, wxID_ANY,  _("Times shown as") );
+    wxStaticBox* itemStaticBoxTZ = new wxStaticBox( itemDialog1, wxID_ANY,  _("Time shown as") );
     wxStaticBoxSizer* itemStaticBoxSizerTZ = new wxStaticBoxSizer( itemStaticBoxTZ, wxHORIZONTAL );
     bSizer2->Add( itemStaticBoxSizerTZ, 0, wxEXPAND | wxALL, 5 );
     
@@ -1262,7 +1262,7 @@ void RouteProp::CreateControls()
     m_prb_tzLMT = new wxRadioButton(itemDialog1, ID_TIMEZONESEL_LMT, _("LMT @ Location"));
     itemStaticBoxSizerTZ->Add( m_prb_tzLMT, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,5 );
     
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color") + _T(":"), wxDefaultPosition, wxDefaultSize,
                                       0 );
     //m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1277,7 +1277,7 @@ void RouteProp::CreateControls()
       m_chColor->SetSelection( 0 );
       bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       
-      wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+      wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style") + _T(":"), wxDefaultPosition, wxDefaultSize,
         0 );
       bSizer2->Add( staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       
@@ -1295,7 +1295,7 @@ void RouteProp::CreateControls()
       #endif    
       
       
-      m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+      m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width") + _T(":"), wxDefaultPosition, wxDefaultSize,
         0 );
       //m_staticText2->Wrap( -1 );
       bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -2553,7 +2553,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
     //  Waypoints
-    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show Range Rings"),
+    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show range rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
     bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 0 );
 
@@ -2573,7 +2573,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     waypointradarGrid->AddGrowableCol( 1 );
     bSizerTextProperties->Add( waypointradarGrid, 0, wxLEFT | wxRIGHT| wxEXPAND, 5 );
 
-    wxStaticText* waypointdistanceText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Ring Spacing") );
+    wxStaticText* waypointdistanceText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Distance between rings") );
     waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, 1 );
 
     m_textWaypointRangeRingsStep = new wxTextCtrl( m_panelBasicProperties, ID_TEXTCTRL, _T(""), wxDefaultPosition,

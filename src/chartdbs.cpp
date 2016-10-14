@@ -1225,9 +1225,9 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             lc++;
 
             if(pc)      // chart is loaded and available
-                  line.Printf(_(" Scale:  1:%d"), pc->GetNativeScale() );
+                  line.Printf(_T(" %s:  1:%d"), _("Scale"), pc->GetNativeScale() );
             else
-                  line.Printf(_(" Scale:  1:%d"), cte.GetScale() );
+                  line.Printf(_T(" %s:  1:%d"), _("Scale"), cte.GetScale() );
 
             line += _T("\n");
             max_width = wxMax(max_width, line.Len());

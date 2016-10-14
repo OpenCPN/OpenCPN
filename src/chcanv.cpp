@@ -2399,7 +2399,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
 
                     if( !pr->m_bIsInLayer )
-                        s.Append( _("Route: ") );
+                        s.Append( _("Route") + _T(": ") );
                     else
                         s.Append( _("Layer Route: ") );
 
@@ -3468,15 +3468,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
             
             if( m_displayed_scale_factor > 10.0 )
-                text.Printf( _("Scale %4.0f (%1.0fx)"), true_scale_display, m_displayed_scale_factor );
+                text.Printf( _T("%s %4.0f (%1.0fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
             else if( m_displayed_scale_factor > 1.0 )
-                text.Printf( _("Scale %4.0f (%1.1fx)"), true_scale_display, m_displayed_scale_factor );
+                text.Printf( _T("%s %4.0f (%1.1fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
             else if( m_displayed_scale_factor > 0.1 ){
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
-                text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display, sfr );
+                text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
             }
             else  {
-                text.Printf( _("Scale %4.0f (---)"), true_scale_display );      // Generally, no chart, so no chart scale factor
+                text.Printf( _T("%s %4.0f (---)"), _("Scale"), true_scale_display );      // Generally, no chart, so no chart scale factor
             }
 
 #ifdef ocpnUSE_GL
@@ -3507,7 +3507,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     wxRect rect;
                     parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
                     if(w && w > rect.width){
-                        text.Printf( _("Scale (%1.1fx)"),  m_displayed_scale_factor );
+                        text.Printf( _T("%s (%1.1fx)"), _("Scale"), m_displayed_scale_factor );
                     }
                 
                 //  Test again...if too big still, then give it up.
@@ -8321,8 +8321,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     pMarkPropDialog->SetRoutePoint( markPoint );
     pMarkPropDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
-        wxString caption( _("Waypoint Properties, Layer: ") );
-        caption.Append( GetLayerName( markPoint->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( markPoint->m_LayerID ) ) );
         pMarkPropDialog->SetDialogTitle( caption );
     } else
         pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
@@ -8370,8 +8369,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     if( !selected->m_bIsInLayer )
         pRoutePropDialog->SetDialogTitle( title );
     else {
-        wxString caption( title << _T(", Layer: ") );
-        caption.Append( GetLayerName( selected->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), title, _("Layer"), GetLayerName( selected->m_LayerID ) ) );
         pRoutePropDialog->SetDialogTitle( caption );
     }
 
@@ -9051,7 +9049,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
 
         wxString s0;
         if( !route->m_bIsInLayer )
-            s0.Append( _("Route: ") );
+            s0.Append( _("Route") + _T(": ") );
         else
             s0.Append( _("Layer Route: ") );
 
