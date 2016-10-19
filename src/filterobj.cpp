@@ -1,29 +1,29 @@
-#include "iirfilter.h"
+#include "filterobj.h"
 
 #include <wx/math.h>
 
-iirfilter::iirfilter(double fc, int tp) {
-    wxASSERT(tp == IIRFILTER_TYPE_DEG || tp == IIRFILTER_TYPE_LINEAR || tp == IIRFILTER_TYPE_RAD);
+filterobj::filterobj(double fc, int tp) {
+    wxASSERT(tp == FILTEROBJ_TYPE_DEG || tp == FILTEROBJ_TYPE_LINEAR || tp == FILTEROBJ_TYPE_RAD);
     setFC(fc);
     type = tp;
-    reset();
+    reset(0.0);
 }
 
-double iirfilter::filter(double data) {
+double filterobj::filter(double data) {
     if (!wxIsNaN(data) && !wxIsNaN(b1)) {
         if (wxIsNaN(accum))
             accum = 0.0;
         switch (type) {
-            case IIRFILTER_TYPE_LINEAR:
+            case FILTEROBJ_TYPE_LINEAR:
                 accum = accum * b1 + a0 * data;
                 break;
 
-            case IIRFILTER_TYPE_DEG:
+            case FILTEROBJ_TYPE_DEG:
                 unwrapDeg(data);
                 accum = accum * b1 + a0 * (oldDeg + 360.0*wraps);
                 break;
                    
-            case IIRFILTER_TYPE_RAD:
+            case FILTEROBJ_TYPE_RAD:
                 unwrapRad(data);
                 accum = accum * b1 + a0 * (oldRad + 2.0*M_PI*wraps);
                 break;
@@ -37,14 +37,14 @@ double iirfilter::filter(double data) {
     return get();
 }
 
-void iirfilter::reset(double a) {
+void filterobj::reset(double a) {
     accum = a;
     oldDeg = NAN;
     oldRad = NAN;
     wraps = 0;
 }
 
-void iirfilter::setFC(double fc) {
+void filterobj::setFC(double fc) {
     if (wxIsNaN(fc) || fc <= 0.0) {
         a0 = b1 = NAN;  // NAN means no filtering will be done
         reset();
@@ -54,13 +54,13 @@ void iirfilter::setFC(double fc) {
     }
 }
 
-void iirfilter::setType(int tp)
+void filterobj::setType(int tp)
 {
-    wxASSERT(tp == IIRFILTER_TYPE_DEG || tp == IIRFILTER_TYPE_LINEAR || tp == IIRFILTER_TYPE_RAD);
+    wxASSERT(tp == FILTEROBJ_TYPE_DEG || tp == FILTEROBJ_TYPE_LINEAR || tp == FILTEROBJ_TYPE_RAD);
     type = tp;
 }
 
-double iirfilter::getFc(void)
+double filterobj::getFC(void) const
 {
     if (wxIsNaN(b1))
         return 0.0;
@@ -68,22 +68,22 @@ double iirfilter::getFc(void)
     return fc;
 }
 
-int iirfilter::getType(void)
+int filterobj::getType(void) const
 {
     return type;
 }
 
-double iirfilter::get(void) {
+double filterobj::get(void) const {
     if (wxIsNaN(accum))
         return accum;
     double res = accum;
     switch (type) {
-        case IIRFILTER_TYPE_DEG:
+        case FILTEROBJ_TYPE_DEG:
             while (res < 0) res += 360.0;
             while (res > 360) res -= 360.0;
             break;
                 
-        case IIRFILTER_TYPE_RAD:
+        case FILTEROBJ_TYPE_RAD:
             while (res < 0) res += 2.0*M_PI;
             while (res > 2.0*M_PI) res -= 2.0*M_PI;
             break;
@@ -91,7 +91,7 @@ double iirfilter::get(void) {
     return res;
 }
 
-void iirfilter::unwrapDeg(double deg) {
+void filterobj::unwrapDeg(double deg) {
     if (deg - oldDeg > 180) {
         wraps--;
     }
@@ -101,7 +101,7 @@ void iirfilter::unwrapDeg(double deg) {
     oldDeg = deg;
 }
 
-void iirfilter::unwrapRad(double rad) {
+void filterobj::unwrapRad(double rad) {
     if (rad - oldRad > M_PI) {
         wraps--;
     }
@@ -110,3 +110,4 @@ void iirfilter::unwrapRad(double rad) {
     }
     oldRad = rad;
 }
+

@@ -107,6 +107,7 @@
 #include "AISTargetQueryDialog.h"
 #include "S57QueryDialog.h"
 #include "glTexCache.h"
+#include "filterobj.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -339,6 +340,9 @@ bool                      g_bfilter_cogsog;
 int                       g_COGFilterSec;
 int                       g_SOGFilterSec;
 
+filterobj                 g_fCOG;
+filterobj                 g_fSOG;
+
 int                       g_ChartUpdatePeriod;
 int                       g_SkewCompUpdatePeriod;
 
@@ -430,7 +434,6 @@ bool                      g_bGDAL_Debug;
 double                    g_VPRotate; // Viewport rotation angle, used on "Course Up" mode
 bool                      g_bCourseUp;
 int                       g_COGAvgSec; // COG average period (sec.) for Course Up Mode
-double                    g_COGAvg;
 bool                      g_bLookAhead;
 bool                      g_bskew_comp;
 bool                      g_bopengl;
@@ -2605,11 +2608,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_bdefer_resize = false;
 
     //    Clear the NMEA Filter tables
-    for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = 0.;
-        SOGFilterTable[i] = 0.;
-    }
-    m_COGFilterLast = 0.;
+    g_fCOG.setType(FILTEROBJ_TYPE_DEG);
     m_last_bGPSValid = false;
 
     gHdt = NAN;
@@ -2617,10 +2616,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gVar = NAN;
     gSog = NAN;
     gCog = NAN;
-
-    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ ) {
-        COGTable[i] = 0.;
-    }
 
     m_fixtime = 0;
 
@@ -2673,8 +2668,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_FloatingToolbarConfigMenu = new wxMenu();
 
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
-
-    m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
     g_sticky_projection = -1;
@@ -4847,13 +4840,8 @@ void MyFrame::ToggleCourseUp( void )
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = 0.;
-        if( !wxIsNaN(gCog) ) stuff = gCog;
+        if (!wxIsNaN(gCog)) g_fCOG.reset(gCog);
 
-        if( g_COGAvgSec > 0) {
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-        }
-        g_COGAvg = stuff;
         gFrame->FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
     } else {
         if ( !g_bskew_comp && (fabs(cc1->GetVPSkew()) > 0.0001))
@@ -5663,14 +5651,8 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
-        if( !wxIsNaN(gCog) ) stuff = gCog;
-        if( g_COGAvgSec > 0 ) {
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-        }
-
-        g_COGAvg = stuff;
+        
+        if (!wxIsNaN(gCog)) g_fCOG.reset(gCog);
 
         DoCOGSet();
     }
@@ -5678,16 +5660,8 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
 
     //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
-    if( !wxIsNaN(gCog) ) stuffcog = gCog;
-    if( !wxIsNaN(gSog) ) stuffsog = gSog;
-
-    for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = stuffcog;
-        SOGFilterTable[i] = stuffsog;
-    }
-    m_COGFilterLast = stuffcog;
+    if( !wxIsNaN(gCog) ) g_fCOG.reset(gCog);
+    if( !wxIsNaN(gSog) ) g_fSOG.reset(gSog);
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
@@ -7116,7 +7090,7 @@ void MyFrame::DoCOGSet( void )
         return;
 
     double old_VPRotate = g_VPRotate;
-    g_VPRotate = -g_COGAvg * PI / 180.;
+    g_VPRotate = -g_fCOG.get() * PI / 180.;
 
     cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
@@ -7969,7 +7943,7 @@ bool MyFrame::DoChartUpdate( void )
 
         // on lookahead mode, adjust the vp center point
         if( g_bLookAhead ) {
-            double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
+            double angle = g_fCOG.get() + ( cc1->GetVPRotation() * 180. / PI );
 
             double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
             double pixel_deltax = fabs( sin( angle * PI / 180. ) ) * cc1->GetCanvasWidth() / 4;
@@ -7991,7 +7965,7 @@ bool MyFrame::DoChartUpdate( void )
 
             double meters_to_shift = cos( gLat * PI / 180. ) * pixel_delta / cc1->GetVPScale();
 
-            double dir_to_shift = g_COGAvg;
+            double dir_to_shift = g_fCOG.get();
 
             ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
         }
@@ -9474,36 +9448,8 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 
 //    Maintain average COG for Course Up Mode
 
-    if( !wxIsNaN(gCog) ) {
-        if( g_COGAvgSec > 0 ) {
-            //    Make a hole
-            for( int i = g_COGAvgSec - 1; i > 0; i-- )
-                COGTable[i] = COGTable[i - 1];
-            COGTable[0] = gCog;
-
-            double sum = 0.;
-            for( int i = 0; i < g_COGAvgSec; i++ ) {
-                double adder = COGTable[i];
-
-                if( fabs( adder - g_COGAvg ) > 180. ) {
-                    if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
-                    else
-                        adder += 360.;
-                }
-
-                sum += adder;
-            }
-            sum /= g_COGAvgSec;
-
-            if( sum < 0. ) sum += 360.;
-            else
-                if( sum >= 360. ) sum -= 360.;
-
-            g_COGAvg = sum;
-        }
-        else
-            g_COGAvg = gCog;
-    }
+    if( !wxIsNaN(gCog) )
+        gCog = g_fCOG.filter(gCog);
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
 //      Use the fix time to update the local system clock, only once per session
@@ -9603,53 +9549,13 @@ void MyFrame::FilterCogSog( void )
         //    If the data are undefined, leave the array intact
         if( !wxIsNaN(gCog) ) {
             //    Simple averaging filter for COG
-            double cog_last = gCog;       // most recent reported value
-
-            //    Make a hole in array
-            for( int i = g_COGFilterSec - 1; i > 0; i-- )
-                COGFilterTable[i] = COGFilterTable[i - 1];
-            COGFilterTable[0] = cog_last;
-
-            //
-            double sum = 0.;
-            for( int i = 0; i < g_COGFilterSec; i++ ) {
-                double adder = COGFilterTable[i];
-
-                if( fabs( adder - m_COGFilterLast ) > 180. ) {
-                    if( ( adder - m_COGFilterLast ) > 0. ) adder -= 360.;
-                    else
-                        adder += 360.;
-                }
-
-                sum += adder;
-            }
-            sum /= g_COGFilterSec;
-
-            if( sum < 0. ) sum += 360.;
-            else
-                if( sum >= 360. ) sum -= 360.;
-
-            gCog = sum;
-            m_COGFilterLast = sum;
+            gCog = g_fCOG.filter(gCog);
         }
 
         //    If the data are undefined, leave the array intact
         if( !wxIsNaN(gSog) ) {
             //    Simple averaging filter for SOG
-            double sog_last = gSog;       // most recent reported value
-
-            //    Make a hole in array
-            for( int i = g_SOGFilterSec - 1; i > 0; i-- )
-                SOGFilterTable[i] = SOGFilterTable[i - 1];
-            SOGFilterTable[0] = sog_last;
-
-            double sum = 0.;
-            for( int i = 0; i < g_SOGFilterSec; i++ ) {
-                sum += SOGFilterTable[i];
-            }
-            sum /= g_SOGFilterSec;
-
-            gSog = sum;
+            gSog = g_fSOG.filter(gSog);
         }
     }
 }

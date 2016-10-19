@@ -75,6 +75,7 @@ extern GLuint g_raster_format;
 
 #include "navutil.h"
 
+#include "filterobj.h"
 #ifdef USE_S57
 #include "s52plib.h"
 #include "s52utils.h"
@@ -119,6 +120,8 @@ extern Multiplexer* g_pMUX;
 extern bool g_bfilter_cogsog;
 extern int g_COGFilterSec;
 extern int g_SOGFilterSec;
+extern filterobj        g_fCOG;
+extern filterobj        g_fSOG;
 
 extern PlugInManager* g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -5700,6 +5703,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       wxMin(static_cast<int>(filter_val), MAX_COGSOG_FILTER_SECONDS);
   g_COGFilterSec = wxMax(g_COGFilterSec, 1);
   g_SOGFilterSec = g_COGFilterSec;
+  g_fSOG.setFC(g_bfilter_cogsog ? 1.0 / (2.0*g_SOGFilterSec) : 0.0);
+  g_fCOG.setFC(g_bfilter_cogsog ? 1.0 / (2.0*g_COGFilterSec) : 0.0);
 
   g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
