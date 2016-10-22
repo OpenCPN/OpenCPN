@@ -91,10 +91,12 @@ void OpenCPN_OGR_OSENC_ErrorHandler( CPLErr eErrClass, int nError, const char * 
     }
     
     //      Do not simply return on CE_Fatal errors, as we don't want to abort()
-    
+
+#ifndef __WXMSW__    
     if( eErrClass == CE_Fatal ) {
         longjmp( env_osenc_ogrf, 1 );                  // jump back to the setjmp() point
     }
+#endif
     
 }
 
