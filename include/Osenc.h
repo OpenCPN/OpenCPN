@@ -335,15 +335,105 @@ typedef std::vector<VC_Element *> VC_ElementVector;
 WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 
 //--------------------------------------------------------------------------
+//      Osenc_instream definition
+//--------------------------------------------------------------------------
+class Osenc_instream
+{
+public:
+    Osenc_instream(){};
+    virtual ~Osenc_instream(){};
+    
+    virtual bool Open( const wxString &senc_file_name ) = 0;
+    virtual void Close() = 0;
+    
+    virtual Osenc_instream &Read(void *buffer, size_t size) = 0;
+    virtual bool IsOk() = 0;
+    virtual bool isAvailable() = 0;
+    virtual void Shutdown() = 0;
+    
+};
+
+
+//--------------------------------------------------------------------------
+//      Osenc_instreamFile definition
+//      A simple file stream implementation based on wxFFileInputStream
+//--------------------------------------------------------------------------
+class Osenc_instreamFile : public Osenc_instream
+{
+public:
+    Osenc_instreamFile();
+    ~Osenc_instreamFile();
+    
+    bool Open( const wxString &senc_file_name );
+    void Close();
+    
+    Osenc_instream &Read(void *buffer, size_t size);
+    bool IsOk();
+    bool isAvailable();
+    void Shutdown();
+
+    
+private:
+    void Init();
+
+    wxFFileInputStream  *m_instream;
+    bool                m_ok;
+    
+};
+
+
+
+//--------------------------------------------------------------------------
+//      Osenc_outstream definition
+//--------------------------------------------------------------------------
+class Osenc_outstream
+{
+public:
+    Osenc_outstream(){};
+    virtual ~Osenc_outstream(){};
+
+    virtual bool Open(const wxString& ofileName) = 0;
+
+    virtual Osenc_outstream& Write(const void* buffer, size_t size) = 0;
+    virtual void Close() = 0;
+    virtual bool IsOk() = 0;
+    
+    
+
+};
+
+
+//--------------------------------------------------------------------------
+//      Osenc_outstreamFile definition
+//      A simple file stream implementation based on wxFFileInputStream
+//--------------------------------------------------------------------------
+class Osenc_outstreamFile : public Osenc_outstream
+{
+public:
+    Osenc_outstreamFile();
+    ~Osenc_outstreamFile();
+    
+    bool Open(const wxString& ofileName);
+    
+    Osenc_outstream& Write(const void* buffer, size_t size);
+    void Close();
+    bool IsOk();
+    
+private:
+    void Init();
+    
+    wxFFileOutputStream  *m_outstream;
+    bool                 m_ok;
+    
+};
+
+
+
+
+
+//--------------------------------------------------------------------------
 //      Osenc definition
 //--------------------------------------------------------------------------
-
-
-
-
-
-
-
 
 class Osenc
 {
@@ -352,6 +442,7 @@ public:
     ~Osenc();
 
     wxString getLastError(){ return errorMessage; }
+    void setVerbose(bool verbose );
     
     int ingestHeader(const wxString &senc_file_name);
     int ingest(const wxString &senc_file_name,
@@ -365,17 +456,16 @@ public:
                VC_ElementVector *pVCArray);
     
     //  SENC creation, by Version desired...
-    int createSenc124(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg = true);
     void SetLODMeters(double meters){ m_LOD_meters = meters;}
     void setRegistrar( S57ClassRegistrar *registrar ){ m_poRegistrar = registrar; }
     void setRefLocn( double lat, double lon){ m_ref_lat = lat; m_ref_lon = lon; }
+    void setOutstream(Osenc_outstream *stream){ m_pauxOutstream = stream; }
+    void setInstream(Osenc_instream *stream){ m_pauxInstream = stream; }
     
     wxString getUpdateDate(){ return m_LastUpdateDate; }
     wxString getBaseDate(){ return m_sdate000; }
     
     wxString getSENCFileCreateDate(){ return m_readFileCreateDate; }
-    //wxULongLong getFileSize000(){ return m_FileSize000; }
-    //wxString getsFileSize000(){ return m_sFileSize000; }
 
     int getSencReadVersion(){ return m_senc_file_read_version; }
     wxString getSENCReadBaseEdition(){ return m_read_base_edtn; }
@@ -392,19 +482,19 @@ public:
     
     int createSenc200(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg = true);
     
-    void CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReader );
-    void CreateSENCVectorConnectedTableRecord200( FILE * fpOut, S57Reader *poReader );
+    void CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Reader *poReader );
+    void CreateSENCVectorConnectedTableRecord200( Osenc_outstream *stream, S57Reader *poReader );
     
     void InitializePersistentBuffer( void );
     unsigned char *getBuffer( size_t length);
     
-        
+    int getNativeScale(){ return m_native_scale; }
+    int GetBaseFileInfo(const wxString& FullPath000, const wxString& SENCFileName);
+    
 private:
     void init();
     
-    int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
     int ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, const wxString &working_dir );
-    int ingestCell( const wxString &FullPath000, const wxString &working_dir );
     int ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
                                  wxString &LastUpdateDate, bool b_copyfiles);
     int GetUpdateFileArray(const wxFileName file000, wxArrayString *UpFiles);
@@ -414,27 +504,27 @@ private:
     OGRFeature *GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57ClassRegistrar *poRegistrar );
     OGRFeature *GetChartNextM_COVR( int &catcov, S57Reader *pENCReader );
     bool CreateCOVRTables( S57Reader *pENCReader, S57ClassRegistrar *poRegistrar );
-    bool CreateCovrRecords(FILE *fileOut);
+    bool CreateCovrRecords(Osenc_outstream *stream);
     
-    void CreateSENCRecord124( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader );
-    void  CreateSENCVectorEdgeTable(FILE * fpOut, S57Reader *poReader);
-    void  CreateSENCConnNodeTable(FILE * fpOut, S57Reader *poReader);
+    void CreateSENCRecord124( OGRFeature *pFeature, Osenc_outstream *stream, int mode, S57Reader *poReader );
+    void  CreateSENCVectorEdgeTable(Osenc_outstream *stream, S57Reader *poReader);
+    void  CreateSENCConnNodeTable(Osenc_outstream *stream, S57Reader *poReader);
 
-    bool CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader );
-    bool WriteFIDRecord200( FILE *fileOut, int nOBJL, int featureID, int prim);
-    bool WriteHeaderRecord200( FILE *fileOut, int recordType, std::string payload);
-    bool WriteHeaderRecord200( FILE *fileOut, int recordType, uint16_t value);
-    bool WriteHeaderRecord200( FILE *fileOut, int recordType, uint32_t value);
-    bool CreateAreaFeatureGeometryRecord200( S57Reader *poReader, OGRFeature *pFeature, FILE *fpOut );
-    bool CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature *pFeature, FILE *fpOut );
-    bool CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, FILE *fpOut);
+    bool CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, int mode, S57Reader *poReader );
+    bool WriteFIDRecord200( Osenc_outstream *stream, int nOBJL, int featureID, int prim);
+    bool WriteHeaderRecord200( Osenc_outstream *stream, int recordType, std::string payload);
+    bool WriteHeaderRecord200( Osenc_outstream *stream, int recordType, uint16_t value);
+    bool WriteHeaderRecord200( Osenc_outstream *stream, int recordType, uint32_t value);
+    bool CreateAreaFeatureGeometryRecord200( S57Reader *poReader, OGRFeature *pFeature, Osenc_outstream *stream );
+    bool CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature *pFeature, Osenc_outstream *stream );
+    bool CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osenc_outstream *stream);
     
     std::string GetFeatureAcronymFromTypecode( int typeCode );
     std::string GetAttributeAcronymFromTypecode( int typeCode );
     
     PolyTessGeo *BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record, unsigned char **bytes_consumed );
-    
     LineGeometryDescriptor *BuildLineGeometry( _OSENC_LineGeometry_Record_Payload *pPayload );
+    bool CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar );
     
     wxString            errorMessage;
     
@@ -493,6 +583,14 @@ private:
     SENCFloatPtrArray     m_NoCovrPtrArray;
     wxArrayInt            m_NoCovrCntArray;
     
+    
+    Osenc_outstream       *m_pauxOutstream;
+    Osenc_instream        *m_pauxInstream;
+    
+    Osenc_outstream       *m_pOutstream;
+    Osenc_instream        *m_pInstream;
+
+    bool                  m_bVerbose;
     
 };
 
