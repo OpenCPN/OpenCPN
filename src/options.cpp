@@ -6110,7 +6110,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
-    
+    m_CurrentDirList = *m_pWorkDirList; // Perform a deep copy back to main database.
+
     //  We can clear a few flag bits on "Apply", so they won't be recognised at the "OK" click.
     //  Their actions have already been accomplished once...
     m_returnChanges &= ~( FORCE_UPDATE | SCAN_UPDATE );
