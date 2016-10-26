@@ -492,6 +492,8 @@ static void CreateTexture(GLuint &tex_name, bool b_use_mipmaps)
 
 bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const wxRect &rect)
 {
+    bool busy_shown = false;
+    
     // the quality is only slightly worse because linear_mipmap_linear
     // is impossible, but still replace the texture data with the
     // correct level data and using only texture level 0
@@ -576,6 +578,7 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         if (m_newCatalog) {
             // it's an empty catalog or it's not used, odds it's going to be slow
             OCPNPlatform::ShowBusySpinner();
+            busy_shown = true;
             m_newCatalog = false;
         }
 
@@ -620,6 +623,9 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level, const 
         free( ptd->map_array[i] );
         ptd->map_array[i] = 0;
     }
+
+    if(busy_shown)
+        OCPNPlatform::HideBusySpinner();
     
     return true;
 }
