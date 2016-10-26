@@ -767,9 +767,10 @@ found_uclc_file:
               wxLogMessage(msg);
               wxLogMessage(_T("   Default datum (WGS84) substituted."));
               
-              //          return INIT_FAIL_REMOVE;
-              }
+              datum_index = DATUM_INDEX_WGS84;
           }
+          m_datum_index = datum_index;
+      }
 
 //    Convert captured plypoint information into chart COVR structures
       m_nCOVREntries = 1;
