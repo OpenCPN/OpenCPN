@@ -741,9 +741,14 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
-    double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
-    mod = wxMax(mod, .2);
-    mod = wxMin(mod, 2.0);
+//     double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
+//     mod = wxMax(mod, .2);
+//     mod = wxMin(mod, 2.0);
+
+     double modf = ((double)g_chart_zoom_modifier)/5.;  // -1->1
+     double mod = pow(8., modf);
+     mod = wxMax(mod, .2);
+     mod = wxMin(mod, 8.0);
 
     switch(family){
         case CHART_FAMILY_RASTER:{
