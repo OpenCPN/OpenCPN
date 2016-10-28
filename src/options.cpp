@@ -388,6 +388,7 @@ void OCPNCheckedListCtrl::Clear() {
       delete cb;
   }
   m_list.Clear();
+  Scroll(0,0);
 }
 
 extern ArrayOfMMSIProperties g_MMSI_Props_Array;
@@ -5079,7 +5080,7 @@ void options::SetInitialVectorSettings(void)
             
             // The ListBox control will insert entries in sorted order, which means
             // we need to
-            // keep track of already inseted items that gets pushed down the line.
+            // keep track of already inserted items that gets pushed down the line.
             int newpos = ps57CtlListBox->Append(item);
             marinersStdXref.push_back(newpos);
             for (size_t i = 0; i < iPtr; i++) {
