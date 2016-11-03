@@ -176,7 +176,8 @@ enum {
   ID_TRACKROTATETIME,
   ID_TRACKROTATEUTC,
   ID_TRACKROTATELMT,
-  ID_TRACKROTATECOMPUTER
+  ID_TRACKROTATECOMPUTER,
+  ID_SETSTDLIST
 };
 
 /* Define an int bit field for dialog return value
@@ -284,7 +285,8 @@ class options : private Uncopyable,
   void OnDisplayCategoryRadioButton(wxCommandEvent &event);
   void OnButtonClearClick(wxCommandEvent &event);
   void OnButtonSelectClick(wxCommandEvent &event);
-
+  void OnButtonSetStd(wxCommandEvent& event);
+      
   void OnPageChange(wxListbookEvent &event);
   void OnNBPageChange(wxNotebookEvent &event);
   void DoOnPageChange(size_t page);
@@ -413,14 +415,14 @@ class options : private Uncopyable,
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
 
-#if defined(__WXMSW__) || defined(__WXOSX__)
-  wxCheckListBox *ps57CtlListBox;
-#else
+// #if defined(__WXMSW__) || defined(__WXOSX__)
+//   wxCheckListBox *ps57CtlListBox;
+// #else
   OCPNCheckedListCtrl *ps57CtlListBox;
-#endif
+// #endif
 
   wxChoice *pDispCat, *pPointStyle, *pBoundStyle, *p24Color;
-  wxButton *itemButtonClearList, *itemButtonSelectList;
+  wxButton *itemButtonClearList, *itemButtonSelectList, *itemButtonSetStd;
   wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
   wxCheckBox *pCheck_SCAMIN, *pCheck_ATONTEXT, *pCheck_LDISTEXT;
   wxCheckBox *pCheck_XLSECTTEXT, *pCheck_DECLTEXT, *pCheck_NATIONALTEXT;
@@ -558,7 +560,9 @@ class options : private Uncopyable,
 
   void ClearNMEAForm(void);
   bool m_bNMEAParams_shown;
-
+  
+  void resetMarStdList(bool bsetConfig, bool bsetStd);
+  
   void SetConnectionParams(ConnectionParams *cp);
   void SetDefaultConnectionParams(void);
   void SetDSFormRWStates();

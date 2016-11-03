@@ -322,7 +322,7 @@ class OCPNCheckedListCtrl : public wxScrolledWindow {
 
   virtual ~OCPNCheckedListCtrl() {}
 
-  unsigned int Append(wxString& label);
+  unsigned int Append(wxString& label, bool benable = true);
   unsigned int GetCount() { return m_list.GetCount(); }
 
   void Clear();
@@ -355,8 +355,10 @@ bool OCPNCheckedListCtrl::Create(wxWindow* parent, wxWindowID id,
   return TRUE;
 }
 
-unsigned int OCPNCheckedListCtrl::Append(wxString& label) {
+unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable) {
   wxCheckBox* cb = new wxCheckBox(this, wxID_ANY, label);
+  cb->Enable(benable);
+  cb->SetValue(!benable);
   m_sizer->Add(cb);
   m_sizer->Layout();  
   
@@ -872,6 +874,7 @@ EVT_CHOICE(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton)
 EVT_CHOICE(ID_DEPTHUNITSCHOICE, options::OnUnitsChoice)
 EVT_BUTTON(ID_CLEARLIST, options::OnButtonClearClick)
 EVT_BUTTON(ID_SELECTLIST, options::OnButtonSelectClick)
+EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
 EVT_BUTTON(ID_AISALERTSELECTSOUND, options::OnButtonSelectSound)
 EVT_BUTTON(ID_AISALERTTESTSOUND, options::OnButtonTestSound)
 EVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
@@ -3251,25 +3254,29 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         new wxStaticBoxSizer(marinersBox, wxVERTICAL);
     dispSizer->Add(marinersSizer, 1, wxALL | wxEXPAND, border_size);
 
-#if defined(__WXMSW__) || defined(__WXOSX__)
-    wxString* ps57CtlListBoxStrings = NULL;
-
-    ps57CtlListBox = new wxCheckListBox(
-        ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
-        ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
-#else
+// #if defined(__WXMSW__) || defined(__WXOSX__)
+//     wxString* ps57CtlListBoxStrings = NULL;
+// 
+//     ps57CtlListBox = new wxCheckListBox(
+//         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
+//         ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
+// #else
     ps57CtlListBox = new OCPNCheckedListCtrl(
         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350));
-#endif
+// #endif
     marinersSizer->Add(ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing);
 
-    wxBoxSizer* btnRow = new wxBoxSizer(wxHORIZONTAL);
-    itemButtonSelectList =
-        new wxButton(ps57Ctl, ID_SELECTLIST, _("Select All"));
-    btnRow->Add(itemButtonSelectList, 1, wxALL | wxEXPAND, group_item_spacing);
+    wxBoxSizer* btnRow1 = new wxBoxSizer(wxHORIZONTAL);
+    itemButtonSelectList =  new wxButton(ps57Ctl, ID_SELECTLIST, _("Select All"));
+    btnRow1->Add(itemButtonSelectList, 1, wxALL | wxEXPAND, group_item_spacing);
     itemButtonClearList = new wxButton(ps57Ctl, ID_CLEARLIST, _("Clear All"));
-    btnRow->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
-    marinersSizer->Add(btnRow);
+    btnRow1->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
+    marinersSizer->Add(btnRow1);
+    
+    wxBoxSizer* btnRow2 = new wxBoxSizer(wxHORIZONTAL);
+    itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
+    btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
+    marinersSizer->Add(btnRow2);
   }
 
   else {
@@ -3467,15 +3474,15 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     btnRow->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow);
 
-#if defined(__WXMSW__) || defined(__WXOSX__)
-    wxString* ps57CtlListBoxStrings = NULL;
-    ps57CtlListBox = new wxCheckListBox(
-        ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
-        ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
-#else
+// #if defined(__WXMSW__) || defined(__WXOSX__)
+//     wxString* ps57CtlListBoxStrings = NULL;
+//     ps57CtlListBox = new wxCheckListBox(
+//         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
+//         ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
+// #else
     ps57CtlListBox = new OCPNCheckedListCtrl(
         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350));
-#endif
+// #endif
 
     marinersSizer->Add(ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing);
   }
@@ -5054,6 +5061,70 @@ void options::SetInitialSettings(void) {
   
 }
 
+void options::resetMarStdList(bool bsetConfig, bool bsetStd)
+{
+    if (ps57CtlListBox) {
+        //    S52 Primary Filters
+        ps57CtlListBox->Clear();
+        marinersStdXref.clear();
+        
+        for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++) {
+            OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
+
+            if( !strncmp(pOLE->OBJLName, "CBLARE", 6))
+                int yyp = 3;
+                
+            wxString item;
+            if (iPtr < ps52plib->OBJLDescriptions.size()) {
+                item = ps52plib->OBJLDescriptions[iPtr];
+            } else {
+                item = wxString(pOLE->OBJLName, wxConvUTF8);
+            }
+            
+            
+            // Find the most conservative Category, among Point, Area, and Line LUPs
+            DisCat cat = OTHER;
+ 
+            DisCat catp = ps52plib->findLUPDisCat(pOLE->OBJLName, SIMPLIFIED);
+            DisCat cata = ps52plib->findLUPDisCat(pOLE->OBJLName, PLAIN_BOUNDARIES);
+            DisCat catl = ps52plib->findLUPDisCat(pOLE->OBJLName, LINES);
+            
+            if((catp == DISPLAYBASE) || (cata == DISPLAYBASE) || (catl== DISPLAYBASE) )
+                cat = DISPLAYBASE;
+            else if((catp == STANDARD) || (cata == STANDARD) || (catl== STANDARD) )
+                cat = STANDARD;
+            
+            bool benable = true;
+            if(cat > 0)
+                benable = cat != DISPLAYBASE;
+            
+            // The ListBox control will insert entries in sorted order, which means
+                // we need to
+                // keep track of already inserted items that gets pushed down the line.
+                int newpos = ps57CtlListBox->Append(item, benable);
+                marinersStdXref.push_back(newpos);
+                for (size_t i = 0; i < iPtr; i++) {
+                    if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
+                }
+                
+                bool bviz = 0;
+                if(bsetConfig)
+                    bviz = !(pOLE->nViz == 0);
+                
+                if(cat == DISPLAYBASE)
+                    bviz = true;
+                
+                if(bsetStd){
+                    if(cat == STANDARD){
+                        bviz = true;
+                    }
+                }
+                
+                ps57CtlListBox->Check(newpos, bviz);
+        }
+    }
+}
+
 void options::SetInitialVectorSettings(void)
 {
 #ifdef USE_S57
@@ -5062,34 +5133,8 @@ void options::SetInitialVectorSettings(void)
     //    Diplay Category
     if (ps52plib) {
         m_bVectorInit = true;
-    
-        if (ps57CtlListBox) {
-            //    S52 Primary Filters
-            ps57CtlListBox->Clear();
-            marinersStdXref.clear();
-            
-            for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
-                 iPtr++) {
-                OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
-            wxString item;
-            if (iPtr < ps52plib->OBJLDescriptions.size()) {
-                item = ps52plib->OBJLDescriptions[iPtr];
-            } else {
-                item = wxString(pOLE->OBJLName, wxConvUTF8);
-            }
-            
-            // The ListBox control will insert entries in sorted order, which means
-            // we need to
-            // keep track of already inserted items that gets pushed down the line.
-            int newpos = ps57CtlListBox->Append(item);
-            marinersStdXref.push_back(newpos);
-            for (size_t i = 0; i < iPtr; i++) {
-                if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
-            }
-            
-            ps57CtlListBox->Check(newpos, !(pOLE->nViz == 0));
-                 }
-        }
+        resetMarStdList(true, false);
+
         #ifdef __OCPN__ANDROID__
         ps57CtlListBox->GetHandle()->setStyleSheet(getQtStyleSheet());
         #endif
@@ -5341,9 +5386,12 @@ void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
 }
 
 void options::OnButtonClearClick(wxCommandEvent& event) {
-  int nOBJL = ps57CtlListBox->GetCount();
-  for (int iPtr = 0; iPtr < nOBJL; iPtr++) ps57CtlListBox->Check(iPtr, FALSE);
-
+  resetMarStdList(false, false);
+    
+//   int nOBJL = ps57CtlListBox->GetCount();
+//   for (int iPtr = 0; iPtr < nOBJL; iPtr++){
+//           ps57CtlListBox->Check(iPtr, FALSE);
+//   }
   event.Skip();
 }
 
@@ -5352,6 +5400,12 @@ void options::OnButtonSelectClick(wxCommandEvent& event) {
   for (int iPtr = 0; iPtr < nOBJL; iPtr++) ps57CtlListBox->Check(iPtr, TRUE);
 
   event.Skip();
+}
+
+void options::OnButtonSetStd(wxCommandEvent& event) {
+    resetMarStdList(false, true);
+    
+    event.Skip();
 }
 
 bool options::ShowToolTips(void) { return TRUE; }
