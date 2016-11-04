@@ -602,11 +602,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
-                    double drval2 = 0.0;
-                    GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
+//                     double drval2 = 0.0;
+//                     GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
                     
-                    if(depth_value < drval2)
-                        b_promote = true;
+//                     if(depth_value < drval2)
+//                         b_promote = true;
                     
                     if(drval1 >= safety_contour)
                     {

@@ -383,7 +383,30 @@ void s52plib::DestroyRulesChain( Rules *top )
 
 
 
-
+DisCat s52plib::findLUPDisCat(const char *objectName, LUPname TNAM)
+{
+    LUPArrayContainer *plac = SelectLUPArrayContainer( TNAM );
+    
+    wxArrayOfLUPrec *LUPArray = SelectLUPARRAY( TNAM  );
+    
+    
+    //      Find the first matching entry in the LUP Array
+    int index = 0;
+    int index_max = LUPArray->GetCount();
+    LUPrec *LUPCandidate;
+    
+    
+    while(  index < index_max  ) {
+        LUPCandidate = LUPArray->Item( index );
+        if( !strcmp( objectName, LUPCandidate->OBCL ) ) {
+            return LUPCandidate->DISC;
+        }
+        index++;
+    }
+    
+    return (DisCat)(-1);
+}
+    
 
 
 
@@ -469,7 +492,7 @@ void s52plib::GenerateStateHash()
     
 }
 
-wxArrayOfLUPrec* s52plib::SelectLUPARRAY( LUPname TNAM )
+wxArrayOfLUPrec* s52plib::SelectLUPARRAY( LUPname TNAM  )
 {
     switch( TNAM ){
         case SIMPLIFIED:
@@ -6072,8 +6095,8 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
- //   if(rzRules->obj->Index == 534)
- //       int yyp = 0;
+//     if(rzRules->obj->Index == 914)
+//         int yyp = 0;
     
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
@@ -6295,39 +6318,26 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
     Rules *rules = rzRules->LUP->ruleList;
 
     //      Do Object Type Filtering
-    //    If the object s not currently visible (i.e. on a not-currently visible layer),
+    //    If the object s not currently visible (i.e. classed as a not-currently visible category),
     //    then do not set the line segment priorities at all
+    //    
 
     bool b_catfilter = true;
 
-    if( m_nDisplayCategory == MARINERS_STANDARD ) {
-        if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );
-
-        if( !( (OBJLElement *) ( pOBJLArray->Item( rzRules->obj->iOBJL ) ) )->nViz ) b_catfilter =
-                false;
-    }
-
-    if( m_nDisplayCategory == OTHER ) {
-        if( ( DISPLAYBASE != rzRules->LUP->DISC ) && ( STANDARD != rzRules->LUP->DISC )
-                && ( OTHER != rzRules->LUP->DISC ) ) {
-            b_catfilter = false;
+   // DEPCNT is mutable
+    if( m_nDisplayCategory == STANDARD ) {
+        if( ( DISPLAYBASE != rzRules->LUP->DISC ) && ( STANDARD != rzRules->LUP->DISC ) ) {
+            b_catfilter = rzRules->obj->m_bcategory_mutable;
+        }
+    } else if( m_nDisplayCategory == DISPLAYBASE ) {
+        if( DISPLAYBASE != rzRules->LUP->DISC ) {
+            b_catfilter = rzRules->obj->m_bcategory_mutable;
         }
     }
 
-    else {
-        // DEPCNT is mutable
-        if( m_nDisplayCategory == STANDARD ) {
-            if( ( DISPLAYBASE != rzRules->LUP->DISC ) && ( STANDARD != rzRules->LUP->DISC ) ) {
-                b_catfilter = rzRules->obj->m_bcategory_mutable;
-            }
-        } else
-            if( m_nDisplayCategory == DISPLAYBASE ) {
-                if( DISPLAYBASE != rzRules->LUP->DISC ) {
-                    b_catfilter = rzRules->obj->m_bcategory_mutable;
-                }
-            }
-    }
-    if( !b_catfilter ) return 0;
+    if(!b_catfilter)            // No chance this object is visible
+        return 0;
+
 
     while( rules != NULL ) {
         switch( rules->ruleType ){
@@ -8902,7 +8912,8 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( rzRules->obj == NULL ) return false;
 
     bool b_catfilter = true;
-
+    bool b_visible = false;
+    
     //  Meta object override
     if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) ) if( !m_bShowMeta ) return false;
 
@@ -8912,8 +8923,13 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
         if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );
 
-        if( !( (OBJLElement *) ( pOBJLArray->Item( rzRules->obj->iOBJL ) ) )->nViz ) b_catfilter =
-                false;
+        if( DISPLAYBASE == obj_cat ){        // always display individual objects that were moved to DISPLAYBASE by CS Procedures
+            b_visible = true;
+            b_catfilter = false;
+        }
+        else if( !( (OBJLElement *) ( pOBJLArray->Item( rzRules->obj->iOBJL ) ) )->nViz ){
+                b_catfilter = false;
+        }
     }
 
     else
@@ -8939,7 +8955,6 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( !strncmp( rzRules->LUP->OBCL, "SOUNDG", 6 ) )
         b_catfilter = m_bShowSoundg;
     
-    bool b_visible = false;
     if( b_catfilter ) {
         b_visible = true;
 
