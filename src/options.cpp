@@ -5123,6 +5123,12 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
                 ps57CtlListBox->Check(newpos, bviz);
         }
     }
+
+    //  Force the wxScrolledWindow to recalculate its scroll bars
+    wxSize s = ps57CtlListBox->GetSize();
+    ps57CtlListBox->SetSize(s.x, s.y-1);
+    
+
 }
 
 void options::SetInitialVectorSettings(void)
@@ -5162,11 +5168,10 @@ void options::SetInitialVectorSettings(void)
         
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-        itemButtonClearList->Enable(MARINERS_STANDARD ==
-        ps52plib->GetDisplayCategory());
-        itemButtonSelectList->Enable(MARINERS_STANDARD ==
-        ps52plib->GetDisplayCategory());
-        
+        itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+        itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+        itemButtonSetStd->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
+                
         //  Other Display Filters
         pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
         pCheck_META->SetValue(ps52plib->m_bShowMeta);
@@ -5381,6 +5386,8 @@ void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
   ps57CtlListBox->Enable(select);
   itemButtonClearList->Enable(select);
   itemButtonSelectList->Enable(select);
+  itemButtonSetStd->Enable(select);
+  
 
   event.Skip();
 }
