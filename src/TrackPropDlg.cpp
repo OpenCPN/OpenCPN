@@ -510,25 +510,6 @@ void TrackPropDlg::CreateControlsCompact()
       itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
       m_sdbBtmBtnsSizerOK->SetDefault();
 
-/*
-      //Make it look nice and add the needed non-standard buttons
-      int w1, w2, h;
-      ((wxWindowBase *)m_stName)->GetSize( &w1, &h );
-      ((wxWindowBase *)m_stFrom)->GetSize( &w2, &h );
-      ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-      ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-*/
-#if 0
-      Connect( m_menuItemDelete->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
-      Connect( m_menuItemEdit->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
-      Connect( m_menuItemAdd->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-#endif
-
-
-
     int char_size = GetCharWidth();
     //Set the maximum size of the entire  dialog
     int width, height;
@@ -887,14 +868,6 @@ void TrackPropDlg::CreateControls( void )
       ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
       ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
 
-#if 0
-      Connect( m_menuItemDelete->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
-      Connect( m_menuItemEdit->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
-      Connect( m_menuItemAdd->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-#endif
 
       m_panelBasic->SetScrollRate(5, 5);
       m_panelAdvanced->SetScrollRate(5, 5);
