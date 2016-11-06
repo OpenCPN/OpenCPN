@@ -254,13 +254,7 @@ OCPNRegion M_COVR_Desc::GetRegion ( const ViewPort &vp, wxPoint *pwp )
 
 
             double easting, northing, epix, npix;
-#if 0
-            ViewPort avp = vp;
-            wxPoint2DDouble q = avp.GetDoublePixFromLL( p->y, plon);
-            easting = q.m_x, northing = q.m_y;
-#else
             toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
-#endif
 
 //            easting -= transform_WGS84_offset_x;
             easting -=  user_xoff;
