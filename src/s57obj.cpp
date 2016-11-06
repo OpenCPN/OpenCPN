@@ -129,8 +129,6 @@ S57Obj::~S57Obj()
             delete pPolyTessGeo;
         }
 
-        if( pPolyTrapGeo ) delete pPolyTrapGeo;
-
         if( FText ) delete FText;
 
         if( geoPt ) free( geoPt );
@@ -158,7 +156,7 @@ void S57Obj::Init()
     n_attr = 0;
 
     pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
+
 
     bCS_Added = 0;
     CSrules = NULL;

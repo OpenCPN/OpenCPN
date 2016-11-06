@@ -2059,20 +2059,9 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     OGRGeometry *pGeo = pFeature->GetGeometryRef();
     OGRPolygon *poly = (OGRPolygon *) ( pGeo );
     
-    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, false, m_LOD_meters );   //try to use glu library
+    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, m_LOD_meters );
     
     error_code = ppg->ErrorCode;
-    if( error_code == ERROR_NO_DLL ) {
-        //                        if( !bGLUWarningSent ) {
-            //                            wxLogMessage( _T("   Warning...Could not find glu32.dll, trying internal tess.") );
-            //                            bGLUWarningSent = true;
-            //                        }
-            
-            delete ppg;
-            //  Try with internal tesselator
-            ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, true, m_LOD_meters );
-            error_code = ppg->ErrorCode;
-    }
     
     if( error_code ){
         wxLogMessage( _T("   Warning: S57 SENC Geometry Error %d, Some Features ignored."), ppg->ErrorCode );
