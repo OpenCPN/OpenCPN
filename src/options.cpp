@@ -4028,7 +4028,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
     itemStaticTextUserVar =
-        new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation"));
+        new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
 
@@ -5238,11 +5238,19 @@ void options::UpdateOptionsUnits(void) {
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
 #endif
-  
+
   //disable input for variation if WMM is available
-  itemStaticTextUserVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
-  itemStaticTextUserVar2->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
-  pMagVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
+  bool havewmm = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+  if(havewmm)
+      itemStaticTextUserVar->SetLabel(_("WMM Plugin for magnetic variation"));
+  else
+      itemStaticTextUserVar->SetLabel(_("Assumed magnetic variation"));
+
+  // size hack to adjust change in static text size
+  wxSize sz = this->GetSize(); this->SetSize(sz.x+1, sz.y); this->SetSize(sz);
+
+  itemStaticTextUserVar2->Enable(!havewmm);
+  pMagVar->Enable(!havewmm);
 } 
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
