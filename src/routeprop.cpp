@@ -74,7 +74,7 @@ extern RouteProp          *pRoutePropDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
-extern bool                g_bShowMag;
+extern bool                g_bShowTrue, g_bShowMag;
 extern wxColour            g_colourWaypointRangeRingsColour;
 
 extern MyFrame            *gFrame;
@@ -502,6 +502,8 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     SetFont( *qFont );
         
     m_bcompact = false;
+    for(int i=0; i<COL_COUNT; i++)
+        cols[i] = -1;
     
 #ifdef __OCPN__ANDROID__
     m_bcompact = true;
@@ -1079,27 +1081,29 @@ void RouteProp::CreateControlsCompact()
     
     int char_size = GetCharWidth();
 
-    m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 10 );
-    m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
-    m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+#define C(COL) (cols[COL] = c++)
+    int c = 0;
 
+    m_wpList->InsertColumn( C(LEG), _("Leg"), wxLIST_FORMAT_LEFT, 10 );
+    m_wpList->InsertColumn( C(TO_WAYPOINT), _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
+    m_wpList->InsertColumn( C(DISTANCE), _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+
+    if(g_bShowTrue)
+        m_wpList->InsertColumn( C(BEARING), _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
     if(g_bShowMag)
-        m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-    else
-        m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
+        m_wpList->InsertColumn( C(BEARING_MAGNETIC), _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
 
-    m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
-    m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
-    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(LATITUDE), _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(LONGITUDE), _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(ETE_ETD), _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
+    m_wpList->InsertColumn( C(SPEED), _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
+    m_wpList->InsertColumn( C(NEXT_TIDE), _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(DESCRIPTION), _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+
+    if(g_bShowTrue)
+        m_wpList->InsertColumn( C(COURSE), _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
     if(g_bShowMag)
-        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-    else
-        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
-
-    
+        m_wpList->InsertColumn( C(COURSE_MAGNETIC), _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
    
     //Set the maximum size of the entire  dialog
     int width, height;
@@ -1371,27 +1375,29 @@ void RouteProp::CreateControls()
       
       
       int char_size = GetCharWidth();
-      
-      m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, char_size * 6 );
-      m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
-      m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
-      
+
+#define C(COL) (cols[COL] = c++)
+      int c = 0;
+      m_wpList->InsertColumn( C(LEG), _("Leg"), wxLIST_FORMAT_LEFT, char_size * 6 );
+      m_wpList->InsertColumn( C(TO_WAYPOINT), _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
+      m_wpList->InsertColumn( C(DISTANCE), _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+
+      if(g_bShowTrue)
+          m_wpList->InsertColumn( C(BEARING), _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
       if(g_bShowMag)
-          m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      else
-          m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
+          m_wpList->InsertColumn( C(BEARING_MAGNETIC), _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
       
-      m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
-      m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
-      m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(LATITUDE), _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(LONGITUDE), _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(ETE_ETD), _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
+      m_wpList->InsertColumn( C(SPEED), _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
+      m_wpList->InsertColumn( C(NEXT_TIDE), _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(DESCRIPTION), _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+
+      if(g_bShowTrue)
+          m_wpList->InsertColumn( C(COURSE), _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
       if(g_bShowMag)
-          m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      else
-          m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      
+          m_wpList->InsertColumn( C(COURSE_MAGNETIC), _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
       
       //Set the maximum size of the entire  dialog
       int width, height;
@@ -1749,7 +1755,7 @@ bool RouteProp::UpdateProperties()
 
         //    Update the "tides event" column header
         wxListItem column_info;
-        if( m_wpList->GetColumn( 8, column_info ) ) {
+        if( m_wpList->GetColumn( cols[NEXT_TIDE], column_info ) ) {
             wxString c = _("Next tide event");
             if( gpIDX && m_starttime.IsValid() ) {
                 c = _T("@~~");
@@ -1759,16 +1765,16 @@ bool RouteProp::UpdateProperties()
 
             }
             column_info.SetText( c );
-            m_wpList->SetColumn( 8, column_info );
+            m_wpList->SetColumn( cols[NEXT_TIDE], column_info );
         }
 
         //Update the "ETE/Timestamp" column header
 
-        if( m_wpList->GetColumn( 6, column_info ) ) {
+        if( m_wpList->GetColumn( cols[ETE_ETD], column_info ) ) {
             if( m_starttime.IsValid() ) column_info.SetText( _("ETA") );
             else
                 column_info.SetText( _("ETE") );
-            m_wpList->SetColumn( 6, column_info );
+            m_wpList->SetColumn( cols[ETE_ETD], column_info );
         }
 
         m_pRoute->UpdateSegmentDistances( m_planspeed );           // get segment and total distance
@@ -1887,7 +1893,7 @@ bool RouteProp::UpdateProperties()
             wxString t;
             t.Printf( _T("%d"), i );
             if( i == 0 ) t = _T("---");
-            if( arrival ) m_wpList->SetItem( item_line_index, 0, t );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LEG], t );
 /*
             if( arrival ){
                 wxListItem item;
@@ -1901,9 +1907,9 @@ bool RouteProp::UpdateProperties()
             */
             
             //  Mark Name
-            if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[TO_WAYPOINT], prp->GetName() );
         // Store Dewcription
-            if( arrival ) m_wpList->SetItem( item_line_index, 9, prp->GetDescription() );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[DESCRIPTION], prp->GetDescription() );
 
             //  Distance
             //  Note that Distance/Bearing for Leg 000 is as from current position
@@ -1954,26 +1960,36 @@ bool RouteProp::UpdateProperties()
 
             t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
             if( arrival )
-                m_wpList->SetItem( item_line_index, 2, t );
+                m_wpList->SetItem( item_line_index, cols[DISTANCE], t );
             if( !enroute )
-                m_wpList->SetItem( item_line_index, 2, nullify );
+                m_wpList->SetItem( item_line_index, cols[DISTANCE], nullify );
             prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
                 //  Bearing
-            if( g_bShowMag ){
-                double latAverage = (prp->m_lat + slat)/2;
-                double lonAverage = (prp->m_lon + slon)/2;
-                double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
-                
-                t.Printf( _T("%03.0f Deg. M"), varBrg );
+            if( g_bShowTrue ) {
+                if( enroute )
+                    t.Printf( _T("%03.0f Deg. T"), brg );
+                else
+                    t = nullify;
+                if( arrival )
+                    m_wpList->SetItem( item_line_index, cols[BEARING], t );
             }
-            else
-                t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
 
-            if( arrival )
-                m_wpList->SetItem( item_line_index, 3, t );
-            if( !enroute )
-                m_wpList->SetItem( item_line_index, 3, nullify );
+            if( g_bShowMag ){
+                if( enroute ) {
+                    double latAverage = (prp->m_lat + slat)/2;
+                    double lonAverage = (prp->m_lon + slon)/2;
+                    double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+                
+                    t.Printf( _T("%03.0f Deg. M"), varBrg );
+                } else
+                    t = nullify;
+
+                if( arrival )
+                    m_wpList->SetItem( item_line_index, cols[BEARING_MAGNETIC], t );
+            }
+
+
 
             // Course (bearing of next )
             if (_next_prp){
@@ -1987,24 +2003,24 @@ bool RouteProp::UpdateProperties()
 
                     double latAverage = (prp->m_lat + next_lat)/2;
                     double lonAverage = (prp->m_lon + next_lon)/2;
-                    double varCourse = gFrame->GetTrueOrMag( course, latAverage, lonAverage);
+                    double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
 
                     t.Printf( _T("%03.0f Deg. M"), varCourse );
                 }
                 else
-                    t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+                    t.Printf( _T("%03.0f Deg. T"), course );
                 if( arrival )
-                    m_wpList->SetItem( item_line_index, 10, t );
+                    m_wpList->SetItem( item_line_index, cols[COURSE], t );
             }
             else
-                m_wpList->SetItem( item_line_index, 10, nullify );
+                m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
-            if( arrival ) m_wpList->SetItem( item_line_index, 4, tlat );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LATITUDE], tlat );
 
             wxString tlon = toSDMM( 2, prp->m_lon, false );
-            if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LONGITUDE], tlon );
 
 
             tide_form = _T("");
@@ -2096,19 +2112,19 @@ bool RouteProp::UpdateProperties()
             }  // end of repeatable route point
 
             if( enroute && ( arrival || m_starttime.IsValid() ) ) m_wpList->SetItem(
-                    item_line_index, 6, time_form );
+                item_line_index, cols[ETE_ETD], time_form );
             else
-                m_wpList->SetItem( item_line_index, 6, _T("----") );
+                m_wpList->SetItem( item_line_index, cols[ETE_ETD], _T("----") );
 
             //Leg speed
             wxString s;
             s.Printf( _T("%5.2f"), toUsrSpeed( leg_speed ) );
-            if( arrival ) m_wpList->SetItem( item_line_index, 7, s );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[SPEED], s );
 
-            if( enroute ) m_wpList->SetItem( item_line_index, 8, tide_form );
+            if( enroute ) m_wpList->SetItem( item_line_index, cols[NEXT_TIDE], tide_form );
             else {
-                m_wpList->SetItem( item_line_index, 7, nullify );
-                m_wpList->SetItem( item_line_index, 8, nullify );
+                m_wpList->SetItem( item_line_index, cols[NEXT_TIDE], nullify );
+                m_wpList->SetItem( item_line_index, cols[DESCRIPTION], nullify );
             }
 
             //  Save for iterating distance/bearing calculation

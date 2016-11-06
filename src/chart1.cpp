@@ -657,7 +657,7 @@ ocpnCompass              *g_Compass;
 
 bool                      g_benable_rotate;
 
-bool                      g_bShowMag;
+bool                      g_bShowTrue, g_bShowMag;
 double                    g_UserVar;
 bool                      g_bMagneticAPB;
 
@@ -6941,59 +6941,51 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 }
 
-double MyFrame::GetTrueOrMag(double a)
+double MyFrame::GetMag(double a)
 {
-    if( g_bShowMag ){
-        if(!wxIsNaN(gVar)){
-            if((a - gVar) >360.)
-                return (a - gVar - 360.);
-            else
-                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-        }
-        else{
-            if((a - g_UserVar) >360.)
-                return (a - g_UserVar - 360.);
-            else
-                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-        }
+    if(!wxIsNaN(gVar)){
+        if((a - gVar) >360.)
+            return (a - gVar - 360.);
+        else
+            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
     }
-    else
-        return a;
+    else{
+        if((a - g_UserVar) >360.)
+            return (a - g_UserVar - 360.);
+        else
+            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+    }
 }
 
-double MyFrame::GetTrueOrMag(double a, double lat, double lon)
+double MyFrame::GetMag(double a, double lat, double lon)
 {
-    if( g_bShowMag ){
-        if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
+    if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
             
-            // Request variation at a specific lat/lon
+        // Request variation at a specific lat/lon
             
-            // Note that the requested value is returned sometime later in the event stream,
-            // so there may be invalid data returned on the first call to this method.
-            // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
-            wxDateTime now = wxDateTime::Now();
-            SendJSON_WMM_Var_Request(lat, lon, now);
+        // Note that the requested value is returned sometime later in the event stream,
+        // so there may be invalid data returned on the first call to this method.
+        // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
+        wxDateTime now = wxDateTime::Now();
+        SendJSON_WMM_Var_Request(lat, lon, now);
             
-            if((a - gQueryVar) >360.)
-                return (a - gQueryVar - 360.);
-            else
-                return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
-        }
-        else if(!wxIsNaN(gVar)){
-            if((a - gVar) >360.)
-                return (a - gVar - 360.);
-            else
-                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-        }
-        else{
-            if((a - g_UserVar) >360.)
-                return (a - g_UserVar - 360.);
-            else
-                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-        }
+        if((a - gQueryVar) >360.)
+            return (a - gQueryVar - 360.);
+        else
+            return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
     }
-    else
-        return a;
+    else if(!wxIsNaN(gVar)){
+        if((a - gVar) >360.)
+            return (a - gVar - 360.);
+        else
+            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+    }
+    else{
+        if((a - g_UserVar) >360.)
+            return (a - g_UserVar - 360.);
+        else
+            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+    }
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
@@ -9463,10 +9455,10 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
         if( wxIsNaN(gCog) )
             cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
         else {
+            if( g_bShowTrue )
+                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gCog );
             if( g_bShowMag )
-                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
-            else
-                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( gCog ) );
         }
 
         sogcog.Append( cogs );

@@ -445,8 +445,8 @@ class MyFrame: public wxFrame
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
 
     bool CheckGroup(int igroup);
-    double GetTrueOrMag(double a);
-    double GetTrueOrMag(double a, double lat, double lon);
+    double GetMag(double a);
+    double GetMag(double a, double lat, double lon);
     bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
     
     void DestroyPersistentDialogs();

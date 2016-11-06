@@ -107,7 +107,7 @@ extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
-extern bool g_bShowMag;
+extern bool g_bShowTrue, g_bShowMag;
 extern double g_UserVar;
 extern int g_chart_zoom_modifier;
 extern int g_NMEAAPBPrecision;
@@ -3911,6 +3911,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     groupLabelFlags);
 
     //  "Mag Heading" checkbox
+    pCBTrueShow =
+        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show true"));
+    unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow =
         new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
@@ -4019,6 +4022,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(bearingsSizer, 0, 0, 0);
 
     //  "Mag Heading" checkbox
+    pCBTrueShow = new wxCheckBox(panelUnits, ID_TRUESHOWCHECKBOX,
+                                _("Show true bearings and headings"));
+    bearingsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow = new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX,
                                 _("Show magnetic bearings and headings"));
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
@@ -4848,6 +4854,7 @@ void options::SetInitialSettings(void) {
         pSmoothPanZoom->Disable();
     }
 #endif
+  pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
 
   s.Printf(_T("%4.1f"), g_UserVar);
@@ -5890,6 +5897,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bLookAhead = pCBLookAhead->GetValue();
 
+  g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
   pMagVar->GetValue().ToDouble(&g_UserVar);
 
