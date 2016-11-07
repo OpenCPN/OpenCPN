@@ -254,13 +254,7 @@ OCPNRegion M_COVR_Desc::GetRegion ( const ViewPort &vp, wxPoint *pwp )
 
 
             double easting, northing, epix, npix;
-#if 0
-            ViewPort avp = vp;
-            wxPoint2DDouble q = avp.GetDoublePixFromLL( p->y, plon);
-            easting = q.m_x, northing = q.m_y;
-#else
             toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
-#endif
 
 //            easting -= transform_WGS84_offset_x;
             easting -=  user_xoff;
@@ -3814,22 +3808,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->y_rate   = m_CIB.transform_y_rate;
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
 
-                        //    Set up a deferred tesselation
-                        //      If OpnGL is not available, use the trapezoid tesselator 
-                        //        instead of the triangle tesselator
-                        
-                        //      Two reasons for this:
-                        //      a.  Tri tesselator is buggy, some tris not rendered correctly
-                        //      b.  Tri tesselator is slower than trapezoids for direct rendering
-#ifdef ocpnUSE_GL
-                        if(g_bopengl)
-                            pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
-                        else
-                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
-                        
-#else                        
-                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
-#endif                        
+                        pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
 
                   break;

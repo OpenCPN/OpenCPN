@@ -2144,12 +2144,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
 {
-#if 0
-    // this works but is inconsistent across drivers and really slow if there are icons
-    g_Piano->Paint(cc1->m_canvas_height - g_Piano->GetHeight(), dc);
-#else
     g_Piano->DrawGL(cc1->m_canvas_height - g_Piano->GetHeight());
-#endif
 }
 
 void glChartCanvas::DrawQuiting()
@@ -2466,127 +2461,6 @@ void glChartCanvas::SetClipRect(const ViewPort &vp, const wxRect &rect, bool b_c
     if(!b_clear)
         glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
 }
-
-#if 0
-/* set stencil buffer to clip in this region, and optionally clear using the current color */
-void glChartCanvas::SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
-                                  bool apply_rotation, bool b_clear )
-{
-    bool rotation = apply_rotation && (fabs( vp.rotation ) > 0.0001 || ( g_bskew_comp && fabs( vp.skew ) > 0.0001));
-
-#if 1 /* optimization: use scissor test or no test at all if one is not needed */
-    /* for some reason this causes an occasional bug in depth mode, I cannot
-       seem to solve it yet, so for now: */
-    if(!rotation && s_b_useStencil && s_b_useScissorTest) {
-        int n_rect = 0;
-        for(OCPNRegionIterator clipit( region ); clipit.HaveRects() && n_rect < 2; clipit.NextRect())
-            n_rect++;
-
-        if(n_rect == 1) {
-            wxRect rect = OCPNRegionIterator( region ).GetRect();
-            if(rect == vp.rv_rect) {
-                /* no actual clipping need be done, common case */
-            } else {
-                glEnable(GL_SCISSOR_TEST);
-                glScissor(rect.x, rect.y, rect.width, rect.height);
-            }
-
-            if(b_clear) { /* can glClear work in scissors instead? */
-                glBegin( GL_QUADS );
-                glVertex2i( rect.x, rect.y );
-                glVertex2i( rect.x + rect.width, rect.y );
-                glVertex2i( rect.x + rect.width, rect.y + rect.height );
-                glVertex2i( rect.x, rect.y + rect.height );
-                glEnd();
-            }
-
-            /* the code in s52plib depends on the depth buffer being
-               initialized to this value, this code should go there instead and
-               only a flag set here. */
-            if(!s_b_useStencil) {
-                glClearDepth( 0.25 );
-                glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-                glClear( GL_DEPTH_BUFFER_BIT );
-                glDepthMask( GL_FALSE );
-                glClearDepth( 1 ); // set back to default of 1
-                glDepthFunc( GL_GREATER );                          // Set the test value
-            }
-            return;
-        }
-    }
-#endif
-    //    As a convenience, while we are creating the stencil or depth mask,
-    //    also clear the background if selected
-    if( !b_clear )
-        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-
-    if( s_b_useStencil ) {
-        //    Create a stencil buffer for clipping to the region
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
-        glClear( GL_STENCIL_BUFFER_BIT );
-
-        //    We are going to write "1" into the stencil buffer wherever the region is valid
-        glStencilFunc( GL_ALWAYS, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-    } else              //  Use depth buffer for clipping
-    {
-        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
-        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
-        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-
-        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
-
-        //    Decompose the region into rectangles, and draw as quads
-        //    With z = 1
-            // dep buffer clear = 1
-            // 1 makes 0 in dep buffer, works
-            // 0 make .5 in depth buffer
-            // -1 makes 1 in dep buffer
-
-            //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-            //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-            //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-        glTranslatef( 0, 0, .5 );
-    }
-
-    if(rotation) {
-        glPushMatrix();
-        glChartCanvas::RotateToViewPort( vp );
-    }
-
-    //    Decompose the region into rectangles, and draw as quads
-    OCPNRegionIterator clipit( region );
-    glBegin( GL_QUADS );
-    while( clipit.HaveRects() ) {
-        wxRect rect = clipit.GetRect();
-        
-        glVertex2i( rect.x, rect.y );
-        glVertex2i( rect.x + rect.width, rect.y );
-        glVertex2i( rect.x + rect.width, rect.y + rect.height );
-        glVertex2i( rect.x, rect.y + rect.height );
-        
-        clipit.NextRect();
-    }
-    glEnd();
-
-    if(rotation)
-        glPopMatrix();
-    
-    if( s_b_useStencil ) {
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-    } else {
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-        glTranslatef( 0, 0, -.5 ); // reset translation
-    }
-
-    if(!b_clear)
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-}
-#endif
 
 void glChartCanvas::DisableClipRegion()
 {
@@ -3876,65 +3750,6 @@ void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region
   
     // 3:  Use largest scale chart in the current quilt candidate list (which is identical to chart bar)
     //          which covers the entire canvas
-#if 0 
-
-int sx = GetSize().x;
-int sy = GetSize().y;
-//glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-//glViewport( 0, 0, (GLint) sx, (GLint) sy );
-
-
-//glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-//glEnable( g_texture_rectangle_format );
-//glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-
-
-glColor3ub(250, 0, 250);
-
-    
-    glBegin( GL_QUADS );
-    glVertex2f( 0,                     0 );
-    glVertex2f( 2048,        0 );
-    glVertex2f( 2048,        2049 );
-    glVertex2f( 0,                     2048 );
-    glEnd();
-    
-
-    //  Make a ViewPort covering the entire canvas
-    wxRect rtex( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-    ViewPort cvp = cc1->GetVP().BuildExpandedVP( m_cache_tex_x,  m_cache_tex_y );  //BuildClippedVP(cc1->GetVP(), rtex);
-
-    int dbIndex = -1;
-    ArrayOfInts candidates = cc1->GetQuiltCandidatedbIndexArray( );
-    for(unsigned int i=0 ; i < candidates.GetCount(); i++){
-        int index = candidates.Item(i);
-        
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
-        OCPNRegion testr = Quilt::GetChartQuiltRegion( cte, cvp );
-
-        OCPNRegion texr( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-        texr.Subtract(testr);
-        if(texr.IsEmpty()){
-            dbIndex = index;
-            break;
-        }
-    }
-    
-    if(dbIndex >= 0){
-        ChartBase *target_chart = ChartData->OpenChartFromDB( dbIndex, FULL_INIT );
-        if(target_chart){
-            
-            
-//            OCPNRegion texr( 0, 0, m_cache_tex_x,  m_cache_tex_y );
-            OCPNRegion texr( 10, 10, m_cache_tex_x-20,  m_cache_tex_y-20 );
-            RenderRasterChartRegionGL( target_chart, cvp, texr, true );
-        }
-    }
-
-    glBindTexture( g_texture_rectangle_format, 0);
-    
-#endif
 
     glPopMatrix();
 

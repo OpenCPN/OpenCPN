@@ -1459,16 +1459,6 @@ const NV_CHAR *inferred_semi_diurnal[INFERRED_SEMI_DIURNAL_COUNT] = {
 }
 #endif
 
-#if 0
-#ifdef NDEBUG
-#ifdef USE_PRAGMA_MESSAGE
-#pragma message("WARNING:  NDEBUG is defined.  This configuration is unsupported and discouraged.")
-#else
-#warning NDEBUG is defined.  This configuration is unsupported and discouraged.
-#endif
-#endif
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -347,22 +347,6 @@ void about::Populate( void )
         
     pLicenseHTMLCtl->SetPage( licenseText );
         
-        
-#if 0    
-    wxTextFile license_file( m_DataLocn + _T("license.txt") );
-    if ( license_file.Open() ) {
-        for ( wxString str = license_file.GetFirstLine(); !license_file.Eof() ; str = license_file.GetNextLine() )
-            pLicenseTextCtl->AppendText( str + '\n' );
-        license_file.Close();
-    } else {
-        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
-    }
-    
-    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
-    pLicenseTextCtl->AppendText( suppLicense );
-    
-    pLicenseTextCtl->SetInsertionPoint( 0 );
-#endif
 
     SetColorScheme();
 }

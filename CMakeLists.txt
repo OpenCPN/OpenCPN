@@ -303,7 +303,6 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     MESSAGE (STATUS "Found OpenGLESv1")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
@@ -324,7 +323,6 @@ IF(QT_ANDROID)
     MESSAGE (STATUS "Using GLESv1 for Android")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
     ADD_DEFINITIONS(-DARMHF)
 
     SET(OPENGLES_FOUND "YES")
@@ -355,7 +353,6 @@ IF(OPENGL_FOUND)
     MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
@@ -1166,7 +1163,6 @@ IF (USE_S57)
 		src/cm93.cpp
 		src/mygeom.cpp
 		include/cm93.h
-		src/tri.c
 		src/Osenc.cpp
 		include/Osenc.h
                 include/s57RegistrarMgr.h
