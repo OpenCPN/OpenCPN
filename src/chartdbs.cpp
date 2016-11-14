@@ -1038,6 +1038,7 @@ bool ChartDatabase::Read(const wxString &filePath)
     if(0 == cth.GetDirEntries())
           wxLogMessage(_T("  Nil"));
 
+    int ind = 0;
     for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
         wxString dir;
         int dirlen;
@@ -1060,8 +1061,11 @@ bool ChartDatabase::Read(const wxString &filePath)
 
     entries = cth.GetTableEntries();
     active_chartTable.Alloc(entries);
-    while (entries-- && entry.Read(this, ifs))
+    active_chartTable_pathindex.clear();
+    while (entries-- && entry.Read(this, ifs)) {
+        active_chartTable_pathindex[wxString(entry.GetpFullPath(), wxConvUTF8)] = ind++;
         active_chartTable.Add(entry);
+    }
 
     entry.Clear();
     bValid = true;
@@ -1337,6 +1341,8 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxProgressDialog *pprog)
 
       m_chartDirs.Clear();
       active_chartTable.Clear();
+      active_chartTable_pathindex.clear();
+
       Update(dir_array, true, pprog);                   // force the update the reload everything
 
       bValid = true;
@@ -1407,14 +1413,16 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog 
           if(!active_chartTable[i].GetbValid())
             {
                 active_chartTable.RemoveAt(i);
-                  i--;                 // entry is gone, recheck this index for next entry
+                i--;                 // entry is gone, recheck this index for next entry
             }
       }
 
       //    And once more, setting the Entry index field
-      for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
+      active_chartTable_pathindex.clear();
+      for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++) {
+          active_chartTable_pathindex[wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8)] = i;
           active_chartTable[i].SetEntryOffset( i );
-
+      }
 
       m_nentries = active_chartTable.GetCount();
       
@@ -1428,6 +1436,7 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog 
 
 int ChartDatabase::FinddbIndex(wxString PathToFind)
 {
+#if 0
       //    Find the chart
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
       {
@@ -1437,6 +1446,10 @@ int ChartDatabase::FinddbIndex(wxString PathToFind)
                   return i;
             }
       }
+#else
+      if(active_chartTable_pathindex.find(PathToFind) != active_chartTable_pathindex.end())
+          return active_chartTable_pathindex[PathToFind];
+#endif
 
       return -1;
 }
@@ -1449,19 +1462,13 @@ int ChartDatabase::FinddbIndex(wxString PathToFind)
 
 int ChartDatabase::DisableChart(wxString& PathToDisable)
 {
-      //    Find the chart
-      for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
-      {
-          if(PathToDisable.IsSameAs(wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8)))
-            {
-                ChartTableEntry *pentry = &active_chartTable[i];
-                  pentry->Disable();
-
-                  return 1;
-            }
-      }
-
-      return 0;
+    int index = FinddbIndex(PathToDisable);
+    if( index != -1 ) {
+        ChartTableEntry *pentry = &active_chartTable[index];
+        pentry->Disable();
+        return 1;
+    }
+    return 0;
 }
 
 // ----------------------------------------------------------------------------
