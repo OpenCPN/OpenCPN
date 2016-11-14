@@ -4211,6 +4211,7 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
 
 void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 {
+#if 0
     double blat, blon, tlat, tlon;
     wxPoint r;
 
@@ -4250,6 +4251,54 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         
         dc.DrawLine( x_origin, y_origin - y, x_origin, y_origin - ( y + l1 ) );
     }
+#else
+    double blat, blon, tlat, tlon;
+
+    int x_origin = g_bDisplayGrid ? 50 : 10;
+    int y_origin = m_canvas_height - 30;
+
+    GetCanvasPixPoint( x_origin, y_origin, blat, blon );
+    GetCanvasPixPoint( x_origin + m_canvas_width, y_origin, tlat, tlon );
+
+    double d;
+    ll_gc_ll_reverse(blat, blon, tlat, tlon, 0, &d);
+    d /= 2;
+
+    int unit = g_iDistanceFormat;
+    if( d < .5 && ( unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI ) )
+	unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
+    
+    // nice number
+    float dist = toUsrDistance( d, unit ), logdist = log(dist) / log(10);
+    float places = floor(logdist), rem = logdist - places;
+    dist = pow(10, places);
+
+    if(rem < .2)
+        dist /= 5;
+    else if(rem < .5)
+        dist /= 2;
+
+    wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
+    wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
+    double rotation = -VPoint.rotation;
+
+    ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
+    wxPoint r;
+    GetCanvasPointPix( tlat, tlon, &r );
+    int l1 = r.x - x_origin;
+
+    dc.SetPen(pen1);
+    
+    dc.DrawLine( x_origin, y_origin, x_origin, y_origin - 12);
+    dc.DrawLine( x_origin, y_origin, x_origin + l1, y_origin);
+    dc.DrawLine( x_origin + l1, y_origin, x_origin + l1, y_origin - 12);
+
+    dc.SetFont( *m_pgridFont );
+    dc.SetTextForeground( GetGlobalColor( _T ( "UBLCK" ) ) );
+    int w, h;
+    dc.GetTextExtent(s, &w, &h);
+    dc.DrawText( s, x_origin + l1/2 - w/2, y_origin - h - 1 );
+#endif
 }
 
 void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
