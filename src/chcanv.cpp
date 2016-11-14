@@ -2023,14 +2023,14 @@ bool ChartCanvas::StartTimedMovement( bool stoptimer )
     /* jumpstart because paint gets called right away, if we want first frame to move */
 //    m_last_movement_time -= wxTimeSpan::Milliseconds(100);
 
-    Refresh( false );
+//    Refresh( false );
 
     return true;
 }
 
 void ChartCanvas::DoTimedMovement()
 {
-    if(!m_panx && !m_pany && m_zoom_factor==1 && !m_rotation_speed)
+    if( m_pan_drag == wxPoint(0, 0) && !m_panx && !m_pany && m_zoom_factor==1 && !m_rotation_speed)
         return; /* not moving */
 
     wxDateTime now = wxDateTime::UNow();
@@ -2055,6 +2055,11 @@ void ChartCanvas::DoMovement( long dt )
     m_mustmove -= dt;
     if(m_mustmove < 0)
         m_mustmove = 0;
+
+    if(m_pan_drag.x || m_pan_drag.y) {
+        PanCanvas( m_pan_drag.x, m_pan_drag.y );
+        m_pan_drag.x = m_pan_drag.y = 0;
+    }
 
     if(m_panx || m_pany) {
         const double slowpan = .1, maxpan = 2;
@@ -2090,7 +2095,8 @@ void ChartCanvas::DoMovement( long dt )
             }
         }
 
-        DoZoomCanvas( zoom_factor, m_bzooming_to_cursor );
+        if( fabs(zoom_factor - 1) > 1e-4)
+            DoZoomCanvas( zoom_factor, m_bzooming_to_cursor );
 
         if(m_wheelzoom_stop_oneshot > 0) {
             if(m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
@@ -2934,7 +2940,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
 
-    if( VPoint.b_quilt ) {
+    if( VPoint.b_quilt) {
         int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
         if( ( new_ref_dbIndex != cur_ref_dbIndex ) && ( new_ref_dbIndex != -1 ) ) {
             //Tweak the scale slightly for a new ref chart
@@ -6480,9 +6486,11 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
         
     }
 
-    if( event.LeftDown() )
+    if( event.LeftDown() ) {
+        last_drag.x = x, last_drag.y = y;
         panleftIsDown = true;
-        
+    }
+    
     if( event.LeftUp() ) {
         if( panleftIsDown ) {  // leftUp for chart center, but only after a leftDown seen here.
             panleftIsDown = false;
@@ -6525,11 +6533,12 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
     if( event.Dragging() && event.LeftIsDown()){
             if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
                 m_bChartDragging = true;
-                PanCanvas( last_drag.x - x, last_drag.y - y );
-                
-                last_drag.x = x;
-                last_drag.y = y;
-                
+                StartTimedMovement();
+                m_pan_drag.x += last_drag.x - x;
+                m_pan_drag.y += last_drag.y - y;
+
+                last_drag.x = x, last_drag.y = y;
+
                 if( g_btouch ) {
                     if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
                         //deactivate next LeftUp to ovoid creating an unexpected point

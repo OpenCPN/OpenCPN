@@ -621,6 +621,7 @@ private:
 //#endif
 
       //Smooth movement member variables
+      wxPoint     m_pan_drag;
       int         m_panx, m_pany, m_modkeys;
       double      m_panspeed;
       bool        m_bmouse_key_mod;
