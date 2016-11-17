@@ -541,8 +541,10 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         strncpy( arpa_name_str, token.mb_str(), len );
         arpa_name_str[len] = 0;
         arpa_status = tkz.GetNextToken(); //12) Target Status
-        if (arpa_status != _T("L"))
+        if ( arpa_status != _T( "L" ) ) {
             arpa_lost = false;
+        } else if ( arpa_status != wxEmptyString )
+            arpa_nottracked = true;
         arpa_reftarget = tkz.GetNextToken(); //13) Reference Target
         if ( tkz.HasMoreTokens() )
         {
