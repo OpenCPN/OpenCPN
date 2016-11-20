@@ -1997,8 +1997,14 @@ double cm93chart::GetNormalScaleMin ( double canvas_scale_factor, bool b_allow_o
       return 1.0;
 }
 
-double cm93chart::GetNormalScaleMax ( double canvas_scale_factor )
+double cm93chart::GetNormalScaleMax ( double canvas_scale_factor, int canvas_width )
 {
+      /* 
+         XXX previous declaration hides overloaded virtual function 
+            and it was calling:
+         s57chart::GetNormalScaleMax( canvas_scale_factor, canvas_width )
+         should we restore this behavior?
+      */
       switch ( GetNativeScale() )
       {
             case 20000000: return 50000000.;          // Z

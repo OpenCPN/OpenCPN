@@ -317,7 +317,7 @@ class cm93chart : public s57chart
             void ResetSubcellKey(){ m_loadcell_key = '0'; }
 
             double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-            double GetNormalScaleMax(double canvas_scale_factor);
+            double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
             bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
             void SetVPParms(const ViewPort &vpt);

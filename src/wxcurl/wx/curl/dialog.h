@@ -130,9 +130,10 @@ public:
     bool IsVerbose() const
         { return m_bVerbose; }
 
+    virtual void EndModal(int retCode);
+
 protected:     // internal utils
 
-    virtual void EndModal(wxCurlDialogReturnFlag retCode);
 
     wxStaticText *AddSizerRow(wxSizer *sz, const wxString &name);
     void CreateControls(const wxString &url, const wxString &msg, 

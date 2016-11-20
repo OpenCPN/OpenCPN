@@ -66,6 +66,7 @@
 #include "wind_history.h"
 #include "baro_history.h"
 #include "from_ownship.h"
+#include "iirfilter.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;
@@ -190,6 +191,8 @@ private:
       int                  mGPS_Watchdog;
       int                  mVar_Watchdog;
 
+      iirfilter            mSOGFilter;
+      iirfilter            mCOGFilter;
 //protected:
 //      DECLARE_EVENT_TABLE();
 };
@@ -219,6 +222,8 @@ public:
       wxFontPickerCtrl             *m_pFontPickerLabel;
       wxFontPickerCtrl             *m_pFontPickerSmall;
       wxSpinCtrl                   *m_pSpinSpeedMax;
+      wxSpinCtrl                   *m_pSpinCOGDamp;
+      wxSpinCtrl                   *m_pSpinSOGDamp;
       wxChoice                     *m_pChoiceSpeedUnit;
       wxChoice                     *m_pChoiceDepthUnit;
       wxChoice                     *m_pChoiceDistanceUnit;
