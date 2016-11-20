@@ -922,7 +922,7 @@ void ChartDatabase::UpdateChartClassDescriptorArray(void)
       m_ChartClassDescriptorArray.Add(pcd);
       pcd = new ChartClassDescriptor(_T("cm93compchart"), _T("00300000.a"), BUILTIN_DESCRIPTOR);
       m_ChartClassDescriptorArray.Add(pcd);
-
+      
       //    If the PlugIn Manager exists, get the array of dynamically loadable chart class names
       if(g_pi_manager)
       {
@@ -1434,7 +1434,8 @@ int ChartDatabase::FinddbIndex(wxString PathToFind)
       //    Find the chart
       for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
       {
-          if(active_chartTable[i].GetpsFullPath()->IsSameAs(PathToFind))
+          wxString s = wxString(active_chartTable[i].GetpFullPath(), wxConvUTF8);
+          if(s.IsSameAs(PathToFind))
             {
                   return i;
             }

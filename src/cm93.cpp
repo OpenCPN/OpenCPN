@@ -2206,13 +2206,14 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+                OCPNPlatform::ShowBusySpinner();
                   int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) '0', vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
                         recalc_depth = true;
 
@@ -2229,7 +2230,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
-
+                        
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
                         if ( wxNOT_FOUND == m_cells_loaded_array.Index ( cell_index ) )
@@ -2240,7 +2241,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                         loadcell_key++;
                   }
             }
+            OCPNPlatform::HideBusySpinner();
       }
+      
       if (recalc_depth) {
           ClearDepthContourArray();
           BuildDepthContourArray();
@@ -2332,7 +2335,7 @@ void cm93chart::ProcessVectorEdges ( void )
 
             if ( pgd->n_points )
             {
-                  double *pPoints = ( double * ) malloc ( pgd->n_points * 2 * sizeof ( double ) );
+                float *pPoints = ( float * ) malloc ( pgd->n_points * 2 * sizeof ( float ) );
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;
@@ -2369,7 +2372,7 @@ void cm93chart::ProcessVectorEdges ( void )
 //                  if(lon1 > lon2)
                   //                    lon2 += 360;
 
-                  vep->BBox.Set( lat1, lon1, lat2, lon2);
+                  vep->edgeBBox.Set( lat1, lon1, lat2, lon2);
                   
             }
             
@@ -4549,7 +4552,6 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       //    File is known to exist
 
-      OCPNPlatform::ShowBusySpinner();
       
       wxString msg ( _T ( "Loading CM93 cell " ) );
       msg += file;

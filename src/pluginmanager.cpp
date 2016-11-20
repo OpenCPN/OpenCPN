@@ -4552,10 +4552,12 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     cobj->m_lsindex_array = pObj->m_lsindex_array;
     cobj->m_n_edge_max_points = pObj->m_n_edge_max_points;
     
-    if(gs_plib_flags & PLIB_CAPS_OBJSEGLIST)
-        cobj->m_ls_list = (line_segment_element *)pObj->m_ls_list;          // note the cast, assumes in-sync layout
+    if(gs_plib_flags & PLIB_CAPS_OBJSEGLIST){
+        cobj->m_ls_list_legacy = (PI_line_segment_element *)pObj->m_ls_list;          // note the cast, assumes in-sync layout
+    }
     else   
-        cobj->m_ls_list = 0;
+        cobj->m_ls_list_legacy = 0;
+    cobj->m_ls_list = 0;
         
     if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
         cobj->m_bcategory_mutable = pObj->m_bcategory_mutable;
@@ -4577,7 +4579,13 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
-    cobj->auxParm0 = 0;
+    
+    if(pObj->auxParm3 != 1234){
+        pObj->auxParm3 = 1234;
+        pObj->auxParm0 = -99;
+    }
+        
+    cobj->auxParm0 = pObj->auxParm0;
     cobj->auxParm1 = 0;
     cobj->auxParm2 = 0;
     cobj->auxParm3 = 0;
@@ -4724,6 +4732,9 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     
     pContext->ChildRazRules = rzRules->child;
     pContext->MPSRulesList = rzRules->mps;
+    
+    pObj->auxParm0 = cobj->auxParm0;
+    
     
 }
 
@@ -5010,7 +5021,8 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
         cobj.auxParm1 = -1;         // signal that this object render cannot have single buffer conversion done
     }            
     else {              // it is a newer PLugIn, so can do single buffer conversion and VBOs
-        cobj.auxParm0 = -5;         // signal that this object render must use a temporary VBO
+        if(pObj->auxParm0 < 1)
+            cobj.auxParm0 = -7;         // signal that this object render can use a persistent VBO for area triangle vertices
     }
     
 

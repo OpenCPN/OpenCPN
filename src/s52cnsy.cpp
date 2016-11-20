@@ -1543,9 +1543,9 @@ static void *OBSTRN04 (void *param)
       ObjRazRules *rzRules = (ObjRazRules *)param;
       S57Obj *obj = rzRules->obj;
 
-      //    Debug Hook
-//      if(obj->Index == 701)
-//            int yyp = 5;
+      //TODO    Debug Hook
+//       if(obj->Index == 534)
+//             int yyp = 5;
 
       double   valsou      = UNKNOWN;
       double   depth_value = UNKNOWN;

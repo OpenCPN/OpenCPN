@@ -2692,20 +2692,17 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       new wxStaticBoxSizer(itemStaticBoxUpdateStatic, wxVERTICAL);
   chartPanel->Add(itemStaticBoxSizerUpdate, 0, wxGROW | wxALL, 5);
 
-  wxFlexGridSizer* itemFlexGridSizerUpdate = new wxFlexGridSizer(2);
+  wxFlexGridSizer* itemFlexGridSizerUpdate = new wxFlexGridSizer(1);
   itemFlexGridSizerUpdate->SetFlexibleDirection( wxHORIZONTAL );
 
-  pScanCheckBox = new wxCheckBox(chartPanelWin, ID_SCANCHECKBOX,
-                                 _("Scan Charts and Update Database"));
+  pScanCheckBox = new wxCheckBox(chartPanelWin, ID_SCANCHECKBOX, _("Scan Charts and Update Database"));
   itemFlexGridSizerUpdate->Add(pScanCheckBox, 1, wxALL, 5);
 
-  pParseENCButton = new wxButton(chartPanelWin, ID_PARSEENCBUTTON,
-                                   _("Parse all ENC Charts"));
-  itemFlexGridSizerUpdate->Add(pParseENCButton, 1, wxALL, 5);
-
-  pUpdateCheckBox = new wxCheckBox(chartPanelWin, ID_UPDCHECKBOX,
-                                   _("Force Full Database Rebuild"));
+  pUpdateCheckBox = new wxCheckBox(chartPanelWin, ID_UPDCHECKBOX, _("Force Full Database Rebuild"));
   itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+
+  pParseENCButton = new wxButton(chartPanelWin, ID_PARSEENCBUTTON, _("Prepare all ENC Charts"));
+  itemFlexGridSizerUpdate->Add(pParseENCButton, 1, wxALL, 5);
 
   itemStaticBoxSizerUpdate->Add( itemFlexGridSizerUpdate, 1, wxEXPAND, 5 );
   
@@ -6195,8 +6192,16 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
+    cc1->EnablePaint(false);
+    
     extern void ParseAllENC();
     ParseAllENC();
+    ViewPort vp;
+    gFrame->ChartsRefresh(-1, vp, true);
+    
+    cc1->EnablePaint(true);
+    
+    
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }

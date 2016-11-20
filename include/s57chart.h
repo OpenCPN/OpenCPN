@@ -235,7 +235,12 @@ public:
       bool        m_b2lineLUPS;
       
       struct _chart_context     *m_this_chart_context;
+
+      InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
+protected:
+    void AssembleLineGeometry( void );
+    
 private:
       int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
       void SetSafetyContour(void);
@@ -249,16 +254,16 @@ private:
 
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
-      InitReturn FindOrCreateSenc( const wxString& name );
-      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName);
+      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
       
       void SetLinePriorities(void);
 
       bool BuildThumbnail(const wxString &bmpname);
       bool CreateHeaderDataFromENC(void);
       bool CreateHeaderDataFromSENC(void);
-      bool GetBaseFileAttr(wxFileName fn);
-
+      bool CreateHeaderDataFromoSENC(void);
+      bool GetBaseFileAttr( const wxString& file000 );
+      
       void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
 
            //    Access to raw ENC DataSet
@@ -274,7 +279,6 @@ private:
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                   const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 
-      void AssembleLineGeometry( void );
       void BuildLineVBO( void );
       
  // Private Data
@@ -313,12 +317,6 @@ private:
       int         m_nvaldco_alloc;
       double       *m_pvaldco_array;
 
-      VectorHelperHash        m_vector_helper_hash;
-
-      VE_Hash     m_ve_hash;
-      VC_Hash     m_vc_hash;
-      
-      connected_segment_hash m_connector_hash;
       
       float      *m_line_vertex_buffer;
       size_t      m_vbo_byte_length;
@@ -334,6 +332,12 @@ private:
       double      m_LOD_meters;
 
       int         m_LineVBO_name;
+      
+      VE_Hash     m_ve_hash;
+      VC_Hash     m_vc_hash;
+      std::vector<connector_segment *> m_pcs_vector;
+      std::vector<VE_Element *> m_pve_vector;
+      
 protected:      
       sm_parms    vp_transform;
       

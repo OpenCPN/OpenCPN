@@ -1232,7 +1232,8 @@ void OCPNPlatform::ShowBusySpinner( void )
     androidShowBusyIcon();
 #else 
     #if wxCHECK_VERSION(2, 9, 0 )
-    if( !::wxIsBusy() ){
+//    if( !::wxIsBusy() )
+    {
         ::wxBeginBusyCursor();
     }
     #endif
@@ -1245,7 +1246,7 @@ void OCPNPlatform::HideBusySpinner( void )
     androidHideBusyIcon();
 #else
     #if wxCHECK_VERSION(2, 9, 0 )
-    if( ::wxIsBusy() )
+//    if( ::wxIsBusy() )
     {
         ::wxEndBusyCursor();
     }
@@ -1354,9 +1355,9 @@ double  OCPNPlatform::GetDisplaySizeMM()
     ret = GetAndroidDisplaySize();
 #endif    
     
-    wxString msg;
-    msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
-    wxLogMessage(msg);
+//     wxString msg;
+//     msg.Printf(_T("Detected display size (horizontal): %d mm"), (int) ret);
+//     wxLogMessage(msg);
     
     return ret;
 }

@@ -273,6 +273,13 @@ private:
     
     void UpdateOBJLArray( S57Obj *obj );
 
+    int RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderGLLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderGLLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    
     render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
         Rules *rules, ViewPort *vp, bool b_revrgb, bool b_pot = false );
 

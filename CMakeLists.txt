@@ -445,6 +445,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -std=c++0x")
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -1170,6 +1171,7 @@ IF (USE_S57)
 		include/Osenc.h
                 include/s57RegistrarMgr.h
                 src/s57RegistrarMgr.cpp
+                src/s57obj.cpp
 
 		src/myiso8211/ddffielddefn.cpp
 		src/myiso8211/ddfmodule.cpp
@@ -2013,7 +2015,7 @@ ENDIF(MSVC AND OCPN_USE_CRASHREPORT)
 MESSAGE (STATUS "")
 
 IF(NOT SKIP_PLUGINS)
- add_subdirectory (plugins)
+# add_subdirectory (plugins)
 ENDIF(NOT SKIP_PLUGINS)
 
 

@@ -116,5 +116,9 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 #endif
 
 
+//      Simple and fast CRC32 calculator
+
+extern "C" unsigned int crc32buf(unsigned char *buf, size_t len);
+
 
 #endif
