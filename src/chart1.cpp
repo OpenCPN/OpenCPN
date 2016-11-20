@@ -1146,31 +1146,17 @@ static wxStopWatch init_sw;
 class ParseENCWorkerThread : public wxThread
 {
 public:
-    ParseENCWorkerThread(wxString filename, Extent &ext, int scale)
-        : wxThread(wxTHREAD_JOINABLE)
-        {
-            m_filename = filename;
-            m_ext = ext;
-            m_scale = scale;
-            Create();
-        }
+    ParseENCWorkerThread(wxString filename)
+        : wxThread(wxTHREAD_JOINABLE), m_filename(filename)
+        { Create(); }
         
     void *Entry() {
-//         ChartBase *pchart = ChartData->OpenChartFromDB(m_filename, FULL_INIT);
-//         ChartData->DeleteCacheChart(pchart);
-        s57chart *newChart = new s57chart;
-        
-        newChart->SetNativeScale(m_scale);
-        newChart->SetFullExtent(m_ext);
-        
-        newChart->FindOrCreateSenc(m_filename);
-        delete newChart;
+        ChartBase *pchart = ChartData->OpenChartFromDB(m_filename, FULL_INIT);
+        ChartData->DeleteCacheChart(pchart);
         return 0;
     }
 
     wxString m_filename;
-    Extent m_ext;
-    int m_scale;
 };
 
 // begin duplicated code
@@ -1291,7 +1277,7 @@ void ParseAllENC()
         workers[t] = NULL;
 
     long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
-    wxProgressDialog prog(_("OpenCPN  ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+    wxProgressDialog prog(_("OpenCPN Prepare ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
 
     // make wider to show long filenames
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
@@ -1306,17 +1292,7 @@ void ParseAllENC()
     for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
         wxString filename = ct_array.Item(j).chart_path;
         double distance = ct_array.Item(j).distance;
-        int index = ChartData->FinddbIndex(filename);
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
-        Extent ext;
-        ext.NLAT = cte.GetLatMax();
-        ext.SLAT = cte.GetLatMin();
-        ext.WLON = cte.GetLonMin();
-        ext.ELON = cte.GetLonMax();
-        
-        int scale = cte.GetScale();
-        
-        
+
         wxString msg;
         msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
         if(sz.x > 600){
@@ -1324,27 +1300,14 @@ void ParseAllENC()
             msg += filename;
         }
 
-        count++;
-        if(wxThread::IsMain()){
-            prog.Update(count, msg, &skip );
-            if(skip)
-                break;
-        }
-        printf("count: %d\n", count);
+        if(!prog.Update(count++, msg, &skip ))
+            break;
+        if(skip)
+            break;
 
-#if 1
-        s57chart *newChart = new s57chart;
-        
-        newChart->SetNativeScale(scale);
-        newChart->SetFullExtent(ext);
-        
-        newChart->FindOrCreateSenc(filename, false);
-        delete newChart;
-        
-#else        
         for(int t = 0;; t=(t+1)%thread_count) {
             if(!workers[t]) {
-                workers[t] = new ParseENCWorkerThread(filename, ext, scale);
+                workers[t] = new ParseENCWorkerThread(filename);
                 workers[t]->Run();
                 break;
             }
@@ -1359,7 +1322,6 @@ void ParseAllENC()
                 wxThread::Sleep(1); /* wait for a worker to finish */
             }
         }
-#endif        
     }
 
     /* wait for workers to finish, and clean up after then */

@@ -3615,7 +3615,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if( flags == HEADER_ONLY ) {
         if( fn.GetExt() == _T("000") ) {
-            if( !GetBaseFileAttr( name ) )
+            if( !GetBaseFileAttr( fn ) )
                 ret_value = INIT_FAIL_REMOVE;
             else {
                 if( !CreateHeaderDataFromENC() )
@@ -3638,8 +3638,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     //      Full initialization from here
 
     if( !m_bbase_file_attr_known ) {
-        if( !GetBaseFileAttr( name ) )
-            ret_value = INIT_FAIL_REMOVE;
+        if( !GetBaseFileAttr( fn ) ) ret_value = INIT_FAIL_REMOVE;
         else
             m_bbase_file_attr_known = true;
     }
@@ -3679,15 +3678,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 //    Find or Create a relevent SENC file from a given .000 ENC file
 //    Returns with error code, and associated SENC file name in m_S57FileName
 //-----------------------------------------------------------------------------------------------
-InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
+InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 {
-    if( !m_bbase_file_attr_known ) {
-        if( !GetBaseFileAttr( name ) )
-            return INIT_FAIL_REMOVE;
-        else
-            m_bbase_file_attr_known = true;
-    }
-    
     //      Establish location for SENC files
     m_SENCFileName = name;
     m_SENCFileName.SetExt( _T("S57") );
@@ -3795,7 +3787,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 
     if( bbuild_new_senc ) {
         m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath(), b_progress );
+        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val )
             return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val )
@@ -4981,11 +4973,11 @@ wxString s57chart::GetISDT( void )
         return _T("Unknown");
 }
 
-bool s57chart::GetBaseFileAttr( const wxString& file000 )
+bool s57chart::GetBaseFileAttr( wxFileName fn )
 {
-    if( !wxFileName::FileExists( file000 ) ) return false;
+    if( !wxFileName::FileExists( fn.GetFullPath() ) ) return false;
 
-    wxString FullPath000 = file000;
+    wxString FullPath000 = fn.GetFullPath();
     DDFModule *poModule = new DDFModule();
     if( !poModule->Open( FullPath000.mb_str() ) ) {
         wxString msg( _T("   s57chart::BuildS57File  Unable to open ") );
@@ -5059,24 +5051,20 @@ bool s57chart::GetBaseFileAttr( const wxString& file000 )
     return true;
 }
 
-int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName, bool b_progress )
+int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName )
 {
     //  LOD calculation
     double display_ppm = 1 / .00025;     // nominal for most LCD displays
     double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
     m_LOD_meters = meters_per_pixel_max_scale * g_SENC_LOD_pixels;
 
-    //  Establish a common reference point for the chart
-    ref_lat = ( m_FullExtent.NLAT + m_FullExtent.SLAT ) / 2.;
-    ref_lon = ( m_FullExtent.WLON + m_FullExtent.ELON ) / 2.;
-    
     Osenc senc;
 
     senc.setRegistrar( g_poRegistrar );
     senc.setRefLocn(ref_lat, ref_lon);
     senc.SetLODMeters(m_LOD_meters);
 
-    int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
+    int ret = senc.createSenc200( FullPath000, SENCFileName );
 //    int ret = senc.createSenc124( FullPath000, SENCFileName );
 
     return ret;

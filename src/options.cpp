@@ -6192,16 +6192,8 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
-    cc1->EnablePaint(false);
-    
     extern void ParseAllENC();
     ParseAllENC();
-    ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp, true);
-    
-    cc1->EnablePaint(true);
-    
-    
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }
