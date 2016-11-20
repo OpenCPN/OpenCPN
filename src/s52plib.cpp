@@ -2125,23 +2125,14 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 
 //            if ( rzRules->obj->Primitive_type == GEO_POINT )
         {
-            wxBoundingBox bbtext;
-            double plat, plon, extent = 0;
+            double latmin, lonmin, latmax, lonmax, extent = 0;
 
-            GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
-            if(plon >= 360)
-                extent = 360;
-            bbtext.SetMin( plon - extent, plat );
+            GetPixPointSingleNoRotate( rect.GetX(), rect.GetY() + rect.GetHeight(), &latmin, &lonmin, vp );
+            GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &latmax, &lonmax, vp );
+            LLBBox bbtext;
+            bbtext.Set( latmin, lonmin, latmax, lonmax );
 
-            GetPixPointSingleNoRotate( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
-            bbtext.SetMax( plon - extent, plat );
-
-            if( rzRules->obj->bBBObj_valid )
-                rzRules->obj->BBObj.Expand( bbtext );
-            else {
-                rzRules->obj->BBObj = bbtext;
-                rzRules->obj->bBBObj_valid = true;
-            }
+            rzRules->obj->BBObj.Expand( bbtext );
         }
     }
 
@@ -2294,21 +2285,13 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         //  Update the object Bounding box
         //  so that subsequent drawing operations will redraw the item fully
 
-        wxBoundingBox symbox;
-        double plat, plon;
+        double latmin, lonmin, latmax, lonmax;
+        GetPixPointSingleNoRotate( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &latmin, &lonmin, vp );
+        GetPixPointSingleNoRotate( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &latmax,  &lonmax, vp );
+        LLBBox symbox;
+        symbox.Set( latmin, lonmin, latmax, lonmax );
 
-        GetPixPointSingleNoRotate( r.x + prule->parm2, r.y + prule->parm3 + bm_height, &plat, &plon, vp );
-        symbox.SetMin( plon, plat );
-
-        GetPixPointSingleNoRotate( r.x + prule->parm2 + bm_width, r.y + prule->parm3, &plat,  &plon, vp );
-        symbox.SetMax( plon, plat );
-
-        if( rzRules->obj->bBBObj_valid )
-            rzRules->obj->BBObj.Expand( symbox );
-        else {
-            rzRules->obj->BBObj = symbox;
-            rzRules->obj->bBBObj_valid = true;
-        }
+        rzRules->obj->BBObj.Expand( symbox );
     }
 
     return true;
@@ -2552,8 +2535,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     b_width = prule->parm2;
     b_height = prule->parm3;
 
-    wxBoundingBox symbox;
-    double plat, plon;
+    LLBBox symbox;
+    double latmin, lonmin, latmax, lonmax;
 
     if( !m_pdc && fabs( vp->rotation ) > .01)          // opengl
     {
@@ -2563,25 +2546,20 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         float s = sinf(vp->rotation );
         float x = r.x - pivot_x -cx;
         float y = r.y - pivot_y + b_height -cy;
-        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
-        symbox.SetMin( plon, plat );
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &latmin, &lonmin, vp );
 
         x = r.x - pivot_x + b_width -cx;
         y = r.y - pivot_y -cy;
-        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &plat, &plon, vp );
-        symbox.SetMax( plon, plat );
-    
+        GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &latmax, &lonmax, vp );
+    } else {
+        GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &latmin, &lonmin, vp );
+        GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &latmax, &lonmax, vp );
     }
-    else {
-        GetPixPointSingle( r.x - pivot_x, r.y - pivot_y + b_height, &plat, &plon, vp );
-        symbox.SetMin( plon, plat );
+    symbox.Set( latmin, lonmin, latmax, lonmax );
 
-        GetPixPointSingle( r.x - pivot_x + b_width, r.y - pivot_y, &plat, &plon, vp );
-        symbox.SetMax( plon, plat );
-    }
     //  Special case for GEO_AREA objects with centred symbols
     if( rzRules->obj->Primitive_type == GEO_AREA ) {
-        if( rzRules->obj->BBObj.Intersect( symbox, 0 ) != _IN ) // Symbol is wholly outside base object
+        if( !rzRules->obj->BBObj.IntersectIn( symbox ) ) // Symbol is wholly outside base object
             return true;
     }
 
@@ -2769,13 +2747,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     //  so that subsequent drawing operations will redraw the item fully
     //  We expand the object's BBox to account for objects rendered by multiple symbols, such as SOUNGD.
     //  so that expansions are cumulative.
-    if( rzRules->obj->Primitive_type == GEO_POINT ) {
-        if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-        else {
-            rzRules->obj->BBObj = symbox;
-            rzRules->obj->bBBObj_valid = true;
-        }
-    }
+    if( rzRules->obj->Primitive_type == GEO_POINT )
+        rzRules->obj->BBObj.Expand( symbox );
 
     //  Dump the cache for next time
     if(g_oz_vector_scale && (scale_factor > 1.0))
@@ -2867,11 +2840,11 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 #ifdef ocpnUSE_GL
 
-    wxBoundingBox BBView = vp->GetBBoxView();
+    LLBBox BBView = vp->GetBBox();
 
     //  Allow a little slop in calculating whether a segment
     //  is within the requested Viewport
-    double margin = BBView.GetWidth() * .05;
+    double margin = BBView.GetLonRange() * .05;
     BBView.EnLarge( margin );
 
     //  Try to determine if the feature needs to be drawn in the most efficient way
@@ -2890,10 +2863,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
         {
             //  Check visibility of the segment
-            if((BBView.GetMinY() < ls_list->lat_max && BBView.GetMaxY() > ls_list->lat_min) &&
-               ((BBView.GetMinX() <= ls_list->lon_max && BBView.GetMaxX() >= ls_list->lon_min) ||
-                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > ls_list->lon_min) ||
-                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < ls_list->lon_max))) {
+            if((BBView.GetMinLat() < ls_list->lat_max && BBView.GetMaxLat() > ls_list->lat_min) &&
+               ((BBView.GetMinLon() <= ls_list->lon_max && BBView.GetMaxLon() >= ls_list->lon_min) ||
+                (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->lon_min) ||
+                (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->lon_max))) {
                 // render the segment
                 bdraw++;
                 break;
@@ -2949,12 +2922,12 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Next, the per-object transform
     
     //      We may need to translate object coordinates by 360 degrees to conform.
-    if( BBView.GetMaxX() > 180. ) {
-        if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+    if( BBView.GetMaxLon() > 180. ) {
+        if(rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
             glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
     } else
-    if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.) ||
-        (BBView.GetMinX() <= 0. && rzRules->obj->BBObj.GetMaxX() > 180))
+    if( (BBView.GetMinLon() <= -180. && rzRules->obj->BBObj.GetMaxLon() > BBView.GetMinLon() + 360.) ||
+        (BBView.GetMinLon() <= 0. && rzRules->obj->BBObj.GetMaxLon() > 180))
         glTranslatef( -mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
   
     if( rzRules->obj->m_chart_context->chart ){
@@ -2977,10 +2950,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
         {
             //  Check visibility of the segment
-            if((BBView.GetMinY() <= ls_list->lat_max && BBView.GetMaxY() >= ls_list->lat_min) &&
-               ((BBView.GetMinX() <= ls_list->lon_max && BBView.GetMaxX() >= ls_list->lon_min) ||
-                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 >= ls_list->lon_min) ||
-                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 <= ls_list->lon_max))) {
+            if((BBView.GetMinLat() <= ls_list->lat_max && BBView.GetMaxLat() >= ls_list->lat_min) &&
+               ((BBView.GetMinLon() <= ls_list->lon_max && BBView.GetMaxLon() >= ls_list->lon_min) ||
+                (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 >= ls_list->lon_min) ||
+                (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 <= ls_list->lon_max))) {
                 // render the segment
                 
                 if(b_useVBO){
@@ -3766,9 +3739,8 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             
             double lon = *pdl++;
             double lat = *pdl++;
-            point_obj.BBObj.SetMin( lon, lat );
-            point_obj.BBObj.SetMax( lon, lat );
-            point_obj.bBBObj_valid = false;
+            point_obj.BBObj.Set( lat, lon, lat, lon );
+            point_obj.BBObj.Invalidate();
             
             char *rule_str1 = RenderCS( &point_rzRules, ru_cs );
             wxString cs_string( rule_str1, wxConvUTF8 );
@@ -3824,8 +3796,8 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     // We need a pixel bounding rectangle of the passed ViewPort.
     // Very important for partial screen renders, as with dc mode pans or OpenGL FBO operation.
     
-    wxPoint cr0 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMaxY(), vp_local.GetBBox().GetMinX());
-    wxPoint cr1 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMinY(), vp_local.GetBBox().GetMaxX());
+    wxPoint cr0 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMaxLat(), vp_local.GetBBox().GetMinLon());
+    wxPoint cr1 = vp_local.GetPixFromLL( vp_local.GetBBox().GetMinLat(), vp_local.GetBBox().GetMaxLon());
     wxRect clip_rect(cr0, cr1);
     
     for( int ip = 0; ip < npt; ip++ ) {
@@ -4316,19 +4288,13 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Update the object Bounding box,
     //  so that subsequent drawing operations will redraw the item fully
 
-    double plat, plon;
-    wxBoundingBox symbox;
+    double latmin, lonmin, latmax, lonmax;
 
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
-    symbox.SetMin( plon, plat );
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
-    symbox.SetMax( plon, plat );
-
-    if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-    else {
-        rzRules->obj->BBObj = symbox;
-        rzRules->obj->bBBObj_valid = true;
-    }
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &latmin, &lonmin, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &latmax, &lonmax, vp );
+    LLBBox symbox;
+    symbox.Set( latmin, lonmin, latmax, lonmax );
+    rzRules->obj->BBObj.Expand( symbox );
 
     return 1;
 }
@@ -4706,19 +4672,14 @@ int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPor
     //  Update the object Bounding box,
     //  so that subsequent drawing operations will redraw the item fully
     
-    double plat, plon;
-    wxBoundingBox symbox;
-    
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &plat, &plon, vp );
-    symbox.SetMin( plon, plat );
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &plat, &plon, vp );
-    symbox.SetMax( plon, plat );
-    
-    if( rzRules->obj->bBBObj_valid ) rzRules->obj->BBObj.Expand( symbox );
-    else {
-        rzRules->obj->BBObj = symbox;
-        rzRules->obj->bBBObj_valid = true;
-    }
+    double latmin, lonmin, latmax, lonmax;
+
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &latmin, &lonmin, vp );
+    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &latmax, &lonmax, vp );
+
+    LLBBox symbox;
+    symbox.Set( latmin, lonmin, latmax, lonmax );
+    rzRules->obj->BBObj.Expand( symbox );
     
     return 1;
 }
@@ -6153,7 +6114,16 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop, int y
 void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S52color *c,
                                            render_canvas_parms *pb_spec, render_canvas_parms *pPatt_spec, ViewPort *vp )
 {
-    wxBoundingBox BBView = vp->GetBBoxView();
+//    LLBBox BBView = vp->GetBBox();
+        LLBBox BBView = vp->GetBBox();
+    // please untangle this logic with the logic below
+    if(BBView.GetMaxLon()+180 < vp->clon)
+        BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() + 360,
+                   BBView.GetMaxLat(), BBView.GetMaxLon() + 360);
+    else if(BBView.GetMinLon()-180 > vp->clon)
+        BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() - 360,
+                   BBView.GetMaxLat(), BBView.GetMaxLon() - 360);
+
 
     S52color cp;
     if( NULL != c ) {
@@ -6172,17 +6142,13 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
 
         //  Allow a little slop in calculating whether a triangle
         //  is within the requested Viewport
-        double margin = BBView.GetWidth() * .05;
+        double margin = BBView.GetLonRange() * .05;
 
         PolyTriGroup *ppg = obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
-        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
-            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
-               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
-                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
-                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx))) {
+            if(!BBView.IntersectOut(p_tp->box)) {
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
@@ -6347,11 +6313,18 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     glColor3ub( c->R, c->G, c->B );
 
-    wxBoundingBox BBView = vp->GetBBoxView();
-    
+    LLBBox BBView = vp->GetBBox();
+    // please untangle this logic with the logic below
+    if(BBView.GetMaxLon()+180 < vp->clon)
+        BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() + 360,
+                   BBView.GetMaxLat(), BBView.GetMaxLon() + 360);
+    else if(BBView.GetMinLon()-180 > vp->clon)
+        BBView.Set(BBView.GetMinLat(), BBView.GetMinLon() - 360,
+                   BBView.GetMaxLat(), BBView.GetMaxLon() - 360);
+
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
-    double margin = BBView.GetWidth() * .05;
+    double margin = BBView.GetLonRange() * .05;
     BBView.EnLarge( margin );
     
     if( rzRules->obj->pPolyTessGeo ) {
@@ -6377,13 +6350,13 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     || ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93 ) )
                 {
                     //      We may need to translate object coordinates by 360 degrees to conform.
-                    if( BBView.GetMaxX() >= 180. ) {
-                        if(rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.)
+                    if( BBView.GetMaxLon() >= 180. ) {
+                        if(rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
                             x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
                     }
                     else
-                    if( (BBView.GetMinX() <= -180. && rzRules->obj->BBObj.GetMaxX() > BBView.GetMinX() + 360.)
-                    || (rzRules->obj->BBObj.GetMaxX() > 180 && BBView.GetMinX() + 360 < rzRules->obj->BBObj.GetMaxX() )
+                    if( (BBView.GetMinLon() <= -180. && rzRules->obj->BBObj.GetMaxLon() > BBView.GetMinLon() + 360.)
+                    || (rzRules->obj->BBObj.GetMaxLon() > 180 && BBView.GetMinLon() + 360 < rzRules->obj->BBObj.GetMaxLon() )
                     )
                     x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
                 }
@@ -6505,13 +6478,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
             
         while( p_tp ) {
-            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
-               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
-                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
-                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx) ||
-                (180 <= p_tp->maxx && BBView.GetMinX() < 0)))
-            {
-
+            if(!BBView.IntersectOut(p_tp->box)) {
                 if(b_useVBO) {
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
@@ -6589,11 +6556,11 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     GLuint clip_list = 0;
 
-    wxBoundingBox BBView = vp->GetBBoxView();
+    LLBBox BBView = vp->GetBBox();
 
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
-    double margin = BBView.GetWidth() * .05;
+    double margin = BBView.GetLonRange() * .05;
 
     wxPoint *ptp;
     if( rzRules->obj->pPolyTessGeo ) {
@@ -6644,16 +6611,10 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
-        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
 
-            if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
-               ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
-                (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
-                (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx) ||
-                (180 <= p_tp->maxx && BBView.GetMinX() < 0))) {
-
+            if(!BBView.IntersectOut(p_tp->box)) {
                 //      Get and convert the points
 
                 wxPoint *pr = ptp;
@@ -6855,11 +6816,11 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
 {
 #ifdef ocpnUSE_GL
 
-    wxBoundingBox BBView = vp->GetBBoxView();
+    LLBBox BBView = vp->GetBBox();
 
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
-    double margin = BBView.GetWidth() * .05;
+    double margin = BBView.GetLonRange() * .05;
 
     int obj_xmin = 10000;
     int obj_xmax = -10000;
@@ -6868,15 +6829,9 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
     
     PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
     
-    wxBoundingBox tp_box;
     TriPrim *p_tp = ppg->tri_prim_head;
     while( p_tp ) {
-
-        if((BBView.GetMinY() <= p_tp->maxy && BBView.GetMaxY() >= p_tp->miny) &&
-           ((BBView.GetMinX() <= p_tp->maxx && BBView.GetMaxX() >= p_tp->minx) ||
-            (BBView.GetMaxX() >=  180 && BBView.GetMaxX() - 360 > p_tp->minx) ||
-            (BBView.GetMinX() <= -180 && BBView.GetMinX() + 360 < p_tp->maxx))) {
-
+        if(!BBView.IntersectOut( p_tp->box)) {
             //      Get and convert the points
             
             wxPoint *pr = ptp;
@@ -7082,8 +7037,8 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
 
         //    Pattern bounding boxes may be offset from origin, to preset the spacing
         //    So, the bitmap must be delta based.
-        double dwidth = box.GetMaxX() - box.GetMinX();
-        double dheight = box.GetMaxY() - box.GetMinY();
+        double dwidth = box.GetWidth();
+        double dheight = box.GetHeight();
 
         //  Add in the pattern spacing parameters
         dwidth += prule->pos.patt.minDist.PAMI;
@@ -7114,7 +7069,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
             char *col = prule->colRef.LCRF;
             wxPoint pivot( pivot_x, pivot_y );
             wxPoint r0( (int) ( ( pivot_x - box.GetMinX() ) / fsf ) + 1,
-                    (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
+                        (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
 
             HPGL->SetTargetDC( &mdc );
             HPGL->Render( str, col, r0, pivot, 0 );
@@ -7299,11 +7254,11 @@ int s52plib::RenderToBufferAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,
     //    Identify this case......
     if( vp->chart_scale > 5e7 ) {
         //    Does the object hang out over the left side of the VP?
-        if( ( rzRules->obj->BBObj.GetMaxX() > vp->GetBBox().GetMinX() )
-                && ( rzRules->obj->BBObj.GetMinX() < vp->GetBBox().GetMinX() ) ) {
+        if( ( rzRules->obj->BBObj.GetMaxLon() > vp->GetBBox().GetMinLon() )
+                && ( rzRules->obj->BBObj.GetMinLon() < vp->GetBBox().GetMinLon() ) ) {
             //    If we add 360 to the objects lons, does it intersect the the right side of the VP?
-            if( ( ( rzRules->obj->BBObj.GetMaxX() + 360. ) > vp->GetBBox().GetMaxX() )
-                    && ( ( rzRules->obj->BBObj.GetMinX() + 360. ) < vp->GetBBox().GetMaxX() ) ) {
+            if( ( ( rzRules->obj->BBObj.GetMaxLon() + 360. ) > vp->GetBBox().GetMaxLon() )
+                    && ( ( rzRules->obj->BBObj.GetMinLon() + 360. ) < vp->GetBBox().GetMaxLon() ) ) {
                 //  If so, this area oject should be drawn again, this time for the left side
                 //    Do this by temporarily adjusting the objects rendering offset
                 rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
@@ -7516,18 +7471,18 @@ bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
     if( rzRules->obj == NULL ) return false;
 
     // Of course, the object must be at least partly visible in the viewport
-    const wxBoundingBox &vpBox = vp->GetBBox(), &testBox = rzRules->obj->BBObj;
+    const LLBBox &vpBox = vp->GetBBox(), &testBox = rzRules->obj->BBObj;
 
-    if(vpBox.GetMaxY() < testBox.GetMinY() || vpBox.GetMinY() > testBox.GetMaxY())
+    if(vpBox.GetMaxLat() < testBox.GetMinLat() || vpBox.GetMinLat() > testBox.GetMaxLat())
         return false;
 
-    if(vpBox.GetMaxX() >= testBox.GetMinX() && vpBox.GetMinX() <= testBox.GetMaxX())
+    if(vpBox.GetMaxLon() >= testBox.GetMinLon() && vpBox.GetMinLon() <= testBox.GetMaxLon())
         return true;
 
-    if(vpBox.GetMaxX() >= testBox.GetMinX()+360 && vpBox.GetMinX() <= testBox.GetMaxX()+360)
+    if(vpBox.GetMaxLon() >= testBox.GetMinLon()+360 && vpBox.GetMinLon() <= testBox.GetMaxLon()+360)
         return true;
 
-    if(vpBox.GetMaxX() >= testBox.GetMinX()-360 && vpBox.GetMinX() <= testBox.GetMaxX()-360)
+    if(vpBox.GetMaxLon() >= testBox.GetMinLon()-360 && vpBox.GetMinLon() <= testBox.GetMaxLon()-360)
         return true;
 
     return false;

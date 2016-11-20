@@ -1159,7 +1159,7 @@ extern "C"{
         }
             
         wxString s;
-        s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxY(), vbox.GetMaxX(), vbox.GetMinY(), vbox.GetMinX());  
+        s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxLat(), vbox.GetMaxLon(), vbox.GetMinLon(), vbox.GetMinLon());  
                     
         jstring ret = (env)->NewStringUTF(s.c_str());
         

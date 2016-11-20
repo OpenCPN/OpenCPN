@@ -186,9 +186,8 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     LonMin = ext.WLON;
     LonMax = ext.ELON;
 
-    m_bbox.SetMax(LonMax, LatMax);
-    m_bbox.SetMin(LonMin, LatMin);
-    
+    m_bbox.Set(LatMin, LonMin, LatMax, LonMax);
+
     // Fill in the PLY information
     //  LOD calculation
     int LOD_pixels = 1;
@@ -501,8 +500,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
         LonMax = cte.LonMax;
         LonMin = cte.LonMin;
 
-        m_bbox.SetMax(LonMax, LatMax);
-        m_bbox.SetMin(LonMin, LatMin);
+        m_bbox.Set(LatMin, LonMin, LatMax, LonMax);
         
         Skew = cte.skew;
         ProjectionType = cte.ProjectionType;
@@ -579,8 +577,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
         LonMax = cte.LonMax;
         LonMin = cte.LonMin;
 
-        m_bbox.SetMax(LonMax, LatMax);
-        m_bbox.SetMin(LonMin, LatMin);
+        m_bbox.Set(LatMin, LatMax, LonMin, LonMax);
         
         Skew = cte.skew;
         ProjectionType = cte.ProjectionType;
@@ -658,8 +655,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
           LonMax = cte.LonMax;
           LonMin = cte.LonMin;
 
-          m_bbox.SetMax(LonMax, LatMax);
-          m_bbox.SetMin(LonMin, LatMin);
+          m_bbox.Set(LatMin, LatMax, LonMin, LonMax);
           
           Skew = cte.skew;
           ProjectionType = cte.ProjectionType;
@@ -714,8 +710,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
       LonMax = cte.LonMax;
       LonMin = cte.LonMin;
 
-      m_bbox.SetMax(LonMax, LatMax);
-      m_bbox.SetMin(LonMin, LatMin);
+      m_bbox.Set(LatMin, LatMax, LonMin, LonMax);
       
       Scale = cte.Scale;
       edition_date = cte.edition_date;
@@ -764,8 +759,8 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
           LatMin = cte.LatMin;
           LonMax = cte.LonMax;
           LonMin = cte.LonMin;
-          m_bbox.SetMax(LonMax, LatMax);
-          m_bbox.SetMin(LonMin, LatMin);
+
+          m_bbox.Set(LatMin, LatMax, LonMin, LonMax);
           
           Scale = cte.Scale;
           edition_date = cte.edition_date;
@@ -1579,15 +1574,6 @@ bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & 
       wxArrayString FileList;
       wxDir dir(dir_path);
       int n_files = dir.GetAllFiles(dir_path, &FileList);
-
-      //    Arbitrarily, we decide if the dir has more than a specified number of files
-      //    then don't scan it.  Takes too long....
-
-      if(n_files > 10000)
-      {
-            new_magic = _T("");
-            return true;
-      }
 
       //Traverse the list of files, getting their interesting stuff to add to accumulator
       for(int ifile=0 ; ifile < n_files ; ifile++)
@@ -2508,19 +2494,19 @@ int ChartDatabase::GetDBChartScale(int dbIndex)
 //-------------------------------------------------------------------
 //    Get Lat/Lon Bounding Box from db
 //-------------------------------------------------------------------
-bool ChartDatabase::GetDBBoundingBox(int dbIndex, wxBoundingBox *box)
+bool ChartDatabase::GetDBBoundingBox(int dbIndex, LLBBox &box)
 {
     if((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
       {
             const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
-            box->SetMax(entry.GetLonMax(), entry.GetLatMax());
-            box->SetMin(entry.GetLonMin(), entry.GetLatMin());
+            box.Set(entry.GetLatMin(), entry.GetLonMin(),
+                    entry.GetLatMax(), entry.GetLonMax());
       }
 
       return true;
 }
 
-const wxBoundingBox &ChartDatabase::GetDBBoundingBox(int dbIndex)
+const LLBBox &ChartDatabase::GetDBBoundingBox(int dbIndex)
 {
     if((bValid) && (dbIndex >= 0) )
     {

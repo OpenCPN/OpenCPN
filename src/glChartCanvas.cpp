@@ -78,7 +78,7 @@ private:
 #include "ais.h"
 #include "OCPNPlatform.h"
 #include "toolbar.h"
-#include "chartbarwin.h"
+#include "piano.h"
 #include "tcmgr.h"
 #include "compass.h"
 #include "FontMgr.h"
@@ -130,7 +130,6 @@ extern OCPNPlatform *g_Platform;
 extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
-extern ChartBarWin     *g_ChartBarWin;
 extern Piano           *g_Piano;
 extern ocpnCompass         *g_Compass;
 extern ChartStack *pCurrentStack;
@@ -168,6 +167,7 @@ extern PlugInManager* g_pi_manager;
 
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
+extern TrackList        *pTrackList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
@@ -230,6 +230,7 @@ extern wxProgressDialog *pprog;
 extern bool b_skipout;
 extern wxSize pprog_size;
 extern int pprog_count;
+extern int pprog_threads;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
 //const
@@ -383,7 +384,7 @@ static double chart_dist(int index)
     float  clat;
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
     // if the chart contains ownship position set the distance to 0
-    if (cte.GetBBox().PointInBox(gLon, gLat, 0.))
+    if (cte.GetBBox().Contains( gLat, gLon ))
         d = 0.;
     else {
         // find the nearest edge 
@@ -505,6 +506,7 @@ void BuildCompressedCache()
 #endif
 
     int thread_count = 0;
+    pprog_threads = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
         if(g_nCPUCount > 0)
@@ -516,7 +518,8 @@ void BuildCompressedCache()
             // obviously there's a least one CPU!
             thread_count = 1;
         }
-            
+        pprog_threads = thread_count;
+
         workers = new CompressedCacheWorkerThread*[thread_count];
         for(int t = 0; t < thread_count; t++)
             workers[t] = NULL;
@@ -1819,23 +1822,35 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
        routines works the same here (with accelerated panning) as it does without, so we
        can adjust the coordinates here */
 
-    if(bbox.GetMaxX() < cvp.GetBBox().GetMinX()) {
-        wxPoint2DDouble p360(360, 0);
-        bbox.Translate(p360);
-    } else if(bbox.GetMinX() > cvp.GetBBox().GetMaxX()) {
-        wxPoint2DDouble n360(-360, 0);
-        bbox.Translate(n360);
-    }
-
-    cvp.SetBBoxDirect(bbox);
+    if(bbox.GetMaxLon() < cvp.GetBBox().GetMinLon()) {
+        bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() + 360,
+                 bbox.GetMaxLat(), bbox.GetMaxLon() + 360);
+        cvp.SetBBoxDirect(bbox);
+    } else if(bbox.GetMaxLon() > cvp.GetBBox().GetMaxLon()) {
+        bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() - 360,
+                 bbox.GetMaxLat(), bbox.GetMaxLon() - 360);
+        cvp.SetBBoxDirect(bbox);
+    } else
+        cvp.SetBBoxDirect(bbox);
 
     return cvp;
 }
 
 
-void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
+void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
+
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
+            /* defer rendering active tracks until later */
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            continue;
+
+        pTrackDraw->Draw( dc, vp, vp.GetBBox() );
+    }
     
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
@@ -1848,12 +1863,6 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
             continue;
     
-        if( pRouteDraw->IsTrack() ) {
-            /* defer rendering active tracks until later */
-            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
-                continue;
-        }
-    
         /* defer rendering routes being edited until later */
         if( pRouteDraw->m_bIsBeingEdited )
             continue;
@@ -1865,15 +1874,25 @@ void glChartCanvas::DrawStaticRoutesAndWaypoints( ViewPort &vp )
     if( vp.GetBBox().GetValid() && pWayPointMan) {
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
+            if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
                 pWP->DrawGL( vp );
         }
     }
 }
 
-void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
+void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
+
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
+            /* defer rendering active tracks until later */
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            pTrackDraw->Draw( dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
+    }
+
     for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         
@@ -1884,16 +1903,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         /* Active routes */
         if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
             drawit++;
-        
-        if( pRouteDraw->IsTrack() ) {
-            /* Active tracks */
-            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() ){
-                pRouteDraw->Draw( dc, vp );     // We need Track::Draw() to dynamically render last (ownship) point.
-         //       pRouteDraw->DrawGL( vp );
-                continue;
-            }
-        }
-        
+                
         /* Routes being edited */
         if( pRouteDraw->m_bIsBeingEdited )
             drawit++;
@@ -1903,7 +1913,7 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
             drawit++;
         
         if(drawit) {
-            const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+            const LLBBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
             if(!vp_box.IntersectOut(test_box))
                 pRouteDraw->DrawGL( vp );
         }
@@ -1915,9 +1925,8 @@ void glChartCanvas::DrawDynamicRoutesAndWaypoints( ViewPort &vp )
         
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && (pWP->m_bIsBeingEdited) && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) ){
+            if( pWP && pWP->m_bIsBeingEdited && !pWP->m_bIsInRoute )
                 pWP->DrawGL( vp );
-            }
         }
     }
     
@@ -1955,33 +1964,22 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         return;
         
     /* quick bounds check */
-    wxBoundingBox box;
-    ChartData->GetDBBoundingBox( dbIndex, &box );
+    LLBBox box;
+    ChartData->GetDBBoundingBox( dbIndex, box );
     if(!box.GetValid())
         return;
 
     
     // Don't draw an outline in the case where the chart covers the entire world */
-    double lon_diff = box.GetMaxX() - box.GetMinX();
-    if(lon_diff == 360)
+    if(box.GetLonRange() == 360)
         return;
 
-    wxBoundingBox vpbox = vp.GetBBox();
+    LLBBox vpbox = vp.GetBBox();
     
-    float lon_bias;
-    if( vpbox.IntersectOut( box ) ) {
-        wxPoint2DDouble p = wxPoint2DDouble(360, 0);
-        box.Translate( p );
-        if( vpbox.IntersectOut( box ) ) {
-            wxPoint2DDouble n = wxPoint2DDouble(-720, 0);
-            box.Translate( n );
-            if( vpbox.IntersectOut( box ) )
-                return;
-            lon_bias = -360;
-        } else
-            lon_bias = 360;
-    } else
-        lon_bias = 0;
+    double lon_bias = 0;
+    // chart is outside of viewport lat/lon bounding box
+    if( box.IntersectOutGetBias( vp.GetBBox(), lon_bias ) )
+        return;
 
     float plylat, plylon;
 
@@ -2114,10 +2112,10 @@ void glChartCanvas::GridDraw( )
     h = vp.pix_height;
 
     LLBBox llbbox = vp.GetBBox();
-    nlat = llbbox.GetMaxY();
-    slat = llbbox.GetMinY();
-    elon = llbbox.GetMaxX();
-    wlon = llbbox.GetMinX();
+    nlat = llbbox.GetMaxLat();
+    slat = llbbox.GetMinLat();
+    elon = llbbox.GetMaxLon();
+    wlon = llbbox.GetMinLon();
 
     // calculate distance between latitude grid lines
     CalcGridSpacing( vp.view_scale_ppm, gridlatMajor, gridlatMinor );
@@ -2427,7 +2425,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     int drawit = 0;
     //    Is ship in Vpoint?
-    if( cc1->GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
+    if( cc1->GetVP().GetBBox().Contains( gLat,  gLon ) )
+        drawit++;                             // yep
 
     //  COG/SOG may be undefined in NMEA data stream
     float pCog = gCog;
@@ -2451,7 +2450,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                        powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
 
     //    Is predicted point in the VPoint?
-    if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;      // yep
+    if( cc1->GetVP().GetBBox().Contains( pred_lat,  pred_lon ) )
+        drawit++;      // yep
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
@@ -2484,7 +2484,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
     //    Is head predicted point in the VPoint?
-    if( cc1->GetVP().GetBBox().PointInBox( hdg_pred_lon, hdg_pred_lat, 0 ) ) drawit++;                     // yep
+    if( cc1->GetVP().GetBBox().Contains( hdg_pred_lat,  hdg_pred_lon ) )
+        drawit++;                     // yep
 
 //    Should we draw the Head vector?
 //    Compare the points lHeadPoint and lPredPoint
@@ -2506,11 +2507,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     // And two more tests to catch the case where COG/HDG line crosses the screen,
     // but ownship and pred point are both off
-    
-    if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
-    if( cc1->GetVP().GetBBox().LineIntersect( wxPoint2DDouble( gLon, gLat ),
-        wxPoint2DDouble( hdg_pred_lon, hdg_pred_lat ) ) ) drawit++;
+
+    LLBBox box;
+    box.SetFromSegment(gLon, gLat, pred_lon, pred_lat);
+    if( !cc1->GetVP().GetBBox().IntersectOut( box ) )
+        drawit++;
+    box.SetFromSegment(gLon, gLat, hdg_pred_lon, hdg_pred_lat);
+    if( !cc1->GetVP().GetBBox().IntersectOut(box))
+        drawit++;
     
     //    Do the draw if either the ship or prediction is within the current VPoint
     if( !drawit )
@@ -3868,7 +3872,7 @@ void glChartCanvas::DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp)
 {
     cc1->RenderAllChartOutlines( dc, vp );
 
-    DrawStaticRoutesAndWaypoints( vp );
+    DrawStaticRoutesTracksAndWaypoints( vp );
 
     if( cc1->m_bShowTide ) {
         LLBBox bbox = vp.GetBBox();
@@ -3968,23 +3972,10 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
             {
                 double lon = pIDX->IDX_lon;
                 double lat = pIDX->IDX_lat;
-                bool b_inbox = false;
-                double nlon;
                 
-                if( BBox.PointInBox( lon, lat, 0 ) ) {
-                    nlon = lon;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon + 360., lat, 0 ) ) {
-                    nlon = lon + 360.;
-                    b_inbox = true;
-                } else if( BBox.PointInBox( lon - 360., lat, 0 ) ) {
-                    nlon = lon - 360.;
-                    b_inbox = true;
-                }
-  
-                if( b_inbox ) {
+                if( BBox.Contains( lat,  lon ) ) {
                     wxPoint r;
-                    cc1->GetCanvasPointPix( lat, nlon, &r );
+                    cc1->GetCanvasPointPix( lat, lon, &r );
       
                     float xp = r.x;
                     float yp = r.y;
@@ -4507,7 +4498,7 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
-    DrawDynamicRoutesAndWaypoints( VPoint );
+    DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
@@ -4594,7 +4585,7 @@ void glChartCanvas::Render()
     
 #endif
     // render the chart bar
-    if(g_bShowChartBar && !g_ChartBarWin)
+    if(g_bShowChartBar)
         DrawChartBar(gldc);
 
     if (g_Compass)

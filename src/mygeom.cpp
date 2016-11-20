@@ -385,19 +385,9 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
             //  Read the triangle primitive bounding box as lat/lon
             double *pbb = (double *)m_buf_ptr;
             
-#ifdef ARMHF
             double abox[4];
             memcpy(&abox[0], pbb, 4 * sizeof(double));
-            tp->minx = abox[0];
-            tp->maxx = abox[1];
-            tp->miny = abox[2];
-            tp->maxy = abox[3];
-#else            
-            tp->minx = *pbb++;
-            tp->maxx = *pbb++;
-            tp->miny = *pbb++;
-            tp->maxy = *pbb;
-#endif
+            tp->box.Set(abox[2], abox[0], abox[3], abox[1]);
             
             m_buf_ptr += 4 * sizeof(double);
 
@@ -807,7 +797,8 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
                 }
             }
             //  Calculate bounding box as lat/lon
-
+            // this breaks if the triangle crosses IDL
+            
             float sxmax = -179;                   // this poly BBox
             float sxmin = 170;
             float symax = -90;
@@ -826,11 +817,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
                 symin = wxMin(yd, symin);
             }
 
-            pTP->minx = sxmin;
-            pTP->miny = symin;
-            pTP->maxx = sxmax;
-            pTP->maxy = symax;
-
+            pTP->box.Set(symin, sxmin, symax, sxmax);
         }
         pr = (polyout *)pr->poly_next;
     }
@@ -1264,17 +1251,7 @@ int PolyTessGeo::BuildTessTri(void)
                 symin = wxMin(lat, symin);
             }
         
-
-
-
-
-
-
-            pTP->minx = sxmin;
-            pTP->miny = symin;
-            pTP->maxx = sxmax;
-            pTP->maxy = symax;
-            
+            pTP->box.Set(symin, sxmin, symax, sxmax);
         }
         pr = (polyout *)pr->poly_next;
     }
@@ -1366,11 +1343,9 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
         
 
         //  Write out the object bounding box as lat/lon
-        ostream2->Write(&pTP->minx, sizeof(double));
-        ostream2->Write(&pTP->maxx, sizeof(double));
-        ostream2->Write(&pTP->miny, sizeof(double));
-        ostream2->Write(&pTP->maxy, sizeof(double));
-
+        double data[4] = {pTP->box.GetMinLon(), pTP->box.GetMaxLon(),
+                          pTP->box.GetMinLat(), pTP->box.GetMaxLat()};
+        ostream2->Write(data, 4*sizeof(double));
 
         pTP = pTP->p_next;
     }
@@ -2489,11 +2464,7 @@ void __CALL_CONVENTION endCallback(void)
                 }
             }
 
-            pTPG->minx = sxmin;
-            pTPG->miny = symin;
-            pTPG->maxx = sxmax;
-            pTPG->maxy = symax;
-            
+            pTPG->box.Set(symin, sxmin, symax, sxmax);
 
             //  Transcribe this geometry to TriPrim, converting to SM if called for
 

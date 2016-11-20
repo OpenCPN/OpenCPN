@@ -90,7 +90,7 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern Route    *pAISMOBRoute;
 extern wxString AISTargetNameFileName;
 extern MyConfig *pConfig;
-extern RouteList *pRouteList;
+extern TrackList *pTrackList;
 extern OCPNPlatform     *g_Platform;
 extern PlugInManager             *g_pi_manager;
 
@@ -1870,22 +1870,22 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
         if ( 0 == m_persistent_tracks.count( ptarget->MMSI ) )
         {
             t = new Track();
-            t->m_RouteNameString = wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
-            pRouteList->Append( t );
-            pConfig->AddNewRoute( t, -1 );
+            t->m_TrackNameString = wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+            pTrackList->Append( t );
+            pConfig->AddNewTrack( t );
             m_persistent_tracks[ptarget->MMSI] = t;
         }
         else
         {
             t = m_persistent_tracks[ptarget->MMSI];
         }
-        RoutePoint *rp = t->GetLastPoint();
+        TrackPoint *tp = t->GetLastPoint();
         vector2D point( ptrackpoint->m_lon, ptrackpoint->m_lat );
-        RoutePoint *rp1 = t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );        
-        if( rp )
+        TrackPoint *tp1 = t->AddNewPoint( point, wxDateTime(ptrackpoint->m_time).ToUTC() );        
+        if( tp )
         {
-            pSelect->AddSelectableTrackSegment( rp->m_lat, rp->m_lon, rp1->m_lat,
-                rp1->m_lon, rp, rp1, t );
+            pSelect->AddSelectableTrackSegment( tp->m_lat, tp->m_lon, tp1->m_lat,
+                tp1->m_lon, tp, tp1, t );
         }
         
 //We do not want dependency on the GUI here, do we?

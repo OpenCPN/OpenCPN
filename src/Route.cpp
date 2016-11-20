@@ -38,27 +38,23 @@ extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
-extern int g_track_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
 extern double g_n_arrival_circle_radius;
 extern float g_GLMinSymbolLineWidth;
 extern double g_PlanSpeed;
-extern double gLat, gLon;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
 
-Route::Route( void )
+Route::Route()
 {
     m_bRtIsSelected = false;
     m_bRtIsActive = false;
     m_pRouteActivePoint = NULL;
     m_bIsBeingEdited = false;
     m_bIsBeingCreated = false;
-    m_bIsTrack = false;
-    m_nPoints = 0;
     m_nm_sequence = 1;
     m_route_length = 0.0;
     m_route_time = 0.0;
@@ -70,14 +66,10 @@ Route::Route( void )
     m_hiliteWidth = 0;
 
     pRoutePointList = new RoutePointList;
-    m_pLastAddedPoint = NULL;
     m_GUID = pWayPointMan->CreateGUID( NULL );
     m_btemp = false;
     
     m_ArrivalRadius = g_n_arrival_circle_radius;        // Nautical Miles
-
-    m_bNeedsUpdateBBox = true;
-    RBBox.Reset();
 
     m_LayerID = 0;
     m_bIsInLayer = false;
@@ -93,25 +85,18 @@ Route::Route( void )
     
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
-    
-    m_HyperlinkList = new HyperlinkList;
 }
 
-Route::~Route( void )
+Route::~Route()
 {
     pRoutePointList->DeleteContents( false );            // do not delete Marks
-    pRoutePointList->Clear();
     delete pRoutePointList;
-    m_HyperlinkList->Clear();
-    delete m_HyperlinkList;
 }
 
 // The following is used only for route splitting, assumes just created, empty route
 //
 void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
 {
-    m_bIsTrack = psourceroute->m_bIsTrack;
-
     m_RouteNameString = psourceroute->m_RouteNameString + suffix;
     m_RouteStartString = psourceroute->m_RouteStartString;
     m_RouteEndString = psourceroute->m_RouteEndString;
@@ -125,107 +110,11 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
                     psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
             AddPoint( ptargetpoint, false );
-
-            CloneAddedRoutePoint( m_pLastAddedPoint, psourcepoint );
         }
     }
 
     FinalizeForRendering();
 
-}
-
-void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
-{
-    if( psourceroute->m_bIsInLayer ) return;
-
-    m_bIsTrack = psourceroute->m_bIsTrack;
-
-    m_RouteNameString = psourceroute->m_RouteNameString + suffix;
-    m_RouteStartString = psourceroute->m_RouteStartString;
-    m_RouteEndString = psourceroute->m_RouteEndString;
-
-    bool b_splitting = GetnPoints() == 0;
-
-    int startTrkSegNo;
-    if( b_splitting ) startTrkSegNo = psourceroute->GetPoint( start_nPoint )->m_GPXTrkSegNo;
-    else
-        startTrkSegNo = this->GetLastPoint()->m_GPXTrkSegNo;
-
-    int i;
-    for( i = start_nPoint; i <= end_nPoint; i++ ) {
-
-        RoutePoint *psourcepoint = psourceroute->GetPoint( i );
-        RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
-
-        AddPoint( ptargetpoint, false );
-        
-        //    This is a hack, need to undo the action of Route::AddPoint
-        ptargetpoint->m_bIsInRoute = false;
-        ptargetpoint->m_bIsInTrack = true;
-        
-        CloneAddedTrackPoint( m_pLastAddedPoint, psourcepoint );
-
-        int segment_shift = psourcepoint->m_GPXTrkSegNo;
-
-        if(  start_nPoint == 2 ) 
-            segment_shift = psourcepoint->m_GPXTrkSegNo - 1; // continue first segment if tracks share the first point
-
-        if( b_splitting )
-            m_pLastAddedPoint->m_GPXTrkSegNo = ( psourcepoint->m_GPXTrkSegNo - startTrkSegNo ) + 1;
-        else
-            m_pLastAddedPoint->m_GPXTrkSegNo = startTrkSegNo + segment_shift;
-    }
-
-    FinalizeForRendering();
-
-}
-
-void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcepoint )
-{
-    ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
-    ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
-    ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
-    ptargetpoint->m_bPtIsSelected = false;
-    ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
-    ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
-    ptargetpoint->m_bDynamicName = psourcepoint->m_bDynamicName;
-    ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
-    ptargetpoint->m_NameLocationOffsetY = psourcepoint->m_NameLocationOffsetY;
-    ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
-    ptargetpoint->m_HyperlinkList = new HyperlinkList;
-    ptargetpoint->ReLoadIcon();
-    
-    if( !psourcepoint->m_HyperlinkList->IsEmpty() ) {
-        HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
-        psourcepoint->m_HyperlinkList->splice( iter, *( ptargetpoint->m_HyperlinkList ) );
-    }
-}
-
-void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcepoint )
-{
-    //    This is a hack, need to undo the action of Route::AddPoint
-    ptargetpoint->m_bIsInRoute = false;
-    ptargetpoint->m_bIsInTrack = true;
-    ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
-    ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
-    ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
-    ptargetpoint->m_bPtIsSelected = false;
-    ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
-    ptargetpoint->m_bBlink = psourcepoint->m_bBlink;
-    ptargetpoint->m_bDynamicName = psourcepoint->m_bDynamicName;
-    ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
-    ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
-    ptargetpoint->m_NameLocationOffsetY = psourcepoint->m_NameLocationOffsetY;
-    ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
-    ptargetpoint->m_HyperlinkList = new HyperlinkList;
-    ptargetpoint->ReLoadIcon();
-    // Hyperlinks not implemented currently in GPX for trackpoints
-    //if (!psourcepoint->m_HyperlinkList->IsEmpty()) {
-    //      HyperlinkList::iterator iter = psourcepoint->m_HyperlinkList->begin();
-    //      psourcepoint->m_HyperlinkList->splice(iter, *(ptargetpoint->m_HyperlinkList));
-    //}
 }
 
 void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_deferBoxCalc )
@@ -239,19 +128,15 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
     RoutePoint *prev = GetLastPoint();
     pRoutePointList->Append( pNewPoint );
 
-    m_nPoints++;
-
     if( !b_deferBoxCalc )
         FinalizeForRendering();
 
     if( prev )
         UpdateSegmentDistance( prev, pNewPoint );
 
-    m_pLastAddedPoint = pNewPoint;
-
     if( b_rename_in_sequence && pNewPoint->GetName().IsEmpty() && !pNewPoint->m_bKeepXRoute ) {
         wxString name;
-        name.Printf( _T ( "%03d" ), m_nPoints );
+        name.Printf( _T ( "%03d" ), GetnPoints() );
         pNewPoint->SetName( name );
         pNewPoint->m_bDynamicName = true;
     }
@@ -313,9 +198,14 @@ void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &vp, b
     RenderSegment( dc, rp1->x, rp1->y, rp2->x, rp2->y, vp, bdraw_arrow );
 }
 
-void Route::Draw( ocpnDC& dc, ViewPort &vp )
+void Route::Draw( ocpnDC& dc, ViewPort &vp, const LLBBox &box )
 {
-    if( m_nPoints == 0 ) return;
+    if( pRoutePointList->empty() )
+        return;
+
+    LLBBox test_box = GetBBox();
+    if( box.IntersectOut( test_box ) ) // Route is wholly outside window
+        return;
 
     int width = g_route_line_width;
     if( m_width != WIDTH_UNDEFINED ) width = m_width;
@@ -375,8 +265,8 @@ void Route::Draw( ocpnDC& dc, ViewPort &vp )
         if ( m_bVisible )
         {
             //    Handle offscreen points
-            bool b_2_on = vp.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
-            bool b_1_on = vp.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
+            bool b_2_on = vp.GetBBox().Contains( prp2->m_lat,  prp2->m_lon );
+            bool b_1_on = vp.GetBBox().Contains( prp1->m_lat,  prp1->m_lon );
 
             //Simple case
             if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp, true, m_hiliteWidth ); // with arrows
@@ -459,7 +349,7 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
     RoutePoint *prp2 = node->GetData();
     cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &lastpoint);
     
-    if(m_nPoints == 1 && dc) { // single point.. make sure it shows up for highlighting
+    if(GetnPoints() == 1 && dc) { // single point.. make sure it shows up for highlighting
         cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r1);
         dc->DrawLine(r1.m_x, r1.m_y, r1.m_x+2, r1.m_y+2);
         return;
@@ -472,19 +362,13 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
     if( !dc )
         glBegin(GL_LINES);
 
-    unsigned short int FromSegNo = prp2->m_GPXTrkSegNo;
     for(node = node->GetNext(); node; node = node->GetNext()) {
         RoutePoint *prp1 = prp2;
         prp2 = node->GetData();
-        unsigned short int ToSegNo = prp2->m_GPXTrkSegNo;
 
         // Provisional, to properly set status of last point in route
         prp2->m_pos_on_screen = false;
-        
-        if (FromSegNo != ToSegNo) {
-            FromSegNo = ToSegNo;
-            r1valid = false;
-        } else {
+        {
             
             wxPoint2DDouble r2;
             cc1->GetDoubleCanvasPointPix( prp2->m_lat, prp2->m_lon, &r2);
@@ -498,8 +382,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             // don't need to perform calculations or render segment
             // if both points are past any edge of the vp
             // TODO: use these optimizations for dc mode
-            bool lat1l = prp1->m_lat < bbox.GetMinY(), lat2l = prp2->m_lat < bbox.GetMinY();
-            bool lat1r = prp1->m_lat > bbox.GetMaxY(), lat2r = prp2->m_lat > bbox.GetMaxY();
+            bool lat1l = prp1->m_lat < bbox.GetMinLat(), lat2l = prp2->m_lat < bbox.GetMinLat();
+            bool lat1r = prp1->m_lat > bbox.GetMaxLat(), lat2r = prp2->m_lat > bbox.GetMaxLat();
             if( (lat1l && lat2l) || (lat1r && lat2r) ) {
                 r1valid = false;
                 prp1->m_pos_on_screen = false;
@@ -507,8 +391,8 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             }
 
             bool lon1l, lon1r, lon2l, lon2r;
-            TestLongitude(prp1->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon1l, lon1r);
-            TestLongitude(prp2->m_lon, bbox.GetMinX(), bbox.GetMaxX(), lon2l, lon2r);
+            TestLongitude(prp1->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon1l, lon1r);
+            TestLongitude(prp2->m_lon, bbox.GetMinLon(), bbox.GetMaxLon(), lon2l, lon2r);
             if( (lon1l && lon2l) || (lon1r && lon2r) ) {
                 r1valid = false;
                 prp1->m_pos_on_screen = false;
@@ -579,23 +463,6 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
         }
     }
 
-    //  Draw tentative segment from last point to Ownship, if running.
-    if( IsTrack() ) {
-        /* Active tracks */
-        if( dynamic_cast<Track *>(this)->IsRunning() ){
-            wxPoint2DDouble rs;
-            cc1->GetDoubleCanvasPointPix( gLat, gLon, &rs);
-            if( dc )
-                dc->DrawLine(lastpoint.m_x, lastpoint.m_y, rs.m_x, rs.m_y);
-            else {
-                glVertex2f(lastpoint.m_x, lastpoint.m_y);
-                glVertex2f(rs.m_x, rs.m_y);
-             }
-        }
-    }
-                
-                
-        
     if( !dc )
         glEnd();
 #endif    
@@ -604,13 +471,10 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
 void Route::DrawGL( ViewPort &vp )
 {
 #ifdef ocpnUSE_GL
-    if( m_nPoints < 1 || !m_bVisible ) return;
+    if( pRoutePointList->empty() || !m_bVisible ) return;
 
     if(!vp.GetBBox().IntersectOut(GetBBox()))
         DrawGLRouteLines(vp);
-
-    if(m_bIsTrack)
-        return;
 
     /*  Route points  */
     for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
@@ -645,9 +509,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
     wxColour col;
 
     int width = g_pRouteMan->GetRoutePen()->GetWidth(); //g_route_line_width;
-    if(m_bIsTrack)
-        width = g_pRouteMan->GetTrackPen()->GetWidth();
-    if( m_width != WIDTH_UNDEFINED )
+    if( m_width != wxPENSTYLE_INVALID )
         width = m_width;
     
     if( m_bRtIsActive )
@@ -658,21 +520,6 @@ void Route::DrawGLRouteLines( ViewPort &vp )
     } else {
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
-            
-            //  For tracks, establish colour based on first icon name
-            if(m_bIsTrack){
-                wxRoutePointListNode *node = pRoutePointList->GetFirst();
-                RoutePoint *prp = node->GetData();
-                
-                if( prp->GetIconName().StartsWith( _T("xmred") ) ) 
-                    col = GetGlobalColor( _T ( "URED" ) );
-                else if( prp->GetIconName().StartsWith( _T("xmblue") ) ) 
-                    col = GetGlobalColor( _T ( "BLUE3" ) );
-                else if( prp->GetIconName().StartsWith( _T("xmgreen") ) ) 
-                    col = GetGlobalColor( _T ( "UGREN" ) );
-                else 
-                    col = GetGlobalColor( _T ( "CHMGD" ) );
-            }
         } else {
             for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
                 if( m_Colour == ::GpxxColorNames[i] ) {
@@ -683,7 +530,7 @@ void Route::DrawGLRouteLines( ViewPort &vp )
         }
     }
     
-    int style = wxSOLID;
+    wxPenStyle style = wxPENSTYLE_SOLID;
     if( m_style != wxPENSTYLE_INVALID ) style = m_style;
     dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
     
@@ -697,19 +544,17 @@ void Route::DrawGLRouteLines( ViewPort &vp )
     glDisable (GL_LINE_STIPPLE);
 
     /* direction arrows.. could probably be further optimized for opengl */
-    if( !m_bIsTrack ) {
-        wxRoutePointListNode *node = pRoutePointList->GetFirst();
-        wxPoint rpt1, rpt2;
-        while(node) {
-            RoutePoint *prp = node->GetData();
-            cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-            if(node != pRoutePointList->GetFirst())
-                RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
-            rpt1 = rpt2;
-            node = node->GetNext();
-        }
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    wxPoint rpt1, rpt2;
+    while(node) {
+        RoutePoint *prp = node->GetData();
+        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+        if(node != pRoutePointList->GetFirst())
+            RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp );
+        rpt1 = rpt2;
+        node = node->GetNext();
     }
-#endif
+    #endif
 }
 
 static int s_arrow_icon[] = { 0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0 };
@@ -862,8 +707,6 @@ RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
 
     RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
 
-    m_nPoints++;
-
     if( bRenamePoints ) RenameRoutePoints();
 
     FinalizeForRendering();
@@ -876,7 +719,7 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
                                       bool bRenamePoints )
 {
     int nRP = pRoutePointList->IndexOf( pRP );
-    if( nRP >= m_nPoints - 1 )
+    if( nRP >= GetnPoints() - 1 )
         return NULL;
     nRP++;
     
@@ -889,8 +732,6 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
     pRoutePointList->Insert( nRP, newpoint );
     
     RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
-    
-    m_nPoints++;
     
     if( bRenamePoints ) RenameRoutePoints();
     
@@ -942,11 +783,9 @@ void Route::DeletePoint( RoutePoint *rp, bool bRenamePoints )
 
     delete rp;
 
-    m_nPoints -= 1;
-
     if( bRenamePoints ) RenameRoutePoints();
 
-    if( m_nPoints > 1 ) {
+    if( GetnPoints() > 1 ) {
         pSelect->AddAllSelectableRouteSegments( this );
         pSelect->AddAllSelectableRoutePoints( this );
 
@@ -969,7 +808,6 @@ void Route::RemovePoint( RoutePoint *rp, bool bRenamePoints )
     pRoutePointList->DeleteObject( rp );
     if( wxNOT_FOUND != RoutePointGUIDList.Index( rp->m_GUID ) ) RoutePointGUIDList.Remove(
             rp->m_GUID );
-    m_nPoints -= 1;
 
     // check all other routes to see if this point appears in any other route
     Route *pcontainer_route = g_pRouteMan->FindRouteContainingWaypoint( rp );
@@ -1024,24 +862,21 @@ void Route::ReloadRoutePointIcons()
 
 void Route::FinalizeForRendering()
 {
-    m_bNeedsUpdateBBox = true;
+    RBBox.Invalidate();
 }
 
 LLBBox &Route::GetBBox( void )
 {
-    if(!m_bNeedsUpdateBBox)
+    if(RBBox.GetValid())
         return RBBox;
 
-    double bbox_xmin;
-    double bbox_xmax;
-    double bbox_ymin = 90.;
-    double bbox_ymax = -90.;
+    double bbox_lonmin, bbox_lonmax, bbox_latmin, bbox_latmax;
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *data = node->GetData();
 
-    bbox_xmax = bbox_xmin = data->m_lon;
-    bbox_ymax = bbox_ymin = data->m_lat;
+    bbox_lonmax = bbox_lonmin = data->m_lon;
+    bbox_latmax = bbox_latmin = data->m_lat;
 
     double lastlon = data->m_lon, wrap = 0;
 
@@ -1056,32 +891,30 @@ LLBBox &Route::GetBBox( void )
         
         double lon = data->m_lon + wrap;
 
-        if( lon > bbox_xmax )
-            bbox_xmax = lon;
-        if( lon < bbox_xmin )
-            bbox_xmin = lon;
+        if( lon > bbox_lonmax )
+            bbox_lonmax = lon;
+        if( lon < bbox_lonmin )
+            bbox_lonmin = lon;
 
-        if( data->m_lat > bbox_ymax )
-            bbox_ymax = data->m_lat;
-        if( data->m_lat < bbox_ymin )
-            bbox_ymin = data->m_lat;
+        if( data->m_lat > bbox_latmax )
+            bbox_latmax = data->m_lat;
+        if( data->m_lat < bbox_latmin )
+            bbox_latmin = data->m_lat;
 
         lastlon = data->m_lon;
         node = node->GetNext();
     }
     
-    if(bbox_xmin < -360)
-        bbox_xmin += 360, bbox_xmax += 360;
-    else if(bbox_xmax > 360)
-        bbox_xmin -= 360, bbox_xmax -= 360;
+    if(bbox_lonmin < -360)
+        bbox_lonmin += 360, bbox_lonmax += 360;
+    else if(bbox_lonmax > 360)
+        bbox_lonmin -= 360, bbox_lonmax -= 360;
 
-    if(bbox_xmax - bbox_xmin > 360)
-       bbox_xmin = -180, bbox_xmax = 180;
+    if(bbox_lonmax - bbox_lonmin > 360)
+       bbox_lonmin = -180, bbox_lonmax = 180;
 
-    RBBox.SetMin(bbox_xmin, bbox_ymin);
-    RBBox.SetMax(bbox_xmax, bbox_ymax);
+    RBBox.Set(bbox_latmin, bbox_lonmin, bbox_latmax, bbox_lonmax);
 
-    m_bNeedsUpdateBBox = false;
     return RBBox;
 }
 
@@ -1223,7 +1056,6 @@ void Route::Reverse( bool bRenamePoints )
 
     pRoutePointList->DeleteContents( false );
     pRoutePointList->Clear();
-    m_nPoints = 0;
     m_route_length = 0.0;
     
     AssembleRoute();                          // Rebuild the route points from the GUID list

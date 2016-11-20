@@ -1,3 +1,4 @@
+
 /***************************************************************************
  *
  * Project:  OpenCPN
@@ -306,7 +307,7 @@ public:
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
-      void ShowTrackPropertiesDialog( Route* selected );
+      void ShowTrackPropertiesDialog( Track* selected );
       void DrawTCWindow(int x, int y, void *pIDX);
       
       
@@ -412,7 +413,7 @@ private:
       SelectItem  *m_pFoundPoint;
       bool        m_bChartDragging;
       Route       *m_pSelectedRoute;
-      Route       *m_pSelectedTrack;
+      Track       *m_pSelectedTrack;
       wxArrayPtrVoid *m_pEditRouteArray;
       RoutePoint  *m_pFoundRoutePoint;
 
@@ -469,8 +470,9 @@ private:
       void MovementStopTimerEvent( wxTimerEvent& );
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
-      void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
-      void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
+      void DrawAllTracksInBBox( ocpnDC& dc, LLBBox& BltBBox );
+      void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox );
+      void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox );
       void DrawAnchorWatchPoints( ocpnDC& dc );
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 

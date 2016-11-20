@@ -1774,8 +1774,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
                 }
             }
 
-            tile->box.SetMin(lonmin, latmin);
-            tile->box.SetMax(lonmax, latmax);
+            tile->box.Set(latmin, lonmin, latmax, lonmax);
 
             double sx = rect.width;
             double sy = rect.height;
