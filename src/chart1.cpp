@@ -1139,11 +1139,9 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
-
+static wxStopWatch init_sw;
 bool MyApp::OnInit()
 {
-    wxStopWatch sw;
-
     if( !wxApp::OnInit() ) return false;
 
     #ifdef __OCPN__ANDROID__
@@ -2117,7 +2115,12 @@ extern ocpnGLOptions g_GLOptions;
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Raise();
 #endif
-        
+
+    // Start delayed initialization chain after 100 milliseconds
+    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
+
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
+
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif
@@ -2145,7 +2148,7 @@ extern ocpnGLOptions g_GLOptions;
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 50, wxTIMER_CONTINUOUS );
 
-    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), sw.Time() ) );
+    wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
    
     return TRUE;
@@ -6255,6 +6258,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             #endif
 
+            wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
             
         }
