@@ -5230,6 +5230,8 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
     cc1->StopMovement();
     cc1->m_bFollow = false;
     
+/*
+ *  No Need to adjust the reference chart.  Quilt will do it for us.
     //  is the current chart available at the target location?
     int currently_selected_index = pCurrentStack->GetCurrentEntrydbIndex();
 
@@ -5244,7 +5246,7 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
             cc1->SetQuiltRefChart( -1 );
         }
     }
-
+*/
     if( !cc1->GetQuiltMode() ) {
         cc1->SetViewPoint( lat, lon, scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation() );
     } else {
