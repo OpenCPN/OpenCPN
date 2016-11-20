@@ -166,6 +166,7 @@ bool                      g_bFirstRun;
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
 bool                      g_rebuild_gl_cache;
+bool                      g_parse_all_enc;
 
 MyFrame                   *gFrame;
 
@@ -848,6 +849,7 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("no_opengl") );
     parser.AddSwitch( _T("fullscreen") );
     parser.AddSwitch( _T("rebuild_gl_raster_cache") );
+    parser.AddSwitch( _T("parse_all_enc") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -857,6 +859,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
     g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
+    g_parse_all_enc = parser.Found( _T("parse_all_enc") );
 
     return true;
 }
@@ -1140,6 +1143,196 @@ static char *get_X11_property (Display *disp, Window win,
 #endif
 
 static wxStopWatch init_sw;
+class ParseENCWorkerThread : public wxThread
+{
+public:
+    ParseENCWorkerThread(wxString filename)
+        : wxThread(wxTHREAD_JOINABLE), m_filename(filename)
+        { Create(); }
+        
+    void *Entry() {
+        ChartBase *pchart = ChartData->OpenChartFromDB(m_filename, FULL_INIT);
+        ChartData->DeleteCacheChart(pchart);
+        return 0;
+    }
+
+    wxString m_filename;
+};
+
+// begin duplicated code
+static double chart_dist(int index)
+{
+    double d;
+    float  clon;
+    float  clat;
+    const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+    // if the chart contains ownship position set the distance to 0
+    if (cte.GetBBox().Contains(gLon, gLat))
+        d = 0.;
+    else {
+        // find the nearest edge 
+        double t;
+        clon = (cte.GetLonMax() + cte.GetLonMin())/2;
+        d = DistGreatCircle(cte.GetLatMax(), clon, gLat, gLon);
+        t = DistGreatCircle(cte.GetLatMin(), clon, gLat, gLon);
+        if (t < d)
+            d = t;
+            
+        clat = (cte.GetLatMax() + cte.GetLatMin())/2;
+        t = DistGreatCircle(clat, cte.GetLonMin(), gLat, gLon);
+        if (t < d)
+            d = t;
+        t = DistGreatCircle(clat, cte.GetLonMax(), gLat, gLon);
+        if (t < d)
+            d = t;
+    }
+    return d;
+}
+
+WX_DEFINE_SORTED_ARRAY_INT(int, MySortedArrayInt);
+static int CompareInts(int n1, int n2)
+{
+    double d1 = chart_dist(n1);
+    double d2 = chart_dist(n2);
+    return (int)(d1 - d2);
+}
+
+class compress_target
+{
+public:
+    wxString chart_path;
+    double distance;
+};
+
+WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
+//WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
+
+#include <wx/arrimpl.cpp> 
+// end duplicated code
+
+void ParseAllENC()
+{
+    MySortedArrayInt idx_sorted_by_distance(CompareInts);
+    
+    // Building the cache may take a long time....
+    // Be a little smarter.
+    // Build a sorted array of chart database indices, sorted on distance from the ownship currently.
+    // This way, a user may build a few charts textures for immediate use, then "skip" out on the rest until later.
+    int count = 0;
+    for(int i = 0; i<ChartData->GetChartTableEntries(); i++) {
+        /* skip if not kap */
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+        if(CHART_TYPE_S57 != cte.GetChartType())
+            continue;
+
+        idx_sorted_by_distance.Add(i);
+        count++;
+    }  
+
+                                   
+    if(count == 0)
+        return;
+
+    wxLogMessage(wxString::Format(_T("ParseAllENC() count = %d"), count ));
+    
+    //  Build another array of sorted compression targets.
+    //  We need to do this, as the chart table will not be invariant
+    //  after the compression threads start, so our index array will be invalid.
+        
+    ArrayOfCompressTargets ct_array;
+    for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
+        
+        int i = idx_sorted_by_distance.Item(j);
+        
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+        double distance = chart_dist(i);
+        
+        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        
+        compress_target *pct = new compress_target;
+        pct->distance = distance;
+        pct->chart_path = filename;
+        
+        ct_array.Add(pct);
+    }
+    
+    int thread_count = 0;
+    ParseENCWorkerThread **workers = NULL;
+/*    
+    extern int              g_nCPUCount;
+    if(g_nCPUCount > 0)
+        thread_count = g_nCPUCount;
+    else
+        thread_count = wxThread::GetCPUCount();
+        
+    if (thread_count < 1) {
+        // obviously there's a least one CPU!
+        thread_count = 1;
+    }
+*/
+    thread_count = 1; // for now because there is a problem with more than 1
+            
+    workers = new ParseENCWorkerThread*[thread_count];
+    for(int t = 0; t < thread_count; t++)
+        workers[t] = NULL;
+
+    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
+    wxProgressDialog prog(_("OpenCPN Parse ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+
+    // make wider to show long filenames
+    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+    wxSize sz = prog.GetSize();
+    sz.x = csz.x * 8 / 10;
+    prog.SetSize( sz );
+    prog.Centre();
+
+    // parse targets
+    bool skip = false;
+    count = 0;
+    for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
+        wxString filename = ct_array.Item(j).chart_path;
+        double distance = ct_array.Item(j).distance;
+
+        wxString msg;
+        msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
+        if(sz.x > 600){
+            msg += _T("   Chart:");
+            msg += filename;
+        }
+
+        prog.Update(count++, msg, &skip );
+        if(skip)
+            break;
+
+        for(int t = 0;; t=(t+1)%thread_count) {
+            if(!workers[t]) {
+                workers[t] = new ParseENCWorkerThread(filename);
+                workers[t]->Run();
+                break;
+            }
+
+            if(!workers[t]->IsAlive()) {
+                workers[t]->Wait();
+                delete workers[t];
+                workers[t] = NULL;
+            }
+            if(t == 0) {
+//                ::wxYield();                // allow ChartCanvas main message loop to run 
+                wxThread::Sleep(1); /* wait for a worker to finish */
+            }
+        }
+    }
+
+    /* wait for workers to finish, and clean up after then */
+    for(int t = 0; t<thread_count; t++) {
+        if(workers[t]) {
+            workers[t]->Wait();
+            delete workers[t];
+        }
+    }
+    delete [] workers;
+}
+
 bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
@@ -2027,6 +2220,8 @@ extern ocpnGLOptions g_GLOptions;
     }
 #endif
 
+    if(g_parse_all_enc )
+        ParseAllENC();
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -8854,7 +9049,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool bis_recognized_sentence = true;
     bool ll_valid = true;
 
-    wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    wxString str_buf = event.ProcessNMEA4Tags();
 
     if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
     {

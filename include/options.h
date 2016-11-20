@@ -161,6 +161,7 @@ enum {
   ID_TRACKHILITE,
   ID_TRANSTOOLBARCHECKBOX,
   ID_UPDCHECKBOX,
+  ID_PARSEENCBUTTON,
   ID_VECTORCHECKBOX1,
   ID_ZTCCHECKBOX,
   ID_DELETECHECKBOX,
@@ -266,6 +267,7 @@ class options : private Uncopyable,
   void OnDirctrlSelChanged(wxTreeEvent &event);
   void OnButtonaddClick(wxCommandEvent &event);
   void OnButtondeleteClick(wxCommandEvent &event);
+  void OnButtonParseENC(wxCommandEvent &event);
   void OnRadioboxSelected(wxCommandEvent &event);
   void OnApplyClick(wxCommandEvent &event);
   void OnXidOkClick(wxCommandEvent &event);
@@ -441,6 +443,7 @@ class options : private Uncopyable,
   wxListBox *pActiveChartsList;
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
+  wxButton *pParseENCButton;
   wxButton *m_removeBtn;
   int k_charts;
   int m_nCharWidthMax;

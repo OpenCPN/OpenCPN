@@ -45,6 +45,8 @@ public:
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
+    wxString ProcessNMEA4Tags();
+
 private:
     std::string m_NMEAstring;
     DataStream *m_pDataStream;
