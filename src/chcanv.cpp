@@ -2102,41 +2102,42 @@ void ChartCanvas::DoMovement( long dt )
 
         if(m_zoom_factor < 1)
             zoom_factor = 1/zoom_factor;
-        
+
         //  Try to hit the zoom target exactly.
-        if(zoom_factor > 1){
-            if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
-                zoom_factor = VPoint.chart_scale / m_zoom_target;
+        if(m_wheelzoom_stop_oneshot > 0) {
+            if(zoom_factor > 1){
+                if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
+                    zoom_factor = VPoint.chart_scale / m_zoom_target;
+            }
+
+            else if(zoom_factor < 1){
+                if(  VPoint.chart_scale / zoom_factor >= m_zoom_target)
+                    zoom_factor = VPoint.chart_scale / m_zoom_target;
+            }
         }
 
-        else if(zoom_factor < 1){
-            if(  VPoint.chart_scale / zoom_factor >= m_zoom_target)
-                zoom_factor = VPoint.chart_scale / m_zoom_target;
-        }
-        
         DoZoomCanvas( zoom_factor, m_bzooming_to_cursor );
-        
-        if(m_wheelzoom_stop_oneshot > 0 &&
-           m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
-            m_wheelzoom_stop_oneshot = 0;
-            StopMovement( );
-        }
-        
-        //      Don't overshoot the zoom target.
-        if(zoom_factor > 1){
-            if(  VPoint.chart_scale <= m_zoom_target){
+
+        if(m_wheelzoom_stop_oneshot > 0) {
+            if(m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
                 m_wheelzoom_stop_oneshot = 0;
                 StopMovement( );
             }
-        }
-        else if(zoom_factor < 1){
-            if(  VPoint.chart_scale >= m_zoom_target){
-                m_wheelzoom_stop_oneshot = 0;
-                StopMovement( );
+        
+            //      Don't overshoot the zoom target.
+            if(zoom_factor > 1){
+                if(  VPoint.chart_scale <= m_zoom_target){
+                    m_wheelzoom_stop_oneshot = 0;
+                    StopMovement( );
+                }
+            }
+            else if(zoom_factor < 1){
+                if(  VPoint.chart_scale >= m_zoom_target){
+                    m_wheelzoom_stop_oneshot = 0;
+                    StopMovement( );
+                }
             }
         }
-        
-                
     }
 
     if( m_rotation_speed ) { /* in degrees per second */
