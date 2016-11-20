@@ -230,10 +230,6 @@ wxString                  g_UserPresLibData;
 wxString                  g_VisibleLayers;
 wxString                  g_InvisibleLayers;
 
-#ifdef ocpnUSE_GL
-extern CompressionWorkerPool   *g_CompressorPool;
-#endif
-
 bool                      g_bcompression_wait;
 
 wxString                  g_uploadConnection;
@@ -3217,10 +3213,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 #ifdef ocpnUSE_GL
     // cancel compression jobs
-    if(g_bopengl && g_CompressorPool){
-        g_CompressorPool->PurgeJobList();
+    if(g_bopengl){
+        g_glTextureManager->PurgeJobList();
 
-        if(g_CompressorPool->GetRunningJobCount())
+        if(g_glTextureManager->GetRunningJobCount())
             g_bcompression_wait = true;
     }
 #endif
@@ -3452,7 +3448,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     // This way the main window is already invisible and to the user
     // it appears to have finished rather than hanging for several seconds
     // while the compression threads exit
-    if(g_bopengl && g_CompressorPool && g_CompressorPool->GetRunningJobCount()){
+    if(g_bopengl && g_glTextureManager->GetRunningJobCount()){
+        g_glTextureManager->ClearAllRasterTextures();
 
         wxLogMessage(_T("Starting compressor pool drain"));
         wxDateTime now = wxDateTime::Now();
@@ -3465,9 +3462,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
             stall = later.GetTicks();
 
             wxString msg;
-            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, g_CompressorPool->GetRunningJobCount());
+            msg.Printf(_T("Time: %d  Job Count: %d"), n_comploop, g_glTextureManager->GetRunningJobCount());
             wxLogMessage(msg);
-            if(!g_CompressorPool->GetRunningJobCount())
+            if(!g_glTextureManager->GetRunningJobCount())
                 break;
             wxYield();
             wxSleep(1);
@@ -3475,10 +3472,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
         wxString fmsg;
         fmsg.Printf(_T("Finished compressor pool drain..Time: %d  Job Count: %d"),
-                    n_comploop, g_CompressorPool->GetRunningJobCount());
+                    n_comploop, g_glTextureManager->GetRunningJobCount());
         wxLogMessage(fmsg);
     }
-
+    delete g_glTextureManager;
 #endif
 
     this->Destroy();

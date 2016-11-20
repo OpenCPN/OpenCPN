@@ -1122,11 +1122,13 @@ IF(OPENGL_FOUND)
   SET(HDRS ${HDRS} include/glChartCanvas.h
                    include/glTextureDescriptor.h
                    include/glTexCache.h
+                   include/glTextureManager.h
                    include/TexFont.h
         )
   SET(SRCS ${SRCS} src/glChartCanvas.cpp
                    src/glTextureDescriptor.cpp
                    src/glTexCache.cpp
+                   src/glTextureManager.cpp
                    src/TexFont.cpp
         )
 ENDIF(OPENGL_FOUND)
