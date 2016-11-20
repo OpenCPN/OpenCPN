@@ -1300,10 +1300,9 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                         case 113:
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
-                            if(ppi)
-                                if(ppi->KeyboardEventHook( event ))
-                                    bret = true;
-                                break;
+                            if(ppi && ppi->KeyboardEventHook( event ))
+                                bret = true;
+                            break;
                         }
                         
                         default:
@@ -3098,14 +3097,14 @@ bool DeletePluginTrack( wxString& GUID )
     bool b_found = false;
 
     //  Find the Route
-    Route *pRoute = g_pRouteMan->FindRouteByGUID( GUID );
-    if(pRoute) {
-        g_pRouteMan->DeleteTrack( (Track *)pRoute );
+    Track *pTrack = g_pRouteMan->FindTrackByGUID( GUID );
+    if(pTrack) {
+        g_pRouteMan->DeleteTrack( pTrack );
         b_found = true;
     }
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-        pRouteManagerDialog->UpdateRouteListCtrl();
+        pRouteManagerDialog->UpdateTrkListCtrl();
 
     return b_found;
  }
@@ -3115,13 +3114,13 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
     bool b_found = false;
 
     //  Find the Track
-    Route *pRoute = g_pRouteMan->FindRouteByGUID( ptrack->m_GUID );
-    if(pRoute)
+    Track *pTrack = g_pRouteMan->FindTrackByGUID( ptrack->m_GUID );
+    if(pTrack)
         b_found = true;
 
     if(b_found) {
-        bool b_permanent = (pRoute->m_btemp == false);
-        g_pRouteMan->DeleteTrack( (Track *)pRoute );
+        bool b_permanent = (pTrack->m_btemp == false);
+        g_pRouteMan->DeleteTrack( pTrack );
 
         b_found = AddPlugInTrack( ptrack, b_permanent );
     }

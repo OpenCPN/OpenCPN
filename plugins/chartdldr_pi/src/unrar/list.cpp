@@ -270,6 +270,8 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
       if (hd.RedirType!=FSREDIR_NONE)
         switch(hd.RedirType)
         {
+          case FSREDIR_NONE:
+                                    break;
           case FSREDIR_UNIXSYMLINK:
             Type=St(MListUSymlink); break;
           case FSREDIR_WINSYMLINK:
@@ -295,7 +297,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
           }
           else
           {
-            int DataSize=(int)Min(hd.PackSize,ASIZE(LinkTargetA)-1);
+            int DataSize=(int)Min(static_cast<size_t>(hd.PackSize),ASIZE(LinkTargetA)-1);
             Arc.Read(LinkTargetA,DataSize);
             LinkTargetA[DataSize > 0 ? DataSize : 0] = 0;
           }

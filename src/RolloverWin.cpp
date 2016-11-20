@@ -129,7 +129,8 @@ void RolloverWin::SetBitmap( int rollover )
             glBindTexture( g_texture_rectangle_format, m_texture );
             glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-        }
+        } else
+            glBindTexture( g_texture_rectangle_format, m_texture );
         mdc.SelectObject( wxNullBitmap );
 
         // make texture data

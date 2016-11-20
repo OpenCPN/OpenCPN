@@ -5709,7 +5709,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  to facility identification and allow stop and restart of the stream
   wxString lastAddr;
   int lastPort = 0;
-  NetworkProtocol lastNetProtocol;
+  NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
   
   if (itemIndex >= 0) {
     int params_index = m_lcSources->GetItemData(itemIndex);

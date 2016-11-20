@@ -1006,19 +1006,32 @@ wxString Routeman::GetRouteReverseMessage( void )
             _("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?") );
 }
 
-Route *Routeman::FindRouteByGUID(wxString &guid)
+Route *Routeman::FindRouteByGUID(const wxString &guid)
 {
-    Route *pRoute = NULL;
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
-        pRoute = node1->GetData();
+        Route *pRoute = node1->GetData();
         
         if( pRoute->m_GUID == guid )
-            break;
+            return pRoute;
         node1 = node1->GetNext();
     }
  
-    return pRoute;
+    return NULL;
+}
+
+Track *Routeman::FindTrackByGUID(const wxString &guid)
+{
+    wxTrackListNode *node1 = pTrackList->GetFirst();
+    while( node1 ) {
+        Track *pTrack = node1->GetData();
+        
+        if( pTrack->m_GUID == guid )
+            return pTrack;
+        node1 = node1->GetNext();
+    }
+ 
+    return NULL;
 }
 
 void Routeman::ZeroCurrentXTEToActivePoint()

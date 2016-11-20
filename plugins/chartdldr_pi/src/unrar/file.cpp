@@ -324,10 +324,10 @@ bool File::Write(const void *Data,size_t Size)
       Success=WriteFile(hFile,Data,(DWORD)Size,&Written,NULL)==TRUE;
 #else
 #ifdef FILE_USE_OPEN
-    ssize_t Written=write(hFile,Data,Size);
+    size_t Written=static_cast<size_t>(write(hFile,Data,Size));
     Success=Written==Size;
 #else
-    int Written=fwrite(Data,1,Size,hFile);
+    size_t Written=fwrite(Data,1,Size,hFile);
     Success=Written==Size && !ferror(hFile);
 #endif
 #endif

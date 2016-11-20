@@ -495,14 +495,10 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     if( g_pGroupArray->GetCount() ) {
 
 #ifdef __WXMSW__
-          const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
           wxMenuItem* subItem1 = subMenuChart->AppendRadioItem( wxID_CANCEL , _T("temporary") );
           SetMenuItemFont1(subItem1);
 #endif
           wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE ,
-#ifdef __WXMSW__
-                  ( g_GroupIndex == 0 ? l[1] : l[0] ) +
-#endif
                   _("All Active Charts") );
 
 
@@ -511,9 +507,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
         for( unsigned int i = 0; i < g_pGroupArray->GetCount(); i++ ) {
             subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
-#ifdef __WXMSW__
-                     ( i == g_GroupIndex - 1 ? l[1] : l[0] ) +
-#endif
                      g_pGroupArray->Item( i )->m_group_name );
             SetMenuItemFont1(subItem0);
         }

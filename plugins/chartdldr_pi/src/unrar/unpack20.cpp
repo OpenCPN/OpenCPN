@@ -167,7 +167,7 @@ bool Unpack::ReadTables20()
 {
   byte BitLength[BC20];
   byte Table[MC20*4];
-  int TableSize,N,I;
+  size_t TableSize,N,I;
   if (Inp.InAddr>ReadTop-25)
     if (!UnpReadBuf())
       return(false);
@@ -238,7 +238,7 @@ bool Unpack::ReadTables20()
   if (Inp.InAddr>ReadTop)
     return(true);
   if (UnpAudioBlock)
-    for (I=0;I<UnpChannels;I++)
+    for (I=0;I<static_cast<size_t>(UnpChannels);I++)
       MakeDecodeTables(&Table[I*MC20],&MD[I],MC20);
   else
   {
@@ -317,7 +317,7 @@ byte Unpack::DecodeAudio(int Delta)
   {
     unsigned int MinDif=V->Dif[0],NumMinDif=0;
     V->Dif[0]=0;
-    for (int I=1;I<sizeof(V->Dif)/sizeof(V->Dif[0]);I++)
+    for (size_t I=1;I<sizeof(V->Dif)/sizeof(V->Dif[0]);I++)
     {
       if (V->Dif[I]<MinDif)
       {

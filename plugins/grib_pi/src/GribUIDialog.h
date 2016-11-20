@@ -153,7 +153,7 @@ private:
 	void OnShowCursorData( wxCommandEvent& event );
 
     wxDateTime MinTime();
-    wxString GetNewestFileInDirectory();
+    wxArrayString GetFilesInDirectory();
     void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
     int GetNearestIndex(wxDateTime time, int model);
     int GetNearestValue(wxDateTime time, int model);
@@ -191,7 +191,7 @@ private:
 class GRIBFile {
 public:
 
-    GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec );
+    GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile = false );
     ~GRIBFile();
 
     bool IsOK( void )

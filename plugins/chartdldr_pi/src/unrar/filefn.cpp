@@ -58,7 +58,7 @@ bool CreatePath(const wchar *Path,bool SkipLastName)
   for (const wchar *s=Path;*s!=0;s++)
   {
     wchar DirName[NM];
-    if (s-Path>=ASIZE(DirName))
+    if (static_cast<size_t>(s - Path) >= ASIZE(DirName))
       break;
 
     // Process all kinds of path separators, so user can enter Unix style
