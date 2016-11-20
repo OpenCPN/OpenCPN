@@ -6224,11 +6224,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     } else
                         brp_viz = prp->IsVisible();               // isolated point
                         
-                        if( ( NULL == pFirstVizPoint ) && brp_viz ) pFirstVizPoint = prp;
+                    if( ( NULL == pFirstVizPoint ) && brp_viz ) pFirstVizPoint = prp;
                         
-                        // Use route array to choose the appropriate route
-                        // Give preference to any active route, otherwise select the first visible route in the array for this point
-                        m_pSelectedRoute = NULL;
+                    // Use route array to choose the appropriate route
+                    // Give preference to any active route, otherwise select the first visible route in the array for this point
+                    m_pSelectedRoute = NULL;
                     if( proute_array ) {
                         for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
                             Route *pr = (Route *) proute_array->Item( ir );

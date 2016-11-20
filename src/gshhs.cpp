@@ -1217,10 +1217,9 @@ int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double dec
     for( itp = ( pol->lsPoints ).begin(); itp != ( pol->lsPoints ).end(); itp++ ) {
         x = ( *itp )->lon + declon;
         y = ( *itp )->lat;
-                                    {
         wxPoint2DDouble p = GetDoublePixFromLL(vp,  y, x );
         xx = p.m_x, yy = p.m_y;
-        if( j == 0 || ( oxx != xx || oyy != yy ) )  // Remove close points
+        if( j == 0 || ( oxx != xx || oyy != yy ) ) { // Remove close points
             oxx = xx;
             oyy = yy;
             pts[j].x = xx;
