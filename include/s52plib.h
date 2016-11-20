@@ -376,7 +376,7 @@ public:
 #if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
 #endif
-    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
+    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, float scale, double rot_angle);
 
 private:
     const char* findColorNameInRef( char colorCode, char* col );
