@@ -37,7 +37,7 @@
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
 
-#include "ogr_api.h"
+#include "mygdal/ogr_api.h"
 #include "s57chart.h"
 #include "cm93.h"
 #include "s52plib.h"

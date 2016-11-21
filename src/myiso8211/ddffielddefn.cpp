@@ -101,7 +101,7 @@
  */
 
 #include "iso8211.h"
-#include "cpl_string.h"
+#include "mygdal/cpl_string.h"
 #include <ctype.h>
 
 /************************************************************************/

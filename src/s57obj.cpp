@@ -51,7 +51,7 @@
 #include "s52utils.h"
 #include "wx28compat.h"
 
-#include "cpl_csv.h"
+#include "mygdal/cpl_csv.h"
 #include "setjmp.h"
 
 #include "mygdal/ogr_s57.h"

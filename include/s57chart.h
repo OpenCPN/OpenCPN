@@ -35,11 +35,11 @@
 #include "wx/file.h"
 #include "wx/stream.h"
 #include "wx/wfstream.h"
-#include <ogrsf_frmts.h>
+#include "mygdal/ogrsf_frmts.h"
 
 #include "iso8211.h"
 
-#include "gdal.h"
+#include "mygdal/gdal.h"
 #include "s57RegistrarMgr.h"
 #include "S57ClassRegistrar.h"
 #include "S57Light.h"

@@ -34,7 +34,7 @@
 #endif //precompiled headers
 
 #include "mygdal/ogr_s57.h"
-#include "cpl_csv.h"
+#include "mygdal/cpl_csv.h"
 #include "chartbase.h"
 
 #include <string.h>

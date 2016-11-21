@@ -72,6 +72,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#ifndef PRIxFAST16
+#include <inttypes.h>
+#endif
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_math.h"

@@ -551,6 +551,10 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 int featureTypeCode = pPayload->feature_type_code;
                 featureID = pPayload->feature_ID;
 
+                //TODO
+//                if(207 == featureID)
+//                    int yyp = 4;
+                
                 //  Look up the FeatureName from the Registrar
                
                 std::string acronym = GetFeatureAcronymFromTypecode( featureTypeCode );
@@ -2475,6 +2479,9 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( FILE * fpOut, S57Reader *po
 
 bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader )
 {
+    //TODO
+//    if(pFeature->GetFID() == 207)
+//        int yyp = 4;
     
     //  Create the Feature Identification Record
     
@@ -2538,6 +2545,28 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 //TODO Debugging
 //                 if(!strncmp(pAttrName, "CATLIT", 6))
 //                     int yyp = 2;
+       
+                wxString wxAttrValue;
+                
+                if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
+                    (0 == strncmp("NINFOM",pAttrName, 6) ) ||
+                    (0 == strncmp("NPLDST",pAttrName, 6) ) ||
+                    (0 == strncmp("NTXTDS",pAttrName, 6) ) )
+                {
+                    if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
+                            wxMBConvUTF16 conv;
+                            wxString att_conv(pAttrVal, conv);
+                            att_conv.RemoveLast();      // Remove the \037 that terminates UTF-16 strings in S57
+                            att_conv.Replace(_T("\n"), _T("|") );  //Replace  <new line> with special break character
+                            wxAttrValue = att_conv;
+                            wxLogMessage(wxAttrValue);
+                    }
+                    else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
+                            wxCSConv conv(_T("iso8859-1") );
+                            wxString att_conv(pAttrVal, conv);
+                            wxAttrValue = att_conv;
+                    }
+                }
                 
                 //  Use the OCPN Registrar Manager to map attribute acronym to an identifier.
                 //  The mapping is defined by the file {csv_dir}/s57attributes.csv
@@ -2641,9 +2670,15 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
                     case 4:             // Ascii String
                     {
                         valueType = OGRvalueType;
-                        
                         const char *pAttrVal = pFeature->GetFieldAsString( iField );
                         unsigned int stringPayloadLength = strlen(pAttrVal);
+                        
+                        wxCharBuffer buffer;
+                        if(wxAttrValue.Length()){               // need to explicitely encode as UTF8
+                            buffer=wxAttrValue.ToUTF8();
+                            pAttrVal = buffer.data();
+                            stringPayloadLength = strlen(buffer.data());
+                        }
 
                         if(stringPayloadLength){
                             if(payloadBufferLength < stringPayloadLength + 1){

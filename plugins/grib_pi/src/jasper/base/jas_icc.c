@@ -71,6 +71,9 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#ifndef PRIxFAST16
+#include <inttypes.h>
+#endif
 
 #define	jas_iccputuint8(out, val)	jas_iccputuint(out, 1, val)
 #define	jas_iccputuint16(out, val)	jas_iccputuint(out, 2, val)

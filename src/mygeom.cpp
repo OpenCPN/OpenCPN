@@ -36,7 +36,7 @@
 #include <wx/mstream.h>
 
 #ifdef USE_S57
-#include <ogr_geometry.h>
+#include "mygdal/ogr_geometry.h"
 #endif
 
 #include "cutil.h"
