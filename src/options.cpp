@@ -3471,13 +3471,18 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         new wxStaticBoxSizer(marinersBox, wxVERTICAL);
     dispSizer->Add(marinersSizer, 1, wxALL | wxEXPAND, border_size);
 
-    wxBoxSizer* btnRow = new wxBoxSizer(wxHORIZONTAL);
-    itemButtonSelectList =
-        new wxButton(ps57Ctl, ID_SELECTLIST, _("Select All"));
-    btnRow->Add(itemButtonSelectList, 1, wxALL | wxEXPAND, group_item_spacing);
+    wxBoxSizer* btnRow1 = new wxBoxSizer(wxHORIZONTAL);
+    itemButtonSelectList =  new wxButton(ps57Ctl, ID_SELECTLIST, _("Select All"));
+    btnRow1->Add(itemButtonSelectList, 1, wxALL | wxEXPAND, group_item_spacing);
     itemButtonClearList = new wxButton(ps57Ctl, ID_CLEARLIST, _("Clear All"));
-    btnRow->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
-    marinersSizer->Add(btnRow);
+    btnRow1->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
+    marinersSizer->Add(btnRow1);
+    
+    wxBoxSizer* btnRow2 = new wxBoxSizer(wxHORIZONTAL);
+    itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
+    btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
+    marinersSizer->Add(btnRow2);
+    
 
 // #if defined(__WXMSW__) || defined(__WXOSX__)
 //     wxString* ps57CtlListBoxStrings = NULL;
