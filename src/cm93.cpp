@@ -2244,8 +2244,8 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                         loadcell_key++;
                   }
+                OCPNPlatform::HideBusySpinner();
             }
-            OCPNPlatform::HideBusySpinner();
       }
       
       if (recalc_depth) {
