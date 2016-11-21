@@ -74,7 +74,6 @@
 
 #include <algorithm>          // for std::sort
 #include <map>
-#include <unordered_map>
 
 #ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
