@@ -48,6 +48,7 @@
 
 extern s57RegistrarMgr          *m_pRegistrarMan;
 extern wxString                 g_csv_locn;
+extern bool                     g_bGDAL_Debug;
 
 using namespace std;
 
@@ -72,7 +73,35 @@ Osenc::Osenc()
 
 Osenc::~Osenc()
 {
+    // Free the coverage arrays, if they exist
+    SENCFloatPtrArray &AuxPtrArray = getSENCReadAuxPointArray();
+    wxArrayInt &AuxCntArray = getSENCReadAuxPointCountArray();
+    int nCOVREntries = AuxCntArray.GetCount();
+        for( unsigned int j = 0; j < (unsigned int) nCOVREntries; j++ ) {
+        free(AuxPtrArray.Item(j));
+    }
+
+    SENCFloatPtrArray &AuxNoPtrArray = getSENCReadNOCOVRPointArray();
+    wxArrayInt &AuxNoCntArray = getSENCReadNOCOVRPointCountArray();
+    int nNoCOVREntries = AuxNoCntArray.GetCount();
+    for( unsigned int j = 0; j < (unsigned int) nNoCOVREntries; j++ ) {
+        free(AuxNoPtrArray.Item(j));
+    }
+    
     free(pBuffer);
+
+    
+    for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) 
+        free (m_pNoCOVRTable[j]);
+
+    for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) 
+        free (m_pCOVRTable[j]);
+    
+    free( m_pCOVRTablePoints );
+    free( m_pCOVRTable );
+    free( m_pNoCOVRTablePoints );
+    free( m_pNoCOVRTable );
+    
 }
 
 void Osenc::init( void )
@@ -87,6 +116,14 @@ void Osenc::init( void )
     m_ref_lon = 0;
     
     m_read_base_edtn = _T("-1");
+    
+    m_nNoCOVREntries = 0;
+    m_nCOVREntries = 0;
+    m_pCOVRTablePoints = NULL;
+    m_pCOVRTable = NULL;
+    m_pNoCOVRTablePoints = NULL;
+    m_pNoCOVRTable = NULL;
+    
 }
 
 
@@ -519,8 +556,9 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 std::string acronym = GetFeatureAcronymFromTypecode( featureTypeCode );
                 
                 //TODO debugging
-                if(!strncmp(acronym.c_str(), "BOYLAT", 6))
-                    int yyp = 4;
+//                 printf("%s\n", acronym.c_str());
+//                 if(!strncmp(acronym.c_str(), "BOYLAT", 6))
+//                     int yyp = 4;
                 
                 if(acronym.length()){
                     obj = new S57Obj(acronym.c_str());
@@ -729,6 +767,7 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 
                 // The Feature(Object) count
                 int nCount = *(int *)pRun;
+                
                 pRun += sizeof(int);
                 
                 for(int i=0 ; i < nCount ; i++ ) {
@@ -813,7 +852,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //      Alternatively, we can explicitely find and apply updates from any source directory.
     //      We need to keep track of the last sequential update applied, to look out for new updates
     
-    int last_applied_update = 0;
+//    int last_applied_update = 0;
     wxString LastUpdateDate = m_date000.Format( _T("%Y%m%d") );
     
     m_last_applied_update = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
@@ -821,7 +860,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     
     if( m_last_applied_update > 0 ){
         wxString msg1;
-        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), last_applied_update );
+        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), m_last_applied_update );
         wxLogMessage( msg1 );
     }
     
@@ -849,9 +888,12 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //      Open the OGRS57DataSource
     //      This will ingest the .000 file from the working dir, and apply updates
     
+    bool b_current_debug = g_bGDAL_Debug;
+    g_bGDAL_Debug = true;
+    
     int open_return = poS57DS->Open( m_tmpup_array.Item( 0 ).mb_str(), TRUE, NULL/*&s_ProgressCallBack*/ ); ///172
-    //if( open_return == BAD_UPDATE )         ///172
-    //    bbad_update = true;
+    
+    g_bGDAL_Debug = b_current_debug;
     
     //      Get a pointer to the reader
     S57Reader *poReader = poS57DS->GetModule( 0 );
@@ -1342,6 +1384,8 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     delete s_ProgDialog;
     
+    delete poS57DS;
+    
     return ret_code;
  
    
@@ -1715,8 +1759,10 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     
     }
 
-  
-
+    int nEdgeVectorRecords = 0;
+    unsigned char *pvec_buffer = getObjectVectorIndexTable( poReader, pFeature, nEdgeVectorRecords );
+    
+#if 0
 
     //    Capture the Vector Table geometry indices into a memory buffer
     int *pNAME_RCID;
@@ -1731,6 +1777,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
 //                    fwrite(pNAME_RCID, 1, nEdgeVectorRecords * sizeof(int), fpOut);
 
 
+    
     unsigned char *pvec_buffer = (unsigned char *)malloc(nEdgeVectorRecords * 3 * sizeof(int));
     unsigned char *pvRun = pvec_buffer;
     
@@ -1745,6 +1792,8 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     for( int i = 0; i < nEdgeVectorRecords; i++ ) {
         
         int *pI = (int *)pvRun;
+        
+        int edge_rcid = pNAME_RCID[i];
         
         int start_rcid, end_rcid;
         int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
@@ -1762,25 +1811,19 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
                 start_rcid = -1;
             if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) )
                 end_rcid = -2;
-        
+
+            OGRLineString *poLS = (OGRLineString *)pEdgeVectorRecordFeature->GetGeometryRef();
+            
             int edge_ornt = 1;
-        //  Allocate some storage for converted points
         
              if( edge_ornt == 1 ){                                    // forward
                 *pI++ = start_rcid;
-                *pI++ = pNAME_RCID[i];
+                *pI++ = edge_rcid;
                 *pI++ = end_rcid;
-             //   fwrite( &start_rcid, 1, sizeof(int), fpOut );
-             //   fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-             //   fwrite( &end_rcid, 1, sizeof(int), fpOut );
             } else {                                                  // reverse
                 *pI++ = end_rcid;
-                *pI++ = pNAME_RCID[i];
+                *pI++ = edge_rcid;
                 *pI++ = start_rcid;
-
-                //fwrite( &end_rcid, 1, sizeof(int), fpOut );
-                //fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                //fwrite( &start_rcid, 1, sizeof(int), fpOut );
             }
 
             delete pEdgeVectorRecordFeature;
@@ -1789,11 +1832,8 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
             end_rcid = -2;
     
             *pI++ = start_rcid;
-            *pI++ = pNAME_RCID[i];
+            *pI++ = edge_rcid;
             *pI++ = end_rcid;
-            //fwrite( &start_rcid, 1, sizeof(int), fpOut );
-            //fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-            //fwrite( &end_rcid, 1, sizeof(int), fpOut );
         }
         
         pvRun += 3 * sizeof(int);
@@ -1804,6 +1844,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,"OFF" );
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
+#endif
 
     
     //  Ready to write the record
@@ -1934,6 +1975,10 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
     baseRecord.triprim_count = n_TriPrims;                            //  Set the number of TriPrims
     
  
+    int nEdgeVectorRecords = 0;
+    unsigned char *pvec_buffer = getObjectVectorIndexTable( poReader, pFeature, nEdgeVectorRecords );
+    
+#if 0    
      //  Create the Vector Edge Index table into a memory buffer
      //  This buffer will follow the triangle buffer in the output stream
     int *pNAME_RCID;
@@ -1964,11 +2009,12 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
         int start_rcid, end_rcid;
         int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
         pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
+
+        int edge_rcid = pNAME_RCID[i];
         
         if( NULL != pEdgeVectorRecordFeature ) {
             start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
             end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
-            
             //    Make sure the start and end points exist....
             //    Note this poReader method was converted to Public access to
             //     facilitate this test.  There might be another clean way....
@@ -1977,17 +2023,17 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
                 start_rcid = -1;
             if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) )
                 end_rcid = -2;
-            
+
             int edge_ornt = 1;
             //  Allocate some storage for converted points
             
             if( edge_ornt == 1 ){                                    // forward
                 *pI++ = start_rcid;
-                *pI++ = pNAME_RCID[i];
+                *pI++ = edge_rcid;
                 *pI++ = end_rcid;
             } else {                                                  // reverse
                 *pI++ = end_rcid;
-                *pI++ = pNAME_RCID[i];
+                *pI++ = edge_rcid;
                 *pI++ = start_rcid;
             }
             
@@ -1997,7 +2043,7 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
             end_rcid = -2;
             
             *pI++ = start_rcid;
-            *pI++ = pNAME_RCID[i];
+            *pI++ = edge_rcid;
             *pI++ = end_rcid;
         }
         
@@ -2010,15 +2056,17 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
     
+#endif
 
- 
+    baseRecord.edgeVector_count = nEdgeVectorRecords;
+
     //  Calculate the total record length
     int recordLength = sizeof(OSENC_AreaGeometry_Record_Base);
     recordLength += contourPointCountArraySize;
     recordLength += geoLength;
     recordLength += nEdgeVectorRecords * 3 * sizeof(int);
     baseRecord.record_length = recordLength;
-    
+
     //  Write the base record
     size_t targetCount = sizeof(baseRecord);
     size_t wCount = fwrite (&baseRecord , sizeof(char), targetCount, fpOut);
@@ -2082,6 +2130,95 @@ bool Osenc::CreateAreaFeatureGeometryRecord200(S57Reader *poReader, OGRFeature *
     return true;
 }
 
+unsigned char *Osenc::getObjectVectorIndexTable( S57Reader *poReader, OGRFeature *pFeature, int &nEntries )
+{
+    //  Create the Vector Edge Index table into a memory buffer
+    //  This buffer will follow the triangle buffer in the output stream
+    int *pNAME_RCID;
+    int *pORNT;
+    int nEdgeVectorRecords;
+    OGRFeature *pEdgeVectorRecordFeature;
+    
+    pNAME_RCID = (int *) pFeature->GetFieldAsIntegerList( "NAME_RCID", &nEdgeVectorRecords );
+    pORNT = (int *) pFeature->GetFieldAsIntegerList( "ORNT", NULL );
+    
+    nEntries = nEdgeVectorRecords;
+    
+    unsigned char *pvec_buffer = (unsigned char *)malloc(nEdgeVectorRecords * 3 * sizeof(int));
+    unsigned char *pvRun = pvec_buffer;
+    
+    //  Set up the options, adding RETURN_PRIMITIVES
+    char ** papszReaderOptions = NULL;
+    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
+    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES,"ON" );
+    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,"ON" );
+    poReader->SetOptions( papszReaderOptions );
+    
+    //    Capture the beginning and end point connected nodes for each edge vector record
+    for( int i = 0; i < nEdgeVectorRecords; i++ ) {
+        
+        int *pI = (int *)pvRun;
+        
+        int edge_rcid = pNAME_RCID[i];
+        
+        int start_rcid, end_rcid;
+        int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
+        pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
+        
+        if( NULL != pEdgeVectorRecordFeature ) {
+            start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
+            end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
+            
+            //    Make sure the start and end points exist....
+            //    Note this poReader method was converted to Public access to
+            //     facilitate this test.  There might be another clean way....
+            //    Problem first found on Holand ENC 1R5YM009.000
+            if( !poReader->FetchPoint( RCNM_VC, start_rcid, NULL, NULL, NULL, NULL ) )
+                start_rcid = -1;
+            if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) )
+                end_rcid = -2;
+            
+            OGRLineString *poLS = (OGRLineString *)pEdgeVectorRecordFeature->GetGeometryRef();
+            if(!poLS)
+                edge_rcid = 0;
+            else if(poLS->getNumPoints() < 1)
+                edge_rcid = 0;
+            
+            int edge_ornt = pORNT[i];
+            
+            if( edge_ornt == 1 ){                                    // forward
+                *pI++ = start_rcid;
+                *pI++ = edge_rcid;
+                *pI++ = end_rcid;
+            } else {                                                  // reverse
+                *pI++ = end_rcid;
+                *pI++ = -edge_rcid;
+                *pI++ = start_rcid;
+            }
+            
+            delete pEdgeVectorRecordFeature;
+        } else {
+            start_rcid = -1;                                    // error indication
+            end_rcid = -2;
+            
+            *pI++ = start_rcid;
+            *pI++ = edge_rcid;
+            *pI++ = end_rcid;
+        }
+        
+        pvRun += 3 * sizeof(int);
+    }
+    
+    
+    //  Reset the options
+    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,"OFF" );
+    poReader->SetOptions( papszReaderOptions );
+    CSLDestroy( papszReaderOptions );
+ 
+    return pvec_buffer;
+    
+}
+
 void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReader )
 {
     //  We create the payload first, so we can calculate the total record length
@@ -2101,19 +2238,12 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
     OGRGeometry *pGeo;
     OGRFeature *pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
     
+    int nFeatures = 0;
+    
     //  Read all the EdgeVector Features
     while( NULL != pEdgeVectorRecordFeature ) {
 
-        int new_size = payloadSize + (2 * sizeof(int));
-        pPayload = (uint8_t *)realloc(pPayload, new_size );
-        pRun = pPayload + payloadSize;                   //  recalculate the running pointer,
-                                                        //  since realloc may have moved memory
-        payloadSize = new_size;
-        
-        //  Fetch and store the Record ID
-        int record_id = pEdgeVectorRecordFeature->GetFieldAsInteger( "RCID" );
-        *(int*)pRun = record_id;
-        pRun += sizeof(int);
+        //  Check for a zero point count.  Dunno why this should happen, other than bad ENC encoding
         
         int nPoints = 0;
         if( pEdgeVectorRecordFeature->GetGeometryRef() != NULL ) {
@@ -2125,9 +2255,21 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
                 nPoints = 0;
         }
         
+        if(nPoints){
+            int new_size = payloadSize + (2 * sizeof(int));
+            pPayload = (uint8_t *)realloc(pPayload, new_size );
+            pRun = pPayload + payloadSize;                   //  recalculate the running pointer,
+                                                        //  since realloc may have moved memory
+            payloadSize = new_size;
+        
+        //  Fetch and store the Record ID
+            int record_id = pEdgeVectorRecordFeature->GetFieldAsInteger( "RCID" );
+            *(int*)pRun = record_id;
+            pRun += sizeof(int);
+        
+       
         //  Transcribe points to a buffer
         
-        if(nPoints){
             double *ppd = (double *)malloc(nPoints * sizeof(MyPoint));
             double *ppr = ppd;
             
@@ -2166,15 +2308,14 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
             *(int *)pRun = nPointReduced;
             pRun += sizeof(int);
             
-            
             //  transcribe the (possibly) reduced linestring to the payload
             
             //  Grow the payload buffer
-            int new_size = payloadSize + (nPointReduced* 2 * sizeof(float)) ;
-            pPayload = (uint8_t *)realloc(pPayload, new_size );
+            int new_size_red = payloadSize + (nPointReduced* 2 * sizeof(float)) ;
+            pPayload = (uint8_t *)realloc(pPayload, new_size_red );
             pRun = pPayload + payloadSize;              //  recalculate the running pointer,
                                                         //  since realloc may have moved memory
-            payloadSize = new_size;
+            payloadSize = new_size_red;
             
             float *npp = (float *)pRun;
             float *npp_run = npp;
@@ -2193,13 +2334,10 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
                     }
                 }
             }
+    
+            nFeatures++;
             
             free( ppd );
-        }
-        else{
-            //  Store the (zero)point count in the payload
-            *(int *)pRun = nPoints;
-            pRun += sizeof(int);
         }
         
         //    Next vector record
@@ -2221,7 +2359,7 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( FILE * fpOut, S57Reader *poReade
     fwrite (&record , sizeof(OSENC_VET_Record_Base), 1, fpOut);
 
     //  Write out the Feature(Object) count
-    fwrite (&feid, sizeof(uint32_t), 1, fpOut);
+    fwrite (&nFeatures, sizeof(uint32_t), 1, fpOut);
     
     //  Write out the payload
     fwrite (pPayload, sizeof(uint8_t), payloadSize, fpOut);
@@ -2379,11 +2517,11 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
     //  In the interests of output file size, DO NOT report fields that are not set.
 
     //TODO Debugging
-    if(!strncmp(pFeature->GetDefnRef()->GetName(), "BOYLAT", 6))
-        int yyp = 4;
+//     if(!strncmp(pFeature->GetDefnRef()->GetName(), "BOYLAT", 6))
+//         int yyp = 4;
     
-    if(pFeature->GetFID() == 6919)
-        int yyp = 4;
+//     if(pFeature->GetFID() == 6919)
+//         int yyp = 4;
     
     int payloadLength = 0;
     void *payloadBuffer = NULL;
@@ -2398,8 +2536,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 const char *pAttrVal = pFeature->GetFieldAsString( iField );
                 
                 //TODO Debugging
-                if(!strncmp(pAttrName, "CATLIT", 6))
-                    int yyp = 2;
+//                 if(!strncmp(pAttrName, "CATLIT", 6))
+//                     int yyp = 2;
                 
                 //  Use the OCPN Registrar Manager to map attribute acronym to an identifier.
                 //  The mapping is defined by the file {csv_dir}/s57attributes.csv
@@ -2555,6 +2693,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, FILE * fpOut, int mode, S
             }
         }
     }
+
+    free( payloadBuffer );
     
     
 #if 0    
@@ -2681,7 +2821,6 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     //      Alternatively, we can explicitely find and apply updates from any source directory.
     //      We need to keep track of the last sequential update applied, to look out for new updates
     
-    int last_applied_update = 0;
     wxString LastUpdateDate = m_date000.Format( _T("%Y%m%d") );
     
     m_last_applied_update = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
@@ -2689,7 +2828,7 @@ int Osenc::ingestCell( const wxString &FullPath000, const wxString &working_dir 
     
     if( m_last_applied_update > 0 ){
         wxString msg1;
-        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), last_applied_update );
+        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), m_last_applied_update );
         wxLogMessage( msg1 );
     }
     
@@ -2960,6 +3099,8 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
                 pNoCovrPtrArray->Add( pf );
                 pNoCovrCntArray->Add( npt );
             }
+            else
+                free( pf );
         }
         
         
@@ -3024,6 +3165,12 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
         m_pNoCOVRTablePoints = NULL;
         m_pNoCOVRTable = NULL;
     }
+
+     for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) 
+         free(pNoCovrPtrArray->Item(j));
+     for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ )
+         free(pAuxPtrArray->Item(j));
+     
     
     delete pAuxPtrArray;
     delete pAuxCntArray;
@@ -3096,9 +3243,11 @@ OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57C
         //      Select the proper class
         poRegistrar->SelectClass( "M_COVR" );
 
+//        OGRFeatureDefn *M_COVRdef = S57GenerateObjectClassDefn( poRegistrar, 302, 0);                           
+        
         //      find this feature
         bool bFound = false;
-        OGRFeature *pobjectDef = pENCReader->ReadNextFeature( );
+        OGRFeature *pobjectDef = pENCReader->ReadNextFeature(/*M_COVRdef*/ );
         while(!bFound){
             if( pobjectDef ) {
             
@@ -3108,6 +3257,8 @@ OGRFeature *Osenc::GetChartFirstM_COVR( int &catcov, S57Reader *pENCReader, S57C
                     catcov = pobjectDef->GetFieldAsInteger( "CATCOV" );
                     return pobjectDef;
                 }
+                else
+                    delete pobjectDef;
             }
             else
                 return NULL;
@@ -3137,6 +3288,9 @@ OGRFeature *Osenc::GetChartNextM_COVR( int &catcov, S57Reader *pENCReader )
                     catcov = pobjectDef->GetFieldAsInteger( "CATCOV" );
                     return pobjectDef;
                 }
+                else
+                    delete pobjectDef;
+                
             }
             else
                 return NULL;

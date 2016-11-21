@@ -852,6 +852,7 @@ EVT_CHECKBOX(ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click)
 EVT_BUTTON(ID_BUTTONADD, options::OnButtonaddClick)
 EVT_BUTTON(ID_BUTTONDELETE, options::OnButtondeleteClick)
 EVT_BUTTON(ID_PARSEENCBUTTON, options::OnButtonParseENC)
+EVT_BUTTON(ID_BUTTONCOMPRESS, options::OnButtoncompressClick)
 EVT_BUTTON(ID_TCDATAADD, options::OnInsertTideDataLocation)
 EVT_BUTTON(ID_TCDATADEL, options::OnRemoveTideDataLocation)
 EVT_BUTTON(ID_APPLY, options::OnApplyClick)
@@ -2685,6 +2686,15 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
       new wxButton(chartPanelWin, ID_BUTTONDELETE, _("Remove Selected"));
   cmdButtonSizer->Add(m_removeBtn, 1, wxALL | wxEXPAND, group_item_spacing);
   m_removeBtn->Disable();
+
+#ifdef USE_LZMA
+  m_compressBtn =
+      new wxButton(chartPanelWin, ID_BUTTONCOMPRESS, _("Compress Selected"));
+  cmdButtonSizer->Add(m_compressBtn, 1, wxALL | wxEXPAND, group_item_spacing);
+  m_compressBtn->Disable();
+#else
+  m_compressBtn = NULL;
+#endif
 
   wxStaticBox* itemStaticBoxUpdateStatic =
       new wxStaticBox(chartPanelWin, wxID_ANY, _("Update Control"));
@@ -5154,6 +5164,9 @@ void options::SetInitialVectorSettings(void)
 void options::UpdateOptionsUnits(void) {
   int depthUnit = pDepthUnitSelect->GetSelection();
 
+  depthUnit = wxMax(depthUnit, 0);
+  depthUnit = wxMin(depthUnit, 2);
+  
   // depth unit conversion factor
   float conv = 1;
   if (depthUnit == 0)  // feet
@@ -5315,12 +5328,11 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 }
 
 void options::OnChartDirListSelect(wxCommandEvent& event) {
-  if (event.IsSelection()) {
-    m_removeBtn->Enable();
-  } else {
     wxArrayInt sel;
-    m_removeBtn->Enable(pActiveChartsList->GetSelections(sel) != 0);
-  }
+    bool selected = pActiveChartsList->GetSelections(sel);
+    m_removeBtn->Enable(selected);
+    if(m_compressBtn)
+        m_compressBtn->Enable(selected);
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
@@ -6194,6 +6206,330 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 {
     extern void ParseAllENC();
     ParseAllENC();
+    ViewPort vp;
+    gFrame->ChartsRefresh(-1, vp, true);
+    
+    cc1->EnablePaint(true);
+    
+}   
+
+#ifdef USE_LZMA
+#include <lzma.h>
+
+static bool
+compress(lzma_stream *strm, FILE *infile, FILE *outfile)
+{
+    // This will be LZMA_RUN until the end of the input file is reached.
+    // This tells lzma_code() when there will be no more input.
+    lzma_action action = LZMA_RUN;
+
+    // Buffers to temporarily hold uncompressed input
+    // and compressed output.
+    uint8_t inbuf[BUFSIZ];
+    uint8_t outbuf[BUFSIZ];
+
+    // Initialize the input and output pointers. Initializing next_in
+    // and avail_in isn't really necessary when we are going to encode
+    // just one file since LZMA_STREAM_INIT takes care of initializing
+    // those already. But it doesn't hurt much and it will be needed
+    // if encoding more than one file like we will in 02_decompress.c.
+    //
+    // While we don't care about strm->total_in or strm->total_out in this
+    // example, it is worth noting that initializing the encoder will
+    // always reset total_in and total_out to zero. But the encoder
+    // initialization doesn't touch next_in, avail_in, next_out, or
+    // avail_out.
+    strm->next_in = NULL;
+    strm->avail_in = 0;
+    strm->next_out = outbuf;
+    strm->avail_out = sizeof(outbuf);
+
+    // Loop until the file has been successfully compressed or until
+    // an error occurs.
+    while (true) {
+        // Fill the input buffer if it is empty.
+        if (strm->avail_in == 0 && !feof(infile)) {
+            strm->next_in = inbuf;
+            strm->avail_in = fread(inbuf, 1, sizeof(inbuf),
+                                   infile);
+
+            if (ferror(infile)) {
+                fprintf(stderr, "Read error: %s\n",
+                        strerror(errno));
+                return false;
+            }
+
+            // Once the end of the input file has been reached,
+            // we need to tell lzma_code() that no more input
+            // will be coming and that it should finish the
+            // encoding.
+            if (feof(infile))
+                action = LZMA_FINISH;
+        }
+
+        // Tell liblzma do the actual encoding.
+        //
+        // This reads up to strm->avail_in bytes of input starting
+        // from strm->next_in. avail_in will be decremented and
+        // next_in incremented by an equal amount to match the
+        // number of input bytes consumed.
+        //
+        // Up to strm->avail_out bytes of compressed output will be
+        // written starting from strm->next_out. avail_out and next_out
+        // will be incremented by an equal amount to match the number
+        // of output bytes written.
+        //
+        // The encoder has to do internal buffering, which means that
+        // it may take quite a bit of input before the same data is
+        // available in compressed form in the output buffer.
+        lzma_ret ret = lzma_code(strm, action);
+
+        // If the output buffer is full or if the compression finished
+        // successfully, write the data from the output bufffer to
+        // the output file.
+        if (strm->avail_out == 0 || ret == LZMA_STREAM_END) {
+            // When lzma_code() has returned LZMA_STREAM_END,
+            // the output buffer is likely to be only partially
+            // full. Calculate how much new data there is to
+            // be written to the output file.
+            size_t write_size = sizeof(outbuf) - strm->avail_out;
+
+            if (fwrite(outbuf, 1, write_size, outfile)
+                != write_size) {
+                fprintf(stderr, "Write error: %s\n",
+                        strerror(errno));
+                return false;
+            }
+
+            // Reset next_out and avail_out.
+            strm->next_out = outbuf;
+            strm->avail_out = sizeof(outbuf);
+        }
+
+        // Normally the return value of lzma_code() will be LZMA_OK
+        // until everything has been encoded.
+        if (ret != LZMA_OK) {
+            // Once everything has been encoded successfully, the
+            // return value of lzma_code() will be LZMA_STREAM_END.
+            //
+            // It is important to check for LZMA_STREAM_END. Do not
+            // assume that getting ret != LZMA_OK would mean that
+            // everything has gone well.
+            if (ret == LZMA_STREAM_END)
+                return true;
+
+            // It's not LZMA_OK nor LZMA_STREAM_END,
+            // so it must be an error code. See lzma/base.h
+            // (src/liblzma/api/lzma/base.h in the source package
+            // or e.g. /usr/include/lzma/base.h depending on the
+            // install prefix) for the list and documentation of
+            // possible values. Most values listen in lzma_ret
+            // enumeration aren't possible in this example.
+            const char *msg;
+            switch (ret) {
+            case LZMA_MEM_ERROR:
+                msg = "Memory allocation failed";
+                break;
+
+            case LZMA_DATA_ERROR:
+                // This error is returned if the compressed
+                // or uncompressed size get near 8 EiB
+                // (2^63 bytes) because that's where the .xz
+                // file format size limits currently are.
+                // That is, the possibility of this error
+                // is mostly theoretical unless you are doing
+                // something very unusual.
+                //
+                // Note that strm->total_in and strm->total_out
+                // have nothing to do with this error. Changing
+                // those variables won't increase or decrease
+                // the chance of getting this error.
+                msg = "File size limits exceeded";
+                break;
+
+            default:
+                // This is most likely LZMA_PROG_ERROR, but
+                // if this program is buggy (or liblzma has
+                // a bug), it may be e.g. LZMA_BUF_ERROR or
+                // LZMA_OPTIONS_ERROR too.
+                //
+                // It is inconvenient to have a separate
+                // error message for errors that should be
+                // impossible to occur, but knowing the error
+                // code is important for debugging. That's why
+                // it is good to print the error code at least
+                // when there is no good error message to show.
+                msg = "Unknown error, possibly a bug";
+                break;
+            }
+
+            wxLogMessage(_T("LZMA Encoder error: %s (error code %u)\n"),
+                         msg, ret);
+            return false;
+        }
+    }
+}
+#endif
+
+static bool CompressChart(wxString in, wxString out)
+{
+#ifdef USE_LZMA
+    FILE *infile = fopen(in.mb_str(), "rb");
+    if(!infile)
+        return false;
+
+    FILE *outfile = fopen(out.mb_str(), "wb");
+    if(!outfile) {
+        fclose(infile);
+        return false;
+    }
+
+    lzma_stream strm = LZMA_STREAM_INIT;
+    bool success = false;
+    if(lzma_easy_encoder(&strm, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC64) == LZMA_OK)
+        success = compress(&strm, infile, outfile);
+
+    lzma_end(&strm);
+    fclose(infile);
+    fclose(outfile);
+
+    return success;
+#endif
+    return false;
+}
+
+void options::OnButtoncompressClick(wxCommandEvent& event) {
+  wxString dirname;
+
+  wxArrayInt pListBoxSelections;
+#ifndef __WXQT__  // Multi selection is not implemented in wxQT
+  pActiveChartsList->GetSelections(pListBoxSelections);
+  int nSelections = pListBoxSelections.GetCount();
+#else
+  int nSelections = 1;
+  int n = pActiveChartsList->GetSelection();
+  pListBoxSelections.Add( n );
+#endif
+
+    if(OCPNMessageBox( this, _("Compression will alter chart files on disk.\n\
+This may make them incompatible with other programs or older versions of OpenCPN.\n\
+Compressed charts may take slightly longer to load and display on some systems.\n\
+They can be decompressed again using unxz or 7 zip programs."),
+                     _("OpenCPN Warning"),
+                     (long) wxYES | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING) != wxID_YES)
+      return;
+
+    wxArrayString filespecs;
+    filespecs.Add("*.kap");
+    filespecs.Add("*.KAP");
+    filespecs.Add("*.000");
+    
+    // should we verify we are in a cm93 directory for these?
+    filespecs.Add("*.A"), filespecs.Add("*.B"), filespecs.Add("*.C"), filespecs.Add("*.D");
+    filespecs.Add("*.E"), filespecs.Add("*.F"), filespecs.Add("*.G"), filespecs.Add("*.Z");
+
+    wxProgressDialog prog1(_("OpenCPN Compress Charts"), wxEmptyString,
+                           filespecs.GetCount()*pListBoxSelections.GetCount()+1, this,
+                          wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+                          wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
+
+  //    Make sure the dialog is big enough to be readable
+  wxSize sz = prog1.GetSize();
+  sz.x = cc1->GetClientSize().x * 8 / 10;
+  prog1.SetSize( sz );
+
+  wxArrayString charts;
+  for(unsigned int i=0; i<pListBoxSelections.GetCount(); i++) {
+      dirname = pActiveChartsList->GetString(pListBoxSelections[i]);
+      if (dirname.IsEmpty())
+          continue;
+      //    This is a fix for OSX, which appends EOL to results of
+      //    GetLineText()
+      while ((dirname.Last() == wxChar(_T('\n'))) ||
+             (dirname.Last() == wxChar(_T('\r'))))
+          dirname.RemoveLast();
+
+      if(!wxDir::Exists(dirname))
+          continue;
+
+      wxDir dir(dirname);
+      wxArrayString FileList;
+      for(unsigned int j = 0; j<filespecs.GetCount(); j++) {
+          dir.GetAllFiles(dirname, &FileList, filespecs[j]);
+          bool skip = false;
+          prog1.Update(i*filespecs.GetCount()+j, dirname+filespecs[j], &skip);
+          if(skip)
+              return;
+      }
+
+
+      for(unsigned int j=0; j<FileList.GetCount(); j++)
+          charts.Add(FileList[j]);
+  }
+  prog1.Hide();
+
+  if(charts.GetCount() == 0) {
+      OCPNMessageBox(
+      this,
+      _("No charts found to compress."),
+      _("OpenCPN Info"));
+      return;
+  }
+
+    
+  // TODO: make this use threads
+  unsigned long total_size = 0, total_compressed_size = 0, count = 0;
+  wxProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
+                        wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+                        wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
+
+  prog.SetSize( sz );
+
+  for(unsigned int i=0; i<charts.GetCount(); i++) {
+      bool skip = false;
+      prog.Update(i, charts[i], &skip);
+      if(skip)
+          break;
+
+      wxString compchart = charts[i] + _T(".xz");
+      if(CompressChart(charts[i], compchart)) {
+          total_size += wxFileName::GetSize(charts[i]).ToULong();
+          total_compressed_size += wxFileName::GetSize(compchart).ToULong();
+          wxRemoveFile(charts[i]);
+          count++;
+      }
+  }
+
+  // report statistics
+  double total_size_mb = total_size/1024.0/1024.0;
+  double total_compressed_size_mb = total_compressed_size/1024.0/1024.0;
+  OCPNMessageBox(
+      this,
+      wxString::Format(_("compressed %ld charts\nfrom %.1fMB to %.1fMB\nsaved %.1fMB (%.1f%%)"),
+                       count, total_size_mb, total_compressed_size_mb,
+                       total_size_mb - total_compressed_size_mb,
+                       (1 - total_compressed_size_mb / total_size_mb) * 100.0),
+      _("OpenCPN Info"));
+  
+  UpdateWorkArrayFromTextCtl();
+
+  if (m_pWorkDirList) {
+    pActiveChartsList->Clear();
+
+    int nDir = m_pWorkDirList->GetCount();
+    for (int id = 0; id < nDir; id++) {
+      dirname = m_pWorkDirList->Item(id).fullpath;
+      if (!dirname.IsEmpty()) {
+        pActiveChartsList->Append(dirname);
+      }
+    }
+  }
+
+  k_charts |= CHANGE_CHARTS;
+
+  pScanCheckBox->Disable();
+
+  event.Skip();
 }
 
 void options::OnDebugcheckbox1Click(wxCommandEvent& event) { event.Skip(); }

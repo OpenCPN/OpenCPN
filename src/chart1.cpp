@@ -1232,7 +1232,7 @@ void ParseAllENC()
                                    
     if(count == 0)
         return;
-
+    
     wxLogMessage(wxString::Format(_T("ParseAllENC() count = %d"), count ));
     
     //  Build another array of sorted compression targets.
@@ -1271,11 +1271,13 @@ void ParseAllENC()
     }
 */
     thread_count = 1; // for now because there is a problem with more than 1
-            
+
+#if 0    
     workers = new ParseENCWorkerThread*[thread_count];
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
-
+#endif
+        
     long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
     wxProgressDialog prog(_("OpenCPN Prepare ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
 
@@ -1292,7 +1294,16 @@ void ParseAllENC()
     for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
         wxString filename = ct_array.Item(j).chart_path;
         double distance = ct_array.Item(j).distance;
-
+        int index = ChartData->FinddbIndex(filename);
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+        Extent ext;
+        ext.NLAT = cte.GetLatMax();
+        ext.SLAT = cte.GetLatMin();
+        ext.WLON = cte.GetLonMin();
+        ext.ELON = cte.GetLonMax();
+        
+        int scale = cte.GetScale();
+        
         wxString msg;
         msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
         if(sz.x > 600){
@@ -1300,11 +1311,25 @@ void ParseAllENC()
             msg += filename;
         }
 
-        if(!prog.Update(count++, msg, &skip ))
-            break;
-        if(skip)
-            break;
+        count++;
+        if(wxThread::IsMain()){
+            prog.Update(count, msg, &skip );
+            if(skip)
+                break;
+        }
 
+#if 1
+        if(ps52plib){
+            s57chart *newChart = new s57chart;
+        
+            newChart->SetNativeScale(scale);
+            newChart->SetFullExtent(ext);
+        
+            newChart->FindOrCreateSenc(filename);
+            delete newChart;
+        }
+        
+#else        
         for(int t = 0;; t=(t+1)%thread_count) {
             if(!workers[t]) {
                 workers[t] = new ParseENCWorkerThread(filename);
@@ -1322,8 +1347,10 @@ void ParseAllENC()
                 wxThread::Sleep(1); /* wait for a worker to finish */
             }
         }
+#endif        
     }
 
+#if 0    
     /* wait for workers to finish, and clean up after then */
     for(int t = 0; t<thread_count; t++) {
         if(workers[t]) {
@@ -1332,6 +1359,7 @@ void ParseAllENC()
         }
     }
     delete [] workers;
+#endif    
 }
 
 bool MyApp::OnInit()
@@ -6452,7 +6480,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_bDeferredInitDone = true;
             
             if(b_reloadForPlugins)
-                ChartsRefresh(g_restore_dbindex, cc1->GetVP());
+                ChartsRefresh(g_restore_dbindex, cc1->GetVP(), false);
             
             #ifdef __OCPN__ANDROID__
             androidEnableBackButton( true );

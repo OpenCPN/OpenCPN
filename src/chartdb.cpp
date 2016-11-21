@@ -427,6 +427,13 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
 
       wxString chartExt = fn.GetExt().Upper();
 
+      if (chartExt == wxT("XZ")) {
+          wxString npath = theFilePath;
+          npath = npath.Left(npath.length()-3);
+          wxFileName fn(npath);
+          chartExt = fn.GetExt().Upper();
+      }
+      
       if (chartExt == wxT("KAP")) {
             pch = new ChartKAP;
       }

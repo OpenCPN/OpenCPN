@@ -1861,8 +1861,15 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                     FileList.Add(*item);
             }
 #endif
+            // add xz compressed files;
+            wxArrayString compressedFileList;
+            dir.GetAllFiles(dir_name, &compressedFileList, filespec+_T(".xz"), gaf_flags);
+            for (wxArrayString::const_iterator item = compressedFileList.begin(); item != compressedFileList.end(); item++)
+                FileList.Add(*item);
 
 #ifndef __WXMSW__
+
+            
             if (filespec != lowerFileSpec)
             {
             // add lowercase filespec files too
@@ -1870,17 +1877,24 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
 
 #ifdef __OCPN__ANDROID__
-            if(!lowerFileList.GetCount()){
-                wxArrayString afl = androidTraverseDir( dir_name, lowerFileSpec);
+                if(!lowerFileList.GetCount()){
+                    wxArrayString afl = androidTraverseDir( dir_name, lowerFileSpec);
 
-                for (wxArrayString::const_iterator item = afl.begin(); item != afl.end(); item++)
-                    lowerFileList.Add(*item);
-            }
+                    for (wxArrayString::const_iterator item = afl.begin(); item != afl.end(); item++)
+                        lowerFileList.Add(*item);
+                }
 #endif
 
-            for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
-                  FileList.Add(*item);
+                for (wxArrayString::const_iterator item = lowerFileList.begin(); item != lowerFileList.end(); item++)
+                    FileList.Add(*item);
+
+                dir.GetAllFiles(dir_name, &compressedFileList, lowerFileSpec+_T(".xz"), gaf_flags);
+                for (wxArrayString::const_iterator item = compressedFileList.begin(); item != compressedFileList.end(); item++)
+                    FileList.Add(*item);
             }
+
+
+            
 #endif
       }
       else {                            // This is a cm93 dataset, specified as yada/yada/cm93
@@ -1923,8 +1937,12 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             wxString file_name = file.GetFullName();
             //    Validate the file name again, considering MSW's semi-random treatment of case....
             // TODO...something fishy here - may need to normalize saved name?
-            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) && !b_found_cm93)
+            if(!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
+               !file_name.Matches(lowerFileSpec+_T(".xz")) && !file_name.Matches(filespec+_T(".xz")) &&
+               !b_found_cm93) {
+                wxLogMessage(_T("FileSpec test failed for:") + file_name);
                 continue;
+            }
 
             if(pprog && (ifile % (nFile / 60 + 1)) == 0)
                   pprog->Update(wxMin((ifile * 100) / nFile, 100), full_name);

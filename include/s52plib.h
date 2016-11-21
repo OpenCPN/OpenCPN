@@ -273,6 +273,8 @@ private:
     
     void UpdateOBJLArray( S57Obj *obj );
 
+    int reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest);
+    
     int RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );

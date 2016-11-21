@@ -162,17 +162,10 @@ public:
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
       static wxString GetAttributeDecode(wxString& att, int ival);
 
-      wxFileName GetSENCFileName(){ return m_SENCFileName; }
-      void SetSENCFileName(wxFileName fn){ m_SENCFileName = fn;}
-
       int BuildRAZFromSENCFile(const wxString& SENCPath);
       static void GetChartNameFromTXT(const wxString& FullPath, wxString &Name);
+      wxString buildSENCName( const wxString& name);
       
-      int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
-
-      //    Initialize from an existing SENC file
-      bool InitFromSENCMinimal( const wxString& FullPath );
-
       //    DEPCNT VALDCO array access
       bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
@@ -230,12 +223,14 @@ public:
 
       char GetUsageChar(void){ return m_usage_char; }
       static bool IsCellOverlayType(char *pFullPath);
-
+      
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
       
       struct _chart_context     *m_this_chart_context;
 
+      InitReturn FindOrCreateSenc( const wxString& name );
+      
 protected:
     void AssembleLineGeometry( void );
     
@@ -252,7 +247,6 @@ private:
 
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
-      InitReturn FindOrCreateSenc( const wxString& name );
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName);
       
       void SetLinePriorities(void);
@@ -284,7 +278,7 @@ private:
       char        *hdr_buf;
       char        *mybuf_ptr;
       int         hdr_len;
-      wxFileName  m_SENCFileName;
+      wxString    m_SENCFileName;
       ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
 
 
@@ -337,6 +331,8 @@ private:
       std::vector<connector_segment *> m_pcs_vector;
       std::vector<VE_Element *> m_pve_vector;
       
+
+      wxString    m_TempFilePath;
 protected:      
       sm_parms    vp_transform;
       

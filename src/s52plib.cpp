@@ -3362,7 +3362,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         line_segment_element *ls = rzRules->obj->m_ls_list;
 
 #ifdef ocpnUSE_GL
-        if(!b_wide_line)
+        if( !m_pdc && !b_wide_line)
             glBegin( GL_LINES );
 #endif
             
@@ -3424,7 +3424,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             ls = ls->next;
         }
 #ifdef ocpnUSE_GL
-        if(!b_wide_line)
+    if(!m_pdc && !b_wide_line)
             glEnd();
 #endif              
     }
@@ -3887,6 +3887,9 @@ int s52plib::RenderLSPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+//     if(rzRules->obj->Index != 7574)
+//         return 0;
+    
     // catch cm93 and legacy PlugIns (e.g.s63_pi)
     if( rzRules->obj->m_n_lsindex  && !rzRules->obj->m_ls_list) 
         return RenderLCLegacy(rzRules, rules, vp);
@@ -3896,7 +3899,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     wxPoint r;
 
     
-    int isym_len = rules->razRule->pos.line.bnbox_w.SYHL;
+    int isym_len = rules->razRule->pos.line.bnbox_w.SYHL + (rules->razRule->pos.line.bnbox_x.LBXC - rules->razRule->pos.line.pivot_x.LICL);
     float sym_len = isym_len * canvas_pix_per_mm / 100;
     float sym_factor = 1.0; ///1.50;                        // gives nicer effect
 
@@ -3936,12 +3939,13 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 
         //  Allocate some storage for converted points
         wxPoint *ptp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
-        
+        double *pdp = (double *)malloc( 2 * ( max_points ) * sizeof(double) ); 
 
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->chart->GetLineVertexBuffer();;
         line_segment_element *ls = rzRules->obj->m_ls_list;
 
         unsigned int index = 0;
+        unsigned int idouble = 0;
         int nls = 0;
         wxPoint lp;
         float *ppt;
@@ -3968,10 +3972,12 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             nPoints = 2;
                         }
                         wxPoint pfirst;
+//                        wxPoint pfirst(ppt[1], ppt[0]);
                         GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst, vp );
 
                         // fetch the last point
                         int index_last = (nPoints-1) * 2;
+//                        wxPoint plast(ppt[index_last +1], ppt[index_last]);
                         wxPoint plast;
                         GetPointPixSingle( rzRules, ppt[index_last +1], ppt[index_last], &plast, vp );
                         
@@ -3989,12 +3995,14 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             nPoints_next = 2;
                         }
                         wxPoint pfirst_next;
+//                        wxPoint pfirst_next(ppt[1], ppt[0]);
                         GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst_next, vp );
                         
                         // fetch the last point
                         int index_last_next = (nPoints_next-1) * 2;
                         wxPoint plast_next;
                         GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &plast_next, vp );
+//                        wxPoint plast_next(ppt[index_last_next +1], ppt[index_last_next]);
                         
                         // Now find the correct match
                         // That is, what order(direction) of the first segmenta allows direct hookup to the next segment
@@ -4003,8 +4011,9 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                             direction = 1;
                         else if( (pfirst == pfirst_next) || (pfirst == plast_next) )
                             direction = -1;
-                        else
-                            int yyp = 4;
+                        else{
+                            color = wxColour(255,0,0);
+                        }
                     }
                 }
                     
@@ -4022,19 +4031,46 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     nPoints = 2;
                  }
             
+
+                int vbo_index = 0;
+                int vbo_inc = 2;
+                if(direction == -1){
+                    vbo_index = (nPoints-1) * 2;
+                    vbo_inc = -2;
+                }
+                for(int ip=0 ; ip < nPoints ; ip++){
+                    wxPoint r;
+                    //                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
+                    GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
+                    if( (r.x != lp.x) || (r.y != lp.y) ){
+                        ptp[index++] = r;
+                        pdp[idouble++] = ppt[vbo_index];
+                        pdp[idouble++] = ppt[vbo_index + 1];
+                        
+                        nls++;
+                    }
+                    else{               // sKipping point
+                    }
+                    
+                    lp = r;
+                    vbo_index += vbo_inc;
+                }            
                 
+#if 0                
                 if(direction == 1){
                     int vbo_index = 0;
                     for(int ip=0 ; ip < nPoints ; ip++){
                         wxPoint r;
+//                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
                         GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
                         if( (r.x != lp.x) || (r.y != lp.y) ){
                             ptp[index++] = r;
-//                            printf("FWD %d %d\n", r.x, r.y);
+                            pdp[idouble++] = ppt[vbo_index];
+                            pdp[idouble++] = ppt[vbo_index + 1];
+                            
                             nls++;
                         }
                         else{
- //                           printf("  SKIP FWD %d %d\n", r.x, r.y);
                         }
                             
                         lp = r;
@@ -4046,17 +4082,21 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     for(int ip=0 ; ip < nPoints ; ip++){
                         wxPoint r;
                         GetPointPixSingle( rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r, vp );
+//                        r = wxPoint(ppt[vbo_index + 1], ppt[vbo_index]);
                         if( (r.x != lp.x) || (r.y != lp.y) ){
                             ptp[index++] = r;
 //                            printf("REVerse %d %d\n", r.x, r.y);
+                            pdp[idouble++] = ppt[vbo_index];
+                            pdp[idouble++] = ppt[vbo_index + 1];
+                            
                             nls++;
                         }
                         lp = r;
                         vbo_index -= 2;
                     }
-                }            
-                
-                    
+                }
+#endif
+
             }  // priority
             
             // inspect the next segment to see if it can be connected, or if the chain breaks
@@ -4075,11 +4115,13 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
                 wxPoint pfirst_next;
                 GetPointPixSingle( rzRules, ppt[1], ppt[0], &pfirst_next, vp );
+//                wxPoint pfirst_next(ppt[1], ppt[0]);
                 
                 // fetch the last point
                 int index_last_next = (nPoints_next-1) * 2;
                 wxPoint plast_next;
                 GetPointPixSingle( rzRules, ppt[index_last_next +1], ppt[index_last_next], &plast_next, vp );
+//                wxPoint plast_next(ppt[index_last_next +1], ppt[index_last_next]);
                 
                 // try to match a point in this segment with the last point in the previous segment, and set direction for the next loop
                 
@@ -4088,29 +4130,45 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                  else if (lp == plast_next)
                      direction = -1;
                 else{
-                    // next segment is discontinuous, so render what is available
-//                    if(ndraw++ < 2)
-                    {
-                        draw_lc_poly( m_pdc, color, w, ptp, nls, sym_len, sym_factor, rules->razRule, vp );
-//                        printf("DrawDisc\n\n");
-                    }
-//                     else{
-//                         printf("DoneDrawDisc\n\n");
-//                         wxColour color( 0,0,0 );
-//                         
-//                         draw_lc_poly( m_pdc, color, w, ptp, nls, sym_len, sym_factor, rules->razRule, vp );
-//                     }
+//                    color = wxColour(0, 0, 255);
+                    
+                   // next segment is discontinuous, so render what is available
+//                     if(ndraw > 0)
+//                         color = wxColour(0, 255, 255);
+
+     
+                    wxPoint2DDouble *pReduced = 0;
+                    int nPointReduced = reduceLOD( 3.0, nls, pdp, &pReduced);
+                    
+                    wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
+                    GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
+                    free(pReduced);
+                    
+                    draw_lc_poly( m_pdc, color, w, ptestp, nPointReduced, sym_len, sym_factor, rules->razRule, vp );
+                    free(ptestp);
+                   
+                     ndraw++;
                     
                      nls = 0;
                      index = 0;
+                     idouble = 0;
                  }
                     
                 
             }
             else{
                 // no more segments, so render what is available
-//                draw_lc_poly( m_pdc, color, w, ptp, nls, sym_len, sym_factor, rules->razRule, vp );
-//                printf("DrawNormal\n\n");
+                if(nls){
+                    wxPoint2DDouble *pReduced = 0;
+                    int nPointReduced = reduceLOD( 3.0, nls, pdp, &pReduced);
+
+                    wxPoint *ptestp = (wxPoint *) malloc( ( max_points ) * sizeof(wxPoint) ); 
+                    GetPointPixArray( rzRules, pReduced, ptestp, nPointReduced, vp );
+                    free(pReduced);
+                
+                    draw_lc_poly( m_pdc, color, w, ptp, nls, sym_len, sym_factor, rules->razRule, vp );
+                    free( ptestp );
+                }
             }
             
             ls = ls->next;
@@ -4118,6 +4176,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 
         free( ptp );
+        free(pdp);
     }
     
 
@@ -4220,7 +4279,46 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
 
-
+int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest)
+{
+    //      Reduce the LOD of this linestring
+    wxArrayInt index_keep;
+    if(nPoints > 5 && (LOD_meters > .01)){
+        index_keep.Clear();
+        index_keep.Add(0);
+        index_keep.Add(nPoints-1);
+        index_keep.Add(nPoints-2);
+        
+        DouglasPeucker(source, 1, nPoints-2, LOD_meters, &index_keep);
+        
+    }
+    else {
+        index_keep.Clear();
+        for(int i = 0 ; i < nPoints ; i++)
+            index_keep.Add(i);
+    }
+    
+    wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.GetCount() ) * sizeof(wxPoint2DDouble) ); 
+    *dest = pReduced;
+    
+    double *ppr = source;  
+    int ir = 0;
+    for(int ip = 0 ; ip < nPoints ; ip++)
+    {
+        double x = *ppr++;
+        double y = *ppr++;
+        
+        for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
+            if(index_keep.Item(j) == ip){
+                pReduced[ir++] = wxPoint2DDouble(x, y);
+                break;
+            }
+        }
+    }
+    
+    return index_keep.GetCount();
+}
+    
 
 // Line Complex
 int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
@@ -5051,8 +5149,8 @@ next_seg_dc:
 
                     //      Enable anti-aliased lines, at best quality
 #ifndef __OCPN__ANDROID__
-                    glEnable( GL_BLEND );
-                    glEnable( GL_LINE_SMOOTH );
+//                    glEnable( GL_BLEND );
+//                    glEnable( GL_LINE_SMOOTH );
 #endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());
@@ -5088,8 +5186,8 @@ next_seg_dc:
                         s += sym_len * sym_factor;
                     }
 #ifndef __OCPN__ANDROID__
-                    glEnable( GL_BLEND );
-                    glEnable( GL_LINE_SMOOTH );
+//                    glEnable( GL_BLEND );
+//                    glEnable( GL_LINE_SMOOTH );
 #endif
                     // if(m_pen.GetWidth() > 1)
                     //   DrawThickLine(x1, y1, x2, y2, m_pen.GetWidth());

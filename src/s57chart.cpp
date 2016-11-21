@@ -50,6 +50,7 @@
 #include "ocpndc.h"
 #include "s52utils.h"
 #include "wx28compat.h"
+#include "ChartDataInputStream.h"
 
 #include "cpl_csv.h"
 #include "setjmp.h"
@@ -75,6 +76,8 @@
 #include <algorithm>          // for std::sort
 #include <map>
 #include <unordered_map>
+
+#include "ssl/sha1.h"
 
 #ifdef __MSVC__
 #define strncasecmp(x,y,z) _strnicmp(x,y,z)
@@ -1362,7 +1365,12 @@ s57chart::~s57chart()
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
         s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
-    free (m_this_chart_context);
+    free (m_this_chart_context);    
+
+    if(m_TempFilePath.Length() && (m_FullPath != m_TempFilePath)){
+        if( ::wxFileExists(m_TempFilePath) )
+            wxRemoveFile(m_TempFilePath);
+    }
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
@@ -2069,9 +2077,11 @@ void s57chart::AssembleLineGeometry( void )
                         edge_dir = false;
                     }
 
-
                     VE_Element *pedge = 0;
-                    pedge = m_ve_hash[venode];
+                    if(venode){
+                        if(m_ve_hash.find(venode) != m_ve_hash.end())
+                            pedge = m_ve_hash[venode];
+                    }
 
                     //  Get end connected node
                     unsigned int enode = *index_run++;
@@ -2317,6 +2327,7 @@ void s57chart::AssembleLineGeometry( void )
     //      and recording each segment's offset in the array
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
         VE_Element *pedge = it->second;
+        int key = it->first;
         if( pedge ) {
             memcpy(lvr, pedge->pPoints, pedge->nCount * 2 * sizeof(float));
             lvr += pedge->nCount * 2;
@@ -2324,6 +2335,8 @@ void s57chart::AssembleLineGeometry( void )
             pedge->vbo_offset = offset;
             offset += pedge->nCount * 2 * sizeof(float);
         }
+//         else
+//             int yyp = 4;        //TODO Why are zero elements being inserted into m_ve_hash?
     }
 
     //      Now iterate on the hashmaps, adding the connector segments in the temporary vector to the VBO buffer
@@ -2385,9 +2398,10 @@ void s57chart::AssembleLineGeometry( void )
     // are now in the VBO buffer
     for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
         VE_Element *pedge = it->second;
-        m_pve_vector.push_back(pedge);
-
-        free(pedge->pPoints);
+        if(pedge){
+            m_pve_vector.push_back(pedge);
+            free(pedge->pPoints);
+        }
     }
     m_ve_hash.clear();
 
@@ -3563,6 +3577,28 @@ bool s57chart::IsCellOverlayType( char *pFullPath )
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 {
+    // Really can only Init and use S57 chart if the S52 Presentation Library is present and OK
+    if( (NULL ==ps52plib) || !(ps52plib->m_bOK) )
+        return INIT_FAIL_REMOVE;
+    
+    wxString ext;
+    if(name.Upper().EndsWith(".XZ")) {
+        ext = wxFileName(name.Left(name.Length()-3)).GetExt();
+        
+        // decompress to temp file to allow seeking
+        m_TempFilePath = wxFileName::GetTempDir() + wxFileName::GetPathSeparator() +
+            wxFileName(name).GetName();
+
+        if(!DecompressXZFile(name, m_TempFilePath)) {
+            wxRemoveFile(m_TempFilePath);
+            return INIT_FAIL_REMOVE;
+        }
+    } else {
+        m_TempFilePath = name;
+        ext = wxFileName(name).GetExt();
+    }
+    m_FullPath = name;
+
     //    Use a static semaphore flag to prevent recursion
     if( s_bInS57 ) {
 //          printf("s57chart::Init() recursion..., retry\n");
@@ -3574,10 +3610,9 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     InitReturn ret_value = INIT_OK;
 
-    m_FullPath = name;
-    m_Description = m_FullPath;
+    m_Description = name;
 
-    wxFileName fn( name );
+    wxFileName fn( m_TempFilePath );
 
     //      Get the "Usage" character
     wxString cname = fn.GetName();
@@ -3614,8 +3649,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     }
 
     if( flags == HEADER_ONLY ) {
-        if( fn.GetExt() == _T("000") ) {
-            if( !GetBaseFileAttr( fn ) )
+        if( ext == _T("000") ) {
+            if( !GetBaseFileAttr( fn.GetFullPath() ) )
                 ret_value = INIT_FAIL_REMOVE;
             else {
                 if( !CreateHeaderDataFromENC() )
@@ -3623,8 +3658,8 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
                 else
                     ret_value = INIT_OK;
             }
-        } else if( fn.GetExt() == _T("S57") ) {
-            m_SENCFileName = name;
+        } else if( ext == _T("S57") ) {
+            m_SENCFileName = m_TempFilePath;
             if( !CreateHeaderDataFromSENC() ) ret_value = INIT_FAIL_REMOVE;
             else
                 ret_value = INIT_OK;
@@ -3643,11 +3678,11 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
             m_bbase_file_attr_known = true;
     }
 
-    if( fn.GetExt() == _T("000") ) {
+    if( ext == _T("000") ) {
         if( m_bbase_file_attr_known ) {
             OCPNPlatform::ShowBusySpinner();
 
-            int sret = FindOrCreateSenc( name );
+            int sret = FindOrCreateSenc( m_FullPath );
             if( sret != BUILD_SENC_OK ) {
                 if( sret == BUILD_SENC_NOK_RETRY ) ret_value = INIT_FAIL_RETRY;
                 else
@@ -3659,10 +3694,10 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     }
 
-    else if( fn.GetExt() == _T("S57") ) {
+    else if( ext == _T("S57") ) {
         OCPNPlatform::ShowBusySpinner();
 
-        m_SENCFileName = name;
+        m_SENCFileName = m_TempFilePath;
         ret_value = PostInit( flags, m_global_color_scheme );
 
     }
@@ -3674,46 +3709,97 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
 }
 
+wxString s57chart::buildSENCName( const wxString& name)
+{
+    wxFileName fn(name);
+    fn.SetExt( _T("S57") );
+    wxString file_name = fn.GetFullName();
+    
+    //      Set the proper directory for the SENC files
+    wxString SENCdir = g_SENCPrefix;
+    
+    if( SENCdir.Last() != wxFileName::GetPathSeparator() )
+        SENCdir.Append( wxFileName::GetPathSeparator() );
+    
+#if 1
+    wxString source_dir = fn.GetPath(wxPATH_GET_SEPARATOR);    
+    wxCharBuffer buf = source_dir.ToUTF8();
+    unsigned char sha1_out[20];
+    sha1( (unsigned char *) buf.data(), strlen(buf.data()), sha1_out );
+    
+    wxString sha1;
+    for (unsigned int i=0 ; i < 6 ; i++){
+        wxString s;
+        s.Printf(_T("%02X"), sha1_out[i]);
+        sha1 += s;
+    }
+    sha1 += _T("_");
+    file_name.Prepend(sha1);
+#endif    
+    
+    wxFileName tsfn( SENCdir );
+    tsfn.SetFullName( file_name );
+    
+    return tsfn.GetFullPath();
+}
+
 //-----------------------------------------------------------------------------------------------
 //    Find or Create a relevent SENC file from a given .000 ENC file
 //    Returns with error code, and associated SENC file name in m_S57FileName
 //-----------------------------------------------------------------------------------------------
 InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 {
+    //  This method may be called for a compressed .000 cell, so check and decompress if necessary
+    wxString ext;
+    if(name.Upper().EndsWith(".XZ")) {
+        ext = wxFileName(name.Left(name.Length()-3)).GetExt();
+        
+        // decompress to temp file to allow seeking
+        m_TempFilePath = wxFileName::GetTempDir() + wxFileName::GetPathSeparator() +
+        wxFileName(name).GetName();
+        
+        if(!DecompressXZFile(name, m_TempFilePath)) {
+            wxRemoveFile(m_TempFilePath);
+            return INIT_FAIL_REMOVE;
+        }
+    } else {
+        m_TempFilePath = name;
+        ext = wxFileName(name).GetExt();
+    }
+    m_FullPath = name;
+    
+    if( !m_bbase_file_attr_known ) {
+        if( !GetBaseFileAttr( m_TempFilePath ) )
+            return INIT_FAIL_REMOVE;
+        else
+            m_bbase_file_attr_known = true;
+    }
+    
     //      Establish location for SENC files
-    m_SENCFileName = name;
-    m_SENCFileName.SetExt( _T("S57") );
-
-    //      Set the proper directory for the SENC files
-    wxString SENCdir = g_SENCPrefix;
-
-    if( SENCdir.Last() != m_SENCFileName.GetPathSeparator() ) SENCdir.Append(
-            m_SENCFileName.GetPathSeparator() );
-
-    wxFileName tsfn( SENCdir );
-    tsfn.SetFullName( m_SENCFileName.GetFullName() );
-    m_SENCFileName = tsfn;
-
-    // Really can only Init and use S57 chart if the S52 Presentation Library is OK
-    if( !ps52plib->m_bOK ) return INIT_FAIL_REMOVE;
-
+    m_SENCFileName = buildSENCName( name );
+    
     int build_ret_val = 1;
 
     bool bbuild_new_senc = false;
     m_bneed_new_thumbnail = false;
 
-    wxFileName FileName000( name );
+    wxFileName FileName000( m_TempFilePath );
 
 //      Look for SENC file in the target directory
 
+    wxString msg( _T("S57chart::Checking SENC file: ") );
+    msg.Append( m_SENCFileName );
+    wxLogMessage( msg );
+    
     {
         int force_make_senc = 0;
 
-        if( m_SENCFileName.FileExists() ){                    // SENC file exists
+        if( ::wxFileExists(m_SENCFileName) ){                    // SENC file exists
 
             Osenc senc;
-            if(senc.ingestHeader( m_SENCFileName.GetFullPath() ) ){
+            if(senc.ingestHeader( m_SENCFileName ) ){
                 bbuild_new_senc = true;
+                wxLogMessage(_T("    Rebuilding SENC due to ingestHeader failure."));
             }
             else{
 
@@ -3732,25 +3818,46 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 //                wxString ssize000 = senc.getsFileSize000();
 
                 wxString senc_base_edtn = senc.getSENCReadBaseEdition();
-
+                long isenc_edition;
+                senc_base_edtn.ToLong(&isenc_edition);
+                long ifile_edition;
+                m_edtn000.ToLong(&ifile_edition);
+                
 //              Anything to do?
 //force_make_senc = 1;
                 //  SENC file version has to be correct for other tests to make sense
-                if( senc_file_version != CURRENT_SENC_FORMAT_VERSION )
+                if( senc_file_version != CURRENT_SENC_FORMAT_VERSION ){
                     bbuild_new_senc = true;
+                    wxLogMessage(_T("    Rebuilding SENC due to SENC format update."));
+                }
 
                 //  Senc EDTN must be the same as .000 file EDTN.
                 //  This test catches the usual case where the .000 file is updated from the web,
                 //  and all updates (.001, .002, etc.)  are subsumed.
-                else if( !senc_base_edtn.IsSameAs( m_edtn000 ) )
+                
+                else if( ifile_edition > isenc_edition ){
                     bbuild_new_senc = true;
-
+                    wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
+                    wxString msg;
+                    msg = _T("    Last edition recorded in SENC: ");
+                    msg += senc_base_edtn;
+                    msg += _T("  most recent edition cell file: ");
+                    msg += m_edtn000;
+                    wxLogMessage(msg);
+                }
                 else {
                     //    See if there are any new update files  in the ENC directory
                     int most_recent_update_file = GetUpdateFileArray( FileName000, NULL, m_date000, m_edtn000 );
 
-                    if( last_update != most_recent_update_file )
-                        bbuild_new_senc = true;
+                    if( ifile_edition == isenc_edition ){
+                        if( most_recent_update_file > last_update ){
+                            bbuild_new_senc = true;
+                            wxLogMessage(_T("    Rebuilding SENC due to incremental cell update."));
+                            wxString msg;
+                            msg.Printf(_T("    Last update recorded in SENC: %d   most recent update file: %d"), last_update, most_recent_update_file);
+                            wxLogMessage(msg);
+                        }
+                    }
 
 //          Make simple tests to see if the .000 file is "newer" than the SENC file representation
 //          These tests may be redundant, since the DSID:EDTN test above should catch new base files
@@ -3758,11 +3865,15 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
                     FileName000.GetTimes( NULL, &OModTime000, NULL );
                     OModTime000.ResetTime();                      // to midnight
                     if( SENCCreateDate.IsValid() ){
-                        if( OModTime000.IsLaterThan( SENCCreateDate ) )
+                        if( OModTime000.IsLaterThan( SENCCreateDate ) ){
+                            wxLogMessage(_T("    Rebuilding SENC due to Senc vs cell file time check."));
                             bbuild_new_senc = true;
+                        }
                     }
-                    else
+                    else{
                         bbuild_new_senc = true;
+                        wxLogMessage(_T("    Rebuilding SENC due to SENC create time invalid."));
+                    }
 
 
 //                     int Osize000l = FileName000.GetSize().GetLo();
@@ -3779,16 +3890,17 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
             }
         }
-        else if( !m_SENCFileName.FileExists() )                    // SENC file does not exist
+        else if( !::wxFileExists(m_SENCFileName ) )                    // SENC file does not exist
         {
+            wxLogMessage(_T("    Rebuilding SENC due to missing SENC file."));
             bbuild_new_senc = true;
         }
     }
 
     if( bbuild_new_senc ) {
         m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-        build_ret_val = BuildSENCFile( name, m_SENCFileName.GetFullPath() );
-        if( BUILD_SENC_NOK_PERMANENT == build_ret_val )
+        build_ret_val = BuildSENCFile( m_TempFilePath, m_SENCFileName );
+        if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) 
             return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val )
             return INIT_FAIL_RETRY;
@@ -3801,9 +3913,9 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 {
 
 //    SENC file is ready, so build the RAZ structure
-    if( 0 != BuildRAZFromSENCFile( m_SENCFileName.GetFullPath() ) ) {
+    if( 0 != BuildRAZFromSENCFile( m_SENCFileName ) ) {
         wxString msg( _T("   Cannot load SENC file ") );
-        msg.Append( m_SENCFileName.GetFullPath() );
+        msg.Append( m_SENCFileName );
         wxLogMessage( msg );
 
         return INIT_FAIL_RETRY;
@@ -4080,9 +4192,9 @@ WX_DEFINE_ARRAY_PTR( float*, MyFloatPtrArray );
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC( void )
 {
-    if( !InitENCMinimal( m_FullPath ) ) {
+    if( !InitENCMinimal( m_TempFilePath ) ) {
         wxString msg( _T("   Cannot initialize ENC file ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
 
         return false;
@@ -4173,7 +4285,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     else                                     // strange case, found no CATCOV=1 M_COVR objects
     {
         wxString msg( _T("   ENC contains no useable M_COVR, CATCOV=1 features:  ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
     }
 
@@ -4205,7 +4317,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     if( 0 == m_nCOVREntries ) {                        // fallback
         wxString msg( _T("   ENC contains no M_COVR features:  ") );
-        msg.Append( m_FullPath );
+        msg.Append( m_TempFilePath );
         wxLogMessage( msg );
 
         msg =  _T("   Calculating Chart Extents as fallback.");
@@ -4245,7 +4357,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
         } else {
             wxString msg( _T("   Cannot calculate Extents for ENC:  ") );
-            msg.Append( m_FullPath );
+            msg.Append( m_TempFilePath );
             wxLogMessage( msg );
 
             return false;                     // chart is completely unusable
@@ -4263,7 +4375,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     m_Chart_Scale = GetENCScale();
 
     wxString nice_name;
-    GetChartNameFromTXT( m_FullPath, nice_name );
+    GetChartNameFromTXT( m_TempFilePath, nice_name );
     m_Name = nice_name;
 
 
@@ -4275,11 +4387,11 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
 {
     bool ret_val = true;
 
-    wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
+    wxFFileInputStream fpx( m_SENCFileName );
     if (!fpx.IsOk()) {
-        if( !m_SENCFileName.FileExists() ) {
+        if( !::wxFileExists(m_SENCFileName) ) {
             wxString msg( _T("   Cannot open SENC file ") );
-            msg.Append( m_SENCFileName.GetFullPath() );
+            msg.Append( m_SENCFileName );
             wxLogMessage( msg );
 
         }
@@ -4287,7 +4399,7 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
     }
 
     Osenc senc;
-    if(senc.ingestHeader( m_SENCFileName.GetFullPath() ) ){
+    if(senc.ingestHeader( m_SENCFileName ) ){
         return false;
     }
     else{
@@ -4382,139 +4494,9 @@ bool s57chart::CreateHeaderDataFromSENC( void )
     if(CURRENT_SENC_FORMAT_VERSION >= 200)
         return CreateHeaderDataFromoSENC();
 
-    wxFFileInputStream fpx( m_SENCFileName.GetFullPath() );
-    if (!fpx.IsOk()) {
-        if( !m_SENCFileName.FileExists() ) {
-            wxString msg( _T("   Cannot open SENC file ") );
-            msg.Append( m_SENCFileName.GetFullPath() );
-            wxLogMessage( msg );
-
-        }
-        return false;
-    }
-
-    int MAX_LINE = 499999;
-    char *buf = (char *) malloc( MAX_LINE + 1 );
-
-    int dun = 0;
-
-    hdr_buf = (char *) malloc( 1 );
-    wxString date_000, date_upd;
-
-    while( !dun ) {
-
-        if( my_fgets( buf, MAX_LINE, fpx ) == 0 ) {
-            dun = 1;
-            break;
-        }
-
-        if( !strncmp( buf, "OGRF", 4 ) ) {
-            dun = 1;
-            break;
-        }               //OGRF
-
-        else if( !strncmp( buf, "SENC", 4 ) ) {
-            int senc_file_version;
-            sscanf( buf, "SENC Version=%i", &senc_file_version );
-            if( senc_file_version != CURRENT_SENC_FORMAT_VERSION ) {
-                wxString msg( _T("   Wrong version on SENC file ") );
-                msg.Append( m_SENCFileName.GetFullPath() );
-                wxLogMessage( msg );
-
-                dun = 1;
-                ret_val = false;                   // error
-                break;
-            }
-        }
-
-        else if( !strncmp( buf, "DATEUPD", 7 ) ) {
-            date_upd.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
-        }
-
-        else if( !strncmp( buf, "DATE000", 7 ) ) {
-            date_000.Append( wxString( &buf[8], wxConvUTF8 ).BeforeFirst( '\n' ) );
-        }
-
-        else if( !strncmp( buf, "SCALE", 5 ) ) {
-            int ins;
-            sscanf( buf, "SCALE=%d", &ins );
-            m_Chart_Scale = ins;
-
-        }
-
-        else if( !strncmp( buf, "NAME", 4 ) ) {
-            m_Name = wxString( &buf[5], wxConvUTF8 ).BeforeFirst( '\n' );
-        }
-
-        else if( !strncmp( buf, "Chart Extents:", 14 ) ) {
-            float elon, wlon, nlat, slat;
-            sscanf( buf, "Chart Extents: %g %g %g %g", &elon, &wlon, &nlat, &slat );
-            m_FullExtent.ELON = elon;
-            m_FullExtent.WLON = wlon;
-            m_FullExtent.NLAT = nlat;
-            m_FullExtent.SLAT = slat;
-            m_bExtentSet = true;
-        }
-
-    }                       //while(!dun)
-
-    //    Populate COVR structures
-    if( m_bExtentSet ) {
-        m_nCOVREntries = 1;                       // this is the default for pre-made SENCs
-
-        if( m_nCOVREntries == 1 ) {
-            m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-            *m_pCOVRTablePoints = 4;
-            m_pCOVRTable = (float **) malloc( sizeof(float *) );
-
-            float *pf = (float *) malloc( 2 * 4 * sizeof(float) );
-            *m_pCOVRTable = pf;
-            float *pfe = pf;
-
-            *pfe++ = m_FullExtent.NLAT;
-            *pfe++ = m_FullExtent.ELON;
-
-            *pfe++ = m_FullExtent.NLAT;
-            *pfe++ = m_FullExtent.WLON;
-
-            *pfe++ = m_FullExtent.SLAT;
-            *pfe++ = m_FullExtent.WLON;
-
-            *pfe++ = m_FullExtent.SLAT;
-            *pfe++ = m_FullExtent.ELON;
-        }
-    }
-
-    free( buf );
-
-    free( hdr_buf );
-
-    //   Decide on pub date to show
-
-    int d000 = 0;
-    wxString sd000 =date_000.Mid( 0, 4 );
-    wxCharBuffer dbuffer=sd000.ToUTF8();
-    if(dbuffer.data())
-        d000 = atoi(dbuffer.data() );
-
-    int dupd = 0;
-    wxString sdupd =date_upd.Mid( 0, 4 );
-    wxCharBuffer ubuffer = sdupd.ToUTF8();
-    if(ubuffer.data())
-        dupd = atoi(ubuffer.data() );
-
-    if( dupd > d000 )
-        m_PubYear = sdupd;
-    else
-        m_PubYear = sd000;
-
-    wxDateTime dt;
-    dt.ParseDate( date_000 );
-
-    if( !ret_val ) return false;
-
-    return true;
-}
+    return false;
+    
+ }
 
 /*    This method returns the smallest chart DEPCNT:VALDCO value which
  is greater than or equal to the specified value
@@ -4857,7 +4839,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
             m_tmpup_array = new wxArrayString;       // save a list of created files for later erase
 
             for( int iff = 0; iff < retval + 1; iff++ ) {
-                wxFileName ufile( m_FullPath );
+                wxFileName ufile( m_TempFilePath );
                 wxString sext;
                 sext.Printf( _T("%03d"), iff );
                 ufile.SetExt( sext );
@@ -4929,7 +4911,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
         //      Extract the date field from the last of the update files
         //      which is by definition a valid, present update file....
 
-        wxFileName lastfile( m_FullPath );
+        wxFileName lastfile( m_TempFilePath );
         wxString last_sext;
         last_sext.Printf( _T("%03d"), retval );
         lastfile.SetExt( last_sext );
@@ -5118,7 +5100,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     for( int i = 0; i < n_ve_elements; i++ ) {
 
         VE_Element *vep = VEs.at( i );
-        if(vep->nCount){
+        if(vep && vep->nCount){
             //  Get a bounding box for the edge
             double east_max = -1e7; double east_min = 1e7;
             double north_max = -1e7; double north_min = 1e7;
@@ -5387,39 +5369,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     return ret_val;
 }
 
-//------------------------------------------------------------------------------
-//      Local version of fgets for Binary Mode (SENC) file
-//------------------------------------------------------------------------------
-int s57chart::my_fgets( char *buf, int buf_len_max, wxInputStream& ifs )
 
-{
-    char chNext;
-    int nLineLen = 0;
-    char *lbuf;
-
-    lbuf = buf;
-
-    while( !ifs.Eof() && nLineLen < buf_len_max ) {
-        chNext = (char) ifs.GetC();
-
-        /* each CR/LF (or LF/CR) as if just "CR" */
-        if( chNext == 10 || chNext == 13 ) {
-            chNext = '\n';
-        }
-
-        *lbuf = chNext;
-        lbuf++, nLineLen++;
-
-        if( chNext == '\n' ) {
-            *lbuf = '\0';
-            return nLineLen;
-        }
-    }
-
-    *( lbuf ) = '\0';
-
-    return nLineLen;
-}
 
 int s57chart::_insertRules( S57Obj *obj, LUPrec *LUP, s57chart *pOwner )
 {
@@ -6994,99 +6944,6 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
     return ret;
 }
 
-//------------------------------------------------------------------------
-//
-//          Minimally initialize an S57 chart from a prebuilt SENC file
-//          Mainly used to get extents, scale, etc from SENC header
-//
-//------------------------------------------------------------------------
-bool s57chart::InitFromSENCMinimal( const wxString &FullPath )
-{
-    bool ret_val = true;
-    int check_val = 0;
-
-    m_FullPath = FullPath;
-    m_Description = m_FullPath;
-
-    wxFile f;
-    if( f.Open( FullPath ) ) {
-        if( f.Length() == 0 ) {
-            f.Close();
-            ret_val = false;
-        } else                                      // file exists, non-zero
-        {                                         // so check for new updates
-
-            f.Seek( 0 );
-            wxFileInputStream *pfpx_u = new wxFileInputStream( f );
-            wxBufferedInputStream *pfpx = new wxBufferedInputStream( *pfpx_u );
-            int dun = 0;
-            int last_update = 0;
-            int senc_file_version = 0;
-            char buf[256];
-            char *pbuf = buf;
-
-            while( !dun ) {
-                if( my_fgets( pbuf, 256, *pfpx ) == 0 ) {
-                    dun = 1;
-                    ret_val = false;
-                    break;
-                } else {
-                    if( !strncmp( pbuf, "OGRF", 4 ) ) {
-                        dun = 1;
-                        break;
-                    } else if( !strncmp( pbuf, "UPDT", 4 ) ) {
-                        sscanf( pbuf, "UPDT=%i", &last_update );
-                    } else if( !strncmp( pbuf, "SENC", 4 ) ) {
-                        sscanf( pbuf, "SENC Version=%i", &senc_file_version );
-                    } else if( !strncmp( pbuf, "Chart Extents:", 13 ) ) {
-                        double xmin, ymin, xmax, ymax;
-                        wxString l( pbuf, wxConvUTF8 );
-
-                        wxStringTokenizer tkz( l, _T(" ") );
-                        wxString token = tkz.GetNextToken();  //Chart
-                        token = tkz.GetNextToken();           //Extents:
-
-                        token = tkz.GetNextToken();
-                        token.ToDouble( &xmax );
-                        token = tkz.GetNextToken();
-                        token.ToDouble( &xmin );
-                        token = tkz.GetNextToken();
-                        token.ToDouble( &ymax );
-                        token = tkz.GetNextToken();
-                        token.ToDouble( &ymin );
-
-                        Extent ext;
-                        ext.WLON = xmin;
-                        ext.SLAT = ymin;
-                        ext.ELON = xmax;
-                        ext.NLAT = ymax;
-                        SetFullExtent( ext );
-
-                        check_val |= 1;
-                    } else if( !strncmp( pbuf, "SCALE=", 6 ) ) {
-                        int scale;
-                        sscanf( pbuf, "SCALE=%i", &scale );
-                        m_Chart_Scale = scale;
-                        check_val |= 2;
-                    }
-
-                }
-            }
-
-            delete pfpx;
-            delete pfpx_u;
-            f.Close();
-        }
-    } else
-        ret_val = false;                // file did not open
-
-    if( false == ret_val ) return false;                   // some other read problem
-
-    if( 3 != check_val ) return false;                   // did not get all required parameters
-
-    return true;
-
-}
 
 wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName )
 {
