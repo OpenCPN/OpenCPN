@@ -23,22 +23,26 @@ public class Assetbridge {
     public static void unpack(Context c) {
 
         try {
-            String tmpdir = "";
+            String targetDir = "";
 
-            // first let's get the temp directory
+            // first let's get the target directory
 
             ApplicationInfo ai = c.getApplicationInfo();
             if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
-                tmpdir = c.getExternalFilesDir(null).getPath();
+                targetDir = c.getExternalFilesDir(null).getPath();
             else
-                tmpdir = c.getFilesDir().getPath();
+                targetDir = c.getFilesDir().getPath();
 
-            // String tmpdir = c.getCacheDir().getPath();
-            Log.i("OpenCPN", "assetbridge target " + tmpdir);
+            Log.i("OpenCPN", "assetbridge target " + targetDir);
 
 
-            if(tmpdir.isEmpty())
-                tmpdir = "/data/data/org.opencpn.opencpn/files";
+            // Sometimes, due to an app startup race condition, the getFilesDir() does not yet exist, or is inaccessible.
+            //  So, in this case, we hardcode/set the targetDIR directly.
+            //  Note that this method WILL PROBABLY NOT WORK if the app is moved to the sdCard.  But it does not always happen, so...
+            // See https://code.google.com/p/android/issues/detail?id=8886
+
+            if(targetDir.isEmpty())
+                targetDir = "/data/data/org.opencpn.opencpn/files";
 
             // now we need the assetmanager
             AssetManager am = c.getAssets();
@@ -47,12 +51,9 @@ public class Assetbridge {
             // iterate on the files...
             for(String asset : assets) {
                 Log.i("OpenCPN", "assetbridge asset: " + asset);
-                copyAssetItem(am, "files/"+asset, tmpdir + "/" + asset);
+                copyAssetItem(am, "files/"+asset, targetDir + "/" + asset);
             }
 
-            // last, set the ASSETDIR environment variable for the C
-            // parts of the procee
-//            setassetdir(c.getCacheDir().getPath());
 
         } catch (IOException e) {
             Log.e("OpenCPN", "Can't unpack assets from APK", e);
