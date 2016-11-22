@@ -54,8 +54,9 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     wxColour colour;
     GetGlobalColor(_T("DILG1"), &colour);
-   
-    //populate "cursor position" display 
+
+    //populate "cursor position" display
+
     wxString l;
     l.Append(toSDMM_PlugIn(1, m_cursor_lat)).Append(_T("   "))
         .Append(toSDMM_PlugIn(2, m_cursor_lon));
@@ -83,7 +84,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
     doubledatarow->SetAlignment(wxALIGN_CENTRE, -1);
 
     //init labels
-    m_pGribTable->SetLabelFont(labelfont);                  
+    m_pGribTable->SetLabelFont(labelfont);
     m_pGribTable->SetLabelBackgroundColour(colour);
 
     //create as columns as necessary
@@ -106,10 +107,10 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
         time = rsa->Item(i).m_Reference_Time;
-   
+
         //populate 'time' row
         m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
-        
+
         nrows = 2;
 
         m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
@@ -214,7 +215,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
                     m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings(day, zone, 1));
                     m_pGribTable->AutoSizeColumn(i, false);
                 }
-            }  
+            }
             ncols = 0;
         }
     }
@@ -369,7 +370,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray)
                     getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
                 if( direction != GRIB_NOTDEF ){
                     skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
-                   
+
                     if( recordarray[Idx_WVPER] ) {
                         double period = recordarray[Idx_WVPER]->
                             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
@@ -476,10 +477,17 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray)
                                          m_cursor_lon, m_cursor_lat)) {
         vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
+        // Current direction is generally reported as the "flow" direction,
+        // which is opposite from wind convention.
+        // So, adjust.
+        ang += 180;
+        if(ang >= 360) ang -= 360;
+        if( ang < 0 ) ang += 360;
+
         skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );
-        
+
         skn.Append(_T("\n\n"));
-        
+
         skn.Append( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
         m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
     }
