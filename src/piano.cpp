@@ -956,9 +956,6 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             if( -1 != sel_index ){
                 m_action = DEFERRED_KEY_CLICK_DOWN;
                 ShowBusy( true );
- #ifdef __OCPN__ANDROID__
-                androidShowBusyIcon();
- #endif                
                 m_eventTimer.Start(10, wxTIMER_ONE_SHOT);
             }
         } if( event.LeftUp() ) {

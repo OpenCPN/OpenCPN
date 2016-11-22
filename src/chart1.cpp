@@ -2063,10 +2063,6 @@ bool MyApp::OnInit()
 
     gFrame->Show( TRUE );
 
-#ifdef __OCPN__ANDROID__
-    androidShowBusyIcon();
-#endif
-
     gFrame->SetAndApplyColorScheme( global_color_scheme );
 
     if( g_bframemax ) gFrame->Maximize( true );
