@@ -875,17 +875,20 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 
     int x = -1;
     int y = -1;
-    int w = 900;
-    int h = 350;
+    int w = m_vp->pix_width - 30;
+    int h = m_vp->pix_height - 30;
 
     if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
         pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
         pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
-        pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
-        pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
+        pConf->Read( _T ( "GribDataTableWidth" ), &w );
+        pConf->Read( _T ( "GribDataTableHeight" ), &h );
     }
+    //Correct an eventuelly oversized dialog
+    w = ( w > m_vp->pix_width - 30 )? m_vp->pix_width - 30: w;
+    h = ( h > m_vp->pix_height - 30)? m_vp->pix_height - 30: h;
     //init centered position and default size if not set yet
     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
 
