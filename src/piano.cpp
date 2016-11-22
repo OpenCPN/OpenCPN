@@ -45,7 +45,12 @@
 #include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
+#include "qdebug.h" 
 #include "androidUTIL.h"
+#endif
+
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
 #endif
 
 #include <wx/arrimpl.cpp>
@@ -59,6 +64,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame *gFrame;
 extern bool g_btouch;
 extern int  g_GUIScaleFactor;
+extern bool g_bopengl;
 
 extern ChartCanvas               *cc1;
 extern Piano                     *g_Piano;
@@ -1049,8 +1055,10 @@ void Piano::onTimerEvent(wxTimerEvent &event)
                 ResetRollover();
             }
             else{
-                gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
-//            ShowBusy( false );
+#ifdef ocpnUSE_GL
+                if(g_bopengl && cc1->GetglCanvas() && !cc1->GetglCanvas()->isInGesture())
+#endif    
+                    gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
             }
             break;
         case INFOWIN_TIMEOUT:

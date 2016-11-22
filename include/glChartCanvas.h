@@ -42,6 +42,7 @@ class glTexFactory;
 
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
+#define GESTURE_FINISH_TIMER 78336
 
 class ocpnGLOptions
 {
@@ -101,6 +102,7 @@ public:
     void OnEvtPanGesture( wxQT_PanGestureEvent &event);
     void OnEvtPinchGesture( wxQT_PinchGestureEvent &event);
     void onGestureTimerEvent(wxTimerEvent &event);
+    void onGestureFinishTimerEvent(wxTimerEvent &event);
 #endif
 
     void onZoomTimerEvent(wxTimerEvent &event);
@@ -128,6 +130,8 @@ public:
     bool CanAcceleratePanning() { return m_b_BuiltFBO; }
     bool UsingFBO() { return m_b_BuiltFBO; }
 
+    bool isInGesture(){ return m_binGesture; }
+    
     time_t m_last_render_time;
 
     int viewport[4];
@@ -218,11 +222,13 @@ protected:
     
     bool        m_binPinch;
     bool        m_binPan;
+    bool        m_binGesture;
     bool        m_bfogit;
     bool        m_benableFog;
     bool        m_benableVScale;
     
     wxTimer     m_gestureEeventTimer;
+    wxTimer     m_gestureFinishTimer;
     bool        m_bgestureGuard;
     bool        m_bpinchGuard;
     wxPoint     m_pinchStart;

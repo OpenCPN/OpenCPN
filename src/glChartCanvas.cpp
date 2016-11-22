@@ -462,6 +462,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_binPinch = false;
     m_binPan = false;
     m_bpinchGuard = false;
+    m_binGesture = false;
     
     b_timeGL = true;
     m_last_render_time = -1;
@@ -482,11 +483,15 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     Connect( GESTURE_EVENT_TIMER, wxEVT_TIMER, 
              (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::onGestureTimerEvent, NULL, this );
 
+    Connect( GESTURE_FINISH_TIMER, wxEVT_TIMER, 
+             (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::onGestureFinishTimerEvent, NULL, this );
+    
     Connect( ZOOM_TIMER, wxEVT_TIMER, 
              (wxObjectEventFunction) (wxEventFunction) &glChartCanvas::onZoomTimerEvent, NULL, this );
 
     
     m_gestureEeventTimer.SetOwner( this, GESTURE_EVENT_TIMER );
+    m_gestureFinishTimer.SetOwner( this, GESTURE_FINISH_TIMER );
     zoomTimer.SetOwner( this, ZOOM_TIMER );
     
     m_bgestureGuard = false;
@@ -4510,6 +4515,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             
             panx = pany = 0;
             m_binPan = true;
+            m_binGesture = true;
             break;
             
         case GestureUpdated:
@@ -4540,13 +4546,14 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             #endif        
             
             }
-            //panx = pany = 0;
             m_binPan = false;
+            m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
             
             break;
             
         case GestureCanceled:
             m_binPan = false; 
+            m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
             break;
             
         default:
@@ -4583,6 +4590,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
         case GestureStarted:
             m_binPinch = true;
             m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
+            m_binGesture = true;
             m_pinchStart = event.GetCenterPoint();
             m_lpinchPoint = m_pinchStart;
             
@@ -4641,54 +4649,21 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             
             else{
                 cc1->ZoomCanvas( tzoom, false );
-            
-//                if(tzoom > 1){
-                    cc1->PanCanvas( dx, dy );
+                cc1->PanCanvas( dx, dy );
                     
-                    #ifdef __OCPN__ANDROID__
-                    androidSetFollowTool(false);
-                    #endif        
-  //              }
+                #ifdef __OCPN__ANDROID__
+                androidSetFollowTool(false);
+                #endif        
             }
             
-            
-#if 0            
-            m_fbo_offsetx = m_runoffsetx;
-            m_fbo_offsety = m_runoffsety;
-            m_fbo_swidth = m_runswidth;
-            m_fbo_sheight = m_runsheight;
-            zoomTimer.Stop();
-            
-            int cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
-            int cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
-            
-            if( projected_scale < 3e8)
-                cc1->ZoomCanvas( total_zoom_val, false );
-            else
-                cc1->ZoomCanvas(cc1->GetVP().chart_scale / 3e8, false);
-            
-             if(total_zoom_val > 1){
-                 if (g_GLOptions.m_bUseCanvasPanning){
-
-
-                     int dx = (cc_x - m_cc_x) * total_zoom_val;
-                     int dy = -(cc_y - m_cc_y) * total_zoom_val;
-//                     qDebug() << "final pan" << dx << dy << total_zoom_val;
-                     cc1->PanCanvas( dx, dy );
-                 
-                 #ifdef __OCPN__ANDROID__
-                     androidSetFollowTool(false);
-                 #endif        
-                 }
-             }
-#endif
-
              m_binPinch = false;
+             m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
              break;
         }
             
         case GestureCanceled:
             m_binPinch = false;
+            m_gestureFinishTimer.Start(500, wxTIMER_ONE_SHOT);
             break;
             
         default:
@@ -4712,6 +4687,12 @@ void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
     }
     m_bgestureGuard = false;
     m_bpinchGuard = false;
+}
+
+void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event)
+{
+    // signal gesture is finished after a delay
+    m_binGesture = false;
 }
 
 
