@@ -1306,14 +1306,17 @@ void androidTerminate(){
 
 bool CheckPendingJNIException()
 {
-    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
-        //qDebug() << "GetEnv failed.";
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
         return true;
-    }
 
     if( (jenv)->ExceptionCheck() == JNI_TRUE ) {
-        //qDebug() << "Found JNI Exception Pending.";
-        return true;
+
+        // Handle exception here.
+        (jenv)->ExceptionDescribe(); // writes to logcat
+        (jenv)->ExceptionClear();
+        
+        return false;           // There was a pending exception, but cleared OK
+                                // interesting discussion:  http://blog.httrack.com/blog/2013/08/23/catching-posix-signals-on-android/
     }
     
     return false;
