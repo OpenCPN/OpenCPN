@@ -506,7 +506,20 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         else
             optionsMenuEnabled = false;
 
-        invalidateOptionsMenu();
+        // Can only mess with the UI view if this method is executed from the main UI thread.
+        //  Otherwise, provokes a "CalledFromWrongThreadException"
+        //  But, for some reason, this code don't work...
+/*
+        if(Looper.getMainLooper().getThread() == Thread.currentThread())
+            invalidateOptionsMenu();
+*/
+        // So, do this:
+        runOnUiThread(new Runnable() {
+            public void run() {
+                invalidateOptionsMenu();
+            }
+        });
+
         return "OK";
     }
 
@@ -663,7 +676,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
 
         m_gminitialZoom = Double.parseDouble(initialZoom);
-
 
         intent.putExtra("VP_CORNERS", s);
         intent.putExtra("VPS", v);
