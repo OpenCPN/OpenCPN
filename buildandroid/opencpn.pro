@@ -100,7 +100,7 @@ s57_deployment.files += $$PWD/../data/s57data/rastersymbols-dusk.png
 s57_deployment.files += $$PWD/../data/s57data/s57attributes.csv
 s57_deployment.files += $$PWD/../data/s57data/s57expectedinput.csv
 s57_deployment.files += $$PWD/../data/s57data/s57objectclasses.csv
-s57_deployment.path = /assets/s57data
+s57_deployment.path = /assets/files/s57data
 INSTALLS += s57_deployment
 
 ui_deployment.files += $$PWD/../src/bitmaps/styles.xml
@@ -108,7 +108,7 @@ ui_deployment.files += $$PWD/../src/bitmaps/toolicons_traditional.png
 ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman.png
 ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman_flat.png
 ui_deployment.files += $$PWD/../data/svg/traditional/settings.svg
-ui_deployment.path = /assets/uidata
+ui_deployment.path = /assets/files/uidata
 INSTALLS += ui_deployment
 
 svg_deployment.files += $$PWD/../data/svg/traditional/settings.svg
@@ -124,13 +124,13 @@ svg_deployment.files += $$PWD/../data/svg/traditional/gps1Bar.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/grabber.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/grabber_hi.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/grabber_ext.svg
-svg_deployment.path = /assets/uidata/traditional
+svg_deployment.path = /assets/files/uidata/traditional
 INSTALLS += svg_deployment
 
 gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_i.b
 gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_i.b
 gshhs_deployment.files += $$PWD/../data/gshhs/poly-i-1.dat
-gshhs_deployment.path = /assets/gshhs
+gshhs_deployment.path = /assets/files/gshhs
 INSTALLS += gshhs_deployment
 
 styles_deployment.files += $$PWD/../data/styles/qtstylesheet.qss
@@ -138,26 +138,26 @@ styles_deployment.files += $$PWD/../data/styles/chek_full.png
 styles_deployment.files += $$PWD/../data/styles/chek_empty.png
 styles_deployment.files += $$PWD/../data/styles/tabbar_button_right.png
 styles_deployment.files += $$PWD/../data/styles/tabbar_button_left.png
-styles_deployment.path = /assets/styles
+styles_deployment.path = /assets/files/styles
 INSTALLS += styles_deployment
 
 
 tc_deployment.files += $$PWD/../data/tcdata/HARMONIC.IDX
 tc_deployment.files += $$PWD/../data/tcdata/HARMONIC
-tc_deployment.path = /assets/tcdata
+tc_deployment.path = /assets/files/tcdata
 INSTALLS += tc_deployment
 
 license_deployment.files += $$PWD/../data/license.txt
-license_deployment.path = /assets
+license_deployment.path = /assets/files
 INSTALLS += license_deployment
 
 sound_deployment.files += $$PWD/../data/sounds/1bells.wav
 sound_deployment.files += $$PWD/../data/sounds/2bells.wav
-sound_deployment.path = /assets/sounds
+sound_deployment.path = /assets/files/sounds
 INSTALLS += sound_deployment
 
 doc_deployment.files += $$PWD/../data/doc
-doc_deployment.path = /assets/doc
+doc_deployment.path = /assets/files/doc
 INSTALLS += doc_deployment
 
 # The built-in PlugIns
@@ -167,41 +167,41 @@ INSTALLS += doc_deployment
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
-dldr_plugin_deployment.path = /assets/plugins/chartdldr_pi/data
+dldr_plugin_deployment.path = /assets/files/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
 
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
-so_dldr_plugin_deployment.path = /assets/plugins
+so_dldr_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_dldr_plugin_deployment
 #------------------------------------------------------------------------------------
 
 # World Magnetic Model---------------------------------------------------------------
 #library
 so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
-so_wmm_plugin_deployment.path = /assets/plugins
+so_wmm_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_wmm_plugin_deployment
 
 #data
 wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
-wmm_plugin_deployment.path = /assets/plugins/wmm_pi/data
+wmm_plugin_deployment.path = /assets/files/plugins/wmm_pi/data
 INSTALLS += wmm_plugin_deployment
 
 #SVG
 svg_wmm_plugin_deployment.files +=$$PWD/../plugins/wmm_pi/data/wmm_live.svg
 svg_wmm_plugin_deployment.files +=$$PWD/../plugins/wmm_pi/data/wmm_pi.svg
-svg_wmm_plugin_deployment.path = /assets/plugins/wmm_pi/data
+svg_wmm_plugin_deployment.path = /assets/files/plugins/wmm_pi/data
 INSTALLS += svg_wmm_plugin_deployment
 #------------------------------------------------------------------------------------
 
 # GRIB---------------------------------------------------------------
 #library
 so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
-so_grib_plugin_deployment.path = /assets/plugins
+so_grib_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_grib_plugin_deployment
 
 #SVG
-svg_grib_plugin_deployment.path = /assets/plugins/grib_pi/data
+svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/altitude.svg
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/curdata.svg
 svg_grib_plugin_deployment.files +=$$PWD/../plugins/grib_pi/data/grib.svg
@@ -227,20 +227,20 @@ INSTALLS += svg_grib_plugin_deployment
 # Dashboard---------------------------------------------------------------
 #library
 so_dashboard_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/libdashboard_pi.so
-so_dashboard_plugin_deployment.path = /assets/plugins
+so_dashboard_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_dashboard_plugin_deployment
 
 #SVG
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard.svg
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard_toggled.svg
-svg_dashboard_plugin_deployment.path = /assets/plugins/dashboard_pi/data
+svg_dashboard_plugin_deployment.path = /assets/files/plugins/dashboard_pi/data
 INSTALLS += svg_dashboard_plugin_deployment
 #------------------------------------------------------------------------------------
 
 # Squiddio---------------------------------------------------------------
 #library
 so_squiddio_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/libsquiddio_pi.so
-so_squiddio_plugin_deployment.path = /assets/plugins
+so_squiddio_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_squiddio_plugin_deployment
 #------------------------------------------------------------------------------------
 

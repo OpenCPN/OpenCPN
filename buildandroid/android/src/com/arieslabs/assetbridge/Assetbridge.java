@@ -33,18 +33,21 @@ public class Assetbridge {
             else
                 tmpdir = c.getFilesDir().getPath();
 
- //            String tmpdir = c.getCacheDir().getPath();
- //           Log.i("DEBUGGER_TAG", "assetbridge target " + tmpdir);
+            // String tmpdir = c.getCacheDir().getPath();
+            Log.i("OpenCPN", "assetbridge target " + tmpdir);
 
+
+            if(tmpdir.isEmpty())
+                tmpdir = "/data/data/org.opencpn.opencpn/files";
 
             // now we need the assetmanager
             AssetManager am = c.getAssets();
-            String[] assets = am.list("");
+            String[] assets = am.list("files");
 
             // iterate on the files...
             for(String asset : assets) {
- //               Log.i("DEBUGGER_TAG", "assetbridge asset: " + asset);
-                copyAssetFolder(am, asset, tmpdir + "/" + asset);
+                Log.i("OpenCPN", "assetbridge asset: " + asset);
+                copyAssetItem(am, "files/"+asset, tmpdir + "/" + asset);
             }
 
             // last, set the ASSETDIR environment variable for the C
@@ -52,16 +55,16 @@ public class Assetbridge {
 //            setassetdir(c.getCacheDir().getPath());
 
         } catch (IOException e) {
-            Log.e("Assetbridge", "Can't unpack assets from APK", e);
+            Log.e("OpenCPN", "Can't unpack assets from APK", e);
         }
 
     }
 
 
-    public static void copyAssetFolder(AssetManager am, String src, String dest)
+    public static void copyAssetItem(AssetManager am, String src, String dest)
     	throws IOException{
 
- //       Log.i("DEBUGGER_TAG", "assetbridge copyAssetFolder " + src + " " + dest);
+        Log.i("OpenCPN", "assetbridge copyAssetItem " + src + " " + dest);
 
         InputStream srcIS = null;
         File destfh;
@@ -82,7 +85,7 @@ public class Assetbridge {
         // and now, depending on ..
     	if(isDir) {
 
- //           Log.i("DEBUGGER_TAG", "assetbridge copying dir " + dest);
+            Log.i("OpenCPN", "assetbridge copying dir " + dest);
 
             // If the directory doesn't yet exist, create it
             if( !destfh.exists() ){
@@ -94,12 +97,12 @@ public class Assetbridge {
 
             // and copy them all using same.
             for(String asset : assets) {
-                copyAssetFolder(am, src + "/" + asset, dest + "/" + asset);
+                copyAssetItem(am, src + "/" + asset, dest + "/" + asset);
             }
 
     	} else {
 
-//            Log.i("DEBUGGER_TAG", "assetbridge copying file " + dest);
+            Log.i("OpenCPN", "assetbridge copying file " + dest);
             int count, buffer_len = 2048;
             byte[] data = new byte[buffer_len];
 
