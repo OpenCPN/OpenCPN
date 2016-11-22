@@ -289,13 +289,14 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
 
         m_bHelp = new wxButton( this, wxID_ANY, _("Help"), wxDefaultPosition, wxDefaultSize, 0 );
         bSizerBtns->Add( m_bHelp, 0, wxALL, 5 );
-
+        m_bHelp->Hide();
+        
         m_bDnldCharts = new wxButton( this, wxID_ANY, _("Download\n selected charts"), wxDefaultPosition, wxDefaultSize, 0 );
         bSizerBtns->Add( m_bDnldCharts, 1, wxALIGN_CENTER|wxALL, 5 );
 
         m_bShowLocal = new wxButton( this, wxID_ANY, _("Show local files"), wxDefaultPosition, wxDefaultSize, 0 );
         bSizerBtns->Add( m_bShowLocal, 0, wxALL, 5 );
-       // m_bShowLocal->Hide();
+        m_bShowLocal->Hide();
 
 
 
