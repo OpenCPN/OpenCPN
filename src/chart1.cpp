@@ -45,6 +45,7 @@
 #include <wx/clrpicker.h>
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
+#include <wx/filename.h>
 
 #include <wx/dialog.h>
 
@@ -1652,6 +1653,20 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
     wxString locale_location = g_Platform->GetSharedDataDir();
     locale_location += _T("share/locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+#elif defined(unix) || defined(__unix__) || defined(__unix) || defined(__UNIX__)
+    // On Unix, wxWidgets defaults to installation prefix of its own, usually "/usr".
+    // On the other hand, canonical installation prefix for OpenCPN is "/usr/local".
+    wxString locale_location;
+    if( !wxGetEnv( _T("OPENCPN_PREFIX"), &locale_location ) )
+    {
+        locale_location = _T("/usr/local");
+    }
+    wxFileName location;
+    location.AssignDir( locale_location );
+    location.AppendDir( _T("share") );
+    location.SetName( _T("locale") );
+    locale_location = location.GetFullPath();
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 #endif
 
