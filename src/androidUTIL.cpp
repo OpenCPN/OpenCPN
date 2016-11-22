@@ -79,7 +79,6 @@ static const long long lNaN = 0xfff8000000000000;
 
 
 
-
 class androidUtilHandler;
 
 
@@ -1153,13 +1152,13 @@ extern "C"{
     {
 //        qDebug() << "getVPCorners";
         
-        LLBBox vbox;
-        if(cc1){
-            vbox = cc1->GetVP().GetBBox();
-        }
-            
         wxString s;
-        s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxLat(), vbox.GetMaxLon(), vbox.GetMinLon(), vbox.GetMinLon());  
+        
+        if(cc1){
+            LLBBox vbox;
+            vbox = cc1->GetVP().GetBBox();
+            s.Printf(_T("%g;%g;%g;%g;"), vbox.GetMaxLat(), vbox.GetMaxLon(), vbox.GetMinLat(), vbox.GetMinLon());  
+        }
                     
         jstring ret = (env)->NewStringUTF(s.c_str());
         

@@ -642,6 +642,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNMapsActivity.class);
 
         String s = nativeLib.getVPCorners();
+        if(s.isEmpty()){
+            Log.i("DEBUGGER_TAG", "invokeGoogleMaps..Error, empty VPCorners");
+            return "66";
+        }
 
         String v = nativeLib.getVPS();
         Log.i("DEBUGGER_TAG", "initialPositionString" + v);
