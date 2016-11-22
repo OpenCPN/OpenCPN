@@ -901,6 +901,18 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     //set dialog size and position
     table->SetSize(w, h);
     table->SetPosition(wxPoint(x, y));
+
+    //try to show and highlight current dateTime step column
+    int i = 1,vcol = GetNearestIndex( GetNow(), 0);
+    wxColour colour;
+    GetGlobalColor(_T("GREEN1"), &colour);
+    table->m_pGribTable->SetCellBackgroundColour( colour, 1, vcol ); //mark current column
+    while( table->m_pGribTable->IsVisible( 1, i, true) ) {           //ensure it's visible
+        i++;
+    }
+    table->m_pGribTable->GoToCell( 1, vcol + i );
+    //
+
     table->ShowModal();
 }
 
