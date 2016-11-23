@@ -871,6 +871,10 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 {
+    //deactivate cursor data update during menu callback
+    bool dataisshown = m_CDataIsShown;
+    m_CDataIsShown = false;
+    //
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     int x = -1;
@@ -914,6 +918,9 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     //
 
     table->ShowModal();
+
+    //re-activate cursor data
+    m_CDataIsShown = dataisshown;
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
