@@ -321,7 +321,7 @@ const char *MyCSVGetField( const char * pszFilename,
 
 
 //      Fwd Definitions
-class wxProgressDialog;
+class wxGenericProgressDialog;
 class S57Obj;
 class VE_Element;
 class VC_Element;
@@ -557,7 +557,7 @@ private:
     S57ClassRegistrar   *m_poRegistrar;
     wxArrayString       m_tmpup_array;
     
-    wxProgressDialog    *s_ProgDialog;
+    wxGenericProgressDialog    *m_ProgDialog;
     
     
     unsigned char *     pBuffer;

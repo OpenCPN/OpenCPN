@@ -8288,6 +8288,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
 #endif
                ),
       m_brebuild_cache(FALSE) {
+          
+  wxFont* dialogFont = GetOCPNScaledFont(_("Dialog"));
+  SetFont(*dialogFont);
+          
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxFlexGridSizer* flexSizer = new wxFlexGridSizer(2);
 

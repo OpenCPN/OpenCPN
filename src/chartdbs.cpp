@@ -1329,7 +1329,7 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
 // Create Chart Table Database by directory search
 //    resulting in valid pChartTable in (this)
 // ----------------------------------------------------------------------------
-bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxProgressDialog *pprog)
+bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxGenericProgressDialog *pprog)
 {
       m_dir_array = dir_array;
 
@@ -1355,7 +1355,7 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array, wxProgressDialog *pprog)
 // Update existing ChartTable Database by directory search
 //    resulting in valid pChartTable in (this)
 // ----------------------------------------------------------------------------
-bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog *pprog)
+bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgressDialog *pprog)
 {
       m_dir_array = dir_array;
 
@@ -1470,7 +1470,7 @@ int ChartDatabase::DisableChart(wxString& PathToDisable)
 //  If target chart is already in database, mark the entry valid and skip additional processing
 // ----------------------------------------------------------------------------
 
-int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDialog *pprog, wxString &dir_magic, bool bForce)
+int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProgressDialog *pprog, wxString &dir_magic, bool bForce)
 {
       //    Extract the true dir name and magic number from the compound string
       wxString dir_path = dir_info.fullpath;
@@ -1554,7 +1554,7 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDia
       return nAdd;
 }
 
-bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxProgressDialog *pprog)
+bool ChartDatabase::DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog)
 {
       if(pprog)
             pprog->SetTitle(_("OpenCPN Directory Scan...."));
@@ -1812,7 +1812,7 @@ WX_DECLARE_STRING_HASH_MAP( int, ChartCollisionsHashMap );
 
 int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                                          ChartClassDescriptor &chart_desc,
-                                         wxProgressDialog *pprog)
+                                         wxGenericProgressDialog *pprog)
 {
       wxString msg(_T("Searching directory: "));
       msg += dir_name_base;
@@ -2054,7 +2054,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
 }
 
 
-bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxProgressDialog *pprog,
+bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog,
     int isearch, bool bthis_dir_in_dB)
 {
     bool rv = false;

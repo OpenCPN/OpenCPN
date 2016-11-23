@@ -268,7 +268,6 @@ extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;
 
 extern bool             g_bFullScreenQuilt;
-extern wxProgressDialog *s_ProgDialog;
 
 extern bool             g_bsmoothpanzoom;
 
@@ -4817,9 +4816,6 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
     bool bret = false;
     
-    if( s_ProgDialog )
-        return(true);
-
     event.GetPosition( &x, &y );
     
     //  Some systems produce null drag events, where the pointer position has not changed from the previous value.
@@ -6730,8 +6726,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
     }
 #endif
-
-    if( s_ProgDialog ) return;
 
     if(!g_btouch){
         if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 )

@@ -253,26 +253,33 @@ void BuildCompressedCache()
     msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg top line ");
 #endif    
 
- wxProgressDialog prog(_("OpenCPN Compressed Cache Update"), msg0, count+1, cc1, style );
-    
+    wxGenericProgressDialog  *prog = new wxGenericProgressDialog();
+ 
     wxSize csz = cc1->GetClientSize();
     if(csz.x < 600 || csz.y < 600){
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
         wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
-        prog.SetFont( *sFont );
+        prog->SetFont( *sFont );
     }
+    else{
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));  
+        prog->SetFont( *qFont );
+    }
+        
+    
+    prog->Create(_("OpenCPN Compressed Cache Update"), msg0, count+1, NULL, style );
     
     //    Make sure the dialog is big enough to be readable
-    prog.Hide();
-    wxSize sz = prog.GetSize();
+    prog->Hide();
+    wxSize sz = prog->GetSize();
     sz.x = csz.x * 8 / 10;
 //    sz.y += thread_count * 40;          // allow for multiline messages
-    prog.SetSize( sz );
+    prog->SetSize( sz );
 
     wxSize pprog_size = sz;
-    prog.Centre();
-    prog.Show();
-    prog.Raise();
+    prog->Centre();
+    prog->Show();
+    prog->Raise();
 
     bool b_skipout = false;
 
@@ -304,8 +311,8 @@ void BuildCompressedCache()
                 msg += pchart->GetFullPath();
             }
 //            wxString cntmsg = wxString::Format(_T("%04d/%04d "), 0, origcnt);
-            prog.Update(j, msg, &skip );
-            prog.SetSize(pprog_size);
+            prog->Update(j, msg, &skip );
+            prog->SetSize(pprog_size);
 
             if(skip) {
                 g_glTextureManager->PurgeJobList();
@@ -363,6 +370,8 @@ void BuildCompressedCache()
     }
     
     b_inCompressAllCharts = false;
+    
+    delete prog;
 }
 
 class CompressionPoolThread;

@@ -468,8 +468,6 @@ int                       g_GroupIndex;
 
 wxString                  g_GPS_Ident;
 
-wxProgressDialog          *s_ProgDialog;
-
 S57QueryDialog            *g_pObjectQueryDialog;
 
 wxArrayString             TideCurrentDataSet;
@@ -733,7 +731,6 @@ DEFINE_GUID( GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
-
 
 //    Some static helpers
 void appendOSDirSlash( wxString* pString );
@@ -1285,14 +1282,19 @@ void ParseAllENC()
 #endif
         
     long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
-    wxProgressDialog prog(_("OpenCPN  ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
+
+    wxGenericProgressDialog *prog = new wxGenericProgressDialog();
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    prog->SetFont( *qFont );
+    
+    prog->Create(_("OpenCPN  ENC"), _T(""), count+1, NULL, style );
 
     // make wider to show long filenames
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    wxSize sz = prog.GetSize();
+    wxSize sz = prog->GetSize();
     sz.x = csz.x * 8 / 10;
-    prog.SetSize( sz );
-    prog.Centre();
+    prog->SetSize( sz );
+    prog->Centre();
 
     // parse targets
     bool skip = false;
@@ -1320,7 +1322,7 @@ void ParseAllENC()
 
         count++;
         if(wxThread::IsMain()){
-            prog.Update(count, msg, &skip );
+            prog->Update(count, msg, &skip );
             if(skip)
                 break;
         }
@@ -1367,6 +1369,8 @@ void ParseAllENC()
     }
     delete [] workers;
 #endif    
+    
+    delete prog;
 }
 
 bool MyApp::OnInit()
@@ -2171,9 +2175,8 @@ bool MyApp::OnInit()
             wxString dummy1 = _("Elapsed time : ");
             wxString dummy2 = _("Estimated time : ");
             wxString dummy3 = _("Remaining time : ");
-            wxProgressDialog *pprog = new wxProgressDialog( _("OpenCPN Chart Update"), line, 100,
-                    NULL,
-                    wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+            wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
+                    NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
 
             ChartData->Create( ChartDirArray, pprog );
             ChartData->SaveBinary(ChartListFileName);
@@ -4058,8 +4061,6 @@ void MyFrame::SetGroupIndex( int index )
 
 void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 {
-    if( s_ProgDialog ) return;
-
     switch( event.GetId() ){
         case ID_MENU_SCALE_OUT:
         case ID_STKUP:
@@ -5913,16 +5914,24 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     OCPNPlatform::ShowBusySpinner();
 
-    wxProgressDialog *pprog = NULL;
+    wxGenericProgressDialog *pprog = NULL;
     if( b_prog ) {
         wxString longmsg = _("OpenCPN Chart Update");
         longmsg += _T("..........................................................................");
-        pprog = new wxProgressDialog( _("OpenCPN Chart Update"), longmsg,
-                100, this,
-                wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+
+        pprog = new wxGenericProgressDialog();
+        
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        pprog->SetFont( *qFont );
+        
+        pprog->Create( _("OpenCPN Chart Update"), longmsg, 100,
+                                          NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+        
+        
+        pprog->Show();
+        pprog->Raise();
     }
-
-
+    
     wxLogMessage( _T("   ") );
     wxLogMessage( _T("Starting chart database Update...") );
     ChartData->Update( DirArray, b_force, pprog );
@@ -6513,11 +6522,6 @@ int ut_index;
 
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
-
-
-    if( s_ProgDialog ) {
-        return;
-    }
 
     if( g_unit_test_1 ) {
 //            if((0 == ut_index) && GetQuiltMode())
@@ -7301,7 +7305,6 @@ int MyFrame::GetApplicationMemoryUse( void )
 void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     // stop movement or on slow computer we may get something like :
     // zoom out with the wheel (timer is set)
@@ -7388,7 +7391,6 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 void MyFrame::HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     PianoPopupMenu( x, y, selected_index, selected_dbIndex );
     UpdateControlBar();
@@ -7401,7 +7403,6 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
 {
     if( !cc1 ) return;
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     if(ChartData && ChartData->IsBusy())
         return;
