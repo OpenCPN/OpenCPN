@@ -10210,14 +10210,24 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox )
                 continue;
             }
 
-#if 0
-            /* technically incorrect... waypoint has bounding box */
-            if( BltBBox.Contains( pWP->m_lat, pWP->m_lon ) )
-                pWP->Draw( dc, NULL );
-#else            
             if( !BltBBox.IntersectOut( pWP->m_wpBBox ) )
                 pWP->Draw( dc, NULL );
-#endif            
+            else{
+                // Are Range Rings enabled?
+                if(pWP->GetShowWaypointRangeRings() && (pWP->GetWaypointRangeRingsNumber() > 0)){
+                    double factor = 1.00;
+                    if( pWP->GetWaypointRangeRingsStepUnits() == 1 )          // convert kilometers to NMi
+                    factor = 1 / 1.852;
+                    
+                    double radius = factor * pWP->GetWaypointRangeRingsNumber() * pWP->GetWaypointRangeRingsStep()  / 60.;
+                    
+                    LLBBox radar_box = pWP->m_wpBBox;
+                    radar_box.EnLarge(radius);
+                    if( !BltBBox.IntersectOut( radar_box ) ){
+                        pWP->Draw( dc, NULL );
+                    }
+                }
+            }
         }
 
         node = node->GetNext();
