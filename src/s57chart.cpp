@@ -111,8 +111,6 @@ extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
 extern bool              g_b_EnableVBO;
 
-extern wxProgressDialog *s_ProgDialog;
-
 int                      g_SENC_LOD_pixels;
 
 static jmp_buf env_ogrf;                    // the context saved by setjmp();
@@ -140,7 +138,6 @@ static bool s_ProgressCallBack( void )
     bool ret = true;
     s_cnt++;
     if( ( s_cnt % 100 ) == 0 ) {
-        if( s_ProgDialog ) ret = s_ProgDialog->Pulse();         // return false if cancel is pressed
     }
     return ret;
 }

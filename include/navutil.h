@@ -86,7 +86,7 @@ extern double parseLatLon(wxString latlon);
 
 class Route;
 class NavObjectCollection;
-class wxProgressDialog;
+class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
 class NavObjectChanges;

@@ -6272,13 +6272,16 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
+    m_returnChanges = PARSE_ENC;
+    Finish();
+/*    
     extern void ParseAllENC();
     ParseAllENC();
     ViewPort vp;
     gFrame->ChartsRefresh(-1, vp, true);
     
     cc1->EnablePaint(true);
-    
+*/    
 }   
 
 #ifdef USE_LZMA
@@ -8316,6 +8319,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
 #endif
                ),
       m_brebuild_cache(FALSE) {
+          
+  wxFont* dialogFont = GetOCPNScaledFont(_("Dialog"));
+  SetFont(*dialogFont);
+          
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxFlexGridSizer* flexSizer = new wxFlexGridSizer(2);
 

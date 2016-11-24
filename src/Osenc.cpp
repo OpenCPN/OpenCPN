@@ -42,7 +42,7 @@
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
 #include "cpl_csv.h"
-
+#include "chart1.h"             // for fonts
 #include "mygdal/ogr_s57.h"
 #include "mygdal/cpl_string.h"
 
@@ -263,7 +263,7 @@ void Osenc::init( void )
     m_LOD_meters = 0;
     m_poRegistrar = NULL;
     m_senc_file_read_version = 0;
-    s_ProgDialog = NULL;
+    m_ProgDialog = NULL;
     InitializePersistentBuffer();
     
     m_ref_lat = 0;
@@ -1482,8 +1482,12 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     int nProg = poReader->GetFeatureCount();
     
     if(wxThread::IsMain() && b_showProg){
-        s_ProgDialog = new wxProgressDialog( Title, Message, nProg, NULL,
-                                             wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
+        m_ProgDialog = new wxGenericProgressDialog();
+        
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        m_ProgDialog->SetFont( *qFont );
+        
+        m_ProgDialog->Create( Title, Message, nProg, NULL, wxPD_AUTO_HIDE | wxPD_SMOOTH );
     }
 #endif    
     
@@ -1505,14 +1509,14 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
             //  Update the progress dialog
             //We update only every 200 milliseconds to improve performance as updating the dialog is very expensive...
             // WXGTK is measurably slower even with 100ms here
-            if( s_ProgDialog && progsw.Time() > 200 )
+            if( m_ProgDialog && progsw.Time() > 200 )
             {
                 progsw.Start();
                 
                 wxString sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
                 sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
                 
-                bcont = s_ProgDialog->Update( iObj, sobj );
+                bcont = m_ProgDialog->Update( iObj, sobj );
             }
 #endif
 
@@ -1577,7 +1581,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     }
     
 #if wxUSE_PROGRESSDLG
-    delete s_ProgDialog;
+    delete m_ProgDialog;
 #endif    
     
     delete poS57DS;

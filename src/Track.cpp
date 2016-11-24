@@ -964,7 +964,7 @@ int Track::Simplify( double maxDelta )
     return reduction;
 }
 
-Route *Track::RouteFromTrack( wxProgressDialog *pprog )
+Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
 {
 
     Route *route = new Route();
