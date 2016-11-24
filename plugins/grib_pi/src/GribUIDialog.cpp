@@ -1861,7 +1861,7 @@ GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
 void GRIBUICData::OnMove( wxMoveEvent& event )
 {
     int w, h;
-    m_gCursorData->GetScreenPosition( &w, &h );
+    GetScreenPosition( &w, &h );
     m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }
 
