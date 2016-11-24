@@ -592,7 +592,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                     else
                         MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
                 }
-                MenuAppend1(menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI"));
+                MenuAppend1( menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI") );
 
                 menuAIS->AppendSeparator();
                 

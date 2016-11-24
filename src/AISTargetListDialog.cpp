@@ -637,13 +637,13 @@ void AISTargetListDialog::CreateControls()
                                    wxCommandEventHandler( AISTargetListDialog::OnToggleTrack ), NULL, this );
     bsRouteButtonsInner->Add( m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0 );
     
-    m_pButtonCopyMMSI = new wxButton(winr, wxID_ANY, _("Copy MMSI"), wxDefaultPosition,
-        wxDefaultSize, wxBU_AUTODRAW);
+    m_pButtonCopyMMSI = new wxButton( winr, wxID_ANY, _("Copy MMSI"), wxDefaultPosition,
+        wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonCopyMMSI->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
     bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 0);
 
-    m_pCBAutosort = new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
+    m_pCBAutosort = new wxCheckBox( winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
                                     wxDefaultSize, wxBU_AUTODRAW );
     m_pCBAutosort->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,
                             wxCommandEventHandler( AISTargetListDialog::OnAutosortCB ), NULL, this );
@@ -934,7 +934,7 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent& event)
     CopyMMSItoClipBoard((int)m_pMMSI_array->Item(selItemID));
 }
 
-void AISTargetListDialog::CopyMMSItoClipBoard(int mmsi)
+void AISTargetListDialog::CopyMMSItoClipBoard( int mmsi )
 {
     // Write MMSI # as text to the clipboard
     if (wxTheClipboard->Open())
@@ -943,7 +943,7 @@ void AISTargetListDialog::CopyMMSItoClipBoard(int mmsi)
         wxTheClipboard->Close();
     }
 }
-void AISTargetListDialog::OnLimitRange(wxCommandEvent& event)
+void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
 {
     g_AisTargetList_range = m_pSpinCtrlRange->GetValue();
     UpdateAISTargetList();
