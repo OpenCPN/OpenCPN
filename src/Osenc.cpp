@@ -1483,11 +1483,11 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     if(wxThread::IsMain() && b_showProg){
         m_ProgDialog = new wxGenericProgressDialog();
+
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
         m_ProgDialog->SetFont( *qFont );
         
-        m_ProgDialog->Create( Title, Message, nProg, NULL,
-                              wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
+        m_ProgDialog->Create( Title, Message, nProg, NULL, wxPD_AUTO_HIDE | wxPD_SMOOTH );
     }
 #endif    
     

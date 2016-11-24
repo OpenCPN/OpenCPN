@@ -1227,12 +1227,12 @@ void ParseAllENC()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         if(CHART_TYPE_S57 != cte.GetChartType())
             continue;
-
+        
         idx_sorted_by_distance.Add(i);
         count++;
     }  
-
-                                   
+    
+    
     if(count == 0)
         return;
     
@@ -1241,7 +1241,7 @@ void ParseAllENC()
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
     //  after the compression threads start, so our index array will be invalid.
-        
+    
     ArrayOfCompressTargets ct_array;
     for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
         
@@ -1261,117 +1261,135 @@ void ParseAllENC()
     
     int thread_count = 0;
     ParseENCWorkerThread **workers = NULL;
-/*    
-    extern int              g_nCPUCount;
-    if(g_nCPUCount > 0)
-        thread_count = g_nCPUCount;
-    else
-        thread_count = wxThread::GetCPUCount();
-        
-    if (thread_count < 1) {
-        // obviously there's a least one CPU!
-        thread_count = 1;
-    }
-*/
+    /*    
+     *    extern int              g_nCPUCount;
+     *    if(g_nCPUCount > 0)
+     *        thread_count = g_nCPUCount;
+     *    else
+     *        thread_count = wxThread::GetCPUCount();
+     *        
+     *    if (thread_count < 1) {
+     *        // obviously there's a least one CPU!
+     *        thread_count = 1;
+     }
+     */
     thread_count = 1; // for now because there is a problem with more than 1
-
-#if 0    
+    
+    #if 0    
     workers = new ParseENCWorkerThread*[thread_count];
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
-#endif
+    #endif
         
-    long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
-
-    wxGenericProgressDialog *prog = new wxGenericProgressDialog();
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    prog->SetFont( *qFont );
-    
-    prog->Create(_("OpenCPN  ENC"), _T(""), count+1, NULL, style );
-
-    // make wider to show long filenames
-    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    wxSize sz = prog->GetSize();
-    sz.x = csz.x * 8 / 10;
-    prog->SetSize( sz );
-    prog->Centre();
-
-    // parse targets
-    bool skip = false;
-    count = 0;
-    for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
-        wxString filename = ct_array.Item(j).chart_path;
-        double distance = ct_array.Item(j).distance;
-        int index = ChartData->FinddbIndex(filename);
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
-        Extent ext;
-        ext.NLAT = cte.GetLatMax();
-        ext.SLAT = cte.GetLatMin();
-        ext.WLON = cte.GetLonMin();
-        ext.ELON = cte.GetLonMax();
+        long style =  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
         
-        int scale = cte.GetScale();
+        wxGenericProgressDialog *prog = new wxGenericProgressDialog();
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        prog->SetFont( *qFont );
+        
+        prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggggggggggg"), count+1, NULL, style );
+        
+        // make wider to show long filenames
+        wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+        wxSize sz = prog->GetSize();
+        sz.x = csz.x * 8 / 10;
+        prog->SetSize( sz );
+        prog->Centre();
+        prog->Show();
+        prog->Raise();
+        
+        //  Move the Progress dialog out of the center of the screen, so that the SENC creation dialog has a place to be seen.
+        int yp = wxMax(0, prog->GetPosition().y - prog->GetSize().y);
+        prog->Move( -1, yp );
         
         
-        wxString msg;
-        msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
-        if(sz.x > 600){
-            msg += _T("   Chart:");
-            msg += filename;
-        }
-
-        count++;
-        if(wxThread::IsMain()){
-            prog->Update(count, msg, &skip );
-            if(skip)
-                break;
-        }
-
-#if 1
-        if(ps52plib){
-            s57chart *newChart = new s57chart;
-        
-            newChart->SetNativeScale(scale);
-            newChart->SetFullExtent(ext);
-        
-            newChart->FindOrCreateSenc(filename, false);
-            delete newChart;
-        }
-        
-#else        
-        for(int t = 0;; t=(t+1)%thread_count) {
-            if(!workers[t]) {
-                workers[t] = new ParseENCWorkerThread(filename, ext, scale);
-                workers[t]->Run();
-                break;
+        // parse targets
+        bool skip = false;
+        count = 0;
+        for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
+            wxString filename = ct_array.Item(j).chart_path;
+            double distance = ct_array.Item(j).distance;
+            int index = ChartData->FinddbIndex(filename);
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+            Extent ext;
+            ext.NLAT = cte.GetLatMax();
+            ext.SLAT = cte.GetLatMin();
+            ext.WLON = cte.GetLonMin();
+            ext.ELON = cte.GetLonMax();
+            
+            int scale = cte.GetScale();
+            
+            wxString msg;
+            msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
+            if(sz.x > 600){
+                msg += _T("   Chart:");
+                msg += filename;
             }
-
-            if(!workers[t]->IsAlive()) {
-                workers[t]->Wait();
-                delete workers[t];
-                workers[t] = NULL;
+            
+            count++;
+            if(wxThread::IsMain()){
+                prog->Update(count, msg, &skip );
+                prog->Raise();
+                if(skip)
+                    break;
             }
-            if(t == 0) {
-//                ::wxYield();                // allow ChartCanvas main message loop to run 
-                wxThread::Sleep(1); /* wait for a worker to finish */
+            
+            #if 1
+            if(ps52plib){
+                s57chart *newChart = new s57chart;
+                
+                newChart->SetNativeScale(scale);
+                newChart->SetFullExtent(ext);
+                
+                newChart->FindOrCreateSenc(filename);
+                delete newChart;
+                
+                if(wxThread::IsMain()){
+                    msg.Printf( _("ENC Completed.") );
+                    prog->Update(count, msg, &skip );
+                    prog->Raise();
+                    if(skip)
+                        break;
+                }
+                
             }
+            
+            
+            #else        
+            for(int t = 0;; t=(t+1)%thread_count) {
+                if(!workers[t]) {
+                    workers[t] = new ParseENCWorkerThread(filename);
+                    workers[t]->Run();
+                    break;
+                }
+                
+                if(!workers[t]->IsAlive()) {
+                    workers[t]->Wait();
+                    delete workers[t];
+                    workers[t] = NULL;
+                }
+                if(t == 0) {
+                    //                ::wxYield();                // allow ChartCanvas main message loop to run 
+                    wxThread::Sleep(1); /* wait for a worker to finish */
+                }
+            }
+            #endif        
         }
-#endif        
-    }
-
-#if 0    
-    /* wait for workers to finish, and clean up after then */
-    for(int t = 0; t<thread_count; t++) {
-        if(workers[t]) {
-            workers[t]->Wait();
-            delete workers[t];
+        
+        #if 0    
+        /* wait for workers to finish, and clean up after then */
+        for(int t = 0; t<thread_count; t++) {
+                        if(workers[t]) {
+                            workers[t]->Wait();
+                            delete workers[t];
+                        }
         }
-    }
-    delete [] workers;
-#endif    
-    
-    delete prog;
+        delete [] workers;
+        #endif    
+        
+        delete prog;
 }
+
 
 bool MyApp::OnInit()
 {
