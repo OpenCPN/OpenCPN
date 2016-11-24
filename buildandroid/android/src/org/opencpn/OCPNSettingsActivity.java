@@ -388,6 +388,10 @@ public class OCPNSettingsActivity extends PreferenceActivity
                 m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT232R", preferences.getBoolean("prefb_FT232R", false)));
             if(m_serialString.contains("FT231X"))
                 m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_FT231X", preferences.getBoolean("prefb_FT231X", false)));
+            if(m_serialString.contains("MCP_000A"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_MCP000A", preferences.getBoolean("prefb_MCP000A", false)));
+            if(m_serialString.contains("MCP_0205"))
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_MCP0205", preferences.getBoolean("prefb_MCP0205", false)));
         }
 
 

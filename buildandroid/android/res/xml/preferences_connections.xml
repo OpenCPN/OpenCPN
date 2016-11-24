@@ -32,6 +32,18 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
+            android:key="prefb_MCP000A"
+            android:title="Microchip Serial USB, type A"
+            android:summary="   or compatible device"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="prefb_MCP0205"
+            android:title="Microchip Serial USB, type 205"
+            android:summary="   or compatible device"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
             android:key="prefb_trackOnPause"
             android:title="Enable continuous GPS tracking"
             android:summary="   ...even while paused/asleep"

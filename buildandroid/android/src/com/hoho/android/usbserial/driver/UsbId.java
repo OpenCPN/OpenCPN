@@ -67,6 +67,10 @@ public final class UsbId {
     public static final int VENDOR_WEGMATT = 0x16D0;
     public static final int WEGMATT_DAISY = 0x0B03;
 
+    public static final int VENDOR_MICROCHIP = 0X04D8;
+    public static final int MCP_000A = 0X000a;
+    public static final int MCP_0205 = 0X0205;
+
     private UsbId() {
         throw new IllegalAccessError("Non-instantiable class.");
     }

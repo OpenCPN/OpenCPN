@@ -353,6 +353,12 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
                     UsbId.WEGMATT_DAISY,
                 });
 
+        supportedDevices.put(Integer.valueOf(UsbId.VENDOR_MICROCHIP),
+                new int[] {
+                    UsbId.MCP_000A,
+                    UsbId.MCP_0205,
+                });
+
         return supportedDevices;
     }
 

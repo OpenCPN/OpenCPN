@@ -116,7 +116,8 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
         boolean bdAISy = false;
         boolean bFT232R = false;
         boolean bFT231X = false;
-
+        boolean bMCP000A = false;
+        boolean bMCP0205 = false;
 
         // Retrieve initial arguments
         Bundle extras = getArguments();
@@ -134,6 +135,10 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
                     bFT232R = true;
                 if(serialString.contains("FT231X"))
                     bFT231X = true;
+                if(serialString.contains("MCP000A"))
+                    bMCP000A = true;
+                if(serialString.contains("MCP0205"))
+                    bMCP0205 = true;
 
             }
         }
@@ -170,6 +175,19 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
              }
          }
 
+         cPref = (CheckBoxPreference)findPreference("prefb_MCP000A");
+         if(null != cPref){
+             if(!bMCP000A){
+                 screen.removePreference(cPref);
+             }
+         }
+
+         cPref = (CheckBoxPreference)findPreference("prefb_MCP0205");
+         if(null != cPref){
+             if(!bMCP0205){
+                 screen.removePreference(cPref);
+             }
+         }
 
     }
 }

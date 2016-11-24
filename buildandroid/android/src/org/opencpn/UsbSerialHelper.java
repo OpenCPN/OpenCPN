@@ -115,6 +115,10 @@ public class UsbSerialHelper {
                 fName = "AUSBSerial:FTDI_FT232R";
             else if((vID == UsbId.VENDOR_FTDI) && (pID == UsbId.FTDI_FT231X))
                 fName = "AUSBSerial:FTDI_FT231X";
+            else if((vID == UsbId.VENDOR_MICROCHIP) && (pID == UsbId.MCP_000A))
+                fName = "AUSBSerial:MCP_000A";
+            else if((vID == UsbId.VENDOR_MICROCHIP) && (pID == UsbId.MCP_0205))
+                fName = "AUSBSerial:MCP_0205";
             friendlyName = fName;
             return true;
         }
@@ -140,6 +144,16 @@ public class UsbSerialHelper {
             else if(fName.equals("AUSBSerial:FTDI_FT231X")){
                 vendorID = UsbId.VENDOR_FTDI;
                 productID = UsbId.FTDI_FT231X;
+            }
+
+            else if(fName.equals("AUSBSerial:MCP_000A")){
+                vendorID = UsbId.VENDOR_MICROCHIP;
+                productID = UsbId.MCP_000A;
+            }
+
+            else if(fName.equals("AUSBSerial:MCP_0205")){
+                vendorID = UsbId.VENDOR_MICROCHIP;
+                productID = UsbId.MCP_0205;
             }
 
             return true;
