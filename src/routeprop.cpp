@@ -56,6 +56,9 @@
 #include <QtWidgets/QScroller>
 #endif
 
+#ifdef __WXMSW__
+#include <algorithm>
+#endif
 
 extern double             gLat, gLon, gSog, gCog;
 extern double             g_PlanSpeed;
