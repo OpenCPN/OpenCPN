@@ -22,7 +22,7 @@
     <usb-device vendor-id="5840" product-id="2819" />
 
      <!-- 0X04D8 /  Microchip USB -->
-    <usb-device vendor-id="1240" />
+    <usb-device vendor-id="9476" />
 
 
 </resources>

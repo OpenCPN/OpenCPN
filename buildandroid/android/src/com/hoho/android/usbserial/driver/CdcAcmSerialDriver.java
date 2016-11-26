@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import com.hoho.android.usbserial.util.HexDump;
 
 /**
  * USB CDC/ACM serial driver implementation.
@@ -47,7 +48,7 @@ import java.util.Map;
  */
 public class CdcAcmSerialDriver implements UsbSerialDriver {
 
-    private final String TAG = CdcAcmSerialDriver.class.getSimpleName();
+    private final String TAG = "opencpn"; //CdcAcmSerialDriver.class.getSimpleName();
 
     private final UsbDevice mDevice;
     private final UsbSerialPort mPort;
@@ -175,7 +176,7 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
 
                 final int nread = buf.position();
                 if (nread > 0) {
-                  //Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
+                  Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
                   return nread;
                 } else {
                   return 0;

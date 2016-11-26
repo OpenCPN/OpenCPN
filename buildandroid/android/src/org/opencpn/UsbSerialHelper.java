@@ -494,7 +494,6 @@ public class UsbSerialHelper {
     public String startUSBSerialPort( String friendlyName, int baudRate ){
         if(DEBUG) Log.d("OpenCPN", "Trying startUSBSerialPort for friendlyName=" + friendlyName);
 
-
         portContainer container = findContainer( ACTIVE, friendlyName );
         if(null != container){
             if(DEBUG) Log.d("OpenCPN", "startUSBSerialPort port already running, OK.");
@@ -603,6 +602,13 @@ public class UsbSerialHelper {
                 try {
                     port.open(connection);
                     port.setParameters(container.baudRate, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+
+                    if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort: Driver Simple Name is " + port.getDriver().getClass().getSimpleName());
+                    if(port.getDriver().getClass().getSimpleName().equalsIgnoreCase("CdcAcmSerialDriver")){
+//                        if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort: setting DTR for CdcAcmSerialDriver");
+//                        port.setDTR(true);
+                    }
+
                 } catch (IOException e) {
                     if(DEBUG) Log.e("OpenCPN", "Error setting up device: " + e.getMessage(), e);
                     try {

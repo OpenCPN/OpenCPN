@@ -420,8 +420,8 @@ public class OCPNSettingsActivity extends PreferenceActivity
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartScaleFactor", preferences.getString("prefs_chartScaleFactor", "?")));
         m_newSettings = m_newSettings.concat(appendStringSetting("prefs_chartInitDir", preferences.getString("prefs_chartInitDir", "?")));
 
-        //Log.i("OpenCPN", "createSettingsString.m_newSettings: " + m_newSettings);
-        //Log.i("OpenCPN", "createSettingsString.m_serialString: " + m_serialString);
+        Log.i("OpenCPN", "createSettingsString.m_newSettings: " + m_newSettings);
+        Log.i("OpenCPN", "createSettingsString.m_serialString: " + m_serialString);
 
     }
 

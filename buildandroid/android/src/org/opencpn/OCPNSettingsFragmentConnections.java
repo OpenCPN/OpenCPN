@@ -107,7 +107,7 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Log.i("OpenCPN", "SettingsFragment connections!");
+       Log.i("OpenCPN", "SettingsFragment connections!");
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences_connections);
@@ -125,7 +125,7 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
         if (extras != null) {
             String serialString = extras.getString("DETECTEDSERIALPORTS_STRING");
             if(null != serialString){
-                //Log.i("OpenCPN", "OCPNSettingsFragmentConnections.DETECTEDSERIALPORTS_STRING: " + serialString);
+                Log.i("OpenCPN", "OCPNSettingsFragmentConnections.DETECTEDSERIALPORTS_STRING: " + serialString);
 
                 if(serialString.contains("2303"))
                     bPL2303 = true;
@@ -135,9 +135,9 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
                     bFT232R = true;
                 if(serialString.contains("FT231X"))
                     bFT231X = true;
-                if(serialString.contains("MCP000A"))
+                if(serialString.contains("MCP_000A"))
                     bMCP000A = true;
-                if(serialString.contains("MCP0205"))
+                if(serialString.contains("MCP_0205"))
                     bMCP0205 = true;
 
             }
