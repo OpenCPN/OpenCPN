@@ -1464,6 +1464,9 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
     //qDebug() << method;
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;)Ljava/lang/String;", p);
+    
+    (jenv)->DeleteLocalRef(p);
+    
     if(CheckPendingJNIException())
         return _T("NOK");
     
@@ -1510,6 +1513,10 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
     //qDebug() << "Calling method_s2s" << " (" << method << ")";
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    
     if(CheckPendingJNIException())
         return _T("NOK");
     
@@ -1562,6 +1569,11 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
                                                        p1, p2, p3, p4);
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    (jenv)->DeleteLocalRef(p3);
+    (jenv)->DeleteLocalRef(p4);
+    
     if(CheckPendingJNIException())
         return _T("NOK");
     
@@ -1607,6 +1619,10 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString p
     
     QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;II)Ljava/lang/String;",
                                                        p1, p2, parm3, parm4);
+    
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    
     if(CheckPendingJNIException())
         return _T("NOK");
     
@@ -2567,6 +2583,10 @@ wxString BuildAndroidSettingsString( void )
                     result += _T("prefb_FT231X:");
                     result += cp->bEnabled ? _T("1;") : _T("0;");
                 }
+                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("MCP_000A"))){
+                    result += _T("prefb_MCP000A:");
+                    result += cp->bEnabled ? _T("1;") : _T("0;");
+                }
             }                    
         }
     
@@ -2575,8 +2595,10 @@ wxString BuildAndroidSettingsString( void )
     return result;
 }
 
-const wxString AUSBNames[] = { _T("AUSBSerial:Prolific_PL2303"), _T("AUSBSerial:FTDI_FT232R"), _T("AUSBSerial:FTDI_FT231X"), _T("AUSBSerial:dAISy"), _T("LASTENTRY") };
-const wxString AUSBPrefs[] = { _T("prefb_PL2303"),               _T("prefb_FT232R"),           _T("prefb_FT231X"),           _T("prefb_dAISy")     , _T("LASTENTRY") };
+const wxString AUSBNames[] = { _T("AUSBSerial:Prolific_PL2303"), _T("AUSBSerial:FTDI_FT232R"), _T("AUSBSerial:FTDI_FT231X"), _T("AUSBSerial:dAISy"),
+                _T("AUSBSerial:MCP_000A"), _T("LASTENTRY") };
+const wxString AUSBPrefs[] = { _T("prefb_PL2303"),               _T("prefb_FT232R"),           _T("prefb_FT231X"),           _T("prefb_dAISy"),
+                _T("prefb_MCP000A"),         _T("LASTENTRY") };
 
 
 int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
