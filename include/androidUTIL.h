@@ -49,7 +49,7 @@ class ArrayOfCDI;
 #define OCPN_ACTION_ENCTEXT_TOGGLE      0x1009
 #define OCPN_ACTION_TRACK_ON            0x100a
 #define OCPN_ACTION_TRACK_OFF           0x100b
-
+#define OCPN_ACTION_ENCSOUNDINGS_TOGGLE 0x100c
 
 #define GPS_OFF                         0
 #define GPS_ON                          1

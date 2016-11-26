@@ -1138,6 +1138,11 @@ extern "C"{
                 gFrame->GetEventHandler()->AddPendingEvent(evt);
                 break;
                 
+            case OCPN_ACTION_ENCSOUNDINGS_TOGGLE:
+                evt.SetId( ID_MENU_ENC_SOUNDINGS );
+                gFrame->GetEventHandler()->AddPendingEvent(evt);
+                break;
+                
             default:
                 break;
         }

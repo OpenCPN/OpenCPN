@@ -42,6 +42,11 @@
           android:title="@string/ocpn_action_encText"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_encSoundings"
+          android:icon="@drawable/text"
+          android:title="@string/ocpn_action_encSoundings"
+          android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/ocpn_action_tides"
           android:icon="@drawable/tide"
           android:title="@string/ocpn_action_tides"

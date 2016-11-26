@@ -241,6 +241,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int OCPN_ACTION_ENCTEXT_TOGGLE = 0x1009;
     private final static int OCPN_ACTION_TRACK_ON = 0x100a;
     private final static int OCPN_ACTION_TRACK_OFF = 0x100b;
+    private final static int OCPN_ACTION_ENCSOUNDINGS_TOGGLE = 0x100c;
 
 
     //  Definitions found in OCPN "chart1.h"
@@ -3528,6 +3529,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 case R.id.ocpn_action_encText:
                     nativeLib.invokeMenuItem(OCPN_ACTION_ENCTEXT_TOGGLE);
                     return true;
+
+                case R.id.ocpn_action_encSoundings:
+                    nativeLib.invokeMenuItem(OCPN_ACTION_ENCSOUNDINGS_TOGGLE);
+                        return true;
 
                 case R.id.ocpn_action_googlemaps:
                         invokeGoogleMaps();
