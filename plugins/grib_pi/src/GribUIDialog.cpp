@@ -657,9 +657,11 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 
     SetMinSize( wxSize(0, 0));
 
-    //then hide eventually Cursor data dialog
-    if( m_gGRIBUICData )
-            m_gGRIBUICData->Hide();
+    //then cancel eventually Cursor data dialog (to be re-created later if necessary )
+    if( m_gGRIBUICData ) {
+        m_gGRIBUICData->Destroy();
+        m_gGRIBUICData = NULL;
+    }
 
     if( (m_DialogStyle >> 1 == SEPARATED || !m_CDataIsShown) && !m_HasCaption ) {                   // Size and show grabber if necessary
         Fit();                                                                                      // each time CtrlData dialog will be alone
@@ -681,15 +683,13 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             m_gCursorData->Show();
 
         } else if( m_DialogStyle >> 1 == SEPARATED ) { //dialogs isolated
-        //buile cursor data dialog
-            if( !m_gGRIBUICData )
-                m_gGRIBUICData = new GRIBUICData( *this );
+        //create cursor data dialog
+            m_gGRIBUICData = new GRIBUICData( *this );
             m_gGRIBUICData->m_gCursorData->PopulateTrackingControls( m_DialogStyle == SEPARATED_VERTICAL );
             pPlugIn->SetDialogFont( m_gGRIBUICData->m_gCursorData );
             m_gGRIBUICData->Fit();
             m_gGRIBUICData->Update();
             m_gGRIBUICData->Show();
-
 			pPlugIn->MoveDialog(m_gGRIBUICData, pPlugIn->GetCursorDataXY() );
         }
 
@@ -1855,7 +1855,6 @@ GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
         m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
 
     Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUICData::OnMove ) );
-
 }
 
 void GRIBUICData::OnMove( wxMoveEvent& event )
