@@ -1159,7 +1159,7 @@ void GRIBUICtrlBar::OnPlayStop( wxCommandEvent& event )
     } else {
 		m_bpPlay->SetBitmapLabel(GetScaledBitmap(wxBitmap(stop), _T("stop"), m_ScaledFactor));
         m_bpPlay->SetToolTip( _("Stop play back") );
-        m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
+        m_tPlayStop.Start( 3000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
         m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
     }
 }

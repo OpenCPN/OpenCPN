@@ -988,46 +988,79 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	sbSizer121 = new wxStaticBoxSizer( new wxStaticBox( m_scSetPlaybackPanel, wxID_ANY, _("Playback Options") ), wxVERTICAL );
 
 	wxFlexGridSizer* fgSizer48;
-	fgSizer48 = new wxFlexGridSizer( 0, 3, 0, 0 );
+	fgSizer48 = new wxFlexGridSizer( 0, 1, 0, 0 );
 	fgSizer48->SetFlexibleDirection( wxBOTH );
 	fgSizer48->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText4;
+	m_staticText4 = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Speed Control"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	fgSizer48->Add( m_staticText4, 0, wxALL|wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer480;
+	fgSizer480 = new wxFlexGridSizer( 0, 4, 0, 0 );
+	fgSizer480->SetFlexibleDirection( wxBOTH );
+	fgSizer480->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	fgSizer480->Add( 0, 0, 1, wxLEFT|wxRIGHT, 15 );
+
+	wxStaticText* m_staticText400;
+	m_staticText400 = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Slow"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText400->Wrap( -1 );
+	fgSizer480->Add( m_staticText400, 0, wxLEFT|wxTOP, 5 );
+
+	m_sUpdatesPerSecond = new wxSlider( m_scSetPlaybackPanel, wxID_ANY, 4, 2, 12, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
+	fgSizer480->Add( m_sUpdatesPerSecond, 0, wxEXPAND|wxBOTTOM, 5 );
+
+	wxStaticText* m_staticText401;
+	m_staticText401 = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Fast"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText401->Wrap( -1 );
+	fgSizer480->Add( m_staticText401, 0, wxRIGHT|wxTOP, 5 );
+
+	fgSizer48->Add( fgSizer480, 0, wxALL|wxEXPAND, 5 );
 
 	m_cLoopMode = new wxCheckBox( m_scSetPlaybackPanel, wxID_ANY, _("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer48->Add( m_cLoopMode, 0, wxALL, 5 );
 
+	wxFlexGridSizer* fgSizer481;
+	fgSizer481 = new wxFlexGridSizer( 0, 3, 0, 0 );
+	fgSizer481->SetFlexibleDirection( wxBOTH );
+	fgSizer481->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	fgSizer481->Add( 0, 0, 1, wxLEFT|wxRIGHT, 15 );
+
 	m_staticText26 = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Loop Start"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText26->Wrap( -1 );
-	fgSizer48->Add( m_staticText26, 0, wxALL|wxEXPAND, 5 );
+	fgSizer481->Add( m_staticText26, 0, wxALL|wxEXPAND, 5 );
 
 	wxString m_cLoopStartPointChoices[] = { _("Top of Grib File"), _("Current time forecast") };
 	int m_cLoopStartPointNChoices = sizeof( m_cLoopStartPointChoices ) / sizeof( wxString );
 	m_cLoopStartPoint = new wxChoice( m_scSetPlaybackPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cLoopStartPointNChoices, m_cLoopStartPointChoices, 0 );
 	m_cLoopStartPoint->SetSelection( 0 );
-	fgSizer48->Add( m_cLoopStartPoint, 0, wxALL|wxEXPAND, 5 );
+	fgSizer481->Add( m_cLoopStartPoint, 0, wxALL|wxEXPAND, 5 );
 
-
-	fgSizer48->Add( 0, 0, 1, wxEXPAND, 5 );
-
-	wxStaticText* m_staticText4;
-	m_staticText4 = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText4->Wrap( -1 );
-	fgSizer48->Add( m_staticText4, 0, wxALL|wxEXPAND, 5 );
-
-	m_sUpdatesPerSecond = new wxSpinCtrl( m_scSetPlaybackPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
-	fgSizer48->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
+	fgSizer48->Add( fgSizer481, 0, wxALL, 5 );
 
 	m_cInterpolate = new wxCheckBox( m_scSetPlaybackPanel, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer48->Add( m_cInterpolate, 0, wxALL, 5 );
+	fgSizer48->Add( m_cInterpolate, 0, wxALL|wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer482;
+	fgSizer482 = new wxFlexGridSizer( 0, 3, 0, 0 );
+	fgSizer482->SetFlexibleDirection( wxBOTH );
+	fgSizer482->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	fgSizer482->Add( 0, 0, 1, wxLEFT|wxRIGHT, 15 );
 
 	m_tSlicesPerUpdate = new wxStaticText( m_scSetPlaybackPanel, wxID_ANY, _("Time Interval"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tSlicesPerUpdate->Wrap( -1 );
-	fgSizer48->Add( m_tSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
+	fgSizer482->Add( m_tSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 
 	wxArrayString m_sSlicesPerUpdateChoices;
 	m_sSlicesPerUpdate = new wxChoice( m_scSetPlaybackPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_sSlicesPerUpdateChoices, 0 );
 	m_sSlicesPerUpdate->SetSelection( 0 );
-	fgSizer48->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
+	fgSizer482->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 
+    fgSizer48->Add( fgSizer482, 0, wxALL|wxEXPAND, 5 );
 
 	sbSizer121->Add( fgSizer48, 1, wxEXPAND|wxALL, 5 );
 
@@ -1296,6 +1329,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_sTransparency->Connect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Connect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_cInterpolate->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
+	m_cLoopMode->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_rbCurDataAttaWCap->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
 	m_rbCurDataAttaWoCap->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
 	m_rbCurDataIsolHoriz->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
@@ -1325,6 +1359,7 @@ GribSettingsDialogBase::~GribSettingsDialogBase()
 	m_sTransparency->Disconnect( wxEVT_SCROLL_THUMBRELEASE, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_sTransparency->Disconnect( wxEVT_SCROLL_CHANGED, wxScrollEventHandler( GribSettingsDialogBase::OnTransparencyChange ), NULL, this );
 	m_cInterpolate->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
+	m_cLoopMode->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_rbCurDataAttaWCap->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
 	m_rbCurDataAttaWoCap->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
 	m_rbCurDataIsolHoriz->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnCtrlandDataStyleChanged ), NULL, this );
