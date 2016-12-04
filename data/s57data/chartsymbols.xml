@@ -13248,8 +13248,8 @@
 			<disp-prio>Hazards</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
-			<attrib-code index="0">COLOUR4</attrib-code>
-			<attrib-code index="1">BCNSHP5</attrib-code>
+			<attrib-code index="0">BCNSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4</attrib-code>
 			<instruction>SY(BCNLAT16);TE('bn %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>17020</comment>
@@ -21564,7 +21564,7 @@
 			<attrib-code index="0">TOPSHP19</attrib-code>
 			<attrib-code index="1">COLPAT6</attrib-code>
 			<attrib-code index="2">COLOUR1,3</attrib-code>
-			<instruction>SY(TOPSHP39);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(TOPMA107);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27025</comment>
 		</lookup>
@@ -22107,7 +22107,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TOPSHP24</attrib-code>
 			<attrib-code index="1">COLOUR4</attrib-code>
-			<instruction>SY(TOPSHP14);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(TOPMA102);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27025</comment>
 		</lookup>
@@ -22129,7 +22129,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TOPSHP25</attrib-code>
 			<attrib-code index="1">COLOUR3</attrib-code>
-			<instruction>SY(TOPSHP06);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(TOPMA100);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27025</comment>
 		</lookup>
@@ -30969,7 +30969,291 @@
                         <display-cat>Standard</display-cat>
                         <comment>17020</comment>
                 </lookup>
-
+		<lookup id="2984" RCID="3063001" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4</attrib-code>
+			<instruction>SY(BCNGEN61);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2985" RCID="3063002" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR3</attrib-code>
+			<instruction>SY(BCNGEN60);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2986" RCID="3063003" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR1,4,1,4</attrib-code>
+			<instruction>SY(BCNGEN65);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2987" RCID="3063004" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR1,3,1,3</attrib-code>
+			<instruction>SY(BCNGEN64);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2988" RCID="3063005" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP1</attrib-code>
+			<attrib-code index="1">COLOUR4,3,4</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BOYCON67);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2989" RCID="3063006" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP1</attrib-code>
+			<attrib-code index="1">COLOUR3,4,3</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BOYCON66);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2990" RCID="3063007" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP2</attrib-code>
+			<attrib-code index="1">COLOUR3,4,3</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BOYCAN72);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2991" RCID="3063008" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP12</attrib-code>
+			<attrib-code index="1">COLOUR1,4</attrib-code>
+			<attrib-code index="2">COLPAT6</attrib-code>
+			<instruction>SY(TOPMA109);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="2992" RCID="3063009" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP7</attrib-code>
+			<attrib-code index="1">COLOUR6</attrib-code>
+			<instruction>SY(TOPMA113);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="2993" RCID="3063010" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP8</attrib-code>
+			<attrib-code index="1">COLOUR6</attrib-code>
+			<instruction>SY(TOPMA111);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="2994" RCID="3063011" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP2</attrib-code>
+			<attrib-code index="1">COLOUR3</attrib-code>
+			<instruction>SY(TOPMA100);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="2995" RCID="3063012" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP1</attrib-code>
+			<attrib-code index="1">COLOUR4</attrib-code>
+			<instruction>SY(TOPMA102);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="2997" RCID="3063014" name="bcnlat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BCNSHP5</attrib-code>
+			<attrib-code index="1">COLOUR1,3</attrib-code>
+			<instruction>SY(BCNSTK78);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2998" RCID="3063015" name="bcnlat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BCNSHP5</attrib-code>
+			<attrib-code index="1">COLOUR1,4</attrib-code>
+			<instruction>SY(BCNSTK81);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2999" RCID="3063016" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4,3</attrib-code>
+			<instruction>SY(BOYCON68);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3000" RCID="3063017" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4,3,4</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BCNSTK80);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3001" RCID="3063018" name="bcnlat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BCNSHP5</attrib-code>
+			<attrib-code index="1">COLOUR3</attrib-code>
+			<instruction>SY(BCNGEN60);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3002" RCID="3063019" name="bcnlat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BCNSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4</attrib-code>
+			<instruction>SY(BCNGEN61);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3003" RCID="3063020" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP20</attrib-code>
+			<attrib-code index="1">COLOUR1,2</attrib-code>
+			<attrib-code index="2">COLPAT4</attrib-code>
+			<instruction>SY(TOPSHP83);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="3004" RCID="3063021" name="DAYMAR">
+			<type>Point</type>
+			<disp-prio>Routing</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">TOPSHP7</attrib-code>
+			<attrib-code index="1">COLOUR2</attrib-code>
+			<instruction>SY(TOPSHPI2);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>27025</comment>
+		</lookup>
+		<lookup id="3005" RCID="3063022" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP3</attrib-code>
+			<attrib-code index="1">COLOUR3,4,3</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BOYSPH66);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3005" RCID="3063022" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP6</attrib-code>
+			<attrib-code index="1">COLOUR6</attrib-code>
+			<instruction>SY(BOYBAR62);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3006" RCID="3063023" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR3,1</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BCNSTK78);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3007" RCID="3063024" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4,1</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BCNSTK81);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="3008" RCID="3063025" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR3,4,3</attrib-code>
+			<attrib-code index="2">COLPAT1</attrib-code>
+			<instruction>SY(BCNSTK79);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
 
 	</lookups>
 
@@ -32072,6 +32356,7 @@
                         </bitmap>
                         <color-ref>ACHBRN</color-ref>
                 </pattern>
+
         </patterns>
 
 	<symbols>
