@@ -263,11 +263,16 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 IF(DEFINED _wx_selected_config)
 
+#  May be overridden
+IF(NOT DEFINED Qt_Build)
+  SET(Qt_Build "android_armv7")
+ENDIF(NOT DEFINED Qt_Build)
+
 MESSAGE (STATUS "selected config ${_wx_selected_config}")
 
 IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Building for wxQt-Android")
-  MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
+  MESSAGE (STATUS "Qt_Base/Build: " ${Qt_Base} "/" ${Qt_Build})
   MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
   SET(QT_LINUX "OFF")
@@ -524,12 +529,12 @@ IF(QT_ANDROID)
         set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
  #   endif()
 
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtCore")
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include")
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtWidgets")
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtGui")
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtOpenGL")
-  INCLUDE_DIRECTORIES("${Qt_Base}/android_armv7/include/QtTest")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtCore")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtWidgets")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtGui")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtOpenGL")
+  INCLUDE_DIRECTORIES("${Qt_Base}/${Qt_Build}/include/QtTest")
 
   INCLUDE_DIRECTORIES( "${wxQt_Base}/${wxQt_Build}/lib/wx/include/arm-linux-androideabi-qt-unicode-static-3.1")
   INCLUDE_DIRECTORIES("${wxQt_Base}/include")
