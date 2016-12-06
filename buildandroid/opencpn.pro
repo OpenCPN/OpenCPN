@@ -238,14 +238,14 @@ INSTALLS += dldr_plugin_deployment
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
 so_dldr_plugin_deployment.path = /assets/files/plugins
-INSTALLS += so_dldr_plugin_deployment
+#INSTALLS += so_dldr_plugin_deployment
 #------------------------------------------------------------------------------------
 
 # World Magnetic Model---------------------------------------------------------------
 #library
 so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
 so_wmm_plugin_deployment.path = /assets/files/plugins
-INSTALLS += so_wmm_plugin_deployment
+#INSTALLS += so_wmm_plugin_deployment
 
 #data
 wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
@@ -263,7 +263,7 @@ INSTALLS += svg_wmm_plugin_deployment
 #library
 so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
 so_grib_plugin_deployment.path = /assets/files/plugins
-INSTALLS += so_grib_plugin_deployment
+#INSTALLS += so_grib_plugin_deployment
 
 #SVG
 svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
@@ -293,7 +293,7 @@ INSTALLS += svg_grib_plugin_deployment
 #library
 so_dashboard_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/libdashboard_pi.so
 so_dashboard_plugin_deployment.path = /assets/files/plugins
-INSTALLS += so_dashboard_plugin_deployment
+#INSTALLS += so_dashboard_plugin_deployment
 
 #SVG
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard.svg
@@ -306,9 +306,13 @@ INSTALLS += svg_dashboard_plugin_deployment
 #library
 so_squiddio_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/libsquiddio_pi.so
 so_squiddio_plugin_deployment.path = /assets/files/plugins
-INSTALLS += so_squiddio_plugin_deployment
+#INSTALLS += so_squiddio_plugin_deployment
 #------------------------------------------------------------------------------------
 
+
+de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de_DE.lproj/opencpn.mo
+de_DE_mo_deployment.path = /assets/files/locale/de_DE/LC_MESSAGES
+INSTALLS += de_DE_mo_deployment
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
