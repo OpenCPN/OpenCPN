@@ -1664,6 +1664,12 @@ bool MyApp::OnInit()
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
 #endif
 
+#ifdef __OCPN__ANDROID__
+    wxString locale_location = g_Platform->GetSharedDataDir();
+    locale_location += _T("locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+#endif
+    
     //  Get the default language info
     wxString def_lang_canonical;
 #ifdef __WXMSW__
