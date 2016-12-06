@@ -2,76 +2,76 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
     <header
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBGeneralSettings"
-        android:title="General"
-        android:summary="Set General Display Options">
+        android:title="@string/ocpn_grib_display_head_general"
+        android:summary="@string/ocpn_grib_display_head_summary_general">
     </header>
 
     <header
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWindSettings"
-        android:title="Wind"
-        android:summary="Set Wind Display Options">
+        android:title="@string/ocpn_grib_display_head_wind"
+        android:summary="@string/ocpn_grib_display_head_summary_wind">
     </header>
 
     <header
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBPressureSettings"
-        android:title="Pressure"
-        android:summary="Set Pressure Display Options">
+        android:title="@string/ocpn_grib_display_head_pressure"
+        android:summary="@string/ocpn_grib_display_head_summary_pressure">
     </header>
 
     <header
         android:key="grib_pref_gust"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBGustSettings"
-        android:title="Wind Gust"
-        android:summary="Set Wind Gust Display Options">
+        android:title="@string/ocpn_grib_display_head_windgust"
+        android:summary="@string/ocpn_grib_display_head_summary_windgust">
     </header>
 
     <header
         android:key="grib_pref_waves"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBWaveSettings"
-        android:title="Wave Height/Direction"
-        android:summary="Set Wave Display Options">
+        android:title="@string/ocpn_grib_display_head_waves"
+        android:summary="@string/ocpn_grib_display_head_summary_waves">
     </header>
 
     <header
         android:key="grib_pref_current"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCurrentSettings"
-        android:title="Current"
-        android:summary="Set Current Display Options">
+        android:title="@string/ocpn_grib_display_head_current"
+        android:summary="@string/ocpn_grib_display_head_summary_current">
     </header>
 
     <header
         android:key="grib_pref_rainfall"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBRainfallSettings"
-        android:title="Rainfall"
-        android:summary="Set Rainfall Display Options">
+        android:title="@string/ocpn_grib_display_head_rain"
+        android:summary="@string/ocpn_grib_display_head_summary_rain">
     </header>
 
     <header
         android:key="grib_pref_cloudcover"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCloudSettings"
-        android:title="Cloudcover"
-        android:summary="Set Cloudcover Display Options">
+        android:title="@string/ocpn_grib_display_head_cloud"
+        android:summary="@string/ocpn_grib_display_head_summary_cloud">
     </header>
 
     <header
         android:key="grib_pref_airtemp"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBAirtempSettings"
-        android:title="Air temperature"
-        android:summary="Set Air Temperature Display Options">
+        android:title="@string/ocpn_grib_display_head_airtemp"
+        android:summary="@string/ocpn_grib_display_head_summary_airtemp">
     </header>
 
     <header
         android:key="grib_pref_seatemp"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBSeatempSettings"
-        android:title="Sea temperature"
-        android:summary="Set Sea Temperature Display Options">
+        android:title="@string/ocpn_grib_display_head_seatemp"
+        android:summary="@string/ocpn_grib_display_head_summary_seatemp">
     </header>
 
     <header
         android:key="grib_pref_cape"
         android:fragment="org.opencpn.OCPNGRIBDisplayPrefActivity$GRIBCAPESettings"
-        android:title="CAPE"
-        android:summary="Set CAPE Display Options">
+        android:title="@string/ocpn_grib_display_head_cape"
+        android:summary="@string/ocpn_grib_display_head_summary_cape">
     </header>
 
 <!--

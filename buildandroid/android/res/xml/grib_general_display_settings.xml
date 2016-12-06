@@ -4,7 +4,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_UseLocalTZ"
-        android:title="GRIB Reference Timezone"
+        android:title="@string/ocpn_grib_ref_tz"
         android:switchTextOff="Local"
         android:switchTextOn="GMT"
         android:defaultValue="true"

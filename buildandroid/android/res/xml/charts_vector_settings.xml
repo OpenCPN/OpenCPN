@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:title="Display Category"
+        android:title="@string/ocpn_prefs_charts_vectordisplaycat"
         android:key="prefs_displaycategory"
         android:defaultValue="0"
         android:entries="@array/displayCategoryListArray"
@@ -10,68 +10,68 @@
 
     <CheckBoxPreference
         android:key="prefb_showsound"
-        android:title="Show Depth Soundings"
+        android:title="@string/ocpn_prefs_charts_vectorshowsound"
         android:summary=""
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showATONLabels"
-        android:title="Show Buoy and Light Labels"
+        android:title="@string/ocpn_prefs_charts_vectorshowlabel"
         android:summary=""
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showlightldesc"
-        android:title="Show Light Descriptions"
+        android:title="@string/ocpn_prefs_charts_vectorshowdescrip"
         android:summary=""
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showimptext"
-        android:title="Show Important Text Only"
+        android:title="@string/ocpn_prefs_charts_vectorshowimportant"
         android:summary=""
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showSCAMIN"
-        android:title="Show Reduced Detail at Small Scale"
+        android:title="@string/ocpn_prefs_charts_vectorshowreduced"
         android:summary=""
         android:defaultValue="false" />
 
     <EditTextPreference
         android:key="prefs_shallowdepth"
-        android:title="Shallow Depth"
+        android:title="@string/ocpn_prefs_charts_vectorshallowdepth"
         android:summary=""
         android:defaultValue="2" />
 
     <EditTextPreference
         android:key="prefs_safetydepth"
-        android:title="Safety Depth"
+        android:title="@string/ocpn_prefs_charts_vectorsafetydepth"
         android:summary=""
         android:defaultValue="3" />
 
     <EditTextPreference
         android:key="prefs_deepdepth"
-        android:title="Deep Depth"
+        android:title="@string/ocpn_prefs_charts_vectordeepdepth"
         android:summary=""
         android:defaultValue="4" />
 
     <ListPreference
-        android:title="Chart Graphics Style"
+        android:title="@string/ocpn_prefs_charts_vectordisplaygraphstyle"
         android:key="prefs_vectorgraphicsstyle"
         android:defaultValue="0"
         android:entries="@array/vectorGraphicsStyleListArray"
         android:entryValues="@array/vectorGraphicsStyleListValues" />
 
     <ListPreference
-        android:title="Chart Area Boundary Style"
+        android:title="@string/ocpn_prefs_charts_vectordisplayareaboundstyle"
         android:key="prefs_vectorboundarystyle"
         android:defaultValue="0"
         android:entries="@array/vectorBoundaryStyleListArray"
         android:entryValues="@array/vectorBoundaryStyleListValues" />
 
     <ListPreference
-        android:title="Chart Colors"
+        android:title="@string/ocpn_prefs_charts_vectordisplaychartcolors"
         android:key="prefs_vectorchartcolors"
         android:defaultValue="0"
         android:entries="@array/vectorChartColorsListArray"

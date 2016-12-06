@@ -3,12 +3,11 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_SeaTemperatureNumbers"
-        android:title="Show Sea Temperature Values"
-        android:summary=""
+        android:title="@string/ocpn_grib_seatempvalues"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Sea Temperature Value Units"
+        android:title="@string/ocpn_grib_seatempunits"
         android:key="grib_prefs_SeaTemperatureUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBTempUnits"
@@ -16,7 +15,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_SeaTemperatureNumbersFixedSpacing"
-        android:title="Sea Temperature Value Spacing"
+        android:title="@string/ocpn_grib_seatempspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -24,34 +23,30 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_SeaTemperatureNumbersSpacing"
-        android:title="Sea Temperature Numbers Spacing (pixels)"
-        android:summary=""
+        android:title="@string/ocpn_grib_seatempspacepix"
         android:defaultValue="50"
         android:max="100"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_SeaTemperatureDisplayIsobars"
-        android:title="Show Isotherms"
-        android:summary=""
+        android:title="@string/ocpn_grib_seatempiso"
         android:defaultValue="false" />
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_SeaTemperatureIsoBarSpacing"
-        android:title="Isotherm Spacing (\u00B0C)"
-        android:summary=""
+        android:title="@string/ocpn_grib_seatempisospace"
         android:defaultValue="10"
         android:max="20"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_SeaTemperatureOverlayMap"
-        android:title="Show Sea Temperature Overlay"
-        android:summary=""
+        android:title="@string/ocpn_grib_seatempshowoverlay"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Sea Temperature Overlay Colors"
+        android:title="@string/ocpn_grib_seatempoverlaycolor"
         android:key="grib_prefs_SeaTemperatureOverlayMapColors"
         android:defaultValue="3"
         android:entries="@array/GRIBOverlayColors"
@@ -59,8 +54,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_OverlayTransparency"
-        android:title="Overlay Transparency"
-        android:summary=""
+        android:title="@string/ocpn_grib_overlaytrans"
         android:defaultValue="60"
         android:max="100"
         />

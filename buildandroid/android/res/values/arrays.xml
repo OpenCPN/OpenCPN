@@ -3,10 +3,10 @@
 <resources>
 
     <string-array name="GRIB_model_ListArray">
-        <item>GFS 0.50\u00B0 NOAA/NECP</item>
-        <item>GFS 1.0\u00B0 NOAA/NECP</item>
-        <item>RTOFS (Atlantic) NOAA/NECP</item>
-        <item>WW3 WaveWatch3 NOAA/NECP</item>
+        <item>@string/ocpn_grib_model_array_item_gfs5</item>
+        <item>@string/ocpn_grib_model_array_item_gfs1</item>
+        <item>@string/ocpn_grib_model_array_item_rtofs</item>
+        <item>@string/ocpn_grib_model_array_item_ww3</item>
     </string-array>
     <string-array name="GRIB_model_ListValues">
         <item>GFS50</item>
@@ -16,11 +16,11 @@
     </string-array>
 
     <string-array name="GRIB_timestep_ListArray">
-        <item>1 Hour</item>
-        <item>3 Hours</item>
-        <item>6 Hours</item>
-        <item>12 Hours</item>
-        <item>24 Hours</item>
+        <item>@string/ocpn_grib_timestep_array_item_1</item>
+        <item>@string/ocpn_grib_timestep_array_item_3</item>
+        <item>@string/ocpn_grib_timestep_array_item_6</item>
+        <item>@string/ocpn_grib_timestep_array_item_12</item>
+        <item>@string/ocpn_grib_timestep_array_item_24</item>
         </string-array>
     <string-array name="GRIB_timestep_ListValues">
         <item>1</item>
@@ -31,13 +31,13 @@
        </string-array>
 
     <string-array name="GRIB_days_ListArray">
-        <item>1 day</item>
-        <item>2 days</item>
-        <item>3 days</item>
-        <item>4 days</item>
-        <item>5 days</item>
-        <item>6 days</item>
-        <item>7 days</item>
+        <item>@string/ocpn_grib_time_array_item_1</item>
+        <item>@string/ocpn_grib_time_array_item_2</item>
+        <item>@string/ocpn_grib_time_array_item_3</item>
+        <item>@string/ocpn_grib_time_array_item_4</item>
+        <item>@string/ocpn_grib_time_array_item_5</item>
+        <item>@string/ocpn_grib_time_array_item_6</item>
+        <item>@string/ocpn_grib_time_array_item_7</item>
     </string-array>
     <string-array name="GRIB_days_ListValues">
         <item>1</item>
@@ -50,11 +50,11 @@
     </string-array>
 
     <string-array name="GRIBSpeedUnits" >
-        <item>Knots</item>
-        <item>m/s</item>
-        <item>mph</item>
-        <item>km/h</item>
-        <item>Beaufort</item>
+        <item>@string/ocpn_grib_speedunits_array_item_knots</item>
+        <item>@string/ocpn_grib_speedunits_array_item_ms</item>
+        <item>@string/ocpn_grib_speedunits_array_item_mph</item>
+        <item>@string/ocpn_grib_speedunits_array_item_kmh</item>
+        <item>@string/ocpn_grib_speedunits_array_item_beau</item>
     </string-array>
 
     <string-array name="GRIBSpeedUnitsVal" >
@@ -66,8 +66,8 @@
     </string-array>
 
     <string-array name="GRIBTempUnits" >
-        <item>Celsius</item>
-        <item>Fahrenheit</item>
+        <item>@string/ocpn_grib_tempunits_array_item_celcius</item>
+        <item>@string/ocpn_grib_tempunits_array_item_Fahrenheit</item>
     </string-array>
 
     <string-array name="GRIBTempUnitsVal" >
@@ -76,8 +76,8 @@
     </string-array>
 
     <string-array name="GRIBDistanceUnits" >
-        <item>Meters</item>
-        <item>Feet</item>
+        <item>@string/ocpn_grib_distanceunits_array_item_meters</item>
+        <item>@string/ocpn_grib_distanceunits_array_item_feet</item>
     </string-array>
 
     <string-array name="GRIBDistanceUnitsVal" >
@@ -86,8 +86,8 @@
     </string-array>
 
     <string-array name="GRIBDirectionArrowForm" >
-        <item>Single</item>
-        <item>Double</item>
+        <item>@string/ocpn_grib_arrowform_array_item_single</item>
+        <item>@string/ocpn_grib_arrowform_array_item_double</item>
     </string-array>
 
     <string-array name="GRIBDirectionArrowFormVal" >
@@ -96,13 +96,13 @@
     </string-array>
 
     <string-array name="GRIBOverlayColors" >
-        <item>Generic</item>
-        <item>Wind</item>
-        <item>Air Temp</item>
-        <item>Sea Temp</item>
-        <item>Rainfall</item>
-        <item>Cloud Cover</item>
-        <item>Current</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_generic</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_wind</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_airtemp</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_seatemp</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_rainfall</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_cloudcover</item>
+        <item>@string/ocpn_grib_overlaycolors_array_item_current</item>
     </string-array>
 
     <string-array name="GRIBOverlayColorsVal" >
@@ -116,8 +116,8 @@
     </string-array>
 
     <string-array name="GRIBwindBarbColor" >
-        <item>Generic</item>
-        <item>Controlled</item>
+        <item>@string/ocpn_grib_windbarbcolor_generic</item>
+        <item>@string/ocpn_grib_windbarbcolor_controlled</item>
     </string-array>
 
     <string-array name="GRIBwindBarbColorVal" >
@@ -126,19 +126,20 @@
     </string-array>
 
     <string-array name="navmodeListArray">
-        <item>North Up</item>
-        <item>Course Up</item>
+        <item> @string/ocpn_prefs_display_navigation_mode_NU </item>
+        <item> @string/ocpn_prefs_display_navigation_mode_CU</item>
     </string-array>
+
     <string-array name="navmodeListValues">
         <item>North Up</item>
         <item>Course Up</item>
     </string-array>
 
     <string-array name="displayCategoryListArray">
-        <item>Base</item>
-        <item>Standard</item>
-        <item>All</item>
-        <item>Mariner Standard</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycategory_Base</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycategory_Standard</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycategory_All</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycategory_Marinerstandard</item>
     </string-array>
     <string-array name="displayCategoryListValues">
         <item>Base</item>
@@ -149,8 +150,8 @@
 
 
     <string-array name="vectorGraphicsStyleListArray">
-        <item>Paper Chart</item>
-        <item>Simplified</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaygraphstyle_Paper</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaygraphstyle_Simple</item>
     </string-array>
     <string-array name="vectorGraphicsStyleListValues">
         <item>Paper Chart</item>
@@ -159,8 +160,8 @@
 
 
     <string-array name="vectorBoundaryStyleListArray">
-        <item>Plain</item>
-        <item>Symbolized</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaylinestyle_Plain</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaylinestyle_Symbol</item>
     </string-array>
     <string-array name="vectorBoundaryStyleListValues">
         <item>Plain</item>
@@ -168,8 +169,8 @@
     </string-array>
 
     <string-array name="vectorChartColorsListArray">
-        <item>4</item>
-        <item>2</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycolors_4</item>
+        <item> @string/ocpn_prefs_charts_vectordisplaycolors_2</item>
     </string-array>
 
     <string-array name="vectorChartColorsListValues">
@@ -179,9 +180,9 @@
 
 
     <string-array name="GRIBPressureUnits" >
-        <item>milliBars</item>
-        <item>mmHG</item>
-        <item>inHG</item>
+        <item>@string/ocpn_grib_pressureunits_array_item_mb</item>
+        <item>@string/ocpn_grib_pressureunits_array_item_mm</item>
+        <item>@string/ocpn_grib_pressureunits_array_item_in</item>
     </string-array>
 
     <string-array name="GRIBPressureUnitsVal" >
@@ -191,7 +192,7 @@
     </string-array>
 
     <string-array name="GRIBPercentUnits" >
-        <item>Percentage</item>
+        <item>@string/ocpn_grib_percentunits_array_item_percent</item>
     </string-array>
 
     <string-array name="GRIBPercentUnitsVal" >
@@ -207,8 +208,8 @@
     </string-array>
 
     <string-array name="GRIBSmallDistanceUnits" >
-        <item>Millimeters</item>
-        <item>Inches</item>
+        <item>@string/ocpn_grib_distanceunitsmall_mm</item>
+        <item>@string/ocpn_grib_distanceunitsmall_in</item>
     </string-array>
 
     <string-array name="GRIBSmallDistanceUnitsVal" >
@@ -218,10 +219,10 @@
 
 
     <string-array name="GRIBCurrentSpeedUnits" >
-        <item>Knots</item>
-        <item>m/s</item>
-        <item>mph</item>
-        <item>km/h</item>
+        <item>@string/ocpn_grib_currentspeedunits_array_item_knots</item>
+        <item>@string/ocpn_grib_currentspeedunits_array_item_ms</item>
+        <item>@string/ocpn_grib_currentspeedunits_array_item_mph</item>
+        <item>@string/ocpn_grib_currentspeedunits_array_item_kmh</item>
     </string-array>
 
     <string-array name="GRIBCurrentSpeedUnitsVal" >

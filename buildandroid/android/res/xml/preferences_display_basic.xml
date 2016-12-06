@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
-        android:title="Navigation Mode"
+        android:title="@string/ocpn_prefs_display_navigation_mode"
         android:key="prefs_navmode"
         android:defaultValue="0"
         android:entries="@array/navmodeListArray"
@@ -9,67 +9,64 @@
 
     <CheckBoxPreference
         android:key="prefb_lookahead"
-        android:title="Look Ahead mode"
-        android:summary="Show more of the chart ahead of the ship's course"
+        android:title="@string/ocpn_prefs_display_lookahead_mode"
+        android:summary="@string/ocpn_prefs_display_summary_nav_mode"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_quilt"
-        android:title="Enable Chart Quilting"
-        android:summary="Display multiple charts at your location"
+        android:title="@string/ocpn_prefs_display_enablequilt"
+        android:summary="@string/ocpn_prefs_display_summary_quilt"
         android:defaultValue="true" />
 
     <CheckBoxPreference
         android:key="prefb_showgrid"
-        android:title="Show Grid"
-        android:summary="Show Latitude/Longitude grid overlay"
+        android:title="@string/ocpn_prefs_display_showgrid"
+        android:summary="@string/ocpn_prefs_display_summary_grid"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showoutlines"
-        android:title="Show Chart Outlines"
-        android:summary="Individual chart outlines shown as constrasting overlay"
+        android:title="@string/ocpn_prefs_display_showoutlines"
+        android:summary="@string/ocpn_prefs_display_summary_outlines"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_lockwp"
-        android:title="Lock Waypoints"
-        android:summary="Unless Property Dialog is shown"
+        android:title="@string/ocpn_prefs_display_lockwaypoints"
+        android:summary="@string/ocpn_prefs_display_summary_lockwpt"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_confirmdelete"
-        android:title="Confirm Delete Actions"
-        android:summary="On Routes and Tracks"
+        android:title="@string/ocpn_prefs_display_confirmdelete"
+        android:summary="@string/ocpn_prefs_display_summary_confirmdelete"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key="prefb_showdepthunits"
-        android:title="Show Depth Units"
-        android:summary="Depth units displayed as emboss on chart surface"
+        android:title="@string/ocpn_prefs_display_showdepthunits"
+        android:summary="@string/ocpn_prefs_display_summary_depthunits"
         android:defaultValue="false" />
 
     <org.opencpn.opencpn.SeekBarPreference
-            android:key="prefs_UIScaleFactor"
-            android:title="User Interface Scale Factor"
-            android:summary="Affects toolbars, dialogs, and GUI fonts."
-            android:defaultValue="50"
-            android:max="100"
-    />
+        android:key="prefs_UIScaleFactor"
+        android:title="@string/ocpn_prefs_display_uiscalefactor"
+        android:summary="@string/ocpn_prefs_display_summary_uiscalefactor"
+        android:defaultValue="50"
+        android:max="100"/>
 
     <org.opencpn.opencpn.SeekBarPreference
-            android:key="prefs_chartScaleFactor"
-            android:title="Chart Display Scale Factor"
-            android:summary="Affects chart objects like marks, buoys, text, etc."
-            android:defaultValue="50"
-            android:max="100"
-    />
-
+        android:key="prefs_chartScaleFactor"
+        android:title="@string/ocpn_prefs_display_chartscalefactor"
+        android:summary="@string/ocpn_prefs_display_summary_chartscalefactor"
+        android:defaultValue="50"
+        android:max="100"/>
 
     <CheckBoxPreference
         android:key="prefb_expertmode"
-        android:title="Expert Mode"
-        android:summary="Showing toolbar and extended menus"
+        android:title="@string/ocpn_prefs_display_expertmode"
+        android:summary="@string/ocpn_prefs_display_summary_expertmode"
         android:defaultValue="false" />
 
 

@@ -2,16 +2,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <org.opencpn.ChartFilesDialogPreference
         android:key="pref_ChartFiles"
-        android:title="Chart Files"
-        android:summary="Configure Installed Charts"
-        android:negativeButtonText ="No"
-        android:positiveButtonText ="OK" />
+        android:title="@string/ocpn_prefs_charts_files"
+        android:summary="@string/ocpn_prefs_charts_summary_chartfiles"
+        android:negativeButtonText ="@string/ocpn_prefs_charts_negative"
+        android:positiveButtonText ="@string/ocpn_prefs_charts_positive" />
 
     <PreferenceScreen
         android:key="pref_s52Options"
         android:fragment="org.opencpn.OCPNSettingsActivity$ChartsVectorSettings"
-        android:title="Vector Chart Settings"
-        android:summary="Set Vector Chart Display Options">
+        android:title="@string/ocpn_prefs_charts_vectorchartsettings"
+        android:summary="@string/ocpn_prefs_charts_summary_vectorchartsettings">
     </PreferenceScreen>
 
  </PreferenceScreen>

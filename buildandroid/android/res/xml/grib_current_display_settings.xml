@@ -3,13 +3,13 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CurrentDirectionArrows"
-        android:title="Show Current Direction Arrows"
+        android:title="@string/ocpn_grib_currentdirarrows"
         android:summary=""
         android:defaultValue="true" />
 
     <SwitchPreference
         android:key="grib_prefb_CurrentDirectionArrowFixedSpacing"
-        android:title="Current Direction Arrow Spacing"
+        android:title="@string/ocpn_grib_currentdirarrowspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -18,7 +18,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CurrentDirectionArrowSpacing"
-        android:title="Current Direction Arrow Spacing (pixels)"
+        android:title="@string/ocpn_grib_currentdirarrowspacepix"
         android:summary=""
         android:defaultValue="50"
         android:max="100"
@@ -26,12 +26,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CurrentNumbers"
-        android:title="Show Current Speed Values"
+        android:title="@string/ocpn_grib_currentspeedvalues"
         android:summary=""
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Current Speed Value Units"
+        android:title="@string/ocpn_grib_currentspeedunits"
         android:key="grib_prefs_CurrentUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBCurrentSpeedUnits"
@@ -39,7 +39,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_CurrentNumbersFixedSpacing"
-        android:title="Current Speed Value Spacing"
+        android:title="@string/ocpn_grib_currentspeedspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -47,7 +47,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CurrentNumbersSpacing"
-        android:title="Current Speed Numbers Spacing (pixels)"
+        android:title="@string/ocpn_grib_currentspeedspacepix"
         android:summary=""
         android:defaultValue="50"
         android:max="100"
@@ -55,12 +55,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CurrentOverlayMap"
-        android:title="Show Current Speed Overlay"
+        android:title="@string/ocpn_grib_currentshowspeedoverlay"
         android:summary=""
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Current Speed Overlay Colors"
+        android:title="@string/ocpn_grib_currentspeedoverlaycolor"
         android:key="grib_prefs_CurrentOverlayMapColors"
         android:defaultValue="6"
         android:entries="@array/GRIBOverlayColors"
@@ -68,7 +68,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_OverlayTransparency"
-        android:title="Overlay Transparency"
+        android:title="@string/ocpn_grib_overlaytrans"
         android:summary=""
         android:defaultValue="60"
         android:max="100"
@@ -76,13 +76,13 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CurrentParticles"
-        android:title="Show Current Particles"
+        android:title="@string/ocpn_grib_showparticles"
         android:summary=""
         android:defaultValue="false" />
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CurrentParticleDensity"
-        android:title="Current Particle Density"
+        android:title="@string/ocpn_grib_particledensity"
         android:summary=""
         android:defaultValue="5"
         android:max="10"

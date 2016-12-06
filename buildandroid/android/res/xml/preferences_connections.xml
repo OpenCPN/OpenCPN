@@ -3,50 +3,50 @@
 
         <CheckBoxPreference
             android:key="prefb_internalGPS"
-            android:title="Internal GPS Receiver"
-            android:summary="Activate GPS to enable this choice."
+            android:title="@string/ocpn_prefs_conn_internal"
+            android:summary="@string/ocpn_prefs_conn_summary_internal"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_PL2303"
-            android:title="Prolific PL2303"
-            android:summary="   or compatible GPS receiver"
+            android:title="@string/ocpn_prefs_conn_prolificPL203"
+            android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_dAISy"
-            android:title="dAISy AIS Receiver"
+            android:title="@string/ocpn_prefs_conn_daisy"
             android:summary=""
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_FT232R"
-            android:title="FTDI FT232R"
-            android:summary="   or compatible GPS receiver"
+            android:title="@string/ocpn_prefs_conn_FT232R"
+            android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_FT231X"
-            android:title="FTDI FT231X"
-            android:summary="   or compatible GPS receiver"
+            android:title="@string/ocpn_prefs_conn_FT231X"
+            android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_MCP000A"
             android:title="Microchip Serial USB, type A"
-            android:summary="   or compatible device"
+            android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_MCP0205"
             android:title="Microchip Serial USB, type 205"
-            android:summary="   or compatible device"
+            android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="prefb_trackOnPause"
-            android:title="Enable continuous GPS tracking"
-            android:summary="   ...even while paused/asleep"
+            android:title="@string/ocpn_prefs_conn_continuous"
+            android:summary="@string/ocpn_prefs_conn_summary_continuous"
             android:defaultValue="false" />
 
 </PreferenceScreen>

@@ -3,12 +3,11 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_WavesDirectionArrows"
-        android:title="Show Wave Direction Arrows"
-        android:summary=""
+        android:title="@string/ocpn_grib_wavedirarrows"
         android:defaultValue="true" />
 
     <ListPreference
-        android:title="Wave Arrow Form"
+        android:title="@string/ocpn_grib_wavedirdirarrowform"
         android:key="grib_prefs_WavesDirectionArrowForm"
         android:defaultValue="1"
         android:entries="@array/GRIBDirectionArrowForm"
@@ -16,7 +15,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_WavesDirectionArrowFixedSpacing"
-        android:title="Wave Arrow Spacing"
+        android:title="@string/ocpn_grib_wavedirarrowspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -25,20 +24,18 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_WavesDirectionArrowSpacing"
-        android:title="Wave Direction Arrow Spacing (pixels)"
-        android:summary=""
+        android:title="@string/ocpn_grib_wavedirarrowspacepix"
         android:defaultValue="50"
         android:max="100"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_WavesNumbers"
-        android:title="Show Wave Height Values"
-        android:summary=""
+        android:title="@string/ocpn_grib_waveheightvalues"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Wave Height Units"
+        android:title="@string/ocpn_grib_waveheightunits"
         android:key="grib_prefs_WavesUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBDistanceUnits"
@@ -46,7 +43,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_WavesNumbersFixedSpacing"
-        android:title="Wave Height Value Spacing"
+        android:title="@string/ocpn_grib_waveheightspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -54,20 +51,18 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_WavesNumbersSpacing"
-        android:title="Wave Height Numbers Spacing (pixels)"
-        android:summary=""
+        android:title="@string/ocpn_grib_waveheightspacepix"
         android:defaultValue="50"
         android:max="100"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_WavesOverlayMap"
-        android:title="Show Wave Height Overlay"
-        android:summary=""
+        android:title="@string/ocpn_grib_waveheightshowoverlay"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Wave Height Overlay Colors"
+        android:title="@string/ocpn_grib_waveheightoverlaycolor"
         android:key="grib_prefs_WavesOverlayMapColors"
         android:defaultValue="0"
         android:entries="@array/GRIBOverlayColors"
@@ -75,8 +70,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_OverlayTransparency"
-        android:title="Overlay Transparency"
-        android:summary=""
+        android:title="@string/ocpn_grib_overlaytrans"
         android:defaultValue="60"
         android:max="100"
         />

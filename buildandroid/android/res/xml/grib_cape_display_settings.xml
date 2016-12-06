@@ -3,12 +3,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CAPENumbers"
-        android:title="Show CAPE Values"
+        android:title="@string/ocpn_grib_capevalues"
         android:summary=""
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="CAPE Value Units"
+        android:title="@string/ocpn_grib_capeunits"
         android:key="grib_prefs_CAPEUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBCAPEUnits"
@@ -16,7 +16,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_CAPENumbersFixedSpacing"
-        android:title="CAPE Value Spacing"
+        android:title="@string/ocpn_grib_capespace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -24,7 +24,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CAPENumbersSpacing"
-        android:title="CAPE Numbers Spacing (pixels)"
+        android:title="@string/ocpn_grib_capespacepix"
         android:summary=""
         android:defaultValue="50"
         android:max="100"
@@ -32,13 +32,13 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CAPEDisplayIsobars"
-        android:title="Show Iso CAPE"
+        android:title="@string/ocpn_grib_capeiso"
         android:summary=""
         android:defaultValue="false" />
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CAPEIsoBarSpacing"
-        android:title="IsoCAPE Spacing (j/kg)"
+        android:title="@string/ocpn_grib_capeisospace"
         android:summary=""
         android:defaultValue="10"
         android:max="50"
@@ -46,12 +46,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CAPEOverlayMap"
-        android:title="Show CAPE Overlay"
-        android:summary=""
+        android:title="@string/ocpn_grib_capeshowoverlay"
+        android:summary="ocpn_grib_capeoverlaycolor"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="CAPE Overlay Colors"
+        android:title="@string/ocpn_grib_capeoverlaycolor"
         android:key="grib_prefs_CAPEOverlayMapColors"
         android:defaultValue="0"
         android:entries="@array/GRIBOverlayColors"
@@ -59,7 +59,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_OverlayTransparency"
-        android:title="Overlay Transparency"
+        android:title="@string/ocpn_grib_overlaytrans"
         android:summary=""
         android:defaultValue="60"
         android:max="100"

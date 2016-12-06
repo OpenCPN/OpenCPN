@@ -30,7 +30,7 @@ public class FileChooser extends ListActivity {
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
-        setContentView(R.xml.file_chooser_layout);
+        setContentView(R.layout.file_chooser_layout);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -72,7 +72,7 @@ public class FileChooser extends ListActivity {
          dir.addAll(fls);
          if(!f.getName().equalsIgnoreCase("sdcard"))
              dir.add(0,new Option("..","Parent Directory",f.getParent()));
-         adapter = new FileArrayAdapter(FileChooser.this,R.xml.file_view,dir);
+         adapter = new FileArrayAdapter(FileChooser.this,R.layout.file_view,dir);
          this.setListAdapter(adapter);
     }
     @Override

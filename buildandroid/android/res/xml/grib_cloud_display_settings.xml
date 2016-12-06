@@ -4,12 +4,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CloudCoverNumbers"
-        android:title="Show CloudCover Values"
+        android:title="@string/ocpn_grib_cloudvalues"
         android:summary=""
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="CloudCover Value Units"
+        android:title="@string/ocpn_grib_cloudunits"
         android:key="grib_prefs_CloudCoverUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBPercentUnits"
@@ -17,7 +17,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_CloudCoverNumbersFixedSpacing"
-        android:title="CloudCover Value Spacing"
+        android:title="@string/ocpn_grib_cloudspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -25,7 +25,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_CloudCoverNumbersSpacing"
-        android:title="CloudCover Numbers Spacing (pixels)"
+        android:title="@string/ocpn_grib_cloudspacepix"
         android:summary=""
         android:defaultValue="50"
         android:max="100"
@@ -33,12 +33,12 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_CloudCoverOverlayMap"
-        android:title="Show CloudCover Overlay"
+        android:title="@string/ocpn_grib_cloudshowoverlay"
         android:summary=""
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="CloudCover Overlay Colors"
+        android:title="@string/ocpn_grib_cloudoverlaycolor"
         android:key="grib_prefs_CloudCoverOverlayMapColors"
         android:defaultValue="5"
         android:entries="@array/GRIBOverlayColors"
@@ -46,7 +46,7 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_OverlayTransparency"
-        android:title="Overlay Transparency"
+        android:title="@string/ocpn_grib_overlaytrans"
         android:summary=""
         android:defaultValue="60"
         android:max="100"

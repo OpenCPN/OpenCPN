@@ -4,12 +4,11 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_AltitudeNumbers"
-        android:title="Show Geopotential Altitude"
-        android:summary=""
+        android:title="@string/ocpn_grib_altgeoalt"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Geopotential Altitude Units"
+        android:title="@string/ocpn_grib_altgeounits"
         android:key="grib_prefs_AltitudeUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBDistanceUnits"

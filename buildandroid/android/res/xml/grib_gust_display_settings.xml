@@ -4,12 +4,11 @@
 
     <CheckBoxPreference
         android:key="grib_prefb_WindGustNumbers"
-        android:title="Show WindGust Values"
-        android:summary=""
+        android:title="@string/ocpn_grib_windgustvalues"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Wind Gust Value Units"
+        android:title="@string/ocpn_grib_windgustunits"
         android:key="grib_prefs_WindGustUnits"
         android:defaultValue="0"
         android:entries="@array/GRIBSpeedUnits"
@@ -17,7 +16,7 @@
 
     <SwitchPreference
         android:key="grib_prefb_WindGustNumbersFixedSpacing"
-        android:title="Wind Gust Value Spacing"
+        android:title="@string/ocpn_grib_windgustspace"
         android:switchTextOff="Default"
         android:switchTextOn="Custom"
         android:defaultValue="false"
@@ -25,43 +24,38 @@
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_WindGustNumbersSpacing"
-        android:title="Wind Gust Numbers Spacing (pixels)"
-        android:summary=""
+        android:title="@string/ocpn_grib_windgustspacepix"
         android:defaultValue="50"
         android:max="100"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_WindGustDisplayIsobars"
-        android:title="Show Isotachs"
-        android:summary=""
+        android:title="@string/ocpn_grib_windgustiso"
         android:defaultValue="false" />
 
     <org.opencpn.opencpn.SeekBarPreference
         android:key="grib_prefs_WindGustIsoBarSpacing"
-        android:title="Wind Gust Isotach Spacing (knots)"
-        android:summary=""
+        android:title="@string/ocpn_grib_windgustisospace"
         android:defaultValue="10"
         android:max="50"
         />
 
     <CheckBoxPreference
         android:key="grib_prefb_WindGustOverlayMap"
-        android:title="Show Wind Gust Overlay"
-        android:summary=""
+        android:title="@string/ocpn_grib_windgustshowoverlay"
         android:defaultValue="false" />
 
     <ListPreference
-        android:title="Wind Gust Overlay Colors"
+        android:title="@string/ocpn_grib_windgustoverlaycolor"
         android:key="grib_prefs_WindGustOverlayMapColors"
         android:defaultValue="1"
         android:entries="@array/GRIBOverlayColors"
         android:entryValues="@array/GRIBOverlayColorsVal" />
 
     <org.opencpn.opencpn.SeekBarPreference
-        android:key="grib_prefs_OverlayTransparency"
+        android:key="@string/ocpn_grib_overlaytrans"
         android:title="Overlay Transparency"
-        android:summary=""
         android:defaultValue="60"
         android:max="100"
         />
