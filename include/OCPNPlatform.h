@@ -149,6 +149,8 @@ public:
 #define PLATFORM_CAP_PLUGINS   1
 #define PLATFORM_CAP_FASTPAN   2
     void LaunchLocalHelp();
+
+    void SetLocaleSearchPrefixes( void );
     
 private:
     wxString    m_homeDir;
