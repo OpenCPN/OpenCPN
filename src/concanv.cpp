@@ -158,6 +158,11 @@ void ConsoleCanvas::SetColorScheme( ColorScheme cs )
             wxBRUSHSTYLE_SOLID );
     SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
 
+    if( g_bShowRouteTotal )
+        pThisLegText->SetLabel( _("Route") );
+    else
+        pThisLegText->SetLabel( _("This Leg") );
+    
     //  Also apply color scheme to all known children
 
     pThisLegText->SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
