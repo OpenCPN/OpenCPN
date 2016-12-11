@@ -100,6 +100,11 @@ FontMgr::~FontMgr()
     delete m_wxFontCache;
 }
 
+void FontMgr::SetLocale( wxString& newLocale)
+{
+    s_locale = newLocale;
+}
+
 wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
 {
     //    Look thru the font list for a match
@@ -256,7 +261,7 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont, wxColour color
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
-            if(pmfd->m_configstring.BeforeFirst('-') == g_locale) {
+            if(pmfd->m_configstring.BeforeFirst('-') == s_locale) {
                 
             // Todo Think about this
             //
