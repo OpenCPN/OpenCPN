@@ -2622,7 +2622,7 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( Osenc_outstream *stream, S5
     OSENC_VCT_Record record;
     
     record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize;
+    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
     
     // Write out the record
     stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
