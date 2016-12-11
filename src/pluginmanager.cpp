@@ -710,10 +710,9 @@ bool PlugInManager::UnLoadAllPlugIns()
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
-        wxString msg(_T("PlugInManager: UnLoading PlugIn: "));
-        msg += pic->m_plugin_file;
-        wxLogMessage(msg);
 
+        DeactivatePlugIn( pic );
+        
         pic->m_destroy_fn(pic->m_pplugin);
 
         delete pic->m_plibrary;            // This will unload the PlugIn
@@ -722,6 +721,9 @@ bool PlugInManager::UnLoadAllPlugIns()
 
         delete pic;
     }
+    
+    plugin_array.Empty();
+    
     return true;
 }
 
