@@ -1,18 +1,4 @@
 <resources>
-    <string name="app_name">OpenCPN</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="disclaimer">"\n\
-    OpenCPN is distributed in the hope that it will be useful,\n\
-    but WITHOUT ANY WARRANTY; without even the implied\n\
-    warranty of MERCHANTABILITY or FITNESS FOR A\n\
-    PARTICULAR PURPOSE.\n\
-    See the GNU General Public License for more details.\n\n\
-    OpenCPN must only be used in conjunction with approved\n\
-    paper charts and traditional methods of navigation.\n\n\
-    DO NOT rely upon OpenCPN for safety of life or property.\n\n\
-    Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"</string>
-
 
     <string name="ocpn_action_follow">Auto-Follow Boat</string>
     <string name="ocpn_action_mob">Mark Man Overboard</string>
@@ -168,21 +154,6 @@
     <string name="ocpn_grib_download_summary_seatemp">Request Sea Temperature data</string>
 
    <string name="ocpn_grib_ref_tz">GRIB Reference Timezone</string>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <!-- Grib Fragment prefs -->
