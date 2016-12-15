@@ -313,7 +313,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2" )
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm" "dri2" )
   ENDIF()
 ENDIF()
 
@@ -367,18 +367,17 @@ IF(OPENGL_FOUND)
         ENDIF()
     ENDFOREACH (_currentLibFile )
 
-    MESSAGE (STATUS "    Adding local GLU" )
-    add_subdirectory(src/glu)
-
-    SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
     MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
-
 
 ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_FOUND)
 
 ENDIF()
+
+MESSAGE (STATUS "    Adding local GLU" )
+add_subdirectory(src/glu)
+SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
 
 IF(NOT QT_ANDROID)
 # Find wxWidgets here, and the setting get inherited by all plugins.

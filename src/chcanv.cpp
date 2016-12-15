@@ -10154,7 +10154,7 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox )
                 continue;
             }
 
-#if 0
+#if 1
             /* technically incorrect... waypoint has bounding box */
             if( BltBBox.Contains( pWP->m_lat, pWP->m_lon ) )
                 pWP->Draw( dc, NULL );

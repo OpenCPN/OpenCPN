@@ -1129,12 +1129,14 @@ void s52plib::FlushSymbolCaches( void )
     }
     m_CARC_hashmap.clear();
 
+#ifdef ocpnUSE_GL    
     CARC_DL_Hash::iterator itd;
     for( itd = m_CARC_DL_hashmap.begin(); itd != m_CARC_DL_hashmap.end(); ++itd ) {
         GLuint list = itd->second;
         glDeleteLists( list, 1 );
     }
     m_CARC_DL_hashmap.clear();
+#endif
     
 }
 
