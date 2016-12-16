@@ -305,7 +305,6 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
-extern bool             g_blocale_changed;
 extern bool             g_bDebugGPSD;
 
 extern bool             g_bfilter_cogsog;

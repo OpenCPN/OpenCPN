@@ -639,8 +639,6 @@ bool                      g_bFullscreen;
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
-bool                      g_blocale_changed;
-
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
@@ -1654,23 +1652,12 @@ bool MyApp::OnInit()
 //    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-    if( lang_list[0] ) {
-    };                 // silly way to avoid compiler warnings
+    if( lang_list[0] ) {};                 // silly way to avoid compiler warnings
 
-    // Add a new prefix for search order.
-#ifdef __WXMSW__
-    wxString locale_location = g_Platform->GetSharedDataDir();
-    locale_location += _T("share/locale");
-    wxLocale::AddCatalogLookupPathPrefix( locale_location );
-#endif
-
-#ifdef __OCPN__ANDROID__
-    wxString locale_location = g_Platform->GetSharedDataDir();
-    locale_location += _T("locale");
-    wxLocale::AddCatalogLookupPathPrefix( locale_location );
-#endif
     
     //  Get the default language info
+    g_Platform->SetLocaleSearchPrefixes();
+    
     wxString def_lang_canonical;
 #ifdef __WXMSW__
     LANGID lang_id = GetUserDefaultUILanguage();
@@ -1684,6 +1671,7 @@ bool MyApp::OnInit()
 #else
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
 #endif
+    
     if( languageInfo ) {
         def_lang_canonical = languageInfo->CanonicalName;
         imsg = _T("System default Language:  ");
@@ -1714,7 +1702,7 @@ bool MyApp::OnInit()
         // If the locale was not initialized OK, it may be that the wxstd.mo translations
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
-        if( !b_initok ){
+        if( !plocale_def_lang->IsOk() ){
             delete plocale_def_lang;
             plocale_def_lang = new wxLocale;
             b_initok = plocale_def_lang->Init( pli->Language, 0 );
@@ -1722,7 +1710,8 @@ bool MyApp::OnInit()
         loc_lang_canonical = pli->CanonicalName;
     }
 
-    if( !pli || !b_initok ) {
+    if( !pli || !plocale_def_lang->IsOk() ) {
+        // Some loading problem, so set locale back to en_US
         delete plocale_def_lang;
         plocale_def_lang = new wxLocale;
         plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
@@ -1733,15 +1722,11 @@ bool MyApp::OnInit()
     imsg += loc_lang_canonical;
     wxLogMessage( imsg );
 
-    // Set filename without extension (example : opencpn_fr_FR)
-    // i.e. : Set-up the filename needed for translation
-//        wxString loc_lang_filename = _T("opencpn_") + loc_lang_canonical;
-    wxString loc_lang_filename = _T("opencpn");
 
-    // Get translation file (example : opencpn_fr_FR.mo)
-    // No problem if the file doesn't exist
-    // as this case is handled by wxWidgets
-    if( plocale_def_lang ) plocale_def_lang->AddCatalog( loc_lang_filename );
+    // Get translation file for the core
+    // No problem if the file doesn't exist as this case is handled by wxWidgets
+    if( plocale_def_lang )
+        plocale_def_lang->AddCatalog( _T("opencpn") );
 
     //    Always use dot as decimal
     setlocale( LC_NUMERIC, "C" );
@@ -5695,6 +5680,12 @@ int MyFrame::DoOptionsDialog()
     }
     
 
+    if(rr & LOCALE_CHANGED){
+        ChangeLocale(g_locale);
+        ApplyLocale();
+    }
+        
+    
     g_boptionsactive = false;
     return ret_val;
 }
@@ -5722,12 +5713,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         }
     }
 
-    if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
-        if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
-            OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
-                    _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
-            if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
-        }
+    if(  rr & STYLE_CHANGED  ) {
+        OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
+                _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
     }
 
     bool b_groupchange = false;
@@ -12287,73 +12275,158 @@ void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
 bool ReloadLocale()
 {
     bool ret = false;
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+    return (!ChangeLocale( g_locale ).IsEmpty());
+}
 
+wxString ChangeLocale(wxString &newLocale)
+{
+    wxString return_val;
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+    
     //  Old locale is done.
     delete plocale_def_lang;
-
+    
     plocale_def_lang = new wxLocale;
     wxString loc_lang_canonical;
-
-    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
+    
+    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocale );
     bool b_initok = false;
-
+    
     if( pli ) {
         b_initok = plocale_def_lang->Init( pli->Language, 1 );
         // If the locale was not initialized OK, it may be that the wxstd.mo translations
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
-        if( !b_initok ){
+        if( !plocale_def_lang->IsOk() ){
             delete plocale_def_lang;
             plocale_def_lang = new wxLocale;
             b_initok = plocale_def_lang->Init( pli->Language, 0 );
         }
         loc_lang_canonical = pli->CanonicalName;
     }
-
-    if( !pli || !b_initok ) {
+    
+    if( !pli || !plocale_def_lang->IsOk() ) {
         delete plocale_def_lang;
         plocale_def_lang = new wxLocale;
         b_initok = plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
         loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
     }
-
-    if(b_initok){
+    
+    if(plocale_def_lang->IsOk()){
         wxString imsg = _T("Opencpn language reload for:  ");
         imsg += loc_lang_canonical;
         wxLogMessage( imsg );
-
+        
         //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
         //  That is, the last catalog containing a certain translatable item takes precedence.
-
+        
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
-
-//        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
-
+        
+        //        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+        
+ 
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
             imsg += g_locale_catalog_array.Item(i);
             wxLogMessage( imsg );
             plocale_def_lang->AddCatalog( g_locale_catalog_array.Item(i) );
         }
-
-
-    // Get core opencpn catalog translation (.mo) file
+        
+        
+        // Get core opencpn catalog translation (.mo) file
         wxLogMessage( _T("Loading catalog for opencpn core.") );
         plocale_def_lang->AddCatalog( _T("opencpn") );
-
-//        wxLog::SetVerbose(false);
-
-        ret = true;
+        
+        return_val = loc_lang_canonical;
     }
+#endif
 
     //    Always use dot as decimal
     setlocale( LC_NUMERIC, "C" );
-
-#endif
-    return ret;
-
+    
+    return return_val;
 }
 
-
+void ApplyLocale()
+{
+    FontMgr::Get().SetLocale( g_locale );
+    FontMgr::Get().ScrubList(); 
+    
+    //  Close and re-init various objects to allow new locale to show.
+    delete g_options;
+    g_options = NULL;
+    g_pOptions = NULL;
+    
+    
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Hide();
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pRouteManagerDialog ) {
+        pRouteManagerDialog->Hide();
+        pRouteManagerDialog->Destroy();
+        pRouteManagerDialog = NULL;
+    }
+    
+    if(console)
+        console->SetColorScheme( global_color_scheme );
+    
+    if( g_pais_query_dialog_active ){
+        g_pais_query_dialog_active->Destroy();
+        g_pais_query_dialog_active = NULL;
+    }
+    
+    if( g_pais_alert_dialog_active ){
+        g_pais_alert_dialog_active->Destroy();
+        g_pais_alert_dialog_active = NULL;
+    }
+    
+    
+    if( g_pAISTargetList ) {
+        if(g_pauimgr) g_pauimgr->DetachPane(g_pAISTargetList);
+        g_pAISTargetList->Disconnect_decoder();
+        g_pAISTargetList->Destroy();
+        g_pAISTargetList = NULL;
+    }
+    
+    
+    // Capture a copy of the current perspective
+    //  So that we may restore PlugIn window sizes, position, visibility, etc.
+    wxString perspective;
+    pConfig->SetPath( _T ( "/AUI" ) );
+    pConfig->Read( _T ( "AUIPerspective" ), &perspective );
+    
+    
+    
+    g_pi_manager->UnLoadAllPlugIns();
+    g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+    
+    
+    //         // Make sure the perspective saved in the config file is "reasonable"
+    //         // In particular, the perspective should have an entry for every
+    //         // windows added to the AUI manager so far.
+    //         // If any are not found, then use the default layout
+    //         
+    bool bno_load = false;
+    wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+    
+    for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
+        wxAuiPaneInfo pane = pane_array_val.Item( i );
+        if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+            bno_load = true;
+            break;
+        }
+    }
+    
+    if( !bno_load )
+        g_pauimgr->LoadPerspective( perspective, false );
+    
+    g_pauimgr->Update();
+    
+    if(gFrame)
+        gFrame->RequestNewToolbar( true );
+}
