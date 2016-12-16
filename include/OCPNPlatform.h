@@ -154,6 +154,8 @@ public:
     void LaunchLocalHelp();
     int platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray);
     void platformLaunchDefaultBrowser( wxString URL );
+
+    void SetLocaleSearchPrefixes( void );
     
 private:
     wxString    m_homeDir;

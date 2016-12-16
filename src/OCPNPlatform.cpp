@@ -551,6 +551,23 @@ void OCPNPlatform::OnExit_2( void ){
 }
 
 
+void OCPNPlatform::SetLocaleSearchPrefixes( void )
+{
+    // Add a new prefixes for search order.
+#ifdef __WXMSW__
+    wxString locale_location = GetSharedDataDir();
+    locale_location += _T("share/locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+#endif
+    
+#ifdef __OCPN__ANDROID__    
+    wxLocale::AddCatalogLookupPathPrefix( _T("usr/local/share/locale" ) );
+#endif    
+    
+}
+
+
+
 //      Setup default global options when config file is unavailable,
 //      as on initial startup after new install
 //      The global config object (pConfig) is available, so direct updates are also allowed
