@@ -276,6 +276,7 @@ extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
 
 extern wxString         g_locale;
+extern wxString         g_localeOverride;
 
 extern bool             g_bUseRaster;
 extern bool             g_bUseVector;
@@ -734,7 +735,8 @@ int MyConfig::LoadMyConfig()
 
     g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
-
+    Read( _T ( "LocaleOverride" ), &g_localeOverride );
+    
     //We allow 0-99 backups ov navobj.xml
     Read( _T ( "KeepNavobjBackups" ), &g_navobjbackups, 5 );
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
@@ -1995,7 +1997,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InvisibleLayers" ), invis );
 
     Write( _T ( "Locale" ), g_locale );
-
+    Write( _T ( "LocaleOverride" ), g_localeOverride );
+    
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
     Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
