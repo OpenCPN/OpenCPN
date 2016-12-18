@@ -235,6 +235,11 @@ extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale                  *plocale_def_lang;
+
+extern wxString                  g_locale;
+extern wxString                  g_localeOverride;
+extern wxArrayString             g_locale_catalog_array;
+
 #endif
 
 
@@ -548,18 +553,170 @@ void OCPNPlatform::OnExit_2( void ){
 
 void OCPNPlatform::SetLocaleSearchPrefixes( void )
 {
+#if wxUSE_XLOCALE
+    
     // Add a new prefixes for search order.
-#ifdef __WXMSW__
+    #ifdef __WXMSW__
     wxString locale_location = GetSharedDataDir();
     locale_location += _T("share/locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
+    #endif
+    
+    #ifdef __OCPN__ANDROID__ 
+    wxString locale_location = GetSharedDataDir() + _T("locale");
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+    #endif    
+    
+#endif
+}
+
+wxString OCPNPlatform::GetDefaultSystemLocale()
+{
+    wxString retval = _T("en_US");
+    
+#if wxUSE_XLOCALE
+    
+    const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    retval =languageInfo->CanonicalName;
+    
+    #if defined(__WXMSW__) 
+    LANGID lang_id = GetUserDefaultUILanguage();
+    wxChar lngcp[100];
+    const wxLanguageInfo* languageInfo = 0;
+    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
+        languageInfo = wxLocale::FindLanguageInfo(lngcp);define
+    }
+    else
+        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    retval = languageInfo->CanonicalName();
+    #endif
+    
+    #if defined(__OCPN__ANDROID__)
+    retval = androidGetAndroidSystemLocale();
+    #endif
+    
 #endif
     
-#ifdef __OCPN__ANDROID__    
-    wxLocale::AddCatalogLookupPathPrefix( _T("usr/local/share/locale" ) );
-#endif    
-    
+    return retval;
 }
+
+
+wxString OCPNPlatform::GetAdjustedAppLocale()
+{
+    wxString adjLocale = g_locale;
+    
+    //  For windows, installer may have left information in the registry defining the
+    //  user's selected install language.
+    //  If so, override the config file value and use this selection for opencpn...
+    #if defined(__WXMSW__)
+    if( g_bFirstRun ) {
+        wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
+        if( RegKey.Exists() ) {
+            wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
+            RegKey.QueryValue( wxString( _T("InstallerLanguage") ), adjLocale );
+        }
+    }
+    #endif
+    
+    #if defined(__OCPN__ANDROID__)
+    if(g_localeOverride.Length())
+        adjLocale = g_localeOverride;
+    else
+        adjLocale = GetDefaultSystemLocale();
+    #endif
+        
+        return adjLocale;
+}
+
+
+#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
+
+wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale)
+{
+    wxString return_val;
+    
+    
+    //  Old locale is done.
+    delete (wxLocale*)presentLocale;
+    
+    wxLocale *locale = new wxLocale;
+    wxString loc_lang_canonical;
+    
+    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocaleID );
+    bool b_initok = false;
+    
+    if( pli ) {
+        locale->Init( pli->Language, 1 );
+        // If the locale was not initialized OK, it may be that the wxstd.mo translations
+        // of the wxWidgets strings is not present.
+        // So try again, without attempting to load defaults wxstd.mo.
+        if( !locale->IsOk() ){
+            delete locale;
+            locale = new wxLocale;
+            locale->Init( pli->Language, 0 );
+        }
+        loc_lang_canonical = pli->CanonicalName;
+        
+        b_initok = locale->IsOk();
+        #ifdef __OCPN__ANDROID__
+        b_initok = true;
+        #endif
+    }
+    
+    if( !b_initok ) {
+        delete locale;
+        locale = new wxLocale;
+        locale->Init( wxLANGUAGE_ENGLISH_US, 0 );
+        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
+    }
+    
+    if(b_initok){
+        wxString imsg = _T("Opencpn language load for:  ");
+        imsg += loc_lang_canonical;
+        wxLogMessage( imsg );
+        
+        //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
+        //  That is, the last catalog containing a certain translatable item takes precedence.
+        
+        //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
+        //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
+        
+        //        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+        
+        
+        for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
+            wxString imsg = _T("Loading catalog for:  ");
+            imsg += g_locale_catalog_array.Item(i);
+            wxLogMessage( imsg );
+            locale->AddCatalog( g_locale_catalog_array.Item(i) );
+        }
+        
+        
+        // Get core opencpn catalog translation (.mo) file
+        wxLogMessage( _T("Loading catalog for opencpn core.") );
+        locale->AddCatalog( _T("opencpn") );
+        
+        
+        return_val = locale->GetCanonicalName();
+        
+        // We may want to override the default system locale, so set a flag.
+        if(return_val != GetDefaultSystemLocale())
+            g_localeOverride = return_val;
+        else
+            g_localeOverride = _T("");
+        
+        
+    }
+    
+    *newLocale = locale;                    // return the new locale
+    
+    //    Always use dot as decimal
+    setlocale( LC_NUMERIC, "C" );
+    
+    return return_val;
+}
+#endif
+
 
 
 

@@ -604,6 +604,7 @@ wxLocale                  *plocale_def_lang;
 #endif
 
 wxString                  g_locale;
+wxString                  g_localeOverride;
 bool                      g_b_assume_azerty;
 
 bool                      g_bUseRaster;
@@ -1658,97 +1659,40 @@ bool MyApp::OnInit()
     if( !n_NavMessageShown ) g_bFirstRun = true;
 
     //  Now we can set the locale
-
-    //    Manage internationalization of embedded messages
     //    using wxWidgets/gettext methodology....
-
-//    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
-
+    
+    
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
     if( lang_list[0] ) {};                 // silly way to avoid compiler warnings
 
+    
+    //  Where are the opencpn.mo files?
     g_Platform->SetLocaleSearchPrefixes();
     
-    //  Get the system default language info
-    wxString def_lang_canonical;
-#ifdef __WXMSW__
-    LANGID lang_id = GetUserDefaultUILanguage();
-    wxChar lngcp[100];
-    const wxLanguageInfo* languageInfo = 0;
-    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
-        languageInfo = wxLocale::FindLanguageInfo(lngcp);
-    }
-    else
-        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-#else
-    const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-#endif
+    wxString def_lang_canonical = g_Platform->GetDefaultSystemLocale();
     
-    if( languageInfo ) {
-        def_lang_canonical = languageInfo->CanonicalName;
-        imsg = _T("System default Language:  ");
-        imsg += def_lang_canonical;
-        wxLogMessage( imsg );
-    }
-
-    //  For windows, installer may have left information in the registry defining the
-    //  user's selected install language.
-    //  If so, override the config file value and use this selection for opencpn...
-#ifdef __WXMSW__
-    if( g_bFirstRun ) {
-        wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
-        if( RegKey.Exists() ) {
-            wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
-            RegKey.QueryValue( wxString( _T("InstallerLanguage") ), g_locale );
-        }
-    }
-#endif
-    //  Find the language specified by the config file
-    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
-    wxString loc_lang_canonical;
-    bool b_initok;
-    plocale_def_lang = new wxLocale;
-
-    if( pli ) {
-        b_initok = plocale_def_lang->Init( pli->Language, 1 );
-        // If the locale was not initialized OK, it may be that the wxstd.mo translations
-        // of the wxWidgets strings is not present.
-        // So try again, without attempting to load defaults wxstd.mo.
-        if( !plocale_def_lang->IsOk() ){
-            delete plocale_def_lang;
-            plocale_def_lang = new wxLocale;
-            b_initok = plocale_def_lang->Init( pli->Language, 0 );
-        }
-        loc_lang_canonical = pli->CanonicalName;
-    }
-
-    if( !pli || !plocale_def_lang->IsOk() ) {
-        // Some loading problem, so set locale back to en_US
-        delete plocale_def_lang;
-        plocale_def_lang = new wxLocale;
-        plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
-        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
-    }
-
-    imsg = _T("Opencpn language set to:  ");
-    imsg += loc_lang_canonical;
+    imsg = _T("System default Language:  ") + def_lang_canonical;
     wxLogMessage( imsg );
 
+    wxString cflmsg = _T("Config file language:  ") + g_locale;
+    wxLogMessage( cflmsg );
 
-    // Get translation file for the core
-    // No problem if the file doesn't exist as this case is handled by wxWidgets
-    if( plocale_def_lang )
-        plocale_def_lang->AddCatalog( _T("opencpn") );
+    //  Make any adjustments necessary
+    g_locale = g_Platform->GetAdjustedAppLocale();
+    cflmsg = _T("Adjusted App language:  ") + g_locale;
+    wxLogMessage( cflmsg );
 
-    //    Always use dot as decimal
-    setlocale( LC_NUMERIC, "C" );
 
-//    wxLog::SetVerbose( false );           // log no more verbose messages
+    // Set the desired locale
+    g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
+    
+    imsg = _T("Opencpn language set to:  ");
+    imsg += g_locale;
+    wxLogMessage( imsg );
 
     //  French language locale is assumed to include the AZERTY keyboard
     //  This applies to either the system language, or to OpenCPN language selection
-    if( loc_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
-    if( def_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
+    if( g_locale == _T("fr_FR") ) g_b_assume_azerty = true;
 #else
     wxLogMessage( _T("wxLocale support not available") );
 #endif
@@ -5606,12 +5550,13 @@ int MyFrame::DoOptionsDialog()
         pMarkPropDialog = NULL;
     }
     
-
+#if wxUSE_XLOCALE    
     if(rr & LOCALE_CHANGED){
-        ChangeLocale(g_locale);
+        
+        g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
         ApplyLocale();
     }
-        
+#endif
     
     g_boptionsactive = false;
     return ret_val;
@@ -12467,79 +12412,13 @@ void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
 bool ReloadLocale()
 {
     bool ret = false;
-    return (!ChangeLocale( g_locale ).IsEmpty());
-}
 
-wxString ChangeLocale(wxString &newLocale)
-{
-    wxString return_val;
-
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-    
-    //  Old locale is done.
-    delete plocale_def_lang;
-    
-    plocale_def_lang = new wxLocale;
-    wxString loc_lang_canonical;
-    
-    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( newLocale );
-    bool b_initok = false;
-    
-    if( pli ) {
-        b_initok = plocale_def_lang->Init( pli->Language, 1 );
-        // If the locale was not initialized OK, it may be that the wxstd.mo translations
-        // of the wxWidgets strings is not present.
-        // So try again, without attempting to load defaults wxstd.mo.
-        if( !plocale_def_lang->IsOk() ){
-            delete plocale_def_lang;
-            plocale_def_lang = new wxLocale;
-            b_initok = plocale_def_lang->Init( pli->Language, 0 );
-        }
-        loc_lang_canonical = pli->CanonicalName;
-    }
-    
-    if( !pli || !plocale_def_lang->IsOk() ) {
-        delete plocale_def_lang;
-        plocale_def_lang = new wxLocale;
-        b_initok = plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
-        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
-    }
-    
-    if(plocale_def_lang->IsOk()){
-        wxString imsg = _T("Opencpn language reload for:  ");
-        imsg += loc_lang_canonical;
-        wxLogMessage( imsg );
-        
-        //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
-        //  That is, the last catalog containing a certain translatable item takes precedence.
-        
-        //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
-        //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
-        
-        //        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
-        
- 
-        for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
-            wxString imsg = _T("Loading catalog for:  ");
-            imsg += g_locale_catalog_array.Item(i);
-            wxLogMessage( imsg );
-            plocale_def_lang->AddCatalog( g_locale_catalog_array.Item(i) );
-        }
-        
-        
-        // Get core opencpn catalog translation (.mo) file
-        wxLogMessage( _T("Loading catalog for opencpn core.") );
-        plocale_def_lang->AddCatalog( _T("opencpn") );
-        
-        return_val = loc_lang_canonical;
-    }
+#if wxUSE_XLOCALE    
+    ret = (!g_Platform->ChangeLocale( g_locale, plocale_def_lang, &plocale_def_lang ).IsEmpty());
 #endif
-
-    //    Always use dot as decimal
-    setlocale( LC_NUMERIC, "C" );
-    
-    return return_val;
+    return ret;
 }
+
 
 void ApplyLocale()
 {

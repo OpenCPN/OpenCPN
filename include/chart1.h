@@ -68,7 +68,6 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 
 bool TestGLCanvas(wxString prog_dir);
 bool ReloadLocale();
-wxString ChangeLocale(wxString &newLocale);
 void ApplyLocale( void );
 
 void LoadS57();

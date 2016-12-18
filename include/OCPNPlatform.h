@@ -151,6 +151,12 @@ public:
     void LaunchLocalHelp();
 
     void SetLocaleSearchPrefixes( void );
+    wxString GetDefaultSystemLocale();
+    wxString GetAdjustedAppLocale();
+    
+#if wxUSE_XLOCALE    
+    wxString ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale);
+#endif
     
 private:
     wxString    m_homeDir;
