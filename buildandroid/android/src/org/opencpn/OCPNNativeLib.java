@@ -38,6 +38,7 @@ public class OCPNNativeLib {
   public native int onStop();
   public native int onPause();
   public native int onResume();
+  public native int onDestroy();
 
   public native int invokeMenuItem( int item);
   public native int selectChartDisplay( int type, int family);

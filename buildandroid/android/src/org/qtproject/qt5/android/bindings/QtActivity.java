@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
 import android.util.Base64;
+import java.util.Locale ;
 
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.SecretKeyFactory;
@@ -250,6 +251,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private final static int ID_CMD_TRIGGER_RESIZE  = 302;
     private final static int ID_CMD_SETVP = 303;
     private final static int ID_CMD_POST_JSON_TO_PLUGINS = 304;
+    private final static int ID_CMD_SET_LOCALE = 305;
 
     private final static int CHART_TYPE_CM93COMP = 7;       // must line up with OCPN types
     private final static int CHART_FAMILY_RASTER = 1;
@@ -405,6 +407,69 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private boolean m_fullScreen;
     private String m_scannedSerial = "";
 
+    //BroadcastReceiver which receives broadcasted Intents
+    private final BroadcastReceiver mLocaleChangeReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.i("OpenCPN", "mLocaleChangeReceiver");
+
+                final String action = intent.getAction();
+                Log.i("OpenCPN", "onLocaleChange: " + action);
+                String language = getCurrentAndroidLocale().getLanguage();
+                Log.i("OpenCPN", "  new language is: " + language);
+
+                setAppLocale(getCurrentAndroidLocale());
+            }
+    };
+
+    public Locale getCurrentAndroidLocale(){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+//            return getResources().getConfiguration().getLocales().get(0);
+//        }
+//        else
+        {
+            //noinspection deprecation
+            return getResources().getConfiguration().locale;
+        }
+    }
+
+    public void setAppLocale( Locale newLocale){
+        String lang = newLocale.getLanguage();
+        String country = newLocale.getCountry();
+
+        String toSet = lang;
+        if(!country.isEmpty())
+            toSet += "_" + country;
+
+//        Log.i("OpenCPN", "  setAppLocale new language ID is: " + toSet);
+
+//        nativeLib.invokeCmdEventCmdString( ID_CMD_SET_LOCALE, toSet);
+
+    }
+
+
+
+    public String getAndroidLocaleString( ){
+        Locale locale  = getCurrentAndroidLocale();
+        if(null != locale){
+            String lang = locale.getLanguage();
+            String country = locale.getCountry();
+
+            String ret = lang;
+            if(!country.isEmpty())
+                ret += "_" + country;
+
+            Log.i("OpenCPN", "  getAndroidLocaleString language ID is: " + ret);
+
+            return ret;
+        }
+        else
+            return "en_US";
+
+    }
+
+
     public QtActivity()
     {
         if (Build.VERSION.SDK_INT <= 10) {
@@ -425,7 +490,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String buildSVGIcon(String inFile, String outFile, int width, int height){
 
-        Log.i("OpenCPN", inFile + " " + outFile);
+//        Log.i("OpenCPN", inFile + " " + outFile);
 
         // Read an SVG file
         File file = new File( inFile);
@@ -2517,6 +2582,20 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
     //---------------------------------------------------------------------------
 
+
+    protected void setAppLocale()
+    {
+
+        // defer a bit
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+             public void run() {
+                  nativeLib.invokeCmdEventCmdString( ID_CMD_SET_LOCALE, "fr");
+             }
+        }, 100);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -2923,7 +3002,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     public void onConfigurationChanged(Configuration newConfig)
     {
-        //Log.i("DEBUGGER_TAG", "onConfigurationChanged");
+        Log.i("OpenCPN", "onConfigurationChanged");
 
         int i = nativeLib.onConfigChange();
 
@@ -3050,11 +3129,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             Log.i("OpenCPN", "onCreate initUSBSerial");
         }
 
-        if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
-            Log.i("OpenCPN", "onCreate invoking delegate onCreate");
-            QtApplication.invokeDelegateMethod(QtApplication.onCreate, savedInstanceState);
-            return;
-        }
+        // On App Create, we really want the entire app to restart, includiong the Qt parts...
+//        if (QtApplication.m_delegateObject != null && QtApplication.onCreate != null) {
+//            Log.i("OpenCPN", "onCreate invoking delegate onCreate");
+//            QtApplication.invokeDelegateMethod(QtApplication.onCreate, savedInstanceState);
+//            return;
+//      }
 
 
  //----------------------------------------------------------------------------
@@ -3077,12 +3157,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 //----------------------------------------------------------------------------
 
+        // Register my desire to get locale change notifications
+        IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
+        registerReceiver(mLocaleChangeReceiver, filter);
+
         ENVIRONMENT_VARIABLES += "\tQT_ANDROID_THEME=" + QT_ANDROID_DEFAULT_THEME
                               + "/\tQT_ANDROID_THEME_DISPLAY_DPI=" + getResources().getDisplayMetrics().densityDpi + "\t";
 
-    //Log.i("DEBUGGER_TAG", "splash Screen??");
 
-        if (null == getLastNonConfigurationInstance()) {
+        if (null == getLastNonConfigurationInstance())
+        {
             // if splash screen is defined, then show it
             if (m_activityInfo.metaData.containsKey("android.app.splash_screen") )
                 setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
@@ -3147,11 +3231,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
    /* Turn off multicast filter */
-   WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+    WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
    if (wifi != null){
         WifiManager.MulticastLock lock = wifi.createMulticastLock("mylock");
         lock.acquire();
    }
+
 
 
             startApp(true);
@@ -3334,6 +3419,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         //Toast.makeText(getApplicationContext(), "onDestroy",Toast.LENGTH_LONG).show();
         Log.i("OpenCPN", "onDestroy " + this);
+
+        nativeLib.onDestroy();
+
+        // Disconnect the Locale broadcast receiver
+        unregisterReceiver(mLocaleChangeReceiver);
 
         super.onDestroy();
 
@@ -3736,11 +3826,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public Object onRetainNonConfigurationInstance()
     {
         Log.i("OpenCPN", "onRetainNonConfigurationInstance "  + this);
-        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
-        if (res.invoked)
-            return res.methodReturns;
-        else
-            return super.onRetainNonConfigurationInstance();
+
+        // We return "null" here, to induce the onCreate method to completely re-init the application
+        // This is a bit sub-optimal, but happens mainly on locale changes.
+        return null;
+
+//        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
+//        if (res.invoked)
+//            return res.methodReturns;
+//        else
+//            return super.onRetainNonConfigurationInstance();
     }
 
     public Object super_onRetainNonConfigurationInstance()

@@ -310,14 +310,12 @@ so_squiddio_plugin_deployment.path = /assets/files/plugins
 #------------------------------------------------------------------------------------
 
 
-de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de_DE.lproj/opencpn.mo
+de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de.lproj/opencpn.mo
 de_DE_mo_deployment.path = /assets/files/locale/de_DE/LC_MESSAGES
 INSTALLS += de_DE_mo_deployment
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
-
-
 
 
 

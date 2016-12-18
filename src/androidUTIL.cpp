@@ -1020,8 +1020,24 @@ extern "C"{
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
 
-        
         return ret;
+    }
+}
+
+extern "C"{
+    JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onDestroy(JNIEnv *env, jobject obj)
+    {
+        qDebug() << "onDestroy";
+        wxLogMessage(_T("onDestroy"));
+        
+        if(pConfig){
+            //  Persist the config file, especially to capture the viewport location,scale, locale etc.
+            pConfig->UpdateSettings();
+        }
+        
+        g_running = false;
+        
+        return 98;
     }
 }
 
@@ -1052,7 +1068,7 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeCmdEventCmdString(JNIEnv *env, jobject obj, int cmd_id, jstring s)
     {
-        const char *sparm;
+         const char *sparm;
         wxString wx_sparm;
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
@@ -1062,7 +1078,7 @@ extern "C"{
             sparm = (jenv)->GetStringUTFChars(s, NULL);
             wx_sparm = wxString(sparm, wxConvUTF8);
         }
-        
+ 
         //qDebug() << "invokeCmdEventCmdString" << cmd_id << s;
         
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
@@ -1070,9 +1086,11 @@ extern "C"{
         evt.SetString( wx_sparm);
         
         if(gFrame){
-            //qDebug() << "add event" << cmd_id << s;
+            qDebug() << "add event" << cmd_id << wx_sparm.mbc_str();
             gFrame->GetEventHandler()->AddPendingEvent(evt);
         }
+        else
+            qDebug() << "No frame for EventCmdString";
 
         
         return 71;
@@ -1643,6 +1661,11 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString p
 }
 
 
+wxString androidGetAndroidSystemLocale()
+{
+    return callActivityMethod_vs("getAndroidLocaleString");
+}   
+    
 bool androidGetFullscreen()
 {
     wxString s = callActivityMethod_vs("getFullscreen");
@@ -3493,7 +3516,7 @@ wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned i
     wxCharBuffer abuf = filename.ToUTF8();
     if( abuf.data() ){                            // OK conversion?
         std::string s(abuf.data());              
-        qDebug() << s.c_str();
+//        qDebug() << s.c_str();
     }
     
     // Destination file location
@@ -3507,7 +3530,7 @@ wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned i
     
     wxString val = callActivityMethod_s2s2i("buildSVGIcon", filename, fn.GetFullPath(), width, height);
     if( val == _T("OK") ){
-        qDebug() << "OK";
+//        qDebug() << "OK";
         
         return wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
     }
