@@ -223,7 +223,7 @@ INSTALLS += sound_deployment
 
 doc_deployment.files += $$PWD/../data/doc
 doc_deployment.path = /assets/files/doc
-INSTALLS += doc_deployment
+#INSTALLS += doc_deployment
 
 # The built-in PlugIns
 
@@ -310,9 +310,13 @@ so_squiddio_plugin_deployment.path = /assets/files/plugins
 #------------------------------------------------------------------------------------
 
 
-de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de.lproj/opencpn.mo
-de_DE_mo_deployment.path = /assets/files/locale/de_DE/LC_MESSAGES
-INSTALLS += de_DE_mo_deployment
+#de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de.lproj/opencpn.mo
+#de_DE_mo_deployment.path = /assets/files/locale/de_DE/LC_MESSAGES
+#INSTALLS += de_DE_mo_deployment
+
+fr_FR_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lproj/opencpn.mo
+fr_FR_mo_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_deployment
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
