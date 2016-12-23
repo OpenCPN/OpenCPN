@@ -924,10 +924,10 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy )
     
     condSymbolLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // dynamic Cond Sym LUPs
 
-    m_unused_color.R = 255;
-    m_unused_color.G = 0;
-    m_unused_color.B = 0;
-    m_unused_wxColor.Set( 255, 0, 0 );
+    m_unused_color.R = 2;
+    m_unused_color.G = 2;
+    m_unused_color.B = 2;
+    m_unused_wxColor.Set( 2,2,2 );
 
     // First, honor the user attempt for force Lecagy mode.
     // Next, try to load symbols using the newer XML/PNG format.
@@ -8472,6 +8472,10 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
 
         //      Instantiate the vector pattern to a wxBitmap
         wxMemoryDC mdc;
+        wxGraphicsContext* pgc = mdc.GetGraphicsContext();
+        if(pgc)
+            pgc->SetAntialiasMode(wxANTIALIAS_NONE); 
+        
         wxBitmap *pbm = NULL;
 
         if( ( 0 != width ) && ( 0 != height ) ) {

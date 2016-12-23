@@ -95,6 +95,7 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 
 extern OCPNPlatform              *g_Platform;
+extern bool                      g_bFirstRun;
 
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
@@ -582,13 +583,13 @@ wxString OCPNPlatform::GetDefaultSystemLocale()
     #if defined(__WXMSW__) 
     LANGID lang_id = GetUserDefaultUILanguage();
     wxChar lngcp[100];
-    const wxLanguageInfo* languageInfo = 0;
+    const wxLanguageInfo* languageInfoW = 0;
     if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
-        languageInfo = wxLocale::FindLanguageInfo(lngcp);define
+        languageInfoW = wxLocale::FindLanguageInfo(lngcp);
     }
     else
-        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    retval = languageInfo->CanonicalName();
+        languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+    retval = languageInfoW->CanonicalName;
     #endif
     
     #if defined(__OCPN__ANDROID__)
@@ -1402,7 +1403,7 @@ void OCPNPlatform::HideBusySpinner( void )
     androidHideBusyIcon();
 #else
     #if wxCHECK_VERSION(2, 9, 0 )
-//    if( ::wxIsBusy() )
+    if( ::wxIsBusy() )
     {
         ::wxEndBusyCursor();
     }
