@@ -1693,8 +1693,46 @@ void androidLaunchBrowser( wxString URL )
 
 bool androidShowDisclaimer( wxString title, wxString msg )
 {
-    wxString ret_val = callActivityMethod_s2s("disclaimerDialog", title, msg);
-    return (ret_val == _T("OK"));
+    if(CheckPendingJNIException())
+        return false;
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return false;
+    
+    if ( !activity.isValid() )
+        return false;
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
+        return false;
+    
+    
+    jstring p1 = (jenv)->NewStringUTF(title.c_str());
+ 
+    // Convert for wxString-UTF8  to jstring-UTF16
+    wxWCharBuffer b = msg.wc_str();
+    jstring p2 = (jenv)->NewString( (jchar *)b.data(), msg.Len() * 2);
+    
+    QAndroidJniObject data = activity.callObjectMethod( "disclaimerDialog", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", p1, p2);
+    
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    
+    if(CheckPendingJNIException())
+        return false;
+        
+    jstring s = data.object<jstring>();
+        
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+        
+        
+    return (return_string == _T("OK"));
 }
 
 extern PlatSpec android_plat_spc;
@@ -2105,7 +2143,6 @@ void androidConfirmSizeCorrection()
 void androidForceFullRepaint()
 {
         wxLogMessage(_T("androidForceFullRepaint"));
-    
         wxSize targetSize = getAndroidDisplayDimensions();
         wxSize tempSize = targetSize;
         tempSize.y--;
