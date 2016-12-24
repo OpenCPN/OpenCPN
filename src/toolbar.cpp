@@ -373,6 +373,11 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
 {
     DestroyToolBar();
+
+    // Avoid an orphan recovery grabber
+    m_destroyTimer.Stop();
+    delete m_destroyGrabber;
+    m_pRecoverwin = NULL;
 }
 
 void ocpnFloatingToolbarDialog::OnWindowCreate( wxWindowCreateEvent& event )
@@ -1012,7 +1017,7 @@ void ocpnFloatingToolbarDialog::DestroyToolBar()
         m_pRecoverwin = NULL;
         m_destroyTimer.Start( 5, wxTIMER_ONE_SHOT );           //  Destor the unneeded recovery grabber
     }
-    
+
 }
 
 //----------------------------------------------------------------------------

@@ -3215,7 +3215,7 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
     if( g_FloatingToolbarDialog ) {
         if( g_FloatingToolbarDialog->IsToolbarShown() )
             DestroyMyToolbar();
-
+        
         g_toolbar = CreateAToolbar();
         if (g_FloatingToolbarDialog->isSubmergedToGrabber()) {
             g_FloatingToolbarDialog->SubmergeToGrabber();
@@ -9916,18 +9916,6 @@ void MyFrame::applySettingsString( wxString settings)
     if(previous_expert != g_bUIexpert)
         b_newToolbar = true;
 
-
-    if(b_newToolbar && g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->DestroyToolBar();
-
-
-    //  We do this is one case only to remove an orphan recovery window
-#ifdef __OCPN__ANDROID__
-     if(previous_expert && !g_bUIexpert){
-         androidForceFullRepaint();
-     }
-#endif
-
     if(previous_expert != g_bUIexpert)
         g_Platform->applyExpertMode(g_bUIexpert);
 
@@ -9945,9 +9933,20 @@ void MyFrame::applySettingsString( wxString settings)
         g_Platform->HideBusySpinner();
     }
 
+    //  We do this to remove an orphan recovery window
+#ifdef __OCPN__ANDROID__
+    if( b_newToolbar || (previous_expert && !g_bUIexpert) )
+        androidForceFullRepaint();
+#endif
+    
     SurfaceToolbar();
-
-    gFrame->Raise();
+    
+    if(g_FloatingToolbarDialog){
+        g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
+        g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+    }
+    
+    Raise();
 
     cc1->InvalidateGL();
     DoChartUpdate();
