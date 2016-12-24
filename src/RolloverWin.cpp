@@ -79,6 +79,89 @@ void RolloverWin::OnMouseEvent( wxMouseEvent& event )
     }
 }
 
+
+void RolloverWin::SetBitmap( int rollover )
+{
+    wxMemoryDC mdc;
+    delete m_pbm;
+    m_pbm = new wxBitmap( m_size.x, m_size.y );
+    mdc.SelectObject( *m_pbm );
+    
+    mdc.SetBackground( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
+    mdc.Clear();
+    
+    int usegl = g_bopengl && g_texture_rectangle_format;
+    if(!usegl) {
+        if(m_bmaincanvas){
+            wxDC* cdc = new wxScreenDC();
+            int cpx = 0, cpy = 0;
+            GetParent()->ClientToScreen(&cpx, &cpy);
+            mdc.Blit( 0, 0, m_size.x, m_size.y, cdc,m_position.x + cpx, m_position.y + cpy);
+            delete cdc;
+        }
+    } 
+    
+    ocpnDC dc( mdc );
+    
+    wxString text;
+    double radius = 6.0;
+    switch( rollover ) {
+        case AIS_ROLLOVER: text = _("AISRollover");   break;
+        case TC_ROLLOVER:  text = _("TideCurrentGraphRollover"), radius = 0; break;
+        default:
+        case LEG_ROLLOVER: text = _("RouteLegInfoRollover");  break;
+    }
+    
+    if(usegl)
+        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, radius, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+    
+    mdc.SetTextForeground( FontMgr::Get().GetFontColor( text ) );
+    
+    if(m_plabelFont && m_plabelFont->IsOk()) {
+        
+        //    Draw the text
+        mdc.SetFont( *m_plabelFont );
+        
+        mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+    }
+    
+    SetSize( m_position.x, m_position.y, m_size.x, m_size.y );  
+    
+    #ifdef ocpnUSE_GL
+    if(usegl) {
+        if(!m_texture) {
+            glGenTextures( 1, &m_texture );
+            glBindTexture( g_texture_rectangle_format, m_texture );
+            glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        } else
+            glBindTexture( g_texture_rectangle_format, m_texture );
+        mdc.SelectObject( wxNullBitmap );
+        
+        // make texture data
+        wxImage image = m_pbm->ConvertToImage();
+        
+        unsigned char *d = image.GetData();
+        unsigned char *e = new unsigned char[4*m_size.x*m_size.y];
+        for(int y = 0; y<m_size.y; y++)
+            for(int x = 0; x<m_size.x; x++) {
+                int i = y * m_size.x + x;
+                memcpy(e+4*i, d+3*i, 3);
+                e[4*i+3] = 255 - d[3*i+2];
+            }
+            glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA,
+                          m_size.x, m_size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, e );
+            delete [] e;
+    }
+    #endif
+    
+    // Retrigger the auto timeout
+    if( m_timeout_sec > 0 ) m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
+}
+
+
+#if 0
+
 void RolloverWin::SetBitmap( int rollover )
 {
     wxMemoryDC mdc;
@@ -153,6 +236,8 @@ void RolloverWin::SetBitmap( int rollover )
     // Retrigger the auto timeout
     if( m_timeout_sec > 0 ) m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
 }
+
+#endif
 
 void RolloverWin::OnPaint( wxPaintEvent& event )
 {
@@ -240,8 +325,13 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         h = 10;
     }
 
+#ifndef __WXQT__
     m_size.x = w + 8;
     m_size.y = h + 8;
+#else
+    m_size.x = w + 28;
+    m_size.y = h + 28;
+#endif
 
     int xp, yp;
     if( ( x + off_x + m_size.x ) > parent_size.x ) {
