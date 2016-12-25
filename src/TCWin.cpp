@@ -24,6 +24,7 @@ extern TCMgr *ptcmgr;
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 extern wxString g_locale;
+extern OCPNPlatform *g_Platform;
 
 enum
 {
@@ -600,6 +601,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
             for( i = 0; i < 26; i++ ) {
                 int tt = m_t_graphday_00_at_station + ( i * FORWARD_ONE_HOUR_STEP );
                 ptcmgr->GetTideOrCurrent( tt, pIDX->IDX_rec_num, tcv[i], dir );
+                tt_tcv[i] = tt;                         // store the corresponding time_t value
                 if( tcv[i] > tcmax ) tcmax = tcv[i];
 
                 if( tcv[i] < tcmin ) tcmin = tcv[i];
@@ -808,6 +810,20 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.SetFont( *pSFont );
         dc.DrawText( sday, 10, y - 2 * m_button_height );
 
+        //  Render "Spot of interest"
+        double spotDim = 4 * g_Platform->GetDisplayDPmm();
+        
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "URED" ) ), wxMax(2, 0.5 * g_Platform->GetDisplayDPmm()) ) );
+        dc.DrawRoundedRectangle(xSpot - spotDim/2, ySpot - spotDim/2, spotDim, spotDim, spotDim/2);
+        
+        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxBRUSHSTYLE_SOLID ) );
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
+        
+        double ispotDim = spotDim / 5.;
+        dc.DrawRoundedRectangle(xSpot - ispotDim/2, ySpot - ispotDim/2, ispotDim, ispotDim, ispotDim/2);
+        
+
     }
 }
 
@@ -921,6 +937,33 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         m_pTCRolloverWin->SetBitmap( TC_ROLLOVER );
         m_pTCRolloverWin->Refresh();
         m_pTCRolloverWin->Show();
+        
+        //  Mark the actual spot on the curve
+        // x value is clear...
+        //  Find the point in the window that is used for the curev rendering, rounding as necessary
+        
+        int idx;
+        for( int i = 0; i < 26; i++ ) {
+            float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
+            if(ppx > curs_x){
+                idx = i;
+                break;
+            }
+        }
+
+        wxPointList *list = (wxPointList *)&m_sList;
+        wxPoint *a = list->Item(idx-1)->GetData();
+        wxPoint *b = list->Item(idx)->GetData();
+        
+        float pct = (curs_x  - a->x) / (float)((b->x - a->x));
+        float dy = pct * (b->y - a->y);
+        
+        ySpot = a->y + dy;
+        xSpot = curs_x;
+        
+        Refresh(true);
+        
+        
     } else {
         SetCursor( *pParent->pCursorArrow );
         ShowRollover = false;

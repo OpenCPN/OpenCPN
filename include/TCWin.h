@@ -89,6 +89,8 @@ private:
 
 
       float       tcv[26];
+      time_t      tt_tcv[26];
+      
       wxListBox  *m_tList ;
       bool        btc_valid;
       ChartCanvas    *pParent;
@@ -114,6 +116,9 @@ private:
       wxBrush *pltgray2;
 
       int         m_button_height;
+      
+      int xSpot;
+      int ySpot;
 
 DECLARE_EVENT_TABLE()
 };
