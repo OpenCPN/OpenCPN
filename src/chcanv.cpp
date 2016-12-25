@@ -8931,30 +8931,44 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
     return result;
 }
 
-static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, int row, wxString s )
+static void RouteLegInfo( ocpnDC &dc, wxPoint ref_point, const wxString &first, const wxString &second )
 {
     wxFont *dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover") );
     dc.SetFont( *dFont );
 
-    int w, h;
+    int w1, h1;
+    int w2 = 0;
+    int h2 = 0;
+    int h, w;
+    
     int xp, yp;
     int hilite_offset = 3;
 #ifdef __WXMAC__
     wxScreenDC sdc;
-    sdc.GetTextExtent(s, &w, &h, NULL, NULL, dFont);
+    sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, dFont);
+    if(second.Len())
+        sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, dFont);
 #else
-    dc.GetTextExtent( s, &w, &h );
+    dc.GetTextExtent( first, &w1, &h1 );
+    if(second.Len())
+        dc.GetTextExtent( second, &w2, &h2 );
 #endif
 
+    w = wxMax(w1, w2);
+    h = h1 + h2;
+    
     xp = ref_point.x - w;
-    yp = ref_point.y + h*row;
+    yp = ref_point.y;
     yp += hilite_offset;
 
+    AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+    
     dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
-    AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
-    dc.DrawText( s, xp, yp );
+    dc.DrawText( first, xp, yp );
+    if(second.Len())
+        dc.DrawText( second, xp, yp + h1 );
 }
 
 void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
@@ -9028,20 +9042,18 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
-        wxString routeInfo;
+        wxString routeInfo1;
         if( g_bShowMag ){
             double latAverage = (m_cursor_lat + render_lat)/2;
             double lonAverage = (m_cursor_lon + render_lon)/2;
             double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
             
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+            routeInfo1 << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
         }
         else
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+            routeInfo1 << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
-        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
-
-        RouteLegInfo( dc, r_rband, 0, routeInfo );
+        routeInfo1 << _T(" ") << FormatDistanceAdaptive( dist );
 
         wxString s0;
         if( !route->m_bIsInLayer )
@@ -9053,7 +9065,9 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         if( !g_btouch)
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
-        RouteLegInfo( dc, r_rband, 1, s0 );
+
+        RouteLegInfo( dc, r_rband, routeInfo1, s0 );
+
         m_brepaint_piano = true;
     }
 }
