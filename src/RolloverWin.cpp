@@ -112,7 +112,7 @@ void RolloverWin::SetBitmap( int rollover )
         case LEG_ROLLOVER: text = _("RouteLegInfoRollover");  break;
     }
     
-    if(usegl)
+    if(usegl && m_bmaincanvas)
         AlphaBlending( dc, 0, 0, m_size.x, m_size.y, radius, GetGlobalColor( _T ( "YELO1" ) ), 172 );
     
     mdc.SetTextForeground( FontMgr::Get().GetFontColor( text ) );
@@ -124,6 +124,8 @@ void RolloverWin::SetBitmap( int rollover )
         
         mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
     }
+
+    mdc.SelectObject( wxNullBitmap );
     
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );  
     
@@ -136,7 +138,6 @@ void RolloverWin::SetBitmap( int rollover )
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         } else
             glBindTexture( g_texture_rectangle_format, m_texture );
-        mdc.SelectObject( wxNullBitmap );
         
         // make texture data
         wxImage image = m_pbm->ConvertToImage();
@@ -314,9 +315,11 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
     if(m_plabelFont && m_plabelFont->IsOk()) {
 #ifdef __WXMAC__
         wxScreenDC sdc;
+        sdc.SetFont(*m_plabelFont);
         sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, m_plabelFont);
 #else
         wxClientDC cdc( GetParent() );
+        cdc.SetFont(*m_plabelFont);
         cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, m_plabelFont );
 #endif
     }
@@ -325,13 +328,8 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         h = 10;
     }
 
-#ifndef __WXQT__
     m_size.x = w + 8;
     m_size.y = h + 8;
-#else
-    m_size.x = w + 28;
-    m_size.y = h + 28;
-#endif
 
     int xp, yp;
     if( ( x + off_x + m_size.x ) > parent_size.x ) {
