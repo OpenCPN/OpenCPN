@@ -235,6 +235,11 @@ dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
 dldr_plugin_deployment.path = /assets/files/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
 
+#locale
+fr_FR_mo_dldr_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/fr_FR.lproj/opencpn-chartdldr_pi.mo
+fr_FR_mo_dldr_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_dldr_deployment
+
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
 so_dldr_plugin_deployment.path = /assets/files/plugins
