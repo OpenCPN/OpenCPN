@@ -139,11 +139,11 @@ IF (QT_ANDROID )
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
 
         )
 

@@ -145,19 +145,19 @@ IF(QT_ANDROID)
 ENDIF(QT_ANDROID)
 
     #  Stripped jasper library courtesy of https://github.com/vmarkovtsev/jasper.git
-    
+
     file(GLOB jasper_base_sources "src/jasper/base/*.c")
     file(GLOB jasper_jp2_sources "src/jasper/jp2/*.c")
     file(GLOB jasper_jp2_headers "src/jasper/jp2/*.h")
     file(GLOB jasper_jpc_sources "src/jasper/jpc/*.c")
     file(GLOB jasper_jpc_headers "src/jasper/jpc/*.h")
     file(GLOB jasper_headers "src/jasper/include/jasper/*.h")
-    
+
     SET(SRC_GRIB ${SRC_GRIB} ${jasper_base_sources} ${jasper_headers} ${jasper_jp2_sources} ${jasper_jp2_headers} ${jasper_jpc_sources} ${jasper_jpc_headers})
 
     ADD_DEFINITIONS(-DJASPER)
     ADD_DEFINITIONS(-DEXCLUDE_MIF_SUPPORT -DEXCLUDE_PNM_SUPPORT -DEXCLUDE_BMP_SUPPORT -DEXCLUDE_RAS_SUPPORT -DEXCLUDE_JPG_SUPPORT -DEXCLUDE_PGX_SUPPORT)
-   
+
     INCLUDE_DIRECTORIES("src/jasper/include")
 
 
@@ -171,7 +171,7 @@ IF (QT_ANDROID )
         # flow to this module from above.  If we want to build Android plugins out-of-core, this will need improvement.
 
         # TODO This is pretty ugly, but there seems no way to avoid specifying a full path in a cross build....
-        /home/dsr/Projects/opencpn_sf/opencpn/build-opencpn-Android_for_armeabi_v7a_GCC_4_8_Qt_5_5_0-Debug/libopencpn.so
+        /home/dsr/Projects/opencpn/build-opencpn-Test_build_Android_for_armeabi_v7a_GCC_4_9_Qt_5_5_1-Debug/libopencpn.so
 
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_core-3.1-arm-linux-androideabi.a
@@ -182,11 +182,11 @@ IF (QT_ANDROID )
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_aui-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
         ${wxQt_Base}/${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-        ${Qt_Base}/android_armv7/lib/libQt5Core.so
-        ${Qt_Base}/android_armv7/lib/libQt5OpenGL.so
-        ${Qt_Base}/android_armv7/lib/libQt5Widgets.so
-        ${Qt_Base}/android_armv7/lib/libQt5Gui.so
-        ${Qt_Base}/android_armv7/lib/libQt5AndroidExtras.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Core.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5OpenGL.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Widgets.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5Gui.so
+        ${Qt_Base}/${Qt_Build}/lib/libQt5AndroidExtras.so
 
         ${NDK_Base}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/libgnustl_shared.so
         )
