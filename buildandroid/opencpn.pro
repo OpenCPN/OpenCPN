@@ -243,7 +243,7 @@ INSTALLS += fr_FR_mo_dldr_deployment
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
 so_dldr_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_dldr_plugin_deployment
+INSTALLS += so_dldr_plugin_deployment
 #------------------------------------------------------------------------------------
 
 # World Magnetic Model---------------------------------------------------------------
@@ -262,13 +262,24 @@ svg_wmm_plugin_deployment.files +=$$PWD/../plugins/wmm_pi/data/wmm_live.svg
 svg_wmm_plugin_deployment.files +=$$PWD/../plugins/wmm_pi/data/wmm_pi.svg
 svg_wmm_plugin_deployment.path = /assets/files/plugins/wmm_pi/data
 INSTALLS += svg_wmm_plugin_deployment
+
+#locale
+fr_FR_mo_wmm_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/fr_FR.lproj/opencpn-wmm_pi.mo
+fr_FR_mo_wmm_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_wmm_deployment
+
 #------------------------------------------------------------------------------------
 
 # GRIB---------------------------------------------------------------
 #library
 so_grib_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/libgrib_pi.so
 so_grib_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_grib_plugin_deployment
+INSTALLS += so_grib_plugin_deployment
+
+#locale
+fr_FR_mo_grib_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/fr_FR.lproj/opencpn-grib_pi.mo
+fr_FR_mo_grib_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_grib_deployment
 
 #SVG
 svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
@@ -298,13 +309,18 @@ INSTALLS += svg_grib_plugin_deployment
 #library
 so_dashboard_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/libdashboard_pi.so
 so_dashboard_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_dashboard_plugin_deployment
+INSTALLS += so_dashboard_plugin_deployment
 
 #SVG
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard.svg
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard_toggled.svg
 svg_dashboard_plugin_deployment.path = /assets/files/plugins/dashboard_pi/data
 INSTALLS += svg_dashboard_plugin_deployment
+
+#locale
+fr_FR_mo_dashboard_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/fr_FR.lproj/opencpn-dashboard_pi.mo
+fr_FR_mo_dashboard_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_dashboard_deployment
 #------------------------------------------------------------------------------------
 
 # Squiddio---------------------------------------------------------------
@@ -314,10 +330,6 @@ so_squiddio_plugin_deployment.path = /assets/files/plugins
 #INSTALLS += so_squiddio_plugin_deployment
 #------------------------------------------------------------------------------------
 
-
-#de_DE_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de.lproj/opencpn.mo
-#de_DE_mo_deployment.path = /assets/files/locale/de_DE/LC_MESSAGES
-#INSTALLS += de_DE_mo_deployment
 
 fr_FR_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lproj/opencpn.mo
 fr_FR_mo_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
