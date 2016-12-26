@@ -49,6 +49,7 @@
 
 #include "ocpndc.h"
 #include "wx28compat.h"
+#include "cutil.h"
 
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
@@ -1044,6 +1045,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
         }
         else{           
             wxScreenDC sdc;
+            sdc.SetFont(m_font);
             sdc.GetTextExtent(text, &w, &h, NULL, NULL, &m_font);
             
             /* create bitmap of appropriate size and select it */
@@ -1094,7 +1096,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                     }
                 }
             }
-
+#if 0
             glColor4ub( 255, 255, 255, 255 );
             glEnable( GL_BLEND );
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -1103,7 +1105,39 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             glDrawPixels( w, h, GL_RGBA, GL_UNSIGNED_BYTE, data );
             glPixelZoom( 1, 1 );
             glDisable( GL_BLEND );
+#else
+            unsigned int texobj;    
             
+            glGenTextures(1, &texobj);
+            glBindTexture(GL_TEXTURE_2D, texobj);
+            
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+            
+            int TextureWidth = NextPow2(w);
+            int TextureHeight = NextPow2(h);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureWidth, TextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            
+            glColor3ub(0,0,0);
+            
+            float u = (float)w/TextureWidth, v = (float)h/TextureHeight;
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 0); glVertex2f(x, y);
+            glTexCoord2f(u, 0); glVertex2f(x+w, y);
+            glTexCoord2f(u, v); glVertex2f(x+w, y+h);
+            glTexCoord2f(0, v); glVertex2f(x, y+h);
+            glEnd();
+            
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+            
+            glDeleteTextures(1, &texobj);
+#endif            
             delete[] data;
         }            
     }
