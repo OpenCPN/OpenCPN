@@ -686,14 +686,15 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
         
-        //        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
+        //wxLog::SetVerbose(true);            // log all messages for debugging language stuff
         
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
             imsg += g_locale_catalog_array.Item(i);
             wxLogMessage( imsg );
-            locale->AddCatalog( g_locale_catalog_array.Item(i) );
+            if(!locale->AddCatalog( g_locale_catalog_array.Item(i) ))
+                wxLogMessage(_T("   AddCatalog failed..."));;
         }
         
         
@@ -1680,8 +1681,13 @@ double OCPNPlatform::GetToolbarScaleFactor( int GUIScaleFactor )
     // and that the value may range from 0.5 -> 2.0
     
     //  Get the basic size of a tool icon
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    wxSize style_tool_size = style->GetToolSize();
+    wxSize style_tool_size(32,32);
+    
+    if(g_StyleManager){
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        if(style)
+            style_tool_size = style->GetToolSize();
+    }
     double tool_size = style_tool_size.x;
     
     // unless overridden by user, we declare the "best" tool size
