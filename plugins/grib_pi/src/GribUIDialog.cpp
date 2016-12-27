@@ -49,6 +49,10 @@
 #include "GribUIDialog.h"
 #include <wx/arrimpl.cpp>
 
+#ifdef __WXQT__
+#include "qdebug.h"
+#endif
+
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -708,6 +712,7 @@ void GRIBUICtrlBar::OnAltitude( wxCommandEvent& event )
     wxMenu* amenu = new wxMenu();
     amenu->Connect( wxEVT_COMMAND_MENU_SELECTED, wxMenuEventHandler(GRIBUICtrlBar::OnMenuEvent), NULL, this );
 
+
 #ifdef __WXMSW__
     const wxString l[] = { _T(" "), wxString::Format( _T("\u2022") ) };
 #endif
@@ -1088,8 +1093,8 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
     wxString json_final;
     w.Write(v, json_final);
 //    wxLogMessage(json_final);
-    
-    
+
+
 #ifdef __OCPN__ANDROID__
     wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
     wxLogMessage(ret);
@@ -1114,6 +1119,8 @@ void GRIBUICtrlBar::OpenFileFromJSON( wxString json)
     }
 
     wxString file = root[( _T("grib_file") )].AsString();
+
+    wxLogMessage(_T("OpenFileFromJSON: ") + file);
 
      if(file.Length() && wxFileExists( file )){
          wxFileName fn(file);
@@ -1442,13 +1449,15 @@ void GRIBUICtrlBar::PopulateComboDataList()
         m_cRecordForecast->Clear();
     }
 
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    for( size_t i = 0; i < rsa->GetCount(); i++ ) {
-        wxDateTime t( rsa->Item( i ).m_Reference_Time );
+    if(m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()){
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        for( size_t i = 0; i < rsa->GetCount(); i++ ) {
+            wxDateTime t( rsa->Item( i ).m_Reference_Time );
 
-        m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
+            m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
+        }
+        m_cRecordForecast->SetSelection( index );
     }
-    m_cRecordForecast->SetSelection( index );
 }
 
 void GRIBUICtrlBar::OnZoomToCenterClick( wxCommandEvent& event )
