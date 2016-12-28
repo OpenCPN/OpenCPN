@@ -562,6 +562,7 @@ private:
       wxBitmap    m_cCurrentBitmap;
       
       RolloverWin *m_pRouteRolloverWin;
+      RolloverWin *m_pTrackRolloverWin;
       RolloverWin *m_pAISRolloverWin;
       
       TimedPopupWin *m_pBrightPopup;
@@ -607,6 +608,7 @@ private:
       bool        m_b_rot_hidef;
 
       SelectItem  *m_pRolloverRouteSeg;
+      SelectItem  *m_pRolloverTrackSeg;
 
       double      m_wheel_lat, m_wheel_lon;
       int         m_wheel_x,m_wheel_y;
