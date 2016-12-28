@@ -328,6 +328,7 @@ public:
 
       Route       *m_pMouseRoute;
       bool        m_bMeasure_Active;
+      bool        m_bMeasure_DistCircle;
       wxString    m_active_upload_port;
       bool        m_bAppendingRoute;
       int         m_nMeasureState;

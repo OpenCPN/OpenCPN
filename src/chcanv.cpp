@@ -535,6 +535,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     pss_overlay_mask = NULL;
     m_bChartDragging = false;
     m_bMeasure_Active = false;
+    m_bMeasure_DistCircle = false;
     m_pMeasureRoute = NULL;
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
@@ -1534,8 +1535,14 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
     case WXK_F4:
-        if( !m_bMeasure_Active )
+        if( !m_bMeasure_Active ) {
+            if (event.ShiftDown())
+                m_bMeasure_DistCircle = true;
+            else
+                m_bMeasure_DistCircle = false;
+
             StartMeasureRoute();
+        }
         else{
             CancelMeasureRoute();
             
@@ -1620,6 +1627,23 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         ZoomCanvas( .5, false );
         break;
     }
+	case WXK_DELETE:
+	case WXK_BACK:
+		if (m_bMeasure_Active) {
+            if (m_nMeasureState > 2) {
+                m_pMeasureRoute->DeletePoint(m_pMeasureRoute->GetLastPoint());
+                m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+                m_nMeasureState--;
+                InvalidateGL();
+                Refresh(false);
+
+            }
+            else {
+                CancelMeasureRoute();
+                StartMeasureRoute();
+            }
+		}
+	break;
     default:
         break;
 
@@ -1720,6 +1744,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'M':
+            if (event.ShiftDown())
+                m_bMeasure_DistCircle = true;
+            else
+                m_bMeasure_DistCircle = false;
+
             StartMeasureRoute();
             break;
 
@@ -9029,8 +9058,17 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                 }
             }
             else {
-                if(r_rband.x && r_rband.y)      // RubberBand disabled?
-                    route->DrawSegment( dc, &lastPoint, &r_rband, GetVP(), false );
+                if (r_rband.x && r_rband.y) {    // RubberBand disabled?
+                    route->DrawSegment(dc, &lastPoint, &r_rband, GetVP(), false);
+
+                    if (m_bMeasure_DistCircle) {
+                        double distanceRad = sqrtf(powf((float)(r_rband.x - lastPoint.x), 2) +
+                            powf((float)(r_rband.y - lastPoint.y), 2));
+
+                        dc.SetPen(*g_pRouteMan->GetRoutePen());
+                        dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
+                    }
+                }
             }
         }
 
