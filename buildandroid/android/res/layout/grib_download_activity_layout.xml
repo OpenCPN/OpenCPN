@@ -8,8 +8,9 @@ android:orientation="vertical">
     android:paddingTop="4dip">
 
     <Button android:id="@+id/DownloadPrefButton" android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:text="Request GRIB Download..."
-        android:textSize="26dp" />
+        android:layout_height="wrap_content" android:text="@string/ocpn_GRIB_download_dialog_Request"
+        android:textSize="26dp"
+    />
 
 </LinearLayout>
 <ListView android:id="@android:id/list" android:layout_width="fill_parent"

@@ -3,10 +3,10 @@
     android:layout_width="match_parent" android:orientation="vertical"
         android:layout_height="match_parent" >
 
-         <Button
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="GRIB Display Settings"
+            android:text="@string/ocpn_GRIB_activity_Display"
             android:id="@+id/button_grib_display"
             android:layout_marginTop="93dp"
             android:enabled="true"
@@ -17,7 +17,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose local GRIB file"
+            android:text="@string/ocpn_GRIB_activity_Choose"
             android:id="@+id/button_grib_file"
             android:textSize="26dp"
             android:layout_marginTop="28dp"
@@ -27,7 +27,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Request new GRIB file download"
+            android:text="@string/ocpn_GRIB_activity_Request"
             android:id="@+id/button_grib_download"
             android:textSize="26dp"
             android:layout_marginTop="28dp"
