@@ -81,12 +81,13 @@ void AddSourceDlg::applyStyle()
     #ifdef __OCPN__ANDROID__
     m_panelPredefined->GetHandle()->setStyleSheet( qtStyleSheet);
     QScroller::ungrabGesture(m_panelPredefined->GetHandle());
-    QScroller::ungrabGesture(m_treeCtrlPredefSrcs->GetHandle());
+///    QScroller::ungrabGesture(m_treeCtrlPredefSrcs->GetHandle());
     #endif
 }
 
 AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+    
 	this->SetSizeHints( wxSize( 500,-1 ), wxDefaultSize );
 
 	wxBoxSizer* bSizerMain = new wxBoxSizer( wxVERTICAL );
@@ -106,9 +107,9 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	wxBoxSizer* bSizerPredefTree = new wxBoxSizer( wxVERTICAL );
 
-        m_treeCtrlPredefSrcs = new wxTreeCtrl( m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_HIDE_ROOT );
+        m_treeCtrlPredefSrcs = new wxTreeCtrl( m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_HIDE_ROOT|wxTR_HAS_BUTTONS );
 	bSizerPredefTree->Add( m_treeCtrlPredefSrcs, 1, wxALL|wxEXPAND, 5 );
-
+        m_treeCtrlPredefSrcs->SetScrollRate(0,1);
 
 	m_panelPredefined->SetSizer( bSizerPredefTree );
         m_panelPredefined->Layout();

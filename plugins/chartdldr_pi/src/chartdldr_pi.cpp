@@ -84,6 +84,17 @@
     #endif
 #endif // __WXMAC__
 
+#ifdef __OCPN__ANDROID__
+    #include <QtAndroidExtras/QAndroidJniObject>
+    #include "qdebug.h"
+    
+    extern JavaVM *java_vm;         // found in androidUtil.cpp, accidentally exported....
+    JNIEnv* jenv;
+    
+#endif    
+
+    bool getDisplayMetrics();
+    
 #define CHART_DIR "Charts"
 
 void write_file( const wxString extract_file, char *data, unsigned long datasize )
@@ -113,6 +124,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
+
+double g_androidDPmm;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -167,6 +180,8 @@ int chartdldr_pi::Init( void )
     //    And load the configuration items
     LoadConfig();
 
+    getDisplayMetrics();
+    
     wxStringTokenizer st(m_schartdldr_sources, _T("|"), wxTOKEN_DEFAULT);
     while( st.HasMoreTokens() )
     {
@@ -359,6 +374,98 @@ void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
     dialog->Destroy();
     wxDELETE(dialog);
 }
+
+bool getDisplayMetrics()
+{
+#ifdef __OCPN__ANDROID__
+
+    g_androidDPmm = 4.0;           // nominal default
+
+    //  Get a reference to the running native activity
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    
+    if ( !activity.isValid() ){
+        return false;
+    }
+    
+    //  Call the desired method
+    QAndroidJniObject data = activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
+    
+    wxString return_string;
+    jstring s = data.object<jstring>();
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        //qDebug() << "GetEnv failed.";
+    }
+    else {
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+    
+    //  Return string may have commas instead of periods, if using Euro locale
+    //  We just fix it here...
+    return_string.Replace( _T(","), _T(".") );
+
+    
+//     wxLogMessage(_T("Metrics:") + return_string);
+//     wxSize screen_size = ::wxGetDisplaySize();
+//     wxString msg;
+//     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
+//     wxLogMessage(msg);
+    
+    double density = 1.0;
+    wxStringTokenizer tk(return_string, _T(";"));
+    if( tk.HasMoreTokens() ){
+        wxString token = tk.GetNextToken();     // xdpi
+        token = tk.GetNextToken();              // density
+        
+        long b = ::wxGetDisplaySize().y;        
+        token.ToDouble( &density );
+        
+        token = tk.GetNextToken();              // ldpi
+        
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height - statusBarHeight
+        token = tk.GetNextToken();              // width
+        token = tk.GetNextToken();              // height
+        token = tk.GetNextToken();              // dm.widthPixels
+        token = tk.GetNextToken();              // dm.heightPixels
+        
+        token = tk.GetNextToken();              // actionBarHeight
+        long abh;
+        token.ToLong( &abh );
+//        g_ActionBarHeight = wxMax(abh, 50);
+        
+        //        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+        
+    }
+    
+    double ldpi = 160. * density;
+    
+//    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+//    ret = (maxDim / ldpi) * 25.4;
+    
+//    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
+//    wxLogMessage(msg);
+    
+    //  Save some items as global statics for convenience
+    g_androidDPmm = ldpi / 25.4;
+//    g_androidDensity = density;
+    
+    qDebug() << "PI Metrics" << g_androidDPmm << density;
+    return true;
+#else
+    
+    return true;
+#endif    
+    
+    
+}
+
+
+
 
 ChartSource::ChartSource( wxString name, wxString url, wxString localdir )
 {
@@ -1462,7 +1569,8 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
 
     return true;
     
-#endif  //Android    
+#endif  //Android 
+    return true;
 }
 
 bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveZip )
@@ -1572,21 +1680,65 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
 ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg( wxWindow* parent ) : AddSourceDlg( parent )
 {
-    p_iconList = new wxImageList(16, 16);
     wxFileName fn;
     fn.SetPath(*GetpSharedDataLocation());
     fn.AppendDir(_T("plugins"));
     fn.AppendDir(_T("chartdldr_pi"));
     fn.AppendDir(_T("data"));
-    fn.SetFullName(_T("folder215.png"));
-    p_iconList->Add(wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG));
-    fn.SetFullName(_T("open182.png"));
-    p_iconList->Add(wxBitmap(fn.GetFullPath(), wxBITMAP_TYPE_PNG));
+ 
+    int w = 16;                 // default for desktop
+    int h = 16;
+    
+#ifdef __OCPN__ANDROID__
+    w = 6 * g_androidDPmm;      // mm nominal size
+    h = w;
+#endif
+    
+    p_iconList = new wxImageList(w, h);
+    
+    fn.SetFullName(_T("folder.png"));
+    wxImage ima(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    ima.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(ima);
+
+    fn.SetFullName(_T("file.png"));
+    wxImage imb(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    imb.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_iconList->Add(imb);
+
     m_treeCtrlPredefSrcs->AssignImageList(p_iconList);
+    
+    p_buttonIconList = new wxImageList(w, h);
+
+    fn.SetFullName(_T("button_right.png"));
+    wxImage im1(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im1.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im1);
+    
+    fn.SetFullName(_T("button_right.png"));
+    wxImage im2(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im2.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im2);
+
+    fn.SetFullName(_T("button_down.png"));
+    wxImage im3(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im3.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im3);
+    
+    fn.SetFullName(_T("button_down.png"));
+    wxImage im4(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
+    im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
+    p_buttonIconList->Add(im4);
+    
+    m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
+
+    m_treeCtrlPredefSrcs->SetIndent( w );
+    
     m_base_path = wxEmptyString;
     m_last_path = wxEmptyString;
     LoadSources();
     m_nbChoice->SetSelection(0);
+    
     //m_treeCtrlPredefSrcs->ExpandAll();
 
     applyStyle();

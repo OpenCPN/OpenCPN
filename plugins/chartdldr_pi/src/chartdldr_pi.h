@@ -251,6 +251,7 @@ private:
     wxString        m_base_path;
     wxString        m_last_path;
     wxImageList    *p_iconList;
+    wxImageList    *p_buttonIconList;
 };
 
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg
