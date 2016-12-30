@@ -230,8 +230,10 @@ doc_deployment.path = /assets/files/doc
 # Chart Downloader-------------------------------------------------------------------
 #data
 dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/chart_sources.xml
-dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder215.png
-dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/open182.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/folder.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/file.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/button_right.png
+dldr_plugin_deployment.files += $$PWD/../plugins/chartdldr_pi/data/button_down.png
 dldr_plugin_deployment.path = /assets/files/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
 
@@ -250,7 +252,7 @@ INSTALLS += so_dldr_plugin_deployment
 #library
 so_wmm_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/libwmm_pi.so
 so_wmm_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_wmm_plugin_deployment
+INSTALLS += so_wmm_plugin_deployment
 
 #data
 wmm_plugin_deployment.files += $$PWD/../plugins/wmm_pi/data/WMM.COF
@@ -327,7 +329,13 @@ INSTALLS += fr_FR_mo_dashboard_deployment
 #library
 so_squiddio_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/libsquiddio_pi.so
 so_squiddio_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_squiddio_plugin_deployment
+INSTALLS += so_squiddio_plugin_deployment
+
+#locale
+fr_FR_mo_squiddio_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fr_FR.lproj/opencpn-squiddio_pi.mo
+fr_FR_mo_squiddio_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
+INSTALLS += fr_FR_mo_squiddio_deployment
+
 #------------------------------------------------------------------------------------
 
 
@@ -337,6 +345,9 @@ INSTALLS += fr_FR_mo_deployment
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
+
+DISTFILES += \
+    android/src/org/opencpn/PortContainer.java
 
 
 
