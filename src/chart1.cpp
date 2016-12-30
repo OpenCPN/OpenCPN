@@ -3582,9 +3582,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAIS = NULL;
     }
 
-    if(g_pMUX)
-        delete g_pMUX;
-
+    delete g_pMUX;
+    g_pMUX = NULL;
+    
     //  Clear some global arrays, lists, and hash maps...
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
