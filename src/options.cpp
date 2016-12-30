@@ -1220,7 +1220,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer17 = new wxBoxSizer(wxVERTICAL);
 
   m_lcSources = new wxListCtrl(m_pNMEAForm, wxID_ANY, wxDefaultPosition,
-                               wxSize(300, 200), wxLC_REPORT | wxLC_SINGLE_SEL);
+                               wxSize(300, m_fontHeight * 2), wxLC_REPORT | wxLC_SINGLE_SEL);
   bSizer17->Add(m_lcSources, 1, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* bSizer18;
@@ -8069,6 +8069,11 @@ void options::FillSourceList(void) {
 #endif
 
   m_lcSources->SortItems(SortConnectionOnPriority, (long)m_lcSources);
+  
+  // If space is at a permium, adjust the size of the connections list to the minimum useful
+  if(m_bcompact)
+    m_lcSources->SetMinSize(wxSize(-1, wxMax((m_fontHeight * 3 / 2), (g_pConnectionParams->Count() + 1) * m_fontHeight)));
+  
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
