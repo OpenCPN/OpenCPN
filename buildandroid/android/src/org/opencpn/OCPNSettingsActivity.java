@@ -392,6 +392,11 @@ public class OCPNSettingsActivity extends PreferenceActivity
                 m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_MCP000A", preferences.getBoolean("prefb_MCP000A", false)));
             if(m_serialString.contains("MCP_0205"))
                 m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_MCP0205", preferences.getBoolean("prefb_MCP0205", false)));
+            if(m_serialString.contains("USBDP")){
+                int idx = m_serialString.indexOf("USBDP");
+                String pidvid = m_serialString.substring(idx+6, idx+15);
+                m_newSettings = m_newSettings.concat(appendBoolSetting("prefb_USBDP", preferences.getBoolean("prefb_USBDP", false), pidvid));
+            }
         }
 
 
@@ -434,6 +439,18 @@ public class OCPNSettingsActivity extends PreferenceActivity
             ret = ret.concat(":0;");
 
         return ret;
+    }
+
+    private String appendBoolSetting(String key, Boolean value, String extraString)
+    {
+        String ret = key;
+        if(value)
+            ret = ret.concat(":1:");
+        else
+            ret = ret.concat(":0:");
+
+        return ret + extraString + ";";
+
     }
 
     private String appendStringSetting(String key, String value)

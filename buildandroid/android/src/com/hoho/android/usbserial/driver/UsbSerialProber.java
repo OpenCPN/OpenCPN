@@ -67,12 +67,11 @@ public class UsbSerialProber {
     public List<UsbSerialDriver> findAllDrivers(final UsbManager usbManager) {
         final List<UsbSerialDriver> result = new ArrayList<UsbSerialDriver>();
 
-        Log.d("OpenCPN", "FindAll");
+        Log.d("OpenCPN", "findAllDrivers");
         int i=0;
 
         for (final UsbDevice usbDevice : usbManager.getDeviceList().values()) {
-            Log.d("OpenCPN device", String.format("%d\n", i));
-            Log.d("OpenCPN device", String.format("%d %d\n", usbDevice.getVendorId(), usbDevice.getProductId()));
+            Log.d("OpenCPN", "device " + String.format("%d:  %d/%d\n", i, usbDevice.getVendorId(), usbDevice.getProductId()));
 
             final UsbSerialDriver driver = probeDevice(usbDevice);
             if (driver != null) {
@@ -94,8 +93,9 @@ public class UsbSerialProber {
         final int vendorId = usbDevice.getVendorId();
         final int productId = usbDevice.getProductId();
 
-        final Class<? extends UsbSerialDriver> driverClass =
-                mProbeTable.findDriver(vendorId, productId);
+        Log.d("OpenCPN", "ProbeDevice checking VID/PID: " + String.format("%d/%d\n", usbDevice.getVendorId(), usbDevice.getProductId()));
+
+        final Class<? extends UsbSerialDriver> driverClass = mProbeTable.findDriver(vendorId, productId);
         if (driverClass != null) {
             final UsbSerialDriver driver;
             try {
@@ -113,9 +113,32 @@ public class UsbSerialProber {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
+            Log.d("OpenCPN", "Found predefined driver, using: " + driverClass);
             return driver;
         }
-        return null;
+
+        else{
+            final Class<? extends UsbSerialDriver> driverClassG = CdcAcmSerialDriver.class;
+            final UsbSerialDriver driver;
+            try {
+                final Constructor<? extends UsbSerialDriver> ctor = driverClassG.getConstructor(UsbDevice.class);
+                driver = ctor.newInstance(usbDevice);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+
+            Log.d("OpenCPN", "No predefined Driver, using:" + driverClassG);
+            return driver;
+
+       }
     }
 
 }

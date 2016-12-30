@@ -812,8 +812,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String doAndroidSettings(String settings){
-        //Log.i("OpenCPN", "doAndroidSettings");
-        //Log.i("DEBUGGER_TAG", settings);
         if(null != uSerialHelper)
             m_scannedSerial = scanSerialPorts( UsbSerialHelper.NOSCAN );      // No scan, just report latest results.
 
@@ -822,7 +820,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Intent intent = new Intent(QtActivity.this, org.opencpn.OCPNSettingsActivity.class);
         intent.putExtra("SETTINGS_STRING",settings);
         intent.putExtra("DETECTEDSERIALPORTS_STRING",m_scannedSerial);
-        //Log.i("OpenCPN", m_scannedSerial);
+        Log.i("OpenCPN", "doAndroidSettings settings" + settings);
+        Log.i("OpenCPN", "doAndroidSettings m_scannedSerial" + m_scannedSerial);
 
         startActivityForResult(intent, OCPN_SETTINGS_REQUEST_CODE);
 

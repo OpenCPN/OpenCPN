@@ -63,9 +63,13 @@ import java.util.List;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
+import org.opencpn.portContainer;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 
 @SuppressLint("NewApi")
 public class UsbSerialHelper {
@@ -96,71 +100,6 @@ public class UsbSerialHelper {
     public UsbSerialHelper() {
     }
 
-    private class portContainer{
-        public UsbSerialPort port = null;
-        public String friendlyName = "";
-        public SerialInputOutputManager sioManager;
-        public int baudRate = 4800;
-        public int vendorID = 0;
-        public int productID = 0;
-        public boolean approved = false;
-
-        private boolean updateFriendlyName( int vID, int pID){
-            String fName = "";
-            if((vID == UsbId.VENDOR_WEGMATT) && (pID == UsbId.WEGMATT_DAISY))
-                fName = "AUSBSerial:dAISy";
-            else if((vID == UsbId.VENDOR_PROLIFIC) && (pID == UsbId.PROLIFIC_PL2303))
-                fName = "AUSBSerial:Prolific_PL2303";
-            else if((vID == UsbId.VENDOR_FTDI) && (pID == UsbId.FTDI_FT232R))
-                fName = "AUSBSerial:FTDI_FT232R";
-            else if((vID == UsbId.VENDOR_FTDI) && (pID == UsbId.FTDI_FT231X))
-                fName = "AUSBSerial:FTDI_FT231X";
-            else if((vID == UsbId.VENDOR_MICROCHIP) && (pID == UsbId.MCP_000A))
-                fName = "AUSBSerial:MCP_000A";
-            else if((vID == UsbId.VENDOR_MICROCHIP) && (pID == UsbId.MCP_0205))
-                fName = "AUSBSerial:MCP_0205";
-            friendlyName = fName;
-            return true;
-        }
-
-        private boolean updateIDS(){
-            String fName = friendlyName;
-
-            if(fName.equals("AUSBSerial:dAISy")){
-                vendorID = UsbId.VENDOR_WEGMATT;
-                productID = UsbId.WEGMATT_DAISY;
-            }
-
-            else if(fName.equals("AUSBSerial:Prolific_PL2303")){
-                vendorID = UsbId.VENDOR_PROLIFIC;
-                productID = UsbId.PROLIFIC_PL2303;
-            }
-
-            else if(fName.equals("AUSBSerial:FTDI_FT232R")){
-                vendorID = UsbId.VENDOR_FTDI;
-                productID = UsbId.FTDI_FT232R;
-            }
-
-            else if(fName.equals("AUSBSerial:FTDI_FT231X")){
-                vendorID = UsbId.VENDOR_FTDI;
-                productID = UsbId.FTDI_FT231X;
-            }
-
-            else if(fName.equals("AUSBSerial:MCP_000A")){
-                vendorID = UsbId.VENDOR_MICROCHIP;
-                productID = UsbId.MCP_000A;
-            }
-
-            else if(fName.equals("AUSBSerial:MCP_0205")){
-                vendorID = UsbId.VENDOR_MICROCHIP;
-                productID = UsbId.MCP_0205;
-            }
-
-            return true;
-        }
-
-    };
-
 
     public void initUSBSerial(Context context){
         if(null != context){
@@ -174,6 +113,11 @@ public class UsbSerialHelper {
             filter = new IntentFilter();
             filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             context.registerReceiver(mUsbReceiver, filter);
+
+            mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            filter = new IntentFilter(ACTION_USB_PERMISSION);
+            context.registerReceiver(mUsbReceiver, filter);
+
         }
 
         nativeLib = OCPNNativeLib.getInstance();
@@ -205,7 +149,7 @@ public class UsbSerialHelper {
         for(int i=0 ; i < list.size() ; i++){
             portContainer p = list.get(i);
             if(null != p){
-                if(p.friendlyName.equals(friendlyName))
+                if(p.getFriendlyName().equals(friendlyName))
                     return p;
             }
         }
@@ -250,7 +194,7 @@ public class UsbSerialHelper {
                 String subtitle = driver.getClass().getSimpleName();
                 if(DEBUG) Log.d("OpenCPN", "scanSerialPorts Port: " + title + " " + subtitle);
 
-                String friendlyNameP = cport.friendlyName + ";";
+                String friendlyNameP = cport.getFriendlyName() + ";";
 
                 ret_str += friendlyNameP;
             }
@@ -275,8 +219,8 @@ public class UsbSerialHelper {
 
         @Override
         public void onNewData(final byte[] data) {
-//            final String message = "Read " + data.length + " bytes: \n" + HexDump.dumpHexString(data) + "\n\n";
-//            if(DEBUG) Log.d("OpenCPN", "onNewData " + message);
+ //           final String message = "Read " + data.length + " bytes: \n" + HexDump.dumpHexString(data) + "\n\n";
+ //           if(DEBUG) Log.d("OpenCPN", "onNewData " + message);
 
             messageNMEA += new String(data);
 
@@ -326,32 +270,42 @@ public class UsbSerialHelper {
                             if(DEBUG) Log.d("OpenCPN", "USB Attached: Probe found port: " + port);
 
                             portContainer tentPort = new portContainer();
-                            tentPort.friendlyName = "";
+                            tentPort.setFriendlyName("");
                             tentPort.port = port;
                             tentPort.sioManager = null;
                             tentPort.vendorID = device.getVendorId();
                             tentPort.productID = device.getProductId();
-                            tentPort.updateFriendlyName(device.getVendorId(), device.getProductId());
+                            tentPort.updateFriendlyName();
+                            if(DEBUG) Log.d("OpenCPN", "USB Attached: friendlyName is: " + tentPort.getFriendlyName());
 
                       //  Refresh the entry in the DETECTED list
-                            portContainer p = findContainer( DETECTED, tentPort.friendlyName );
+                            portContainer p = findContainer( DETECTED, tentPort.getFriendlyName() );
                             if(null != p)
                                 mDetectedPorts.remove(p);
                             mDetectedPorts.add(tentPort);
+                            if(DEBUG) Log.d("OpenCPN", "USB Attached: Adding to DETECTED list: " + tentPort);
 
                      //  Refresh the entry in the PENDING list
-                            p = findContainer( PENDING, tentPort.friendlyName );
+                            p = findContainer( PENDING, tentPort.getFriendlyName() );
                             if(null != p)
                                 mPendingPorts.remove(p);
                             mPendingPorts.add(tentPort);
+                            if(DEBUG) Log.d("OpenCPN", "USB Attached: Adding to PENDING list: " + tentPort);
 
                      // and start it
-                            p = findContainer( PENDING, tentPort.friendlyName );
-                            if(null != p)
-                                startUSBSerialPort( p.friendlyName, p.baudRate );
+                            p = findContainer( PENDING, tentPort.getFriendlyName() );
+                            if(null != p){
+                                if(DEBUG) Log.d("OpenCPN", "USB Attached: Starting " + p.getFriendlyName());
+                                startUSBSerialPort( p.getFriendlyName(), p.baudRate );
+                            }
                         }
                     }
                  }
+                 else{
+                     if(DEBUG) Log.d("OpenCPN", "Driver Not Found.");
+                 }
+
+
 
                  usbConnected=true;
              }
@@ -363,7 +317,7 @@ public class UsbSerialHelper {
                      if(DEBUG) Log.d("OpenCPN", "USB Detached: ");
                      portContainer p = findContainer( ACTIVE, device.getVendorId(), device.getProductId() );
                      if(null != p)
-                        stopUSBSerialPort( p.friendlyName );
+                        stopUSBSerialPort( p.getFriendlyName() );
 
                  }
                  usbConnected=false;
@@ -376,7 +330,7 @@ public class UsbSerialHelper {
                      if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                          if(device != null){
                              if(DEBUG) Log.d("OpenCPN", "permission approved for device " + device);
-                             //call method to set up device communication
+                             //Set up device communication
                              portContainer p = findContainer( PENDING, device.getVendorId(), device.getProductId() );
                              if(null != p){
                                  if(null == p.port){
@@ -394,6 +348,15 @@ public class UsbSerialHelper {
 
                                  }
                                  connectUSBSerialPort( p );
+
+                                 // Update preferences to show this port enabled
+                                 if(DEBUG) Log.d("OpenCPN", "Editing pref: " + p.prefString);
+
+                                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                                 Editor editor = preferences.edit();
+                                 editor.putBoolean(p.prefString, true);
+                                 editor.commit();
+
                              }
                          }
                      }
@@ -458,7 +421,7 @@ public class UsbSerialHelper {
                         container.sioManager = null;
                         container.vendorID = device.getVendorId();
                         container.productID = device.getProductId();
-                        container.updateFriendlyName(device.getVendorId(),device.getProductId());
+                        container.updateFriendlyName();
 
                         mDetectedPorts.add(container);
 
@@ -471,7 +434,7 @@ public class UsbSerialHelper {
     private void stopIoManager(portContainer port) {
         if(null != port){
             if (port.sioManager != null) {
-                if(DEBUG) Log.i("OpenCPN", "Stopping io manager for port " + port.friendlyName);
+                if(DEBUG) Log.i("OpenCPN", "Stopping io manager for port " + port.getFriendlyName());
                 port.sioManager.stop();
                 port.sioManager = null;
             }
@@ -480,7 +443,7 @@ public class UsbSerialHelper {
 
     private void startIoManager(portContainer port) {
         if (port != null) {
-            if(DEBUG) Log.i("OpenCPN", "Starting io manager for port "+ port.friendlyName );
+            if(DEBUG) Log.i("OpenCPN", "Starting io manager for port "+ port.getFriendlyName() );
             port.sioManager = new SerialInputOutputManager(port.port, mListener);
             mExecutor.submit(port.sioManager);
         }
@@ -515,6 +478,11 @@ public class UsbSerialHelper {
             container.baudRate = baudRate;
             if(DEBUG) Log.i("OpenCPN", "startUSBSerialPort: port: " + port);
         }
+        else{
+            if(DEBUG) Log.i("OpenCPN", "startUSBSerialPort: port container not found for friendlyName: " + friendlyName);
+        }
+
+
 
         if(bFound && (null != port)){
             if(DEBUG) Log.d("OpenCPN", "startUSBSerialPort adding port to PENDING list");
@@ -524,14 +492,13 @@ public class UsbSerialHelper {
                 mPendingPorts.remove(p);
 
             portContainer tentPort = new portContainer();
-            tentPort.friendlyName = friendlyName;
+            tentPort.setFriendlyName(friendlyName);
             tentPort.port = port;
             tentPort.sioManager = null;
             tentPort.baudRate = baudRate;
-            tentPort.updateIDS();
             mPendingPorts.add(tentPort);
 
-
+/*
             //  It seems that if one uses an intent in the manifest, then one does not need (nor want) to ask permissison
             if(DEBUG) Log.d("OpenCPN", "startUSBSerialPort:  Assuming have permission...");
             p = findContainer( PENDING, friendlyName );
@@ -539,8 +506,9 @@ public class UsbSerialHelper {
                 if(DEBUG) Log.d("OpenCPN", "startUSBSerialPort:   proceeding to connect");
                 connectUSBSerialPort(p);
             }
+*/
 
-/*
+
             if( mUsbManager.hasPermission(port.getDriver().getDevice())){
                 if(DEBUG) Log.d("OpenCPN", "startUSBSerialPort:  Have permission");
                 p = findContainer( PENDING, friendlyName );
@@ -554,12 +522,9 @@ public class UsbSerialHelper {
                 + " VID:" + String.valueOf(port.getDriver().getDevice().getVendorId())
                 + " PID:" + String.valueOf(port.getDriver().getDevice().getProductId()));
 
-                mPermissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
-                IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-                mContext.registerReceiver(mUsbReceiver, filter);
                 mUsbManager.requestPermission(port.getDriver().getDevice(), mPermissionIntent);
             }
-*/
+
 
 
         }
@@ -625,7 +590,7 @@ public class UsbSerialHelper {
             //  shift the container into the correct list
             portContainer pc = new portContainer();
             pc.port = container.port;
-            pc.friendlyName = container.friendlyName;
+            pc.setFriendlyName(container.getFriendlyName());
             pc.sioManager = container.sioManager;
             pc.baudRate = container.baudRate;
             pc.vendorID = container.vendorID;
@@ -641,10 +606,10 @@ public class UsbSerialHelper {
 
             //  Is this container already in the pending list?
             //  If so, don't add it again
-            if(null == findContainer( PENDING, container.friendlyName )){
+            if(null == findContainer( PENDING, container.getFriendlyName() )){
                 if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort adding port to PENDING list");
                 portContainer tentPort = new portContainer();
-                tentPort.friendlyName = container.friendlyName;
+                tentPort.setFriendlyName(container.getFriendlyName());
                 tentPort.port = null;
                 tentPort.sioManager = null;
                 tentPort.vendorID = container.vendorID;
@@ -707,7 +672,7 @@ public class UsbSerialHelper {
         portContainer pc = new portContainer();
         if(null != container){
         pc.port = container.port;
-        pc.friendlyName = container.friendlyName;
+        pc.setFriendlyName(container.getFriendlyName());
         pc.sioManager = container.sioManager;
         pc.baudRate = container.baudRate;
         pc.vendorID = container.vendorID;

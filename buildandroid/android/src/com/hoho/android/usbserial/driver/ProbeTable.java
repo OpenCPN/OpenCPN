@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import android.util.Log;
 
 /**
  * Maps (vendor id, product id) pairs to the corresponding serial driver.
@@ -48,6 +49,7 @@ public class ProbeTable {
      */
     public ProbeTable addProduct(int vendorId, int productId,
             Class<? extends UsbSerialDriver> driverClass) {
+
         mProbeTable.put(Pair.create(vendorId, productId), driverClass);
         return this;
     }

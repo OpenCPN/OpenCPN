@@ -14,12 +14,6 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="prefb_dAISy"
-            android:title="@string/ocpn_prefs_conn_daisy"
-            android:summary=""
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
             android:key="prefb_FT232R"
             android:title="@string/ocpn_prefs_conn_FT232R"
             android:summary="@string/ocpn_prefs_conn_summary_compatible"
@@ -32,14 +26,8 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="prefb_MCP000A"
-            android:title="Microchip Serial USB, type A"
-            android:summary="@string/ocpn_prefs_conn_summary_compatible"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
-            android:key="prefb_MCP0205"
-            android:title="Microchip Serial USB, type 205"
+            android:key="prefb_USBDP"
+            android:title="Detected USB Device"
             android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 

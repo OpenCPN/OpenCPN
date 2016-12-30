@@ -18,11 +18,4 @@
     <!-- 0x067B / 0x2303: Prolific PL2303 -->
     <usb-device vendor-id="1659" product-id="8963" />
 
-     <!-- 0x16D0 / 0x0B03: dAISy receiver -->
-    <usb-device vendor-id="5840" product-id="2819" />
-
-     <!-- 0X04D8 /  Microchip USB -->
-    <usb-device vendor-id="9476" />
-
-
 </resources>

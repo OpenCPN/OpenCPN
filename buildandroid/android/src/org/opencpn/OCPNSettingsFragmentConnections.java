@@ -93,6 +93,10 @@ import android.preference.PreferenceCategory;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceScreen;
 import android.content.SharedPreferences;
+import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.widget.Button;
+import android.view.ViewGroup;
 
 import org.opencpn.opencpn.R;
 
@@ -103,6 +107,8 @@ import android.view.ActionMode.Callback;
 //@ANDROID-11
 
 public class OCPNSettingsFragmentConnections extends PreferenceFragment {
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,11 +119,9 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences_connections);
 
         boolean bPL2303 = false;
-        boolean bdAISy = false;
         boolean bFT232R = false;
         boolean bFT231X = false;
-        boolean bMCP000A = false;
-        boolean bMCP0205 = false;
+        boolean bUSBDP = false;
 
         // Retrieve initial arguments
         Bundle extras = getArguments();
@@ -129,34 +133,32 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
 
                 if(serialString.contains("2303"))
                     bPL2303 = true;
-                if(serialString.contains("dAISy"))
-                    bdAISy = true;
                 if(serialString.contains("FT232R"))
                     bFT232R = true;
                 if(serialString.contains("FT231X"))
                     bFT231X = true;
-                if(serialString.contains("MCP_000A"))
-                    bMCP000A = true;
-                if(serialString.contains("MCP_0205"))
-                    bMCP0205 = true;
-
+                if(serialString.contains("USBDP")){
+                    Preference pref = findPreference("prefb_USBDP");
+                    if(null != pref){
+                        int idx = serialString.indexOf("USBDP");
+                        String pidvid = serialString.substring(idx+6, idx+15);
+                        pref.setSummary("Vid/Pid: " + pidvid);
+                    }
+                    bUSBDP = true;
+                }
             }
         }
 
 
          SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+         if(preferences.getBoolean("prefb_USBDP", false) == true)
+            Log.i("OpenCPN", "OCPNSettingsFragmentConnections.prefb_USBDP true ");
+
          PreferenceScreen screen = getPreferenceScreen();
 
          CheckBoxPreference cPref = (CheckBoxPreference)findPreference("prefb_PL2303");
          if(null != cPref){
              if(!bPL2303){
-                 screen.removePreference(cPref);
-             }
-         }
-
-         cPref = (CheckBoxPreference)findPreference("prefb_dAISy");
-         if(null != cPref){
-             if(!bdAISy){
                  screen.removePreference(cPref);
              }
          }
@@ -175,19 +177,11 @@ public class OCPNSettingsFragmentConnections extends PreferenceFragment {
              }
          }
 
-         cPref = (CheckBoxPreference)findPreference("prefb_MCP000A");
+         cPref = (CheckBoxPreference)findPreference("prefb_USBDP");
          if(null != cPref){
-             if(!bMCP000A){
+             if(!bUSBDP){
                  screen.removePreference(cPref);
              }
          }
-
-         cPref = (CheckBoxPreference)findPreference("prefb_MCP0205");
-         if(null != cPref){
-             if(!bMCP0205){
-                 screen.removePreference(cPref);
-             }
-         }
-
     }
 }

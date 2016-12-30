@@ -689,7 +689,7 @@ extern "C"{
         //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
         //  But we may want to synthesize messages from the Java app, even without a definite connection, and we want to process these messages too.
         //  So assume that the global MUX, if present, will handle these synthesized messages.
-        if( !s_pAndroidNMEAMessageConsumer ) 
+        if( !s_pAndroidNMEAMessageConsumer && g_pMUX ) 
             s_pAndroidNMEAMessageConsumer = g_pMUX;
         
         
@@ -835,7 +835,7 @@ extern "C"{
         //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
         //  But we may get synthesized messages from the Java app, even without a definite connection, and we want to process these messages too.
         //  So assume that the global MUX, if present, will handle these messages.
-        if( !s_pAndroidNMEAMessageConsumer ) 
+        if( !s_pAndroidNMEAMessageConsumer && g_pMUX ) 
             s_pAndroidNMEAMessageConsumer = g_pMUX;
                 
             
@@ -2648,22 +2648,22 @@ wxString BuildAndroidSettingsString( void )
                     result += _T("prefb_FT231X:");
                     result += cp->bEnabled ? _T("1;") : _T("0;");
                 }
-                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("MCP_000A"))){
-                    result += _T("prefb_MCP000A:");
+                else if(wxNOT_FOUND != cp->GetPortStr().Find(_T("USBDP"))){
+                    result += _T("prefb_USBDP:");
                     result += cp->bEnabled ? _T("1;") : _T("0;");
                 }
             }                    
         }
     
-    wxLogMessage(result);
+    wxLogMessage(_T("BuildAndroidSettingsString: ") + result);
     
     return result;
 }
 
 const wxString AUSBNames[] = { _T("AUSBSerial:Prolific_PL2303"), _T("AUSBSerial:FTDI_FT232R"), _T("AUSBSerial:FTDI_FT231X"), _T("AUSBSerial:dAISy"),
-                _T("AUSBSerial:MCP_000A"), _T("LASTENTRY") };
+                _T("AUSBSerial:USBDP"), _T("LASTENTRY") };
 const wxString AUSBPrefs[] = { _T("prefb_PL2303"),               _T("prefb_FT232R"),           _T("prefb_FT231X"),           _T("prefb_dAISy"),
-                _T("prefb_MCP000A"),         _T("LASTENTRY") };
+                _T("prefb_USBDP"),         _T("LASTENTRY") };
 
 
 int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
@@ -2978,23 +2978,38 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                 wxString token = tk.GetNextToken();
                 wxString pref = token.BeforeFirst(':');
                 wxString val = token.AfterFirst(':');
+                wxString extraString;
+                
+                
                 bool benabled = false;
                 
                 if(pref.IsSameAs(AUSBPrefs[i])){
+
+                    wxLogMessage(_T("pref: ") + pref);
+                    wxLogMessage(_T("val: ") + val);
+                    
+                    if(pref.Contains(_T("USBDP"))){
+                        extraString = val.AfterFirst(':');
+                        wxLogMessage(_T("extra: ") + extraString);
+                    }
+                            
+                    wxLogMessage(_T("found pref ") + pref);
                     
                     //  Does the connection already exist?
                     ConnectionParams *pExistingParams = NULL;
                     ConnectionParams *cp = NULL;
                     
+                    wxString target = AUSBNames[i] + _T("-") + extraString;
+                    
                     for ( unsigned int j = 0; j < g_pConnectionParams->Count(); j++ )
                     {
                         ConnectionParams *xcp = g_pConnectionParams->Item(j);
-                        wxLogMessage(AUSBNames[i] + " .. " +xcp->GetDSPort());
+                        wxLogMessage( _T("    Checking: ") + target + " .. " +xcp->GetDSPort());
                         
-                        if( (SERIAL == xcp->Type) && (AUSBNames[i].IsSameAs(xcp->GetDSPort().AfterFirst(':'))) ){
+                        if( (SERIAL == xcp->Type) && (target.IsSameAs(xcp->GetDSPort().AfterFirst(':'))) ){
                             pExistingParams = xcp;
                             cp = xcp;
-                            benabled = val.IsSameAs(_T("1"));
+                            benabled = val.BeforeFirst(':').IsSameAs(_T("1"));
                             break;
                         }
                     }
@@ -3002,20 +3017,24 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                     
                     bool b_action = true;
                     if(pExistingParams){
+                        wxLogMessage(_T("Using existing connection  ") + target);
+                        
                         if(pExistingParams->bEnabled == benabled){
                             b_action = false;                    // nothing to do...
                         }
                         else
                             cp->bEnabled = benabled;
                     }
-                    else if(val.IsSameAs(_T("1"))){           //  Need a new Params
+                    else if(val.BeforeFirst(':').IsSameAs(_T("1"))){           //  Need a new Params
                         // make a generic config string.
                         //0;1;;0;0;/dev/ttyS0;4800;1;0;0;;0;;1;0;0;0;0        17 parms
                         
                         wxString sSerial = _T("0;1;;0;0;");
                         sSerial += AUSBNames[i];
+                        sSerial += _T("-") + extraString;
                         sSerial += _T(";4800;1;0;0;;0;;1;0;0;0;0");
                         
+                        wxLogMessage(_T("Adding connection  ") + sSerial);
                         
                         ConnectionParams *new_params = new ConnectionParams(sSerial);
                         
