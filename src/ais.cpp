@@ -51,6 +51,7 @@
 #include "AISTargetAlertDialog.h"
 #include "AISTargetQueryDialog.h"
 #include "wx28compat.h"
+#include "OCPNPlatform.h"
 
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
@@ -58,6 +59,7 @@ extern  double          gLat, gLon, gSog, gCog;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
+extern OCPNPlatform     *g_Platform;
 
 int                      g_ais_cog_predictor_width;
 extern AIS_Decoder              *g_pAIS;
@@ -870,11 +872,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     //    Target is lost due to position report time-out, but still in Target List
     if( td->b_lost ) return;
     
-    float scale_factor = 1.0;
-//    if(g_bresponsive){
-        scale_factor =  g_ChartScaleFactorExp;
-//    }
-    
+    float scale_factor = g_ChartScaleFactorExp;
+
+    double nominal_line_width_pix = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2.0));             //0.5 mm nominal, but not less than 1 pixel
+        
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
     if( ( g_bHideMoored ) && ( td->SOG <= g_ShowMoored_Kts )
@@ -1114,6 +1115,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
+    wxPen target_outline_pen( UBLCK, nominal_line_width_pix );
+    
     //    Check for alarms here, maintained by AIS class timer tick
     if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
         //  Calculate the point of CPA for target
@@ -1389,7 +1392,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
         }
 
-        wxPen target_outline_pen( UBLCK, 2 );
         dc.SetPen( target_outline_pen );
         dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
         dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
@@ -1427,21 +1429,40 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 #ifdef ocpnUSE_GL
             wxColour c = target_brush.GetColour();
             glColor3ub(c.Red(), c.Green(), c.Blue());
+                        
+            glPushMatrix();
+            glTranslated(TargetPoint.x, TargetPoint.y, 0);
+            glScalef(scale_factor, scale_factor, scale_factor);
+                        
             glBegin(GL_TRIANGLE_FAN);
-
-            glVertex2i(ais_quad_icon[3].x + TargetPoint.x, ais_quad_icon[3].y  + TargetPoint.y);
-            glVertex2i(ais_quad_icon[0].x + TargetPoint.x, ais_quad_icon[0].y  + TargetPoint.y);
-            glVertex2i(ais_quad_icon[1].x + TargetPoint.x, ais_quad_icon[1].y  + TargetPoint.y);
-            glVertex2i(ais_quad_icon[2].x + TargetPoint.x, ais_quad_icon[2].y  + TargetPoint.y);
+            
+            glVertex2i(ais_quad_icon[3].x, ais_quad_icon[3].y);
+            glVertex2i(ais_quad_icon[0].x, ais_quad_icon[0].y);
+            glVertex2i(ais_quad_icon[1].x, ais_quad_icon[1].y);
+            glVertex2i(ais_quad_icon[2].x, ais_quad_icon[2].y);
             
             glEnd();
-
-            glLineWidth(1);
+ /*           
+            glLineWidth(nominal_line_width_pix);
             glColor3ub(0,0,0);
+            //      Enable anti-aliased lines, at best quality
+            glEnable( GL_LINE_SMOOTH );
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+            
             glBegin(GL_LINE_LOOP);
             for(int i=0; i<4; i++)
-                glVertex2i(ais_quad_icon[i].x + TargetPoint.x, ais_quad_icon[i].y  + TargetPoint.y);
+            glVertex2i(ais_quad_icon[i].x, ais_quad_icon[i].y);
             glEnd();
+            */
+ 
+            glPopMatrix();
+            
+            dc.SetPen( target_outline_pen );
+            dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
+            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
+                
 #endif
         }
 
