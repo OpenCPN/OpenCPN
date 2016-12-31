@@ -250,15 +250,15 @@ void BuildCompressedCache()
     
     wxString msg0;
 #ifdef __WXQT__    
-    msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg top line ");
+    msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggggggggggggggggggggggggggggg top line ");
 #endif    
 
     wxGenericProgressDialog  *prog = new wxGenericProgressDialog();
  
     wxSize csz = cc1->GetClientSize();
-    if(csz.x < 600 || csz.y < 600){
+    if(csz.x < 500 || csz.y < 500){
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));         // to get type, weight, etc...
-        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 10, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
+        wxFont *sFont = FontMgr::Get().FindOrCreateFont( 12, qFont->GetFamily(), qFont->GetStyle(), qFont->GetWeight());
         prog->SetFont( *sFont );
     }
     else{
@@ -272,7 +272,7 @@ void BuildCompressedCache()
     //    Make sure the dialog is big enough to be readable
     prog->Hide();
     wxSize sz = prog->GetSize();
-    sz.x = csz.x * 8 / 10;
+    sz.x = csz.x * 9 / 10;
 //    sz.y += thread_count * 40;          // allow for multiline messages
     prog->SetSize( sz );
 
@@ -311,6 +311,9 @@ void BuildCompressedCache()
                 msg += pchart->GetFullPath();
             }
 //            wxString cntmsg = wxString::Format(_T("%04d/%04d "), 0, origcnt);
+
+            msg.Prepend(_T("Preparing RNC Cache...\n"));
+
             prog->Update(j, msg, &skip );
             prog->SetSize(pprog_size);
 
