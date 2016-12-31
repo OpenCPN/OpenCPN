@@ -1274,13 +1274,13 @@ void ParseAllENC()
         workers[t] = NULL;
 #endif
         
-    long style =  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
+    long style =  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
 
     wxGenericProgressDialog *prog = new wxGenericProgressDialog();
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     prog->SetFont( *qFont );
     
-    prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggggggggggg"), count+1, NULL, style );
+    prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggg\nggggggggggggggggggggggggggggggggggggggggggggggggg"), count+1, NULL, style );
 
     // make wider to show long filenames
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
@@ -1318,6 +1318,8 @@ void ParseAllENC()
             msg += _T("   Chart:");
             msg += filename;
         }
+        
+        msg.Prepend(_T("Preparing ENC...\n"));
 
         count++;
         if(wxThread::IsMain()){
