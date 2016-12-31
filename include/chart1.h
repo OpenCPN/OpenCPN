@@ -198,6 +198,7 @@ enum
     ID_CMD_SELECT_CHART_TYPE,
     ID_CMD_SELECT_CHART_FAMILY,
     ID_CMD_INVALIDATE,
+    ID_CMD_CLOSE_ALL_DIALOGS,
     
 };
 
@@ -519,7 +520,8 @@ class MyFrame: public wxFrame
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
     void SetAISDisplayStyle(int StyleIndx);
-
+    void closeAllOpenDialogs();
+    
     int                 m_StatusBarFieldCount;
 
     ChartCanvas         *m_pchart_canvas;

@@ -502,7 +502,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             
             break;
  
-            
         case ACTION_FILECHOOSER_END:            //  Handle polling of android Dialog
             {
                 //qDebug() << "chooser poll";
@@ -637,7 +636,6 @@ void resizeAndroidPersistents()
 {
     
      if(g_androidUtilHandler){
-     
          g_androidUtilHandler->m_action = ACTION_RESIZE_PERSISTENTS;
          g_androidUtilHandler->m_eventTimer.Start(100, wxTIMER_ONE_SHOT);
      }
@@ -975,6 +973,12 @@ extern "C"{
         
         if(!g_btrackContinuous)
             androidGPSService( GPS_OFF );
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_CLOSE_ALL_DIALOGS );
+        if(gFrame && gFrame->GetEventHandler()){
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
         
         return 97;
     }

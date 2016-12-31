@@ -4402,6 +4402,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
+        case ID_CMD_CLOSE_ALL_DIALOGS:{
+            closeAllOpenDialogs();
+            break;
+        }
+        
         case ID_CMD_POST_JSON_TO_PLUGINS:{
             
             // Extract the Message ID which is embedded in the JSON string passed in the event
@@ -4445,6 +4450,31 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::closeAllOpenDialogs()
+{
+    if( g_pais_query_dialog_active )
+        g_pais_query_dialog_active->Close();
+    
+    if(g_pObjectQueryDialog)
+        g_pObjectQueryDialog->Close();
+    
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pTrackPropDialog ) {
+        pTrackPropDialog->Destroy();
+        pTrackPropDialog = NULL;
+    }
+    
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->Destroy();
+        pMarkPropDialog = NULL;
+    }
+    
 }
 
 void MyFrame::SetAISDisplayStyle(int StyleIndx)
