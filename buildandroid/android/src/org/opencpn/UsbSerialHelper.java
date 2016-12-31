@@ -230,7 +230,7 @@ public class UsbSerialHelper {
                 smsg = smsg.trim();
                 smsg += "\n";
 
-                if(DEBUG) Log.d("OpenCPN", "Formatted " + smsg);
+//                if(DEBUG) Log.d("OpenCPN", "Formatted " + smsg);
                 if(null != nativeLib)
                     nativeLib.processNMEA( smsg );
                 if(eol < messageNMEA.length()){
