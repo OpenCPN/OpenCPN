@@ -874,7 +874,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     
     float scale_factor = g_ChartScaleFactorExp;
 
-    double nominal_line_width_pix = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2.0));             //0.5 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.0));             //0.5 mm nominal, but not less than 1 pixel
         
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
@@ -1442,26 +1442,26 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             glVertex2i(ais_quad_icon[2].x, ais_quad_icon[2].y);
             
             glEnd();
- /*           
-            glLineWidth(nominal_line_width_pix);
-            glColor3ub(0,0,0);
-            //      Enable anti-aliased lines, at best quality
-            glEnable( GL_LINE_SMOOTH );
-            glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
             
-            glBegin(GL_LINE_LOOP);
-            for(int i=0; i<4; i++)
-            glVertex2i(ais_quad_icon[i].x, ais_quad_icon[i].y);
-            glEnd();
-            */
- 
+            // Depending on platform  (wx) capabilities, draw the nicest lines possible
+#if wxUSE_GRAPHICS_CONTEXT
             glPopMatrix();
             
             dc.SetPen( target_outline_pen );
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
             dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
+#else            
+            glLineWidth(nominal_line_width_pix);
+            glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
+            
+            glBegin(GL_LINE_LOOP);
+            for(int i=0; i<4; i++)
+                glVertex2i(ais_quad_icon[i].x, ais_quad_icon[i].y);
+            glEnd();
+            glPopMatrix();
+            
+#endif            
+            
                 
 #endif
         }
