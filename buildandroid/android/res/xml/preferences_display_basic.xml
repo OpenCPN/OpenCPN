@@ -64,6 +64,12 @@
         android:max="100"/>
 
     <CheckBoxPreference
+        android:key="prefb_noSleep"
+        android:title="@string/ocpn_prefs_display_nosleep"
+        android:summary="@string/ocpn_prefs_display_summary_nosleep"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
         android:key="prefb_expertmode"
         android:title="@string/ocpn_prefs_display_expertmode"
         android:summary="@string/ocpn_prefs_display_summary_expertmode"

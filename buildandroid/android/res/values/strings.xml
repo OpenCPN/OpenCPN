@@ -51,6 +51,8 @@
     <string name="ocpn_prefs_display_summary_expertmode">Showing toolbar and extended menus</string>
     <string name="ocpn_prefs_display_navigation_mode_NU">North Up</string>
     <string name="ocpn_prefs_display_navigation_mode_CU">Course Up</string>
+    <string name="ocpn_prefs_display_nosleep">Do not sleep</string>
+    <string name="ocpn_prefs_display_summary_nosleep">...while OpenCPN is active</string>
 
 
     <!-- Charts Preferences -->

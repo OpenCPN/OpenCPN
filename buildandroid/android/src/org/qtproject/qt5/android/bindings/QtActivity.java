@@ -2614,6 +2614,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                           nativeLib.invokeCmdEventCmdString( ID_CMD_APPLY_SETTINGS, m_settingsReturn);
                      }
                 }, 100);
+
+            //  Apply any Android private settings
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+                Boolean bnoSleep = preferences.getBoolean("prefb_noSleep", false);
+                if(bnoSleep)
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                else
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
             }
             else if (resultCode == RESULT_CANCELED){
             }
@@ -3135,6 +3145,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //            return;
 //      }
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean bnoSleep = preferences.getBoolean("prefb_noSleep", false);
+        if(bnoSleep)
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
  //----------------------------------------------------------------------------
         // Set up ActionBar spinner navigation
