@@ -3443,6 +3443,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         super.onDestroy();
 
         QtApplication.invokeDelegate();
+
+        //  The Delegate will not return, since it does (in QtActivityDelegate.java)
+        // System.exit(0);// FIXME remove it or find a better way
+
+        Log.i("OpenCPN", "onDestroy Done");
+
     }
     //---------------------------------------------------------------------------
 
@@ -3688,10 +3694,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Log.i("OpenCPN", "onPause "  + this);
 
         if(null != nativeLib)
-            nativeLib.onPause();
-
-        //if(null != uSerialHelper)
-         //   uSerialHelper.deinitUSBSerial(this);
+           nativeLib.onPause();
 
         // Disconnect the SailTimer API broadcast receiver
         unregisterReceiver(mGattUpdateReceiver);
@@ -3903,17 +3906,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     {
         Log.i("OpenCPN", "onStop " + this);
 
-        int i = nativeLib.onStop();
+        nativeLib.onStop();
 
         if(null != uSerialHelper)
             uSerialHelper.deinitUSBSerial(this);
 
-        String aa;
-        aa = String.format("%d", i);
-        //Log.i("DEBUGGER_TAG", aa);
-
         super.onStop();
         QtApplication.invokeDelegate();
+
+        Log.i("OpenCPN", "onStop Done");
+
     }
     //---------------------------------------------------------------------------
 

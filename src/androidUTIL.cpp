@@ -959,7 +959,7 @@ extern "C"{
         if(g_bstress1) ShowNavWarning();
         
         g_running = true;
-        
+
         return 99;
     }
 }
@@ -973,12 +973,6 @@ extern "C"{
         
         if(!g_btrackContinuous)
             androidGPSService( GPS_OFF );
-        
-        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-        evt.SetId( ID_CMD_CLOSE_ALL_DIALOGS );
-        if(gFrame && gFrame->GetEventHandler()){
-            gFrame->GetEventHandler()->AddPendingEvent(evt);
-        }
         
         return 97;
     }
@@ -1001,16 +995,17 @@ extern "C"{
         if(cc1){
             glChartCanvas *glc = cc1->GetglCanvas();
             QGLWidget *glw = glc->GetHandle();
-            qDebug() << glw;
+//            qDebug() << glw;
             if(glw){
                  QGLContext *context = glw->context();
-                 qDebug() << context;
+//                 qDebug() << context;
                  if(context){
-                     qDebug() << context->isValid();
+//                     qDebug() << context->isValid();
                      if(context->isValid())
                          ret = 1;
                      else{
                          wxLogMessage(_T("OpenGL Lost Context"));
+                         qDebug() << "OpenGL Lost Context";
                          ret = 0;
                      }
  
@@ -1018,9 +1013,13 @@ extern "C"{
             }
         }
         
+        wxCommandEvent evt0(wxEVT_COMMAND_MENU_SELECTED);
+        evt0.SetId( ID_CMD_CLOSE_ALL_DIALOGS );
+        if(gFrame && gFrame->GetEventHandler())
+            gFrame->GetEventHandler()->AddPendingEvent(evt0);
+        
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         evt.SetId( ID_CMD_INVALIDATE );
-        
         if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
 
@@ -1059,11 +1058,8 @@ extern "C"{
             evt.SetExtraLong( family);
         }
         
-        if(gFrame){
-//            qDebug() << "add event" << type << family;
+        if(gFrame)
             gFrame->GetEventHandler()->AddPendingEvent(evt);
-        }
-
         
         return 74;
     }

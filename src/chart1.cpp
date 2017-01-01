@@ -2334,6 +2334,7 @@ extern ocpnGLOptions g_GLOptions;
 int MyApp::OnExit()
 {
     wxLogMessage( _T("opencpn::MyApp starting exit.") );
+    qDebug() << "opencpn::MyApp starting exit.";
 
     //  Send current nav status data to log file   // pjotrc 2010.02.09
 
@@ -2459,6 +2460,8 @@ int MyApp::OnExit()
 
     g_Platform->OnExit_2();
 
+    qDebug() << "opencpn::MyApp finished exit.";
+    
     return TRUE;
 }
 
