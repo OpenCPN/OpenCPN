@@ -5519,40 +5519,25 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
     return NULL;
 
+  //  We check some values here for consistency.
+  //  If necessary, set defaults so user will see some result, however wrong...
+    
   //  DataStreams should be Input, Output, or Both
   if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-      m_pListbook->SetSelection(2);   // Raise connections page.
-      OCPNMessageBox(NULL, _("Data connection must be input, output or both"),
-                   _("OpenCPN Info"), wxICON_HAND);
-
-    return NULL;
+      m_cbInput->SetValue( true );
   }
 
   if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString) {
-      m_pListbook->SetSelection(2);   // Raise connections page.
-      OCPNMessageBox(NULL, _("You must select or enter the port..."),
-                   _("OpenCPN Info"), wxICON_HAND);
-    return NULL;
+      m_comboPort->Select(0);
   }
   //  TCP, GPSD and UDP require port field to be set.
   //  TCP clients, GPSD and UDP output sockets require an address
   else if (m_rbTypeNet->GetValue()) {
     if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-        m_pListbook->SetSelection(2);   // Raise connections page.
-        OCPNMessageBox(NULL, _("You must enter a port..."), _("OpenCPN Info"),
-                     wxICON_HAND);
-      return NULL;
+        m_tNetPort->SetValue(_T("2947"));       // reset to default
     }
     if (m_tNetAddress->GetValue() == wxEmptyString) {
-      if ((m_rbNetProtoGPSD->GetValue()) ||
-          (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue())) {
-          m_pListbook->SetSelection(2);   // Raise connections page.
-          OCPNMessageBox(NULL, _("You must enter the address..."),
-                       _("OpenCPN Info"), wxICON_HAND);
-        return NULL;
-      } else {
         m_tNetAddress->SetValue(_T("0.0.0.0"));
-      }
     }
   }
 
@@ -7948,6 +7933,8 @@ void options::SetDefaultConnectionParams(void) {
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
   m_choicePriority->Select(m_choicePriority->FindString(_T( "1" )));
 
+  m_tNetAddress->SetValue(_T("0.0.0.0"));
+  
   bool bserial = TRUE;
 #ifdef __WXGTK__
   if (!g_bserial_access_checked) bserial = FALSE;
