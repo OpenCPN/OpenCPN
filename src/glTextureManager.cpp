@@ -759,6 +759,8 @@ glTextureManager::glTextureManager()
     
     m_ticks = 0;
     m_skip = false;
+    m_bcompact = false;
+    m_skipout = false;
     
     m_timer.Connect(wxEVT_TIMER, wxTimerEventHandler( glTextureManager::OnTimer ), NULL, this);
     m_timer.Start(500);
@@ -789,17 +791,19 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                     bfound = true;
                     break;
                 }
-                    
                 tnode = tnode->GetNext();
             }
-            
             if(bfound){
                 wxString msgx;
                 if(1){
+                    int bar_length = NBAR_LENGTH;
+                    if(m_bcompact)
+                        bar_length = 20;
+                    
                     msgx += _T("\n[");
                     wxString block = wxString::Format(_T("%c"), 0x2589);
-                    float cutoff = ((event.nstat+1) / (float)event.nstat_max) * NBAR_LENGTH;
-                    for(int i=0 ; i < NBAR_LENGTH ; i++){
+                    float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
+                    for(int i=0 ; i < bar_length ; i++){
                         if(i <= cutoff)
                             msgx += block;
                         else
@@ -807,18 +811,21 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                     }
                     msgx += _T("]");
 
-                    wxString msgy;
-                    msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
-                    msgx += msgy;
+                    if(!m_bcompact){
+                        wxString msgy;
+                        msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
+                        msgx += msgy;
                 
-                    wxFileName fn(ticket->m_ChartPath);
-                    msgx += fn.GetFullName();
+                        wxFileName fn(ticket->m_ChartPath);
+                        msgx += fn.GetFullName();
+                    }
                 }
                 else
                     msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
                 
                 item->msgx = msgx;
             }
+
                 // look for an empty slot
             else{
                 bool bfound_empty = false;
@@ -836,7 +843,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                 if(bfound_empty){
                     item->file_path = ticket->m_ChartPath;
                     wxString msgx;
-                    msgx.Printf(_T("\n [%5d/%5d]"), event.nstat+1, event.nstat_max);
+                    msgx.Printf(_T("\n [%3d/%3d]"), event.nstat+1, event.nstat_max);
                     item->msgx = msgx;
                 }
             }
@@ -1418,8 +1425,13 @@ void glTextureManager::BuildCompressedCache()
     wxString msg0;
     msg0 = _T("                                                                               \n  \n  ");
     
+    #ifdef __WXQT__    
+    msg0 = _T("Very longgggggggggggggggggggggggggggggggggggggggggggg\ngggggggggggggggggggggggggggggggggggggggggggg top line ");
+    #endif    
+    
+    
     for(int i=0 ; i < m_max_jobs+1 ; i++)
-        msg0 += _T("\n    ");
+        msg0 += _T("\n                                             ");
     
     m_progDialog = new wxGenericProgressDialog();
     
@@ -1433,6 +1445,13 @@ void glTextureManager::BuildCompressedCache()
         sFont = FontMgr::Get().FindOrCreateFont( fontSize, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     
     m_progDialog->SetFont( *sFont );
+    
+    //  Should we use "compact" screen layout?
+    wxScreenDC sdc;
+    int height, width;
+    sdc.GetTextExtent(_T("[WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW]"), &width, &height, NULL, NULL, sFont);
+    if(width > (csz.x / 2))
+        m_bcompact = true;
     
     
     m_progDialog->Create(_("OpenCPN Compressed Cache Update"), msg0, count+1, NULL, style );
@@ -1452,6 +1471,7 @@ void glTextureManager::BuildCompressedCache()
     m_progDialog->Raise();
     
     m_skipout = false;
+    m_skip = false;
     
     for( m_jcnt = 0; m_jcnt<ct_array.GetCount(); m_jcnt++) {
         
@@ -1526,8 +1546,12 @@ void glTextureManager::BuildCompressedCache()
                     wxThread::Sleep(1);
                 }
                 
-                if(m_skipout)
-                    break;          // the for loop
+                if(m_skipout) {
+                    g_glTextureManager->PurgeJobList();
+                    ChartData->DeleteCacheChart(pchart);
+                    delete tex_fact;
+                    break;
+                }
             }
     }
     
