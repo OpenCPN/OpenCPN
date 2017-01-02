@@ -2197,7 +2197,8 @@ extern ocpnGLOptions g_GLOptions;
 //        if( g_FloatingToolbarDialog )
 //            g_FloatingToolbarDialog->Hide();
 
-        BuildCompressedCache();
+        if(g_glTextureManager)
+            g_glTextureManager->BuildCompressedCache();
 
     }
 #endif
@@ -5768,9 +5769,11 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
 #ifdef ocpnUSE_GL
     if(rr & REBUILD_RASTER_CACHE){
-        cc1->Disable();
-        BuildCompressedCache();
-        cc1->Enable();
+        if(g_glTextureManager){
+            cc1->Disable();
+            g_glTextureManager->BuildCompressedCache();
+            cc1->Enable();
+        }
     }
 #endif
 

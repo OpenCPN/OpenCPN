@@ -30,8 +30,36 @@
 const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
 
 class JobTicket;
+class wxGenericProgressDialog;
 
 WX_DECLARE_LIST(JobTicket, JobList);
+
+class ProgressInfoItem;
+WX_DECLARE_LIST(ProgressInfoItem, ProgressInfoList);
+
+class ProgressInfoItem
+{
+public:
+    ProgressInfoItem(){};
+    ~ProgressInfoItem(){};
+    
+    wxString file_path;
+    wxString msgx;
+};
+
+
+
+class CompressionPoolThread : public wxThread
+{
+public:
+    CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target);
+    void *Entry();
+    
+    wxEvtHandler        *m_pMessageTarget;
+    JobTicket           *m_ticket;
+};
+
+
 
 class OCPN_CompressionThreadEvent: public wxEvent
 {
@@ -45,10 +73,42 @@ public:
     
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
+
+    int        type;
+    int        nstat;
+    int        nstat_max;
     
 private:
     JobTicket  * m_ticket;
 };
+
+class CompressionPoolThread;
+class JobTicket
+{
+public:
+    JobTicket();
+    ~JobTicket() { free(level0_bits); }
+    bool DoJob();
+    bool DoJob(const wxRect &rect);
+    
+    glTexFactory *pFact;
+    wxRect       rect;
+    int         level_min_request;
+    int         ident;
+    bool        b_throttle;
+    
+    CompressionPoolThread *pthread;
+    unsigned char *level0_bits;
+    unsigned char *comp_bits_array[10];
+    wxString    m_ChartPath;
+    bool        b_abort;
+    bool        b_isaborted;
+    bool        bpost_zip_compress;
+    bool        binplace;
+    unsigned char *compcomp_bits_array[10];
+    int         compcomp_size_array[10];
+};
+
 
 //      This is a hashmap with Chart full path as key, and glTexFactory as value
 WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
@@ -74,7 +134,8 @@ public:
     bool PurgeChartTextures(ChartBase *pc, bool b_purge_factory = false);
     bool TextureCrunch(double factor);
     bool FactoryCrunch(double factor);
-
+    void BuildCompressedCache();
+    
     //    This is a hash table
     //    key is Chart full path
     //    Value is glTexFactory*
@@ -93,6 +154,12 @@ private:
 
     wxTimer     m_timer;
     size_t      m_ticks;
+    wxGenericProgressDialog *m_progDialog;
+    wxString    m_progMsg;
+    unsigned int  m_jcnt;
+    ProgressInfoList    progList;
+    bool        m_skip;
+    bool        m_skipout;
 };
 
 class glTextureDescriptor;
