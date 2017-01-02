@@ -160,6 +160,7 @@ private:
     ProgressInfoList    progList;
     bool        m_skip;
     bool        m_skipout;
+    bool        m_bcompact;
 };
 
 class glTextureDescriptor;
