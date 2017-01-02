@@ -548,6 +548,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     hilitebox = r3;
     hilitebox.x -= r.x;
     hilitebox.y -= r.y;
+    
+    hilitebox.x *= g_ChartScaleFactorExp;
+    hilitebox.y *= g_ChartScaleFactorExp;
+    hilitebox.width  *= g_ChartScaleFactorExp;
+    hilitebox.height *= g_ChartScaleFactorExp;
+    
     float radius;
     if( g_btouch ){
         hilitebox.Inflate( 20 );
