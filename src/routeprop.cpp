@@ -87,6 +87,7 @@ extern wxPrintData               *g_printData;
 extern wxPageSetupData*          g_pageSetupData;
 
 extern float g_ChartScaleFactorExp;
+extern int   g_GUIScaleFactor;
 
 /*!
 * Helper stuff for calculating Route Plans
@@ -3106,20 +3107,18 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         m_bcomboBoxIcon->Clear();
         //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
-        wxImageList *icons = pWayPointMan->Getpmarkicon_image_list();
+        
+        double factor = GetCharHeight() / (double)16.0;   // Because I know what the base icon size is....
+        factor = wxMin(3.0, factor);            // not greater than 3
+        factor = wxMax(1.0, factor);            // nor less than 1
+        
+        wxImageList *icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
 
         int target = 16;
-        if( fillCombo  && icons){
+        if( fillCombo  && icon_list){
             for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
                 wxString *ps = pWayPointMan->GetIconDescription( i );
-                wxBitmap bmp = icons->GetBitmap( i );
-
-                if(g_ChartScaleFactorExp > 1.0){
-                    target = bmp.GetHeight() * g_ChartScaleFactorExp;
-                    wxImage img = bmp.ConvertToImage();
-                    img.Rescale(target, target, wxIMAGE_QUALITY_HIGH);
-                    bmp = wxBitmap(img);
-                }
+                wxBitmap bmp = icon_list->GetBitmap( i );
                 
                 m_bcomboBoxIcon->Append( *ps, bmp );
             }
@@ -3134,14 +3133,14 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         //  not found, so add  it to the list, with a generic bitmap and using the name as description
         // n.b.  This should never happen...
-        if( icons && -1 == iconToSelect){
-            m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icons->GetBitmap( 0 ) );
+        if( icon_list && -1 == iconToSelect){
+            m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icon_list->GetBitmap( 0 ) );
             iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
         }
         
         
         m_bcomboBoxIcon->Select( iconToSelect );
-        icons = NULL;
+        icon_list = NULL;
     }
 
     #ifdef __OCPN__ANDROID__

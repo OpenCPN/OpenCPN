@@ -1062,6 +1062,7 @@ WayPointman::WayPointman()
     ProcessIcons( style );
 
     m_nGUID = 0;
+    m_iconListScale = -999.0;
 }
 
 WayPointman::~WayPointman()
@@ -1247,8 +1248,15 @@ void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxStr
     pmi->icon_texture = 0; /* invalidate */
 }
 
-wxImageList *WayPointman::Getpmarkicon_image_list( void )
+wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
 {
+    // Cached version available?
+    if( pmarkicon_image_list && (fabs(scale-m_iconListScale) < .001)){
+        return pmarkicon_image_list;
+    }
+    
+    //  Create the scaled list
+    
     // First find the largest bitmap size
     int w = 0;
     int h = 0;
@@ -1268,6 +1276,9 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
 
     }
 
+    w *= scale;
+    h *= scale;
+    
     // Build an image list large enough
 
     if( NULL != pmarkicon_image_list ) {
@@ -1289,8 +1300,7 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
 
         wxImage icon_larger;
         if( h0 <= h && w0 <= w ) {
-            // Resize & Center smaller icons in the bitmap, so menus won't look so weird.
-            icon_larger = icon_image.Resize( wxSize( w, h ), wxPoint( (w-w0)/2, (h-h0)/2 ) );
+            icon_larger = icon_image.Rescale(  w, h, wxIMAGE_QUALITY_HIGH  );
         } else {
             // rescale in one or two directions to avoid cropping, then resize to fit to cell
             int h1 = h;
@@ -1337,10 +1347,14 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
         wxMask *pmask = new wxMask(bmp, unused_color);
         bmp.SetMask( pmask );
 
-        pmarkicon_image_list->Add( bmp );
+        wxImage imgu = bmp.ConvertToImage();
+//         if(scale > 1)
+//             imgu.Rescale(imgu.GetWidth() * scale, imgu.GetHeight() * scale, wxIMAGE_QUALITY_HIGH);
+        
+        pmarkicon_image_list->Add( imgu );
     }
         
-        
+    m_iconListScale = scale;
         
     return pmarkicon_image_list;
 }
