@@ -187,8 +187,8 @@ public:
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);
 
-      wxImageList *Getpmarkicon_image_list(void);
-
+      wxImageList *Getpmarkicon_image_list( double scale = 1.0 );
+      
       bool AddRoutePoint(RoutePoint *prp);
       bool RemoveRoutePoint(RoutePoint *prp);
       RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
@@ -204,6 +204,7 @@ private:
       wxArrayPtrVoid    *m_pIconArray;
 
       int         m_nGUID;
+      double      m_iconListScale;
 };
 
 #endif
