@@ -975,10 +975,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     int targetscale = 100;
     if ( g_bAllowShowScaled && g_bShowScaled ){
+        if (td->NavStatus <= 15){ // NavStatus > 15 is AtoN, and we don want AtoN being counted for attenuation           
             double temp_importance, So, Tcpa, Cpa, Rang, Siz = 0.; //calc the importance of target
             So = g_ScaledNumWeightSOG/12 * td->SOG; //0 - 12 knts gives 0 - g_ScaledNumWeightSOG weight
             if (So > g_ScaledNumWeightSOG) So = g_ScaledNumWeightSOG; 
-                       
+                    
             if (td->bCPA_Valid){
                 Cpa=g_ScaledNumWeightCPA - g_ScaledNumWeightCPA/4 * td->CPA;
                 //if TCPA is positief (target is coming closer), make weight of CPA bigger
@@ -990,7 +991,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             Rang = g_ScaledNumWeightRange / 10 * td->Range_NM;
             if ( Rang > g_ScaledNumWeightRange ) Rang = g_ScaledNumWeightRange;
             Rang = g_ScaledNumWeightRange - Rang;
-                                                   
+                                                
             Siz = g_ScaledNumWeightSizeOfT/30*( td->DimA + td->DimB);
             if ( Siz > g_ScaledNumWeightSizeOfT ) Siz = g_ScaledNumWeightSizeOfT;
             temp_importance = So + Cpa + Rang + Siz;
@@ -1004,7 +1005,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             if ( td->importance  > ImportanceSwitchPoint ) targetscale = td->last_scale +5; 
             if ( targetscale > 100 ) targetscale = 100;
             if ( targetscale < 50 ) targetscale = 50;//g_ScaledSizeMinimal;
-            td->last_scale = targetscale;            
+            td->last_scale = targetscale; 
+            }//if (td->NavStatus <= 15){ // NavStatus > 15 is AtoN
         }//if (g_bShowScaled
     
     //  Draw the icon rotated to the COG
@@ -1659,6 +1661,7 @@ void AISDraw( ocpnDC& dc )
     //    This way, fast targets are not obscured by slow/stationary targets
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
+        td->importance = 0; //Set all importance top zero at start of ais-draw serie
         if( ( td->SOG < g_ShowMoored_Kts )
                 && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) ) 
         {
