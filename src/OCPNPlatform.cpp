@@ -233,6 +233,10 @@ extern Select                    *pSelect;
 extern Select                    *pSelectTC;
 extern Select                    *pSelectAIS;
 
+extern Select                    *pSelect;
+extern Select                    *pSelectTC;
+extern Select                    *pSelectAIS;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
 #endif
@@ -546,10 +550,9 @@ void OCPNPlatform::Initialize_2( void )
 void OCPNPlatform::Initialize_3( void )
 {
 #ifdef __OCPN__ANDROID__
-    if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * GetDisplayDPmm()) );
-    if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * GetDisplayDPmm()) );
-    if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * GetDisplayDPmm()) );
-
+    if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
+    if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
+    if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
 #endif    
 }
 
