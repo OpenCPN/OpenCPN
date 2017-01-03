@@ -2316,6 +2316,8 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
+    OCPNPlatform::Initialize_3( );
+    
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif

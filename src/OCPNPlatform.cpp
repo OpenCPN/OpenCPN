@@ -45,6 +45,7 @@
 #include "ConnectionParams.h"
 #include "FontMgr.h"
 #include "s52s57.h"
+#include "Select.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -223,6 +224,10 @@ extern bool                     g_oz_vector_scale;
 extern int                      g_nTrackPrecision;
 extern wxString                 g_toolbarConfig;
 extern bool                     g_bPreserveScaleOnX;
+
+extern Select                    *pSelect;
+extern Select                    *pSelectTC;
+extern Select                    *pSelectAIS;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
@@ -534,7 +539,13 @@ void OCPNPlatform::Initialize_2( void )
 }
 
 //  Called from MyApp() just before end of MyApp::OnInit()
-void OCPNPlatform::Initialize_3( void ){
+void OCPNPlatform::Initialize_3( void )
+{
+#ifdef __OCPN__ANDROID__
+    if(pSelect) pSelect->SetSelectPixelRadius(wxMax( 25, 6.0 * getAndroidDPmm()) );
+    if(pSelectTC) pSelectTC->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
+    if(pSelectAIS) pSelectAIS->SetSelectPixelRadius( wxMax( 25, 6.0 * getAndroidDPmm()) );
+#endif    
 }
 
 void OCPNPlatform::OnExit_1( void ){
