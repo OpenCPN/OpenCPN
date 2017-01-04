@@ -64,6 +64,7 @@
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
+#include <dlfcn.h>
 #endif
 
 #ifdef ocpnUSE_GL
@@ -230,6 +231,7 @@ PlugInToolbarToolContainer::~PlugInToolbarToolContainer()
     delete bitmap_Rollover_night;
 }
 
+
 //-----------------------------------------------------------------------------------------------------
 //
 //          The PlugIn Manager Implementation
@@ -274,6 +276,12 @@ PlugInManager::PlugInManager(MyFrame *parent)
         wxRadioBox *box = new wxRadioBox(pFrame, -1, _T(""), wxPoint(0,0), wxSize(-1, -1), as);
         delete box;
     }
+    
+    
+    //  We need a soft reference to some functions in wxWidgets, to make sure they get linked from the static wx Libraries.
+    typedef __sighandler_t (*bsd_signal_func_t)(int, __sighandler_t);
+    bsd_signal_func_t bsd_signal_func_ref = (bsd_signal_func_t) dlsym(RTLD_DEFAULT, "bsd_signal");
+
 #endif
 
     #ifdef __OCPN_USE_CURL__
@@ -5794,6 +5802,7 @@ bool PlugInManager::HandleCurlThreadError(wxCurlThreadError err, wxCurlBaseThrea
 }
 #endif
 #endif
+
 
 bool LaunchDefaultBrowser_Plugin( wxString url )
 {
