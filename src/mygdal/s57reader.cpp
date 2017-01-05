@@ -2277,16 +2277,33 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
         /* If we don't have SG2D, check for SG3D */
         if( poDstSG2D == NULL )
         {
-            poSrcSG2D = poUpdate->FindField( "SG3D" );
             poDstSG2D = poTarget->FindField( "SG3D" );
+            if (poDstSG2D != NULL)
+            {
+                poSrcSG2D = poUpdate->FindField("SG3D");
+            }
         }
-
-        if( (poSrcSG2D == NULL && nCCUI != 2) || poDstSG2D == NULL )
+        
+        if( (poSrcSG2D == NULL && nCCUI != 2)
+            || (poDstSG2D == NULL && nCCUI != 1) )
         {
-            CPLAssert( FALSE );
+            //CPLAssert( FALSE );
             return FALSE;
         }
-
+        
+        if (poDstSG2D == NULL)
+        {
+            poTarget->AddField(poTarget->GetModule()->FindFieldDefn("SG2D"));
+            poDstSG2D = poTarget->FindField("SG2D");
+            if (poDstSG2D == NULL) {
+                //CPLAssert( FALSE );
+                return FALSE;
+            }
+            
+            // Delete null default data that was created
+            poTarget->SetFieldRaw( poDstSG2D, 0, NULL, 0 );
+        }
+        
         nCoordSize = poDstSG2D->GetFieldDefn()->GetFixedWidth();
 
         if( nCCUI == 1 ) /* INSERT */
@@ -2353,16 +2370,21 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
 /* -------------------------------------------------------------------- */
     if( poUpdate->FindField( "ATTF" ) != NULL )
     {
+        bool b_newField = false;
         DDFSubfieldDefn *poSrcATVLDefn;
         DDFField *poSrcATTF = poUpdate->FindField( "ATTF" );
         DDFField *poDstATTF = poTarget->FindField( "ATTF" );
 
         if(NULL == poDstATTF)
         {
-              //  This probably means that the update applies to an attribute that doesn't (yet) exist
-              //  To fix, we need to add an attribute, then update it.
-              CPLDebug( "S57","Could not find target ATTF field for attribute update");
-              return FALSE;
+            //  This probably means that the update applies to an attribute that doesn't (yet) exist
+            //  To fix, we need to add an attribute, then update it.
+            
+            DDFFieldDefn *poATTF = poTarget->GetModule()->FindFieldDefn( "ATTF" );
+            poTarget->AddField(poATTF);
+            poDstATTF = poTarget->FindField( "ATTF" );
+            b_newField = true;
+            
         }
 
         int     nRepeatCount = poSrcATTF->GetRepeatCount();
@@ -2384,6 +2406,15 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
             if( iTAtt == -1 )
                 iTAtt = poDstATTF->GetRepeatCount();
 
+            //  If we just added a new field above, then the first attribute will be 0.
+            //   We should replace this one    
+            if(b_newField){
+                if( poTarget->GetIntSubfield( "ATTF", 0, "ATTL", 0 ) == 0){
+                    iTAtt = 0;
+                    b_newField = false;
+                }
+            }
+                
             pszRawData = poSrcATTF->GetInstanceData( iAtt, &nDataBytes );
             poTarget->SetFieldRaw( poDstATTF, iTAtt, pszRawData, nDataBytes );
         }
