@@ -4579,10 +4579,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     senc.setRefLocn(ref_lat, ref_lon);
     senc.SetLODMeters(m_LOD_meters);
 
-    int ret = senc.createSenc200( FullPath000, SENCFileName );
-//    int ret = senc.createSenc124( FullPath000, SENCFileName );
+    int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
 
-    return ret;
+    if(ret == ERROR_INGESTING000)
+        return BUILD_SENC_NOK_PERMANENT;
+    else
+        return ret;
 }
 
 
