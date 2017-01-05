@@ -873,9 +873,21 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->b_lost ) return;
     
     float scale_factor = g_ChartScaleFactorExp;
+    if( g_ChartScaleFactorExp > 1.0 )
+        scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+    
+    //  Establish some graphic element line widths dependent on the platform display resolution
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 3.0));             //0.3 mm nominal, but not less than 1 pixel
 
-    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.0));             //0.5 mm nominal, but not less than 1 pixel
-        
+    float width_interceptbar_base = 3 * nominal_line_width_pix;
+    float width_interceptbar_top = 1.5 * nominal_line_width_pix;
+    float intercept_bar_circle_diameter = 4 * nominal_line_width_pix;
+    float width_interceptline = 2 * nominal_line_width_pix;
+    float width_cogpredictor_base = 3 * nominal_line_width_pix;
+    float width_cogpredictor_line = 1 * nominal_line_width_pix;
+    float width_target_outline = 1 * nominal_line_width_pix;
+    
+    
     //      Skip anchored/moored (interpreted as low speed) targets if requested
     //      unless the target is NUC or AtoN, in which case it is always displayed.
     if( ( g_bHideMoored ) && ( td->SOG <= g_ShowMoored_Kts )
@@ -1115,7 +1127,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
-    wxPen target_outline_pen( UBLCK, nominal_line_width_pix );
+    wxPen target_outline_pen( UBLCK, width_target_outline );
     
     //    Check for alarms here, maintained by AIS class timer tick
     if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
@@ -1131,7 +1143,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                        &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
         if( res != Invisible ) {
-            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( URED, width_cogpredictor_line, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
 
@@ -1165,10 +1177,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         if( ores != Invisible ) {
             wxColour yellow = GetGlobalColor( _T ( "YELO1" ) );
-            dc.SetPen( wxPen( yellow, 4 ) );
+            dc.SetPen( wxPen( yellow, width_interceptbar_base ) );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
-            wxPen ppPen2( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( URED, width_interceptbar_top, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
             dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
@@ -1176,11 +1188,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             //        Draw little circles at the ends of the CPA alert line
             wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
             dc.SetBrush( br );
-            dc.SetPen( wxPen( UBLCK ) );
+            dc.SetPen( wxPen( UBLCK, width_target_outline ) );
 
             //  Using the true ends, not the clipped ends
-            dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, 5 );
-            dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, 5 );
+            dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, intercept_bar_circle_diameter );
+            dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, intercept_bar_circle_diameter );
         }
 
         // Draw the intercept line from ownship
@@ -1193,7 +1205,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                                            0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
 
         if ( ownres != Invisible ) {
-            wxPen ppPen2 ( URED, 2, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2 ( URED, width_interceptline, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen(ppPen2);
 
@@ -1234,14 +1246,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             if( res != Invisible ) {
                     //    Draw a wider coloured line
                     if (targetscale >= 75){
-                        wxPen wide_pen( target_brush.GetColour(), g_ais_cog_predictor_width );
+                        wxPen wide_pen( target_brush.GetColour(), width_cogpredictor_base );
                         dc.SetPen( wide_pen );
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
 
-                    if( g_ais_cog_predictor_width > 1 ) {
-                        //    Draw a 1 pixel wide black line
-                        wxPen narrow_pen( UBLCK, 1 );
+                    if( width_cogpredictor_base > 1 ) {
+                        //    Draw narrow black line
+                        wxPen narrow_pen( UBLCK, width_cogpredictor_line );
                         dc.SetPen( narrow_pen );
                         dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
                     }
@@ -1288,7 +1300,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                     } else {
 #ifdef ocpnUSE_GL
                         
-                    // draw circle
+                        glPushMatrix();
+                        glTranslated(pixx1, pixy1, 0);
+                        glScalef(scale_factor, scale_factor, scale_factor);
+                        // draw circle
                         float points[] = {0.0f, 5.0f, 2.5f, 4.330127f, 4.330127f, 2.5f, 5.0f,
                                       0, 4.330127f, -2.5f, 2.5f, -4.330127f, 0, -5.1f,
                                       -2.5f, -4.330127f, -4.330127f, -2.5f, -5.0f, 0,
@@ -1303,15 +1318,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                       
                         glBegin(GL_TRIANGLE_FAN);
                         for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
-                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                            glVertex2i(points[i], points[i+1]);
                         glEnd();
 
                         glColor3ub(0, 0, 0);
-                        glLineWidth( 1 );
+                        glLineWidth( width_target_outline );
                         glBegin(GL_LINE_LOOP);
                         for(unsigned int i=0; i<(sizeof points) / (sizeof *points); i+=2)
-                            glVertex2i(pixx1 + points[i], pixy1 + points[i+1]);
+                            glVertex2i(points[i], points[i+1]);
                         glEnd();
+                        glPopMatrix();
 #endif                    
                     }
             }
@@ -1451,7 +1467,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
             dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
 #else            
-            glLineWidth(nominal_line_width_pix);
+            glLineWidth(width_target_outline);
             glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
             
             glBegin(GL_LINE_LOOP);
