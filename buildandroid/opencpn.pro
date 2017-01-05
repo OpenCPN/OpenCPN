@@ -223,7 +223,7 @@ INSTALLS += sound_deployment
 
 doc_deployment.files += $$PWD/../data/doc
 doc_deployment.path = /assets/files/doc
-#INSTALLS += doc_deployment
+INSTALLS += doc_deployment
 
 # The built-in PlugIns
 
