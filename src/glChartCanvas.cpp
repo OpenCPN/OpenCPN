@@ -2028,8 +2028,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         
         if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType < 2 )){
-            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
-            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;
+            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   // soften the scale factor a bit
+            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;
         }
         
         glScalef(scale_factor_x, scale_factor_y, 1);
