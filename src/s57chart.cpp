@@ -3280,7 +3280,7 @@ wxString s57chart::buildSENCName( const wxString& name)
 //    Find or Create a relevent SENC file from a given .000 ENC file
 //    Returns with error code, and associated SENC file name in m_S57FileName
 //-----------------------------------------------------------------------------------------------
-InitReturn s57chart::FindOrCreateSenc( const wxString& name )
+InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
 {
     //  This method may be called for a compressed .000 cell, so check and decompress if necessary
     wxString ext;
@@ -3432,7 +3432,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name )
 
     if( bbuild_new_senc ) {
         m_bneed_new_thumbnail = true; // force a new thumbnail to be built in PostInit()
-        build_ret_val = BuildSENCFile( m_TempFilePath, m_SENCFileName );
+        build_ret_val = BuildSENCFile( m_TempFilePath, m_SENCFileName, b_progress );
         if( BUILD_SENC_NOK_PERMANENT == build_ret_val ) 
             return INIT_FAIL_REMOVE;
         if( BUILD_SENC_NOK_RETRY == build_ret_val )
@@ -4566,7 +4566,7 @@ bool s57chart::GetBaseFileAttr( wxFileName fn )
     return true;
 }
 
-int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName )
+int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName, bool b_progress  )
 {
     //  LOD calculation
     double display_ppm = 1 / .00025;     // nominal for most LCD displays
