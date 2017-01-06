@@ -348,11 +348,11 @@ bool chartdldr_pi::SaveConfig(void)
 
 void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(NULL/*m_parent_window*/);
+    ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(parent);
     
     if( m_parent_window ){
-        int xmax = wxMin(parent->GetSize().GetWidth() - 80, 600);
-        int ymax = wxMin(::wxGetDisplaySize().GetHeight() - 100, 450);
+        int xmax = parent->GetSize().GetWidth() * 8 / 10;
+        int ymax = wxGetDisplaySize().GetHeight() / 2;
         dialog->SetSize(xmax, ymax);
         dialog->Layout();
         

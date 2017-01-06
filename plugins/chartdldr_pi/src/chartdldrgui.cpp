@@ -74,6 +74,7 @@ height: 30px;\
 
 #ifdef __OCPN__ANDROID__
 #include <QtWidgets/QScroller>
+#include "qdebug.h"
 #endif
 
 void AddSourceDlg::applyStyle()
@@ -451,15 +452,16 @@ ChartDldrPanel::~ChartDldrPanel()
 
 }
 
-ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+ChartDldrPrefsDlg::ChartDldrPrefsDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) 
+      : wxDialog( parent, id, title, pos, size, style )
 {
-        wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+        wxFont *pFont = OCPNGetFont(_("Dialog"), 0);
         if( pFont ) SetFont( *pFont );
-                                   
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+ 
+        this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
         #ifdef __OCPN__ANDROID__
-        this->GetHandle()->setStyleSheet( qtStyleSheet);
+//        this->GetHandle()->setStyleSheet( qtStyleSheet);
 //        QScroller::ungrabGesture(m_panelPredefined->GetHandle());
         #endif
         
