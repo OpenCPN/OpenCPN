@@ -534,7 +534,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                     }
                     else if( (jenv)->GetStringLength( s )){
                         const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-                        //qDebug() << "isFileChooserFinished returned " << ret_string;
+//                        qDebug() << "isFileChooserFinished returned " << ret_string;
                         if( !strncmp(ret_string, "cancel:", 7) ){
                             m_done = true;
                             m_stringResult = _T("cancel:");
@@ -542,7 +542,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                         else if( !strncmp(ret_string, "file:", 5) ){
                             m_done = true;
                             m_stringResult = wxString(ret_string, wxConvUTF8);
-                        }                            
+                        } 
                     }
                 }
                 
@@ -2421,7 +2421,7 @@ bool androidStopUSBSerial(wxString &portname)
 
 
 int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
-                        const wxString &suggestion, const wxString &wildcard, bool dirOnly)
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly, bool addFile)
 {
     wxString tresult;
     
@@ -2432,7 +2432,8 @@ int androidFileChooser( wxString *result, const wxString &initDir, const wxStrin
 
         wxString activityResult;
         if(dirOnly)
-            activityResult = callActivityMethod_s2s("DirChooserDialog", initDir, title);
+            activityResult = callActivityMethod_s2s2i("DirChooserDialog", initDir, title, addFile, 0);
+        
         else
             activityResult = callActivityMethod_s4s("FileChooserDialog", initDir, title, suggestion, wildcard);
         

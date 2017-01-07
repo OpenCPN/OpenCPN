@@ -46,7 +46,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import android.util.Base64;
 import java.util.Locale ;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.io.FileNotFoundException;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.SecretKey;
@@ -215,6 +217,11 @@ import org.opencpn.OCPNResultReceiver.Receiver;
 
 import com.caverock.androidsvg.SVG;
 import android.graphics.Bitmap;
+
+import android.support.v4.provider.DocumentFile;
+import android.provider.OpenableColumns;
+import android.provider.MediaStore;
+import android.os.ParcelFileDescriptor;
 
 public class QtActivity extends Activity implements ActionBar.OnNavigationListener, Receiver
 {
@@ -1697,7 +1704,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "OK";
    }
 
-   public String DirChooserDialog(final String initialDir, final String Title)
+   public String DirChooserDialog(final String initialDir, final String Title, final int addFile, final int spare)
    {
        m_FileChooserDone = false;
 
@@ -1706,6 +1713,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             Intent intent = new Intent(this, FileChooserActivity.class);
             intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
             intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+
             this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
         }
 
@@ -1729,7 +1737,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
                         dialog.setShowFullPath( true );
                         dialog.setFolderMode( true );
-                        dialog.setCanCreateFiles( true );
+                        dialog.setCanCreateFiles( addFile > 0 );
 
 
                         dialog.setTitle( Title );
@@ -2598,7 +2606,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-//        Log.i("DEBUGGER_TAG", "onActivityResultA");
         if (requestCode == OCPN_SETTINGS_REQUEST_CODE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
@@ -3065,7 +3072,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
-
 
 
 

@@ -97,7 +97,7 @@ extern bool androidStopUSBSerial(wxString &portname);
 
 extern bool DoAndroidPreferences( void );
 extern int androidFileChooser( wxString *result, const wxString &initDir, const wxString &title,
-                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false);
+                        const wxString &suggestion, const wxString &wildcard, bool dirOnly = false, bool addFiles = false);
 
 extern void androidSetChartTypeMaskSel( int mask, wxString &indicator);
 extern void androidSetRouteAnnunciator(bool viz);

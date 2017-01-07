@@ -1236,7 +1236,7 @@ int OCPNPlatform::DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, w
     return result;
 }
 
-int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir)
+int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir, bool b_addFiles)
 {
     wxString dir;
     int result = wxID_CANCEL;
@@ -1247,7 +1247,7 @@ int OCPNPlatform::DoDirSelectorDialog( wxWindow *parent, wxString *file_spec, wx
     if(initDir.StartsWith(_T("/data/data")))                 // not good, provokes a crash usually...
         idir = GetWritableDocumentsDir();
     
-    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true);    // Directories only
+    result = androidFileChooser(&dir, idir, Title, _T(""), _T(""), true, b_addFiles);    // Directories only, maybe add dirs
     if(file_spec)
         *file_spec = dir;
 #else

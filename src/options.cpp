@@ -5440,9 +5440,7 @@ void options::OnCharHook(wxKeyEvent& event) {
 
 void options::OnButtonaddClick(wxCommandEvent& event) {
   wxString selDir;
-  int dresult = g_Platform->DoDirSelectorDialog(
-      this, &selDir, _("Add a directory containing chart files"),
-      *pInit_Chart_Dir);
+  int dresult = g_Platform->DoDirSelectorDialog( this, &selDir, _("Add a directory containing chart files"),*pInit_Chart_Dir, false);      // no add files allowed
 
   if (dresult != wxID_CANCEL) AddChartDir(selDir);
 
