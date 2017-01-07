@@ -308,8 +308,8 @@ void ErrorHandler::SetSignalHandlers(bool Enable)
 #ifdef _WIN_ALL
   SetConsoleCtrlHandler(Enable ? ProcessSignal:NULL,TRUE);
 #else
-  signal(SIGINT,Enable ? ProcessSignal:SIG_IGN);
-  signal(SIGTERM,Enable ? ProcessSignal:SIG_IGN);
+//  signal(SIGINT,Enable ? ProcessSignal:SIG_IGN);
+//  signal(SIGTERM,Enable ? ProcessSignal:SIG_IGN);
 #endif
 #endif
 }
