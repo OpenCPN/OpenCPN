@@ -229,7 +229,7 @@ public:
       
       struct _chart_context     *m_this_chart_context;
 
-      InitReturn FindOrCreateSenc( const wxString& name );
+      InitReturn FindOrCreateSenc( const wxString& name, bool b_progress = true );
       
 protected:
     void AssembleLineGeometry( void );
@@ -247,7 +247,7 @@ private:
 
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
-      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName);
+      int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
       
       void SetLinePriorities(void);
 
