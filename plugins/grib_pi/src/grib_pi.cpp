@@ -360,11 +360,17 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
 {
 	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient(position);
     //Check and ensure there is always a "grabb" zone always visible wathever the dialoue size is.
-	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
-		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
-	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
-		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
+ 	if (p.x + dialog->GetSize().GetX() > GetOCPNCanvasWindow()->GetClientSize().GetX())
+ 		p.x = GetOCPNCanvasWindow()->GetClientSize().GetX() - dialog->GetSize().GetX();
+ 	if (p.y + dialog->GetSize().GetY() > GetOCPNCanvasWindow()->GetClientSize().GetY())
+ 		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
 
+#ifdef __OCPN__ANDROID__
+        //  But not off-screen, nor covering the toolbar, as estimated by the dialog size (y) iteself...        
+        p.x = wxMax(0, p.x);
+        p.y = wxMax(dialog->GetSize().y * 3 / 4, p.y);
+#endif        
+        
 #ifdef __WXGTK__
     dialog->Move(0, 0);
 #endif
@@ -419,6 +425,16 @@ void grib_pi::OnToolbarToolCallback(int id)
 			m_GUIScaleFactor = scale_factor;
 			m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
+            
+#ifdef __OCPN__ANDROID__            
+            //  The basic size should be about 7 buttons wide
+            wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
+            qDebug() << "7wide" << sz_nominal.x << GetOCPNGUIToolScaleFactor_PlugIn();
+            
+            wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+            m_pGribCtrlBar->SetSize(wxMin(csz.x, sz_nominal.x), -1);
+#endif
+            
             m_pGribCtrlBar->Refresh();
         } else {
 			MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());

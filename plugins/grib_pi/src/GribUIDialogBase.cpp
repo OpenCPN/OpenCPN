@@ -48,14 +48,16 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 	fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
 
+        m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
+        fgSizer50->Add( m_sTimeline, 0, wxEXPAND, 1 );
+        
 
-
+        
+        
+        
 
         wxBoxSizer *fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
         mainBox->Add( fgSizer51, 0, wxEXPAND, 5 );
-
-
-
 
 	m_bpAltitude = new wxBitmapButton( this, ID_CTRLALTITUDE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpAltitude->SetToolTip( _("Select geoptential altitude") );
@@ -76,36 +78,18 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
         fgSizer51->Add( m_bpShowCursorData, 0, wxALL, 1 );
 
 
-        fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
 	m_bpPlay = new wxBitmapButton( this, ID_BTNPLAY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
         fgSizer51->Add( m_bpPlay, 0, wxBOTTOM|wxLEFT|wxTOP, 1 );
 
-	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
-        fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
+        m_bpOpenFile = NULL;
 
         fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
-
-        m_bpOpenFile = NULL;
-//         m_bpOpenFile = new wxBitmapButton( this, ID_BTNOPENFILE, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-//         m_bpOpenFile->SetToolTip( _("Open a new file") );
-//         fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
-
-	m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+        m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
-
-        fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
+        fgSizer51->Add( m_bpSettings, 0, wxALL | wxALIGN_RIGHT, 1 );
 
         m_bpRequest = NULL;
         
-//         m_bpRequest = new wxBitmapButton( this, ID_BTNREQUEST, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-//         fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
-
-//         wxFlexGridSizer* fgSizer49;
-//         fgSizer49 = new wxFlexGridSizer( 0, 1, 0, 0 );
-//         fgSizer49->AddGrowableCol( 0 );
-//         fgSizer49->SetFlexibleDirection( wxVERTICAL );
-//         fgSizer49->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
  	m_fgCDataSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
         m_fgCDataSizer->SetFlexibleDirection( wxVERTICAL );
         m_fgCDataSizer->AddGrowableCol( 0 );
