@@ -899,6 +899,17 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
     wxString file_URI = tfn.GetFullPath();
 #endif    
 
+    
+#ifdef __OCPN__ANDROID__
+    wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
+    if(!testFile.IsOpened()){
+        wxMessageBox(wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
+        return;
+    }
+    testFile.Close();
+    ::wxRemoveFile(tfn.GetFullPath());
+#endif    
+    
     _OCPN_DLStatus ret = OCPN_downloadFile( cs->GetUrl(), file_URI,
                                  _("Downloading file"),
                                  _("Reading Headers: ") + url.BuildURI(), wxNullBitmap, this,
