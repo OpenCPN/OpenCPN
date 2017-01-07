@@ -1733,7 +1733,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        FileChooserDialog dialog = new FileChooserDialog(m_activity, initialDir);
+                        final FileChooserDialog dialog = new FileChooserDialog(m_activity, initialDir);
 
                         dialog.setShowFullPath( true );
                         dialog.setFolderMode( true );
@@ -1748,20 +1748,32 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                 //Toast toast = Toast.makeText(source.getContext(), "File selected: " + file.getName(), Toast.LENGTH_LONG);
                                 //toast.show();
 
+                                //Log.i("OpenCPN", "Activity onFileSelectedA: " + file.getPath());
                                 m_filechooserString = "file:" + file.getPath();
                                 m_FileChooserDone = true;
 
                             }
                             public void onFileSelected(Dialog source, File folder, String name) {
-                                source.hide();
-                                m_FileChooserDone = true;
+                                //Log.i("OpenCPN", "Activity onFileSelectedB: " + folder.getPath() +  File.separator + name);
+
+                                File newFolder = new File(folder.getPath() +  File.separator + name);
+                                boolean success = true;
+                                if (!newFolder.exists())
+                                    success = newFolder.mkdirs();
+
+                                if(!success){
+                                    Toast toast = Toast.makeText(source.getContext(), "Could not create file in: " + folder.getPath(), Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+
+                                dialog.loadFolder(folder.getPath());
                             }
 
                         });
 
                         dialog.setOnCancelListener(new OnCancelListener() {
                             public void onCancel(DialogInterface dialog) {
-                                //Log.i("DEBUGGER_TAG", "DirChooserDialog Cancel");
+                                Log.i("OpenCPN", "DirChooserDialog Cancel");
                                 m_filechooserString = "cancel:";
                                 m_FileChooserDone = true;
                             }
