@@ -8,7 +8,30 @@
     android:scrollbars="vertical" >
 
 
- <TextView
+    <LinearLayout
+        android:id="@+id/linearLayoutSource"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" >
+
+        <Button
+            android:id="@+id/buttonDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/device"
+            android:text="Device" />
+
+        <Button
+            android:id="@+id/buttonSDCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/microsd"
+            android:text="SDCard" />
+    </LinearLayout>
+
+     <TextView
         android:id="@+id/afdLabelInfo"
         android:layout_width="match_parent"
         android:gravity="center_horizontal"

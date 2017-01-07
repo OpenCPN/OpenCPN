@@ -43,6 +43,10 @@ import android.os.AsyncTask;
 import android.app.ProgressDialog;
 import android.util.Log;
 
+import android.content.Context;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class implements the common features of a file chooser.
  */
@@ -123,6 +127,8 @@ class FileChooserCore {
 	}
 
         ProgressBar m_progressBar;
+
+        String m_sdcardDir = null;
 
         public void setDone( boolean d){
                         m_done = d;
@@ -266,9 +272,94 @@ class FileChooserCore {
 		Button okButton = (Button) root.findViewById(R.id.buttonOk);
 		okButton.setOnClickListener(okButtonClickListener);
 
+                Button deviceButton = (Button) root.findViewById(R.id.buttonDevice);
+                deviceButton.setOnClickListener(deviceButtonClickListener);
+                Button sdcardButton = (Button) root.findViewById(R.id.buttonSDCard);
+                sdcardButton.setOnClickListener(sdcardButtonClickListener);
+
+                m_sdcardDir = isRemovableSDCardAvailable();
+
+                if(null == m_sdcardDir){
+                    sdcardButton.setVisibility( View.INVISIBLE);
+                    //deviceButton.setVisibility( View.INVISIBLE);
+                }
 
 	}
 	
+        /**
+         * Check if can create file on given directory. Use this enclose with method
+         * {@link BeginScreenFragement#isRemovableSDCardAvailable()} to check sd
+         * card is available on device or not.
+         *
+         * @param directory
+         * @return
+         */
+        public String canCreateFile(String directory) {
+            final String FILE_DIR = directory + File.separator + "hoang.txt";
+            File tempFlie = null;
+            try {
+                tempFlie = new File(FILE_DIR);
+                FileOutputStream fos = new FileOutputStream(tempFlie);
+                fos.write(new byte[1024]);
+                fos.flush();
+                fos.close();
+                Log.e("OpenCPN", "Can write file on this directory: " + FILE_DIR);
+            } catch (Exception e) {
+                Log.e("OpenCPN", "Write file error: " + e.getMessage());
+                return null;
+            } finally {
+                if (tempFlie != null && tempFlie.exists() && tempFlie.isFile()) {
+                    tempFlie.delete();
+                    tempFlie = null;
+                }
+            }
+            return directory;
+        }
+        public String isRemovableSDCardAvailable() {
+            final String FLAG = "mnt";
+            final String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
+            final String EXTERNAL_STORAGE_DOCOMO = System.getenv("EXTERNAL_STORAGE_DOCOMO");
+            final String EXTERNAL_SDCARD_STORAGE = System.getenv("EXTERNAL_SDCARD_STORAGE");
+            final String EXTERNAL_SD_STORAGE = System.getenv("EXTERNAL_SD_STORAGE");
+            final String EXTERNAL_STORAGE = System.getenv("EXTERNAL_STORAGE");
+
+            Map<Integer, String> listEnvironmentVariableStoreSDCardRootDirectory = new HashMap<Integer, String>();
+            listEnvironmentVariableStoreSDCardRootDirectory.put(0, SECONDARY_STORAGE);
+            listEnvironmentVariableStoreSDCardRootDirectory.put(1, EXTERNAL_STORAGE_DOCOMO);
+            listEnvironmentVariableStoreSDCardRootDirectory.put(2, EXTERNAL_SDCARD_STORAGE);
+            listEnvironmentVariableStoreSDCardRootDirectory.put(3, EXTERNAL_SD_STORAGE);
+            listEnvironmentVariableStoreSDCardRootDirectory.put(4, EXTERNAL_STORAGE);
+
+            File externalStorageList[] = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                externalStorageList = this.chooser.getContext().getExternalFilesDirs(null);
+            }
+            String directory = null;
+            int size = listEnvironmentVariableStoreSDCardRootDirectory.size();
+            for (int i = 0; i < size; i++) {
+                if (externalStorageList != null && externalStorageList.length > 1 && externalStorageList[1] != null)
+                    directory = externalStorageList[1].getAbsolutePath();
+                else
+                    directory = listEnvironmentVariableStoreSDCardRootDirectory.get(i);
+
+                directory = canCreateFile(directory);
+                if (directory != null && directory.length() != 0) {
+                    if (i == size - 1) {
+                        if (directory.contains(FLAG)) {
+                            Log.e("OpenCPN", "SD Card's directory: " + directory);
+                            return directory;
+                        } else {
+                            return null;
+                        }
+                    }
+                    Log.e("OpenCPN", "SD Card's directory: " + directory);
+                    return directory;
+                }
+            }
+            return null;
+        }
+
+
 	// ----- Events methods ----- //
 
 	/**
@@ -330,15 +421,35 @@ class FileChooserCore {
 			FileChooserCore.this.notifyListeners(FileChooserCore.this.currentFolder, null);
 		}
 	};
-	
-	/**
+
+        /**
+         * Implementation of the click listener for when the "device" button is clicked.
+         */
+        private View.OnClickListener deviceButtonClickListener = new View.OnClickListener() {
+                public void onClick(View v) {
+                    loadFolder("/storage/emulated/0");
+                }
+        };
+
+        /**
+         * Implementation of the click listener for when the "SD card" button is clicked.
+         */
+        private View.OnClickListener sdcardButtonClickListener = new View.OnClickListener() {
+                public void onClick(View v) {
+//                    loadFolder("/storage/C02C-1BF1");
+                    if(null != m_sdcardDir)
+                        loadFolder(m_sdcardDir);
+                }
+        };
+
+        /**
 	 * Implementation of the click listener for when a file item is clicked.
 	 */
 	private FileItem.OnFileClickListener fileItemClickListener = new FileItem.OnFileClickListener() {
 		public void onClick(FileItem source) {
 			// Verify if the item is a folder.
 			File file = source.getFile();
-                        //Log.i("DEBUGGER_TAG", "OnFileClickListener " + file);
+                        //Log.i("OpenCPN", "OnFileClickListener " + file);
                         if(file.isDirectory()) {
 				// Open the folder.
                                 String[] Files = file.list();
@@ -349,7 +460,7 @@ class FileChooserCore {
                                         FileChooserCore.this.loadFolder(file);
                                 }
                                 else{
-                                    //Log.i("DEBUGGER_TAG", "file.list NULL");
+                                    //Log.i("OpenCPN", "file.list NULL");
 
                                     //  Probably a prohibited read.  Switch to a known good directory.
                                     FileChooserCore.this.currentFolder = new File("/");    //Environment.getExternalStorageDirectory();
