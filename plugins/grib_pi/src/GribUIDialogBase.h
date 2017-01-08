@@ -121,6 +121,8 @@ class GRIBUICtrlBarBase : public wxDialog
 		wxBitmapButton* m_bpRequest;
 		wxFlexGridSizer* m_fgCDataSizer;
 		wxFlexGridSizer* m_fgCtrlGrabberSize;
+                bool             m_bcompact;
+                
 
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }

@@ -361,8 +361,14 @@ void GRIBUICtrlBar::SetScaledBitmap( double factor )
 
     SetRequestBitmap( m_ZoneSelMode );
 
-    m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
-    m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    if(m_bcompact){
+        m_sTimeline->SetSize( wxSize( 64 * m_ScaledFactor , -1 ) );
+        m_sTimeline->SetMinSize( wxSize( 64 * m_ScaledFactor , -1 ) );
+    }
+    else{
+        m_sTimeline->SetSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+        m_sTimeline->SetMinSize( wxSize( 90 * m_ScaledFactor , -1 ) );
+    }
 
 }
 

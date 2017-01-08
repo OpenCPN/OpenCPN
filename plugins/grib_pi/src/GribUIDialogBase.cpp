@@ -12,7 +12,7 @@
 GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 
-    bool m_bcompact = false;
+    m_bcompact = false;
 #ifdef __OCPN__ANDROID__
     m_bcompact = true;
 #endif    
@@ -48,8 +48,6 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
 
 	fgSizer50->Add( m_bpNext, 0, wxALL, 1 );
 
-        m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
-        fgSizer50->Add( m_sTimeline, 0, wxEXPAND, 1 );
         
 
         
@@ -84,6 +82,10 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase( wxWindow* parent, wxWindowID id, const wxS
         m_bpOpenFile = NULL;
 
         fgSizer51->Add( 0, 0, 1, wxEXPAND|wxLEFT|wxRIGHT, 1 );
+        
+        m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
+        fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
+        
         m_bpSettings = new wxBitmapButton( this, ID_BTNSETTING, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
         fgSizer51->Add( m_bpSettings, 0, wxALL | wxALIGN_RIGHT, 1 );
