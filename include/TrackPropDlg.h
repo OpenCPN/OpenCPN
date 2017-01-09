@@ -177,7 +177,7 @@ private:
         void CreateControlsCompact( void );
         
 public:
-        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
+        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track properties"),
                                       const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
                                       long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
         static bool getInstanceFlag(){ return instanceFlag; } 

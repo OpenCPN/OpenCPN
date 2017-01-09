@@ -380,7 +380,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             
         if(m_benable_blackdialog && !b_compat)
         {
-            wxLogMessage(wxString::Format(_("    Incompatible PlugIn detected: %s"), file_name.c_str()));
+            wxLogMessage(wxString::Format(_T("    %s: %s")), _T("Incompatible plugin detected"), file_name.c_str());
             OCPNMessageBox( NULL, wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()), wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
         }
             
@@ -935,9 +935,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             for (int i = 0; i < len; i++) {
                 wxString candidate = PluginBlacklist[i].name.Lower();
                 if( prob_pi_name.Lower().EndsWith(candidate)){
-                    wxString msg = _("Incompatible PlugIn detected:\n");
-                    msg += plugin_file;
-                    msg += _T("\n\n");
+                    wxString msg( wxString::Format( _T("%s:\n%s\n\n"), _("Incompatible plugin detected"), plugin_file ) );
                     
                     wxString msg1;
                     msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),

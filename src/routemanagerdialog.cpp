@@ -535,7 +535,7 @@ void RouteManagerDialog::Create()
     wxBoxSizer *bsRouteButtonsInner = new wxBoxSizer( wxVERTICAL );
     winr->SetSizer(bsRouteButtonsInner);
     
-    btnRteProperties = new wxButton( winr, -1, _("&Properties...") );
+    btnRteProperties = new wxButton( winr, -1, _("&Properties") + _T("...") );
     bsRouteButtonsInner->Add( btnRteProperties, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnRteProperties->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                wxCommandEventHandler(RouteManagerDialog::OnRtePropertiesClick), NULL, this );
@@ -687,7 +687,7 @@ void RouteManagerDialog::Create()
     
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
-    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from Ownship"), wxLIST_FORMAT_LEFT, 14 * char_width );
+    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from own ship"), wxLIST_FORMAT_LEFT, 14 * char_width );
     
     wxBoxSizer *bsWptButtons = new wxBoxSizer( wxVERTICAL );
     itemBoxSizer4->Add( bsWptButtons, 0, wxALIGN_RIGHT | wxEXPAND );
@@ -1220,8 +1220,7 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
     if( !route->m_bIsInLayer )
         pRoutePropDialog->SetDialogTitle( _("Route Properties") );
     else {
-        wxString caption( _T("Route Properties, Layer: ") );
-        caption.Append( GetLayerName( route->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Route Properties"), _("Layer"), GetLayerName( route->m_LayerID ) ) );
         pRoutePropDialog->SetDialogTitle( caption );
     }
 
@@ -1462,7 +1461,7 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     pdlg->SetRoute( route );
 
     wxString source;
-    pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
+    pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
     
 #ifdef __WXOSX__
     HideWithEffect(wxSHOW_EFFECT_BLEND );
@@ -2195,8 +2194,7 @@ void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* pare
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();
     if( wp->m_bIsInLayer ) {
-        wxString caption( _("Waypoint Properties, Layer: ") );
-        caption.Append( GetLayerName( wp->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( wp->m_LayerID ) ) );
         pMarkPropDialog->SetDialogTitle( caption );
     } else
         pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
@@ -2370,7 +2368,7 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
     pdlg->SetWaypoint( wp );
 
     wxString source;
-    pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
+    pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
     pdlg->ShowModal();
 
     delete pdlg;
