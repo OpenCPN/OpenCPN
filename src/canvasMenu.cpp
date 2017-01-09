@@ -185,6 +185,7 @@ enum
     ID_DEF_MENU_AISSHOWTRACK,
     ID_DEF_MENU_ACTIVATE_MEASURE,
     ID_DEF_MENU_DEACTIVATE_MEASURE,
+    ID_DEF_MENU_COPY_MMSI,
 
     ID_UNDO,
     ID_REDO,
@@ -591,7 +592,8 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                     else
                         MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
                 }
-                
+                MenuAppend1( menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI") );
+
                 menuAIS->AppendSeparator();
                 
                 if( !parent->GetVP().b_quilt ) {
@@ -1109,6 +1111,17 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if ( myptarget )
             myptarget->ToggleShowTrack();
+        break;
+    }
+
+    case ID_DEF_MENU_COPY_MMSI:
+    {
+        // Write MMSI # as text to the clipboard
+        if (wxTheClipboard->Open())
+        {
+            wxTheClipboard->SetData(new wxTextDataObject(wxString::Format(wxT("%09d"), m_FoundAIS_MMSI)));
+            wxTheClipboard->Close();
+        }
         break;
     }
 

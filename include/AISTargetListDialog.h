@@ -61,6 +61,7 @@ class AISTargetListDialog: public wxPanel
             void SetColorScheme( );
             void UpdateAISTargetList( );     // Rebuild AIS target list
             void UpdateNVAISTargetList( );
+            void CopyMMSItoClipBoard(int);
             AIS_Target_Data   *GetpTarget(unsigned int list_item);
 
             OCPNListCtrl      *m_pListCtrlAISTargets;
@@ -83,6 +84,7 @@ class AISTargetListDialog: public wxPanel
             void OnShowAllTracks( wxCommandEvent& event );
             void OnHideAllTracks( wxCommandEvent& event );
             void OnToggleTrack( wxCommandEvent& event );
+            void OnCopyMMSI( wxCommandEvent& event );
             void OnLimitRange( wxCommandEvent& event );
             void OnCloseButton( wxCommandEvent& event );
             void OnAutosortCB( wxCommandEvent &event );
@@ -95,6 +97,7 @@ class AISTargetListDialog: public wxPanel
             wxButton          *m_pButtonHideAllTracks;
             wxButton          *m_pButtonShowAllTracks;
             wxButton          *m_pButtonToggleTrack;
+            wxButton          *m_pButtonCopyMMSI;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxStaticText      *m_pStaticTextCount;
