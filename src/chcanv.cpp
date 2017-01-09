@@ -288,7 +288,7 @@ extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OCPN_Sound        g_anchorwatch_sound;
 
-extern bool              g_bShowMag;
+extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
@@ -2411,15 +2411,15 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     << _(" to ") << segShow_point_b->GetName()
                     << _T("\n");
 
+                    if( g_bShowTrue )
+                        s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
                     if( g_bShowMag ){
                         double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat)/2;
                         double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon)/2;
-                        double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+                        double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
                         
                         s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
                     }
-                    else
-                        s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
                     s << FormatDistanceAdaptive( dist );
 
@@ -2546,9 +2546,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     wxString s;
     DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
     if( g_bShowMag )
-        s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+        s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( brg ) );
     else
-        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
     
     s << FormatDistanceAdaptive( dist );
     
@@ -9040,18 +9040,18 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             }
         }
 
-        wxString routeInfo1;
+        wxString routeInfo;
+        if( g_bShowTrue )
+            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
         if( g_bShowMag ){
             double latAverage = (m_cursor_lat + render_lat)/2;
             double lonAverage = (m_cursor_lon + render_lon)/2;
-            double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
+            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
             
-            routeInfo1 << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
+            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
         }
-        else
-            routeInfo1 << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
 
-        routeInfo1 << _T(" ") << FormatDistanceAdaptive( dist );
+        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
         wxString s0;
         if( !route->m_bIsInLayer )
@@ -9064,7 +9064,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             disp_length += dist;
         s0 += FormatDistanceAdaptive( disp_length );
 
-        RouteLegInfo( dc, r_rband, routeInfo1, s0 );
+        RouteLegInfo( dc, r_rband, routeInfo, s0 );
 
         m_brepaint_piano = true;
     }

@@ -547,9 +547,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             int crs = wxRound( COG );
             if( crs < 360 ) {
                 if( g_bShowMag )
-                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
                 else
-                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)crs );
             }   
             else if( COG == 360.0 )
                 courseStr = _T("---");
@@ -600,9 +600,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         brg = 0;
     if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) ){
         if( g_bShowMag )
-            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( Brg ) );
         else
-            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) Brg );
     }   
     else
         brgStr = _("---");
@@ -764,9 +764,9 @@ wxString AIS_Target_Data::GetRolloverString( void )
         if( b_positionOnceValid ) {
             if( crs < 360 ) {
                 if( g_bShowMag )
-                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
                 else
-                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)crs );
             }
                 
             else if( COG == 360.0 )
