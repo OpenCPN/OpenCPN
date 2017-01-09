@@ -50,6 +50,8 @@
 
 #include "dychart.h"
 
+#include <limits.h>
+
 #ifdef __WXMSW__
 #include <stdlib.h>
 #include <math.h>
@@ -832,22 +834,29 @@ END_EVENT_TABLE()
 void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
     //    Add some OpenCPN specific command line options
-    parser.AddSwitch( _T("unit_test_1") );
-    parser.AddSwitch( _T("p") );
-    parser.AddSwitch( _T("no_opengl") );
-    parser.AddSwitch( _T("fullscreen") );
-    parser.AddSwitch( _T("rebuild_gl_raster_cache") );
-    parser.AddSwitch( _T("parse_all_enc") );
+    parser.AddSwitch( _T("h"), _T("help"), _("Show usage syntax."), wxCMD_LINE_OPTION_HELP );
+    parser.AddSwitch( _T("p"), wxEmptyString, _("Run in portable mode.") );
+    parser.AddSwitch( _T("fullscreen"), wxEmptyString, _("Switch to full screen mode on start.") );
+    parser.AddSwitch( _T("no_opengl"), wxEmptyString, _("Disable OpenGL video acceleration. This setting will be remembered.") );
+    parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
+    parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
+    parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
-    g_unit_test_1 = parser.Found( _T("unit_test_1") );
+    long number;
     g_bportable = parser.Found( _T("p") );
-    g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
+    g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
     g_parse_all_enc = parser.Found( _T("parse_all_enc") );
+    if( parser.Found( _T("unit_test_1"), &number ) )
+    {
+        g_unit_test_1 = static_cast<int>( number );
+        if( g_unit_test_1 == 0 )
+            g_unit_test_1 = -1;
+    }
 
     return true;
 }
@@ -6492,6 +6501,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
         cc1->m_bFollow = false;
         if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+        int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
             if( ut_index < ChartData->GetChartTableEntries() ) {
@@ -6517,7 +6527,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 cc1->ReloadVP();
 
                 ut_index++;
-                if(ut_index > 100)
+                if( ut_index > ut_index_max )
                     exit(0);
             }
             else
