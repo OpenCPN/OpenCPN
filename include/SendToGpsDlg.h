@@ -35,7 +35,7 @@
 //    Constants for SendToGps... Dialog
 #define ID_STGDIALOG 10005
 #define SYMBOL_STG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_STG_TITLE _("Send Route To GPS")
+#define SYMBOL_STG_TITLE _("Send to GPS")
 #define SYMBOL_STG_IDNAME ID_STGDIALOG
 #define SYMBOL_STG_SIZE wxSize(500, 500)
 #define SYMBOL_STG_POSITION wxDefaultPosition

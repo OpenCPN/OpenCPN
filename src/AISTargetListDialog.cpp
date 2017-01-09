@@ -606,7 +606,7 @@ void AISTargetListDialog::CreateControls()
     bsRouteButtonsInner->Add( m_pButtonInfo, 0, wxEXPAND | wxALL, 0 );
     bsRouteButtonsInner->AddSpacer( 5 );
     
-    m_pButtonJumpTo = new wxButton( winr, wxID_ANY, _("Center View"), wxDefaultPosition,
+    m_pButtonJumpTo = new wxButton( winr, wxID_ANY, _("Center view"), wxDefaultPosition,
                                     wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                               wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );

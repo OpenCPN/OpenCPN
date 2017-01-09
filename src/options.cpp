@@ -651,7 +651,7 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
   if (m_context_item == wxNOT_FOUND) return;
   wxMenu* menu = new wxMenu(_("MMSI Properties"));
   wxMenuItem* item_edit =
-      new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit..."));
+      new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit") + _T("..."));
   menu->Append(item_edit);
   wxMenuItem* item_delete =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _("Delete"));
@@ -1202,7 +1202,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer161->Add(m_cbGarminUploadHost, 0, wxALL, cb_space);
 
   m_cbAPBMagnetic =
-      new wxCheckBox(m_pNMEAForm, wxID_ANY, _("Use mag bearings in ECAPB"),
+      new wxCheckBox(m_pNMEAForm, wxID_ANY, _("Use magnetic bearings in output sentence ECAPB"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
   bSizer161->Add(m_cbAPBMagnetic, 0, wxALL, cb_space);
@@ -1227,7 +1227,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   bSizer18 = new wxBoxSizer(wxHORIZONTAL);
   bSizer17->Add(bSizer18, 0, wxEXPAND, 5);
 
-  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _("Add..."),
+  m_buttonAdd = new wxButton(m_pNMEAForm, wxID_ANY, _("Add") + _T("..."),
                              wxDefaultPosition, wxDefaultSize, 0);
   bSizer18->Add(m_buttonAdd, 0, wxALL, 5);
 
@@ -1274,7 +1274,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                           wxDefaultPosition, wxDefaultSize, 0);
     bSizer15->Add(m_rbTypeInternalBT, 0, wxALL, 5);
 
-    m_buttonScanBT = new wxButton(m_pNMEAForm, wxID_ANY, _("BT Scan..."),
+    m_buttonScanBT = new wxButton(m_pNMEAForm, wxID_ANY, _("BT Scan") + _T("..."),
                                   wxDefaultPosition, wxDefaultSize);
     m_buttonScanBT->Hide();
     sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 5);
@@ -1486,8 +1486,8 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   // m_stPrecision->Wrap( -1 );
   fgSizer5a->Add(m_stPrecision, 0, wxALL, 5);
 
-  wxString m_choicePrecisionChoices[] = {_("x"), _("x.x"), _("x.xx"),
-                                         _("x.xxx"), _("x.xxxx")};
+  wxString m_choicePrecisionChoices[] = {_T("x"), _T("x.x"), _T("x.xx"),
+                                         _T("x.xxx"), _T("x.xxxx")};
   int m_choicePrecisionNChoices =
       sizeof(m_choicePrecisionChoices) / sizeof(wxString);
   m_choicePrecision =
@@ -2072,12 +2072,12 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   m_cbOutput =
       new wxCheckBox(m_pNMEAForm, wxID_ANY,
-                     _("Output on this port ( as Autopilot or NMEA Repeater)"),
+                     wxString::Format(_T("%s (%s)"), _("Output on this port"), _("as autopilot or NMEA repeater")),
                      wxDefaultPosition, wxDefaultSize, 0);
   fgSizer5->Add(m_cbOutput, 0, wxALL, 5);
 
   m_stTalkerIdText = new wxStaticText(m_pNMEAForm, wxID_ANY,
-                                      _("Talker ID (blank = default ID)"),
+                                      wxString::Format(_T("%s (%s)"), _("Talker ID"), _("blank = default ID")),
                                       wxDefaultPosition, wxDefaultSize, 0);
   m_stTalkerIdText->Wrap(-1);
   fgSizer5->Add(m_stTalkerIdText, 0, wxALL, 5);
@@ -2378,7 +2378,7 @@ void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
 
 void options::CreatePanel_Ownship(size_t parent, int border_size,
                                   int group_item_spacing) {
-  itemPanelShip = AddPage(parent, _("Own Ship"));
+  itemPanelShip = AddPage(parent, _("Own ship"));
 
   ownShip = new wxBoxSizer(wxVERTICAL);
   itemPanelShip->SetSizer(ownShip);
@@ -2480,7 +2480,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   dispOptions->Add(radarGrid, 0, wxLEFT | wxEXPAND, 30);
 
   wxStaticText* distanceText =
-      new wxStaticText(itemPanelShip, wxID_STATIC, _("Distance Between Rings"));
+      new wxStaticText(itemPanelShip, wxID_STATIC, _("Distance between rings"));
   radarGrid->Add(distanceText, 1, wxEXPAND | wxALL, group_item_spacing);
 
   pNavAidRadarRingsStep = new wxTextCtrl(itemPanelShip, ID_OPTEXTCTRL, _T(""),
@@ -2492,7 +2492,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticText(itemPanelShip, wxID_STATIC, _("Distance Unit"));
   radarGrid->Add(unitText, 1, wxEXPAND | wxALL, group_item_spacing);
 
-  wxString pDistUnitsStrings[] = {_("Nautical Miles"), _("Kilometers")};
+  wxString pDistUnitsStrings[] = {_("Nautical miles"), _("Kilometers")};
   m_itemRadarRingsUnits =
       new wxChoice(itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition,
                    m_pShipIconType->GetSize(), 2, pDistUnitsStrings);
@@ -2605,7 +2605,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   waypointSizer->Add(waypointradarGrid, 0, wxLEFT | wxEXPAND, 30);
 
   wxStaticText* waypointdistanceText = new wxStaticText(
-      itemPanelShip, wxID_STATIC, _("Distance Between Waypoint Rings"));
+      itemPanelShip, wxID_STATIC, _("Distance between rings"));
   waypointradarGrid->Add(waypointdistanceText, 1, wxEXPAND | wxALL,
                          group_item_spacing);
 
@@ -2746,11 +2746,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     boxCharts->Add(pFullScreenQuilt, inputFlags);
 
     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                       _("Suppress blur/fog effects"));
+                                       _("Suppress blur/fog effects on overzoom"));
     boxCharts->Add(pOverzoomEmphasis, inputFlags);
 
     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                    _("Suppress scaled vector charts"));
+                                    _("Suppress scaled vector charts on overzoom"));
     boxCharts->Add(pOZScaleVector, inputFlags);
 
     // Control Options
@@ -2782,7 +2782,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(OpenGLSizer, 0, 0, 0);
 
     pOpenGL = new wxCheckBox(m_ChartDisplayPage, ID_OPENGLBOX,
-                             _("Use Accelerated Graphics"));
+                             _("Use Accelerated Graphics (OpenGL)"));
     OpenGLSizer->Add(pOpenGL, inputFlags);
     pOpenGL->Enable(!g_bdisable_opengl);
 
@@ -2791,7 +2791,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 #endif
 
     wxButton* bOpenGL =
-        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options..."));
+        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
     bOpenGL->Enable(!g_bdisable_opengl);
 
@@ -3041,7 +3041,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 #endif
 
     wxButton* bOpenGL =
-        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options..."));
+        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
     bOpenGL->Enable(!g_bdisable_opengl);
 
@@ -3198,7 +3198,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                        wxSize(60, -1), wxTE_RIGHT);
     depShalRow->Add(m_ShallowCtl, inputFlags);
-    m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depShalRow->Add(m_depthUnitsShal, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")),
@@ -3208,7 +3208,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_SafetyCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
                                  wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
     depSafeRow->Add(m_SafetyCtl, inputFlags);
-    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depSafeRow->Add(m_depthUnitsSafe, inputFlags);
 
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")),
@@ -3218,7 +3218,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
                                wxDefaultPosition, wxSize(60, -1), wxTE_RIGHT);
     depDeepRow->Add(m_DeepCtl, inputFlags);
-    m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     depDeepRow->Add(m_depthUnitsDeep, inputFlags);
 
     // spacer
@@ -3413,7 +3413,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                        wxSize(100, -1), wxTE_RIGHT);
     DepthColumn->Add(m_ShallowCtl, inputFlags);
-    m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsShal, inputFlags);
 
     DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")),
@@ -3422,7 +3422,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
         new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
                        wxSize(100, -1), wxTE_RIGHT);
     DepthColumn->Add(m_SafetyCtl, inputFlags);
-    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsSafe, inputFlags);
 
     DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")),
@@ -3430,7 +3430,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
                                wxDefaultPosition, wxSize(100, -1), wxTE_RIGHT);
     DepthColumn->Add(m_DeepCtl, inputFlags);
-    m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("metres"));
+    m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsDeep, inputFlags);
 
     // spacer
@@ -3699,7 +3699,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     boxCharts->Add(pCDOQuilting, verticleInputFlags);
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
-                                    _("Preserve Scale when Switching Charts"));
+                                    _("Preserve scale when switching charts"));
     boxCharts->Add(pPreserveScale, verticleInputFlags);
 
     // spacer
@@ -3790,7 +3790,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     boxCharts->Add(pCDOQuilting, inputFlags);
 
     pPreserveScale = new wxCheckBox(pDisplayPanel, ID_PRESERVECHECKBOX,
-                                    _("Preserve Scale on Chart Switch"));
+                                    _("Preserve scale when switching charts"));
     boxCharts->Add(pPreserveScale, inputFlags);
 
     // spacer
@@ -3912,7 +3912,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     //  "Mag Heading" checkbox
     pCBMagShow =
-        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic"));
+        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
     //  Mag Heading user variation
@@ -8176,9 +8176,9 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
 
 const wxString SentenceListDlg::GetBoxLabel(void) const {
   if (m_dir == FILTER_OUTPUT)
-    return m_type == WHITELIST ? _("Transmit Sentences") : _("Drop Sentences");
+    return m_type == WHITELIST ? _("Transmit sentences") : _("Drop sentences");
   else
-    return m_type == WHITELIST ? _("Accept Sentences") : _("Ignore Sentences");
+    return m_type == WHITELIST ? _("Accept only sentences") : _("Ignore sentences");
 }
 
 void SentenceListDlg::Populate(const wxArrayString& list) {

@@ -35,7 +35,7 @@
 ////@begin control identifiers
 #define ID_GOTOPOS 8100
 #define SYMBOL_GOTOPOS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_GOTOPOS_TITLE _("Center View")
+#define SYMBOL_GOTOPOS_TITLE _("Center view")
 #define SYMBOL_GOTOPOS_IDNAME ID_GOTOPOS
 #define SYMBOL_GOTOPOS_SIZE wxSize(200, 300)
 #define SYMBOL_GOTOPOS_POSITION wxDefaultPosition
