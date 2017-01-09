@@ -541,8 +541,10 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         strncpy( arpa_name_str, token.mb_str(), len );
         arpa_name_str[len] = 0;
         arpa_status = tkz.GetNextToken(); //12) Target Status
-        if (arpa_status != _T("L"))
+        if ( arpa_status != _T( "L" ) ) {
             arpa_lost = false;
+        } else if ( arpa_status != wxEmptyString )
+            arpa_nottracked = true;
         arpa_reftarget = tkz.GetNextToken(); //13) Reference Target
         if ( tkz.HasMoreTokens() )
         {
@@ -2207,7 +2209,8 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         if( td->Class == AIS_SART ) removelost_Mins = 18.0;
 
         if( g_bRemoveLost ) {
-            if( ( target_posn_age > removelost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) ) {
+            bool b_arpalost = ( td->Class == AIS_ARPA  && td->b_lost ); //A lost ARPA target would be deleted at once
+            if ( ( ( target_posn_age > removelost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) ) || b_arpalost ) {
                 //      So mark the target as lost, with unknown position, and make it not selectable
                 td->b_lost = true;
                 td->b_positionOnceValid = false;
@@ -2220,8 +2223,9 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
 
                 //      If we have not seen a static report in 3 times the removal spec,
-                //      then remove the target from all lists.
-                if( target_static_age > removelost_Mins * 60 * 3 ) 
+                //      then remove the target from all lists
+                //      or a lost ARPA target.
+                if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost )
                     remove_array.Add(td->MMSI);         //Add this target to removal list
             }
         }
