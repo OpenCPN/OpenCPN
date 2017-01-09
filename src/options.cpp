@@ -107,7 +107,7 @@ extern bool g_bShowDepthUnits;
 extern bool g_bskew_comp;
 extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
-extern bool g_bShowMag;
+extern bool g_bShowTrue, g_bShowMag;
 extern double g_UserVar;
 extern int g_chart_zoom_modifier;
 extern int g_NMEAAPBPrecision;
@@ -3911,6 +3911,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     groupLabelFlags);
 
     //  "Mag Heading" checkbox
+    pCBTrueShow =
+        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show true"));
+    unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow =
         new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
@@ -4019,6 +4022,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     unitsSizer->Add(bearingsSizer, 0, 0, 0);
 
     //  "Mag Heading" checkbox
+    pCBTrueShow = new wxCheckBox(panelUnits, ID_TRUESHOWCHECKBOX,
+                                _("Show true bearings and headings"));
+    bearingsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow = new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX,
                                 _("Show magnetic bearings and headings"));
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
@@ -4028,7 +4034,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
     itemStaticTextUserVar =
-        new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation"));
+        new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
 
@@ -4848,6 +4854,7 @@ void options::SetInitialSettings(void) {
         pSmoothPanZoom->Disable();
     }
 #endif
+  pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
 
   s.Printf(_T("%4.1f"), g_UserVar);
@@ -5243,11 +5250,19 @@ void options::UpdateOptionsUnits(void) {
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
 #endif
-  
+
   //disable input for variation if WMM is available
-  itemStaticTextUserVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
-  itemStaticTextUserVar2->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
-  pMagVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
+  bool havewmm = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+  if(havewmm)
+      itemStaticTextUserVar->SetLabel(_("WMM Plugin for magnetic variation"));
+  else
+      itemStaticTextUserVar->SetLabel(_("Assumed magnetic variation"));
+
+  // size hack to adjust change in static text size
+  wxSize sz = this->GetSize(); this->SetSize(sz.x+1, sz.y); this->SetSize(sz);
+
+  itemStaticTextUserVar2->Enable(!havewmm);
+  pMagVar->Enable(!havewmm);
 } 
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
@@ -5874,6 +5889,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bLookAhead = pCBLookAhead->GetValue();
 
+  g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
   pMagVar->GetValue().ToDouble(&g_UserVar);
 

@@ -247,6 +247,11 @@ private:
     wxRadioButton  *m_prb_tzLocal;
     wxRadioButton  *m_prb_tzLMT;
     bool m_bcompact;
+
+    enum COLS {LEG, TO_WAYPOINT, DISTANCE, BEARING, BEARING_MAGNETIC,
+               LATITUDE, LONGITUDE, ETE_ETD, SPEED, NEXT_TIDE, DESCRIPTION,
+               COURSE, COURSE_MAGNETIC, COL_COUNT};
+    int cols[COL_COUNT];
     
 };
 
