@@ -65,6 +65,23 @@ static wxString FormatTimeAdaptive( int seconds )
     return wxString::Format( _T("%2dh %02dmin"), h, m );
 }
 
+static wxString html_escape ( const wxString &src)
+{
+  // Escape &, <, > as well as single and double quotes for HTML.
+  wxString ret = src;
+
+  ret.Replace(_T("<"), _T("&lt;"));
+  ret.Replace(_T(">"), _T("&gt;"));
+
+  // only < and > in 6 bits AIS ascii
+  // ret.Replace(_T("\""), _T("&quot;"));
+  // ret.Replace(_T("&"), _T("&amp;"));
+  // ret.Replace(_T("'"), _T("&#39;"));
+
+  // Do we care about multiple spaces?
+  //   ret.Replace(_T(" "), _T("&nbsp;"));
+  return ret;
+}
 
 AIS_Target_Data::AIS_Target_Data()
 {
@@ -510,7 +527,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                  << rowStartH << _T("<b>");
                  wxString dest =  trimAISField( Destination );
                  if(dest.Length() )
-                     html << dest;
+                     html << html_escape(dest);
                  else
                      html << _("---");
                  html << _T("</b></td><td nowrap align=right><b>");
