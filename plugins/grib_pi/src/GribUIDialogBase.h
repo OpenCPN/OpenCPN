@@ -273,7 +273,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxFlexGridSizer* m_fgSetPlaybackSizer;
 		wxStaticText* m_staticText26;
 		wxChoice* m_cLoopStartPoint;
-		wxSpinCtrl* m_sUpdatesPerSecond;
+		wxSlider* m_sUpdatesPerSecond;
 		wxStaticText* m_tSlicesPerUpdate;
 		wxFlexGridSizer* m_fgSetGuiSizer;
 		wxRadioButton* m_rbCurDataAttaWCap;

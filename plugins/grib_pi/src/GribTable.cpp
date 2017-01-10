@@ -47,15 +47,17 @@ GRIBTable::GRIBTable(GRIBUICtrlBar &parent)
 void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 {
     //init fonts and colours
-    wxFont dayfont = wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     wxFont labelfont = wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     wxFont timefont = wxFont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     wxFont datafont = wxFont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
 
-    wxColour colour;
+    wxColour colour, colour0, colour1;
     GetGlobalColor(_T("DILG1"), &colour);
-   
-    //populate "cursor position" display 
+    GetGlobalColor(_T("DILG0"), &colour0);
+    GetGlobalColor(_T("DILG2"), &colour1);
+
+    //populate "cursor position" display
+
     wxString l;
     l.Append(toSDMM_PlugIn(1, m_cursor_lat)).Append(_T("   "))
         .Append(toSDMM_PlugIn(2, m_cursor_lon));
@@ -65,8 +67,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     //init row attr
     wxGridCellAttr *daysrow = new wxGridCellAttr();
-    daysrow->SetFont(dayfont);
-    daysrow->SetBackgroundColour(colour);
+    daysrow->SetFont(timefont);
     daysrow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
 
     wxGridCellAttr *timerow = new wxGridCellAttr();
@@ -83,7 +84,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
     doubledatarow->SetAlignment(wxALIGN_CENTRE, -1);
 
     //init labels
-    m_pGribTable->SetLabelFont(labelfont);                  
+    m_pGribTable->SetLabelFont(labelfont);
     m_pGribTable->SetLabelBackgroundColour(colour);
 
     //create as columns as necessary
@@ -100,16 +101,30 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
     m_pGribTable->SetRowAttr(1, timerow);
 
     //populate grib
-    wxDateTime day(rsa->Item(0).m_Reference_Time);
-    wxDateTime time;
-    int ncols = -1,nrows,dcol = 0;
+    wxDateTime time, day, ptime;
+    int nrows,dcol = 0;
+    bool color = false;
 
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
         time = rsa->Item(i).m_Reference_Time;
-   
+        day = time;
+        if( i == 0 ) ptime = time;
+
+        //populate and color 'day' row
+        if( ptime.GetDateOnly() != day.GetDateOnly() ) {
+            ptime = time;
+            color = !color;
+        }
+        if( !color )
+            m_pGribTable->SetCellBackgroundColour(0, i, colour0);
+        else
+            m_pGribTable->SetCellBackgroundColour(0, i, colour1);
+
+        m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings( day, zone , 1) );
+
         //populate 'time' row
         m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
-        
+
         nrows = 2;
 
         m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
@@ -194,29 +209,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         }
 
         m_pGribTable->AutoSizeColumn(i, false);
-        ncols++;
 
-        //write 'days' row
-        if(time.GetDateOnly() != day.GetDateOnly() || i == rsa->GetCount()- 1){
-            if( i == 0 ) continue;                                      //not the first item
-
-            if(i == rsa->GetCount() - 1 && ncols != 1) ncols++;         ////if end of time range don't forgett the last col
-
-            m_pGribTable->SetCellSize(0, dcol, 1, ncols);
-            m_pGribTable->SetCellValue(0, dcol, GetTimeRowsStrings(day, zone, 1));
-
-            day = rsa->Item(i).m_Reference_Time;
-            dcol = i;
-
-            if( ncols == 1){                                            //if only one item per day
-                m_pGribTable->AutoSizeColumn(i-1, false);
-                if(i == rsa->GetCount() - 1 ) {                         //if end of time range
-                    m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings(day, zone, 1));
-                    m_pGribTable->AutoSizeColumn(i, false);
-                }
-            }  
-            ncols = 0;
-        }
     }
     AutoSizeDataRows();
     m_pGribTable->SetGridCursor( m_pGribTable->GetNumberRows(), 0);     //put cursor outside the grid
@@ -369,7 +362,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray)
                     getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
                 if( direction != GRIB_NOTDEF ){
                     skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
-                   
+
                     if( recordarray[Idx_WVPER] ) {
                         double period = recordarray[Idx_WVPER]->
                             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
@@ -476,10 +469,17 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray)
                                          m_cursor_lon, m_cursor_lat)) {
         vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
+        // Current direction is generally reported as the "flow" direction,
+        // which is opposite from wind convention.
+        // So, adjust.
+        ang += 180;
+        if(ang >= 360) ang -= 360;
+        if( ang < 0 ) ang += 360;
+
         skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );
-        
+
         skn.Append(_T("\n\n"));
-        
+
         skn.Append( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
         m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
     }
