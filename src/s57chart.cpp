@@ -5258,7 +5258,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                     float lon, lat;
                     double easting, northing;
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                     double east_d, north_d;
                     memcpy(&east_d, psd++, sizeof(double));
                     memcpy(&north_d, psd++, sizeof(double));
@@ -5287,7 +5287,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                 }
 
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                 float tmp;
                 tmp = lonmax;
                 memcpy(pdf++, &tmp, sizeof(float));
@@ -5417,7 +5417,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 psd = (double *) ps;
                 pdf = (float *) pd;
 
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                 double lata, lona;
                 memcpy(&lona, psd, sizeof(double));
                 memcpy(&lata, &psd[1], sizeof(double));
@@ -5433,7 +5433,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 double easting, northing;
                 toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                 float east, north;
                 east = easting;
                 north = northing;
@@ -5494,7 +5494,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                     double easting, northing;
                     toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                     float east = easting;
                     float north = northing;
                     float deep = depth;
@@ -5516,7 +5516,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 }
 
                 //      Store the Bounding Box as lat/lon
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                 float tmp;
                 tmp = lonmax;
                 memcpy(pdf++, &tmp, sizeof(float));

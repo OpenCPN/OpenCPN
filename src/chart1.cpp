@@ -1403,7 +1403,7 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-#if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
+#if defined(__WXGTK__) && defined(__arm__) && defined(ocpnUSE_GLES)
     // There is a race condition between cairo which is used for text rendering
     // by gtk and EGL which without the below code causes a bus error and the
     // program aborts before startup
@@ -1509,7 +1509,7 @@ bool MyApp::OnInit()
     wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
     wxString os_name;
-#ifndef __WXQT__
+#ifndef __OCPN_ANDROID__
     os_name = platforminfo.GetOperatingSystemIdName();
 #else
     os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1532,7 +1532,7 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __WXQT__
+#ifdef __OCPN_ANDROID__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
@@ -3526,7 +3526,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_Compass = NULL;
 
 
-#ifndef __OCPN__ANDROID__
+#ifndef __WXQT__
     SetStatusBar( NULL );
 #endif
 

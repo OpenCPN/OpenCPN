@@ -278,7 +278,7 @@ class options : private Uncopyable,
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
   void OnChooseFontColor(wxCommandEvent &event);
 #endif
   void OnGLClicked(wxCommandEvent &event);

@@ -249,7 +249,7 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
     item->SetFont(*qFont);
 #endif
     
-#ifdef __WXQT__
+#ifdef __OCPN_ANDROID__
     wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
     item->SetFont(sFont);
 #endif
@@ -266,7 +266,7 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
     item->SetFont(*qFont);
 #endif
     
-#ifdef __WXQT__
+#ifdef __OCPN_ANDROID__
     wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
     item->SetFont(sFont);
 #endif
