@@ -1811,7 +1811,7 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         double easting, northing;
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         float east = easting;
         float north = northing;
         float deep = depth;
@@ -1903,7 +1903,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
                                                          // computing bbox as we go
         float lon, lat;
         double easting, northing;
-    #ifdef ARMHF
+    #ifdef __ARM_ARCH
         double east_d, north_d;
         memcpy(&east_d, psd++, sizeof(double));
         memcpy(&north_d, psd++, sizeof(double));
@@ -2958,7 +2958,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 double *psd = (double *) ps;
                 
                 double lat, lon;
-                #ifdef ARMHF
+                #ifdef __ARM_ARCH
                 double lata, lona;
                 memcpy(&lona, psd, sizeof(double));
                 memcpy(&lata, &psd[1], sizeof(double));
@@ -3111,7 +3111,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
 
         double      minxt, minyt, maxxt, maxyt;
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         double abox[4];
         memcpy(&abox[0], pbb, 4 * sizeof(double));
         

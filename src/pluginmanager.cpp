@@ -792,7 +792,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     if (virtualpointer)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #if 0
     wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
     FILE *ldd = popen( cmd.mb_str(), "r" );
@@ -818,8 +818,18 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     // this is 3x faster than the other method
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
-    sprintf( strver, "libwx_baseu-%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
 
+    sprintf( strver,
+#if defined(__WXGTK20__)
+             "libwx_gtk2u_core-%i.%i"
+#elif defined(__WXGTK3__)
+             "libwx_gtk3u_core-%i.%i"
+#elif defined(__WXQT__)
+             "libwx_qtu_core-%i.%i"
+#else
+             #error undefined plugin platform
+#endif    
+             , wxMAJOR_VERSION, wxMINOR_VERSION );
     b_compat = false;
     
     int pos = 0, len = strlen(strver), c;

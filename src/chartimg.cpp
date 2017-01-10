@@ -4623,7 +4623,7 @@ nocachestart:
                   // it is probably possible to gain even faster performance by ensuring alignment
                   // to 16 or 32byte boundary (depending on processor) then using inline assembly
 
-#ifdef ARMHF          
+#ifdef __ARM_ARCH
 //  ARM needs 8 byte alignment for *(uint64_T *x) = *(uint64_T *y)
 //  because the compiler will (probably) use the ldrd/strd instuction pair.
 //  So, advance the prgb pointer until it is 8-byte aligned,

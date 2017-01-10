@@ -2833,7 +2833,6 @@ const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime )
 #include <wx/fontdlg.h>
 #include <wx/fontenum.h>
 #include "wx/encinfo.h"
-#include "wx/fontutil.h"
 
 #ifdef __WXX11__
 #include "/usr/X11R6/include/X11/Xlib.h"
