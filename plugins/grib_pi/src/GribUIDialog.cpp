@@ -657,9 +657,11 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
 
     SetMinSize( wxSize(0, 0));
 
-    //then hide eventually Cursor data dialog
-    if( m_gGRIBUICData )
-            m_gGRIBUICData->Hide();
+    //then cancel eventually Cursor data dialog (to be re-created later if necessary )
+    if( m_gGRIBUICData ) {
+        m_gGRIBUICData->Destroy();
+        m_gGRIBUICData = NULL;
+    }
 
     if( (m_DialogStyle >> 1 == SEPARATED || !m_CDataIsShown) && !m_HasCaption ) {                   // Size and show grabber if necessary
         Fit();                                                                                      // each time CtrlData dialog will be alone
@@ -681,15 +683,13 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
             m_gCursorData->Show();
 
         } else if( m_DialogStyle >> 1 == SEPARATED ) { //dialogs isolated
-        //buile cursor data dialog
-            if( !m_gGRIBUICData )
-                m_gGRIBUICData = new GRIBUICData( *this );
+        //create cursor data dialog
+            m_gGRIBUICData = new GRIBUICData( *this );
             m_gGRIBUICData->m_gCursorData->PopulateTrackingControls( m_DialogStyle == SEPARATED_VERTICAL );
             pPlugIn->SetDialogFont( m_gGRIBUICData->m_gCursorData );
             m_gGRIBUICData->Fit();
             m_gGRIBUICData->Update();
             m_gGRIBUICData->Show();
-
 			pPlugIn->MoveDialog(m_gGRIBUICData, pPlugIn->GetCursorDataXY() );
         }
 
@@ -871,21 +871,28 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 
 void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 {
+    //deactivate cursor data update during menu callback
+    bool dataisshown = m_CDataIsShown;
+    m_CDataIsShown = false;
+    //
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     int x = -1;
     int y = -1;
-    int w = 900;
-    int h = 350;
+    int w = m_vp->pix_width - 30;
+    int h = m_vp->pix_height - 30;
 
     if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
         pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
         pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
-        pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
-        pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
+        pConf->Read( _T ( "GribDataTableWidth" ), &w );
+        pConf->Read( _T ( "GribDataTableHeight" ), &h );
     }
+    //Correct an eventuelly oversized dialog
+    w = ( w > m_vp->pix_width - 30 )? m_vp->pix_width - 30: w;
+    h = ( h > m_vp->pix_height - 30)? m_vp->pix_height - 30: h;
     //init centered position and default size if not set yet
     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
 
@@ -898,7 +905,24 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     //set dialog size and position
     table->SetSize(w, h);
     table->SetPosition(wxPoint(x, y));
+
+    //try to show and highlight current dateTime step column
+    int i = 0,vcol = GetNearestIndex( GetNow(), 0);
+    wxColour colour;
+    GetGlobalColor(_T("GREEN1"), &colour);
+    table->m_pGribTable->SetCellBackgroundColour( colour, 0, vcol ); //mark current column
+    table->m_pGribTable->SetCellBackgroundColour( colour, 1, vcol );
+    while( table->m_pGribTable->IsVisible( 0, i, true) ) {           //ensure it's visible
+        i++;
+    }
+    vcol += i - 2;
+    table->m_pGribTable->GoToCell( 0, vcol );
+    //
+
     table->ShowModal();
+
+    //re-activate cursor data
+    m_CDataIsShown = dataisshown;
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
@@ -1135,7 +1159,7 @@ void GRIBUICtrlBar::OnPlayStop( wxCommandEvent& event )
     } else {
 		m_bpPlay->SetBitmapLabel(GetScaledBitmap(wxBitmap(stop), _T("stop"), m_ScaledFactor));
         m_bpPlay->SetToolTip( _("Stop play back") );
-        m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
+        m_tPlayStop.Start( 3000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
         m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
     }
 }
@@ -1831,13 +1855,12 @@ GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
         m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
 
     Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUICData::OnMove ) );
-
 }
 
 void GRIBUICData::OnMove( wxMoveEvent& event )
 {
     int w, h;
-    m_gCursorData->GetScreenPosition( &w, &h );
+    GetScreenPosition( &w, &h );
     m_gpparent.pPlugIn->SetCursorDataXY ( wxPoint(w, h) );
 }
 
