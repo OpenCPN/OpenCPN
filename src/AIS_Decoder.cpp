@@ -2606,10 +2606,19 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     jMsg[wxS("cog")] = pTarget->COG;
     jMsg[wxS("hdg")] = pTarget->HDG;
     jMsg[wxS("mmsi")] = pTarget->MMSI;
+    jMsg[wxS("class")] = pTarget->Class;
+    jMsg[wxS("ownship")] = pTarget->b_OwnShip;
+    jMsg[wxS("active")] = pTarget->b_active;
+    jMsg[wxS("lost")] = pTarget->b_lost;
     wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
     for(size_t i =0; i < l_ShipName.Len(); i++) {
         if(l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
     }
     jMsg[wxS("shipname")] = l_ShipName;
+    wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
+    for(size_t i =0; i < l_CallSign.Len(); i++) {
+        if(l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
+    }
+    jMsg[wxS("callsign")] = l_CallSign;
     g_pi_manager->SendJSONMessageToAllPlugins( wxT("AIS"), jMsg );    
 }
