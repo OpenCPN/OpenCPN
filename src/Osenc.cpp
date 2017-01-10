@@ -2938,6 +2938,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     return false;
                 
                 break;
+            }
                 
             case wkbPoint: {
                 
@@ -2987,7 +2988,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                 if(!CreateMultiPointFeatureGeometryRecord200( pFeature, stream))
                     return false;
-                
                 break;
             }
                 
@@ -2997,7 +2997,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     
                     if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
                         return false;
-                }
                    
                     break;
                 }
