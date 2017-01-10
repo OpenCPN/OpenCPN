@@ -51,6 +51,10 @@ ENDIF(APPLE)
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+    MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
+ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+
 
 #Red Hat:   /etc/redhat-release
 #Slackware: /etc/slackware-version
