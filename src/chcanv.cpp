@@ -9131,6 +9131,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
                             powf((float)(r_rband.y - lastPoint.y), 2));
 
                         dc.SetPen(*g_pRouteMan->GetRoutePen());
+                        dc.SetBrush(*wxTRANSPARENT_BRUSH);
                         dc.StrokeCircle(lastPoint.x, lastPoint.y, distanceRad);
                     }
                 }
