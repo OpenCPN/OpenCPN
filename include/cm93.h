@@ -347,8 +347,6 @@ class cm93chart : public s57chart
 
             OCPNRegion          m_render_region;
 
-            LLBBox      m_covr_bbox; /* bounding box for entire covr_set */
-
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
