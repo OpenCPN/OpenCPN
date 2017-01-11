@@ -484,6 +484,7 @@ wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
 bool                      g_bSleep;
+bool                      g_bsimplifiedScalebar;
 
 int                       g_grad_default;
 wxColour                  g_border_color_default;

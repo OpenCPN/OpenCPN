@@ -271,6 +271,7 @@ extern int              g_n_ownship_min_mm;
 extern double           g_n_arrival_circle_radius;
 
 extern bool             g_bPreserveScaleOnX;
+extern bool             g_bsimplifiedScalebar;
 
 extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
@@ -546,6 +547,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar, 0 );
     Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
+    
+    Read( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar, 0 );
     
     int size_mm;
     Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
