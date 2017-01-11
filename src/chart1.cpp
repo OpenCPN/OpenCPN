@@ -2574,10 +2574,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //    Clear the NMEA Filter tables
     for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = 0.;
-        SOGFilterTable[i] = 0.;
+        COGFilterTable[i] = NAN;
+        SOGFilterTable[i] = NAN;
     }
-    m_COGFilterLast = 0.;
     m_last_bGPSValid = false;
 
     gHdt = NAN;
@@ -2586,9 +2585,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gSog = NAN;
     gCog = NAN;
 
-    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ ) {
-        COGTable[i] = 0.;
-    }
+    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ )
+        COGTable[i] = NAN;
 
     m_fixtime = 0;
 
@@ -2641,8 +2639,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_FloatingToolbarConfigMenu = new wxMenu();
 
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
-
-    m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
     g_sticky_projection = -1;
@@ -4814,7 +4810,7 @@ void MyFrame::ToggleCourseUp( void )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
 
         if( g_COGAvgSec > 0) {
@@ -5636,7 +5632,7 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
         if( g_COGAvgSec > 0 ) {
             for( int i = 0; i < g_COGAvgSec; i++ )
@@ -5651,8 +5647,8 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
 
     //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
+    double stuffcog = NAN;
+    double stuffsog = NAN;
     if( !wxIsNaN(gCog) ) stuffcog = gCog;
     if( !wxIsNaN(gSog) ) stuffsog = gSog;
 
@@ -5660,7 +5656,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         COGFilterTable[i] = stuffcog;
         SOGFilterTable[i] = stuffsog;
     }
-    m_COGFilterLast = stuffcog;
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
@@ -8968,12 +8963,43 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     return bret;
 }
 
+static bool ParsePosition(const LATLONG &Position)
+{
+    bool ll_valid = true;
+    double llt = Position.Latitude.Latitude;
+    if( !wxIsNaN(llt) )
+    {
+        int lat_deg_int = (int) ( llt / 100 );
+        double lat_deg = lat_deg_int;
+        double lat_min = llt - ( lat_deg * 100 );
+        gLat = lat_deg + ( lat_min / 60. );
+        if( Position.Latitude.Northing == South )
+            gLat = -gLat;
+    }
+    else
+        ll_valid = false;
+    
+    double lln = Position.Longitude.Longitude;
+    if( !wxIsNaN(lln) )
+    {
+        int lon_deg_int = (int) ( lln / 100 );
+        double lon_deg = lon_deg_int;
+        double lon_min = lln - ( lon_deg * 100 );
+        gLon = lon_deg + ( lon_min / 60. );
+        if( Position.Longitude.Easting == West )
+            gLon = -gLon;
+    }
+    else
+        ll_valid = false;
+
+    return ll_valid;
+}
+
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
-    bool pos_valid = false;
+    bool pos_valid = false, cog_sog_valid = false;
     bool bis_recognized_sentence = true;
-    bool ll_valid = true;
 
     wxString str_buf = event.ProcessNMEA4Tags();
 
@@ -9005,368 +9031,250 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     }
 
     bool b_accept = EvalPriority( str_buf, event.GetStream() );
-    if( b_accept ) {
-        m_NMEA0183 << str_buf;
-        if( m_NMEA0183.PreParse() )
+    if( !b_accept )
+        return;
+    
+    m_NMEA0183 << str_buf;
+
+    if( m_NMEA0183.PreParse() )
+    {
+        wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"),
+                          _T("VTG"), _T("GSV"), _T("GLL"), _T("GGA")};
+        enum {RMC, HDT, HDG, HDM, VTG, GSV, GGA, GLL, ID_NUM };
+
+        int id;
+        int num = g_bUseGLL ? ID_NUM : GLL;
+        for(id=0; id<num; id++)
+            if( m_NMEA0183.LastSentenceIDReceived == IDs[id] )
+                break;
+
+        if(id == num) // avoid parsing if we won't use it
+            return;
+
+        if( m_NMEA0183.Parse() )
         {
-            if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") )
+            switch(id)
             {
-                if( m_NMEA0183.Parse() )
+            case RMC:
+                if( m_NMEA0183.Rmc.IsDataValid == NTrue )
                 {
-                    if( m_NMEA0183.Rmc.IsDataValid == NTrue )
-                    {
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) )
-                        {
-                            double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                            int lat_deg_int = (int) ( llt / 100 );
-                            double lat_deg = lat_deg_int;
-                            double lat_min = llt - ( lat_deg * 100 );
-                            gLat = lat_deg + ( lat_min / 60. );
-                            if( m_NMEA0183.Rmc.Position.Latitude.Northing == South ) gLat = -gLat;
-                        }
-                        else
-                            ll_valid = false;
+                    pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) )
-                        {
-                            double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                            int lon_deg_int = (int) ( lln / 100 );
-                            double lon_deg = lon_deg_int;
-                            double lon_min = lln - ( lon_deg * 100 );
-                            gLon = lon_deg + ( lon_min / 60. );
-                            if( m_NMEA0183.Rmc.Position.Longitude.Easting == West )
-                                gLon = -gLon;
-                        }
-                        else
-                            ll_valid = false;
-
+                    // course is not valid in this case
+                    // but also my gps occasionally outputs RMC
+                    // messages with valid lat and lon but
+                    // 0.0 for speed and course which messes up the filter
+                    if(m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
                         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-
-                        if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
-                        {
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
-                                gVar = m_NMEA0183.Rmc.MagneticVariation;
-                            else
-                                if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
-                                    gVar = -m_NMEA0183.Rmc.MagneticVariation;
-
-                            g_bVAR_Rx = true;
-                            gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                        }
-
-                        sfixtime = m_NMEA0183.Rmc.UTCTime;
-
-                        if(ll_valid )
-                        {
-                            gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                            wxDateTime now = wxDateTime::Now();
-                            m_fixtime = now.GetTicks();
-                        }
-                        pos_valid = ll_valid;
+                        cog_sog_valid = true;
                     }
-                }
-                else
-                    if( g_nNMEADebug )
+                    
+                    if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
                     {
-                        wxString msg( _T("   ") );
-                        msg.Append( m_NMEA0183.ErrorMessage );
-                        msg.Append( _T(" : ") );
-                        msg.Append( str_buf );
-                        wxLogMessage( msg );
-                    }
-            }
-
-            else
-                if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") )
-                {
-                    if( m_NMEA0183.Parse() )
-                    {
-                        gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                        if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
-                        {
-                            g_bHDT_Rx = true;
-                            gHDT_Watchdog = gps_watchdog_timeout_ticks;
-                        }
-                    }
-                    else
-                        if( g_nNMEADebug )
-                        {
-                            wxString msg( _T("   ") );
-                            msg.Append( m_NMEA0183.ErrorMessage );
-                            msg.Append( _T(" : ") );
-                            msg.Append( str_buf );
-                            wxLogMessage( msg );
-                        }
-                }
-                else
-                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") )
-                    {
-                        if( m_NMEA0183.Parse() )
-                        {
-                            gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
-                                gHDx_Watchdog = gps_watchdog_timeout_ticks;
-
-                            if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
-                                gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
-                            else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
-                                gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
-                            {
-                                g_bVAR_Rx = true;
-                                gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                            }
-
-
-                        } else
-                            if( g_nNMEADebug )
-                            {
-                                wxString msg( _T("   ") );
-                                msg.Append( m_NMEA0183.ErrorMessage );
-                                msg.Append( _T(" : ") );
-                                msg.Append( str_buf );
-                                wxLogMessage( msg );
-                            }
-
-                    }
-                    else
-                        if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") )
-                        {
-                            if( m_NMEA0183.Parse() )
-                            {
-                                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
-                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                            }
-                            else
-                                if( g_nNMEADebug )
-                                {
-                                    wxString msg( _T("   ") );
-                                    msg.Append( m_NMEA0183.ErrorMessage );
-                                    msg.Append( _T(" : ") );
-                                    msg.Append( str_buf );
-                                    wxLogMessage( msg );
-                                }
-                        }
+                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                            gVar = m_NMEA0183.Rmc.MagneticVariation;
                         else
-                            if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") )
-                            {
-                                if( m_NMEA0183.Parse() )
-                                {
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
-                                        gSog = m_NMEA0183.Vtg.SpeedKnots;
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
-                                        gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
-                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                }
-                                else
-                                    if( g_nNMEADebug )
-                                    {
-                                        wxString msg( _T("   ") );
-                                        msg.Append( m_NMEA0183.ErrorMessage );
-                                        msg.Append( _T(" : ") );
-                                        msg.Append( str_buf );
-                                        wxLogMessage( msg );
-                                    }
-                            }
-                            else
-                                if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") )
-                                {
-                                    if( m_NMEA0183.Parse() )
-                                    {
-                                        g_SatsInView = m_NMEA0183.Gsv.SatsInView;
-                                        gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                        g_bSatValid = true;
-                                    }
-                                    else
-                                        if( g_nNMEADebug )
-                                        {
-                                            wxString msg( _T("   ") );
-                                            msg.Append( m_NMEA0183.ErrorMessage );
-                                            msg.Append( _T(" : ") );
-                                            msg.Append( str_buf );
-                                            wxLogMessage( msg );
-                                        }
-                                }
-                                else
-                                    if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") )
-                                    {
-                                        if( m_NMEA0183.Parse() )
-                                        {
-                                            if( m_NMEA0183.Gll.IsDataValid == NTrue )
-                                            {
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
-                                                {
-                                                    double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
-                                                    int lat_deg_int = (int) ( llt / 100 );
-                                                    double lat_deg = lat_deg_int;
-                                                    double lat_min = llt - ( lat_deg * 100 );
-                                                    gLat = lat_deg + ( lat_min / 60. );
-                                                    if( m_NMEA0183.Gll.Position.Latitude.Northing
-                                                            == South ) gLat = -gLat;
-                                                }
-                                                else
-                                                    ll_valid = false;
+                            if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                                gVar = -m_NMEA0183.Rmc.MagneticVariation;
+                        
+                        g_bVAR_Rx = true;
+                        gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                    }
+                    
+                    sfixtime = m_NMEA0183.Rmc.UTCTime;
+                }
+                break;
 
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) )
-                                                {
-                                                    double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
-                                                    int lon_deg_int = (int) ( lln / 100 );
-                                                    double lon_deg = lon_deg_int;
-                                                    double lon_min = lln - ( lon_deg * 100 );
-                                                    gLon = lon_deg + ( lon_min / 60. );
-                                                    if( m_NMEA0183.Gll.Position.Longitude.Easting == West )
-                                                        gLon = -gLon;
-                                                }
-                                                else
-                                                    ll_valid = false;
-
-                                                sfixtime = m_NMEA0183.Gll.UTCTime;
-
-                                                if(ll_valid)
-                                                {
-                                                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                                    wxDateTime now = wxDateTime::Now();
-                                                    m_fixtime = now.GetTicks();
-                                                }
-                                                pos_valid = ll_valid;
-                                            }
-                                        } else
-                                            if( g_nNMEADebug )
-                                            {
-                                                wxString msg( _T("   ") );
-                                                msg.Append( m_NMEA0183.ErrorMessage );
-                                                msg.Append( _T(" : ") );
-                                                msg.Append( str_buf );
-                                                wxLogMessage( msg );
-                                            }
-                                    }
-                                    else
-                                        if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") )
-                                        {
-                                            if( m_NMEA0183.Parse() )
-                                            {
-                                                if( m_NMEA0183.Gga.GPSQuality > 0 )
-                                                {
-                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Latitude.Latitude) )
-                                                    {
-                                                        double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
-                                                        int lat_deg_int = (int) ( llt / 100 );
-                                                        double lat_deg = lat_deg_int;
-                                                        double lat_min = llt - ( lat_deg * 100 );
-                                                        gLat = lat_deg + ( lat_min / 60. );
-                                                        if( m_NMEA0183.Gga.Position.Latitude.Northing == South )
-                                                            gLat = -gLat;
-                                                    }
-                                                    else
-                                                        ll_valid = false;
-
-                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) )
-                                                    {
-                                                        double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
-                                                        int lon_deg_int = (int) ( lln / 100 );
-                                                        double lon_deg = lon_deg_int;
-                                                        double lon_min = lln - ( lon_deg * 100 );
-                                                        gLon = lon_deg + ( lon_min / 60. );
-                                                        if( m_NMEA0183.Gga.Position.Longitude.Easting
-                                                                == West ) gLon = -gLon;
-                                                    }
-                                                    else
-                                                        ll_valid = false;
-
-                                                    sfixtime = m_NMEA0183.Gga.UTCTime;
-
-                                                    if(ll_valid)
-                                                    {
-                                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                                        wxDateTime now = wxDateTime::Now();
-                                                        m_fixtime = now.GetTicks();
-                                                    }
-                                                    pos_valid = ll_valid;
-
-                                                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
-                                                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                                    g_bSatValid = true;
-
-                                                }
-                                            } else
-                                                if( g_nNMEADebug )
-                                                {
-                                                    wxString msg( _T("   ") );
-                                                    msg.Append( m_NMEA0183.ErrorMessage );
-                                                    msg.Append( _T(" : ") );
-                                                    msg.Append( str_buf );
-                                                    wxLogMessage( msg );
-                                                }
-                                        }
-        }
-        //      Process ownship (AIVDO) messages from any source
-        else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
-        {
-            GenericPosDatEx gpd;
-            AIS_Error nerr = AIS_GENERIC_ERROR;
-            if(g_pAIS)
-                nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
-
-            if(nerr == AIS_NoError)
-            {
-                if( !wxIsNaN(gpd.kLat) )
-                    gLat = gpd.kLat;
-                if( !wxIsNaN(gpd.kLon) )
-                    gLon = gpd.kLon;
-
-                gCog = gpd.kCog;
-                gSog = gpd.kSog;
-
-                if( !wxIsNaN(gpd.kHdt) )
+            case HDT:
+                gHdt = m_NMEA0183.Hdt.DegreesTrue;
+                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
                 {
-                    gHdt = gpd.kHdt;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
+                break;
 
-                if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+            case HDG:
+                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+
+                if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
+                    gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+                else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
+                    gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
                 {
+                    g_bVAR_Rx = true;
+                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                }
+                break;
+
+            case HDM:
+                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                break;
+
+            case VTG:
+                // should we allow either Sog or Cog but not both to be valid?
+                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
+                    gSog = m_NMEA0183.Vtg.SpeedKnots;
+                if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
+                    !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                    cog_sog_valid = true;
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                    wxDateTime now = wxDateTime::Now();
-                    m_fixtime = now.GetTicks();
+                }
+                break;
 
-                    pos_valid = true;
-                }
-            }
-            else
-            {
-                if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+            case GSV:
+                g_SatsInView = m_NMEA0183.Gsv.SatsInView;
+                gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                g_bSatValid = true;
+                break;
+
+            case GGA:
+                if( m_NMEA0183.Gga.GPSQuality > 0 )
                 {
-                    g_total_NMEAerror_messages++;
-                    wxString msg( _T("   Invalid AIVDO Sentence...") );
-                    msg.Append( str_buf );
-                    wxLogMessage( msg );
+                    pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
+                    sfixtime = m_NMEA0183.Gga.UTCTime;
+                    
+                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
+                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                    g_bSatValid = true;
                 }
+                break;
+
+            case GLL:
+                if( m_NMEA0183.Gll.IsDataValid == NTrue )
+                {
+                    pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
+                    sfixtime = m_NMEA0183.Gll.UTCTime;  
+                }
+                break;
+            }
+
+            if(pos_valid)
+            {
+                gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                wxDateTime now = wxDateTime::Now();
+                m_fixtime = now.GetTicks();
+            }
+
+        } else if( g_nNMEADebug ) {
+            wxString msg( _T("   ") );
+            msg.Append( m_NMEA0183.ErrorMessage );
+            msg.Append( _T(" : ") );
+            msg.Append( str_buf );
+            wxLogMessage( msg );
+        }
+    }
+        //      Process ownship (AIVDO) messages from any source
+    else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
+    {
+        GenericPosDatEx gpd;
+        AIS_Error nerr = AIS_GENERIC_ERROR;
+        if(g_pAIS)
+            nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
+        
+        if(nerr == AIS_NoError)
+        {
+            if( !wxIsNaN(gpd.kLat) )
+                gLat = gpd.kLat;
+            if( !wxIsNaN(gpd.kLon) )
+                gLon = gpd.kLon;
+            
+            gCog = gpd.kCog;
+            gSog = gpd.kSog;
+            cog_sog_valid = true;
+
+            if( !wxIsNaN(gpd.kHdt) )
+            {
+                gHdt = gpd.kHdt;
+                g_bHDT_Rx = true;
+                gHDT_Watchdog = gps_watchdog_timeout_ticks;
+            }
+            
+            if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+            {
+                gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                wxDateTime now = wxDateTime::Now();
+                m_fixtime = now.GetTicks();
+                
+                pos_valid = true;
             }
         }
         else
         {
-            bis_recognized_sentence = false;
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
             {
                 g_total_NMEAerror_messages++;
-                wxString msg( _T("   Unrecognized NMEA Sentence...") );
+                wxString msg( _T("   Invalid AIVDO Sentence...") );
                 msg.Append( str_buf );
                 wxLogMessage( msg );
             }
         }
-
-        if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, sfixtime );
     }
+    else
+    {
+        bis_recognized_sentence = false;
+        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+        {
+            g_total_NMEAerror_messages++;
+            wxString msg( _T("   Unrecognized NMEA Sentence...") );
+            msg.Append( str_buf );
+            wxLogMessage( msg );
+        }
+    }
+
+    if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
 }
 
-void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
+void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
 {
-    FilterCogSog();
+    if(cog_sog_valid) {
+        //    Maintain average COG for Course Up Mode
+        if( !wxIsNaN(gCog) ) {
+            if( g_COGAvgSec > 0 ) {
+                //    Make a hole
+                for( int i = g_COGAvgSec - 1; i > 0; i-- )
+                    COGTable[i] = COGTable[i - 1];
+                COGTable[0] = gCog;
+
+                double sum = 0., count=0;
+                for( int i = 0; i < g_COGAvgSec; i++ ) {
+                    double adder = COGTable[i];
+                    if(wxIsNaN(adder))
+                        continue;
+
+                    if( fabs( adder - g_COGAvg ) > 180. ) {
+                        if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
+                        else
+                            adder += 360.;
+                    }
+
+                    sum += adder;
+                    count++;
+                }
+                sum /= count;
+
+                if( sum < 0. ) sum += 360.;
+                else
+                    if( sum >= 360. ) sum -= 360.;
+
+                g_COGAvg = sum;
+            }
+            else
+                g_COGAvg = gCog;
+        }
+
+        FilterCogSog();
+    }
 
     //    If gSog is greater than some threshold, we determine that we are "cruising"
     if( gSog > 3.0 ) g_bCruising = true;
@@ -9408,69 +9316,43 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 //    Show gLat/gLon in StatusWindow0
 
     if( NULL != GetStatusBar() ) {
-        char tick_buf[2];
-        tick_buf[0] = nmea_tick_chars[tick_idx];
-        tick_buf[1] = 0;
+        if(pos_valid) {
+            char tick_buf[2];
+            tick_buf[0] = nmea_tick_chars[tick_idx];
+            tick_buf[1] = 0;
 
-        wxString s1( tick_buf, wxConvUTF8 );
-        s1 += _(" Ship ");
-        s1 += toSDMM( 1, gLat );
-        s1 += _T("   ");
-        s1 += toSDMM( 2, gLon );
+            wxString s1( tick_buf, wxConvUTF8 );
+            s1 += _(" Ship ");
+            s1 += toSDMM( 1, gLat );
+            s1 += _T("   ");
+            s1 += toSDMM( 2, gLon );
 
-        if(STAT_FIELD_TICK >= 0 )
-            SetStatusText( s1, STAT_FIELD_TICK );
-
-        wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
-        else
-            sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
-
-        wxString cogs;
-        if( wxIsNaN(gCog) )
-            cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
-        else {
-            if( g_bShowTrue )
-                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gCog );
-            if( g_bShowMag )
-                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( gCog ) );
+            if(STAT_FIELD_TICK >= 0 )
+                SetStatusText( s1, STAT_FIELD_TICK );
+            
         }
-
-        sogcog.Append( cogs );
-        SetStatusText( sogcog, STAT_FIELD_SOGCOG );
-    }
-
-//    Maintain average COG for Course Up Mode
-
-    if( !wxIsNaN(gCog) ) {
-        if( g_COGAvgSec > 0 ) {
-            //    Make a hole
-            for( int i = g_COGAvgSec - 1; i > 0; i-- )
-                COGTable[i] = COGTable[i - 1];
-            COGTable[0] = gCog;
-
-            double sum = 0.;
-            for( int i = 0; i < g_COGAvgSec; i++ ) {
-                double adder = COGTable[i];
-
-                if( fabs( adder - g_COGAvg ) > 180. ) {
-                    if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
-                    else
-                        adder += 360.;
-                }
-
-                sum += adder;
-            }
-            sum /= g_COGAvgSec;
-
-            if( sum < 0. ) sum += 360.;
+        
+        if(cog_sog_valid) {
+            wxString sogcog;
+            if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
             else
-                if( sum >= 360. ) sum -= 360.;
+                sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
-            g_COGAvg = sum;
+            wxString cogs;
+            if( wxIsNaN(gCog) )
+                cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
+            else {
+                if( g_bShowTrue )
+                    cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gCog );
+                if( g_bShowMag )
+                    cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( gCog ) );
+            }
+
+            sogcog.Append( cogs );
+            SetStatusText( sogcog, STAT_FIELD_SOGCOG );
         }
-        else
-            g_COGAvg = gCog;
+        
+        
     }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
@@ -9566,56 +9448,63 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 }
 
 void MyFrame::FilterCogSog( void )
-{
+{            
     if( g_bfilter_cogsog ) {
-        //    If the data are undefined, leave the array intact
-        if( !wxIsNaN(gCog) ) {
-            //    Simple averaging filter for COG
-            double cog_last = gCog;       // most recent reported value
+        //    Simple averaging filter for COG
+        double cog_last = gCog;       // most recent reported value
 
-            //    Make a hole in array
-            for( int i = g_COGFilterSec - 1; i > 0; i-- )
-                COGFilterTable[i] = COGFilterTable[i - 1];
-            COGFilterTable[0] = cog_last;
+        //    Make a hole in array
+        for( int i = g_COGFilterSec - 1; i > 0; i-- )
+            COGFilterTable[i] = COGFilterTable[i - 1];
+        COGFilterTable[0] = cog_last;
 
+        //    If the lastest data is undefined, leave it
+        if( !wxIsNaN(cog_last) ) {
             //
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_COGFilterSec; i++ ) {
                 double adder = COGFilterTable[i];
+                if(wxIsNaN(adder))
+                    continue;
 
-                if( fabs( adder - m_COGFilterLast ) > 180. ) {
-                    if( ( adder - m_COGFilterLast ) > 0. ) adder -= 360.;
+                if( fabs( adder - cog_last ) > 180. ) {
+                    if( ( adder - cog_last ) > 0. ) adder -= 360.;
                     else
                         adder += 360.;
                 }
 
                 sum += adder;
+                count++;
             }
-            sum /= g_COGFilterSec;
+            sum /= count;
 
             if( sum < 0. ) sum += 360.;
             else
                 if( sum >= 360. ) sum -= 360.;
 
             gCog = sum;
-            m_COGFilterLast = sum;
         }
 
+        //    Simple averaging filter for SOG
+        double sog_last = gSog;       // most recent reported value
+
+        //    Make a hole in array
+        for( int i = g_SOGFilterSec - 1; i > 0; i-- )
+            SOGFilterTable[i] = SOGFilterTable[i - 1];
+        SOGFilterTable[0] = sog_last;
+
+        
         //    If the data are undefined, leave the array intact
         if( !wxIsNaN(gSog) ) {
-            //    Simple averaging filter for SOG
-            double sog_last = gSog;       // most recent reported value
-
-            //    Make a hole in array
-            for( int i = g_SOGFilterSec - 1; i > 0; i-- )
-                SOGFilterTable[i] = SOGFilterTable[i - 1];
-            SOGFilterTable[0] = sog_last;
-
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_SOGFilterSec; i++ ) {
+                if(wxIsNaN(SOGFilterTable[i]))
+                    continue;
+
                 sum += SOGFilterTable[i];
+                count++;
             }
-            sum /= g_SOGFilterSec;
+            sum /= count;
 
             gSog = sum;
         }

@@ -510,7 +510,7 @@ class MyFrame: public wxFrame
     void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool pos_valid, const wxString &sfixtime);
+    void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
@@ -542,7 +542,6 @@ class MyFrame: public wxFrame
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
 
-    double              m_COGFilterLast;
     double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 
