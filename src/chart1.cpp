@@ -1217,7 +1217,7 @@ public:
 };
 
 WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
-//WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
+WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 
 #include <wx/arrimpl.cpp> 
 // end duplicated code

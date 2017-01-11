@@ -36,7 +36,9 @@
 #include "FontMgr.h"
 
 extern bool             g_bopengl;
+#ifdef ocpnUSE_GL    
 extern GLenum       g_texture_rectangle_format;
+#endif
 
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow) EVT_PAINT(RolloverWin::OnPaint)
     EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
@@ -170,7 +172,11 @@ void RolloverWin::SetBitmap( int rollover )
     m_pbm = new wxBitmap( m_size.x, m_size.y );
     mdc.SelectObject( *m_pbm );
 
-    int usegl = g_bopengl && g_texture_rectangle_format && m_bmaincanvas;
+    int usegl = g_bopengl &&
+#ifdef ocpnUSE_GL    
+        g_texture_rectangle_format &&
+#endif
+        m_bmaincanvas;
     if(!usegl) {
         wxDC* cdc = new wxScreenDC();
         int cpx = 0, cpy = 0;

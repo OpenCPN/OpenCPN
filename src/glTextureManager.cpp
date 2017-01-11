@@ -186,7 +186,7 @@ public:
 #include <wx/arrimpl.cpp> 
 
 WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
-WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
+//WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 
 
 JobTicket::JobTicket()
