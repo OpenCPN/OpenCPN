@@ -223,7 +223,7 @@ bool glTexFactory::OnTimer()
         }
     }
 
-#if 1
+#if 0 // this is proven unreliable and slow
     // if we have the data in the catalog of level 0 or doubly compressed
     // for an entire row of tiles, then we can free rows from the linebuffer
     if(g_GLOptions.m_bTextureCompression) {

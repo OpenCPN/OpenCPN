@@ -3691,6 +3691,9 @@ double fromUsrDistance( double usr_distance, int unit )
         case DISTANCE_M:
             ret = usr_distance / 1852;
             break;
+        case DISTANCE_FT:
+            ret = usr_distance / 6076.12;
+            break;
     }
     return ret;
 }
