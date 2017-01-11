@@ -245,7 +245,7 @@ class options : private Uncopyable,
   void CreateControls(void);
   size_t CreatePanel(const wxString &title);
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
-  bool DeletePage(wxScrolledWindow *page);
+  bool DeletePluginPage(wxScrolledWindow *page);
   void SetColorScheme(ColorScheme cs);
   void RecalculateSize(void);
 

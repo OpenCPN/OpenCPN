@@ -2722,7 +2722,7 @@ wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title )
 bool DeleteOptionsPage( wxScrolledWindow* page )
 {
     if (! g_pOptions) return false;
-    return g_pOptions->DeletePage( page );
+    return g_pOptions->DeletePluginPage( page );
 }
 
 bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *accumulator )

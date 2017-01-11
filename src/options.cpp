@@ -1099,7 +1099,7 @@ wxScrolledWindow* options::AddPage(size_t parent, const wxString& title) {
   return sw;
 }
 
-bool options::DeletePage(wxScrolledWindow* page) {
+bool options::DeletePluginPage(wxScrolledWindow* page) {
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
     wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
@@ -1107,18 +1107,20 @@ bool options::DeletePage(wxScrolledWindow* page) {
     if (nb) {
       for (size_t j = 0; j < nb->GetPageCount(); j++) {
         wxNotebookPage* spg = nb->GetPage(j);
-        if (spg != page) return FALSE;
-        nb->DeletePage(j);
-        if (nb->GetPageCount() != 1) return FALSE;
-        /* There's only one page, remove inner notebook */
-        spg = nb->GetPage(0);
-        spg->Reparent(m_pListbook);
-        nb->RemovePage(0);
-        wxString toptitle = m_pListbook->GetPageText(i);
-        m_pListbook->DeletePage(i);
-        m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
+        if (spg == page){
+            nb->DeletePage(j);
+            if (nb->GetPageCount() != 1)
+                return TRUE;
+            /* There's only one page, remove inner notebook */
+            spg = nb->GetPage(0);
+            spg->Reparent(m_pListbook);
+            nb->RemovePage(0);
+            wxString toptitle = m_pListbook->GetPageText(i);
+            m_pListbook->DeletePage(i);
+            m_pListbook->InsertPage(i, spg, toptitle, FALSE, i);
+            return TRUE;    
+        }
       }
-      return TRUE;
     } else if (pg == page) {
       /* There's only one page, replace it with empty panel */
       m_pListbook->DeletePage(i);
