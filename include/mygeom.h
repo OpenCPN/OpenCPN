@@ -204,7 +204,7 @@ class PolyTessGeo
         PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
 
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
-            double ref_lat, double ref_lon,  bool bUseInternalTess, double LOD_meters);  // Build this from OGRPolygon
+            double ref_lat, double ref_lon, double LOD_meters);  // Build this from OGRPolygon
 
         PolyTessGeo(Extended_Geometry *pxGeom);
 
@@ -234,9 +234,7 @@ class PolyTessGeo
 
     private:
         int BuildTessGL(void);
-        int BuildTessTri(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
-        int PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
         int my_bufgets( char *buf, int buf_len_max );
 
 

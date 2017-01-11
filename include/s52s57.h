@@ -378,7 +378,6 @@ public:
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
       PolyTessGeo             *pPolyTessGeo;
-      PolyTessGeoTrap         *pPolyTrapGeo;
 
       LLBBox                  BBObj;                  // lat/lon BBox of the rendered object
       double                  m_lat;                  // The lat/lon of the object's "reference" point
