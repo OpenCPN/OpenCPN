@@ -235,8 +235,6 @@ S57Obj::~S57Obj()
             delete pPolyTessGeo;
         }
 
-        if( pPolyTrapGeo ) delete pPolyTrapGeo;
-
         if( FText ) delete FText;
 
         if( geoPt ) free( geoPt );
@@ -264,7 +262,6 @@ void S57Obj::Init()
     n_attr = 0;
 
     pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
 
     bCS_Added = 0;
     CSrules = NULL;
@@ -522,7 +519,6 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
     auxParm3 = 0;
 
     pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
     bCS_Added = 0;
     CSrules = NULL;
     FText = NULL;
@@ -6294,130 +6290,6 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
         }
 
     }           // if pPolyTessGeo
-
-    else if( obj->pPolyTrapGeo ) {
-        if( !obj->pPolyTrapGeo->IsOk() ) obj->pPolyTrapGeo->BuildTess();
-
-        PolyTrapGroup *ptg = obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-        //  Polygon geometry is carried in SM coordinates, so...
-        //  make the hit test thus.
-        //  However, since PolyTrapGeo geometry is (always??) in cm-93 coordinates, convert to sm as necessary
-        double easting, northing;
-        toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
-        //  It turns out that trapezoid tesselation is only used for cm93,
-        //  So we get better accuracy if we use the cell-referenced points instead of global SM points
-        {
-            double y_rate = obj->y_rate;
-            double y_origin = obj->y_origin;
-            double x_rate = obj->x_rate;
-            double x_origin = obj->x_origin;
-
-            double northing_scaled = ( northing - y_origin ) / y_rate;
-            double easting_scaled = ( easting - x_origin ) / x_rate;
-            northing = northing_scaled;
-            easting = easting_scaled;
-        }
-
-        int ntraps = ptg->ntrap_count;
-        trapz_t *ptraps = ptg->trap_array;
-        MyPoint *segs = (MyPoint *) ptg->ptrapgroup_geom; //TODO convert MyPoint to wxPoint2DDouble globally
-
-        MyPoint pvert_list[4];
-
-        for( int i = 0; i < ntraps; i++, ptraps++ ) {
-            //      Y test
-
-            double hiy = ptraps->hiy;
-            if( northing > hiy ) continue;
-
-            double loy = ptraps->loy;
-            if( northing < loy ) continue;
-
-            //      Use the segment endpoints to calculate the corners of a trapezoid
-            int lseg = ptraps->ilseg;
-            int rseg = ptraps->irseg;
-
-            //    Left edge
-            double xmax = segs[lseg].x;
-            double xmin = segs[lseg + 1].x;
-
-            double ymax = segs[lseg].y;
-            double ymin = segs[lseg + 1].y;
-
-            double xt, yt, xca, xcb;
-
-            if( ymax < ymin ) {
-                xt = xmin;
-                xmin = xmax;
-                xmax = xt;                // interchange min/max
-                yt = ymin;
-                ymin = ymax;
-                ymax = yt;
-            }
-
-            if( xmin == xmax ) {
-                xca = xmin;
-                xcb = xmin;
-            } else {
-                double slope = ( ymax - ymin ) / ( xmax - xmin );
-                xca = xmin + ( ptraps->loy - ymin ) / slope;
-                xcb = xmin + ( ptraps->hiy - ymin ) / slope;
-            }
-
-            //  Test point is west of leftmost trap point
-            double x_quad_left = wxMin(xca, xcb);
-            if( x_quad_left > easting )
-                continue;
-
-            pvert_list[0].x = xca;
-            pvert_list[0].y = loy;
-
-            pvert_list[1].x = xcb;
-            pvert_list[1].y = hiy;
-
-            //    Right edge
-            xmax = segs[rseg].x;
-            xmin = segs[rseg + 1].x;
-            ymax = segs[rseg].y;
-            ymin = segs[rseg + 1].y;
-
-            if( ymax < ymin ) {
-                xt = xmin;
-                xmin = xmax;
-                xmax = xt;
-                yt = ymin;
-                ymin = ymax;
-                ymax = yt;
-            }
-
-            if( xmin == xmax ) {
-                xca = xmin;
-                xcb = xmin;
-            } else {
-                double slope = ( ymax - ymin ) / ( xmax - xmin );
-                xca = xmin + ( ptraps->hiy - ymin ) / slope;
-                xcb = xmin + ( ptraps->loy - ymin ) / slope;
-            }
-
-            //  Test point is east of rightmost trap point
-            double x_quad_right = wxMax(xca, xcb);
-            if( x_quad_right < easting )
-                continue;
-
-            pvert_list[2].x = xca;
-            pvert_list[2].y = hiy;
-
-            pvert_list[3].x = xcb;
-            pvert_list[3].y = loy;
-
-            if( G_PtInPolygon( (MyPoint *) pvert_list, 4, easting, northing ) ) {
-                ret = true;
-                break;
-            }
-        }
-    }           // if pPolyTrapGeo
 
     return ret;
 }
