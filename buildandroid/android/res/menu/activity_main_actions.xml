@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/ocpn_route_create_active"
-          android:icon="@drawable/route_active"
-          android:title="Route Create is Active"
-          android:visible="false"
-          android:showAsAction="ifRoom"/>
-
     <item android:id="@+id/ocpn_action_follow"
           android:icon="@drawable/follow"
           android:title="@string/ocpn_action_follow"
@@ -17,14 +11,14 @@
           android:title="@string/ocpn_action_follow"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/ocpn_action_track_toggle_ison"
-          android:icon="@drawable/trackon"
-          android:title="@string/ocpn_action_tracktoggle_off"
-          android:showAsAction="ifRoom"/>
-
     <item android:id="@+id/ocpn_action_routemanager"
           android:icon="@drawable/route_manager"
           android:title="@string/ocpn_action_routemanager"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_action_track_toggle_ison"
+          android:icon="@drawable/trackon"
+          android:title="@string/ocpn_action_tracktoggle_off"
           android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/ocpn_action_track_toggle_isoff"
@@ -35,6 +29,12 @@
     <item android:id="@+id/ocpn_action_createroute"
           android:icon="@drawable/route"
           android:title="@string/ocpn_action_createroute"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/ocpn_route_create_active"
+          android:icon="@drawable/route_active"
+          android:title="Route Create is Active"
+          android:visible="false"
           android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/ocpn_action_encText"
