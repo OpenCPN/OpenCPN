@@ -1085,7 +1085,8 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 463: return b_CntryLongStr ? _("Pakistan") : _T("PK") ;
     case 466: return b_CntryLongStr ? _("Qatar") : _T("QA") ;
     case 468: return b_CntryLongStr ? _("Syrian Arab Republic") : _T("SY") ;
-    case 470: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
+    case 470:
+    case 471: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
     case 472: return b_CntryLongStr ? _("Tajikistan") : _T("TJ") ;
     case 473: return b_CntryLongStr ? _("Yemen") : _T("YE") ;
     case 475: return b_CntryLongStr ? _("Yemen") : _T("YE") ;
