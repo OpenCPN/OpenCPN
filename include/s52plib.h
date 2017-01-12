@@ -162,6 +162,12 @@ public:
     bool GetShowS57ImportantTextOnly() { return m_bShowS57ImportantTextOnly; }
     void SetShowS57ImportantTextOnly( bool f ) { m_bShowS57ImportantTextOnly = f; GenerateStateHash(); }
 
+    void SetLightsOff(bool val){ m_lightsOff = val; }
+    bool GetLightsOff(){ return m_lightsOff; }
+    
+    void SetAnchorOn(bool val){ m_anchorOn = val; }
+    bool GetAnchorOn();
+    
     int GetMajorVersion( void ) { return m_VersionMajor; }
     int GetMinorVersion( void ) { return m_VersionMinor; }
 
@@ -357,6 +363,9 @@ private:
 
     wxString m_ColorScheme;
 
+    bool m_lightsOff;
+    bool m_anchorOn;
+    
     long m_state_hash;
 
     bool m_txf_ready;

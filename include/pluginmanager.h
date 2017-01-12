@@ -303,6 +303,8 @@ public:
 
       bool SendMouseEventToPlugins( wxMouseEvent &event);
       bool SendKeyEventToPlugins( wxKeyEvent &event);
+
+      void SendConfigToAllPlugIns();
       
       wxArrayString GetPlugInChartClassNameArray(void);
 

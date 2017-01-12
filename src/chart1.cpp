@@ -4852,6 +4852,10 @@ void MyFrame::ToggleENCText( void )
             g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
 
         SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
+        
+        if(g_pi_manager)
+            g_pi_manager->SendConfigToAllPlugIns();
+        
         cc1->ReloadVP();
     }
 
@@ -4864,6 +4868,10 @@ void MyFrame::ToggleSoundings( void )
     if( ps52plib ) {
         ps52plib->SetShowSoundings( !ps52plib->GetShowSoundings() );
         SetMenubarItemState( ID_MENU_ENC_SOUNDINGS, ps52plib->GetShowSoundings() );
+        
+        if(g_pi_manager)
+            g_pi_manager->SendConfigToAllPlugIns();
+        
         cc1->ReloadVP();
     }
 #endif
@@ -4888,17 +4896,23 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
         oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
 
         if( doToggle ){
-            if(oldstate)                            // On, going off
+            if(oldstate){                            // On, going off
                 ps52plib->AddObjNoshow("LIGHTS");
+                ps52plib->SetLightsOff(true);
+            }
             else{                                   // Off, going on
                 if(pOLE)
                     pOLE->nViz = 1;
                 ps52plib->RemoveObjNoshow("LIGHTS");
+                ps52plib->SetLightsOff(false);
             }
 
             SetMenubarItemState( ID_MENU_ENC_LIGHTS, !oldstate );
         }
 
+        if(g_pi_manager)
+            g_pi_manager->SendConfigToAllPlugIns();
+        
         if( doToggle ) {
             if( ! temporary ) {
                 ps52plib->GenerateStateHash();
@@ -4908,6 +4922,8 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
     }
 
 #endif
+
+
     return oldstate;
 }
 
@@ -4945,34 +4961,20 @@ void MyFrame::ToggleAnchor( void )
 #ifdef USE_S57
     if( ps52plib ) {
         int old_vis =  0;
-        OBJLElement *pOLE = NULL;
-
-        if(  MARINERS_STANDARD == ps52plib->GetDisplayCategory()){
-            // Need to loop once for SBDARE, which is our "master", then for
-            // other categories, since order is unknown?
-            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                    old_vis = pOLE->nViz;
-                    break;
-                }
-		pOLE = NULL;
-            }
-        }
-        else if(OTHER == ps52plib->GetDisplayCategory())
-            old_vis = true;
 
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
 
-        old_vis &= !ps52plib->IsObjNoshow("SBDARE");
-
+        old_vis = ps52plib->GetAnchorOn();
+        
         if(old_vis){                            // On, going off
+            ps52plib->SetAnchorOn(false);
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->AddObjNoshow(categories[c]);
             }
         }
         else{                                   // Off, going on
+            ps52plib->SetAnchorOn(true);
             for( unsigned int c = 0; c < num; c++ ) {
                 ps52plib->RemoveObjNoshow(categories[c]);
             }
@@ -4994,6 +4996,9 @@ void MyFrame::ToggleAnchor( void )
 
         SetMenubarItemState( ID_MENU_ENC_ANCHOR, !old_vis );
 
+        if(g_pi_manager)
+            g_pi_manager->SendConfigToAllPlugIns();
+        
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
 

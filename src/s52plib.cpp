@@ -282,6 +282,9 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_bShowLdisText = true;
     m_bExtendLightSectors = true;
 
+    m_lightsOff = false;
+    m_anchorOn = false;
+    
     GenerateStateHash();
 
     HPGL = new RenderFromHPGL( this );
@@ -412,7 +415,36 @@ DisCat s52plib::findLUPDisCat(const char *objectName, LUPname TNAM)
 
 
 
-
+bool s52plib::GetAnchorOn()
+{
+    //  Investigate and report the logical condition that "Anchoring Condition" is shown
+    
+    int old_vis =  0;
+    OBJLElement *pOLE = NULL;
+        
+    if(  MARINERS_STANDARD == ps52plib->GetDisplayCategory()){
+            // Need to loop once for SBDARE, which is our "master", then for
+            // other categories, since order is unknown?
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                    old_vis = pOLE->nViz;
+                    break;
+                }
+                pOLE = NULL;
+            }
+    }
+    else if(OTHER == ps52plib->GetDisplayCategory())
+        old_vis = true;
+        
+    const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
+    unsigned int num = sizeof(categories) / sizeof(categories[0]);
+        
+    old_vis &= !ps52plib->IsObjNoshow("SBDARE");
+    
+    return (old_vis != 0);
+}
+        
 
 void s52plib::SetGLRendererString(const wxString &renderer)
 {
