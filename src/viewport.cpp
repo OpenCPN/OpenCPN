@@ -183,11 +183,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
         toSMcache( lat, xlon, cache0, clon, &easting, &northing );
-#endif
         break;
 
     case PROJECTION_TRANSVERSE_MERCATOR:

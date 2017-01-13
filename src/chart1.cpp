@@ -6799,13 +6799,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         //    This RefreshRect will cause any active routepoint to blink
         if( g_pRouteMan->GetpActiveRoute() ) cc1->RefreshRect( g_blink_rect, false );
     }
-#if 0 // too slow, my computer hiccups, this takes nearly a second on some machines.
-//  Instead we should save the current configuration only when it needs to be saved.
-    if( 0 == ( g_tick % ( g_nautosave_interval_seconds ) ) ) {
-        pConfig->UpdateSettings();
-        pConfig->UpdateNavObj();
-    }
-#endif
 
 //  Force own-ship drawing parameters
     cc1->SetOwnShipState( SHIP_NORMAL );
@@ -10746,7 +10739,7 @@ wxArrayString *EnumerateSerialPorts( void )
                     if( GetLastError() == 122)  //ERROR_INSUFFICIENT_BUFFER, OK in this case
                         bOk = true;
                 }
-//#if 0
+
                 //      We could get friendly name and/or description here
                 TCHAR fname[256] = {0};
                 TCHAR desc[256] ={0};
@@ -10759,7 +10752,7 @@ wxArrayString *EnumerateSerialPorts( void )
                         hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
                         (PBYTE)desc, sizeof(desc), NULL);
                 }
-//#endif
+
                 //  Get the "COMn string from the registry key
                 if(bOk) {
                     bool bFoundCom = false;
