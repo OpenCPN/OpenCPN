@@ -2497,6 +2497,12 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     //    Look for the texture factory for this chart
     wxString key = chart->GetFullPath();
+    
+    /* replace path separators with ! */
+    wxChar separator = wxFileName::GetPathSeparator();
+    for(unsigned int pos = 0; pos < key.size(); pos = key.find(separator, pos))
+        key.replace(pos, 1, _T("!"));
+    
     glTexFactory *pTexFact;
     ChartPathHashTexfactType &hash = g_glTextureManager->m_chart_texfactory_hash;
     ChartPathHashTexfactType::iterator ittf = hash.find( key );
