@@ -51,6 +51,10 @@ ENDIF(APPLE)
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+    MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
+ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+
 
 #Red Hat:   /etc/redhat-release
 #Slackware: /etc/slackware-version
@@ -68,38 +72,61 @@ IF (NOT WIN32)
     SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2")
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "amd64")
-#      SET (LIB_INSTALL_DIR "lib64")
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "arm64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "amd64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
     SET(TENTATIVE_PREFIX "/usr/local")
   ENDIF (EXISTS /etc/debian_version)
   IF (EXISTS /etc/redhat-release)
     SET (PACKAGE_FORMAT "RPM")
     #    SET (PACKAGE_DEPS  "wxGTK mesa-libGLU mesa-libGL gettext zlib bzip2 portaudio")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "x86_64")
-      SET (LIB_INSTALL_DIR "lib64")
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-      SET (LIB_INSTALL_DIR "lib")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "aarch64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "x86_64")
+        SET (LIB_INSTALL_DIR "lib64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+        SET (LIB_INSTALL_DIR "lib")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   ENDIF (EXISTS /etc/redhat-release)
   IF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
     SET (PACKAGE_FORMAT "RPM")
     #    SET (PACKAGE_DEPS  "libwx_baseu-2_8-0-wxcontainer MesaGLw libbz2-1 portaudio")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "x86_64")
-      SET (LIB_INSTALL_DIR "lib")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "aarch64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "x86_64")
+        SET (LIB_INSTALL_DIR "lib")
         # In recent openSUSE versions (as of 2016), lib64 is mostly used when there are both 32-bit and 64-bit versions, although not limited to that.
         # This CMake variable only affects the location of OpenCPN plugins at installation time, and nothing more than that.
         # At run time, the plugin directory is determined by wxStandardPaths::GetPluginsDir(), which returns "lib", so this can be considered canonical.
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-      SET (LIB_INSTALL_DIR "lib")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+        SET (LIB_INSTALL_DIR "lib")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
   IF (EXISTS /etc/gentoo-release)
     SET (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
@@ -116,14 +143,9 @@ ELSE (NOT WIN32)
   SET (ARCH "i386")
 ENDIF (NOT WIN32)
 
-IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  SET (ARCH "armhf")
-ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-
-IF (ARCH MATCHES "armhf")
-  ADD_DEFINITIONS(-DARMHF)
-ENDIF (ARCH MATCHES "armhf")
-
+#IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+#  SET (ARCH "armhf")
+#ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
 
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
@@ -260,7 +282,6 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 #-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
 #-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
 #-DQt_Base /home/dsr/Qt/5.3) ..
-
 IF(DEFINED _wx_selected_config)
 
 MESSAGE (STATUS "selected config ${_wx_selected_config}")
@@ -270,15 +291,6 @@ IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Qt_Base: " ${Qt_Base})
   MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
-  SET(QT_LINUX "OFF")
-  SET(QT "ON")
-ELSE(_wx_selected_config MATCHES "androideabi-qt")
-  IF(_wx_selected_config MATCHES "qt")
-    MESSAGE (STATUS "Building for wxQt-linux")
-    SET(QT_ANDROID "OFF")
-    SET(QT_LINUX "ON")
-    SET(QT "ON")
-  ENDIF(_wx_selected_config MATCHES "qt")
 ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
@@ -303,7 +315,6 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     MESSAGE (STATUS "Found OpenGLESv1")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
@@ -313,7 +324,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2" )
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm" "dri2" )
   ENDIF()
 ENDIF()
 
@@ -324,7 +335,6 @@ IF(QT_ANDROID)
     MESSAGE (STATUS "Using GLESv1 for Android")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
     ADD_DEFINITIONS(-DARMHF)
 
     SET(OPENGLES_FOUND "YES")
@@ -355,7 +365,6 @@ IF(OPENGL_FOUND)
     MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
@@ -367,18 +376,17 @@ IF(OPENGL_FOUND)
         ENDIF()
     ENDFOREACH (_currentLibFile )
 
-    MESSAGE (STATUS "    Adding local GLU" )
-    add_subdirectory(src/glu)
-
-    SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
     MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
-
 
 ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_FOUND)
 
 ENDIF()
+
+MESSAGE (STATUS "    Adding local GLU" )
+add_subdirectory(src/glu)
+SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
 
 IF(NOT QT_ANDROID)
 # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -396,7 +404,8 @@ STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_
 ENDIF(MSYS)
 
 INCLUDE(${wxWidgets_USE_FILE})
-    MESSAGE (STATUS "Found wxWidgets..." )
+MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
     # We need to remove GLU from the wxWidgets_LIBRARIES list
@@ -1166,7 +1175,6 @@ IF (USE_S57)
 		src/cm93.cpp
 		src/mygeom.cpp
 		include/cm93.h
-		src/tri.c
 		src/Osenc.cpp
 		include/Osenc.h
                 include/s57RegistrarMgr.h
@@ -1373,7 +1381,8 @@ IF (OPENGL_FOUND)
     src/mipmap/mipmap_sse.c
     src/mipmap/mipmap_sse2.c
     src/mipmap/mipmap_ssse3.c
-    src/mipmap/mipmap_avx2.c)
+    src/mipmap/mipmap_avx2.c
+    src/mipmap/mipmap_neon.c)
 
   ADD_LIBRARY(MIPMAP ${SRC_MIPMAP})
   SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
@@ -1396,7 +1405,6 @@ IF (OPENGL_FOUND)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
       ELSE ()
-#        neon version not yet tested or implemented
 #        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       ENDIF ()
   ELSE (NOT MSVC)
@@ -1797,10 +1805,21 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
 
-IF(QT_LINUX)
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
-ENDIF(QT_LINUX)
 
+IF( UNIX AND NOT APPLE )
+    FIND_PATH( LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf )
+    FIND_LIBRARY( LIBELF_LIBRARY NAMES elf )
+    IF( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+        MESSAGE( STATUS "Found LibELF..." )
+        MESSAGE( STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}" )
+        MESSAGE( STATUS "    ELF Include: ${LIBELF_LIBRARY}" )
+        TARGET_COMPILE_DEFINITIONS( ${PACKAGE_NAME} PUBLIC USE_LIBELF )
+        TARGET_INCLUDE_DIRECTORIES( ${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}" )
+        TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "${LIBELF_LIBRARY}" )
+    ELSE( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+        MESSAGE( WARNING "Did not found LibELF, plugin compatibility check will be simplified." )
+    ENDIF( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+ENDIF( UNIX AND NOT APPLE )
 
 IF(NOT APPLE)
 
@@ -1928,6 +1947,7 @@ MACRO(GETTEXT_BUILD_MO _poFile _lang)
    ADD_CUSTOM_COMMAND(
       OUTPUT ${_gmoFile}
       COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} --check -o ${_gmoFile} ${_absFile}
+      COMMAND ${CMAKE_COMMAND} -E copy  ${_gmoFile}  ${CMAKE_CURRENT_BINARY_DIR}/Resources/${PACKAGE_NAME}_${_lang}.lproj/${PACKAGE_NAME}.mo
       DEPENDS ${_absFile}
       COMMENT "i18n [${_poBasename}]: Created mo file."
    )

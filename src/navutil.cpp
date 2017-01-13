@@ -104,7 +104,7 @@ extern double           kLat, kLon;
 extern double           initial_scale_ppm, initial_rotation;
 extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
-extern bool             g_bShowMag;
+extern bool             g_bShowTrue, g_bShowMag;
 extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
@@ -271,11 +271,13 @@ extern int              g_n_ownship_min_mm;
 extern double           g_n_arrival_circle_radius;
 
 extern bool             g_bPreserveScaleOnX;
+extern bool             g_bsimplifiedScalebar;
 
 extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
 
 extern wxString         g_locale;
+extern wxString         g_localeOverride;
 
 extern bool             g_bUseRaster;
 extern bool             g_bUseVector;
@@ -305,7 +307,6 @@ extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
 
-extern bool             g_blocale_changed;
 extern bool             g_bDebugGPSD;
 
 extern bool             g_bfilter_cogsog;
@@ -547,6 +548,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "AutoHideToolbar" ), &g_bAutoHideToolbar, 0 );
     Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
     
+    Read( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar, 0 );
+    
     int size_mm;
     Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
     g_config_display_size_mm = size_mm;
@@ -565,7 +568,12 @@ int MyConfig::LoadMyConfig()
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
+    Read( _T ( "ShowTrue" ), &g_bShowTrue, 1 );
     Read( _T ( "ShowMag" ), &g_bShowMag, 0 );
+
+    if(!g_bShowTrue && !g_bShowMag)
+        g_bShowTrue = true;
+
     g_UserVar = 0.0;
     wxString umv;
     Read( _T ( "UserMagVariation" ), &umv );
@@ -733,7 +741,8 @@ int MyConfig::LoadMyConfig()
 
     g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
-
+    Read( _T ( "LocaleOverride" ), &g_localeOverride );
+    
     //We allow 0-99 backups ov navobj.xml
     Read( _T ( "KeepNavobjBackups" ), &g_navobjbackups, 5 );
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
@@ -1870,6 +1879,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
+    Write( _T ( "ShowTrue" ), g_bShowTrue );
     Write( _T ( "ShowMag" ), g_bShowMag );
     Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
 
@@ -1987,7 +1997,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InvisibleLayers" ), invis );
 
     Write( _T ( "Locale" ), g_locale );
-
+    Write( _T ( "LocaleOverride" ), g_localeOverride );
+    
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
     Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
@@ -2825,7 +2836,6 @@ const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime )
 #include <wx/fontdlg.h>
 #include <wx/fontenum.h>
 #include "wx/encinfo.h"
-#include "wx/fontutil.h"
 
 #ifdef __WXX11__
 #include "/usr/X11R6/include/X11/Xlib.h"

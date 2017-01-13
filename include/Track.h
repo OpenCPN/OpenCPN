@@ -90,7 +90,7 @@ public:
 
     double Length();
     int Simplify( double maxDelta );
-    Route *RouteFromTrack(wxProgressDialog *pprog);
+    Route *RouteFromTrack(wxGenericProgressDialog *pprog);
 
     wxString    m_GUID;
     bool        m_bIsInLayer;

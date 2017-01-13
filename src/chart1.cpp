@@ -50,6 +50,8 @@
 
 #include "dychart.h"
 
+#include <limits.h>
+
 #ifdef __WXMSW__
 #include <stdlib.h>
 #include <math.h>
@@ -468,8 +470,6 @@ int                       g_GroupIndex;
 
 wxString                  g_GPS_Ident;
 
-wxProgressDialog          *s_ProgDialog;
-
 S57QueryDialog            *g_pObjectQueryDialog;
 
 wxArrayString             TideCurrentDataSet;
@@ -484,6 +484,7 @@ wxPoint                   options_lastWindowPos( 0,0 );
 wxSize                    options_lastWindowSize( 0,0 );
 
 bool                      g_bSleep;
+bool                      g_bsimplifiedScalebar;
 
 int                       g_grad_default;
 wxColour                  g_border_color_default;
@@ -606,6 +607,7 @@ wxLocale                  *plocale_def_lang;
 #endif
 
 wxString                  g_locale;
+wxString                  g_localeOverride;
 bool                      g_b_assume_azerty;
 
 bool                      g_bUseRaster;
@@ -640,8 +642,6 @@ bool                      g_bFullscreen;
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
-bool                      g_blocale_changed;
-
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
@@ -657,7 +657,7 @@ ocpnCompass              *g_Compass;
 
 bool                      g_benable_rotate;
 
-bool                      g_bShowMag;
+bool                      g_bShowTrue, g_bShowMag;
 double                    g_UserVar;
 bool                      g_bMagneticAPB;
 
@@ -733,7 +733,6 @@ DEFINE_GUID( GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
-
 
 //    Some static helpers
 void appendOSDirSlash( wxString* pString );
@@ -836,22 +835,29 @@ END_EVENT_TABLE()
 void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
     //    Add some OpenCPN specific command line options
-    parser.AddSwitch( _T("unit_test_1") );
-    parser.AddSwitch( _T("p") );
-    parser.AddSwitch( _T("no_opengl") );
-    parser.AddSwitch( _T("fullscreen") );
-    parser.AddSwitch( _T("rebuild_gl_raster_cache") );
-    parser.AddSwitch( _T("parse_all_enc") );
+    parser.AddSwitch( _T("h"), _T("help"), _("Show usage syntax."), wxCMD_LINE_OPTION_HELP );
+    parser.AddSwitch( _T("p"), wxEmptyString, _("Run in portable mode.") );
+    parser.AddSwitch( _T("fullscreen"), wxEmptyString, _("Switch to full screen mode on start.") );
+    parser.AddSwitch( _T("no_opengl"), wxEmptyString, _("Disable OpenGL video acceleration. This setting will be remembered.") );
+    parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
+    parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
+    parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
-    g_unit_test_1 = parser.Found( _T("unit_test_1") );
+    long number;
     g_bportable = parser.Found( _T("p") );
-    g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
+    g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
     g_parse_all_enc = parser.Found( _T("parse_all_enc") );
+    if( parser.Found( _T("unit_test_1"), &number ) )
+    {
+        g_unit_test_1 = static_cast<int>( number );
+        if( g_unit_test_1 == 0 )
+            g_unit_test_1 = -1;
+    }
 
     return true;
 }
@@ -1211,7 +1217,7 @@ public:
 };
 
 WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
-//WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
+WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 
 #include <wx/arrimpl.cpp> 
 // end duplicated code
@@ -1230,12 +1236,12 @@ void ParseAllENC()
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         if(CHART_TYPE_S57 != cte.GetChartType())
             continue;
-
+        
         idx_sorted_by_distance.Add(i);
         count++;
     }  
-
-                                   
+    
+    
     if(count == 0)
         return;
     
@@ -1244,7 +1250,7 @@ void ParseAllENC()
     //  Build another array of sorted compression targets.
     //  We need to do this, as the chart table will not be invariant
     //  after the compression threads start, so our index array will be invalid.
-        
+    
     ArrayOfCompressTargets ct_array;
     for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
         
@@ -1264,116 +1270,141 @@ void ParseAllENC()
     
     int thread_count = 0;
     ParseENCWorkerThread **workers = NULL;
-/*    
-    extern int              g_nCPUCount;
-    if(g_nCPUCount > 0)
-        thread_count = g_nCPUCount;
-    else
-        thread_count = wxThread::GetCPUCount();
-        
-    if (thread_count < 1) {
-        // obviously there's a least one CPU!
-        thread_count = 1;
-    }
-*/
+    /*    
+     *    extern int              g_nCPUCount;
+     *    if(g_nCPUCount > 0)
+     *        thread_count = g_nCPUCount;
+     *    else
+     *        thread_count = wxThread::GetCPUCount();
+     *        
+     *    if (thread_count < 1) {
+     *        // obviously there's a least one CPU!
+     *        thread_count = 1;
+     }
+     */
     thread_count = 1; // for now because there is a problem with more than 1
-
-#if 0    
+    
+    #if 0    
     workers = new ParseENCWorkerThread*[thread_count];
     for(int t = 0; t < thread_count; t++)
         workers[t] = NULL;
-#endif
+    #endif
         
-    long style =  wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
-    wxProgressDialog prog(_("OpenCPN  ENC"), _T(""), count+1, GetOCPNCanvasWindow(), style );
-
-    // make wider to show long filenames
-    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    wxSize sz = prog.GetSize();
-    sz.x = csz.x * 8 / 10;
-    prog.SetSize( sz );
-    prog.Centre();
-
-    // parse targets
-    bool skip = false;
-    count = 0;
-    for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
-        wxString filename = ct_array.Item(j).chart_path;
-        double distance = ct_array.Item(j).distance;
-        int index = ChartData->FinddbIndex(filename);
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
-        Extent ext;
-        ext.NLAT = cte.GetLatMax();
-        ext.SLAT = cte.GetLatMin();
-        ext.WLON = cte.GetLonMin();
-        ext.ELON = cte.GetLonMax();
+        long style =  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP ;
         
-        int scale = cte.GetScale();
+        wxGenericProgressDialog *prog = new wxGenericProgressDialog();
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        prog->SetFont( *qFont );
+        
+        prog->Create(_("OpenCPN ENC Prepare"), _T("Longgggggggggggggggggggggggggggg"), count+1, NULL, style );
+        
+        // make wider to show long filenames
+        wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+        wxSize sz = prog->GetSize();
+        sz.x = csz.x * 8 / 10;
+        prog->SetSize( sz );
+        prog->Centre();
+        prog->Show();
+        prog->Raise();
+        
+        //  Move the Progress dialog out of the center of the screen, so that the SENC creation dialog has a place to be seen.
+        int yp = wxMax(0, prog->GetPosition().y - prog->GetSize().y);
+        prog->Move( -1, yp );
         
         
-        wxString msg;
-        msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
-        if(sz.x > 600){
-            msg += _T("   Chart:");
-            msg += filename;
-        }
-
-        count++;
-        if(wxThread::IsMain()){
-            prog.Update(count, msg, &skip );
-            if(skip)
-                break;
-        }
-
-#if 1
-        if(ps52plib){
-            s57chart *newChart = new s57chart;
-        
-            newChart->SetNativeScale(scale);
-            newChart->SetFullExtent(ext);
-        
-            newChart->FindOrCreateSenc(filename, false);
-            delete newChart;
-        }
-        
-#else        
-        for(int t = 0;; t=(t+1)%thread_count) {
-            if(!workers[t]) {
-                workers[t] = new ParseENCWorkerThread(filename, ext, scale);
-                workers[t]->Run();
-                break;
+        // parse targets
+        bool skip = false;
+        count = 0;
+        for(unsigned int j = 0; j<ct_array.GetCount(); j++) {
+            wxString filename = ct_array.Item(j).chart_path;
+            double distance = ct_array.Item(j).distance;
+            int index = ChartData->FinddbIndex(filename);
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
+            Extent ext;
+            ext.NLAT = cte.GetLatMax();
+            ext.SLAT = cte.GetLatMin();
+            ext.WLON = cte.GetLonMin();
+            ext.ELON = cte.GetLonMax();
+            
+            int scale = cte.GetScale();
+            
+            wxString msg;
+            msg.Printf( _("Distance from Ownship:  %4.0f NMi"), distance);
+            if(sz.x > 600){
+                msg += _T("   Chart:");
+                msg += filename;
             }
-
-            if(!workers[t]->IsAlive()) {
-                workers[t]->Wait();
-                delete workers[t];
-                workers[t] = NULL;
+            
+            count++;
+            if(wxThread::IsMain()){
+                prog->Update(count, msg, &skip );
+                prog->Raise();
+                if(skip)
+                    break;
             }
-            if(t == 0) {
-//                ::wxYield();                // allow ChartCanvas main message loop to run 
-                wxThread::Sleep(1); /* wait for a worker to finish */
+            
+            #if 1
+            if(ps52plib){
+                s57chart *newChart = new s57chart;
+                
+                newChart->SetNativeScale(scale);
+                newChart->SetFullExtent(ext);
+                
+                newChart->FindOrCreateSenc(filename);
+                delete newChart;
+                
+                if(wxThread::IsMain()){
+                    msg.Printf( _("ENC Completed.") );
+                    prog->Update(count, msg, &skip );
+                    prog->Raise();
+                    if(skip)
+                        break;
+                }
+                
             }
+            
+            
+            #else        
+            for(int t = 0;; t=(t+1)%thread_count) {
+                if(!workers[t]) {
+                    workers[t] = new ParseENCWorkerThread(filename);
+                    workers[t]->Run();
+                    break;
+                }
+                
+                if(!workers[t]->IsAlive()) {
+                    workers[t]->Wait();
+                    delete workers[t];
+                    workers[t] = NULL;
+                }
+                if(t == 0) {
+                    //                ::wxYield();                // allow ChartCanvas main message loop to run 
+                    wxThread::Sleep(1); /* wait for a worker to finish */
+                }
+            }
+            #endif        
         }
-#endif        
-    }
-
-#if 0    
-    /* wait for workers to finish, and clean up after then */
-    for(int t = 0; t<thread_count; t++) {
-        if(workers[t]) {
-            workers[t]->Wait();
-            delete workers[t];
+        
+        #if 0    
+        /* wait for workers to finish, and clean up after then */
+        for(int t = 0; t<thread_count; t++) {
+                        if(workers[t]) {
+                            workers[t]->Wait();
+                            delete workers[t];
+                        }
         }
-    }
-    delete [] workers;
-#endif    
+        delete [] workers;
+        #endif    
+        
+        delete prog;
 }
+
 
 bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-#if defined(__WXGTK__) && defined(ARMHF) && defined(ocpnUSE_GLES)
+#if defined(__WXGTK__) && defined(__arm__) && defined(ocpnUSE_GLES)
     // There is a race condition between cairo which is used for text rendering
     // by gtk and EGL which without the below code causes a bus error and the
     // program aborts before startup
@@ -1479,7 +1510,7 @@ bool MyApp::OnInit()
     wxPlatformInfo platforminfo = wxPlatformInfo::Get();
 
     wxString os_name;
-#ifndef __WXQT__
+#ifndef __OCPN_ANDROID__
     os_name = platforminfo.GetOperatingSystemIdName();
 #else
     os_name = platforminfo.GetOperatingSystemFamilyName();
@@ -1502,7 +1533,7 @@ bool MyApp::OnInit()
     imsg += g_Platform->GetSharedDataDir();
     wxLogMessage( imsg );
 
-#ifdef __WXQT__
+#ifdef __OCPN_ANDROID__
     //  Now we can load a Qt StyleSheet, if present
     wxString style_file = g_Platform->GetSharedDataDir();
     style_file += _T("styles");
@@ -1638,105 +1669,40 @@ bool MyApp::OnInit()
     if( !n_NavMessageShown ) g_bFirstRun = true;
 
     //  Now we can set the locale
-
-    //    Manage internationalization of embedded messages
     //    using wxWidgets/gettext methodology....
-
-//    wxLog::SetVerbose(true);            // log all messages for debugging language stuff
-
+    
+    
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-    if( lang_list[0] ) {
-    };                 // silly way to avoid compiler warnings
+    if( lang_list[0] ) {};                 // silly way to avoid compiler warnings
 
-    // Add a new prefix for search order.
-#ifdef __WXMSW__
-    wxString locale_location = g_Platform->GetSharedDataDir();
-    locale_location += _T("share/locale");
-    wxLocale::AddCatalogLookupPathPrefix( locale_location );
-#endif
-
-    //  Get the default language info
-    wxString def_lang_canonical;
-#ifdef __WXMSW__
-    LANGID lang_id = GetUserDefaultUILanguage();
-    wxChar lngcp[100];
-    const wxLanguageInfo* languageInfo = 0;
-    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
-        languageInfo = wxLocale::FindLanguageInfo(lngcp);
-    }
-    else
-        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-#else
-    const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-#endif
-    if( languageInfo ) {
-        def_lang_canonical = languageInfo->CanonicalName;
-        imsg = _T("System default Language:  ");
-        imsg += def_lang_canonical;
-        wxLogMessage( imsg );
-    }
-
-    //  For windows, installer may have left information in the registry defining the
-    //  user's selected install language.
-    //  If so, override the config file value and use this selection for opencpn...
-#ifdef __WXMSW__
-    if( g_bFirstRun ) {
-        wxRegKey RegKey( wxString( _T("HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenCPN") ) );
-        if( RegKey.Exists() ) {
-            wxLogMessage( _("Retrieving initial language selection from Windows Registry") );
-            RegKey.QueryValue( wxString( _T("InstallerLanguage") ), g_locale );
-        }
-    }
-#endif
-    //  Find the language specified by the config file
-    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
-    wxString loc_lang_canonical;
-    bool b_initok;
-    plocale_def_lang = new wxLocale;
-
-    if( pli ) {
-        b_initok = plocale_def_lang->Init( pli->Language, 1 );
-        // If the locale was not initialized OK, it may be that the wxstd.mo translations
-        // of the wxWidgets strings is not present.
-        // So try again, without attempting to load defaults wxstd.mo.
-        if( !b_initok ){
-            delete plocale_def_lang;
-            plocale_def_lang = new wxLocale;
-            b_initok = plocale_def_lang->Init( pli->Language, 0 );
-        }
-        loc_lang_canonical = pli->CanonicalName;
-    }
-
-    if( !pli || !b_initok ) {
-        delete plocale_def_lang;
-        plocale_def_lang = new wxLocale;
-        plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
-        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
-    }
-
-    imsg = _T("Opencpn language set to:  ");
-    imsg += loc_lang_canonical;
+    
+    //  Where are the opencpn.mo files?
+    g_Platform->SetLocaleSearchPrefixes();
+    
+    wxString def_lang_canonical = g_Platform->GetDefaultSystemLocale();
+    
+    imsg = _T("System default Language:  ") + def_lang_canonical;
     wxLogMessage( imsg );
 
-    // Set filename without extension (example : opencpn_fr_FR)
-    // i.e. : Set-up the filename needed for translation
-//        wxString loc_lang_filename = _T("opencpn_") + loc_lang_canonical;
-    wxString loc_lang_filename = _T("opencpn");
+    wxString cflmsg = _T("Config file language:  ") + g_locale;
+    wxLogMessage( cflmsg );
 
-    // Get translation file (example : opencpn_fr_FR.mo)
-    // No problem if the file doesn't exist
-    // as this case is handled by wxWidgets
-    if( plocale_def_lang ) plocale_def_lang->AddCatalog( loc_lang_filename );
+    //  Make any adjustments necessary
+    g_locale = g_Platform->GetAdjustedAppLocale();
+    cflmsg = _T("Adjusted App language:  ") + g_locale;
+    wxLogMessage( cflmsg );
 
-    //    Always use dot as decimal
-    setlocale( LC_NUMERIC, "C" );
 
-//    wxLog::SetVerbose( false );           // log no more verbose messages
+    // Set the desired locale
+    g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
+    
+    imsg = _T("Opencpn language set to:  ");
+    imsg += g_locale;
+    wxLogMessage( imsg );
 
     //  French language locale is assumed to include the AZERTY keyboard
     //  This applies to either the system language, or to OpenCPN language selection
-    if( loc_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
-    if( def_lang_canonical == _T("fr_FR") ) g_b_assume_azerty = true;
+    if( g_locale == _T("fr_FR") ) g_b_assume_azerty = true;
 #else
     wxLogMessage( _T("wxLocale support not available") );
 #endif
@@ -2171,9 +2137,8 @@ bool MyApp::OnInit()
             wxString dummy1 = _("Elapsed time : ");
             wxString dummy2 = _("Estimated time : ");
             wxString dummy3 = _("Remaining time : ");
-            wxProgressDialog *pprog = new wxProgressDialog( _("OpenCPN Chart Update"), line, 100,
-                    NULL,
-                    wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+            wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
+                    NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
 
             ChartData->Create( ChartDirArray, pprog );
             ChartData->SaveBinary(ChartListFileName);
@@ -2257,7 +2222,8 @@ extern ocpnGLOptions g_GLOptions;
 //        if( g_FloatingToolbarDialog )
 //            g_FloatingToolbarDialog->Hide();
 
-        BuildCompressedCache();
+        if(g_glTextureManager)
+            g_glTextureManager->BuildCompressedCache();
 
     }
 #endif
@@ -2360,6 +2326,8 @@ extern ocpnGLOptions g_GLOptions;
 
     wxLogMessage( wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
+    OCPNPlatform::Initialize_3( );
+    
 #ifdef __OCPN__ANDROID__
     androidHideBusyIcon();
 #endif
@@ -2606,10 +2574,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     //    Clear the NMEA Filter tables
     for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-        COGFilterTable[i] = 0.;
-        SOGFilterTable[i] = 0.;
+        COGFilterTable[i] = NAN;
+        SOGFilterTable[i] = NAN;
     }
-    m_COGFilterLast = 0.;
     m_last_bGPSValid = false;
 
     gHdt = NAN;
@@ -2618,9 +2585,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gSog = NAN;
     gCog = NAN;
 
-    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ ) {
-        COGTable[i] = 0.;
-    }
+    for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++ )
+        COGTable[i] = NAN;
 
     m_fixtime = 0;
 
@@ -2673,8 +2639,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_FloatingToolbarConfigMenu = new wxMenu();
 
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
-
-    m_COGFilterLast = 0.;
 
     g_sticky_chart = -1;
     g_sticky_projection = -1;
@@ -2978,9 +2942,9 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 #endif
 
     if (gs)
-        tipString = wxString( _("Hide ENC Text") ) << _T(" (T)");
+        tipString = wxString( _("Hide ENC text") ) << _T(" (T)");
     else
-        tipString = wxString( _("Show ENC Text") ) << _T(" (T)");
+        tipString = wxString( _("Show ENC text") ) << _T(" (T)");
 
     if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
         tb->AddTool( ID_ENC_TEXT, _T("text"),
@@ -3077,7 +3041,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     if( g_bShowAIS ) {
         if (g_bAllowShowScaled){
             if(!g_bShowScaled)
-                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS Targets") );
+                tb->SetToolShortHelp( ID_AIS, _("Attenuate less critical AIS targets") );
             else
                 tb->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
         }
@@ -3559,7 +3523,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_Compass = NULL;
 
 
-#ifndef __OCPN__ANDROID__
+#ifndef __WXQT__
     SetStatusBar( NULL );
 #endif
 
@@ -3601,6 +3565,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 
     delete g_pMUX;
+    g_pMUX = NULL;
+    
 
     //  Clear some global arrays, lists, and hash maps...
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
@@ -4058,8 +4024,6 @@ void MyFrame::SetGroupIndex( int index )
 
 void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 {
-    if( s_ProgDialog ) return;
-
     switch( event.GetId() ){
         case ID_MENU_SCALE_OUT:
         case ID_STKUP:
@@ -4474,9 +4438,9 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
     bool g_bShowAIS_Array[3] = {true, true, false}; 
     bool g_bShowScaled_Array[3] = {false, true, true};
     wxString ToolShortHelp_Array[3] = { _("Show all AIS Targets"),
-                                        _("Attenuate less critical AIS Targets"),
+                                        _("Attenuate less critical AIS targets"),
                                         _("Hide AIS Targets") };
-    wxString iconName_Array[3] = { _("AIS"),  _("AIS_Suppressed"), _("AIS_Disabled")};
+    wxString iconName_Array[3] = { _T("AIS"),  _T("AIS_Suppressed"), _T("AIS_Disabled")};
     int ArraySize = 3;
     int AIS_Toolbar_Switch = 0;
     if (StyleIndx == -1){// -1 means coming from toolbar button
@@ -4846,7 +4810,7 @@ void MyFrame::ToggleCourseUp( void )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
 
         if( g_COGAvgSec > 0) {
@@ -4881,9 +4845,9 @@ void MyFrame::ToggleENCText( void )
     if( ps52plib ) {
         ps52plib->SetShowS57Text( !ps52plib->GetShowS57Text() );
         SetToolbarItemState( ID_ENC_TEXT, ps52plib->GetShowS57Text() );
-        wxString tip = _("Show ENC Text (T)");
+        wxString tip = _("Show ENC text") + _T(" (T)");
         if(ps52plib->GetShowS57Text())
-            tip = _("Hide ENC Text (T)");
+            tip = _("Hide ENC text") + _T(" (T)");
         if( g_toolbar )
             g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
 
@@ -5244,12 +5208,12 @@ void MyFrame::RegisterGlobalMenuItems()
 #ifdef USE_S57
     view_menu->AppendSeparator();
 #ifndef __WXOSX__
-    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
 #else
-    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC Text"), _T("Alt-T")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("Alt-T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("Alt-L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("Alt-S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
@@ -5277,12 +5241,12 @@ void MyFrame::RegisterGlobalMenuItems()
     wxMenu* ais_menu = new wxMenu();
     ais_menu->AppendCheckItem( ID_MENU_AIS_TARGETS, _("Show AIS Targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_MOORED_TARGETS, _("Hide Moored AIS Targets") );
-    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate Less Critical AIS Targets") );    
+    ais_menu->AppendCheckItem( ID_MENU_AIS_SCALED_TARGETS, _("Attenuate less critical AIS targets") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_TRACKS, _("Show AIS Target Tracks") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPADIALOG, _("Show CPA Alert Dialogs") );
     ais_menu->AppendCheckItem( ID_MENU_AIS_CPASOUND, _("Sound CPA Alarms") );
     ais_menu->AppendSeparator();
-    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS Target List...") );
+    ais_menu->Append( ID_MENU_AIS_TARGETLIST, _("AIS target list") + _T("...") );
     m_pMenuBar->Append( ais_menu, _("&AIS") );
 
     wxMenu* tools_menu = new wxMenu();
@@ -5302,11 +5266,11 @@ void MyFrame::RegisterGlobalMenuItems()
 #ifdef __WXOSX__
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("RawCtrl-Space")) ); // NOTE Cmd+Space is reserved for Spotlight
     tools_menu->AppendSeparator();
-    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences..."), _T("Ctrl-,")) );
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Preferences") + _T("..."), _T("Ctrl-,")) );
 #else
     tools_menu->Append( ID_MENU_MARK_MOB, _menuText(_("Drop MOB Marker"), _T("Ctrl-Space")) );
     tools_menu->AppendSeparator();
-    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options..."), _T("Ctrl-,")) );
+    tools_menu->Append( wxID_PREFERENCES, _menuText(_("Options") + _T("..."), _T("Ctrl-,")) );
 #endif
 
     m_pMenuBar->Append( tools_menu, _("&Tools") );
@@ -5597,7 +5561,14 @@ int MyFrame::DoOptionsDialog()
         pMarkPropDialog = NULL;
     }
     
-
+#if wxUSE_XLOCALE    
+    if(rr & LOCALE_CHANGED){
+        
+        g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
+        ApplyLocale();
+    }
+#endif
+    
     g_boptionsactive = false;
     return ret_val;
 }
@@ -5625,12 +5596,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         }
     }
 
-    if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
-        if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
-            OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
-                    _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
-            if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
-        }
+    if(  rr & STYLE_CHANGED  ) {
+        OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
+                _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
     }
 
     bool b_groupchange = false;
@@ -5664,7 +5632,7 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = 0.;
+        double stuff = NAN;
         if( !wxIsNaN(gCog) ) stuff = gCog;
         if( g_COGAvgSec > 0 ) {
             for( int i = 0; i < g_COGAvgSec; i++ )
@@ -5679,8 +5647,8 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     g_pRouteMan->SetColorScheme(global_color_scheme);           // reloads pens and brushes
 
     //    Stuff the Filter tables
-    double stuffcog = 0.;
-    double stuffsog = 0.;
+    double stuffcog = NAN;
+    double stuffsog = NAN;
     if( !wxIsNaN(gCog) ) stuffcog = gCog;
     if( !wxIsNaN(gSog) ) stuffsog = gSog;
 
@@ -5688,7 +5656,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
         COGFilterTable[i] = stuffcog;
         SOGFilterTable[i] = stuffsog;
     }
-    m_COGFilterLast = stuffcog;
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
@@ -5704,9 +5671,11 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
 #ifdef ocpnUSE_GL
     if(rr & REBUILD_RASTER_CACHE){
-        cc1->Disable();
-        BuildCompressedCache();
-        cc1->Enable();
+        if(g_glTextureManager){
+            cc1->Disable();
+            g_glTextureManager->BuildCompressedCache();
+            cc1->Enable();
+        }
     }
 #endif
 
@@ -5913,16 +5882,24 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     OCPNPlatform::ShowBusySpinner();
 
-    wxProgressDialog *pprog = NULL;
+    wxGenericProgressDialog *pprog = NULL;
     if( b_prog ) {
         wxString longmsg = _("OpenCPN Chart Update");
         longmsg += _T("..........................................................................");
-        pprog = new wxProgressDialog( _("OpenCPN Chart Update"), longmsg,
-                100, this,
-                wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+
+        pprog = new wxGenericProgressDialog();
+        
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        pprog->SetFont( *qFont );
+        
+        pprog->Create( _("OpenCPN Chart Update"), longmsg, 100,
+                                          NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+        
+        
+        pprog->Show();
+        pprog->Raise();
     }
-
-
+    
     wxLogMessage( _T("   ") );
     wxLogMessage( _T("Starting chart database Update...") );
     ChartData->Update( DirArray, b_force, pprog );
@@ -6514,17 +6491,13 @@ int ut_index;
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
 
-
-    if( s_ProgDialog ) {
-        return;
-    }
-
     if( g_unit_test_1 ) {
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();
 
         cc1->m_bFollow = false;
         if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+        int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
             if( ut_index < ChartData->GetChartTableEntries() ) {
@@ -6550,7 +6523,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 cc1->ReloadVP();
 
                 ut_index++;
-                if(ut_index > 100)
+                if( ut_index > ut_index_max )
                     exit(0);
             }
             else
@@ -6941,59 +6914,51 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 }
 
-double MyFrame::GetTrueOrMag(double a)
+double MyFrame::GetMag(double a)
 {
-    if( g_bShowMag ){
-        if(!wxIsNaN(gVar)){
-            if((a - gVar) >360.)
-                return (a - gVar - 360.);
-            else
-                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-        }
-        else{
-            if((a - g_UserVar) >360.)
-                return (a - g_UserVar - 360.);
-            else
-                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-        }
+    if(!wxIsNaN(gVar)){
+        if((a - gVar) >360.)
+            return (a - gVar - 360.);
+        else
+            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
     }
-    else
-        return a;
+    else{
+        if((a - g_UserVar) >360.)
+            return (a - g_UserVar - 360.);
+        else
+            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+    }
 }
 
-double MyFrame::GetTrueOrMag(double a, double lat, double lon)
+double MyFrame::GetMag(double a, double lat, double lon)
 {
-    if( g_bShowMag ){
-        if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
+    if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
             
-            // Request variation at a specific lat/lon
+        // Request variation at a specific lat/lon
             
-            // Note that the requested value is returned sometime later in the event stream,
-            // so there may be invalid data returned on the first call to this method.
-            // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
-            wxDateTime now = wxDateTime::Now();
-            SendJSON_WMM_Var_Request(lat, lon, now);
+        // Note that the requested value is returned sometime later in the event stream,
+        // so there may be invalid data returned on the first call to this method.
+        // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
+        wxDateTime now = wxDateTime::Now();
+        SendJSON_WMM_Var_Request(lat, lon, now);
             
-            if((a - gQueryVar) >360.)
-                return (a - gQueryVar - 360.);
-            else
-                return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
-        }
-        else if(!wxIsNaN(gVar)){
-            if((a - gVar) >360.)
-                return (a - gVar - 360.);
-            else
-                return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-        }
-        else{
-            if((a - g_UserVar) >360.)
-                return (a - g_UserVar - 360.);
-            else
-                return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-        }
+        if((a - gQueryVar) >360.)
+            return (a - gQueryVar - 360.);
+        else
+            return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
     }
-    else
-        return a;
+    else if(!wxIsNaN(gVar)){
+        if((a - gVar) >360.)
+            return (a - gVar - 360.);
+        else
+            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+    }
+    else{
+        if((a - g_UserVar) >360.)
+            return (a - g_UserVar - 360.);
+        else
+            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
+    }
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
@@ -7301,7 +7266,6 @@ int MyFrame::GetApplicationMemoryUse( void )
 void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     // stop movement or on slow computer we may get something like :
     // zoom out with the wheel (timer is set)
@@ -7388,7 +7352,6 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
 void MyFrame::HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex )
 {
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     PianoPopupMenu( x, y, selected_index, selected_dbIndex );
     UpdateControlBar();
@@ -7401,7 +7364,6 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
 {
     if( !cc1 ) return;
     if( !pCurrentStack ) return;
-    if( s_ProgDialog ) return;
 
     if(ChartData && ChartData->IsBusy())
         return;
@@ -9001,12 +8963,43 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     return bret;
 }
 
+static bool ParsePosition(const LATLONG &Position)
+{
+    bool ll_valid = true;
+    double llt = Position.Latitude.Latitude;
+    if( !wxIsNaN(llt) )
+    {
+        int lat_deg_int = (int) ( llt / 100 );
+        double lat_deg = lat_deg_int;
+        double lat_min = llt - ( lat_deg * 100 );
+        gLat = lat_deg + ( lat_min / 60. );
+        if( Position.Latitude.Northing == South )
+            gLat = -gLat;
+    }
+    else
+        ll_valid = false;
+    
+    double lln = Position.Longitude.Longitude;
+    if( !wxIsNaN(lln) )
+    {
+        int lon_deg_int = (int) ( lln / 100 );
+        double lon_deg = lon_deg_int;
+        double lon_min = lln - ( lon_deg * 100 );
+        gLon = lon_deg + ( lon_min / 60. );
+        if( Position.Longitude.Easting == West )
+            gLon = -gLon;
+    }
+    else
+        ll_valid = false;
+
+    return ll_valid;
+}
+
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
-    bool pos_valid = false;
+    bool pos_valid = false, cog_sog_valid = false;
     bool bis_recognized_sentence = true;
-    bool ll_valid = true;
 
     wxString str_buf = event.ProcessNMEA4Tags();
 
@@ -9038,368 +9031,250 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     }
 
     bool b_accept = EvalPriority( str_buf, event.GetStream() );
-    if( b_accept ) {
-        m_NMEA0183 << str_buf;
-        if( m_NMEA0183.PreParse() )
+    if( !b_accept )
+        return;
+    
+    m_NMEA0183 << str_buf;
+
+    if( m_NMEA0183.PreParse() )
+    {
+        wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"),
+                          _T("VTG"), _T("GSV"), _T("GLL"), _T("GGA")};
+        enum {RMC, HDT, HDG, HDM, VTG, GSV, GGA, GLL, ID_NUM };
+
+        int id;
+        int num = g_bUseGLL ? ID_NUM : GLL;
+        for(id=0; id<num; id++)
+            if( m_NMEA0183.LastSentenceIDReceived == IDs[id] )
+                break;
+
+        if(id == num) // avoid parsing if we won't use it
+            return;
+
+        if( m_NMEA0183.Parse() )
         {
-            if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") )
+            switch(id)
             {
-                if( m_NMEA0183.Parse() )
+            case RMC:
+                if( m_NMEA0183.Rmc.IsDataValid == NTrue )
                 {
-                    if( m_NMEA0183.Rmc.IsDataValid == NTrue )
-                    {
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) )
-                        {
-                            double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                            int lat_deg_int = (int) ( llt / 100 );
-                            double lat_deg = lat_deg_int;
-                            double lat_min = llt - ( lat_deg * 100 );
-                            gLat = lat_deg + ( lat_min / 60. );
-                            if( m_NMEA0183.Rmc.Position.Latitude.Northing == South ) gLat = -gLat;
-                        }
-                        else
-                            ll_valid = false;
+                    pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) )
-                        {
-                            double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                            int lon_deg_int = (int) ( lln / 100 );
-                            double lon_deg = lon_deg_int;
-                            double lon_min = lln - ( lon_deg * 100 );
-                            gLon = lon_deg + ( lon_min / 60. );
-                            if( m_NMEA0183.Rmc.Position.Longitude.Easting == West )
-                                gLon = -gLon;
-                        }
-                        else
-                            ll_valid = false;
-
+                    // course is not valid in this case
+                    // but also my gps occasionally outputs RMC
+                    // messages with valid lat and lon but
+                    // 0.0 for speed and course which messes up the filter
+                    if(m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
                         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-
-                        if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
-                        {
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
-                                gVar = m_NMEA0183.Rmc.MagneticVariation;
-                            else
-                                if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
-                                    gVar = -m_NMEA0183.Rmc.MagneticVariation;
-
-                            g_bVAR_Rx = true;
-                            gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                        }
-
-                        sfixtime = m_NMEA0183.Rmc.UTCTime;
-
-                        if(ll_valid )
-                        {
-                            gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                            wxDateTime now = wxDateTime::Now();
-                            m_fixtime = now.GetTicks();
-                        }
-                        pos_valid = ll_valid;
+                        cog_sog_valid = true;
                     }
-                }
-                else
-                    if( g_nNMEADebug )
+                    
+                    if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
                     {
-                        wxString msg( _T("   ") );
-                        msg.Append( m_NMEA0183.ErrorMessage );
-                        msg.Append( _T(" : ") );
-                        msg.Append( str_buf );
-                        wxLogMessage( msg );
-                    }
-            }
-
-            else
-                if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") )
-                {
-                    if( m_NMEA0183.Parse() )
-                    {
-                        gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                        if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
-                        {
-                            g_bHDT_Rx = true;
-                            gHDT_Watchdog = gps_watchdog_timeout_ticks;
-                        }
-                    }
-                    else
-                        if( g_nNMEADebug )
-                        {
-                            wxString msg( _T("   ") );
-                            msg.Append( m_NMEA0183.ErrorMessage );
-                            msg.Append( _T(" : ") );
-                            msg.Append( str_buf );
-                            wxLogMessage( msg );
-                        }
-                }
-                else
-                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") )
-                    {
-                        if( m_NMEA0183.Parse() )
-                        {
-                            gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
-                                gHDx_Watchdog = gps_watchdog_timeout_ticks;
-
-                            if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
-                                gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
-                            else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
-                                gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
-                            {
-                                g_bVAR_Rx = true;
-                                gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                            }
-
-
-                        } else
-                            if( g_nNMEADebug )
-                            {
-                                wxString msg( _T("   ") );
-                                msg.Append( m_NMEA0183.ErrorMessage );
-                                msg.Append( _T(" : ") );
-                                msg.Append( str_buf );
-                                wxLogMessage( msg );
-                            }
-
-                    }
-                    else
-                        if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") )
-                        {
-                            if( m_NMEA0183.Parse() )
-                            {
-                                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
-                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                            }
-                            else
-                                if( g_nNMEADebug )
-                                {
-                                    wxString msg( _T("   ") );
-                                    msg.Append( m_NMEA0183.ErrorMessage );
-                                    msg.Append( _T(" : ") );
-                                    msg.Append( str_buf );
-                                    wxLogMessage( msg );
-                                }
-                        }
+                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                            gVar = m_NMEA0183.Rmc.MagneticVariation;
                         else
-                            if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") )
-                            {
-                                if( m_NMEA0183.Parse() )
-                                {
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
-                                        gSog = m_NMEA0183.Vtg.SpeedKnots;
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
-                                        gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
-                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                }
-                                else
-                                    if( g_nNMEADebug )
-                                    {
-                                        wxString msg( _T("   ") );
-                                        msg.Append( m_NMEA0183.ErrorMessage );
-                                        msg.Append( _T(" : ") );
-                                        msg.Append( str_buf );
-                                        wxLogMessage( msg );
-                                    }
-                            }
-                            else
-                                if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") )
-                                {
-                                    if( m_NMEA0183.Parse() )
-                                    {
-                                        g_SatsInView = m_NMEA0183.Gsv.SatsInView;
-                                        gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                        g_bSatValid = true;
-                                    }
-                                    else
-                                        if( g_nNMEADebug )
-                                        {
-                                            wxString msg( _T("   ") );
-                                            msg.Append( m_NMEA0183.ErrorMessage );
-                                            msg.Append( _T(" : ") );
-                                            msg.Append( str_buf );
-                                            wxLogMessage( msg );
-                                        }
-                                }
-                                else
-                                    if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") )
-                                    {
-                                        if( m_NMEA0183.Parse() )
-                                        {
-                                            if( m_NMEA0183.Gll.IsDataValid == NTrue )
-                                            {
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
-                                                {
-                                                    double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
-                                                    int lat_deg_int = (int) ( llt / 100 );
-                                                    double lat_deg = lat_deg_int;
-                                                    double lat_min = llt - ( lat_deg * 100 );
-                                                    gLat = lat_deg + ( lat_min / 60. );
-                                                    if( m_NMEA0183.Gll.Position.Latitude.Northing
-                                                            == South ) gLat = -gLat;
-                                                }
-                                                else
-                                                    ll_valid = false;
+                            if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                                gVar = -m_NMEA0183.Rmc.MagneticVariation;
+                        
+                        g_bVAR_Rx = true;
+                        gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                    }
+                    
+                    sfixtime = m_NMEA0183.Rmc.UTCTime;
+                }
+                break;
 
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) )
-                                                {
-                                                    double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
-                                                    int lon_deg_int = (int) ( lln / 100 );
-                                                    double lon_deg = lon_deg_int;
-                                                    double lon_min = lln - ( lon_deg * 100 );
-                                                    gLon = lon_deg + ( lon_min / 60. );
-                                                    if( m_NMEA0183.Gll.Position.Longitude.Easting == West )
-                                                        gLon = -gLon;
-                                                }
-                                                else
-                                                    ll_valid = false;
-
-                                                sfixtime = m_NMEA0183.Gll.UTCTime;
-
-                                                if(ll_valid)
-                                                {
-                                                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                                    wxDateTime now = wxDateTime::Now();
-                                                    m_fixtime = now.GetTicks();
-                                                }
-                                                pos_valid = ll_valid;
-                                            }
-                                        } else
-                                            if( g_nNMEADebug )
-                                            {
-                                                wxString msg( _T("   ") );
-                                                msg.Append( m_NMEA0183.ErrorMessage );
-                                                msg.Append( _T(" : ") );
-                                                msg.Append( str_buf );
-                                                wxLogMessage( msg );
-                                            }
-                                    }
-                                    else
-                                        if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") )
-                                        {
-                                            if( m_NMEA0183.Parse() )
-                                            {
-                                                if( m_NMEA0183.Gga.GPSQuality > 0 )
-                                                {
-                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Latitude.Latitude) )
-                                                    {
-                                                        double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
-                                                        int lat_deg_int = (int) ( llt / 100 );
-                                                        double lat_deg = lat_deg_int;
-                                                        double lat_min = llt - ( lat_deg * 100 );
-                                                        gLat = lat_deg + ( lat_min / 60. );
-                                                        if( m_NMEA0183.Gga.Position.Latitude.Northing == South )
-                                                            gLat = -gLat;
-                                                    }
-                                                    else
-                                                        ll_valid = false;
-
-                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) )
-                                                    {
-                                                        double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
-                                                        int lon_deg_int = (int) ( lln / 100 );
-                                                        double lon_deg = lon_deg_int;
-                                                        double lon_min = lln - ( lon_deg * 100 );
-                                                        gLon = lon_deg + ( lon_min / 60. );
-                                                        if( m_NMEA0183.Gga.Position.Longitude.Easting
-                                                                == West ) gLon = -gLon;
-                                                    }
-                                                    else
-                                                        ll_valid = false;
-
-                                                    sfixtime = m_NMEA0183.Gga.UTCTime;
-
-                                                    if(ll_valid)
-                                                    {
-                                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                                                        wxDateTime now = wxDateTime::Now();
-                                                        m_fixtime = now.GetTicks();
-                                                    }
-                                                    pos_valid = ll_valid;
-
-                                                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
-                                                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                                    g_bSatValid = true;
-
-                                                }
-                                            } else
-                                                if( g_nNMEADebug )
-                                                {
-                                                    wxString msg( _T("   ") );
-                                                    msg.Append( m_NMEA0183.ErrorMessage );
-                                                    msg.Append( _T(" : ") );
-                                                    msg.Append( str_buf );
-                                                    wxLogMessage( msg );
-                                                }
-                                        }
-        }
-        //      Process ownship (AIVDO) messages from any source
-        else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
-        {
-            GenericPosDatEx gpd;
-            AIS_Error nerr = AIS_GENERIC_ERROR;
-            if(g_pAIS)
-                nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
-
-            if(nerr == AIS_NoError)
-            {
-                if( !wxIsNaN(gpd.kLat) )
-                    gLat = gpd.kLat;
-                if( !wxIsNaN(gpd.kLon) )
-                    gLon = gpd.kLon;
-
-                gCog = gpd.kCog;
-                gSog = gpd.kSog;
-
-                if( !wxIsNaN(gpd.kHdt) )
+            case HDT:
+                gHdt = m_NMEA0183.Hdt.DegreesTrue;
+                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
                 {
-                    gHdt = gpd.kHdt;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
+                break;
 
-                if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+            case HDG:
+                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+
+                if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
+                    gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+                else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
+                    gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
                 {
+                    g_bVAR_Rx = true;
+                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                }
+                break;
+
+            case HDM:
+                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                break;
+
+            case VTG:
+                // should we allow either Sog or Cog but not both to be valid?
+                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
+                    gSog = m_NMEA0183.Vtg.SpeedKnots;
+                if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
+                    !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
+                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                    cog_sog_valid = true;
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                    wxDateTime now = wxDateTime::Now();
-                    m_fixtime = now.GetTicks();
+                }
+                break;
 
-                    pos_valid = true;
-                }
-            }
-            else
-            {
-                if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+            case GSV:
+                g_SatsInView = m_NMEA0183.Gsv.SatsInView;
+                gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                g_bSatValid = true;
+                break;
+
+            case GGA:
+                if( m_NMEA0183.Gga.GPSQuality > 0 )
                 {
-                    g_total_NMEAerror_messages++;
-                    wxString msg( _T("   Invalid AIVDO Sentence...") );
-                    msg.Append( str_buf );
-                    wxLogMessage( msg );
+                    pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
+                    sfixtime = m_NMEA0183.Gga.UTCTime;
+                    
+                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
+                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                    g_bSatValid = true;
                 }
+                break;
+
+            case GLL:
+                if( m_NMEA0183.Gll.IsDataValid == NTrue )
+                {
+                    pos_valid = ParsePosition(m_NMEA0183.Gll.Position);
+                    sfixtime = m_NMEA0183.Gll.UTCTime;  
+                }
+                break;
+            }
+
+            if(pos_valid)
+            {
+                gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                wxDateTime now = wxDateTime::Now();
+                m_fixtime = now.GetTicks();
+            }
+
+        } else if( g_nNMEADebug ) {
+            wxString msg( _T("   ") );
+            msg.Append( m_NMEA0183.ErrorMessage );
+            msg.Append( _T(" : ") );
+            msg.Append( str_buf );
+            wxLogMessage( msg );
+        }
+    }
+        //      Process ownship (AIVDO) messages from any source
+    else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
+    {
+        GenericPosDatEx gpd;
+        AIS_Error nerr = AIS_GENERIC_ERROR;
+        if(g_pAIS)
+            nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
+        
+        if(nerr == AIS_NoError)
+        {
+            if( !wxIsNaN(gpd.kLat) )
+                gLat = gpd.kLat;
+            if( !wxIsNaN(gpd.kLon) )
+                gLon = gpd.kLon;
+            
+            gCog = gpd.kCog;
+            gSog = gpd.kSog;
+            cog_sog_valid = true;
+
+            if( !wxIsNaN(gpd.kHdt) )
+            {
+                gHdt = gpd.kHdt;
+                g_bHDT_Rx = true;
+                gHDT_Watchdog = gps_watchdog_timeout_ticks;
+            }
+            
+            if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+            {
+                gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                wxDateTime now = wxDateTime::Now();
+                m_fixtime = now.GetTicks();
+                
+                pos_valid = true;
             }
         }
         else
         {
-            bis_recognized_sentence = false;
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
             {
                 g_total_NMEAerror_messages++;
-                wxString msg( _T("   Unrecognized NMEA Sentence...") );
+                wxString msg( _T("   Invalid AIVDO Sentence...") );
                 msg.Append( str_buf );
                 wxLogMessage( msg );
             }
         }
-
-        if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, sfixtime );
     }
+    else
+    {
+        bis_recognized_sentence = false;
+        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+        {
+            g_total_NMEAerror_messages++;
+            wxString msg( _T("   Unrecognized NMEA Sentence...") );
+            msg.Append( str_buf );
+            wxLogMessage( msg );
+        }
+    }
+
+    if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
 }
 
-void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
+void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxString &sfixtime )
 {
-    FilterCogSog();
+    if(cog_sog_valid) {
+        //    Maintain average COG for Course Up Mode
+        if( !wxIsNaN(gCog) ) {
+            if( g_COGAvgSec > 0 ) {
+                //    Make a hole
+                for( int i = g_COGAvgSec - 1; i > 0; i-- )
+                    COGTable[i] = COGTable[i - 1];
+                COGTable[0] = gCog;
+
+                double sum = 0., count=0;
+                for( int i = 0; i < g_COGAvgSec; i++ ) {
+                    double adder = COGTable[i];
+                    if(wxIsNaN(adder))
+                        continue;
+
+                    if( fabs( adder - g_COGAvg ) > 180. ) {
+                        if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
+                        else
+                            adder += 360.;
+                    }
+
+                    sum += adder;
+                    count++;
+                }
+                sum /= count;
+
+                if( sum < 0. ) sum += 360.;
+                else
+                    if( sum >= 360. ) sum -= 360.;
+
+                g_COGAvg = sum;
+            }
+            else
+                g_COGAvg = gCog;
+        }
+
+        FilterCogSog();
+    }
 
     //    If gSog is greater than some threshold, we determine that we are "cruising"
     if( gSog > 3.0 ) g_bCruising = true;
@@ -9441,69 +9316,43 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 //    Show gLat/gLon in StatusWindow0
 
     if( NULL != GetStatusBar() ) {
-        char tick_buf[2];
-        tick_buf[0] = nmea_tick_chars[tick_idx];
-        tick_buf[1] = 0;
+        if(pos_valid) {
+            char tick_buf[2];
+            tick_buf[0] = nmea_tick_chars[tick_idx];
+            tick_buf[1] = 0;
 
-        wxString s1( tick_buf, wxConvUTF8 );
-        s1 += _(" Ship ");
-        s1 += toSDMM( 1, gLat );
-        s1 += _T("   ");
-        s1 += toSDMM( 2, gLon );
+            wxString s1( tick_buf, wxConvUTF8 );
+            s1 += _(" Ship ");
+            s1 += toSDMM( 1, gLat );
+            s1 += _T("   ");
+            s1 += toSDMM( 2, gLon );
 
-        if(STAT_FIELD_TICK >= 0 )
-            SetStatusText( s1, STAT_FIELD_TICK );
-
-        wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
-        else
-            sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
-
-        wxString cogs;
-        if( wxIsNaN(gCog) )
-            cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
-        else {
-            if( g_bShowMag )
-                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
-            else
-                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+            if(STAT_FIELD_TICK >= 0 )
+                SetStatusText( s1, STAT_FIELD_TICK );
+            
         }
+        
+        if(cog_sog_valid) {
+            wxString sogcog;
+            if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("     ") );
+            else
+                sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
-        sogcog.Append( cogs );
-        SetStatusText( sogcog, STAT_FIELD_SOGCOG );
-    }
-
-//    Maintain average COG for Course Up Mode
-
-    if( !wxIsNaN(gCog) ) {
-        if( g_COGAvgSec > 0 ) {
-            //    Make a hole
-            for( int i = g_COGAvgSec - 1; i > 0; i-- )
-                COGTable[i] = COGTable[i - 1];
-            COGTable[0] = gCog;
-
-            double sum = 0.;
-            for( int i = 0; i < g_COGAvgSec; i++ ) {
-                double adder = COGTable[i];
-
-                if( fabs( adder - g_COGAvg ) > 180. ) {
-                    if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
-                    else
-                        adder += 360.;
-                }
-
-                sum += adder;
+            wxString cogs;
+            if( wxIsNaN(gCog) )
+                cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
+            else {
+                if( g_bShowTrue )
+                    cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gCog );
+                if( g_bShowMag )
+                    cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( gCog ) );
             }
-            sum /= g_COGAvgSec;
 
-            if( sum < 0. ) sum += 360.;
-            else
-                if( sum >= 360. ) sum -= 360.;
-
-            g_COGAvg = sum;
+            sogcog.Append( cogs );
+            SetStatusText( sogcog, STAT_FIELD_SOGCOG );
         }
-        else
-            g_COGAvg = gCog;
+        
+        
     }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
@@ -9599,56 +9448,63 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 }
 
 void MyFrame::FilterCogSog( void )
-{
+{            
     if( g_bfilter_cogsog ) {
-        //    If the data are undefined, leave the array intact
-        if( !wxIsNaN(gCog) ) {
-            //    Simple averaging filter for COG
-            double cog_last = gCog;       // most recent reported value
+        //    Simple averaging filter for COG
+        double cog_last = gCog;       // most recent reported value
 
-            //    Make a hole in array
-            for( int i = g_COGFilterSec - 1; i > 0; i-- )
-                COGFilterTable[i] = COGFilterTable[i - 1];
-            COGFilterTable[0] = cog_last;
+        //    Make a hole in array
+        for( int i = g_COGFilterSec - 1; i > 0; i-- )
+            COGFilterTable[i] = COGFilterTable[i - 1];
+        COGFilterTable[0] = cog_last;
 
+        //    If the lastest data is undefined, leave it
+        if( !wxIsNaN(cog_last) ) {
             //
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_COGFilterSec; i++ ) {
                 double adder = COGFilterTable[i];
+                if(wxIsNaN(adder))
+                    continue;
 
-                if( fabs( adder - m_COGFilterLast ) > 180. ) {
-                    if( ( adder - m_COGFilterLast ) > 0. ) adder -= 360.;
+                if( fabs( adder - cog_last ) > 180. ) {
+                    if( ( adder - cog_last ) > 0. ) adder -= 360.;
                     else
                         adder += 360.;
                 }
 
                 sum += adder;
+                count++;
             }
-            sum /= g_COGFilterSec;
+            sum /= count;
 
             if( sum < 0. ) sum += 360.;
             else
                 if( sum >= 360. ) sum -= 360.;
 
             gCog = sum;
-            m_COGFilterLast = sum;
         }
 
+        //    Simple averaging filter for SOG
+        double sog_last = gSog;       // most recent reported value
+
+        //    Make a hole in array
+        for( int i = g_SOGFilterSec - 1; i > 0; i-- )
+            SOGFilterTable[i] = SOGFilterTable[i - 1];
+        SOGFilterTable[0] = sog_last;
+
+        
         //    If the data are undefined, leave the array intact
         if( !wxIsNaN(gSog) ) {
-            //    Simple averaging filter for SOG
-            double sog_last = gSog;       // most recent reported value
-
-            //    Make a hole in array
-            for( int i = g_SOGFilterSec - 1; i > 0; i-- )
-                SOGFilterTable[i] = SOGFilterTable[i - 1];
-            SOGFilterTable[0] = sog_last;
-
-            double sum = 0.;
+            double sum = 0., count = 0;
             for( int i = 0; i < g_SOGFilterSec; i++ ) {
+                if(wxIsNaN(SOGFilterTable[i]))
+                    continue;
+
                 sum += SOGFilterTable[i];
+                count++;
             }
-            sum /= g_SOGFilterSec;
+            sum /= count;
 
             gSog = sum;
         }
@@ -9732,7 +9588,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
 
     if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
-                                              wxString( _( "Ownship" ) ), GPX_EMPTY_STRING );
+                                              wxString( _( "Own ship" ) ), GPX_EMPTY_STRING );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
 
         pAISMOBRoute = new Route();
@@ -9744,7 +9600,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         pSelect->AddSelectableRouteSegment(ptarget->Lat, ptarget->Lon, gLat, gLon, pWP_src, pWP_MOB, pAISMOBRoute );
 
         pAISMOBRoute->m_RouteNameString = _("Temporary AISMOB Route");
-        pAISMOBRoute->m_RouteStartString = _("Present Ownship");
+        pAISMOBRoute->m_RouteStartString = _("Present own ship");
         pAISMOBRoute->m_RouteEndString = mob_label;
 
         pAISMOBRoute->m_bDeleteOnArrival = false;
@@ -12455,73 +12311,92 @@ void SearchPnpKeyW9x(HKEY hkPnp, BOOL bUsbDevice,
 bool ReloadLocale()
 {
     bool ret = false;
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 
-    //  Old locale is done.
-    delete plocale_def_lang;
-
-    plocale_def_lang = new wxLocale;
-    wxString loc_lang_canonical;
-
-    const wxLanguageInfo *pli = wxLocale::FindLanguageInfo( g_locale );
-    bool b_initok = false;
-
-    if( pli ) {
-        b_initok = plocale_def_lang->Init( pli->Language, 1 );
-        // If the locale was not initialized OK, it may be that the wxstd.mo translations
-        // of the wxWidgets strings is not present.
-        // So try again, without attempting to load defaults wxstd.mo.
-        if( !b_initok ){
-            delete plocale_def_lang;
-            plocale_def_lang = new wxLocale;
-            b_initok = plocale_def_lang->Init( pli->Language, 0 );
-        }
-        loc_lang_canonical = pli->CanonicalName;
-    }
-
-    if( !pli || !b_initok ) {
-        delete plocale_def_lang;
-        plocale_def_lang = new wxLocale;
-        b_initok = plocale_def_lang->Init( wxLANGUAGE_ENGLISH_US, 0 );
-        loc_lang_canonical = wxLocale::GetLanguageInfo( wxLANGUAGE_ENGLISH_US )->CanonicalName;
-    }
-
-    if(b_initok){
-        wxString imsg = _T("Opencpn language reload for:  ");
-        imsg += loc_lang_canonical;
-        wxLogMessage( imsg );
-
-        //  wxWidgets assigneds precedence to message catalogs in reverse order of loading.
-        //  That is, the last catalog containing a certain translatable item takes precedence.
-
-        //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
-        //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
-
-//        wxLog::SetVerbose(true);            // log all messages for debugging language stuff
-
-        for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
-            wxString imsg = _T("Loading catalog for:  ");
-            imsg += g_locale_catalog_array.Item(i);
-            wxLogMessage( imsg );
-            plocale_def_lang->AddCatalog( g_locale_catalog_array.Item(i) );
-        }
-
-
-    // Get core opencpn catalog translation (.mo) file
-        wxLogMessage( _T("Loading catalog for opencpn core.") );
-        plocale_def_lang->AddCatalog( _T("opencpn") );
-
-//        wxLog::SetVerbose(false);
-
-        ret = true;
-    }
-
-    //    Always use dot as decimal
-    setlocale( LC_NUMERIC, "C" );
-
+#if wxUSE_XLOCALE    
+    ret = (!g_Platform->ChangeLocale( g_locale, plocale_def_lang, &plocale_def_lang ).IsEmpty());
 #endif
     return ret;
-
 }
 
 
+void ApplyLocale()
+{
+    FontMgr::Get().SetLocale( g_locale );
+    FontMgr::Get().ScrubList(); 
+    
+    //  Close and re-init various objects to allow new locale to show.
+    delete g_options;
+    g_options = NULL;
+    g_pOptions = NULL;
+    
+    
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Hide();
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pRouteManagerDialog ) {
+        pRouteManagerDialog->Hide();
+        pRouteManagerDialog->Destroy();
+        pRouteManagerDialog = NULL;
+    }
+    
+    if(console)
+        console->SetColorScheme( global_color_scheme );
+    
+    if( g_pais_query_dialog_active ){
+        g_pais_query_dialog_active->Destroy();
+        g_pais_query_dialog_active = NULL;
+    }
+    
+    if( g_pais_alert_dialog_active ){
+        g_pais_alert_dialog_active->Destroy();
+        g_pais_alert_dialog_active = NULL;
+    }
+    
+    
+    if( g_pAISTargetList ) {
+        if(g_pauimgr) g_pauimgr->DetachPane(g_pAISTargetList);
+        g_pAISTargetList->Disconnect_decoder();
+        g_pAISTargetList->Destroy();
+        g_pAISTargetList = NULL;
+    }
+    
+    
+    // Capture a copy of the current perspective
+    //  So that we may restore PlugIn window sizes, position, visibility, etc.
+    wxString perspective;
+    pConfig->SetPath( _T ( "/AUI" ) );
+    pConfig->Read( _T ( "AUIPerspective" ), &perspective );
+    
+    
+    
+    g_pi_manager->UnLoadAllPlugIns();
+    g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+    
+    
+    //         // Make sure the perspective saved in the config file is "reasonable"
+    //         // In particular, the perspective should have an entry for every
+    //         // windows added to the AUI manager so far.
+    //         // If any are not found, then use the default layout
+    //         
+    bool bno_load = false;
+    wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+    
+    for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
+        wxAuiPaneInfo pane = pane_array_val.Item( i );
+        if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+            bno_load = true;
+            break;
+        }
+    }
+    
+    if( !bno_load )
+        g_pauimgr->LoadPerspective( perspective, false );
+    
+    g_pauimgr->Update();
+    
+    if(gFrame)
+        gFrame->RequestNewToolbar( true );
+}

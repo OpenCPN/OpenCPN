@@ -35,6 +35,7 @@
 #include "cutil.h"
 #include "georef.h"
 #include "wx28compat.h"
+#include "OCPNPlatform.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -52,6 +53,7 @@ extern int g_iWaypointRangeRingsNumber;
 extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
+extern OCPNPlatform *g_Platform;
 
 extern float g_ChartScaleFactorExp;
 
@@ -488,7 +490,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     wxPoint r;
     wxRect hilitebox;
     unsigned char transparency = 150;
-
+    double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
+    
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
@@ -528,6 +531,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     hilitebox = r3;
     hilitebox.x -= r.x;
     hilitebox.y -= r.y;
+    
+    hilitebox.x *= g_ChartScaleFactorExp;
+    hilitebox.y *= g_ChartScaleFactorExp;
+    hilitebox.width  *= g_ChartScaleFactorExp;
+    hilitebox.height *= g_ChartScaleFactorExp;
+    
     float radius;
     if( g_btouch ){
         hilitebox.Inflate( 20 );
@@ -702,7 +711,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
         
-        wxPen ppPen1( m_wxcWaypointRangeRingsColour, 2 );
+        wxPen ppPen1( m_wxcWaypointRangeRingsColour, platform_pen_width );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );

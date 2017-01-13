@@ -65,6 +65,23 @@ static wxString FormatTimeAdaptive( int seconds )
     return wxString::Format( _T("%2dh %02dmin"), h, m );
 }
 
+static wxString html_escape ( const wxString &src)
+{
+  // Escape &, <, > as well as single and double quotes for HTML.
+  wxString ret = src;
+
+  ret.Replace(_T("<"), _T("&lt;"));
+  ret.Replace(_T(">"), _T("&gt;"));
+
+  // only < and > in 6 bits AIS ascii
+  // ret.Replace(_T("\""), _T("&quot;"));
+  // ret.Replace(_T("&"), _T("&amp;"));
+  // ret.Replace(_T("'"), _T("&#39;"));
+
+  // Do we care about multiple spaces?
+  //   ret.Replace(_T(" "), _T("&nbsp;"));
+  return ret;
+}
 
 AIS_Target_Data::AIS_Target_Data()
 {
@@ -510,7 +527,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                  << rowStartH << _T("<b>");
                  wxString dest =  trimAISField( Destination );
                  if(dest.Length() )
-                     html << dest;
+                     html << html_escape(dest);
                  else
                      html << _("---");
                  html << _T("</b></td><td nowrap align=right><b>");
@@ -530,9 +547,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             int crs = wxRound( COG );
             if( crs < 360 ) {
                 if( g_bShowMag )
-                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
                 else
-                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)crs );
             }   
             else if( COG == 360.0 )
                 courseStr = _T("---");
@@ -583,9 +600,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         brg = 0;
     if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) ){
         if( g_bShowMag )
-            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( Brg ) );
         else
-            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) Brg );
     }   
     else
         brgStr = _("---");
@@ -747,9 +764,9 @@ wxString AIS_Target_Data::GetRolloverString( void )
         if( b_positionOnceValid ) {
             if( crs < 360 ) {
                 if( g_bShowMag )
-                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
                 else
-                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)crs );
             }
                 
             else if( COG == 360.0 )
@@ -1068,7 +1085,8 @@ wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short
     case 463: return b_CntryLongStr ? _("Pakistan") : _T("PK") ;
     case 466: return b_CntryLongStr ? _("Qatar") : _T("QA") ;
     case 468: return b_CntryLongStr ? _("Syrian Arab Republic") : _T("SY") ;
-    case 470: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
+    case 470:
+    case 471: return b_CntryLongStr ? _("United Arab Emirates") : _T("AE") ;
     case 472: return b_CntryLongStr ? _("Tajikistan") : _T("TJ") ;
     case 473: return b_CntryLongStr ? _("Yemen") : _T("YE") ;
     case 475: return b_CntryLongStr ? _("Yemen") : _T("YE") ;

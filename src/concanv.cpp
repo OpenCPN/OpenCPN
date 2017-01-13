@@ -54,7 +54,7 @@ extern MyFrame          *gFrame;
 extern bool             g_bShowActiveRouteHighway;
 extern double           gCog;
 extern double           gSog;
-extern bool             g_bShowMag;
+extern bool             g_bShowTrue, g_bShowMag;
 
 bool             g_bShowRouteTotal;
 
@@ -158,6 +158,11 @@ void ConsoleCanvas::SetColorScheme( ColorScheme cs )
             wxBRUSHSTYLE_SOLID );
     SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
 
+    if( g_bShowRouteTotal )
+        pThisLegText->SetLabel( _("Route") );
+    else
+        pThisLegText->SetLabel( _("This Leg") );
+    
     //  Also apply color scheme to all known children
 
     pThisLegText->SetBackgroundColour( GetGlobalColor( _T("DILG1"/*"UIBDR"*/) ) );
@@ -271,10 +276,10 @@ void ConsoleCanvas::UpdateRouteData()
                 dcog = 0;
             
             wxString cogstr;
+            if( g_bShowTrue )
+                cogstr << wxString::Format( wxString("%6.0f", wxConvUTF8 ), dcog );
             if( g_bShowMag )
-                cogstr << wxString::Format( wxString("%6.0f(M)", wxConvUTF8 ), gFrame->GetTrueOrMag( dcog ) );
-            else
-                cogstr << wxString::Format( wxString("%6.0f", wxConvUTF8 ), gFrame->GetTrueOrMag( dcog ) );
+                cogstr << wxString::Format( wxString("%6.0f(M)", wxConvUTF8 ), gFrame->GetMag( dcog ) );
             
             pBRG->SetAValue( cogstr );
 

@@ -68,6 +68,7 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 
 bool TestGLCanvas(wxString prog_dir);
 bool ReloadLocale();
+void ApplyLocale( void );
 
 void LoadS57();
 
@@ -445,8 +446,8 @@ class MyFrame: public wxFrame
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
 
     bool CheckGroup(int igroup);
-    double GetTrueOrMag(double a);
-    double GetTrueOrMag(double a, double lat, double lon);
+    double GetMag(double a);
+    double GetMag(double a, double lat, double lon);
     bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
     
     void DestroyPersistentDialogs();
@@ -509,7 +510,7 @@ class MyFrame: public wxFrame
     void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool pos_valid, const wxString &sfixtime);
+    void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
@@ -541,7 +542,6 @@ class MyFrame: public wxFrame
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
 
-    double              m_COGFilterLast;
     double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
 

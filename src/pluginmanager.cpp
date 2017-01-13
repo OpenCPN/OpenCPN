@@ -30,11 +30,23 @@
 #include <wx/aui/aui.h>
 #include <wx/statline.h>
 #include <wx/tokenzr.h>
+#include <wx/app.h>
+#include <wx/hashset.h>
+#include <wx/hashmap.h>
 #ifndef __WXMSW__
 #include <cxxabi.h>
 #endif // __WXMSW__
-#include "dychart.h"
+#include <stdint.h>
+#include <fcntl.h>
+#include <errno.h>
 
+#ifdef USE_LIBELF
+#include <elf.h>
+#include <libelf.h>
+#include <gelf.h>
+#endif
+
+#include "dychart.h"
 #include "pluginmanager.h"
 #include "navutil.h"
 #include "ais.h"
@@ -380,7 +392,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             
         if(m_benable_blackdialog && !b_compat)
         {
-            wxLogMessage(wxString::Format(_("    Incompatible PlugIn detected: %s"), file_name.c_str()));
+            wxLogMessage(wxString::Format(_T("    %s: %s")), _T("Incompatible plugin detected"), file_name.c_str());
             OCPNMessageBox( NULL, wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()), wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
         }
             
@@ -694,10 +706,9 @@ bool PlugInManager::UnLoadAllPlugIns()
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
-        wxString msg(_T("PlugInManager: UnLoading PlugIn: "));
-        msg += pic->m_plugin_file;
-        wxLogMessage(msg);
 
+        DeactivatePlugIn( pic );
+        
         pic->m_destroy_fn(pic->m_pplugin);
 
         delete pic->m_plibrary;            // This will unload the PlugIn
@@ -706,6 +717,9 @@ bool PlugInManager::UnLoadAllPlugIns()
 
         delete pic;
     }
+    
+    plugin_array.Empty();
+    
     return true;
 }
 
@@ -743,6 +757,160 @@ DWORD Rva2Offset(DWORD rva, PIMAGE_SECTION_HEADER psh, PIMAGE_NT_HEADERS pnt)
     return (rva - pSeh->VirtualAddress + pSeh->PointerToRawData);
 }
 #endif
+
+class ModuleInfo
+{
+public:
+    WX_DECLARE_HASH_SET( wxString, wxStringHash, wxStringEqual, DependencySet );
+    WX_DECLARE_HASH_MAP( wxString, wxString, wxStringHash, wxStringEqual, DependencyMap );
+
+    uint64_t type_magic;
+    DependencyMap dependencies;
+};
+
+#ifdef USE_LIBELF
+bool ReadModuleInfoFromELF( const wxString& file, const ModuleInfo::DependencySet& dependencies, ModuleInfo& info )
+{
+
+    static bool b_libelf_initialized = false;
+    static bool b_libelf_usable = false;
+
+    if ( b_libelf_usable )
+    {
+        // Nothing to do.
+    }
+    else if ( b_libelf_initialized )
+    {
+        return false;
+    }
+    else if( elf_version(EV_CURRENT) == EV_NONE ) {
+        b_libelf_initialized = true;
+        b_libelf_usable = false;
+        wxLogError( _T("LibELF is outdated.") );
+        return false;
+    }
+    else
+    {
+        b_libelf_initialized = true;
+        b_libelf_usable = true;
+    }
+
+    int file_handle = 0;
+    Elf *elf_handle = NULL;
+    GElf_Ehdr elf_file_header;
+    Elf_Scn *elf_section_handle = NULL;
+
+    file_handle = open( file, O_RDONLY );
+    if( file_handle == -1 )
+    {
+        wxLogError( wxString::Format( _T("Could not open file \"%s\" for reading with errno = %i."), file, errno ) );
+        goto FailureEpilogue;
+    }
+
+    elf_handle = elf_begin( file_handle, ELF_C_READ, NULL );
+    if( elf_handle == NULL )
+    {
+        wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("structures"), file ) );
+        goto FailureEpilogue;
+    }
+
+    if( gelf_getehdr( elf_handle, &elf_file_header ) != &elf_file_header )
+    {
+        wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("file header"), file ) );
+        goto FailureEpilogue;
+    }
+
+    switch( elf_file_header.e_type )
+    {
+        case ET_EXEC:
+        case ET_DYN:
+            break;
+        default:
+            wxLogError( wxString::Format( _T("Module \"%s\" is not an executable or shared library."), file ) );
+            goto FailureEpilogue;
+    }
+
+    info.type_magic =
+        ( static_cast< uint64_t >( elf_file_header.e_ident[EI_CLASS] ) << 0 ) |         // ELF class (32/64).
+        ( static_cast< uint64_t >( elf_file_header.e_ident[EI_DATA] ) << 8 ) |          // Endianness.
+        ( static_cast< uint64_t >( elf_file_header.e_ident[EI_OSABI] ) << 16 ) |        // OS ABI (Linux, FreeBSD, etc.).
+        ( static_cast< uint64_t >( elf_file_header.e_ident[EI_ABIVERSION] ) << 24 ) |   // OS ABI version.
+        ( static_cast< uint64_t >( elf_file_header.e_machine) << 32 ) |                 // Instruction set.
+        0;
+
+    while( ( elf_section_handle = elf_nextscn( elf_handle, elf_section_handle ) ) != NULL )
+    {
+        GElf_Shdr elf_section_header;
+        Elf_Data *elf_section_data = NULL;
+        size_t elf_section_entry_count = 0;
+
+        if( gelf_getshdr( elf_section_handle, &elf_section_header ) != &elf_section_header )
+        {
+            wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("section header"), file ) );
+            goto FailureEpilogue;
+        }
+        else if( elf_section_header.sh_type != SHT_DYNAMIC )
+        {
+            continue;
+        }
+
+        elf_section_data = elf_getdata( elf_section_handle, NULL );
+        if( elf_section_data == NULL )
+        {
+            wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("section data"), file ) );
+            goto FailureEpilogue;
+        }
+
+        if( ( elf_section_data->d_size == 0 ) || ( elf_section_header.sh_entsize == 0 ) )
+        {
+            wxLogError( wxString::Format( _T("Got malformed %s %s from \"%s\"."), _T("ELF"), _T("section metadata"), file ) );
+            goto FailureEpilogue;
+        }
+
+        elf_section_entry_count = elf_section_data->d_size / elf_section_header.sh_entsize;
+        for( size_t elf_section_entry_index = 0; elf_section_entry_index < elf_section_entry_count; ++elf_section_entry_index )
+        {
+            GElf_Dyn elf_dynamic_entry;
+            const char *elf_dynamic_entry_name = NULL;
+            if( gelf_getdyn( elf_section_data, elf_section_entry_index, &elf_dynamic_entry ) != &elf_dynamic_entry )
+            {
+                wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("dynamic section entry"), file ) );
+                goto FailureEpilogue;
+            }
+            else if( elf_dynamic_entry.d_tag != DT_NEEDED )
+            {
+                continue;
+            }
+            elf_dynamic_entry_name = elf_strptr( elf_handle, elf_section_header.sh_link, elf_dynamic_entry.d_un.d_val );
+            if( elf_dynamic_entry_name == NULL )
+            {
+                wxLogError( wxString::Format( _T("Could not get %s %s from \"%s\"."), _T("ELF"), _T("string entry"), file ) );
+                goto FailureEpilogue;
+            }
+            wxString name_full( elf_dynamic_entry_name );
+            wxString name_part( elf_dynamic_entry_name, strcspn( elf_dynamic_entry_name, "-." ) );
+            if( dependencies.find( name_part ) != dependencies.end() )
+            {
+                info.dependencies.insert( ModuleInfo::DependencyMap::value_type( name_part, name_full ) );
+            }
+        }
+    };
+
+    goto SuccessEpilogue;
+
+SuccessEpilogue:
+    elf_end( elf_handle );
+    close( file_handle );
+    return true;
+
+FailureEpilogue:
+    if( elf_handle != NULL )
+        elf_end( elf_handle );
+    if( file_handle != 0 )
+        close( file_handle );
+    return false;
+}
+#endif  // USE_LIBELF
 
 bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
 {
@@ -790,7 +958,7 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     if (virtualpointer)
         VirtualFree(virtualpointer, size, MEM_DECOMMIT);
 #endif
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #if 0
     wxString cmd = _T("ldd ") + plugin_file + _T(" 2>&1");
     FILE *ldd = popen( cmd.mb_str(), "r" );
@@ -812,12 +980,89 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
         }
         fclose(ldd);
     }
+#elif defined(USE_LIBELF)
+
+    static bool b_own_info_queried = false;
+    static bool b_own_info_usable = false;
+    static ModuleInfo own_info;
+    static ModuleInfo::DependencySet dependencies;
+
+    if( !b_own_info_queried )
+    {
+        dependencies.insert( _T("libwx_baseu") );
+        const wxApp& app = *wxTheApp;
+        if( app.argc && !app.argv[0].IsEmpty())
+        {
+            wxString app_path( app.argv[0] );
+#if defined(USE_LIBELF)
+            b_own_info_usable = ReadModuleInfoFromELF( app_path, dependencies, own_info );
+#else
+#error No support for other executable formats is implemented.
+#endif
+        }
+        else
+        {
+            wxLogError( _T("Cannot get own executable path.") );
+        }
+        b_own_info_queried = true;
+    }
+
+    if( b_own_info_usable )
+    {
+        bool b_pi_info_usable = false;
+        ModuleInfo pi_info;
+#if defined(USE_LIBELF)
+        b_pi_info_usable = ReadModuleInfoFromELF( plugin_file, dependencies, pi_info );
+#else
+#error No support for other executable formats is implemented.
+#endif
+        if( b_pi_info_usable )
+        {
+            b_compat = ( pi_info.type_magic == own_info.type_magic );
+            if( !b_compat )
+            {
+                pi_info.dependencies.clear();
+                wxLogError( wxString::Format( _T("    Plugin \"%s\" is of another binary flavor than the main module."), plugin_file ) );
+            }
+            for( ModuleInfo::DependencyMap::const_iterator own_dependency = own_info.dependencies.begin(); own_dependency != own_info.dependencies.end(); ++own_dependency )
+            {
+                ModuleInfo::DependencyMap::const_iterator pi_dependency = pi_info.dependencies.find( own_dependency->first );
+                if( ( pi_dependency != pi_info.dependencies.end() ) && ( pi_dependency->second != own_dependency->second ) )
+                {
+                    b_compat = false;
+                    wxLogError( wxString::Format( _T("    Plugin \"%s\" depends on library \"%s\", but the main module was built for \"%s\"."), plugin_file, pi_dependency->second, own_dependency->second ) );
+                    break;
+                }
+            }
+        }
+        else
+        {
+            b_compat = false;
+            wxLogMessage( wxString::Format( _T("    Plugin \"%s\" could not be reliably checked for compatibility."), plugin_file ) );
+        }
+    }
+    else
+    {
+        // Allow any plugin when own info is not available.
+        b_compat = true;
+    }
+
 #else
     // this is 3x faster than the other method
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
-    sprintf( strver, "libwx_baseu-%i.%i", wxMAJOR_VERSION, wxMINOR_VERSION );
 
+    sprintf( strver,
+#if defined(__WXGTK20__)
+             "libwx_gtk2u_core-%i.%i"
+#elif defined(__WXGTK3__)
+             "libwx_gtk3u_core-%i.%i"
+#elif defined(__WXQT__)
+             "libwx_qtu_core-%i.%i"
+#else
+             #error undefined plugin platform
+#endif    
+             , wxMAJOR_VERSION, wxMINOR_VERSION );
     b_compat = false;
     
     int pos = 0, len = strlen(strver), c;
@@ -933,9 +1178,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
             for (int i = 0; i < len; i++) {
                 wxString candidate = PluginBlacklist[i].name.Lower();
                 if( prob_pi_name.Lower().EndsWith(candidate)){
-                    wxString msg = _("Incompatible PlugIn detected:\n");
-                    msg += plugin_file;
-                    msg += _T("\n\n");
+                    wxString msg( wxString::Format( _T("%s:\n%s\n\n"), _("Incompatible plugin detected"), plugin_file ) );
                     
                     wxString msg1;
                     msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),

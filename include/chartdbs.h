@@ -32,7 +32,7 @@
 #include "bbox.h"
 #include "LLRegion.h"
 
-class wxProgressDialog;
+class wxGenericProgressDialog;
 class ChartBase;
 
 //    A small class used in an array to describe chart directories
@@ -298,8 +298,8 @@ public:
     ChartDatabase();
     virtual ~ChartDatabase(){};
 
-    bool Create(ArrayOfCDI& dir_array, wxProgressDialog *pprog);
-    bool Update(ArrayOfCDI& dir_array, bool bForce, wxProgressDialog *pprog);
+    bool Create(ArrayOfCDI& dir_array, wxGenericProgressDialog *pprog);
+    bool Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgressDialog *pprog);
 
     bool Read(const wxString &filePath);
     bool Write(const wxString &filePath);
@@ -357,12 +357,12 @@ protected:
 private:
     bool IsChartDirUsed(const wxString &theDir);
 
-    int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxProgressDialog *pprog);
+    int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog);
 
-    int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDialog *pprog, wxString& dir_magic, bool bForce);
-    bool DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxProgressDialog *pprog);
+    int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxGenericProgressDialog *pprog, wxString& dir_magic, bool bForce);
+    bool DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxGenericProgressDialog *pprog);
 
-    bool AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxProgressDialog *pprog,
+    bool AddChart( wxString &chartfilename, ChartClassDescriptor &chart_desc, wxGenericProgressDialog *pprog,
                    int isearch, bool bthis_dir_in_dB );
 
     bool Check_CM93_Structure(wxString dir_name);

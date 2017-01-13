@@ -165,6 +165,7 @@ enum {
   ID_ZTCCHECKBOX,
   ID_DELETECHECKBOX,
   ID_NATIONALTEXTCHECKBOX,
+  ID_TRUESHOWCHECKBOX,
   ID_MAGSHOWCHECKBOX,
   ID_MAGAPBCHECKBOX,
   ID_MOBILEBOX,
@@ -277,7 +278,7 @@ class options : private Uncopyable,
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
   void OnChooseFontColor(wxCommandEvent &event);
 #endif
   void OnGLClicked(wxCommandEvent &event);
@@ -434,7 +435,7 @@ class options : private Uncopyable,
 
   // For "Units" page
   wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect;
-  wxCheckBox *pCBMagShow;
+  wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
   // For "Charts" page

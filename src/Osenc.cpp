@@ -42,7 +42,7 @@
 #include "cutil.h"
 #include "s57RegistrarMgr.h"
 #include "cpl_csv.h"
-
+#include "chart1.h"             // for fonts
 #include "mygdal/ogr_s57.h"
 #include "mygdal/cpl_string.h"
 
@@ -263,7 +263,7 @@ void Osenc::init( void )
     m_LOD_meters = 0;
     m_poRegistrar = NULL;
     m_senc_file_read_version = 0;
-    s_ProgDialog = NULL;
+    m_ProgDialog = NULL;
     InitializePersistentBuffer();
     
     m_ref_lat = 0;
@@ -1482,8 +1482,12 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     int nProg = poReader->GetFeatureCount();
     
     if(wxThread::IsMain() && b_showProg){
-        s_ProgDialog = new wxProgressDialog( Title, Message, nProg, NULL,
-                                             wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
+        m_ProgDialog = new wxGenericProgressDialog();
+
+        wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+        m_ProgDialog->SetFont( *qFont );
+        
+        m_ProgDialog->Create( Title, Message, nProg, NULL, wxPD_AUTO_HIDE | wxPD_SMOOTH );
     }
 #endif    
     
@@ -1505,14 +1509,14 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
             //  Update the progress dialog
             //We update only every 200 milliseconds to improve performance as updating the dialog is very expensive...
             // WXGTK is measurably slower even with 100ms here
-            if( s_ProgDialog && progsw.Time() > 200 )
+            if( m_ProgDialog && progsw.Time() > 200 )
             {
                 progsw.Start();
                 
                 wxString sobj = wxString( objectDef->GetDefnRef()->GetName(), wxConvUTF8 );
                 sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
                 
-                bcont = s_ProgDialog->Update( iObj, sobj );
+                bcont = m_ProgDialog->Update( iObj, sobj );
             }
 #endif
 
@@ -1577,7 +1581,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     }
     
 #if wxUSE_PROGRESSDLG
-    delete s_ProgDialog;
+    delete m_ProgDialog;
 #endif    
     
     delete poS57DS;
@@ -1807,7 +1811,7 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         double easting, northing;
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         float east = easting;
         float north = northing;
         float deep = depth;
@@ -1899,7 +1903,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
                                                          // computing bbox as we go
         float lon, lat;
         double easting, northing;
-    #ifdef ARMHF
+    #ifdef __ARM_ARCH
         double east_d, north_d;
         memcpy(&east_d, psd++, sizeof(double));
         memcpy(&north_d, psd++, sizeof(double));
@@ -2059,20 +2063,9 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     OGRGeometry *pGeo = pFeature->GetGeometryRef();
     OGRPolygon *poly = (OGRPolygon *) ( pGeo );
     
-    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, false, m_LOD_meters );   //try to use glu library
+    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, m_LOD_meters );
     
     error_code = ppg->ErrorCode;
-    if( error_code == ERROR_NO_DLL ) {
-        //                        if( !bGLUWarningSent ) {
-            //                            wxLogMessage( _T("   Warning...Could not find glu32.dll, trying internal tess.") );
-            //                            bGLUWarningSent = true;
-            //                        }
-            
-            delete ppg;
-            //  Try with internal tesselator
-            ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, true, m_LOD_meters );
-            error_code = ppg->ErrorCode;
-    }
     
     if( error_code ){
         wxLogMessage( _T("   Warning: S57 SENC Geometry Error %d, Some Features ignored."), ppg->ErrorCode );
@@ -2618,7 +2611,7 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( Osenc_outstream *stream, S5
     OSENC_VCT_Record record;
     
     record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize;
+    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
     
     // Write out the record
     stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
@@ -2934,6 +2927,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     return false;
                 
                 break;
+            }
                 
             case wkbPoint: {
                 
@@ -2954,7 +2948,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 double *psd = (double *) ps;
                 
                 double lat, lon;
-                #ifdef ARMHF
+                #ifdef __ARM_ARCH
                 double lata, lona;
                 memcpy(&lona, psd, sizeof(double));
                 memcpy(&lata, &psd[1], sizeof(double));
@@ -2983,7 +2977,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                 if(!CreateMultiPointFeatureGeometryRecord200( pFeature, stream))
                     return false;
-                
                 break;
             }
                 
@@ -2993,7 +2986,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     
                     if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
                         return false;
-                }
                    
                     break;
                 }
@@ -3107,7 +3099,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
 
         double      minxt, minyt, maxxt, maxyt;
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         double abox[4];
         memcpy(&abox[0], pbb, 4 * sizeof(double));
         

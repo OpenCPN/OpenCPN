@@ -149,6 +149,14 @@ public:
 #define PLATFORM_CAP_PLUGINS   1
 #define PLATFORM_CAP_FASTPAN   2
     void LaunchLocalHelp();
+
+    void SetLocaleSearchPrefixes( void );
+    wxString GetDefaultSystemLocale();
+    wxString GetAdjustedAppLocale();
+    
+#if wxUSE_XLOCALE    
+    wxString ChangeLocale(wxString &newLocaleID, wxLocale *presentLocale, wxLocale** newLocale);
+#endif
     
 private:
     wxString    m_homeDir;
