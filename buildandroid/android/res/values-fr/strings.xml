@@ -1,327 +1,287 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+<string name="ocpn_GRIB_activity_Display">"Options d'affichage GRIB"</string>
+<string name="ocpn_GRIB_activity_Choose">"Choisissez un fichier GRIB local"</string>
+<string name="ocpn_GRIB_activity_Request">"Télécharger un nouveau fichier Grib"</string>
+<string name="ocpn_GRIB_download_dialog_Request">"Démarrer la requête ..."</string>
+<string name="ocpn_action_follow">"Suivi automatique du bateau"</string>
+<string name="ocpn_action_mob">"Homme à la mer : Marquer"</string>
+<string name="ocpn_action_routemanager">"Gestionnaire de route : Afficher"</string>
+<string name="ocpn_action_tracktoggle_on">"Trace : Conserver"</string>
+<string name="ocpn_action_tracktoggle_off">"Trace : Cesser"</string>
+<string name="ocpn_action_createroute">"Créer une route"</string>
+<string name="ocpn_action_tides">"Marées : Montrer/cacher"</string>
+<string name="ocpn_action_currents">"Courants : Montrer/Cacher"</string>
+<string name="ocpn_action_settings_basic">"Paramètres OpenCPN"</string>
+<string name="ocpn_action_encText">"Textes : Montrer/cacher"</string>
+<string name="ocpn_action_encSoundings">"Sondes : Montrer/cacher"</string>
+<string name="ocpn_action_googlemaps">"Utiliser Google Maps"</string>
+<string name="ocpn_action_toggle_fullscreen">"Plein écran : Oui/Non"</string>
 
-    <string name="ocpn_GRIB_activity_Display">Options d\'affichage GRIB</string>
-    <string name="ocpn_GRIB_activity_Choose">Choisissez un fichier GRIB local</string>
-    <string name="ocpn_GRIB_activity_Request">Requête télécharger fichier GRIB</string>
-    <string name="ocpn_GRIB_download_dialog_Request">Démarrer la requête...</string>
+<!-- Preferences Headers -->
+<string name="ocpn_prefs_header_display">"Afficher "</string>
+<string name="ocpn_prefs_header_charts">"Cartes"</string>
+<string name="ocpn_prefs_header_connections">"Connexions "</string>
+<string name="ocpn_prefs_header_summary_display">"Options d'affichage de la carte"</string>
+<string name="ocpn_prefs_header_summary_charts">"Sources et options de la carte"</string>
+<string name="ocpn_prefs_header_summary_connections">"Options de localisation GPS / AIS "</string>
 
-    <string name="ocpn_action_follow">Suivi-auto bateau</string>
-    <string name="ocpn_action_mob">Homme à la mer : Marquer</string>
-    <string name="ocpn_action_routemanager">Afficher gestionnaire d\'itinéraire </string>
-    <string name="ocpn_action_tracktoggle_on">Commencer suivi</string>
-    <string name="ocpn_action_tracktoggle_off">Cesser suivi</string>
-    <string name="ocpn_action_createroute">Créer nouvel itinéraire </string>
-    <string name="ocpn_action_tides">Marées : Montrer/cacher</string>
-    <string name="ocpn_action_currents">Courants : Montrer/Cacher</string>
-    <string name="ocpn_action_settings_basic">Paramètres OpenCPN </string>
-    <string name="ocpn_action_encText">Textes : Montrer/cacher</string>
-    <string name="ocpn_action_encSoundings">Sondes : Montrer/cacher</string>
-    <string name="ocpn_action_googlemaps">Utiliser Google Maps</string>
-    <string name="ocpn_action_toggle_fullscreen">Alterner plein écran</string>
+<!-- Display Preferences -->
+<string name="ocpn_prefs_display_navigation_mode">"Mode navigation "</string>
+<string name="ocpn_prefs_display_lookahead_mode">"Mode surveillance"</string>
+<string name="ocpn_prefs_display_enablequilt">"MosaÏque : Activer"</string>
+<string name="ocpn_prefs_display_showgrid">"Grille : Montrer"</string>
+<string name="ocpn_prefs_display_showoutlines">"Montrer la bordure des cartes"</string>
+<string name="ocpn_prefs_display_lockwaypoints">"Verrouiller les waypoint "</string>
+<string name="ocpn_prefs_display_confirmdelete">"Confirmer les suppressions "</string>
+<string name="ocpn_prefs_display_showdepthunits">"Montrer les unités de profondeur "</string>
+<string name="ocpn_prefs_display_uiscalefactor">"Facteur d'échelle de l'interface utilisateur "</string>
+<string name="ocpn_prefs_display_chartscalefactor">"Facteur d'échelle des objets affichables"</string>
+<string name="ocpn_prefs_display_expertmode">"Mode expert "</string>
+<string name="ocpn_prefs_display_summary_nav_mode">"Décentrer la carte pour voir en avant du bateau "</string>
+<string name="ocpn_prefs_display_summary_quilt">"Afficher plusieurs cartes à votre position "</string>
+<string name="ocpn_prefs_display_summary_grid">"Grille : Afficher"</string>
+<string name="ocpn_prefs_display_summary_outlines">"La bordure de la carte affichée apparait de façon contrastée "</string>
+<string name="ocpn_prefs_display_summary_lockwpt">"sauf si la fenêtre des propriétés ne est affiché "</string>
+<string name="ocpn_prefs_display_summary_confirmdelete">"Sur les routes et traces"</string>
+<string name="ocpn_prefs_display_summary_depthunits">"Unités de profondeur affichées en relief sur zone de carte"</string>
+<string name="ocpn_prefs_display_summary_uiscalefactor">"Affecte les barres d'outils, les dialogues et les polices GUI."</string>
+<string name="ocpn_prefs_display_summary_chartscalefactor">"Affecte les objets de carte tels que les marques, les balises, le texte, etc."</string>
+<string name="ocpn_prefs_display_summary_expertmode">"Barre de menu : Afficher"</string>
+<string name="ocpn_prefs_display_navigation_mode_NU">"Nord vers le haut"</string>
+<string name="ocpn_prefs_display_navigation_mode_CU">"COG vers le haut"</string>
+<string name="ocpn_prefs_display_nosleep">"Ne pas mettre en veille"</string>
+<string name="ocpn_prefs_display_summary_nosleep">"... si OpenCPN est actif"</string>
 
-   <!-- Preferences Headers -->
-    <string name="ocpn_prefs_header_display">Afficher </string>
-    <string name="ocpn_prefs_header_charts">Cartes</string>
-    <string name="ocpn_prefs_header_connections">Connexions </string>
-    <string name="ocpn_prefs_header_summary_display">Options affichage de la carte</string>
-    <string name="ocpn_prefs_header_summary_charts">Sources et options de la carte</string>
-    <string name="ocpn_prefs_header_summary_connections">Options de localisation GPS / AIS </string>
+<!-- Charts Preferences -->
+<string name="ocpn_prefs_charts_files">"Fichiers de carte "</string>
+<string name="ocpn_prefs_charts_vectorchartsettings">"Paramètres carte vectorielle "</string>
+<string name="ocpn_prefs_charts_summary_chartfiles">"Configurer cartes installées "</string>
+<string name="ocpn_prefs_charts_summary_vectorchartsettings">"Options d'affichage des cartes vectorielles"</string>
+<string name="ocpn_prefs_charts_negative">"Non"</string>
+<string name="ocpn_prefs_charts_positive">"Ok"</string>
+<string name="ocpn_prefs_charts_vectordisplaycat">"Afficher catégorie "</string>
+<string name="ocpn_prefs_charts_vectordisplaygraphstyle">"Style des images de carte "</string>
+<string name="ocpn_prefs_charts_vectordisplayareaboundstyle">"Style des limites de zone de carte "</string>
+<string name="ocpn_prefs_charts_vectordisplaychartcolors">"Couleurs des cartes "</string>
+<string name="ocpn_prefs_charts_vectordisplaycategory_Base">"Base"</string>
+<string name="ocpn_prefs_charts_vectordisplaycategory_Standard">"Standard"</string>
+<string name="ocpn_prefs_charts_vectordisplaycategory_All">"Toutes "</string>
+<string name="ocpn_prefs_charts_vectordisplaycategory_Marinerstandard">"Standard "</string>
+<string name="ocpn_prefs_charts_vectordisplaylinestyle_Plain">"Continue"</string>
+<string name="ocpn_prefs_charts_vectordisplaylinestyle_Symbol">"Symbolisée "</string>
+<string name="ocpn_prefs_charts_vectordisplaygraphstyle_Paper">"Carte papier "</string>
+<string name="ocpn_prefs_charts_vectordisplaygraphstyle_Simple">"Simplifiée "</string>
+<string name="ocpn_prefs_charts_vectordisplaycolors_2">"2 couleurs "</string>
+<string name="ocpn_prefs_charts_vectordisplaycolors_4">"4 couleurs "</string>
+<string name="ocpn_prefs_charts_vectorshowsound">"Sondes : Afficher"</string>
+<string name="ocpn_prefs_charts_vectorshowlabel">"Afficher étiquettes balise et feu"</string>
+<string name="ocpn_prefs_charts_vectorshowdescrip">"Caractéristiques des feux : Afficher"</string>
+<string name="ocpn_prefs_charts_vectorshowimportant">"Texte important seulement : Oui/Non"</string>
+<string name="ocpn_prefs_charts_vectorshowreduced">"Afficher des détails réduits pour descriptions de feu de petite échelle "</string>
+<string name="ocpn_prefs_charts_vectorshallowdepth">"Faible profondeur"</string>
+<string name="ocpn_prefs_charts_vectorsafetydepth">"Profondeur de sécurité "</string>
+<string name="ocpn_prefs_charts_vectordeepdepth">"Profondeur importante "</string>
 
-   <!-- Display Preferences -->
-    <string name="ocpn_prefs_display_navigation_mode">Mode navigation </string>
-    <string name="ocpn_prefs_display_lookahead_mode">Mode surveillance</string>
-    <string name="ocpn_prefs_display_enablequilt">Activer couture de carte</string>
-    <string name="ocpn_prefs_display_showgrid">Afficher grille</string>
-    <string name="ocpn_prefs_display_showoutlines">Montrer les contours de carte</string>
-    <string name="ocpn_prefs_display_lockwaypoints">Verrouiller points de cheminement </string>
-    <string name="ocpn_prefs_display_confirmdelete">Confirmer les actions de suppression </string>
-    <string name="ocpn_prefs_display_showdepthunits">Montrer les unités de profondeur </string>
-    <string name="ocpn_prefs_display_uiscalefactor">Facteur d\'échelle d\'interface utilisateur </string>
-    <string name="ocpn_prefs_display_chartscalefactor">Facteur d\'échelle d\'affichage de carte </string>
-    <string name="ocpn_prefs_display_expertmode">Mode expert </string>
-    <string name="ocpn_prefs_display_summary_nav_mode">Montrer plus grande partie de la carte en avant de l\'itinéraire du bateau </string>
-    <string name="ocpn_prefs_display_summary_quilt">Afficher plusieurs cartes à votre emplacement </string>
-    <string name="ocpn_prefs_display_summary_grid">Afficher chevauchement grille latitude / longitude </string>
-    <string name="ocpn_prefs_display_summary_outlines">Contours carte individuelle affichés comme un chevauchement contrasté </string>
-    <string name="ocpn_prefs_display_summary_lockwpt">A moins que le dialogue des propriétés ne soit affiché </string>
-    <string name="ocpn_prefs_display_summary_confirmdelete">Sur les itinéraires et suivis </string>
-    <string name="ocpn_prefs_display_summary_depthunits">Unités de profondeur affichées comme gaufrage sur la surface de la carte </string>
-    <string name="ocpn_prefs_display_summary_uiscalefactor">Affecte les barres d\'outils, les dialogues et les polices GUI.</string>
-    <string name="ocpn_prefs_display_summary_chartscalefactor">Affecte les objets de carte tels que les marques, les balises, le texte, etc.</string>
-    <string name="ocpn_prefs_display_summary_expertmode">Affichage de la barre d\'outils et des menus étendus </string>
-    <string name="ocpn_prefs_display_navigation_mode_NU">Orientation Nord</string>
-    <string name="ocpn_prefs_display_navigation_mode_CU">Orientation itinéraire </string>
-    <string name="ocpn_prefs_display_nosleep">Ne pas dormir</string>
-    <string name="ocpn_prefs_display_summary_nosleep">...tandis que OpenCPN est actif</string>
+<!-- Connections Preferences -->
+<string name="ocpn_prefs_conn_internal">"Récepteur GPS interne "</string>
+<string name="ocpn_prefs_conn_prolificPL203">"Prolific PL2303"</string>
+<string name="ocpn_prefs_conn_daisy">"Réception dAISy AIS "</string>
+<string name="ocpn_prefs_conn_FT232R">"FTDI FT232R"</string>
+<string name="ocpn_prefs_conn_FT231X">"FTDI FT231X"</string>
+<string name="ocpn_prefs_conn_continuous">"GPS, Suivi continu : Activer"</string>
+<string name="ocpn_prefs_conn_summary_internal">"GPS , permettre ce choix : Activer"</string>
+<string name="ocpn_prefs_conn_summary_compatible">"   ou récepteur GPS compatible "</string>
+<string name="ocpn_prefs_conn_summary_continuous">"   ...même si en pause / en veille"</string>
 
+<!-- Grib Display Headers -->
+<string name="ocpn_grib_display_head_general">"Général "</string>
+<string name="ocpn_grib_display_head_wind">"Vent"</string>
+<string name="ocpn_grib_display_head_pressure">"Pression "</string>
+<string name="ocpn_grib_display_head_windgust">"Rafale de vent "</string>
+<string name="ocpn_grib_display_head_waves">"Hauteur / Direction des vagues"</string>
+<string name="ocpn_grib_display_head_current">"Courant "</string>
+<string name="ocpn_grib_display_head_rain">"Pluie"</string>
+<string name="ocpn_grib_display_head_cloud">"Couverture nuageuse"</string>
+<string name="ocpn_grib_display_head_airtemp">"Température de l'air"</string>
+<string name="ocpn_grib_display_head_seatemp">"Température de l'eau"</string>
+<string name="ocpn_grib_display_head_cape">"CAPE"</string>
+<string name="ocpn_grib_display_head_summary_general">"Fixer les options générales d'affichage "</string>
+<string name="ocpn_grib_display_head_summary_wind">"Fixer les options d'affichage du vent"</string>
+<string name="ocpn_grib_display_head_summary_pressure">"Fixer les options d'affichage de pression"</string>
+<string name="ocpn_grib_display_head_summary_windgust">"Fixer les options d'affichage des rafales de vent"</string>
+<string name="ocpn_grib_display_head_summary_waves">"Fixer les options d'affichage des vagues "</string>
+<string name="ocpn_grib_display_head_summary_current">"Afficher les options d'affichage des courants"</string>
+<string name="ocpn_grib_display_head_summary_rain">"Fixer les options d'affichages de la pluie "</string>
+<string name="ocpn_grib_display_head_summary_cloud">"Fixer les options d'affichage de couverture nuageuse"</string>
+<string name="ocpn_grib_display_head_summary_airtemp">"Fixer les options d'affichage de température de l'air "</string>
+<string name="ocpn_grib_display_head_summary_seatemp">"Fixer les options d'affichage de température de l'eau "</string>
+<string name="ocpn_grib_display_head_summary_cape">"Fixer les options d'affichage de la CAPE "</string>
+<string name="ocpn_grib_download_model">"Modèle "</string>
+<string name="ocpn_grib_download_timestep">"Pas de la durée"</string>
+<string name="ocpn_grib_download_days">"Jours"</string>
+<string name="ocpn_grib_download_cat_general">"Général "</string>
+<string name="ocpn_grib_download_item_wind">"Vent"</string>
+<string name="ocpn_grib_download_item_pressure">"Pression "</string>
+<string name="ocpn_grib_download_item_windgust">"Rafale de vent "</string>
+<string name="ocpn_grib_download_item_rain">"Pluie"</string>
+<string name="ocpn_grib_download_item_cloud">"Couverture nuageuse"</string>
+<string name="ocpn_grib_download_item_airtemp">"Température de l'air "</string>
+<string name="ocpn_grib_download_item_cape">"CAPE"</string>
+<string name="ocpn_grib_download_cat_waves">"Vagues"</string>
+<string name="ocpn_grib_download_item_waves">"Vagues"</string>
+<string name="ocpn_grib_download_cat_sea">"Mer "</string>
+<string name="ocpn_grib_download_item_current">"Courant "</string>
+<string name="ocpn_grib_download_item_seatemp">"Température de l'eau"</string>
+<string name="ocpn_grib_download_summary_model">"Choisir le modèle de prévisions GRIB"</string>
+<string name="ocpn_grib_download_summary_timestep">"Fixer la durée entre les prévisions "</string>
+<string name="ocpn_grib_download_summary_days">"Fixer le nombre de jours dans le GRIB"</string>
+<string name="ocpn_grib_download_summary_wind">"Demander la vitesse et la direction du vent"</string>
+<string name="ocpn_grib_download_summary_pressure">"Demander les données : Pression"</string>
+<string name="ocpn_grib_download_summary_windgust">"Demander les données : Rafales de vent"</string>
+<string name="ocpn_grib_download_summary_rain">"Demander données : Pluie"</string>
+<string name="ocpn_grib_download_summary_cloud">"Demander les données : Couverture nuageuse"</string>
+<string name="ocpn_grib_download_summary_airtemp">"Demander la température de l'air"</string>
+<string name="ocpn_grib_download_summary_cape">"Demander la CAPE"</string>
+<string name="ocpn_grib_download_summary_waves">"Demander données : Vagues"</string>
+<string name="ocpn_grib_download_summary_current">"Demander données : Courant"</string>
+<string name="ocpn_grib_download_summary_seatemp">"Demander la température de l'eau"</string>
+<string name="ocpn_grib_ref_tz">"Fuseau horaire de référence GRIB "</string>
 
-    <!-- Charts Preferences -->
-    <string name="ocpn_prefs_charts_files">Fichiers carte </string>
-    <string name="ocpn_prefs_charts_vectorchartsettings">Paramètres carte vectorielle </string>
-    <string name="ocpn_prefs_charts_summary_chartfiles">Configuration cartes installées </string>
-    <string name="ocpn_prefs_charts_summary_vectorchartsettings">Fixe les options d\'affichage de carte vectorielle</string>
-    <string name="ocpn_prefs_charts_negative">Non</string>
-    <string name="ocpn_prefs_charts_positive">OK</string>
+<!-- Grib Fragment prefs -->
+<string name="ocpn_grib_overlaytrans">"Superposition : taux de transparence"</string>
+<string name="ocpn_grib_showparticles">"Visualisez et animer les flux"</string>
+<string name="ocpn_grib_particledensity">"Densité des flux"</string>
+<string name="ocpn_grib_airtempvalues">"Température de l'air : Afficher les valeurs"</string>
+<string name="ocpn_grib_airtempunits">"Température de l'air : Unités de valeur"</string>
+<string name="ocpn_grib_airtempspace">"Température de l'air : Espacement des valeurs"</string>
+<string name="ocpn_grib_airtempspacepix">"Température de l'air : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_airtempiso">"Isothermes : Afficher"</string>
+<string name="ocpn_grib_airtempisospace">"Isothermes : Espacement (\u00B0C)"</string>
+<string name="ocpn_grib_airtempshowoverlay">"Température de l'air : Superposition"</string>
+<string name="ocpn_grib_airtempoverlaycolor">"Température de l'air : Couleurs de superposition"</string>
+<string name="ocpn_grib_altgeoalt">"Altitude géopotentielle : Afficher"</string>
+<string name="ocpn_grib_altgeounits">"Altitude géopotentielle : Afficher"</string>
+<string name="ocpn_grib_capevalues">"CAPE, valeurs : "</string>
+<string name="ocpn_grib_capeunits">"CAPE : Unité "</string>
+<string name="ocpn_grib_capespace">"CAPE : Espacement des valeurs"</string>
+<string name="ocpn_grib_capespacepix">"CAPE : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_capeiso">"CAPE : Afficher les isolignes"</string>
+<string name="ocpn_grib_capeisospace">"CAPE : Espacement des isolignes (j/kg)"</string>
+<string name="ocpn_grib_capeshowoverlay">"CAPE, superposition : Afficher "</string>
+<string name="ocpn_grib_capeoverlaycolor">"CAPE : Couleurs de superposition "</string>
+<string name="ocpn_grib_cloudvalues">"Couverture nuageuse : Afficher les valeurs"</string>
+<string name="ocpn_grib_cloudunits">"Couverture nuageuse : Unité"</string>
+<string name="ocpn_grib_cloudspace">"Couverture nuageuse : Espacement des valeurs"</string>
+<string name="ocpn_grib_cloudspacepix">"Couverture nuageuse : Espacement des chiffres (pixels) "</string>
+<string name="ocpn_grib_cloudshowoverlay">"Couverture nuageuse : Superposition"</string>
+<string name="ocpn_grib_cloudoverlaycolor">"Couverture nuageuse : Couleurs de superposition"</string>
+<string name="ocpn_grib_currentdirarrows">"Courant : Afficher les flèches"</string>
+<string name="ocpn_grib_currentdirarrowspace">"Courant : Espacement des flèches"</string>
+<string name="ocpn_grib_currentdirarrowspacepix">"Courant : Espacement des flèches (pixels)"</string>
+<string name="ocpn_grib_currentspeedvalues">"Vitesse du courant : Afficher"</string>
+<string name="ocpn_grib_currentspeedunits">"Vitesse du courant : Unités"</string>
+<string name="ocpn_grib_currentspeedspace">"Vitesse du courant : Espacement"</string>
+<string name="ocpn_grib_currentspeedspacepix">"Vitesse du courant : Espacement des chiffres (pixels) "</string>
+<string name="ocpn_grib_currentshowspeedoverlay">"Courant : Superposition "</string>
+<string name="ocpn_grib_currentspeedoverlaycolor">"Courant : Couleurs en superposant"</string>
+<string name="ocpn_grib_windgustvalues">"Rafales de vent : Afficher la vitesse"</string>
+<string name="ocpn_grib_windgustunits">"Rafales de vent : Unité de valeur"</string>
+<string name="ocpn_grib_windgustspace">"Rafales de vent : Espacement des vitesses"</string>
+<string name="ocpn_grib_windgustspacepix">"Rafales de vent : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_windgustiso">"Rafales de vent : Afficher les isotaches"</string>
+<string name="ocpn_grib_windgustisospace">"Rafales de vent : Espacement des isotaches (nœuds)"</string>
+<string name="ocpn_grib_windgustshowoverlay">"Rafales de vent : Afficher en superposant"</string>
+<string name="ocpn_grib_windgustoverlaycolor">"Rafales de vent : Couleurs de superposition"</string>
+<string name="ocpn_grib_pressurevalues">"Pression : Afficher les valeurs"</string>
+<string name="ocpn_grib_pressureunits">"Pression : Unité de valeur"</string>
+<string name="ocpn_grib_pressurespace">"Pression : Espacement des valeurs"</string>
+<string name="ocpn_grib_pressurespacepix">"Pression : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_pressureiso">"Pression : Afficher les isobares "</string>
+<string name="ocpn_grib_pressureisospace">"Pression : Espacement des isobares (hPa)"</string>
+<string name="ocpn_grib_rainvalues">"Précipitation : Afficher les cumuls de pluie"</string>
+<string name="ocpn_grib_rainunits">"Précipitation : Unité de valeur"</string>
+<string name="ocpn_grib_rainspace">"Précipitation : Espacement des valeurs"</string>
+<string name="ocpn_grib_rainspacepix">"Précipitation : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_rainshowoverlay">"Précipitation : Afficher en superposant"</string>
+<string name="ocpn_grib_rainoverlaycolor">"Précipitation : Couleurs de superposition"</string>
+<string name="ocpn_grib_seatempvalues">"Température de l'eau : Afficher les valeurs"</string>
+<string name="ocpn_grib_seatempunits">"Température de l'eau : Unité de valeur"</string>
+<string name="ocpn_grib_seatempspace">"Température de l'eau : Espacement des valeurs"</string>
+<string name="ocpn_grib_seatempspacepix">"Température de l'eau : Espacement des chiffres (pixels) "</string>
+<string name="ocpn_grib_seatempiso">"Température de l'eau : Afficher les isothermes"</string>
+<string name="ocpn_grib_seatempisospace">"Température de l'eau : Espacement les isothermes (\u00B0C)"</string>
+<string name="ocpn_grib_seatempshowoverlay">"Température de l'eau : Afficher en superposant"</string>
+<string name="ocpn_grib_seatempoverlaycolor">"Température de l'eau : Couleurs de superposition"</string>
+<string name="ocpn_grib_wavedirarrows">"Vagues : Afficher les flèches de direction"</string>
+<string name="ocpn_grib_wavedirdirarrowform">"Vagues : Forme des flèches"</string>
+<string name="ocpn_grib_wavedirarrowspace">"Vagues : Espacement des flèches"</string>
+<string name="ocpn_grib_wavedirarrowspacepix">"Vagues : Espacement des flèches (pixels) "</string>
+<string name="ocpn_grib_waveheightvalues">"Hauteur des vagues : Afficher les valeurs"</string>
+<string name="ocpn_grib_waveheightunits">"Hauteur des vagues : Unité"</string>
+<string name="ocpn_grib_waveheightspace">"Hauteur des vagues : Espacement des valeurs"</string>
+<string name="ocpn_grib_waveheightspacepix">"Hauteur des vagues : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_waveheightshowoverlay">"Hauteur des vagues : Afficher en superposant"</string>
+<string name="ocpn_grib_waveheightoverlaycolor">"Hauteur des vagues : Couleurs de superposition"</string>
+<string name="ocpn_grib_windbarbrarrows">"Flèches de vent à barbules : Afficher"</string>
+<string name="ocpn_grib_windbarbarrowsalways">"Flèches de vent à barbules : Toujours afficher"</string>
+<string name="ocpn_grib_windbarbcolor">"Flèches de vent à barbules : Couleurs"</string>
+<string name="ocpn_grib_windbarbspace">"Flèches de vent à barbules : Espacement"</string>
+<string name="ocpn_grib_windbarbspacepix">"Flèches de vent à barbules : Espacement (pixels)"</string>
+<string name="ocpn_grib_windspeedvalues">"Vitesse du vent : Afficher"</string>
+<string name="ocpn_grib_windspeedunits">"Vitesse du vent : Unité"</string>
+<string name="ocpn_grib_windspeedspace">"Vitesse du vent : Espacement des valeurs"</string>
+<string name="ocpn_grib_windspeedspacepix">"Vitesse du vent : Espacement des chiffres (pixels)"</string>
+<string name="ocpn_grib_windspeediso">"Vitesse du vent : Afficher les isotaches"</string>
+<string name="ocpn_grib_windspeedisospace">"Vitesse du vent : Espacement des isotaches (noeuds)"</string>
+<string name="ocpn_grib_windspeedshowoverlay">"Vitesse du vent : Afficher en superposant"</string>
+<string name="ocpn_grib_windspeedoverlaycolor">"Vitesse du vent : Couleurs de superposition"</string>
 
-
-    <string name="ocpn_prefs_charts_vectordisplaycat">Afficher catégorie </string>
-    <string name="ocpn_prefs_charts_vectordisplaygraphstyle">Style images de carte </string>
-    <string name="ocpn_prefs_charts_vectordisplayareaboundstyle">Style de limite de zone de carte </string>
-    <string name="ocpn_prefs_charts_vectordisplaychartcolors">Couleurs carte </string>
-
-    <string name="ocpn_prefs_charts_vectordisplaycategory_Base">Base</string>
-    <string name="ocpn_prefs_charts_vectordisplaycategory_Standard">Standard</string>
-    <string name="ocpn_prefs_charts_vectordisplaycategory_All">Toutes </string>
-    <string name="ocpn_prefs_charts_vectordisplaycategory_Marinerstandard">Standard Mariner </string>
-
-    <string name="ocpn_prefs_charts_vectordisplaylinestyle_Plain">Continue</string>
-    <string name="ocpn_prefs_charts_vectordisplaylinestyle_Symbol">Symbolisée </string>
-
-    <string name="ocpn_prefs_charts_vectordisplaygraphstyle_Paper">Carte papier </string>
-    <string name="ocpn_prefs_charts_vectordisplaygraphstyle_Simple">Simplifiée </string>
-
-    <string name="ocpn_prefs_charts_vectordisplaycolors_2">2 couleurs </string>
-    <string name="ocpn_prefs_charts_vectordisplaycolors_4">4 couleurs </string>
-
-    <string name="ocpn_prefs_charts_vectorshowsound">Afficher sons profondeur </string>
-    <string name="ocpn_prefs_charts_vectorshowlabel">Afficher étiquettes balise et feu</string>
-    <string name="ocpn_prefs_charts_vectorshowdescrip">Afficher descriptions feu</string>
-    <string name="ocpn_prefs_charts_vectorshowimportant">Afficher seulement le texte important </string>
-    <string name="ocpn_prefs_charts_vectorshowreduced">Afficher des détails réduits pour descriptions de feu de petite échelle </string>
-    <string name="ocpn_prefs_charts_vectorshallowdepth">Faible profondeur</string>
-    <string name="ocpn_prefs_charts_vectorsafetydepth">Profondeur de sécurité </string>
-    <string name="ocpn_prefs_charts_vectordeepdepth">Profondeur importante </string>
-
-    <!-- Connections Preferences -->
-    <string name="ocpn_prefs_conn_internal">Récepteur GPS interne </string>
-    <string name="ocpn_prefs_conn_prolificPL203">Prolific PL2303</string>
-    <string name="ocpn_prefs_conn_daisy">Réception dAISy AIS </string>
-    <string name="ocpn_prefs_conn_FT232R">FTDI FT232R</string>
-    <string name="ocpn_prefs_conn_FT231X">FTDI FT231X</string>
-    <string name="ocpn_prefs_conn_continuous">Activer suivi GPS  continu </string>
-    <string name="ocpn_prefs_conn_summary_internal">Activer GPS pour permettre ce choix.</string>
-    <string name="ocpn_prefs_conn_summary_compatible">   ou récepteur GPS compatible </string>
-    <string name="ocpn_prefs_conn_summary_continuous">   ...même si en pause / en sommeil</string>
-
-
-    <!-- Grib Display Headers -->
-    <string name="ocpn_grib_display_head_general">Général </string>
-    <string name="ocpn_grib_display_head_wind">Vent</string>
-    <string name="ocpn_grib_display_head_pressure">Pression </string>
-    <string name="ocpn_grib_display_head_windgust">Rafale de vent </string>
-    <string name="ocpn_grib_display_head_waves">Hauteur / Direction des vagues</string>
-    <string name="ocpn_grib_display_head_current">Courant </string>
-    <string name="ocpn_grib_display_head_rain">Pluie</string>
-    <string name="ocpn_grib_display_head_cloud">Couverture nuageuse </string>
-    <string name="ocpn_grib_display_head_airtemp">Température de l\'air</string>
-    <string name="ocpn_grib_display_head_seatemp">Température de l\'eau</string>
-    <string name="ocpn_grib_display_head_cape">CAP</string>
-
-    <string name="ocpn_grib_display_head_summary_general">Fixer les options d\'affichage générales </string>
-    <string name="ocpn_grib_display_head_summary_wind">Fixer les options d\'affichage du vent</string>
-    <string name="ocpn_grib_display_head_summary_pressure">Fixer les options d\'affichage de pression</string>
-    <string name="ocpn_grib_display_head_summary_windgust">Fixer les options d\'affichage des rafales de vent</string>
-    <string name="ocpn_grib_display_head_summary_waves">Fixer les options d\'affichage des vagues </string>
-    <string name="ocpn_grib_display_head_summary_current">Afficher les options d\'affichage des courants</string>
-    <string name="ocpn_grib_display_head_summary_rain">Fixer les options d\'affichages de la pluie </string>
-    <string name="ocpn_grib_display_head_summary_cloud">Fixer les options d\'affichage de couverture nuageuse </string>
-    <string name="ocpn_grib_display_head_summary_airtemp">Fixer les options d\'affichage de température de l\'air </string>
-    <string name="ocpn_grib_display_head_summary_seatemp">Fixer les options d\'affichage de température de l\'eau </string>
-    <string name="ocpn_grib_display_head_summary_cape">Fixer les options d\'affichage du CAP </string>
-
-    <string name="ocpn_grib_download_model">Modèle </string>
-    <string name="ocpn_grib_download_timestep">Intervalle temporel </string>
-    <string name="ocpn_grib_download_days">Jours</string>
-    <string name="ocpn_grib_download_cat_general">Général </string>
-    <string name="ocpn_grib_download_item_wind">Vent</string>
-    <string name="ocpn_grib_download_item_pressure">Pression </string>
-    <string name="ocpn_grib_download_item_windgust">Rafale de vent </string>
-    <string name="ocpn_grib_download_item_rain">Pluie</string>
-    <string name="ocpn_grib_download_item_cloud">Couverture nuageuse</string>
-    <string name="ocpn_grib_download_item_airtemp">Température de l\'air </string>
-    <string name="ocpn_grib_download_item_cape">CAP</string>
-    <string name="ocpn_grib_download_cat_waves">Vagues</string>
-    <string name="ocpn_grib_download_item_waves">Vagues</string>
-    <string name="ocpn_grib_download_cat_sea">Mer </string>
-    <string name="ocpn_grib_download_item_current">Courant </string>
-    <string name="ocpn_grib_download_item_seatemp">Température de l\'eau</string>
-
-    <string name="ocpn_grib_download_summary_model">Choisir le modèle de prévisions GRIB</string>
-    <string name="ocpn_grib_download_summary_timestep">Fixer l\'intervalle temporel entre les prévisions </string>
-    <string name="ocpn_grib_download_summary_days">Fixer le nombre de jours en GRIB</string>
-    <string name="ocpn_grib_download_summary_wind">Demander la vitesse et la direction du vent </string>
-    <string name="ocpn_grib_download_summary_pressure">Demander données de pression </string>
-    <string name="ocpn_grib_download_summary_windgust">Demander données de rafales de vent</string>
-    <string name="ocpn_grib_download_summary_rain">Demander données de pluie </string>
-    <string name="ocpn_grib_download_summary_cloud">Demander données de couverture nuageuse </string>
-    <string name="ocpn_grib_download_summary_airtemp">Demander données de température de l\'air </string>
-    <string name="ocpn_grib_download_summary_cape">Demander données CAP </string>
-    <string name="ocpn_grib_download_summary_waves">Demander données vagues  </string>
-    <string name="ocpn_grib_download_summary_current">Demander données courant </string>
-    <string name="ocpn_grib_download_summary_seatemp">Demander données température de l\'eau </string>
-
-   <string name="ocpn_grib_ref_tz">Fuseau horaire référence GRIB </string>
-
-
-    <!-- Grib Fragment prefs -->
-    <string name="ocpn_grib_overlaytrans">Transparence chevauchements </string>
-    <string name="ocpn_grib_showparticles">Montrer affichage particules </string>
-    <string name="ocpn_grib_particledensity">Densité particules</string>
-
-    <string name="ocpn_grib_airtempvalues">Afficher valeurs température de l\'air</string>
-    <string name="ocpn_grib_airtempunits">Unités de valeur température de l\'air </string>
-    <string name="ocpn_grib_airtempspace">Espacement des valeurs de température de l\'air</string>
-    <string name="ocpn_grib_airtempspacepix">Espacement chiffres de température de l\'air (pixels)</string>
-    <string name="ocpn_grib_airtempiso">Afficher isothermes </string>
-    <string name="ocpn_grib_airtempisospace">Espacement isothermes (\u00B0C)</string>
-    <string name="ocpn_grib_airtempshowoverlay">Afficher chevauchement températures de l\'air</string>
-    <string name="ocpn_grib_airtempoverlaycolor">Couleurs chevauchement température de l\'air </string>
-
-    <string name="ocpn_grib_altgeoalt">Afficher altitude géopotentielle </string>
-    <string name="ocpn_grib_altgeounits">Unités d\'altitude géopotentielle </string>
-
-    <string name="ocpn_grib_capevalues">Afficher valeurs CAP </string>
-    <string name="ocpn_grib_capeunits">Unités de valeur CAP </string>
-    <string name="ocpn_grib_capespace">Espacement valeurs CAP </string>
-    <string name="ocpn_grib_capespacepix">Espacement chiffres CAP (pixels)</string>
-    <string name="ocpn_grib_capeiso">Afficher CAP iso</string>
-    <string name="ocpn_grib_capeisospace">Espacement IsoCAP (j/kg)</string>
-    <string name="ocpn_grib_capeshowoverlay">Afficher chevauchement CAP </string>
-    <string name="ocpn_grib_capeoverlaycolor">Couleurs chevauchement CAP </string>
-
-    <string name="ocpn_grib_cloudvalues">Afficher valeurs couverture nuageuse </string>
-    <string name="ocpn_grib_cloudunits">Unités de valeur couverture nuageuse </string>
-    <string name="ocpn_grib_cloudspace">Espacement valeurs couverture nuageuse </string>
-    <string name="ocpn_grib_cloudspacepix">Espacement chiffres couverture nuageuse (pixels) </string>
-    <string name="ocpn_grib_cloudshowoverlay">Afficher chevauchement couverture nuageuse </string>
-    <string name="ocpn_grib_cloudoverlaycolor">Couleurs chevauchement couverture nuageuse </string>
-
-    <string name="ocpn_grib_currentdirarrows">Afficher flèches direction courant</string>
-    <string name="ocpn_grib_currentdirarrowspace">Espacement flèche direction courant</string>
-    <string name="ocpn_grib_currentdirarrowspacepix">Espacement flèche direction courant (pixels)</string>
-    <string name="ocpn_grib_currentspeedvalues">Afficher valeurs vitesse courant </string>
-    <string name="ocpn_grib_currentspeedunits">Unités de valeur vitesse courant </string>
-    <string name="ocpn_grib_currentspeedspace">Espacement valeurs vitesse du courant </string>
-    <string name="ocpn_grib_currentspeedspacepix">Espacement chiffres de vitesse du courant (pixels) </string>
-    <string name="ocpn_grib_currentshowspeedoverlay">Afficher chevauchement vitesse du courant </string>
-    <string name="ocpn_grib_currentspeedoverlaycolor">Couleurs chevauchement vitesse du courant </string>
-
-    <string name="ocpn_grib_windgustvalues">Afficher valeurs rafales de vent </string>
-    <string name="ocpn_grib_windgustunits">Unités de valeur rafales de vent </string>
-    <string name="ocpn_grib_windgustspace">Espacement valeur rafales de vent </string>
-    <string name="ocpn_grib_windgustspacepix">Espacement chiffres rafales de vent (pixels)</string>
-    <string name="ocpn_grib_windgustiso">Afficher isotaches</string>
-    <string name="ocpn_grib_windgustisospace">Espacement isotaches rafales de vent (nœuds)</string>
-    <string name="ocpn_grib_windgustshowoverlay">Afficher chevauchement rafales de vent </string>
-    <string name="ocpn_grib_windgustoverlaycolor">Couleurs chevauchement rafales de vent</string>
-
-    <string name="ocpn_grib_pressurevalues">Afficher valeurs pression </string>
-    <string name="ocpn_grib_pressureunits">Unités de valeur pression</string>
-    <string name="ocpn_grib_pressurespace">Espacement valeurs pression </string>
-    <string name="ocpn_grib_pressurespacepix">Espacement chiffres de pression (pixels)</string>
-    <string name="ocpn_grib_pressureiso">Afficher isobares </string>
-    <string name="ocpn_grib_pressureisospace">Espacement isobares pression (hPa)</string>
-
-    <string name="ocpn_grib_rainvalues">Afficher valeurs pluie </string>
-    <string name="ocpn_grib_rainunits">Unités de valeur pluie </string>
-    <string name="ocpn_grib_rainspace">Espacement valeurs pluie </string>
-    <string name="ocpn_grib_rainspacepix">Espacement chiffres pluie (pixels)</string>
-    <string name="ocpn_grib_rainshowoverlay">Afficher chevauchement pluies </string>
-    <string name="ocpn_grib_rainoverlaycolor">Couleurs chevauchement pluies </string>
-
-    <string name="ocpn_grib_seatempvalues">Afficher valeurs température de l\'eau </string>
-    <string name="ocpn_grib_seatempunits">Unités de valeur température de l\'eau </string>
-    <string name="ocpn_grib_seatempspace">Espacement valeurs température de l\'eau </string>
-    <string name="ocpn_grib_seatempspacepix">Espacement chiffres température de l\'eau (pixels) </string>
-    <string name="ocpn_grib_seatempiso">Afficher isothermes de l\'eau </string>
-    <string name="ocpn_grib_seatempisospace">Espacement isothermes de l\'eau (\u00B0C)</string>
-    <string name="ocpn_grib_seatempshowoverlay">Afficher chevauchement températures de l\'eau</string>
-    <string name="ocpn_grib_seatempoverlaycolor">Couleurs chevauchement température de l\'eau </string>
-
-    <string name="ocpn_grib_wavedirarrows">Afficher flèches direction des vagues </string>
-    <string name="ocpn_grib_wavedirdirarrowform">Forme flèche des vagues</string>
-    <string name="ocpn_grib_wavedirarrowspace">Espacement flèches des vagues </string>
-    <string name="ocpn_grib_wavedirarrowspacepix">Espacement flèches direction des vagues (pixels) </string>
-    <string name="ocpn_grib_waveheightvalues">Afficher valeurs hauteur des vagues </string>
-    <string name="ocpn_grib_waveheightunits">Unités de hauteur des vagues </string>
-    <string name="ocpn_grib_waveheightspace">Espacement valeurs de hauteur des vagues </string>
-    <string name="ocpn_grib_waveheightspacepix">Espacement chiffres hauteur des vagues (pixels) </string>
-    <string name="ocpn_grib_waveheightshowoverlay">Afficher chevauchement hauteur des vagues </string>
-    <string name="ocpn_grib_waveheightoverlaycolor">Couleurs chevauchement hauteur des vagues </string>
-
-    <string name="ocpn_grib_windbarbrarrows">Afficher flèches de barbule de vent </string>
-    <string name="ocpn_grib_windbarbarrowsalways">Toujours afficher les flèches de barbule de vent </string>
-    <string name="ocpn_grib_windbarbcolor">Couleurs de flèche de barbule de vent </string>
-    <string name="ocpn_grib_windbarbspace">Espacement de flèche  de barbule de vent </string>
-    <string name="ocpn_grib_windbarbspacepix">Espacement de barbule de vent (pixels)</string>
-    <string name="ocpn_grib_windspeedvalues">Afficher valeurs de vitesse du vent</string>
-    <string name="ocpn_grib_windspeedunits">Unités de valeur de vitesse du vent</string>
-    <string name="ocpn_grib_windspeedspace">Espacement valeurs vitesse du vent</string>
-    <string name="ocpn_grib_windspeedspacepix">Espacement chiffres vitesse du vent (pixels)</string>
-    <string name="ocpn_grib_windspeediso">Afficher isotaches de vitesse du vent</string>
-    <string name="ocpn_grib_windspeedisospace">Espacement isotaches de vitesse du vent (nœuds) </string>
-    <string name="ocpn_grib_windspeedshowoverlay">Afficher chevauchement vitesse du vent</string>
-    <string name="ocpn_grib_windspeedoverlaycolor">Couleurs chevauchement vitesse du vent </string>
-
-    <!--  Grib Arrays   -->
-    <string name="ocpn_grib_model_array_item_gfs5">GFS 0.50\u00B0 NOAA/NECP</string>
-    <string name="ocpn_grib_model_array_item_gfs1">GFS 1.0\u00B0 NOAA/NECP</string>
-    <string name="ocpn_grib_model_array_item_rtofs">RTOFS (Atlantique) NOAA/NECP</string>
-    <string name="ocpn_grib_model_array_item_ww3">WW3 WaveWatch3 NOAA/NECP</string>
-
-    <string name="ocpn_grib_timestep_array_item_1">1 heure</string>
-    <string name="ocpn_grib_timestep_array_item_3">3 heures </string>
-    <string name="ocpn_grib_timestep_array_item_6">6 heures </string>
-    <string name="ocpn_grib_timestep_array_item_12">12 heures </string>
-    <string name="ocpn_grib_timestep_array_item_24">24 heures </string>
-
-    <string name="ocpn_grib_time_array_item_1">1 jour </string>
-    <string name="ocpn_grib_time_array_item_2">2 jours </string>
-    <string name="ocpn_grib_time_array_item_3">3 jours</string>
-    <string name="ocpn_grib_time_array_item_4">4 jours</string>
-    <string name="ocpn_grib_time_array_item_5">5 jours</string>
-    <string name="ocpn_grib_time_array_item_6">6 jours </string>
-    <string name="ocpn_grib_time_array_item_7">7 jours</string>
-
-    <string name="ocpn_grib_speedunits_array_item_knots">Nœuds </string>
-    <string name="ocpn_grib_speedunits_array_item_ms">m / s</string>
-    <string name="ocpn_grib_speedunits_array_item_mph">mph</string>
-    <string name="ocpn_grib_speedunits_array_item_kmh">km/h</string>
-    <string name="ocpn_grib_speedunits_array_item_beau">Beaufort</string>
-
-    <string name="ocpn_grib_tempunits_array_item_celcius">Celsius </string>
-    <string name="ocpn_grib_tempunits_array_item_Fahrenheit">Fahrenheit</string>
-
-    <string name="ocpn_grib_distanceunits_array_item_meters">Mètres </string>
-    <string name="ocpn_grib_distanceunits_array_item_feet">Pieds </string>
-
-    <string name="ocpn_grib_arrowform_array_item_single">Unique</string>
-    <string name="ocpn_grib_arrowform_array_item_double">Double</string>
-
-    <string name="ocpn_grib_overlaycolors_array_item_generic">Générique </string>
-    <string name="ocpn_grib_overlaycolors_array_item_wind">Vent</string>
-    <string name="ocpn_grib_overlaycolors_array_item_airtemp">Temp. air</string>
-    <string name="ocpn_grib_overlaycolors_array_item_seatemp">Temp. eau</string>
-    <string name="ocpn_grib_overlaycolors_array_item_rainfall">Pluie</string>
-    <string name="ocpn_grib_overlaycolors_array_item_cloudcover">Couverture nuageuse </string>
-    <string name="ocpn_grib_overlaycolors_array_item_current">Courant </string>
-
-    <string name="ocpn_grib_windbarbcolor_generic">Générique </string>
-    <string name="ocpn_grib_windbarbcolor_controlled">Contrôlé</string>
-
-    <string name="ocpn_grib_pressureunits_array_item_mb">millibars </string>
-    <string name="ocpn_grib_pressureunits_array_item_mm">mmHG</string>
-    <string name="ocpn_grib_pressureunits_array_item_in">inHG</string>
-
-    <string name="ocpn_grib_percentunits_array_item_percent">Pourcentage </string>
-
-    <string name="ocpn_grib_distanceunitsmall_mm">Millimètres </string>
-    <string name="ocpn_grib_distanceunitsmall_in">Pouces </string>
-
-    <string name="ocpn_grib_currentspeedunits_array_item_knots">Nœuds </string>
-    <string name="ocpn_grib_currentspeedunits_array_item_ms">m / s</string>
-    <string name="ocpn_grib_currentspeedunits_array_item_mph">mph</string>
-    <string name="ocpn_grib_currentspeedunits_array_item_kmh">km/h</string>
-
+<!-- Grib Arrays -->
+<string name="ocpn_grib_model_array_item_gfs5">"GFS 0.50\u00B0 NOAA/NECP"</string>
+<string name="ocpn_grib_model_array_item_gfs1">"GFS 1.0\u00B0 NOAA/NECP"</string>
+<string name="ocpn_grib_model_array_item_rtofs">"RTOFS (Atlantique) NOAA/NECP"</string>
+<string name="ocpn_grib_model_array_item_ww3">"WW3 WaveWatch3 NOAA/NECP"</string>
+<string name="ocpn_grib_timestep_array_item_1">"1 heure"</string>
+<string name="ocpn_grib_timestep_array_item_3">"3 heures"</string>
+<string name="ocpn_grib_timestep_array_item_6">"6 heures"</string>
+<string name="ocpn_grib_timestep_array_item_12">"12 heures"</string>
+<string name="ocpn_grib_timestep_array_item_24">"24 heures"</string>
+<string name="ocpn_grib_time_array_item_1">"1 jour"</string>
+<string name="ocpn_grib_time_array_item_2">"2 jours"</string>
+<string name="ocpn_grib_time_array_item_3">"3 jours"</string>
+<string name="ocpn_grib_time_array_item_4">"4 jours"</string>
+<string name="ocpn_grib_time_array_item_5">"5 jours"</string>
+<string name="ocpn_grib_time_array_item_6">"6 jours"</string>
+<string name="ocpn_grib_time_array_item_7">"7 jours"</string>
+<string name="ocpn_grib_speedunits_array_item_knots">"Nœuds"</string>
+<string name="ocpn_grib_speedunits_array_item_ms">"m / s"</string>
+<string name="ocpn_grib_speedunits_array_item_mph">"mph"</string>
+<string name="ocpn_grib_speedunits_array_item_kmh">"km/h"</string>
+<string name="ocpn_grib_speedunits_array_item_beau">"Beaufort"</string>
+<string name="ocpn_grib_tempunits_array_item_celcius">"Celsius"</string>
+<string name="ocpn_grib_tempunits_array_item_Fahrenheit">"Fahrenheit"</string>
+<string name="ocpn_grib_distanceunits_array_item_meters">"Mètres"</string>
+<string name="ocpn_grib_distanceunits_array_item_feet">"Pieds"</string>
+<string name="ocpn_grib_arrowform_array_item_single">"Unique"</string>
+<string name="ocpn_grib_arrowform_array_item_double">"Double"</string>
+<string name="ocpn_grib_overlaycolors_array_item_generic">"Générique"</string>
+<string name="ocpn_grib_overlaycolors_array_item_wind">"Vent"</string>
+<string name="ocpn_grib_overlaycolors_array_item_airtemp">"Temp. air"</string>
+<string name="ocpn_grib_overlaycolors_array_item_seatemp">"Temp. eau"</string>
+<string name="ocpn_grib_overlaycolors_array_item_rainfall">"Pluie"</string>
+<string name="ocpn_grib_overlaycolors_array_item_cloudcover">"Couverture nuageuse"</string>
+<string name="ocpn_grib_overlaycolors_array_item_current">"Courant"</string>
+<string name="ocpn_grib_windbarbcolor_generic">"Générique"</string>
+<string name="ocpn_grib_windbarbcolor_controlled">"Contrôlé"</string>
+<string name="ocpn_grib_pressureunits_array_item_mb">"Millibars"</string>
+<string name="ocpn_grib_pressureunits_array_item_mm">"mmHG"</string>
+<string name="ocpn_grib_pressureunits_array_item_in">"inHG"</string>
+<string name="ocpn_grib_percentunits_array_item_percent">"Pourcentage"</string>
+<string name="ocpn_grib_distanceunitsmall_mm">"Millimètres"</string>
+<string name="ocpn_grib_distanceunitsmall_in">"Pouces"</string>
+<string name="ocpn_grib_currentspeedunits_array_item_knots">"Nœuds"</string>
+<string name="ocpn_grib_currentspeedunits_array_item_ms">"m / s"</string>
+<string name="ocpn_grib_currentspeedunits_array_item_mph">"mph"</string>
+<string name="ocpn_grib_currentspeedunits_array_item_kmh">"km/h"</string>
 </resources>
