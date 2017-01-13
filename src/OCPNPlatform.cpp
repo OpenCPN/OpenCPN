@@ -452,10 +452,10 @@ void OCPNPlatform::Initialize_1( void )
     _set_new_mode(1);
 #endif    
     
-    //    On MSW, force the entire process to run on one CPU core only
-    //    This resolves some difficulty with wxThread syncronization
 #if 0
 #ifdef __WXMSW__
+    //    On MSW, force the entire process to run on one CPU core only
+    //    This resolves some difficulty with wxThread syncronization
     //Gets the current process handle
     HANDLE hProc = GetCurrentProcess();
     DWORD procMask;

@@ -878,7 +878,6 @@ EVT_BUTTON(ID_SETSTDLIST, options::OnButtonSetStd)
 EVT_BUTTON(ID_AISALERTSELECTSOUND, options::OnButtonSelectSound)
 EVT_BUTTON(ID_AISALERTTESTSOUND, options::OnButtonTestSound)
 EVT_CHECKBOX(ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick)
-EVT_CHECKBOX(ID_ZTCCHECKBOX, options::OnZTCCheckboxClick)
 EVT_CHOICE(ID_SHIPICONTYPE, options::OnShipTypeSelect)
 EVT_CHOICE(ID_RADARRINGS, options::OnRadarringSelect)
 EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
@@ -4848,12 +4847,6 @@ void options::SetInitialSettings(void) {
 
   pOpenGL->SetValue(g_bopengl);
   pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
-#if 0
-    if( g_bEnableZoomToCursor || pEnableZoomToCursor->GetValue() ) {
-        pSmoothPanZoom->SetValue( FALSE );
-        pSmoothPanZoom->Disable();
-    }
-#endif
   pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
 
@@ -4916,13 +4909,6 @@ void options::SetInitialSettings(void) {
   pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
 
   pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
-#if 0
-    if( pEnableZoomToCursor->GetValue() ) {
-        pSmoothPanZoom->Disable();
-    } else {
-        pSmoothPanZoom->Enable();
-    }
-#endif
 
   pPreserveScale->SetValue(g_bPreserveScaleOnX);
   pPlayShipsBells->SetValue(g_bPlayShipsBells);
@@ -5301,16 +5287,6 @@ void options::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     NMEALogWindow::Get().Create(pParent, 35);
     Raise();
   }
-}
-
-void options::OnZTCCheckboxClick(wxCommandEvent& event) {
-#if 0
-    if( pEnableZoomToCursor->GetValue() ) {
-        pSmoothPanZoom->Disable();
-    } else {
-        pSmoothPanZoom->Enable();
-    }
-#endif
 }
 
 void options::OnShipTypeSelect(wxCommandEvent& event) {
