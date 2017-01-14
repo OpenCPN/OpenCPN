@@ -4732,10 +4732,19 @@ void options::CreateControls(void) {
   CreatePanel_TidesCurrents(m_pageCharts, border_size, group_item_spacing);
 
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
-  if (nb)
+  if (nb){
+      
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__      
       nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                                   wxListbookEventHandler(options::OnChartsPageChange),
                                   NULL, this);
+#else
+      nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
+                  wxNotebookEventHandler(options::OnChartsPageChange),
+                  NULL, this);
+      
+#endif
+  }
       
       
   m_pageConnections = CreatePanel(_("Connections"));
@@ -6672,7 +6681,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
 void options::OnChartsPageChange(wxListbookEvent& event) {
   unsigned int i = event.GetSelection();
-
+  
   //    User selected Chart Groups Page?
   //    If so, build the remaining UI elements
   if (2 == i) {  // 2 is the index of "Chart Groups" page
@@ -6692,8 +6701,6 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
     if (!m_bVectorInit)
         SetInitialVectorSettings();
   }
-
-  event.Skip();  // Allow continued event processing
 }
 
 void options::OnPageChange(wxListbookEvent& event) {
@@ -6706,6 +6713,11 @@ void options::OnNBPageChange(wxNotebookEvent& event) {
 
 void options::DoOnPageChange(size_t page) {
   unsigned int i = page;
+
+  //  Sometimes there is a (-1) page selected.
+  if(page > 10)
+      return;
+  
   lastPage = i;
   
   //    User selected Chart Page?
