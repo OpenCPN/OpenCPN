@@ -1609,6 +1609,7 @@ void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
 wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog* dlg)
 {
     wxDirDialog* ret_dlg = dlg;
+#ifndef __WXGTK__            
     
         dlg->Show();
         dlg->SetSize( container->GetSize());
@@ -1639,13 +1640,14 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             
         }
         ret_dlg->Hide();
-        
+#endif        
     return ret_dlg;
 }
         
 wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
 {
             wxFileDialog* ret_dlg = dlg;
+#ifndef __WXGTK__            
             
             dlg->Show();
             dlg->SetSize( container->GetSize());
@@ -1678,7 +1680,7 @@ wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDial
                 
             }
             ret_dlg->Hide();
-            
+#endif            
             return ret_dlg;
 }
         
