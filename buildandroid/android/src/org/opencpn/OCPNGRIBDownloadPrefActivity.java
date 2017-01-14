@@ -176,14 +176,14 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
         mGRIB_TimestepPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_timestep");
         if(null != mGRIB_TimestepPreference){
-            String ts = "Set the time interval between forecasts";
+            String ts = getResources().getString(R.string.ocpn_grib_download_summary_timestep);
             String pts = mGRIB_TimestepPreference.getEntry().toString();
             mGRIB_TimestepPreference.setSummary(ts + " ... " + pts);
         }
 
         mGRIB_DaysPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_days");
         if(null != mGRIB_DaysPreference){
-            String ts = "Set the number of days in forecast";
+            String ts = getResources().getString(R.string.ocpn_grib_download_summary_days);
             String pts = mGRIB_DaysPreference.getEntry().toString();
             mGRIB_DaysPreference.setSummary(ts + " ... " + pts);
         }

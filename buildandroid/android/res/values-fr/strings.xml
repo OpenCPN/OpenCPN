@@ -10,6 +10,7 @@
 <string name="ocpn_action_tracktoggle_on">"Trace : Conserver"</string>
 <string name="ocpn_action_tracktoggle_off">"Trace : Cesser"</string>
 <string name="ocpn_action_createroute">"Créer une route"</string>
+<string name="ocpn_action_endroute">Fin de route</string>
 <string name="ocpn_action_tides">"Marées : Montrer/cacher"</string>
 <string name="ocpn_action_currents">"Courants : Montrer/Cacher"</string>
 <string name="ocpn_action_settings_basic">"Paramètres OpenCPN"</string>

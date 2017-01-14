@@ -11,6 +11,7 @@
     <string name="ocpn_action_tracktoggle_on">Start tracking</string>
     <string name="ocpn_action_tracktoggle_off">Stop tracking</string>
     <string name="ocpn_action_createroute">Create a new route</string>
+    <string name="ocpn_action_endroute">Finish new route</string>
     <string name="ocpn_action_tides">Show/Hide Tides</string>
     <string name="ocpn_action_currents">Show/Hide Currents</string>
     <string name="ocpn_action_settings_basic">OpenCPN Settings</string>

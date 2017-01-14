@@ -33,7 +33,7 @@
 
     <item android:id="@+id/ocpn_route_create_active"
           android:icon="@drawable/route_active"
-          android:title="Route Create is Active"
+          android:title="@string/ocpn_action_endroute"
           android:visible="false"
           android:showAsAction="ifRoom"/>
 
