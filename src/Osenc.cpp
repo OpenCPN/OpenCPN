@@ -1509,7 +1509,11 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
             //  Update the progress dialog
             //We update only every 200 milliseconds to improve performance as updating the dialog is very expensive...
             // WXGTK is measurably slower even with 100ms here
+#if defined(__WXDEBUG__) && defined(__MSVC__)
+            if( m_ProgDialog && progsw.Time() > 2000 )
+#else
             if( m_ProgDialog && progsw.Time() > 200 )
+#endif
             {
                 progsw.Start();
                 
