@@ -171,8 +171,8 @@ public:
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
-      void SetVPRotation(double angle){ VPoint.rotation = angle; }
-      double GetVPRotation(void) { return GetVP().rotation; }
+      void SetVPRotation(double angle){ VPoint.SetRotationAngle(angle); }
+      double GetVPRotation(void) { return GetVP().GetRotationAngle(); }
       double GetVPSkew(void) { return GetVP().skew; }
       double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);

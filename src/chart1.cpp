@@ -7079,6 +7079,9 @@ void MyFrame::DoCOGSet( void )
     if(!cc1)
         return;
 
+    if (wxIsNaN(g_COGAvg))
+        return;
+
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
 
@@ -7498,6 +7501,8 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
             if (fabs(newskew) > 0.0001)
                 rotation = newskew;
         }
+
+        wxASSERT(!isnan(newskew) && !isnan(rotation));
 
         cc1->SetViewPoint( zLat, zLon, best_scale, newskew, rotation );
 

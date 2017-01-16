@@ -1135,7 +1135,7 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
         printf("ERROR: Unhandled projection\n");
     }
 
-    double rotation = vp.rotation;
+    double rotation = vp.GetRotationAngle();
 
     if (rotation)
         glRotatef(rotation*180/PI, 0, 0, 1);
@@ -1161,7 +1161,7 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float 
 
     cvp.clon = lon;
     cvp.view_scale_ppm = NORM_FACTOR;
-    cvp.rotation = cvp.skew = 0;
+    cvp.SetRotationAngle( cvp.skew = 0 );
     return cvp;
 }
 
@@ -1452,7 +1452,7 @@ void glChartCanvas::GridDraw( )
     ViewPort &vp = cc1->GetVP();
 
     // TODO: make minor grid work all the time
-    bool minorgrid = fabs( vp.rotation ) < 0.0001 &&
+    bool minorgrid = fabs( vp.GetRotationAngle() ) < 0.0001 &&
         vp.m_projection_type == PROJECTION_MERCATOR;
 
     double nlat, elon, slat, wlon;
@@ -1836,7 +1836,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += (float)PI;
 
-    if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().rotation;
+    if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().GetRotationAngle();
 
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
@@ -2227,7 +2227,7 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
 
 void glChartCanvas::RotateToViewPort(const ViewPort &vp)
 {
-    float angle = vp.rotation;
+    float angle = vp.GetRotationAngle();
 
     if( fabs( angle ) > 0.0001 )
     {
@@ -3052,7 +3052,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
 
             ViewPort tvp = vp;
             tvp.clat = 0, tvp.clon = 0;
-            tvp.rotation = 0;
+            tvp.SetRotationAngle(0);
             wxPoint2DDouble p = tvp.GetDoublePixFromLL( 89.99, 0);
             float w = ((float)tvp.pix_width)/2, h = ((float)tvp.pix_height)/2;
             double world_r = h - p.m_y;
@@ -3349,7 +3349,7 @@ void glChartCanvas::Render()
         // If the view is the same we do no updates, 
         // cached texture to the framebuffer
         if(    m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm
-               && m_cache_vp.rotation == VPoint.rotation
+               && m_cache_vp.GetRotationAngle() == VPoint.GetRotationAngle()
                && m_cache_vp.clat == VPoint.clat
                && m_cache_vp.clon == VPoint.clon
                && m_cache_vp.IsValid()

@@ -103,7 +103,8 @@ class ViewPort
             void Validate() { bValid = true; }
             bool IsValid() const { return bValid; }
 
-            void SetRotationAngle(double angle_rad) { rotation = angle_rad;}
+            void SetRotationAngle(double angle_rad) { wxASSERT(!_isnan(angle_rad)); rotationAngle = angle_rad; }
+            double GetRotationAngle(void) const { return(rotationAngle); }
             void SetProjectionType(int type){ m_projection_type = type; }
 
             LLBBox &GetBBox() { return vpBBox; }
@@ -118,7 +119,6 @@ class ViewPort
             double   clon;
             double   view_scale_ppm;
             double   skew;
-            double   rotation;
             double   tilt;  // For perspective view
 
             double    chart_scale;            // conventional chart displayed scale
@@ -141,6 +141,7 @@ class ViewPort
             bool     bValid;                 // This VP is valid
 
             double lat0_cache, cache0, cache1;
+            double   rotationAngle;
 };
 
 

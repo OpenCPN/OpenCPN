@@ -146,7 +146,7 @@ PlugIn_ViewPort CreatePlugInViewport( const ViewPort &vp)
     pivp.clon =                   tvp.clon;
     pivp.view_scale_ppm =         tvp.view_scale_ppm;
     pivp.skew =                   tvp.skew;
-    pivp.rotation =               tvp.rotation;
+    pivp.rotation =               tvp.GetRotationAngle();
     pivp.chart_scale =            tvp.chart_scale;
     pivp.pix_width =              tvp.pix_width;
     pivp.pix_height =             tvp.pix_height;
@@ -173,7 +173,7 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.clon =                   pivp.clon;
     vp.view_scale_ppm =         pivp.view_scale_ppm;
     vp.skew =                   pivp.skew;
-    vp.rotation =               pivp.rotation;
+    vp.SetRotationAngle(pivp.rotation);
     vp.chart_scale =            pivp.chart_scale;
     vp.pix_width =              pivp.pix_width;
     vp.pix_height =             pivp.pix_height;
@@ -2385,7 +2385,7 @@ void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon)
     ocpn_vp.m_projection_type = vp->m_projection_type;
     ocpn_vp.view_scale_ppm = vp->view_scale_ppm;
     ocpn_vp.skew = vp->skew;
-    ocpn_vp.rotation = vp->rotation;
+    ocpn_vp.SetRotationAngle(vp->rotation);
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
@@ -2403,7 +2403,7 @@ void GetDoubleCanvasPixLL(PlugIn_ViewPort *vp, wxPoint2DDouble *pp, double lat, 
     ocpn_vp.m_projection_type = vp->m_projection_type;
     ocpn_vp.view_scale_ppm = vp->view_scale_ppm;
     ocpn_vp.skew = vp->skew;
-    ocpn_vp.rotation = vp->rotation;
+    ocpn_vp.SetRotationAngle(vp->rotation);
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
@@ -2419,7 +2419,7 @@ void GetCanvasLLPix( PlugIn_ViewPort *vp, wxPoint p, double *plat, double *plon)
     ocpn_vp.m_projection_type = vp->m_projection_type;
     ocpn_vp.view_scale_ppm = vp->view_scale_ppm;
     ocpn_vp.skew = vp->skew;
-    ocpn_vp.rotation = vp->rotation;
+    ocpn_vp.SetRotationAngle(vp->rotation);
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
@@ -3400,7 +3400,7 @@ void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     ocpn_vp.m_projection_type = vp->m_projection_type;
     ocpn_vp.view_scale_ppm = vp->view_scale_ppm;
     ocpn_vp.skew = vp->skew;
-    ocpn_vp.rotation = vp->rotation;
+    ocpn_vp.SetRotationAngle(vp->rotation);
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
@@ -3417,7 +3417,7 @@ void PlugInNormalizeViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     vp->clat = ocpn_vp.clat;
     vp->clon = ocpn_vp.clon;
     vp->view_scale_ppm = ocpn_vp.view_scale_ppm;
-    vp->rotation = ocpn_vp.rotation;
+    vp->rotation = ocpn_vp.GetRotationAngle();
     vp->skew = ocpn_vp.skew;
 #endif    
 }

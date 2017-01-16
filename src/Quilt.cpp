@@ -1266,7 +1266,7 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     }
 
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
-    double saved_vp_rotation = vp_local.rotation;                      // save a copy
+    double saved_vp_rotation = vp_local.GetRotationAngle();                      // save a copy
     vp_local.SetRotationAngle( 0. );
 
     bool bfull = vp_in.b_FullScreenQuilt;

@@ -2070,7 +2070,7 @@ void ChartCanvas::DoMovement( long dt )
         double speed = m_rotation_speed;
         if( m_modkeys == wxMOD_ALT)
             speed /= 10;
-        DoRotateCanvas( VPoint.rotation + speed * PI / 180 * dt / 1000.0);
+        DoRotateCanvas(VPoint.GetRotationAngle() + speed * PI / 180 * dt / 1000.0);
     }
 }
 
@@ -2535,7 +2535,7 @@ void ChartCanvas::GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double r
     // If for some reason the chart rejects the request by returning an error,
     // then fall back to Viewport Projection estimate from canvas parameters
     if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( vp.rotation ) < .0001 ) && ( fabs( vp.skew ) < .0001 ) )
+        && ( ( ( fabs( vp.GetRotationAngle() ) < .0001 ) && ( fabs( vp.skew ) < .0001 ) )
         || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
@@ -2605,7 +2605,7 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
     bool bUseVP = true;
 
     if( !g_bopengl && Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-        && ( ( ( fabs( GetVP().rotation ) < .0001 ) && ( fabs( GetVP().skew ) < .0001 ) )
+        && ( ( ( fabs( GetVP().GetRotationAngle() ) < .0001 ) && ( fabs( GetVP().skew ) < .0001 ) )
         || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
         && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) )
@@ -2632,6 +2632,10 @@ void ChartCanvas::GetCanvasPixPoint( double x, double y, double &lat, double &lo
 
                 lon = slon;
                 bUseVP = false;
+            }
+            else
+            {
+                wxASSERT(false);
             }
         }
     }
@@ -2806,7 +2810,7 @@ void ChartCanvas::RotateCanvas( double dir )
         double speed = dir*10;
         if( m_modkeys == wxMOD_ALT)
             speed /= 20;
-        DoRotateCanvas(VPoint.rotation + PI/180 * speed);
+        DoRotateCanvas(VPoint.GetRotationAngle() + PI/180 * speed);
     }
 }
 
@@ -2815,11 +2819,11 @@ void ChartCanvas::DoRotateCanvas( double rotation )
     while(rotation < 0) rotation += 2*PI;
     while(rotation > 2*PI) rotation -= 2*PI;
 
-    if(rotation == VPoint.rotation || wxIsNaN(rotation))
+    if(rotation == VPoint.GetRotationAngle() || wxIsNaN(rotation))
         return;
 
     SetVPRotation( rotation );
-    parent_frame->UpdateRotationState( VPoint.rotation);
+    parent_frame->UpdateRotationState( VPoint.GetRotationAngle());
 }
 
 void ChartCanvas::DoTiltCanvas( double tilt )
@@ -2876,7 +2880,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     //    But this only works on north-up projections
     // TODO: can we remove this now?
-    if( ( ( fabs( GetVP().skew ) < .001 ) ) && ( fabs( GetVP().rotation ) < .001 ) ) {
+    if( ( ( fabs( GetVP().skew ) < .001 ) ) && ( fabs( GetVP().GetRotationAngle() ) < .001 ) ) {
 
         if( dx == 0 ) dlon = clon;
         if( dy == 0 ) dlat = clat;
@@ -2884,7 +2888,7 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     int cur_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
 
-    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
+    SetViewPoint( dlat, dlon, VPoint.view_scale_ppm, VPoint.skew, VPoint.GetRotationAngle() );
 
     if( VPoint.b_quilt) {
         int new_ref_dbIndex = m_pQuilt->GetRefChartdbIndex();
@@ -2934,7 +2938,7 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 
     if( m_pQuilt ) m_pQuilt->Invalidate();
 
-    SetViewPoint( vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation, vp.m_projection_type, b_adjust );
+    SetViewPoint( vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.GetRotationAngle(), vp.m_projection_type, b_adjust );
 
 }
 
@@ -3052,12 +3056,12 @@ bool ChartCanvas::SetViewPointByCorners( double latSW, double lonSW, double latN
     
     double scale_ppm = VPoint.pix_height / fabs(ne_northing - sw_northing);
         
-    return SetViewPoint( latc, lonc, scale_ppm, VPoint.skew, VPoint.rotation );
+    return SetViewPoint( latc, lonc, scale_ppm, VPoint.skew, VPoint.GetRotationAngle() );
 }
 
 bool ChartCanvas::SetVPScale( double scale, bool refresh )
 {
-    return SetViewPoint( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation,
+    return SetViewPoint( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.GetRotationAngle(),
                          VPoint.m_projection_type, true, refresh );
 }
 
@@ -3069,13 +3073,13 @@ bool ChartCanvas::SetVPProjection( int projection )
     // the view scale varies depending on geographic location and projection
     // rescale to keep the relative scale on the screen the same
     double prev_true_scale_ppm = m_true_scale_ppm;
-    return SetViewPoint( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation, projection ) &&
+    return SetViewPoint( VPoint.clat, VPoint.clon, VPoint.view_scale_ppm, VPoint.skew, VPoint.GetRotationAngle(), projection ) &&
         SetVPScale(wxMax(VPoint.view_scale_ppm * prev_true_scale_ppm / m_true_scale_ppm, m_absolute_min_scale_ppm));
 }
 
 bool ChartCanvas::SetViewPoint( double lat, double lon )
 {
-    return SetViewPoint( lat, lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.rotation );
+    return SetViewPoint( lat, lon, VPoint.view_scale_ppm, VPoint.skew, VPoint.GetRotationAngle() );
 }
 
 bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double skew,
@@ -3089,7 +3093,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     //  Any sensible change?
     if( ( fabs( VPoint.view_scale_ppm - scale_ppm ) < 1e-9 )
             && ( fabs( VPoint.skew - skew ) < 1e-9 )
-            && ( fabs( VPoint.rotation - rotation ) < 1e-9 )
+            && ( fabs( VPoint.GetRotationAngle() - rotation ) < 1e-9 )
             && ( fabs( VPoint.clat - lat ) < 1e-9 )
             && ( fabs( VPoint.clon - lon ) < 1e-9 )
             && (VPoint.m_projection_type == projection || projection == PROJECTION_UNKNOWN)
@@ -3768,7 +3772,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += (float)PI;
-    double rotate = GetVP().rotation;
+    double rotate = GetVP().GetRotationAngle();
 
     if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + rotate;
 
@@ -4070,7 +4074,7 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
  ************************************************************************/
 void ChartCanvas::GridDraw( ocpnDC& dc )
 {
-    if( !( g_bDisplayGrid && ( fabs( GetVP().rotation ) < 1e-5 ) ) )
+    if( !( g_bDisplayGrid && ( fabs( GetVP().GetRotationAngle() ) < 1e-5 ) ) )
         return;
 
     double nlat, elon, slat, wlon;
@@ -4189,7 +4193,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         }
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
-        double rotation = -VPoint.rotation;
+        double rotation = -VPoint.GetRotationAngle();
 
         ll_gc_ll( blat, blon, rotation * 180 / PI, dist, &tlat, &tlon );
         GetCanvasPointPix( tlat, tlon, &r );
@@ -4233,7 +4237,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
 
         wxString s = wxString::Format(_T("%g "), dist) + getUsrDistanceUnit( unit );
         wxPen pen1 = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 3, wxPENSTYLE_SOLID );
-        double rotation = -VPoint.rotation;
+        double rotation = -VPoint.GetRotationAngle();
 
         ll_gc_ll( blat, blon, rotation * 180 / PI + 90, fromUsrDistance(dist, unit), &tlat, &tlon );
         wxPoint r;
@@ -4836,6 +4840,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     mx = x;
     my = y;
     GetCanvasPixPoint( x, y, m_cursor_lat, m_cursor_lon );
+    wxASSERT(!wxIsNaN(m_cursor_lat) && !wxIsNaN(m_cursor_lon));
 
     //  Establish the event region
     cursor_region = CENTER;
@@ -7644,14 +7649,14 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     bool b_newview = true;
 
     if( ( m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm )
-            && ( m_cache_vp.rotation == VPoint.rotation ) && ( m_cache_vp.clat == VPoint.clat )
+            && ( m_cache_vp.GetRotationAngle() == VPoint.GetRotationAngle() ) && ( m_cache_vp.clat == VPoint.clat )
             && ( m_cache_vp.clon == VPoint.clon ) && m_cache_vp.IsValid() ) {
         b_newview = false;
     }
 
     //  If the ViewPort is skewed or rotated, we may be able to use the cached rotated bitmap.
     bool b_rcache_ok = false;
-    if( fabs( VPoint.skew ) > 0.01 || fabs( VPoint.rotation ) > 0.01)
+    if( fabs( VPoint.skew ) > 0.01 || fabs( VPoint.GetRotationAngle() ) > 0.01)
         b_rcache_ok = !b_newview;
 
     //  Make a special VP
@@ -7679,7 +7684,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
                         svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug
 
-        if( fabs( VPoint.rotation ) < 0.01 ) {
+        if( fabs( VPoint.GetRotationAngle() ) < 0.01 ) {
             bool b_save = true;
 
             //  If the saved wxBitmap from last OnPaint is useable
@@ -7861,7 +7866,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             delete clip_region;
 
             ocpnDC bgdc( temp_dc );
-            double r = VPoint.rotation;
+            double r = VPoint.GetRotationAngle();
             SetVPRotation(VPoint.skew);
 
             pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
@@ -7872,7 +7877,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     wxMemoryDC *pChartDC = &temp_dc;
     wxMemoryDC rotd_dc;
     
-    if( ( ( fabs( GetVP().rotation ) > 0.01 ) )
+    if( ( ( fabs( GetVP().GetRotationAngle() ) > 0.01 ) )
         ||   ( fabs( GetVP().skew ) > 0.01 ) )  {
         
         //  Can we use the current rotated image cache?
@@ -7893,7 +7898,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             //    Use a local static image rotator to improve wxWidgets code profile
             //    Especially, on GTK the wxRound and wxRealPoint functions are very expensive.....
 
-            double angle = GetVP().skew - GetVP().rotation;
+            double angle = GetVP().skew - GetVP().GetRotationAngle();
             wxImage ri;
             bool b_rot_ok = false;
             if( base_image.IsOk() ) {
@@ -7906,7 +7911,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                                    m_b_rot_hidef, &m_roffset );
 
                 if( ( rot_vp.view_scale_ppm == VPoint.view_scale_ppm )
-                        && ( rot_vp.rotation == VPoint.rotation ) && ( rot_vp.clat == VPoint.clat )
+                        && ( rot_vp.GetRotationAngle() == VPoint.GetRotationAngle() ) && ( rot_vp.clat == VPoint.clat )
                         && ( rot_vp.clon == VPoint.clon ) && rot_vp.IsValid() && ( ri.IsOk() ) ) {
                     b_rot_ok = true;
                 }

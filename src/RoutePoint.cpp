@@ -480,7 +480,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
 
     if(m_wpBBox.GetValid() &&
        vp.view_scale_ppm == m_wpBBox_view_scale_ppm &&
-       vp.rotation == m_wpBBox_rotation) {
+       vp.GetRotationAngle() == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
         if( vpBBox.IntersectOut( m_wpBBox ) )
@@ -548,7 +548,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     }
     
     /* update bounding box */
-    if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.rotation != m_wpBBox_rotation) {
+    if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.GetRotationAngle() != m_wpBBox_rotation) {
         double lat1, lon1, lat2, lon2;
         cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
         cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
@@ -559,7 +559,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
             m_wpBBox.Set(lat1, lon1, lat2, lon2);
 
         m_wpBBox_view_scale_ppm = vp.view_scale_ppm;
-        m_wpBBox_rotation = vp.rotation;
+        m_wpBBox_rotation = vp.GetRotationAngle();
     }
 
 //    if(region.Contains(r3) == wxOutRegion)

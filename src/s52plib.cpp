@@ -1663,8 +1663,8 @@ static void rotate(wxRect *r, ViewPort const &vp)
 {
     float cx = vp.pix_width/2.;
     float cy = vp.pix_height/2.;
-    float c = cosf(vp.rotation );
-    float s = sinf(vp.rotation );
+    float c = cosf( vp.GetRotationAngle() );
+    float s = sinf( vp.GetRotationAngle() );
     float x = r->GetX() -cx;
     float y = r->GetY() -cy;
     r->SetX( x*c - y*s +cx);
@@ -1818,7 +1818,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                     //  So, we adjust the pixel array offsets to compensate.
                     //  Sadly, the same logic does not work for rotated matrices, so we have to let them clip.
                     //  TODO...do manual matrix operation to determine adjusted pixel array offsets for rotated case
-                    if( fabs( vp->rotation ) < 0.01 ) {
+                    if ( fabs(vp->GetRotationAngle() ) < 0.01) {
                         
                         if( xp < 0 ) {
                             x_offset = -xp;
@@ -1902,7 +1902,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             pRectDrawn->SetHeight( h );
 
             if( bCheckOverlap ) {
-                if(fabs( vp->rotation ) > .01){
+                if ( fabs(vp->GetRotationAngle() ) > .01){
                     rotate(pRectDrawn, *vp );
                 }
                 if( CheckTextRectList( *pRectDrawn, ptext ) ) bdraw = false;
@@ -1923,7 +1923,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 glTranslatef(xp, yp, 0);
 
                 /* undo previous rotation to make text level */
-                glRotatef(vp->rotation*180/PI, 0, 0, -1);
+                glRotatef(vp->GetRotationAngle()* 180 / PI, 0, 0, -1);
 
                 f_cache->RenderString(ptext->frmtd);
                 glPopMatrix();
@@ -2584,12 +2584,12 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     LLBBox symbox;
     double latmin, lonmin, latmax, lonmax;
 
-    if( !m_pdc && fabs( vp->rotation ) > .01)          // opengl
+    if (!m_pdc && fabs( vp->GetRotationAngle() ) > .01)          // opengl
     {
         float cx = vp->pix_width/2.;
         float cy = vp->pix_height/2.;
-        float c = cosf(vp->rotation );
-        float s = sinf(vp->rotation );
+        float c = cosf(vp->GetRotationAngle());
+        float s = sinf(vp->GetRotationAngle());
         float x = r.x - pivot_x -cx;
         float y = r.y - pivot_y + b_height -cy;
         GetPixPointSingle( x*c - y*s +cx, x*s + y*c +cy, &latmin, &lonmin, vp );
@@ -2634,11 +2634,11 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 ty1 /= size.y, ty2 /= size.y;
             }
             
-            if(fabs( vp->rotation ) > .01){
+            if (fabs( vp->GetRotationAngle() ) > .01){
                 glPushMatrix();
 
                 glTranslatef(r.x, r.y, 0);
-                glRotatef(vp->rotation * 180/PI, 0, 0, -1);
+                glRotatef(vp->GetRotationAngle() * 180 / PI, 0, 0, -1);
                 glTranslatef(-pivot_x, -pivot_y, 0);
                 glScalef(scale_factor, scale_factor, 1);
                 
@@ -2684,8 +2684,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             glDisable(g_texture_rectangle_format);
         } else { /* this is only for legacy mode, or systems without NPOT textures */
-            float cr = cosf( vp->rotation );
-            float sr = sinf( vp->rotation );
+            float cr = cosf( vp->GetRotationAngle() );
+            float sr = sinf( vp->GetRotationAngle() );
             float ddx = pivot_x * cr + pivot_y * sr;
             float ddy = pivot_y * cr - pivot_x * sr;
 
@@ -8678,7 +8678,7 @@ void s52plib::GetPixPointSingle( int pixx, int pixy, double *plat, double *plon,
 void s52plib::GetPixPointSingleNoRotate( int pixx, int pixy, double *plat, double *plon, ViewPort *vpt )
 {
     if(vpt){
-        double rotation = vpt->rotation;
+        double rotation = vpt->GetRotationAngle();
         vpt->SetRotationAngle(0);
         vpt->GetLLFromPix(wxPoint(pixx, pixy), plat, plon);
         vpt->SetRotationAngle(rotation);

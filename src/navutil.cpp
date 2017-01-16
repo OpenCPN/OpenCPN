@@ -2036,7 +2036,7 @@ void MyConfig::UpdateSettings()
             Write( _T ( "VPLatLon" ), st1 );
             st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
             Write( _T ( "VPScale" ), st1 );
-            st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
+            st1.Printf( _T ( "%i" ), ((int)(vp.GetRotationAngle() * 180 / PI)) % 360 );
             Write( _T ( "VPRotation" ), st1 );
         }
     }
