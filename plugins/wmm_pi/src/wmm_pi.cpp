@@ -45,6 +45,7 @@
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) { WMMLogMessage1(wxString::FromAscii(s)); }
 
+
 #include "wmm_pi.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -58,6 +59,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 {
     delete p;
 }
+
+wmm_pi *g_pi;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -120,6 +123,8 @@ wmm_pi::wmm_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     initialize_images();
+    
+    g_pi = this;
 }
 
 int wmm_pi::Init(void)
@@ -835,13 +840,82 @@ bool wmm_pi::SaveConfig(void)
         return false;
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
+}
+
 void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     WmmPrefsDialog *dialog = new WmmPrefsDialog( parent, wxID_ANY, _("WMM Preferences"), wxPoint( m_wmm_dialog_x, m_wmm_dialog_y), wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
-    dialog->Fit();
-    wxColour cl;
-    GetGlobalColor(_T("DILG1"), &cl);
-    dialog->SetBackgroundColour(cl);
+    
+    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    dialog->SetFont(fo);
+    
+    if( m_parent_window ){
+        int xmax = m_parent_window->GetSize().GetWidth();
+        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+        dialog->SetSize( xmax, ymax );
+        dialog->Layout();
+        
+        dialog->Move(0,0);
+    }
+    
+    wxColour cl = wxColour(214,218,222);
+    SetBackColor( dialog, cl );
+    
+//     dialog->Fit();
+//     wxColour cl;
+//     GetGlobalColor(_T("DILG1"), &cl);
+//     dialog->SetBackgroundColour(cl);
 
     dialog->m_rbViewType->SetSelection(m_iViewType);
     dialog->m_cbShowPlotOptions->SetValue(m_bShowPlotOptions);
@@ -850,8 +924,12 @@ void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
     dialog->m_cbLiveIcon->SetValue(m_bShowLiveIcon);
     dialog->m_sOpacity->SetValue(m_iOpacity);
 
-    if(dialog->ShowModal() == wxID_OK)
-    {
+    dialog->Show();
+    
+}
+
+void wmm_pi::UpdatePrefs(WmmPrefsDialog *dialog)
+{
         m_iViewType = dialog->m_rbViewType->GetSelection();
         m_bShowPlotOptions = dialog->m_cbShowPlotOptions->GetValue();
         m_bShowAtCursor = dialog->m_cbShowAtCursor->GetValue();
@@ -863,8 +941,6 @@ void wmm_pi::ShowPreferencesDialog( wxWindow* parent )
         SetIconType();
 
         SaveConfig();
-    }
-    delete dialog;
 }
 
 void wmm_pi::ShowPlotSettings()
@@ -982,3 +1058,81 @@ int WMM_setupMagneticModel(char *data, WMMtype_MagneticModel * MagneticModel)
     free(tmp_data);
     return TRUE;
 } /*WMM_setupMagneticModel */
+
+WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+        this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+        wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
+        SetSizer( topSizer );
+        
+        wxBoxSizer* labelSizer = new wxBoxSizer( wxHORIZONTAL );
+        topSizer->Add( labelSizer, 0, wxEXPAND, 5 );
+        
+        wxStaticText *labelBox = new wxStaticText( this, wxID_ANY, _("WMM PlugIn Preferences"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+        labelSizer->Add(labelBox, 1, wxEXPAND, 0);
+        
+        
+        wxScrolledWindow *itemScrollWin = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL | wxHSCROLL);
+        itemScrollWin->SetScrollRate(2, 2);
+        
+        topSizer->Add( itemScrollWin, 1, wxEXPAND | wxALL, 0 );
+        
+        wxBoxSizer* scrollSizer = new wxBoxSizer( wxVERTICAL );
+        itemScrollWin->SetSizer( scrollSizer );
+        
+        //--------------------------------------------------------
+        
+        wxBoxSizer* bSizer2;
+        bSizer2 = new wxBoxSizer( wxVERTICAL );
+        
+        wxString m_rbViewTypeChoices[] = { _("Extended"), _("Variation only") };
+        int m_rbViewTypeNChoices = sizeof( m_rbViewTypeChoices ) / sizeof( wxString );
+        m_rbViewType = new wxRadioBox( itemScrollWin, wxID_ANY, _("View"), wxDefaultPosition, wxDefaultSize, m_rbViewTypeNChoices, m_rbViewTypeChoices, 2, wxRA_SPECIFY_COLS );
+        m_rbViewType->SetSelection( 1 );
+        scrollSizer->Add( m_rbViewType, 0, wxALL|wxEXPAND, 5 );
+        
+        m_cbShowPlotOptions = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show Plot Options"), wxDefaultPosition, wxDefaultSize, 0 );
+        scrollSizer->Add( m_cbShowPlotOptions, 0, wxALL, 5 );
+        
+        m_cbShowAtCursor = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show also data at cursor position"), wxDefaultPosition, wxDefaultSize, 0 );
+        scrollSizer->Add( m_cbShowAtCursor, 0, wxALL, 5 );
+        
+        m_cbShowIcon = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
+        scrollSizer->Add( m_cbShowIcon, 0, wxALL, 5 );
+        
+        m_cbLiveIcon = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show data in toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
+        scrollSizer->Add( m_cbLiveIcon, 0, wxALL, 5 );
+        
+        wxStaticBoxSizer* sbSizer4;
+        sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( itemScrollWin, wxID_ANY, _("Window transparency") ), wxVERTICAL );
+        
+        m_sOpacity = new wxSlider( itemScrollWin, wxID_ANY, 255, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_INVERSE );
+        sbSizer4->Add( m_sOpacity, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
+        
+        
+        scrollSizer->Add( sbSizer4, 1, wxALL|wxEXPAND, 5 );
+
+        wxBoxSizer* m_sdbButtonSizer = new wxBoxSizer( wxHORIZONTAL );
+        topSizer->Add( m_sdbButtonSizer, 0, wxEXPAND, 5 );
+        
+        wxButton *m_sdbButtonSizerOK = new wxButton( this, wxID_OK );
+        m_sdbButtonSizer->Add( m_sdbButtonSizerOK, 0, wxALL | wxALIGN_RIGHT, 15 );
+        wxButton *m_sdbButtonSizerCancel = new wxButton( this, wxID_CANCEL );
+        m_sdbButtonSizer->Add( m_sdbButtonSizerCancel, 0, wxALL | wxALIGN_RIGHT, 15 );
+        
+        m_sdbButtonSizerOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( WmmPrefsDialog::OnOKClick ), NULL, this );
+        
+}
+
+WmmPrefsDialog::~WmmPrefsDialog()
+{
+}
+
+void WmmPrefsDialog::OnOKClick(wxCommandEvent& event)
+{
+    if(g_pi)
+        g_pi->UpdatePrefs( this );
+    Close();
+}
+

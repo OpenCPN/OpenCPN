@@ -59,6 +59,7 @@
 
 #define WMM_TOOL_POSITION    -1        // Request default positioning of toolbar tool
 class wmm_pi;
+class WmmPrefsDialog;
 
 class WmmUIDialog : public WmmUIDialogBase
 {      
@@ -128,6 +129,8 @@ public:
     void OnWmmDialogClose();
     void ShowPlotSettings();
 
+    void UpdatePrefs(WmmPrefsDialog *dialog);
+    
 //    WMM Declarations
     WMMtype_MagneticModel *MagneticModel, *TimedMagneticModel;
     WMMtype_Ellipsoid Ellip;

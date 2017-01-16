@@ -264,61 +264,6 @@ WmmUIDialogBase::~WmmUIDialogBase()
 	
 }
 
-WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxBoxSizer* bSizer2;
-	bSizer2 = new wxBoxSizer( wxVERTICAL );
-	
-	wxString m_rbViewTypeChoices[] = { _("Extended"), _("Variation only") };
-	int m_rbViewTypeNChoices = sizeof( m_rbViewTypeChoices ) / sizeof( wxString );
-	m_rbViewType = new wxRadioBox( this, wxID_ANY, _("View"), wxDefaultPosition, wxDefaultSize, m_rbViewTypeNChoices, m_rbViewTypeChoices, 2, wxRA_SPECIFY_COLS );
-	m_rbViewType->SetSelection( 1 );
-	bSizer2->Add( m_rbViewType, 0, wxALL|wxEXPAND, 5 );
-	
-	m_cbShowPlotOptions = new wxCheckBox( this, wxID_ANY, _("Show Plot Options"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_cbShowPlotOptions, 0, wxALL, 5 );
-	
-	m_cbShowAtCursor = new wxCheckBox( this, wxID_ANY, _("Show also data at cursor position"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_cbShowAtCursor, 0, wxALL, 5 );
-	
-        m_cbShowIcon = new wxCheckBox( this, wxID_ANY, _("Show toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
-        bSizer2->Add( m_cbShowIcon, 0, wxALL, 5 );
-        
-        m_cbLiveIcon = new wxCheckBox( this, wxID_ANY, _("Show data in toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_cbLiveIcon, 0, wxALL, 5 );
-	
-	wxStaticBoxSizer* sbSizer4;
-	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Window transparency") ), wxVERTICAL );
-	
-	m_sOpacity = new wxSlider( this, wxID_ANY, 255, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_INVERSE );
-	sbSizer4->Add( m_sOpacity, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
-	
-	
-	bSizer2->Add( sbSizer4, 1, wxALL|wxEXPAND, 5 );
-	
-	m_sdbSizer1 = new wxStdDialogButtonSizer();
-	m_sdbSizer1OK = new wxButton( this, wxID_OK );
-	m_sdbSizer1->AddButton( m_sdbSizer1OK );
-	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL );
-	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
-	m_sdbSizer1->Realize();
-	
-	bSizer2->Add( m_sdbSizer1, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
-	
-	
-	this->SetSizer( bSizer2 );
-	this->Layout();
-	bSizer2->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-WmmPrefsDialog::~WmmPrefsDialog()
-{
-}
-
 WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
