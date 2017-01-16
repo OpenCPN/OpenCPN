@@ -126,6 +126,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 }
 
 double g_androidDPmm;
+chartdldr_pi *g_pi;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -159,7 +160,8 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
     m_dldrpanel = NULL;
     m_leftclick_tool_id = -1;
     m_schartdldr_sources = wxEmptyString;
-    
+
+    g_pi = this;
 }
 
 int chartdldr_pi::Init( void )
@@ -346,33 +348,93 @@ bool chartdldr_pi::SaveConfig(void)
         return false;
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
+}
+
+
 void chartdldr_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(parent);
+
+    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    dialog->SetFont(fo);
     
     if( m_parent_window ){
-        int xmax = parent->GetSize().GetWidth() * 8 / 10;
-        int ymax = wxGetDisplaySize().GetHeight() / 2;
-        dialog->SetSize(xmax, ymax);
+        int xmax = m_parent_window->GetSize().GetWidth();
+        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+        dialog->SetSize( xmax, ymax );
         dialog->Layout();
         
-        dialog->CenterOnScreen();
+        dialog->Move(0,0);
     }
+    
+    wxColour cl = wxColour(214,218,222);
+    SetBackColor( dialog, cl );
     
     dialog->SetPath(m_base_chart_dir);
     dialog->SetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-    if( wxID_OK == dialog->ShowModal() )
-    {
-        m_base_chart_dir = dialog->GetPath();
-        dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
-        SaveConfig();
-        if(m_dldrpanel)
-            m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
-        
-    }
-    dialog->Close();
-    dialog->Destroy();
-    wxDELETE(dialog);
+    
+    dialog->Show();
+}
+
+void chartdldr_pi::UpdatePrefs(ChartDldrPrefsDlgImpl *dialog)
+{
+    m_base_chart_dir = dialog->GetPath();
+    dialog->GetPreferences(m_preselect_new, m_preselect_updated, m_allow_bulk_update);
+    SaveConfig();
+    if(m_dldrpanel)
+        m_dldrpanel->SetBulkUpdate( m_allow_bulk_update );
+    
 }
 
 bool getDisplayMetrics()
@@ -1982,26 +2044,32 @@ void ChartDldrGuiAddSourceDlg::OnCancelClick( wxCommandEvent& event )
 
 void ChartDldrPrefsDlgImpl::OnOkClick( wxCommandEvent& event )
 {
-    if( !wxDirExists(m_tcDefaultDir->GetValue()) )
+    
+    if( !wxDirExists(m_tcDefaultDir->GetValue()) ){
         if( !wxFileName::Mkdir(m_tcDefaultDir->GetValue(), 0755, wxPATH_MKDIR_FULL) )
         {
             wxMessageBox(wxString::Format(_("Directory %s can't be created."), m_tcDefaultDir->GetValue().c_str()), _("Chart Downloader"));
             return;
         }
-    event.Skip();
-    EndModal( wxID_OK );
+    }
+    
+    if(g_pi){
+        g_pi->UpdatePrefs(this);
+    }
+    
+    Hide();
+    Close();
 }
 
 void ChartDldrPrefsDlg::OnCancelClick( wxCommandEvent& event )
 {
-    event.Skip();
-    EndModal( wxID_CANCEL );
+    Close();
 }
 
 void ChartDldrPrefsDlg::OnOkClick( wxCommandEvent& event )
 {
     event.Skip();
-    EndModal( wxID_OK );
+    Close();
 }
 
 

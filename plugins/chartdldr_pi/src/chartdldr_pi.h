@@ -61,6 +61,7 @@
 class ChartSource;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
+class ChartDldrPrefsDlgImpl;
 
 WX_DEFINE_ARRAY_PTR(ChartSource *, wxArrayOfChartSources);
 WX_DECLARE_OBJARRAY(wxDateTime, wxArrayOfDateTime);
@@ -99,6 +100,8 @@ public:
     bool            ExtractZipFiles(const wxString& aZipFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveZip = false);
     bool            ExtractRarFiles(const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath = true, wxDateTime aMTime = wxDateTime::Now(), bool aRemoveRar = false);
 
+    void            UpdatePrefs(ChartDldrPrefsDlgImpl *dialog);
+    
 //    Public properties
     wxArrayOfChartSources *m_chartSources;
     wxWindow       *m_parent_window;
