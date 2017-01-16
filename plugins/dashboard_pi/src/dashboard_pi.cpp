@@ -1302,6 +1302,17 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
     
     dialog->RecalculateSize();
 
+    wxWindow *ccwin = GetOCPNCanvasWindow();
+    
+    if( ccwin ){
+        int xmax = ccwin->GetSize().GetWidth();
+        int ymax = ccwin->GetParent()->GetSize().GetHeight();  // This would be the Frame itself
+        dialog->SetSize( xmax, ymax );
+        dialog->Layout();
+        
+        dialog->Move(0,0);
+    }
+    
     if( dialog->ShowModal() == wxID_OK ) {
         delete g_pFontTitle;
         g_pFontTitle = new wxFont( dialog->m_pFontPickerTitle->GetSelectedFont() );
