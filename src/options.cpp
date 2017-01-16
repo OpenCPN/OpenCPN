@@ -3546,6 +3546,7 @@ void options::CreatePanel_ChartGroups(size_t parent, int border_size,
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_groupsPage);
   if (nb) nb->AddPage(groupsPanel, _("Chart Groups"));
 
+  groupsPanel->Scroll(0,0);
 }
 
 void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
@@ -3562,6 +3563,11 @@ void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
   SetSizer(groupsSizer);
 
   m_UIcomplete = FALSE;
+  
+#ifdef __OCPN__ANDROID__  
+  CompletePanel();
+#endif  
+  
 }
 
 void ChartGroupsUI::CompletePanel(void) {
@@ -7126,7 +7132,7 @@ EVT_BUTTON(ID_GROUPDELETEGROUP, ChartGroupsUI::OnDeleteGroup)
 END_EVENT_TABLE()
 
 ChartGroupsUI::ChartGroupsUI(wxWindow* parent) {
-  Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL,
+  Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxHSCROLL,
          _("Chart Groups"));
 
   int scrollRate = 5;
