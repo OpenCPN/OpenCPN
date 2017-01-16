@@ -49,6 +49,8 @@
 #include "GribOverlayFactory.h"
 #include "GribUIDialog.h"
 
+class GribPreferencesDialog;
+
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
@@ -118,6 +120,8 @@ public:
       GRIBOverlayFactory *m_pGRIBOverlayFactory;
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
+      void UpdatePrefs(GribPreferencesDialog *Pref);
+      
       int   m_MenuItem;
       bool  m_DialogStyleChanged;
 
@@ -164,7 +168,7 @@ private:
 };
 
 //----------------------------------------------------------------------------------------
-// Prefrence dialog definition
+// Preference dialog definition
 //----------------------------------------------------------------------------------------
 
 class GribPreferencesDialog : public GribPreferencesDialogBase
@@ -174,6 +178,8 @@ public:
     : GribPreferencesDialogBase(pparent) {}
     ~GribPreferencesDialog() {}
 
+    void OnOKClick(wxCommandEvent& event);
+    
 private:
     void OnStartOptionChange(wxCommandEvent& event);
 };

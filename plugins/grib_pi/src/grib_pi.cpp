@@ -57,6 +57,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 
 extern int   m_DialogStyle;
 
+grib_pi *g_pi;
+
 //---------------------------------------------------------------------------------------------------------
 //
 //    Grib PlugIn Implementation
@@ -79,6 +81,7 @@ grib_pi::grib_pi(void *ppimgr)
       initialize_images();
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
+      g_pi = this;
 }
 
 grib_pi::~grib_pi(void)
@@ -254,13 +257,78 @@ void grib_pi::SetTimeZone(int tz)
     }
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+        //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+            
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+            
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+            
+            if( win->GetChildren().GetCount() > 0 ) {
+                depth++;
+                wxWindow * w = win;
+                SetBackColor( w, col );
+                depth--;
+            }
+    }
+}
+
 void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
     GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
 
     DimeWindow( Pref );                                     //aplly global colours scheme
     SetDialogFont( Pref );                                  //Apply global font
-
+    
+    if( m_parent_window ){
+        int xmax = m_parent_window->GetSize().GetWidth();
+        int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+        Pref->SetSize( xmax, ymax );
+        Pref->Layout();
+        
+        Pref->Move(0,0);
+    }
+        
+    wxColour cl = wxColour(214,218,222);
+    SetBackColor( Pref, cl );
+    
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
@@ -269,7 +337,12 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbLoadOptions->SetSelection( m_bLoadLastOpenFile );
     Pref->m_rbStartOptions->SetSelection( m_bStartOptions );
 
-     if( Pref->ShowModal() == wxID_OK ) {
+    Pref->Show();
+    return;
+}
+
+void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref)
+{
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
@@ -321,8 +394,6 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          }
 
          SaveConfig();
-     }
-     delete Pref;
 }
 
 bool grib_pi::QualifyCtrlBarPosition( wxPoint position, wxSize size )
@@ -708,3 +779,11 @@ void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
                 _("Warning!"));
     }
 }
+
+void GribPreferencesDialog::OnOKClick(wxCommandEvent& event)
+{
+    if(g_pi)
+        g_pi->UpdatePrefs(this);
+    Close();
+}
+
