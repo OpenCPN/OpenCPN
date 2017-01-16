@@ -49,6 +49,7 @@ class SquiddioPrefsDialogBase : public wxDialog
 		virtual void OnCheckBoxAll( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShareChoice( wxCommandEvent& event ) { event.Skip(); }
 		virtual void LaunchHelpPage( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnOKClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:

@@ -70,6 +70,8 @@ int period_secs(int period);
 
 #define SQUIDDIO_TOOL_POSITION    -1  // Request default positioning of toolbar tool
 
+class SquiddioPrefsDialog;
+
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
@@ -126,6 +128,8 @@ public:
 
       void RenderLayers();
 
+      void UpdatePrefs(SquiddioPrefsDialog *dialog);
+      
       void SetNMEASentence(wxString &sentence);
       void SetLogsWindow();
       void LateInit(void);
@@ -207,7 +211,8 @@ public:
     void OnCheckBoxAll( wxCommandEvent& event );
     void LaunchHelpPage( wxCommandEvent& event );
     void OnShareChoice( wxCommandEvent& event );
-
+    void OnOKClick(wxCommandEvent& event);
+        
 protected:
     squiddio_pi &m_sq_pi;
 };

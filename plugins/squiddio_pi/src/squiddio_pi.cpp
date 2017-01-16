@@ -37,6 +37,10 @@ WX_DEFINE_LIST (HyperlinkList);
 WX_DEFINE_LIST (Plugin_HyperlinkList);
 
 #ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
+#ifdef __OCPN__ANDROID__
 
 QString qtStyleSheet = "QScrollBar:horizontal {\
 border: 0px solid grey;\
@@ -865,17 +869,78 @@ int squiddio_pi::GetToolbarToolCount(void) {
     return 1;
 }
 
+void SetBackColor( wxWindow* ctrl, wxColour col)
+{
+    static int depth = 0; // recursion count
+    if ( depth == 0 ) {   // only for the window root, not for every child
+
+        ctrl->SetBackgroundColour( col );
+    }
+    
+    wxWindowList kids = ctrl->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
+        
+        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
+        
+//        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+//            ( (wxStaticText*) win )->SetForegroundColour( uitext );
+        
+            else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+                ( (wxChoice*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+                ( (wxComboBox*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+                ( (wxRadioButton*) win )->SetBackgroundColour( col );
+            
+            else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
+                ( (wxScrolledWindow*) win )->SetBackgroundColour( col );
+            }
+            
+           
+            else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
+                ( (wxButton*) win )->SetBackgroundColour( col );
+            }
+            
+            else {
+                ;
+            }
+                
+            if( win->GetChildren().GetCount() > 0 ) {
+                    depth++;
+                    wxWindow * w = win;
+                    SetBackColor( w, col );
+                    depth--;
+            }
+    }
+}
+
 void squiddio_pi::PreferencesDialog(wxWindow* parent) {
     {
 
-        SquiddioPrefsDialog * dialog = new SquiddioPrefsDialog(*this, m_parent_window);
+        SquiddioPrefsDialog * dialog = new SquiddioPrefsDialog(*this, parent);
         
-//        wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-//        dialog->SetFont(fo);
+        wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+        dialog->SetFont(fo);
  
-#ifdef __OCPN__ANDROID__        
-        dialog->GetHandle()->setStyleSheet( qtStyleSheet );
-#endif        
+        if( m_parent_window ){
+            int xmax = m_parent_window->GetSize().GetWidth();
+            int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
+            dialog->SetSize( xmax, ymax );
+            dialog->Layout();
+            
+            dialog->Move(0,0);
+        }
+        
+        wxColour cl = wxColour(214,218,222);
+        SetBackColor( dialog, cl );
         
         if (g_ViewMarinas && g_ViewAnchorages == true
                 && g_ViewYachtClubs == true && g_ViewDocks == true
@@ -912,60 +977,8 @@ void squiddio_pi::PreferencesDialog(wxWindow* parent) {
             dialog->m_textApiKey->Enable(true);
         }
 
-        int curr_retrieve_period = g_RetrievePeriod;
-
-        dialog->Fit();
-        wxColour cl;
-        GetGlobalColor(_T("DILG1"), &cl);
-        dialog->SetBackgroundColour(cl);
-        dialog->Centre();
-
-        if (dialog->ShowModal() == wxID_OK) {
-            g_PostPeriod = dialog->m_choiceHowOften->GetSelection();
-            g_RetrievePeriod = dialog->m_choiceReceive->GetSelection();
-            g_Email = dialog->m_textSquiddioID->GetValue().Trim();
-            g_ApiKey = dialog->m_textApiKey->GetValue().Trim();
-            g_ViewMarinas = dialog->m_checkBoxMarinas->GetValue();
-            g_ViewAnchorages = dialog->m_checkBoxAnchorages->GetValue();
-            g_ViewYachtClubs = dialog->m_checkBoxYachtClubs->GetValue();
-            g_ViewDocks = dialog->m_checkBoxDocks->GetValue();
-            g_ViewRamps = dialog->m_checkBoxRamps->GetValue();
-            g_ViewFuelStations = dialog->m_checkBoxFuelStations->GetValue();
-            g_ViewOthers = dialog->m_checkBoxOthers->GetValue();
-            g_ViewAIS = dialog->m_checkBoxAIS->GetValue();
-
-            if ((g_RetrievePeriod > 0 || g_PostPeriod > 0) && (g_Email.Length() == 0 || g_ApiKey.Length() == 0))
-            {
-                wxMessageBox(_("Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\nTo obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."));
-                g_RetrievePeriod=0;
-                g_PostPeriod    =0;
-            }
-
-            SetLogsWindow();
-
-            if (m_plogs_window) {
-                if (g_RetrievePeriod != curr_retrieve_period){
-                    if (g_RetrievePeriod > 0){
-                        m_plogs_window->SetTimer(period_secs(g_RetrievePeriod));
-                    }else{
-                        m_plogs_window->SetTimer(0);
-                    }
-                }
-                m_plogs_window->m_ErrorCondition = wxEmptyString;
-            }
-
-            Layer * l;
-            LayerList::iterator it;
-            for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it ) {
-                l = (Layer *) (*it);
-                if (l->m_LayerName.Contains(_T("logs")))
-                    l->m_bIsVisibleOnChart = g_RetrievePeriod > 0;
-            }
-
-            SaveConfig();
-            RenderLayers();
-        }
-        delete dialog;
+        dialog->Show();
+        return;
     }
 }
 void squiddio_pi::ShowPreferencesDialog(wxWindow* parent) {
@@ -1024,6 +1037,55 @@ void squiddio_pi::OnThreadActionFinished(SquiddioEvent& event)
     //Whatever is needed after an action was performed in the background
 }
 
+void squiddio_pi::UpdatePrefs(SquiddioPrefsDialog *dialog)
+{
+    int curr_retrieve_period = g_RetrievePeriod;
+    
+    g_PostPeriod = dialog->m_choiceHowOften->GetSelection();
+    g_RetrievePeriod = dialog->m_choiceReceive->GetSelection();
+    g_Email = dialog->m_textSquiddioID->GetValue().Trim();
+    g_ApiKey = dialog->m_textApiKey->GetValue().Trim();
+    g_ViewMarinas = dialog->m_checkBoxMarinas->GetValue();
+    g_ViewAnchorages = dialog->m_checkBoxAnchorages->GetValue();
+    g_ViewYachtClubs = dialog->m_checkBoxYachtClubs->GetValue();
+    g_ViewDocks = dialog->m_checkBoxDocks->GetValue();
+    g_ViewRamps = dialog->m_checkBoxRamps->GetValue();
+    g_ViewFuelStations = dialog->m_checkBoxFuelStations->GetValue();
+    g_ViewOthers = dialog->m_checkBoxOthers->GetValue();
+    g_ViewAIS = dialog->m_checkBoxAIS->GetValue();
+    
+    if ((g_RetrievePeriod > 0 || g_PostPeriod > 0) && (g_Email.Length() == 0 || g_ApiKey.Length() == 0))
+    {
+        wxMessageBox(_("Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\nTo obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."));
+        g_RetrievePeriod=0;
+        g_PostPeriod    =0;
+    }
+    
+    SetLogsWindow();
+    
+    if (m_plogs_window) {
+        if (g_RetrievePeriod != curr_retrieve_period){
+            if (g_RetrievePeriod > 0){
+                m_plogs_window->SetTimer(period_secs(g_RetrievePeriod));
+            }else{
+                m_plogs_window->SetTimer(0);
+            }
+        }
+        m_plogs_window->m_ErrorCondition = wxEmptyString;
+    }
+    
+    Layer * l;
+    LayerList::iterator it;
+    for (it = (*pLayerList).begin(); it != (*pLayerList).end(); ++it ) {
+        l = (Layer *) (*it);
+        if (l->m_LayerName.Contains(_T("logs")))
+            l->m_bIsVisibleOnChart = g_RetrievePeriod > 0;
+    }
+    
+    SaveConfig();
+    RenderLayers();
+}
+
 
 //---------------------------------------------- preferences dialog event handlers
 void SquiddioPrefsDialog::OnCheckBoxAll(wxCommandEvent& event) {
@@ -1072,5 +1134,11 @@ void SquiddioPrefsDialog::OnShareChoice(wxCommandEvent& event) {
     Refresh(false);
 }
 
+void SquiddioPrefsDialog::OnOKClick(wxCommandEvent& event) {
+    
+    m_sq_pi.UpdatePrefs( this );
+    Close();
+}
 
+    
 
