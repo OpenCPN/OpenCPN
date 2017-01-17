@@ -7079,6 +7079,9 @@ void MyFrame::DoCOGSet( void )
     if(!cc1)
         return;
 
+    if (wxIsNaN(g_COGAvg))
+        return;
+
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
 
