@@ -3527,10 +3527,8 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
         m_pitemBoxSizer01->Layout();
         wxSize sel_size = pPluginPanel->GetSize();
 
-#ifndef __WXQT__        
         pPluginPanel->SetSelected( false );       // reset to unselected
         m_pitemBoxSizer01->Layout();
-#endif
         
         int dy = sel_size.y - nsel_size.y;
         dy += 10;                                 // fluff
@@ -3670,10 +3668,14 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    // Make an estimate of a good size for icon
+    wxFont *tFont = OCPNGetFont(_T("Dialog"), 12);
+    int sizeRef = tFont->GetPointSize() * 4;
+    
     m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
-    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonsUpDown->Add( m_pButtonUp, 0, wxALIGN_RIGHT|wxALL, 2);
-    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down") ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonDown = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("down"), sizeRef, sizeRef, true ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonsUpDown->Add( m_pButtonDown, 0, wxALIGN_RIGHT|wxALL, 2);
     m_pButtonUp->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginUp), NULL, this);
     m_pButtonDown->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginDown), NULL, this);
@@ -3708,11 +3710,17 @@ void PluginPanel::SetSelected( bool selected )
     {
         SetBackgroundColour(GetGlobalColor(_T("DILG0")));
         m_pDescription->SetLabel( m_pPlugin->m_short_description );
+#ifndef __WXQT__
         m_pButtons->Show(false);
+#else        
+        m_pButtons->Show(true);
+#endif        
         m_pButtonsUpDown->Show(false);
         Layout();
         //FitInside();
     }
+    Refresh(true);
+    
     // StaticText color change upon selection
     SetEnabled( m_pPlugin->m_bEnabled );
 }
@@ -3721,7 +3729,9 @@ void PluginPanel::OnPluginPreferences( wxCommandEvent& event )
 {
     if (m_pPlugin->m_bEnabled && m_pPlugin->m_bInitState && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) )
     {
+    
         m_pPlugin->m_pplugin->ShowPreferencesDialog( this );
+        
     }
 }
 
@@ -3764,11 +3774,14 @@ void PluginPanel::SetEnabled( bool enabled )
 
 void PluginPanel::OnPluginUp( wxCommandEvent& event )
 {
+    qDebug() << "Up";
+    
     m_PluginListPanel->MoveUp( this );
 }
 
 void PluginPanel::OnPluginDown( wxCommandEvent& event )
 {
+    qDebug() << "Down";
     m_PluginListPanel->MoveDown( this );
 }
 
