@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"POT-Creation-Date: 2016-02-28 19:44-0300\n"
 "PO-Revision-Date: 2016-02-18 16:08-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
@@ -15,252 +15,240 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: es-ES\n"
 "X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
-
-#: src/squiddio_pi.cpp:125
-msgid "Show local sQuiddio destinations"
-msgstr "Mostrar destinos sQuiddio en local"
-
-#: src/squiddio_pi.cpp:130
-msgid "Hide local sQuiddio destinations"
-msgstr "Ocultar destinos sQuiddio en local"
-
-#: src/squiddio_pi.cpp:135
-msgid "Download local sQuiddio destinations"
-msgstr "Descargar destinos sQuiddio en local"
-
-#: src/squiddio_pi.cpp:140
-msgid "Report a Destination at this location"
-msgstr "Informe de un destino en esta ubicación"
-
-#: src/squiddio_pi.cpp:201
-msgid "sQuiddio"
-msgstr "sQuiddio"
-
-#: src/squiddio_pi.cpp:610
-msgid "Local destinations have been updated"
-msgstr "Destinos locales han sido actualizados"
-
-#: src/squiddio_pi.cpp:613
-msgid "No destinations available for the region"
-msgstr "No hay destinos disponibles para la región"
-
-#: src/squiddio_pi.cpp:616
-msgid "Server not responding. Check your Internet connection"
-msgstr "Servidor no responde. Compruebe su conexión a Internet"
-
-#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
-msgid "Could not launch default browser. Check your Internet connection"
-msgstr "Puede que el navegador por defecto no funcione. Compruebe su conexión a Internet"
-
-#: src/squiddio_pi.cpp:654
-msgid "Downloading"
-msgstr "Descargando"
-
-#: src/squiddio_pi.cpp:654
-msgid "Downloading: "
-msgstr "Descargando: "
-
-#: src/squiddio_pi.cpp:666
-msgid "Squiddio_pi: unable to connect to host"
-msgstr "Squiddio_pi: no se puede conectar al host"
-
-#: src/squiddio_pi.cpp:737
-msgid "Squiddio"
-msgstr "Squiddio"
-
-#: src/squiddio_pi.cpp:741
-msgid "Squiddio for OpenCPN"
-msgstr "Squiddio para OpenCPN"
-
-#: src/squiddio_pi.cpp:746
-msgid "== User-sourced database of sailing destinations ==\n"
-"To download destinations for a desired region (requires Internet connection):\n"
-"* Position cursor on area where you want to view destinations and right click mouse\n"
-"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
-"Destinations appear as OpenCPN waypoints: \n"
-"* Right-click on waypoint for link to sQuiddio's destination page. \n"
-"* Follow link to rate destination and add comments online.\n\n"
-"Other menu options: \n"
-"* Toggle visibility for local destinations on/off \n"
-"* Submit a new destination (requires Internet connection and free user account)\n\n"
-"== In-chart log-sharing for cruisers ==\n"
-"* Share your GPS coordinates with your cruising friends and visualize their position\n"
-"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
-"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
-"and Conditions, available at http://squidd.io/enduser_agreement"
-msgstr "== Base de datos de destinos de navegación de usuarios ==\n"
-"Para descargar destinos de la región deseada (require conexión a Internet):\n"
-"* Ponga el cursor en el área de la que quiere ver destinos y haga clic con el botón derecho del ratón\n"
-"* Elija  'Descargar destinos sQuiddio en local' del menú sensible al contexto.\n\n"
-"Los destinos como marcas OpenCPN: \n"
-"* Haga clic derecho sobre una marca para enlazar con los destinos de la página sQuiddio's. \n"
-"* Siga el enlace para valorar y añadir comentarion en línea.\n\n"
-"Otras opciones de menú: \n"
-"* Interruptor para ver o no los destinos en local \n"
-"* Presentar un nuevo destino (se necesita conexión a Internet y una cuenta gratuita de usuario)\n\n"
-"== Cuaderno compartido sobre la carta para cruceristas ==\n"
-"* Comparta sus coordenadas GPS con sus amigos cruceristas y vea sus posiciones\n"
-"o sus cartas  OpenCPN (necesita una cuenta gratuita sQuiddio)\n\n"
-"IMPORTANTE: Si utiliza este plugin está aceptando los términos\n"
-" y condiciones, disponibles en http://squidd.io/enduser_agreement"
-
-#: src/squiddio_pi.cpp:838
-msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
-"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
-msgstr "El cuaderno compartido no se ha activado. Por favor entre su ID de usuario sQuiddio y clave API. \n\n"
-"Para obtener su clave API, registrese en sQuiddio (http://squidd.io/signup) y visite la página con su perfil de usuario (vea Edit Profile link en el panel), pestaña 'Numbers & Keys'."
-
-#: src/logs.cpp:94
-msgid "Just now"
-msgstr "Ahora"
-
-#: src/logs.cpp:97
-msgid "One second ago"
-msgstr "Hace un segundo"
-
-#: src/logs.cpp:100
-#, c-format
-msgid "%i seconds ago"
-msgstr "hace %i segundos"
-
-#: src/logs.cpp:104
-msgid "About a minute ago"
-msgstr "Hace un minuto aproximadamente"
-
-#: src/logs.cpp:107
-#, c-format
-msgid "%i minutes ago"
-msgstr "Hace %i minutos"
-
-#: src/logs.cpp:111
-msgid "About an hour ago"
-msgstr "Hace una hora aproximadamente"
-
-#: src/logs.cpp:114
-#, c-format
-msgid "%i hours ago"
-msgstr "hace %i horas"
-
-#: src/logs.cpp:118
-msgid "Yesterday"
-msgstr "Ayer"
-
-#: src/logs.cpp:121
+#
 #, c-format
 msgid "%i days ago"
 msgstr "hace %i días"
-
-#: src/logs.cpp:199
-msgid "Log sent:"
-msgstr "Registro enviado:"
-
-#: src/logs.cpp:215
-msgid "Logs received"
-msgstr "Registros recibidos"
-
-#: src/logs.cpp:305
-msgid "Created sQuiddio log update:"
-msgstr "Actualización de registros sQuiddio creados:"
-
-#: src/squiddioPrefsDialogBase.cpp:28
-msgid "View Destinations"
-msgstr "Ver destinos"
-
-#: src/squiddioPrefsDialogBase.cpp:35
-msgid "All"
-msgstr "Todos"
-
-#: src/squiddioPrefsDialogBase.cpp:38
-msgid "Marinas"
-msgstr "Marinas"
-
-#: src/squiddioPrefsDialogBase.cpp:41
-msgid "Anchorages"
-msgstr "Fondeaderos"
-
-#: src/squiddioPrefsDialogBase.cpp:44
-msgid "Yacht clubs"
-msgstr "Clubes de yates"
-
-#: src/squiddioPrefsDialogBase.cpp:47
-msgid "Docks/piers"
-msgstr "Muelles/embarcaderos"
-
-#: src/squiddioPrefsDialogBase.cpp:50
-msgid "Boat ramps"
-msgstr "Rampas"
-
-#: src/squiddioPrefsDialogBase.cpp:53
-msgid "Fuel Stations"
-msgstr "Gasolineras"
-
-#: src/squiddioPrefsDialogBase.cpp:56
-msgid "Other"
-msgstr "Otros"
-
-#: src/squiddioPrefsDialogBase.cpp:59
+#
+#, c-format
+msgid "%i hours ago"
+msgstr "hace %i horas"
+#
+#, c-format
+msgid "%i minutes ago"
+msgstr "Hace %i minutos"
+#
+#, c-format
+msgid "%i seconds ago"
+msgstr "hace %i segundos"
+#
+msgid ""
+"== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet "
+"connection):\n"
+"* Position cursor on area where you want to view destinations and right click "
+"mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n"
+"\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n"
+"\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user "
+"account)\n"
+"\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their "
+"position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n"
+"\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr ""
+"== Base de datos de destinos de navegación de usuarios ==\n"
+"Para descargar destinos de la región deseada (require conexión a Internet):\n"
+"* Ponga el cursor en el área de la que quiere ver destinos y haga clic con el "
+"botón derecho del ratón\n"
+"* Elija  'Descargar destinos sQuiddio en local' del menú sensible al "
+"contexto.\n"
+"\n"
+"Los destinos como marcas OpenCPN: \n"
+"* Haga clic derecho sobre una marca para enlazar con los destinos de la "
+"página sQuiddio's. \n"
+"* Siga el enlace para valorar y añadir comentarion en línea.\n"
+"\n"
+"Otras opciones de menú: \n"
+"* Interruptor para ver o no los destinos en local \n"
+"* Presentar un nuevo destino (se necesita conexión a Internet y una cuenta "
+"gratuita de usuario)\n"
+"\n"
+"== Cuaderno compartido sobre la carta para cruceristas ==\n"
+"* Comparta sus coordenadas GPS con sus amigos cruceristas y vea sus "
+"posiciones\n"
+"o sus cartas  OpenCPN (necesita una cuenta gratuita sQuiddio)\n"
+"\n"
+"IMPORTANTE: Si utiliza este plugin está aceptando los términos\n"
+" y condiciones, disponibles en http://squidd.io/enduser_agreement"
+#
 msgid "AIS marker"
 msgstr "Marcador de AIS"
-
-#: src/squiddioPrefsDialogBase.cpp:69
-msgid "Share logs with friends"
-msgstr "Compartir registros con amigos"
-
-#: src/squiddioPrefsDialogBase.cpp:76
-msgid "Send"
-msgstr "Enviar"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Never"
-msgstr "Nunca"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once a day"
-msgstr "Una vez al día"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice a day"
-msgstr "Dos veces al día"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once an hour"
-msgstr "Una vez por hora"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice an hour"
-msgstr "Dos veces por hora"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once a minute"
-msgstr "Una vez por minuto"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice a minute"
-msgstr "Dos veces por minuto"
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Every 10 seconds"
-msgstr "Cada 10 segundos"
-
-#: src/squiddioPrefsDialogBase.cpp:88
-msgid "Receive"
-msgstr "Recibir"
-
-#: src/squiddioPrefsDialogBase.cpp:100
-msgid "sQuiddio ID"
-msgstr "ID sQuiddio"
-
-#: src/squiddioPrefsDialogBase.cpp:106
-msgid "The email address you use to log into sQuidd.io"
-msgstr "La dirección de correo electrónico que utilizas para iniciar sesión en sQuidd.io"
-
-#: src/squiddioPrefsDialogBase.cpp:110
+#
 msgid "API Key"
 msgstr "Clave API"
-
-#: src/squiddioPrefsDialogBase.cpp:116
-msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+#
+msgid "About a minute ago"
+msgstr "Hace un minuto aproximadamente"
+#
+msgid "About an hour ago"
+msgstr "Hace una hora aproximadamente"
+#
+msgid "All"
+msgstr "Todos"
+#
+msgid "Anchorages"
+msgstr "Fondeaderos"
+#
+msgid "Boat ramps"
+msgstr "Rampas"
+#
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr ""
+"Puede que el navegador por defecto no funcione. Compruebe su conexión a "
+"Internet"
+#
+msgid "Created sQuiddio log update:"
+msgstr "Actualización de registros sQuiddio creados:"
+#
+msgid "Docks/piers"
+msgstr "Muelles/embarcaderos"
+#
+msgid "Download local sQuiddio destinations"
+msgstr "Descargar destinos sQuiddio en local"
+#
+msgid "Downloading"
+msgstr "Descargando"
+#
+msgid "Downloading: "
+msgstr "Descargando: "
+#
+msgid "Every 10 seconds"
+msgstr "Cada 10 segundos"
+#
+msgid "Fuel Stations"
+msgstr "Gasolineras"
+#
+msgid "Hide local sQuiddio destinations"
+msgstr "Ocultar destinos sQuiddio en local"
+#
+msgid "Just now"
+msgstr "Ahora"
+#
+msgid "Local destinations have been updated"
+msgstr "Destinos locales han sido actualizados"
+#
+msgid "Log sent:"
+msgstr "Registro enviado:"
+#
+msgid ""
+"Log sharing was not activated. Please enter your sQuiddio user ID and API "
+"Key. \n"
+"\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and "
+"visit your online profile page (see Edit Profile link in the Dashboard), "
+"'Numbers & Keys' tab."
+msgstr ""
+"El cuaderno compartido no se ha activado. Por favor entre su ID de usuario "
+"sQuiddio y clave API. \n"
+"\n"
+"Para obtener su clave API, registrese en sQuiddio (http://squidd.io/signup) y "
+"visite la página con su perfil de usuario (vea Edit Profile link en el "
+"panel), pestaña 'Numbers & Keys'."
+#
+msgid "Logs received"
+msgstr "Registros recibidos"
+#
+msgid "Marinas"
+msgstr "Marinas"
+#
+msgid "Never"
+msgstr "Nunca"
+#
+msgid "No destinations available for the region"
+msgstr "No hay destinos disponibles para la región"
+#
+msgid "Once a day"
+msgstr "Una vez al día"
+#
+msgid "Once a minute"
+msgstr "Una vez por minuto"
+#
+msgid "Once an hour"
+msgstr "Una vez por hora"
+#
+msgid "One second ago"
+msgstr "Hace un segundo"
+#
+msgid "Other"
+msgstr "Otros"
+#
+msgid "Receive"
+msgstr "Recibir"
+#
+msgid "Report a Destination at this location"
+msgstr "Informe de un destino en esta ubicación"
+#
+msgid ""
+"Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "
+"and click Edit Profile in the Dashboard, then select the Numbers and Keys "
+"tab. Click Help for more information. \n"
+"\n"
 "IMPORTANT! Do not use your sQuiddio Password as your API Key! "
-msgstr "Recuperar su clave de API de su perfil sQuidd.io. Entra en http://squidd.io y haga clic en Edit Profile en el tablero, luego seleccione la pestaña Numbers and Keys. Haga clic sobre teclas haga clic sobre Help para obtener más información. \n\n"
+msgstr ""
+"Recuperar su clave de API de su perfil sQuidd.io. Entra en http://squidd.io y "
+"haga clic en Edit Profile en el tablero, luego seleccione la pestaña Numbers "
+"and Keys. Haga clic sobre teclas haga clic sobre Help para obtener más "
+"información. \n"
+"\n"
 "¡IMPORTANTE! ¡No utilice su contraseña de sQuiddio como su clave API! "
-
+#
+msgid "Send"
+msgstr "Enviar"
+#
+msgid "Server not responding. Check your Internet connection"
+msgstr "Servidor no responde. Compruebe su conexión a Internet"
+#
+msgid "Share logs with friends"
+msgstr "Compartir registros con amigos"
+#
+msgid "Show local sQuiddio destinations"
+msgstr "Mostrar destinos sQuiddio en local"
+#
+msgid "Squiddio"
+msgstr "Squiddio"
+#
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio para OpenCPN"
+#
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: no se puede conectar al host"
+#
+msgid "The email address you use to log into sQuidd.io"
+msgstr ""
+"La dirección de correo electrónico que utilizas para iniciar sesión en sQuidd."
+"io"
+#
+msgid "Twice a day"
+msgstr "Dos veces al día"
+#
+msgid "Twice a minute"
+msgstr "Dos veces por minuto"
+#
+msgid "Twice an hour"
+msgstr "Dos veces por hora"
+#
+msgid "View Destinations"
+msgstr "Ver destinos"
+#
+msgid "Yacht clubs"
+msgstr "Clubes de yates"
+#
+msgid "Yesterday"
+msgstr "Ayer"
+#
+msgid "sQuiddio"
+msgstr "sQuiddio"
+#
+msgid "sQuiddio ID"
+msgstr "ID sQuiddio"
