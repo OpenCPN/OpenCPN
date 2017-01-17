@@ -3547,6 +3547,7 @@ void options::CreatePanel_ChartGroups(size_t parent, int border_size,
   if (nb) nb->AddPage(groupsPanel, _("Chart Groups"));
 
   groupsPanel->Scroll(0,0);
+  
 }
 
 void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
@@ -3555,12 +3556,15 @@ void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
   m_border_size = border_size;
   m_group_item_spacing = group_item_spacing;
 
+  wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+  SetSizer(topSizer);
+  
   groupsSizer = new wxFlexGridSizer(4, 2, border_size, border_size);
+  topSizer->Add(groupsSizer, 1, wxALL | wxEXPAND, border_size);
+  
   groupsSizer->AddGrowableCol(0);
   groupsSizer->AddGrowableRow(1, 1);
   groupsSizer->AddGrowableRow(3, 1);
-
-  SetSizer(groupsSizer);
 
   m_UIcomplete = FALSE;
   
