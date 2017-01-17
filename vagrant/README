@@ -1,0 +1,11 @@
+Vagrant is used to develop OpenCPN in a virtual machine like VirtualBox.
+========================================================================
+
+Install VirtualBox and Vagrant. Then run in this folder :
+
+$ vagrant up
+<long output>
+
+$ vagrant ssh -c opencpn
+
+That's it !
