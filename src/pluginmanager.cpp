@@ -62,6 +62,7 @@
 #include "mygeom.h"
 #include "OCPNPlatform.h"
 #include "version.h"
+#include "toolbar.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -109,6 +110,7 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern wxString         g_locale;
 extern bool             g_btouch;
+extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 
 unsigned int      gs_plib_flags;
 
@@ -1672,6 +1674,14 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
     }
+
+    // Some useful display metrics
+    if(g_FloatingToolbarDialog){
+        v[_T("OpenCPN Toolbar Width")] = g_FloatingToolbarDialog->GetSize().x;
+        v[_T("OpenCPN Toolbar Height")] = g_FloatingToolbarDialog->GetSize().y;
+        v[_T("OpenCPN Toolbar PosnX")] = g_FloatingToolbarDialog->GetPosition().x;
+        v[_T("OpenCPN Toolbar PosnY")] = g_FloatingToolbarDialog->GetPosition().y;
+    }    
     
     wxJSONWriter w;
     wxString out;
