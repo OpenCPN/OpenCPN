@@ -133,7 +133,6 @@ svg_deployment.files += $$PWD/../data/svg/traditional/current_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/current_rollover_toggled.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/current.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/current_toggled.svg
-svg_deployment.files += $$PWD/../data/svg/traditional/down.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/follow_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/follow_rollover_toggled.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/follow.svg
@@ -184,7 +183,6 @@ svg_deployment.files += $$PWD/../data/svg/traditional/track_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/track_rollover_toggled.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/track.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/track_toggled.svg
-svg_deployment.files += $$PWD/../data/svg/traditional/up.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomin_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomin.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomout_rollover.svg
@@ -335,7 +333,6 @@ INSTALLS += so_squiddio_plugin_deployment
 fr_FR_mo_squiddio_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fr_FR.lproj/opencpn-squiddio_pi.mo
 fr_FR_mo_squiddio_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
 INSTALLS += fr_FR_mo_squiddio_deployment
-
 #------------------------------------------------------------------------------------
 
 
