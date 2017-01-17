@@ -50,6 +50,7 @@ class ArrayOfCDI;
 #define OCPN_ACTION_TRACK_ON            0x100a
 #define OCPN_ACTION_TRACK_OFF           0x100b
 #define OCPN_ACTION_ENCSOUNDINGS_TOGGLE 0x100c
+#define OCPN_ACTION_ENCLIGHTS_TOGGLE    0x100d
 
 #define GPS_OFF                         0
 #define GPS_ON                          1
