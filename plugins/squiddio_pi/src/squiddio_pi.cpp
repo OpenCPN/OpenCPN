@@ -181,6 +181,8 @@ int squiddio_pi::Init(void) {
 
     wxLogMessage(_T("squiddio_pi: Init()"));
 
+    AddLocaleCatalog( _T("opencpn-squiddio_pi") );
+    
     m_plogs_window = NULL;
     g_PostPeriod = 0;
     g_RetrievePeriod = 0;
