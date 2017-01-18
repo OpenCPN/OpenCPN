@@ -125,6 +125,9 @@ public:
       int   m_MenuItem;
       bool  m_DialogStyleChanged;
 
+      wxSize           m_coreToolbarSize;
+      wxPoint          m_coreToolbarPosn;
+      
 private:
       bool LoadConfig(void);
       bool SaveConfig(void);
@@ -165,6 +168,7 @@ private:
 
       bool        m_bShowGrib;
       PlugIn_ViewPort  m_current_vp;
+      
 };
 
 //----------------------------------------------------------------------------------------

@@ -98,7 +98,9 @@ int grib_pi::Init(void)
       // Set some default private member parameters
       m_CtrlBarxy = wxPoint( 0 ,0 );
       m_CursorDataxy = wxPoint( 0, 0 );
-
+      m_coreToolbarSize = wxSize(1,1);
+      m_coreToolbarPosn = wxPoint(0,0);
+      
       m_pGribCtrlBar = NULL;
       m_pGRIBOverlayFactory = NULL;
 
@@ -437,9 +439,13 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position)
  		p.y = GetOCPNCanvasWindow()->GetClientSize().GetY() - dialog->GetSize().GetY();
 
 #ifdef __OCPN__ANDROID__
-        //  But not off-screen, nor covering the toolbar, as estimated by the dialog size (y) iteself...        
-        p.x = wxMax(0, p.x);
-        p.y = wxMax(dialog->GetSize().y * 3 / 4, p.y);
+        //  But not off-screen, nor covering the toolbar...        
+        if(m_coreToolbarSize.y > 1){                    //has been set by core message        
+            qDebug() << m_coreToolbarSize.x << m_coreToolbarSize.y;
+            p.x = wxMax(0, p.x);
+            p.y = wxMax(m_coreToolbarSize.y + 2, p.y);
+        }
+        
 #endif        
         
 #ifdef __WXGTK__
@@ -677,6 +683,18 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             
         }
+    }
+    
+    if(message_id == _T("OpenCPN Config"))
+    {
+        wxJSONReader r;
+        wxJSONValue v;
+        r.Parse(message_body, &v);
+        
+        if(v[_T("OpenCPN Toolbar Width")].IsInt())  m_coreToolbarSize.x = v[_T("OpenCPN Toolbar Width")].AsInt();
+        if(v[_T("OpenCPN Toolbar Height")].IsInt()) m_coreToolbarSize.y = v[_T("OpenCPN Toolbar Height")].AsInt();
+        if(v[_T("OpenCPN Toolbar PosnX")].IsInt())  m_coreToolbarPosn.x = v[_T("OpenCPN Toolbar PosnX")].AsInt();
+        if(v[_T("OpenCPN Toolbar PosnY")].IsInt())  m_coreToolbarPosn.x = v[_T("OpenCPN Toolbar PosnY")].AsInt();
     }
 }
 

@@ -229,8 +229,9 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
         pConf->Read( _T ( "SeaTemperaturePlot" ), &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false );
         pConf->Read( _T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE], false );
 
-		pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
+        pConf->Read( _T ( "CursorDataShown" ), &m_CDataIsShown, true );
 
+        
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
         pConf->SetPath ( _T ( "/Settings/GRIB/FileNames" ) );
@@ -659,6 +660,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     m_gGrabber->Hide();
     //then hide and detach cursor data window
     if( m_gCursorData ) {
+        m_gCursorData->Move(0, 0); 
         m_gCursorData->Hide();
         m_fgCDataSizer->Detach(m_gCursorData);
     }
@@ -746,6 +748,8 @@ void GRIBUICtrlBar::OnMove( wxMoveEvent& event )
     int w, h;
     GetScreenPosition( &w, &h );
     pPlugIn->SetCtrlBarXY ( wxPoint( w, h ) );
+    
+        
 }
 
 void GRIBUICtrlBar::OnMenuEvent( wxMenuEvent& event )
