@@ -101,11 +101,8 @@ long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
     m_pitemBoxSizerLeg->Add( pThisLegText, 0, wxALIGN_CENTER_HORIZONTAL, 2 );
 
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    wxFont *pThisLegFont = GetOCPNScaledFont(_("Dialog"));
     
-    wxFont *pThisLegFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT,
-                                                          qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
-                                                          qFont->GetFaceName() );
     pThisLegText->SetFont( *pThisLegFont );
 
     pXTE = new AnnunText( this, -1, _("Console Legend"), _("Console Value") );
@@ -209,16 +206,31 @@ void ConsoleCanvas::LegRoute()
     RefreshConsoleData();
 }
 
+wxMenuItem *MenuAppend1( wxMenu *menu, int id, wxString label, wxString help, wxItemKind iKind)
+{
+    wxMenuItem *item = new wxMenuItem(menu, id, label, help, iKind);
+    #if defined(__WXMSW__)
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"));
+    item->SetFont(*qFont);
+    #endif
+    
+    #ifdef __WXQT__
+    wxFont sFont = GetOCPNGUIScaledFont(_T("Menu"));
+    item->SetFont(sFont);
+    #endif
+    
+    menu->Append(item);
+    
+    return item;
+}
+
 void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
     wxMenu* contextMenu = new wxMenu();
-    wxMenuItem* btnLeg = new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), _T(""), wxITEM_RADIO );
-    wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE, _("Full Route"), _T(""), wxITEM_RADIO );
-    wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK );
-    contextMenu->Append( btnLeg );
-    contextMenu->Append( btnRoute );
-    contextMenu->AppendSeparator();
-    contextMenu->Append( btnHighw );
-
+    
+    wxMenuItem* btnLeg = MenuAppend1(contextMenu,ID_NAVLEG,_("This Leg"), _T(""), wxITEM_RADIO);
+    wxMenuItem* btnRoute  = MenuAppend1(contextMenu,ID_NAVROUTE,_("Full Route"), _T(""), wxITEM_RADIO);
+    wxMenuItem* btnHighw = MenuAppend1(contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK );
+    
     btnLeg->Check( ! g_bShowRouteTotal );
     btnRoute->Check( g_bShowRouteTotal );
     btnHighw->Check( g_bShowActiveRouteHighway );
