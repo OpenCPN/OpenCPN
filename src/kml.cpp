@@ -42,10 +42,13 @@
 #include "navutil.h"
 #include "tinyxml.h"
 #include "kml.h"
+#include "OCPNPlatform.h"
+#include "qdebug.h"
 
 extern MyFrame *gFrame;
 extern double gLat;
 extern double gLon;
+extern OCPNPlatform  *g_Platform;
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;
@@ -547,6 +550,17 @@ wxString Kml::MakeKmlFromWaypoint( RoutePoint* routepoint ) {
 
 void Kml::CopyRouteToClipboard( Route* route ) {
     KmlFormatDialog* formatDlg = new KmlFormatDialog( gFrame );
+    
+    // These sizing numbers are bogus.  Must be incorrect math in getFontPointsperPixel()....
+    //  But it works for Android, so use it.
+    wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+    int estSizex = fo.GetPointSize() * 10 / g_Platform->getFontPointsperPixel();
+    qDebug() << fo.GetPointSize() << g_Platform->getFontPointsperPixel();
+    
+    int sizeX = wxMin(estSizex, gFrame->GetSize().x - 10);
+    formatDlg->SetSize(sizeX, fo.GetPointSize() * 3 / g_Platform->getFontPointsperPixel() );
+    formatDlg->Center();
+    
     int format = formatDlg->ShowModal();
 
     if( format != wxID_CANCEL ) {
@@ -607,8 +621,12 @@ Kml::~Kml() {
 //----------------------------------------------------------------------------------
 
 KmlFormatDialog::KmlFormatDialog( wxWindow* parent )
-       : wxDialog( parent, wxID_ANY, _("Choose Format for Copy"), wxDefaultPosition, wxSize(250, 230) )
 {
+    wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+    SetFont(fo);
+
+    wxDialog::Create( parent, wxID_ANY, _("Choose Format for Copy"), wxDefaultPosition, wxSize(400, 230) );
+    
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
 
     wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
@@ -626,8 +644,10 @@ KmlFormatDialog::KmlFormatDialog( wxWindow* parent )
     sizer->Add( choices[1], 0, wxEXPAND | wxALL, 5 );
     sizer->Add( buttonSizer, 0, wxEXPAND | wxTOP, 5 );
 
-    topSizer->SetSizeHints(this);
     SetSizer( topSizer );
+    GetSizer()->SetSizeHints( this );
+    Centre();
+    
 }
 
 int KmlFormatDialog::GetSelectedFormat() {
