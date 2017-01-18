@@ -143,6 +143,7 @@ extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
+extern OCPNPlatform     *g_Platform;
 
 // sort callback. Sort by route name.
 int sort_route_name_dir;
@@ -843,10 +844,34 @@ void RouteManagerDialog::Create()
     RecalculateSize();
 
     // create a image list for the list with just the eye icon
-    wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
+    wxImageList *imglist;
+    
+#ifdef __OCPN__ANDROID__    
+    int imageRefSize = g_Platform->GetDisplayDPmm() * 4;
+    
+    imglist = new wxImageList( imageRefSize, imageRefSize, true, 1 );
+    
+    wxImage eye1 = wxBitmap( eye ).ConvertToImage();
+    wxImage eye1s = eye1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap( eye1s ) );
+    
+    wxImage eye2 = wxBitmap( eyex).ConvertToImage();
+    wxImage eye2s = eye2.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap( eye2s ) );
+    
+    m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+
+    m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(imageRefSize, imageRefSize));
+#else
+
+    imglist = new wxImageList( 20, 20, true, 1 );
+    
     imglist->Add( wxBitmap( eye ) );
     imglist->Add( wxBitmap( eyex ) );
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+    
+#endif    
+    
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
@@ -1465,6 +1490,9 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     SendToGpsDlg *pdlg = new SendToGpsDlg();
     pdlg->SetRoute( route );
 
+    wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+    pdlg->SetFont(fo);
+    
     wxString source;
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
     
