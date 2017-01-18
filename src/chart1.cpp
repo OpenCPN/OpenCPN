@@ -6501,6 +6501,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             androidEnableBackButton( true );
             #endif
 
+            if(g_pi_manager)
+                g_pi_manager->SendConfigToAllPlugIns();
+            
             wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
             
