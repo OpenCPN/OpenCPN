@@ -832,6 +832,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     //        Invoke the correct focused drop-down menu
+    
     parent->PopupMenu( menuFocus, x, y );
 
 
@@ -1307,8 +1308,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
              else {
                  SendToGpsDlg dlg;
                  dlg.SetWaypoint( m_pFoundRoutePoint );
-
+                 wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
+                 dlg.SetFont(fo);
+                 
                  dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+                 
                  dlg.ShowModal();
              }
         }
