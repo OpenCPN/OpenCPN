@@ -1676,6 +1676,7 @@ void PlugInManager::SendConfigToAllPlugIns()
     }
 
     // Some useful display metrics
+    
     if(g_FloatingToolbarDialog){
         v[_T("OpenCPN Toolbar Width")] = g_FloatingToolbarDialog->GetSize().x;
         v[_T("OpenCPN Toolbar Height")] = g_FloatingToolbarDialog->GetSize().y;
@@ -3628,6 +3629,7 @@ void PluginListPanel::MoveUp( PluginPanel *pi )
 
     m_PluginSelected = pi;
 
+    GetSizer()->Layout();
     m_parent->Layout();
     Refresh(true);
 }
@@ -3647,6 +3649,7 @@ void PluginListPanel::MoveDown( PluginPanel *pi )
 
     m_PluginSelected = pi;
 
+    GetSizer()->Layout();
     m_parent->Layout();
     Refresh(false);
 }
@@ -3705,9 +3708,12 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     m_pButtonEnable->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(PluginPanel::OnPluginEnable), NULL, this);
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    // Make an estimate of a good size for icon
-    wxFont *tFont = OCPNGetFont(_T("Dialog"), 12);
-    int sizeRef = tFont->GetPointSize() * 4;
+
+    // Make an estimate of a good size for up/down icons
+    int sizeRef = plugin_icon.GetSize().y + 1;
+    
+    wxBitmap bmp = style->GetIcon( _T("up"), sizeRef, sizeRef, true  );
+    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
     
     m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
     m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
@@ -3739,7 +3745,12 @@ void PluginPanel::SetSelected( bool selected )
         SetBackgroundColour(GetGlobalColor(_T("DILG1")));
         m_pDescription->SetLabel( m_pPlugin->m_long_description );
         m_pButtons->Show(true);
+#ifndef __WXQT__
         m_pButtonsUpDown->Show(true);
+#else        
+        // Some Android devices (e.g. Kyocera) have trouble with  wxBitmapButton...
+        m_pButtonsUpDown->Show(false);
+#endif        
         Layout();
         //FitInside();
     }
@@ -3811,14 +3822,11 @@ void PluginPanel::SetEnabled( bool enabled )
 
 void PluginPanel::OnPluginUp( wxCommandEvent& event )
 {
-    qDebug() << "Up";
-    
     m_PluginListPanel->MoveUp( this );
 }
 
 void PluginPanel::OnPluginDown( wxCommandEvent& event )
 {
-    qDebug() << "Down";
     m_PluginListPanel->MoveDown( this );
 }
 
