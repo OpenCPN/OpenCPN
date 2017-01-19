@@ -1791,11 +1791,22 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxBoxSizer *itemBoxSizer01 = new wxBoxSizer( wxVERTICAL );
     itemFlexGridSizer01->Add( itemBoxSizer01, 1, wxEXPAND | wxTOP | wxLEFT, border_size );
 
-    wxImageList *imglist1 = new wxImageList( 32, 32, true, 1 );
-    imglist1->Add( *_img_dashboard_pi );
-
+    // Scale the images in the dashboard list control
+    int imageRefSize = 32 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist1 = new wxImageList( imageRefSize, imageRefSize, true, 1 );
+    
+    wxImage dash1 = wxBitmap( *_img_dashboard_pi ).ConvertToImage();
+    wxImage dash1s = dash1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist1->Add( wxBitmap( dash1s ) );
+    
     m_pListCtrlDashboards = new wxListCtrl( itemPanelNotebook01, wxID_ANY, wxDefaultPosition,
-            wxSize( 50, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+                                            wxSize( imageRefSize * 3/2, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+    
+#ifdef __WXQT__
+    m_pListCtrlDashboards->GetHandle()->setIconSize(QSize(imageRefSize, imageRefSize));
+#endif    
+    
     m_pListCtrlDashboards->AssignImageList( imglist1, wxIMAGE_LIST_SMALL );
     m_pListCtrlDashboards->InsertColumn( 0, _T("") );
     m_pListCtrlDashboards->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
@@ -1807,17 +1818,23 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxBoxSizer *itemBoxSizer02 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer01->Add( itemBoxSizer02 );
 
-    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, *_img_plus,
+    wxImage plus1 = wxBitmap( *_img_plus ).ConvertToImage();
+    wxImage plus1s = plus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
+    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, wxBitmap( plus1s ),
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonAddDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonAddDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnDashboardAdd), NULL, this );
-    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, *_img_minus,
+    
+    wxImage minus1 = wxBitmap( *_img_minus ).ConvertToImage();
+    wxImage minus1s = minus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
+    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, wxBitmap( minus1s ),
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonDeleteDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonDeleteDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnDashboardDelete), NULL, this );
 
+    
     m_pPanelDashboard = new wxPanel( itemPanelNotebook01, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxBORDER_SUNKEN );
     itemFlexGridSizer01->Add( m_pPanelDashboard, 1, wxEXPAND | wxTOP | wxRIGHT, border_size );
@@ -1854,10 +1871,18 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceOrientation->Append( _("Horizontal") );
     itemFlexGridSizer->Add( m_pChoiceOrientation, 0, wxALIGN_RIGHT | wxALL, border_size );
 
-    wxImageList *imglist = new wxImageList( 20, 20, true, 2 );
-    imglist->Add( *_img_instrument );
-    imglist->Add( *_img_dial );
-
+    int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
+ 
+    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
+    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(inst1s) );
+    
+    wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
+    wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(dial1s) );
+    
     wxStaticBox* itemStaticBox03 = new wxStaticBox( m_pPanelDashboard, wxID_ANY, _("Instruments") );
     wxStaticBoxSizer* itemStaticBoxSizer03 = new wxStaticBoxSizer( itemStaticBox03, wxHORIZONTAL );
     itemBoxSizer03->Add( itemStaticBoxSizer03, 1, wxEXPAND | wxALL, border_size );
@@ -1872,6 +1897,10 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     
     m_pListCtrlInstruments = new wxListCtrl( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
             wxSize( -1, vsize ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
+#ifdef __WXQT__
+    m_pListCtrlInstruments->GetHandle()->setIconSize(QSize(instImageRefSize, instImageRefSize));
+#endif    
+    
     itemStaticBoxSizer03->Add( m_pListCtrlInstruments, 1, wxEXPAND | wxALL, border_size );
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
@@ -2214,16 +2243,21 @@ void DashboardPreferencesDialog::OnInstrumentUp( wxCommandEvent& event )
 {
     long itemID = -1;
     itemID = m_pListCtrlInstruments->GetNextItem( itemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-
+    
     wxListItem item;
     item.SetId( itemID );
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID - 1 );
+    item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
-    m_pListCtrlInstruments->InsertItem( item );
-    m_pListCtrlInstruments->SetItemState( itemID - 1, wxLIST_STATE_SELECTED,
-            wxLIST_STATE_SELECTED );
+    m_pListCtrlInstruments->InsertItem( item ); 
+    
+    for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
+        m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    
+    m_pListCtrlInstruments->SetItemState( itemID - 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+    
     UpdateButtonsState();
 }
 
@@ -2231,16 +2265,21 @@ void DashboardPreferencesDialog::OnInstrumentDown( wxCommandEvent& event )
 {
     long itemID = -1;
     itemID = m_pListCtrlInstruments->GetNextItem( itemID, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-
+    
     wxListItem item;
     item.SetId( itemID );
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID + 1 );
+    item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
-    m_pListCtrlInstruments->InsertItem( item );
-    m_pListCtrlInstruments->SetItemState( itemID + 1, wxLIST_STATE_SELECTED,
-            wxLIST_STATE_SELECTED );
+    m_pListCtrlInstruments->InsertItem( item );              
+    
+    for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
+        m_pListCtrlInstruments->SetItemState(i,0,wxLIST_STATE_SELECTED);
+    
+    m_pListCtrlInstruments->SetItemState( itemID + 1, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
+
     UpdateButtonsState();
 }
 
@@ -2260,10 +2299,21 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
             _("Select instrument to add:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer01->Add( itemStaticText01, 0, wxEXPAND | wxALL, 5 );
 
-    wxImageList *imglist = new wxImageList( 20, 20, true, 2 );
-    imglist->Add( *_img_instrument );
-    imglist->Add( *_img_dial );
-
+    int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
+    
+    wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
+    
+    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
+    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(inst1s) );
+    
+    wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
+    wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    imglist->Add( wxBitmap(dial1s) );
+    
+    
+    
+    
     int vsize = 180;
     
     #ifdef __OCPN__ANDROID__
@@ -2275,6 +2325,10 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
     m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( -1, vsize/*250, 180 */),
             wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING );
     itemBoxSizer01->Add( m_pListCtrlInstruments, 0, wxEXPAND | wxALL, 5 );
+#ifdef __WXQT__
+    m_pListCtrlInstruments->GetHandle()->setIconSize(QSize(instImageRefSize, instImageRefSize));
+#endif    
+    
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
 
@@ -2283,7 +2337,7 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
     
     #ifdef __OCPN__ANDROID__
     m_pListCtrlInstruments->GetHandle()->setStyleSheet( qtStyleSheet);
-    QScroller::ungrabGesture(m_pListCtrlInstruments->GetHandle());
+    ///QScroller::ungrabGesture(m_pListCtrlInstruments->GetHandle());
     #endif
 
     wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
