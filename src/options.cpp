@@ -4387,6 +4387,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pShowMenuBar, 0, wxALL, border_size);
 #endif
 
+#ifdef __OCPN__ANDROID__
+  pShowMenuBar->Hide();
+#endif
+  
   pShowChartBar = new wxCheckBox(itemPanelFont, wxID_ANY, _("Show Chart Bar"));
   pShowChartBar->SetValue(g_bShowChartBar);
   miscOptions->Add(pShowChartBar, 0, wxALL, border_size);
@@ -7373,9 +7377,12 @@ out:
 }
 
 void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
-  wxTextEntryDialog* pd =
-      new wxTextEntryDialog(this, _("Enter Group Name"), _("New Chart Group"));
+  wxTextEntryDialog* pd = new wxTextEntryDialog();
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+  pd->SetFont(*qFont);
 
+  pd->Create(this, _("Enter Group Name"), _("New Chart Group"));
+  
   if (pd->ShowModal() == wxID_OK) {
     if (pd->GetValue().Length()) {
       AddEmptyGroupPage(pd->GetValue());
