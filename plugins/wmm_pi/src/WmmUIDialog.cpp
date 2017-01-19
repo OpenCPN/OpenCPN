@@ -6,11 +6,13 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "WmmUIDialog.h"
-
 ///////////////////////////////////////////////////////////////////////////
 
 WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+        wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+        SetFont(*pFont);
+    
 	this->SetSizeHints( wxSize( -1,-1 ), wxSize( -1,-1 ) );
 	
 	wxFlexGridSizer* fgSizer6;
@@ -21,15 +23,18 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	fgSizer6->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	bSframe = new wxBoxSizer( wxVERTICAL );
-	
+        fgSizer6->Add( bSframe, 1, wxEXPAND, 5 );
 	bSframe->SetMinSize( wxSize( 200,-1 ) ); 
+        
+        
 	sbSboat = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Boat") ), wxVERTICAL );
 	
 	gSboat = new wxFlexGridSizer( 6, 2, 0, 0 );
 	gSboat->AddGrowableCol( 1 );
 	gSboat->SetFlexibleDirection( wxBOTH );
 	gSboat->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+        bSframe->Add( sbSboat, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+        
 	m_staticText8 = new wxStaticText( this, wxID_ANY, _("F "), wxDefaultPosition, wxDefaultSize, 0 );
 	//m_staticText8->Wrap( -1 );
 	m_staticText8->SetToolTip( _("Total Intensity") );
@@ -93,39 +98,35 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	
 	sbSboat->Add( gSboat, 1, wxEXPAND, 0 );
-	
-	wxFlexGridSizer* gSizer3;
-	gSizer3 = new wxFlexGridSizer( 1, 2, 0, 0 );
-	gSizer3->AddGrowableCol( 1 );
-	gSizer3->SetFlexibleDirection( wxBOTH );
-	gSizer3->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_staticText13 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText13->Wrap( -1 );
-	m_staticText13->SetToolTip( _("Magnetic Variation") );
-	m_staticText13->SetMinSize( wxSize( 50,-1 ) );
-	
-	gSizer3->Add( m_staticText13, 0, wxALL, 5 );
-	
-	m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
-	m_tbD->SetMaxLength( 0 ); 
-	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
-	
-	gSizer3->Add( m_tbD, 1, wxEXPAND, 5 );
-	
-	
-	sbSboat->Add( gSizer3, 0, wxEXPAND, 0 );
-	
-	
-	bSframe->Add( sbSboat, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-	
+
+        wxBoxSizer *varBox = new wxBoxSizer(wxHORIZONTAL);
+        sbSboat->Add( varBox, 0, wxEXPAND, 0 );
+        
+        m_staticText13 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
+        //m_staticText13->Wrap( -1 );
+        m_staticText13->SetToolTip( _("Magnetic Variation") );
+        varBox->Add( m_staticText13, 1, wxALL, 5 );
+        
+        m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
+        m_tbD->SetMaxLength( 0 ); 
+        //m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+        
+        varBox->Add( m_tbD, 3, wxEXPAND, 5 );
+        
+        
+        
+        bSframe->AddSpacer(5);
+        
+        
 	sbScursor = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Cursor") ), wxVERTICAL );
-	
+        bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+        
 	gScursor = new wxFlexGridSizer( 6, 2, 0, 0 );
 	gScursor->AddGrowableCol( 1 );
 	gScursor->SetFlexibleDirection( wxBOTH );
 	gScursor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+        sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
+        
 	m_staticText81 = new wxStaticText( this, wxID_ANY, _("F "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText81->Wrap( -1 );
 	m_staticText81->SetToolTip( _("Total Intensity") );
@@ -187,57 +188,38 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	m_tcI->SetMaxLength( 0 ); 
 	gScursor->Add( m_tcI, 0, wxEXPAND, 5 );
 	
-	
-	sbScursor->Add( gScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-	
-	wxFlexGridSizer* gSizer4;
-	gSizer4 = new wxFlexGridSizer( 2, 2, 0, 0 );
-	gSizer4->AddGrowableCol( 1 );
-	gSizer4->SetFlexibleDirection( wxBOTH );
-	gSizer4->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_staticText131 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText131->Wrap( -1 );
-	m_staticText131->SetToolTip( _("Magnetic Variation") );
-	m_staticText131->SetMinSize( wxSize( 50,-1 ) );
-	
-	gSizer4->Add( m_staticText131, 0, wxALL, 5 );
-	
-	m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
-	m_tcD->SetMaxLength( 0 ); 
-	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
-	
-	gSizer4->Add( m_tcD, 0, wxEXPAND, 5 );
+        wxBoxSizer *varBoxCursor = new wxBoxSizer(wxHORIZONTAL);
+        sbScursor->Add( varBoxCursor, 0, wxEXPAND, 0 );
+        
+        m_staticText131 = new wxStaticText( this, wxID_ANY, _("Vari"), wxDefaultPosition, wxDefaultSize, 0 );
+        //m_staticText131->Wrap( -1 );
+        m_staticText131->SetToolTip( _("Magnetic Variation") );
+        varBoxCursor->Add( m_staticText131, 1, wxALL, 5 );
+        
+        m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
+        m_tcD->SetMaxLength( 0 ); 
+        //m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+        
+        varBoxCursor->Add( m_tcD, 3, wxEXPAND, 5 );
+
+        bSframe->AddSpacer(5);
+        
 	
 	
-	sbScursor->Add( gSizer4, 0, wxEXPAND, 0 );
-	
-	
-	bSframe->Add( sbScursor, 1, wxEXPAND|wxFIXED_MINSIZE, 0 );
-	
-	
-	fgSizer6->Add( bSframe, 1, wxEXPAND, 5 );
 	
 	//sbPlot = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Plot"), wxVERTICAL );
         sbPlot = new wxStaticBoxSizer(  wxVERTICAL, this, _("Plot") );
+        fgSizer6->Add( sbPlot, 1, wxEXPAND/*|wxFIXED_MINSIZE*/, 0 );
         
-// 	wxFlexGridSizer* fgSizer5;
-// 	fgSizer5 = new wxFlexGridSizer( 0, 2, 0, 0 );
-// 	fgSizer5->SetFlexibleDirection( wxBOTH );
-// 	fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-
-        //wxBoxSizer* fgSizer5 = new wxBoxSizer( wxHORIZONTAL );
         
 	m_cbEnablePlot = new wxCheckBox( this, wxID_ANY, _("Enable plot"), wxDefaultPosition, wxDefaultSize, 0 );
-        m_cbEnablePlot->SetMinSize( wxSize( 200,-1 ) );
-        sbPlot->Add( m_cbEnablePlot, 1, wxALL, 5 );
+        //m_cbEnablePlot->SetMinSize( wxSize( 200,-1 ) );
+        sbPlot->Add( m_cbEnablePlot, 0, wxEXPAND | wxALL, 5 );
 	
 	m_bPlotSettings = new wxButton( this, wxID_ANY, _("Settings..."), wxDefaultPosition, wxDefaultSize, 0 );
-        m_bPlotSettings->SetMinSize( wxSize( 200,-1 ) );
-        sbPlot->Add( m_bPlotSettings, 1, wxALL, 5 );
+        //m_bPlotSettings->SetMinSize( wxSize( 200,-1 ) );
+        sbPlot->Add( m_bPlotSettings, 0, wxALL, 5 );
 	
-	//sbPlot->Add( fgSizer5, 1, wxEXPAND, 5 );
-        fgSizer6->Add( sbPlot, 1, wxEXPAND/*|wxFIXED_MINSIZE*/, 0 );
         
         wxStdDialogButtonSizer *m_sdbSizerBtns = new wxStdDialogButtonSizer();
         wxButton *m_sdbSizerBtnsOK = new wxButton( this, wxID_OK );

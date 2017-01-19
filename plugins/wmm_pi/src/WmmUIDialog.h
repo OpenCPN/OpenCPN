@@ -28,6 +28,8 @@
 #include <wx/spinctrl.h>
 #include <wx/datectrl.h>
 #include <wx/dateevt.h>
+#include <wx/dcmemory.h>
+#include "ocpn_plugin.h"
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -39,6 +39,7 @@
 #else
 #include "qopengl.h"                  // this gives us the qt runtime gles2.h
 #include "GL/gl_private.h"
+#include "qdebug.h"
 #endif
 
 
@@ -62,6 +63,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 
 wmm_pi *g_pi;
 
+bool g_compact;
+
 //---------------------------------------------------------------------------------------------------------
 //
 //    WMM PlugIn Implementation
@@ -69,18 +72,30 @@ wmm_pi *g_pi;
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
+WmmUIDialog::WmmUIDialog( wmm_pi *_wmm_pi, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style)
+    : WmmUIDialogBase( parent, id, title, pos, size, style )
+
+{
+    m_wmm_pi = _wmm_pi;
+}
+
+
+WmmUIDialog::~WmmUIDialog()
+{
+    m_wmm_pi->m_pWmmDialog = 0;
+}
 
 void WmmUIDialog::EnablePlotChanged( wxCommandEvent& event )
 {
     if(m_cbEnablePlot->GetValue())
-      m_wmm_pi.RecomputePlot();
-    m_wmm_pi.SetShowPlot(m_cbEnablePlot->GetValue());
-    RequestRefresh( m_wmm_pi.m_parent_window );
+      m_wmm_pi->RecomputePlot();
+    m_wmm_pi->SetShowPlot(m_cbEnablePlot->GetValue());
+    RequestRefresh( m_wmm_pi->m_parent_window );
 }
 
 void WmmUIDialog::PlotSettings( wxCommandEvent& event )
 {
-    m_wmm_pi.ShowPlotSettings();
+    m_wmm_pi->ShowPlotSettings();
 }
 
 void WmmPlotSettingsDialog::About( wxCommandEvent& event )
@@ -146,6 +161,13 @@ int wmm_pi::Init(void)
     //    And load the configuration items
     LoadConfig();
 
+#ifdef __OCPN__ANDROID__
+    g_compact = true;
+    m_bShowPlotOptions = false;
+    m_iViewType = 1;
+#endif
+    
+    
     m_buseable = true;
 
     m_LastVal = wxEmptyString;
@@ -347,7 +369,8 @@ void wmm_pi::RearrangeWindow()
 
     m_pWmmDialog->m_cbEnablePlot->Show(m_bShowPlotOptions);
     m_pWmmDialog->m_bPlotSettings->Show(m_bShowPlotOptions);
-
+    m_pWmmDialog->sbPlot->GetStaticBox()->Show(m_bShowPlotOptions);
+    
     if (!m_bShowAtCursor)
     {
         m_pWmmDialog->bSframe->Hide(m_pWmmDialog->sbScursor, true);
@@ -385,17 +408,20 @@ void wmm_pi::OnToolbarToolCallback(int id)
         return;
     if(NULL == m_pWmmDialog)
     {
-        m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
+        m_pWmmDialog = new WmmUIDialog(this, m_parent_window);
         wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
         m_pWmmDialog->SetFont(*pFont);
         
         m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
+        
+        m_pWmmDialog->Fit();
     }
 
     RearrangeWindow();
     /*m_pWmmDialog->SetMaxSize(m_pWmmDialog->GetSize());
     m_pWmmDialog->SetMinSize(m_pWmmDialog->GetSize());*/
     m_pWmmDialog->Show(!m_pWmmDialog->IsShown());
+    
     m_pWmmDialog->Layout();     // Some platforms need a re-Layout at this point (gtk, at least)
     if (m_pWmmDialog->IsShown())
         SendPluginMessage(_T("WMM_WINDOW_SHOWN"), wxEmptyString);
@@ -408,7 +434,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     
 #ifdef __OCPN__ANDROID__
     m_pWmmDialog->CentreOnScreen();
-    m_pWmmDialog->Move(-1,0);
+    m_pWmmDialog->Move(-1,100);
 #endif    
     
 }
@@ -467,7 +493,10 @@ void wmm_pi::RecomputePlot()
 }
 
 void wmm_pi::SetCursorLatLon(double lat, double lon)
-{
+{ 
+    if(!m_pWmmDialog)
+        return;
+    
     if (!m_bShowAtCursor)
         return; //We don't want to waste CPU cycles that much...
     if (lat < -90 || lat > 90 || lon < -180 || lon > 180 || NULL == m_pWmmDialog || !m_pWmmDialog->IsShown())
@@ -505,7 +534,7 @@ void wmm_pi::SetCursorLatLon(double lat, double lon)
 }
 
 void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
-{
+{ 
     CoordGeodetic.lambda = pfix.Lon;
     CoordGeodetic.phi = pfix.Lat;
     CoordGeodetic.HeightAboveEllipsoid = 0;
@@ -627,6 +656,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 //Demo implementation of response mechanism
 void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
 {
+    
     if(message_id == _T("WMM_VARIATION_REQUEST"))
     {
         wxJSONReader r;
@@ -1092,8 +1122,14 @@ WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString&
         m_rbViewType->SetSelection( 1 );
         scrollSizer->Add( m_rbViewType, 0, wxALL|wxEXPAND, 5 );
         
+        if(g_compact)
+            m_rbViewType->Hide();
+        
         m_cbShowPlotOptions = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show Plot Options"), wxDefaultPosition, wxDefaultSize, 0 );
         scrollSizer->Add( m_cbShowPlotOptions, 0, wxALL, 5 );
+
+        if(g_compact)
+            m_cbShowPlotOptions->Hide();
         
         m_cbShowAtCursor = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show also data at cursor position"), wxDefaultPosition, wxDefaultSize, 0 );
         scrollSizer->Add( m_cbShowAtCursor, 0, wxALL, 5 );
@@ -1104,11 +1140,16 @@ WmmPrefsDialog::WmmPrefsDialog( wxWindow* parent, wxWindowID id, const wxString&
         m_cbLiveIcon = new wxCheckBox( itemScrollWin, wxID_ANY, _("Show data in toolbar icon"), wxDefaultPosition, wxDefaultSize, 0 );
         scrollSizer->Add( m_cbLiveIcon, 0, wxALL, 5 );
         
-        wxStaticBoxSizer* sbSizer4;
-        sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( itemScrollWin, wxID_ANY, _("Window transparency") ), wxVERTICAL );
+        wxStaticBox *sbTrans = new wxStaticBox( itemScrollWin, wxID_ANY, _("Window transparency") );
+        wxStaticBoxSizer* sbSizer4 = new wxStaticBoxSizer( sbTrans, wxVERTICAL );
         
         m_sOpacity = new wxSlider( itemScrollWin, wxID_ANY, 255, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL|wxSL_INVERSE );
         sbSizer4->Add( m_sOpacity, 0, wxBOTTOM|wxEXPAND|wxTOP, 5 );
+        
+        if(g_compact){
+            sbTrans->Hide();
+            m_sOpacity->Hide();
+        }
         
         
         scrollSizer->Add( sbSizer4, 1, wxALL|wxEXPAND, 5 );
