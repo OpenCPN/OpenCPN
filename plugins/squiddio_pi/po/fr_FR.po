@@ -119,7 +119,7 @@ msgid "Docks/piers"
 msgstr "Docks/Quais"
 #
 msgid "Download local sQuiddio destinations"
-msgstr "Télécharger les destinations locales sQuiddio"
+msgstr "Charger les destinations"
 #
 msgid "Downloading"
 msgstr "Téléchargement en cours"
@@ -191,7 +191,7 @@ msgid "Receive"
 msgstr "Recevoir"
 #
 msgid "Report a Destination at this location"
-msgstr "Signaler une destination pour cet endroit"
+msgstr "Signaler une destination"
 #
 msgid ""
 "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "

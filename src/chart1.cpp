@@ -2109,11 +2109,12 @@ bool MyApp::OnInit()
             wxString line( _("Rebuilding chart database from configuration file entries...") );
             /* The following 3 strings are embeded in wxProgressDialog but must be included by xgettext
              * to be localized properly. See {wxWidgets}src/generic/progdlgg.cpp:190 */
-            wxString dummy1 = _("Elapsed time : ");
-            wxString dummy2 = _("Estimated time : ");
-            wxString dummy3 = _("Remaining time : ");
-            wxString dummy4 = _("Estimated time:");
-            wxString dummy5 = _("Remaining time:");
+            wxString dummy1 =  _("Elapsed time : ");
+            wxString dummy1a = _("Elapsed time:");
+            wxString dummy2 =  _("Estimated time : ");
+            wxString dummy2a = _("Estimated time:");
+            wxString dummy3 =  _("Remaining time : ");
+            wxString dummy3a = _("Remaining time:");
             wxGenericProgressDialog *pprog = new wxGenericProgressDialog( _("OpenCPN Chart Update"), line, 100,
                     NULL, wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
 
@@ -2339,7 +2340,7 @@ extern ocpnGLOptions g_GLOptions;
 int MyApp::OnExit()
 {
     wxLogMessage( _T("opencpn::MyApp starting exit.") );
-    qDebug() << "opencpn::MyApp starting exit.";
+//    qDebug() << "opencpn::MyApp starting exit.";
 
     //  Send current nav status data to log file   // pjotrc 2010.02.09
 
@@ -2465,7 +2466,7 @@ int MyApp::OnExit()
 
     g_Platform->OnExit_2();
 
-    qDebug() << "opencpn::MyApp finished exit.";
+//    qDebug() << "opencpn::MyApp finished exit.";
     
     return TRUE;
 }

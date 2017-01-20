@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2015-12-31 15:37-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Hungarian\n"
@@ -1738,6 +1738,10 @@ msgid "El Salvador"
 msgstr ""
 #
 msgid "Elapsed time : "
+msgstr "Eltelt idő : "
+#
+#, fuzzy
+msgid "Elapsed time:"
 msgstr "Eltelt idő : "
 #
 msgid "Elements to print..."
@@ -4875,17 +4879,22 @@ msgstr ""
 msgid "x.xxxx"
 msgstr ""
 #
+#
 #~ msgid "Extend Track"
 #~ msgstr "Útvonal kiterjesztése"
+#
 #
 #~ msgid "Split Track"
 #~ msgstr "Nyomvonal szétvágása"
 #
+#
 #~ msgid "You must enter a port..."
 #~ msgstr "Ki kell választani vagy meg kell adni a portot..."
 #
+#
 #~ msgid "You must enter the address..."
 #~ msgstr "Meg kell adni a címet..."
+#
 #
 #~ msgid "You must select or enter the port..."
 #~ msgstr "Ki kell választani vagy meg kell adni a portot..."

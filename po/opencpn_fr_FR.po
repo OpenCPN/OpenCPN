@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2016-02-01 16:24-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
@@ -1777,6 +1777,9 @@ msgstr "Le Salvador"
 msgid "Elapsed time : "
 msgstr "Durée écoulée :  "
 #
+msgid "Elapsed time:"
+msgstr "Durée écoulée :  "
+#
 msgid "Elements to print..."
 msgstr "Eléments à imprimer ..."
 #
@@ -3510,7 +3513,9 @@ msgid "Remove"
 msgstr "Supprimer"
 #
 msgid "Remove Chart"
-msgstr "Enlever ce dossier\n du groupe choisi"
+msgstr ""
+"Enlever ce dossier\n"
+" du groupe choisi"
 #
 msgid "Remove Connection"
 msgstr "Supprimer une connexion"
@@ -4997,20 +5002,26 @@ msgstr "x.xxx"
 msgid "x.xxxx"
 msgstr "x.xxxx"
 #
+#
 #~ msgid "Data connection must be input, output or both"
 #~ msgstr "La connexion des données doit être en entrée, en sortie ou les deux"
+#
 #
 #~ msgid "Extend Track"
 #~ msgstr "Trace : Etendre"
 #
+#
 #~ msgid "Split Track"
 #~ msgstr "Trace : Scinder"
+#
 #
 #~ msgid "You must enter a port..."
 #~ msgstr "Vous devez entrer un port  ..."
 #
+#
 #~ msgid "You must enter the address..."
 #~ msgstr "Vous devez entrer l'adresse ..."
+#
 #
 #~ msgid "You must select or enter the port..."
 #~ msgstr "Vous devez choisir ou entrer un port d'entrée ..."

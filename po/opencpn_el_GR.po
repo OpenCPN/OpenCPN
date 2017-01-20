@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2016-01-25 19:57-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
@@ -1758,6 +1758,10 @@ msgid "El Salvador"
 msgstr "Ελ Σαλβαδόρ"
 #
 msgid "Elapsed time : "
+msgstr "Χρόνος που πέρασε: "
+#
+#, fuzzy
+msgid "Elapsed time:"
 msgstr "Χρόνος που πέρασε: "
 #
 msgid "Elements to print..."
@@ -4956,20 +4960,26 @@ msgstr "x.xxx"
 msgid "x.xxxx"
 msgstr "x.xxxx"
 #
+#
 #~ msgid "Data connection must be input, output or both"
 #~ msgstr "Η σύνδεση πρέπει να είναι είσοδος, έξοδος δεδομένων ή αμφότερα"
+#
 #
 #~ msgid "Extend Track"
 #~ msgstr "Επέκταση ίχνους"
 #
+#
 #~ msgid "Split Track"
 #~ msgstr "Διαίρεση ίχνους"
+#
 #
 #~ msgid "You must enter a port..."
 #~ msgstr "Πρέπει να γράψετε μια θύρα..."
 #
+#
 #~ msgid "You must enter the address..."
 #~ msgstr "Πρέπει να γράψετε τη διεύθυνση..."
+#
 #
 #~ msgid "You must select or enter the port..."
 #~ msgstr "Πρέπει να επιλέξετε την θύρα δεδομένων..."

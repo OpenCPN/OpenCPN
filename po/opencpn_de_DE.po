@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2016-01-25 19:56-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
@@ -1759,6 +1759,10 @@ msgid "El Salvador"
 msgstr "El Salvador"
 #
 msgid "Elapsed time : "
+msgstr "Vergangene Zeit:"
+#
+#, fuzzy
+msgid "Elapsed time:"
 msgstr "Vergangene Zeit:"
 #
 msgid "Elements to print..."
@@ -4946,20 +4950,26 @@ msgstr "x.xxx"
 msgid "x.xxxx"
 msgstr "x.xxxx"
 #
+#
 #~ msgid "Data connection must be input, output or both"
 #~ msgstr "Datenverbindung muss Eingang, Ausgang oder Beides sein"
+#
 #
 #~ msgid "Extend Track"
 #~ msgstr "Track erweitern"
 #
+#
 #~ msgid "Split Track"
 #~ msgstr "Track splitten"
+#
 #
 #~ msgid "You must enter a port..."
 #~ msgstr "Port wählen oder eingeben..."
 #
+#
 #~ msgid "You must enter the address..."
 #~ msgstr "Adresse muß eingegeben werden..."
+#
 #
 #~ msgid "You must select or enter the port..."
 #~ msgstr "Port wählen oder eingeben..."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2016-01-06 09:11-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
@@ -1719,6 +1719,10 @@ msgid "El Salvador"
 msgstr "エルサルバドル"
 #
 msgid "Elapsed time : "
+msgstr "経過時間: "
+#
+#, fuzzy
+msgid "Elapsed time:"
 msgstr "経過時間: "
 #
 msgid "Elements to print..."
@@ -4852,6 +4856,7 @@ msgstr ""
 #
 msgid "x.xxxx"
 msgstr ""
+#
 #
 #~ msgid "Split Track"
 #~ msgstr "トラックを分割"

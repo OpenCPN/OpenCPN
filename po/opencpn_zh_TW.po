@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 13:59-0500\n"
+"POT-Creation-Date: 2017-01-19 21:31-0500\n"
 "PO-Revision-Date: 2015-12-31 15:38-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Chinese Traditional\n"
@@ -1736,6 +1736,10 @@ msgid "El Salvador"
 msgstr "薩爾瓦多"
 #
 msgid "Elapsed time : "
+msgstr "經過時間 : "
+#
+#, fuzzy
+msgid "Elapsed time:"
 msgstr "經過時間 : "
 #
 msgid "Elements to print..."
@@ -4886,20 +4890,26 @@ msgstr "x.xxx"
 msgid "x.xxxx"
 msgstr "x.xxxx"
 #
+#
 #~ msgid "Data connection must be input, output or both"
 #~ msgstr "資料連線必須為輸入,輸出或兩者"
+#
 #
 #~ msgid "Extend Track"
 #~ msgstr "延伸航跡"
 #
+#
 #~ msgid "Split Track"
 #~ msgstr "分離航跡"
+#
 #
 #~ msgid "You must enter a port..."
 #~ msgstr "必須選取或輸入埠號…"
 #
+#
 #~ msgid "You must enter the address..."
 #~ msgstr "必須輸入位址..."
+#
 #
 #~ msgid "You must select or enter the port..."
 #~ msgstr "必須選取或輸入埠號…"
