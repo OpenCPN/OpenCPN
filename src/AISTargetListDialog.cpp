@@ -417,7 +417,7 @@ void AISTargetListDialog::RecalculateSize()
         esize.y = GetCharHeight() * 40;
         
         wxSize dsize = gFrame->GetClientSize();
-        esize.y = wxMin(esize.y, dsize.y - (8 * GetCharHeight()));
+        esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
         esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
         SetClientSize(esize);
         
@@ -447,7 +447,7 @@ void AISTargetListDialog::CreateControls()
     wxBoxSizer* topSizer = new wxBoxSizer( wxHORIZONTAL );
     SetSizer( topSizer );
 #ifdef __OCPN__ANDROID__
-    this->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
+///    this->GetHandle()->setStyleSheet( getAdjustedDialogStyleSheet());
 #endif    
     
     
