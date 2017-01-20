@@ -360,10 +360,10 @@ unsigned int OCPNCheckedListCtrl::Append(wxString& label, bool benable) {
   cb->Enable(benable);
   cb->SetValue(!benable);
   m_sizer->Add(cb);
-  m_sizer->Layout();  
-  
+  m_sizer->Layout();
+
   m_list.Append(cb);
-  
+
   return m_list.GetCount() - 1;
 }
 
@@ -461,7 +461,7 @@ void MMSIEditDialog::CreateControls(void) {
 
   m_IgnoreButton = new wxCheckBox(this, wxID_ANY, _("Ignore this MMSI"));
   mmsiSizer->Add(m_IgnoreButton, 0, wxEXPAND, 5);
-  
+
   m_MOBButton = new wxCheckBox(this, wxID_ANY,
                                _("Handle this MMSI as SART/PLB(AIS) MOB."));
   mmsiSizer->Add(m_MOBButton, 0, wxEXPAND, 5);
@@ -533,7 +533,7 @@ void MMSIEditDialog::OnMMSIEditOKClick(wxCommandEvent& event) {
             return;
         }
     }
-    
+
     if (m_rbTypeTrackDefault->GetValue())
       m_props->TrackType = TRACKTYPE_DEFAULT;
     else if (m_rbTypeTrackAlways->GetValue())
@@ -730,7 +730,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
     width = wxMin(width, dx * 13);
   }
   m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-  
+
   s_width = tkz.GetNextToken();
   width = dx * 12;
   if (s_width.ToLong(&lwidth)) {
@@ -773,13 +773,13 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER, width);
 
   s_width = tkz.GetNextToken();
-  width = dx * 8;  
+  width = dx * 8;
   if (s_width.ToLong(&lwidth)) {
       width = wxMax(dx * 2, lwidth);
       width = wxMin(width, dx * 10);
   }
   m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER, width);  //Has
-  
+
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
   m_pButtonNew = new wxButton(this, wxID_ANY, _("New..."), wxDefaultPosition,
@@ -906,29 +906,29 @@ options::options(MyFrame* parent, wxWindowID id, const wxString& caption,
 }
 
 options::~options(void) {
-    
+
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
     if (nb)
         nb->Disconnect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                                     wxListbookEventHandler(options::OnChartsPageChange),
                                     NULL, this);
-        
+
   groupsPanel->EmptyChartGroupArray(m_pGroupArray);
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
   delete smallFont;
-  
+
 }
 
 // with AIS it's called very often
 #if wxCHECK_VERSION(3,0,0)
-bool options::SendIdleEvents(wxIdleEvent &event )  { 
+bool options::SendIdleEvents(wxIdleEvent &event )  {
     if (IsShown())
        return wxDialog::SendIdleEvents(event);
    return false;
 }
-#endif    
+#endif
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
@@ -942,7 +942,7 @@ void options::RecalculateSize(void) {
 
     Fit();
     m_nCharWidthMax = GetSize().x / GetCharWidth();
-    
+
     return;
   }
 
@@ -962,7 +962,7 @@ void options::RecalculateSize(void) {
   int yp = (canvas_size.y - fsize.y) / 2;
   wxPoint xxp = GetParent()->ClientToScreen(canvas_pos);
   Move(xxp.x + xp, xxp.y + yp);
-  
+
   m_nCharWidthMax = GetSize().x / GetCharWidth();
 }
 
@@ -985,7 +985,7 @@ void options::Init(void) {
   k_tides = 0;
   smallFont = 0;
   m_pConfig = NULL;
-  
+
   activeSizer = NULL;
   itemActiveChartStaticBox = NULL;
 
@@ -1365,7 +1365,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
   m_tNetAddress = new wxTextCtrl(m_pNMEAForm, wxID_ANY, wxEmptyString,
                                  wxDefaultPosition, wxSize(m_fontHeight * 4, -1), 0);
   fgSizer1a->Add(m_tNetAddress, 1, wxTOP | wxALIGN_RIGHT, 5);
- 
+
   m_stNetPort = new wxStaticText(m_pNMEAForm, wxID_ANY, _("DataPort"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   fgSizer1a->Add(m_stNetPort, 1, wxALL, 5);
@@ -2337,7 +2337,7 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
   m_lcSources->Refresh();
   FillSourceList();
-    
+
   ShowNMEACommon(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEANet(FALSE);
@@ -2506,30 +2506,30 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   pTrackDaily = new wxCheckBox(itemPanelShip, ID_DAILYCHECKBOX,
                                _("Automatic Daily Tracks at midnight"));
-  
+
   trackSizer1->Add(pTrackDaily, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size);
-    
+
   trackSizer1->Add( 0, 0, 1, wxEXPAND, 0 );
-  
+
 #if wxCHECK_VERSION(2, 9, 0)
 #if  wxUSE_TIMEPICKCTRL
   pTrackDaily->SetLabel(_("Automatic Daily Tracks at"));
   pTrackRotateTime = new wxTimePickerCtrl( itemPanelShip, ID_TRACKROTATETIME, wxDateTime((time_t)g_track_rotate_time).ToUTC(), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
-#endif  
 #endif
-    
+#endif
+
   pTrackRotateComputerTime = new wxRadioButton( itemPanelShip, ID_TRACKROTATECOMPUTER, _("Computer"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateComputerTime, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
-    
+
   pTrackRotateUTC = new wxRadioButton( itemPanelShip, ID_TRACKROTATEUTC, _("UTC"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateUTC, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
-    
+
   pTrackRotateLMT = new wxRadioButton( itemPanelShip, ID_TRACKROTATELMT, _("LMT"), wxDefaultPosition, wxDefaultSize, 0 );
   trackSizer1->Add( pTrackRotateLMT, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT, border_size );
 
   trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
-    
+
   pTrackHighlite =
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
   trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
@@ -2659,9 +2659,9 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
                     0, pListBoxStrings, wxLB_MULTIPLE);
 
 #ifdef __OCPN__ANDROID__
-  pActiveChartsList->GetHandle()->setStyleSheet( getScrollBarsStyleSheet() );            
+  pActiveChartsList->GetHandle()->setStyleSheet( getScrollBarsStyleSheet() );
 #endif
-      
+
   activeSizer->Add(pActiveChartsList, 1, wxALL | wxEXPAND, border_size);
 
   pActiveChartsList->Connect(
@@ -2719,8 +2719,8 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   itemFlexGridSizerUpdate->Add(pParseENCButton, 1, wxALL, 5);
 
   itemStaticBoxSizerUpdate->Add( itemFlexGridSizerUpdate, 1, wxEXPAND, 5 );
-  
-  
+
+
   chartPanel->Layout();
 }
 
@@ -3261,7 +3261,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
 
 // #if defined(__WXMSW__) || defined(__WXOSX__)
 //     wxString* ps57CtlListBoxStrings = NULL;
-// 
+//
 //     ps57CtlListBox = new wxCheckListBox(
 //         ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition, wxSize(250, 350), 0,
 //         ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT);
@@ -3277,7 +3277,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     itemButtonClearList = new wxButton(ps57Ctl, ID_CLEARLIST, _("Clear All"));
     btnRow1->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow1);
-    
+
     wxBoxSizer* btnRow2 = new wxBoxSizer(wxHORIZONTAL);
     itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
@@ -3477,12 +3477,12 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     itemButtonClearList = new wxButton(ps57Ctl, ID_CLEARLIST, _("Clear All"));
     btnRow1->Add(itemButtonClearList, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow1);
-    
+
     wxBoxSizer* btnRow2 = new wxBoxSizer(wxHORIZONTAL);
     itemButtonSetStd = new wxButton(ps57Ctl, ID_SETSTDLIST, _("Reset to STANDARD"));
     btnRow2->Add(itemButtonSetStd, 1, wxALL | wxEXPAND, group_item_spacing);
     marinersSizer->Add(btnRow2);
-    
+
 
 // #if defined(__WXMSW__) || defined(__WXOSX__)
 //     wxString* ps57CtlListBoxStrings = NULL;
@@ -3533,97 +3533,94 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   btnSizer->Add(removeButton, 1, wxALL | wxEXPAND, group_item_spacing);
 }
 
-void options::CreatePanel_ChartGroups(size_t parent, int border_size,
-                                      int group_item_spacing) {
+void options::CreatePanel_ChartGroups(size_t parent, int border_size, int group_item_spacing)
+{
   // Special case for adding the tab here. We know this page has multiple tabs,
   // and we have the actual widgets in a separate class (because of its
   // complexity)
 
-  m_groupsPage = m_pListbook->GetPage(parent);
-  groupsPanel = new ChartGroupsUI(m_groupsPage);
+  wxWindow *chartsPage = m_pListbook->GetPage(parent);
+  groupsPanel = new ChartGroupsUI(chartsPage);
+
+  groupsPanel->m_panel = AddPage(parent, _("Chart Groups"));
 
   groupsPanel->CreatePanel(parent, border_size, group_item_spacing);
-  wxNotebook* nb = dynamic_cast<wxNotebook*>(m_groupsPage);
-  if (nb) nb->AddPage(groupsPanel, _("Chart Groups"));
 
-  groupsPanel->Scroll(0,0);
-  
 }
 
 void ChartGroupsUI::CreatePanel(size_t parent, int border_size,
-                                int group_item_spacing) {
-  modified = FALSE;
-  m_border_size = border_size;
-  m_group_item_spacing = group_item_spacing;
+                                int group_item_spacing)
+{
 
-  wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
-  SetSizer(topSizer);
-  
-  groupsSizer = new wxFlexGridSizer(4, 2, border_size, border_size);
-  topSizer->Add(groupsSizer, 1, wxALL | wxEXPAND, border_size);
-  
-  groupsSizer->AddGrowableCol(0);
-  groupsSizer->AddGrowableRow(1, 1);
-  groupsSizer->AddGrowableRow(3, 1);
+    modified = FALSE;
+    m_border_size = border_size;
+    m_group_item_spacing = group_item_spacing;
 
-  m_UIcomplete = FALSE;
-  
-#ifdef __OCPN__ANDROID__  
+
+    m_UIcomplete = FALSE;
+
+#ifdef __OCPN__ANDROID__
   CompletePanel();
-#endif  
-  
+ #endif
+
 }
 
-void ChartGroupsUI::CompletePanel(void) {
+void ChartGroupsUI::CompletePanel(void)
+{
+    m_topSizer = new wxBoxSizer(wxVERTICAL);
+    m_panel->SetSizer(m_topSizer);
+    
   //    The chart file/dir tree
-  wxStaticText* allChartsLabel =
-      new wxStaticText(this, wxID_ANY, _("All Available Charts"));
-  groupsSizer->Add(allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size);
+  wxStaticText* allChartsLabel = new wxStaticText(m_panel, wxID_ANY, _("All Available Charts"));
+  m_topSizer->Add(allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size);
 
-  wxStaticText* dummy1 = new wxStaticText(this, -1, _T(""));
-  groupsSizer->Add(dummy1);
+    wxBoxSizer *sizerCharts = new wxBoxSizer(wxHORIZONTAL);
+    m_topSizer->Add(sizerCharts, 0, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* activeListSizer = new wxBoxSizer(wxVERTICAL);
-  groupsSizer->Add(activeListSizer, 1, wxALL | wxEXPAND, 5);
+  sizerCharts->Add(activeListSizer, 1, wxALL | wxEXPAND, 5);
 
-  allAvailableCtl =
-      new wxGenericDirCtrl(this, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
+  allAvailableCtl = new wxGenericDirCtrl(m_panel, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
                            wxDefaultSize, wxVSCROLL);
   activeListSizer->Add(allAvailableCtl, 1, wxEXPAND);
 
-  m_pAddButton = new wxButton(this, ID_GROUPINSERTDIR, _("Add"));
+  m_pAddButton = new wxButton(m_panel, ID_GROUPINSERTDIR, _("Add"));
   m_pAddButton->Disable();
-  m_pRemoveButton = new wxButton(this, ID_GROUPREMOVEDIR, _("Remove Chart"));
+  m_pRemoveButton = new wxButton(m_panel, ID_GROUPREMOVEDIR, _("Remove Chart"));
   m_pRemoveButton->Disable();
 
+  m_pAddButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnInsertChartItem), NULL, this );
+  m_pRemoveButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnRemoveChartItem), NULL, this );
+
   wxBoxSizer* addRemove = new wxBoxSizer(wxVERTICAL);
+  sizerCharts->Add(addRemove, 0, wxALL | wxEXPAND, m_border_size);
   addRemove->Add(m_pAddButton, 0, wxALL | wxEXPAND, m_group_item_spacing);
-  groupsSizer->Add(addRemove, 0, wxALL | wxEXPAND, m_border_size);
+
+  sizerCharts->AddSpacer(20);
 
   //    Add the Groups notebook control
-  wxStaticText* groupsLabel =
-      new wxStaticText(this, wxID_ANY, _("Chart Groups"));
-  groupsSizer->Add(groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size);
+  wxStaticText* groupsLabel =  new wxStaticText(m_panel, wxID_ANY, _("Chart Groups"));
+  m_topSizer->Add(groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size);
 
-  wxStaticText* dummy2 = new wxStaticText(this, -1, _T(""));
-  groupsSizer->Add(dummy2);
+
+  wxBoxSizer *sizerGroups = new wxBoxSizer(wxHORIZONTAL);
+  m_topSizer->Add(sizerGroups, 0, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* nbSizer = new wxBoxSizer(wxVERTICAL);
-  m_GroupNB = new wxNotebook(this, ID_GROUPNOTEBOOK, wxDefaultPosition,
-                             wxDefaultSize, wxNB_TOP);
+  sizerGroups->Add(nbSizer, 1, wxALL | wxEXPAND, m_border_size);
+  m_GroupNB = new wxNotebook(m_panel, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP);
   nbSizer->Add(m_GroupNB, 1, wxEXPAND);
-  groupsSizer->Add(nbSizer, 1, wxALL | wxEXPAND, m_border_size);
 
+  m_GroupNB->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(ChartGroupsUI::OnGroupPageChange), NULL, this);
+  
   //    Add default (always present) Default Chart Group
-  wxPanel* allActiveGroup =
-      new wxPanel(m_GroupNB, -1, wxDefaultPosition, wxDefaultSize);
+  wxPanel* allActiveGroup = new wxPanel(m_GroupNB, -1, wxDefaultPosition, wxDefaultSize);
   m_GroupNB->AddPage(allActiveGroup, _("All Charts"));
 
   wxBoxSizer* page0BoxSizer = new wxBoxSizer(wxHORIZONTAL);
   allActiveGroup->SetSizer(page0BoxSizer);
 
-  defaultAllCtl = new wxGenericDirCtrl(
-      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
+  defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
 
   //    Set the Font for the All Active Chart Group tree to be italic, dimmed
   iFont = new wxFont(*dialogFont);
@@ -3635,26 +3632,28 @@ void ChartGroupsUI::CompletePanel(void) {
   m_DirCtrlArray.Add(defaultAllCtl);
 
   //    Add the Chart Group (page) "New" and "Delete" buttons
-  m_pNewGroupButton = new wxButton(this, ID_GROUPNEWGROUP, _("New Group..."));
-  m_pDeleteGroupButton =
-      new wxButton(this, ID_GROUPDELETEGROUP, _("Delete Group"));
+  m_pNewGroupButton = new wxButton(m_panel, ID_GROUPNEWGROUP, _("New Group..."));
+  m_pDeleteGroupButton = new wxButton(m_panel, ID_GROUPDELETEGROUP, _("Delete Group"));
+
+  m_pNewGroupButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnNewGroup), NULL, this );
+  m_pDeleteGroupButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnDeleteGroup), NULL, this );
 
   wxBoxSizer* newDeleteGrp = new wxBoxSizer(wxVERTICAL);
-  groupsSizer->Add(newDeleteGrp, 0, wxALL, m_border_size);
+  sizerGroups->Add(newDeleteGrp, 0, wxALL, m_border_size);
 
   newDeleteGrp->AddSpacer(25);
   newDeleteGrp->Add(m_pNewGroupButton, 0, wxALL | wxEXPAND,
                     m_group_item_spacing);
+  newDeleteGrp->AddSpacer(15);
   newDeleteGrp->Add(m_pDeleteGroupButton, 0, wxALL | wxEXPAND,
                     m_group_item_spacing);
   newDeleteGrp->AddSpacer(25);
   newDeleteGrp->Add(m_pRemoveButton, 0, wxALL | wxEXPAND, m_group_item_spacing);
 
-  // Connect this last, otherwise handler is called before all objects are
-  // initialized.
-  this->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED,
-                wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL,
-                this);
+  sizerGroups->AddSpacer(20);
+
+  // Connect this last, otherwise handler is called before all objects are initialized.
+   m_panel->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL,  this);
 
   m_UIcomplete = TRUE;
 }
@@ -3823,26 +3822,26 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSmoothPanZoom = new wxCheckBox(pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                     _("Smooth Panning / Zooming"));
     boxCtrls->Add(pSmoothPanZoom, inputFlags);
-    
+
 #ifdef __OCPN__ANDROID__
     pSmoothPanZoom->Hide();
 #endif
-    
+
     pEnableZoomToCursor =
         new wxCheckBox(pDisplayPanel, ID_ZTCCHECKBOX, _("Zoom to Cursor"));
     pEnableZoomToCursor->SetValue(FALSE);
     boxCtrls->Add(pEnableZoomToCursor, inputFlags);
-    
+
 #ifdef __OCPN__ANDROID__
     pEnableZoomToCursor->Hide();
 #endif
-    
-#ifndef __OCPN__ANDROID__    
+
+#ifndef __OCPN__ANDROID__
     // spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
 #endif
-    
+
     // Display Options
     wxBoxSizer* boxDisp = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDisp, groupInputFlags);
@@ -3943,7 +3942,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     //  Mag Heading user variation
 
     wxStaticBox* itemStaticBoxVar = new wxStaticBox(panelUnits, wxID_ANY, _T(""));
-    
+
     wxStaticBoxSizer* itemStaticBoxSizerVar = new wxStaticBoxSizer(itemStaticBoxVar, wxVERTICAL);
     wrapperSizer->Add(itemStaticBoxSizerVar, 0, wxALL | wxEXPAND, 5);
 
@@ -3951,7 +3950,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, _("Assumed magnetic variation") );
     itemStaticBoxSizerVar->Add(itemStaticTextUserVar, 1, wxEXPAND | wxALL, group_item_spacing);
-    
+
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     itemStaticBoxSizerVar->Add(magVarSizer, 1, wxEXPAND | wxALL, group_item_spacing);
 
@@ -3962,7 +3961,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     magVarSizer->Add(pMagVar, 0, wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
     itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
-    
+
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
 
     itemStaticBoxSizerVar->Add(0, border_size * 40);
@@ -4319,11 +4318,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                               border_size);
 
   wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
-  
+
   int fLayout = wxHORIZONTAL;
   if(m_nCharWidthMax <  40)
       fLayout = wxVERTICAL;
-  
+
   wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer(itemFontStaticBox, fLayout);
   m_itemBoxSizerFontPanel->Add(itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size);
 
@@ -4390,7 +4389,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __OCPN__ANDROID__
   pShowMenuBar->Hide();
 #endif
-  
+
   pShowChartBar = new wxCheckBox(itemPanelFont, wxID_ANY, _("Show Chart Bar"));
   pShowChartBar->SetValue(g_bShowChartBar);
   miscOptions->Add(pShowChartBar, 0, wxALL, border_size);
@@ -4453,7 +4452,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pMobile->Hide();
   pResponsive->Hide();
 #endif
-  
+
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
@@ -4483,7 +4482,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __WXQT__
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
-  
+
   miscOptions->AddSpacer(20);
 }
 
@@ -4500,7 +4499,7 @@ void options::CreateControls(void) {
       wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 
   m_nCharWidthMax = GetSize().x / GetCharWidth();
-      
+
   // Some members (pointers to controls) need to initialized
   pEnableZoomToCursor = NULL;
   pSmoothPanZoom = NULL;
@@ -4578,7 +4577,7 @@ void options::CreateControls(void) {
   //  In wxQT, we can dynamically style the little scroll buttons on a small
   //  display, to make them bigger
   m_pListbook->GetHandle()->setStyleSheet( getListBookStyleSheet() );
-  
+
 #endif
 
 #ifdef __WXMSW__
@@ -4657,23 +4656,23 @@ void options::CreateControls(void) {
     bmps = style->GetIcon(_T("Display"));
     int base_size = bmps.GetWidth();
     double tool_size = base_size;
-    
+
     double premult = 1.0;
-    
+
     // unless overridden by user, we declare the "best" size
     // to be roughly 6 mm square.
     double target_size = 6.0;                // mm
-    
+
     double basic_tool_size_mm = tool_size / g_Platform->GetDisplayDPmm();
     premult = target_size / basic_tool_size_mm;
-    
+
     //Adjust the scale factor using the global GUI scale parameter
     double postmult =  exp( g_GUIScaleFactor * (0.693 / 5.0) );       //  exp(2)
     postmult = wxMin(postmult, 3.0);
     postmult = wxMax(postmult, 1.0);
-    
+
     int sizeTab = base_size * postmult * premult;
-    
+
     m_topImgList = new wxImageList(sizeTab, sizeTab, TRUE, 1);
 
     wxBitmap bmp;
@@ -4735,19 +4734,20 @@ void options::CreateControls(void) {
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
 
   m_pageCharts = CreatePanel(_("Charts"));
-  
-  
-  
+
+
+
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
   // ChartGroups must be created after ChartsLoad and must be at least third
   CreatePanel_ChartGroups(m_pageCharts, border_size, group_item_spacing);
+  RecalculateSize();
   CreatePanel_TidesCurrents(m_pageCharts, border_size, group_item_spacing);
 
   wxNotebook* nb = dynamic_cast<wxNotebook*>(m_pListbook->GetPage(m_pageCharts));
   if (nb){
-      
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__      
+
+#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
       nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                                   wxListbookEventHandler(options::OnChartsPageChange),
                                   NULL, this);
@@ -4755,11 +4755,11 @@ void options::CreateControls(void) {
       nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                   wxNotebookEventHandler(options::OnChartsPageChange),
                   NULL, this);
-      
+
 #endif
   }
-      
-      
+
+
   m_pageConnections = CreatePanel(_("Connections"));
 #ifndef __OCPN__ANDROID__
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -4820,8 +4820,8 @@ void options::SetInitialSettings(void) {
 
   m_returnChanges = 0;                  // reset the flags
   m_bfontChanged = false;
-  
-  
+
+
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
 
@@ -5013,9 +5013,9 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%4.1f"), g_ShowMoored_Kts);
   m_pText_Moored_Speed->SetValue(s);
-  
+
   m_pCheck_Scale_Priority->SetValue(g_bAllowShowScaled);
-  
+
   s.Printf(_T("%i"), g_ShowScaled_Num);
   m_pText_Scale_Priority->SetValue(s);
 
@@ -5071,27 +5071,27 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%d"), g_nAutoHideToolbar);
   pToolbarHideSecs->SetValue(s);
-  
+
   //  Serial ports
-  
+
   delete m_pSerialArray;
   m_pSerialArray = NULL;
   m_pSerialArray = EnumerateSerialPorts();
-  
+
   if (m_pSerialArray) {
       m_comboPort->Clear();
       for (size_t i = 0; i < m_pSerialArray->Count(); i++) {
           m_comboPort->Append(m_pSerialArray->Item(i));
       }
   }
-  
+
   //  On some platforms, the global connections list may be changed outside of the options dialog.
   //  Pick up any changes here, and re-populate the dialog list.
   FillSourceList();
-  
+
   //  Reset the touch flag...
   connectionsaved = true;
-  
+
 }
 
 void options::resetMarStdList(bool bsetConfig, bool bsetStd)
@@ -5100,37 +5100,37 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
         //    S52 Primary Filters
         ps57CtlListBox->Clear();
         marinersStdXref.clear();
-        
+
         for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++) {
             OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
 
             if( !strncmp(pOLE->OBJLName, "CBLARE", 6))
                 int yyp = 3;
-                
+
             wxString item;
             if (iPtr < ps52plib->OBJLDescriptions.size()) {
                 item = ps52plib->OBJLDescriptions[iPtr];
             } else {
                 item = wxString(pOLE->OBJLName, wxConvUTF8);
             }
-            
-            
+
+
             // Find the most conservative Category, among Point, Area, and Line LUPs
             DisCat cat = OTHER;
- 
+
             DisCat catp = ps52plib->findLUPDisCat(pOLE->OBJLName, SIMPLIFIED);
             DisCat cata = ps52plib->findLUPDisCat(pOLE->OBJLName, PLAIN_BOUNDARIES);
             DisCat catl = ps52plib->findLUPDisCat(pOLE->OBJLName, LINES);
-            
+
             if((catp == DISPLAYBASE) || (cata == DISPLAYBASE) || (catl== DISPLAYBASE) )
                 cat = DISPLAYBASE;
             else if((catp == STANDARD) || (cata == STANDARD) || (catl== STANDARD) )
                 cat = STANDARD;
-            
+
             bool benable = true;
             if(cat > 0)
                 benable = cat != DISPLAYBASE;
-            
+
             // The ListBox control will insert entries in sorted order, which means
                 // we need to
                 // keep track of already inserted items that gets pushed down the line.
@@ -5139,20 +5139,20 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
                 for (size_t i = 0; i < iPtr; i++) {
                     if (marinersStdXref[i] >= newpos) marinersStdXref[i]++;
                 }
-                
+
                 bool bviz = 0;
                 if(bsetConfig)
                     bviz = !(pOLE->nViz == 0);
-                
+
                 if(cat == DISPLAYBASE)
                     bviz = true;
-                
+
                 if(bsetStd){
                     if(cat == STANDARD){
                         bviz = true;
                     }
                 }
-                
+
                 ps57CtlListBox->Check(newpos, bviz);
         }
     }
@@ -5160,7 +5160,7 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
     //  Force the wxScrolledWindow to recalculate its scroll bars
     wxSize s = ps57CtlListBox->GetSize();
     ps57CtlListBox->SetSize(s.x, s.y-1);
-    
+
 
 }
 
@@ -5168,7 +5168,7 @@ void options::SetInitialVectorSettings(void)
 {
 #ifdef USE_S57
     m_pSlider_CM93_Zoom->SetValue(g_cm93_zoom_factor);
-    
+
     //    Diplay Category
     if (ps52plib) {
         m_bVectorInit = true;
@@ -5177,7 +5177,7 @@ void options::SetInitialVectorSettings(void)
         #ifdef __OCPN__ANDROID__
         ps57CtlListBox->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
         #endif
-        
+
         int nset = 2;  // default OTHER
         switch (ps52plib->GetDisplayCategory()) {
             case (DISPLAYBASE):
@@ -5196,15 +5196,15 @@ void options::SetInitialVectorSettings(void)
                 nset = 3;
                 break;
         }
-        
+
         pDispCat->SetSelection(nset);
-        
+
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
         itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
         itemButtonSelectList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
         itemButtonSetStd->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
-                
+
         //  Other Display Filters
         pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
         pCheck_META->SetValue(ps52plib->m_bShowMeta);
@@ -5215,23 +5215,23 @@ void options::SetInitialVectorSettings(void)
         pCheck_XLSECTTEXT->SetValue(ps52plib->m_bExtendLightSectors);
         pCheck_DECLTEXT->SetValue(ps52plib->m_bDeClutterText);
         pCheck_NATIONALTEXT->SetValue(ps52plib->m_bShowNationalTexts);
-        
+
         // Chart Display Style
         if (ps52plib->m_nSymbolStyle == PAPER_CHART)
             pPointStyle->SetSelection(0);
         else
             pPointStyle->SetSelection(1);
-        
+
         if (ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES)
             pBoundStyle->SetSelection(0);
         else
             pBoundStyle->SetSelection(1);
-        
+
         if (S52_getMarinerParam(S52_MAR_TWO_SHADES) == 1.0)
             p24Color->SetSelection(0);
         else
             p24Color->SetSelection(1);
-        
+
         // Depths
             pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
             UpdateOptionsUnits();  // sets depth values using the user's unit preference
@@ -5245,7 +5245,7 @@ void options::UpdateOptionsUnits(void) {
 
   depthUnit = wxMax(depthUnit, 0);
   depthUnit = wxMin(depthUnit, 2);
-  
+
   // depth unit conversion factor
   float conv = 1;
   if (depthUnit == 0)  // feet
@@ -5276,12 +5276,12 @@ void options::UpdateOptionsUnits(void) {
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
 #endif
-  
+
   //disable input for variation if WMM is available
   itemStaticTextUserVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
   itemStaticTextUserVar2->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
   pMagVar->Enable(!(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))));
-} 
+}
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
   wxString screenmm = wxString::Format(
@@ -5396,7 +5396,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     }
     else
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
-    
+
   }
 
   if (dlg.GetRebuildCache()) {
@@ -5420,14 +5420,14 @@ void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
   itemButtonClearList->Enable(select);
   itemButtonSelectList->Enable(select);
   itemButtonSetStd->Enable(select);
-  
+
 
   event.Skip();
 }
 
 void options::OnButtonClearClick(wxCommandEvent& event) {
   resetMarStdList(false, false);
-    
+
 //   int nOBJL = ps57CtlListBox->GetCount();
 //   for (int iPtr = 0; iPtr < nOBJL; iPtr++){
 //           ps57CtlListBox->Check(iPtr, FALSE);
@@ -5444,7 +5444,7 @@ void options::OnButtonSelectClick(wxCommandEvent& event) {
 
 void options::OnButtonSetStd(wxCommandEvent& event) {
     resetMarStdList(false, true);
-    
+
     event.Skip();
 }
 
@@ -5544,7 +5544,7 @@ void options::UpdateWorkArrayFromTextCtl(void) {
 }
 
 ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
-       
+
   if (!m_bNMEAParams_shown) return NULL;
 
   //  Special encoding for deleted connection
@@ -5553,7 +5553,7 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 
   //  We check some values here for consistency.
   //  If necessary, set defaults so user will see some result, however wrong...
-    
+
   //  DataStreams should be Input, Output, or Both
   if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
       m_cbInput->SetValue( true );
@@ -5589,7 +5589,7 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
   pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
   pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
-  
+
   pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
   pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
   if (m_rbNetProtoTCP->GetValue())
@@ -5706,7 +5706,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  Any Font changes?
   if(m_bfontChanged)
       m_returnChanges |= FONT_CHANGED;
-  
+
   // Handle Chart Tab
   if (pActiveChartsList) {
     UpdateWorkArrayFromTextCtl();
@@ -5792,7 +5792,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   wxString lastAddr;
   int lastPort = 0;
   NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
-  
+
   if (itemIndex >= 0) {
     int params_index = m_lcSources->GetItemData(itemIndex);
     ConnectionParams* cpo = g_pConnectionParams->Item(params_index);
@@ -5834,7 +5834,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // Recreate datastreams that are new, or have been edited
   for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
     ConnectionParams* cp = g_pConnectionParams->Item(i);
-    
+
     // Stream is new, or edited
     if (cp->b_IsSetup) continue;
     // Terminate and remove any existing stream with the same port name
@@ -5900,7 +5900,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   #ifdef __OCPN__ANDROID__
   g_bsmoothpanzoom = false;
   #endif
-  
+
   long update_val = 1;
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
   g_COGAvgSec = wxMin(static_cast<int>(update_val), MAX_COG_AVERAGE_SECONDS);
@@ -5953,7 +5953,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   int h,m,s;
   if( pTrackRotateTime->GetTime(&h, &m, &s) )
       g_track_rotate_time = h*3600 + m*60 + s;
-#endif  
+#endif
 #endif
 
     if( pTrackRotateUTC->GetValue() )
@@ -5969,8 +5969,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 #ifdef __OCPN__ANDROID__
   g_bEnableZoomToCursor = false;
 #endif
-  
-  
+
+
   // AIS Parameters
   //   CPA Box
   g_bCPAMax = m_pCheck_CPA_Max->GetValue();
@@ -6010,7 +6010,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   long l;
   m_pText_Scale_Priority->GetValue().ToLong(&l);
   g_ShowScaled_Num = (int)l;
-  
+
   g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
   g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
   g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
@@ -6203,7 +6203,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     //  We can clear a few flag bits on "Apply", so they won't be recognised at the "OK" click.
     //  Their actions have already been accomplished once...
     m_returnChanges &= ~( FORCE_UPDATE | SCAN_UPDATE );
-    
+
     cc1->ReloadVP();
   }
 
@@ -6280,15 +6280,15 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 {
     m_returnChanges = PARSE_ENC;
     Finish();
-/*    
+/*
     extern void ParseAllENC();
     ParseAllENC();
     ViewPort vp;
     gFrame->ChartsRefresh(-1, vp, true);
-    
+
     cc1->EnablePaint(true);
-*/    
-}   
+*/
+}
 
 #ifdef USE_LZMA
 #include <lzma.h>
@@ -6500,7 +6500,7 @@ They can be decompressed again using unxz or 7 zip programs."),
     filespecs.Add("*.kap");
     filespecs.Add("*.KAP");
     filespecs.Add("*.000");
-    
+
     // should we verify we are in a cm93 directory for these?
     filespecs.Add("*.A"), filespecs.Add("*.B"), filespecs.Add("*.C"), filespecs.Add("*.D");
     filespecs.Add("*.E"), filespecs.Add("*.F"), filespecs.Add("*.G"), filespecs.Add("*.Z");
@@ -6553,7 +6553,7 @@ They can be decompressed again using unxz or 7 zip programs."),
       return;
   }
 
-    
+
   // TODO: make this use threads
   unsigned long total_size = 0, total_compressed_size = 0, count = 0;
   wxProgressDialog prog(_("OpenCPN Compress Charts"), wxEmptyString, charts.GetCount()+1, this,
@@ -6587,7 +6587,7 @@ They can be decompressed again using unxz or 7 zip programs."),
                        total_size_mb - total_compressed_size_mb,
                        (1 - total_compressed_size_mb / total_size_mb) * 100.0),
       _("OpenCPN Info"));
-  
+
   UpdateWorkArrayFromTextCtl();
 
   if (m_pWorkDirList) {
@@ -6720,7 +6720,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
 void options::OnChartsPageChange(wxListbookEvent& event) {
   unsigned int i = event.GetSelection();
-  
+
   //    User selected Chart Groups Page?
   //    If so, build the remaining UI elements
   if (2 == i) {  // 2 is the index of "Chart Groups" page
@@ -6734,6 +6734,17 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
       groupsPanel->PopulateTrees();
       groupsPanel->m_treespopulated = TRUE;
     }
+    
+//     groupsPanel->m_panel->GetSizer()->Layout();
+//     
+//     int h, w;
+//     groupsPanel->m_panel->GetSize(&w, &h);
+//   
+//     groupsPanel->m_panel->EnableScrolling(true, true);
+//     groupsPanel->m_panel->SetScrollbars(1, 1, w, /*2 * */h);
+//     
+//     groupsPanel->m_panel->Scroll(0,2);
+    
   }
   else if(1 == i){              // Vector charts panel
     LoadS57();
@@ -6756,9 +6767,9 @@ void options::DoOnPageChange(size_t page) {
   //  Sometimes there is a (-1) page selected.
   if(page > 10)
       return;
-  
+
   lastPage = i;
-  
+
   //    User selected Chart Page?
   //    If so, build the "Charts" page variants
   if (1 == i) {  // 2 is the index of "Charts" page
@@ -7130,26 +7141,13 @@ void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
 }
 
 //    Chart Groups dialog implementation
-BEGIN_EVENT_TABLE(ChartGroupsUI, wxScrolledWindow)
-EVT_TREE_ITEM_EXPANDED(wxID_TREECTRL, ChartGroupsUI::OnNodeExpanded)
-EVT_BUTTON(ID_GROUPINSERTDIR, ChartGroupsUI::OnInsertChartItem)
-EVT_BUTTON(ID_GROUPREMOVEDIR, ChartGroupsUI::OnRemoveChartItem)
-EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, ChartGroupsUI::OnGroupPageChange)
-EVT_BUTTON(ID_GROUPNEWGROUP, ChartGroupsUI::OnNewGroup)
-EVT_BUTTON(ID_GROUPDELETEGROUP, ChartGroupsUI::OnDeleteGroup)
-END_EVENT_TABLE()
+ BEGIN_EVENT_TABLE(ChartGroupsUI, wxEvtHandler)
+ EVT_TREE_ITEM_EXPANDED(wxID_TREECTRL, ChartGroupsUI::OnNodeExpanded)
+ EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, ChartGroupsUI::OnGroupPageChange) // This should work under Windows :-(
+ END_EVENT_TABLE()
 
-ChartGroupsUI::ChartGroupsUI(wxWindow* parent) {
-  Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxHSCROLL,
-         _("Chart Groups"));
-
-  int scrollRate = 5;
-#ifdef __OCPN__ANDROID__
-  scrollRate = 1;
-#endif
-
-  SetScrollRate(scrollRate, scrollRate);
-
+ChartGroupsUI::ChartGroupsUI(wxWindow* parent)
+{
   m_GroupSelectedPage = -1;
   m_pActiveChartsTree = 0;
   pParent = parent;
@@ -7201,8 +7199,7 @@ void ChartGroupsUI::PopulateTrees(void) {
     wxString dirname = m_db_dirs.Item(i).fullpath;
     if (!dirname.IsEmpty()) dir_array0.Add(dirname);
   }
-  PopulateTreeCtrl(defaultAllCtl->GetTreeCtrl(), dir_array0,
-                   wxColour(128, 128, 128), iFont);
+  PopulateTreeCtrl(defaultAllCtl->GetTreeCtrl(), dir_array0,  wxColour(128, 128, 128), iFont);
 }
 
 void ChartGroupsUI::CompleteInitialSettings(void) {
@@ -7210,7 +7207,7 @@ void ChartGroupsUI::CompleteInitialSettings(void) {
 
   BuildNotebookPages(m_pGroupArray);
 
-  groupsSizer->Layout();
+  m_panel->GetSizer()->Layout();
 
   m_settingscomplete = TRUE;
   m_treespopulated = TRUE;
@@ -7244,14 +7241,18 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
   }
 }
 
-void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
+void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event)
+{
+    wxGenericDirCtrl* pDirCtrl = 0;
+    wxTreeCtrl* ptree = 0;
+    
   wxString insert_candidate = allAvailableCtl->GetPath();
   if (!insert_candidate.IsEmpty()) {
     if (m_DirCtrlArray.GetCount()) {
-      wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+      pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
       ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
       if (pDirCtrl) {
-        wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
+        ptree = pDirCtrl->GetTreeCtrl();
         if (ptree) {
           if (ptree->IsEmpty()) {
             wxDirItemData* rootData =
@@ -7279,17 +7280,23 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
   modified = TRUE;
   allAvailableCtl->GetTreeCtrl()->UnselectAll();
   m_pAddButton->Disable();
+  if(ptree)
+      ptree->Refresh(true);
 }
 
-void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
+void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event)
+{
+    wxGenericDirCtrl* pDirCtrl = 0;
+    wxTreeCtrl* ptree = 0;
+    
   if (m_DirCtrlArray.GetCount()) {
-    wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+    pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
     ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
 
     if (pDirCtrl) {
       wxString sel_item = pDirCtrl->GetPath();
 
-      wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
+      ptree = pDirCtrl->GetTreeCtrl();
       if (ptree && ptree->GetCount()) {
         wxTreeItemId id = ptree->GetSelection();
         lastDeletedItem = id;
@@ -7332,6 +7339,9 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
       }
     }
   }
+  if(ptree)
+      ptree->Refresh(true);
+  
   event.Skip();
 }
 
@@ -7381,8 +7391,8 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
   pd->SetFont(*qFont);
 
-  pd->Create(this, _("Enter Group Name"), _("New Chart Group"));
-  
+  pd->Create(m_panel, _("Enter Group Name"), _("New Chart Group"));
+
   if (pd->ShowModal() == wxID_OK) {
     if (pd->GetValue().Length()) {
       AddEmptyGroupPage(pd->GetValue());
@@ -7489,7 +7499,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
 void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
 {
   ClearGroupPages();
-  
+
   for (unsigned int i = 0; i < pGroupArray->GetCount(); i++) {
     ChartGroup* pGroup = pGroupArray->Item(i);
     wxTreeCtrl* ptc = AddEmptyGroupPage(pGroup->m_group_name);
@@ -7539,7 +7549,7 @@ void ChartGroupsUI::ClearGroupPages()
     }
 }
 
-            
+
 void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   wxString sel_file;
   int response = wxID_CANCEL;
@@ -7905,9 +7915,9 @@ void options::SetDSFormRWStates(void) {
 void options::SetConnectionParams(ConnectionParams* cp) {
   if(wxNOT_FOUND == m_comboPort->FindString(cp->Port))
        m_comboPort->Append(cp->Port);
-    
+
   m_comboPort->Select(m_comboPort->FindString(cp->Port));
- 
+
   m_cbCheckCRC->SetValue(cp->ChecksumCheck);
   m_cbGarminHost->SetValue(cp->Garmin);
   m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
@@ -7963,10 +7973,10 @@ void options::SetConnectionParams(ConnectionParams* cp) {
     ClearNMEAForm();
 
   m_connection_enabled = cp->bEnabled;
-  
+
   // Reset touch flag
   connectionsaved = true;
-  
+
 }
 
 void options::SetDefaultConnectionParams(void) {
@@ -7985,7 +7995,7 @@ void options::SetDefaultConnectionParams(void) {
   m_choicePriority->Select(m_choicePriority->FindString(_T( "1" )));
 
   m_tNetAddress->SetValue(_T("0.0.0.0"));
-  
+
   bool bserial = TRUE;
 #ifdef __WXGTK__
   if (!g_bserial_access_checked) bserial = FALSE;
@@ -7995,17 +8005,17 @@ void options::SetDefaultConnectionParams(void) {
 #ifdef __OCPN__ANDROID__
   m_rbTypeInternalGPS->SetValue(true);
   SetNMEAFormToGPS();
-#else  
+#else
   m_rbTypeSerial->SetValue(bserial);
   m_rbTypeNet->SetValue(!bserial);
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
 #endif
-  
+
   m_connection_enabled = TRUE;
-  
+
   // Reset touch flag
   connectionsaved = true;
-  
+
 }
 
 void options::OnAddDatasourceClick(wxCommandEvent& event) {
@@ -8083,11 +8093,11 @@ void options::FillSourceList(void) {
 #endif
 
   m_lcSources->SortItems(SortConnectionOnPriority, (long)m_lcSources);
-  
+
   // If space is at a permium, adjust the size of the connections list to the minimum useful
   if(m_bcompact)
     m_lcSources->SetMinSize(wxSize(-1, wxMax((m_fontHeight * 3 / 2), (g_pConnectionParams->Count() + 1) * m_fontHeight)));
-  
+
 }
 
 void options::OnRemoveDatasourceClick(wxCommandEvent& event) {
@@ -8338,10 +8348,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
 #endif
                ),
       m_brebuild_cache(FALSE) {
-          
+
   wxFont* dialogFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*dialogFont);
-          
+
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   wxFlexGridSizer* flexSizer = new wxFlexGridSizer(2);
 

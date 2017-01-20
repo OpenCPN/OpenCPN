@@ -590,9 +590,9 @@ class options : private Uncopyable,
   DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
+class ChartGroupsUI : public wxEvtHandler  {
  public:
-  explicit ChartGroupsUI(wxWindow *parent);
+  ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);
 
   void CreatePanel(size_t parent, int border_size, int group_item_spacing);
@@ -624,12 +624,13 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
 
   bool modified, m_UIcomplete, m_settingscomplete, m_treespopulated;
 
+  wxScrolledWindow *m_panel;
+  
  private:
   int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
                       wxString *pbranch_adder);
 
   wxWindow *pParent;
-  wxFlexGridSizer *groupsSizer;
   wxButton *m_pAddButton, *m_pRemoveButton, *m_pNewGroupButton;
   wxButton *m_pDeleteGroupButton;
   wxGenericDirCtrl *allAvailableCtl, *defaultAllCtl;
@@ -644,6 +645,8 @@ class ChartGroupsUI : private Uncopyable, public wxScrolledWindow {
   ChartGroupArray *m_pGroupArray;
 
   int m_border_size, m_group_item_spacing, m_GroupSelectedPage;
+  
+  wxBoxSizer *m_topSizer;
 
   DECLARE_EVENT_TABLE()
 };
