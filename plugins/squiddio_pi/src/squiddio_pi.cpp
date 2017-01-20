@@ -298,6 +298,12 @@ int squiddio_pi::Init(void) {
 }
 
 bool squiddio_pi::DeInit(void) {
+    
+    if(local_sq_layer){
+        local_sq_layer->SetVisibleOnChart(false);
+        RenderLayerContentsOnChart(local_sq_layer, true);
+    }
+    
     RemovePlugInTool(m_leftclick_tool_id);
 
     if (m_plogs_window) {
@@ -929,9 +935,6 @@ void squiddio_pi::PreferencesDialog(wxWindow* parent) {
 
         SquiddioPrefsDialog * dialog = new SquiddioPrefsDialog(*this, parent);
         
-        wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
-        dialog->SetFont(fo);
- 
         if( m_parent_window ){
             int xmax = m_parent_window->GetSize().GetWidth();
             int ymax = m_parent_window->GetParent()->GetSize().GetHeight();  // This would be the Options dialog itself
@@ -1020,7 +1023,7 @@ void squiddio_pi::SetLogsWindow() {
 }
 
 void squiddio_pi::OnToolbarToolCallback(int id) {
-    PreferencesDialog(m_parent_window);
+    PreferencesDialog(GetOCPNCanvasWindow());
 }
 void squiddio_pi::SetPluginMessage(wxString &message_id,
         wxString &message_body) {
@@ -1142,5 +1145,12 @@ void SquiddioPrefsDialog::OnOKClick(wxCommandEvent& event) {
     Close();
 }
 
-    
+SquiddioPrefsDialog::SquiddioPrefsDialog( squiddio_pi &_sq_pi, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
+: SquiddioPrefsDialogBase( parent, id, title, pos, size, style ), m_sq_pi(_sq_pi) 
+{
+    wxFont fo = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+    SetFont(fo);
+    CreateControls();
+}
+
 

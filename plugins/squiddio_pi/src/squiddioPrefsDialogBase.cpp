@@ -14,8 +14,12 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
+SquiddioPrefsDialogBase::SquiddioPrefsDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) 
+      : wxDialog( parent, id, title, pos, size, style )
+{
+}
 
-SquiddioPrefsDialogBase::SquiddioPrefsDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+void SquiddioPrefsDialogBase::CreateControls( void )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
