@@ -1603,7 +1603,10 @@ bool MyApp::OnInit()
     //  Override for some safe and nice default values if the config file was created from scratch
     if(b_initial_load)
         g_Platform->SetDefaultOptions();
-
+    
+    if(g_vs != g_config_version_string)
+        g_Platform->SetUpgradeOptions(g_vs, g_config_version_string);
+    
     g_Platform->applyExpertMode(g_bUIexpert);
 
     // Now initialize UI Style.
