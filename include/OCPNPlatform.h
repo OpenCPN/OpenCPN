@@ -87,7 +87,8 @@ public:
     
 
     void SetDefaultOptions( void );
-
+    void SetUpgradeOptions( wxString vString, wxString vStringConfig );
+    
     void applyExpertMode(bool mode);
     
 //--------------------------------------------------------------------------

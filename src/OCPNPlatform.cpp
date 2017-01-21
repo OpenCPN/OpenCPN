@@ -247,6 +247,8 @@ bool         g_bEmailCrashReport;
 extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
+extern double                    g_ChartNotRenderScaleFactor;
+
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale                  *plocale_def_lang;
 
@@ -866,6 +868,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_fog_overzoom = false;
     
     g_GUIScaleFactor = 0;               // nominal
+    g_ChartNotRenderScaleFactor = 2.0;
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
@@ -916,10 +919,21 @@ void OCPNPlatform::SetDefaultOptions( void )
         
     
 #endif
-    
-    
-    
 }
+
+//      Setup global options on upgrade detected
+//      The global config object (pConfig) is available, so direct updates are also allowed
+
+void OCPNPlatform::SetUpgradeOptions( wxString vString, wxString vStringConfig )
+{
+#ifdef __OCPN__ANDROID__
+        g_ChartNotRenderScaleFactor = 2.0;
+        g_default_font_size = 22;            //  Experience indicates slightly larger is better
+        
+#endif    
+}
+
+
 
 
 int OCPNPlatform::platformApplyPrivateSettingsString( wxString settings, ArrayOfCDI *pDirArray){
