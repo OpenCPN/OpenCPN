@@ -1583,13 +1583,19 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
         return _T("jenv Error");
     }
     
-    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
-    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
-    jstring p3 = (jenv)->NewStringUTF(parm3.c_str());
-    jstring p4 = (jenv)->NewStringUTF(parm4.c_str());
-
-    const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
+    wxCharBuffer p1b = parm2.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
     
+    wxCharBuffer p2b = parm2.ToUTF8();
+    jstring p2 = (jenv)->NewStringUTF(p2b.data());
+    
+    wxCharBuffer p3b = parm2.ToUTF8();
+    jstring p3 = (jenv)->NewStringUTF(p3b.data());
+    
+    wxCharBuffer p4b = parm2.ToUTF8();
+    jstring p4 = (jenv)->NewStringUTF(p4b.data());
+
+    //const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
     //qDebug() << "Test String p2" << ts;
     
     //  Call the desired method
