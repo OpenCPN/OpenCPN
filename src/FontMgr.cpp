@@ -56,6 +56,8 @@ extern OCPNPlatform     *g_Platform;
 
 wxString s_locale;
 int g_default_font_size;
+wxString g_default_font_facename;
+
 
 FontMgr * FontMgr::instance = NULL;
 
@@ -174,18 +176,19 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int user_default_size )
     int sys_font_size = sys_font.GetPointSize();
     wxString FaceName = sys_font.GetFaceName();
     
-#ifdef __OCPN__ANDROID__
-    sys_font_size = 18;
-    FaceName = _T("Roboto");
-#endif    
-    
-
     int new_size;
-    if( 0 == user_default_size )
-        new_size = sys_font_size;
+    if( 0 == user_default_size ){
+        if(g_default_font_size)
+            new_size = g_default_font_size;
+        else
+            new_size = sys_font_size;
+    }
     else
         new_size = user_default_size;
 
+    if(g_default_font_facename.Length())
+        FaceName = g_default_font_facename;
+    
     wxString nativefont = GetSimpleNativeFont( new_size, FaceName );
     wxFont *nf = wxFont::New( nativefont );
     

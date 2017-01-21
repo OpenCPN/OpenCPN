@@ -241,6 +241,7 @@ extern Select                    *pSelectAIS;
 extern ocpnGLOptions            g_GLOptions;
 #endif
 extern int                      g_default_font_size;
+extern wxString                 g_default_font_facename;
 
 wxLog       *g_logger;
 bool         g_bEmailCrashReport;
@@ -927,8 +928,17 @@ void OCPNPlatform::SetDefaultOptions( void )
 void OCPNPlatform::SetUpgradeOptions( wxString vString, wxString vStringConfig )
 {
 #ifdef __OCPN__ANDROID__
-        g_ChartNotRenderScaleFactor = 2.0;
-        g_default_font_size = 22;            //  Experience indicates slightly larger is better
+
+        if(wxNOT_FOUND != vString.Find(_T("4.5.1"))){            // upgrade
+            g_ChartNotRenderScaleFactor = 2.0;
+        
+        //  Experience indicates a slightly larger default font size is better
+            pConfig->DeleteGroup( _T ( "/Settings/QTFonts" ));
+            g_default_font_size = 20;            
+            g_default_font_facename = _T("Roboto");
+        
+            FontMgr::Get().Shutdown();      // Restart the font manager
+        }
         
 #endif    
 }

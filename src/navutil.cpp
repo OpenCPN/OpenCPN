@@ -379,6 +379,7 @@ extern bool             g_benable_rotate;
 extern bool             g_bEmailCrashReport;
 
 extern int              g_default_font_size;
+extern wxString         g_default_font_facename;
 
 extern bool             g_bAutoHideToolbar;
 extern int              g_nAutoHideToolbar;
@@ -532,7 +533,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "DefaultFontSize"), &g_default_font_size, 0 );
-
+    Read( _T ( "DefaultFontFacename"), &g_default_font_facename, _T("") );
+    
     Read( _T ( "TrackContinuous" ), &g_btrackContinuous, 0 );
     
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
@@ -1850,6 +1852,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowMenuBar" ), m_bShowMenuBar );
 #endif
     Write( _T ( "DefaultFontSize" ), g_default_font_size );
+    Write( _T ( "DefaultFontFacename" ), g_default_font_facename );
     
     Write( _T ( "Fullscreen" ), g_bFullscreen );
     Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
