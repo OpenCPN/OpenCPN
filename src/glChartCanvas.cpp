@@ -2905,12 +2905,14 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         //  This test does not need to be done for raster charts, since
         //  we can assume that texture binding is acceptably fast regardless of the render region,
         //  and that the quilt zoom methods choose a reasonable reference chart.
-        if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
+        
+        //  However, it is safer do this test on all charts, letting the factor g_ChartNotRenderScaleFactor ultimately determine whether to render
+//        if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
         {
-//                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-//                    chart = cc1->m_pQuilt->GetNextChart();
-//                    continue;
-//                }
+                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+                    chart = cc1->m_pQuilt->GetNextChart();
+                    continue;
+                }
         }
 
         QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();

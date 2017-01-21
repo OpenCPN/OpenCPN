@@ -586,7 +586,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_glcc = NULL;
     m_pGLcontext = NULL;
     
-    g_ChartNotRenderScaleFactor = 2.0;
 
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
