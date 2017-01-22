@@ -253,7 +253,9 @@ void MenuPrepend1( wxMenu *menu, int id, wxString label)
     item->SetFont(sFont);
 #endif
     
+    menu->InsertSeparator(0);
     menu->Prepend(item);
+    
 }
 
 void MenuAppend1( wxMenu *menu, int id, wxString label)
@@ -271,6 +273,7 @@ void MenuAppend1( wxMenu *menu, int id, wxString label)
 #endif
     
     menu->Append(item);
+    menu->AppendSeparator();
 }
 
 void SetMenuItemFont1(wxMenuItem *item)
@@ -833,9 +836,18 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     //        Invoke the correct focused drop-down menu
     
+    #ifdef __OCPN__ANDROID__
+    androidEnableBackButton( false );
+    androidEnableOptionsMenu( false );
+    #endif
+    
     parent->PopupMenu( menuFocus, x, y );
 
-
+    #ifdef __OCPN__ANDROID__
+    androidEnableBackButton( true );
+    androidEnableOptionsMenu( true );
+    #endif
+    
     // Cleanup
     delete contextMenu;
     delete menuAIS;
