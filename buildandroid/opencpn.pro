@@ -314,6 +314,10 @@ INSTALLS += so_dashboard_plugin_deployment
 #SVG
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard.svg
 svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/Dashboard_toggled.svg
+svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/plus.svg
+svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/minus.svg
+svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/dial.svg
+svg_dashboard_plugin_deployment.files +=$$PWD/../plugins/dashboard_pi/data/instrument.svg
 svg_dashboard_plugin_deployment.path = /assets/files/plugins/dashboard_pi/data
 INSTALLS += svg_dashboard_plugin_deployment
 
