@@ -108,6 +108,7 @@ extern MyConfig                  *pConfig;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool                      g_bshowToolbar;
+extern bool                      g_bexpert;
 extern bool                      g_bBasicMenus;
 extern bool                      g_bUIexpert;
 
@@ -960,7 +961,7 @@ int OCPNPlatform::platformApplyPrivateSettingsString( wxString settings, ArrayOf
 void OCPNPlatform::applyExpertMode(bool mode)
 {
 #ifdef __OCPN__ANDROID__
-    g_bshowToolbar = mode;               // no toolbar unless in exprt mode
+    g_bexpert = mode;                   // toolbar only shows plugin icons if expert mode is false
     g_bBasicMenus = !mode;              //  simplified context menus in basic mode
 #endif
 

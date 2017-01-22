@@ -217,6 +217,7 @@ ThumbWin                  *pthumbwin;
 TCMgr                     *ptcmgr;
 
 bool                      g_bshowToolbar = true;
+bool                      g_bexpert = true;
 bool                      g_bBasicMenus = false;;
 
 bool                      bDrawCurrentValues;
@@ -2861,6 +2862,9 @@ void MyFrame::DestroyMyToolbar()
 
 bool _toolbarConfigMenuUtil( int toolid, wxString tipString )
 {
+    if(!g_bexpert)
+        return false;                   //  When export mode is false, only plugin tools are shown
+    
     wxMenuItem* menuitem;
 
     if( toolid == ID_MOB && g_bPermanentMOBIcon ) return true;
@@ -3670,7 +3674,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 #ifdef __OCPN__ANDROID__
     qDebug() << "Calling OnExit()";
     wxTheApp->OnExit();
-    
 #endif
 
 }
