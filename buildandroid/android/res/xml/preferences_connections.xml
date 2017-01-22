@@ -27,7 +27,7 @@
 
         <CheckBoxPreference
             android:key="prefb_USBDP"
-            android:title="Detected USB Device"
+            android:title="@string/ocpn_prefs_conn_detected"
             android:summary="@string/ocpn_prefs_conn_summary_compatible"
             android:defaultValue="false" />
 

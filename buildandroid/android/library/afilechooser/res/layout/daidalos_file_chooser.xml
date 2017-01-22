@@ -45,7 +45,7 @@
         android:id="@+id/afdLabelFileHdr"
         android:layout_width="match_parent"
         android:gravity="left"
-        android:text="Current Directory:"
+        android:text="@string/ocpn_currentDirectory"
         android:layout_height="wrap_content"
         android:textColor="@android:color/primary_text_dark" />
 
