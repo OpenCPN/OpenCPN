@@ -1228,7 +1228,7 @@ msgid "Chart Information Objects"
 msgstr "Cartes : Informations relatives aux objets."
 #
 msgid "Chart Object scale factor"
-msgstr "Facteur d'échelle des objets affichables"
+msgstr "Objets affich. : Facteur d'échelle"
 #
 msgid "Chart Texts"
 msgstr "Textes de carte"
@@ -1797,7 +1797,7 @@ msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Alerte sur cible : Activer le délai maximum d’acquittement (minutes)"
 #
 msgid "Enable Toolbar auto-hide"
-msgstr "Permettre le masquage automatique de la barre d'outils"
+msgstr "Barre de menu : Masquer automat."
 #
 msgid "Enable Touchscreen interface"
 msgstr "Activer l'interface pour écran tactile"
@@ -1983,7 +1983,7 @@ msgid "For this leg the Great Circle route is "
 msgstr "Pour ce segment, la route orthodromique est "
 #
 msgid "Force Full Database Rebuild"
-msgstr "Forcer la reconstruction de la base de données"
+msgstr "Reconstruire"
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "Format de téléchargement pour Furuno GP3X"
@@ -3513,9 +3513,7 @@ msgid "Remove"
 msgstr "Supprimer"
 #
 msgid "Remove Chart"
-msgstr ""
-"Enlever ce dossier\n"
-" du groupe choisi"
+msgstr "Enlever ce dossier"
 #
 msgid "Remove Connection"
 msgstr "Supprimer une connexion"
@@ -3761,7 +3759,7 @@ msgid "Scale Out"
 msgstr "Echelle -"
 #
 msgid "Scan Charts and Update Database"
-msgstr "Analyser les dossiers et mettre à jour la base de données"
+msgstr "Dossiers: Analyser & Mettre à jour"
 #
 msgid "Search and Rescue Vessel"
 msgstr "Navire de recherche et sauvetage en mer"
@@ -3888,7 +3886,7 @@ msgid "Show Chart Outlines"
 msgstr "Montrer la bordure des cartes"
 #
 msgid "Show Compass/GPS Status Window"
-msgstr "Montrer les indicateurs : Nord de la carte et état du GPS"
+msgstr "Indicateurs, Nord & GPS"
 #
 msgid "Show Current Information"
 msgstr "Montrer les informations relatives aux courants"
@@ -4607,7 +4605,7 @@ msgid "Unspecified"
 msgstr "Non spécifié"
 #
 msgid "Update Control"
-msgstr "Contrôler la mise à jour"
+msgstr "Base de données : Adapter"
 #
 msgid "Uruguay"
 msgstr "Uruguay"
@@ -4651,7 +4649,7 @@ msgid "User Interface"
 msgstr "Personnaliser"
 #
 msgid "User Interface scale factor"
-msgstr "Facteur d'échelle de l'interface utilisateur"
+msgstr "Interf. utilisat. : Facteur d'échelle"
 #
 msgid "User X Offset"
 msgstr "Perso. : X"
