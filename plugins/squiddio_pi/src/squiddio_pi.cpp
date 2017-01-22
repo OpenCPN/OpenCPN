@@ -193,25 +193,27 @@ int squiddio_pi::Init(void) {
     last_online_chk = 0;
     last_online =false;
 
+    local_sq_layer = NULL;
+    
     wxMenu dummy_menu;
 
     wxMenuItem *pmi = new wxMenuItem(&dummy_menu, -1,
-            _("Show local sQuiddio destinations"));
+            _("Show sQuiddio POIs"));
     m_show_id = AddCanvasContextMenuItem(pmi, this);
     SetCanvasContextMenuItemViz(m_show_id, false);
 
     wxMenuItem *pmih = new wxMenuItem(&dummy_menu, -1,
-            _("Hide local sQuiddio destinations"));
+            _("Hide sQuiddio POIs"));
     m_hide_id = AddCanvasContextMenuItem(pmih, this);
     SetCanvasContextMenuItemViz(m_hide_id, false);
 
     wxMenuItem *updi = new wxMenuItem(&dummy_menu, -1,
-            _("Download local sQuiddio destinations"));
+            _("Download sQuiddio POIs"));
     m_update_id = AddCanvasContextMenuItem(updi, this);
     SetCanvasContextMenuItemViz(m_update_id, true);
 
     wxMenuItem *repi = new wxMenuItem(&dummy_menu, -1,
-            _("Report a Destination at this location"));
+            _("Report a POI here"));
     m_report_id = AddCanvasContextMenuItem(repi, this);
     SetCanvasContextMenuItemViz(m_report_id, true);
 
