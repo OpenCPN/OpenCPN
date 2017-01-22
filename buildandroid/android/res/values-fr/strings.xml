@@ -15,6 +15,7 @@
 <string name="ocpn_action_settings_basic">"Paramètres OpenCPN"</string>
 <string name="ocpn_action_encText">"Textes : Montrer/Cacher"</string>
 <string name="ocpn_action_encSoundings">"Sondes : Montrer/Cacher"</string>
+<string name="ocpn_action_encLights">Feux : Montrer/Cacher</string>
 <string name="ocpn_action_googlemaps">"Utiliser Google Maps"</string>
 <string name="ocpn_action_toggle_fullscreen">"Plein écran : Oui/Non"</string>
 
@@ -39,7 +40,7 @@
 <string name="ocpn_prefs_display_chartscalefactor">"Facteur d'échelle : Objets affichables"</string>
 <string name="ocpn_prefs_display_expertmode">"Mode expert"</string>
 <string name="ocpn_prefs_display_summary_nav_mode">"Voir en avant du bateau : Décentrer la carte"</string>
-<string name="ocpn_prefs_display_summary_quilt">"Afficher plusieurs cartes à votre position 
+<string name="ocpn_prefs_display_summary_quilt">"Afficher plusieurs cartes à votre position
 "</string>
 <string name="ocpn_prefs_display_summary_grid">"Grille : Afficher"</string>
 <string name="ocpn_prefs_display_summary_outlines">"La bordure de la carte affichée apparait de façon contrastée"</string>
@@ -48,7 +49,7 @@
 <string name="ocpn_prefs_display_summary_depthunits">"Unités de profondeur affichées en relief sur zone de carte"</string>
 <string name="ocpn_prefs_display_summary_uiscalefactor">"Affecte les barres d'outils, les dialogues et les polices GUI."</string>
 <string name="ocpn_prefs_display_summary_chartscalefactor">"Affecte les objets de carte tels que : marques, balises, texte, etc."</string>
-<string name="ocpn_prefs_display_summary_expertmode">"Barre de menu : Afficher"</string>
+<string name="ocpn_prefs_display_summary_expertmode">"Barre d'icones: Oui/Non"</string>
 <string name="ocpn_prefs_display_navigation_mode_NU">"Nord vers le haut"</string>
 <string name="ocpn_prefs_display_navigation_mode_CU">"COG vers le haut"</string>
 <string name="ocpn_prefs_display_nosleep">"Ne pas mettre en veille"</string>
@@ -79,7 +80,7 @@
 <string name="ocpn_prefs_charts_vectorshowlabel">"Afficher étiquettes balise et feu"</string>
 <string name="ocpn_prefs_charts_vectorshowdescrip">"Caractéristiques des feux : Afficher"</string>
 <string name="ocpn_prefs_charts_vectorshowimportant">"Texte important seulement : Oui/Non"</string>
-<string name="ocpn_prefs_charts_vectorshowreduced">"Afficher des détails réduits pour descriptions de feu de petite échelle"</string>
+<string name="ocpn_prefs_charts_vectorshowreduced">"Détails réduits aux petites échelles"</string>
 <string name="ocpn_prefs_charts_vectorshallowdepth">"Faible profondeur"</string>
 <string name="ocpn_prefs_charts_vectorsafetydepth">"Profondeur de sécurité"</string>
 <string name="ocpn_prefs_charts_vectordeepdepth">"Profondeur importante"</string>
@@ -94,6 +95,7 @@
 <string name="ocpn_prefs_conn_summary_internal">"GPS , permettre ce choix : Activer"</string>
 <string name="ocpn_prefs_conn_summary_compatible">"   ou récepteur GPS compatible"</string>
 <string name="ocpn_prefs_conn_summary_continuous">"   ...même si en pause / en veille"</string>
+<string name="ocpn_prefs_conn_detected">"Matériel USB détecté"</string>
 
 <!-- Grib Display Headers -->
 <string name="ocpn_grib_display_head_general">"Général"</string>

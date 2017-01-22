@@ -89,7 +89,7 @@
     <string name="ocpn_prefs_charts_vectorshowlabel">Show Buoy and Light Labels</string>
     <string name="ocpn_prefs_charts_vectorshowdescrip">Show Light Descriptions</string>
     <string name="ocpn_prefs_charts_vectorshowimportant">Show Important Text Only</string>
-    <string name="ocpn_prefs_charts_vectorshowreduced">Show Reduced Detail at Small ScaleLight Descriptions</string>
+    <string name="ocpn_prefs_charts_vectorshowreduced">Show Reduced Detail at Small Scale</string>
     <string name="ocpn_prefs_charts_vectorshallowdepth">Shallow Depth</string>
     <string name="ocpn_prefs_charts_vectorsafetydepth">Safety Depth</string>
     <string name="ocpn_prefs_charts_vectordeepdepth">Deep Depth</string>
@@ -97,13 +97,14 @@
     <!-- Connections Preferences -->
     <string name="ocpn_prefs_conn_internal">Internal GPS Receiver</string>
     <string name="ocpn_prefs_conn_prolificPL203">Prolific PL2303</string>
-    <string name="ocpn_prefs_conn_daisy">dAISy AIS Receive</string>
+    <string name="ocpn_prefs_conn_daisy">dAISy AIS Receiver</string>
     <string name="ocpn_prefs_conn_FT232R">FTDI FT232R</string>
     <string name="ocpn_prefs_conn_FT231X">FTDI FT231X</string>
     <string name="ocpn_prefs_conn_continuous">Enable continuous GPS tracking</string>
     <string name="ocpn_prefs_conn_summary_internal">Activate GPS to enable this choice.</string>
     <string name="ocpn_prefs_conn_summary_compatible">   or compatible GPS receiver</string>
     <string name="ocpn_prefs_conn_summary_continuous">   ...even while paused/asleep</string>
+    <string name="ocpn_prefs_conn_detected">Detected USB Device</string>
 
 
     <!-- Grib Display Headers -->
