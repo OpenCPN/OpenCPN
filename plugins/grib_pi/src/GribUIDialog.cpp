@@ -99,13 +99,18 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
 static wxString TToString( const wxDateTime date_time, const int time_zone )
 {
     wxDateTime t( date_time );
+    wxString formatString = _T(" %a %d-%b-%Y  %H:%M ");
+#ifdef __OCPN__ANDROID__
+    formatString = _T(" %d-%b-%Y %H:%M  ");
+#endif
+    
     switch( time_zone ) {
         case 0:
 			if( (wxDateTime::Now() == (wxDateTime::Now().ToGMT())) && t.IsDST() )  //bug in wxWingets 3.0 for UTC meridien ?
 				t.Add( wxTimeSpan( 1, 0, 0, 0 ) );
-			return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");
+			return t.Format( formatString, wxDateTime::Local ) + _T("LOC");
         case 1:
-        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
+        default: return t.Format( formatString, wxDateTime::UTC ) + _T("UTC");
     }
 }
 
@@ -707,7 +712,15 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     Layout();
     Fit();
     SetMinSize( GetBestSize() );
+ 
+#ifdef __OCPN__ANDROID__
+    wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
+    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+    SetSize(wxMin(csz.x, sz_nominal.x), -1);
+#else
     SetSize( GetBestSize() );
+#endif    
+    
     Update();
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
@@ -905,12 +918,25 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     GRIBTable *table = new GRIBTable(*this);
 
+    wxFont *qFont = OCPNGetFont(_("Dialog"), 10);
+    table->SetFont(*qFont);
+    
     table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
     table->m_pButtonTableOK->SetLabel(_("Close"));
-
+    
+#ifdef __OCPN__ANDROID__
+    int cw, ch;
+    GetOCPNCanvasWindow()->GetSize(&cw, &ch);
+    w = cw * 5 / 10;
+    h = ch * 5 / 10;
+    table->SetSize(w, h);
+    table->Center();
+#else    
     //set dialog size and position
     table->SetSize(w, h);
     table->SetPosition(wxPoint(x, y));
+#endif
+    
     table->ShowModal();
 }
 
