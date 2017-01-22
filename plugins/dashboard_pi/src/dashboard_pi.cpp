@@ -1764,6 +1764,10 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
     SetFont( *pF );
 #endif
+
+    wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") + wxFileName::GetPathSeparator() +
+    _T("dashboard_pi") + wxFileName::GetPathSeparator()
+    + _T("data") + wxFileName::GetPathSeparator();
     
     Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DashboardPreferencesDialog::OnCloseDialog ),
             NULL, this );
@@ -1796,16 +1800,21 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     
     wxImageList *imglist1 = new wxImageList( imageRefSize, imageRefSize, true, 1 );
     
+    wxBitmap bmDashBoard;
+#ifdef ocpnUSE_SVG
+    wxString filename = shareLocn + _T("Dashboard.svg");
+    bmDashBoard = GetBitmapFromSVGFile(filename, imageRefSize, imageRefSize);
+#else
     wxImage dash1 = wxBitmap( *_img_dashboard_pi ).ConvertToImage();
     wxImage dash1s = dash1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
-    imglist1->Add( wxBitmap( dash1s ) );
+    bmDashBoard = wxBitmap(dash1s);
+#endif
+    
+    imglist1->Add( bmDashBoard );
     
     m_pListCtrlDashboards = new wxListCtrl( itemPanelNotebook01, wxID_ANY, wxDefaultPosition,
                                             wxSize( imageRefSize * 3/2, 200 ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
     
-#ifdef __WXQT__
-    m_pListCtrlDashboards->GetHandle()->setIconSize(QSize(imageRefSize, imageRefSize));
-#endif    
     
     m_pListCtrlDashboards->AssignImageList( imglist1, wxIMAGE_LIST_SMALL );
     m_pListCtrlDashboards->InsertColumn( 0, _T("") );
@@ -1818,17 +1827,27 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxBoxSizer *itemBoxSizer02 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer01->Add( itemBoxSizer02 );
 
+    wxBitmap bmPlus, bmMinus;
+#ifdef ocpnUSE_SVG    
+    bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), imageRefSize/2, imageRefSize/2);
+    bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), imageRefSize/2, imageRefSize/2);
+#else
     wxImage plus1 = wxBitmap( *_img_plus ).ConvertToImage();
     wxImage plus1s = plus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
-    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, wxBitmap( plus1s ),
+    bmPlus = wxBitmap(plus1s);
+    
+    wxImage minus1 = wxBitmap( *_img_minus ).ConvertToImage();
+    wxImage minus1s = minus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
+    bmMinus = wxBitmap(minus1s);
+#endif
+    
+    m_pButtonAddDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmPlus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonAddDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonAddDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnDashboardAdd), NULL, this );
     
-    wxImage minus1 = wxBitmap( *_img_minus ).ConvertToImage();
-    wxImage minus1s = minus1.Scale(imageRefSize/2, imageRefSize/2, wxIMAGE_QUALITY_HIGH);
-    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, wxBitmap( minus1s ),
+    m_pButtonDeleteDashboard = new wxBitmapButton( itemPanelNotebook01, wxID_ANY, bmMinus,
             wxDefaultPosition, wxDefaultSize );
     itemBoxSizer02->Add( m_pButtonDeleteDashboard, 0, wxALIGN_CENTER, 2 );
     m_pButtonDeleteDashboard->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
@@ -1874,14 +1893,23 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     int instImageRefSize = 20 * GetOCPNGUIToolScaleFactor_PlugIn();
     
     wxImageList *imglist = new wxImageList( instImageRefSize, instImageRefSize, true, 2 );
- 
-    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
-    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
-    imglist->Add( wxBitmap(inst1s) );
-    
+
+    wxBitmap bmDial, bmInst;
+#ifdef ocpnUSE_SVG    
+    bmDial = GetBitmapFromSVGFile(shareLocn + _T("dial.svg"), instImageRefSize, instImageRefSize);
+    bmInst = GetBitmapFromSVGFile(shareLocn + _T("instrument.svg"), instImageRefSize, instImageRefSize);
+#else
     wxImage dial1 = wxBitmap( *_img_dial ).ConvertToImage();
     wxImage dial1s = dial1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
-    imglist->Add( wxBitmap(dial1s) );
+    bmDial = wxBitmap(dial1);
+    
+    wxImage inst1 = wxBitmap( *_img_instrument ).ConvertToImage();
+    wxImage inst1s = inst1.Scale(instImageRefSize, instImageRefSize, wxIMAGE_QUALITY_HIGH);
+    bmInst = wxBitmap(inst1s);
+#endif
+    
+    imglist->Add( bmInst );
+    imglist->Add( bmDial );
     
     wxStaticBox* itemStaticBox03 = new wxStaticBox( m_pPanelDashboard, wxID_ANY, _("Instruments") );
     wxStaticBoxSizer* itemStaticBoxSizer03 = new wxStaticBoxSizer( itemStaticBox03, wxHORIZONTAL );
@@ -1897,9 +1925,6 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     
     m_pListCtrlInstruments = new wxListCtrl( m_pPanelDashboard, wxID_ANY, wxDefaultPosition,
             wxSize( -1, vsize ), wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL );
-#ifdef __WXQT__
-    m_pListCtrlInstruments->GetHandle()->setIconSize(QSize(instImageRefSize, instImageRefSize));
-#endif    
     
     itemStaticBoxSizer03->Add( m_pListCtrlInstruments, 1, wxEXPAND | wxALL, border_size );
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -2249,7 +2274,7 @@ void DashboardPreferencesDialog::OnInstrumentUp( wxCommandEvent& event )
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID - 1 );
-    item.SetImage(0);           // image 0, by default
+    //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item ); 
     
@@ -2271,7 +2296,7 @@ void DashboardPreferencesDialog::OnInstrumentDown( wxCommandEvent& event )
     item.SetMask( wxLIST_MASK_TEXT | wxLIST_MASK_IMAGE | wxLIST_MASK_DATA );
     m_pListCtrlInstruments->GetItem( item );
     item.SetId( itemID + 1 );
-    item.SetImage(0);           // image 0, by default
+    //item.SetImage(0);           // image 0, by default
     m_pListCtrlInstruments->DeleteItem( itemID );
     m_pListCtrlInstruments->InsertItem( item );              
     
@@ -2325,9 +2350,6 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
     m_pListCtrlInstruments = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxSize( -1, vsize/*250, 180 */),
             wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING );
     itemBoxSizer01->Add( m_pListCtrlInstruments, 0, wxEXPAND | wxALL, 5 );
-#ifdef __WXQT__
-    m_pListCtrlInstruments->GetHandle()->setIconSize(QSize(instImageRefSize, instImageRefSize));
-#endif    
     
     m_pListCtrlInstruments->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
