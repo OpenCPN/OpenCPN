@@ -284,7 +284,7 @@ wxString callActivityMethod_vs(const char *method);
 //      Globals, accessible only to this module
 
 JavaVM *java_vm;
-JNIEnv* jenv;
+JNIEnv* global_jenv;
 bool     b_androidBusyShown;
 double   g_androidDPmm;
 double   g_androidDensity;
@@ -519,6 +519,8 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 
                 jstring s = data.object<jstring>();
                 
+                JNIEnv* jenv;
+                
                 //  Need a Java environment to decode the resulting string
                 if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
                     //qDebug() << "GetEnv failed.";
@@ -646,7 +648,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved)
     java_vm = vm;
     
     // Get JNI Env for all function calls
-    if (vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+    if (vm->GetEnv( (void **) &global_jenv, JNI_VERSION_1_6) != JNI_OK) {
         return -1;
     }
     
@@ -1070,6 +1072,8 @@ extern "C"{
     {
          const char *sparm;
         wxString wx_sparm;
+        JNIEnv* jenv;
+        
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
             //qDebug() << "GetEnv failed.";
@@ -1246,6 +1250,7 @@ extern "C"{
  
         const char *sparm;
         wxString wx_sparm;
+        JNIEnv* jenv;
         
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
@@ -1308,6 +1313,7 @@ extern "C"{
         const char *sparm;
         wxString MsgID;
         wxString Msg;
+        JNIEnv* jenv;
         
         //  Need a Java environment to decode the string parameter
         if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
@@ -1334,6 +1340,8 @@ void androidTerminate(){
 
 bool CheckPendingJNIException()
 {
+    JNIEnv* jenv;
+    
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
         return true;
 
@@ -1356,6 +1364,8 @@ wxString callActivityMethod_vs(const char *method)
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+    
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1396,6 +1406,7 @@ wxString callActivityMethod_is(const char *method, int parm)
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1430,6 +1441,8 @@ wxString callActivityMethod_iis(const char *method, int parm1, int parm2)
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+   
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1466,6 +1479,7 @@ wxString callActivityMethod_ss(const char *method, wxString parm)
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1515,6 +1529,7 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1565,6 +1580,7 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
 {
     if(CheckPendingJNIException())
         return _T("NOK");
+    JNIEnv* jenv;
     
     wxString return_string;
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
@@ -1640,6 +1656,8 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString p
     }
     
     //  Need a Java environment to decode the resulting string
+    JNIEnv* jenv;
+    
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
         return _T("jenv Error");
@@ -1662,8 +1680,8 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString p
     
     jstring s = data.object<jstring>();
         
-     if( (jenv)->GetStringLength( s )){
-             const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
              return_string = wxString(ret_string, wxConvUTF8);
      }
         
@@ -1715,6 +1733,8 @@ bool androidShowDisclaimer( wxString title, wxString msg )
     
     if ( !activity.isValid() )
         return false;
+    
+    JNIEnv* jenv;
     
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) 
@@ -1963,6 +1983,7 @@ double GetAndroidDisplaySize()
     wxString return_string;
     jstring s = data.object<jstring>();
     
+    JNIEnv* jenv;
     //  Need a Java environment to decode the resulting string
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
@@ -2089,6 +2110,7 @@ wxSize getAndroidDisplayDimensions( void )
     jstring s = data.object<jstring>();
     
     //  Need a Java environment to decode the resulting string
+    JNIEnv* jenv;
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
     }
@@ -2274,6 +2296,7 @@ wxString androidGPSService(int parm)
     jstring s = data.object<jstring>();
     
     //  Need a Java environment to decode the resulting string
+    JNIEnv* jenv;
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
     }
@@ -2303,6 +2326,7 @@ bool androidDeviceHasBlueTooth()
     jstring s = data.object<jstring>();
     
     //  Need a Java environment to decode the resulting string
+    JNIEnv* jenv;
     if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
         //qDebug() << "GetEnv failed.";
     }
