@@ -3713,7 +3713,7 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     int sizeRef = plugin_icon.GetSize().y + 1;
     
     wxBitmap bmp = style->GetIcon( _T("up"), sizeRef, sizeRef, true  );
-    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
+//    qDebug() << bmp.GetSize().x << bmp.GetSize().y;
     
     m_pButtonsUpDown = new wxBoxSizer(wxVERTICAL);
     m_pButtonUp = new wxBitmapButton( this, wxID_ANY, style->GetIcon( _T("up"), sizeRef, sizeRef, true  ), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );

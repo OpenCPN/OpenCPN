@@ -142,7 +142,7 @@ void NMEALogWindow::SetSize(int w, int h)
     height = h;
     height = wxMax(height, 300 * g_Platform->GetDisplayDensityFactor());
     height = wxMin(height, g_Platform->getDisplaySize().y - 20);
-    qDebug() << w << h << width << height;
+//    qDebug() << w << h << width << height;
 }
 
 void NMEALogWindow::SetPos(int x, int y)

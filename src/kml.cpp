@@ -43,7 +43,7 @@
 #include "tinyxml.h"
 #include "kml.h"
 #include "OCPNPlatform.h"
-#include "qdebug.h"
+//#include "qdebug.h"
 
 extern MyFrame *gFrame;
 extern double gLat;
@@ -555,7 +555,7 @@ void Kml::CopyRouteToClipboard( Route* route ) {
     //  But it works for Android, so use it.
     wxFont fo = GetOCPNGUIScaledFont(_T("Dialog"));
     int estSizex = fo.GetPointSize() * 10 / g_Platform->getFontPointsperPixel();
-    qDebug() << fo.GetPointSize() << g_Platform->getFontPointsperPixel();
+//    qDebug() << fo.GetPointSize() << g_Platform->getFontPointsperPixel();
     
     int sizeX = wxMin(estSizex, gFrame->GetSize().x - 10);
     formatDlg->SetSize(sizeX, fo.GetPointSize() * 3 / g_Platform->getFontPointsperPixel() );
