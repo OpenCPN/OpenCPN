@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="ocpn_currentDirectory">Dossier actuel:</string>
+
     <string name="daidalos_hello">Hello World!</string>
     <string name="daidalos_app_name">AFileDialog</string>
     <color name="daidalos_gray">#888</color>
