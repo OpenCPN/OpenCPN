@@ -4459,9 +4459,9 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_GUI_Factor->Hide();
-  miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
-                                    _("User Interface scale factor")),
-                   verticleInputFlags);
+  
+  miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), 0, wxEXPAND);
+                                       
   miscOptions->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
@@ -4473,9 +4473,9 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_Chart_Factor->Hide();
-  miscOptions->Add(
-      new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      verticleInputFlags);
+  
+  miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), 0, wxEXPAND);
+  
   miscOptions->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
