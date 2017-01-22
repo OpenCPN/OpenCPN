@@ -477,9 +477,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         wxFont *qFont = OCPNGetFont(_("Menu"), 10);
         table->SetFont(*qFont);
 #endif
+
+#ifndef __OCPN__ANDROID__        
         m_MenuItem = AddCanvasContextMenuItem(table, this);
         SetCanvasContextMenuItemViz(m_MenuItem, false);
-
+#endif
+        
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribCtrlBar );
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
