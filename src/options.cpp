@@ -4314,8 +4314,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   m_itemLangListBox = new wxChoice(itemPanelFont, ID_CHOICE_LANG);
 
-  itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL,
-                              border_size);
+  itemLangStaticBoxSizer->Add(m_itemLangListBox, 0, wxEXPAND | wxALL, border_size);
+#ifdef __OCPN__ANDROID__
+  m_itemLangListBox->Disable();
+#endif  
 
   wxStaticBox* itemFontStaticBox = new wxStaticBox(itemPanelFont, wxID_ANY, _("Fonts"));
 
