@@ -493,6 +493,8 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     //  ChartGroup SubMenu
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
+    contextMenu->AppendSeparator();
+    
     SetMenuItemFont1(subItemChart);
     
     if( g_pGroupArray->GetCount() ) {
@@ -577,6 +579,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 #endif
                 
                 contextMenu->Append( pmi );
+                contextMenu->AppendSeparator();
                 contextMenu->Enable( pimis->id, !pimis->b_grey );
             }
         }
