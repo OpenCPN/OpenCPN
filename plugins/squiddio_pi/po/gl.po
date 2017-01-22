@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-28 19:44-0300\n"
+"POT-Creation-Date: 2017-01-21 09:05-0500\n"
 "PO-Revision-Date: 2015-12-31 15:39-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Galician\n"
@@ -91,6 +91,9 @@ msgstr ""
 msgid "Download local sQuiddio destinations"
 msgstr ""
 #
+msgid "Download sQuiddio POIs"
+msgstr ""
+#
 msgid "Downloading"
 msgstr ""
 #
@@ -104,6 +107,9 @@ msgid "Fuel Stations"
 msgstr ""
 #
 msgid "Hide local sQuiddio destinations"
+msgstr ""
+#
+msgid "Hide sQuiddio POIs"
 msgstr ""
 #
 msgid "Just now"
@@ -157,6 +163,9 @@ msgstr ""
 msgid "Report a Destination at this location"
 msgstr ""
 #
+msgid "Report a POI here"
+msgstr ""
+#
 msgid ""
 "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "
 "and click Edit Profile in the Dashboard, then select the Numbers and Keys "
@@ -177,10 +186,40 @@ msgstr ""
 msgid "Show local sQuiddio destinations"
 msgstr ""
 #
+msgid "Show sQuiddio POIs"
+msgstr ""
+#
 msgid "Squiddio"
 msgstr ""
 #
+msgid "Squiddio PlugIn"
+msgstr ""
+#
+msgid "Squiddio PlugIn Preferences"
+msgstr ""
+#
 msgid "Squiddio for OpenCPN"
+msgstr ""
+#
+msgid ""
+"Squiddio_pi could not launch default browser.\n"
+" Check your Internet connection"
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed with short or corrupt file.\n"
+"Repeat the operation if needed."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Device is offline."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Verify there is a working Internet connection.\n"
+"Repeat the operation if needed."
 msgstr ""
 #
 msgid "Squiddio_pi: unable to connect to host"

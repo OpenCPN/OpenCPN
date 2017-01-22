@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 21:40-0400\n"
+"POT-Creation-Date: 2017-01-20 00:04-0500\n"
 "PO-Revision-Date: 2013-12-10 18:46+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -22,6 +22,16 @@ msgstr ""
 msgid " (Max size )"
 msgstr "(En büyük ölçek)"
 #
+msgid " can't be read!"
+msgstr ""
+#
+msgid " contains no valid data!"
+msgstr ""
+#
+#, fuzzy
+msgid " files don't exist!"
+msgstr "Hata: Dosya yok!"
+#
 msgid "300 hPa"
 msgstr ""
 #
@@ -31,7 +41,7 @@ msgstr ""
 msgid "700 hPa"
 msgstr ""
 #
-msgid "850 hPA"
+msgid "850 hPa"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -69,6 +79,12 @@ msgstr ""
 msgid "Apply"
 msgstr "Uygula"
 #
+msgid "Area Selection"
+msgstr ""
+#
+msgid "Attached icon bar"
+msgstr ""
+#
 msgid "Authorize Interpolation to start at current time"
 msgstr "Zaman ayarını şimdi başlat."
 #
@@ -87,6 +103,9 @@ msgstr ""
 #
 msgid "Building Isobar map"
 msgstr "Eşbasınç haritası oluşturuluyor."
+#
+msgid "Buttons Visibility"
+msgstr ""
 #
 msgid "CAPE"
 msgstr "CAPE"
@@ -134,6 +153,9 @@ msgstr ""
 msgid "Convective Available Potential Energy"
 msgstr ""
 #
+msgid "Coord. "
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "İlk Kayıp Birikimli Kaydı Kopyala"
 #
@@ -158,12 +180,43 @@ msgstr ""
 msgid "Data"
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #, fuzzy
-msgid "Data at Cursor Position:"
+msgid "Data Display Options"
+msgstr "GRIB Seçenekleri"
+#
+msgid "Data Selection"
+msgstr ""
+#
+#, fuzzy
+msgid "Data at Position:"
 msgstr "GRIB Verisini Farede Göster"
 #
-msgid "Data available"
-msgstr "Veri alınabilir"
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+#
+#, fuzzy
+msgid "Data at cursor position"
+msgstr "GRIB Verisini Farede Göster"
 #
 msgid "Days"
 msgstr "Gün"
@@ -178,11 +231,17 @@ msgstr ""
 msgid "Deg"
 msgstr "Derece"
 #
+msgid "Density"
+msgstr ""
+#
+msgid "Dialog"
+msgstr ""
+#
+msgid "Dialogs Style"
+msgstr ""
+#
 msgid "Direction Arrows"
 msgstr "Yön Okları"
-#
-msgid "Display"
-msgstr "Gösterilen Veriler"
 #
 msgid "Display Iso CAPE"
 msgstr "Eş CAP çizgilerini göster"
@@ -200,20 +259,28 @@ msgstr "Eşsıcaklık çizgilerini göster"
 msgid "Double Arrow"
 msgstr "Sakallı Oklar"
 #
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr ""
+#
+msgid "E"
+msgstr ""
+#
 msgid "Enter your forecasted Course"
 msgstr ""
 #
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr ""
 #
-msgid "Error:  Can't read this File!"
-msgstr "Hata: Dosya okunamıyor"
+msgid "Error! "
+msgstr ""
 #
-msgid "Error:  File does not exist!"
-msgstr "Hata: Dosya yok!"
-#
-msgid "Error:  No valid data in this file!"
-msgstr "Hata: Bu dosyada geçerli veri yok"
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr ""
 #
 msgid "Estimated File Size"
 msgstr "Hesaplanan Dosya Boyutu"
@@ -224,14 +291,18 @@ msgstr "Fahrenayt"
 msgid "Feet"
 msgstr "Ayak"
 #
+msgid "Fixed"
+msgstr ""
+#
 msgid "Forecast Model "
 msgstr "Tahmin Modeli"
 #
-msgid "GRIB Data at Cursor"
-msgstr "GRIB Verisini Farede Göster"
-#
 msgid "GRIB Display Control"
 msgstr "GRIB Görüntü Denetim Panosu"
+#
+#, fuzzy
+msgid "GRIB PlugIn Preferences"
+msgstr "OpenCPN GRIB Eklentisi"
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB Eklentisi"
@@ -264,8 +335,18 @@ msgstr ""
 "- Deniz yüzey suyu sıcaklığı\n"
 "- Yüzey akıntılarının yönü ve hızı."
 #
+msgid "GUI"
+msgstr ""
+#
+#, fuzzy
+msgid "General Options"
+msgstr "Zaman Seçenekleri"
+#
 msgid "Generic"
 msgstr "Üretilmiş"
+#
+msgid "Geopot. Height Choice"
+msgstr ""
 #
 msgid "Geopotential Height"
 msgstr ""
@@ -281,14 +362,8 @@ msgid "Grib Data Table"
 msgstr "Veri alınabilir"
 #
 #, fuzzy
-msgid "Grib Data at"
-msgstr "Veri alınabilir"
-#
-msgid "Grib Preferences"
-msgstr "GRIB Ayarları"
-#
-msgid "Grib Settings"
-msgstr "GRIB Ayarları"
+msgid "Hide data at cursor"
+msgstr "GRIB Verisini Farede Göster"
 #
 msgid "Hours"
 msgstr "Saat"
@@ -304,6 +379,9 @@ msgstr "Aralık"
 #
 msgid "IsoBars"
 msgstr "Eşbasınç"
+#
+msgid "Isolated icon bar"
+msgstr ""
 #
 msgid "Knots"
 msgstr "Knot"
@@ -344,9 +422,18 @@ msgstr "eMail"
 msgid "Mail To "
 msgstr "Adresine email gönder"
 #
+msgid "Manual Selection"
+msgstr ""
+#
 #, fuzzy
 msgid "Max"
 msgstr "(En büyük"
+#
+msgid "Max Lat"
+msgstr ""
+#
+msgid "Max Long"
+msgstr ""
 #
 #
 #
@@ -373,11 +460,20 @@ msgstr "MiliBar"
 msgid "Millimeters"
 msgstr "Milimetre"
 #
+msgid "Min Lat"
+msgstr ""
+#
+msgid "Min Long"
+msgstr ""
+#
 #, fuzzy
-msgid "Minimum Spacing"
+msgid "Minimum"
 msgstr "Aralama"
 #
 msgid "Moving Grib"
+msgstr ""
+#
+msgid "N"
 msgstr ""
 #
 msgid "N/A"
@@ -395,7 +491,12 @@ msgstr "Sayılar"
 msgid "Open File"
 msgstr "Dosya aç"
 #
-msgid "Overlay Transparency"
+#, fuzzy
+msgid "Open a new file"
+msgstr "Dosya aç"
+#
+#, fuzzy
+msgid "Overlay Transparency (%)"
 msgstr "Bindirimin Geçirgenlik Derecesi"
 #
 msgid "OverlayMap"
@@ -407,16 +508,28 @@ msgstr ""
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 #
+msgid "Particle Map"
+msgstr ""
+#
 msgid "Percentage"
 msgstr "Yüzde"
 #
-msgid "Play"
-msgstr "Oynat"
+#, fuzzy
+msgid "Playback"
+msgstr "Görünüm"
+#
+#, fuzzy
+msgid "Playback Options"
+msgstr "Seçenekleri Başlat"
 #
 #
 #
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr "Bindirimi görebilmek için haritayı yakınlaştırın yada uzaklaştırın."
+#
+#, fuzzy
+msgid "Preferences"
+msgstr "GRIB Ayarları"
 #
 #
 #
@@ -436,7 +549,7 @@ msgstr "Yön Okları"
 msgid "Rainfall"
 msgstr "Yağış"
 #
-msgid "Rel. Humid."
+msgid "Relat. Hum."
 msgstr ""
 #
 msgid "Relative Humidity"
@@ -456,6 +569,9 @@ msgstr ""
 #
 msgid "Resolution"
 msgstr "Çözünürlük"
+#
+msgid "S"
+msgstr ""
 #
 msgid "Save"
 msgstr "Sakla"
@@ -490,14 +606,20 @@ msgstr "Deniz Yüzeyi Sıcaklığı"
 msgid "Sea Temperature(surf.)"
 msgstr "Deniz Yüzeyi Sıcaklığı"
 #
-#, c-format
-msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr ""
+#, fuzzy
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Hava Sıcaklığı (2m)"
 #
 #
 #
 msgid "Select a GRIB file"
 msgstr "Bir GRIB dosyası seçin "
+#
+msgid "Select geopotential altitude"
+msgstr ""
+#
+msgid "Select geoptential altitude"
+msgstr ""
 #
 msgid "Send"
 msgstr "Gönder"
@@ -507,6 +629,13 @@ msgstr "Göndericinin eMail Adresi"
 #
 msgid "Settings"
 msgstr "Ayarlar"
+#
+msgid "Show Cursor Data"
+msgstr ""
+#
+#, fuzzy
+msgid "Show data at cursor"
+msgstr "GRIB Verisini Farede Göster"
 #
 #
 #
@@ -530,11 +659,18 @@ msgstr ""
 msgid "Spacing"
 msgstr "Aralama"
 #
+#, fuzzy
+msgid "Spacing(pixels)"
+msgstr "Aralama"
+#
 msgid "Speed"
 msgstr ""
 #
 msgid "Start Options"
 msgstr "Seçenekleri Başlat"
+#
+msgid "Start a request"
+msgstr ""
 #
 msgid "Start at the first forecast in GRIB file"
 msgstr "İlk GRIB dosyasıyla başla"
@@ -542,8 +678,13 @@ msgstr "İlk GRIB dosyasıyla başla"
 msgid "Start at the nearest forecast to current time"
 msgstr "En güncel GRIB dosyasıyla başla"
 #
-msgid "Stop"
-msgstr "Dur"
+#, fuzzy
+msgid "Start play back"
+msgstr "Görünüm"
+#
+#, fuzzy
+msgid "Stop play back"
+msgstr "Görünüm"
 #
 msgid "Surface Current Direction"
 msgstr ""
@@ -551,31 +692,31 @@ msgstr ""
 msgid "Surface Current Speed"
 msgstr ""
 #
-msgid "Surface level"
-msgstr ""
+#, fuzzy
+msgid "Temp."
+msgstr "Hava Sıcaklığı"
 #
 #, fuzzy
 msgid "Temperature"
 msgstr "Hava Sıcaklığı (2m)"
 #
 msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
 msgstr ""
-"Dosya büyüklük sınırı aşıldı. \n"
-"Daha da yakınlaşabilir ya da değişkenleri değiştirebilirsiniz..."
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
-msgstr ""
-"Bu dosya özel zaman dilimi verileri içeriyor. Siz farkıl zaman dilimi "
-"kullanılmasını seçtiniz.\n"
-"Lütfen değerlerin aralıklandırılacağını (interpolate) dikkate alın."
 #
 msgid "This is your zyGrib's forum access Login"
 msgstr "Bu sizin zyGrib's forumuna giriş parolanızdır."
+#
+#, fuzzy
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Aralık değeri kullanılmasını (interpolation) onayladınız. \n"
+"Gösterilen değerin şimdiki gerçek değer yerine aralık değeri olduğunu "
+"unutmayın."
 #
 #, fuzzy
 msgid "Time Interval"
@@ -587,7 +728,22 @@ msgstr "Zaman Seçenekleri"
 msgid "Time Range"
 msgstr "Zaman Aralığı"
 #
+msgid "Time Slider"
+msgstr ""
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr ""
+#
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr ""
+#
+msgid "Too small area for this resolution!"
+msgstr ""
+#
 msgid "Top of Grib File"
+msgstr ""
+#
+msgid "Transparency for all Overlay Maps"
 msgstr ""
 #
 msgid "UTC"
@@ -599,6 +755,9 @@ msgstr "Birimler"
 msgid "Updates per Second"
 msgstr "Dakikada bir Güncelle"
 #
+msgid "Use Always this Area"
+msgstr ""
+#
 msgid "Use Gradual Colors"
 msgstr "Geçici Renkleri Kullan"
 #
@@ -607,14 +766,17 @@ msgstr "Geçici Renkleri Kullan"
 msgid "Use High Definition Graphics"
 msgstr "Yüksek Çözünürlükte Grafik Kullan."
 #
-msgid "WIND data at"
+msgid "Valid Area and Continue"
+msgstr ""
+#
+msgid "W"
+msgstr ""
+#
+msgid "Warning : Data at Geopotential Height"
 msgstr ""
 #
 msgid "Warning!"
 msgstr "Uyarı!"
-#
-msgid "Warning:  Empty directory!"
-msgstr "Uyarı: Boş klasör!"
 #
 msgid "Waves"
 msgstr "Dalga"
@@ -630,6 +792,19 @@ msgstr "Dalga"
 #
 #, fuzzy
 msgid "Waves Direction"
+msgstr "Rüzgar yönü"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Waves period"
 msgstr "Rüzgar yönü"
 #
 msgid "Weather table"
@@ -648,7 +823,7 @@ msgstr "Rüzgar"
 #
 #
 #, fuzzy
-msgid "Wind Direction at"
+msgid "Wind Direction"
 msgstr "Rüzgar yönü"
 #
 msgid "Wind Gust"
@@ -668,16 +843,41 @@ msgstr "Rüzgar Kaçağı"
 #
 #
 #, fuzzy
-msgid "Wind Speed at"
+msgid "Wind Speed"
+msgstr "Rüzgar hızı, Kts."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed in Bf"
 msgstr "Rüzgar hızı, Kts."
 #
 msgid "Write and send eMail request"
 msgstr "eMail oluşturup gönderin"
 #
+#, fuzzy
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
-"interpolated!"
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+"Aralık değeri kullanılmasını (interpolation) onayladınız. \n"
+"Gösterilen değerin şimdiki gerçek değer yerine aralık değeri olduğunu "
+"unutmayın."
+#
+#, fuzzy
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
 msgstr ""
 "Aralık değeri kullanılmasını (interpolation) onayladınız. \n"
 "Gösterilen değerin şimdiki gerçek değer yerine aralık değeri olduğunu "
@@ -687,7 +887,14 @@ msgid ""
 "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"2.5\\u00B0x2.5\\u00B0\n"
+"and the time intervall 12 hours."
+msgstr ""
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr ""
+#
+msgid "You want to remove the dialog title/drag bar\n"
 msgstr ""
 #
 msgid ""
@@ -709,6 +916,15 @@ msgstr ""
 "Bitirmek için Sakla ya da İptal tuşuna basın... Ya da Devam edin..."
 #
 msgid "Zoom To Center"
+msgstr ""
+#
+msgid "Zoom to Center"
+msgstr ""
+#
+msgid "at"
+msgstr ""
+#
+msgid "at Geopotential Height"
 msgstr ""
 #
 msgid "h"
@@ -738,14 +954,15 @@ msgstr "mil/saat"
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
 msgstr ""
 #
-msgid "playback"
-msgstr "Görünüm"
+msgid "surface level"
+msgstr ""
 #
 msgid "zyGrib Code"
 msgstr "zyGrib Kodu"
 #
 msgid "zyGrib Login"
 msgstr "zyGrib Bağlan"
+#
 #
 #
 #
@@ -771,9 +988,11 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB Verileri"
+#
 #
 #
 #
@@ -782,18 +1001,21 @@ msgstr "zyGrib Bağlan"
 #~ msgstr "Bulut Durumu"
 #
 #
+#~ msgid "Data available"
+#~ msgstr "Veri alınabilir"
 #
 #
+#~ msgid "Display"
+#~ msgstr "Gösterilen Veriler"
 #
 #
+#~ msgid "Error:  Can't read this File!"
+#~ msgstr "Hata: Dosya okunamıyor"
 #
 #
+#~ msgid "Error:  No valid data in this file!"
+#~ msgstr "Hata: Bu dosyada geçerli veri yok"
 #
-#
-#
-#, fuzzy
-#~ msgid "Data Display Preferences"
-#~ msgstr "GRIB Seçenekleri"
 #
 #
 #
@@ -842,8 +1064,23 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Dosya Klasörü"
+#
+#
+#, fuzzy
+#~ msgid "Grib Data at"
+#~ msgstr "Veri alınabilir"
+#
+#
+#~ msgid "Grib Settings"
+#~ msgstr "GRIB Ayarları"
+#
+#
+#~ msgid "Play"
+#~ msgstr "Oynat"
+#
 #
 #
 #
@@ -862,6 +1099,7 @@ msgstr "zyGrib Bağlan"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -895,11 +1133,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -931,11 +1171,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten CRAIN GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -949,8 +1191,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "Range"
 #~ msgstr "Aralık"
+#
 #
 #
 #
@@ -1011,8 +1255,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB simgesini göster"
+#
 #
 #
 #
@@ -1024,14 +1270,39 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Güncelleme Aralığı"
 #
 #
 #
 #
+#
 #~ msgid "Slices per hour"
 #~ msgstr "Saatlik Aralıklar"
+#
+#
+#~ msgid "Stop"
+#~ msgstr "Dur"
+#
+#
+#~ msgid ""
+#~ "The file size limit is overcome!\n"
+#~ "You can zoom in and/or change parameters..."
+#~ msgstr ""
+#~ "Dosya büyüklük sınırı aşıldı. \n"
+#~ "Daha da yakınlaşabilir ya da değişkenleri değiştirebilirsiniz..."
+#
+#
+#~ msgid ""
+#~ "This file contains data for particular time intervals but you have chosen "
+#~ "to display different intervals.\n"
+#~ "Please consider that the values will be interpolated."
+#~ msgstr ""
+#~ "Bu dosya özel zaman dilimi verileri içeriyor. Siz farkıl zaman dilimi "
+#~ "kullanılmasını seçtiniz.\n"
+#~ "Lütfen değerlerin aralıklandırılacağını (interpolate) dikkate alın."
+#
 #
 #
 #
@@ -1072,10 +1343,16 @@ msgstr "zyGrib Bağlan"
 #~ msgstr "DİKKAT: Acele GRIB verileri %d saat eskidir."
 #
 #
+#~ msgid "Warning:  Empty directory!"
+#~ msgstr "Uyarı: Boş klasör!"
+#
+#
+#
 #
 #
 #~ msgid "WavesModel"
 #~ msgstr "Dalga Modeli"
+#
 #
 #
 #

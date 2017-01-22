@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-28 19:44-0300\n"
+"POT-Creation-Date: 2017-01-21 09:05-0500\n"
 "PO-Revision-Date: 2016-02-18 16:08-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
@@ -117,6 +117,10 @@ msgstr "Muelles/embarcaderos"
 msgid "Download local sQuiddio destinations"
 msgstr "Descargar destinos sQuiddio en local"
 #
+#, fuzzy
+msgid "Download sQuiddio POIs"
+msgstr "Descargar destinos sQuiddio en local"
+#
 msgid "Downloading"
 msgstr "Descargando"
 #
@@ -131,6 +135,10 @@ msgstr "Gasolineras"
 #
 msgid "Hide local sQuiddio destinations"
 msgstr "Ocultar destinos sQuiddio en local"
+#
+#, fuzzy
+msgid "Hide sQuiddio POIs"
+msgstr "ID sQuiddio"
 #
 msgid "Just now"
 msgstr "Ahora"
@@ -189,6 +197,9 @@ msgstr "Recibir"
 msgid "Report a Destination at this location"
 msgstr "Informe de un destino en esta ubicación"
 #
+msgid "Report a POI here"
+msgstr ""
+#
 msgid ""
 "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "
 "and click Edit Profile in the Dashboard, then select the Numbers and Keys "
@@ -215,11 +226,46 @@ msgstr "Compartir registros con amigos"
 msgid "Show local sQuiddio destinations"
 msgstr "Mostrar destinos sQuiddio en local"
 #
+#, fuzzy
+msgid "Show sQuiddio POIs"
+msgstr "ID sQuiddio"
+#
 msgid "Squiddio"
 msgstr "Squiddio"
 #
+#, fuzzy
+msgid "Squiddio PlugIn"
+msgstr "Squiddio"
+#
+msgid "Squiddio PlugIn Preferences"
+msgstr ""
+#
 msgid "Squiddio for OpenCPN"
 msgstr "Squiddio para OpenCPN"
+#
+#, fuzzy
+msgid ""
+"Squiddio_pi could not launch default browser.\n"
+" Check your Internet connection"
+msgstr ""
+"Puede que el navegador por defecto no funcione. Compruebe su conexión a "
+"Internet"
+#
+msgid ""
+"Squiddio_pi download failed with short or corrupt file.\n"
+"Repeat the operation if needed."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Device is offline."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Verify there is a working Internet connection.\n"
+"Repeat the operation if needed."
+msgstr ""
 #
 msgid "Squiddio_pi: unable to connect to host"
 msgstr "Squiddio_pi: no se puede conectar al host"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 21:40-0400\n"
+"POT-Creation-Date: 2017-01-20 00:04-0500\n"
 "PO-Revision-Date: 2010-11-28 17:53+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -19,6 +19,15 @@ msgstr ""
 msgid " (Max size )"
 msgstr ""
 #
+msgid " can't be read!"
+msgstr ""
+#
+msgid " contains no valid data!"
+msgstr ""
+#
+msgid " files don't exist!"
+msgstr ""
+#
 msgid "300 hPa"
 msgstr ""
 #
@@ -28,7 +37,7 @@ msgstr ""
 msgid "700 hPa"
 msgstr ""
 #
-msgid "850 hPA"
+msgid "850 hPa"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -83,6 +92,12 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 #
+msgid "Area Selection"
+msgstr ""
+#
+msgid "Attached icon bar"
+msgstr ""
+#
 msgid "Authorize Interpolation to start at current time"
 msgstr ""
 #
@@ -98,6 +113,9 @@ msgid ""
 msgstr ""
 #
 msgid "Building Isobar map"
+msgstr ""
+#
+msgid "Buttons Visibility"
 msgstr ""
 #
 msgid "CAPE"
@@ -148,6 +166,9 @@ msgstr ""
 msgid "Convective Available Potential Energy"
 msgstr ""
 #
+msgid "Coord. "
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -171,10 +192,40 @@ msgstr ""
 msgid "Data"
 msgstr ""
 #
-msgid "Data at Cursor Position:"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+msgid "Data Display Options"
+msgstr "Preferencje GRIB"
+#
+msgid "Data Selection"
 msgstr ""
 #
-msgid "Data available"
+msgid "Data at Position:"
+msgstr ""
+#
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr ""
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+#
+msgid "Data at cursor position"
 msgstr ""
 #
 # 
@@ -190,10 +241,16 @@ msgstr ""
 msgid "Deg"
 msgstr ""
 #
-msgid "Direction Arrows"
+msgid "Density"
 msgstr ""
 #
-msgid "Display"
+msgid "Dialog"
+msgstr ""
+#
+msgid "Dialogs Style"
+msgstr ""
+#
+msgid "Direction Arrows"
 msgstr ""
 #
 msgid "Display Iso CAPE"
@@ -211,20 +268,27 @@ msgstr ""
 msgid "Double Arrow"
 msgstr ""
 #
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr ""
+#
+msgid "E"
+msgstr ""
+#
 msgid "Enter your forecasted Course"
 msgstr ""
 #
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr ""
 #
-# 
-msgid "Error:  Can't read this File!"
+msgid "Error! "
 msgstr ""
 #
-msgid "Error:  File does not exist!"
-msgstr ""
-#
-msgid "Error:  No valid data in this file!"
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
 msgstr ""
 #
 msgid "Estimated File Size"
@@ -236,15 +300,20 @@ msgstr ""
 msgid "Feet"
 msgstr ""
 #
-msgid "Forecast Model "
+msgid "Fixed"
 msgstr ""
 #
-msgid "GRIB Data at Cursor"
+msgid "Forecast Model "
 msgstr ""
 #
 # 
 msgid "GRIB Display Control"
 msgstr "Ustawienia wyświetlania GRIB"
+#
+# 
+#, fuzzy
+msgid "GRIB PlugIn Preferences"
+msgstr "Wtyczka do wyświetlania GRIB w OpenCPN"
 #
 # 
 msgid "GRIB PlugIn for OpenCPN"
@@ -279,7 +348,16 @@ msgstr ""
 "- temperatura wody powierzchniowej\n"
 "- kierunek i prędkość prądu powierzchniowego."
 #
+msgid "GUI"
+msgstr ""
+#
+msgid "General Options"
+msgstr ""
+#
 msgid "Generic"
+msgstr ""
+#
+msgid "Geopot. Height Choice"
 msgstr ""
 #
 msgid "Geopotential Height"
@@ -295,15 +373,7 @@ msgstr "Grib"
 msgid "Grib Data Table"
 msgstr ""
 #
-msgid "Grib Data at"
-msgstr ""
-#
-# 
-#, fuzzy
-msgid "Grib Preferences"
-msgstr "Preferencje GRIB"
-#
-msgid "Grib Settings"
+msgid "Hide data at cursor"
 msgstr ""
 #
 msgid "Hours"
@@ -320,6 +390,9 @@ msgid "Interval"
 msgstr ""
 #
 msgid "IsoBars"
+msgstr ""
+#
+msgid "Isolated icon bar"
 msgstr ""
 #
 msgid "Knots"
@@ -359,7 +432,16 @@ msgstr ""
 msgid "Mail To "
 msgstr ""
 #
+msgid "Manual Selection"
+msgstr ""
+#
 msgid "Max"
+msgstr ""
+#
+msgid "Max Lat"
+msgstr ""
+#
+msgid "Max Long"
 msgstr ""
 #
 #
@@ -385,10 +467,19 @@ msgstr ""
 msgid "Millimeters"
 msgstr ""
 #
-msgid "Minimum Spacing"
+msgid "Min Lat"
+msgstr ""
+#
+msgid "Min Long"
+msgstr ""
+#
+msgid "Minimum"
 msgstr ""
 #
 msgid "Moving Grib"
+msgstr ""
+#
+msgid "N"
 msgstr ""
 #
 msgid "N/A"
@@ -406,7 +497,10 @@ msgstr ""
 msgid "Open File"
 msgstr ""
 #
-msgid "Overlay Transparency"
+msgid "Open a new file"
+msgstr ""
+#
+msgid "Overlay Transparency (%)"
 msgstr ""
 #
 msgid "OverlayMap"
@@ -418,16 +512,27 @@ msgstr ""
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 #
+msgid "Particle Map"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
-msgid "Play"
+msgid "Playback"
+msgstr ""
+#
+msgid "Playback Options"
 msgstr ""
 #
 # 
 #, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr "Zmniejsz skalę lub powiększenie by zobaczyć HTSGW"
+#
+# 
+#, fuzzy
+msgid "Preferences"
+msgstr "Preferencje GRIB"
 #
 # 
 #, fuzzy
@@ -446,7 +551,7 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Rel. Humid."
+msgid "Relat. Hum."
 msgstr ""
 #
 msgid "Relative Humidity"
@@ -463,6 +568,9 @@ msgstr ""
 #
 # 
 msgid "Resolution"
+msgstr ""
+#
+msgid "S"
 msgstr ""
 #
 msgid "Save"
@@ -525,14 +633,29 @@ msgstr "Temp. powierzchni morza, C"
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-#, c-format
-msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr ""
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Temp. powierzchni morza, C"
 #
 # 
 #, fuzzy
 msgid "Select a GRIB file"
 msgstr "Wybierz katalog GRIB"
+#
+msgid "Select geopotential altitude"
+msgstr ""
+#
+msgid "Select geoptential altitude"
+msgstr ""
 #
 # 
 msgid "Send"
@@ -542,6 +665,12 @@ msgid "Sender eMail Address"
 msgstr ""
 #
 msgid "Settings"
+msgstr ""
+#
+msgid "Show Cursor Data"
+msgstr ""
+#
+msgid "Show data at cursor"
 msgstr ""
 #
 #
@@ -564,10 +693,16 @@ msgstr ""
 msgid "Spacing"
 msgstr ""
 #
+msgid "Spacing(pixels)"
+msgstr ""
+#
 msgid "Speed"
 msgstr ""
 #
 msgid "Start Options"
+msgstr ""
+#
+msgid "Start a request"
 msgstr ""
 #
 msgid "Start at the first forecast in GRIB file"
@@ -576,7 +711,10 @@ msgstr ""
 msgid "Start at the nearest forecast to current time"
 msgstr ""
 #
-msgid "Stop"
+msgid "Start play back"
+msgstr ""
+#
+msgid "Stop play back"
 msgstr ""
 #
 msgid "Surface Current Direction"
@@ -585,8 +723,18 @@ msgstr ""
 msgid "Surface Current Speed"
 msgstr ""
 #
-msgid "Surface level"
-msgstr ""
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Temp."
+msgstr "Temp. powierzchni morza, C"
 #
 # 
 # 
@@ -602,17 +750,17 @@ msgid "Temperature"
 msgstr "Temp. powierzchni morza, C"
 #
 msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
-msgstr ""
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
 msgstr ""
 #
 msgid "This is your zyGrib's forum access Login"
+msgstr ""
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
 msgstr ""
 #
 msgid "Time Interval"
@@ -624,7 +772,22 @@ msgstr ""
 msgid "Time Range"
 msgstr ""
 #
+msgid "Time Slider"
+msgstr ""
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr ""
+#
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr ""
+#
+msgid "Too small area for this resolution!"
+msgstr ""
+#
 msgid "Top of Grib File"
+msgstr ""
+#
+msgid "Transparency for all Overlay Maps"
 msgstr ""
 #
 # 
@@ -638,6 +801,9 @@ msgstr ""
 msgid "Updates per Second"
 msgstr ""
 #
+msgid "Use Always this Area"
+msgstr ""
+#
 msgid "Use Gradual Colors"
 msgstr ""
 #
@@ -645,13 +811,16 @@ msgstr ""
 msgid "Use High Definition Graphics"
 msgstr "Użyj grafili wysokuej rozdzielczości"
 #
-msgid "WIND data at"
+msgid "Valid Area and Continue"
+msgstr ""
+#
+msgid "W"
+msgstr ""
+#
+msgid "Warning : Data at Geopotential Height"
 msgstr ""
 #
 msgid "Warning!"
-msgstr ""
-#
-msgid "Warning:  Empty directory!"
 msgstr ""
 #
 msgid "Waves"
@@ -666,6 +835,17 @@ msgstr ""
 # 
 #, fuzzy
 msgid "Waves Direction"
+msgstr "Kierunek wiatru"
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+msgid "Waves period"
 msgstr "Kierunek wiatru"
 #
 msgid "Weather table"
@@ -683,7 +863,7 @@ msgstr ""
 #
 # 
 #, fuzzy
-msgid "Wind Direction at"
+msgid "Wind Direction"
 msgstr "Kierunek wiatru"
 #
 msgid "Wind Gust"
@@ -722,7 +902,40 @@ msgstr ""
 # 
 # 
 #, fuzzy
-msgid "Wind Speed at"
+msgid "Wind Speed"
+msgstr "Prędkość wiatru, w."
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Wind Speed in Bf"
 msgstr "Prędkość wiatru, w."
 #
 msgid "Write and send eMail request"
@@ -731,14 +944,28 @@ msgstr ""
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
-"interpolated!"
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
 msgstr ""
 #
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"2.5\\u00B0x2.5\\u00B0\n"
+"and the time intervall 12 hours."
+msgstr ""
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr ""
+#
+msgid "You want to remove the dialog title/drag bar\n"
 msgstr ""
 #
 msgid ""
@@ -754,6 +981,15 @@ msgid ""
 msgstr ""
 #
 msgid "Zoom To Center"
+msgstr ""
+#
+msgid "Zoom to Center"
+msgstr ""
+#
+msgid "at"
+msgstr ""
+#
+msgid "at Geopotential Height"
 msgstr ""
 #
 msgid "h"
@@ -783,7 +1019,7 @@ msgstr ""
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
 msgstr ""
 #
-msgid "playback"
+msgid "surface level"
 msgstr ""
 #
 msgid "zyGrib Code"
@@ -791,6 +1027,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -825,21 +1062,9 @@ msgstr ""
 #
 #
 # 
-#, fuzzy
-#~ msgid "Data Display Preferences"
-#~ msgstr "Preferencje GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -885,10 +1110,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć SEATEMP"
+#
 #
 #
 #
@@ -914,11 +1141,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
+#
 #
 #
 #
@@ -943,6 +1172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
@@ -950,10 +1180,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Pressure Altitude"
 #~ msgstr "Ciśnienie, mbar"
+#
 #
 #
 #
@@ -989,6 +1221,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -1014,6 +1247,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Pokaż ikonę GRIB"
+#
 #
 #
 #
@@ -1060,10 +1294,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #

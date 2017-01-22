@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the squiddio_pi package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: squiddio_pi 0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-28 19:44-0300\n"
+"POT-Creation-Date: 2017-01-21 09:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,63 +17,104 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/squiddio_pi.cpp:125
+#: src/squiddio_pi.cpp:201
+msgid "Show sQuiddio POIs"
+msgstr ""
+
+#: src/squiddio_pi.cpp:206
+msgid "Hide sQuiddio POIs"
+msgstr ""
+
+#: src/squiddio_pi.cpp:211
+msgid "Download sQuiddio POIs"
+msgstr ""
+
+#: src/squiddio_pi.cpp:216
+msgid "Report a POI here"
+msgstr ""
+
+#: src/squiddio_pi.cpp:220
 msgid "Show local sQuiddio destinations"
 msgstr ""
 
-#: src/squiddio_pi.cpp:130
+#: src/squiddio_pi.cpp:221
 msgid "Hide local sQuiddio destinations"
 msgstr ""
 
-#: src/squiddio_pi.cpp:135
+#: src/squiddio_pi.cpp:222
 msgid "Download local sQuiddio destinations"
 msgstr ""
 
-#: src/squiddio_pi.cpp:140
+#: src/squiddio_pi.cpp:223
 msgid "Report a Destination at this location"
 msgstr ""
 
-#: src/squiddio_pi.cpp:201
+#: src/squiddio_pi.cpp:282
 msgid "sQuiddio"
 msgstr ""
 
-#: src/squiddio_pi.cpp:610
+#: src/squiddio_pi.cpp:686
+msgid ""
+"Squiddio_pi download failed.\n"
+"Device is offline."
+msgstr ""
+
+#: src/squiddio_pi.cpp:687 src/squiddio_pi.cpp:769 src/squiddio_pi.cpp:779
+msgid "Squiddio PlugIn"
+msgstr ""
+
+#: src/squiddio_pi.cpp:704
 msgid "Local destinations have been updated"
 msgstr ""
 
-#: src/squiddio_pi.cpp:613
+#: src/squiddio_pi.cpp:707
 msgid "No destinations available for the region"
 msgstr ""
 
-#: src/squiddio_pi.cpp:616
+#: src/squiddio_pi.cpp:710
 msgid "Server not responding. Check your Internet connection"
 msgstr ""
 
-#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
-msgid "Could not launch default browser. Check your Internet connection"
+#: src/squiddio_pi.cpp:739
+msgid ""
+"Squiddio_pi could not launch default browser.\n"
+" Check your Internet connection"
 msgstr ""
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:756
 msgid "Downloading"
 msgstr ""
 
-#: src/squiddio_pi.cpp:654
+#: src/squiddio_pi.cpp:756
 msgid "Downloading: "
 msgstr ""
 
-#: src/squiddio_pi.cpp:666
+#: src/squiddio_pi.cpp:768
+msgid ""
+"Squiddio_pi download failed.\n"
+"Verify there is a working Internet connection.\n"
+"Repeat the operation if needed."
+msgstr ""
+
+#: src/squiddio_pi.cpp:771
 msgid "Squiddio_pi: unable to connect to host"
 msgstr ""
 
-#: src/squiddio_pi.cpp:737
+#: src/squiddio_pi.cpp:778
+msgid ""
+"Squiddio_pi download failed with short or corrupt file.\n"
+"Repeat the operation if needed."
+msgstr ""
+
+#: src/squiddio_pi.cpp:849
 msgid "Squiddio"
 msgstr ""
 
-#: src/squiddio_pi.cpp:741
+#: src/squiddio_pi.cpp:853
 msgid "Squiddio for OpenCPN"
 msgstr ""
 
-#: src/squiddio_pi.cpp:746
+#: src/squiddio_pi.cpp:858
 msgid ""
 "== User-sourced database of sailing destinations ==\n"
 "To download destinations for a desired region (requires Internet "
@@ -100,7 +141,7 @@ msgid ""
 "and Conditions, available at http://squidd.io/enduser_agreement"
 msgstr ""
 
-#: src/squiddio_pi.cpp:838
+#: src/squiddio_pi.cpp:1071
 msgid ""
 "Log sharing was not activated. Please enter your sQuiddio user ID and API "
 "Key. \n"
@@ -108,6 +149,10 @@ msgid ""
 "To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and "
 "visit your online profile page (see Edit Profile link in the Dashboard), "
 "'Numbers & Keys' tab."
+msgstr ""
+
+#: src/squiddio_pi.cpp:1135
+msgid "Could not launch default browser. Check your Internet connection"
 msgstr ""
 
 #: src/logs.cpp:94
@@ -162,103 +207,107 @@ msgstr ""
 msgid "Created sQuiddio log update:"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:28
-msgid "View Destinations"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:35
-msgid "All"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:38
-msgid "Marinas"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:41
-msgid "Anchorages"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:44
-msgid "Yacht clubs"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:47
-msgid "Docks/piers"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:50
-msgid "Boat ramps"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:53
-msgid "Fuel Stations"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:56
-msgid "Other"
+#: src/squiddioPrefsDialogBase.cpp:32
+msgid "Squiddio PlugIn Preferences"
 msgstr ""
 
 #: src/squiddioPrefsDialogBase.cpp:59
-msgid "AIS marker"
+msgid "View Destinations"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:69
-msgid "Share logs with friends"
+#: src/squiddioPrefsDialogBase.cpp:67
+msgid "All"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:70
+msgid "Marinas"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:73
+msgid "Anchorages"
 msgstr ""
 
 #: src/squiddioPrefsDialogBase.cpp:76
-msgid "Send"
+msgid "Yacht clubs"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Never"
+#: src/squiddioPrefsDialogBase.cpp:79
+msgid "Docks/piers"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once a day"
+#: src/squiddioPrefsDialogBase.cpp:82
+msgid "Boat ramps"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice a day"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once an hour"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice an hour"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Once a minute"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Twice a minute"
-msgstr ""
-
-#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
-msgid "Every 10 seconds"
+#: src/squiddioPrefsDialogBase.cpp:85
+msgid "Fuel Stations"
 msgstr ""
 
 #: src/squiddioPrefsDialogBase.cpp:88
-msgid "Receive"
+msgid "Other"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:100
-msgid "sQuiddio ID"
+#: src/squiddioPrefsDialogBase.cpp:91
+msgid "AIS marker"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:99
+msgid "Share logs with friends"
 msgstr ""
 
 #: src/squiddioPrefsDialogBase.cpp:106
+msgid "Send"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Never"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Once a day"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Twice a day"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Once an hour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Twice an hour"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Once a minute"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Twice a minute"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:110 src/squiddioPrefsDialogBase.cpp:122
+msgid "Every 10 seconds"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:118
+msgid "Receive"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:130
+msgid "sQuiddio ID"
+msgstr ""
+
+#: src/squiddioPrefsDialogBase.cpp:136
 msgid "The email address you use to log into sQuidd.io"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:110
+#: src/squiddioPrefsDialogBase.cpp:140
 msgid "API Key"
 msgstr ""
 
-#: src/squiddioPrefsDialogBase.cpp:116
+#: src/squiddioPrefsDialogBase.cpp:146
 msgid ""
 "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "
 "and click Edit Profile in the Dashboard, then select the Numbers and Keys "

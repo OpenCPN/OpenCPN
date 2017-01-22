@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-28 19:44-0300\n"
+"POT-Creation-Date: 2017-01-21 09:05-0500\n"
 "PO-Revision-Date: 2016-02-25 08:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
@@ -114,6 +114,10 @@ msgstr "Kai/pirer"
 msgid "Download local sQuiddio destinations"
 msgstr "Last ned lokal sQuiddio destinasjoner"
 #
+#, fuzzy
+msgid "Download sQuiddio POIs"
+msgstr "Last ned lokal sQuiddio destinasjoner"
+#
 msgid "Downloading"
 msgstr "Laster ned"
 #
@@ -128,6 +132,10 @@ msgstr "Bunkringsanlegg"
 #
 msgid "Hide local sQuiddio destinations"
 msgstr "Skjul lokale sQuiddio destinasjoner"
+#
+#, fuzzy
+msgid "Hide sQuiddio POIs"
+msgstr "sQuiddio ID"
 #
 msgid "Just now"
 msgstr "Akkurat nå"
@@ -186,6 +194,9 @@ msgstr "Motta"
 msgid "Report a Destination at this location"
 msgstr "Rapporter en destinasjon på dette stedet"
 #
+msgid "Report a POI here"
+msgstr ""
+#
 msgid ""
 "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io "
 "and click Edit Profile in the Dashboard, then select the Numbers and Keys "
@@ -211,11 +222,44 @@ msgstr "Del logger med venner"
 msgid "Show local sQuiddio destinations"
 msgstr "Vis lokale sQuiddio destinasjoner"
 #
+#, fuzzy
+msgid "Show sQuiddio POIs"
+msgstr "sQuiddio ID"
+#
 msgid "Squiddio"
 msgstr "Squiddio"
 #
+#, fuzzy
+msgid "Squiddio PlugIn"
+msgstr "Squiddio"
+#
+msgid "Squiddio PlugIn Preferences"
+msgstr ""
+#
 msgid "Squiddio for OpenCPN"
 msgstr "Squiddio for OpenCPN"
+#
+#, fuzzy
+msgid ""
+"Squiddio_pi could not launch default browser.\n"
+" Check your Internet connection"
+msgstr "Kunne ikke starte standard nettleser. Sjekk din Internettforbindelse"
+#
+msgid ""
+"Squiddio_pi download failed with short or corrupt file.\n"
+"Repeat the operation if needed."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Device is offline."
+msgstr ""
+#
+msgid ""
+"Squiddio_pi download failed.\n"
+"Verify there is a working Internet connection.\n"
+"Repeat the operation if needed."
+msgstr ""
 #
 msgid "Squiddio_pi: unable to connect to host"
 msgstr "Squiddio_pi: kunne ikke koble til vert"

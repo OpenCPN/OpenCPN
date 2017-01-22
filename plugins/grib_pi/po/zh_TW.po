@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-29 21:40-0400\n"
+"POT-Creation-Date: 2017-01-20 00:04-0500\n"
 "PO-Revision-Date: 2013-09-25 15:53+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -21,6 +21,16 @@ msgstr ""
 msgid " (Max size )"
 msgstr ""
 #
+msgid " can't be read!"
+msgstr ""
+#
+msgid " contains no valid data!"
+msgstr ""
+#
+#, fuzzy
+msgid " files don't exist!"
+msgstr "錯誤: 檔案不存在!"
+#
 msgid "300 hPa"
 msgstr ""
 #
@@ -30,7 +40,7 @@ msgstr ""
 msgid "700 hPa"
 msgstr ""
 #
-msgid "850 hPA"
+msgid "850 hPa"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -69,6 +79,21 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Area Selection"
+msgstr "動作"
+#
+msgid "Attached icon bar"
+msgstr ""
+#
 msgid "Authorize Interpolation to start at current time"
 msgstr ""
 #
@@ -85,6 +110,9 @@ msgstr ""
 #
 msgid "Building Isobar map"
 msgstr "建立等壓線圖"
+#
+msgid "Buttons Visibility"
+msgstr ""
 #
 msgid "CAPE"
 msgstr ""
@@ -133,6 +161,9 @@ msgstr ""
 msgid "Convective Available Potential Energy"
 msgstr ""
 #
+msgid "Coord. "
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "複製首先累積遺失的記錄"
 #
@@ -155,12 +186,43 @@ msgstr ""
 msgid "Data"
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #, fuzzy
-msgid "Data at Cursor Position:"
+msgid "Data Display Options"
+msgstr "GRIB 偏好設定"
+#
+msgid "Data Selection"
+msgstr ""
+#
+#, fuzzy
+msgid "Data at Position:"
 msgstr "游標位置的 GRIB 資料"
 #
-msgid "Data available"
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
 msgstr ""
+#
+msgid ""
+"Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr ""
+#
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr ""
+#
+#, fuzzy
+msgid "Data at cursor position"
+msgstr "游標位置的 GRIB 資料"
 #
 #
 msgid "Days"
@@ -178,11 +240,17 @@ msgstr ""
 msgid "Deg"
 msgstr "度"
 #
+msgid "Density"
+msgstr ""
+#
+msgid "Dialog"
+msgstr ""
+#
+msgid "Dialogs Style"
+msgstr ""
+#
 msgid "Direction Arrows"
 msgstr "方向箭頭"
-#
-msgid "Display"
-msgstr "顯示"
 #
 #, fuzzy
 msgid "Display Iso CAPE"
@@ -203,6 +271,17 @@ msgstr ""
 msgid "Double Arrow"
 msgstr "箭頭"
 #
+msgid ""
+"Draw requested Area\n"
+"or Click here to stop request"
+msgstr ""
+#
+msgid "Draw requested Area or Click here to stop request"
+msgstr ""
+#
+msgid "E"
+msgstr ""
+#
 msgid "Enter your forecasted Course"
 msgstr ""
 #
@@ -210,16 +289,18 @@ msgid "Enter your forescasted Speed (in Knots)"
 msgstr ""
 #
 #
-msgid "Error:  Can't read this File!"
-msgstr "錯誤: 無法讀取檔案!"
 #
-msgid "Error:  File does not exist!"
-msgstr "錯誤: 檔案不存在!"
+#
+#
+#
 #
 #
 #, fuzzy
-msgid "Error:  No valid data in this file!"
-msgstr "錯誤: 無法讀取檔案!"
+msgid "Error! "
+msgstr "錯誤"
+#
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr ""
 #
 msgid "Estimated File Size"
 msgstr ""
@@ -230,15 +311,20 @@ msgstr "華氏"
 msgid "Feet"
 msgstr "英呎"
 #
-msgid "Forecast Model "
+msgid "Fixed"
 msgstr ""
 #
-msgid "GRIB Data at Cursor"
-msgstr "游標位置的 GRIB 資料"
+msgid "Forecast Model "
+msgstr ""
 #
 #
 msgid "GRIB Display Control"
 msgstr "GRIB 顯示控制"
+#
+#
+#, fuzzy
+msgid "GRIB PlugIn Preferences"
+msgstr "OpenCPN GRIB 插件"
 #
 #
 msgid "GRIB PlugIn for OpenCPN"
@@ -273,8 +359,17 @@ msgstr ""
 "- 海平面溫度\n"
 "- 海面流向與流速."
 #
+msgid "GUI"
+msgstr ""
+#
+msgid "General Options"
+msgstr ""
+#
 msgid "Generic"
 msgstr "一般"
+#
+msgid "Geopot. Height Choice"
+msgstr ""
 #
 msgid "Geopotential Height"
 msgstr ""
@@ -289,15 +384,9 @@ msgstr "Grib"
 msgid "Grib Data Table"
 msgstr ""
 #
-msgid "Grib Data at"
-msgstr ""
-#
-#
-msgid "Grib Preferences"
-msgstr "GRIB 偏好設定"
-#
-msgid "Grib Settings"
-msgstr "Grib 設定"
+#, fuzzy
+msgid "Hide data at cursor"
+msgstr "游標位置的 GRIB 資料"
 #
 msgid "Hours"
 msgstr ""
@@ -315,6 +404,9 @@ msgstr "間隔"
 #, fuzzy
 msgid "IsoBars"
 msgstr "等壓線"
+#
+msgid "Isolated icon bar"
+msgstr ""
 #
 msgid "Knots"
 msgstr "節"
@@ -359,7 +451,16 @@ msgstr "eMail"
 msgid "Mail To "
 msgstr "送郵件給"
 #
+msgid "Manual Selection"
+msgstr ""
+#
 msgid "Max"
+msgstr ""
+#
+msgid "Max Lat"
+msgstr ""
+#
+msgid "Max Long"
 msgstr ""
 #
 #
@@ -385,11 +486,20 @@ msgstr "毫巴"
 msgid "Millimeters"
 msgstr "毫米"
 #
+msgid "Min Lat"
+msgstr ""
+#
+msgid "Min Long"
+msgstr ""
+#
 #, fuzzy
-msgid "Minimum Spacing"
+msgid "Minimum"
 msgstr "間距"
 #
 msgid "Moving Grib"
+msgstr ""
+#
+msgid "N"
 msgstr ""
 #
 msgid "N/A"
@@ -408,7 +518,11 @@ msgid "Open File"
 msgstr "開啟檔案"
 #
 #, fuzzy
-msgid "Overlay Transparency"
+msgid "Open a new file"
+msgstr "開啟檔案"
+#
+#, fuzzy
+msgid "Overlay Transparency (%)"
 msgstr "疊圖"
 #
 msgid "OverlayMap"
@@ -420,16 +534,28 @@ msgstr ""
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 #
+msgid "Particle Map"
+msgstr ""
+#
 msgid "Percentage"
 msgstr "百分比"
 #
-msgid "Play"
+#, fuzzy
+msgid "Playback"
 msgstr "播放"
+#
+msgid "Playback Options"
+msgstr ""
 #
 #
 #, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr "請放大畫面以顯示 suppressed"
+#
+#
+#, fuzzy
+msgid "Preferences"
+msgstr "GRIB 偏好設定"
 #
 #
 msgid "Pressure"
@@ -449,7 +575,7 @@ msgstr "方向箭頭"
 msgid "Rainfall"
 msgstr "雨"
 #
-msgid "Rel. Humid."
+msgid "Relat. Hum."
 msgstr ""
 #
 msgid "Relative Humidity"
@@ -467,6 +593,9 @@ msgstr ""
 #
 msgid "Resolution"
 msgstr "解析"
+#
+msgid "S"
+msgstr ""
 #
 msgid "Save"
 msgstr ""
@@ -501,13 +630,19 @@ msgstr "海水溫度"
 msgid "Sea Temperature(surf.)"
 msgstr "海水溫度"
 #
-#, c-format
-msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr ""
+#, fuzzy
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "大氣溫度"
 #
 #
 msgid "Select a GRIB file"
 msgstr "選擇 GRIB 檔案"
+#
+msgid "Select geopotential altitude"
+msgstr ""
+#
+msgid "Select geoptential altitude"
+msgstr ""
 #
 #
 msgid "Send"
@@ -518,6 +653,13 @@ msgstr ""
 #
 msgid "Settings"
 msgstr "設定"
+#
+msgid "Show Cursor Data"
+msgstr ""
+#
+#, fuzzy
+msgid "Show data at cursor"
+msgstr "游標位置的 GRIB 資料"
 #
 #
 #
@@ -539,10 +681,17 @@ msgstr ""
 msgid "Spacing"
 msgstr "間距"
 #
+#, fuzzy
+msgid "Spacing(pixels)"
+msgstr "間距"
+#
 msgid "Speed"
 msgstr ""
 #
 msgid "Start Options"
+msgstr ""
+#
+msgid "Start a request"
 msgstr ""
 #
 msgid "Start at the first forecast in GRIB file"
@@ -551,8 +700,13 @@ msgstr ""
 msgid "Start at the nearest forecast to current time"
 msgstr ""
 #
-msgid "Stop"
-msgstr "停止"
+#, fuzzy
+msgid "Start play back"
+msgstr "播放"
+#
+#, fuzzy
+msgid "Stop play back"
+msgstr "播放"
 #
 msgid "Surface Current Direction"
 msgstr ""
@@ -560,25 +714,33 @@ msgstr ""
 msgid "Surface Current Speed"
 msgstr ""
 #
-msgid "Surface level"
-msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Temp."
+msgstr "海水溫度"
 #
 #, fuzzy
 msgid "Temperature"
 msgstr "大氣溫度"
 #
 msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
-msgstr ""
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
+"This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
 msgstr ""
 #
 msgid "This is your zyGrib's forum access Login"
+msgstr ""
+#
+msgid ""
+"This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
 msgstr ""
 #
 #
@@ -593,7 +755,22 @@ msgstr ""
 msgid "Time Range"
 msgstr "範圍"
 #
+msgid "Time Slider"
+msgstr ""
+#
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr ""
+#
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr ""
+#
+msgid "Too small area for this resolution!"
+msgstr ""
+#
 msgid "Top of Grib File"
+msgstr ""
+#
+msgid "Transparency for all Overlay Maps"
 msgstr ""
 #
 #
@@ -607,6 +784,9 @@ msgstr "單位"
 msgid "Updates per Second"
 msgstr "每秒更新"
 #
+msgid "Use Always this Area"
+msgstr ""
+#
 msgid "Use Gradual Colors"
 msgstr "使用漸層顏色"
 #
@@ -614,13 +794,16 @@ msgstr "使用漸層顏色"
 msgid "Use High Definition Graphics"
 msgstr "使用高畫質圖形"
 #
-msgid "WIND data at"
+msgid "Valid Area and Continue"
+msgstr ""
+#
+msgid "W"
+msgstr ""
+#
+msgid "Warning : Data at Geopotential Height"
 msgstr ""
 #
 msgid "Warning!"
-msgstr ""
-#
-msgid "Warning:  Empty directory!"
 msgstr ""
 #
 #, fuzzy
@@ -638,6 +821,17 @@ msgstr "波"
 msgid "Waves Direction"
 msgstr "風向"
 #
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Waves period"
+msgstr "風向"
+#
 msgid "Weather table"
 msgstr ""
 #
@@ -653,7 +847,7 @@ msgstr "風"
 #
 #
 #, fuzzy
-msgid "Wind Direction at"
+msgid "Wind Direction"
 msgstr "風向"
 #
 msgid "Wind Gust"
@@ -668,7 +862,15 @@ msgstr "陣風"
 #
 #
 #, fuzzy
-msgid "Wind Speed at"
+msgid "Wind Speed"
+msgstr "Wind Scat"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed in Bf"
 msgstr "Wind Scat"
 #
 msgid "Write and send eMail request"
@@ -677,14 +879,28 @@ msgstr ""
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
-"interpolated!"
+"Recomputed\n"
+"This can decrease accuracy!"
+msgstr ""
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
 msgstr ""
 #
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"2.5\\u00B0x2.5\\u00B0\n"
+"and the time intervall 12 hours."
+msgstr ""
+#
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr ""
+#
+msgid "You want to remove the dialog title/drag bar\n"
 msgstr ""
 #
 #
@@ -708,6 +924,15 @@ msgstr ""
 "按OK繼續 ..."
 #
 msgid "Zoom To Center"
+msgstr ""
+#
+msgid "Zoom to Center"
+msgstr ""
+#
+msgid "at"
+msgstr ""
+#
+msgid "at Geopotential Height"
 msgstr ""
 #
 msgid "h"
@@ -737,14 +962,15 @@ msgstr ""
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
 msgstr ""
 #
-msgid "playback"
-msgstr "播放"
+msgid "surface level"
+msgstr ""
 #
 msgid "zyGrib Code"
 msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -776,19 +1002,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " data"
 #~ msgstr "資料"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Action"
-#~ msgstr "動作"
 #
 #
 #
@@ -804,32 +1021,25 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "雲"
 #
 #
+#~ msgid "Display"
+#~ msgstr "顯示"
 #
 #
 #
-#
-#
-#
+#~ msgid "Error:  Can't read this File!"
+#~ msgstr "錯誤: 無法讀取檔案!"
 #
 #
 #
 #, fuzzy
-#~ msgid "Data Display Preferences"
-#~ msgstr "GRIB 偏好設定"
+#~ msgid "Error:  No valid data in this file!"
+#~ msgstr "錯誤: 無法讀取檔案!"
 #
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Error"
-#~ msgstr "錯誤"
 #
 #
 #
@@ -840,6 +1050,7 @@ msgstr ""
 #
 #~ msgid "Failed to send mail message"
 #~ msgstr "傳送郵件失敗"
+#
 #
 #
 #
@@ -885,8 +1096,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
+#
+#
+#~ msgid "Grib Settings"
+#~ msgstr "Grib 設定"
+#
 #
 #
 #
@@ -905,8 +1122,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "公尺/秒"
+#
 #
 #
 #
@@ -925,6 +1144,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "我的標籤"
 #
@@ -935,8 +1155,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCPN 登入失敗! 請檢查您的電子郵件設定"
+#
 #
 #
 #
@@ -957,8 +1179,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "週期"
+#
+#
+#~ msgid "Play"
+#~ msgstr "播放"
+#
 #
 #
 #
@@ -973,6 +1201,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+#
 #
 #
 #
@@ -1000,9 +1229,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -1028,6 +1259,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
@@ -1039,8 +1271,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "凝結"
+#
 #
 #
 #
@@ -1056,8 +1290,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
 #
 #
 #
@@ -1074,8 +1310,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "參考:"
+#
 #
 #
 #
@@ -1109,19 +1347,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
 #
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "SeaTemp"
-#~ msgstr "海水溫度"
 #
 #
 #
@@ -1162,8 +1392,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Size"
 #~ msgstr "大小"
+#
 #
 #
 #
@@ -1174,8 +1406,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Slices per hour"
 #~ msgstr "分隔每小時"
+#
+#
+#~ msgid "Stop"
+#~ msgstr "停止"
+#
 #
 #
 #
@@ -1217,9 +1455,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "WavesModel"
 #~ msgstr "模型"
+#
 #
 #
 #
@@ -1245,6 +1485,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "風速,  Kts."
@@ -1257,8 +1498,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "區域"
+#
 #
 #
 #
