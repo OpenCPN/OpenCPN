@@ -402,12 +402,20 @@ ChartTableEntry::~ChartTableEntry()
 bool ChartTableEntry::IsEarlierThan(const ChartTableEntry &cte) const {
     wxDateTime mine(edition_date);
     wxDateTime theirs(cte.edition_date);
+    
+    if(!mine.IsValid() || !theirs.IsValid())
+        return false;              // will have the effect of keeping all questionable charts                     
+    
     return ( mine.IsEarlierThan(theirs) );
 }
 
 bool ChartTableEntry::IsEqualTo(const ChartTableEntry &cte) const {
       wxDateTime mine(edition_date);
       wxDateTime theirs(cte.edition_date);
+      
+      if(!mine.IsValid() || !theirs.IsValid())
+          return true;              // will have the effect of keeping all questionable charts                     
+      
       return ( mine.IsEqualTo(theirs) );
 }
 
