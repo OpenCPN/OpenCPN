@@ -5703,7 +5703,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     //TODO  Debugging
 //     if(rzRules->obj->Index == 914)
 //         int yyp = 0;
-    
+
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
     
@@ -8764,8 +8764,8 @@ void RenderFromHPGL::SetTargetGCDC( wxGCDC* gdc )
 const char* RenderFromHPGL::findColorNameInRef( char colorCode, char* col )
 {
     int noColors = strlen( col ) / 6;
-    for( int i = 0; i < noColors; i++ ) {
-        if( *col + i == colorCode ) return col + i + 1;
+    for( int i = 0, j=0; i < noColors; i++, j += 6 ) {
+        if( *(col + j) == colorCode ) return col + j + 1;
     }
     return col + 1; // Default to first color if not found.
 }
