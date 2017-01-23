@@ -8452,12 +8452,20 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 
     bool b_catfilter = true;
     bool b_visible = false;
-    
-    //  Meta object override
-    if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) ) if( !m_bShowMeta ) return false;
 
     //      Do Object Type Filtering
     DisCat obj_cat = rzRules->obj->m_DisplayCat;
+    
+    //  Meta object filter. 
+    // Applied when showing display category OTHER, and
+    // only for objects whose decoded S52 display category (by LUP) is also OTHER
+    if( m_nDisplayCategory == OTHER ){
+        if(OTHER == obj_cat){
+            if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) )
+                if( !m_bShowMeta ) return false;
+        }
+    }
+
 
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
         if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );
