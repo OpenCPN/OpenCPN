@@ -1336,7 +1336,7 @@
 			<table-name>Plain</table-name>
 			<attrib-code index="0">MARSYS1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
-			<instruction>SY(DIRBOYA1,ORIENT);LS(DASH,1,CHGRD)</instruction>
+			<instruction>SY(DIRBOYA1,ORIENT);LS(DASH,1,CHYLW)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27040</comment>
 		</lookup>
@@ -34585,6 +34585,7 @@
 				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPA;SW2;PU280,507;CI152;SPA;SW2;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
+                        <prefer-bitmap>no</prefer-bitmap>
 		</symbol>
 
 		<symbol RCID="3133">
@@ -34601,9 +34602,10 @@
 				<distance min="0" max="0" />
 				<pivot x="-2324" y="778" />
 				<origin x="128" y="355" />
-				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW2;PU280,507;CI152;SPC;SW2;PU1291,507;CI149;</HPGL>
+				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW3;PU280,507;CI152;SPC;SW3;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
+                        <prefer-bitmap>no</prefer-bitmap>
 		</symbol>
 
 		<symbol RCID="3132">
@@ -34620,9 +34622,10 @@
 				<distance min="0" max="0" />
 				<pivot x="-2324" y="778" />
 				<origin x="128" y="355" />
-				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW2;PU280,507;CI152;SPC;SW2;PU1291,507;CI149;</HPGL>
+				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW3;PU280,507;CI152;SPC;SW3;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
+                        <prefer-bitmap>no</prefer-bitmap>
 		</symbol>
 
 		<symbol RCID="2242">
