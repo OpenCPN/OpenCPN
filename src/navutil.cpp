@@ -601,7 +601,12 @@ int MyConfig::LoadMyConfig()
     g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
     Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
-    Read( _T ( "OpenGL" ), &g_bopengl, 0 );
+
+    bool default_opengl = true;
+#ifdef __WXMSW__
+    default_opengl = false; // disable opengl by default on windows until it's proven more reliable
+#endif
+    Read( _T ( "OpenGL" ), &g_bopengl, default_opengl );
     if ( g_bdisable_opengl )
         g_bopengl = false;
     Read( _T ( "SoftwareGL" ), &g_bSoftwareGL, 0 );
@@ -737,7 +742,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
 
-    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 0 );
+    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 1 );
 
     g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
