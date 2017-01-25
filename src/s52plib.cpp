@@ -2209,8 +2209,7 @@ int s52plib::RenderTE( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return RenderT_All( rzRules, rules, vp, false );
 }
 
-bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
-        float rot_angle )
+bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp, float rot_angle )
 {
     float fsf = 100 / canvas_pix_per_mm;
 
@@ -2231,11 +2230,25 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         xscale = wxMin(xscale, 1.0);
         xscale = wxMax(.4, xscale);
         
-        printf("scaled length: %g   xscale: %g\n", scaled_length, xscale);
+        //printf("scaled length: %g   xscale: %g\n", scaled_length, xscale);
         
         
         fsf *= xscale;
     }
+    
+    //  Special case for GEO_AREA objects with centred symbols
+    if( rzRules->obj->Primitive_type == GEO_AREA ) {
+        wxPoint r;
+        GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
+        
+        double latdraw, londraw;                // position of the drawn symbol with pivot applied
+        GetPixPointSingleNoRotate( r.x + (prule->pos.symb.pivot_x.SYCL / fsf),
+                                   r.y + (prule->pos.symb.pivot_y.SYRW / fsf), &latdraw, &londraw, vp );
+        
+        if( !rzRules->obj->BBObj.Contains( latdraw, londraw ) ) // Symbol reference point is outside base area object
+             return 1;
+    }
+    
     
     int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
     width *= 4; // Grow the drawing bitmap to allow for rotation of symbols with highly offset pivot points
@@ -2245,17 +2258,21 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
     height *= 4;
     height = (int) ( height / fsf );
 
+    int origin_x = prule->pos.symb.bnbox_x.SBXC;
+    int origin_y = prule->pos.symb.bnbox_y.SBXR;
+    wxPoint origin(origin_x, origin_y);
+    
     int pivot_x = prule->pos.symb.pivot_x.SYCL;
     int pivot_y = prule->pos.symb.pivot_y.SYRW;
-
+    wxPoint pivot( pivot_x, pivot_y );
+    
     char *str = prule->vector.LVCT;
     char *col = prule->colRef.LCRF;
-    wxPoint pivot( pivot_x, pivot_y );
     wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
     if( !m_pdc ) { // OpenGL Mode, do a direct render
         HPGL->SetTargetOpenGl();
-        HPGL->Render( str, col, r, pivot, xscale, (double) rot_angle );
+        HPGL->Render( str, col, r, pivot, origin, xscale, (double) rot_angle );
 
     } else {
 
@@ -2282,7 +2299,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxMemoryDC &gdc( mdc );
         HPGL->SetTargetDC( &gdc );
 #endif
-        HPGL->Render( str, col, r0, pivot, xscale, (double) rot_angle );
+        HPGL->Render( str, col, r0, pivot, origin, xscale, (double) rot_angle );
 
         int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4;
         int bm_height = ( gdc.MaxY() - gdc.MinY() ) + 4;
@@ -2310,7 +2327,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxGCDC targetGcdc( targetDc );
         r0 -= wxPoint( bm_orgx, bm_orgy );
         HPGL->SetTargetGCDC( &targetGcdc );
-        HPGL->Render( str, col, r0, pivot, xscale, (double) rot_angle );
+        HPGL->Render( str, col, r0, pivot,origin, xscale, (double) rot_angle );
 #else
         //  We can use the bitmap already rendered
         //  Get smallest containing bitmap
@@ -2836,9 +2853,9 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         wxPoint r, r1;
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
-        //  Render a raster or vector symbol, as specified by LUP rules
-        if( rules->razRule->definition.SYDF == 'V' ) RenderHPGL( rzRules, rules->razRule, r, vp,
-                angle );
+         //  Render a raster or vector symbol, as specified by LUP rules
+        if( rules->razRule->definition.SYDF == 'V' )
+            RenderHPGL( rzRules, rules->razRule, r, vp, angle );
 
         else
             if( rules->razRule->definition.SYDF == 'R' ) RenderRasterSymbol( rzRules,
@@ -3919,7 +3936,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     int w = 1; // arbitrary width
     wxColour color( c->R, c->G, c->B );
     double LOD = 2.0 / vp->view_scale_ppm;              // empirical value, by experiment
-    LOD = wxMin(LOD, 10.0);
+    LOD = 0; //wxMin(LOD, 10.0);
     
     //  Get the current display priority
     //  Default comes from the LUP, unless overridden
@@ -4510,7 +4527,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
 
                         HPGL->SetTargetDC( pdc );
                         theta = atan2f( dy, dx );
-                        HPGL->Render( str, col, r, pivot, 1.0, theta * 180. / PI );
+                        HPGL->Render( str, col, r, pivot, pivot, 1.0, theta * 180. / PI );
 
                         xs += sym_len * dx / seg_len * sym_factor;
                         ys += sym_len * dy / seg_len * sym_factor;
@@ -4617,7 +4634,7 @@ next_seg_dc:
 
                         HPGL->SetTargetOpenGl();
                         theta = atan2f( dy, dx );
-                        HPGL->Render( str, col, r, pivot, 1.0, theta * 180. / PI );
+                        HPGL->Render( str, col, r, pivot, pivot, 1.0, theta * 180. / PI );
 
                         xs += sym_len * dx / seg_len * sym_factor;
                         ys += sym_len * dy / seg_len * sym_factor;
@@ -8026,11 +8043,16 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
             char *str = prule->vector.LVCT;
             char *col = prule->colRef.LCRF;
             wxPoint pivot( pivot_x, pivot_y );
+            
+            int origin_x = prule->pos.patt.bnbox_x.PBXC;
+            int origin_y = prule->pos.patt.bnbox_y.PBXR;
+            wxPoint origin(origin_x, origin_y);
+            
             wxPoint r0( (int) ( ( pivot_x - box.GetMinX() ) / fsf ) + 1,
                         (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
 
             HPGL->SetTargetDC( &mdc );
-            HPGL->Render( str, col, r0, pivot, 1.0, 0 );
+            HPGL->Render( str, col, r0, pivot, origin, 1.0, 0 );
         } else {
             pbm = new wxBitmap( 2, 2 );       // substitute small, blank pattern
             mdc.SelectObject( *pbm );
@@ -8893,20 +8915,20 @@ void RenderFromHPGL::Polygon()
 #endif
 }
 
-void RenderFromHPGL::RotatePoint( wxPoint& point, double angle )
+void RenderFromHPGL::RotatePoint( wxPoint& point, wxPoint origin, double angle )
 {
     if( angle == 0. ) return;
     double sin_rot = sin( angle * PI / 180. );
     double cos_rot = cos( angle * PI / 180. );
 
-    double xp = ( point.x * cos_rot ) - ( point.y * sin_rot );
-    double yp = ( point.x * sin_rot ) + ( point.y * cos_rot );
+    double xp = ( (point.x - origin.x) * cos_rot ) - ( (point.y - origin.y) * sin_rot );
+    double yp = ( (point.x - origin.x) * sin_rot ) + ( (point.y - origin.y) * cos_rot );
 
-    point.x = (int) xp;
-    point.y = (int) yp;
+    point.x = (int) xp + origin.x;
+    point.y = (int) yp + origin.y;
 }
 
-bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, float scale, double rot_angle )
+bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle )
 {
 //      int width = 1;
 //      double radius = 0.0;
@@ -8942,8 +8964,9 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, f
         if( command == _T("PU") ) {
             SetPen();
             lineStart = ParsePoint( arguments );
+            RotatePoint( lineStart, origin, rot_angle );
             lineStart -= pivot;
-            RotatePoint( lineStart, rot_angle );
+            
             lineStart.x /= scaleFactor;
             lineStart.y /= scaleFactor;
             lineStart += r;
@@ -8955,8 +8978,8 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, f
                 lineEnd.x++;
             } else {
                 lineEnd = ParsePoint( arguments );
+                RotatePoint( lineEnd, origin, rot_angle );
                 lineEnd -= pivot;
-                RotatePoint( lineEnd, rot_angle );
                 lineEnd.x /= scaleFactor;
                 lineEnd.y /= scaleFactor;
                 lineEnd += r;
@@ -8999,7 +9022,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, f
                             points.GetNextToken().ToLong( &y );
                             lineEnd = wxPoint( x, y );
                             lineEnd -= pivot;
-                            RotatePoint( lineEnd, rot_angle );
+                            RotatePoint( lineEnd, origin, rot_angle );
                             lineEnd.x /= scaleFactor;
                             lineEnd.y /= scaleFactor;
                             lineEnd += r;

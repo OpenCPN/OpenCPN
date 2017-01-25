@@ -395,11 +395,11 @@ public:
 #if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
 #endif
-    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, float scale, double rot_angle);
+    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle);
 
 private:
     const char* findColorNameInRef( char colorCode, char* col );
-    void RotatePoint( wxPoint& point, double angle );
+    void RotatePoint( wxPoint& point, wxPoint origin, double angle );
     wxPoint ParsePoint( wxString& argument );
     void SetPen();
     void Line( wxPoint from, wxPoint to );
