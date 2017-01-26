@@ -8756,6 +8756,7 @@ RenderFromHPGL::RenderFromHPGL( s52plib* plibarg )
     renderToDC = false;
     renderToOpenGl = false;
     renderToGCDC = false;
+    transparency = 255;
 }
 
 void RenderFromHPGL::SetTargetDC( wxDC* pdc )
@@ -8820,7 +8821,11 @@ void RenderFromHPGL::SetPen()
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
-        glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), penColor.Alpha() );
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_POLYGON_SMOOTH );
+        glEnable( GL_BLEND );
+        
+        glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
         glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7) );
 #ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
@@ -8902,6 +8907,8 @@ void RenderFromHPGL::Polygon()
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
+        glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
+        
         glBegin( GL_POLYGON );
         for( int ip = 1; ip < noPoints; ip++ )
             glVertex2i( polygon[ip].x, polygon[ip].y );
@@ -8958,7 +8965,11 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
             continue;
         }
         if( command == _T("ST") ) {
-            // Transparency is ignored for now.
+            long transIndex;
+            arguments.ToLong( &transIndex );
+            transparency = (4 - transIndex) * 64;
+            transparency = wxMin(transparency, 255);
+            transparency = wxMax(0, transparency);
             continue;
         }
         if( command == _T("PU") ) {
@@ -8966,7 +8977,6 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
             lineStart = ParsePoint( arguments );
             RotatePoint( lineStart, origin, rot_angle );
             lineStart -= pivot;
-            
             lineStart.x /= scaleFactor;
             lineStart.y /= scaleFactor;
             lineStart += r;
@@ -9021,8 +9031,8 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
                             points.GetNextToken().ToLong( &x );
                             points.GetNextToken().ToLong( &y );
                             lineEnd = wxPoint( x, y );
-                            lineEnd -= pivot;
                             RotatePoint( lineEnd, origin, rot_angle );
+                            lineEnd -= pivot;
                             lineEnd.x /= scaleFactor;
                             lineEnd.y /= scaleFactor;
                             lineEnd += r;

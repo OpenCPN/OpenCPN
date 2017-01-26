@@ -419,7 +419,8 @@ private:
     wxColor brushColor;
     wxBrush* brush;
     long penWidth;
-
+    int transparency;
+    
     int noPoints;
     wxPoint polygon[100];
 
