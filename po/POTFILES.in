@@ -10,7 +10,6 @@ include/androidUTIL.h
 include/bbox.h
 include/canvasMenu.h
 include/chart1.h
-include/chartbarwin.h
 include/chartbase.h
 include/chartdb.h
 include/chartdbs.h
@@ -109,7 +108,6 @@ include/timers.h
 include/tinyxml.h
 include/toolbar.h
 include/TrackPropDlg.h
-include/triangulate.h
 include/TTYScroll.h
 include/TTYWindow.h
 include/tzdata.h
@@ -131,7 +129,6 @@ src/androidUTIL.cpp
 src/bbox.cpp
 src/canvasMenu.cpp
 src/chart1.cpp
-src/chartbarwin.cpp
 src/chartdb.cpp
 src/chartdbs.cpp
 src/chartimg.cpp
