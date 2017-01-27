@@ -4207,8 +4207,13 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
     else {
         double blat, blon, tlat, tlon;
 
-        int x_origin = g_bDisplayGrid ? 50 : 10;
-        int y_origin = m_canvas_height - 30;
+//        int x_origin = g_bDisplayGrid ? 50 : 10;
+        int x_origin = m_canvas_width - 200;
+        int chartbar_height = GetChartbarHeight();
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        if (style->chartStatusWindowTransparent)
+            chartbar_height = 0;
+        int y_origin = m_canvas_height - chartbar_height - 5;
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
         GetCanvasPixPoint( x_origin + m_canvas_width, y_origin, tlat, tlon );
