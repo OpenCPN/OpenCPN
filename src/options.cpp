@@ -4896,7 +4896,7 @@ void options::SetInitialSettings(void) {
       wxString::Format(_T("%.1f"), g_n_gps_antenna_offset_y));
   m_pOSMinSize->SetValue(wxString::Format(_T("%d"), g_n_ownship_min_mm));
   m_pText_ACRadius->SetValue(
-      wxString::Format(_T("%.2f"), g_n_arrival_circle_radius));
+      wxString::Format(_T("%.3f"), g_n_arrival_circle_radius));
 
   wxString buf;
   if (g_iNavAidRadarRingsNumberVisible > 10)
