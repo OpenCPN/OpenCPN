@@ -150,6 +150,16 @@ ENDIF (NOT WIN32)
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
+#  Detect the Apple Version of the build machine
+IF (APPLE)
+   EXEC_PROGRAM(uname ARGS -v  OUTPUT_VARIABLE DARWIN_VERSION)
+   STRING(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
+   MESSAGE(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
+   IF (DARWIN_VERSION GREATER 11)
+     SET(APPLE_MODERN 1 INTERNAL)
+   ENDIF (DARWIN_VERSION GREATER 11)
+ENDIF(APPLE)
+
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 #If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
@@ -275,7 +285,6 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
     SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_tcdata OFF")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
-
 
 #  To build for android, use this cmake invocation..
 #$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
@@ -475,7 +484,7 @@ ENDIF(MINGW)
 IF( APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations" )
+  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
@@ -630,14 +639,39 @@ IF(OCPN_USE_SVG)
         SET( CAIRO_FIND_QUIETLY TRUE )
       ENDIF( CAIRO_INCLUDE_DIR )
 
-      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
-              PATHS /usr/local/include /usr/include
-              PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/ )
+      SET(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include )
 
+      IF(APPLE)
+        IF(NOT APPLE_MODERN)
+            SET(CAIRO_INC_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/include)
+            SET(LOOK_OPTION NO_DEFAULT_PATH)
+        ENDIF(NOT APPLE_MODERN)
+      ENDIF(APPLE)
+        
+      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
+              PATHS ${CAIRO_INC_LOOK_PATHS}
+              PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
+              ${LOOK_OPTION} )
+              
+      message(STATUS " Cairo include directory found: ${CAIRO_INCLUDE_DIR}")
+
+      
+      SET(CAIRO_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+      IF(APPLE)
+        IF(NOT APPLE_MODERN)
+            SET(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib)
+            SET(LOOK_OPTION NO_DEFAULT_PATH)
+        ENDIF(NOT APPLE_MODERN)
+      ENDIF(APPLE)
+      
       SET( CAIRO_NAMES libcairo cairo )
+
       FIND_LIBRARY( CAIRO_LIBRARY
               NAMES ${CAIRO_NAMES}
-              PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+              PATHS ${CAIRO_LIB_LOOK_PATHS}
+              ${LOOK_OPTION})
+
+      message(STATUS " Cairo library found: ${CAIRO_LIBRARY}")
 
       GET_FILENAME_COMPONENT( CAIRO_LIBRARY_DIR ${CAIRO_LIBRARY} PATH )
 
@@ -653,12 +687,15 @@ IF(OCPN_USE_SVG)
 
       #  Some systems (e.g ARMHF RPI2) require some extra libraries
       #  This is not exactly a general solution, but probably harmless where not needed.
+      IF(NOT APPLE)
       FIND_LIBRARY( PANGOCAIRO_LIBRARY  NAMES pangocairo-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( GDK_PIXBUF_LIBRARY NAMES gdk_pixbuf-2.0 PATHS /usr/lib /usr/local/lib)
       FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
                                             PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
+      ENDIF(NOT APPLE)
+      
       IF ( CAIRO_EXTRAS_FOUND )                                           
         SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
         message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
