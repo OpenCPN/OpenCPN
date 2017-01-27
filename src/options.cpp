@@ -4027,9 +4027,13 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                 _("Show true bearings and headings"));
     bearingsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow = new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX,
-                                _("Show magnetic bearings and headings"));
+                                _("Show magnetic bearings and headings."));
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
+    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("")), labelFlags);
+    
+    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin.")));
+    
     //  Mag Heading user variation
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
