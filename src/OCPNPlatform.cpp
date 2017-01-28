@@ -804,7 +804,25 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
         pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
      }
+
+
+#ifdef ocpnUSE_GL
+    int attribList[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, 0 };
+    wxFrame frame(NULL, -1, "OpenGL Test Frame");//
+    wxGLCanvas canvas(&frame, wxID_ANY, attribList);
+    frame.Show();
+    canvas.Show();
+    wxSleep(1);
+    wxYield();
+    wxGLContext context(&canvas);
+    context.SetCurrent(canvas);
     
+    char *str = (char *) glGetString( GL_RENDERER );
+    wxString glRenderer;
+    if(str)
+        glRenderer = wxString( str, wxConvUTF8 );
+    
+#endif
     
 #ifdef __WXMSW__
     //  Enable some default PlugIns, and their default options
@@ -850,11 +868,18 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->SetPath ( _T ( "/Settings/WMM" ) );
         pConfig->Write ( _T ( "ShowIcon" ), true );
         pConfig->Write ( _T ( "ShowLiveIcon" ), true );
-        
+
+#ifdef ocpnUSE_GL
+        if(glRenderer.Contains("Mesa DRI Intel")) {
+            g_bopengl = true;
+            g_GLOptions.m_bTextureCompression = 1;
+            g_GLOptions.m_bTextureCompressionCaching = 0;
+        }
+#endif
     }
 #endif
 
-        
+
 #ifdef __OCPN__ANDROID__
     
 #ifdef ocpnUSE_GL
