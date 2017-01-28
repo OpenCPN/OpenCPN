@@ -601,12 +601,7 @@ int MyConfig::LoadMyConfig()
     g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
     Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
-
-    bool default_opengl = true;
-#ifdef __WXMSW__
-    default_opengl = false; // disable opengl by default on windows until it's proven more reliable
-#endif
-    Read( _T ( "OpenGL" ), &g_bopengl, default_opengl );
+    Read( _T ( "OpenGL" ), &g_bopengl, 0 );
     if ( g_bdisable_opengl )
         g_bopengl = false;
     Read( _T ( "SoftwareGL" ), &g_bSoftwareGL, 0 );
