@@ -4746,7 +4746,7 @@ void options::CreateControls(void) {
       nb->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED,
                   wxNotebookEventHandler(options::OnChartsPageChange),
                   NULL, this);
-      
+
 #endif
   }
       
@@ -6713,6 +6713,8 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
     if (!m_bVectorInit)
         SetInitialVectorSettings();
   }
+  
+  event.Skip();  // Allow continued event processing
 }
 
 void options::OnPageChange(wxListbookEvent& event) {
