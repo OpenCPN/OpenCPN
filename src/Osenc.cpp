@@ -2827,6 +2827,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     
                     case 4:             // Ascii String
                     {
+                        
                         valueType = OGRvalueType;
                         const char *pAttrVal = pFeature->GetFieldAsString( iField );
                         unsigned int stringPayloadLength = strlen(pAttrVal);
@@ -2865,7 +2866,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                     //  Get a reference to the class persistent buffer
                     unsigned char *pBuffer = getBuffer( recordLength );
-                
+                    
                     OSENC_Attribute_Record *pRecord = (OSENC_Attribute_Record *)pBuffer;
                     memset(pRecord, 0, sizeof(OSENC_Attribute_Record));
                     pRecord->record_type = FEATURE_ATTRIBUTE_RECORD;
@@ -2886,7 +2887,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
     }
 
     free( payloadBuffer );
-    
     
 #if 0    
     //    Special geometry cases
@@ -2984,8 +2984,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 //      Special case, polygons are handled separately
                 case wkbPolygon: {
                     
-                    if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
-                        return false;
+                     if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
+                         return false;
                    
                     break;
                 }
@@ -3541,8 +3541,8 @@ bool Osenc::CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar
 
 void Osenc::InitializePersistentBuffer( void ){
 
-    pBuffer = NULL;
-    bufferSize = 0;
+    pBuffer = (unsigned char *)malloc(1024);
+    bufferSize = 1024;
 }
 
 unsigned char *Osenc::getBuffer( size_t length){
