@@ -6247,7 +6247,15 @@ void options::OnButtonParseENC(wxCommandEvent &event)
     cc1->EnablePaint(false);
     
     extern void ParseAllENC();
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+        
     ParseAllENC();
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     ViewPort vp;
     gFrame->ChartsRefresh(-1, vp, true);
     
