@@ -1297,13 +1297,14 @@ bool glTextureManager::FactoryCrunch(double factor)
     mem_start = mem_used;
     ChartPathHashTexfactType::iterator it0;
 
-    bool bMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
+    bool bMemCrunch = ( g_memCacheLimit && ( (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
                        mem_used > (double)(m_prevMemUsed) * factor *hysteresis)
-        || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
-    //  Need more, so delete the oldest factory
+                      || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY)));
+    
     if(!bMemCrunch)
         return false;
         
+    //  Need more, so delete the oldest factory
     //      Find the oldest unused factory
     int lru_oldest = 2147483647;
     glTexFactory *ptf_oldest = NULL;
@@ -1346,21 +1347,19 @@ bool glTextureManager::FactoryCrunch(double factor)
 
     GetMemoryStatus(0, &mem_used);
 
-    bMemCrunch = (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
-                  mem_used > (double)(m_prevMemUsed) * factor *hysteresis)
-        || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY);
-    //  Need more memory, so delete the oldest factory
+    bMemCrunch = ( g_memCacheLimit && ( (mem_used > (double)(g_memCacheLimit) * factor *hysteresis && 
+                            mem_used > (double)(m_prevMemUsed) * factor *hysteresis)
+                            || (m_chart_texfactory_hash.size() > MAX_CACHE_FACTORY)));
+    
     if(!bMemCrunch)
         return false;
-
+    
+    //  Need more, so delete the oldest chart too
+        
     m_chart_texfactory_hash.erase(ptf_oldest->GetChartPath());                // This chart  becoming invalid
                 
     delete ptf_oldest;
     
-//    int mem_now;
-//    GetMemoryStatus(0, &mem_now);
-//    printf(">>>>FactoryCrunch  was: %d  is:%d \n", mem_start, mem_now);
-
     return true;
 }
 
