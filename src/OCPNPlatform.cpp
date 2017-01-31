@@ -606,7 +606,8 @@ wxString OCPNPlatform::GetDefaultSystemLocale()
 #if wxUSE_XLOCALE
     
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    retval =languageInfo->CanonicalName;
+    if (languageInfo)
+        retval = languageInfo->CanonicalName;
     
     #if defined(__WXMSW__) 
     LANGID lang_id = GetUserDefaultUILanguage();
