@@ -3440,12 +3440,13 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-#if 0
+#if 1
     wxString SENCdir = g_SENCPrefix;
-    if( SENCdir.Last() != m_SENCFileName.GetPathSeparator() )
-        SENCdir.Append( m_SENCFileName.GetPathSeparator() );
-
-    wxFileName ThumbFileName( SENCdir, m_SENCFileName.GetName(), _T("BMP") );
+    if( SENCdir.Last() != wxFileName::GetPathSeparator() )
+        SENCdir.Append( wxFileName::GetPathSeparator() );
+    
+    wxFileName s57File(m_SENCFileName);
+    wxFileName ThumbFileName( SENCdir, s57File.GetName(), _T("BMP") );
 
     if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
         BuildThumbnail( ThumbFileName.GetFullPath() );
