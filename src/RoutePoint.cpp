@@ -483,8 +483,25 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
        vp.rotation == m_wpBBox_rotation) {
         /* see if this waypoint can intersect with bounding box */
         LLBBox vpBBox = vp.GetBBox();
-        if( vpBBox.IntersectOut( m_wpBBox ) )
-            return;
+        if( vpBBox.IntersectOut( m_wpBBox ) ){
+            
+            // Are Range Rings enabled?
+            if(m_bShowWaypointRangeRings && (m_iWaypointRangeRingsNumber > 0)){
+                double factor = 1.00;
+                if( m_iWaypointRangeRingsStepUnits == 1 )          // convert kilometers to NMi
+                    factor = 1 / 1.852;
+            
+                double radius = factor * m_iWaypointRangeRingsNumber * m_fWaypointRangeRingsStep  / 60.;
+
+                LLBBox radar_box = m_wpBBox;
+                radar_box.EnLarge(radius * 2 );
+                if( vpBBox.IntersectOut( radar_box ) ){
+                    return;
+                }
+            }
+            else
+                return;
+        }
     }
 
     wxPoint r;
