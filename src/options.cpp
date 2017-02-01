@@ -2955,8 +2955,8 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
     wxStaticText* zoomText =
         new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                         _("With a lower value, the same zoom level shows a less detailed chart.\n \
-                         With a higher value, the same zoom level shows a more detailed chart."));
+                         _("With a lower value, the same zoom level shows a less detailed chart.\n\
+With a higher value, the same zoom level shows a more detailed chart."));
 
     smallFont = new wxFont(*dialogFont);  // we can't use Smaller() because
                                           // wx2.8 doesn't support it
@@ -4032,7 +4032,6 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("")), labelFlags);
     
-    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin.")));
     
     //  Mag Heading user variation
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -4049,6 +4048,16 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
 	itemStaticTextUserVar2 = new wxStaticText(panelUnits, wxID_ANY, _("deg (-W, +E)"));
     magVarSizer->Add(itemStaticTextUserVar2, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
+    
+    bearingsSizer->AddSpacer(10);
+    
+    wxStaticText *varText = new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin."));
+    smallFont = new wxFont(*dialogFont);  
+    smallFont->SetPointSize((smallFont->GetPointSize() / 1.2) +  0.5);  // + 0.5 to round instead of truncate
+    varText->SetFont(*smallFont);
+    
+    bearingsSizer->Add(varText);
+    
   }
 }
 
@@ -5255,9 +5264,9 @@ void options::UpdateOptionsUnits(void) {
   //disable input for variation if WMM is available
   bool havewmm = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
   if(havewmm)
-      itemStaticTextUserVar->SetLabel(_("WMM Plugin for magnetic variation"));
+      itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
   else
-      itemStaticTextUserVar->SetLabel(_("Assumed magnetic variation"));
+      itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
 
   // size hack to adjust change in static text size
   wxSize sz = this->GetSize(); this->SetSize(sz.x+1, sz.y); this->SetSize(sz);
