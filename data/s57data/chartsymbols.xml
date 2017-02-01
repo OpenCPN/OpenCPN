@@ -9118,7 +9118,7 @@
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="897" RCID="31973" name="rdocal">
@@ -9129,7 +9129,7 @@
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="898" RCID="31974" name="rdocal">
@@ -9140,7 +9140,7 @@
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL02,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="899" RCID="31975" name="rdocal">
@@ -9151,7 +9151,7 @@
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>LS(DASH,1,TRFCD);SY(RDOCAL03,ORIENT);TX(OBJNAM,3,1,2,'24207',1,-1,CHBLK,21);TX(COMCHA,3,1,2,'24207',1,1,CHBLK,52)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="900" RCID="31976" name="rdocal">
@@ -9160,7 +9160,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Lines</table-name>
 			<instruction>LS(DASH,1,TRFCD);SY(RCLDEF01);TX(OBJNAM,3,2,2,'24207',1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="901" RCID="31977" name="rivbnk">
@@ -12461,7 +12461,7 @@
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1228" RCID="31280" name="RDOCAL">
@@ -12472,7 +12472,7 @@
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1229" RCID="31281" name="RDOCAL">
@@ -12483,7 +12483,7 @@
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1230" RCID="31282" name="RDOCAL">
@@ -12494,7 +12494,7 @@
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL03,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1231" RCID="31283" name="RDOCAL">
@@ -12503,7 +12503,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(RCLDEF01);TE('%s','OBJNAM',3,2,2,'15110',1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1232" RCID="31284" name="RDOSTA">
@@ -15799,7 +15799,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1548" RCID="31600" name="rdocal">
@@ -15809,7 +15809,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1549" RCID="31601" name="rdocal">
@@ -15819,7 +15819,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<instruction>SY(rdocal02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1550" RCID="31602" name="rdocal">
@@ -15829,7 +15829,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<instruction>SY(rdocal03,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1551" RCID="31603" name="rdocal">
@@ -15838,7 +15838,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(RCLDEF01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="1552" RCID="31604" name="refdmp">
@@ -24273,7 +24273,7 @@
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2346" RCID="30503" name="RDOCAL">
@@ -24284,7 +24284,7 @@
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2347" RCID="30504" name="RDOCAL">
@@ -24295,7 +24295,7 @@
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2348" RCID="30505" name="RDOCAL">
@@ -24306,7 +24306,7 @@
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<attrib-code index="1">ORIENT </attrib-code>
 			<instruction>SY(RDOCAL03,ORIENT);TE('%s','OBJNAM',3,1,2,'15110',1,-1,CHBLK,21);TE('Ch %s','COMCHA',3,1,2,'15110',1,1,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2349" RCID="30506" name="RDOCAL">
@@ -24315,7 +24315,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(RCLDEF01);TE('%s','OBJNAM',3,2,2,'15110',1,-1,CHBLK,21)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2350" RCID="30507" name="RDOSTA">
@@ -28871,7 +28871,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC1</attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2781" RCID="30849" name="_RDOCAL">
@@ -28881,7 +28881,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC2</attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2782" RCID="30850" name="_RDOCAL">
@@ -28891,7 +28891,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC3</attrib-code>
 			<instruction>SY(RDOCAL02,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2783" RCID="30851" name="_RDOCAL">
@@ -28901,7 +28901,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">TRAFIC4</attrib-code>
 			<instruction>SY(RDOCAL03,ORIENT);TX(COMCHA,1,2,2,'14106',0,0,CHMGD,11);TX(OBJNAM,3,2,2,'14106',2,-2,CHBLK,11)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2784" RCID="30852" name="_RDOCAL">
@@ -28910,7 +28910,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<instruction>SY(RCLDEF01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15060</comment>
 		</lookup>
 		<lookup id="2785" RCID="30853" name="refdmp">
