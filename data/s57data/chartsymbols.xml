@@ -4114,7 +4114,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC1</attrib-code>
 			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LC(DWRUTE51);CS(RESTRN01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="388" RCID="32423" name="DWRTPT">
@@ -4125,7 +4125,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC2</attrib-code>
 			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LC(DWRUTE51);CS(RESTRN01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="389" RCID="32424" name="DWRTPT">
@@ -4136,7 +4136,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC3</attrib-code>
 			<instruction>SY(TSSLPT51,ORIENT);SY(DWRTPT51);LC(DWRUTE51);CS(RESTRN01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="390" RCID="32425" name="DWRTPT">
@@ -4147,7 +4147,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC4</attrib-code>
 			<instruction>SY(DWRUTE51,ORIENT);SY(DWRTPT51);LC(DWRUTE51);CS(RESTRN01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="391" RCID="32426" name="DWRTPT">
@@ -4156,7 +4156,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
 			<instruction>SY(TWRTPT52);SY(DWRTPT51);LC(DWRUTE51);CS(RESTRN01)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="392" RCID="32427" name="DYKCON">
