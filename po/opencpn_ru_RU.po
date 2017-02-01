@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:17-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -3489,7 +3489,7 @@ msgstr "мор. саж"
 
 #: src/chcanv.cpp:8477
 msgid "OverZoom"
-msgstr "Завышение масштаба"
+msgstr "          Завышение масштаба"
 
 #: src/chcanv.cpp:8806 src/chcanv.cpp:8807
 msgid "ExtendedTideIcon"
@@ -4655,7 +4655,7 @@ msgstr "Отображение"
 
 #: src/options.cpp:3099 src/options.cpp:3310
 msgid "Depth Soundings"
-msgstr "Промеры глубин"
+msgstr "Отметки глубин"
 
 #: src/options.cpp:3104 src/options.cpp:3315
 msgid "Chart Information Objects"
@@ -4683,7 +4683,7 @@ msgstr "Надписи"
 
 #: src/options.cpp:3136 src/options.cpp:3341
 msgid "National text on chart"
-msgstr "Надписи на языке составителя"
+msgstr "Надписи на национальном языке"
 
 #: src/options.cpp:3141 src/options.cpp:3346
 msgid "Important Text Only"
@@ -4727,7 +4727,7 @@ msgstr "Символьные"
 
 #: src/options.cpp:3180 src/options.cpp:3390
 msgid "Colors"
-msgstr "Окраска глубин"
+msgstr "Цвет"
 
 #: src/options.cpp:3183 src/options.cpp:3393
 msgid "2 Color"
@@ -4759,7 +4759,7 @@ msgstr "Снять выделение"
 
 #: src/options.cpp:3278
 msgid "Reset to STANDARD"
-msgstr "Сброс к стандарту"
+msgstr "Сброс к стандартному"
 
 #: src/options.cpp:3494
 msgid "Tides && Currents"

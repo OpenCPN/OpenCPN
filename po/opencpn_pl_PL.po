@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:16-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -41,7 +41,7 @@ msgstr "Szczegóły obiektu"
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:610
 #: src/canvasMenu.cpp:414
 msgid "Center view"
-msgstr ""
+msgstr "Wyśrodkuj widok"
 
 #: include/LinkPropDlg.h:72 include/LinkPropDlg.h:84
 msgid "Link Properties"
@@ -82,7 +82,7 @@ msgstr "Wyślij do GPS"
 #: include/TrackPropDlg.h:180 src/TrackPropDlg.cpp:1084
 #: src/TrackPropDlg.cpp:1097
 msgid "Track properties"
-msgstr ""
+msgstr "Właściwości śladu"
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1296 src/chart1.cpp:5897
@@ -2874,11 +2874,11 @@ msgstr ""
 
 #: src/chart1.cpp:840
 msgid "Switch to full screen mode on start."
-msgstr ""
+msgstr "Przełącz do trybu pełnoekranowego na starcie"
 
 #: src/chart1.cpp:841
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "Wyłącz wideo akcelerację OpenGL. To ustawienie zostanie zapamiętane."
 
 #: src/chart1.cpp:844
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
@@ -4903,7 +4903,7 @@ msgstr "stopni (-W, + E)"
 
 #: src/options.cpp:4027
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "Pokaż kursy i namiary magnetyczne"
 
 #: src/options.cpp:4076
 msgid "AIS Targets"

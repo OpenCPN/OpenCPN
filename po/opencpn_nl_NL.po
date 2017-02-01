@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:14-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -4903,7 +4903,7 @@ msgstr "graden (-W, +E)"
 
 #: src/options.cpp:4027
 msgid "Show true bearings and headings"
-msgstr "Geef koersen en peilingen weer als ware richtingen"
+msgstr "Toon koersen en peilingen als ware richtingen"
 
 #: src/options.cpp:4076
 msgid "AIS Targets"
@@ -5328,7 +5328,7 @@ msgstr "Onleesbaar plugin-bestand gevonden, controleer de bestandspermissies:\n"
 
 #: src/pluginmanager.cpp:1187
 msgid "Incompatible plugin detected"
-msgstr "Niet-compatibele PlugIn gedetecteerd"
+msgstr "Niet-compatibele PlugIn gedetecteerd:\n"
 
 #: src/pluginmanager.cpp:1190
 #, c-format

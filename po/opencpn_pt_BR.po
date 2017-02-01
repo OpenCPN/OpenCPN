@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:17-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -41,7 +41,7 @@ msgstr "Interrogar Objeto"
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:610
 #: src/canvasMenu.cpp:414
 msgid "Center view"
-msgstr ""
+msgstr "Vista do centro"
 
 #: include/LinkPropDlg.h:72 include/LinkPropDlg.h:84
 msgid "Link Properties"
@@ -82,7 +82,7 @@ msgstr "Enviar para o GPS"
 #: include/TrackPropDlg.h:180 src/TrackPropDlg.cpp:1084
 #: src/TrackPropDlg.cpp:1097
 msgid "Track properties"
-msgstr ""
+msgstr "Propriedades da faixa"
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1296 src/chart1.cpp:5897
@@ -2501,7 +2501,7 @@ msgstr "Ligar Acompanhamento"
 
 #: src/AISTargetListDialog.cpp:640
 msgid "Copy MMSI"
-msgstr ""
+msgstr "Copiar MMSI"
 
 #: src/AISTargetListDialog.cpp:646
 msgid "AutoSort"
@@ -2701,7 +2701,7 @@ msgstr "Mostrar faixa de alvo"
 
 #: src/canvasMenu.cpp:595
 msgid "Copy Target MMSI"
-msgstr ""
+msgstr "Copiar Alvo MMSI"
 
 #: src/canvasMenu.cpp:601 src/canvasMenu.cpp:607
 msgid "Object Query..."
@@ -2865,27 +2865,27 @@ msgstr "Benvindo ao OpenCPN"
 
 #: src/chart1.cpp:838
 msgid "Show usage syntax."
-msgstr ""
+msgstr "Mostre sintaxe de uso."
 
 #: src/chart1.cpp:839
 msgid "Run in portable mode."
-msgstr ""
+msgstr "Execute em modo portátil."
 
 #: src/chart1.cpp:840
 msgid "Switch to full screen mode on start."
-msgstr ""
+msgstr "Alternar para o modo de tela cheia ao iníciar."
 
 #: src/chart1.cpp:841
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "Desative a aceleração de vídeo OpenGL. Essa configuração será lembrada."
 
 #: src/chart1.cpp:844
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr ""
+msgstr "Exibir uma apresentação de slides de <num> cartas e depois sair. Zero ou negativos <num> especifica sem limite."
 
 #: src/chart1.cpp:1299
 msgid "OpenCPN ENC Prepare"
-msgstr ""
+msgstr "OpenCPN preparar ENC"
 
 #: src/chart1.cpp:1332
 #, c-format
@@ -2894,7 +2894,7 @@ msgstr "Distância do NossoBarco: %4.0f NMi"
 
 #: src/chart1.cpp:1357
 msgid "ENC Completed."
-msgstr ""
+msgstr "ENC completada."
 
 #: src/chart1.cpp:1634 src/chart1.cpp:1640
 msgid "Failed to initialize the user interface. "
@@ -2985,12 +2985,12 @@ msgstr "Acompanhar Automaticamente"
 
 #: src/chart1.cpp:2945 src/chart1.cpp:4850
 msgid "Hide ENC text"
-msgstr ""
+msgstr "Esconder texto ENC"
 
 #: src/chart1.cpp:2947 src/chart1.cpp:4848 src/chart1.cpp:5216
 #: src/chart1.cpp:5221
 msgid "Show ENC text"
-msgstr ""
+msgstr "Mostrar texto ENC"
 
 #: src/chart1.cpp:2956 src/chart1.cpp:3046 src/chart1.cpp:3049
 #: src/chart1.cpp:4442
@@ -3031,7 +3031,7 @@ msgstr " (Ctrl-espaço)"
 
 #: src/chart1.cpp:3044 src/chart1.cpp:4441 src/chart1.cpp:5249
 msgid "Attenuate less critical AIS targets"
-msgstr ""
+msgstr "Atenuar alvos AIS menos críticos"
 
 #: src/chart1.cpp:3053 src/chart1.cpp:5247
 msgid "Show AIS Targets"
@@ -3232,7 +3232,7 @@ msgstr "AIS Homem ao Mar"
 
 #: src/chart1.cpp:9592 src/options.cpp:2382
 msgid "Own ship"
-msgstr ""
+msgstr "Nosso Navio"
 
 #: src/chart1.cpp:9603
 msgid "Temporary AISMOB Route"
@@ -3240,7 +3240,7 @@ msgstr "Rota temporária de MOB AIS"
 
 #: src/chart1.cpp:9604
 msgid "Present own ship"
-msgstr ""
+msgstr "Navio próprio presente"
 
 #: src/chart1.cpp:9674
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -3280,7 +3280,7 @@ msgstr " Nome:  "
 #: src/chcanv.cpp:3425 src/chcanv.cpp:3428 src/chcanv.cpp:3431
 #: src/chcanv.cpp:3462
 msgid "Scale"
-msgstr ""
+msgstr "Escala"
 
 #: src/chartdbs.cpp:1245
 msgid " ID:  "
@@ -3448,7 +3448,7 @@ msgstr "Interrogar Objeto"
 #: src/chcanv.cpp:6795 src/chcanv.cpp:6843 src/routemanagerdialog.cpp:1223
 #: src/routemanagerdialog.cpp:2197
 msgid "Layer"
-msgstr ""
+msgstr "Camada"
 
 #: src/chcanv.cpp:6880
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
@@ -3667,7 +3667,7 @@ msgstr ", Fora: nenhum"
 
 #: src/glChartCanvas.cpp:675
 msgid "Failed to initialize OpenGL"
-msgstr ""
+msgstr "Falha ao inicializar OpenGL"
 
 #: src/glChartCanvas.cpp:979
 msgid "OpenGL-> SSE2 Instruction set not available"
@@ -4326,11 +4326,11 @@ msgstr "Usar Garmin (GRMN) modo de entrada"
 
 #: src/options.cpp:2076
 msgid "as autopilot or NMEA repeater"
-msgstr ""
+msgstr "como piloto automático ou repetidor NMEA"
 
 #: src/options.cpp:2081
 msgid "blank = default ID"
-msgstr ""
+msgstr "em branco = ID padrão"
 
 #: src/options.cpp:2098
 msgid "x"
@@ -4418,7 +4418,7 @@ msgstr "Nenhum"
 
 #: src/options.cpp:2484 src/options.cpp:2609 src/routeprop.cpp:2593
 msgid "Distance between rings"
-msgstr ""
+msgstr "Distância entre anéis"
 
 #: src/options.cpp:2493 src/options.cpp:2620 src/routeprop.cpp:2600
 msgid "Distance Unit"
@@ -4521,7 +4521,7 @@ msgstr "Remover selecionados"
 
 #: src/options.cpp:2692
 msgid "Compress Selected"
-msgstr ""
+msgstr "Selecionado Compactar"
 
 #: src/options.cpp:2700
 msgid "Update Control"
@@ -4537,7 +4537,7 @@ msgstr "Forçar Reconstrução Completa do Banco de Dados"
 
 #: src/options.cpp:2714
 msgid "Prepare all ENC Charts"
-msgstr ""
+msgstr "Preparar todas cartas ENC"
 
 #: src/options.cpp:2725 src/TrackPropDlg.cpp:803
 msgid "Advanced"
@@ -4764,7 +4764,7 @@ msgstr "Limpar Tudo"
 
 #: src/options.cpp:3278
 msgid "Reset to STANDARD"
-msgstr ""
+msgstr "Redefinir para padrão"
 
 #: src/options.cpp:3494
 msgid "Tides && Currents"
@@ -4816,7 +4816,7 @@ msgstr "Modo Olhar adiante"
 
 #: src/options.cpp:3703 src/options.cpp:3794
 msgid "Preserve scale when switching charts"
-msgstr ""
+msgstr "Preservar escala quando mudar de cartas"
 
 #: src/options.cpp:3717 src/options.cpp:3808
 msgid "Smooth Panning / Zooming"
@@ -4886,7 +4886,7 @@ msgstr "Marcações"
 
 #: src/options.cpp:3916
 msgid "Show true"
-msgstr ""
+msgstr "Mostrar a verdade"
 
 #: src/options.cpp:3919 src/options.cpp:4030
 msgid "Show magnetic bearings and headings"
@@ -4902,7 +4902,7 @@ msgstr "DEG (-W, + E)"
 
 #: src/options.cpp:4027
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "Mostrar marcações e proas verdadeiros"
 
 #: src/options.cpp:4076
 msgid "AIS Targets"
@@ -5074,7 +5074,7 @@ msgstr "Habilitar a interface Touchscreen"
 
 #: src/options.cpp:4429
 msgid "Enable Scaled Graphics interface"
-msgstr ""
+msgstr "Habilitar escala interface gráfica"
 
 #: src/options.cpp:4439
 msgid "User Interface scale factor"
@@ -5118,7 +5118,7 @@ msgstr "braças"
 
 #: src/options.cpp:5254
 msgid "WMM Plugin for magnetic variation"
-msgstr ""
+msgstr "Plugin WMM variação magnética"
 
 #: src/options.cpp:5436
 msgid "Add a directory containing chart files"
@@ -5167,7 +5167,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr ""
+msgstr "Compressão irá alterar arquivos de cartas na disco. \n"
+"Isto pode fazê-las incompatíveis com outros programas ou versões mais antigas de OpenCPN.\n"
+"Cartas Compactadas podem demorar um pouco para carregar e exibir em alguns sistemas. \n"
+"Elas podem ser descompactadas novamente usando unxz ou 7 zip programas."
 
 #: src/options.cpp:6456 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
@@ -5175,18 +5178,20 @@ msgstr "OpenCPN aviso"
 
 #: src/options.cpp:6469 src/options.cpp:6520
 msgid "OpenCPN Compress Charts"
-msgstr ""
+msgstr "OpenCPN Cartas compactadas"
 
 #: src/options.cpp:6512
 msgid "No charts found to compress."
-msgstr ""
+msgstr "Não há cartas para compactar."
 
 #: src/options.cpp:6546
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr ""
+msgstr "compactado %ld de cartas\n"
+"de %.1fMB para %.1fMB\n"
+"salvado %.1fMB (%.1f%%)"
 
 #: src/options.cpp:6911 src/options.cpp:6922
 msgid "Select Sound File"
@@ -5321,7 +5326,7 @@ msgstr "Detectada Biblioteca de PlugIn ilegível, verifique os arquivos de permi
 
 #: src/pluginmanager.cpp:1187
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "PlugIn incompatível detectado"
 
 #: src/pluginmanager.cpp:1190
 #, c-format
@@ -5433,7 +5438,7 @@ msgstr "Nome do Ponto da Derrota"
 
 #: src/routemanagerdialog.cpp:690
 msgid "Distance from own ship"
-msgstr ""
+msgstr "Distância do próprio Navio"
 
 #: src/routemanagerdialog.cpp:704
 msgid "&New"
@@ -5727,7 +5732,7 @@ msgstr "Hora de partida"
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:1226 src/TrackPropDlg.cpp:1205
 msgid "(m/d/y h:m)"
-msgstr ""
+msgstr "(m/d/y h:m)"
 
 #: src/routeprop.cpp:666 src/routeprop.cpp:880 src/routeprop.cpp:1220
 #: src/TrackPropDlg.cpp:666 src/TrackPropDlg.cpp:1206

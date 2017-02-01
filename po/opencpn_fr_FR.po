@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:15-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -4612,8 +4612,8 @@ msgstr "Cartes raster obliques : Afficher nord vers le haut."
 #: src/options.cpp:2958
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "                          With a higher value, the same zoom level shows a more detailed chart."
-msgstr "Pour une valeur plus faible et le même niveau de zoom, la carte est moins détaillée.\n"
-" Pour une valeur plus élevée et le même niveau de zoom, la carte est plus détaillée."
+msgstr "A niveau de zoom égal, et une valeur plus faible, la carte, automatiquement choisie, est moins détaillée.\n"
+" A A niveau de zoom égal, et une valeur plus forte, la carte, automatiquement choisie, est plus détaillée."
 
 #: src/options.cpp:2974 src/options.cpp:3711
 msgid "Controls"
@@ -4884,11 +4884,11 @@ msgstr "Relèvements"
 
 #: src/options.cpp:3916
 msgid "Show true"
-msgstr ""
+msgstr "Montrer Vrai M"
 
 #: src/options.cpp:3919 src/options.cpp:4030
 msgid "Show magnetic bearings and headings"
-msgstr "Utiliser les caps en provenance du compas magnétique au lieu de ceux fournis par le GPS"
+msgstr "Montrer les relèvements et les directions magnétiques"
 
 #: src/options.cpp:3925 src/options.cpp:5256
 msgid "Assumed magnetic variation"
@@ -4896,11 +4896,11 @@ msgstr "Déclinaison magnétique supposée"
 
 #: src/options.cpp:3947 src/options.cpp:4046
 msgid "deg (-W, +E)"
-msgstr "Deg (- O, + e)"
+msgstr "Deg (- O, + E)"
 
 #: src/options.cpp:4027
 msgid "Show true bearings and headings"
-msgstr "Montrer les relèvements et les caps magnétiques"
+msgstr "Montrer les relèvements et les directions vrais"
 
 #: src/options.cpp:4076
 msgid "AIS Targets"
