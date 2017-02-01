@@ -2422,7 +2422,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC1</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="214" RCID="32249" name="TWRTPT">
@@ -2433,7 +2433,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC2</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="215" RCID="32250" name="TWRTPT">
@@ -2444,7 +2444,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC3</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LS(DASH,2,TRFCD)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="216" RCID="32251" name="TWRTPT">
@@ -2455,7 +2455,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC4</attrib-code>
 			<instruction>SY(TWRTPT52,ORIENT);LS(DASH,2,TRFCD)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="217" RCID="32252" name="TWRTPT">
@@ -2464,7 +2464,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
 			<instruction>SY(TWRDEF51);LS(DASH,2,TRFCD)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="218" RCID="32253" name="T_HMON">
@@ -5753,7 +5753,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC1</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LC(CTYARE51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="555" RCID="32590" name="TWRTPT">
@@ -5764,7 +5764,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC2</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LC(CTYARE51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="556" RCID="32591" name="TWRTPT">
@@ -5775,7 +5775,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC3</attrib-code>
 			<instruction>SY(TWRTPT53,ORIENT);LC(CTYARE51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="557" RCID="32592" name="TWRTPT">
@@ -5786,7 +5786,7 @@
 			<attrib-code index="0">ORIENT </attrib-code>
 			<attrib-code index="1">TRAFIC4</attrib-code>
 			<instruction>SY(TWRTPT52,ORIENT);LC(CTYARE51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="558" RCID="32593" name="TWRTPT">
@@ -5795,7 +5795,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
 			<instruction>SY(TWRDEF51);LC(CTYARE51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15010</comment>
 		</lookup>
 		<lookup id="559" RCID="32594" name="T_HMON">
