@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-08 08:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:57-0500\n"
+"POT-Creation-Date: 2017-01-26 22:17-0500\n"
+"PO-Revision-Date: 2017-01-31 22:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -41,15 +41,15 @@ msgstr "\n"
 msgid "WMM Plugin"
 msgstr "WMM PlugIn"
 
-#: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr "World Magnetic Model"
 
-#: src/wmm_pi.cpp:273
+#: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "World Magnetic Model PlugIn voor OpenCPN"
 
-#: src/wmm_pi.cpp:278
+#: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -57,19 +57,19 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr "Deze PlugIn geeft binnen OpenCPN de beschikking over het World Magnetic Model\n"
-"van NOAA. Meer informatie op de site: http://www.ngdc.noaa.gov/geomag/WMM/.\n"
+msgstr "World Magnetic Model PlugIn voor OpenCPN\n"
+"Meer informatie over NOAA's WMM vindt u op de site: http://www.ngdc.noaa.gov/geomag/WMM/.\n"
 "Het huidige WMM2015 model is valide tot en met 31 december 2019. Als er daarna geen\n"
 "nieuwe versie van de PlugIn beschikbaar is: download het bestand WMM.COF van\n"
 "de NOAA site en plaats dit op de locatie waar ook het OpenCPN logbestand staat."
 
-#: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
 msgstr "Fout, zie het log."
 
-#: src/wmm_pi.cpp:744 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
-msgstr "WMM Voorkeuren"
+msgstr "Voorkeuren WMM"
 
 #: src/wmm_pi.h:78 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"

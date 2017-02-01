@@ -434,7 +434,7 @@ msgstr "位置レポート"
 
 #: src/ais.cpp:235 src/ais.cpp:301
 msgid "Distress"
-msgstr "遭難"
+msgstr ""
 
 #: src/ais.cpp:236
 msgid "ARPA radar target"

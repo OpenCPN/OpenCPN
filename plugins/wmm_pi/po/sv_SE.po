@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-08 08:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:58-0500\n"
+"POT-Creation-Date: 2017-01-26 22:17-0500\n"
+"PO-Revision-Date: 2017-01-28 05:39-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -40,15 +40,15 @@ msgstr "\n"
 msgid "WMM Plugin"
 msgstr "WMM Modul"
 
-#: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr "WMM"
 
-#: src/wmm_pi.cpp:273
+#: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Modul till OpenCPN för att modellera jordens magnetfält"
 
-#: src/wmm_pi.cpp:278
+#: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -64,11 +64,11 @@ msgstr "Modulen \"World Magnetic Model\" för OpenCPN\n"
 "går det att hämta en ny fil, WMM.COF, från NOAA och spara på den\n"
 "plats som anges i OpenCPN loggfil."
 
-#: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
 msgstr "Fel, se logg."
 
-#: src/wmm_pi.cpp:744 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr "WMM inställningar"
 

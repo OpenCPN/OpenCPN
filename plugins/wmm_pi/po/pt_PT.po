@@ -2,18 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-08 08:29-0300\n"
-"PO-Revision-Date: 2016-01-25 19:59-0500\n"
+"POT-Creation-Date: 2017-01-26 22:17-0500\n"
+"PO-Revision-Date: 2017-01-27 16:17-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: Portuguese, Brazilian\n"
-"Language: pt_BR\n"
+"Language-Team: Portuguese\n"
+"Language: pt_PT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-Language: pt-PT\n"
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 
 #: src/wmm_pi.cpp:86
@@ -28,29 +28,29 @@ msgid "\n"
 "The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr "\n"
-"O Modelo Mundo magnético Plotting permite  aos usuários cruzar  os valores de desvio magnético impressos em muitos cartas.\n\n"
+"O Registo do Modelo Magnético Mundial permite  aos utilizadores cruzar os valores de desvio magnético impressos em muitos cartas digitalizadas.\n\n"
 "Declinação é o ângulo entre o norte verdadeiro e o norte magnético. \n"
 "Inclinação é o ângulo vertical do campo magnético.\n"
 "\t(+-90 nos pólos magnéticos)\n"
 "Campo de Força é o campo magnético em nano tesla de\n"
 "\t20000 até 66000\n\n"
-"As linhas plotadoas são semelhantes a um mapa topográfico.  O espaço entre elas pode ser ajustado; mais espaço leva menos tempo para calcular.\n\n"
-"O tamanho de passo e controles deslizantes de precisão do pólo permitem uma troca de velocidade vs tempo de computação.\n\n"
-"O Plugin Modelo Mundo Magnético foi escrito por Pavel Kalian e estendido por Sean D'Epagnier para apoiar a plotagem."
+"As linhas traçadas são semelhantes a um mapa topográfico.  O espaço entre elas pode ser ajustado; mais espaço leva menos tempo para calculatar.\n\n"
+"O tamanho do passo e controles deslizantes de precisão do pólo permitem um compromisso velocidade vs tempo de computação.\n\n"
+"A extensão Modelo Magnético Mundial foi escrito por Pavel Kalian e estendido por Sean D'Epagnier para apoiar a plotagem."
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
 msgstr "WMM Plugin"
 
-#: src/wmm_pi.cpp:202 src/wmm_pi.cpp:267 src/WmmUIDialog.h:87
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
 msgstr "WMM"
 
-#: src/wmm_pi.cpp:273
+#: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Plugin para OpenCPN  Modelo Magnético Mundial"
 
-#: src/wmm_pi.cpp:278
+#: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
@@ -58,19 +58,19 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr "Plugin Modelo Magnético Mundial\n"
-" Implementa o Modelo Magnético Mundial da NOAA\n"
-"Mais informações: http:/www.ngdc.noaa.gov.geomag/WMM/\n"
-" O pacote WMM2015 expira em 31 de dezembro de 2019.\n"
-" Após então, se uma nova versão do plugin não for lançado\n"
-"em tempo, pegue uma nova WMM.COF da NOAA e coloque-a no\n"
-"lugar onde encontra-se o logfile do OpenCPN."
+msgstr "World Magnetic Model PlugIn para OpenCPN\n"
+"Implementa o NOAA World Magnetic Model\n"
+"Mais informação: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"O pacote WMM2015 model expira a 31 de Dezembro 31 de 2019.\n"
+"Depois disso, se não tiver sido disponibilizada uma nova versão do \n"
+"atempadamente, obtenha um novo WMM.COF da NOAA e grave-o na\n"
+"localização que pode obter no ficheiro de log do OpenCPN."
 
-#: src/wmm_pi.cpp:443 src/wmm_pi.cpp:514
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
 msgstr "Erro, consulte o log."
 
-#: src/wmm_pi.cpp:744 src/WmmUIDialog.h:112
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
 msgstr "Preferências WMM"
 
@@ -104,7 +104,7 @@ msgstr "X "
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
-msgstr "Componente do Norte"
+msgstr "Componente Norte"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
@@ -112,7 +112,7 @@ msgstr "Y "
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
-msgstr "Componente leste"
+msgstr "Componente Leste"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
@@ -120,11 +120,11 @@ msgstr "Z "
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
-msgstr "Componente vertical"
+msgstr "Componente Vertical"
 
 #: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
 msgid "Incl"
-msgstr "Incl"
+msgstr "Inclinação"
 
 #: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
 msgid "(DIP) - Geomagnetic Inclination "
@@ -132,11 +132,11 @@ msgstr "(DIP) - inclinação geomagnética "
 
 #: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
 msgid "Vari"
-msgstr "Vari"
+msgstr "Declinação"
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr "Variação magnética"
+msgstr "Declinação magnética"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
@@ -144,11 +144,11 @@ msgstr "Cursor"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr "Plot"
+msgstr "Desenho"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr "Ativar plot"
+msgstr "Activar desenho"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
@@ -156,19 +156,19 @@ msgstr "Configurações..."
 
 #: src/WmmUIDialog.cpp:274
 msgid "Extended"
-msgstr "Estendido"
+msgstr "Estendida"
 
 #: src/WmmUIDialog.cpp:274
 msgid "Variation only"
-msgstr "Variação somente"
+msgstr "Apenas variação"
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
-msgstr "Vista"
+msgstr "Apresentação"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr "Mostrar opções de plotagem"
+msgstr "Mostrar opções de desenho"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"

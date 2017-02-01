@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 18:04-0600\n"
-"PO-Revision-Date: 2016-01-25 19:58-0500\n"
+"POT-Creation-Date: 2017-01-26 22:15-0500\n"
+"PO-Revision-Date: 2017-01-28 05:39-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -44,8 +44,8 @@ msgstr "Sjökortsnedladdningsmodul för OpenCPN\n"
 #: src/chartdldr_pi.cpp:251 src/chartdldr_pi.cpp:692 src/chartdldr_pi.cpp:699
 #: src/chartdldr_pi.cpp:705 src/chartdldr_pi.cpp:723 src/chartdldr_pi.cpp:758
 #: src/chartdldr_pi.cpp:821 src/chartdldr_pi.cpp:827 src/chartdldr_pi.cpp:1009
-#: src/chartdldr_pi.cpp:1080 src/chartdldr_pi.cpp:1154
-#: src/chartdldr_pi.cpp:1259 src/chartdldr_pi.cpp:1809
+#: src/chartdldr_pi.cpp:1084 src/chartdldr_pi.cpp:1158
+#: src/chartdldr_pi.cpp:1263 src/chartdldr_pi.cpp:1813
 msgid "Chart Downloader"
 msgstr "Sjökortshämtare"
 
@@ -86,7 +86,7 @@ msgstr "Aktuell"
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr "%lu sjökort totalt, %lu uppdaterade, %lu nya"
 
-#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1233
+#: src/chartdldr_pi.cpp:663 src/chartdldr_pi.cpp:1237
 msgid "(Please update first)"
 msgstr "(Vänligen uppdatera först)"
 
@@ -122,14 +122,14 @@ msgstr "Du har valt att uppdatera alla kortkataloger. \n"
 "Då hämtas bara uppdaterade (men inte nya) sjökort. \n"
 "Det kan ta lång tid."
 
-#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1079
+#: src/chartdldr_pi.cpp:722 src/chartdldr_pi.cpp:1083
 #, c-format
 msgid "%d out of %d charts failed to download.\n"
 "Check the list, verify there is a working Internet connection and repeat the operation if needed."
 msgstr "%d av %d sjökort kunde inte hämtas. \n"
 "Kontrollera listan, kontrollera att det finns en fungerande Internetanslutning och försök igen om det är lämpligt."
 
-#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1786 src/chartdldr_pi.cpp:1809
+#: src/chartdldr_pi.cpp:758 src/chartdldr_pi.cpp:1790 src/chartdldr_pi.cpp:1813
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "Katalog %s kan inte skapas."
@@ -183,70 +183,74 @@ msgstr "Fel, adressen till sjökort(en) (%s) verkar vara fel."
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr "Laddar kort %u av %u, %u nedladdningar misslyckades (%s / %s)"
 
-#: src/chartdldr_pi.cpp:1075 src/chartdldrgui.cpp:293
+#: src/chartdldr_pi.cpp:1076 src/chartdldrgui.cpp:293
 msgid "Download\n"
 " selected charts"
 msgstr "Laddar ner\n"
 " valda sjökort"
 
-#: src/chartdldr_pi.cpp:1104 src/chartdldrgui.cpp:95
+#: src/chartdldr_pi.cpp:1078 src/chartdldrgui.cpp:400
+msgid "Download selected charts"
+msgstr "Laddar ner valda sjökort"
+
+#: src/chartdldr_pi.cpp:1108 src/chartdldrgui.cpp:95
 msgid "Catalog"
 msgstr "Katalog"
 
-#: src/chartdldr_pi.cpp:1105
+#: src/chartdldr_pi.cpp:1109
 msgid "Released"
 msgstr "Publicerad"
 
-#: src/chartdldr_pi.cpp:1106
+#: src/chartdldr_pi.cpp:1110
 msgid "Local path"
 msgstr "Lokal sökväg"
 
-#: src/chartdldr_pi.cpp:1110
+#: src/chartdldr_pi.cpp:1114
 msgid "Title"
 msgstr "Titel"
 
-#: src/chartdldr_pi.cpp:1111
+#: src/chartdldr_pi.cpp:1115
 msgid "Status"
 msgstr "Status"
 
-#: src/chartdldr_pi.cpp:1112
+#: src/chartdldr_pi.cpp:1116
 msgid "Latest"
 msgstr "Senaste"
 
-#: src/chartdldr_pi.cpp:1153
+#: src/chartdldr_pi.cpp:1157
 msgid "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed, but you will not be able to update the charts anymore."
 msgstr "Vill du verkligen ta bort källan för dessa sjökort? \n"
 "Lokala kortfiler kommer inte att tas bort, men du kommer inte att kunna uppdatera korten automatiskt."
 
-#: src/chartdldr_pi.cpp:1219
+#: src/chartdldr_pi.cpp:1223
 msgid "Edit Chart Source"
 msgstr "Redigera källan för sjökorten"
 
-#: src/chartdldr_pi.cpp:1258
+#: src/chartdldr_pi.cpp:1262
 #, c-format
 msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
 "To see the charts you have to adjust the configuration on the 'Chart Files' tab."
 msgstr "Sökvägen %s verkar inte finnas bland dina sjökortsfiler. \n"
 "För att se sjökorten behöver du justera inställningarna i fliken \"Sjökortsfiler\"."
 
-#: src/chartdldr_pi.cpp:1771 src/chartdldr_pi.cpp:1774
+#: src/chartdldr_pi.cpp:1775 src/chartdldr_pi.cpp:1778
 msgid "You must select one of the predefined chart sources or create one of your own.\n"
 msgstr "Du måste antingen välja en av de fördefinierade källorna eller skapa en egen. \n"
 
-#: src/chartdldr_pi.cpp:1777
+#: src/chartdldr_pi.cpp:1781
 msgid "The chart source must have a name.\n"
 msgstr "Sjökortskällan måste ha ett namn. \n"
 
-#: src/chartdldr_pi.cpp:1780
+#: src/chartdldr_pi.cpp:1784
 msgid "The chart source must have a valid URL.\n"
 msgstr "Sjökortskällan måste ha en giltig adress. \n"
 
-#: src/chartdldr_pi.cpp:1782
+#: src/chartdldr_pi.cpp:1786
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Du måste välja en lokal mapp att lagra korten i. \n"
 
-#: src/chartdldr_pi.cpp:1789
+#: src/chartdldr_pi.cpp:1793
 msgid "Chart source definition problem"
 msgstr "Problem med att hitta källan för sjökorten"
 
@@ -330,10 +334,6 @@ msgstr "Visa lokala filer"
 #, c-format
 msgid "%u charts total, %u updated, %u new"
 msgstr "%u kort totalt, %u uppdaterade, %u nya"
-
-#: src/chartdldrgui.cpp:400
-msgid "Download selected charts"
-msgstr "Laddar ner valda sjökort"
 
 #: src/chartdldrgui.cpp:463
 msgid "Default Path to Charts"

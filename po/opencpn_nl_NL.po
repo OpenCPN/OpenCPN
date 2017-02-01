@@ -5328,7 +5328,7 @@ msgstr "Onleesbaar plugin-bestand gevonden, controleer de bestandspermissies:\n"
 
 #: src/pluginmanager.cpp:1187
 msgid "Incompatible plugin detected"
-msgstr "Niet-compatibele PlugIn gedetecteerd:\n"
+msgstr "Niet-compatibele PlugIn gedetecteerd:"
 
 #: src/pluginmanager.cpp:1190
 #, c-format
