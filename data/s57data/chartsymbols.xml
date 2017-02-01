@@ -5116,7 +5116,7 @@
 			<table-name>Symbolized</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<instruction>SY(RCTLPT52,ORIENT)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15020</comment>
 		</lookup>
 		<lookup id="492" RCID="32527" name="RCTLPT">
@@ -5125,7 +5125,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
 			<instruction>SY(RTLDEF51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15020</comment>
 		</lookup>
 		<lookup id="493" RCID="32528" name="RECTRC">
@@ -12441,7 +12441,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">ORIENT </attrib-code>
 			<instruction>SY(RCTLPT52,ORIENT)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15020</comment>
 		</lookup>
 		<lookup id="1226" RCID="31278" name="RCTLPT">
@@ -12450,7 +12450,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction>SY(RTLDEF51)</instruction>
-			<display-cat>Displaybase</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>15020</comment>
 		</lookup>
 		<lookup id="1227" RCID="31279" name="RDOCAL">
