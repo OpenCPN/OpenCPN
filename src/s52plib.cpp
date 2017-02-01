@@ -2924,7 +2924,13 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         priority_current = rzRules->obj->m_DPRI;
     
     line_segment_element *ls_list = rzRules->obj->m_ls_list;
-    while( ls_list){
+    
+    //  This visibility test does not work well for accelerated panning situations.
+    //  The bbox BBView will be very small (maybe 1 or two pixels on panning), and
+    //  so exclude longer stright line segments as are typical in TSS definitions
+    //  Best to assume that the object render check is accurate, and let the GL engine sort it out viz a viz the clip region.
+/*
+     while( ls_list){
         
         if( (ls_list->priority == priority_current) )   
         {
@@ -2959,7 +2965,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     if(!bdraw)
         return 0;
-        
+*/        
     char *str = (char*) rules->INSTstr;
     S52color *c = getColor( str + 7 ); // Colour
     int w = atoi( str + 5 ); // Width
@@ -2990,7 +2996,8 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_LINE_STIPPLE );
 #endif    
 
-        glDisable( GL_LINE_STIPPLE );
+//        glDisable( GL_LINE_STIPPLE );
+
         
     glPushMatrix();
     
@@ -3028,27 +3035,29 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //  Check visibility of the segment
             bool b_drawit = false;
             if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) ){
-                if((BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() && BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat()) &&
-                    ((BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() && BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon()) ||
-                    (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
-                    (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pedge->edgeBBox.GetMaxLon()))) {
+//                 if((BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() && BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat()) &&
+//                     ((BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() && BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon()) ||
+//                     (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
+//                     (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pedge->edgeBBox.GetMaxLon())))
+                {
                     // render the segment
                         b_drawit = true;
                         seg_vbo_offset = ls_list->pedge->vbo_offset;
                         point_count = ls_list->pedge->nCount;
-                    }
+                 }
                     
             }
             else{
-                if((BBView.GetMinLat() < ls_list->pcs->cs_lat_avg && BBView.GetMaxLat() > ls_list->pcs->cs_lat_avg) &&
-                    ((BBView.GetMinLon() <= ls_list->pcs->cs_lon_avg && BBView.GetMaxLon() >= ls_list->pcs->cs_lon_avg) ||
-                    (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pcs->cs_lon_avg) ||
-                    (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pcs->cs_lon_avg))) {
+//                 if((BBView.GetMinLat() < ls_list->pcs->cs_lat_avg && BBView.GetMaxLat() > ls_list->pcs->cs_lat_avg) &&
+//                     ((BBView.GetMinLon() <= ls_list->pcs->cs_lon_avg && BBView.GetMaxLon() >= ls_list->pcs->cs_lon_avg) ||
+//                     (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pcs->cs_lon_avg) ||
+//                     (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pcs->cs_lon_avg)))
+                {
                     // render the segment
                         b_drawit = true;
                         seg_vbo_offset = ls_list->pcs->vbo_offset;
                         point_count = 2;
-                    }
+                 }
             }
             
             
@@ -7231,14 +7240,17 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
                     }
                 }
             } // if bbox
-            TriPrim *next = p_tp->p_next;
             
+            // pick up the next in chain
             if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
                 LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-                next = (TriPrim *)p_ltp->p_next;
+                p_tp = (TriPrim *)p_ltp->p_next;
             }
-            p_tp = next; // pick up the next in chain
+            else
+                p_tp = p_tp->p_next; 
+                
         } // while
+        
         free( ptp );
         free( pp3 );
     } // if pPolyTessGeo
@@ -7466,13 +7478,14 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
             
             vbo_offset += p_tp->nVert * 2 * array_data_size;
-            TriPrim *next = p_tp->p_next;
             
+            // pick up the next in chain
             if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
                 LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-                next = (TriPrim *)p_ltp->p_next;
+                p_tp = (TriPrim *)p_ltp->p_next;
             }
-            p_tp = next; // pick up the next in chain
+            else
+                p_tp = p_tp->p_next; 
             
         } // while
         
@@ -7653,13 +7666,14 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     }
                 }
             } // if bbox
-            TriPrim *next = p_tp->p_next;
             
+            // pick up the next in chain
             if(!rzRules->obj->m_chart_context->chart) {          // This is a PlugIn Chart
                 LegacyTriPrim *p_ltp = (LegacyTriPrim *)p_tp;
-                next = (TriPrim *)p_ltp->p_next;
+                p_tp = (TriPrim *)p_ltp->p_next;
             }
-            p_tp = next; // pick up the next in chain
+            else
+                p_tp = p_tp->p_next; 
             
         } // while
 
