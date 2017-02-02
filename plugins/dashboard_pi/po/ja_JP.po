@@ -434,5 +434,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr "%02d:%02d 以降最大 %.1f %s 全体 %.1f %s"
+msgstr "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 
