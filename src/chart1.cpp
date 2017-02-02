@@ -12318,10 +12318,10 @@ void ApplyLocale()
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
     
-    
-    
-    g_pi_manager->UnLoadAllPlugIns();
-    g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
+    //  Compliant Plugins will reload their locale message catalog during the Init() method.
+    //  So it is sufficient to simply deactivate, and then re-activate, all "active" plugins.
+    g_pi_manager->DeactivateAllPlugIns();
+    g_pi_manager->UpdatePlugIns();
     
     
     //         // Make sure the perspective saved in the config file is "reasonable"
