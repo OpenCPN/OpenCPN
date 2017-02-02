@@ -109,6 +109,7 @@ extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
+extern int              g_nDepthUnitDisplay;
 
 extern wxToolBarBase    *toolBar;
 
@@ -934,6 +935,11 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "nColorScheme" ), &read_int, 0 );
     global_color_scheme = (ColorScheme) read_int;
 
+    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
+    g_nDepthUnitDisplay = read_int;
+    
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
 
@@ -2145,7 +2151,6 @@ void MyConfig::UpdateSettings()
         Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );
         Write( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
         Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
-        Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );
@@ -2153,6 +2158,9 @@ void MyConfig::UpdateSettings()
 
 #endif
 
+    SetPath( _T ( "/Settings/GlobalState" ) );
+    Write( _T ( "S52_DEPTH_UNIT_SHOW" ), g_nDepthUnitDisplay );
+    
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "InitChartDir" ), *pInit_Chart_Dir );
     Write( _T ( "GPXIODir" ), m_gpx_path );

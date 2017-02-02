@@ -112,6 +112,7 @@ extern double g_UserVar;
 extern int g_chart_zoom_modifier;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
+extern int g_nDepthUnitDisplay;
 
 extern wxString* pInit_Chart_Dir;
 extern wxArrayOfConnPrm* g_pConnectionParams;
@@ -5053,6 +5054,9 @@ void options::SetInitialSettings(void) {
 
   m_TalkerIdText->SetValue(g_TalkerIdText.MakeUpper());
 
+  pDepthUnitSelect->SetSelection(g_nDepthUnitDisplay);
+  UpdateOptionsUnits();  // sets depth values using the user's unit preference
+  
   SetInitialVectorSettings();
 
   pToolbarAutoHideCB->SetValue(g_bAutoHideToolbar);
@@ -5216,9 +5220,6 @@ void options::SetInitialVectorSettings(void)
         else
             p24Color->SetSelection(1);
         
-        // Depths
-            pDepthUnitSelect->SetSelection(ps52plib->m_nDepthUnitDisplay);
-            UpdateOptionsUnits();  // sets depth values using the user's unit preference
     }
 #endif
 }
@@ -5269,8 +5270,10 @@ void options::UpdateOptionsUnits(void) {
       itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
 
   // size hack to adjust change in static text size
+#ifdef __WXMSW__      
   wxSize sz = this->GetSize(); this->SetSize(sz.x+1, sz.y); this->SetSize(sz);
-
+#endif
+  
   itemStaticTextUserVar2->Enable(!havewmm);
   pMagVar->Enable(!havewmm);
 } 
@@ -6038,6 +6041,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
 
+  int depthUnit = pDepthUnitSelect->GetSelection();
+  g_nDepthUnitDisplay = depthUnit;
+  
   if (ps52plib) {
     if (m_returnChanges & GL_CHANGED) {
       // Do this now to handle the screen refresh that is automatically
@@ -6087,7 +6093,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     // Depths
     double dval;
-    int depthUnit = pDepthUnitSelect->GetSelection();
     float conv = 1;
 
     if (depthUnit == 0)  // feet
@@ -6110,6 +6115,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     ps52plib->UpdateMarinerParams();
     ps52plib->m_nDepthUnitDisplay = depthUnit;
+    
     ps52plib->GenerateStateHash();
   }
 #endif

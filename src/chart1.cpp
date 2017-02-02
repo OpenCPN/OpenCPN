@@ -187,6 +187,7 @@ wxString                  *pdir_list[20];
 int                       g_restore_stackindex;
 int                       g_restore_dbindex;
 double                    g_ChartNotRenderScaleFactor;
+int                       g_nDepthUnitDisplay;
 
 RouteList                 *pRouteList;
 TrackList                 *pTrackList;
