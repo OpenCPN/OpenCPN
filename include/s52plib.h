@@ -389,7 +389,8 @@ private:
 class RenderFromHPGL {
 public:
     RenderFromHPGL( s52plib* plibarg );
-
+    ~RenderFromHPGL(  );
+    
     void SetTargetDC( wxDC* pdc );
     void SetTargetOpenGl();
 #if wxUSE_GRAPHICS_CONTEXT
@@ -407,7 +408,7 @@ private:
     void Polygon();
 
     s52plib* plib;
-    int scaleFactor;
+    double scaleFactor;
 
     wxDC* targetDC;
 #if wxUSE_GRAPHICS_CONTEXT
@@ -423,6 +424,8 @@ private:
     
     int noPoints;
     wxPoint polygon[100];
+    
+    float m_currentColor[4];
 
     bool renderToDC;
     bool renderToOpenGl;

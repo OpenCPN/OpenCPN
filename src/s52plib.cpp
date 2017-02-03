@@ -1796,7 +1796,8 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
                 //  Add in the offsets, specified in units of nominal font height
                 yp += ptext->yoffs * ( ptext->rendered_char_height );
-                xp += ptext->xoffs * ( ptext->rendered_char_height );
+                //  X offset specified in units of average char width
+                xp += ptext->xoffs * ptext->avgCharWidth;
                 
                 pRectDrawn->SetX( xp );
                 pRectDrawn->SetY( yp );
@@ -1894,8 +1895,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( ptext->rendered_char_height );
-            xp += ptext->xoffs * ( ptext->rendered_char_height );
-
+                        
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
@@ -1934,7 +1934,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         }
             
     #endif
-        } else {
+        } else {                // OpenGL
             wxFont oldfont = pdc->GetFont(); // save current font
 
             
@@ -1962,8 +1962,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( h - descent );
-            xp += ptext->xoffs * ( h - descent );
-
+            
+            //  X offset specified in units of average char width
+            xp += ptext->xoffs * ptext->avgCharWidth;
+            
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
@@ -2089,21 +2091,34 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 
         //    Establish a font
         if( !text->pFont ) {
-
-            //    If we have loaded a legacy S52 compliant PLIB,
-            //    then we should use the formal font selection as required by
-            //    S52 specifications.
-            if( useLegacyRaster ) {
-                int spec_weight = text->weight - 0x30;
-                wxFontWeight fontweight;
-                if( spec_weight < 5 ) fontweight = wxFONTWEIGHT_LIGHT;
+            
+            // Process the font specifications from the LUP symbolizatio rule
+            int spec_weight = text->weight - 0x30;
+            wxFontWeight fontweight;
+            if( spec_weight < 5 )
+                fontweight = wxFONTWEIGHT_LIGHT;
+            else{
+                if( spec_weight == 5 )
+                    fontweight = wxFONTWEIGHT_NORMAL;
                 else
-                    if( spec_weight == 5 ) fontweight = wxFONTWEIGHT_NORMAL;
-                    else
-                        fontweight = wxFONTWEIGHT_BOLD;
-
-                text->pFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
-                        wxFONTSTYLE_NORMAL, fontweight );
+                    fontweight = wxFONTWEIGHT_BOLD;
+            }
+             
+            wxFont *specFont = FontMgr::Get().FindOrCreateFont( text->bsize, wxFONTFAMILY_SWISS,
+                                                               wxFONTSTYLE_NORMAL, fontweight );
+            
+            //Get the width of a single average character in the spec font
+            wxScreenDC dc;
+            dc.SetFont(*specFont);
+            wxSize tsz = dc.GetTextExtent(_T("X"));
+            text->avgCharWidth = tsz.x;
+            
+            //    If we have loaded a legacy S52 compliant PLIB,
+            //    then we should use the formal font selection as required by S52 specifications.
+            //    Otherwise, we have our own plan...
+            
+            if( useLegacyRaster ) {
+                text->pFont = specFont;
             } else {
                 int spec_weight = text->weight - 0x30;
                 wxFontWeight fontweight;
@@ -2242,8 +2257,9 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
         
         double latdraw, londraw;                // position of the drawn symbol with pivot applied
-        GetPixPointSingleNoRotate( r.x + (prule->pos.symb.pivot_x.SYCL / fsf),
-                                   r.y + (prule->pos.symb.pivot_y.SYRW / fsf), &latdraw, &londraw, vp );
+        GetPixPointSingleNoRotate( r.x + ((prule->pos.symb.pivot_x.SYCL - prule->pos.symb.bnbox_x.SBXC) / fsf),
+                                   r.y + ((prule->pos.symb.pivot_y.SYRW - prule->pos.symb.bnbox_y.SBXR) / fsf),
+                                   &latdraw, &londraw, vp );
         
         if( !rzRules->obj->BBObj.Contains( latdraw, londraw ) ) // Symbol reference point is outside base area object
              return 1;
@@ -5727,7 +5743,7 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-//     if(rzRules->obj->Index == 914)
+//     if(rzRules->obj->Index == 2460)
 //         int yyp = 0;
 
     if( !ObjectRenderCheckPos( rzRules, vp ) )
@@ -8773,6 +8789,15 @@ RenderFromHPGL::RenderFromHPGL( s52plib* plibarg )
     transparency = 255;
 }
 
+RenderFromHPGL::~RenderFromHPGL( )
+{
+#ifdef ocpnUSE_GL
+    if( renderToOpenGl ) {
+        glDisable (GL_BLEND );
+    }
+#endif    
+}
+    
 void RenderFromHPGL::SetTargetDC( wxDC* pdc )
 {
     targetDC = pdc;
@@ -8953,6 +8978,12 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
 {
 //      int width = 1;
 //      double radius = 0.0;
+
+#ifdef ocpnUSE_GL
+    if( renderToOpenGl )
+        glGetFloatv(GL_CURRENT_COLOR,m_currentColor);
+#endif        
+    
     wxPoint lineStart;
     wxPoint lineEnd;
 
@@ -9064,12 +9095,19 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
         }
 
         // Only get here if non of the other cases did a continue.
-        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
-        msg += wxString( command );
-        wxLogWarning( msg );
+//        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
+//        msg += wxString( command );
+//        wxLogWarning( msg );
     }
+    
+    transparency = 255;
+    
 #ifdef ocpnUSE_GL
-    glDisable( GL_BLEND );
+    if( renderToOpenGl ) {
+        glDisable (GL_BLEND );
+        glColor4fv( m_currentColor );
+    }
 #endif    
+
     return true;
 }
