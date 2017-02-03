@@ -34580,8 +34580,8 @@
 			<color-ref>ACHMGD</color-ref>
 			<vector width="1312" height="827">
 				<distance min="0" max="0" />
-				<pivot x="-2324" y="778" />
-				<origin x="128" y="355" />
+				<pivot x="778" y="3043" />
+				<origin x="778" y="778" />
 				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPA;SW2;PU280,507;CI152;SPA;SW2;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
@@ -34600,8 +34600,8 @@
 			<color-ref>ACHMGDBCHREDCCHGRN</color-ref>
 			<vector width="1312" height="827">
 				<distance min="0" max="0" />
-				<pivot x="-2324" y="778" />
-				<origin x="128" y="355" />
+				<pivot x="778" y="3043" />
+				<origin x="778" y="778" />
 				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW3;PU280,507;CI152;SPC;SW3;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
@@ -34620,8 +34620,8 @@
 			<color-ref>ACHMGDBCHGRNCCHRED</color-ref>
 			<vector width="1312" height="827">
 				<distance min="0" max="0" />
-				<pivot x="-2324" y="778" />
-				<origin x="128" y="355" />
+				<pivot x="778" y="3043" />
+				<origin x="778" y="778" />
 				<HPGL>SPA;SW1;PU478,983;PD179,983;PD783,381;PD1381,983;PD1079,983;PD1079,1182;PD478,1182;PD478,983;SPB;SW3;PU280,507;CI152;SPC;SW3;PU1291,507;CI149;</HPGL>
 			</vector>
 			<definition>V</definition>
@@ -38240,7 +38240,7 @@
 				<distance min="0" max="0" />
 				<pivot x="2250" y="2250" />
 				<origin x="2250" y="2250" />
-				<HPGL>SPT;ST3;PU1950,1950;PM0;PD2250,1500,2550,1950,2400,1950,2400,2850,2100,2850,2100,1950,1950,1950;PM2;FP;SW1;PU2100,2850;PD2100,1950;PD1950,1950;PD2250,1500;PD2550,1950;PD2400,1950;PD2400,2850;PD2100,2850;</HPGL>
+				<HPGL>SPT;ST3;PU1950,1950;PM0;PD2250,1500,2550,1950,2400,1950,2400,2850,2100,2850,2100,1950,1950,1950;PM2;FP;SW1;ST0;PU2100,2850;PD2100,1950;PD1950,1950;PD2250,1500;PD2550,1950;PD2400,1950;PD2400,2850;PD2100,2850;</HPGL>
 			</vector>
 			<definition>V</definition>
 			<prefer-bitmap>no</prefer-bitmap>
