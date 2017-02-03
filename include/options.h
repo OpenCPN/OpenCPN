@@ -412,6 +412,9 @@ class options : private Uncopyable,
   bool connectionsaved;
   bool m_connection_enabled;
 
+  bool b_haveWMM;
+  bool b_oldhaveWMM;
+  
   // For "S57" page
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;

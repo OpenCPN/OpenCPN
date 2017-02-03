@@ -109,6 +109,7 @@ extern bool g_bopengl;
 extern bool g_bsmoothpanzoom;
 extern bool g_bShowTrue, g_bShowMag;
 extern double g_UserVar;
+extern double gVar;
 extern int g_chart_zoom_modifier;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
@@ -1009,6 +1010,9 @@ void options::Init(void) {
   m_stBTPairs = 0;
   m_choiceBTDataSources = 0;
 
+  b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+  b_oldhaveWMM = b_haveWMM;
+  
   lastPage = 0;
 
   // for deferred loading
@@ -4038,8 +4042,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     wxBoxSizer* magVarSizer = new wxBoxSizer(wxHORIZONTAL);
     bearingsSizer->Add(magVarSizer, 0, wxALL, group_item_spacing);
 
-    itemStaticTextUserVar =
-        new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
+    itemStaticTextUserVar = new wxStaticText(panelUnits, wxID_ANY, wxEmptyString);
+    itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
+        
     magVarSizer->Add(itemStaticTextUserVar, 0, wxALL | wxALIGN_CENTRE_VERTICAL,
                      group_item_spacing);
 
@@ -4822,6 +4827,8 @@ void options::SetInitialSettings(void) {
   m_returnChanges = 0;                  // reset the flags
   m_bfontChanged = false;
   
+  b_oldhaveWMM = b_haveWMM;
+  b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
   
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
@@ -4875,9 +4882,34 @@ void options::SetInitialSettings(void) {
   pCBTrueShow->SetValue(g_bShowTrue);
   pCBMagShow->SetValue(g_bShowMag);
 
-  s.Printf(_T("%4.1f"), g_UserVar);
-  pMagVar->SetValue(s);
-
+  int oldLength = itemStaticTextUserVar->GetLabel().Length();
+  
+  //disable input for variation if WMM is available
+  if(b_haveWMM){
+      itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
+      wxString s;
+      s.Printf(_T("%4.1f"), gVar);
+      pMagVar->SetValue(s);
+  }
+  else{
+      itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
+      wxString s;
+      s.Printf(_T("%4.1f"), g_UserVar);
+      pMagVar->SetValue(s);
+  }
+  
+  int newLength = itemStaticTextUserVar->GetLabel().Length();
+  
+  // size hack to adjust change in static text size
+  if( (newLength != oldLength) || (b_oldhaveWMM != b_haveWMM) ){
+      wxSize sz = GetSize();
+      SetSize(sz.x+1, sz.y);
+      SetSize(sz);
+  }
+  
+  itemStaticTextUserVar2->Enable(!b_haveWMM);
+  pMagVar->Enable(!b_haveWMM);
+  
   pSDisplayGrid->SetValue(g_bDisplayGrid);
 
   pCBCourseUp->SetValue(g_bCourseUp);
@@ -5261,21 +5293,35 @@ void options::UpdateOptionsUnits(void) {
   s.Trim(FALSE);
   m_DeepCtl->SetValue(s);
 #endif
+/*
+  int oldLength = itemStaticTextUserVar->GetLabel().Length();
 
   //disable input for variation if WMM is available
-  bool havewmm = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
-  if(havewmm)
+  if(b_haveWMM){
       itemStaticTextUserVar->SetLabel(_("WMM Plugin calculated magnetic variation"));
-  else
+      wxString s;
+      s.Printf(_T("%4.1f"), gVar);
+      pMagVar->SetValue(s);
+  }
+  else{
       itemStaticTextUserVar->SetLabel(_("User set magnetic variation"));
+      wxString s;
+      s.Printf(_T("%4.1f"), g_UserVar);
+      pMagVar->SetValue(s);
+  }
 
-  // size hack to adjust change in static text size
-#ifdef __WXMSW__      
-  wxSize sz = this->GetSize(); this->SetSize(sz.x+1, sz.y); this->SetSize(sz);
-#endif
+  int newLength = itemStaticTextUserVar->GetLabel().Length();
   
-  itemStaticTextUserVar2->Enable(!havewmm);
-  pMagVar->Enable(!havewmm);
+  // size hack to adjust change in static text size
+  if( (newLength != oldLength) || (b_oldhaveWMM != b_haveWMM) ){
+    wxSize sz = GetSize();
+    SetSize(sz.x+1, sz.y);
+    SetSize(sz);
+  }
+  
+  itemStaticTextUserVar2->Enable(!b_haveWMM);
+  pMagVar->Enable(!b_haveWMM);
+*/  
 } 
 
 void options::OnSizeAutoButton(wxCommandEvent& event) {
@@ -5894,7 +5940,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bShowTrue = pCBTrueShow->GetValue();
   g_bShowMag = pCBMagShow->GetValue();
-  pMagVar->GetValue().ToDouble(&g_UserVar);
+  
+  b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+  if(!b_haveWMM  && !b_oldhaveWMM)
+    pMagVar->GetValue().ToDouble(&g_UserVar);
 
   m_pText_OSCOG_Predictor->GetValue().ToDouble(&g_ownship_predictor_minutes);
   m_pText_OSHDT_Predictor->GetValue().ToDouble(&g_ownship_HDTpredictor_miles);
