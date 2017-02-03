@@ -11272,7 +11272,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATDIS1</attrib-code>
-			<instruction>SY(DISMAR04);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR04);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
@@ -11281,7 +11281,7 @@
 			<disp-prio>Routing</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
-			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
@@ -14224,7 +14224,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATDIS1</attrib-code>
 			<attrib-code index="1">hunits3</attrib-code>
-			<instruction>SY(DISMAR06);TX(wtwdis,3,1,2,'14106',1,-1,CHBLK,21)</instruction>
+			<instruction>SY(DISMAR06);TX(wtwdis,3,1,2,'15110',2,-1,CHBLK,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32420</comment>
 		</lookup>
@@ -14246,7 +14246,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATDIS3</attrib-code>
 			<attrib-code index="1">hunits3</attrib-code>
-			<instruction>SY(HECMTR02);TX(wtwdis,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR02);TX(wtwdis,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -14257,7 +14257,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATDIS3</attrib-code>
 			<attrib-code index="1">hunits4</attrib-code>
-			<instruction>SY(HECMTR01);TX(wtwdis,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR01);TX(wtwdis,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -14267,7 +14267,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catdis5</attrib-code>
-			<instruction>SY(HECMTR02);TX(INFORM,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR02);TX(INFORM,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -14277,7 +14277,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catdis6</attrib-code>
-			<instruction>SY(HECMTR01);TX(INFORM,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR01);TX(INFORM,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -14287,7 +14287,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">catdis7</attrib-code>
-			<instruction>SY(DISMAR06);TX(INFORM,3,1,2,'14106',1,-1,CHBLK,21)</instruction>
+			<instruction>SY(DISMAR06);TX(INFORM,3,1,2,'15110',2,-1,CHBLK,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>31050</comment>
 		</lookup>
@@ -14306,7 +14306,7 @@
 			<disp-prio>Routing</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
-			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
@@ -22500,7 +22500,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">CATDIS1</attrib-code>
-			<instruction>SY(DISMAR04);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR04);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
@@ -22509,7 +22509,7 @@
 			<disp-prio>Routing</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
-			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
@@ -27209,7 +27209,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">CATDIS1</attrib-code>
 			<attrib-code index="1">hunits3</attrib-code>
-			<instruction>SY(DISMAR06);TX(wtwdis,3,1,2,'14106',1,-1,CHBLK,21)</instruction>
+			<instruction>SY(DISMAR06);TX(wtwdis,3,1,2,'15110',2,-1,CHBLK,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32420</comment>
 		</lookup>
@@ -27231,7 +27231,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">CATDIS1</attrib-code>
 			<attrib-code index="1">wtwdis </attrib-code>
-			<instruction>SY(DISMAR03);TX(wtwdis,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(wtwdis,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32420</comment>
 		</lookup>
@@ -27242,7 +27242,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">CATDIS3</attrib-code>
 			<attrib-code index="1">hunits3</attrib-code>
-			<instruction>SY(HECMTR02);TX(wtwdis,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR02);TX(wtwdis,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -27253,7 +27253,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">CATDIS3</attrib-code>
 			<attrib-code index="1">hunits4</attrib-code>
-			<instruction>SY(HECMTR01);TX(wtwdis,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR01);TX(wtwdis,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -27263,7 +27263,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">catdis5</attrib-code>
-			<instruction>SY(HECMTR02);TX(INFORM,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR02);TX(INFORM,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -27273,7 +27273,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">catdis6</attrib-code>
-			<instruction>SY(HECMTR01);TX(INFORM,3,1,2,'14106',1,0,CHMGD,21)</instruction>
+			<instruction>SY(HECMTR01);TX(INFORM,3,1,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>22430</comment>
 		</lookup>
@@ -27283,7 +27283,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">catdis7</attrib-code>
-			<instruction>SY(DISMAR06);TX(INFORM,3,1,2,'14106',1,-1,CHBLK,21)</instruction>
+			<instruction>SY(DISMAR06);TX(INFORM,3,1,2,'15110',2,-1,CHBLK,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>31050</comment>
 		</lookup>
@@ -27303,7 +27303,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
 			<attrib-code index="0">wtwdis </attrib-code>
-			<instruction>SY(DISMAR03);TX(wtwdis,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(wtwdis,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32420</comment>
 		</lookup>
@@ -27312,7 +27312,7 @@
 			<disp-prio>Routing</disp-prio>
 			<radar-prio>On Top</radar-prio>
 			<table-name>Paper</table-name>
-			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'14106',4,0,CHMGD,21)</instruction>
+			<instruction>SY(DISMAR03);TX(INFORM,3,2,2,'15110',2,0,CHMGD,21)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32430</comment>
 		</lookup>
