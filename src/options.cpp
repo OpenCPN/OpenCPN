@@ -6183,7 +6183,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     //  We can clear a few flag bits on "Apply", so they won't be recognised at the "OK" click.
     //  Their actions have already been accomplished once...
-    m_returnChanges &= ~( FORCE_UPDATE | SCAN_UPDATE );
+    m_returnChanges &= ~( CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE );
+    k_charts = 0;
     
     cc1->ReloadVP();
   }
