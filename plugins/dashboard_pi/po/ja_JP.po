@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-01-27 16:16-0500\n"
+"PO-Revision-Date: 2017-02-04 00:24-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -434,5 +434,5 @@ msgstr "NNW"
 #: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
-msgstr "Max %.1f %s since %02d:%02d  Overall %.1f %s"
+msgstr "Max %.1f %s since %02d:%02d Overall %.1f %s"
 
