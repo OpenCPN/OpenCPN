@@ -90,8 +90,7 @@ wxString CompressedCachePath(wxString path)
 {
 #if defined(__WXMSW__)
     int colon = path.find(':', 0);
-    if(colon != wxNOT_FOUND)
-        path.Remove(colon, 1);
+    path.Remove(colon, 1);
 #endif
     
     /* replace path separators with ! */
