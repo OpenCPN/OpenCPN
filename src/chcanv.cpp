@@ -1059,6 +1059,9 @@ void ChartCanvas::SetDisplaySizeMM( double size )
         ps52plib->SetPPMM( m_pix_per_mm );
 #endif
     
+     wxString msg;
+     msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
+     wxLogMessage(msg);
     
 }
 #if 0
@@ -4227,7 +4230,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
         
         // nice number
-        float dist = toUsrDistance( d, unit ), logdist = log(dist) / log(10);
+        float dist = toUsrDistance( d, unit ), logdist = log(dist) / log(10.F);
         float places = floor(logdist), rem = logdist - places;
         dist = pow(10, places);
 
