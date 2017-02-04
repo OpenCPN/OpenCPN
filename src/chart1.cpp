@@ -697,6 +697,7 @@ bool             g_bGLexpert;
 bool             g_bUIexpert;
 
 int              g_chart_zoom_modifier;
+int              g_chart_zoom_modifier_vector;
 
 int              g_NMEAAPBPrecision;
 
@@ -1346,7 +1347,7 @@ void ParseAllENC()
                         msg += filename;
                     }
                     prog->Update(count, msg, &skip );
-//                    prog->Raise();
+                    prog->Raise();
                 }
                 if(skip)
                     break;
@@ -1366,11 +1367,12 @@ void ParseAllENC()
                     msg.Printf( _("ENC Completed.") );
                     if(prog){
                         prog->Update(count, msg, &skip );
-//                        prog->Raise();
+                        prog->Raise();
                     }
                     if(skip)
                         break;
                 }
+                
                 
             }
             
@@ -1395,7 +1397,9 @@ void ParseAllENC()
             }
             #endif 
             
+#ifdef __WXMSW__            
             ::wxSafeYield();
+#endif            
         }
         
         #if 0    
