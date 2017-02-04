@@ -1346,7 +1346,7 @@ void ParseAllENC()
                         msg += filename;
                     }
                     prog->Update(count, msg, &skip );
-                    prog->Raise();
+//                    prog->Raise();
                 }
                 if(skip)
                     break;
@@ -1366,7 +1366,7 @@ void ParseAllENC()
                     msg.Printf( _("ENC Completed.") );
                     if(prog){
                         prog->Update(count, msg, &skip );
-                        prog->Raise();
+//                        prog->Raise();
                     }
                     if(skip)
                         break;
@@ -1393,7 +1393,9 @@ void ParseAllENC()
                     wxThread::Sleep(1); /* wait for a worker to finish */
                 }
             }
-            #endif        
+            #endif 
+            
+            ::wxSafeYield();
         }
         
         #if 0    
