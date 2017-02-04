@@ -111,6 +111,7 @@ extern bool g_bShowTrue, g_bShowMag;
 extern double g_UserVar;
 extern double gVar;
 extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_vector;
 extern int g_NMEAAPBPrecision;
 extern wxString g_TalkerIdText;
 extern int g_nDepthUnitDisplay;
@@ -2827,8 +2828,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     // Chart Zoom Scale Weighting
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                         _("Chart Zoom/Scale Weighting")),
-                        0, wxEXPAND);
+                                         _("Chart Zoom/Scale Weighting")), 0, wxEXPAND);
     m_pSlider_Zoom = new wxSlider(
         m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
@@ -2940,15 +2940,17 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         inputFlags);
 
     // spacer
-    itemBoxSizerUI->Add(0, border_size * 3);
-    itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 8);
+    itemBoxSizerUI->Add(0, border_size * 8);
 
+    wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
+    itemBoxSizerUI->Add(zoomTextHead, labelFlags);
+    itemBoxSizerUI->Add(0, border_size * 1);
+    
+    
     // Chart Zoom Scale Weighting
-    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                         _("Chart Zoom/Scale Weighting")),
-                        labelFlags);
-    m_pSlider_Zoom = new wxSlider(
-        m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
 
 #ifdef __OCPN__ANDROID__
@@ -2957,6 +2959,16 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
 
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
+    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
+        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+    
+#ifdef __OCPN__ANDROID__
+    m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+    
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
+    
     itemBoxSizerUI->Add(0, border_size * 3);
     wxStaticText* zoomText =
         new wxStaticText(m_ChartDisplayPage, wxID_ANY,
@@ -2971,8 +2983,8 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(zoomText, 0, wxALL | wxEXPAND, group_item_spacing);
 
     // spacer
-    itemBoxSizerUI->Add(0, border_size * 3);
-    itemBoxSizerUI->Add(0, border_size * 3);
+    itemBoxSizerUI->Add(0, border_size * 8);
+    itemBoxSizerUI->Add(0, border_size * 8);
 
     // Control Options
     itemBoxSizerUI->Add(
@@ -4035,7 +4047,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                 _("Show magnetic bearings and headings."));
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
-    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _("")), labelFlags);
+    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")), labelFlags);
     
     
     //  Mag Heading user variation
@@ -5067,7 +5079,8 @@ void options::SetInitialSettings(void) {
   m_pCheck_Rollover_CPA->SetValue(g_bAISRolloverShowCPA);
 
   m_pSlider_Zoom->SetValue(g_chart_zoom_modifier);
-
+  m_pSlider_Zoom_Vector->SetValue(g_chart_zoom_modifier_vector);
+  
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
 
@@ -6061,6 +6074,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
   g_chart_zoom_modifier = m_pSlider_Zoom->GetValue();
+  g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
   g_ChartScaleFactorExp =

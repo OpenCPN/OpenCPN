@@ -45,6 +45,7 @@ extern ChartCanvas *cc1;
 extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
+extern int g_chart_zoom_modifier_vector;
 extern bool g_fog_overzoom;
 extern double  g_overzoom_emphasis_base;
 extern bool g_bopengl;
@@ -741,11 +742,12 @@ int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 
 int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
-//     double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
-//     mod = wxMax(mod, .2);
-//     mod = wxMin(mod, 2.0);
-
-     double modf = ((double)g_chart_zoom_modifier)/5.;  // -1->1
+    double zoom_mod = (double)g_chart_zoom_modifier;
+    
+    if(family == CHART_FAMILY_VECTOR)
+        zoom_mod = (double)g_chart_zoom_modifier_vector;
+        
+     double modf = zoom_mod/5.;  // -1->1
      double mod = pow(8., modf);
      mod = wxMax(mod, .2);
      mod = wxMin(mod, 8.0);

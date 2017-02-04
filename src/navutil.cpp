@@ -366,6 +366,7 @@ extern int              g_SENC_LOD_pixels;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern int              g_chart_zoom_modifier;
+extern int              g_chart_zoom_modifier_vector;
 
 extern int              g_NMEAAPBPrecision;
 
@@ -654,6 +655,10 @@ int MyConfig::LoadMyConfig()
     g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
 
+    Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector, 0 );
+    g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
+    g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
+    
     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
     Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
     Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
@@ -1900,6 +1905,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowFPS" ), g_bShowFPS );
     
     Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
+    Write( _T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector );
     
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
