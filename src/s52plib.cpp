@@ -2231,7 +2231,11 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
     float xscale = 1.0;
     
-    if( (!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6)) || (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6)) ){
+    if( (!strncmp(rzRules->obj->FeatureName, "TSSLPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "DWRTPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "TWRTPT", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "RCTLPT", 6))
+    ){
         // assume the symbol length 
         float sym_length = 30;
         float scaled_length = sym_length / vp->view_scale_ppm;
