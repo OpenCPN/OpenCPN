@@ -372,6 +372,7 @@ class MyFrame: public wxFrame
 
     void ProcessCanvasResize(void);
 
+    void BuildMenuBar( void );
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void RegisterGlobalMenuItems();
     void UpdateGlobalMenuItems();
