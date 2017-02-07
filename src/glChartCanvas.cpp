@@ -2508,8 +2508,10 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
     ChartPathHashTexfactType::iterator ittf = hash.find( key );
     
     //    Not Found ?
-    if( ittf == hash.end() )
+    if( ittf == hash.end() ){
         hash[key] = new glTexFactory(chart, g_raster_format);
+        hash[key]->SetHashKey(key);
+    }
     
     pTexFact = hash[key];
     pTexFact->SetLRUTime(++m_LRUtime);
