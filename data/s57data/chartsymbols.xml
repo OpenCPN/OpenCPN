@@ -37119,18 +37119,6 @@
 			<definition>V</definition>
 		</symbol>
 
-  <symbol RCID="1463">
-      <name>SOUNDG00</name>
-      <definition>V</definition>
-      <vector width="125" height="250">
-         <distance min="0" max="0" />
-         <pivot x="750" y="750" />
-         <origin x="800" y="625" />
-      </vector>
-      <description>deep soundings, greater than safety depth</description>
-      <color-ref>YSNDG1</color-ref>
-      <HPGL>SPY;SW1;PU825,625;PD800,650;PD800,850;PD825,875;PD900,875;PD925,850;PD925,650;PD900,625;PD825,625;</HPGL>
-   </symbol>
 
    <symbol RCID="1524">
       <name>SOUNDGB1</name>
@@ -37138,11 +37126,11 @@
       <vector width="631" height="131">
          <distance min="0" max="0" />
          <pivot x="750" y="750" />
-         <origin x="340" y="928" />
+         <origin x="750" y="750" />
+         <HPGL>SPY;SW1;PU340,928;PD340,1059;PD971,1059;PD971,928;</HPGL>
       </vector>
       <description>symbol for swept sounding, used for deep soundings greater than safety depth</description>
       <color-ref>YSNDG1</color-ref>
-      <HPGL>SPY;SW1;PU340,928;PD340,1059;PD971,1059;PD971,928;</HPGL>
    </symbol>
 
    <symbol RCID="3422">
@@ -37151,11 +37139,11 @@
       <vector width="854" height="854">
          <distance min="0" max="0" />
          <pivot x="7350" y="1546" />
-         <origin x="6923" y="1119" />
+         <origin x="7350" y="1546" />
+         <HPGL>SPA;SW1;PU7350,1546;CI427;</HPGL>
       </vector>
       <description>sounding of low accuracy</description>
       <color-ref>ASNDG1</color-ref>
-      <HPGL>SPA;SW1;PU7350,1546;CI427;</HPGL>
    </symbol>
 
    <symbol RCID="1586">
@@ -37164,11 +37152,11 @@
       <vector width="205" height="1">
          <distance min="0" max="0" />
          <pivot x="750" y="750" />
-         <origin x="525" y="970" />
+         <origin x="730" y="750" />
+         <HPGL>SPZ;SW1;PU525,970;PD730,970;</HPGL>
       </vector>
       <description>symbol for drying height, used for shallow soundings, less than or equal to safety depth</description>
       <color-ref>ZSNDG2</color-ref>
-      <HPGL>SPZ;SW1;PU525,970;PD730,970;</HPGL>
    </symbol>
 
    <symbol RCID="1587">
@@ -37177,11 +37165,11 @@
       <vector width="631" height="131">
          <distance min="0" max="0" />
          <pivot x="750" y="750" />
-         <origin x="340" y="928" />
+         <origin x="750" y="750" />
+         <HPGL>SPZ;SW1;PU340,928;PD340,1059;PD971,1059;PD971,928;</HPGL>
       </vector>
       <description>symbol for swept sounding, used for shallow soundings, less than or equal to safety depth</description>
       <color-ref>ZSNDG2</color-ref>
-      <HPGL>SPZ;SW1;PU340,928;PD340,1059;PD971,1059;PD971,928;</HPGL>
    </symbol>
 
    <symbol RCID="3423">
@@ -37190,11 +37178,12 @@
       <vector width="854" height="854">
          <distance min="0" max="0" />
          <pivot x="7350" y="1546" />
-         <origin x="6923" y="1119" />
+         <origin x="7350" y="1546" />
+         <HPGL>SPA;SW1;PU7350,1546;CI427;</HPGL>
       </vector>
       <description>sounding of low accuracy</description>
       <color-ref>ASNDG1</color-ref>
-      <HPGL>SPA;SW1;PU7350,1546;CI427;</HPGL>
+
    </symbol>
 
 		<symbol RCID="1589">
