@@ -1895,7 +1895,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
             //  Add in the offsets, specified in units of nominal font height
             yp += ptext->yoffs * ( ptext->rendered_char_height );
-                        
+            //  X offset specified in units of average char width
+            xp += ptext->xoffs * ptext->avgCharWidth;
+            
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
