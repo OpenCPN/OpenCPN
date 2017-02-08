@@ -662,6 +662,7 @@ bool                      g_bShowTrue, g_bShowMag;
 double                    g_UserVar;
 bool                      g_bMagneticAPB;
 
+bool                      g_bInlandEcdis;
 
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
