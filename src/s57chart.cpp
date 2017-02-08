@@ -1444,6 +1444,21 @@ bool s57chart::GetChartExtent( Extent *pext )
         return false;
 }
 
+static void free_mps(mps_container *mps)
+{
+    
+    if ( mps == 0)
+        return;
+    if( ps52plib && mps->cs_rules ){
+        for(unsigned int i=0 ; i < mps->cs_rules->GetCount() ; i++){
+            Rules *rule_chain_top = mps->cs_rules->Item(i);
+            ps52plib->DestroyRulesChain( rule_chain_top );
+        }
+        delete mps->cs_rules;
+    }
+    free( mps );
+}
+
 void s57chart::FreeObjectsAndRules()
 {
 //      Delete the created ObjRazRules, including the S57Objs
@@ -1475,19 +1490,9 @@ void s57chart::FreeObjectsAndRules()
                         ctop = cnxx;
                     }
                 }
+                free_mps( top->mps );
 
-                if( top->mps ){
-                    if( ps52plib && top->mps->cs_rules ){
-                        for(unsigned int i=0 ; i < top->mps->cs_rules->GetCount() ; i++){
-                            Rules *rule_chain_top = top->mps->cs_rules->Item(i);
-                            ps52plib->DestroyRulesChain( rule_chain_top );
-                        }
-                        delete top->mps->cs_rules;
-                    }
-                    free( top->mps );
-                }
-
-                 nxx = top->next;
+                nxx = top->next;
                 free( top );
                 top = nxx;
             }
@@ -5075,6 +5080,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                free_mps( top->mps );
+                top->mps = 0;
                 if (top->LUP)
                     top->obj->m_DisplayCat = top->LUP->DISC;
 
@@ -5094,6 +5101,9 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        free_mps( ctop->mps );
+                        ctop->mps = 0;
+
                         if (ctop->LUP)
                             ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
