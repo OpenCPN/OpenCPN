@@ -388,6 +388,7 @@ extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
+extern bool             g_bInlandEcdis;
 
 extern wxString         g_uiStyle;
 
@@ -783,7 +784,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ClientPosY" ), &g_lastClientRecty, 0 );
     Read( _T ( "ClientSzX" ), &g_lastClientRectw, 0 );
     Read( _T ( "ClientSzY" ), &g_lastClientRecth, 0 );
-
+    Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );
+    
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
@@ -2071,7 +2073,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ClientPosY" ), g_lastClientRecty );
     Write( _T ( "ClientSzX" ), g_lastClientRectw );
     Write( _T ( "ClientSzY" ), g_lastClientRecth );
-
+    Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
+    
     //    AIS
     SetPath( _T ( "/Settings/AIS" ) );
 
