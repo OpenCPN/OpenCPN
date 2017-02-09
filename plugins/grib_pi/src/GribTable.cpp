@@ -102,7 +102,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     //populate grib
     wxDateTime time, day, ptime;
-    int nrows,dcol = 0;
+    int nrows;
     bool color = false;
 
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
