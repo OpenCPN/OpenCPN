@@ -1320,7 +1320,24 @@ s57chart::~s57chart()
     
     m_pcs_vector.clear();
     m_pve_vector.clear();
-    
+
+    for( VE_Hash::iterator it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        if(pedge){
+            free(pedge->pPoints);
+            delete pedge;
+        }
+    }
+    m_ve_hash.clear();
+
+    for( VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc ) {
+        VC_Element *pcs = itc->second;
+        if(pcs) {
+            free(pcs->pPoint);
+            delete pcs;
+        }
+    }
+    m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
