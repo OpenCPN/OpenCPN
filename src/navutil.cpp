@@ -1874,16 +1874,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
     Write( _T ( "ShowLayers" ), g_bShowLayers );
-    Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
-    if ( !g_bInlandEcdis ) {
-        Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
-        Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
-    }
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
     Write( _T ( "ShowChartBar" ), g_bShowChartBar );
     
@@ -1980,8 +1975,13 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarX" ), g_toolbar_x );
     Write( _T ( "ToolbarY" ), g_toolbar_y );
     Write( _T ( "ToolbarOrient" ), g_toolbar_orient );
-    if ( !g_bInlandEcdis )  Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
-
+    if ( !g_bInlandEcdis ){  
+        Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
+        wxPuts(_T ( "Did write" ) + g_toolbarConfig);
+        Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
+        Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
+        Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
+    }
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
 
@@ -2638,21 +2638,29 @@ void SwitchInlandEcdisMode( bool Switch )
 {
     if ( Switch ){
         wxLogMessage( _T("Switch InlandEcdis mode On") );
-        //g_bInlandEcdis = Switch;
+        //Overule some sewttings to comply with InlandEcdis
         g_toolbarConfig = _T ( "XX...XXX..X...XX.XXXXXXXXXXXX" );
+        g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
+        g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+        wxPuts(_("Setting to")+g_toolbarConfig);
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
-        g_iDistanceFormat=2;
-        g_iSpeedFormat=2;
+        if (gFrame) gFrame->RequestNewToolbar(true);
     }
     else{      
         wxLogMessage( _T("Switch InlandEcdis mode Off") );
-        //g_bInlandEcdis = Switch;
-        pConfig->Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
-        int read_int;
-        pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
-        if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
-        pConfig->Read( _T ( "DistanceFormat" ), g_iDistanceFormat );
-        pConfig->Read( _T ( "SpeedFormat" ), g_iSpeedFormat );
+        //reread the settings overruled by inlandEcdis
+        if (pConfig){
+            pConfig->SetPath( _T ( "/Settings" ) );
+            pConfig->Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
+            pConfig->Read( _T ( "DistanceFormat" ), &g_iDistanceFormat );
+            pConfig->Read( _T ( "SpeedFormat" ), &g_iSpeedFormat );
+            pConfig->Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
+            int read_int;
+            pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
+            if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+        }
+        wxPuts(_("Reread to")+g_toolbarConfig);
+        if (gFrame) gFrame->RequestNewToolbar(true);
     }        
 }
 
