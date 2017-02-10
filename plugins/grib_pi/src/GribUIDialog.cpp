@@ -910,8 +910,8 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     int i = 0,vcol = GetNearestIndex( GetNow(), 0);
     wxColour colour;
     GetGlobalColor(_T("GREEN1"), &colour);
-    table->m_pGribTable->SetCellBackgroundColour( colour, 0, vcol ); //mark current column
-    table->m_pGribTable->SetCellBackgroundColour( colour, 1, vcol );
+    table->m_pGribTable->SetCellBackgroundColour( 0, vcol, colour ); //mark current column
+    table->m_pGribTable->SetCellBackgroundColour( 1, vcol, colour );
     while( table->m_pGribTable->IsVisible( 0, i, true) ) {           //ensure it's visible
         i++;
     }
