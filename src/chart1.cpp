@@ -386,6 +386,7 @@ double                    g_ownship_predictor_minutes;
 double                    g_ownship_HDTpredictor_miles;
 
 int                       g_current_arrow_scale;
+int                       g_tide_rectangle_scale;
 
 Multiplexer               *g_pMUX;
 

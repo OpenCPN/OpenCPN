@@ -497,7 +497,8 @@ private:
       bool        warp_flag;
 
 
-      float       current_draw_scaler;
+      float       current_draw_scaler; // Affect displayed size of current arrows
+      float       tide_draw_scaler;    // Affect displayed size of tide rectangles
 
 
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
