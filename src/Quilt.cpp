@@ -29,6 +29,7 @@
 #include "s52plib.h"
 #include "chcanv.h"
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
+#include "chartimg.h"
 
 #ifdef USE_S57
 #include "s57chart.h"
@@ -382,6 +383,29 @@ ChartBase *Quilt::GetNextChart()
                         cnode->GetData()->dbIndex, FULL_INIT );
     }
 
+    m_bbusy = false;
+    return pret;
+}
+
+ChartBase *Quilt::GetNextSmallerScaleChart()
+{
+    if( !ChartData ) return NULL;
+    
+    if( !ChartData->IsValid() ) return NULL;
+    
+    if( m_bbusy )
+        return NULL;
+    
+    m_bbusy = true;
+    ChartBase *pret = NULL;
+    if( cnode ) {
+        cnode = cnode->GetPrevious();
+        while( cnode && !cnode->GetData()->b_Valid )
+            cnode = cnode->GetPrevious();
+        if( cnode && cnode->GetData()->b_Valid ) pret = ChartData->OpenChartFromDB(
+            cnode->GetData()->dbIndex, FULL_INIT );
+    }
+    
     m_bbusy = false;
     return pret;
 }
@@ -1325,6 +1349,14 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
 }
 
+ChartBase *Quilt::GetRefChart()
+{
+    if(m_refchart_dbIndex >= 0 )
+        return ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
+    else
+        return 0;
+}
+
 void Quilt::UnlockQuilt()
 {
     wxASSERT(m_bbusy == false);
@@ -2105,7 +2137,19 @@ void Quilt::ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region )
 
 int g_render;
 
-bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
+bool Quilt::RenderQuiltRegionViewOnDCNoText( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    return DoRenderQuiltRegionViewOnDC( dc, vp, chart_region);
+}
+
+bool Quilt::RenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    return DoRenderQuiltRegionViewOnDCTextOnly( dc, vp, chart_region);
+}
+
+
+
+bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region )
 {
 
 #ifdef ocpnUSE_DIBSECTION
@@ -2153,7 +2197,24 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion 
                     if( !get_screen_region.Empty() ) {
 
                         if( !pqp->b_overlay ) {
-                            b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+                                b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            }
+                            else{
+                                s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                                if(Chs57){
+                                    b_chart_rendered = Chs57->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                }
+                                else{
+                                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                                    if(ChPI){
+                                        b_chart_rendered = ChPI->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
+                                    }
+                                    else    
+                                        b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                                }
+                            }
+                                
                             if( chart->GetChartType() != CHART_TYPE_CM93COMP )
                                 b_chart_rendered = true;
                             screen_region.Subtract( get_screen_region );
@@ -2447,5 +2508,45 @@ void Quilt::SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp )
     dc.Clear();
     m_covered_region.Clear();
 
+}
+
+bool Quilt::DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region )
+{
+    if( !m_bcomposed )
+        return false;
+    
+    OCPNRegion rendered_region;
+    
+    if( GetnCharts() && !m_bbusy ) {
+        
+        OCPNRegion screen_region = chart_region;
+        
+        //  Walk the quilt, drawing each chart from largest scale to smallest
+        
+        ChartBase *chart = GetLargestScaleChart();
+        int chartsDrawn = 0;
+        
+        while( chart ) {
+                QuiltPatch *pqp = GetCurrentPatch();
+                if( pqp->b_Valid  ) {
+                    s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                    if(Chs57)
+                        Chs57->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );
+                    else{
+                        ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                        if(ChPI){
+                            ChPI->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );
+                        }
+                    }
+                }
+                
+                chart =  GetNextSmallerScaleChart();
+         }
+        
+    } else {             // no charts yet, or busy....
+        SubstituteClearDC( dc, vp );
+    }
+    
+    return true;
 }
 

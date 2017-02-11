@@ -2165,18 +2165,33 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
         wxRect rect;
+        bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText, vp );
 
-        bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText,
-                vp );
-
-        //    If this is an un-cached text object render, then do not update the text object in any way
+        //  If this is an un-cached text render, it probably means that a single object has two or more
+        //  text renders in its rule set.  RDOCAL is one example.  There are others
+        //  We need to cache only the first text structure, but should update the render rectangle
+        //  to reflect all texts rendered for this object,  in order to process the declutter logic.
+        bool b_dupok = false;
         if( b_free_text ) {
             delete text;
-            return 1;
+        
+            if(!bwas_drawn){
+                return 1;
+            }
+            else{                               // object was drawn
+                text = rzRules->obj->FText;
+                
+                wxRect r0 = text->rText;
+                r0 = r0.Union(rect);
+                text->rText = r0;
+            
+                b_dupok = true;                 // OK to add a duplicate text structure to the declutter list, just for this case.
+            }
         }
-
-        text->rText = rect;
-
+        else
+            text->rText = rect;
+        
+        
         //      If this text was actually drawn, add a pointer to its rect to the de-clutter list if it doesn't already exist
         if( m_bDeClutterText ) {
             if( bwas_drawn ) {
@@ -2185,7 +2200,8 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     S52_TextC *oc = node->GetData();
 
                     if( oc == text ) {
-                        b_found = true;
+                        if(!b_dupok)
+                            b_found = true;
                         break;
                     }
                 }
@@ -5745,6 +5761,18 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
     return DoRenderObject( NULL, rzRules, vp );
 }
 
+int s52plib::RenderObjectToDCText( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+{
+    return DoRenderObjectTextOnly( pdcin, rzRules, vp );
+}
+
+int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules, ViewPort *vp )
+{
+    m_glcc = (wxGLContext *) &glcc;
+    return DoRenderObjectTextOnly( NULL, rzRules, vp );
+}
+
+
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
@@ -5879,6 +5907,106 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
         rules = rules->next;
     }
 
+    return 1;
+}
+
+int s52plib::DoRenderObjectTextOnly( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
+{
+//    if(strncmp(rzRules->obj->FeatureName, "RDOCAL", 6))
+//        return 0;
+
+//    if(rzRules->obj->Index != 636)
+//        return 0;
+    
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
+    
+    if( IsObjNoshow( rzRules->LUP->OBCL) )
+        return 0;
+    
+    if( !ObjectRenderCheckCat( rzRules, vp ) ) {
+        
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+        
+        // already added, nothing below can change its display category        
+            if(rzRules->obj->bCS_Added ) 
+                return 0;
+            
+            //  Otherwise, make sure the CS, if present, has been evaluated,
+                //  and then check the category again    
+                //  no rules 
+                if( !ObjectRenderCheckCS( rzRules, vp ) )
+                    return 0;
+                
+                
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                        break;
+                    }
+                    rules = rules->next;
+                }
+                
+                // still not displayable    
+                if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                    return 0;
+    }
+    
+    m_pdc = pdcin; // use this DC
+    Rules *rules = rzRules->LUP->ruleList;
+    
+    while( rules != NULL ) {
+        switch( rules->ruleType ){
+            case RUL_TXT_TX:
+                RenderTX( rzRules, rules, vp );
+                break; // TX
+            case RUL_TXT_TE:
+                RenderTE( rzRules, rules, vp );
+                break; // TE
+            case RUL_CND_SY: {
+                if( !rzRules->obj->bCS_Added ) {
+                    rzRules->obj->CSrules = NULL;
+                    GetAndAddCSRules( rzRules, rules );
+                    if(strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                }
+                
+                Rules *rules_last = rules;
+                rules = rzRules->obj->CSrules;
+                
+                while( NULL != rules ) {
+                    switch( rules->ruleType ){
+                        case RUL_TXT_TX:
+                            RenderTX( rzRules, rules, vp );
+                            break;
+                        case RUL_TXT_TE:
+                            RenderTE( rzRules, rules, vp );
+                            break;
+                        default:
+                            break; // no rule type (init)
+                    }
+                    rules_last = rules;
+                    rules = rules->next;
+                }
+                
+                rules = rules_last;
+                break;
+            }
+            
+            case RUL_NONE:
+            default:
+                 break; // no rule type (init)
+        } // switch
+        
+        rules = rules->next;
+    }
+    
     return 1;
 }
 
@@ -8656,6 +8784,7 @@ bool s52plib::EnableGLLS(bool b_enable)
     
 void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 {
+    return;
     wxRect rScreen( 0, 0, screenw, screenh );
     //    Iterate over the text rectangle list
     //        1.  Apply the specified offset to the list elements

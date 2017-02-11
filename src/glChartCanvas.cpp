@@ -2650,8 +2650,25 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                         }
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                         RenderNoDTA(vp, get_region);
-                        b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
-                    }
+
+                        if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+                            chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                        }
+                        else{
+                            s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                            if(Chs57){
+                                Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                            }
+                            else{
+                                ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                                if(ChPI){
+                                    ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                }
+                                else    
+                                    chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                            }
+                        }
+                     }
                 }
             }
 
@@ -2905,6 +2922,70 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     }
 }
 
+void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region )
+{
+    if( !cc1->m_pQuilt->GetnCharts() || cc1->m_pQuilt->IsBusy() )
+        return;
+    
+    //  render the quilt
+        ChartBase *chart = cc1->m_pQuilt->GetLargestScaleChart();
+        
+        LLRegion region = vp.GetLLRegion(rect_region);
+        
+        LLRegion rendered_region;
+        while( chart ) {
+            
+            QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+            if( pqp->b_Valid ) {
+                LLRegion get_region = pqp->ActiveRegion;
+                bool b_rendered = false;
+                
+                if( !pqp->b_overlay ) {
+                    if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                        
+                        s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                        if(Chs57){
+                            Chs57->RenderViewOnGLTextOnly( *m_pcontext, vp);
+                        }
+                        else{
+                            ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                            if(ChPI){
+                                ChPI->RenderRegionViewOnGLTextOnly( *m_pcontext, vp, rect_region);
+                            }
+                        }
+                    }    
+                }
+            }
+            
+            
+            chart = cc1->m_pQuilt->GetNextSmallerScaleChart();
+        }
+
+/*        
+        //    Render any Overlay patches for s57 charts(cells)
+        if( cc1->m_pQuilt->HasOverlays() ) {
+            ChartBase *pch = cc1->m_pQuilt->GetFirstChart();
+            while( pch ) {
+                QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
+                if( pqp->b_Valid && pqp->b_overlay && pch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                    LLRegion get_region = pqp->ActiveRegion;
+                    
+                    get_region.Intersect( region );
+                    #ifdef USE_S57
+                    if( !get_region.Empty()  ) {
+                        s57chart *Chs57 = dynamic_cast<s57chart*>( pch );
+                        if( Chs57 )
+                            Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                    }
+                    #endif                
+                }
+                
+                pch = cc1->m_pQuilt->GetNextChart();
+            }
+        }
+*/        
+}
+
 void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = cc1->VPoint;
@@ -2973,11 +3054,11 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         } 
     }
         
-    for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-        LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
-        ViewPort cvp = ClippedViewport(vp, region);
-        DrawGroundedOverlayObjects(dc, cvp);
-    }
+     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
+         LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
+         ViewPort cvp = ClippedViewport(vp, region);
+         DrawGroundedOverlayObjects(dc, cvp);
+     }
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
@@ -3336,7 +3417,8 @@ void glChartCanvas::Render()
     m_bfogit = m_benableFog && g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
     bool scale_it  =  m_benableVScale && g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
     
-    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( ).Empty(), useFBO = false;
+    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( ).Empty();
+    bool useFBO = false;
     int sx = GetSize().x;
     int sy = GetSize().y;
 
@@ -3593,6 +3675,31 @@ void glChartCanvas::Render()
     } else          // useFBO
         RenderCharts(gldc, screen_region);
 
+    //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
+    if( VPoint.b_quilt ) {
+        if(cc1->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+
+            ChartBase *chart = cc1->m_pQuilt->GetRefChart();
+            if(chart->GetChartType() != CHART_TYPE_CM93COMP){
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI)
+                        ChPI->ClearPLIBTextList();
+                    else
+                        ps52plib->ClearTextList();
+                }
+                
+                // Grow the ViewPort a bit laterally, to minimize "jumping" of text elements at left side of screen
+                ViewPort vpx = VPoint;
+                vpx.BuildExpandedVP(VPoint.pix_width * 12 / 10, VPoint.pix_height);
+                
+                OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
+                RenderQuiltViewGLText( vpx, screen_region );
+            }
+        }
+    }
+    
     DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not

@@ -7755,7 +7755,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                             }
 
                             //  Render the new region
-                            m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, update_region );
+                            m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, update_region );
                             cache_dc.SelectObject( wxNullBitmap );
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
@@ -7768,7 +7768,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                     } else              // not blitable
                     {
                         temp_dc.SelectObject( m_working_bm );
-                        m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
+                        m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_region );
                     }
                 } else {
                     //    No change in the view, so use the cached member bitmap2
@@ -7778,7 +7778,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             } else      //cached bitmap is not yet valid
             {
                 temp_dc.SelectObject( m_working_bm );
-                m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
+                m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_region );
             }
 
             //  Save the fully rendered quilt image as a wxBitmap member of this class
@@ -7799,7 +7799,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         {
             temp_dc.SelectObject( m_working_bm );
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
-            m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
+            m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_all_region );
         }
     }
 
@@ -7966,6 +7966,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         upd++;
     }
 
+    
 //    Draw the rest of the overlay objects directly on the scratch dc
     ocpnDC scratch_dc( mscratch_dc );
     DrawOverlayObjects( scratch_dc, ru );
@@ -8041,10 +8042,56 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     mscratch_dc.SelectObject( wxNullBitmap );
 
     dc.DestroyClippingRegion();
+    
+    // Create and Render the Vector quilt decluttered text overlay, omitting CM93 composite
+    if( VPoint.b_quilt ) {
+        if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+            ChartBase *chart = m_pQuilt->GetRefChart();
+            if(chart->GetChartType() != CHART_TYPE_CM93COMP){
+                wxMemoryDC q_dc;
+                wxBitmap qbm(  GetVP().pix_width, GetVP().pix_height );
+                
+                q_dc.SelectObject( qbm );
+                q_dc.SetBackground(wxBrush(wxColour(1,0,0)));
+                q_dc.Clear();
+                
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI){
+                        ChPI->ClearPLIBTextList();
+                    }
+                    else{
+                        if(ps52plib)
+                            ps52plib->ClearTextList();
+                    }
+                }
+                
+                OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
+                m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( q_dc, svp, chart_all_text_region );
 
+                wxMask *pMask = new wxMask(qbm, wxColor(1,0,0));
+                qbm.SetMask(pMask);
+    
+                //  Pick up the new Mask
+                q_dc.SelectObject( wxNullBitmap );
+                q_dc.SelectObject( qbm );
+                
+                // Blit back into source, at the correct height
+                int height = GetVP().pix_height;
+                if(m_brepaint_piano)
+                    height -= GetChartbarHeight();
+                    
+                dc.Blit( 0, 0,  GetVP().pix_width, height, &q_dc, 0, 0, wxCOPY, true );
+                
+                q_dc.SelectObject( wxNullBitmap );
+            }
+        }
+    }
+    
+    
     PaintCleanup();
     OCPNPlatform::HideBusySpinner();
-//      CALLGRIND_STOP_INSTRUMENTATION
 
 }
 
