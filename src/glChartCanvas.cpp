@@ -126,7 +126,7 @@ extern bool g_bShowFPS;
 extern bool g_bSoftwareGL;
 extern bool g_btouch;
 extern OCPNPlatform *g_Platform;
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
@@ -3661,11 +3661,11 @@ void glChartCanvas::Render()
             gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
+    if(g_MainToolbar && g_MainToolbar->m_pRecoverwin ){
         int recoverx, recovery;
-        g_FloatingToolbarDialog->m_pRecoverwin->GetPosition( &recoverx, &recovery );
-        if( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap().IsOk())
-            gldc.DrawBitmap( g_FloatingToolbarDialog->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
+        g_MainToolbar->m_pRecoverwin->GetPosition( &recoverx, &recovery );
+        if( g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
+            gldc.DrawBitmap( g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
     }
     
     
