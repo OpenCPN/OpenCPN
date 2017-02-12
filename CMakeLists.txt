@@ -1555,6 +1555,11 @@ SET(uiData
 	src/bitmaps/toolicons_journeyman.png
 	src/bitmaps/toolicons_journeyman_flat.png
 	src/bitmaps/toolicons_traditional.png
+	src/bitmaps/iconRMinus.png
+        src/bitmaps/iconRPlus.png
+        src/bitmaps/iconMinimum.png
+        src/bitmaps/iconStandard.png
+        src/bitmaps/iconAll.png
 	)
 
 IF (USE_S57)
