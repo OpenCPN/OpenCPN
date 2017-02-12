@@ -2005,8 +2005,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         else
             glColor4ub(128, 128, 128, 255);
 
-        /* scaled ship? */
-        float scale_factor_y = g_ChartScaleFactorExp, scale_factor_x = g_ChartScaleFactorExp;
+        float scale_factor_y = 1.0;
+        float scale_factor_x = 1.0;
+        
         int ownShipWidth = 22; // Default values from s_ownship_icon
         int ownShipLength= 84;
         lShipMidPoint = lGPSPoint;
@@ -2019,6 +2020,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             ownShipLength= ownship_size.y;
         }
 
+        /* scaled ship? */
         if( g_OwnShipIconType != 0 )
             cc1->ComputeShipScaleFactor
                 (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
@@ -2036,9 +2038,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glRotatef(deg, 0, 0, 1);
 
         
-        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType < 2 )){
-            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   // soften the scale factor a bit
-            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;
+        // Scale the generic icon to ChartScaleFactor, slightly softened....
+        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
+            scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
         }
         
         glScalef(scale_factor_x, scale_factor_y, 1);
