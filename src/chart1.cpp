@@ -766,10 +766,22 @@ enum {
 
 iENCToolbar *g_iENCToolbar;
 
-void BuildiENCToolbar()
+void BuildiENCToolbar( bool bnew )
 {
-    if( !g_iENCToolbar ) {
-        g_iENCToolbar = new iENCToolbar( cc1,  wxPoint( 0, 200 ), g_maintoolbar_orient, g_toolbar_scalefactor );
+    if(g_bInlandEcdis){
+        if(bnew)
+            delete g_iENCToolbar;
+        
+        if( !g_iENCToolbar ) {
+            wxPoint posn(0, 100);
+            if(g_MainToolbar)
+                posn = wxPoint(g_maintoolbar_x, g_MainToolbar->GetSize().y + 2);
+            g_iENCToolbar = new iENCToolbar( cc1,  posn, g_maintoolbar_orient, g_toolbar_scalefactor );
+        }
+    }
+    else{
+        delete g_iENCToolbar;
+        g_iENCToolbar = NULL;
     }
 
 }
@@ -3177,8 +3189,6 @@ static bool b_inCloseWindow;
 
 void MyFrame::RequestNewToolbar(bool bforcenew)
 {
-//    BuildiENCToolbar();
-    
     if( b_inCloseWindow ) {
         return;
     }
@@ -3215,6 +3225,8 @@ void MyFrame::RequestNewToolbar(bool bforcenew)
         }
     }
 
+    BuildiENCToolbar(bforcenew);
+    
 #ifdef __OCPN__ANDROID__
     DoChartUpdate();
 #endif
