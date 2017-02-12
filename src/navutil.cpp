@@ -109,7 +109,6 @@ extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
-extern int              g_nDepthUnitDisplay;
 
 extern wxToolBarBase    *toolBar;
 
@@ -366,7 +365,6 @@ extern int              g_SENC_LOD_pixels;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern int              g_chart_zoom_modifier;
-extern int              g_chart_zoom_modifier_vector;
 
 extern int              g_NMEAAPBPrecision;
 
@@ -388,6 +386,7 @@ extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
+
 extern bool             g_bInlandEcdis;
 
 extern wxString         g_uiStyle;
@@ -506,8 +505,8 @@ int MyConfig::LoadMyConfig()
     wxDisplaySize( &display_width, &display_height );
 
 //    Global options and settings
-    SetPath( _T ( "/Settings" ) );
-
+    SetPath( _T ( "/Settings" ) );    
+    
     // Some undocumented values
     Read( _T ( "ConfigVersionString" ), &g_config_version_string, _T("") );
     Read( _T ( "NavMessageShown" ), &n_NavMessageShown, 0 );
@@ -517,13 +516,15 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "UIStyle" ), &g_uiStyle, wxT("Traditional") );
 
     Read( _T ( "NCacheLimit" ), &g_nCacheLimit, 0 );
+     
+    Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );// First read if in iENC mode as this will override some config settings
 
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
-        
+    
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
     Read( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );
@@ -602,7 +603,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "CourseUpMode" ), &g_bCourseUp, 0 );
     Read( _T ( "COGUPAvgSeconds" ), &g_COGAvgSec, 15 );
     g_COGAvgSec = wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);        // Bound the array size
-    Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
+    if( g_bInlandEcdis ) g_bLookAhead=1;
+        else Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
     Read( _T ( "OpenGL" ), &g_bopengl, 0 );
     if ( g_bdisable_opengl )
@@ -656,10 +658,6 @@ int MyConfig::LoadMyConfig()
     g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
 
-    Read( _T ( "ZoomDetailFactorVector" ), &g_chart_zoom_modifier_vector, 0 );
-    g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
-    g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
-    
     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
     Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
     Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
@@ -707,6 +705,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
     
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
+      
     Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
@@ -784,8 +783,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ClientPosY" ), &g_lastClientRecty, 0 );
     Read( _T ( "ClientSzX" ), &g_lastClientRectw, 0 );
     Read( _T ( "ClientSzY" ), &g_lastClientRecth, 0 );
-    Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );
     
+
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
@@ -889,6 +888,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
+    
+    SwitchInlandEcdisMode( g_bInlandEcdis );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
@@ -939,15 +940,12 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "TCDataDir" ), &g_TCData_Dir );           // Get the Directory name
 
     SetPath( _T ( "/Settings/GlobalState" ) );
-    Read( _T ( "nColorScheme" ), &read_int, 0 );
-    global_color_scheme = (ColorScheme) read_int;
-
-    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
-    read_int = wxMax(read_int, 0);                      // qualify value
-    read_int = wxMin(read_int, 2);
-    g_nDepthUnitDisplay = read_int;
     
-
+    if ( g_bInlandEcdis ) global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
+    else{
+        Read( _T ( "nColorScheme" ), &read_int, 0 );
+        global_color_scheme = (ColorScheme) read_int;
+    }
     SetPath( _T ( "/Settings/NMEADataSource" ) );
 
     wxString connectionconfigs;
@@ -1848,12 +1846,13 @@ void MyConfig::UpdateSettings()
     wxLogNull logNo;
 #endif    
     
+    
 //    Global options and settings
     SetPath( _T ( "/Settings" ) );
-
+    
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
-
+    Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     Write( _T ( "UIexpert" ), g_bUIexpert );
     
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
@@ -1875,14 +1874,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TransparentToolbar" ), g_bTransparentToolbar );
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
     Write( _T ( "ShowLayers" ), g_bShowLayers );
-    Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
-    Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
-    Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
     Write( _T ( "ShowChartBar" ), g_bShowChartBar );
     
@@ -1907,7 +1903,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowFPS" ), g_bShowFPS );
     
     Write( _T ( "ZoomDetailFactor" ), g_chart_zoom_modifier );
-    Write( _T ( "ZoomDetailFactorVector" ), g_chart_zoom_modifier_vector );
     
     Write( _T ( "FogOnOverzoom" ), g_fog_overzoom );
     Write( _T ( "OverzoomVectorScale" ), g_oz_vector_scale );
@@ -1929,7 +1924,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UseCM93Charts" ), g_bUseCM93 );
 
     Write( _T ( "CourseUpMode" ), g_bCourseUp );
-    Write( _T ( "LookAheadMode" ), g_bLookAhead );
+    if (!g_bInlandEcdis ) Write( _T ( "LookAheadMode" ), g_bLookAhead );
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
     Write( _T ( "UseMagAPB" ), g_bMagneticAPB );
 
@@ -1980,8 +1975,16 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarX" ), g_maintoolbar_x );
     Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
+
     Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
 
+    if ( !g_bInlandEcdis ){  
+        Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
+        wxPuts(_T ( "Did write" ) + g_toolbarConfig);
+        Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
+        Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
+        Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
+    }
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
 
@@ -2061,7 +2064,7 @@ void MyConfig::UpdateSettings()
     //    Various Options
     SetPath( _T ( "/Settings/GlobalState" ) );
     if( cc1 ) Write( _T ( "bFollow" ), cc1->m_bFollow );
-    Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
+    if ( !g_bInlandEcdis ) Write( _T ( "nColorScheme" ), (int) gFrame->GetColorScheme() );
 
     Write( _T ( "FrameWinX" ), g_nframewin_x );
     Write( _T ( "FrameWinY" ), g_nframewin_y );
@@ -2073,8 +2076,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ClientPosY" ), g_lastClientRecty );
     Write( _T ( "ClientSzX" ), g_lastClientRectw );
     Write( _T ( "ClientSzY" ), g_lastClientRecth );
-    Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     
+    
+
     //    AIS
     SetPath( _T ( "/Settings/AIS" ) );
 
@@ -2143,7 +2147,7 @@ void MyConfig::UpdateSettings()
     if( ps52plib ) {
         Write( _T ( "bShowS57Text" ), ps52plib->GetShowS57Text() );
         Write( _T ( "bShowS57ImportantTextOnly" ), ps52plib->GetShowS57ImportantTextOnly() );
-        Write( _T ( "nDisplayCategory" ), (long) ps52plib->GetDisplayCategory() );
+        if ( !g_bInlandEcdis ) Write( _T ( "nDisplayCategory" ), (long) ps52plib->GetDisplayCategory() );
         Write( _T ( "nSymbolStyle" ), (int) ps52plib->m_nSymbolStyle );
         Write( _T ( "nBoundaryStyle" ), (int) ps52plib->m_nBoundaryStyle );
 
@@ -2160,6 +2164,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );
         Write( _T ( "S52_MAR_DEEP_CONTOUR" ), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) );
         Write( _T ( "S52_MAR_TWO_SHADES" ), S52_getMarinerParam( S52_MAR_TWO_SHADES ) );
+        Write( _T ( "S52_DEPTH_UNIT_SHOW" ), ps52plib->m_nDepthUnitDisplay );
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );
@@ -2167,9 +2172,6 @@ void MyConfig::UpdateSettings()
 
 #endif
 
-    SetPath( _T ( "/Settings/GlobalState" ) );
-    Write( _T ( "S52_DEPTH_UNIT_SHOW" ), g_nDepthUnitDisplay );
-    
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "InitChartDir" ), *pInit_Chart_Dir );
     Write( _T ( "GPXIODir" ), m_gpx_path );
@@ -2630,6 +2632,39 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
             }
         }
     }
+}
+
+//-------------------------------------------------------------------------
+//           Static Routine Switch to Inland Ecdis Mode
+//-------------------------------------------------------------------------
+void SwitchInlandEcdisMode( bool Switch )
+{
+    if ( Switch ){
+        wxLogMessage( _T("Switch InlandEcdis mode On") );
+        //Overule some sewttings to comply with InlandEcdis
+        g_toolbarConfig = _T ( "XX...XXX..X...XX.XXXXXXXXXXXX" );
+        g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
+        g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+        wxPuts(_("Setting to")+g_toolbarConfig);
+        if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
+        if (gFrame) gFrame->RequestNewToolbar(true);
+    }
+    else{      
+        wxLogMessage( _T("Switch InlandEcdis mode Off") );
+        //reread the settings overruled by inlandEcdis
+        if (pConfig){
+            pConfig->SetPath( _T ( "/Settings" ) );
+            pConfig->Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
+            pConfig->Read( _T ( "DistanceFormat" ), &g_iDistanceFormat );
+            pConfig->Read( _T ( "SpeedFormat" ), &g_iSpeedFormat );
+            pConfig->Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
+            int read_int;
+            pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
+            if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+        }
+        wxPuts(_("Reread to")+g_toolbarConfig);
+        if (gFrame) gFrame->RequestNewToolbar(true);
+    }        
 }
 
 //-------------------------------------------------------------------------

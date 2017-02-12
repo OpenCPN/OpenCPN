@@ -5938,7 +5938,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bskew_comp = pSkewComp->GetValue();
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
-  g_bInlandEcdis = pInlandEcdis->GetValue(); 
   
   g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
 
@@ -6226,6 +6225,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
     gFrame->OnSize(nullEvent);
   }
 #endif
+    if ( g_bInlandEcdis != pInlandEcdis->GetValue() ){ // InlandEcdis changed
+        g_bInlandEcdis = pInlandEcdis->GetValue();
+        SwitchInlandEcdisMode( g_bInlandEcdis );
+        m_returnChanges |= TOOLBAR_CHANGED | FORCE_UPDATE;    
+    }
   // PlugIn Manager Panel
 
   // Pick up any changes to selections

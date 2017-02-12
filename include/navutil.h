@@ -183,7 +183,7 @@ public:
 
 };
 
-
+void SwitchInlandEcdisMode( bool Switch );
 /*
 #include <wx/fontdlg.h>
 
