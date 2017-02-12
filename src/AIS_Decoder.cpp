@@ -1416,6 +1416,48 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             break;
         }
 
+        case 19: {                              // Class B mes_ID 19 Is same as mes_ID 18 until bit 139
+            ptd->NavStatus = UNDEFINED;         // Class B targets have no status.  Enforce this...
+            ptd->SOG = 0.1 * (bstr->GetInt(47, 10));
+            int lon = bstr->GetInt(58, 28);
+            if (lon & 0x08000000)                    // negative?
+                lon |= 0xf0000000;
+            double lon_tentative = lon / 600000.;
+
+            int lat = bstr->GetInt(86, 27);
+            if (lat & 0x04000000)                    // negative?
+                lat |= 0xf8000000;
+            double lat_tentative = lat / 600000.;
+
+            if ((lon_tentative <= 180.) && (lat_tentative <= 90.)) // Ship does not report Lat or Lon "unavailable"
+            {
+                ptd->Lon = lon_tentative;
+                ptd->Lat = lat_tentative;
+                ptd->b_positionDoubtful = false;
+                ptd->b_positionOnceValid = true;          // Got the position at least once
+                ptd->PositionReportTicks = now.GetTicks();
+            } else
+                ptd->b_positionDoubtful = true;
+
+            ptd->COG = 0.1 * (bstr->GetInt(113, 12));
+            ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
+            ptd->m_utc_sec = bstr->GetInt(134, 6);
+            //From bit 140 and forward data as of mes 5
+            bstr->GetStr(144, 120, &ptd->ShipName[0], 20);
+            ptd->b_nameValid = true;
+            ptd->ShipType = (unsigned char)bstr->GetInt(264, 8);
+            ptd->DimA = bstr->GetInt(272, 9);
+            ptd->DimB = bstr->GetInt(281, 9);
+            ptd->DimC = bstr->GetInt(290, 6);
+            ptd->DimD = bstr->GetInt(296, 6);
+
+            ptd->Class = AIS_CLASS_B;
+            parse_result = true;         // so far so good
+            b_posn_report = true;
+
+            break;
+        }
+
         case 5: {
             n_msg5++;
             ptd->Class = AIS_CLASS_A;
