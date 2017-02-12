@@ -110,6 +110,8 @@
 #include "S57QueryDialog.h"
 #include "glTexCache.h"
 
+#include "iENCToolbar.h"
+
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
 #endif
@@ -267,7 +269,6 @@ bool                      g_bCruising;
 
 ChartDummy                *pDummyChart;
 
-ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
 
 
@@ -644,14 +645,13 @@ bool                      g_bFullscreen;
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
-wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
-int                       g_toolbar_x;
-int                       g_toolbar_y;
-long                      g_toolbar_orient;
-wxRect                    g_last_tb_rect;
+ocpnFloatingToolbarDialog *g_MainToolbar;
+int                       g_maintoolbar_x;
+int                       g_maintoolbar_y;
+long                      g_maintoolbar_orient;
+wxRect                    g_mainlast_tb_rect;
 float                     g_toolbar_scalefactor;
 float                     g_compass_scalefactor;
 
@@ -765,6 +765,15 @@ enum {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
+iENCToolbar *g_iENCToolbar;
+
+void BuildiENCToolbar()
+{
+    if( !g_iENCToolbar ) {
+        g_iENCToolbar = new iENCToolbar( cc1,  wxPoint( 0, 200 ), g_maintoolbar_orient, g_toolbar_scalefactor );
+    }
+
+}
 
 
 
@@ -895,9 +904,9 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     if(!event.GetActive())
     {
 //        printf("App de-activate\n");
-        if(g_FloatingToolbarDialog) {
-            if(g_FloatingToolbarDialog->IsShown())
-                g_FloatingToolbarDialog->Submerge();
+        if(g_MainToolbar) {
+            if(g_MainToolbar->IsShown())
+                g_MainToolbar->Submerge();
         }
 
 
@@ -964,8 +973,8 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
         }
 #endif
 
-        if( g_FloatingToolbarDialog )
-            g_FloatingToolbarDialog->HideTooltip(); // Hide any existing tip
+    if( g_MainToolbar )
+            g_MainToolbar->HideTooltip(); // Hide any existing tip
     }
 
     event.Skip();
@@ -2035,11 +2044,11 @@ bool MyApp::OnInit()
 
     gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
 
-    g_toolbar_x = wxMax(g_toolbar_x, 0);
-    g_toolbar_y = wxMax(g_toolbar_y, 0);
+    g_maintoolbar_x = wxMax(g_maintoolbar_x, 0);
+    g_maintoolbar_y = wxMax(g_maintoolbar_y, 0);
 
-    g_toolbar_x = wxMin(g_toolbar_x, cw);
-    g_toolbar_y = wxMin(g_toolbar_y, ch);
+    g_maintoolbar_x = wxMin(g_maintoolbar_x, cw);
+    g_maintoolbar_y = wxMin(g_maintoolbar_y, ch);
 
     gFrame->SetToolbarScale();
     gFrame->SetGPSCompassScale();
@@ -2238,8 +2247,8 @@ extern ocpnGLOptions g_GLOptions;
         //      Turn off the toolbar as a clear signal that the system is busy right now.
         // Note: I commented this out because the toolbar never comes back for me
         // and is unusable until I restart opencpn without generating the cache
-//        if( g_FloatingToolbarDialog )
-//            g_FloatingToolbarDialog->Hide();
+//        if( g_MainToolbar )
+//            g_MainToolbar->Hide();
 
         if(g_glTextureManager)
             g_glTextureManager->BuildCompressedCache();
@@ -2336,8 +2345,8 @@ extern ocpnGLOptions g_GLOptions;
     cc1->SetFocus();
 
 #ifdef __WXQT__
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Raise();
+    if(g_MainToolbar)
+        g_MainToolbar->Raise();
 #endif
 
     // Start delayed initialization chain after 100 milliseconds
@@ -2554,7 +2563,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_StatusBarFieldCount = g_Platform->GetStatusBarFieldCount();
 
     m_pMenuBar = NULL;
-    g_toolbar = NULL;
     g_options = NULL;
     m_toolbar_scale_tools_shown = false;
     piano_ctx_menu = NULL;
@@ -2655,8 +2663,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SaveSystemColors();
 #endif
 
-    g_FloatingToolbarConfigMenu = new wxMenu();
-
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
     g_sticky_chart = -1;
@@ -2682,7 +2688,6 @@ MyFrame::~MyFrame()
         node = node->GetNext();
     }
     delete pRouteList;
-    delete g_FloatingToolbarConfigMenu;
 }
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
@@ -2849,49 +2854,18 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
     }
 }
 
-void MyFrame::DestroyMyToolbar()
-{
-    if( g_FloatingToolbarDialog ) {
-        g_FloatingToolbarDialog->DestroyToolBar();
-        g_toolbar = NULL;
-    }
-}
-
-bool _toolbarConfigMenuUtil( int toolid, wxString tipString )
-{
-    wxMenuItem* menuitem;
-
-    if( toolid == ID_MOB && g_bPermanentMOBIcon ) return true;
-
-    // Item ID trickery is needed because the wxCommandEvents for menu item clicked and toolbar button
-    // clicked are 100% identical, so if we use same id's we can't tell the events apart.
-
-    int idOffset = ID_PLUGIN_BASE - ID_ZOOMIN + 100;  // Hopefully no more than 100 plugins loaded...
-    int menuItemId = toolid + idOffset;
-
-    menuitem = g_FloatingToolbarConfigMenu->FindItem( menuItemId );
-
-    if( menuitem ) {
-        return menuitem->IsChecked();
-    }
-
-    menuitem = g_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
-    menuitem->Check( g_toolbarConfig.GetChar( toolid - ID_ZOOMIN ) == _T('X') );
-    return menuitem->IsChecked();
-}
-
 ocpnToolBarSimple *MyFrame::CreateAToolbar()
 {
     ocpnToolBarSimple *tb = NULL;
     wxToolBarToolBase* newtool;
 
-    if( g_FloatingToolbarDialog ){
-        tb = g_FloatingToolbarDialog->GetToolbar();
+    if( g_MainToolbar ){
+        tb = g_MainToolbar->GetToolbar();
         if(tb){
             if(g_Compass)
-                g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+                g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
             else
-                g_FloatingToolbarDialog->SetGeometry(false, wxRect(0,0,1,1));
+                g_MainToolbar->SetGeometry(false, wxRect(0,0,1,1));
         }
             
     }
@@ -2904,13 +2878,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Zoom In") ) << _T(" (+)");
-    if( _toolbarConfigMenuUtil( ID_ZOOMIN, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMIN, tipString ) )
         tb->AddTool( ID_ZOOMIN, _T("zoomin"),
             style->GetToolIcon( _T("zoomin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Zoom Out") ) << _T(" (-)");
-    if( _toolbarConfigMenuUtil( ID_ZOOMOUT, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ZOOMOUT, tipString ) )
         tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
             style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
@@ -2919,7 +2893,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
-    if( _toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {
         newtool = tb->AddTool( ID_STKDN, _T("scin"),
                 style->GetToolIcon( _T("scin"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
         newtool->Enable( m_toolbar_scale_tools_shown );
@@ -2927,7 +2901,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Smaller Scale Chart") ) << _T(" (F8)");
-    if( _toolbarConfigMenuUtil( ID_STKUP, tipString ) ) {
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_STKUP, tipString ) ) {
         newtool = tb->AddTool( ID_STKUP, _T("scout"),
                 style->GetToolIcon( _T("scout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
         newtool->Enable( m_toolbar_scale_tools_shown );
@@ -2935,21 +2909,21 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
-    if( _toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
         tb->AddTool( ID_ROUTE, _T("route"),
             style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("route"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Auto Follow") ) << _T(" (F2)");
-    if( _toolbarConfigMenuUtil( ID_FOLLOW, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_FOLLOW, tipString ) )
         tb->AddTool( ID_FOLLOW, _T("follow"),
             style->GetToolIcon( _T("follow"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Options");
-    if( _toolbarConfigMenuUtil( ID_SETTINGS, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_SETTINGS, tipString ) )
         tb->AddTool( ID_SETTINGS, _T("settings"),
             style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
@@ -2965,7 +2939,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     else
         tipString = wxString( _("Show ENC text") ) << _T(" (T)");
 
-    if( _toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ENC_TEXT, tipString ) )
         tb->AddTool( ID_ENC_TEXT, _T("text"),
             style->GetToolIcon( _T("text"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
@@ -2973,46 +2947,46 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     m_pAISTool = NULL;
     CheckAndAddPlugInTool( tb );
     tipString = _("Hide AIS Targets");          // inital state is on
-    if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_AIS, tipString ) )
         m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
                                   style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ),
                                   wxITEM_NORMAL, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Currents");
-    if( _toolbarConfigMenuUtil( ID_CURRENT, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_CURRENT, tipString ) )
         tb->AddTool( ID_CURRENT, _T("current"),
             style->GetToolIcon( _T("current"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Tides");
-    if( _toolbarConfigMenuUtil( ID_TIDE, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TIDE, tipString ) )
         tb->AddTool( ID_TIDE, _T("tide"),
             style->GetToolIcon( _T("tide"), TOOLICON_NORMAL ), tipString, wxITEM_CHECK );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Print Chart");
-    if( _toolbarConfigMenuUtil( ID_PRINT, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_PRINT, tipString ) )
         tb->AddTool( ID_PRINT, _T("print"),
             style->GetToolIcon( _T("print"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Route & Mark Manager");
-    if( _toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ROUTEMANAGER, tipString ) )
         tb->AddTool( ID_ROUTEMANAGER,
             _T("route_manager"), style->GetToolIcon( _T("route_manager"), TOOLICON_NORMAL ),
             tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Enable Tracking");
-    if( _toolbarConfigMenuUtil( ID_TRACK, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_TRACK, tipString ) )
         tb->AddTool( ID_TRACK, _T("track"),
             style->GetToolIcon( _T("track"), TOOLICON_NORMAL ),
             style->GetToolIcon( _T("track"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Change Color Scheme") ) << _T(" (F5)");
-    if( _toolbarConfigMenuUtil( ID_COLSCHEME, tipString ) ){
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_COLSCHEME, tipString ) ){
         tb->AddTool( ID_COLSCHEME,
             _T("colorscheme"), style->GetToolIcon( _T("colorscheme"), TOOLICON_NORMAL ),
             tipString, wxITEM_NORMAL );
@@ -3022,7 +2996,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
-    if( _toolbarConfigMenuUtil( ID_ABOUT, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_ABOUT, tipString ) )
         tb->AddTool( ID_ABOUT, _T("help"),
             style->GetToolIcon( _T("help"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
@@ -3031,14 +3005,14 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     //  And finally add the MOB tool
     tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
-    if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
+    if( g_MainToolbar->_toolbarConfigMenuUtil( ID_MOB, tipString ) )
         tb->AddTool( ID_MOB, _T("mob_btn"),
                      style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
 
 // Realize() the toolbar
     style->Unload();
-    g_FloatingToolbarDialog->Realize();
+    g_MainToolbar->Realize();
 
 //      Set up the toggle states
 
@@ -3204,71 +3178,83 @@ static bool b_inCloseWindow;
 
 void MyFrame::RequestNewToolbar(bool bforcenew)
 {
+//    BuildiENCToolbar();
+    
     if( b_inCloseWindow ) {
         return;
     }
     
     bool b_reshow = true;
-    if( g_FloatingToolbarDialog ) {
-        b_reshow = g_FloatingToolbarDialog->IsShown();
-        float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
+    if( g_MainToolbar ) {
+        b_reshow = g_MainToolbar->IsShown();
+        float ff = fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor);
         if((ff > 0.01f) || bforcenew){
-            DestroyMyToolbar();
-            delete g_FloatingToolbarDialog;
-            g_FloatingToolbarDialog = NULL;
+            g_MainToolbar->DestroyToolBar();
+            delete g_MainToolbar;
+            g_MainToolbar = NULL;
         }
     }
 
-    if( !g_FloatingToolbarDialog ) {
-        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog( cc1,
-             wxPoint( g_toolbar_x, g_toolbar_y ), g_toolbar_orient, g_toolbar_scalefactor );
+    if( !g_MainToolbar ) {
+        g_MainToolbar = new ocpnFloatingToolbarDialog( cc1,
+             wxPoint( g_maintoolbar_x, g_maintoolbar_y ), g_maintoolbar_orient, g_toolbar_scalefactor );
+        g_MainToolbar->CreateConfigMenu();
     }
 
-    if( g_FloatingToolbarDialog ) {
-        if( g_FloatingToolbarDialog->IsToolbarShown() )
-            DestroyMyToolbar();
+    if( g_MainToolbar ) {
+        if( g_MainToolbar->IsToolbarShown() )
+            g_MainToolbar->DestroyToolBar();
+        
 
-        g_toolbar = CreateAToolbar();
-        if (g_FloatingToolbarDialog->isSubmergedToGrabber()) {
-            g_FloatingToolbarDialog->SubmergeToGrabber();
+        CreateAToolbar();
+        if (g_MainToolbar->isSubmergedToGrabber()) {
+            g_MainToolbar->SubmergeToGrabber();
         } else {
-            g_FloatingToolbarDialog->RePosition();
-            g_FloatingToolbarDialog->SetColorScheme(global_color_scheme);
-            g_FloatingToolbarDialog->Show(b_reshow && g_bshowToolbar);
+            g_MainToolbar->RePosition();
+            g_MainToolbar->SetColorScheme(global_color_scheme);
+            g_MainToolbar->Show(b_reshow && g_bshowToolbar);
         }
     }
 
 #ifdef __OCPN__ANDROID__
     DoChartUpdate();
 #endif
+    
 
 }
 
 //      Update inplace the current toolbar with bitmaps corresponding to the current color scheme
 void MyFrame::UpdateToolbar( ColorScheme cs )
 {
-    if( g_FloatingToolbarDialog ) {
-        if(g_FloatingToolbarDialog->GetColorScheme() != cs){
-            g_FloatingToolbarDialog->SetColorScheme( cs );
+    if( !g_MainToolbar )
+        return;
+    
+    if( g_MainToolbar ) {
+        if(g_MainToolbar->GetColorScheme() != cs){
+            g_MainToolbar->SetColorScheme( cs );
 
-            if( g_FloatingToolbarDialog->IsToolbarShown() ) {
-                DestroyMyToolbar();
-                g_toolbar = CreateAToolbar();
-                if (g_FloatingToolbarDialog->isSubmergedToGrabber()) 
-                    g_FloatingToolbarDialog->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
+            if( g_MainToolbar->IsToolbarShown() ) {
+                g_MainToolbar->DestroyToolBar();
+                CreateAToolbar();
+                if (g_MainToolbar->isSubmergedToGrabber()) 
+                    g_MainToolbar->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
             
             }
         }
     }
 
+    if(g_iENCToolbar){
+        g_iENCToolbar->SetColorScheme( cs );
+    }
+    
     if(g_Compass)
         g_Compass->SetColorScheme( cs );
 
-    if( g_toolbar ) {
+    if( g_MainToolbar->GetToolbar() ) {
         //  Re-establish toggle states
-        g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
-        g_toolbar->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
-        g_toolbar->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+        g_MainToolbar->GetToolbar()->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+        g_MainToolbar->GetToolbar()->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
+        g_MainToolbar->GetToolbar()->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
     }
 
     return;
@@ -3276,25 +3262,25 @@ void MyFrame::UpdateToolbar( ColorScheme cs )
 
 void MyFrame::EnableToolbar( bool newstate )
 {
-    if( g_toolbar ) {
-        g_toolbar->EnableTool( ID_ZOOMIN, newstate );
-        g_toolbar->EnableTool( ID_ZOOMOUT, newstate );
-        g_toolbar->EnableTool( ID_STKUP, newstate );
-        g_toolbar->EnableTool( ID_STKDN, newstate );
-        g_toolbar->EnableTool( ID_ROUTE, newstate );
-        g_toolbar->EnableTool( ID_FOLLOW, newstate );
-        g_toolbar->EnableTool( ID_SETTINGS, newstate );
-        g_toolbar->EnableTool( ID_ENC_TEXT, newstate );
-        g_toolbar->EnableTool( ID_CURRENT, newstate );
-        g_toolbar->EnableTool( ID_TIDE, newstate );
-        g_toolbar->EnableTool( ID_ABOUT, newstate );
-        g_toolbar->EnableTool( ID_TBEXIT, newstate );
-        g_toolbar->EnableTool( ID_TBSTAT, newstate );
-        g_toolbar->EnableTool( ID_PRINT, newstate );
-        g_toolbar->EnableTool( ID_COLSCHEME, newstate );
-        g_toolbar->EnableTool( ID_ROUTEMANAGER, newstate );
-        g_toolbar->EnableTool( ID_TRACK, newstate );
-        g_toolbar->EnableTool( ID_AIS, newstate );
+    if( g_MainToolbar) {
+        g_MainToolbar->EnableTool( ID_ZOOMIN, newstate );
+        g_MainToolbar->EnableTool( ID_ZOOMOUT, newstate );
+        g_MainToolbar->EnableTool( ID_STKUP, newstate );
+        g_MainToolbar->EnableTool( ID_STKDN, newstate );
+        g_MainToolbar->EnableTool( ID_ROUTE, newstate );
+        g_MainToolbar->EnableTool( ID_FOLLOW, newstate );
+        g_MainToolbar->EnableTool( ID_SETTINGS, newstate );
+        g_MainToolbar->EnableTool( ID_ENC_TEXT, newstate );
+        g_MainToolbar->EnableTool( ID_CURRENT, newstate );
+        g_MainToolbar->EnableTool( ID_TIDE, newstate );
+        g_MainToolbar->EnableTool( ID_ABOUT, newstate );
+        g_MainToolbar->EnableTool( ID_TBEXIT, newstate );
+        g_MainToolbar->EnableTool( ID_TBSTAT, newstate );
+        g_MainToolbar->EnableTool( ID_PRINT, newstate );
+        g_MainToolbar->EnableTool( ID_COLSCHEME, newstate );
+        g_MainToolbar->EnableTool( ID_ROUTEMANAGER, newstate );
+        g_MainToolbar->EnableTool( ID_TRACK, newstate );
+        g_MainToolbar->EnableTool( ID_AIS, newstate );
     }
 }
 
@@ -3313,22 +3299,6 @@ void MyFrame::SetGPSCompassScale()
 
     //  Round to the nearest "quarter", to avoid rendering artifacts
 //    g_compass_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
-
-}
-
-void MyFrame::RaiseToolbarRecoveryWindow()
-{
-    if(g_bshowToolbar){
-        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
-            g_FloatingToolbarDialog->m_pRecoverwin->Raise();
-            g_FloatingToolbarDialog->m_pRecoverwin->Refresh( false );
-        }
-    }
-    else{
-        if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->m_pRecoverwin ){
-            g_FloatingToolbarDialog->m_pRecoverwin->Hide();
-        }
-    }
 
 }
 
@@ -3492,12 +3462,12 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
             g_restore_dbindex = cc1->GetQuiltReferenceChartIndex();
     }
 
-    if( g_FloatingToolbarDialog ) {
-        wxPoint tbp = g_FloatingToolbarDialog->GetPosition();
+    if( g_MainToolbar ) {
+        wxPoint tbp = g_MainToolbar->GetPosition();
         wxPoint tbp_incanvas = cc1->ScreenToClient( tbp );
-        g_toolbar_x = tbp_incanvas.x;
-        g_toolbar_y = tbp_incanvas.y;
-        g_toolbar_orient = g_FloatingToolbarDialog->GetOrient();
+        g_maintoolbar_x = tbp_incanvas.x;
+        g_maintoolbar_y = tbp_incanvas.y;
+        g_maintoolbar_orient = g_MainToolbar->GetOrient();
     }
 
     pConfig->UpdateSettings();
@@ -3529,9 +3499,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 #endif
 
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Destroy();
-    g_FloatingToolbarDialog = NULL;
+    if(g_MainToolbar)
+        g_MainToolbar->Destroy();
+    g_MainToolbar = NULL;
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
@@ -3613,7 +3583,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     NMEALogWindow::Shutdown();
 
-    g_FloatingToolbarDialog = NULL;
+    g_MainToolbar = NULL;
     g_bTempShowMenuBar = false;
 
 
@@ -3665,7 +3635,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 void MyFrame::OnMove( wxMoveEvent& event )
 {
-    if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RePosition();
+    if( g_MainToolbar ) g_MainToolbar->RePosition();
 
 //    UpdateGPSCompassStatusBox( );
 
@@ -3681,11 +3651,11 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
 void MyFrame::ProcessCanvasResize( void )
 {
-    if( g_FloatingToolbarDialog ) {
-        g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-        g_FloatingToolbarDialog->Realize();
-        g_FloatingToolbarDialog->RePosition();
+    if( g_MainToolbar ) {
+        g_MainToolbar->RePosition();
+        g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        g_MainToolbar->Realize();
+        g_MainToolbar->RePosition();
 
     }
 
@@ -3739,13 +3709,13 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
     }
 
     if(timer_sequence == 2){
-        if( g_FloatingToolbarDialog ) {
+        if( g_MainToolbar ) {
             g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
             SetToolbarScale();
-            g_FloatingToolbarDialog->RePosition();
-            g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-            g_FloatingToolbarDialog->Realize();
-            g_FloatingToolbarDialog->Refresh( false );
+            g_MainToolbar->RePosition();
+            g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+            g_MainToolbar->Realize();
+            g_MainToolbar->Refresh( false );
         }
         timer_sequence++;
         m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
@@ -3877,16 +3847,16 @@ void MyFrame::ODoSetSize( void )
     }
 
 
-    if( g_FloatingToolbarDialog ) {
-        wxSize oldSize = g_FloatingToolbarDialog->GetSize();
-        g_FloatingToolbarDialog->RePosition();
-        g_FloatingToolbarDialog->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-        g_FloatingToolbarDialog->Realize();
+    if( g_MainToolbar ) {
+        wxSize oldSize = g_MainToolbar->GetSize();
+        g_MainToolbar->RePosition();
+        g_MainToolbar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        g_MainToolbar->Realize();
 
-        if( oldSize != g_FloatingToolbarDialog->GetSize() )
-            g_FloatingToolbarDialog->Refresh( false );
+        if( oldSize != g_MainToolbar->GetSize() )
+            g_MainToolbar->Refresh( false );
 
-        g_FloatingToolbarDialog->RePosition();
+        g_MainToolbar->RePosition();
 
     }
 
@@ -4218,8 +4188,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                 wxString tip = _("Show Currents");
                 if(cc1->GetbShowCurrent())
                     tip = _("Hide Currents");
-                if( g_toolbar )
-                    g_toolbar->SetToolShortHelp( ID_CURRENT, tip );
+                if( g_MainToolbar )
+                    g_MainToolbar->SetToolShortHelp( ID_CURRENT, tip );
 
                 SetMenubarItemState( ID_MENU_SHOW_CURRENTS, cc1->GetbShowCurrent() );
                 cc1->ReloadVP();
@@ -4252,8 +4222,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
                 wxString tip = _("Show Tides");
                 if(cc1->GetbShowTide())
                     tip = _("Hide Tides");
-                if( g_toolbar )
-                    g_toolbar->SetToolShortHelp( ID_TIDE, tip );
+                if( g_MainToolbar )
+                    g_MainToolbar->SetToolShortHelp( ID_TIDE, tip );
 
                 SetMenubarItemState( ID_MENU_SHOW_TIDES, cc1->GetbShowTide() );
                 cc1->ReloadVP();
@@ -4489,11 +4459,11 @@ void MyFrame::SetAISDisplayStyle(int StyleIndx)
     //Set found values to variables
     g_bShowAIS = g_bShowAIS_Array[AIS_Toolbar_Switch];
     g_bShowScaled = g_bShowScaled_Array[AIS_Toolbar_Switch];
-    if( g_toolbar ) {
-        g_toolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
+    if( g_MainToolbar ) {
+        g_MainToolbar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
         if( m_pAISTool ) {
-            g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
-            g_toolbar->Refresh();
+            g_MainToolbar->GetToolbar()->SetToolNormalBitmapEx( m_pAISTool, iconName_Array[AIS_Toolbar_Switch] );
+            g_MainToolbar->GetToolbar()->Refresh();
             m_lastAISiconName = iconName_Array[AIS_Toolbar_Switch];
         }
     }
@@ -4538,8 +4508,8 @@ void MyFrame::DoSettings()
     //              Apply various system settings
     ApplyGlobalSettings( true, bnewtoolbar );                 // flying update
 
-    if( g_FloatingToolbarDialog )
-        g_FloatingToolbarDialog->RefreshFadeTimer();
+    if( g_MainToolbar )
+        g_MainToolbar->RefreshFadeTimer();
 
     if( cc1->GetbShowCurrent() || cc1->GetbShowTide() )
         LoadHarmonics();
@@ -4675,8 +4645,8 @@ void MyFrame::TrackOn( void )
     g_pActiveTrack->Start();
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
-    if( g_toolbar )
-        g_toolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
+    if( g_MainToolbar )
+        g_MainToolbar->SetToolShortHelp( ID_TRACK, _("Disable Tracking") );
 
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
@@ -4749,8 +4719,8 @@ Track *MyFrame::TrackOff( bool do_add_point )
     }
 
     SetToolbarItemState( ID_TRACK, g_bTrackActive );
-    if( g_toolbar )
-        g_toolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
+    if( g_MainToolbar )
+        g_MainToolbar->SetToolShortHelp( ID_TRACK, _("Enable Tracking") );
     SetMenubarItemState( ID_MENU_NAV_TRACK, g_bTrackActive );
 
     #ifdef __OCPN__ANDROID__
@@ -4867,8 +4837,8 @@ void MyFrame::ToggleENCText( void )
         wxString tip = _("Show ENC text") + _T(" (T)");
         if(ps52plib->GetShowS57Text())
             tip = _("Hide ENC text") + _T(" (T)");
-        if( g_toolbar )
-            g_toolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
+        if( g_MainToolbar )
+            g_MainToolbar->SetToolShortHelp( ID_ENC_TEXT, tip );
 
         SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
         
@@ -4878,6 +4848,24 @@ void MyFrame::ToggleENCText( void )
         cc1->ReloadVP();
     }
 
+#endif
+}
+
+void MyFrame::SetENCDisplayCategory( enum _DisCat nset )
+{
+#ifdef USE_S57
+    if( ps52plib ) {
+         
+//        SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
+        
+        ps52plib->SetDisplayCategory(nset);
+        
+        if(g_pi_manager)
+            g_pi_manager->SendConfigToAllPlugIns();
+        
+        cc1->ReloadVP();
+    }
+    
 #endif
 }
 
@@ -5095,24 +5083,25 @@ void MyFrame::SetMenubarItemState( int item_id, bool state )
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
 {
-    if( g_toolbar ) g_toolbar->ToggleTool( tool_id, state );
+    if( g_MainToolbar->GetToolbar() )
+        g_MainToolbar->GetToolbar()->ToggleTool( tool_id, state );
 }
 
 void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRollover )
 {
-    if( g_toolbar ) {
-        g_toolbar->SetToolBitmaps( tool_id, bmp, bmpRollover );
-        wxRect rect = g_toolbar->GetToolRect( tool_id );
-        g_toolbar->RefreshRect( rect );
+    if( g_MainToolbar->GetToolbar() ) {
+        g_MainToolbar->GetToolbar()->SetToolBitmaps( tool_id, bmp, bmpRollover );
+        wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect( tool_id );
+        g_MainToolbar->GetToolbar()->RefreshRect( rect );
     }
 }
 
 void MyFrame::SetToolbarItemSVG( int tool_id, wxString normalSVGfile, wxString rolloverSVGfile, wxString toggledSVGfile )
 {
-    if( g_toolbar ) {
-        g_toolbar->SetToolBitmapsSVG( tool_id, normalSVGfile, rolloverSVGfile, toggledSVGfile );
-        wxRect rect = g_toolbar->GetToolRect( tool_id );
-        g_toolbar->RefreshRect( rect );
+    if( g_MainToolbar->GetToolbar() ) {
+        g_MainToolbar->GetToolbar()->SetToolBitmapsSVG( tool_id, normalSVGfile, rolloverSVGfile, toggledSVGfile );
+        wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect( tool_id );
+        g_MainToolbar->GetToolbar()->RefreshRect( rect );
     }
 }
 
@@ -5356,29 +5345,29 @@ void MyFrame::UpdateGlobalMenuItems()
 
 void MyFrame::SubmergeToolbarIfOverlap( int x, int y, int margin )
 {
-    if( g_FloatingToolbarDialog ) {
-        wxRect rect = g_FloatingToolbarDialog->GetScreenRect();
+    if( g_MainToolbar ) {
+        wxRect rect = g_MainToolbar->GetScreenRect();
         rect.Inflate( margin );
-        if( rect.Contains( x, y ) ) g_FloatingToolbarDialog->Submerge();
+        if( rect.Contains( x, y ) ) g_MainToolbar->Submerge();
     }
 }
 
 void MyFrame::SubmergeToolbar( void )
 {
-    if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->Submerge();
+    if( g_MainToolbar ) g_MainToolbar->Submerge();
 }
 
 void MyFrame::SurfaceToolbar( void )
 {
 
     if(g_bshowToolbar){
-        if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsToolbarShown() ) {
+        if( g_MainToolbar && g_MainToolbar->IsToolbarShown() ) {
             if( IsFullScreen() ) {
                 if( g_bFullscreenToolbar ) {
-                    g_FloatingToolbarDialog->Surface();
+                    g_MainToolbar->Surface();
                 }
             } else{
-                g_FloatingToolbarDialog->Surface();
+                g_MainToolbar->Surface();
             }
         }
 #ifndef __WXQT__
@@ -5389,18 +5378,18 @@ void MyFrame::SurfaceToolbar( void )
 
 bool MyFrame::IsToolbarShown()
 {
-    return g_FloatingToolbarDialog->IsShown();
+    return g_MainToolbar->IsShown();
 }
 
 void MyFrame::ToggleToolbar( bool b_smooth )
 {
-    if( g_FloatingToolbarDialog ) {
-        if( g_FloatingToolbarDialog->IsShown() ){
+    if( g_MainToolbar ) {
+        if( g_MainToolbar->IsShown() ){
             SubmergeToolbar();
         }
         else{
             SurfaceToolbar();
-            g_FloatingToolbarDialog->Raise();
+            g_MainToolbar->Raise();
         }
     }
 }
@@ -5479,12 +5468,12 @@ int MyFrame::DoOptionsDialog()
     prev_locale = g_locale;
 
     bool b_sub = false;
-    if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown() ) {
+    if( g_MainToolbar && g_MainToolbar->IsShown() ) {
         wxRect bx_rect = g_options->GetScreenRect();
-        wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+        wxRect tb_rect = g_MainToolbar->GetScreenRect();
         if( tb_rect.Intersects( bx_rect ) ) b_sub = true;
 
-        if( b_sub ) g_FloatingToolbarDialog->Submerge();
+        if( b_sub ) g_MainToolbar->Submerge();
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
@@ -5511,13 +5500,13 @@ int MyFrame::DoOptionsDialog()
         }
     }
 
-    if( g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->DisableTooltips();
+    if( g_MainToolbar)
+        g_MainToolbar->DisableTooltips();
 
     int rr = g_options->ShowModal();
 
-    if( g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->EnableTooltips();
+    if( g_MainToolbar)
+        g_MainToolbar->EnableTooltips();
 
     options_lastPage = g_options->lastPage;
     options_lastWindowPos = g_options->lastWindowPos;
@@ -5556,9 +5545,9 @@ int MyFrame::DoOptionsDialog()
     RequestNewToolbar();
 
     bDBUpdateInProgress = false;
-    if( g_FloatingToolbarDialog ) {
+    if( g_MainToolbar ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )
-            g_FloatingToolbarDialog->Submerge();
+            g_MainToolbar->Submerge();
     }
 
 #if defined(__WXOSX__) || defined(__WXQT__)
@@ -5718,9 +5707,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
-    if(g_FloatingToolbarDialog){
-        g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
-        g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+    if(g_MainToolbar){
+        g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+        g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
     }
 
     //    Do a full Refresh, trying to open the last open chart
@@ -6144,8 +6133,8 @@ void MyFrame::SetupQuiltMode( void )
 
 void MyFrame::ClearRouteTool()
 {
-    if( g_toolbar )
-        g_toolbar->ToggleTool( ID_ROUTE, false );
+    if( g_MainToolbar->GetToolbar() )
+        g_MainToolbar->GetToolbar()->ToggleTool( ID_ROUTE, false );
 
 #ifdef __OCPN__ANDROID__
         androidSetRouteAnnunciator(false);
@@ -6247,8 +6236,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
     switch(m_iInitCount++) {
         case 0:
         {
-            if( g_toolbar )
-                g_toolbar->EnableTool( ID_SETTINGS, false );
+            if( g_MainToolbar )
+                g_MainToolbar->EnableTool( ID_SETTINGS, false );
             
             // Set persistent Fullscreen mode
             g_Platform->SetFullscreen(g_bFullscreen);
@@ -6338,8 +6327,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
             RequestNewToolbar();
-            if( g_toolbar )
-                g_toolbar->EnableTool( ID_SETTINGS, false );
+            if( g_MainToolbar )
+                g_MainToolbar->EnableTool( ID_SETTINGS, false );
 
             wxString perspective;
             pConfig->SetPath( _T ( "/AUI" ) );
@@ -6384,9 +6373,9 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
         case 3:
         {
-            if(g_FloatingToolbarDialog){
-                g_FloatingToolbarDialog->SetAutoHide(g_bAutoHideToolbar);
-                g_FloatingToolbarDialog->SetAutoHideTimer(g_nAutoHideToolbar);
+            if(g_MainToolbar){
+                g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
+                g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
             }
             
             break;
@@ -6396,8 +6385,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         {
             g_options = new options( this, -1, _("Options") );
     
-            if( g_toolbar )
-                g_toolbar->EnableTool( ID_SETTINGS, true );
+            if( g_MainToolbar )
+                g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
             // needed to ensure that the chart window starts with keyboard focus
             SurfaceToolbar();
@@ -6526,7 +6515,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //                  ToggleQuiltMode();
 
         cc1->m_bFollow = false;
-        if( g_toolbar ) g_toolbar->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+        if( g_MainToolbar->GetToolbar() )
+            g_MainToolbar->GetToolbar()->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
         int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
@@ -6569,9 +6559,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     //    They will be re-Show()-n in MyFrame::OnActivate()
     if(IsIconized())
     {
-        if(g_FloatingToolbarDialog) {
-            if(g_FloatingToolbarDialog->IsShown())
-            g_FloatingToolbarDialog->Submerge();
+        if(g_MainToolbar) {
+            if(g_MainToolbar->IsShown())
+            g_MainToolbar->Submerge();
         }
 
         AppActivateList.Clear();
@@ -7015,9 +7005,9 @@ void MyFrame::TouchAISActive( void )
             if( !g_bShowAIS ) iconName = _T("AIS_Disabled");
 
             if( m_lastAISiconName != iconName ) {
-                if( g_toolbar) {
-                    g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-                    g_toolbar->Refresh();
+                if( g_MainToolbar->GetToolbar()) {
+                    g_MainToolbar->GetToolbar()->SetToolNormalBitmapEx( m_pAISTool, iconName );
+                    g_MainToolbar->GetToolbar()->Refresh();
                     m_lastAISiconName = iconName;
                 }
             }
@@ -7063,9 +7053,9 @@ void MyFrame::UpdateAISTool( void )
 
         if( ( m_lastAISiconName != iconName ) ) b_update = true;
 
-        if( b_update && g_toolbar) {
-            g_toolbar->SetToolNormalBitmapEx( m_pAISTool, iconName );
-            g_toolbar->Refresh();
+        if( b_update && g_MainToolbar->GetToolbar()) {
+            g_MainToolbar->GetToolbar()->SetToolNormalBitmapEx( m_pAISTool, iconName );
+            g_MainToolbar->GetToolbar()->Refresh();
             m_lastAISiconName = iconName;
         }
 
@@ -7175,7 +7165,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
     bool b_update = false;
     int cc1_edge_comp = 2;
 
-    if( g_FloatingToolbarDialog ) {
+    if( g_MainToolbar ) {
         wxRect rect = g_Compass->GetRect();
         wxSize parent_size = cc1->GetSize();
 
@@ -7184,9 +7174,9 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         wxRect tentative_rect( tentative_pt, rect.GetSize() );
 
         //  If the toolbar location has changed, or the proposed compassDialog location has changed
-        if( g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect || b_force_new) {
+        if( g_MainToolbar->GetScreenRect() != g_mainlast_tb_rect || b_force_new) {
 
-            wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+            wxRect tb_rect = g_MainToolbar->GetScreenRect();
             wxPoint tentative_pt_in_screen(cc1->ClientToScreen(tentative_pt));
             wxRect tentative_rect_in_screen(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
                                             rect.width, rect.height);
@@ -7204,7 +7194,7 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
                 cc1->m_brepaint_piano = true;
                 b_update = true;
             }
-            g_last_tb_rect = tb_rect;
+            g_mainlast_tb_rect = tb_rect;
 
         }
     }
@@ -7690,10 +7680,10 @@ void MyFrame::SetChartThumbnail( int index )
                 
                 // Simplistic overlap avoidance works best when toolbar is horizontal near the top of screen.
                 // Other difficult cases simply center the thumbwin on the canvas....
-                if( g_FloatingToolbarDialog && !g_FloatingToolbarDialog->isSubmergedToGrabber()){
-                    if( g_FloatingToolbarDialog->GetScreenRect().Intersects( tRect ) ) {
-                        wxPoint tbpos = cc1->ScreenToClient(g_FloatingToolbarDialog->GetPosition());
-                        pos = wxPoint(4, g_FloatingToolbarDialog->GetSize().y + tbpos.y + 4);
+                if( g_MainToolbar && !g_MainToolbar->isSubmergedToGrabber()){
+                    if( g_MainToolbar->GetScreenRect().Intersects( tRect ) ) {
+                        wxPoint tbpos = cc1->ScreenToClient(g_MainToolbar->GetPosition());
+                        pos = wxPoint(4, g_MainToolbar->GetSize().y + tbpos.y + 4);
                         tLocn = ClientToScreen(pos);
                     }
                 }
@@ -10051,8 +10041,8 @@ void MyFrame::applySettingsString( wxString settings)
         b_newToolbar = true;
 
 
-    if(b_newToolbar && g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->DestroyToolBar();
+    if(b_newToolbar && g_MainToolbar)
+        g_MainToolbar->DestroyToolBar();
 
 
     //  We do this is one case only to remove an orphan recovery window
@@ -10090,8 +10080,8 @@ void MyFrame::applySettingsString( wxString settings)
 
 
 #if defined(__WXOSX__) || defined(__WXQT__)
-    if( g_FloatingToolbarDialog )
-        g_FloatingToolbarDialog->Raise();
+    if( g_MainToolbar )
+        g_MainToolbar->Raise();
 #endif
 
     if(console)
@@ -11583,8 +11573,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     long parent_style;
     bool b_toolviz = false;
 
-    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
-        g_FloatingToolbarDialog->Hide();
+    if(g_MainToolbar && g_MainToolbar->IsShown()){
+        g_MainToolbar->Hide();
         b_toolviz = true;
     }
 

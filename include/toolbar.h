@@ -23,7 +23,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+
+#ifndef _TOOLBAR_H__
+#define _TOOLBAR_H__
+
 #include "wx/tbarbase.h"
+#include "styles.h"
+#include <vector>
+
+class ocpnFloatingToolbarDialog;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Definition
@@ -340,6 +348,11 @@ public:
       
       void Realize();
       ocpnToolBarSimple *GetToolbar();
+      ocpnToolBarSimple *CreateNewToolbar();
+      
+      void CreateConfigMenu();
+      bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
+      
       void Submerge();
       void SubmergeToGrabber();
       bool isSubmergedToGrabber();
@@ -349,7 +362,10 @@ public:
       void ShowTooltips();
       void EnableTooltips() { if(m_ptoolbar) m_ptoolbar->EnableTooltips(); }
       void DisableTooltips() { if(m_ptoolbar) m_ptoolbar->DisableTooltips(); }
-
+      void UpdateRecoveryWindow(bool b_toolbarEnable);
+      void EnableTool( int toolid, bool enable );
+      void SetToolShortHelp( int toolid, const wxString& helpString );
+      
       void DestroyToolBar();
       void ToggleOrientation();
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
@@ -377,6 +393,11 @@ public:
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
       
+      wxMenu  *m_FloatingToolbarConfigMenu;
+
+protected:
+    ocpnToolBarSimple *m_ptoolbar;
+    
 private:
       void DoFade( int value );
 
@@ -384,7 +405,6 @@ private:
       bool  m_bsubmergedToGrabber;
       
       wxWindow *m_pparent;
-      ocpnToolBarSimple *m_ptoolbar;
       wxBoxSizer *m_topSizer;
 
       GrabberWin *m_pGrabberwin;
@@ -433,7 +453,7 @@ class ToolbarChoicesDialog: public wxDialog
 public:
     /// Constructors
     ToolbarChoicesDialog( );
-    ToolbarChoicesDialog( wxWindow* parent, wxWindowID id = -1,
+    ToolbarChoicesDialog( wxWindow* parent, wxWindow *sponsor, wxWindowID id = -1,
                         const wxString& caption = _T(""),
                           const wxPoint& pos = wxDefaultPosition,
                           const wxSize& size = wxDefaultSize,
@@ -453,6 +473,8 @@ public:
     wxButton*     m_OKButton;
 
     std::vector<wxCheckBox*> cboxes;
+    wxMenu        *m_configMenu;
     
 };
 
+#endif

@@ -150,7 +150,10 @@ public:
       void PopupMenuHandler(wxCommandEvent& event);
 
       bool SetUserOwnship();
-          
+      
+      double GetCanvasRangeMeters();
+      void SetCanvasRangeMeters( double range );
+      
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
       virtual void Refresh( bool eraseBackground = true,

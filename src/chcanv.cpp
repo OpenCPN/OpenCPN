@@ -151,6 +151,7 @@ extern bool             g_bHDTValid;
 extern int              g_nbrightness;
 
 extern ConsoleCanvas    *console;
+extern OCPNPlatform     *g_Platform;
 
 extern RouteList        *pRouteList;
 extern TrackList        *pTrackList;
@@ -315,6 +316,10 @@ int   last_brightness;
 
 int                     g_cog_predictor_width;
 extern double           g_display_size_mm;
+
+extern bool             g_bshowToolbar;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
+
 
 
 // "Curtain" mode parameters
@@ -925,6 +930,29 @@ bool ChartCanvas::IsTempMenuBarEnabled()
     return true;
 #endif
 }
+
+double ChartCanvas::GetCanvasRangeMeters()
+{
+    int width, height;
+    GetSize(&width, &height);
+    int minDimension =  wxMin(width, height);
+    
+    double range  = (minDimension / GetVP().view_scale_ppm)/2;
+    range *= cos(GetVP().clat *PI/180.);
+    return range;
+}
+
+void ChartCanvas::SetCanvasRangeMeters( double range )
+{
+    int width, height;
+    GetSize(&width, &height);
+    int minDimension =  wxMin(width, height);
+    
+    double scale_ppm = minDimension / (range / cos(GetVP().clat *PI/180.));
+    SetVPScale( scale_ppm / 2 );
+    
+}
+
 
 bool ChartCanvas::SetUserOwnship(){
     //  Look for user defined ownship image
@@ -7086,7 +7114,7 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 
 #ifdef __WXQT__
     gFrame->SurfaceToolbar();
-    //g_FloatingToolbarDialog->Raise();
+    //g_MainToolbar->Raise();
 #endif
     
     return true;
@@ -8305,7 +8333,8 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
         
-        gFrame->RaiseToolbarRecoveryWindow();
+        if(g_MainToolbar)
+            g_MainToolbar->UpdateRecoveryWindow(g_bshowToolbar);
         
     } else
 #endif

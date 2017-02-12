@@ -121,7 +121,7 @@ extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern wxString         g_locale;
 extern bool             g_btouch;
-extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
 unsigned int      gs_plib_flags;
 
@@ -1898,11 +1898,11 @@ void PlugInManager::SendConfigToAllPlugIns()
     }
 
     // Some useful display metrics
-    if(g_FloatingToolbarDialog){
-        v[_T("OpenCPN Toolbar Width")] = g_FloatingToolbarDialog->GetSize().x;
-        v[_T("OpenCPN Toolbar Height")] = g_FloatingToolbarDialog->GetSize().y;
-        v[_T("OpenCPN Toolbar PosnX")] = g_FloatingToolbarDialog->GetPosition().x;
-        v[_T("OpenCPN Toolbar PosnY")] = g_FloatingToolbarDialog->GetPosition().y;
+    if(g_MainToolbar){
+        v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetSize().x;
+        v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetSize().y;
+        v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
+        v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
     }    
     
     wxJSONWriter w;

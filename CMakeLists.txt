@@ -1048,6 +1048,7 @@ SET(HDRS
                 include/OCPNPlatform.h
                 include/S57Sector.h
                 include/FlexHash.h
+                include/iENCToolbar.h
 )
 
 SET(SRCS
@@ -1140,6 +1141,7 @@ SET(SRCS
                 src/canvasMenu.cpp
                 src/OCPNPlatform.cpp 
                 src/FlexHash.cpp
+                src/iENCToolbar.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
