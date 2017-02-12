@@ -61,9 +61,6 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
  
     LoadToolBitmaps();
  
-    m_rangeFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-    
-    
     wxSize a = m_bmMinimum.GetSize();
     m_ptoolbar->SetToolBitmapSize( a );
 
@@ -98,6 +95,14 @@ iENCToolbar::~iENCToolbar()
 
 }
 
+void iENCToolbar::SetColorScheme( ColorScheme cs )
+{
+    m_range = 0;                // Forcw a redraw of tools
+    m_nDensity = -1;
+    
+    ocpnFloatingToolbarDialog::SetColorScheme( cs );
+}
+    
 
 void iENCToolbar::LoadToolBitmaps()
 {
@@ -264,9 +269,16 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
     if(cc1){
         double range = cc1->GetCanvasRangeMeters();
      
-        if(1/*range != m_range*/){
-            
+        if(range != m_range){
             m_range = range;
+
+
+#if 0
+            // This DOES NOT WORK on Mac
+            //  None of it....
+
+//            wxImage image = m_bmRMinus.ConvertToImage();
+//            wxBitmap bmTemplate(image);
             
             // Get the template bitmap
             wxBitmap bmTemplate = m_bmRMinus;
@@ -285,8 +297,21 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
             dc.Blit(0, 0, m_pbmScratch->GetWidth(), m_pbmScratch->GetHeight(), &dct, 0, 0, wxCOPY, true);
             
             dct.SelectObject(wxNullBitmap);
-            
+#else
+            wxMemoryDC dc;
+            dc.SelectObject(*m_pbmScratch);
+            dc.SetBackground(wxBrush(GetGlobalColor(_T("GREY2"))));
+            dc.Clear();
+            dc.DrawBitmap(m_bmRMinus, wxPoint(0,0));
+#endif            
             //  Render the range as text onto the template
+
+            if(range > 100000)
+                m_rangeFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+            else if(range > 10000)
+                m_rangeFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+            else
+                m_rangeFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
             
             dc.SetFont( *m_rangeFont );
             dc.SetTextForeground(*wxBLACK);

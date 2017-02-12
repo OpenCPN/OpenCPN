@@ -371,7 +371,7 @@ public:
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
       void RePosition();
       void LockPosition(bool lock){ m_block = lock; }
-      void SetColorScheme( ColorScheme cs );
+      virtual void SetColorScheme( ColorScheme cs );
       ColorScheme GetColorScheme(){ return m_cs; }
       bool CheckSurfaceRequest( wxMouseEvent &event );
       

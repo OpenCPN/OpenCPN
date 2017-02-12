@@ -46,6 +46,7 @@ public:
       void OnToolLeftClick( wxCommandEvent& event );
       void SetDensityToolBitmap( int nDensity);
       void StateTimerEvent( wxTimerEvent& event );
+      void SetColorScheme( ColorScheme cs );
       
       wxBitmap m_bmMinimum, m_bmStandard, m_bmAll,m_bmRPlus, m_bmRMinus;
       wxBitmap *m_pbmScratch;
