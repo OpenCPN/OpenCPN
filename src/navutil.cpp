@@ -322,9 +322,9 @@ extern bool             g_bQuiltStart;
 
 extern int              g_SkewCompUpdatePeriod;
 
-extern int              g_toolbar_x;
-extern int              g_toolbar_y;
-extern long             g_toolbar_orient;
+extern int              g_maintoolbar_x;
+extern int              g_maintoolbar_y;
+extern long             g_maintoolbar_orient;
 
 extern int              g_GPU_MemSize;
 
@@ -636,9 +636,9 @@ int MyConfig::LoadMyConfig()
 #endif
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
 
-    Read( _T ( "ToolbarX"), &g_toolbar_x, 0 );
-    Read( _T ( "ToolbarY" ), &g_toolbar_y, 0 );
-    Read( _T ( "ToolbarOrient" ), &g_toolbar_orient, wxTB_HORIZONTAL );
+    Read( _T ( "ToolbarX"), &g_maintoolbar_x, 0 );
+    Read( _T ( "ToolbarY" ), &g_maintoolbar_y, 0 );
+    Read( _T ( "ToolbarOrient" ), &g_maintoolbar_orient, wxTB_HORIZONTAL );
     Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
 
     Read( _T ( "AnchorWatch1GUID" ), &g_AW1GUID, _T("") );
@@ -1977,9 +1977,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AnchorWatch1GUID" ), g_AW1GUID );
     Write( _T ( "AnchorWatch2GUID" ), g_AW2GUID );
 
-    Write( _T ( "ToolbarX" ), g_toolbar_x );
-    Write( _T ( "ToolbarY" ), g_toolbar_y );
-    Write( _T ( "ToolbarOrient" ), g_toolbar_orient );
+    Write( _T ( "ToolbarX" ), g_maintoolbar_x );
+    Write( _T ( "ToolbarY" ), g_maintoolbar_y );
+    Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
     Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
 
     Write( _T ( "GPSIdent" ), g_GPS_Ident );

@@ -8597,6 +8597,7 @@ void s52plib::SetDisplayCategory(enum _DisCat cat)
     if(old != cat){
         ClearNoshow();
     }
+    GenerateStateHash();
 }
 
 
