@@ -109,6 +109,7 @@ extern double           g_UserVar;
 extern bool             g_bShowStatusBar;
 extern bool             g_bUIexpert;
 extern bool             g_bFullscreen;
+extern int              g_nDepthUnitDisplay;
 
 extern wxToolBarBase    *toolBar;
 
@@ -1425,6 +1426,7 @@ void MyConfig::LoadS57Config()
     read_int = wxMax(read_int, 0);                      // qualify value
     read_int = wxMin(read_int, 2);
     ps52plib->m_nDepthUnitDisplay = read_int;
+    g_nDepthUnitDisplay = read_int;
 
 //    S57 Object Class Visibility
 
