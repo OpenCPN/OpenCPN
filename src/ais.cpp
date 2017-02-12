@@ -957,34 +957,36 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( (int) ( td->HDG ) != 511 ) {
         theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
     } else {
-        b_hdgValid = false;   // tentaive judgement
-        
-        // question: why can we not compute similar to above using COG instead of HDG?
-        //  Calculate the relative angle for this chart orientation
-        //    Use a 100 pixel vector to calculate angle
-        float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
-        float angle_lat, angle_lon;
-        spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
+        b_hdgValid = false;   // tentative judgement
 
-        wxPoint AnglePoint;
-        cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+        if(!g_bInlandEcdis){
+            // question: why can we not compute similar to above using COG instead of HDG?
+            //  Calculate the relative angle for this chart orientation
+            //    Use a 100 pixel vector to calculate angle
+            float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
+            float angle_lat, angle_lon;
+            spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
 
-        if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
-            if( target_sog > g_ShowMoored_Kts ){
-                theta = atan2f(
-                    (double) ( AnglePoint.y - TargetPoint.y ),
-                    (double) ( AnglePoint.x - TargetPoint.x ) );
-                b_hdgValid = true;
-            }
-            else
-                theta = (float)-PI / 2.;
-        } else {
-            if( AnglePoint.y > TargetPoint.y )
-                theta = (float)PI / 2.;             // valid COG 180
-            else{
-                theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
-                if (td->SOG >= g_ShowMoored_Kts )            //  valid COG 000 or speed is too low to resolve course
+            wxPoint AnglePoint;
+            cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+
+            if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
+                if( target_sog > g_ShowMoored_Kts ){
+                    theta = atan2f(
+                        (double) ( AnglePoint.y - TargetPoint.y ),
+                        (double) ( AnglePoint.x - TargetPoint.x ) );
                     b_hdgValid = true;
+                }
+                else
+                    theta = (float)-PI / 2.;
+            } else {
+                if( AnglePoint.y > TargetPoint.y )
+                    theta = (float)PI / 2.;             // valid COG 180
+                else{
+                    theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+                    if (td->SOG >= g_ShowMoored_Kts )            //  valid COG 000 or speed is too low to resolve course
+                        b_hdgValid = true;
+                }
             }
         }
     }
@@ -1072,14 +1074,10 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
     }
     
-    // We only symbolize COG-indeterminate targets differently in InlandECDIS mode
-    if(!g_bInlandEcdis)
-        b_hdgValid = true;
-    
     
     wxPoint *iconPoints;
     int nPoints;
-    wxPoint ais_quad_icon[4]={ wxPoint(-4, -3),  wxPoint(0, 12),  wxPoint(4, -3), wxPoint(0, -3) };
+    wxPoint ais_quad_icon[4]={ wxPoint(-8, -6),  wxPoint(0, 24),  wxPoint(8, -6), wxPoint(0, -6) };
     wxPoint ais_octo_icon[8] = {
         wxPoint(4,8),
         wxPoint(8,4),
@@ -1090,15 +1088,15 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         wxPoint(-8,4),
         wxPoint(-4,8) };
         
-     if(b_hdgValid){                                 
+     if(!g_bInlandEcdis){                                 
         // to speed up we only calculate scale when not max or minimal 
-        if (targetscale == 100){
-            ais_quad_icon[0] = wxPoint(-8, -6);
-            ais_quad_icon[1] = wxPoint( 0, 24);
-            ais_quad_icon[2] = wxPoint( 8, -6);
-            ais_quad_icon[3] = wxPoint( 0, -6);
+        if (targetscale == 50){
+            ais_quad_icon[0] = wxPoint(-4, -3);
+            ais_quad_icon[1] = wxPoint( 0, 12);
+            ais_quad_icon[2] = wxPoint( 4, -3);
+            ais_quad_icon[3] = wxPoint( 0, -3);
         }
-        else if ( targetscale != 50) {
+        else if ( targetscale != 100) {
                 ais_quad_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
                 ais_quad_icon[1] = wxPoint( 0, (int)24*targetscale/100);
                 ais_quad_icon[2] = wxPoint( (int)8*targetscale/100, (int)-6*targetscale/100);
@@ -1132,9 +1130,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         iconPoints = ais_quad_icon;
         
     }
-    else{
-        nPoints = 8;
-        iconPoints = ais_octo_icon;
+    else{                               // iENC
+        if(b_hdgValid){
+            transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
+            nPoints = 4;
+            iconPoints = ais_quad_icon;
+        }
+        else{
+            nPoints = 8;
+            iconPoints = ais_octo_icon;
+        }
     }
         
 
@@ -1145,8 +1150,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     wxColour UINFG = GetGlobalColor( _T ( "UINFG" ));
     wxBrush target_brush = wxBrush( UINFG );
 
-    // Euro Inland targets render slightly differently
-    if( td->b_isEuroInland )
+    // Euro Inland targets render slightly differently, unless in InlandENC mode
+    if( td->b_isEuroInland && !g_bInlandEcdis)
         target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
 
     // Target name comes from cache
@@ -1619,18 +1624,42 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    Symbolize it if set by most recent message
         if( td->b_blue_paddle ) {
             wxPoint ais_flag_icon[4];
-            ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
-            ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
-            ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
-            ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
-            
-            transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
-
             int penWidth = 2;
-            if(targetscale < 100)
-                penWidth = 1;
+            
+            if(g_bInlandEcdis){
+                if(b_hdgValid){
+                    ais_flag_icon[0] = wxPoint( -6,9);
+                    ais_flag_icon[1] = wxPoint( -11,12);
+                    ais_flag_icon[2] = wxPoint( -14,8);
+                    ais_flag_icon[3] = wxPoint( -8,4);
+                }
+                else{
+                    ais_flag_icon[0] = wxPoint( -3,0);
+                    ais_flag_icon[1] = wxPoint( 0,3);
+                    ais_flag_icon[2] = wxPoint( 3,0);
+                    ais_flag_icon[3] = wxPoint( 0,-3);
+                }
+                
+                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+                
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFB" ) ), penWidth ) );
+                
+            }
+            else{
+                ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+                ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
+                ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
+                ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
+            
+                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+
+                if(targetscale < 100)
+                    penWidth = 1;
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
+                
+            }
+            
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
             dc.StrokePolygon( 4, ais_flag_icon);
         }
     }
