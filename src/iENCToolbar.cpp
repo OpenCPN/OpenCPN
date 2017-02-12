@@ -81,9 +81,10 @@ iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float
     
     // Realize() the toolbar
     Realize();
-    Show(true);
+    Hide();
     
     RePosition();
+    Show(true);
     
     m_state_timer.SetOwner( this, STATE_TIMER );
     m_state_timer.Start( 500, wxTIMER_CONTINUOUS );
@@ -102,13 +103,25 @@ void iENCToolbar::LoadToolBitmaps()
 {
     wxString dataDir = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator() ;
     
-    
-    m_bmMinimum = wxBitmap( dataDir + _T("iconMinimum.png"), wxBITMAP_TYPE_PNG);
-    m_bmStandard = wxBitmap( dataDir + _T("iconStandard.png"), wxBITMAP_TYPE_PNG);
-    m_bmAll = wxBitmap( dataDir + _T("iconAll.png"), wxBITMAP_TYPE_PNG);
+    if(::wxFileExists( dataDir + _T("iconMinimum.png"))){
+        m_bmMinimum = wxBitmap( dataDir + _T("iconMinimum.png"), wxBITMAP_TYPE_PNG);
+        m_bmStandard = wxBitmap( dataDir + _T("iconStandard.png"), wxBITMAP_TYPE_PNG);
+        m_bmAll = wxBitmap( dataDir + _T("iconAll.png"), wxBITMAP_TYPE_PNG);
 
-    m_bmRPlus = wxBitmap( dataDir + _T("iconRPlus.png"), wxBITMAP_TYPE_PNG);
-    m_bmRMinus = wxBitmap( dataDir + _T("iconRMinus.png"), wxBITMAP_TYPE_PNG);
+        m_bmRPlus = wxBitmap( dataDir + _T("iconRPlus.png"), wxBITMAP_TYPE_PNG);
+        m_bmRMinus = wxBitmap( dataDir + _T("iconRMinus.png"), wxBITMAP_TYPE_PNG);
+    }
+    else{
+        wxLogMessage(_T("Cannot find iENC icons at: ") + dataDir);
+        
+        m_bmMinimum = wxBitmap( 96, 32);
+        m_bmStandard = wxBitmap( 96, 32);;
+        m_bmAll = wxBitmap( 96, 32);
+        
+        m_bmRPlus = wxBitmap( 96, 32);
+        m_bmRMinus = wxBitmap( 96, 32);
+    }
+    
     
 }
     

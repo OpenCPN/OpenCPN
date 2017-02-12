@@ -5094,13 +5094,13 @@ void MyFrame::SetMenubarItemState( int item_id, bool state )
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
 {
-    if( g_MainToolbar->GetToolbar() )
+    if( g_MainToolbar && g_MainToolbar->GetToolbar() )
         g_MainToolbar->GetToolbar()->ToggleTool( tool_id, state );
 }
 
 void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRollover )
 {
-    if( g_MainToolbar->GetToolbar() ) {
+    if( g_MainToolbar && g_MainToolbar->GetToolbar() ) {
         g_MainToolbar->GetToolbar()->SetToolBitmaps( tool_id, bmp, bmpRollover );
         wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect( tool_id );
         g_MainToolbar->GetToolbar()->RefreshRect( rect );
@@ -5109,7 +5109,7 @@ void MyFrame::SetToolbarItemBitmaps( int tool_id, wxBitmap *bmp, wxBitmap *bmpRo
 
 void MyFrame::SetToolbarItemSVG( int tool_id, wxString normalSVGfile, wxString rolloverSVGfile, wxString toggledSVGfile )
 {
-    if( g_MainToolbar->GetToolbar() ) {
+    if( g_MainToolbar && g_MainToolbar->GetToolbar() ) {
         g_MainToolbar->GetToolbar()->SetToolBitmapsSVG( tool_id, normalSVGfile, rolloverSVGfile, toggledSVGfile );
         wxRect rect = g_MainToolbar->GetToolbar()->GetToolRect( tool_id );
         g_MainToolbar->GetToolbar()->RefreshRect( rect );
