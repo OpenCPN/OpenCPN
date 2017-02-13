@@ -1379,12 +1379,18 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
             //      Draw RateOfTurn Vector
             if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && (!g_bShowScaled) ) {
+                float cog_angle = td->COG *PI/180.;
+                
+                float theta2 = theta;           // ownship drawn angle
+                 if (td->SOG >= g_ShowMoored_Kts )
+                     theta2 = cog_angle - (PI / 2);    // actual cog angle    
+                
                 float nv = 10;
-                float theta2 = theta;
-                if( td->ROTAIS > 0 ) theta2 += (float)PI / 2.;
-                else
-                    theta2 -= (float)PI / 2.;
-
+                 if( td->ROTAIS > 0 )
+                      theta2 += (float)PI / 2;
+                 else
+                     theta2 -= (float)PI / 2;
+                 
                 int xrot = (int) round ( pixx1 + ( nv * cosf ( theta2 ) ) );
                 int yrot = (int) round ( pixy1 + ( nv * sinf ( theta2 ) ) );
                 dc.StrokeLine( pixx1, pixy1, xrot, yrot );
