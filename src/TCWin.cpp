@@ -54,7 +54,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE /*| wxRESIZE_BORDER*/ ;
+    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
@@ -151,7 +151,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         m_tList->Hide();
     
     
-    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - (m_tsy + 10) ),
+    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - (2 * m_tsy + 10), sy - (m_tsy + 10) ),
                               wxDefaultSize );
 
     PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (m_tsy + 10) ),
@@ -177,7 +177,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxScreenDC dc;
     int text_height;
     dc.GetTextExtent(_T("W"), NULL, &text_height);
-    m_button_height = text_height + 20;
+    m_button_height = m_tsy; //text_height + 20;
 
 
     // Build graphics tools
@@ -286,7 +286,7 @@ void TCWin::RecalculateSize()
         
     
     m_tc_size.x = wxMin(m_tc_size.x, parent_size.x);
-    m_tc_size.y = wxMin(480, parent_size.y);
+    m_tc_size.y = wxMin(600, parent_size.y);
     
 
    
@@ -670,7 +670,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         dc.SetFont( *pSFont );
         dc.GetTextExtent( m_stz, &w, &h );
-        dc.DrawText( m_stz, x / 2 - w / 2, y - 2 * m_button_height );
+        dc.DrawText( m_stz, x / 2 - w / 2, y - 2.5 * m_button_height );
 
         wxString sdate;
         if(g_locale == _T("en_US"))
@@ -680,7 +680,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
-        dc.DrawText( sdate, x / 2 - w / 2, y - 1.5 * m_button_height );
+        dc.DrawText( sdate, x / 2 - w / 2, y - 2.0 * m_button_height );
 
         Station_Data *pmsd = pIDX->pref_sta_data;
         if( pmsd ) {
@@ -704,25 +704,25 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
 //    Today or tomorrow
-        wxString sday;
-        wxDateTime this_now = wxDateTime::Now();
+        if( (m_button_height * 15) < x ){        // large enough horizontally?
+            wxString sday;
+            wxDateTime this_now = wxDateTime::Now();
 
-        int day = m_graphday.GetDayOfYear();
-        if( m_graphday.GetYear() == this_now.GetYear() ) {
-            if( day == this_now.GetDayOfYear() ) sday.Append( _( "Today" ) );
-            else if( day == this_now.GetDayOfYear() + 1 ) sday.Append( _( "Tomorrow" ) );
-            else
-                sday.Append( m_graphday.GetWeekDayName( m_graphday.GetWeekDay() ) );
-        } else if( m_graphday.GetYear() == this_now.GetYear() + 1
-                   && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() ) sday.Append(
-                           _( "Tomorrow" ) );
+            int day = m_graphday.GetDayOfYear();
+            if( m_graphday.GetYear() == this_now.GetYear() ) {
+                if( day == this_now.GetDayOfYear() ) sday.Append( _( "Today" ) );
+                else if( day == this_now.GetDayOfYear() + 1 ) sday.Append( _( "Tomorrow" ) );
+                else
+                    sday.Append( m_graphday.GetWeekDayName( m_graphday.GetWeekDay() ) );
+            } else if( m_graphday.GetYear() == this_now.GetYear() + 1
+                    && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() ) sday.Append(
+                            _( "Tomorrow" ) );
 
-        dc.SetFont( *pSFont );
-//                dc.GetTextExtent ( wxString ( sday, wxConvUTF8 ), &w, &h );       2.9.1
-//                dc.DrawText ( wxString ( sday, wxConvUTF8 ), 55 - w/2, y * 88/100 );    2.9.1
-        dc.GetTextExtent( sday, &w, &h );
-        dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
-
+            dc.SetFont( *pSFont );
+            dc.GetTextExtent( sday, &w, &h );
+            dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
+        }
+        
         //  Render "Spot of interest"
         double spotDim = 4 * g_Platform->GetDisplayDPmm();
         
@@ -751,7 +751,7 @@ void TCWin::OnSize( wxSizeEvent& event )
     int x_graph = x * 1 / 10;
     int y_graph = y * 32 / 100;
     int x_graph_w = x * 8 / 10;
-    int y_graph_h = (y * .7)  - (3 * m_button_height);
+    int y_graph_h = (y * .7)  - (7 * m_button_height / 2);
     m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
     
     
@@ -771,7 +771,7 @@ void TCWin::OnSize( wxSizeEvent& event )
     }
     m_ptextctrl->SetSize(texc_size);
     
-    OK_button->Move( wxPoint( x - 100, y - (m_tsy + 10) ));                            
+    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));                            
     PR_button->Move( wxPoint( 10, y - (m_tsy + 10) ) );
  
     int bsx, bsy, bpx, bpy;
@@ -782,6 +782,8 @@ void TCWin::OnSize( wxSizeEvent& event )
     
     btc_valid = false;
     
+    Refresh(true);
+    Update();
 }
 
 void TCWin::MouseEvent( wxMouseEvent& event )
