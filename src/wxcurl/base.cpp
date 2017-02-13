@@ -14,7 +14,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "wx/wxprec.h"
-
 #ifndef WX_PRECOMP
     #include "wx/wx.h"
 #endif
@@ -28,7 +27,7 @@
 
 #include <wx/curl/base.h>
 #include <wx/filename.h>
-
+#define wxIsNaN std::isnan
 
 //////////////////////////////////////////////////////////////////////
 // Constants

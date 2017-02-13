@@ -1,3 +1,29 @@
+/******************************************************************************
+* iirfilter.h
+*
+* Project:  Many
+* Purpose:  Class that implements single order inifinite-impulse-response filter
+* Author:   Transmitterdan
+***************************************************************************
+*   Copyright (C) 2016                                                    *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+***************************************************************************
+*/
+
 #include "iirfilter.h"
 
 #include <wx/math.h>
@@ -10,8 +36,8 @@ iirfilter::iirfilter(double fc, int tp) {
 }
 
 double iirfilter::filter(double data) {
-    if (!wxIsNaN(data) && !wxIsNaN(b1)) {
-        if (wxIsNaN(accum))
+    if (!std::isnan(data) && !std::isnan(b1)) {
+        if (std::isnan(accum))
             accum = 0.0;
         switch (type) {
             case IIRFILTER_TYPE_LINEAR:
@@ -45,7 +71,7 @@ void iirfilter::reset(double a) {
 }
 
 void iirfilter::setFC(double fc) {
-    if (wxIsNaN(fc) || fc <= 0.0)
+    if (std::isnan(fc) || fc <= 0.0)
         a0 = b1 = NAN;  // NAN means no filtering will be done
     else {
         reset();
@@ -62,7 +88,7 @@ void iirfilter::setType(int tp)
 
 double iirfilter::getFc(void)
 {
-    if (wxIsNaN(b1))
+    if (std::isnan(b1))
         return 0.0;
     double fc = log(b1) / (-2.0 * 3.1415926535897932384626433832795);
     return fc;
@@ -74,7 +100,7 @@ int iirfilter::getType(void)
 }
 
 double iirfilter::get(void) {
-    if (wxIsNaN(accum))
+    if (std::isnan(accum))
         return accum;
     double res = accum;
     switch (type) {
