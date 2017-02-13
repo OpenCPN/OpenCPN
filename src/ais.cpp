@@ -1642,7 +1642,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 
                 transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
                 
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFB" ) ), penWidth ) );
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
                 
             }
             else{
