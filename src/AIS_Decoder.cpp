@@ -970,7 +970,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                             pTargetData->b_nameFromCache = true;
                         }
                     } 
-                    else if( (pTargetData->MID == 5) || (pTargetData->MID == 24) ){
+                    else if ((pTargetData->MID == 5) || (pTargetData->MID == 24) || (pTargetData->MID == 19)) {
                         //  This message contains ship static data, so has a name field
                         pTargetData->b_nameFromCache = false;
                         AIS_Target_Name_Hash::iterator it = AISTargetNames->find( mmsi );
