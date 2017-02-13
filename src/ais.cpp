@@ -1541,10 +1541,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 #endif
         }
 
-        if (g_bDrawAISSize && bcan_draw_size)
-        {
+        if (g_bDrawAISSize && bcan_draw_size){
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, 1.0 );
+            if(!g_bInlandEcdis){
+                 dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, 1.0 );
+            }
+            else{
+                if(b_hdgValid){
+                    dc.StrokePolygon( 6, ais_real_size, TargetPoint.x, TargetPoint.y, 1.0 );
+                }
+            }
         }
 
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
