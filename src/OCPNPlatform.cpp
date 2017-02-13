@@ -1418,7 +1418,7 @@ void OCPNPlatform::ShowBusySpinner( void )
     androidShowBusyIcon();
 #else 
     #if wxCHECK_VERSION(2, 9, 0 )
-//    if( !::wxIsBusy() )
+    if( !::wxIsBusy() )
     {
         ::wxBeginBusyCursor();
     }
