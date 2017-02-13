@@ -577,6 +577,19 @@ void TCWin::OnPaint( wxPaintEvent& event )
                 val_off = ib;
             }
 
+	    // Arrange to skip some lines and legends if there are too many for the vertical space we have
+	    int height_stext;
+	    dc.GetTextExtent( _T("1"), NULL, &height_stext );
+	    float available_lines = (float) m_graph_rect.height / height_stext;
+	    i_skip = (int) ceil(im / available_lines); 
+	    
+	    if( CURRENT_PLOT == m_plot_type && i_skip != 1) {
+	      // Adjust steps so slack current "0" line is always drawn on graph
+	      ib -= it % i_skip;
+	      it = -ib;
+	      im = 2 * it;
+	    }
+
 //    Build spline list of points
 
             m_sList.DeleteContents( true );
@@ -598,12 +611,6 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         //    Vertical Axis
 
-        //      Maybe skip some lines and legends if the range is too high
-        int height_stext;
-         dc.GetTextExtent( _T("1"), NULL, &height_stext );
-
-        int i_skip = 1;
-        if( height_stext > m_graph_rect.height / im ) i_skip = 2;
 
         i = ib;
         while( i < it + 1 ) {
