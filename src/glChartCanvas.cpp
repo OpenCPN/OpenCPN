@@ -3683,7 +3683,7 @@ void glChartCanvas::Render()
         if(cc1->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
 
             ChartBase *chart = cc1->m_pQuilt->GetRefChart();
-            if(chart->GetChartType() != CHART_TYPE_CM93COMP){
+            if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
                 //        Clear the text Global declutter list
                 if(chart){
                     ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
