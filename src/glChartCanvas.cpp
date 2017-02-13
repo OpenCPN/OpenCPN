@@ -85,6 +85,7 @@ private:
 #include "FontMgr.h"
 #include "mipmap/mipmap.h"
 #include "chartimg.h"
+#include "Track.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64

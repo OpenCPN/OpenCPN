@@ -26,7 +26,6 @@
 
 #include "SelectItem.h"
 #include "Route.h"
-#include "Track.h"
 
 #define SELTYPE_UNKNOWN              0x0001
 #define SELTYPE_ROUTEPOINT           0x0002
@@ -37,6 +36,9 @@
 #define SELTYPE_AISTARGET            0x0040
 #define SELTYPE_MARKPOINT            0x0080
 #define SELTYPE_TRACKSEGMENT         0x0100
+
+class TrackPoint;
+class Track;
 
 class Select
 {

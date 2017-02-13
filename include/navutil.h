@@ -90,8 +90,8 @@ class wxGenericProgressDialog;
 class ocpnDC;
 class NavObjectCollection1;
 class NavObjectChanges;
-
-#include "Track.h"
+class TrackPoint;
+class TrackList;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers

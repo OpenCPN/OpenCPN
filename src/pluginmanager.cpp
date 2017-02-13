@@ -75,6 +75,7 @@
 #include "OCPNPlatform.h"
 #include "version.h"
 #include "toolbar.h"
+#include "Track.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

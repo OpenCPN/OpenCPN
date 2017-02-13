@@ -63,6 +63,7 @@
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 #include "SendToGpsDlg.h"
+#include "Track.h"
 
 
 #ifdef USE_S57

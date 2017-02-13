@@ -109,7 +109,7 @@
 #include "AISTargetQueryDialog.h"
 #include "S57QueryDialog.h"
 #include "glTexCache.h"
-
+#include "Track.h"
 #include "iENCToolbar.h"
 
 #ifdef ocpnUSE_GL

@@ -31,6 +31,7 @@
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
+#include "Track.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -1263,12 +1264,12 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
     else
         selected_no = itemno;
 
-//    m_pRoute->ClearHighlights();
+    m_pTrack->ClearHighlights();
 
     if( itemno >= 0 ) {
         TrackPoint *prp = m_pTrack->GetPoint(itemno);
         if( prp ) {
-//            prp->m_bPtIsSelected = true;                // highlight the trackpoint
+            prp->m_bPtIsSelected = true;                // highlight the trackpoint
 
             if( !( m_pTrack->m_bIsInLayer ) && !( m_pTrack == g_pActiveTrack ) ) {
                 m_nSelected = selected_no + 1;

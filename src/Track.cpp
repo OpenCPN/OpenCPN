@@ -143,6 +143,41 @@ void TrackPoint::SetCreateTime( wxDateTime dt )
     m_CreateTimeX = dt;
 }
 
+void TrackPoint::Draw(ocpnDC& dc )
+{
+    wxPoint r;
+    wxRect hilitebox;
+ 
+    if( !m_bPtIsSelected ) return;
+       
+    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    
+    wxPen *pen;
+    pen = g_pRouteMan->GetRoutePointPen();
+        
+    int sx2 = 8;
+    int sy2 = 8;
+            
+     wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
+            
+     hilitebox = r1;
+     hilitebox.x -= r.x;
+     hilitebox.y -= r.y;
+     float radius;
+     hilitebox.Inflate( 4 );
+     radius = 4.0f;
+            
+     wxColour hi_colour = pen->GetColour();
+     unsigned char transparency = 100;
+            
+     //  Highlite any selected point
+     AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, radius,
+                               hi_colour, transparency );
+            
+}
+
+
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -535,6 +570,14 @@ void Track::Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
     Assemble(pointlists, box, 1/scale/scale, last, level, 0);
 }
 
+void Track::ClearHighlights( void )
+{
+    for(size_t i = 0; i < TrackPoints.size(); i++) {
+        TrackPoint *t = TrackPoints[i];
+        t->m_bPtIsSelected = false;
+    }
+}
+
 void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 {
     std::list< std::list<wxPoint> > pointlists;
@@ -646,6 +689,12 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         delete [] points;
     }
 #endif
+
+    for(size_t i = 0; i < TrackPoints.size(); i++) {
+        TrackPoint *t = TrackPoints[i];
+        if( t->m_bPtIsSelected )
+            t->Draw(dc);
+    }
 }
 
 TrackPoint *Track::GetPoint( int nWhichPoint )

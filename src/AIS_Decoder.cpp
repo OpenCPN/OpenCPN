@@ -33,6 +33,7 @@
 #include <fstream>
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
+#include "Track.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
