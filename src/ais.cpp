@@ -1622,26 +1622,25 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
         //    Symbolize it if set by most recent message
-        if( td->b_blue_paddle ) {
+        if( td->blue_paddle) { //if blue paddle info is available blue_paddle > 0
             wxPoint ais_flag_icon[4];
             int penWidth = 2;
             
             if(g_bInlandEcdis){
                 if(b_hdgValid){
-                    ais_flag_icon[0] = wxPoint( -6,9);
-                    ais_flag_icon[1] = wxPoint( -11,12);
-                    ais_flag_icon[2] = wxPoint( -14,8);
-                    ais_flag_icon[3] = wxPoint( -8,4);
+                    ais_flag_icon[0] = wxPoint( -4,4);
+                    ais_flag_icon[1] = wxPoint( -4,11);
+                    ais_flag_icon[2] = wxPoint( -11,11);
+                    ais_flag_icon[3] = wxPoint( -11,4);
+                    transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
                 }
                 else{
-                    ais_flag_icon[0] = wxPoint( -3,0);
-                    ais_flag_icon[1] = wxPoint( 0,3);
-                    ais_flag_icon[2] = wxPoint( 3,0);
-                    ais_flag_icon[3] = wxPoint( 0,-3);
+                    ais_flag_icon[0] = wxPoint( TargetPoint.x-4, TargetPoint.y+4);
+                    ais_flag_icon[1] = wxPoint( TargetPoint.x-4, TargetPoint.y-3);
+                    ais_flag_icon[2] = wxPoint( TargetPoint.x+3, TargetPoint.y-3);
+                    ais_flag_icon[3] = wxPoint( TargetPoint.x+3, TargetPoint.y+4);
                 }
-                
-                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
-                
+
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
                 
             }
@@ -1650,14 +1649,18 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
                 ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
                 ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
-            
                 transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+                
 
                 if(targetscale < 100)
                     penWidth = 1;
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
                 
             }
+            if( td->blue_paddle == 1) {
+                    ais_flag_icon[1] = ais_flag_icon[0];
+                    ais_flag_icon[2] = ais_flag_icon[3];
+                }
             
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
             dc.StrokePolygon( 4, ais_flag_icon);
