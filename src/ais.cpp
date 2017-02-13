@@ -878,7 +878,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
     
     //  Establish some graphic element line widths dependent on the platform display resolution
-    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 3.0));             //0.3 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
 
     float width_interceptbar_base = 3 * nominal_line_width_pix;
     float width_interceptbar_top = 1.5 * nominal_line_width_pix;
