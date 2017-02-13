@@ -6228,7 +6228,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     if ( g_bInlandEcdis != pInlandEcdis->GetValue() ){ // InlandEcdis changed
         g_bInlandEcdis = pInlandEcdis->GetValue();
         SwitchInlandEcdisMode( g_bInlandEcdis );
-        m_returnChanges |= TOOLBAR_CHANGED | FORCE_UPDATE;    
+        m_returnChanges |= TOOLBAR_CHANGED;    
     }
   // PlugIn Manager Panel
 
