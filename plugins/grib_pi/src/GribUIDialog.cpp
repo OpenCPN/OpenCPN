@@ -910,8 +910,8 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
     int i = 0,vcol = GetNearestIndex( GetNow(), 0);
     wxColour colour;
     GetGlobalColor(_T("GREEN1"), &colour);
-    table->m_pGribTable->SetCellBackgroundColour( colour, 0, vcol ); //mark current column
-    table->m_pGribTable->SetCellBackgroundColour( colour, 1, vcol );
+    table->m_pGribTable->SetCellBackgroundColour( 0, vcol, colour ); //mark current column
+    table->m_pGribTable->SetCellBackgroundColour( 1, vcol, colour );
     while( table->m_pGribTable->IsVisible( 0, i, true) ) {           //ensure it's visible
         i++;
     }
@@ -923,6 +923,7 @@ void GRIBUICtrlBar::ContextMenuItemCallback(int id)
 
     //re-activate cursor data
     m_CDataIsShown = dataisshown;
+    delete table;
 }
 
 void GRIBUICtrlBar::SetViewPort( PlugIn_ViewPort *vp )
@@ -1064,6 +1065,7 @@ void GRIBUICtrlBar::OnSettings( wxCommandEvent& event )
     SetFactoryOptions();
 
     SetDialogsStyleSizePosition(true);
+    delete dialog;
 
     event.Skip();
 }
@@ -1430,6 +1432,7 @@ void GRIBUICtrlBar::OnOpenFile( wxCommandEvent& event )
         OpenFile();
         SetDialogsStyleSizePosition( true );
     }
+    delete dialog;
 #else
     if( !wxDir::Exists( m_grib_dir ) ) {
         wxStandardPathsBase& path = wxStandardPaths::Get();

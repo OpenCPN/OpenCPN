@@ -272,6 +272,7 @@ extern float g_ChartScaleFactorExp;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
+extern bool g_bInlandEcdis;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -4460,6 +4461,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                                _("Enable Scaled Graphics interface"));
   miscOptions->Add(pResponsive, 0, wxALL, border_size);
 
+  pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
+                                _("Use Settings for Inland ECDIS"));
+  miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
+  
+  miscOptions->AddSpacer(10);
+  
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
@@ -4888,6 +4895,7 @@ void options::SetInitialSettings(void) {
   pResponsive->SetValue(g_bresponsive);
   pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   pOZScaleVector->SetValue(!g_oz_vector_scale);
+  pInlandEcdis->SetValue(g_bInlandEcdis); 
 
   pOpenGL->SetValue(g_bopengl);
   pSmoothPanZoom->SetValue(g_bsmoothpanzoom);
@@ -5930,7 +5938,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bskew_comp = pSkewComp->GetValue();
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
-
+  
   g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
 
   long hide_val = 10;
@@ -6217,6 +6225,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
     gFrame->OnSize(nullEvent);
   }
 #endif
+    if ( g_bInlandEcdis != pInlandEcdis->GetValue() ){ // InlandEcdis changed
+        g_bInlandEcdis = pInlandEcdis->GetValue();
+        SwitchInlandEcdisMode( g_bInlandEcdis );
+        m_returnChanges |= TOOLBAR_CHANGED | FORCE_UPDATE;    
+    }
   // PlugIn Manager Panel
 
   // Pick up any changes to selections

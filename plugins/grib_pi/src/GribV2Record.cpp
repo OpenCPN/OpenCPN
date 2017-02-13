@@ -459,7 +459,7 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 {
   int num_coords,factor,sign,value;
   int hh,mm,ss;
-  size_t n,off,start;
+  size_t n,off;
 
 /* indication of hybrid coordinate system */
   getBits(grib_msg->buffer,&num_coords,grib_msg->offset+40,16);
@@ -509,7 +509,6 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	if (sign == 1)
 	  value=-value;
 	grib_msg->md.lvl2=(double)value/pow(10.,(double)factor);
-	start=272;
 	switch (grib_msg->md.pds_templ_num) {
 	  case 1:
 	  case 11:

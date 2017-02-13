@@ -151,6 +151,7 @@ extern bool             g_bHDTValid;
 extern int              g_nbrightness;
 
 extern ConsoleCanvas    *console;
+extern OCPNPlatform     *g_Platform;
 
 extern RouteList        *pRouteList;
 extern TrackList        *pTrackList;
@@ -280,6 +281,7 @@ extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
 
 extern int              g_current_arrow_scale;
+extern int              g_tide_rectangle_scale;
 
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -314,6 +316,10 @@ int   last_brightness;
 
 int                     g_cog_predictor_width;
 extern double           g_display_size_mm;
+
+extern bool             g_bshowToolbar;
+extern ocpnFloatingToolbarDialog *g_MainToolbar;
+
 
 
 // "Curtain" mode parameters
@@ -925,6 +931,29 @@ bool ChartCanvas::IsTempMenuBarEnabled()
 #endif
 }
 
+double ChartCanvas::GetCanvasRangeMeters()
+{
+    int width, height;
+    GetSize(&width, &height);
+    int minDimension =  wxMin(width, height);
+    
+    double range  = (minDimension / GetVP().view_scale_ppm)/2;
+    range *= cos(GetVP().clat *PI/180.);
+    return range;
+}
+
+void ChartCanvas::SetCanvasRangeMeters( double range )
+{
+    int width, height;
+    GetSize(&width, &height);
+    int minDimension =  wxMin(width, height);
+    
+    double scale_ppm = minDimension / (range / cos(GetVP().clat *PI/180.));
+    SetVPScale( scale_ppm / 2 );
+    
+}
+
+
 bool ChartCanvas::SetUserOwnship(){
     //  Look for user defined ownship image
     //  This may be found in the shared data location along with other user defined icons.
@@ -1051,8 +1080,15 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
     m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
     
-    int mm_per_knot = 10;
-    current_draw_scaler = mm_per_knot * m_pix_per_mm * g_current_arrow_scale / 100.0;
+    // set values of tide_draw_scaler, current_draw_scaler
+    // each "scaler" is intended to be about unity on a 100 dpi display,
+    // when its respective scale parameter is 100
+    // parameter g_tide_rectangle_scale is set in config file as value of TideRectangleScale
+    // parameter g_current_arrow_scale is set in config file as value of CurrentArrowScale
+    g_tide_rectangle_scale = wxMax(g_tide_rectangle_scale,0);
+    tide_draw_scaler = m_pix_per_mm * 0.254 * g_tide_rectangle_scale / 100.0;
+    g_current_arrow_scale = wxMax(g_current_arrow_scale,0);
+    current_draw_scaler = m_pix_per_mm * 0.254 * g_current_arrow_scale / 100.0;
     
 #ifdef USE_S57
     if( ps52plib )
@@ -5042,11 +5078,9 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     //    Calculate meaningful SelectRadius
     float SelectRadius;
     int sel_rad_pix = 8;
-    if(g_btouch)
-        sel_rad_pix = 50;
-    
+    if(g_btouch) sel_rad_pix = 50;
     SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-    
+
 ///
     // We start with Double Click processing. The first left click just starts a timer and
     // is remembered, then we actually do something if there is a LeftDClick.
@@ -7080,7 +7114,7 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype)
 
 #ifdef __WXQT__
     gFrame->SurfaceToolbar();
-    //g_FloatingToolbarDialog->Raise();
+    //g_MainToolbar->Raise();
 #endif
     
     return true;
@@ -7755,7 +7789,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                             }
 
                             //  Render the new region
-                            m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, update_region );
+                            m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, update_region );
                             cache_dc.SelectObject( wxNullBitmap );
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
@@ -7768,7 +7802,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                     } else              // not blitable
                     {
                         temp_dc.SelectObject( m_working_bm );
-                        m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
+                        m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_region );
                     }
                 } else {
                     //    No change in the view, so use the cached member bitmap2
@@ -7778,7 +7812,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             } else      //cached bitmap is not yet valid
             {
                 temp_dc.SelectObject( m_working_bm );
-                m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_region );
+                m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_region );
             }
 
             //  Save the fully rendered quilt image as a wxBitmap member of this class
@@ -7799,7 +7833,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         {
             temp_dc.SelectObject( m_working_bm );
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
-            m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
+            m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_all_region );
         }
     }
 
@@ -7966,6 +8000,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         upd++;
     }
 
+    
 //    Draw the rest of the overlay objects directly on the scratch dc
     ocpnDC scratch_dc( mscratch_dc );
     DrawOverlayObjects( scratch_dc, ru );
@@ -8041,10 +8076,56 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     mscratch_dc.SelectObject( wxNullBitmap );
 
     dc.DestroyClippingRegion();
+    
+    // Create and Render the Vector quilt decluttered text overlay, omitting CM93 composite
+    if( VPoint.b_quilt ) {
+        if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+            ChartBase *chart = m_pQuilt->GetRefChart();
+            if(chart->GetChartType() != CHART_TYPE_CM93COMP){
+                wxMemoryDC q_dc;
+                wxBitmap qbm(  GetVP().pix_width, GetVP().pix_height );
+                
+                q_dc.SelectObject( qbm );
+                q_dc.SetBackground(wxBrush(wxColour(1,0,0)));
+                q_dc.Clear();
+                
+                //        Clear the text Global declutter list
+                if(chart){
+                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                    if(ChPI){
+                        ChPI->ClearPLIBTextList();
+                    }
+                    else{
+                        if(ps52plib)
+                            ps52plib->ClearTextList();
+                    }
+                }
+                
+                OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
+                m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( q_dc, svp, chart_all_text_region );
 
+                wxMask *pMask = new wxMask(qbm, wxColor(1,0,0));
+                qbm.SetMask(pMask);
+    
+                //  Pick up the new Mask
+                q_dc.SelectObject( wxNullBitmap );
+                q_dc.SelectObject( qbm );
+                
+                // Blit back into source, at the correct height
+                int height = GetVP().pix_height;
+                if(m_brepaint_piano)
+                    height -= GetChartbarHeight();
+                    
+                dc.Blit( 0, 0,  GetVP().pix_width, height, &q_dc, 0, 0, wxCOPY, true );
+                
+                q_dc.SelectObject( wxNullBitmap );
+            }
+        }
+    }
+    
+    
     PaintCleanup();
     OCPNPlatform::HideBusySpinner();
-//      CALLGRIND_STOP_INSTRUMENTATION
 
 }
 
@@ -8252,7 +8333,8 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
         
-        gFrame->RaiseToolbarRecoveryWindow();
+        if(g_MainToolbar)
+            g_MainToolbar->UpdateRecoveryWindow(g_bshowToolbar);
         
     } else
 #endif
@@ -8815,8 +8897,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "GREEN1" ) ),
                             wxBRUSHSTYLE_SOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-    wxBrush *brc_1 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxBRUSHSTYLE_SOLID );
-    wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
@@ -8890,7 +8972,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                 time_t lttime = 0;
                                 time_t httime = 0;
                                 bool wt;
-                                //define if flood or edd in the last ten minutes and verify if data are useable
+                                //define if flood or ebb in the last ten minutes and verify if data are useable
                                 if( ptcmgr->GetTideFlowSens( t_this_now, BACKWARD_TEN_MINUTES_STEP,
                                                              pIDX->IDX_rec_num, nowlev, val, wt ) ) {
 
@@ -8925,61 +9007,78 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                         lttime = tctime;
                                         ltleve = val;
                                     }
+                
+				    // draw the tide rectangle:
+				    
+				    // tide icon rectangle has default pre-scaled width = 12 , height = 45
+				    // scale default size by tide_draw_scaler factor
+				    int width = (int) (12 * tide_draw_scaler + 0.5);
+				    int height = (int) (45 * tide_draw_scaler + 0.5);
+				    int linew = wxMax(1, (int) (tide_draw_scaler + 0.5));
+
+				    //std::cerr << "tide icon w=" << width << ", h=" << height;
+				    //std::cerr << ", linew=" << linew << ", scale=" << tide_draw_scaler << std::endl;
 
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
                                     int hs = ( httime > lttime ) ? -5 : 5;
                                     if( ts > 0.995 || ts < 0.005 ) hs = 0;
-                                    int ht_y = (int) ( 45.0 * ts );
+                                    int ht_y = (int) ( height * ts );
 
-                                    //draw yellow rectangle as total amplitude (width = 12 , height = 45 )
+				    //draw yellow tide rectangle outlined in black
                                     dc.SetPen( *pblack_pen );
-                                    dc.SetBrush( *brc_2 );
-                                    dc.DrawRectangle( w, h, 12, 45 );
-                                    //draw blue rectangle as water height
+				    pblack_pen->SetWidth(linew);
+                                    dc.SetBrush( *pyelo_brush );
+                                    dc.DrawRectangle( w, h, width, height );
+
+                                    //draw blue rectangle as water height, smaller in width than yellow rectangle
                                     dc.SetPen( *pblue_pen );
-                                    dc.SetBrush( *brc_1 );
-                                    dc.DrawRectangle( w + 2, h + ht_y, 8, 45 - ht_y );
+                                    dc.SetBrush( *pblue_brush );
+                                    dc.DrawRectangle( (w + 2*linew), h + ht_y, 
+						      (width - (4*linew)), height - ht_y );
 
                                     //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
-
                                     int hl;
                                     wxPoint arrow[3];
-                                    arrow[0].x = w + 1;
-                                    arrow[1].x = w + 5;
-                                    arrow[2].x = w + 11;
+                                    arrow[0].x = w + 2*linew;
+                                    arrow[1].x = w + width / 2;
+                                    arrow[2].x = w + width - 2*linew;
+				    pyelo_pen->SetWidth(linew);
+				    pblue_pen->SetWidth(linew);
                                     if( ts > 0.35 || ts < 0.15 )      // one arrow at 3/4 hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.25 ) + h;
+                                        hl = (int) ( height * 0.25 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
-                                        if( ts < 0.15 ) dc.SetPen( *pyelo_pen );
+                                        if( ts < 0.15 ) 
+					  dc.SetPen( *pyelo_pen );
                                         else
-                                            dc.SetPen( *pblue_pen );
-
+					  dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     if( ts > 0.60 || ts < 0.40 )       //one arrow at 1/2 hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.5 ) + h;
+                                        hl = (int) ( height * 0.5 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
-                                        if( ts < 0.40 ) dc.SetPen( *pyelo_pen );
+                                        if( ts < 0.40 ) 
+					  dc.SetPen( *pyelo_pen );
                                         else
-                                            dc.SetPen( *pblue_pen );
+					  dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     if( ts < 0.65 || ts > 0.85 )       //one arrow at 1/4 Hight tide
                                     {
-                                        hl = (int) ( 45.0 * 0.75 ) + h;
+                                        hl = (int) ( height * 0.75 ) + h;
                                         arrow[0].y = hl;
                                         arrow[1].y = hl + hs;
                                         arrow[2].y = hl;
-                                        if( ts < 0.65 ) dc.SetPen( *pyelo_pen );
+                                        if( ts < 0.65 ) 
+					  dc.SetPen( *pyelo_pen );
                                         else
-                                            dc.SetPen( *pblue_pen );
+					  dc.SetPen( *pblue_pen );
                                         dc.DrawLines( 3, arrow );
                                     }
                                     //draw tide level text
@@ -8990,7 +9089,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                             wxString( pmsd->units_abbrv, wxConvUTF8 ) );
                                     int wx1;
                                     dc.GetTextExtent( s, &wx1, NULL );
-                                    dc.DrawText( s, r.x - ( wx1 / 2 ), h + 45 );
+                                    dc.DrawText( s, r.x - ( wx1 / 2 ), h + height );
                                 }
                             }
                         }
@@ -9092,8 +9191,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     wxPoint r;
                     GetCanvasPointPix( lat, lon, &r );
 
-                    wxPoint d[4];
-                    int dd = 6;
+                    wxPoint d[4]; // points of a diamond at the current station location
+                    int dd = (int) (6.0 * current_draw_scaler);  
                     d[0].x = r.x;
                     d[0].y = r.y + dd;
                     d[1].x = r.x + dd;
@@ -9104,14 +9203,14 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     d[3].y = r.y;
 
                     if( ptcmgr->GetTideOrCurrent15( now, i, tcvalue, dir, bnew_val ) ) {
-                        porange_pen->SetWidth( 1 );
+                        pblack_pen->SetWidth( 1 );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );
 
                         if( type == 'C' ) {
                             dc.SetBrush( *pblack_brush );
-                            dc.DrawCircle( r.x, r.y, 2 );
+                            dc.DrawCircle( r.x, r.y, (int)(2*current_draw_scaler) ); 
                         }
 
                         else if( ( type == 'c' ) && ( GetVP().chart_scale < 1000000 ) )
@@ -9121,22 +9220,24 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 //    Get the display pixel location of the current station
                                 int pixxc, pixyc;
                                 wxPoint cpoint;
-                                GetCanvasPointPix( lat, lon, &cpoint );
+                                GetCanvasPointPix( lat, lon, &cpoint ); // called above; why do this again?
                                 pixxc = cpoint.x;
                                 pixyc = cpoint.y;
 
-//    Adjust drawing size using logarithmic scale
+//    Adjust drawing size using logarithmic scale. tcvalue is current in knots
                                 double a1 = fabs( tcvalue ) * 10.;
-                                a1 = wxMax(1.0, a1);      // Current values less than 0.1 knot
-                                // will be displayed as 0
+				// Current values <= 0.1 knot will have no arrow
+                                a1 = wxMax(1.0, a1);      
                                 double a2 = log10( a1 );
 
-                                double scale = current_draw_scaler * a2;
+				// scale to pass to DrawArrow. 0.4 is a reasonable factor here.
+				// adjust value of CurrentArrowScale in config file as needed
+                                float cscale = current_draw_scaler * a2 * 0.4;
 
                                 porange_pen->SetWidth( 2 );
                                 dc.SetPen( *porange_pen );
                                 DrawArrow( dc, pixxc, pixyc,
-                                           dir - 90 + ( skew_angle * 180. / PI ), scale / 100 );
+                                           dir - 90 + ( skew_angle * 180. / PI ), cscale );
 // Draw text, if enabled
 
                                 if( bDrawCurrentValues ) {

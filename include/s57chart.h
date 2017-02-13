@@ -130,6 +130,9 @@ public:
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
       virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
+      virtual bool RenderRegionViewOnDCNoText(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderRegionViewOnDCTextOnly(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
       virtual LLRegion GetValidRegion();
 
@@ -182,12 +185,13 @@ public:
       
       double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
 
-//#ifdef ocpnUSE_GL
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                         const OCPNRegion &RectRegion, const LLRegion &Region);
       virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                                const OCPNRegion &RectRegion, const LLRegion &Region);
-//#endif
+      virtual bool RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
+                                        const OCPNRegion &RectRegion, const LLRegion &Region);
+      virtual bool RenderViewOnGLTextOnly(const wxGLContext &glc, const ViewPort& VPoint);
       
 // Public data
 //Todo Accessors here
@@ -244,7 +248,8 @@ private:
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
-
+      bool DCRenderText(wxMemoryDC& dcinput, const ViewPort& vp);
+      
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );
       int BuildSENCFile(const wxString& FullPath000, const wxString& SENCFileName, bool b_progress = true);
@@ -269,6 +274,7 @@ private:
       const char *getName(OGRFeature *feature);
 
       bool DoRenderOnGL(const wxGLContext &glc, const ViewPort& VPoint);
+      bool DoRenderOnGLText(const wxGLContext &glc, const ViewPort& VPoint);
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                   const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay);
 

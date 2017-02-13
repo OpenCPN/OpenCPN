@@ -89,6 +89,7 @@ extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
+extern bool             g_bInlandEcdis;
 
 extern bool             g_bGPSAISMux;
 extern ColorScheme      global_color_scheme;
@@ -877,7 +878,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
     
     //  Establish some graphic element line widths dependent on the platform display resolution
-    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 3.0));             //0.3 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
 
     float width_interceptbar_base = 3 * nominal_line_width_pix;
     float width_interceptbar_top = 1.5 * nominal_line_width_pix;
@@ -949,33 +950,44 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     cc1->GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
     cc1->GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
 
+    bool b_hdgValid = true;
+    
     float theta;
     //    If the target reported a valid HDG, then use it for icon
     if( (int) ( td->HDG ) != 511 ) {
         theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
     } else {
-        // question: why can we not compute similar to above using COG instead of HDG?
-        //  Calculate the relative angle for this chart orientation
-        //    Use a 100 pixel vector to calculate angle
-        float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
-        float angle_lat, angle_lon;
-        spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
+        b_hdgValid = false;   // tentative judgement
 
-        wxPoint AnglePoint;
-        cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+        if(!g_bInlandEcdis){
+            // question: why can we not compute similar to above using COG instead of HDG?
+            //  Calculate the relative angle for this chart orientation
+            //    Use a 100 pixel vector to calculate angle
+            float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
+            float angle_lat, angle_lon;
+            spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
 
-        if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
-            if( target_sog > g_ShowMoored_Kts )
-                theta = atan2f(
-                    (double) ( AnglePoint.y - TargetPoint.y ),
-                    (double) ( AnglePoint.x - TargetPoint.x ) );
-            else
-                theta = (float)-PI / 2.;
-        } else {
-            if( AnglePoint.y > TargetPoint.y )
-                theta = (float)PI / 2.;             // valid COG 180
-            else
-                theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+            wxPoint AnglePoint;
+            cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+
+            if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
+                if( target_sog > g_ShowMoored_Kts ){
+                    theta = atan2f(
+                        (double) ( AnglePoint.y - TargetPoint.y ),
+                        (double) ( AnglePoint.x - TargetPoint.x ) );
+                    b_hdgValid = true;
+                }
+                else
+                    theta = (float)-PI / 2.;
+            } else {
+                if( AnglePoint.y > TargetPoint.y )
+                    theta = (float)PI / 2.;             // valid COG 180
+                else{
+                    theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+                    if (td->SOG >= g_ShowMoored_Kts )            //  valid COG 000 or speed is too low to resolve course
+                        b_hdgValid = true;
+                }
+            }
         }
     }
 
@@ -1062,43 +1074,74 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
     }
     
-    // to speed up we only calculate scale when not max or minimal 
-    wxPoint ais_quad_icon[4]={ wxPoint(-4, -3),  wxPoint(0, 12),  wxPoint(4, -3), wxPoint(0, -3) };
-    if (targetscale == 100){
-        ais_quad_icon[0] = wxPoint(-8, -6);
-        ais_quad_icon[1] = wxPoint( 0, 24);
-        ais_quad_icon[2] = wxPoint( 8, -6);
-        ais_quad_icon[3] = wxPoint( 0, -6);
-    }
-    else if ( targetscale != 50) {
-            ais_quad_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
-            ais_quad_icon[1] = wxPoint( 0, (int)24*targetscale/100);
-            ais_quad_icon[2] = wxPoint( (int)8*targetscale/100, (int)-6*targetscale/100);
-            ais_quad_icon[3] = wxPoint( 0, (int)-6*targetscale/100);
-    }
+    
+    wxPoint *iconPoints;
+    int nPoints;
+    wxPoint ais_quad_icon[4]={ wxPoint(-8, -6),  wxPoint(0, 24),  wxPoint(8, -6), wxPoint(0, -6) };
+    wxPoint ais_octo_icon[8] = {
+        wxPoint(4,8),
+        wxPoint(8,4),
+        wxPoint(8,-4),
+        wxPoint(4,-8),
+        wxPoint(-4,-8),
+        wxPoint(-8,-4),
+        wxPoint(-8,4),
+        wxPoint(-4,8) };
+        
+     if(!g_bInlandEcdis){                                 
+        // to speed up we only calculate scale when not max or minimal 
+        if (targetscale == 50){
+            ais_quad_icon[0] = wxPoint(-4, -3);
+            ais_quad_icon[1] = wxPoint( 0, 12);
+            ais_quad_icon[2] = wxPoint( 4, -3);
+            ais_quad_icon[3] = wxPoint( 0, -3);
+        }
+        else if ( targetscale != 100) {
+                ais_quad_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+                ais_quad_icon[1] = wxPoint( 0, (int)24*targetscale/100);
+                ais_quad_icon[2] = wxPoint( (int)8*targetscale/100, (int)-6*targetscale/100);
+                ais_quad_icon[3] = wxPoint( 0, (int)-6*targetscale/100);
+        }
 
-    //   If this is an AIS Class B target, so symbolize it differently
-    if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
-    else if( td->Class == AIS_GPSG_BUDDY ) {
-        ais_quad_icon[0] = wxPoint(-5, -12);
-        ais_quad_icon[1] = wxPoint(-3,  12);
-        ais_quad_icon[2] = wxPoint( 3,  12);
-        ais_quad_icon[3] = wxPoint( 5, -12);
-    }
-    else if( td->Class == AIS_DSC ) {
-        ais_quad_icon[0].y = 0;
-        ais_quad_icon[1].y = 8;
-        ais_quad_icon[2].y = 0;
-        ais_quad_icon[3].y = -8;
-    }
-    else if( td->Class == AIS_APRS ) {
-        ais_quad_icon[0] = wxPoint(-8, -8);
-        ais_quad_icon[1] = wxPoint(-8,  8);
-        ais_quad_icon[2] = wxPoint( 8,  8);
-        ais_quad_icon[3] = wxPoint( 8, -8);
-    }
+        //   If this is an AIS Class B target, so symbolize it differently
+        if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
+        else if( td->Class == AIS_GPSG_BUDDY ) {
+            ais_quad_icon[0] = wxPoint(-5, -12);
+            ais_quad_icon[1] = wxPoint(-3,  12);
+            ais_quad_icon[2] = wxPoint( 3,  12);
+            ais_quad_icon[3] = wxPoint( 5, -12);
+        }
+        else if( td->Class == AIS_DSC ) {
+            ais_quad_icon[0].y = 0;
+            ais_quad_icon[1].y = 8;
+            ais_quad_icon[2].y = 0;
+            ais_quad_icon[3].y = -8;
+        }
+        else if( td->Class == AIS_APRS ) {
+            ais_quad_icon[0] = wxPoint(-8, -8);
+            ais_quad_icon[1] = wxPoint(-8,  8);
+            ais_quad_icon[2] = wxPoint( 8,  8);
+            ais_quad_icon[3] = wxPoint( 8, -8);
+        }
 
-    transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
+        transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
+
+        nPoints = 4;
+        iconPoints = ais_quad_icon;
+        
+    }
+    else{                               // iENC
+        if(b_hdgValid){
+            transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
+            nPoints = 4;
+            iconPoints = ais_quad_icon;
+        }
+        else{
+            nPoints = 8;
+            iconPoints = ais_octo_icon;
+        }
+    }
+        
 
     wxColour UBLCK = GetGlobalColor( _T ( "UBLCK" ));
     dc.SetPen( wxPen( UBLCK ) );
@@ -1107,8 +1150,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     wxColour UINFG = GetGlobalColor( _T ( "UINFG" ));
     wxBrush target_brush = wxBrush( UINFG );
 
-    // Euro Inland targets render slightly differently
-    if( td->b_isEuroInland )
+    // Euro Inland targets render slightly differently, unless in InlandENC mode
+    if( td->b_isEuroInland && !g_bInlandEcdis)
         target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
 
     // Target name comes from cache
@@ -1441,8 +1484,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         dc.SetBrush( target_brush );
 
         dc.SetPen( target_pen );
+        
         if(dc.GetDC()) {
-            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
         } else {
 #ifdef ocpnUSE_GL
             wxColour c = target_brush.GetColour();
@@ -1451,13 +1495,20 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             glPushMatrix();
             glTranslated(TargetPoint.x, TargetPoint.y, 0);
             glScalef(scale_factor, scale_factor, scale_factor);
-                        
+            
             glBegin(GL_TRIANGLE_FAN);
             
-            glVertex2i(ais_quad_icon[3].x, ais_quad_icon[3].y);
-            glVertex2i(ais_quad_icon[0].x, ais_quad_icon[0].y);
-            glVertex2i(ais_quad_icon[1].x, ais_quad_icon[1].y);
-            glVertex2i(ais_quad_icon[2].x, ais_quad_icon[2].y);
+            if(nPoints == 4){
+                glVertex2i(ais_quad_icon[3].x, ais_quad_icon[3].y);
+                glVertex2i(ais_quad_icon[0].x, ais_quad_icon[0].y);
+                glVertex2i(ais_quad_icon[1].x, ais_quad_icon[1].y);
+                glVertex2i(ais_quad_icon[2].x, ais_quad_icon[2].y);
+            }
+             else{
+                 for(int i=0 ; i < 8 ; i++){
+                     glVertex2i(iconPoints[i].x, iconPoints[i].y);
+                 }
+             }
             
             glEnd();
             
@@ -1467,14 +1518,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             
             dc.SetPen( target_outline_pen );
             dc.SetBrush( wxBrush( UBLCK, wxBRUSHSTYLE_TRANSPARENT ) );
-            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y, scale_factor );
+            dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
 #else            
             glLineWidth(width_target_outline);
             glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
             
             glBegin(GL_LINE_LOOP);
-            for(int i=0; i<4; i++)
-                glVertex2i(ais_quad_icon[i].x, ais_quad_icon[i].y);
+            for(int i=0; i<nPoints; i++)
+                glVertex2i(iconPoints[i].x, iconPoints[i].y);
             glEnd();
             glPopMatrix();
             
@@ -1573,18 +1624,42 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    Symbolize it if set by most recent message
         if( td->b_blue_paddle ) {
             wxPoint ais_flag_icon[4];
-            ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
-            ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
-            ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
-            ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
-            
-            transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
-
             int penWidth = 2;
-            if(targetscale < 100)
-                penWidth = 1;
+            
+            if(g_bInlandEcdis){
+                if(b_hdgValid){
+                    ais_flag_icon[0] = wxPoint( -6,9);
+                    ais_flag_icon[1] = wxPoint( -11,12);
+                    ais_flag_icon[2] = wxPoint( -14,8);
+                    ais_flag_icon[3] = wxPoint( -8,4);
+                }
+                else{
+                    ais_flag_icon[0] = wxPoint( -3,0);
+                    ais_flag_icon[1] = wxPoint( 0,3);
+                    ais_flag_icon[2] = wxPoint( 3,0);
+                    ais_flag_icon[3] = wxPoint( 0,-3);
+                }
+                
+                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+                
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
+                
+            }
+            else{
+                ais_flag_icon[0] = wxPoint((int)-8*targetscale/100, (int)-6*targetscale/100);
+                ais_flag_icon[1] = wxPoint( (int)-2*targetscale/100, (int)18*targetscale/100);
+                ais_flag_icon[2] = wxPoint( (int)-2*targetscale/100, 0);
+                ais_flag_icon[3] = wxPoint( (int)-2*targetscale/100, (int)-6*targetscale/100);
+            
+                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
+
+                if(targetscale < 100)
+                    penWidth = 1;
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
+                
+            }
+            
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), penWidth ) );
             dc.StrokePolygon( 4, ais_flag_icon);
         }
     }
