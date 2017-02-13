@@ -1979,6 +1979,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarX" ), g_maintoolbar_x );
     Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
+
     if ( !g_bInlandEcdis ){  
         Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
         wxPuts(_T ( "Did write" ) + g_toolbarConfig);
