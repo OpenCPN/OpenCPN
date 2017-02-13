@@ -1370,7 +1370,9 @@ void ParseAllENC()
                         msg += filename;
                     }
                     prog->Update(count, msg, &skip );
+#ifndef __WXMSW__
                     prog->Raise();
+#endif                    
                 }
                 if(skip)
                     break;
@@ -1390,7 +1392,9 @@ void ParseAllENC()
                     msg.Printf( _("ENC Completed.") );
                     if(prog){
                         prog->Update(count, msg, &skip );
+#ifndef __WXMSW__
                         prog->Raise();
+#endif                        
                     }
                     if(skip)
                         break;
