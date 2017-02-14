@@ -811,7 +811,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
         if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
                 && IsChartQuiltableRef( test_db_index )
-                && !IsChartS57Overlay( test_db_index ) ){
+                /*&& !IsChartS57Overlay( test_db_index )*/ ){
 
                 index_array.Add(test_db_index);
                 int nscale = ChartData->GetDBChartScale(test_db_index);
@@ -1617,6 +1617,13 @@ bool Quilt::Compose( const ViewPort &vp_in )
                         if( b_overlay )
                             pqc->b_include = true;
                     }
+                    
+                    //  If the reference chart happens to be an overlay (e.g. 3UABUOYS.000),
+                    //  we dont want it to eclipse any smaller scale standard useage charts.
+                    const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( m_refchart_dbIndex );
+                    if(s57chart::IsCellOverlayType(cte_ref.GetpFullPath() )){
+                        pqc->b_include = true;
+                    }
 #endif
                 }
             }
@@ -1807,7 +1814,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         //    Update the next pass full region to remove the region just allocated
         //    Maintain the present full quilt coverage region
-        m_covered_region.Union( piqp->quilt_region );
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( piqp->dbIndex );
+        piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
+                
+        if(!piqp->b_overlay)    
+            m_covered_region.Union( piqp->quilt_region );
     }
 #else
     // this is the old algorithm does the same thing in n^2/2 operations instead of 2*n-1
