@@ -1276,10 +1276,15 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
             gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+#ifdef __WXMSW__            
+            if(m_lcPoints)
+                m_lcPoints->SetFocus();
+#endif            
         }
     }
     if( selected_no == 0 || selected_no == m_pTrack->GetnPoints() - 1)
         m_sdbBtmBtnsSizerSplit->Enable( false );
+    
 }
 
 void TrackPropDlg::OnTrackPropMenuSelected( wxCommandEvent& event )
