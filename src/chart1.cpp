@@ -9071,7 +9071,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     if( m_NMEA0183.PreParse() )
     {
         wxString IDs[] = {_T("RMC"), _T("HDT"), _T("HDG"), _T("HDM"),
-                          _T("VTG"), _T("GSV"), _T("GLL"), _T("GGA")};
+                          _T("VTG"), _T("GSV"), _T("GGA"), _T("GLL")};
         enum {RMC, HDT, HDG, HDM, VTG, GSV, GGA, GLL, ID_NUM };
 
         int id;
