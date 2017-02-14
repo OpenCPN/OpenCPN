@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:48-0500\n"
+"PO-Revision-Date: 2017-02-13 20:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -3880,7 +3880,7 @@ msgstr "cm"
 
 #: src/navutil.cpp:3817
 msgid "kts"
-msgstr "knp"
+msgstr "kn"
 
 #: src/navutil.cpp:3820
 msgid "mph"
@@ -4614,16 +4614,17 @@ msgstr "Toon scheve rasterkaarten Noord-Boven"
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Raster"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Vector"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Met een lagere waarde toont bepaald zoomniveau een minder gedetailleerde kaart. \n"
+"Met een hogere waarde, toont hetzelfde zoomniveau een meer gedetailleerde kaart."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4914,16 +4915,17 @@ msgstr "Toon koersen en peilingen als ware richtingen"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Geef koersen en peilingen weer als magnetisch"
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Door WMM PlugIn berekende magn. variatie"
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " Om de magn. variatie handmatig in te stellen,\n"
+"moet u de WMM PlugIn uitschakelen."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5132,7 +5134,7 @@ msgstr "PlugIns"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Gebruikersinstelling magn. variatie"
 
 #: src/options.cpp:5290
 msgid "feet"

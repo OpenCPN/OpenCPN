@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:49-0500\n"
+"PO-Revision-Date: 2017-02-12 03:41-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -3254,7 +3254,7 @@ msgstr "OpenCPN kräver tillgång till seriella portar för seriell NMEA data. \
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Inga serieportar hittades. \n"
-"Du måste installera en seriell port eller ansluta en USB-seriellenhet. \n"
+"Du måste installera en seriell port, ansluta en USB enhet eller en USB-seriell konverter. \n"
 
 #: src/chart1.cpp:10962
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
@@ -4613,16 +4613,17 @@ msgstr "Visa vridna rasterkort med Norr upp"
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Raster"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Vektor"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Ett lågt värde ger senare växling till kort med mer detaljer vid inzoomning. \n"
+"Ett högt värde ger tidigare växling till kort med mer detaljer."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4913,16 +4914,17 @@ msgstr "Visa sann bäring och kurs"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Visa magnetiskt bäring och kurs."
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Plugin WMM's beräknade missvisning"
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " För att manuellt ställa in den magnetiska missvisningen\n"
+" måste du först inaktivera plugin WMM."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5126,11 +5128,11 @@ msgstr "Användargränssnitt"
 
 #: src/options.cpp:4798 src/options.cpp:4799
 msgid "Plugins"
-msgstr "Pluginprogram"
+msgstr "Plugins"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Skriv värdet för kompassens missvisning"
 
 #: src/options.cpp:5290
 msgid "feet"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:49-0500\n"
+"PO-Revision-Date: 2017-02-12 03:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -4613,16 +4613,17 @@ msgstr "Δείξε τους παραμορφωμένους raster χάρτες �
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Ράστερ"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Διανυσματικός"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Με χαμηλότερη τιμή, στο ίδιο επίπεδο μεγέθυνσης ο χάρτης δείχνει λιγότερες λεπτομέρειες.\n"
+"Με υψηλότερη τιμή, στο ίδιο επίπεδο μεγέθυνσης ο χάρτης δείχνει περισσότερες λεπτομέρειες."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4913,16 +4914,17 @@ msgstr "Πραγματική κατεύθυνση και διόπτευση"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Κατεύθυνση και διόπτευση μαγνητικής πυξίδας."
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Το πρόσθετο WMM υπολόγισε τη μαγνητική απόκλιση"
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " Για να ρυθμίσετε τη μαγνητική απόκλιση με μη αυτόματο τρόπο,\n"
+" πρέπει να απενεργοποιήσετε το plugin WMM."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5130,7 +5132,7 @@ msgstr "Πρόσθετα"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Μαγνητική απόκλιση από τον χρήστη"
 
 #: src/options.cpp:5290
 msgid "feet"

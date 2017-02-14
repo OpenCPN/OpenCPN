@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:49-0500\n"
+"PO-Revision-Date: 2017-02-12 03:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -4611,16 +4611,17 @@ msgstr "Cartes raster obliques : Afficher nord vers le haut."
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Raster"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Vectorielle"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "A niveau de zoom égal, et une valeur plus faible, la carte, automatiquement choisie, est moins détaillée.\n"
+"A niveau de zoom égal, et une valeur plus forte, la carte, automatiquement choisie, est plus détaillée."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4911,16 +4912,17 @@ msgstr "Montrer les relèvements et les directions vrais"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Montrer les relèvements et les directions magnétiques."
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Complément \"Modèle magnétique mondial\""
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " Régler la déclinaison magnétique manuellement, \n"
+" vous devez désactiver le plugin WMM."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5128,7 +5130,7 @@ msgstr "Compléments"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Déclinaison magnétique définie par l'utilisateur"
 
 #: src/options.cpp:5290
 msgid "feet"
@@ -5309,7 +5311,7 @@ msgstr "Divers"
 
 #: src/Osenc.cpp:1476
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "Cartes vectorielles : Analyse des objets présents ..."
+msgstr "Analyse des objets présents ..."
 
 #: src/pluginmanager.cpp:399
 #, c-format

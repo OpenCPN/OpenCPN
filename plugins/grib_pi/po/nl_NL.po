@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-02-03 23:41-0500\n"
+"PO-Revision-Date: 2017-02-13 20:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -658,7 +658,7 @@ msgstr "Snelheid"
 
 #: src/GribUIDialogBase.cpp:1555
 msgid "Kts"
-msgstr "knp"
+msgstr "kn"
 
 #: src/GribUIDialogBase.cpp:1560
 msgid "Course"

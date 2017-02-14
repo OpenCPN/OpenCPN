@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:49-0500\n"
+"PO-Revision-Date: 2017-02-13 20:05-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -4613,16 +4613,17 @@ msgstr "Mostrar cartas Raster inclinada com o norte para cima"
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Matricial"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Vectorial"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Com um valor inferior, o mesmo nível de aumento mostra uma carta menos detalhada.\n"
+"Com um valor superior, o mesmo nível de aumento mostra uma carta mais detalhada."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4913,16 +4914,17 @@ msgstr "Mostrar marcações e proas verdadeiros"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Mostrar marcações e proas magnéticas."
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Variação magnética calculada pela extensão WMM"
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " Para especificar a variação magnética manualmente,\n"
+" deve desactivar a extensão WMM."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5130,7 +5132,7 @@ msgstr "Plugins"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Variação magnética definida pelo utilizador"
 
 #: src/options.cpp:5290
 msgid "feet"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-03 23:48-0500\n"
+"PO-Revision-Date: 2017-02-12 03:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -41,7 +41,7 @@ msgstr "Kohdekysely"
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:610
 #: src/canvasMenu.cpp:414
 msgid "Center view"
-msgstr ""
+msgstr "Keskitä näkymä"
 
 #: include/LinkPropDlg.h:72 include/LinkPropDlg.h:84
 msgid "Link Properties"
@@ -82,7 +82,7 @@ msgstr "Lähetä GPS:lle"
 #: include/TrackPropDlg.h:180 src/TrackPropDlg.cpp:1084
 #: src/TrackPropDlg.cpp:1097
 msgid "Track properties"
-msgstr ""
+msgstr "Jäljen ominaisuudet"
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1304 src/chart1.cpp:5914
@@ -2501,7 +2501,7 @@ msgstr "Kytke jälki"
 
 #: src/AISTargetListDialog.cpp:640
 msgid "Copy MMSI"
-msgstr ""
+msgstr "Kopioi MMSI"
 
 #: src/AISTargetListDialog.cpp:646
 msgid "AutoSort"
@@ -2701,7 +2701,7 @@ msgstr "Näytä kohteen jälki"
 
 #: src/canvasMenu.cpp:595
 msgid "Copy Target MMSI"
-msgstr ""
+msgstr "Kopioi kohteen MMSI"
 
 #: src/canvasMenu.cpp:601 src/canvasMenu.cpp:607
 msgid "Object Query..."
@@ -2865,27 +2865,27 @@ msgstr "Tervetuloa OpenCPN:ään"
 
 #: src/chart1.cpp:840
 msgid "Show usage syntax."
-msgstr ""
+msgstr "Näytä käyttö syntaksi."
 
 #: src/chart1.cpp:841
 msgid "Run in portable mode."
-msgstr ""
+msgstr "Suorita siirrettävässä tilassa."
 
 #: src/chart1.cpp:842
 msgid "Switch to full screen mode on start."
-msgstr ""
+msgstr "Siirry koko näytön tilaan käynnistettäessä."
 
 #: src/chart1.cpp:843
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "Poistaa OpenGL video kiihtyvyys. Tämä asetus tullaan muistamaan."
 
 #: src/chart1.cpp:846
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr ""
+msgstr "Näyttää diaesitys <num> kartoista ja poistu. Nolla tai negatiivinen <num> ei määritä mitään rajaa."
 
 #: src/chart1.cpp:1307
 msgid "OpenCPN ENC Prepare"
-msgstr ""
+msgstr "OpenCPN ENC valmistelu"
 
 #: src/chart1.cpp:1339
 #, c-format
@@ -2894,7 +2894,7 @@ msgstr "Etäisyys omasta aluksesta: %4.0f NMi"
 
 #: src/chart1.cpp:1367
 msgid "ENC Completed."
-msgstr ""
+msgstr "ENC valmis."
 
 #: src/chart1.cpp:1651 src/chart1.cpp:1657
 msgid "Failed to initialize the user interface. "
@@ -2985,12 +2985,12 @@ msgstr "Automaattiseuranta"
 
 #: src/chart1.cpp:2962 src/chart1.cpp:4867
 msgid "Hide ENC text"
-msgstr ""
+msgstr "Piilota ENC teksti"
 
 #: src/chart1.cpp:2964 src/chart1.cpp:4865 src/chart1.cpp:5233
 #: src/chart1.cpp:5238
 msgid "Show ENC text"
-msgstr ""
+msgstr "Näytä ENC-teksti"
 
 #: src/chart1.cpp:2973 src/chart1.cpp:3063 src/chart1.cpp:3066
 #: src/chart1.cpp:4459
@@ -3031,7 +3031,7 @@ msgstr " (Ctrl-välilyönti)"
 
 #: src/chart1.cpp:3061 src/chart1.cpp:4458 src/chart1.cpp:5266
 msgid "Attenuate less critical AIS targets"
-msgstr ""
+msgstr "Heikennä vaarattomia AIS kohteita"
 
 #: src/chart1.cpp:3070 src/chart1.cpp:5264
 msgid "Show AIS Targets"
@@ -3232,7 +3232,7 @@ msgstr "AIS MIES YLI LAIDAN"
 
 #: src/chart1.cpp:9609 src/options.cpp:2388
 msgid "Own ship"
-msgstr ""
+msgstr "Oma alus"
 
 #: src/chart1.cpp:9620
 msgid "Temporary AISMOB Route"
@@ -3240,7 +3240,7 @@ msgstr "Väliaikainen AISMOB reitti"
 
 #: src/chart1.cpp:9621
 msgid "Present own ship"
-msgstr ""
+msgstr "Nykyinen oma alus"
 
 #: src/chart1.cpp:9691
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -3280,7 +3280,7 @@ msgstr "Nimi:"
 #: src/chcanv.cpp:3428 src/chcanv.cpp:3431 src/chcanv.cpp:3434
 #: src/chcanv.cpp:3465
 msgid "Scale"
-msgstr ""
+msgstr "Mittakaava"
 
 #: src/chartdbs.cpp:1245
 msgid " ID:  "
@@ -3448,7 +3448,7 @@ msgstr "Kohdekysely"
 #: src/chcanv.cpp:6798 src/chcanv.cpp:6846 src/routemanagerdialog.cpp:1223
 #: src/routemanagerdialog.cpp:2197
 msgid "Layer"
-msgstr ""
+msgstr "Kerros"
 
 #: src/chcanv.cpp:6883
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
@@ -3667,7 +3667,7 @@ msgstr ", Ulos: ei mitään"
 
 #: src/glChartCanvas.cpp:675
 msgid "Failed to initialize OpenGL"
-msgstr ""
+msgstr "OpenGL:ää ei voitu alustaa"
 
 #: src/glChartCanvas.cpp:979
 msgid "OpenGL-> SSE2 Instruction set not available"
@@ -4326,11 +4326,11 @@ msgstr "Käyttää Garmin (GRMN) tilaa syöttöön"
 
 #: src/options.cpp:2082
 msgid "as autopilot or NMEA repeater"
-msgstr ""
+msgstr "automaattiohjaimena tai NMEA toistinmena"
 
 #: src/options.cpp:2087
 msgid "blank = default ID"
-msgstr ""
+msgstr "tyhjä = oletus ID"
 
 #: src/options.cpp:2104
 msgid "x"
@@ -4418,7 +4418,7 @@ msgstr "Ei mitään"
 
 #: src/options.cpp:2490 src/options.cpp:2615 src/routeprop.cpp:2593
 msgid "Distance between rings"
-msgstr ""
+msgstr "Etäisyysrenkaiden väli"
 
 #: src/options.cpp:2499 src/options.cpp:2626 src/routeprop.cpp:2600
 msgid "Distance Unit"
@@ -4521,7 +4521,7 @@ msgstr "Poista valitut"
 
 #: src/options.cpp:2698
 msgid "Compress Selected"
-msgstr ""
+msgstr "Pakkaus on valittu"
 
 #: src/options.cpp:2706
 msgid "Update Control"
@@ -4537,7 +4537,7 @@ msgstr "Pakota tietokannan päivitys"
 
 #: src/options.cpp:2720
 msgid "Prepare all ENC Charts"
-msgstr ""
+msgstr "Valmistellaan kaikki ENC kartat"
 
 #: src/options.cpp:2731 src/TrackPropDlg.cpp:803
 msgid "Advanced"
@@ -4613,16 +4613,17 @@ msgstr "Näytä rasteri kartat pohjoinen ylös asennossa"
 
 #: src/options.cpp:2952
 msgid "Raster"
-msgstr ""
+msgstr "Rasteri"
 
 #: src/options.cpp:2962
 msgid "Vector"
-msgstr ""
+msgstr "Vektori"
 
 #: src/options.cpp:2975
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Pienempi arvo samaa zoomaustasoa näyttää vähemmän yksityiskohtaisen kartan.\n"
+"Suuremmalla arvolla sama zoomaustaso näyttä enemmän yksityiskohtia kartalla."
 
 #: src/options.cpp:2991 src/options.cpp:3728
 msgid "Controls"
@@ -4771,7 +4772,7 @@ msgstr "Poista kaikki"
 
 #: src/options.cpp:3295
 msgid "Reset to STANDARD"
-msgstr ""
+msgstr "Palautetaan standardi"
 
 #: src/options.cpp:3511
 msgid "Tides && Currents"
@@ -4823,7 +4824,7 @@ msgstr "Katso eteenpäin tila"
 
 #: src/options.cpp:3720 src/options.cpp:3811
 msgid "Preserve scale when switching charts"
-msgstr ""
+msgstr "Säilytä mittakaava kartan vaihdossa"
 
 #: src/options.cpp:3734 src/options.cpp:3825
 msgid "Smooth Panning / Zooming"
@@ -4893,7 +4894,7 @@ msgstr "Suuntimat"
 
 #: src/options.cpp:3933
 msgid "Show true"
-msgstr ""
+msgstr "Näytä tosi"
 
 #: src/options.cpp:3936
 msgid "Show magnetic bearings and headings"
@@ -4909,20 +4910,21 @@ msgstr "astetta (-W + E)"
 
 #: src/options.cpp:4044
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "Näytä tosi suuntimat ja kulkusuunnat"
 
 #: src/options.cpp:4047
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Näytä magneettiset suuntimat ja kulkusuunnat."
 
 #: src/options.cpp:4058 src/options.cpp:4901
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "WMM Pluginin laskema eranto"
 
 #: src/options.cpp:4072
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " Jos määrität magneettikentän muutokset manuaalisesti, \n"
+" Poista WMM plugin."
 
 #: src/options.cpp:4107
 msgid "AIS Targets"
@@ -5094,7 +5096,7 @@ msgstr "Salli koketusnäyttöliitäntä"
 
 #: src/options.cpp:4460
 msgid "Enable Scaled Graphics interface"
-msgstr ""
+msgstr "Salli sovitettu graafinen rajapinta"
 
 #: src/options.cpp:4470
 msgid "User Interface scale factor"
@@ -5130,7 +5132,7 @@ msgstr "Lisäosat"
 
 #: src/options.cpp:4907
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Käyttäjän määrittämä eranto"
 
 #: src/options.cpp:5290
 msgid "feet"
@@ -5187,7 +5189,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr ""
+msgstr "Pakkaus muuttaa levyllä olevia tiedostoja.\n"
+"Tämä voi tehdä ne yhteensopimattomiksi muiden ohjelmien tai vanhempien OpenCPN versioiden kanssa.\n"
+"Pakattuja karttoja lataus voi kestää hieman kauemmin ladata ja näyttää joissakin järjestelmissä. \n"
+"Ne voidaan purkaa uudelleen käyttäen unxz tai 7 zip-ohjelmia."
 
 #: src/options.cpp:6547 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
@@ -5195,18 +5200,20 @@ msgstr "OpenCPN:n varoitus"
 
 #: src/options.cpp:6560 src/options.cpp:6611
 msgid "OpenCPN Compress Charts"
-msgstr ""
+msgstr "OpenCPN pakkaa karttoja"
 
 #: src/options.cpp:6603
 msgid "No charts found to compress."
-msgstr ""
+msgstr "Yhtään karttaa ei ole löydetty pakattavaksi."
 
 #: src/options.cpp:6637
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr ""
+msgstr "pakattu %ld karttoja\n"
+" %.1fMB %.1fMB\n"
+"talletettu %.1fMB (%.1f%%)"
 
 #: src/options.cpp:7004 src/options.cpp:7015
 msgid "Select Sound File"
@@ -5341,7 +5348,7 @@ msgstr "Lukukelvoton PlugIn kirjasto havaittu, tarkista tiedoston käyttöoikeud
 
 #: src/pluginmanager.cpp:1187
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "Havaittu sopimaton lisäosa"
 
 #: src/pluginmanager.cpp:1190
 #, c-format
@@ -5453,7 +5460,7 @@ msgstr "Reittipisteen nimi"
 
 #: src/routemanagerdialog.cpp:690
 msgid "Distance from own ship"
-msgstr ""
+msgstr "Etäisyys omasta veneestä"
 
 #: src/routemanagerdialog.cpp:704
 msgid "&New"
@@ -5747,7 +5754,7 @@ msgstr "Lähtöaika"
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:1226 src/TrackPropDlg.cpp:1205
 msgid "(m/d/y h:m)"
-msgstr ""
+msgstr "(kk/pv/vv h:m)"
 
 #: src/routeprop.cpp:666 src/routeprop.cpp:880 src/routeprop.cpp:1220
 #: src/TrackPropDlg.cpp:666 src/TrackPropDlg.cpp:1206
