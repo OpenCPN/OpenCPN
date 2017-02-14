@@ -3815,6 +3815,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
+    bool bsave_text = ps52plib->m_bShowS57Text;
     
     // SetDisplayCategory may clear Noshow array
     ps52plib->SaveObjNoshow();
@@ -3828,7 +3829,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
     
     ps52plib->m_bShowSoundg = false;
-
+    ps52plib->m_bShowS57Text = false;
+    
 //      Use display category MARINERS_STANDARD to force use of OBJLArray
     DisCat dsave = ps52plib->GetDisplayCategory();
     ps52plib->SetDisplayCategory( MARINERS_STANDARD );
@@ -3871,7 +3873,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     ps52plib->RemoveObjNoshow( "GATCON" );
     
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
-
+    ps52plib->m_bShowS57Text = bsave_text;
+    
     S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, safety_depth);  
     S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, safety_contour);
     
