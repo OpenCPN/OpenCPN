@@ -4578,7 +4578,8 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
         
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
-        if(!Region.Empty() && ppicb_x)
+        PlugInChartBaseGL *ppicb = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
+        if(!Region.Empty() && (ppicb || ppicb_x))
         {
             wxRegion *r = RectRegion.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
@@ -4597,7 +4598,11 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
                     glChartCanvas::RotateToViewPort(VPoint);
                     
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
-                    ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    if(ppicb_x)
+                        ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    else if(ppicb)
+                        ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    
                     
                     glPopMatrix();
                     glChartCanvas::DisableClipRegion();
@@ -4676,13 +4681,18 @@ bool ChartPlugInWrapper::RenderRegionViewOnDCNoText(wxMemoryDC& dc, const ViewPo
     {
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        if(Region.IsOk())
+        
+        PlugInChartBaseExtended *pCBx = dynamic_cast<PlugInChartBaseExtended*>( m_ppicb );
+        PlugInChartBase *ppicb = dynamic_cast<PlugInChartBase*>(m_ppicb);
+            
+        if(Region.IsOk() && (pCBx || ppicb))
         {
             wxRegion *r = Region.GetNew_wxRegion();
             
-            PlugInChartBaseExtended *pCBx = dynamic_cast<PlugInChartBaseExtended*>( m_ppicb );
             if(pCBx)
                 dc.SelectObject(pCBx->RenderRegionViewOnDCNoText( pivp, *r));
+            else if(ppicb)
+                dc.SelectObject(ppicb->RenderRegionView( pivp, *r));
 
             delete r;
             return true;
