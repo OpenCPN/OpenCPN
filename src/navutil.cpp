@@ -1989,7 +1989,7 @@ void MyConfig::UpdateSettings()
 
     if ( !g_bInlandEcdis ){  
         Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
-        wxPuts(_T ( "Did write" ) + g_toolbarConfig);
+        //wxPuts(_T ( "Did write" ) + g_toolbarConfig);
         Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
         Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
@@ -2655,7 +2655,7 @@ void SwitchInlandEcdisMode( bool Switch )
         g_toolbarConfig = _T ( "XX...XXX..X...XX.XXXXXXXXXXXX" );
         g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
-        wxPuts(_("Setting to")+g_toolbarConfig);
+//        wxPuts(_("Setting to")+g_toolbarConfig);
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
         if (gFrame) gFrame->RequestNewToolbar(true);
     }
@@ -2672,7 +2672,7 @@ void SwitchInlandEcdisMode( bool Switch )
             pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
             if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
         }
-        wxPuts(_("Reread to")+g_toolbarConfig);
+//        wxPuts(_("Reread to")+g_toolbarConfig);
         if (gFrame) gFrame->RequestNewToolbar(true);
     }        
 }
