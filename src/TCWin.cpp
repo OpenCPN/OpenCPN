@@ -19,6 +19,8 @@ extern TCMgr *ptcmgr;
 extern wxString g_locale;
 extern OCPNPlatform *g_Platform;
 
+int g_tcwin_scale;
+
 enum
 {
       ID_TCWIN_NX,
@@ -279,16 +281,20 @@ void TCWin::RecalculateSize()
     if( pParent )
         parent_size = pParent->GetClientSize();
     
-    if(m_created)
-        m_tc_size.x = GetCharWidth() * 50;
-    else
-        m_tc_size.x = 650;
-        
+    int unscaledheight = 600;
+    int unscaledwidth  = 650;
+
+    // value of tcwin_scaler should be about unity on a 100 dpi display,
+    // when scale parameter g_tcwin_scale is 100
+    // parameter g_tcwin_scale is set in config file as value of TideCurrentWindowScale
+    g_tcwin_scale = wxMax(g_tcwin_scale,10); // sanity check on g_tcwin_scale
+    float tcwin_scaler = g_Platform->GetDisplayDPmm() * 0.254 * g_tcwin_scale / 100.0;
+
+    m_tc_size.x = (int) (unscaledwidth * tcwin_scaler + 0.5);
+    m_tc_size.y = (int) (unscaledheight * tcwin_scaler + 0.5);
     
     m_tc_size.x = wxMin(m_tc_size.x, parent_size.x);
-    m_tc_size.y = wxMin(600, parent_size.y);
-    
-
+    m_tc_size.y = wxMin(m_tc_size.y, parent_size.y);
    
     int xc = m_x + 8;
     int yc = m_y;
