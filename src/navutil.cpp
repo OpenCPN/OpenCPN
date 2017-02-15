@@ -2657,6 +2657,8 @@ void SwitchInlandEcdisMode( bool Switch )
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
         wxPuts(_("Setting to")+g_toolbarConfig);
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
+        SetPath( _T ( "/Settings/AIS" ) );
+        g_bDrawAISSize = false;
         if (gFrame) gFrame->RequestNewToolbar(true);
     }
     else{      
@@ -2671,6 +2673,8 @@ void SwitchInlandEcdisMode( bool Switch )
             int read_int;
             pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
             if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+            SetPath( _T ( "/Settings/AIS" ) );
+            pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
         }
         wxPuts(_("Reread to")+g_toolbarConfig);
         if (gFrame) gFrame->RequestNewToolbar(true);
