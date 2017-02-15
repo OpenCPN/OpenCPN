@@ -7637,7 +7637,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     int rx, ry, rwidth, rheight;
     ru.GetBox( rx, ry, rwidth, rheight );
-//        printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry, rwidth, rheight);
+        //printf("%d Onpaint update region box: %d %d %d %d\n", spaint++, rx, ry, rwidth, rheight);
 
 #ifdef ocpnUSE_DIBSECTION
     ocpnMemDC temp_dc;
@@ -7683,6 +7683,15 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         }        
     }
 
+    if(g_Compass && g_Compass->IsShown()){
+        wxRect compassRect = g_Compass->GetRect();
+        if(ru.Contains(compassRect) != wxOutRegion) {
+            ru.Subtract(compassRect);
+        }
+    }
+            
+    
+    
     //  Is this viewpoint the same as the previously painted one?
     bool b_newview = true;
 
@@ -8048,47 +8057,19 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         q_dc.SelectObject( wxNullBitmap );
 
     }
-
-//    And finally, blit the scratch dc onto the physical dc
-    wxRegionIterator upd_final( rgn_blit );
-    while( upd_final ) {
-        wxRect rect = upd_final.GetRect();
-        dc.Blit( rect.x, rect.y, rect.width, rect.height, &mscratch_dc, rect.x, rect.y );
-        upd_final++;
-    }
-
-    //  Test code to validate the dc drawing rectangle....
-    /*
-     OCPNRegionIterator upd_ru ( ru ); // get the update rect list
-     while ( upd_ru )
-     {
-     wxRect rect = upd_ru.GetRect();
-
-     dc.SetPen(wxPen(*wxRED));
-     dc.SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
-     dc.DrawRectangle(rect);
-     upd_ru ++ ;
-     }
-     */
-
-//    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
-    temp_dc.SelectObject( wxNullBitmap );
-//    And for the scratch bitmap
-    mscratch_dc.SelectObject( wxNullBitmap );
-
-    dc.DestroyClippingRegion();
     
     // Create and Render the Vector quilt decluttered text overlay, omitting CM93 composite
     if( VPoint.b_quilt ) {
         if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
             ChartBase *chart = m_pQuilt->GetRefChart();
             if(chart->GetChartType() != CHART_TYPE_CM93COMP){
-                wxMemoryDC q_dc;
+                wxMemoryDC t_dc;
                 wxBitmap qbm(  GetVP().pix_width, GetVP().pix_height );
                 
-                q_dc.SelectObject( qbm );
-                q_dc.SetBackground(wxBrush(wxColour(1,0,0)));
-                q_dc.Clear();
+                wxColor maskBackground = wxColour(1,0,0);
+                t_dc.SelectObject( qbm );
+                t_dc.SetBackground(wxBrush(maskBackground));
+                t_dc.Clear();
                 
                 //        Clear the text Global declutter list
                 if(chart){
@@ -8103,27 +8084,60 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 }
                 
                 OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
-                m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( q_dc, svp, chart_all_text_region );
-
-                wxMask *pMask = new wxMask(qbm, wxColor(1,0,0));
+                m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( t_dc, svp, chart_all_text_region );
+                
+                t_dc.SelectObject( wxNullBitmap );
+                
+                wxMask *pMask = new wxMask(qbm, maskBackground);
                 qbm.SetMask(pMask);
-    
+                
                 //  Pick up the new Mask
-                q_dc.SelectObject( wxNullBitmap );
-                q_dc.SelectObject( qbm );
+                t_dc.SelectObject( qbm );
                 
-                // Blit back into source, at the correct height
-                int height = GetVP().pix_height;
-                if(m_brepaint_piano)
-                    height -= GetChartbarHeight();
-                    
-                dc.Blit( 0, 0,  GetVP().pix_width, height, &q_dc, 0, 0, wxCOPY, true );
+
+                wxRegionIterator upd_final( ru );
+                while( upd_final ) {
+                    wxRect rect = upd_final.GetRect();
+                    scratch_dc.GetDC()->Blit( rect.x, rect.y, rect.width, rect.height, &t_dc, rect.x, rect.y, wxCOPY, true );
+                    upd_final++;
+                }
                 
-                q_dc.SelectObject( wxNullBitmap );
+                t_dc.SelectObject( wxNullBitmap );
             }
         }
     }
     
+    
+
+//    And finally, blit the scratch dc onto the physical dc
+    wxRegionIterator upd_final( rgn_blit );
+    while( upd_final ) {
+        wxRect rect = upd_final.GetRect();
+        dc.Blit( rect.x, rect.y, rect.width, rect.height, &mscratch_dc, rect.x, rect.y );
+        upd_final++;
+    }
+
+    //  Test code to validate the dc drawing rectangle....
+/*
+    wxRegionIterator upd_ru ( rgn_blit ); // get the update rect list
+     while ( upd_ru )
+     {
+     wxRect rect = upd_ru.GetRect();
+
+     dc.SetPen(wxPen(*wxRED));
+     dc.SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
+     dc.DrawRectangle(rect);
+     upd_ru ++ ;
+     }
+*/
+
+//    Deselect the chart bitmap from the temp_dc, so that it will not be destroyed in the temp_dc dtor
+    temp_dc.SelectObject( wxNullBitmap );
+//    And for the scratch bitmap
+    mscratch_dc.SelectObject( wxNullBitmap );
+
+    dc.DestroyClippingRegion();
+
     
     PaintCleanup();
     OCPNPlatform::HideBusySpinner();
