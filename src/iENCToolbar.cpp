@@ -305,20 +305,33 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
             dc.DrawBitmap(m_bmRMinus, wxPoint(0,0));
 #endif            
             //  Render the range as text onto the template
+            m_rangeFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
 
-            if(range > 100000)
-                m_rangeFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-            else if(range > 10000)
-                m_rangeFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-            else
-                m_rangeFont = wxTheFontList->FindOrCreateFont( 12, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-            
+            wxString range_string;
+            range_string.Printf(_T("%4.0fm"), range);
+                
             dc.SetFont( *m_rangeFont );
+
+            //  Select a font that will fit into the allow space.
+            bool good = false;
+            int target_points = 12;
+            while(!good && (target_points > 4)){
+                int width, height;
+                dc.GetTextExtent( range_string, &width, &height);
+                if(width < 50){
+                    good = true;
+                    break;
+                }
+                else{
+                    target_points--;
+                    m_rangeFont = wxTheFontList->FindOrCreateFont( target_points, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+                    dc.SetFont( *m_rangeFont );
+                }
+            }
+            
             dc.SetTextForeground(*wxBLACK);
             dc.SetBackgroundMode(wxTRANSPARENT);
             
-            wxString range_string;
-            range_string.Printf(_T("%4.0fm"), range);
             
             dc.DrawText(range_string, 42, 8);
             
