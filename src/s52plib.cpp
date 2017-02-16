@@ -8702,8 +8702,21 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
         if( m_bUseSCAMIN ) {
             if( ( DISPLAYBASE == rzRules->LUP->DISC ) || ( PRIO_GROUP1 == rzRules->LUP->DPRI ) ) b_visible =
                     true;
-            else
-                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible = false;
+            else{
+//                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible = false;
+
+extern int g_chart_zoom_modifier_vector;
+
+                double zoom_mod = (double)g_chart_zoom_modifier_vector;
+
+                double modf = zoom_mod/5.;  // -1->1
+                double mod = pow(8., modf);
+                mod = wxMax(mod, .2);
+                mod = wxMin(mod, 8.0);
+
+                if( vp->chart_scale  > rzRules->obj->Scamin * mod )
+                    b_visible = false;
+            }
 
             //      On the other hand, $TEXTS features need not really be displayed at all scales, always
             //      To do so makes a very cluttered display
