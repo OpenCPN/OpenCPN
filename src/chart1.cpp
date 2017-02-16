@@ -766,18 +766,39 @@ enum {
 //------------------------------------------------------------------------------
 
 iENCToolbar *g_iENCToolbar;
+int g_iENCToolbarPosX;
+int g_iENCToolbarPosY;
 
 void BuildiENCToolbar( bool bnew )
 {
     if(g_bInlandEcdis){
-        if(bnew)
-            delete g_iENCToolbar;
+        if(bnew){
+            if(g_iENCToolbar){
+                wxPoint locn = g_iENCToolbar->GetPosition();
+                wxPoint tbp_incanvas = cc1->ScreenToClient( locn );
+                
+                g_iENCToolbarPosY = tbp_incanvas.y;
+                g_iENCToolbarPosX = tbp_incanvas.x;
+            
+                delete g_iENCToolbar;
+                g_iENCToolbar = 0;
+            }
+        }
         
         if( !g_iENCToolbar ) {
-            wxPoint posn(0, 100);
-            if(g_MainToolbar)
-                posn = wxPoint(g_maintoolbar_x, g_MainToolbar->GetSize().y + 2);
+            
+            wxPoint posn(g_iENCToolbarPosX, g_iENCToolbarPosY);
+            
+            if((g_iENCToolbarPosX < 0) || (g_iENCToolbarPosY < 0)){
+                posn.x = 0;
+                posn.y = 100;
+                
+                if(g_MainToolbar)
+                    posn = wxPoint(g_maintoolbar_x, g_MainToolbar->GetSize().y + 2);
+            }
+            
             g_iENCToolbar = new iENCToolbar( cc1,  posn, g_maintoolbar_orient, g_toolbar_scalefactor );
+            g_iENCToolbar->SetColorScheme(global_color_scheme);
             g_iENCToolbar->EnableSubmerge( false );
         }
     }
@@ -2037,7 +2058,7 @@ bool MyApp::OnInit()
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
     cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
-
+    
     gFrame->Enable();
 
     cc1->SetFocus();
@@ -3487,6 +3508,13 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_maintoolbar_orient = g_MainToolbar->GetOrient();
     }
 
+    if(g_iENCToolbar){
+        wxPoint locn = g_iENCToolbar->GetPosition();
+        wxPoint tbp_incanvas = cc1->ScreenToClient( locn );
+        g_iENCToolbarPosY = tbp_incanvas.y;
+        g_iENCToolbarPosX = tbp_incanvas.x;
+    }
+    
     pConfig->UpdateSettings();
     pConfig->UpdateNavObj();
 
@@ -3520,6 +3548,13 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_MainToolbar->Destroy();
     g_MainToolbar = NULL;
 
+    if(g_iENCToolbar){
+        wxPoint locn = g_iENCToolbar->GetPosition();
+        g_iENCToolbarPosY = locn.y;
+        g_iENCToolbarPosX = locn.x;
+        g_iENCToolbar->Destroy();
+    }
+    
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
         g_pAISTargetList->Destroy();
@@ -6262,6 +6297,24 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         {
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, false );
+            
+            if(g_bInlandEcdis){
+                double range = cc1->GetCanvasRangeMeters();
+                range = wxRound(range * 10) / 10.;
+                
+                if(range > 4000.)
+                    cc1->SetCanvasRangeMeters(4000.);
+                else if(range > 2000.)
+                    cc1->SetCanvasRangeMeters(2000.);
+                else if(range > 1600.)
+                    cc1->SetCanvasRangeMeters(1600.);
+                else if(range > 1200.)
+                    cc1->SetCanvasRangeMeters(1200.);
+                else if(range > 800.)
+                    cc1->SetCanvasRangeMeters(800.);
+                else
+                    cc1->SetCanvasRangeMeters(500.);
+            }
             
             // Set persistent Fullscreen mode
             g_Platform->SetFullscreen(g_bFullscreen);

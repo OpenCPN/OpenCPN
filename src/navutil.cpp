@@ -392,6 +392,9 @@ extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
 
 extern bool             g_bInlandEcdis;
+extern int              g_iENCToolbarPosX;
+extern int              g_iENCToolbarPosY;
+
 
 extern wxString         g_uiStyle;
 
@@ -647,6 +650,12 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ToolbarOrient" ), &g_maintoolbar_orient, wxTB_HORIZONTAL );
     Read( _T ( "ToolbarConfig" ), &g_toolbarConfig );
 
+    Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX, -1 );
+    Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY, -1 );
+    
+    Read( _T ( "iENCToolbarX"), &g_iENCToolbarPosX, -1 );
+    Read( _T ( "iENCToolbarY"), &g_iENCToolbarPosY, -1 );
+    
     Read( _T ( "AnchorWatch1GUID" ), &g_AW1GUID, _T("") );
     Read( _T ( "AnchorWatch2GUID" ), &g_AW2GUID, _T("") );
 
@@ -1987,6 +1996,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarY" ), g_maintoolbar_y );
     Write( _T ( "ToolbarOrient" ), g_maintoolbar_orient );
 
+    Write( _T ( "iENCToolbarX" ), g_iENCToolbarPosX );
+    Write( _T ( "iENCToolbarY" ), g_iENCToolbarPosY );
+    
     if ( !g_bInlandEcdis ){  
         Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
         //wxPuts(_T ( "Did write" ) + g_toolbarConfig);
