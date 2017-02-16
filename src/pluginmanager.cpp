@@ -4532,7 +4532,8 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
-        if(!Region.Empty() && ppicb_gl)
+        PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
+        if(!Region.Empty() && (ppicb_gl || ppicb_x))
         {
             wxRegion *r = RectRegion.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
@@ -4551,7 +4552,10 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     glChartCanvas::RotateToViewPort(VPoint);
 
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
-                    ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    if(ppicb_x)
+                        ppicb_x->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                    else if(ppicb_gl)
+                        ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
                     glPopMatrix();
                     glChartCanvas::DisableClipRegion();
