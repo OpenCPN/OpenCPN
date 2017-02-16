@@ -346,6 +346,7 @@ public:
       void SetGrabber( wxString icon_name );
       void DestroyTimerEvent( wxTimerEvent& event );
       
+      void EnableSubmerge(bool enable){ m_benableSubmerge = enable; }
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       ocpnToolBarSimple *CreateNewToolbar();
@@ -428,6 +429,7 @@ private:
       
       bool m_bAutoHideToolbar;
       int m_nAutoHideToolbar;
+      bool m_benableSubmerge;
 
 };
 

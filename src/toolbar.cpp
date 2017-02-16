@@ -389,6 +389,8 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
         m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
     
     m_destroyTimer.SetOwner( this, DESTROY_TIMER );
+    
+    m_benableSubmerge = true;
 }
 
 ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
@@ -425,6 +427,7 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil( int toolid, wxString tip
         }
         
         menuitem = m_FloatingToolbarConfigMenu->AppendCheckItem( menuItemId, tipString );
+        int n = toolid - ID_ZOOMIN;
         menuitem->Check( g_toolbarConfig.GetChar( toolid - ID_ZOOMIN ) == _T('X') );
         return menuitem->IsChecked();
     }
@@ -597,6 +600,9 @@ void ocpnFloatingToolbarDialog::Submerge()
 
 void ocpnFloatingToolbarDialog::SubmergeToGrabber()
 {
+    if(!m_benableSubmerge)
+        return;
+    
 //Submerge();
     m_bsubmerged = true;
     m_bsubmergedToGrabber = true;

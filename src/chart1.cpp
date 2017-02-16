@@ -778,6 +778,7 @@ void BuildiENCToolbar( bool bnew )
             if(g_MainToolbar)
                 posn = wxPoint(g_maintoolbar_x, g_MainToolbar->GetSize().y + 2);
             g_iENCToolbar = new iENCToolbar( cc1,  posn, g_maintoolbar_orient, g_toolbar_scalefactor );
+            g_iENCToolbar->EnableSubmerge( false );
         }
     }
     else{
