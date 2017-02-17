@@ -196,13 +196,13 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     pLFont = FontMgr::Get().FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
-    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
+    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
+					      wxPENSTYLE_SOLID );
+    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(2,(int)(2*m_tcwin_scaler+0.5)),
+					      wxPENSTYLE_SOLID );
+    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
                                                                           wxPENSTYLE_SOLID );
-    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2,
-                                                                          wxPENSTYLE_SOLID );
-    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1,
-                                                                          wxPENSTYLE_SOLID );
-    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4,
+    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), wxMax(4,(int)(4*m_tcwin_scaler+0.5)),
                                                                         wxPENSTYLE_SOLID );
     pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
                                                                                wxBRUSHSTYLE_SOLID );
@@ -284,14 +284,14 @@ void TCWin::RecalculateSize()
     int unscaledheight = 600;
     int unscaledwidth  = 650;
 
-    // value of tcwin_scaler should be about unity on a 100 dpi display,
+    // value of m_tcwin_scaler should be about unity on a 100 dpi display,
     // when scale parameter g_tcwin_scale is 100
     // parameter g_tcwin_scale is set in config file as value of TideCurrentWindowScale
     g_tcwin_scale = wxMax(g_tcwin_scale,10); // sanity check on g_tcwin_scale
-    float tcwin_scaler = g_Platform->GetDisplayDPmm() * 0.254 * g_tcwin_scale / 100.0;
+    m_tcwin_scaler = g_Platform->GetDisplayDPmm() * 0.254 * g_tcwin_scale / 100.0;
 
-    m_tc_size.x = (int) (unscaledwidth * tcwin_scaler + 0.5);
-    m_tc_size.y = (int) (unscaledheight * tcwin_scaler + 0.5);
+    m_tc_size.x = (int) (unscaledwidth * m_tcwin_scaler + 0.5);
+    m_tc_size.y = (int) (unscaledheight * m_tcwin_scaler + 0.5);
     
     m_tc_size.x = wxMin(m_tc_size.x, parent_size.x);
     m_tc_size.y = wxMin(m_tc_size.y, parent_size.y);
@@ -471,12 +471,12 @@ void TCWin::OnPaint( wxPaintEvent& event )
                     int x_shim = -20;
                     dc.DrawText( wxString( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8 );
                 }
-                else{
+                else {
                     dc.SetPen( *pblack_1 );
                     dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
                 }
             }
-            else{
+            else {
                 dc.SetPen( *pblack_1 );
                 dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
                 wxString sst;
@@ -622,9 +622,10 @@ void TCWin::OnPaint( wxPaintEvent& event )
         while( i < it + 1 ) {
             int yd = m_graph_rect.y + ( m_plot_y_offset ) - ( ( i - val_off ) * m_graph_rect.height / im );
 
-            if( ( m_plot_y_offset + m_graph_rect.y ) == yd ) dc.SetPen( *pblack_2 );
+            if( ( m_plot_y_offset + m_graph_rect.y ) == yd ) 
+	      dc.SetPen( *pblack_2 );
             else
-                dc.SetPen( *pblack_1 );
+	      dc.SetPen( *pblack_1 );
 
             dc.DrawLine( m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd );
             snprintf( sbuf, 99, "%d", i );
