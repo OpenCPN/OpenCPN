@@ -566,13 +566,14 @@ public class UsbSerialHelper {
 
                 try {
                     port.open(connection);
+
+                    port.setDTR(false);
+                    port.setRTS(false);
+
                     port.setParameters(container.baudRate, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
-                    if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort: Driver Simple Name is " + port.getDriver().getClass().getSimpleName());
-                    if(port.getDriver().getClass().getSimpleName().equalsIgnoreCase("CdcAcmSerialDriver")){
-//                        if(DEBUG) Log.d("OpenCPN", "connectUSBSerialPort: setting DTR for CdcAcmSerialDriver");
-//                        port.setDTR(true);
-                    }
+                    port.setDTR(true);
+                    port.setRTS(true);
 
                 } catch (IOException e) {
                     if(DEBUG) Log.e("OpenCPN", "Error setting up device: " + e.getMessage(), e);

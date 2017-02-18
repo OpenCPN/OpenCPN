@@ -48,7 +48,7 @@ import com.hoho.android.usbserial.util.HexDump;
  */
 public class CdcAcmSerialDriver implements UsbSerialDriver {
 
-    private final String TAG = "opencpn"; //CdcAcmSerialDriver.class.getSimpleName();
+    private final String TAG = "OpenCPN"; //CdcAcmSerialDriver.class.getSimpleName();
 
     private final UsbDevice mDevice;
     private final UsbSerialPort mPort;
@@ -127,15 +127,45 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
                 if (!mConnection.claimInterface(mDataInterface, true)) {
                     throw new IOException("Could not claim data interface.");
                 }
-                mReadEndpoint = mDataInterface.getEndpoint(1);
-                Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
-                mWriteEndpoint = mDataInterface.getEndpoint(0);
-                Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+
+                //  Read and Write endpoints can come in either order.
+                //  So this code that assumes the read Endpoint is always at (index=1) is incorrect.
+
+//                mReadEndpoint = mDataInterface.getEndpoint(1);
+//                Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
+//                mWriteEndpoint = mDataInterface.getEndpoint(0);
+//                Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+
+                if(mDataInterface.getEndpointCount() > 1){
+                    // Determine which endpoint is the READ (Input) endpoint.
+                    if( mDataInterface.getEndpoint(0).getDirection() == 128){  // input
+                        mReadEndpoint = mDataInterface.getEndpoint(0);
+                        mWriteEndpoint = mDataInterface.getEndpoint(1);
+                    }
+                    else{
+                        mReadEndpoint = mDataInterface.getEndpoint(1);
+                        mWriteEndpoint = mDataInterface.getEndpoint(0);
+                    }
+
+                    //  Confirmation...
+                    Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
+                    Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+                }
+                else if(mDataInterface.getEndpointCount() == 1){
+                    Log.d(TAG, "Interface has only one endpoint, assuming it is a Read Point");
+                    mReadEndpoint = mDataInterface.getEndpoint(0);
+                    mWriteEndpoint = null;
+                }
+                else{
+                    throw new IOException("Interface has no endpoints.");
+                }
+
                 if (mEnableAsyncReads) {
                   Log.d(TAG, "Async reads enabled");
                 } else {
                   Log.d(TAG, "Async reads disabled.");
                 }
+
                 opened = true;
             } finally {
                 if (!opened) {
@@ -176,7 +206,7 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
 
                 final int nread = buf.position();
                 if (nread > 0) {
-                  Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
+                  //Log.d(TAG, HexDump.dumpHexString(dest, 0, Math.min(32, dest.length)));
                   return nread;
                 } else {
                   return 0;
@@ -210,6 +240,10 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
         @Override
         public int write(byte[] src, int timeoutMillis) throws IOException {
             // TODO(mikey): Nearly identical to FtdiSerial write. Refactor.
+
+            if(mWriteEndpoint == null)
+                return 0;
+
             int offset = 0;
 
             while (offset < src.length) {
@@ -262,14 +296,19 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
                 default: throw new IllegalArgumentException("Bad value for parity: " + parity);
             }
 
+            int baudSet = baudRate;
             byte[] msg = {
-                    (byte) ( baudRate & 0xff),
-                    (byte) ((baudRate >> 8 ) & 0xff),
-                    (byte) ((baudRate >> 16) & 0xff),
-                    (byte) ((baudRate >> 24) & 0xff),
+                    (byte) ( baudSet & 0xff),
+                    (byte) ((baudSet >> 8 ) & 0xff),
+                    (byte) ((baudSet >> 16) & 0xff),
+                    (byte) ((baudSet >> 24) & 0xff),
                     stopBitsByte,
                     parityBitesByte,
                     (byte) dataBits};
+
+            Log.d(TAG, "setParameters:");
+            Log.d(TAG, HexDump.dumpHexString(msg, 0, 7) );
+
             sendAcmControlMessage(SET_LINE_CODING, 0, msg);
         }
 
