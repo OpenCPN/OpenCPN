@@ -8005,8 +8005,15 @@ void options::SetDefaultConnectionParams(void) {
 
 
 #ifdef __OCPN__ANDROID__
-  m_rbTypeInternalGPS->SetValue(true);
-  SetNMEAFormToGPS();
+  if(m_rbTypeInternalGPS){
+      m_rbTypeInternalGPS->SetValue(true);
+      SetNMEAFormToGPS();
+  }
+  else{
+      m_rbTypeNet->SetValue( true );
+      SetNMEAFormToNet();
+  }
+      
 #else
   m_rbTypeSerial->SetValue(bserial);
   m_rbTypeNet->SetValue(!bserial);
