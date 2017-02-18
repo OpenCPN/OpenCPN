@@ -2344,11 +2344,13 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
@@ -2376,11 +2378,13 @@ bool MyConfig::ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxSt
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
@@ -2409,11 +2413,13 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
@@ -2444,11 +2450,13 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return;
         }
+#endif
 
         ::wxBeginBusyCursor();
 
