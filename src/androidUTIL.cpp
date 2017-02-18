@@ -835,8 +835,10 @@ extern "C"{
         //  The NMEA message target handler may not be setup yet, if no connections are defined or enabled.
         //  But we may get synthesized messages from the Java app, even without a definite connection, and we want to process these messages too.
         //  So assume that the global MUX, if present, will handle these messages.
-        if( !s_pAndroidNMEAMessageConsumer && g_pMUX ) 
-            s_pAndroidNMEAMessageConsumer = g_pMUX;
+        wxEvtHandler  *consumer = s_pAndroidNMEAMessageConsumer;
+        
+        if( !consumer && g_pMUX ) 
+            consumer = g_pMUX;
                 
             
         const char *string = env->GetStringUTFChars(nmea_string, NULL);
@@ -847,12 +849,12 @@ extern "C"{
         strncpy(tstr, string, 190);
         strcat(tstr, "\r\n");
         
-        if( s_pAndroidNMEAMessageConsumer ) {
+        if( consumer ) {
             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
             Nevent.SetNMEAString( tstr );
             Nevent.SetStream( NULL );
                 
-            s_pAndroidNMEAMessageConsumer->AddPendingEvent(Nevent);
+            consumer->AddPendingEvent(Nevent);
         }
         
         return 66;
