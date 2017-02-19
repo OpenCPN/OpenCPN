@@ -487,6 +487,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     m_pTail = NULL;
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
+    m_tDescription = NULL;
 
     m_pRoute = 0;
     m_pEnroutePoint = NULL;
@@ -1315,6 +1316,13 @@ void RouteProp::CreateControls()
         bSizer2->Add( m_chWidth, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
         
         itemStaticBoxSizer3->Add( bSizer2, 1, wxEXPAND, 0 );
+
+        m_stDescription = new wxStaticText( itemDialog1, wxID_ANY, _("Description"), wxDefaultPosition, wxDefaultSize, 0 );
+        //m_stDescription->Wrap( -1 );
+        itemStaticBoxSizer3->Add( m_stDescription, 0, wxALL, 5 );
+
+        m_tDescription = new wxTextCtrl( itemDialog1, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+        itemStaticBoxSizer3->Add( m_tDescription, 1, wxALL|wxEXPAND, 5 );
         
         wxStaticBox* itemStaticBoxSizer14Static = new wxStaticBox( this, wxID_ANY, _("Waypoints") );
         m_pListSizer = new wxStaticBoxSizer( itemStaticBoxSizer14Static, wxVERTICAL );
@@ -2174,9 +2182,12 @@ bool RouteProp::UpdateProperties()
         }
     }
 
+
     ::wxEndBusyCursor();
 
     m_wpList->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+
+    if(m_tDescription)m_tDescription->SetValue( m_pRoute->m_RouteDescription );
     
     return true;
 }
@@ -2225,6 +2236,7 @@ bool RouteProp::SaveChanges( void )
             m_pRoute->m_Colour = ::GpxxColorNames[m_chColor->GetSelection() - 1];
         m_pRoute->m_style = (wxPenStyle)::StyleValues[m_chStyle->GetSelection()];
         m_pRoute->m_width = ::WidthValues[m_chWidth->GetSelection()];
+        if(m_tDescription) m_pRoute->m_RouteDescription = m_tDescription->GetValue();
         m_pRoute->m_PlannedDeparture = g_StartTime;
         m_pRoute->m_PlannedSpeed = m_planspeed;
         switch( g_StartTimeTZ ) {
