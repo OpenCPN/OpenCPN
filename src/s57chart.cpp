@@ -3272,7 +3272,10 @@ bool s57chart::IsCellOverlayType( char *pFullPath )
     wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
-    return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    if(cname.Length() >= 3)
+        return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    else
+        return false;
 }
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
