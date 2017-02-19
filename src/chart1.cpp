@@ -6017,6 +6017,13 @@ void MyFrame::ToggleQuiltMode( void )
             Refresh();
         }
         g_bQuiltEnable = cc1->GetQuiltMode();
+        
+#ifdef USE_S57
+        // Recycle the S52 PLIB so that vector charts will flush caches and re-render
+        if(ps52plib)
+            ps52plib->GenerateStateHash();
+#endif
+        
     }
 }
 

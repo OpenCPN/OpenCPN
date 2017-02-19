@@ -8057,12 +8057,25 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         q_dc.SelectObject( wxNullBitmap );
 
     }
+#if 0
+    //  It is possible that this two-step method may be reuired for some platforms.
+    //  So, retain in the code base to aid recovery if necessary
     
     // Create and Render the Vector quilt decluttered text overlay, omitting CM93 composite
     if( VPoint.b_quilt ) {
         if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
             ChartBase *chart = m_pQuilt->GetRefChart();
-            if(chart->GetChartType() != CHART_TYPE_CM93COMP){
+            if( chart && chart->GetChartType() != CHART_TYPE_CM93COMP){
+                
+                //        Clear the text Global declutter list
+                ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                if(ChPI)
+                    ChPI->ClearPLIBTextList();
+                else{
+                    if(ps52plib)
+                        ps52plib->ClearTextList();
+                }
+                
                 wxMemoryDC t_dc;
                 wxBitmap qbm(  GetVP().pix_width, GetVP().pix_height );
                 
@@ -8070,31 +8083,15 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 t_dc.SelectObject( qbm );
                 t_dc.SetBackground(wxBrush(maskBackground));
                 t_dc.Clear();
-                
-                //        Clear the text Global declutter list
-                if(chart){
-                    ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
-                    if(ChPI){
-                        ChPI->ClearPLIBTextList();
-                    }
-                    else{
-                        if(ps52plib)
-                            ps52plib->ClearTextList();
-                    }
-                }
-                
+
+                //  Copy the scratch DC into the new bitmap
+                t_dc.Blit( 0, 0, GetVP().pix_width, GetVP().pix_height, scratch_dc.GetDC(), 0, 0, wxCOPY );
+
+                //  Render the text to the new bitmap
                 OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
                 m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( t_dc, svp, chart_all_text_region );
                 
-                t_dc.SelectObject( wxNullBitmap );
-                
-                wxMask *pMask = new wxMask(qbm, maskBackground);
-                qbm.SetMask(pMask);
-                
-                //  Pick up the new Mask
-                t_dc.SelectObject( qbm );
-                
-
+                //  Copy the new bitmap back to the scratch dc
                 wxRegionIterator upd_final( ru );
                 while( upd_final ) {
                     wxRect rect = upd_final.GetRect();
@@ -8106,9 +8103,31 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             }
         }
     }
+#endif
+    // Direct rendering model...
+    if( VPoint.b_quilt ) {
+        if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
+            ChartBase *chart = m_pQuilt->GetRefChart();
+            if( chart && chart->GetChartType() != CHART_TYPE_CM93COMP){
+                
+                //        Clear the text Global declutter list
+                ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
+                if(ChPI)
+                    ChPI->ClearPLIBTextList();
+                else{
+                    if(ps52plib)
+                        ps52plib->ClearTextList();
+                }
+                
+                //  Render the text directly to the scratch bitmap
+                OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
+                m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( mscratch_dc, svp, chart_all_text_region );
+                
+            }
+        }
+    }
     
     
-
 //    And finally, blit the scratch dc onto the physical dc
     wxRegionIterator upd_final( rgn_blit );
     while( upd_final ) {
