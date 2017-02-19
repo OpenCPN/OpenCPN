@@ -76,6 +76,7 @@ extern bool     g_bShowAISName;
 extern int      g_Show_Target_Name_Scale;
 extern bool     g_bAllowShowScaled;
 extern bool     g_bShowScaled;
+extern bool     g_bInlandEcdis;
 
 extern bool     g_bWplIsAprsPosition;
 extern double gLat;
@@ -2241,7 +2242,15 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         int target_static_age = now.GetTicks() - td->StaticReportTicks;
 
         //      Mark lost targets if specified
-        if( g_bMarkLost ) {
+        double iECD_TimeOut = 0.0;
+        if ( g_bInlandEcdis ){//special rules aply for europe inland ecdis timeout settings. overrule option settings
+            if ( (td->Class == AIS_CLASS_B) || (td->SOG < 0.5) || (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) ) 
+                iECD_TimeOut=190; //Class B or not moving 3 minutes
+            else iECD_TimeOut = 30;   
+            if( ( target_posn_age > iECD_TimeOut ) && ( td->Class != AIS_GPSG_BUDDY ) ) td->b_active =
+                    false;
+        }
+        else if( g_bMarkLost ) {
             if( ( target_posn_age > g_MarkLost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) ) td->b_active =
                     false;
         }
