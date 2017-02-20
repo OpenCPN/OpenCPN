@@ -1815,7 +1815,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
         //    Update the next pass full region to remove the region just allocated
         //    Maintain the present full quilt coverage region
         const ChartTableEntry &cte = ChartData->GetChartTableEntry( piqp->dbIndex );
-        piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
+        piqp->b_overlay = false;
+        if(cte.GetChartFamily() == CHART_FAMILY_VECTOR){
+            piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
+        }
                 
         if(!piqp->b_overlay)    
             m_covered_region.Union( piqp->quilt_region );
