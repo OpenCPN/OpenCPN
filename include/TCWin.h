@@ -75,6 +75,7 @@ private:
     bool          m_created;
     int           m_tsx;      // test button width
     int           m_tsy;      // test button height
+    float         m_tcwin_scaler; // factor to scale TCWin and contents by
     
       IDX_entry   *pIDX;
       wxButton    *OK_button;

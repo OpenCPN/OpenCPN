@@ -219,6 +219,7 @@ extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
+extern bool             g_bInlandEcdis;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -1707,6 +1708,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 m_bMeasure_DistCircle = false;
 
             StartMeasureRoute();
+            break;
+            
+        case 'N':
+            if( g_bInlandEcdis && ps52plib){
+                gFrame->SetENCDisplayCategory( (_DisCat)STANDARD );
+            }
             break;
 
         case 'O':
@@ -9048,20 +9055,21 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 				    // scale default size by tide_draw_scaler factor
 				    int width = (int) (12 * tide_draw_scaler + 0.5);
 				    int height = (int) (45 * tide_draw_scaler + 0.5);
-				    int linew = wxMax(1, (int) (tide_draw_scaler + 0.5));
+				    int linew = wxMax(1, (int) (tide_draw_scaler));
 
 				    //std::cerr << "tide icon w=" << width << ", h=" << height;
 				    //std::cerr << ", linew=" << linew << ", scale=" << tide_draw_scaler << std::endl;
 
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
-                                    int hs = ( httime > lttime ) ? -5 : 5;
+                                    int hs = ( httime > lttime ) ? -4 : 4;
+				    hs *= (int) (tide_draw_scaler + 0.5); 
                                     if( ts > 0.995 || ts < 0.005 ) hs = 0;
                                     int ht_y = (int) ( height * ts );
 
 				    //draw yellow tide rectangle outlined in black
-                                    dc.SetPen( *pblack_pen );
 				    pblack_pen->SetWidth(linew);
+                                    dc.SetPen( *pblack_pen );
                                     dc.SetBrush( *pyelo_brush );
                                     dc.DrawRectangle( w, h, width, height );
 
@@ -9226,7 +9234,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     GetCanvasPointPix( lat, lon, &r );
 
                     wxPoint d[4]; // points of a diamond at the current station location
-                    int dd = (int) (6.0 * current_draw_scaler);  
+                    int dd = (int) (5.0 * current_draw_scaler + 0.5);  
                     d[0].x = r.x;
                     d[0].y = r.y + dd;
                     d[1].x = r.x + dd;
@@ -9237,7 +9245,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     d[3].y = r.y;
 
                     if( ptcmgr->GetTideOrCurrent15( now, i, tcvalue, dir, bnew_val ) ) {
-                        pblack_pen->SetWidth( 1 );
+		      pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );
@@ -9265,10 +9273,10 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                                 double a2 = log10( a1 );
 
 				// scale to pass to DrawArrow. 0.4 is a reasonable factor here.
-				// adjust value of CurrentArrowScale in config file as needed
+				// users can adjust value of CurrentArrowScale in config file as needed
                                 float cscale = current_draw_scaler * a2 * 0.4;
 
-                                porange_pen->SetWidth( 2 );
+                                porange_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
                                 dc.SetPen( *porange_pen );
                                 DrawArrow( dc, pixxc, pixyc,
                                            dir - 90 + ( skew_angle * 180. / PI ), cscale );
