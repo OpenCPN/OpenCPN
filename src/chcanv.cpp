@@ -219,6 +219,7 @@ extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
+extern bool             g_bInlandEcdis;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -1707,6 +1708,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 m_bMeasure_DistCircle = false;
 
             StartMeasureRoute();
+            break;
+            
+        case 'N':
+            if( g_bInlandEcdis && ps52plib){
+                gFrame->SetENCDisplayCategory( (_DisCat)STANDARD );
+            }
             break;
 
         case 'O':
