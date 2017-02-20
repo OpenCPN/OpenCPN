@@ -839,6 +839,16 @@
               <location>http://www.ienccloud.us/ienc/products/catalog/IENCU37ProductsCatalog.xml</location>
               <dir>{USERDATA}/ENC/US_INLAND</dir>
             </catalog>
+            <catalog>
+              <name>US ACE Inland ENC Buoy Overlay</name>
+              <location>http://www.ienccloud.us/ienc/products/catalog/IENCBuoyProductsCatalog.xml</location>
+              <dir>{USERDATA}/ENC/US_INLAND_BUOYS</dir>
+            </catalog>
+            <catalog>
+              <name>US ACE Inland ENC SW Pass Overlay</name>
+              <location>http://www.ienccloud.us/ienc/products/catalog/IENCSWPassProductsCatalog.xml</location>
+              <dir>{USERDATA}/ENC/US_INLAND_OVERLAYS</dir>
+            </catalog>
           </catalogs>
         </section>
       </sections>
