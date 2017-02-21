@@ -3633,7 +3633,7 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
         SENCdir.Append( wxFileName::GetPathSeparator() );
     
     wxFileName s57File(m_SENCFileName);
-    wxFileName ThumbFileName( SENCdir, s57File.GetName(), _T("BMP") );
+    wxFileName ThumbFileName( SENCdir, s57File.GetName().Mid( 13 ), _T("BMP") );
 
     if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
         BuildThumbnail( ThumbFileName.GetFullPath() );
