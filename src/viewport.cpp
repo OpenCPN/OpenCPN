@@ -125,7 +125,7 @@ ViewPort::ViewPort()
     bValid = false;
     skew = 0.;
     view_scale_ppm = 1;
-    rotation = 0.;
+    rotationAngle = 0.;
     tilt = 0.;
     b_quilt = false;
     pix_height = pix_width = 0;
@@ -246,7 +246,8 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
     double dyr = npix;
 
     //    Apply VP Rotation
-    double angle = rotation;
+    wxASSERT(!wxIsNaN(GetRotationAngle()));
+    double angle = GetRotationAngle();
 
     if( angle ) {
         dxr = epix * cos( angle ) + npix * sin( angle );
@@ -265,7 +266,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double ypr = dy;
 
     //    Apply VP Rotation
-    double angle = rotation;
+    double angle = GetRotationAngle();
 
     if( angle ) {
         xpr = ( dx * cos( angle ) ) - ( dy * sin( angle ) );
@@ -322,7 +323,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     default:
         printf("unhandled projection\n");
     }
-
+    wxASSERT( !_isnan(slat) && !_isnan(slon) );
     *lat = slat;
 
     if( slon < -180. ) slon += 360.;
@@ -353,7 +354,7 @@ LLRegion ViewPort::GetLLRegion( const OCPNRegion &region )
 
         /* if the viewport is rotated, we must split the segments as straight lines in lat/lon
            coordinates map to curves in projected coordinate space */
-        if(fabs( rotation ) >= 0.0001) {
+        if(fabs( GetRotationAngle() ) >= 0.0001) {
             j=0;
             double lastlat, lastlon;
             int li = 6;
@@ -409,8 +410,8 @@ struct ContourRegion
 
 OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLRegion &llregion, int chart_native_scale )
 {
-    double rotation_save = rotation;
-    rotation = 0;
+    double rotation_save = GetRotationAngle();
+    SetRotationAngle(0);
 
     std::list<ContourRegion> cregions;
     for(std::list<poly_contour>::const_iterator i = llregion.contours.begin(); i != llregion.contours.end(); i++) {
@@ -462,7 +463,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLReg
         }
     }
 
-    rotation = rotation_save;
+    SetRotationAngle(rotation_save);
     return r;
 }
 
@@ -537,7 +538,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     
     bool valid = false;
     int npPoints = 0;
-    for( int ip=0; ip < nPoints; ip++ ) {
+    for( size_t ip=0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
         if(p.x == INVALID_COORD)
             continue;
@@ -593,7 +594,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         p3.y = lat; p3.x = lon;
         
         
-        for(size_t i=0 ; i < npPoints-1 ; i++){            
+        for(int i=0 ; i < npPoints-1 ; i++){            
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
 
@@ -650,7 +651,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         while( screen_region_it2.HaveRects() ) {
             wxRect rect = screen_region_it2.GetRect();
  
-            for(size_t i=0 ; i < npPoints-1 ; i++){
+            for(int i=0 ; i < npPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
 
                 if((x0 < rect.x) || (x0 > rect.x+rect.width) ||
@@ -802,9 +803,9 @@ void ViewPort::SetBoxes( void )
     rv_rect = wxRect( 0, 0, pix_width, pix_height );
 
     //  Specify the minimum required rectangle in unrotated screen space which will supply full screen data after specified rotation
-    if (( fabs( skew ) > .0001 ) || (fabs(rotation )>.0001 )) {
+    if (( fabs( skew ) > .0001 ) || (fabs(GetRotationAngle() )>.0001 )) {
 
-        double rotator = rotation;
+        double rotator = GetRotationAngle();
         double lpixh = pix_height;
         double lpixw = pix_width;
 
@@ -830,7 +831,7 @@ void ViewPort::SetBoxes( void )
     //  Compute Viewport lat/lon reference points for co-ordinate hit testing
 
     //  This must be done in unrotated space with respect to full unrotated screen space calculated above
-    double rotation_save = rotation;
+    double rotation_save = GetRotationAngle();
     SetRotationAngle(0.0);
 
     wxPoint ul( rv_rect.x, rv_rect.y ), lr( rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height );

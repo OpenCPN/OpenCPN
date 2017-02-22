@@ -955,7 +955,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     float theta;
     //    If the target reported a valid HDG, then use it for icon
     if( (int) ( td->HDG ) != 511 ) {
-        theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
+        theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().GetRotationAngle();
     } else {
         b_hdgValid = false;   // tentative judgement
 

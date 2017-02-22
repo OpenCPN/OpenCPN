@@ -7601,6 +7601,8 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
                 rotation = newskew;
         }
 
+        wxASSERT(!isnan(newskew) && !isnan(rotation));
+
         cc1->SetViewPoint( zLat, zLon, best_scale, newskew, rotation );
 
         SetChartUpdatePeriod( cc1->GetVP() );

@@ -434,7 +434,7 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
 
             if( dc )
                 if(adder) {
-                    float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
+                    float adderc = cos(vp.GetRotationAngle())*adder, adders = sin(vp.GetRotationAngle())*adder;
                     dc->DrawLine(r1.m_x, r1.m_y, r2.m_x + adderc, r2.m_y + adders);
                     dc->DrawLine(r1.m_x - adderc, r1.m_y - adders, r2.m_x, r2.m_y);
                 } else
@@ -442,7 +442,7 @@ void Route::DrawGLLines( ViewPort &vp, ocpnDC *dc )
             else {
                 glVertex2f(r1.m_x, r1.m_y);
                 if(adder) {
-                    float adderc = cos(vp.rotation)*adder, adders = sin(vp.rotation)*adder;
+                    float adderc = cos(vp.GetRotationAngle())*adder, adders = sin(vp.GetRotationAngle())*adder;
                     glVertex2f(r2.m_x+adderc, r2.m_y+adders);
                     glVertex2f(r1.m_x-adderc, r1.m_y-adders);
                 }

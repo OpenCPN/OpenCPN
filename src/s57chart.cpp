@@ -6683,8 +6683,8 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             dc.SetPen( *arcpen );
 
             float angle1, angle2;
-            angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.rotation * 180.0 / PI;
-            angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.rotation * 180.0 / PI;
+            angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.GetRotationAngle() * 180.0 / PI;
+            angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.GetRotationAngle() * 180.0 / PI;
             if( angle1 > angle2 ) {
                 angle2 += 360.0;
             }
