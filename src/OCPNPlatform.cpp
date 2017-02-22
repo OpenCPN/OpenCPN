@@ -340,11 +340,19 @@ void OCPNPlatform::Initialize_1( void )
     info.pszAppName = _T("OpenCPN");
     
     info.pszAppVersion = OpenCPNVersion.c_str();
+
+    int type =  MiniDumpNormal;
     
-    int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
     // This results in the inclusion of global variables
+    type |= MiniDumpWithDataSegs
     
-    type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
+    //If this flag is specified, the contents of every readable and writeable private memory page will be included into the minidump.
+    type |=  MiniDumpWithPrivateReadWriteMemory;
+
+    //If this flag is specified, MiniDumpWriteDump function will scan the stack memory of every thread looking for pointers
+    //that point to other readable memory pages in the process’ address space.
+    type |=  MiniDumpWithIndirectlyReferencedMemory;
+    
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
     
     // Install all available exception handlers....
