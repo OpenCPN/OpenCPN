@@ -344,7 +344,7 @@ void OCPNPlatform::Initialize_1( void )
     int type =  MiniDumpNormal;
     
     // This results in the inclusion of global variables
-    type |= MiniDumpWithDataSegs
+    type |= MiniDumpWithDataSegs;
     
     //If this flag is specified, the contents of every readable and writeable private memory page will be included into the minidump.
     type |=  MiniDumpWithPrivateReadWriteMemory;
