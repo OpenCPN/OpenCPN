@@ -2673,6 +2673,7 @@ void SwitchInlandEcdisMode( bool Switch )
 {
     if ( Switch ){
         wxLogMessage( _T("Switch InlandEcdis mode On") );
+        LoadS57();
         //Overule some sewttings to comply with InlandEcdis
         g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
         g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
