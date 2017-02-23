@@ -1481,7 +1481,8 @@ void glTextureManager::BuildCompressedCache()
     
     m_skipout = false;
     m_skip = false;
-    
+    int yield = 0;
+        
     for( m_jcnt = 0; m_jcnt<ct_array.GetCount(); m_jcnt++) {
         
         wxString filename = ct_array.Item(m_jcnt).chart_path;
@@ -1543,7 +1544,18 @@ void glTextureManager::BuildCompressedCache()
                 //      Free all possible memory
                 ChartData->DeleteCacheChart(pchart);
                 delete tex_fact;
+                yield++;
+                if (yield == 200) {
+                    ::wxYield();
+                    yield = 0;
+                    if (!m_progDialog->Update(m_jcnt)) {
+                        m_skip = true;
+                        m_skipout = true;
+                    }
+                }
                 continue;
+
+                yield = 0;
                 
                 schedule:
                 ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);            
