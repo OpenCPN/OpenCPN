@@ -214,6 +214,10 @@ enum
 //------------------------------------------------------------------------------
 //    CanvasMenuHandler Implementation
 //------------------------------------------------------------------------------
+int CanvasMenuHandler::GetNextContextMenuId()
+{
+    return ID_DEF_MENU_LAST + 100;  //Allowing for 100 dynamic menu item identifiers
+}
 
 // Define a constructor for my canvas
 CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
