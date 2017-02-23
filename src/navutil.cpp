@@ -399,6 +399,8 @@ extern int              g_iENCToolbarPosY;
 
 extern wxString         g_uiStyle;
 
+int                     g_nCPUCount;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -532,7 +534,9 @@ int MyConfig::LoadMyConfig()
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
-    
+
+    Read( _T( "NCPUCount" ), &g_nCPUCount, -1);    
+
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
     Read( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );

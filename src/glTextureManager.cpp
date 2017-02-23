@@ -68,6 +68,7 @@ extern ocpnGLOptions    g_GLOptions;
 extern long g_tex_mem_used;
 extern int              g_tile_size;
 extern int              g_uncompressed_tile_size;
+extern int              g_nCPUCount;
 
 extern bool             b_inCompressAllCharts;
 
@@ -743,6 +744,13 @@ glTextureManager::glTextureManager()
     // ideally we would use the cpu count -1, and only launch jobs
     // when the idle load average is sufficient (greater than 1)
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
+    if(g_nCPUCount > 0)
+        nCPU = g_nCPUCount;
+
+    if (nCPU < 1) 
+        // obviously there's at least one CPU!
+        nCPU = 1;
+
     m_max_jobs =  wxMax(nCPU, 1);
     m_prevMemUsed = 0;    
 
