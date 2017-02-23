@@ -2119,12 +2119,12 @@ bool s52plib::TextRenderCheck( ObjRazRules *rzRules )
             || ( rzRules->obj->m_chart_context->chart->GetChartType() == CHART_TYPE_CM93COMP ) ) {
             if( !strncmp( rzRules->obj->FeatureName, "BUAARE", 6 ) )
                 return false;
-            else
-                if( !strncmp( rzRules->obj->FeatureName, "SEAARE", 6 ) )
-                    return false;
-                else
-                    if( !strncmp( rzRules->obj->FeatureName, "LNDRGN", 6 ) )
-                        return false;
+            else if( !strncmp( rzRules->obj->FeatureName, "SEAARE", 6 ) )
+                return false;
+            else if( !strncmp( rzRules->obj->FeatureName, "LNDRGN", 6 ) )
+                return false;
+            else if( !strncmp( rzRules->obj->FeatureName, "LNDARE", 6 ) )
+                return false;
         }
     }
 
