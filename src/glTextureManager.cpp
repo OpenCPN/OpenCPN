@@ -869,7 +869,8 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             if(m_skipout)
                 m_progMsg = _T("Skipping, please wait...\n\n");
             
-            m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip );
+            if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
+                m_skip = true;
             if(m_skip)
                 m_skipout = true;
             return;
@@ -1428,7 +1429,7 @@ void glTextureManager::BuildCompressedCache()
     }
     
     // create progress dialog
-    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
+    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT;
     
     wxString msg0;
     msg0 = _T("                                                                               \n  \n  ");
