@@ -1441,6 +1441,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
+    case WXK_MENU:
+        int x, y, mx, my;
+        event.GetPosition( &x, &y );
+
+        CallPopupMenu(x, y);
+        break;
+
     case WXK_ALT:
         m_modkeys |= wxMOD_ALT;
         break;
@@ -5069,6 +5076,329 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         
 }
 
+void ChartCanvas::CallPopupMenu(int x, int y)
+{
+    int mx, my;
+    mx = x;
+    my = y;
+
+    last_drag.x = mx;
+    last_drag.y = my;
+    if( parent_frame->nRoute_State ) {                    // creating route?
+        InvokeCanvasMenu(x, y, SELTYPE_ROUTECREATE);
+        return;
+    }
+    // General Right Click
+    // Look for selectable objects
+    double slat, slon;
+    slat = m_cursor_lat;
+    slon = m_cursor_lon;
+    
+    #if defined(__WXMAC__) || defined(__OCPN__ANDROID__)
+    wxScreenDC sdc;
+    ocpnDC dc( sdc );
+    #else
+    wxClientDC cdc( GetParent() );
+    ocpnDC dc( cdc );
+    #endif
+    
+    SelectItem *pFindAIS;
+    SelectItem *pFindRP;
+    SelectItem *pFindRouteSeg;
+    SelectItem *pFindTrackSeg;
+    SelectItem *pFindCurrent = NULL;
+    SelectItem *pFindTide = NULL;
+    
+    //    Deselect any current objects
+    if( m_pSelectedRoute ) {
+        m_pSelectedRoute->m_bRtIsSelected = false;        // Only one selection at a time
+        m_pSelectedRoute->DeSelectRoute();
+        #ifdef ocpnUSE_GL
+        if(g_bopengl){
+            InvalidateGL();
+            Update();
+        }
+        else
+            #endif
+            m_pSelectedRoute->Draw( dc, VPoint, GetVP().GetBBox() );
+    }
+    
+    if( m_pFoundRoutePoint ) {
+        m_pFoundRoutePoint->m_bPtIsSelected = false;
+        m_pFoundRoutePoint->Draw( dc );
+        RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
+    }
+    
+    //      Get all the selectable things at the cursor
+    pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
+    pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
+    pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
+    pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
+    
+    if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
+        SELTYPE_CURRENTPOINT );
+    
+    if( m_bShowTide )                                // look for tide stations
+        pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT );
+    
+    int seltype = 0;
+    
+    //    Try for AIS targets first
+    if( pFindAIS ) {
+        m_FoundAIS_MMSI = pFindAIS->GetUserData();
+        
+        //      Make sure the target data is available
+        if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) seltype |=
+            SELTYPE_AISTARGET;
+    }
+    
+    //    Now the various Route Parts
+    
+    m_pFoundRoutePoint = NULL;
+    if( pFindRP ) {
+        RoutePoint *pFirstVizPoint = NULL;
+        RoutePoint *pFoundActiveRoutePoint = NULL;
+        RoutePoint *pFoundVizRoutePoint = NULL;
+        Route *pSelectedActiveRoute = NULL;
+        Route *pSelectedVizRoute = NULL;
+        
+        //There is at least one routepoint, so get the whole list
+        SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                 SELTYPE_ROUTEPOINT );
+        wxSelectableItemListNode *node = SelList.GetFirst();
+        while( node ) {
+            SelectItem *pFindSel = node->GetData();
+            
+            RoutePoint *prp = (RoutePoint *) pFindSel->m_pData1;        //candidate
+            
+            //    Get an array of all routes using this point
+            wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( prp );
+            
+            // Use route array (if any) to determine actual visibility for this point
+            bool brp_viz = false;
+            if( proute_array ) {
+                for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                    Route *pr = (Route *) proute_array->Item( ir );
+                    if( pr->IsVisible() ) {
+                        brp_viz = true;
+                        break;
+                    }
+                }
+                if( !brp_viz  && prp->m_bKeepXRoute)    // is not visible as part of route, but still exists as a waypoint
+                    brp_viz = prp->IsVisible();         //  so treat as isolated point
+                    
+            } else
+                brp_viz = prp->IsVisible();               // isolated point
+                
+            if( ( NULL == pFirstVizPoint ) && brp_viz ) pFirstVizPoint = prp;
+                
+            // Use route array to choose the appropriate route
+            // Give preference to any active route, otherwise select the first visible route in the array for this point
+            m_pSelectedRoute = NULL;
+            if( proute_array ) {
+                for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                    Route *pr = (Route *) proute_array->Item( ir );
+                    if( pr->m_bRtIsActive ) {
+                        pSelectedActiveRoute = pr;
+                        pFoundActiveRoutePoint = prp;
+                        break;
+                    }
+                }
+                
+                if( NULL == pSelectedVizRoute ) {
+                    for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
+                        Route *pr = (Route *) proute_array->Item( ir );
+                        if( pr->IsVisible() ) {
+                            pSelectedVizRoute = pr;
+                            pFoundVizRoutePoint = prp;
+                            break;
+                        }
+                    }
+                }
+                
+                delete proute_array;
+            }
+            
+            node = node->GetNext();
+        }
+        
+        //      Now choose the "best" selections
+        if( pFoundActiveRoutePoint ) {
+            m_pFoundRoutePoint = pFoundActiveRoutePoint;
+            m_pSelectedRoute = pSelectedActiveRoute;
+        } else if( pFoundVizRoutePoint ) {
+            m_pFoundRoutePoint = pFoundVizRoutePoint;
+            m_pSelectedRoute = pSelectedVizRoute;
+        } else
+            // default is first visible point in list
+            m_pFoundRoutePoint = pFirstVizPoint;
+        
+        if( m_pSelectedRoute ) {
+            if( m_pSelectedRoute->IsVisible() ) seltype |= SELTYPE_ROUTEPOINT;
+        } else if( m_pFoundRoutePoint ) seltype |= SELTYPE_MARKPOINT;
+        
+        //      Highlite the selected point, to verify the proper right click selection
+        if( m_pFoundRoutePoint) {
+            m_pFoundRoutePoint->m_bPtIsSelected = true;
+            wxRect wp_rect;
+            m_pFoundRoutePoint->CalculateDCRect( m_dc_route, &wp_rect );
+            RefreshRect( wp_rect, true );
+        }
+        
+    }
+    
+    // Note here that we use SELTYPE_ROUTESEGMENT to select tracks as well as routes
+    // But call the popup handler with identifier appropriate to the type
+    if( pFindRouteSeg )                  // there is at least one select item
+    {
+        SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                 SELTYPE_ROUTESEGMENT );
+        
+        if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
+        {
+            //  Choose the first visible route containing segment in the list
+            wxSelectableItemListNode *node = SelList.GetFirst();
+            while( node ) {
+                SelectItem *pFindSel = node->GetData();
+                
+                Route *pr = (Route *) pFindSel->m_pData3;
+                if( pr->IsVisible() ) {
+                    m_pSelectedRoute = pr;
+                    break;
+                }
+                node = node->GetNext();
+            }
+        }
+        
+        if( m_pSelectedRoute ) {
+            if( NULL == m_pFoundRoutePoint )
+                m_pFoundRoutePoint =   (RoutePoint *) pFindRouteSeg->m_pData1;
+            
+            m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
+            if( m_pSelectedRoute->m_bRtIsSelected ){
+                #ifdef ocpnUSE_GL
+                if(g_bopengl){
+                    InvalidateGL();
+                    Update();
+                }
+                else
+                    #endif
+                    m_pSelectedRoute->Draw( dc, GetVP(), GetVP().GetBBox() );
+            }
+            
+            seltype |= SELTYPE_ROUTESEGMENT;
+        }
+        
+    }
+    
+    if( pFindTrackSeg ) {
+        m_pSelectedTrack = NULL;
+        SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
+                                                                 SELTYPE_TRACKSEGMENT );
+        
+        //  Choose the first visible track containing segment in the list
+        wxSelectableItemListNode *node = SelList.GetFirst();
+        while( node ) {
+            SelectItem *pFindSel = node->GetData();
+            
+            Track *pt = (Track *) pFindSel->m_pData3;
+            if( pt->IsVisible() ) {
+                m_pSelectedTrack = pt;
+                break;
+            }
+            node = node->GetNext();
+        }
+        
+        if( m_pSelectedTrack ) seltype |= SELTYPE_TRACKSEGMENT;
+    }
+    
+    bool bseltc = false;
+    //                      if(0 == seltype)
+    {
+        if( pFindCurrent ) {
+            // There may be multiple current entries at the same point.
+            // For example, there often is a current substation (with directions specified)
+            // co-located with its master.  We want to select the substation, so that
+            // the direction will be properly indicated on the graphic.
+            // So, we search the select list looking for IDX_type == 'c' (i.e substation)
+            IDX_entry *pIDX_best_candidate;
+            
+            SelectItem *pFind = NULL;
+            SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
+                                                                       m_cursor_lon, SELTYPE_CURRENTPOINT );
+            
+            //      Default is first entry
+            wxSelectableItemListNode *node = SelList.GetFirst();
+            pFind = node->GetData();
+            pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+            
+            if( SelList.GetCount() > 1 ) {
+                node = node->GetNext();
+                while( node ) {
+                    pFind = node->GetData();
+                    IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                    if( pIDX_candidate->IDX_type == 'c' ) {
+                        pIDX_best_candidate = pIDX_candidate;
+                        break;
+                    }
+                    
+                    node = node->GetNext();
+                }       // while (node)
+            } else {
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                pFind = node->GetData();
+                pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+            }
+            
+            m_pIDXCandidate = pIDX_best_candidate;
+            
+            if( 0 == seltype ) {
+                DrawTCWindow( x, y, (void *) pIDX_best_candidate );
+                Refresh( false );
+                bseltc = true;
+            } else
+                seltype |= SELTYPE_CURRENTPOINT;
+        }
+        
+        else if( pFindTide ) {
+            m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
+            
+            if( 0 == seltype ) {
+                DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
+                Refresh( false );
+                bseltc = true;
+            } else
+                seltype |= SELTYPE_TIDEPOINT;
+        }
+    }
+    
+    if( 0 == seltype )
+        seltype |= SELTYPE_UNKNOWN;
+    
+    if( !bseltc ){
+        InvokeCanvasMenu(x, y, seltype);
+        
+        // Clean up if not deleted in InvokeCanvasMenu
+        if( m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute) ) {
+            m_pSelectedRoute->m_bRtIsSelected = false;
+        }
+        
+        m_pSelectedRoute = NULL;
+        
+        if( m_pFoundRoutePoint ) {
+            if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
+                m_pFoundRoutePoint->m_bPtIsSelected = false;
+        }
+        m_pFoundRoutePoint = NULL;
+        
+        Refresh( true );
+        
+    }                
+    
+    // Seth: Is this refresh needed?
+    Refresh( false );            // needed for MSW, not GTK  Why??
+}
+
 bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
 {
     // For now just bail out completely if the point clicked is not on the chart
@@ -6117,321 +6447,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         }
         
         ret = true;
-        
-        if( parent_frame->nRoute_State ) {                    // creating route?
-            InvokeCanvasMenu(x, y, SELTYPE_ROUTECREATE);
-        }
-        else                                                  // General Right Click
-        {
-            // Look for selectable objects
-            double slat, slon;
-            slat = m_cursor_lat;
-            slon = m_cursor_lon;
-            
-            #if defined(__WXMAC__) || defined(__OCPN__ANDROID__)
-            wxScreenDC sdc;
-            ocpnDC dc( sdc );
-            #else
-            wxClientDC cdc( GetParent() );
-            ocpnDC dc( cdc );
-            #endif
-            
-            SelectItem *pFindAIS;
-            SelectItem *pFindRP;
-            SelectItem *pFindRouteSeg;
-            SelectItem *pFindTrackSeg;
-            SelectItem *pFindCurrent = NULL;
-            SelectItem *pFindTide = NULL;
-            
-            //    Deselect any current objects
-            if( m_pSelectedRoute ) {
-                m_pSelectedRoute->m_bRtIsSelected = false;        // Only one selection at a time
-                m_pSelectedRoute->DeSelectRoute();
-                #ifdef ocpnUSE_GL
-                if(g_bopengl){
-                    InvalidateGL();
-                    Update();
-                }
-                else
-                    #endif
-                    m_pSelectedRoute->Draw( dc, VPoint, GetVP().GetBBox() );
-            }
-            
-            if( m_pFoundRoutePoint ) {
-                m_pFoundRoutePoint->m_bPtIsSelected = false;
-                m_pFoundRoutePoint->Draw( dc );
-                RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
-            }
-            
-            //      Get all the selectable things at the cursor
-            pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
-            pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
-            pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
-            pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
-            
-            if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
-                SELTYPE_CURRENTPOINT );
-            
-            if( m_bShowTide )                                // look for tide stations
-                pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT );
-            
-            int seltype = 0;
-            
-            //    Try for AIS targets first
-            if( pFindAIS ) {
-                m_FoundAIS_MMSI = pFindAIS->GetUserData();
-                
-                //      Make sure the target data is available
-                if( g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI ) ) seltype |=
-                    SELTYPE_AISTARGET;
-            }
-            
-            //    Now the various Route Parts
-            
-            m_pFoundRoutePoint = NULL;
-            if( pFindRP ) {
-                RoutePoint *pFirstVizPoint = NULL;
-                RoutePoint *pFoundActiveRoutePoint = NULL;
-                RoutePoint *pFoundVizRoutePoint = NULL;
-                Route *pSelectedActiveRoute = NULL;
-                Route *pSelectedVizRoute = NULL;
-                
-                //There is at least one routepoint, so get the whole list
-                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                                                         SELTYPE_ROUTEPOINT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
-                while( node ) {
-                    SelectItem *pFindSel = node->GetData();
-                    
-                    RoutePoint *prp = (RoutePoint *) pFindSel->m_pData1;        //candidate
-                    
-                    //    Get an array of all routes using this point
-                    wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( prp );
-                    
-                    // Use route array (if any) to determine actual visibility for this point
-                    bool brp_viz = false;
-                    if( proute_array ) {
-                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
-                            Route *pr = (Route *) proute_array->Item( ir );
-                            if( pr->IsVisible() ) {
-                                brp_viz = true;
-                                break;
-                            }
-                        }
-                        if( !brp_viz  && prp->m_bKeepXRoute)    // is not visible as part of route, but still exists as a waypoint
-                            brp_viz = prp->IsVisible();         //  so treat as isolated point
-                            
-                    } else
-                        brp_viz = prp->IsVisible();               // isolated point
-                        
-                    if( ( NULL == pFirstVizPoint ) && brp_viz ) pFirstVizPoint = prp;
-                        
-                    // Use route array to choose the appropriate route
-                    // Give preference to any active route, otherwise select the first visible route in the array for this point
-                    m_pSelectedRoute = NULL;
-                    if( proute_array ) {
-                        for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
-                            Route *pr = (Route *) proute_array->Item( ir );
-                            if( pr->m_bRtIsActive ) {
-                                pSelectedActiveRoute = pr;
-                                pFoundActiveRoutePoint = prp;
-                                break;
-                            }
-                        }
-                        
-                        if( NULL == pSelectedVizRoute ) {
-                            for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
-                                Route *pr = (Route *) proute_array->Item( ir );
-                                if( pr->IsVisible() ) {
-                                    pSelectedVizRoute = pr;
-                                    pFoundVizRoutePoint = prp;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        delete proute_array;
-                    }
-                    
-                    node = node->GetNext();
-                }
-                
-                //      Now choose the "best" selections
-                if( pFoundActiveRoutePoint ) {
-                    m_pFoundRoutePoint = pFoundActiveRoutePoint;
-                    m_pSelectedRoute = pSelectedActiveRoute;
-                } else if( pFoundVizRoutePoint ) {
-                    m_pFoundRoutePoint = pFoundVizRoutePoint;
-                    m_pSelectedRoute = pSelectedVizRoute;
-                } else
-                    // default is first visible point in list
-                    m_pFoundRoutePoint = pFirstVizPoint;
-                
-                if( m_pSelectedRoute ) {
-                    if( m_pSelectedRoute->IsVisible() ) seltype |= SELTYPE_ROUTEPOINT;
-                } else if( m_pFoundRoutePoint ) seltype |= SELTYPE_MARKPOINT;
-                
-                //      Highlite the selected point, to verify the proper right click selection
-                if( m_pFoundRoutePoint) {
-                    m_pFoundRoutePoint->m_bPtIsSelected = true;
-                    wxRect wp_rect;
-                    m_pFoundRoutePoint->CalculateDCRect( m_dc_route, &wp_rect );
-                    RefreshRect( wp_rect, true );
-                }
-                
-            }
-            
-            // Note here that we use SELTYPE_ROUTESEGMENT to select tracks as well as routes
-            // But call the popup handler with identifier appropriate to the type
-            if( pFindRouteSeg )                  // there is at least one select item
-            {
-                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                                                         SELTYPE_ROUTESEGMENT );
-                
-                if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
-                {
-                    //  Choose the first visible route containing segment in the list
-                    wxSelectableItemListNode *node = SelList.GetFirst();
-                    while( node ) {
-                        SelectItem *pFindSel = node->GetData();
-                        
-                        Route *pr = (Route *) pFindSel->m_pData3;
-                        if( pr->IsVisible() ) {
-                            m_pSelectedRoute = pr;
-                            break;
-                        }
-                        node = node->GetNext();
-                    }
-                }
-                
-                if( m_pSelectedRoute ) {
-                    if( NULL == m_pFoundRoutePoint )
-                        m_pFoundRoutePoint =   (RoutePoint *) pFindRouteSeg->m_pData1;
-                    
-                    m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
-                    if( m_pSelectedRoute->m_bRtIsSelected ){
-                        #ifdef ocpnUSE_GL
-                        if(g_bopengl){
-                            InvalidateGL();
-                            Update();
-                        }
-                        else
-                            #endif
-                            m_pSelectedRoute->Draw( dc, GetVP(), GetVP().GetBBox() );
-                    }
-                    
-                    seltype |= SELTYPE_ROUTESEGMENT;
-                }
-                
-            }
-            
-            if( pFindTrackSeg ) {
-                m_pSelectedTrack = NULL;
-                SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                                                         SELTYPE_TRACKSEGMENT );
-                
-                //  Choose the first visible track containing segment in the list
-                wxSelectableItemListNode *node = SelList.GetFirst();
-                while( node ) {
-                    SelectItem *pFindSel = node->GetData();
-                    
-                    Track *pt = (Track *) pFindSel->m_pData3;
-                    if( pt->IsVisible() ) {
-                        m_pSelectedTrack = pt;
-                        break;
-                    }
-                    node = node->GetNext();
-                }
-                
-                if( m_pSelectedTrack ) seltype |= SELTYPE_TRACKSEGMENT;
-            }
-            
-            bool bseltc = false;
-            //                      if(0 == seltype)
-            {
-                if( pFindCurrent ) {
-                    // There may be multiple current entries at the same point.
-                    // For example, there often is a current substation (with directions specified)
-                    // co-located with its master.  We want to select the substation, so that
-                    // the direction will be properly indicated on the graphic.
-                    // So, we search the select list looking for IDX_type == 'c' (i.e substation)
-                    IDX_entry *pIDX_best_candidate;
-                    
-                    SelectItem *pFind = NULL;
-                    SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
-                                                                               m_cursor_lon, SELTYPE_CURRENTPOINT );
-                    
-                    //      Default is first entry
-                    wxSelectableItemListNode *node = SelList.GetFirst();
-                    pFind = node->GetData();
-                    pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                    
-                    if( SelList.GetCount() > 1 ) {
-                        node = node->GetNext();
-                        while( node ) {
-                            pFind = node->GetData();
-                            IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                            if( pIDX_candidate->IDX_type == 'c' ) {
-                                pIDX_best_candidate = pIDX_candidate;
-                                break;
-                            }
-                            
-                            node = node->GetNext();
-                        }       // while (node)
-                    } else {
-                        wxSelectableItemListNode *node = SelList.GetFirst();
-                        pFind = node->GetData();
-                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                    }
-                    
-                    m_pIDXCandidate = pIDX_best_candidate;
-                    
-                    if( 0 == seltype ) {
-                        DrawTCWindow( x, y, (void *) pIDX_best_candidate );
-                        Refresh( false );
-                        bseltc = true;
-                    } else
-                        seltype |= SELTYPE_CURRENTPOINT;
-                }
-                
-                else if( pFindTide ) {
-                    m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
-                    
-                    if( 0 == seltype ) {
-                        DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
-                        Refresh( false );
-                        bseltc = true;
-                    } else
-                        seltype |= SELTYPE_TIDEPOINT;
-                }
-            }
-            
-            if( 0 == seltype )
-                seltype |= SELTYPE_UNKNOWN;
-            
-            if( !bseltc ){
-                InvokeCanvasMenu(x, y, seltype);
-                
-                // Clean up if not deleted in InvokeCanvasMenu
-                if( m_pSelectedRoute && g_pRouteMan->IsRouteValid(m_pSelectedRoute) ) {
-                    m_pSelectedRoute->m_bRtIsSelected = false;
-                }
-                
-                m_pSelectedRoute = NULL;
-                
-                if( m_pFoundRoutePoint ) {
-                    if (pSelect->IsSelectableRoutePointValid(m_pFoundRoutePoint))
-                        m_pFoundRoutePoint->m_bPtIsSelected = false;
-                }
-                m_pFoundRoutePoint = NULL;
-                
-                Refresh( true );
-                
-            }                
-            
-            // Seth: Is this refresh needed?
-            Refresh( false );            // needed for MSW, not GTK  Why??
-        }
+        CallPopupMenu(mx , my);
     }   //Right down
 
     return ret;

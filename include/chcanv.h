@@ -341,6 +341,8 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       
 private:
+      void CallPopupMenu( int x, int y );
+      
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
     
