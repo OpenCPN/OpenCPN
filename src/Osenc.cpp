@@ -1106,7 +1106,20 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
 //        bool chain_broken_mssage_shown = false;
         
         if( b_copyfiles ) {
-          
+            
+            //  Empty the target directory of any files which might contaminate the ingestion.
+            //  Especially, old update files that have apparently later extensions than we are looking for
+
+            wxArrayString files_to_erase;
+            wxString fileTemplate = file000.GetName() + _T(".???");
+            
+            wxDir::GetAllFiles(CopyDir, &files_to_erase, fileTemplate, wxDIR_FILES);
+            for(unsigned int i=0 ; i < files_to_erase.GetCount() ; i++){
+                wxString f = files_to_erase[i];
+                ::wxRemoveFile(files_to_erase[i]);
+            }
+            
+            
             for( int iff = 0; iff < retval + 1; iff++ ) {
                 wxFileName ufile( file000 );
                 wxString sext;
