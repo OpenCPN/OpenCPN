@@ -75,6 +75,9 @@ extern double  g_overzoom_emphasis_base;
 extern bool    g_oz_vector_scale;
 extern bool g_bresponsive;
 extern float g_ChartScaleFactorExp;
+extern int g_chart_zoom_modifier_vector;
+
+float g_scaminScale;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -2464,6 +2467,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     double scale_factor = 1.0;
  
     scale_factor *=  g_ChartScaleFactorExp;
+    scale_factor *= g_scaminScale;
     
     if(g_oz_vector_scale && vp->b_quilt){
         double sfactor = vp->ref_scale/vp->chart_scale;
@@ -2474,11 +2478,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     int pivot_x = prule->pos.line.pivot_x.SYCL;
     int pivot_y = prule->pos.line.pivot_y.SYRW;
 
-    //  bitmaps are not scaled down, only up.
-    if(scale_factor > 1.0){
-        pivot_x *= scale_factor;
-        pivot_y *= scale_factor;
-    }
+    pivot_x *= scale_factor;
+    pivot_y *= scale_factor;
     
     // For opengl, hopefully the symbols are loaded in a texture
     unsigned int texture = 0;
@@ -2496,21 +2497,22 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         //    Check to see if any cached data is valid
         bool b_dump_cache = false;
         if( prule->pixelPtr ) {
+            
+            // Detect switches between DC and GL modes, flush if switch occurs
             if( m_pdc ) {
                 if( prule->parm0 != ID_wxBitmap ) b_dump_cache = true;
             } else {
                 if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
             }
         }
-        
-        // This handles the case when zooming into overzoom scale mode from normal
-        // We want to make sure the old unzoomed cache is not used.
-        //  Logic:  If parm0 != ID_EMPTY, it must be true that the last render was un-zoomed,
-        //          since zoomed renders clear the cache and set parm0 to ID_EMPTY before exiting.
-        //          So, in this case, dump the cached symbol bitmap so that a new scaled bitmap will be built.
-        if((scale_factor > 1.0) && (prule->parm0 != ID_EMPTY))
-            b_dump_cache = true;
 
+        // If the requested scaled symbol size is not the same as is currently cached, 
+        // we have to dump the cache
+        wxRect trect;
+        ChartSymbols::GetGLTextureRect( trect, prule->name.SYNM );
+        if(prule->parm2 != trect.width * scale_factor)
+            b_dump_cache = true;
+        
         wxBitmap *pbm = NULL;
         wxImage Image;
 
@@ -2522,16 +2524,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             // delete any old private data
             ClearRulesCache( prule );
 
-            if(scale_factor > 1.0){
-                int w0 = Image.GetWidth();
-                int h0 = Image.GetHeight();
-                Image.Rescale(w0 * scale_factor, h0 * scale_factor);
-            }
+            int w0 = Image.GetWidth();
+            int h0 = Image.GetHeight();
+            Image.Rescale(w0 * scale_factor, h0 * scale_factor, wxIMAGE_QUALITY_HIGH);
             
             int w = Image.GetWidth();
             int h = Image.GetHeight();
 
-            if( !m_pdc )          // opengl
+            if( !m_pdc )          // opengl, not using textures
             {
                 //    Get the glRGBA format data from the wxImage
                 unsigned char *d = Image.GetData();
@@ -2708,7 +2708,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             }
             else {
                 
-                if(scale_factor > 1.0){
+                if(1/*scale_factor > 1.0*/){
                     glPushMatrix();
                     
                     glTranslatef(r.x, r.y, 0);
@@ -2773,19 +2773,17 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         {
             //    Don't bother if the symbol is off the true screen,
             //    as for instance when an area-centered symbol is called for.
-            if( ( ( r.x - pivot_x /*+ b_width*/ ) < vp->pix_width )
-                    && ( ( r.y - pivot_y/* + b_height*/ ) < vp->pix_height ) ) {
-                // Get the current screen contents
+            if( ( r.x - pivot_x  < vp->pix_width ) && ( r.y - pivot_y < vp->pix_height ) ) {
+                
+                // Get the current screen contents to a wxImage
                 wxBitmap b1( b_width, b_height, -1 );
                 wxMemoryDC mdc1( b1 );
                 mdc1.Blit( 0, 0, b_width, b_height, m_pdc, r.x - pivot_x, r.y - pivot_y, wxCOPY );
                 wxImage im_back = b1.ConvertToImage();
 
-                //    Get the symbol
+                //    Get the scaled symbol as a wxImage
                 wxImage im_sym = ChartSymbols::GetImage( prule->name.SYNM );
-                if(scale_factor > 1){
-                    im_sym.Rescale(b_width, b_height);
-                }
+                im_sym.Rescale(b_width, b_height, wxIMAGE_QUALITY_HIGH);
 
                 wxImage im_result( b_width, b_height );
                 unsigned char *pdest = im_result.GetData();
@@ -2817,20 +2815,18 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 wxBitmap result( im_result );
                 wxMemoryDC result_dc( result );
 
-                m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc, 0, 0,
-                        wxCOPY, false );
+                m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &result_dc, 0, 0,  wxCOPY, false );
 
                 result_dc.SelectObject( wxNullBitmap );
                 mdc1.SelectObject( wxNullBitmap );
             }
         } else {
             //      Get the symbol bitmap into a memory dc
-            wxMemoryDC mdc;
-            mdc.SelectObject( (wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) ) );
+            wxBitmap &bmp = (wxBitmap &) ( *( (wxBitmap *) ( prule->pixelPtr ) ) );
+            wxMemoryDC mdc(bmp);
 
-            //      Blit it into the target dc
-            m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, b_width, b_height, &mdc, 0, 0, wxCOPY,
-                    true );
+            //      Blit it into the target dc, with mask
+            m_pdc->Blit( r.x - pivot_x, r.y - pivot_y, bmp.GetWidth(), bmp.GetHeight(), &mdc, 0, 0, wxCOPY, true );
 
             mdc.SelectObject( wxNullBitmap );
 
@@ -5777,8 +5773,11 @@ int s52plib::RenderObjectToGLText( const wxGLContext &glcc, ObjRazRules *rzRules
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
     //TODO  Debugging
-//     if(rzRules->obj->Index == 2460)
-//         int yyp = 0;
+//      if(rzRules->obj->Index != 1103)
+//          return 0; //int yyp = 0;
+
+//       if(strncmp(rzRules->obj->FeatureName, "BOYLAT", 6))
+//           return 0; //int yyp = 0;
 
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
@@ -8634,6 +8633,8 @@ bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
 
 bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 {
+    g_scaminScale = 1.0;
+    
     if( rzRules->obj == NULL ) return false;
 
     bool b_catfilter = true;
@@ -8700,12 +8701,13 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
         //      We shall explicitly ignore SCAMIN filtering for these types of objects.
 
         if( m_bUseSCAMIN ) {
-            if( ( DISPLAYBASE == rzRules->LUP->DISC ) || ( PRIO_GROUP1 == rzRules->LUP->DPRI ) ) b_visible =
-                    true;
+
+               
+            if( ( DISPLAYBASE == rzRules->LUP->DISC ) || ( PRIO_GROUP1 == rzRules->LUP->DPRI ) )
+                b_visible = true;
             else{
 //                if( vp->chart_scale > rzRules->obj->Scamin ) b_visible = false;
 
-extern int g_chart_zoom_modifier_vector;
 
                 double zoom_mod = (double)g_chart_zoom_modifier_vector;
 
@@ -8714,8 +8716,26 @@ extern int g_chart_zoom_modifier_vector;
                 mod = wxMax(mod, .2);
                 mod = wxMin(mod, 8.0);
 
-                if( vp->chart_scale  > rzRules->obj->Scamin * mod )
-                    b_visible = false;
+                if(mod > 1){
+                    if( vp->chart_scale  > rzRules->obj->Scamin * mod )
+                        b_visible = false;                              // definitely invisible
+                    else{
+                        //  Theoretically invisible, however...
+                        //  In the "zoom modified" scale region,
+                        //  we render the symbol at reduced size, scaling down to no less than half normal size.
+                        
+                        if(vp->chart_scale  > rzRules->obj->Scamin){
+                            double xs = vp->chart_scale - rzRules->obj->Scamin;
+                            double xl = (rzRules->obj->Scamin * mod) - rzRules->obj->Scamin;
+                            g_scaminScale = 1.0 - (0.5 * xs / xl);
+                            
+                        }
+                    }
+                }
+                else{
+                    if(vp->chart_scale  > rzRules->obj->Scamin)
+                        b_visible = false;
+                }
             }
 
             //      On the other hand, $TEXTS features need not really be displayed at all scales, always
@@ -9138,6 +9158,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, w
 
     scaleFactor = 100.0 / plib->GetPPMM();
     scaleFactor /= scale;
+    scaleFactor /= g_scaminScale;
     
     // SW is not always defined, cf. US/US4CA17M/US4CA17M.000
     penWidth = 1;
