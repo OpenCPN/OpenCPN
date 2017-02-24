@@ -907,7 +907,6 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
     
-    SwitchInlandEcdisMode( g_bInlandEcdis );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
@@ -916,22 +915,6 @@ int MyConfig::LoadMyConfig()
     g_UserPresLibData = valpres;
 
 #ifdef USE_S57
-    /*
-     wxString strd ( _T ( "S57DataLocation" ) );
-     SetPath ( _T ( "/Directories" ) );
-     Read ( strd, &val );              // Get the Directory name
-
-
-     wxString dirname ( val );
-     if ( !dirname.IsEmpty() )
-     {
-     if ( g_pcsv_locn->IsEmpty() )   // on second pass, don't overwrite
-     {
-     g_pcsv_locn->Clear();
-     g_pcsv_locn->Append ( val );
-     }
-     }
-     */
     wxString strs( _T ( "SENCFileLocation" ) );
     SetPath( _T ( "/Directories" ) );
     wxString vals;
@@ -941,6 +924,8 @@ int MyConfig::LoadMyConfig()
 
 #endif
 
+    SwitchInlandEcdisMode( g_bInlandEcdis );
+    
     SetPath( _T ( "/Directories" ) );
     wxString vald;
     Read( _T ( "InitChartDir" ), &vald );           // Get the Directory name
