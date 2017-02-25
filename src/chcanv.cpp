@@ -3481,6 +3481,11 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
                 text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
             }
+            else if( m_displayed_scale_factor > 0.01 ){
+                double sfr = wxRound(m_displayed_scale_factor * 100.) / 100.;
+                text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
+            }
+            
             else  {
                 text.Printf( _T("%s %4.0f (---)"), _("Scale"), true_scale_display );      // Generally, no chart, so no chart scale factor
             }
