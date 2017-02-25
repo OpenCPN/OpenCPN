@@ -3,22 +3,22 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-02-24 21:32-0500\n"
-"PO-Revision-Date: 2017-02-25 13:32-0500\n"
+"PO-Revision-Date: 2017-02-25 13:31-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
-"Language-Team: French\n"
-"Language: fr_FR\n"
+"Language-Team: Arabic\n"
+"Language: ar_SA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
-"X-Crowdin-Language: fr\n"
+"X-Crowdin-Language: ar\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
 #: include/about.h:39 src/chart1.cpp:3042 src/chart1.cpp:5355
 msgid "About OpenCPN"
-msgstr "A propos d'OpenCPN"
+msgstr ""
 
 #: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1130
 #: src/routemanagerdialog.cpp:1179 src/routemanagerdialog.cpp:1829
@@ -26,63 +26,63 @@ msgstr "A propos d'OpenCPN"
 #: src/routemanagerdialog.cpp:2262 src/routemanagerdialog.cpp:2394
 #: src/routemanagerdialog.cpp:2519 src/toolbar.cpp:1054 src/toolbar.cpp:2593
 msgid "OpenCPN Alert"
-msgstr "Alerte déclenchée par OpenCPN"
+msgstr ""
 
 #: include/AISTargetAlertDialog.h:76
 msgid "OpenCPN AIS Alert"
-msgstr "Alerte AIS par OpenCPN"
+msgstr ""
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:58
 #: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53
 #: src/canvasMenu.cpp:387 src/canvasMenu.cpp:393 src/chcanv.cpp:6719
 msgid "Object Query"
-msgstr "Liste des objets :"
+msgstr ""
 
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:610
 #: src/canvasMenu.cpp:415
 msgid "Center view"
-msgstr "Centrer la vue"
+msgstr ""
 
 #: include/LinkPropDlg.h:72 include/LinkPropDlg.h:84
 msgid "Link Properties"
-msgstr "Propriétés du lien"
+msgstr ""
 
 #: include/options.h:68 src/chart1.cpp:2969 src/chart1.cpp:5350
 #: src/chart1.cpp:5503 src/chart1.cpp:6479 src/options.cpp:2802
 #: src/options.cpp:3063
 msgid "Options"
-msgstr "Options :"
+msgstr ""
 
 #: include/routeprintout.h:92 src/routeprintout.cpp:337
 msgid "Print Route Selection"
-msgstr "Route sélectionnée : Imprimer"
+msgstr ""
 
 #: include/routeprop.h:66 src/canvasMenu.cpp:1421 src/chcanv.cpp:5197
 #: src/routemanagerdialog.cpp:1222 src/routemanagerdialog.cpp:1224
 msgid "Route Properties"
-msgstr "Route : Propriétés"
+msgstr ""
 
 #: include/routeprop.h:110 include/routeprop.h:361 src/chcanv.cpp:6845
 #: src/chcanv.cpp:6848 src/routemanagerdialog.cpp:2198
 #: src/routemanagerdialog.cpp:2201 src/routeprop.cpp:562
 msgid "Waypoint Properties"
-msgstr "Waypoint : Propriétés"
+msgstr ""
 
 #: include/routeprop.h:389 include/routeprop.h:411
 msgid "Waypoint Information"
-msgstr "Waypoint/marque : description"
+msgstr ""
 
 #: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:663 src/canvasMenu.cpp:739
 #: src/canvasMenu.cpp:781 src/canvasMenu.cpp:1314 src/canvasMenu.cpp:1325
 #: src/canvasMenu.cpp:1338 src/canvasMenu.cpp:1350
 #: src/routemanagerdialog.cpp:1465 src/routemanagerdialog.cpp:2372
 msgid "Send to GPS"
-msgstr "Envoyer au GPS"
+msgstr ""
 
 #: include/TrackPropDlg.h:179 src/TrackPropDlg.cpp:1085
 #: src/TrackPropDlg.cpp:1098
 msgid "Track properties"
-msgstr "Propriétés de la trace"
+msgstr ""
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1355 src/chart1.cpp:5979
@@ -96,609 +96,609 @@ msgstr "Propriétés de la trace"
 #: src/toolbar.cpp:2691 src/TrackPropDlg.cpp:109 src/TrackPropDlg.cpp:240
 #: src/TrackPropDlg.cpp:548
 msgid "Dialog"
-msgstr "Boite de dialogue"
+msgstr ""
 
 #: src/about.cpp:385
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr "       OpenCPN... Le logiciel  \"opensource\" de cartographie marine et d'aide à la navigation."
+msgstr ""
 
 #: src/about.cpp:404
 msgid "Copy Log File to Clipboard"
-msgstr "Copier le fichier log dans le presse papier"
+msgstr ""
 
 #: src/about.cpp:405
 msgid "Copy Settings File to Clipboard"
-msgstr "Copier le fichier d'initialisation dans le presse-papier"
+msgstr ""
 
 #: src/about.cpp:419
 msgid "About"
-msgstr "A propos de "
+msgstr ""
 
 #: src/about.cpp:433
 msgid "Authors"
-msgstr "Auteurs"
+msgstr ""
 
 #: src/about.cpp:447
 msgid "License"
-msgstr "Licence"
+msgstr ""
 
 #: src/about.cpp:461
 msgid "Help"
-msgstr "Aide"
+msgstr ""
 
 #: src/about.cpp:467 src/AISTargetListDialog.cpp:679
 msgid "Close"
-msgstr "Fermer"
+msgstr ""
 
 #: src/ais.cpp:152
 msgid "Underway"
-msgstr "Faisant route"
+msgstr ""
 
 #: src/ais.cpp:153
 msgid "At Anchor"
-msgstr "Au mouillage"
+msgstr ""
 
 #: src/ais.cpp:154
 msgid "Not Under Command"
-msgstr "Non maître de sa manoeuvre"
+msgstr ""
 
 #: src/ais.cpp:155
 msgid "Restricted Manoeuvrability"
-msgstr "Manœuvrabilité réduite"
+msgstr ""
 
 #: src/ais.cpp:156
 msgid "Constrained by draught"
-msgstr "Handicapé par son tirant d'eau"
+msgstr ""
 
 #: src/ais.cpp:157
 msgid "Moored"
-msgstr "Amarré"
+msgstr ""
 
 #: src/ais.cpp:158
 msgid "Aground"
-msgstr "Echoué"
+msgstr ""
 
 #: src/ais.cpp:159
 msgid "Engaged in Fishing"
-msgstr "Pêche en cours"
+msgstr ""
 
 #: src/ais.cpp:160
 msgid "Under way sailing"
-msgstr "A la voile"
+msgstr ""
 
 #: src/ais.cpp:161 src/ais.cpp:190
 msgid "High Speed Craft"
-msgstr "Navire à Grande Vitesse"
+msgstr ""
 
 #: src/ais.cpp:162
 msgid "Wing In Ground Effect"
-msgstr "Avion à effet de sol (WIG)"
+msgstr ""
 
 #: src/ais.cpp:163
 msgid "Power-driven vessel towing astern (regional use)"
-msgstr "Remorqueur avec remorque (local)"
+msgstr ""
 
 #: src/ais.cpp:164
 msgid "Power-driven vessel pushing ahead or towing alongside (regional use)"
-msgstr "Pousseur ou remorqueur avec remorque à couple (local)"
+msgstr ""
 
 #: src/ais.cpp:165
 msgid "Reserved 13"
-msgstr "Réservé 13"
+msgstr ""
 
 #: src/ais.cpp:166
 msgid "Reserved 14"
-msgstr "Réservé 14"
+msgstr ""
 
 #: src/ais.cpp:167 src/AIS_Target_Data.cpp:401
 msgid "Undefined"
-msgstr "Non défini"
+msgstr ""
 
 #: src/ais.cpp:168
 msgid "Virtual"
-msgstr "Virtuel"
+msgstr ""
 
 #: src/ais.cpp:169
 msgid "Virtual (On Position)"
-msgstr "Virtuel (Etat On)"
+msgstr ""
 
 #: src/ais.cpp:170
 msgid "Virtual (Off Position)"
-msgstr "Virtuel (Etat Off)"
+msgstr ""
 
 #: src/ais.cpp:171
 msgid "Real"
-msgstr "Réel"
+msgstr ""
 
 #: src/ais.cpp:172
 msgid "Real (On Position)"
-msgstr "Réel (Etat On)"
+msgstr ""
 
 #: src/ais.cpp:173
 msgid "Real(Off Position)"
-msgstr "Réel (Etat Off)"
+msgstr ""
 
 #: src/ais.cpp:182
 msgid "Vessel Fishing"
-msgstr "Bateau en pêche"
+msgstr ""
 
 #: src/ais.cpp:183
 msgid "Vessel Towing"
-msgstr "Navire remorquant"
+msgstr ""
 
 #: src/ais.cpp:184
 msgid "Vessel Towing, Long"
-msgstr "Navire remorquant, grande longueur"
+msgstr ""
 
 #: src/ais.cpp:185
 msgid "Vessel Dredging"
-msgstr "Navire draguant"
+msgstr ""
 
 #: src/ais.cpp:186
 msgid "Vessel Diving"
-msgstr "Navire avec plongeurs"
+msgstr ""
 
 #: src/ais.cpp:187
 msgid "Military Vessel"
-msgstr "Navire militaire"
+msgstr ""
 
 #: src/ais.cpp:188
 msgid "Sailing Vessel"
-msgstr "Navire à voile"
+msgstr ""
 
 #: src/ais.cpp:189
 msgid "Pleasure craft"
-msgstr "Navire de plaisance"
+msgstr ""
 
 #: src/ais.cpp:191
 msgid "Pilot Vessel"
-msgstr "Bateau pilote"
+msgstr ""
 
 #: src/ais.cpp:192
 msgid "Search and Rescue Vessel"
-msgstr "Navire de recherche et sauvetage en mer"
+msgstr ""
 
 #: src/ais.cpp:193 src/ais.cpp:258
 msgid "Tug"
-msgstr "Remorqueur"
+msgstr ""
 
 #: src/ais.cpp:194
 msgid "Port Tender"
-msgstr "Bateau de services de port"
+msgstr ""
 
 #: src/ais.cpp:195
 msgid "Pollution Control Vessel"
-msgstr "Navire de contrôle de pollution"
+msgstr ""
 
 #: src/ais.cpp:196
 msgid "Law Enforcement Vessel"
-msgstr "Police maritime"
+msgstr ""
 
 #: src/ais.cpp:197
 msgid "Medical Transport"
-msgstr "Transport sanitaire"
+msgstr ""
 
 #: src/ais.cpp:198
 msgid "Passenger Ship"
-msgstr "Navire à passagers"
+msgstr ""
 
 #: src/ais.cpp:199
 msgid "Cargo Ship"
-msgstr "Cargo"
+msgstr ""
 
 #: src/ais.cpp:200 src/AIS_Decoder.cpp:256
 msgid "Tanker"
-msgstr "Pétrolier"
+msgstr ""
 
 #: src/ais.cpp:201 src/AIS_Target_Data.cpp:387 src/AIS_Target_Data.cpp:672
 #: src/AIS_Target_Data.cpp:732 src/AIS_Target_Data.cpp:906
 #: src/chartdbs.cpp:1279
 msgid "Unknown"
-msgstr "Inconnu"
+msgstr ""
 
 #: src/ais.cpp:202
 msgid "Unspecified"
-msgstr "Non spécifié"
+msgstr ""
 
 #: src/ais.cpp:203
 msgid "Reference Point"
-msgstr "Point de référence :"
+msgstr ""
 
 #: src/ais.cpp:204 src/ais.cpp:270
 msgid "RACON"
-msgstr "RACON"
+msgstr ""
 
 #: src/ais.cpp:205
 msgid "Fixed Structure"
-msgstr "Structure fixe"
+msgstr ""
 
 #: src/ais.cpp:206
 msgid "Spare"
-msgstr "Secours"
+msgstr ""
 
 #: src/ais.cpp:207
 msgid "Light"
-msgstr "Feu"
+msgstr ""
 
 #: src/ais.cpp:208
 msgid "Light w/Sectors"
-msgstr "Feu à secteurs"
+msgstr ""
 
 #: src/ais.cpp:209
 msgid "Leading Light Front"
-msgstr "Feu avant"
+msgstr ""
 
 #: src/ais.cpp:210
 msgid "Leading Light Rear"
-msgstr "Feu arrière"
+msgstr ""
 
 #: src/ais.cpp:211
 msgid "Cardinal N Beacon"
-msgstr "Balise cardinale N"
+msgstr ""
 
 #: src/ais.cpp:212
 msgid "Cardinal E Beacon"
-msgstr "Balise cardinale E"
+msgstr ""
 
 #: src/ais.cpp:213
 msgid "Cardinal S Beacon"
-msgstr "Balise cardinale S"
+msgstr ""
 
 #: src/ais.cpp:214
 msgid "Cardinal W Beacon"
-msgstr "Balise cardinale O"
+msgstr ""
 
 #: src/ais.cpp:215
 msgid "Beacon, Port Hand"
-msgstr "Balise babord"
+msgstr ""
 
 #: src/ais.cpp:216
 msgid "Beacon, Starboard Hand"
-msgstr "Balise tribord"
+msgstr ""
 
 #: src/ais.cpp:217
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr "Balise, chenal préférentiel babord"
+msgstr ""
 
 #: src/ais.cpp:218
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr "Balise, chenal préférentiel tribord"
+msgstr ""
 
 #: src/ais.cpp:219
 msgid "Beacon, Isolated Danger"
-msgstr "Balise, danger isolé"
+msgstr ""
 
 #: src/ais.cpp:220
 msgid "Beacon, Safe Water"
-msgstr "Balise, eau libre"
+msgstr ""
 
 #: src/ais.cpp:221
 msgid "Beacon, Special Mark"
-msgstr "Balise, marque spéciale"
+msgstr ""
 
 #: src/ais.cpp:222
 msgid "Cardinal Mark N"
-msgstr "Marque cardinale N"
+msgstr ""
 
 #: src/ais.cpp:223
 msgid "Cardinal Mark E"
-msgstr "Marque cardinale E"
+msgstr ""
 
 #: src/ais.cpp:224
 msgid "Cardinal Mark S"
-msgstr "Marque cardinale S"
+msgstr ""
 
 #: src/ais.cpp:225
 msgid "Cardinal Mark W"
-msgstr "Marque cardinale O"
+msgstr ""
 
 #: src/ais.cpp:226
 msgid "Port Hand Mark"
-msgstr "Marque latérale babord"
+msgstr ""
 
 #: src/ais.cpp:227
 msgid "Starboard Hand Mark"
-msgstr "Marque latérale tribord"
+msgstr ""
 
 #: src/ais.cpp:228
 msgid "Preferred Channel Port Hand"
-msgstr "Chenal préféré babord"
+msgstr ""
 
 #: src/ais.cpp:229
 msgid "Preferred Channel Starboard Hand"
-msgstr "Chenal préféré tribord"
+msgstr ""
 
 #: src/ais.cpp:230
 msgid "Isolated Danger"
-msgstr "Danger isolé"
+msgstr ""
 
 #: src/ais.cpp:231 src/ais.cpp:286 src/ais.cpp:297
 msgid "Safe Water"
-msgstr "Eau libre"
+msgstr ""
 
 #: src/ais.cpp:232
 msgid "Special Mark"
-msgstr "Marque spéciale"
+msgstr ""
 
 #: src/ais.cpp:233
 msgid "Light Vessel/Rig"
-msgstr "Bateau feu/Plate-forme"
+msgstr ""
 
 #: src/ais.cpp:234
 msgid "GpsGate Buddy"
-msgstr "Portail GPS des amis"
+msgstr ""
 
 #: src/ais.cpp:235
 msgid "Position Report"
-msgstr "Rapport de position"
+msgstr ""
 
 #: src/ais.cpp:236 src/ais.cpp:302
 msgid "Distress"
-msgstr "Détresse"
+msgstr ""
 
 #: src/ais.cpp:237
 msgid "ARPA radar target"
-msgstr "Cible radar ARPA"
+msgstr ""
 
 #: src/ais.cpp:238 src/AIS_Target_Data.cpp:903
 msgid "APRS Position Report"
-msgstr "Rapport de position APRS"
+msgstr ""
 
 #: src/ais.cpp:247
 msgid "F/V"
-msgstr "Nav. pêc."
+msgstr ""
 
 #: src/ais.cpp:248
 msgid "Tow"
-msgstr "Remorquage"
+msgstr ""
 
 #: src/ais.cpp:249
 msgid "Long Tow"
-msgstr "Remorquage long"
+msgstr ""
 
 #: src/ais.cpp:250
 msgid "Dredge"
-msgstr "Drague"
+msgstr ""
 
 #: src/ais.cpp:251
 msgid "D/V"
-msgstr "Plong."
+msgstr ""
 
 #: src/ais.cpp:252
 msgid "Mil/V"
-msgstr "Nav Mil."
+msgstr ""
 
 #: src/ais.cpp:253
 msgid "S/V"
-msgstr "Voil."
+msgstr ""
 
 #: src/ais.cpp:254
 msgid "Yat"
-msgstr "Yacht"
+msgstr ""
 
 #: src/ais.cpp:255
 msgid "HSC"
-msgstr "grd. vit."
+msgstr ""
 
 #: src/ais.cpp:256
 msgid "P/V"
-msgstr "Pil."
+msgstr ""
 
 #: src/ais.cpp:257
 msgid "SAR/V"
-msgstr "Nav. sauv."
+msgstr ""
 
 #: src/ais.cpp:259
 msgid "Tender"
-msgstr "Annexe"
+msgstr ""
 
 #: src/ais.cpp:260
 msgid "PC/V"
-msgstr "Cont. pol."
+msgstr ""
 
 #: src/ais.cpp:261
 msgid "LE/V"
-msgstr "Pol. Mar."
+msgstr ""
 
 #: src/ais.cpp:262
 msgid "Med/V"
-msgstr "Nav. sanit."
+msgstr ""
 
 #: src/ais.cpp:263
 msgid "Pass/V"
-msgstr "Nav. Pas."
+msgstr ""
 
 #: src/ais.cpp:264
 msgid "M/V"
-msgstr "Cargo"
+msgstr ""
 
 #: src/ais.cpp:265
 msgid "M/T"
-msgstr "Pétr."
+msgstr ""
 
 #: src/ais.cpp:266 src/ais.cpp:272
 msgid "?"
-msgstr "?"
+msgstr ""
 
 #: src/ais.cpp:268 src/AIS_Target_Data.cpp:888
 msgid "AtoN"
-msgstr "AtoN"
+msgstr ""
 
 #: src/ais.cpp:269
 msgid "Ref. Pt"
-msgstr "Point de réf."
+msgstr ""
 
 #: src/ais.cpp:271
 msgid "Fix.Struct."
-msgstr "Struct. Fixe"
+msgstr ""
 
 #: src/ais.cpp:273
 msgid "Lt"
-msgstr "Feu"
+msgstr ""
 
 #: src/ais.cpp:274
 msgid "Lt sect."
-msgstr "Feu à secteur"
+msgstr ""
 
 #: src/ais.cpp:275
 msgid "Ldg Lt Front"
-msgstr "Feu avant"
+msgstr ""
 
 #: src/ais.cpp:276
 msgid "Ldg Lt Rear"
-msgstr "Feu arrière"
+msgstr ""
 
 #: src/ais.cpp:277 src/ais.cpp:288
 msgid "Card. N"
-msgstr "Card. Nord"
+msgstr ""
 
 #: src/ais.cpp:278 src/ais.cpp:289
 msgid "Card. E"
-msgstr "Card. Est"
+msgstr ""
 
 #: src/ais.cpp:279 src/ais.cpp:290
 msgid "Card. S"
-msgstr "Card. Sud"
+msgstr ""
 
 #: src/ais.cpp:280 src/ais.cpp:291
 msgid "Card. W"
-msgstr "Card. O"
+msgstr ""
 
 #: src/ais.cpp:281 src/options.cpp:1701
 msgid "Port"
-msgstr "Babord"
+msgstr ""
 
 #: src/ais.cpp:282
 msgid "Stbd"
-msgstr "Trib."
+msgstr ""
 
 #: src/ais.cpp:283 src/ais.cpp:284 src/ais.cpp:294 src/ais.cpp:295
 msgid "Pref. Chnl"
-msgstr "Chnl préf."
+msgstr ""
 
 #: src/ais.cpp:285 src/ais.cpp:296
 msgid "Isol. Dngr"
-msgstr "Dang. isol."
+msgstr ""
 
 #: src/ais.cpp:287 src/ais.cpp:298
 msgid "Special"
-msgstr "Spécial"
+msgstr ""
 
 #: src/ais.cpp:292
 msgid "Port Hand"
-msgstr "Babord"
+msgstr ""
 
 #: src/ais.cpp:293
 msgid "Stbd Hand"
-msgstr "Tribord"
+msgstr ""
 
 #: src/ais.cpp:299
 msgid "LtV/Rig"
-msgstr "Bat.feu/P-form."
+msgstr ""
 
 #: src/ais.cpp:300 src/AIS_Target_Data.cpp:892
 msgid "Buddy"
-msgstr "Buddy"
+msgstr ""
 
 #: src/ais.cpp:301 src/AIS_Target_Data.cpp:895 src/AIS_Target_Data.cpp:897
 msgid "DSC"
-msgstr "ASN"
+msgstr ""
 
 #: src/ais.cpp:303 src/AIS_Target_Data.cpp:901
 msgid "ARPA"
-msgstr "ARPA"
+msgstr ""
 
 #: src/ais.cpp:304 src/AIS_Target_Data.cpp:903
 msgid "APRS"
-msgstr "APRS"
+msgstr ""
 
 #: src/ais.cpp:311
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr "Prudence dans cette zone : Zone fréquentée par des mammifères marins (Aucune baleine observée)"
+msgstr ""
 
 #: src/ais.cpp:312
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr "Prudence dans cette zone : Mammifère marins présents. Réduire la vitesse."
+msgstr ""
 
 #: src/ais.cpp:313
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr "Prudence dans cette zone : Mammifères marins présents. Restez à l'écart"
+msgstr ""
 
 #: src/ais.cpp:314
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr "Prudence dans cette zone : Mammifères marins présents. Rapportez vos observations"
+msgstr ""
 
 #: src/ais.cpp:315
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr "Prudence dans cette zone : Habitat protégé. Réduire la vitesse"
+msgstr ""
 
 #: src/ais.cpp:316
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr "Prudence dans cette zone : Habitat protégé. Restez à l'écart"
+msgstr ""
 
 #: src/ais.cpp:317
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr "Prudence dans cette zone : Habitat protégé. Pêche et mouillage interdit."
+msgstr ""
 
 #: src/ais.cpp:318
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr "Prudence dans cette zone : Epave (Objets dérivants)"
+msgstr ""
 
 #: src/ais.cpp:319
 msgid "Caution Area: Traffic congestion"
-msgstr "Prudence dans cette zone : Trafic dense"
+msgstr ""
 
 #: src/ais.cpp:320
 msgid "Caution Area: Marine event"
-msgstr "Prudence dans cette zone : Evénement maritime"
+msgstr ""
 
 #: src/ais.cpp:321
 msgid "Caution Area: Divers down"
-msgstr "Prudence dans cette zone : Présence de plongeurs "
+msgstr ""
 
 #: src/ais.cpp:322
 msgid "Caution Area: Swim area"
-msgstr "Prudence dans cette zone : Zone de baignade"
+msgstr ""
 
 #: src/ais.cpp:323
 msgid "Caution Area: Dredge operations"
-msgstr "Prudence dans cette zone : Dragage en cours"
+msgstr ""
 
 #: src/ais.cpp:324
 msgid "Caution Area: Survey operations"
-msgstr "Prudence dans cette zone : Mission hydrographique"
+msgstr ""
 
 #: src/ais.cpp:325
 msgid "Caution Area: Underwater operation"
-msgstr "Prudence dans cette zone : Exploitation sous marine"
+msgstr ""
 
 #: src/ais.cpp:326
 msgid "Caution Area: Seaplane operations"
-msgstr "Prudence dans cette zone : Présence d'hydravion"
+msgstr ""
 
 #: src/ais.cpp:327
 msgid "Caution Area: Fishery - nets in water"
-msgstr "Prudence dans cette zone : Zone de pêche, présence de filets immergés"
+msgstr ""
 
 #: src/ais.cpp:328
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr "Prudence dans cette zone : Flottille de pêche"
+msgstr ""
 
 #: src/ais.cpp:329
 msgid "Caution Area: Fairway closed"
-msgstr "Prudence dans cette zone : Chenal fermé"
+msgstr ""
 
 #: src/ais.cpp:330
 msgid "Caution Area: Harbour closed"
-msgstr "Prudence dans cette zone : Port fermé"
+msgstr ""
 
 #: src/ais.cpp:331
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr "Prudence dans cette zone : Risque (Décrit dans le texte associé)"
+msgstr ""
 
 #: src/ais.cpp:332
 msgid "Caution Area: Underwater vehicle operation"
-msgstr "Prudence dans cette zone : Sous-marin présent"
+msgstr ""
 
 #: src/ais.cpp:333 src/ais.cpp:342 src/ais.cpp:350 src/ais.cpp:357
 #: src/ais.cpp:358 src/ais.cpp:359 src/ais.cpp:360 src/ais.cpp:361
@@ -710,1723 +710,1723 @@ msgstr "Prudence dans cette zone : Sous-marin présent"
 #: src/ais.cpp:427 src/ais.cpp:428 src/ais.cpp:429 src/ais.cpp:430
 #: src/ais.cpp:434 src/ais.cpp:435
 msgid "(reserved for future use)"
-msgstr "(Réservé pour un usage futur)"
+msgstr ""
 
 #: src/ais.cpp:334
 msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr "Prudence, environnement hostile : Front d'orage (Ligne de grains)"
+msgstr ""
 
 #: src/ais.cpp:335
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr "Prudence, environnement hostile : Icebergs possibles"
+msgstr ""
 
 #: src/ais.cpp:336
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr "Prudence, environnement hostile : Alerte aux orages (Cellule orageuse ou ligne d'orages)"
+msgstr ""
 
 #: src/ais.cpp:337
 msgid "Environmental Caution Area: High wind"
-msgstr "Prudence, environnement hostile : Vent fort"
+msgstr ""
 
 #: src/ais.cpp:338
 msgid "Environmental Caution Area: High waves"
-msgstr "Prudence, environnement hostile : Hautes vagues"
+msgstr ""
 
 #: src/ais.cpp:339
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
-msgstr "Prudence, environnement hostile :  Visibilité réduite (Brouillard, pluie, etc ...)"
+msgstr ""
 
 #: src/ais.cpp:340
 msgid "Environmental Caution Area: Strong currents"
-msgstr "Prudence, environnement hostile : Courants forts"
+msgstr ""
 
 #: src/ais.cpp:341
 msgid "Environmental Caution Area: Heavy icing"
-msgstr "Prudence, environnement hostile : Givrage important"
+msgstr ""
 
 #: src/ais.cpp:343
 msgid "Restricted Area: Fishing prohibited"
-msgstr "Zone à accès limité : Pêche interdite"
+msgstr ""
 
 #: src/ais.cpp:344
 msgid "Restricted Area: No anchoring."
-msgstr "Zone à accès limité : Mouillage interdit"
+msgstr ""
 
 #: src/ais.cpp:345
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr "Zone à accès limité :  Autorisation d'entrée requise"
+msgstr ""
 
 #: src/ais.cpp:346
 msgid "Restricted Area: Entry prohibited"
-msgstr "Zone à accès limité :  Entrée interdite"
+msgstr ""
 
 #: src/ais.cpp:347
 msgid "Restricted Area: Active military OPAREA"
-msgstr "Zone à accès limité : Opérations militaires en cours OPAREA"
+msgstr ""
 
 #: src/ais.cpp:348
 msgid "Restricted Area: Firing - danger area."
-msgstr "Zone à accès limité :  Zone de tir"
+msgstr ""
 
 #: src/ais.cpp:349
 msgid "Restricted Area: Drifting Mines"
-msgstr "Zone à accès limité :  Mines dérivantes"
+msgstr ""
 
 #: src/ais.cpp:351
 msgid "Anchorage Area: Anchorage open"
-msgstr "Zone de mouillage : Mouillage possible"
+msgstr ""
 
 #: src/ais.cpp:352
 msgid "Anchorage Area: Anchorage closed"
-msgstr "Zone de mouillage : Mouillage fermé"
+msgstr ""
 
 #: src/ais.cpp:353
 msgid "Anchorage Area: Anchoring prohibited"
-msgstr "Zone de mouillage : Mouillage interdit"
+msgstr ""
 
 #: src/ais.cpp:354
 msgid "Anchorage Area: Deep draft anchorage"
-msgstr "Zone de mouillage : Mouillage en eau profonde"
+msgstr ""
 
 #: src/ais.cpp:355
 msgid "Anchorage Area: Shallow draft anchorage"
-msgstr "Zone de mouillage : Mouillage pour faible tirant d'eau"
+msgstr ""
 
 #: src/ais.cpp:356
 msgid "Anchorage Area: Vessel transfer operations"
-msgstr "Zone de mouillage : Pour transfert entre navires"
+msgstr ""
 
 #: src/ais.cpp:367
 msgid "Security Alert - Level 1"
-msgstr "Alerte de sécurité - Niveau 1"
+msgstr ""
 
 #: src/ais.cpp:368
 msgid "Security Alert - Level 2"
-msgstr "Alerte de sécurité - Niveau 2"
+msgstr ""
 
 #: src/ais.cpp:369
 msgid "Security Alert - Level 3"
-msgstr "Alerte de sécurité - Niveau 3"
+msgstr ""
 
 #: src/ais.cpp:375
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Zone de détresse : Navire non manœuvrant dérivant"
+msgstr ""
 
 #: src/ais.cpp:376
 msgid "Distress Area: Vessel sinking"
-msgstr "Zone de détresse : Naufrage d'un navire"
+msgstr ""
 
 #: src/ais.cpp:377
 msgid "Distress Area: Vessel abandoning ship"
-msgstr "Zone de détresse : Navire en cours d'abandon"
+msgstr ""
 
 #: src/ais.cpp:378
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr "Zone de détresse : Navire demandant une assistance médicale"
+msgstr ""
 
 #: src/ais.cpp:379
 msgid "Distress Area: Vessel flooding"
-msgstr "Zone de détresse : Navire prenant l'eau"
+msgstr ""
 
 #: src/ais.cpp:380
 msgid "Distress Area: Vessel fire/explosion"
-msgstr "Zone de détresse: Incendie/explosion à bord d'un navire"
+msgstr ""
 
 #: src/ais.cpp:381
 msgid "Distress Area: Vessel grounding"
-msgstr "Zone de détresse : Navire échoué"
+msgstr ""
 
 #: src/ais.cpp:382
 msgid "Distress Area: Vessel collision"
-msgstr "Zone de détresse : Navire abordé"
+msgstr ""
 
 #: src/ais.cpp:383
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr "Zone de détresse : Navire gité ou chaviré"
+msgstr ""
 
 #: src/ais.cpp:384
 msgid "Distress Area: Vessel under assault"
-msgstr "Zone de détresse : Navire assailli"
+msgstr ""
 
 #: src/ais.cpp:385
 msgid "Distress Area: Person overboard"
-msgstr "Zone de détresse : Homme à la mer"
+msgstr ""
 
 #: src/ais.cpp:386
 msgid "Distress Area: SAR area"
-msgstr "Zone de détresse : Zone de recherche SAR"
+msgstr ""
 
 #: src/ais.cpp:387
 msgid "Distress Area: Pollution response area"
-msgstr "Zone de détresse : Zone en cours de dépollution"
+msgstr ""
 
 #: src/ais.cpp:391
 msgid "Instruction: Contact VTS at this point/juncture"
-msgstr "Instruction : Contactez l'autorité de contrôle du trafic à ce point/cette jonction "
+msgstr ""
 
 #: src/ais.cpp:392
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr "Instruction : Contactez l'autorité du port à ce point/ cette jonction"
+msgstr ""
 
 #: src/ais.cpp:393
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr "Instruction : Ne dépasser pas ce point/ cette jonction"
+msgstr ""
 
 #: src/ais.cpp:394
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr "Instruction : Attendez les consignes avant de dépasser ce point/ cette jonction"
+msgstr ""
 
 #: src/ais.cpp:395
 msgid "Proceed to this location - await instructions"
-msgstr "Faire route jusqu'à ce point - Attendre les instructions"
+msgstr ""
 
 #: src/ais.cpp:396
 msgid "Clearance granted - proceed to berth"
-msgstr "Autorisation accordée : Faites route pour accoster "
+msgstr ""
 
 #: src/ais.cpp:399
 msgid "Information: Pilot boarding position"
-msgstr "Information : Poste d'embarquement du pilote"
+msgstr ""
 
 #: src/ais.cpp:400
 msgid "Information: Icebreaker waiting area"
-msgstr "Information : Zone d'attente d'un brise glace"
+msgstr ""
 
 #: src/ais.cpp:401
 msgid "Information: Places of refuge"
-msgstr "Information : Zone d'abris"
+msgstr ""
 
 #: src/ais.cpp:402
 msgid "Information: Position of icebreakers"
-msgstr "Information : Emplacement des briseglaces"
+msgstr ""
 
 #: src/ais.cpp:403
 msgid "Information: Location of response units"
-msgstr "Information : Emplacement des unités d'intervention"
+msgstr ""
 
 #: src/ais.cpp:404
 msgid "VTS active target"
-msgstr "Cible VTS active"
+msgstr ""
 
 #: src/ais.cpp:405
 msgid "Rogue or suspicious vessel"
-msgstr "Navire voyou ou suspect"
+msgstr ""
 
 #: src/ais.cpp:406
 msgid "Vessel requesting non-distress assistance"
-msgstr "Navire demandant une assistance simple."
+msgstr ""
 
 #: src/ais.cpp:407
 msgid "Chart Feature: Sunken vessel"
-msgstr "Complément à la carte : Navire coulé"
+msgstr ""
 
 #: src/ais.cpp:408
 msgid "Chart Feature: Submerged object"
-msgstr "Complément à la carte : Objet submergé"
+msgstr ""
 
 #: src/ais.cpp:409
 msgid "Chart Feature: Semi-submerged object"
-msgstr "Complément à la carte : Objet semi submergé"
+msgstr ""
 
 #: src/ais.cpp:410
 msgid "Chart Feature: Shoal area"
-msgstr "Complément à la carte : Haut fond"
+msgstr ""
 
 #: src/ais.cpp:411
 msgid "Chart Feature: Shoal area due north"
-msgstr "Complément à la carte : Haut-fond plein nord"
+msgstr ""
 
 #: src/ais.cpp:412
 msgid "Chart Feature: Shoal area due east"
-msgstr "Complément à la carte : Haut-fond plein est"
+msgstr ""
 
 #: src/ais.cpp:413
 msgid "Chart Feature: Shoal area due south"
-msgstr "Complément à la carte : Haut-fond plein sud"
+msgstr ""
 
 #: src/ais.cpp:414
 msgid "Chart Feature: Shoal area due west"
-msgstr "Complément à la carte : Haut-fond plein ouest"
+msgstr ""
 
 #: src/ais.cpp:415
 msgid "Chart Feature: Channel obstruction"
-msgstr "Complément à la carte : Chenal obstrué"
+msgstr ""
 
 #: src/ais.cpp:416
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr "Complément à la carte : Tirant d'air réduit"
+msgstr ""
 
 #: src/ais.cpp:417
 msgid "Chart Feature: Bridge closed"
-msgstr "Complément à la carte : Pont fermé"
+msgstr ""
 
 #: src/ais.cpp:418
 msgid "Chart Feature: Bridge partially open"
-msgstr "Complément à la carte : Pont partiellement ouvert"
+msgstr ""
 
 #: src/ais.cpp:419
 msgid "Chart Feature: Bridge fully open"
-msgstr "Complément à la carte : Pont complètement ouvert"
+msgstr ""
 
 #: src/ais.cpp:423
 msgid "Report from ship: Icing info"
-msgstr "Observation de navire : Présence de glace"
+msgstr ""
 
 #: src/ais.cpp:425
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr "Observation de navire : Diverses informations - Décrites dans le texte associé"
+msgstr ""
 
 #: src/ais.cpp:431
 msgid "Route: Recommended route"
-msgstr "Route : Route recommandée"
+msgstr ""
 
 #: src/ais.cpp:432
 msgid "Route: Alternative route"
-msgstr "Route : autre route"
+msgstr ""
 
 #: src/ais.cpp:433
 msgid "Route: Recommended route through ice"
-msgstr "Route : Route recommandée à travers les glaces"
+msgstr ""
 
 #: src/ais.cpp:436
 msgid "Other - Define in associated text field"
-msgstr "Autre - Défini dans le texte associé"
+msgstr ""
 
 #: src/ais.cpp:437
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr "Annulation : Annuler la zone identifiée par le code du message associé"
+msgstr ""
 
 #: src/ais.cpp:438
 msgid "Undefined (default)"
-msgstr "Indéfini (par défaut)"
+msgstr ""
 
 #: src/ais.cpp:1690 src/ais.cpp:1691
 msgid "AIS Target Name"
-msgstr "Nom de la cible AIS"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:193
 msgid "Vessel, type unknown"
-msgstr "Navire, type inconnu"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:194
 msgid "Freightbarge"
-msgstr "Barge de fret"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:195
 msgid "Tankbarge"
-msgstr "Barge pétrolière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:196
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr "Barge tanker, cargo avec semi liquide (Ex : Ciment)"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:197
 msgid "Service vessel, police patrol, port service"
-msgstr "Navire de service, patrouille de police, service portuaire"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:198 src/AIS_Decoder.cpp:244
 msgid "Pushboat, single"
-msgstr "Pousseur, seul"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:199
 msgid "Object, not otherwise specified"
-msgstr "Objet, non précisé"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:200
 msgid "Object, towed, not otherwise specified"
-msgstr "Objet, remorqué, non précisé"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:201
 msgid "Bunkership"
-msgstr "Pétrolier ravitailleur"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:202
 msgid "Motor freighter"
-msgstr "Barge autopropulsée de fret"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:203
 msgid "Motor tanker"
-msgstr "Barge pétrolière autopropulsée"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:204
 msgid "Motor tanker, liquid cargo, type N"
-msgstr "Barge autopropulsée pétrolière, Chargement liquide, type N"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:205
 msgid "Motor tanker, liquid cargo, type C"
-msgstr "Barge autopropulsée pétrolière, Chargement liquide, type C"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:206
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr "Tanker autopropulsé, cargo avec semi liquide (Ex : Ciment)"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:207
 msgid "Container vessel"
-msgstr "Navire porte containeur"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:208
 msgid "Gas tanker"
-msgstr "Tanker gazier"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:209
 msgid "Motor freighter, tug"
-msgstr "Barge de fret autopropulsée, remorqueur"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:210
 msgid "Motor tanker, tug"
-msgstr "Barge pétrolière, autopropulsée, remorqueur"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:211
 msgid "Motor freighter with one or more ships alongside"
-msgstr "Barge autopropulsée, avec un ou plusieurs bateaux accolés"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:212
 msgid "Motor freighter with tanker"
-msgstr "Barge de fret avec tanker"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:213
 msgid "Motor freighter pushing one or more freighters"
-msgstr "Barge autopropulsée poussant une ou plusieurs barges de fret"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:214
 msgid "Motor freighter pushing at least one tank-ship"
-msgstr "Barge autopropulsée de fret, poussant au moins un bateau pétrolier"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:215
 msgid "Tug, freighter"
-msgstr "Remorqueur, barge de fret"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:216
 msgid "Tug, tanker"
-msgstr "Remorqueur, pétrolier"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:217
 msgid "Tug freighter, coupled"
-msgstr "Remorqueur, barge de fret, à couple"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:218
 msgid "Tug, freighter/tanker, coupled"
-msgstr "Remorqueur, barge de fret/pétrolière, à couple"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:219
 msgid "Tankbarge, liquid cargo, type N"
-msgstr "Barge pétrolière, chargement liquide, type N"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:220
 msgid "Tankbarge, liquid cargo, type C"
-msgstr "Barge pétrolière, chargement liquide, type C"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:221
 msgid "Freightbarge with containers"
-msgstr "Barge de fret, porte containeurs"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:222
 msgid "Tankbarge, gas"
-msgstr "Barge tanker, gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:223
 msgid "Pushtow, one cargo barge"
-msgstr "Convoi de poussage, une barge cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:224
 msgid "Pushtow, two cargo barges"
-msgstr "Convoi de poussage, deux barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:225
 msgid "Pushtow, three cargo barges"
-msgstr "Convoi de poussage, trois barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:226
 msgid "Pushtow, four cargo barges"
-msgstr "Convoi de poussage, quatre barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:227
 msgid "Pushtow, five cargo barges"
-msgstr "Convoi de poussage, cinq barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:228
 msgid "Pushtow, six cargo barges"
-msgstr "Convoi de poussage, six barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:229
 msgid "Pushtow, seven cargo barges"
-msgstr "Convoi de poussage, sept barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:230
 msgid "Pushtow, eight cargo barges"
-msgstr "Convoi de poussage, huit barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:231
 msgid "Pushtow, nine or more barges"
-msgstr "Convoi de poussage, neuf barges cargo"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:232
 msgid "Pushtow, one tank/gas barge"
-msgstr "Convoi de poussage, une barge tanker/gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:233
 msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, deux barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:234
 msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, trois barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:235
 msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, quatre barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:236
 msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, cinq barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:237
 msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, six barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:238
 msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, sept barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:239
 msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, huit barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:240
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr "Convoi de poussage, neuf barges dont au moins une pétrolière ou gazière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:241
 msgid "Tug, single"
-msgstr "Remorqueur, seul"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:242
 msgid "Tug, one or more tows"
-msgstr "Remorqueur, un ou plusieurs câbles de remorquage"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:243
 msgid "Tug, assisting a vessel or linked combination"
-msgstr "Remorqueur, assistance à un navire ou remorquant"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:245
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr "Navire à passagers, ferry, navire de croisière, navire croix rouge"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:246
 msgid "Ferry"
-msgstr "Ferry"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:247
 msgid "Red cross ship"
-msgstr "Navire croix rouge"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:248
 msgid "Cruise ship"
-msgstr "Navire de croisière"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:249
 msgid "Passenger ship without accomodation"
-msgstr "Navire à passagers sans hébergement"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:250
 msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
-msgstr "Navire, navire de maintenance de navire, derrick flottant, navire phares et balises, drague"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:251
 msgid "Fishing boat"
-msgstr "Bateau de pêche"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:252
 msgid "Barge, tanker, chemical"
-msgstr "Barge, pétrolier, chimique"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:253
 msgid "General cargo Vessel maritime"
-msgstr "Cargo généraliste"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:254
 msgid "Unit carrier maritime"
-msgstr "Navire de transport maritime"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:255
 msgid "Bulk carrier maritime"
-msgstr "Navire de transport maritime de vrac"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:257
 msgid "Liquified gas tanker"
-msgstr "Navire-citerne pour gaz liquéfié"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:258
 msgid "Pleasure craft, longer than 20 metres"
-msgstr "Navire de plaisance, long de plus de 20 mètres"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:259
 msgid "Fast ship"
-msgstr "Navire rapide"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:260
 msgid "Hydrofoil"
-msgstr "Hydroglisseur"
+msgstr ""
 
 #: src/AIS_Decoder.cpp:2401
 msgid "AIS Alert"
-msgstr "Alerte AIS"
+msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:158 src/AISTargetAlertDialog.cpp:249
 msgid "AISTargetAlert"
-msgstr "Alerte de cible AIS"
+msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:200
 msgid "&Silence Alert"
-msgstr "Alerte silencieuse"
+msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:207
 msgid "&Acknowledge"
-msgstr "Confirmer"
+msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:213
 msgid "&Jump To"
-msgstr "Aller à"
+msgstr ""
 
 #: src/AISTargetAlertDialog.cpp:219 src/AISTargetQueryDialog.cpp:302
 #: src/undo.cpp:81
 msgid "Create Waypoint"
-msgstr "Waypoint : Créer"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:339 src/AIS_Target_Data.cpp:714
 #: src/OCPNListCtrl.cpp:109
 msgid "SAR Aircraft"
-msgstr "Avion de recherche SAR"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:343 src/AIS_Target_Data.cpp:352
 #: src/AISTargetListDialog.cpp:511 src/options.cpp:435 src/options.cpp:736
 msgid "MMSI"
-msgstr "MMSI"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:344 src/AIS_Target_Data.cpp:353
 #: src/AISTargetListDialog.cpp:519
 msgid "Class"
-msgstr "Classe"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:345
 msgid "IMO"
-msgstr "IMO"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Flag"
-msgstr "Drapeau"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:369 src/AIS_Target_Data.cpp:750
 #: src/AISTargetListDialog.cpp:141 src/AISTargetListDialog.cpp:153
 #: src/OCPNListCtrl.cpp:123
 msgid "Active"
-msgstr "Actif"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:370 src/AIS_Target_Data.cpp:751
 #: src/AISTargetListDialog.cpp:142 src/AISTargetListDialog.cpp:154
 #: src/OCPNListCtrl.cpp:124
 msgid "Testing"
-msgstr "Test"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:417
 msgid "Safety Broadcast Message"
-msgstr "Diffusion d'un message de sécurité"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:490
 msgid " (Last Known)"
-msgstr "(Dernier connu)"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:496 src/GoToPositionDialog.cpp:116
 #: src/routeprintout.cpp:107 src/routeprintout.cpp:370
 msgid "Position"
-msgstr "Position"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:497
 msgid "Report Age"
-msgstr "Age des informations"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:518
 msgid "Report as of"
-msgstr "Information provenant de "
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:525 src/routeprop.cpp:662 src/routeprop.cpp:834
 #: src/routeprop.cpp:1190 src/TrackPropDlg.cpp:277 src/TrackPropDlg.cpp:1203
 msgid "Destination"
-msgstr "Destination"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:527
 msgid "ETA (UTC)"
-msgstr "ETA (UTC)                                     "
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:533 src/AIS_Target_Data.cpp:543
 #: src/AIS_Target_Data.cpp:575 src/AIS_Target_Data.cpp:593
 #: src/AIS_Target_Data.cpp:600 src/AIS_Target_Data.cpp:615
 msgid "---"
-msgstr "---"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:584 src/AIS_Target_Data.cpp:587
 msgid "Right"
-msgstr "Droite"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:585 src/AIS_Target_Data.cpp:588
 msgid "Left"
-msgstr "Gauche"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:620 src/options.cpp:3888 src/options.cpp:3996
 #: src/routeprop.cpp:1100 src/routeprop.cpp:1394 src/TrackPropDlg.cpp:450
 #: src/TrackPropDlg.cpp:722 src/TrackPropDlg.cpp:1205
 msgid "Speed"
-msgstr "Vitesse"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:621 src/routeprintout.cpp:110
 #: src/routeprintout.cpp:377 src/routeprop.cpp:1105 src/routeprop.cpp:1399
 msgid "Course"
-msgstr "COG"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:623
 msgid "Heading"
-msgstr "Cap compas"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:634
 msgid "Turn Rate"
-msgstr "Vitesse de rotation"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:637 src/AISTargetListDialog.cpp:551
 msgid "Range"
-msgstr "Distance"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:638 src/routeprop.cpp:1093 src/routeprop.cpp:1387
 #: src/TrackPropDlg.cpp:446 src/TrackPropDlg.cpp:718
 msgid "Bearing"
-msgstr "Relèvement"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:650
 msgid "in "
-msgstr "dans "
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:652 src/AIS_Target_Data.cpp:793
 #: src/AISTargetListDialog.cpp:574
 msgid "CPA"
-msgstr "CPA"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:659 src/AIS_Target_Data.cpp:662
 msgid "Inland Blue Flag"
-msgstr "Drapeau bleu intérieur"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:660
 msgid "Clear"
-msgstr "Ne rien sélectionner"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:663
 msgid "Set"
-msgstr "Mettre"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:674
 msgid "Altitude"
-msgstr "Altitude"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:784 src/AIS_Target_Data.cpp:788
 msgid " COG Unavailable"
-msgstr "COG indisponible"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:794 src/navutil.cpp:3803
 msgid "in"
-msgstr "Dans"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:795
 msgid "min"
-msgstr "min"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:884
 msgid "A"
-msgstr "A"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:886
 msgid "B"
-msgstr "B"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:888
 msgid "Aid to Navigation"
-msgstr "Aide à la navigation"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:890 src/options.cpp:3099 src/options.cpp:3313
 msgid "Base"
-msgstr "Base"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:890
 msgid "Base Station"
-msgstr "Station de base"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:892
 msgid "GPSGate Buddy"
-msgstr "Portail GPS des amis"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:895
 msgid "DSC Distress"
-msgstr "Détresse ASN"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:897
 msgid "DSC Position Report"
-msgstr "Rapport de position ASN"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:899
 msgid "SART"
-msgstr "SART"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:906
 msgid "Unk"
-msgstr "Inconnue"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:931
 msgid "Albania"
-msgstr "Albanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:932
 msgid "Andorra"
-msgstr "Andorre"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:933
 msgid "Austria"
-msgstr "Autriche"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:934
 msgid "Azores"
-msgstr "Les Açores"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:935
 msgid "Belgium"
-msgstr "Belgique"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:936
 msgid "Belarus"
-msgstr "Bélarus"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:937
 msgid "Bulgaria"
-msgstr "Bulgarie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:938
 msgid "Vatican City State"
-msgstr "Cité du Vatican"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:939 src/AIS_Target_Data.cpp:940
 #: src/AIS_Target_Data.cpp:942
 msgid "Cyprus"
-msgstr "Chipre"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:941 src/AIS_Target_Data.cpp:947
 msgid "Germany"
-msgstr "Allemagne"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:943
 msgid "Georgia"
-msgstr "Georgie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:944
 msgid "Moldova"
-msgstr "Moldavie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:945 src/AIS_Target_Data.cpp:955
 #: src/AIS_Target_Data.cpp:974 src/AIS_Target_Data.cpp:975
 #: src/AIS_Target_Data.cpp:982
 msgid "Malta"
-msgstr "Malte"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:946
 msgid "Armenia"
-msgstr "Arménie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:948 src/AIS_Target_Data.cpp:949
 msgid "Denmark"
-msgstr "Danemark"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:950 src/AIS_Target_Data.cpp:951
 msgid "Spain"
-msgstr "Espagne"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:952 src/AIS_Target_Data.cpp:953
 #: src/AIS_Target_Data.cpp:954
 msgid "France"
-msgstr "France"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:956
 msgid "Finland"
-msgstr "Finlande"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:957
 msgid "Faroe Islands"
-msgstr "Iles Féroé"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:961
 msgid "Great Britain"
-msgstr "Grande Bretagne"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:962
 msgid "Gibraltar"
-msgstr "Gibraltar"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:963 src/AIS_Target_Data.cpp:965
 #: src/AIS_Target_Data.cpp:966 src/AIS_Target_Data.cpp:967
 msgid "Greece"
-msgstr "Grèce"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:964
 msgid "Croatia"
-msgstr "Croatie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:968
 msgid "Morocco"
-msgstr "Maroc"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:969
 msgid "Hungary"
-msgstr "Hongrie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:970 src/AIS_Target_Data.cpp:971
 #: src/AIS_Target_Data.cpp:972
 msgid "Netherlands"
-msgstr "Pays-Bas"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:973
 msgid "Italy"
-msgstr "Italie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:976
 msgid "Ireland"
-msgstr "Irlande"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:977
 msgid "Iceland"
-msgstr "Islande"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:978
 msgid "Liechtenstein"
-msgstr "Liechtenstein"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:979
 msgid "Luxembourg"
-msgstr "Luxembourg"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:980
 msgid "Monaco"
-msgstr "Monaco"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:981
 msgid "Madeira"
-msgstr "Madeire"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:985
 msgid "Norway"
-msgstr "Norvège"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:986
 msgid "Poland"
-msgstr "Pologne"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:987
 msgid "Montenegro"
-msgstr "Monténégro"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:988
 msgid "Portugal"
-msgstr "Portugal"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:989
 msgid "Romania"
-msgstr "Roumanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:990 src/AIS_Target_Data.cpp:991
 msgid "Sweden"
-msgstr "Suède"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:992
 msgid "Slovak Republic"
-msgstr "République de Slovaquie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:993
 msgid "San Marino"
-msgstr "San Marin"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:994
 msgid "Switzerland"
-msgstr "Suisse"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:995
 msgid "Czech Republic"
-msgstr "Tchéquie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:996
 msgid "Turkey"
-msgstr "Turquie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:997
 msgid "Ukraine"
-msgstr "Ukraine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:998
 msgid "Russian"
-msgstr "Russie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:999
 msgid "Macedonia"
-msgstr "Macédoine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1000
 msgid "Latvia"
-msgstr "Lettonie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1001
 msgid "Estonia"
-msgstr "Estonie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1002
 msgid "Lithuania"
-msgstr "Lithuanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1003
 msgid "Slovenia"
-msgstr "Slovénie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1004
 msgid "Serbia"
-msgstr "Serbie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1005
 msgid "Anguilla"
-msgstr "Anguilla"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1006
 msgid "Alaska"
-msgstr "Alaska"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1007 src/AIS_Target_Data.cpp:1008
 msgid "Antigua and Barbuda"
-msgstr "Antigua-et-Barbuda"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1009
 msgid "Antilles"
-msgstr "Antilles"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1010
 msgid "Aruba"
-msgstr "Aruba"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1011 src/AIS_Target_Data.cpp:1012
 #: src/AIS_Target_Data.cpp:1014
 msgid "Bahamas"
-msgstr "Bahamas"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1013
 msgid "Bermuda"
-msgstr "Bermude"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1015
 msgid "Belize"
-msgstr "Belize"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1016
 msgid "Barbados"
-msgstr "La Barbade"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1017
 msgid "Canada"
-msgstr "Canada"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1018
 msgid "Cayman Islands"
-msgstr "Iles Cayman"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1019
 msgid "Costa Rica"
-msgstr "Costa Rica"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1020
 msgid "Cuba"
-msgstr "Cuba"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1021
 msgid "Dominica"
-msgstr "La Dominique"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1022
 msgid "Dominican Republic"
-msgstr "République Dominicaine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1023
 msgid "Guadeloupe"
-msgstr "Guadeloupe"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1024
 msgid "Grenada"
-msgstr "Grenade"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1025
 msgid "Greenland"
-msgstr "Groenland"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1026
 msgid "Guatemala"
-msgstr "Guatemala"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1027
 msgid "Honduras"
-msgstr "Honduras"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1028
 msgid "Haiti"
-msgstr "Haïti"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1029 src/AIS_Target_Data.cpp:1052
 msgid "United States of America"
-msgstr "USA"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1030
 msgid "Jamaica"
-msgstr "Jamaïque"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1031
 msgid "Saint Kitts and Nevis"
-msgstr "Saint Kitts et Nevis"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1032
 msgid "Saint Lucia"
-msgstr "Sainte  Lucie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1033
 msgid "Mexico"
-msgstr "Mexique"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1034
 msgid "Martinique"
-msgstr "Martinique"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1035
 msgid "Montserrat"
-msgstr "Montserrat"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1036
 msgid "Nicaragua"
-msgstr "Nicaragua"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1043 src/AIS_Target_Data.cpp:1057
 msgid "Panama"
-msgstr "Panama"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1044
 msgid "Puerto Rico"
-msgstr "Porto Rico"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1045
 msgid "El Salvador"
-msgstr "Le Salvador"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1046
 msgid "Saint Pierre and Miquelon"
-msgstr "Saint Pierre et Miquelon"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1047
 msgid "Trinidad and Tobago"
-msgstr "Trinidad et Tobago"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1048
 msgid "Turks and Caicos Islands"
-msgstr "Îles Turques et Caïques"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1060
 msgid "Saint Vincent and the Grenadines"
-msgstr "Saint Vincent et les Grenadines"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1061
 msgid "British Virgin Islands"
-msgstr "Îles Vierges britanniques"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1062
 msgid "United States Virgin Islands"
-msgstr "Etats Unis des Iles Vierges"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1063
 msgid "Afghanistan"
-msgstr "Afghanistan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1064
 msgid "Saudi Arabia"
-msgstr "Arabie Saoudite"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1065
 msgid "Bangladesh"
-msgstr "Bangladesh"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1066
 msgid "Bahrain"
-msgstr "Bahrain"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1067
 msgid "Bhutan"
-msgstr "Bhoutan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1070
 msgid "China"
-msgstr "Chine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1071
 msgid "Taiwan"
-msgstr "Taïwan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1072
 msgid "Sri Lanka"
-msgstr "Sri Lanka"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1073
 msgid "India"
-msgstr "Inde"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1074
 msgid "Iran"
-msgstr "Iran"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1075
 msgid "Azerbaijani Republic"
-msgstr "République d'Azerbaïdjan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1076
 msgid "Iraq"
-msgstr "Irak"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1077
 msgid "Israel"
-msgstr "Israel"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1078 src/AIS_Target_Data.cpp:1079
 msgid "Japan"
-msgstr "Japon"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1080
 msgid "Turkmenistan"
-msgstr "Turkmenistan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1081
 msgid "Kazakhstan"
-msgstr "Kazakhstan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1082
 msgid "Uzbekistan"
-msgstr "Ouzbekistan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1083
 msgid "Jordan"
-msgstr "Jordanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1084 src/AIS_Target_Data.cpp:1085
 msgid "Korea"
-msgstr "Korée"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1086
 msgid "Palestine"
-msgstr "Palestine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1087
 msgid "People's Rep. of Korea"
-msgstr "Rep. Populaire de Korée"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1088
 msgid "Kuwait"
-msgstr "Kowait"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1089
 msgid "Lebanon"
-msgstr "Lebanon"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1090
 msgid "Kyrgyz Republic"
-msgstr "République kirghize"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1091
 msgid "Macao"
-msgstr "Macao"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1092
 msgid "Maldives"
-msgstr "Les Maldives"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1093
 msgid "Mongolia"
-msgstr "Mongolie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1094
 msgid "Nepal"
-msgstr "Nepal"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1095
 msgid "Oman"
-msgstr "Oman"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1096
 msgid "Pakistan"
-msgstr "Pakistan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1097
 msgid "Qatar"
-msgstr "Qatar"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1098
 msgid "Syrian Arab Republic"
-msgstr "République Arabe de Syrie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1100
 msgid "United Arab Emirates"
-msgstr "Emirats Arabe Unis"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1101
 msgid "Tajikistan"
-msgstr "Tadjikistan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1102 src/AIS_Target_Data.cpp:1103
 msgid "Yemen"
-msgstr "Yemen"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1104
 msgid "Hong Kong"
-msgstr "Hong Kong"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1105
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnie Herzégovine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1106
 msgid "Adelie Land"
-msgstr "Terre Adélie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1107
 msgid "Australia"
-msgstr "Australie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1108
 msgid "Myanmar"
-msgstr "Myanmar"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1109
 msgid "Brunei Darussalam"
-msgstr "Brunei Darussalam"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1110
 msgid "Micronesia"
-msgstr "Micronésie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1111
 msgid "Palau"
-msgstr "Palau"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1112
 msgid "New Zealand"
-msgstr "Nouvelle Zélande"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1113 src/AIS_Target_Data.cpp:1114
 msgid "Cambodia"
-msgstr "Cambodge"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1115
 msgid "Christmas Island"
-msgstr "Ile Christmas"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1116
 msgid "Cook Islands"
-msgstr "Iles Cook"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1117
 msgid "Fiji"
-msgstr "Iles Fidji"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1118
 msgid "Cocos"
-msgstr "Cocos"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1119
 msgid "Indonesia"
-msgstr "Indonésie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1120
 msgid "Kiribati"
-msgstr "Kiribati"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1121
 msgid "Lao People's Dem. Rep."
-msgstr "Laos"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1122
 msgid "Malaysia"
-msgstr "Malaysie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1123
 msgid "Northern Mariana Islands"
-msgstr "Iles Marianne du nord"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1124
 msgid "Marshall Islands"
-msgstr "Iles Marshall"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1125
 msgid "New Caledonia"
-msgstr "Nouvelle Calédonie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1126
 msgid "Niue"
-msgstr "Niue"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1127
 msgid "Nauru"
-msgstr "Nauru"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1128
 msgid "French Polynesia"
-msgstr "Polynésie Française"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1129
 msgid "Philippines"
-msgstr "Philippines"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1130
 msgid "Papua New Guinea"
-msgstr "Papouasie Nouvelle Guinée"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1131
 msgid "Pitcairn Island"
-msgstr "Ile Pitcairn"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1132
 msgid "Solomon Islands"
-msgstr "Iles Salomon"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1133
 msgid "American Samoa"
-msgstr "Samoa des USA"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1134
 msgid "Samoa"
-msgstr "Samoa"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1138
 msgid "Singapore"
-msgstr "Singapour"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1139
 msgid "Thailand"
-msgstr "Thaïlande"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1140
 msgid "Tonga"
-msgstr "Tonga"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1141
 msgid "Tuvalu"
-msgstr "Tuvalu"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1142
 msgid "Viet Nam"
-msgstr "Vietnam"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1143 src/AIS_Target_Data.cpp:1144
 msgid "Vanuatu"
-msgstr "Vanuatu"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Wallis and Futuna Islands"
-msgstr "Wallis et Futuna"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1146
 msgid "South Africa"
-msgstr "Afrique du Sud"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1147
 msgid "Angola"
-msgstr "Angola"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1148
 msgid "Algeria"
-msgstr "Algerie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1149
 msgid "Saint Paul"
-msgstr "Saint Paul"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1150
 msgid "Ascension Island"
-msgstr "Ile Ascension"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1151
 msgid "Burundi"
-msgstr "Burundi"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1152
 msgid "Benin"
-msgstr "Benin"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1153
 msgid "Botswana"
-msgstr "Botswana"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1154
 msgid "Central African Republic"
-msgstr "République Centre-Africaine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1155
 msgid "Cameroon"
-msgstr "Cameroun"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1156
 msgid "Congo"
-msgstr "Congo"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1157
 msgid "Comoros"
-msgstr "Comores"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1158
 msgid "Cape Verde"
-msgstr "Cap Vert"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1159
 msgid "Crozet Archipelago"
-msgstr "Archipel de Crozet"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1160
 msgid "Ivory Coast"
-msgstr "Côte d'Ivoire"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1161
 msgid "Comoros (Union of the)"
-msgstr "Comores (Union des)"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1162
 msgid "Djibouti"
-msgstr "Djibouti"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1163
 msgid "Egypt"
-msgstr "Egypte"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1164
 msgid "Ethiopia"
-msgstr "Ethiopie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1165
 msgid "Eritrea"
-msgstr "Eritrée"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1166
 msgid "Gabonese Republic"
-msgstr "République du Gabon"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1167
 msgid "Ghana"
-msgstr "Ghana"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1168
 msgid "Gambia"
-msgstr "Gambie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1169
 msgid "Guinea-Bissau"
-msgstr "Guinée-Bissau"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1170
 msgid "Equatorial Guinea"
-msgstr "Guinée Equatoriale"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1171
 msgid "Guinea"
-msgstr "Guinée"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1172
 msgid "Burkina Faso"
-msgstr "Burkina Faso"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1173
 msgid "Kenya"
-msgstr "Kenya"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1174
 msgid "Kerguelen Islands"
-msgstr "Iles Kerguelen"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1175 src/AIS_Target_Data.cpp:1176
 msgid "Liberia"
-msgstr "Libéria"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1177
 msgid "South Sudan (Republic of)"
-msgstr "République du Sud Soudan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1178
 msgid "Libya"
-msgstr "Lybie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1179
 msgid "Lesotho"
-msgstr "Lesotho"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1180
 msgid "Mauritius"
-msgstr "Maurice"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1181
 msgid "Madagascar"
-msgstr "Madagascar"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1182
 msgid "Mali"
-msgstr "Mali"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1183
 msgid "Mozambique"
-msgstr "Mozambique"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1184
 msgid "Mauritania"
-msgstr "Mauritanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1185
 msgid "Malawi"
-msgstr "Malawi"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1186
 msgid "Niger"
-msgstr "Niger"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1187
 msgid "Nigeria"
-msgstr "Nigéria"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1188
 msgid "Namibia"
-msgstr "Namibie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1189
 msgid "Reunion"
-msgstr "Réunion"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1190
 msgid "Rwanda"
-msgstr "Rwanda"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1191
 msgid "Sudan"
-msgstr "Soudan"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1192
 msgid "Senegal"
-msgstr "Sénégal"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1193
 msgid "Seychelles"
-msgstr "Seychelles"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1194
 msgid "Saint Helena"
-msgstr "Saint Hélène"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1195
 msgid "Somali Democratic Republic"
-msgstr "République Démocratique de Somalie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1196
 msgid "Sierra Leone"
-msgstr "Sierra Leone"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1197
 msgid "Sao Tome and Principe"
-msgstr "Sao Tome et Principe"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1198
 msgid "Swaziland"
-msgstr "Swaziland"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1199
 msgid "Chad"
-msgstr "Tchad"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1200
 msgid "Togolese Republic"
-msgstr "République du Togo"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1201
 msgid "Tunisia"
-msgstr "Tunisie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1202 src/AIS_Target_Data.cpp:1205
 msgid "Tanzania"
-msgstr "Tanzanie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1203
 msgid "Uganda"
-msgstr "Ouganda"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1204
 msgid "Dem Rep.of the Congo"
-msgstr "Rep.Démo. du Congo"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1206
 msgid "Zambia"
-msgstr "Zambie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1207
 msgid "Zimbabwe"
-msgstr "Zimbabwe"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1208
 msgid "Argentine Republic"
-msgstr "Argentine"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1209
 msgid "Brazil"
-msgstr "Brésil"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1210
 msgid "Bolivia"
-msgstr "Bolivie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1211
 msgid "Chile"
-msgstr "Chili"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1212
 msgid "Colombia"
-msgstr "Colombie"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1213
 msgid "Ecuador"
-msgstr "Equateur"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1214
 msgid "Falkland Islands"
-msgstr "Iles Falkland"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1215
 msgid "Guiana"
-msgstr "République coopérative du Guyana"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1216
 msgid "Guyana"
-msgstr "Guyane"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1217
 msgid "Paraguay"
-msgstr "Paraguay"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1218
 msgid "Peru"
-msgstr "Pérou"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1219
 msgid "Suriname"
-msgstr "Suriname"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1220
 msgid "Uruguay"
-msgstr "Uruguay"
+msgstr ""
 
 #: src/AIS_Target_Data.cpp:1221
 msgid "Venezuela"
-msgstr "Venezuela"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:146 src/AISTargetListDialog.cpp:158
 #: src/OCPNListCtrl.cpp:75 src/OCPNListCtrl.cpp:84 src/OCPNListCtrl.cpp:116
@@ -2434,97 +2434,96 @@ msgstr "Venezuela"
 #: src/OCPNListCtrl.cpp:153 src/OCPNListCtrl.cpp:165 src/OCPNListCtrl.cpp:173
 #: src/OCPNListCtrl.cpp:181 src/OCPNListCtrl.cpp:190
 msgid "-"
-msgstr "-"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:365 src/canvasMenu.cpp:578 src/chart1.cpp:5326
 msgid "AIS target list"
-msgstr "AIS : Liste des cibles ..."
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:487
 msgid "Trk"
-msgstr "Tra"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:495 src/routeprintout.cpp:104
 #: src/routeprintout.cpp:362 src/routeprop.cpp:660 src/routeprop.cpp:814
 #: src/routeprop.cpp:1172 src/routeprop.cpp:2502 src/TrackPropDlg.cpp:257
 #: src/TrackPropDlg.cpp:574 src/TrackPropDlg.cpp:1201
 msgid "Name"
-msgstr "Nom"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:503
 msgid "Call"
-msgstr "Indicatif"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:527 src/options.cpp:1701 src/options.cpp:2309
 msgid "Type"
-msgstr "Type"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:535
 msgid "Nav Status"
-msgstr "Statut de nav."
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:543
 msgid "Brg"
-msgstr "Relèvement"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:559
 msgid "CoG"
-msgstr "COG"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:567
 msgid "SoG"
-msgstr "SOG"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:581
 msgid "TCPA"
-msgstr "TCPA"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:603
 msgid "Target info"
-msgstr "Info. de cette cible"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:616
 msgid "Create WPT"
-msgstr "Waypoint : Créer"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:622
 msgid "Hide All Tracks"
-msgstr "Cacher les traces"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:628
 msgid "Show All Tracks"
-msgstr "Montrer les traces"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:634
 msgid "Toggle track"
-msgstr "Changer de trace"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:640
 msgid "Copy MMSI"
-msgstr "Copier le MMSI"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:646
 msgid "AutoSort"
-msgstr "Tri automatique"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:656
 msgid "Limit range: NM"
-msgstr "Distance maxi : Nm"
+msgstr ""
 
 #: src/AISTargetListDialog.cpp:669
 msgid "Target Count"
-msgstr "Nombre de cibles"
+msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:139 src/AISTargetQueryDialog.cpp:305
 #: src/AISTargetQueryDialog.cpp:339
 msgid "Record Track"
-msgstr "Enregistrer la trace"
+msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
-msgstr "La trace de cette cible AIS a été enregistrée.\n"
-"Voulez-vous continuer à l'enregistrer jusqu'à la fin de la session en cours d'OpenCPN ?"
+msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5678 src/chart1.cpp:11035
 #: src/chart1.cpp:11066 src/LinkPropDlg.cpp:130 src/options.cpp:534
@@ -2534,308 +2533,307 @@ msgstr "La trace de cette cible AIS a été enregistrée.\n"
 #: src/pluginmanager.cpp:1202 src/Route.cpp:1171 src/RoutePoint.cpp:809
 #: src/tcmgr.cpp:762
 msgid "OpenCPN Info"
-msgstr "OpenCPN vous informe."
+msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:201 src/AISTargetQueryDialog.cpp:250
 msgid "AISTargetQuery"
-msgstr "Informations émises par cette cible"
+msgstr ""
 
 #: src/AISTargetQueryDialog.cpp:337
 msgid "Stop Tracking"
-msgstr "Arrêter la trace"
+msgstr ""
 
 #: src/androidUTIL.cpp:1767
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
-msgstr "Votre appareil Android a un GPS interne, mais il est hors service. \n"
-" s'il vous plaît activez le dans les paramètres d'Androïd"
+msgstr ""
 
 #: src/androidUTIL.cpp:1910
 msgid "Nothing found"
-msgstr "Rien n'a été trouvé"
+msgstr ""
 
 #: src/canvasMenu.cpp:266 src/canvasMenu.cpp:282 src/options.cpp:665
 msgid "Menu"
-msgstr "Menu"
+msgstr ""
 
 #: src/canvasMenu.cpp:290
 msgid "Waypoint"
-msgstr "Waypoint"
+msgstr ""
 
 #: src/canvasMenu.cpp:291 src/chcanv.cpp:2401 src/chcanv.cpp:7595
 #: src/concanv.cpp:143 src/concanv.cpp:162 src/concanv.cpp:204
 msgid "Route"
-msgstr "Route :"
+msgstr ""
 
 #: src/canvasMenu.cpp:292
 msgid "Track"
-msgstr "Trace"
+msgstr ""
 
 #: src/canvasMenu.cpp:293
 msgid "AIS"
-msgstr "AIS"
+msgstr ""
 
 #: src/canvasMenu.cpp:303
 msgid "End Route"
-msgstr "Fin de la route"
+msgstr ""
 
 #: src/canvasMenu.cpp:308
 msgid "Measure Off"
-msgstr "Mesure : Arrêter"
+msgstr ""
 
 #: src/canvasMenu.cpp:310
 msgid "Measure"
-msgstr "Mesure : Démarrer"
+msgstr ""
 
 #: src/canvasMenu.cpp:317
 msgid "Undo"
-msgstr "Défaire"
+msgstr ""
 
 #: src/canvasMenu.cpp:323
 msgid "Redo"
-msgstr "Refaire"
+msgstr ""
 
 #: src/canvasMenu.cpp:381
 msgid "Max Detail Here"
-msgstr "Plus de détail ici"
+msgstr ""
 
 #: src/canvasMenu.cpp:382 src/canvasMenu.cpp:397
 msgid "Scale In"
-msgstr "Echelle +"
+msgstr ""
 
 #: src/canvasMenu.cpp:383 src/canvasMenu.cpp:398
 msgid "Scale Out"
-msgstr "Echelle -"
+msgstr ""
 
 #: src/canvasMenu.cpp:387 src/canvasMenu.cpp:393 src/options.cpp:1537
 #: src/options.cpp:1571 src/options.cpp:2144 src/options.cpp:2179
 #: src/routeprop.cpp:2641
 msgid "..."
-msgstr "..."
+msgstr ""
 
 #: src/canvasMenu.cpp:405
 msgid "Drop Mark"
-msgstr "Placer une marque"
+msgstr ""
 
 #: src/canvasMenu.cpp:408
 msgid "Move Boat Here"
-msgstr "Placer le bateau ici"
+msgstr ""
 
 #: src/canvasMenu.cpp:412
 msgid "Navigate To Here"
-msgstr "Naviguer jusqu'ici"
+msgstr ""
 
 #: src/canvasMenu.cpp:419 src/chart1.cpp:5256
 msgid "Course Up Mode"
-msgstr "COG vers le haut : Activer"
+msgstr ""
 
 #: src/canvasMenu.cpp:422
 msgid "Chart Up Mode"
-msgstr "Mode haut de la carte en haut"
+msgstr ""
 
 #: src/canvasMenu.cpp:424 src/chart1.cpp:4881 src/chart1.cpp:5255
 #: src/chart1.cpp:7246
 msgid "North Up Mode"
-msgstr "Nord vers le haut : Activer"
+msgstr ""
 
 #: src/canvasMenu.cpp:432 src/canvasMenu.cpp:439
 msgid "Toggle Full Screen"
-msgstr "Va et vient plein écran"
+msgstr ""
 
 #: src/canvasMenu.cpp:444
 msgid "Zero XTE"
-msgstr "Zéro XTE"
+msgstr ""
 
 #: src/canvasMenu.cpp:451
 msgid "Paste Waypoint"
-msgstr "Coller le waypoint"
+msgstr ""
 
 #: src/canvasMenu.cpp:455 src/canvasMenu.cpp:463
 msgid "Paste Route"
-msgstr "Coller la route"
+msgstr ""
 
 #: src/canvasMenu.cpp:459 src/canvasMenu.cpp:464
 msgid "Paste Track"
-msgstr "Coller la trace"
+msgstr ""
 
 #: src/canvasMenu.cpp:472
 msgid "CM93 Offset Dialog..."
-msgstr "Gestion des réglages des CM93 ..."
+msgstr ""
 
 #: src/canvasMenu.cpp:482 src/chart1.cpp:8458
 msgid "Hide This Chart"
-msgstr "Cacher cette carte"
+msgstr ""
 
 #: src/canvasMenu.cpp:494 src/options.cpp:3556 src/options.cpp:3604
 #: src/options.cpp:7211
 msgid "Chart Groups"
-msgstr "Groupes de cartes"
+msgstr ""
 
 #: src/canvasMenu.cpp:504
 msgid "All Active Charts"
-msgstr "Toutes les cartes actives"
+msgstr ""
 
 #: src/canvasMenu.cpp:581
 msgid "Target Query..."
-msgstr "Informations émises par cette cible ..."
+msgstr ""
 
 #: src/canvasMenu.cpp:585
 msgid "Hide Target CPA"
-msgstr "Masquer la CPA de cette cible"
+msgstr ""
 
 #: src/canvasMenu.cpp:587
 msgid "Show Target CPA"
-msgstr "Montrer la CPA de cette cible"
+msgstr ""
 
 #: src/canvasMenu.cpp:589
 msgid "Target List..."
-msgstr "Liste des cibles AIS ..."
+msgstr ""
 
 #: src/canvasMenu.cpp:592
 msgid "Hide Target Track"
-msgstr "Masquer la trace de cette cible"
+msgstr ""
 
 #: src/canvasMenu.cpp:594
 msgid "Show Target Track"
-msgstr "Montrer la trace de cette cible"
+msgstr ""
 
 #: src/canvasMenu.cpp:596
 msgid "Copy Target MMSI"
-msgstr "Copier le MMSI de la cible"
+msgstr ""
 
 #: src/canvasMenu.cpp:602 src/canvasMenu.cpp:608
 msgid "Object Query..."
-msgstr "Propriétés des objets ..."
+msgstr ""
 
 #: src/canvasMenu.cpp:625
 msgid "Layer Route"
-msgstr "Couche de route"
+msgstr ""
 
 #: src/canvasMenu.cpp:626 src/canvasMenu.cpp:641 src/canvasMenu.cpp:690
 #: src/canvasMenu.cpp:693 src/canvasMenu.cpp:710 src/canvasMenu.cpp:716
 #: src/canvasMenu.cpp:766 src/canvasMenu.cpp:769 src/options.cpp:1252
 #: src/options.cpp:1855 src/routeprop.cpp:1167 src/routeprop.cpp:2480
 msgid "Properties"
-msgstr "Propriétés"
+msgstr ""
 
 #: src/canvasMenu.cpp:631 src/canvasMenu.cpp:646 src/canvasMenu.cpp:726
 msgid "Activate Next Waypoint"
-msgstr "Activer le prochain waypoint"
+msgstr ""
 
 #: src/canvasMenu.cpp:633 src/canvasMenu.cpp:648
 #: src/routemanagerdialog.cpp:1071
 msgid "Deactivate"
-msgstr "Désactiver"
+msgstr ""
 
 #: src/canvasMenu.cpp:636 src/canvasMenu.cpp:651 src/canvasMenu.cpp:713
 #: src/canvasMenu.cpp:719 src/routemanagerdialog.cpp:1065
 msgid "Activate"
-msgstr "Activer"
+msgstr ""
 
 #: src/canvasMenu.cpp:654
 msgid "Insert Waypoint"
-msgstr "Insérer un waypoint"
+msgstr ""
 
 #: src/canvasMenu.cpp:655 src/undo.cpp:90
 msgid "Append Waypoint"
-msgstr "Prolonger"
+msgstr ""
 
 #: src/canvasMenu.cpp:656 src/canvasMenu.cpp:694 src/canvasMenu.cpp:732
 #: src/canvasMenu.cpp:774
 msgid "Copy as KML"
-msgstr "Copier au format KML"
+msgstr ""
 
 #: src/canvasMenu.cpp:657 src/canvasMenu.cpp:695 src/canvasMenu.cpp:735
 #: src/canvasMenu.cpp:777 src/options.cpp:661 src/options.cpp:8245
 #: src/routeprop.cpp:2670 src/TrackPropDlg.cpp:771
 msgid "Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #: src/canvasMenu.cpp:658
 msgid "Reverse..."
-msgstr "Inverser ..."
+msgstr ""
 
 #: src/canvasMenu.cpp:672 src/canvasMenu.cpp:748
 msgid "Send to new GPS"
-msgstr "Envoyer au nouveau GPS"
+msgstr ""
 
 #: src/canvasMenu.cpp:689
 msgid "Layer Track"
-msgstr "Couche de trace"
+msgstr ""
 
 #: src/canvasMenu.cpp:709
 msgid "Layer Routepoint"
-msgstr "Couche de points de route"
+msgstr ""
 
 #: src/canvasMenu.cpp:730
 msgid "Remove from Route"
-msgstr "Retirer de la route"
+msgstr ""
 
 #: src/canvasMenu.cpp:765
 msgid "Layer Waypoint"
-msgstr "Couche de waypoint"
+msgstr ""
 
 #: src/canvasMenu.cpp:772
 msgid "Navigate To This"
-msgstr "Naviguer jusqu'ici"
+msgstr ""
 
 #: src/canvasMenu.cpp:791
 msgid "Clear Anchor Watch"
-msgstr "Arrêter l'alerte de mouillage"
+msgstr ""
 
 #: src/canvasMenu.cpp:801
 msgid "Set Anchor Watch"
-msgstr "Démarrer l'alerte de mouillage"
+msgstr ""
 
 #: src/canvasMenu.cpp:817
 msgid "Show Tide Information"
-msgstr "Montrer les informations relatives aux marées"
+msgstr ""
 
 #: src/canvasMenu.cpp:823
 msgid "Show Current Information"
-msgstr "Montrer les informations relatives aux courants"
+msgstr ""
 
 #: src/canvasMenu.cpp:903
 msgid "Temporary GOTO Route"
-msgstr "Suivre cette route temporaire"
+msgstr ""
 
 #: src/canvasMenu.cpp:904 src/canvasMenu.cpp:956
 #: src/routemanagerdialog.cpp:2321
 msgid "Here"
-msgstr "Ici"
+msgstr ""
 
 #: src/canvasMenu.cpp:906
 msgid "There"
-msgstr "Là"
+msgstr ""
 
 #: src/canvasMenu.cpp:952 src/routemanagerdialog.cpp:1995
 #: src/routemanagerdialog.cpp:2317
 msgid "(Unnamed Waypoint)"
-msgstr "(Marque sans nom)"
+msgstr ""
 
 #: src/canvasMenu.cpp:953 src/routemanagerdialog.cpp:2318
 msgid "Go to "
-msgstr "Aller au curseur (avec route)"
+msgstr ""
 
 #: src/canvasMenu.cpp:1158 src/routemanagerdialog.cpp:1273
 msgid "Rename Waypoints?"
-msgstr "Renommer les waypoint ?"
+msgstr ""
 
 #: src/canvasMenu.cpp:1178
 msgid "Are you sure you want to delete this route?"
-msgstr "Etes vous certain de vouloir supprimer cette route ?"
+msgstr ""
 
 #: src/canvasMenu.cpp:1179
 msgid "OpenCPN Route Delete"
-msgstr "Route supprimée par OpenCPN"
+msgstr ""
 
 #: src/canvasMenu.cpp:1433
 msgid "Are you sure you want to delete this track?"
-msgstr "Etes vous certain de vouloir supprimer cette trace ?"
+msgstr ""
 
 #: src/canvasMenu.cpp:1434 src/routeman.cpp:921
 msgid "OpenCPN Track Delete"
-msgstr "Supprimer la trace dans OpenCPN"
+msgstr ""
 
 #: src/chart1.cpp:823
 msgid "\n"
@@ -2848,411 +2846,401 @@ msgid "\n"
 "paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\n"
-"OpenCPN est distribué avec l'espoir qu'il fonctionne, mais SANS AUCUNE GARANTIE, sans même la garantie\n"
-"implicite de QUALITE MARCHANDE ou d'ADEQUATION A UN USAGE PARTICULIER.\n\n"
-"Voyez la licence \"GNU Général Public Licence\" pour plus de détails.\n\n"
-"OpenCPN doit être utilisé en conjonction avec des cartes papiers officielles et la méthode traditionnelle de\n"
-"navigation.\n\n"
-"Ne comptez pas sur OpenCPN pour garantir la sécurité des personnes ou des biens.\n\n"
-"S'il vous plait, cliquez sur \"OK\" pour agréer et lancer l'éxecution, \"Annuler\" pour quitter.\n"
+msgstr ""
 
 #: src/chart1.cpp:838
 msgid "Welcome to OpenCPN"
-msgstr "Bienvenue dans OpenCPN"
+msgstr ""
 
 #: src/chart1.cpp:891
 msgid "Show usage syntax."
-msgstr "Montrer la syntaxe d’utilisation."
+msgstr ""
 
 #: src/chart1.cpp:892
 msgid "Run in portable mode."
-msgstr "Exécuter en mode portable."
+msgstr ""
 
 #: src/chart1.cpp:893
 msgid "Switch to full screen mode on start."
-msgstr "Passer en mode plein écran au démarrage."
+msgstr ""
 
 #: src/chart1.cpp:894
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr "Désactiver l’accélération vidéo OpenGL. Ce paramètre sera mémorisé."
+msgstr ""
 
 #: src/chart1.cpp:897
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr "Afficher un diaporama de <num> cartes, puis quitter. Un nombre nul ou négatif de cartes  <num> ne spécifie aucune limite."
+msgstr ""
 
 #: src/chart1.cpp:1358
 msgid "OpenCPN ENC Prepare"
-msgstr "Analyser les cartes ENC"
+msgstr ""
 
 #: src/chart1.cpp:1390
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
-msgstr "Distance au bateau : %4.0f Nm"
+msgstr ""
 
 #: src/chart1.cpp:1420
 msgid "ENC Completed."
-msgstr "Analyse terminée."
+msgstr ""
 
 #: src/chart1.cpp:1706 src/chart1.cpp:1712
 msgid "Failed to initialize the user interface. "
-msgstr "Echec de l'initialisation de l'interface utilisateur"
+msgstr ""
 
 #: src/chart1.cpp:1707
 msgid "OpenCPN cannot start. "
-msgstr "OpenCPN ne peut pas démarrer"
+msgstr ""
 
 #: src/chart1.cpp:1708
 msgid "The necessary configuration files were not found. "
-msgstr "Les  fichiers de configuration nécessaires sont introuvables"
+msgstr ""
 
 #: src/chart1.cpp:1709
 msgid "See the log file at "
-msgstr "Voyez le fichier log à :"
+msgstr ""
 
 #: src/chart1.cpp:1709
 msgid " for details."
-msgstr "Pour plus de détails."
+msgstr ""
 
 #: src/chart1.cpp:2023
 msgid " -- [Portable(-p) executing from "
-msgstr " --[Version portable(-p) exécutée à partir de (ou depuis) "
+msgstr ""
 
 #: src/chart1.cpp:2143
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "Récupération du dossier, contenant les cartes, initialement défini dans le registre Windows."
+msgstr ""
 
 #: src/chart1.cpp:2206
 msgid "Rebuilding chart database from configuration file entries..."
-msgstr "Reconstruction de la base de données des cartes, à partir du fichier de configuration ...."
+msgstr ""
 
 #: src/chart1.cpp:2209
 msgid "Elapsed time : "
-msgstr "Durée écoulée :  "
+msgstr ""
 
 #: src/chart1.cpp:2210
 msgid "Estimated time : "
-msgstr "Durée estimée :  "
+msgstr ""
 
 #: src/chart1.cpp:2211
 msgid "Remaining time : "
-msgstr "Durée restante : "
+msgstr ""
 
 #: src/chart1.cpp:2212 src/chart1.cpp:5974 src/chart1.cpp:5982
 msgid "OpenCPN Chart Update"
-msgstr "OpenCPN met à jour la liste des cartes"
+msgstr ""
 
 #: src/chart1.cpp:2228
 msgid "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
-msgstr "Pas de carte installée \n"
-"Veuillez sélectionner le ou les dossiers de cartes dans le sous onglet \"Dossier des cartes\" de l'onglet \"Cartes/données\" dans les \"Options\"."
+msgstr ""
 
 #: src/chart1.cpp:2399
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
-msgstr "OpenCPN est initialisé à %ld ms."
+msgstr ""
 
 #: src/chart1.cpp:2872 src/chcanv.cpp:9400
 msgid "AIS Target Query"
-msgstr "Informations émises par cette cible"
+msgstr ""
 
 #: src/chart1.cpp:2924 src/chart1.cpp:5259 src/chart1.cpp:5262
 msgid "Zoom In"
-msgstr "Zoomer"
+msgstr ""
 
 #: src/chart1.cpp:2930 src/chart1.cpp:5260 src/chart1.cpp:5263
 msgid "Zoom Out"
-msgstr "Dézoomer"
+msgstr ""
 
 #: src/chart1.cpp:2939
 msgid "Shift to Larger Scale Chart"
-msgstr "Passer à l'échelle supérieure"
+msgstr ""
 
 #: src/chart1.cpp:2947
 msgid "Shift to Smaller Scale Chart"
-msgstr "Passer à l'échelle inférieure"
+msgstr ""
 
 #: src/chart1.cpp:2955 src/chart1.cpp:5338
 msgid "Create Route"
-msgstr "Route : Créer"
+msgstr ""
 
 #: src/chart1.cpp:2962 src/chart1.cpp:5252
 msgid "Auto Follow"
-msgstr "Centrage automatique"
+msgstr ""
 
 #: src/chart1.cpp:2982 src/chart1.cpp:4897
 msgid "Hide ENC text"
-msgstr "Texte : Cacher"
+msgstr ""
 
 #: src/chart1.cpp:2984 src/chart1.cpp:4895 src/chart1.cpp:5288
 #: src/chart1.cpp:5293
 msgid "Show ENC text"
-msgstr "Texte : Montrer"
+msgstr ""
 
 #: src/chart1.cpp:2993 src/chart1.cpp:3083 src/chart1.cpp:3086
 #: src/chart1.cpp:4489
 msgid "Hide AIS Targets"
-msgstr "Cacher les cibles AIS"
+msgstr ""
 
 #: src/chart1.cpp:3000 src/chart1.cpp:4246 src/chart1.cpp:5301
 msgid "Show Currents"
-msgstr "Afficher les courants"
+msgstr ""
 
 #: src/chart1.cpp:3006 src/chart1.cpp:4280 src/chart1.cpp:5300
 msgid "Show Tides"
-msgstr "Afficher les marées"
+msgstr ""
 
 #: src/chart1.cpp:3012
 msgid "Print Chart"
-msgstr "Imprimer la carte"
+msgstr ""
 
 #: src/chart1.cpp:3018 src/routemanagerdialog.cpp:450
 msgid "Route & Mark Manager"
-msgstr "Gestionnaire de routes, traces, marques et couches"
+msgstr ""
 
 #: src/chart1.cpp:3025 src/chart1.cpp:4781 src/chart1.cpp:5253
 msgid "Enable Tracking"
-msgstr "Activer la trace"
+msgstr ""
 
 #: src/chart1.cpp:3032 src/chart1.cpp:5304 src/chart1.cpp:5306
 msgid "Change Color Scheme"
-msgstr "Choisir l'affichage :  Jour / Crépuscule / Nuit"
+msgstr ""
 
 #: src/chart1.cpp:3051 src/chart1.cpp:5344 src/chart1.cpp:5348
 msgid "Drop MOB Marker"
-msgstr "Insérer une marque MOB (Homme à la mer)"
+msgstr ""
 
 #: src/chart1.cpp:3051
 msgid " (Ctrl-Space)"
-msgstr " (Ctrl-Espace)"
+msgstr ""
 
 #: src/chart1.cpp:3081 src/chart1.cpp:4488 src/chart1.cpp:5321
 msgid "Attenuate less critical AIS targets"
-msgstr "Atténuer les cibles AIS moins critiques"
+msgstr ""
 
 #: src/chart1.cpp:3090 src/chart1.cpp:5319
 msgid "Show AIS Targets"
-msgstr "Afficher les cibles"
+msgstr ""
 
 #: src/chart1.cpp:3483
 msgid "Anchorage created "
-msgstr "Mouillage créé"
+msgstr ""
 
 #: src/chart1.cpp:3864 src/chcanv.cpp:3505 src/OCPNPlatform.cpp:1471
 msgid "StatusBar"
-msgstr "Barre d'état"
+msgstr ""
 
 #: src/chart1.cpp:4064
 msgid "Group \""
-msgstr "Groupe \""
+msgstr ""
 
 #: src/chart1.cpp:4066
 msgid "\" is empty, switching to \"All Active Charts\" group."
-msgstr "\" est vide. Activation automatique du groupe de cartes \"Toutes les cartes\"."
+msgstr ""
 
 #: src/chart1.cpp:4068
 msgid "OpenCPN Group Notice"
-msgstr "Avis du groupe OpenCPN"
+msgstr ""
 
 #: src/chart1.cpp:4248
 msgid "Hide Currents"
-msgstr "Cacher les courants"
+msgstr ""
 
 #: src/chart1.cpp:4282
 msgid "Hide Tides"
-msgstr "Cacher les marées"
+msgstr ""
 
 #: src/chart1.cpp:4289
 msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Carte1: Evénement...TCMgr invalide"
+msgstr ""
 
 #: src/chart1.cpp:4487
 msgid "Show all AIS Targets"
-msgstr "Afficher toutes les cibles AIS"
+msgstr ""
 
 #: src/chart1.cpp:4626 src/chart1.cpp:4684
 msgid "MAN OVERBOARD"
-msgstr "Homme à la mer (MOB)"
+msgstr ""
 
 #: src/chart1.cpp:4645
 msgid "1.0 NM along COG"
-msgstr "1.0 NM sur le cap du COG"
+msgstr ""
 
 #: src/chart1.cpp:4656
 msgid "Temporary MOB Route"
-msgstr "Route de retour au MOB"
+msgstr ""
 
 #: src/chart1.cpp:4657
 msgid "Assumed 1 Mile Point"
-msgstr "Position estimée : 1 mille."
+msgstr ""
 
 #: src/chart1.cpp:4707
 msgid "Disable Tracking"
-msgstr "Désactiver la trace"
+msgstr ""
 
 #: src/chart1.cpp:4732 src/chart1.cpp:8822 src/chart1.cpp:8965
 #: src/routemanagerdialog.cpp:1699
 msgid "(Unnamed Track)"
-msgstr "(Trace sans nom)"
+msgstr ""
 
 #: src/chart1.cpp:5266
 msgid "Larger Scale Chart"
-msgstr "Echelle de carte plus grande"
+msgstr ""
 
 #: src/chart1.cpp:5267
 msgid "Smaller Scale Chart"
-msgstr "Echelle de carte plus petite"
+msgstr ""
 
 #: src/chart1.cpp:5270
 msgid "Exit OpenCPN"
-msgstr "Fermer OpenCPN"
+msgstr ""
 
 #: src/chart1.cpp:5272
 msgid "&Navigate"
-msgstr "&1: Naviguer"
+msgstr ""
 
 #: src/chart1.cpp:5277 src/chart1.cpp:5280 src/options.cpp:3717
 #: src/options.cpp:3808
 msgid "Enable Chart Quilting"
-msgstr "Activer l'affichage en mosaïque"
+msgstr ""
 
 #: src/chart1.cpp:5278 src/chart1.cpp:5281 src/options.cpp:3759
 #: src/options.cpp:3849
 msgid "Show Chart Outlines"
-msgstr "Montrer la bordure des cartes"
+msgstr ""
 
 #: src/chart1.cpp:5283 src/options.cpp:4407
 msgid "Show Chart Bar"
-msgstr "Montrer la barre des cartes"
+msgstr ""
 
 #: src/chart1.cpp:5289 src/chart1.cpp:5294
 msgid "Show ENC Lights"
-msgstr "Montrer les feux des cartes ENC"
+msgstr ""
 
 #: src/chart1.cpp:5290 src/chart1.cpp:5295
 msgid "Show ENC Soundings"
-msgstr "Montrer les sondes des cartes ENC"
+msgstr ""
 
 #: src/chart1.cpp:5291 src/chart1.cpp:5296
 msgid "Show ENC Anchoring Info"
-msgstr "Montrer les informations de mouillage"
+msgstr ""
 
 #: src/chart1.cpp:5311 src/chart1.cpp:5313
 msgid "Enter Full Screen"
-msgstr "Afficher/Quitter plein écran"
+msgstr ""
 
 #: src/chart1.cpp:5315
 msgid "&View"
-msgstr "&2: Voir"
+msgstr ""
 
 #: src/chart1.cpp:5320
 msgid "Hide Moored AIS Targets"
-msgstr "Masquer les cibles AIS mouillées"
+msgstr ""
 
 #: src/chart1.cpp:5322
 msgid "Show AIS Target Tracks"
-msgstr "Afficher les traces des cibles AIS"
+msgstr ""
 
 #: src/chart1.cpp:5323
 msgid "Show CPA Alert Dialogs"
-msgstr "Afficher la fenêtre des alertes CPA"
+msgstr ""
 
 #: src/chart1.cpp:5324
 msgid "Sound CPA Alarms"
-msgstr "Alarmes sonores des CPA"
+msgstr ""
 
 #: src/chart1.cpp:5327
 msgid "&AIS"
-msgstr "&3: AIS"
+msgstr ""
 
 #: src/chart1.cpp:5331 src/chart1.cpp:5333
 msgid "Measure Distance"
-msgstr "Mesurer les distances"
+msgstr ""
 
 #: src/chart1.cpp:5337
 msgid "Route && Mark Manager..."
-msgstr "Gestionnaire de routes, traces, marques et couches ..."
+msgstr ""
 
 #: src/chart1.cpp:5340
 msgid "Drop Mark at Boat"
-msgstr "Placer une marque sous le bateau"
+msgstr ""
 
 #: src/chart1.cpp:5341
 msgid "Drop Mark at Cursor"
-msgstr "Placer une marque sous le curseur"
+msgstr ""
 
 #: src/chart1.cpp:5346 src/pluginmanager.cpp:3930
 msgid "Preferences"
-msgstr "Préférences"
+msgstr ""
 
 #: src/chart1.cpp:5353
 msgid "&Tools"
-msgstr "&4: Outils"
+msgstr ""
 
 #: src/chart1.cpp:5356
 msgid "OpenCPN Help"
-msgstr "Aide d'OpenCPN"
+msgstr ""
 
 #: src/chart1.cpp:5357
 msgid "&Help"
-msgstr "&5: Aide"
+msgstr ""
 
 #: src/chart1.cpp:5677
 msgid "Please restart OpenCPN to activate language or style changes."
-msgstr "Redémarrez OpenCPN pour mettre à jour la langue ou changer le style"
+msgstr ""
 
 #: src/chart1.cpp:7239
 msgid "Rotated Mode"
-msgstr "Mode rotation de la carte"
+msgstr ""
 
 #: src/chart1.cpp:8453
 msgid "Show This Chart"
-msgstr "Montrer cette carte"
+msgstr ""
 
 #: src/chart1.cpp:8704 src/routeprintout.cpp:470
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
-msgstr "Problème d'impression.\n"
-"Votre imprimante actuelle est elle bienl configurée ?"
+msgstr ""
 
 #: src/chart1.cpp:8886 src/chart1.cpp:8946 src/routemanagerdialog.cpp:1001
 msgid "(Unnamed Route)"
-msgstr "(Route sans nom)"
+msgstr ""
 
 #: src/chart1.cpp:9435
 msgid " Ship "
-msgstr " Bat. "
+msgstr ""
 
 #: src/chart1.cpp:9688 src/chart1.cpp:9739
 msgid "AIS MAN OVERBOARD"
-msgstr "AIS HOMME A LA MER"
+msgstr ""
 
 #: src/chart1.cpp:9701 src/options.cpp:2389
 msgid "Own ship"
-msgstr "Bateau de l'utilisateur"
+msgstr ""
 
 #: src/chart1.cpp:9712
 msgid "Temporary AISMOB Route"
-msgstr "Route temporaire de retour à l'AISMOB"
+msgstr ""
 
 #: src/chart1.cpp:9713
 msgid "Present own ship"
-msgstr "Bateau présent"
+msgstr ""
 
 #: src/chart1.cpp:9783
 msgid "AIS MAN OVERBOARD UPDATE"
-msgstr "Mise à jour de l'AIS HOMME A LA MER"
+msgstr ""
 
 #: src/chart1.cpp:11030
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
-msgstr "OpenCPN requiert l'accès au port série pour utiliser les données NMEA série.\n"
+msgstr ""
 
 #: src/chart1.cpp:11032
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "Aucun port série ne peut être trouvé sur ce système.\n"
-"Vous devez installer un port série ou le compléter par un port série USB.\n"
+msgstr ""
 
 #: src/chart1.cpp:11054
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
@@ -3260,289 +3248,285 @@ msgid "You do currently not have permission to access the serial ports on this s
 "and add yourself to the correct group to enable serial port access.\n\n"
 "You may do so by executing the following command from the linux command line:\n\n"
 "                sudo usermod -a -G "
-msgstr "Vous n'avez pas actuellement autorisé l'accès aux ports série sur ce système.\n\n"
-"Suggestion :  Quittez OpenCPN maintenant,\n"
-"et ajoutez-vous au groupe correct pour permettre l'accès du port série.\n\n"
-"Vous pouvez le faire en exécutant la commande suivante à partir de la ligne de commande Linux: \n\n"
-"                 sudo usermod -a -G "
+msgstr ""
 
 #: src/chartdbs.cpp:1168
 msgid " ChartFile:  "
-msgstr " Fichier de carte : "
+msgstr ""
 
 #: src/chartdbs.cpp:1205
 msgid " Name:  "
-msgstr " Zone couverte  : "
+msgstr ""
 
 #: src/chartdbs.cpp:1233 src/chartdbs.cpp:1235 src/chcanv.cpp:3470
 #: src/chcanv.cpp:3472 src/chcanv.cpp:3475 src/chcanv.cpp:3479
 #: src/chcanv.cpp:3483 src/chcanv.cpp:3514
 msgid "Scale"
-msgstr "Echelle"
+msgstr ""
 
 #: src/chartdbs.cpp:1245
 msgid " ID:  "
-msgstr " ID                     : "
+msgstr ""
 
 #: src/chartdbs.cpp:1253
 msgid " Depth Units:  "
-msgstr " Unités de profondeur  : "
+msgstr ""
 
 #: src/chartdbs.cpp:1261
 msgid " Soundings:  "
-msgstr " Datum des sondes     : "
+msgstr ""
 
 #: src/chartdbs.cpp:1269
 msgid " Datum:  "
-msgstr " Système géodésique : "
+msgstr ""
 
 #: src/chartdbs.cpp:1277
 msgid " Projection:  "
-msgstr " Projection                  : "
+msgstr ""
 
 #: src/chartdbs.cpp:1281
 msgid "Mercator"
-msgstr "Mercator"
+msgstr ""
 
 #: src/chartdbs.cpp:1283
 msgid "Transverse Mercator"
-msgstr "Mercator transverse"
+msgstr ""
 
 #: src/chartdbs.cpp:1285
 msgid "Polyconic"
-msgstr "Polyconique"
+msgstr ""
 
 #: src/chartdbs.cpp:1294
 msgid " Source Edition:  "
-msgstr " Edition de la source   : "
+msgstr ""
 
 #: src/chartdbs.cpp:1302
 msgid " Updated:  "
-msgstr " Mise à jour                 : "
+msgstr ""
 
 #: src/chartdbs.cpp:1526
 msgid "OpenCPN Chart Scan...."
-msgstr "OpenCPN analyse la carte ...."
+msgstr ""
 
 #: src/chartdbs.cpp:1567
 msgid "OpenCPN Directory Scan...."
-msgstr "OpenCPN traite le dossier ..."
+msgstr ""
 
 #: src/chartdbs.cpp:1898
 msgid "OpenCPN Chart Add...."
-msgstr "OpenCPN ajoute cette carte ..."
+msgstr ""
 
 #: src/chartimg.cpp:227
 msgid "No Chart Available"
-msgstr "Pas de carte disponible"
+msgstr ""
 
 #: src/chartimg.cpp:878
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
-msgstr "   Impossible de lire les %d premiers octets de l'en-tête du fichier de la carte :"
+msgstr ""
 
 #: src/chartimg.cpp:901
 msgid "   Chart file has no BSB header, cannot Init."
-msgstr "   Le fichier de la carte n'a pas d'en-tête BSB. Impossible à initialiser."
+msgstr ""
 
 #: src/chartimg.cpp:1400
 msgid "   Chart File contains less than 3 PLY points: "
-msgstr "   Le fichier de la carte contient moins de 3 points PLY :"
+msgstr ""
 
 #: src/chartimg.cpp:1513
 msgid "---<<< Warning:  Chart Datum may be incorrect. >>>---"
-msgstr "---<<< Attention : Le zéro de cette carte peut être incorrect >>>---"
+msgstr ""
 
 #: src/chartimg.cpp:1579
 msgid "   Chart File RLL data corrupt on chart "
-msgstr "   Données RLL du fichier carte corrompues"
+msgstr ""
 
 #: src/chartimg.cpp:1947 src/chartimg.cpp:1982 src/chartimg.cpp:1992
 #: src/chartimg.cpp:2011
 msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "   Fichier carte corrompu en PostInit() sur la carte"
+msgstr ""
 
 #: src/chartimg.cpp:2051
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "   Ligne d'index corrompue, recréation de l'index pour la carte "
+msgstr ""
 
 #: src/chartimg.cpp:2056
 msgid "   Error creating Line Index for chart "
-msgstr "   Erreur à la création de la ligne d'index pour la carte "
+msgstr ""
 
 #: src/chartimg.cpp:5260
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< Alerte :  La qualité du géo-référencement de la carte est peut-être insuffisante. >>>---"
+msgstr ""
 
 #: src/chartimg.cpp:5360
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP Contrôle final : Géoréfence Chart_Error_Factor sur la carte "
+msgstr ""
 
 #: src/chartimg.cpp:5368 src/chartimg.cpp:5436
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< Alerte :  La qualité du géo-référencement de la carte est insuffisante. >>>---"
+msgstr ""
 
 #: src/chartimg.cpp:5375
 msgid "   Trying again with internally calculated georef solution "
-msgstr "   Nouvel essai avec la solution, calculée en interne, de géo-référencement "
+msgstr ""
 
 #: src/chartimg.cpp:5428
 msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
-msgstr "   VP Contrôle final avec le géoréférencement interne :  Géoréfence Chart_Error_Factor sur la carte "
+msgstr ""
 
 #: src/chartimg.cpp:5440
 msgid "   Result: OK, Internal georef solution used."
-msgstr "   Résultat : OK, la solution interne de géo-référencement sera utilisée."
+msgstr ""
 
 #: src/chcanv.cpp:1692 src/options.cpp:3251 src/options.cpp:3463
 msgid "CM93 Detail Level"
-msgstr "CM93 : Niveau de détails"
+msgstr ""
 
 #: src/chcanv.cpp:2403 src/chcanv.cpp:7597
 msgid "Layer Route: "
-msgstr "Route (Couche) :"
+msgstr ""
 
 #: src/chcanv.cpp:2405
 msgid "(unnamed)"
-msgstr "(Sans nom)"
+msgstr ""
 
 #: src/chcanv.cpp:2409
 msgid "Total Length: "
-msgstr "Longueur totale : "
+msgstr ""
 
 #: src/chcanv.cpp:2410
 msgid "Leg: from "
-msgstr "Segment : De "
+msgstr ""
 
 #: src/chcanv.cpp:2411
 msgid " to "
-msgstr " à "
+msgstr ""
 
 #: src/chcanv.cpp:5285 src/chcanv.cpp:5695
 msgid "Use nearby waypoint?"
-msgstr "Utiliser le waypoint situé à proximité ?"
+msgstr ""
 
 #: src/chcanv.cpp:5286 src/chcanv.cpp:5338 src/chcanv.cpp:5696
 #: src/chcanv.cpp:5745
 msgid "OpenCPN Route Create"
-msgstr "OpenCPN, route"
+msgstr ""
 
 #: src/chcanv.cpp:5332 src/chcanv.cpp:5740
 msgid "For this leg the Great Circle route is "
-msgstr "Pour ce segment, la route orthodromique est "
+msgstr ""
 
 #: src/chcanv.cpp:5333 src/chcanv.cpp:5741
 msgid " shorter than rhumbline.\n\n"
-msgstr "plus court que la route loxodromique.\n\n"
+msgstr ""
 
 #: src/chcanv.cpp:5334 src/chcanv.cpp:5742
 msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr "Voulez-vous inclure les points de la route orthodromique pour ce segment ?"
+msgstr ""
 
 #: src/chcanv.cpp:6713 src/chcanv.cpp:6725 src/S57QueryDialog.cpp:87
 msgid "ObjectQuery"
-msgstr "Afficher les propriétés de l'objet"
+msgstr ""
 
 #: src/chcanv.cpp:6845 src/chcanv.cpp:6893 src/routemanagerdialog.cpp:1224
 #: src/routemanagerdialog.cpp:2198
 msgid "Layer"
-msgstr "Couche"
+msgstr ""
 
 #: src/chcanv.cpp:6930
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
-msgstr "Il existe déjà un waypoint à cette même position. Voulez vous les fusionner en un seul ?\n\n"
+msgstr ""
 
 #: src/chcanv.cpp:6931
 msgid "Answering 'No' will create a new waypoint at the same location."
-msgstr "Répondre «Non» créera un nouveau waypoint à la même position."
+msgstr ""
 
 #: src/chcanv.cpp:6932
 msgid "Merge waypoint?"
-msgstr "Fusionner le waypoint ?"
+msgstr ""
 
 #: src/chcanv.cpp:6989
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
-msgstr "Il existe des waypoint aux mêmes positions que ceux que vous voulez créer. Voulez vous seulement recopier leurs caractéristiques dans les nouveaux waypoint\n"
+msgstr ""
 
 #: src/chcanv.cpp:6990
 msgid "Answering 'No' will create all new waypoints for this route."
-msgstr "Répondre «Non» créera tous les nouveaux waypoint de cette route."
+msgstr ""
 
 #: src/chcanv.cpp:6991
 msgid "Merge waypoints?"
-msgstr "Fusionner les waypoint ?"
+msgstr ""
 
 #: src/chcanv.cpp:7461 src/chcanv.cpp:7492 src/RolloverWin.cpp:114
 #: src/RolloverWin.cpp:198 src/RolloverWin.cpp:312
 msgid "RouteLegInfoRollover"
-msgstr "Info affichées par survol d'un segment de route"
+msgstr ""
 
 #: src/chcanv.cpp:8603 src/options.cpp:3901 src/options.cpp:4009
 msgid "Feet"
-msgstr "Pieds"
+msgstr ""
 
 #: src/chcanv.cpp:8604 src/options.cpp:3880 src/options.cpp:3901
 #: src/options.cpp:3988 src/options.cpp:4009
 msgid "Meters"
-msgstr "Mètres"
+msgstr ""
 
 #: src/chcanv.cpp:8605 src/options.cpp:3901 src/options.cpp:4009
 msgid "Fathoms"
-msgstr "Brasses"
+msgstr ""
 
 #: src/chcanv.cpp:8608
 msgid "OverZoom"
-msgstr "Zoom excessif"
+msgstr ""
 
 #: src/chcanv.cpp:8949 src/chcanv.cpp:8950
 msgid "ExtendedTideIcon"
-msgstr "Hauteur de marée ( sous l'indicateur)"
+msgstr ""
 
 #: src/chcanv.cpp:9216
 msgid "CurrentValue"
-msgstr "Force du courant"
+msgstr ""
 
 #: src/chcanv.cpp:9604
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr "  Application externe \"xcalib\" introuvable. La brillance de l'écran est inchangée"
+msgstr ""
 
 #: src/cm93.cpp:6725
 msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr "CM93 : Ajustement du réglage de la cellule"
+msgstr ""
 
 #: src/cm93.cpp:6742
 msgid "Cell"
-msgstr "Cellule"
+msgstr ""
 
 #: src/cm93.cpp:6745
 msgid "M_COVR ID"
-msgstr "M_COVRD ID"
+msgstr ""
 
 #: src/cm93.cpp:6748
 msgid "Cell Scale"
-msgstr "Echelle de la cellule"
+msgstr ""
 
 #: src/cm93.cpp:6751
 msgid "wgsox"
-msgstr "WGS X"
+msgstr ""
 
 #: src/cm93.cpp:6754
 msgid "wgsoy"
-msgstr "WGS Y"
+msgstr ""
 
 #: src/cm93.cpp:6757 src/cm93.cpp:6768
 msgid "User X Offset"
-msgstr "Perso. : X"
+msgstr ""
 
 #: src/cm93.cpp:6760 src/cm93.cpp:6775
 msgid "User Y Offset"
-msgstr "Perso. : Y"
+msgstr ""
 
 #: src/cm93.cpp:6768 src/cm93.cpp:6775 src/options.cpp:3220
 #: src/options.cpp:3230 src/options.cpp:3240 src/options.cpp:3435
 #: src/options.cpp:3444 src/options.cpp:3452 src/options.cpp:5298
 msgid "meters"
-msgstr "mètres"
+msgstr ""
 
 #: src/cm93.cpp:6782 src/GoToPositionDialog.cpp:149 src/options.cpp:485
 #: src/options.cpp:4747 src/routeprintout.cpp:407 src/routeprop.cpp:1067
@@ -3550,1704 +3534,1691 @@ msgstr "mètres"
 #: src/TCWin.cpp:156 src/toolbar.cpp:2748 src/TrackPropDlg.cpp:509
 #: src/TrackPropDlg.cpp:859
 msgid "OK"
-msgstr "Ok"
+msgstr ""
 
 #: src/concanv.cpp:99 src/concanv.cpp:145 src/concanv.cpp:164
 #: src/concanv.cpp:206 src/concanv.cpp:214
 msgid "This Leg"
-msgstr "Ce segment"
+msgstr ""
 
 #: src/concanv.cpp:111 src/concanv.cpp:115 src/concanv.cpp:119
 #: src/concanv.cpp:123 src/concanv.cpp:127 src/concanv.cpp:547
 msgid "Console Legend"
-msgstr "Légende de la console"
+msgstr ""
 
 #: src/concanv.cpp:111 src/concanv.cpp:115 src/concanv.cpp:119
 #: src/concanv.cpp:123 src/concanv.cpp:127 src/concanv.cpp:548
 msgid "Console Value"
-msgstr "Valeur de la console"
+msgstr ""
 
 #: src/concanv.cpp:215
 msgid "Full Route"
-msgstr "Route complète"
+msgstr ""
 
 #: src/concanv.cpp:216
 msgid "Show Highway"
-msgstr "Montrer l'autoroute"
+msgstr ""
 
 #: src/concanv.cpp:328
 msgid "XTE         L"
-msgstr "Dév.      G"
+msgstr ""
 
 #: src/concanv.cpp:330
 msgid "XTE         R"
-msgstr "Dév.      D"
+msgstr ""
 
 #: src/concanv.cpp:408
 msgid "ETA          "
-msgstr "Arrivée à :                                           "
+msgstr ""
 
 #: src/ConnectionParams.cpp:138 src/options.cpp:1261 src/options.cpp:1863
 msgid "Serial"
-msgstr "Série"
+msgstr ""
 
 #: src/ConnectionParams.cpp:140 src/options.cpp:1266 src/options.cpp:1868
 msgid "Network"
-msgstr "Réseau"
+msgstr ""
 
 #: src/ConnectionParams.cpp:142
 msgid "GPS"
-msgstr "GPS"
+msgstr ""
 
 #: src/ConnectionParams.cpp:144
 msgid "BT"
-msgstr "BT"
+msgstr ""
 
 #: src/ConnectionParams.cpp:156
 msgid "Internal"
-msgstr "Interne"
+msgstr ""
 
 #: src/ConnectionParams.cpp:169 src/options.cpp:1347 src/options.cpp:1950
 msgid "TCP"
-msgstr "TCP"
+msgstr ""
 
 #: src/ConnectionParams.cpp:171 src/options.cpp:1353 src/options.cpp:1956
 msgid "UDP"
-msgstr "UDP"
+msgstr ""
 
 #: src/ConnectionParams.cpp:173 src/options.cpp:1359 src/options.cpp:1962
 msgid "GPSD"
-msgstr "GPSD"
+msgstr ""
 
 #: src/ConnectionParams.cpp:186
 msgid "Input"
-msgstr "Entrer"
+msgstr ""
 
 #: src/ConnectionParams.cpp:188
 msgid "Output"
-msgstr "Sortir"
+msgstr ""
 
 #: src/ConnectionParams.cpp:190
 msgid "In/Out"
-msgstr "Entrée/Sortie"
+msgstr ""
 
 #: src/ConnectionParams.cpp:197
 msgid "Reject"
-msgstr "Rejeter"
+msgstr ""
 
 #: src/ConnectionParams.cpp:199
 msgid "Accept"
-msgstr "Accepter"
+msgstr ""
 
 #: src/ConnectionParams.cpp:203
 msgid "Drop"
-msgstr "Jeter"
+msgstr ""
 
 #: src/ConnectionParams.cpp:205 src/SendToGpsDlg.cpp:136
 msgid "Send"
-msgstr "Envoyer"
+msgstr ""
 
 #: src/ConnectionParams.cpp:227
 msgid "In"
-msgstr "Dans"
+msgstr ""
 
 #: src/ConnectionParams.cpp:232
 msgid "In: None"
-msgstr "Entrée : Aucune"
+msgstr ""
 
 #: src/ConnectionParams.cpp:236
 msgid "Out"
-msgstr "Sortie"
+msgstr ""
 
 #: src/ConnectionParams.cpp:241
 msgid ", Out: None"
-msgstr ", Sortie : Aucune"
+msgstr ""
 
 #: src/glChartCanvas.cpp:676
 msgid "Failed to initialize OpenGL"
-msgstr "Impossible d’initialiser OpenGL"
+msgstr ""
 
 #: src/glChartCanvas.cpp:980
 msgid "OpenGL-> SSE2 Instruction set not available"
-msgstr "OpenGL-> SSE2 Instruction set not available"
+msgstr ""
 
 #: src/glChartCanvas.cpp:996
 msgid "OpenGL-> Using oes etc1 compression"
-msgstr "OpenGL-> Using oes etc1 compression"
+msgstr ""
 
 #: src/glChartCanvas.cpp:1017
 msgid "OpenGL-> Using s3tc dxt1 compression"
-msgstr "OpenGL-> Using s3tc dxt1 compression"
+msgstr ""
 
 #: src/glChartCanvas.cpp:1022
 msgid "OpenGL-> Using 3dfx fxt1 compression"
-msgstr "OpenGL-> Using 3dfx fxt1 compression"
+msgstr ""
 
 #: src/glChartCanvas.cpp:1024
 msgid "OpenGL-> No Useable compression format found"
-msgstr "OpenGL-> No Useable compression format found"
+msgstr ""
 
 #: src/glChartCanvas.cpp:1468 src/s52plib.cpp:1971 src/s52plib.cpp:2065
 #: src/s52plib.cpp:2225
 msgid "ChartTexts"
-msgstr "Texte des cartes"
+msgstr ""
 
 #: src/glChartCanvas.cpp:3807
 msgid "Waiting for raster chart compression thread exit."
-msgstr "Waiting for raster chart compression thread exit."
+msgstr ""
 
 #: src/GoToPositionDialog.cpp:122 src/routeprop.cpp:1097 src/routeprop.cpp:1391
 #: src/routeprop.cpp:2548 src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:719
 msgid "Latitude"
-msgstr "Latitude"
+msgstr ""
 
 #: src/GoToPositionDialog.cpp:132 src/routeprop.cpp:1098 src/routeprop.cpp:1392
 #: src/routeprop.cpp:2555 src/TrackPropDlg.cpp:448 src/TrackPropDlg.cpp:720
 msgid "Longitude"
-msgstr "Longitude "
+msgstr ""
 
 #: src/GoToPositionDialog.cpp:145 src/options.cpp:482 src/routeprintout.cpp:403
 #: src/routeprop.cpp:1063 src/routeprop.cpp:1360 src/routeprop.cpp:2761
 #: src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2744 src/TrackPropDlg.cpp:505
 #: src/TrackPropDlg.cpp:855
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: src/kml.cpp:442
 msgid "OpenCPN Route"
-msgstr "Route pour OpenCPN"
+msgstr ""
 
 #: src/kml.cpp:487
 msgid "OpenCPN Track"
-msgstr "Trace pour OpenCPN"
+msgstr ""
 
 #: src/kml.cpp:535
 msgid "OpenCPN Waypoint"
-msgstr "Marque pour OpenCPN"
+msgstr ""
 
 #: src/kml.cpp:611
 msgid "Choose Format for Copy"
-msgstr "Choisissez le format de copie"
+msgstr ""
 
 #: src/kml.cpp:618
 msgid "KML Standard (Google Earth and others)"
-msgstr "KML standard (Google Earth et autres)"
+msgstr ""
 
 #: src/kml.cpp:621
 msgid "KML with extended waypoint data (QtVlm)"
-msgstr "KML avec les données étendues (QtVlm)"
+msgstr ""
 
 #: src/LinkPropDlg.cpp:47
 msgid "Link"
-msgstr "Lien"
+msgstr ""
 
 #: src/LinkPropDlg.cpp:50
 msgid "Link description"
-msgstr "Description du lien"
+msgstr ""
 
 #: src/LinkPropDlg.cpp:59
 msgid "URL"
-msgstr "URL"
+msgstr ""
 
 #: src/LinkPropDlg.cpp:68
 msgid "Local file..."
-msgstr "Fichier local ..."
+msgstr ""
 
 #: src/LinkPropDlg.cpp:119
 msgid "Choose a file"
-msgstr "Sélectionnez un fichier"
+msgstr ""
 
 #: src/LinkPropDlg.cpp:130
 msgid "Link not complete, can't be saved."
-msgstr "Lien incomplet. Sauvegarde impossible."
+msgstr ""
 
 #: src/navutil.cpp:2323 src/navutil.cpp:2357 src/navutil.cpp:2391
 #: src/navutil.cpp:2426 src/navutil.cpp:2455
 msgid "Export GPX file"
-msgstr "GPX : Exporter un fichier"
+msgstr ""
 
 #: src/navutil.cpp:2336 src/navutil.cpp:2370 src/navutil.cpp:2405
 #: src/navutil.cpp:2442
 msgid "Overwrite existing file?"
-msgstr "Voulez vous remplacer le fichier existant ?"
+msgstr ""
 
 #: src/navutil.cpp:2549 src/navutil.cpp:2583
 msgid "Import GPX file"
-msgstr "GPX : Importer un fichier"
+msgstr ""
 
 #: src/navutil.cpp:3164
 msgid "&Font family:"
-msgstr "Catégorie de polices :"
+msgstr ""
 
 #: src/navutil.cpp:3170 src/navutil.cpp:3172
 msgid "The font family."
-msgstr "Catégorie de polices."
+msgstr ""
 
 #: src/navutil.cpp:3177
 msgid "&Style:"
-msgstr "Style :"
+msgstr ""
 
 #: src/navutil.cpp:3181 src/navutil.cpp:3183
 msgid "The font style."
-msgstr "Style de police."
+msgstr ""
 
 #: src/navutil.cpp:3188
 msgid "&Weight:"
-msgstr "Taille :"
+msgstr ""
 
 #: src/navutil.cpp:3192 src/navutil.cpp:3194
 msgid "The font weight."
-msgstr "Police : normal/gras."
+msgstr ""
 
 #: src/navutil.cpp:3201
 msgid "C&olour:"
-msgstr "Couleur :"
+msgstr ""
 
 #: src/navutil.cpp:3211 src/navutil.cpp:3213
 msgid "The font colour."
-msgstr "Couleur de police."
+msgstr ""
 
 #: src/navutil.cpp:3219
 msgid "&Point size:"
-msgstr "Taille du point :"
+msgstr ""
 
 #: src/navutil.cpp:3224 src/navutil.cpp:3226
 msgid "The font point size."
-msgstr "Taille du point de police."
+msgstr ""
 
 #: src/navutil.cpp:3233
 msgid "&Underline"
-msgstr "Souligné"
+msgstr ""
 
 #: src/navutil.cpp:3236 src/navutil.cpp:3238
 msgid "Whether the font is underlined."
-msgstr "Police soulignée ou non."
+msgstr ""
 
 #: src/navutil.cpp:3245
 msgid "Preview:"
-msgstr "Pré-visualisation :"
+msgstr ""
 
 #: src/navutil.cpp:3250 src/navutil.cpp:3252
 msgid "Shows the font preview."
-msgstr "Prévisualiser la police."
+msgstr ""
 
 #: src/navutil.cpp:3259 src/options.cpp:4751
 msgid "&Cancel"
-msgstr "Annuler"
+msgstr ""
 
 #: src/navutil.cpp:3261
 msgid "Click to cancel the font selection."
-msgstr "Cliquer pour annuler la sélection de police."
+msgstr ""
 
 #: src/navutil.cpp:3264
 msgid "&OK"
-msgstr "OK"
+msgstr ""
 
 #: src/navutil.cpp:3266 src/navutil.cpp:3268
 msgid "Click to confirm the font selection."
-msgstr "Cliquer pour confirmer la sélection de police."
+msgstr ""
 
 #: src/navutil.cpp:3785
 msgid "NMi"
-msgstr "Milles"
+msgstr ""
 
 #: src/navutil.cpp:3788
 msgid "mi"
-msgstr "Miles"
+msgstr ""
 
 #: src/navutil.cpp:3791
 msgid "km"
-msgstr "km"
+msgstr ""
 
 #: src/navutil.cpp:3794
 msgid "m"
-msgstr "m"
+msgstr ""
 
 #: src/navutil.cpp:3797
 msgid "ft"
-msgstr "ft"
+msgstr ""
 
 #: src/navutil.cpp:3800
 msgid "fa"
-msgstr "fa"
+msgstr ""
 
 #: src/navutil.cpp:3806
 msgid "cm"
-msgstr "cm"
+msgstr ""
 
 #: src/navutil.cpp:3874
 msgid "kts"
-msgstr "Noeuds"
+msgstr ""
 
 #: src/navutil.cpp:3877
 msgid "mph"
-msgstr "mi/h"
+msgstr ""
 
 #: src/navutil.cpp:3880 src/options.cpp:3890 src/options.cpp:3998
 msgid "km/h"
-msgstr "km/h"
+msgstr ""
 
 #: src/navutil.cpp:3883 src/options.cpp:3890 src/options.cpp:3998
 msgid "m/s"
-msgstr "m/s"
+msgstr ""
 
 #: src/NMEALogWindow.cpp:64
 msgid "NMEA Debug Window"
-msgstr "Affichage des phases NMEA"
+msgstr ""
 
 #: src/OCPNListCtrl.cpp:77
 msgid "Yes"
-msgstr "Oui"
+msgstr ""
 
 #: src/OCPNListCtrl.cpp:79
 msgid "No"
-msgstr "Non"
+msgstr ""
 
 #: src/OCPNPlatform.cpp:653
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr "Récupération de la langue, initialement sélectionnée, dans le registre Windows."
+msgstr ""
 
 #: src/OCPNPlatform.cpp:1347
 msgid "Old log will be moved to opencpn.log.log"
-msgstr "L'ancien fichier log sera renommé opencpn.log.log"
+msgstr ""
 
 #: src/OCPN_Sound.cpp:147
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr "Impossible de charger les données sonores depuis : '%s'."
+msgstr ""
 
 #: src/OCPN_Sound.cpp:154
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr "Le format du fichier son '%s' n'est pas accepté."
+msgstr ""
 
 #: src/options.cpp:430
 msgid "MMSI Extended Properties"
-msgstr "Propriétés étendues du MMSI"
+msgstr ""
 
 #: src/options.cpp:444
 msgid "Tracking"
-msgstr "Suivi"
+msgstr ""
 
 #: src/options.cpp:449
 msgid "Default tracking"
-msgstr "Suivre par défaut"
+msgstr ""
 
 #: src/options.cpp:454
 msgid "Always track"
-msgstr "Toujours suivre"
+msgstr ""
 
 #: src/options.cpp:457
 msgid " Never track"
-msgstr " Ne jamais suivre"
+msgstr ""
 
 #: src/options.cpp:460 src/options.cpp:611
 msgid "Persistent"
-msgstr "Persistant"
+msgstr ""
 
 #: src/options.cpp:466
 msgid "Ignore this MMSI"
-msgstr "Ignorer ce MMSI"
+msgstr ""
 
 #: src/options.cpp:470
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
-msgstr "Considérer ce MMSI comme émis par une balise personnelle de localisation SART (MOB)."
+msgstr ""
 
 #: src/options.cpp:473
 msgid "Convert AIVDM to AIVDO for this MMSI"
-msgstr "Convertir les phrases AIVDM en AIVDO pour ce MMSI"
+msgstr ""
 
 #: src/options.cpp:476
 msgid "This MMSI is my Follower - No CPA Alert"
-msgstr "Ce MMSI est mon follower - Pas d'alerte CPA"
+msgstr ""
 
 #: src/options.cpp:533
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
-msgstr "Un MMSI est un numéro, de 9 chiffres.\n"
-"S'il vous plait, vérifiez ce que vous avez entré et corrigez si nécessaire."
+msgstr ""
 
 #: src/options.cpp:599 src/options.cpp:2423 src/routeprop.cpp:941
 #: src/routeprop.cpp:959 src/routeprop.cpp:1289 src/routeprop.cpp:1308
 #: src/routeprop.cpp:3055 src/TrackPropDlg.cpp:389 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:627 src/TrackPropDlg.cpp:637
 msgid "Default"
-msgstr "Défaut"
+msgstr ""
 
 #: src/options.cpp:602
 msgid "Always"
-msgstr "Toujours"
+msgstr ""
 
 #: src/options.cpp:605
 msgid "Never"
-msgstr "Jamais"
+msgstr ""
 
 #: src/options.cpp:642 src/options.cpp:686
 msgid "Edit MMSI Properties"
-msgstr "Editer les propriétés des MMSI"
+msgstr ""
 
 #: src/options.cpp:656 src/options.cpp:4085 src/options.cpp:4092
 msgid "MMSI Properties"
-msgstr "Gestion des MMSI"
+msgstr ""
 
 #: src/options.cpp:658 src/routeprop.cpp:2675 src/routeprop.cpp:2695
 #: src/TrackPropDlg.cpp:763 src/TrackPropDlg.cpp:790
 msgid "Edit"
-msgstr "Editer"
+msgstr ""
 
 #: src/options.cpp:744
 msgid "Track Mode"
-msgstr "Mode trace"
+msgstr ""
 
 #: src/options.cpp:752
 msgid "Ignore"
-msgstr "Ignorer"
+msgstr ""
 
 #: src/options.cpp:761
 msgid "MOB"
-msgstr "MOB (Homme à la mer)"
+msgstr ""
 
 #: src/options.cpp:769
 msgid "VDM->VDO"
-msgstr "VDM ---> VDO"
+msgstr ""
 
 #: src/options.cpp:777
 msgid "Ship name"
-msgstr "Nom du bateau"
+msgstr ""
 
 #: src/options.cpp:785
 msgid "Follower"
-msgstr "Follower"
+msgstr ""
 
 #: src/options.cpp:789
 msgid "New..."
-msgstr "Nouveau ..."
+msgstr ""
 
 #: src/options.cpp:812
 msgid "Add MMSI Properties"
-msgstr "Ajouter des propriétés de MMSI"
+msgstr ""
 
 #: src/options.cpp:1145 src/options.cpp:1749
 msgid "NMEA"
-msgstr "NMEA"
+msgstr ""
 
 #: src/options.cpp:1155 src/options.cpp:1759 src/options.cpp:3663
 msgid "General"
-msgstr "Général"
+msgstr ""
 
 #: src/options.cpp:1164
 msgid "Filter NMEA COG/SOG"
-msgstr "Filtrer les phrases NMEA COG/SOG"
+msgstr ""
 
 #: src/options.cpp:1174 src/options.cpp:1777
 msgid "Filter period (sec)"
-msgstr "Période de filtrage (sec.)"
+msgstr ""
 
 #: src/options.cpp:1195 src/options.cpp:1797
 msgid "Show NMEA Debug Window"
-msgstr "Ouvrir la fenêtre d'affichage des données NMEA"
+msgstr ""
 
 #: src/options.cpp:1201
 msgid "Use Furuno GP3X for uploads"
-msgstr "Utiliser le format Furuno GP3X pour les téléchargements"
+msgstr ""
 
 #: src/options.cpp:1207
 msgid "Use GRMN for uploads"
-msgstr "Utiliser le format GRMN pour les téléchargements"
+msgstr ""
 
 #: src/options.cpp:1213 src/options.cpp:1816
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr "NMEA : Pour \"ECAPB\", utiliser, en sortie, le cap du compas magnétique  au lieu du COG du GPS"
+msgstr ""
 
 #: src/options.cpp:1224 src/options.cpp:1827
 msgid "Data Connections"
-msgstr "Gestion des ports de connexion "
+msgstr ""
 
 #: src/options.cpp:1238 src/options.cpp:3593 src/options.cpp:8244
 #: src/routeprop.cpp:2691 src/TrackPropDlg.cpp:787
 msgid "Add"
-msgstr "Ajouter"
+msgstr ""
 
 #: src/options.cpp:1242
 msgid "Remove"
-msgstr "Supprimer"
+msgstr ""
 
 #: src/options.cpp:1272 src/options.cpp:1874
 msgid "Built-in GPS"
-msgstr "GPS intégré"
+msgstr ""
 
 #: src/options.cpp:1281
 msgid "Built-in Bluetooth"
-msgstr "Bluetooth intégré"
+msgstr ""
 
 #: src/options.cpp:1285 src/options.cpp:1887 src/options.cpp:7739
 msgid "BT Scan"
-msgstr "BT Scan"
+msgstr ""
 
 #: src/options.cpp:1293
 msgid "BT Sources"
-msgstr "BT Sources"
+msgstr ""
 
 #: src/options.cpp:1337 src/options.cpp:1418 src/options.cpp:1941
 #: src/options.cpp:2022
 msgid "Protocol"
-msgstr "Protocole"
+msgstr ""
 
 #: src/options.cpp:1369 src/options.cpp:1969
 msgid "Address"
-msgstr "Adresse IP"
+msgstr ""
 
 #: src/options.cpp:1377 src/options.cpp:1392 src/options.cpp:1978
 #: src/options.cpp:1996 src/options.cpp:2309
 msgid "DataPort"
-msgstr "Port com"
+msgstr ""
 
 #: src/options.cpp:1401 src/options.cpp:2005
 msgid "Baudrate"
-msgstr "Vitesse (baud)"
+msgstr ""
 
 #: src/options.cpp:1407 src/options.cpp:2011
 msgid "150"
-msgstr "150"
+msgstr ""
 
 #: src/options.cpp:1407 src/options.cpp:2011
 msgid "300"
-msgstr "300"
+msgstr ""
 
 #: src/options.cpp:1407 src/options.cpp:2011
 msgid "600"
-msgstr "600"
+msgstr ""
 
 #: src/options.cpp:1407 src/options.cpp:2011
 msgid "1200"
-msgstr "1200"
+msgstr ""
 
 #: src/options.cpp:1407 src/options.cpp:2011
 msgid "2400"
-msgstr "2400"
+msgstr ""
 
 #: src/options.cpp:1408 src/options.cpp:2012
 msgid "4800"
-msgstr "4800"
+msgstr ""
 
 #: src/options.cpp:1408 src/options.cpp:2012
 msgid "9600"
-msgstr "9600"
+msgstr ""
 
 #: src/options.cpp:1408 src/options.cpp:2012
 msgid "19200"
-msgstr "19200"
+msgstr ""
 
 #: src/options.cpp:1408 src/options.cpp:2012
 msgid "38400"
-msgstr "38400"
+msgstr ""
 
 #: src/options.cpp:1408 src/options.cpp:2012
 msgid "57600"
-msgstr "57600"
+msgstr ""
 
 #: src/options.cpp:1409 src/options.cpp:2013
 msgid "115200"
-msgstr "115200"
+msgstr ""
 
 #: src/options.cpp:1409 src/options.cpp:2013
 msgid "230400"
-msgstr "230400"
+msgstr ""
 
 #: src/options.cpp:1409 src/options.cpp:2013
 msgid "460800"
-msgstr "460800"
+msgstr ""
 
 #: src/options.cpp:1409 src/options.cpp:2013
 msgid "921600"
-msgstr "921600"
+msgstr ""
 
 #: src/options.cpp:1423 src/options.cpp:2027
 msgid "NMEA 0183"
-msgstr "NMEA 0183"
+msgstr ""
 
 #: src/options.cpp:1423 src/options.cpp:2027
 msgid "NMEA 2000"
-msgstr "NMEA 2000"
+msgstr ""
 
 #: src/options.cpp:1424 src/options.cpp:2028
 msgid "Seatalk"
-msgstr "Seatalk"
+msgstr ""
 
 #: src/options.cpp:1434 src/options.cpp:2038 src/options.cpp:2310
 msgid "Priority"
-msgstr "Priorité"
+msgstr ""
 
 #: src/options.cpp:1439 src/options.cpp:2043
 msgid "0"
-msgstr "0"
+msgstr ""
 
 #: src/options.cpp:1439 src/options.cpp:2043
 msgid "1"
-msgstr "1"
+msgstr ""
 
 #: src/options.cpp:1439 src/options.cpp:2043
 msgid "2"
-msgstr "2"
+msgstr ""
 
 #: src/options.cpp:1439 src/options.cpp:2043
 msgid "3"
-msgstr "3"
+msgstr ""
 
 #: src/options.cpp:1439 src/options.cpp:2043
 msgid "4"
-msgstr "4"
+msgstr ""
 
 #: src/options.cpp:1440 src/options.cpp:2044
 msgid "5"
-msgstr "5"
+msgstr ""
 
 #: src/options.cpp:1440 src/options.cpp:2044
 msgid "6"
-msgstr "6"
+msgstr ""
 
 #: src/options.cpp:1440 src/options.cpp:2044
 msgid "7"
-msgstr "7"
+msgstr ""
 
 #: src/options.cpp:1440 src/options.cpp:2044
 msgid "8"
-msgstr "8"
+msgstr ""
 
 #: src/options.cpp:1440 src/options.cpp:2044
 msgid "9"
-msgstr "9"
+msgstr ""
 
 #: src/options.cpp:1451 src/options.cpp:2060
 msgid "Control checksum"
-msgstr "Contrôle du checksum"
+msgstr ""
 
 #: src/options.cpp:1455 src/options.cpp:2064
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr "En cas de contrôle, seules les phrases ayant un checksum correct sont acceptées"
+msgstr ""
 
 #: src/options.cpp:1459
 msgid "Use GRMN mode for input"
-msgstr "Utiliser le format GRMN en entrée"
+msgstr ""
 
 #: src/options.cpp:1468 src/options.cpp:2077
 msgid "Receive Input on this Port"
-msgstr "Recevoir en entrée sur ce port"
+msgstr ""
 
 #: src/options.cpp:1472 src/options.cpp:2083
 msgid "Output on this port"
-msgstr "Sortir sur ce port"
+msgstr ""
 
 #: src/options.cpp:1480 src/options.cpp:2088
 msgid "Talker ID"
-msgstr "N° de la source"
+msgstr ""
 
 #: src/options.cpp:1491 src/options.cpp:2099
 msgid "APB bearing precision"
-msgstr "Précision du cap du pilote automatique"
+msgstr ""
 
 #: src/options.cpp:1512 src/options.cpp:2119
 msgid "Input filtering"
-msgstr "Filtrage en entrée"
+msgstr ""
 
 #: src/options.cpp:1518 src/options.cpp:2125 src/options.cpp:8293
 msgid "Accept only sentences"
-msgstr "Accepter seulement les phrases"
+msgstr ""
 
 #: src/options.cpp:1522 src/options.cpp:2129 src/options.cpp:8293
 msgid "Ignore sentences"
-msgstr "Ignorer les phrases"
+msgstr ""
 
 #: src/options.cpp:1545 src/options.cpp:2153
 msgid "Output filtering"
-msgstr "Filtrage en sortie"
+msgstr ""
 
 #: src/options.cpp:1552 src/options.cpp:2160 src/options.cpp:8291
 msgid "Transmit sentences"
-msgstr "Phrases envoyées"
+msgstr ""
 
 #: src/options.cpp:1556 src/options.cpp:2164 src/options.cpp:8291
 msgid "Drop sentences"
-msgstr "Phrases non envoyées"
+msgstr ""
 
 #: src/options.cpp:1701
 msgid "On"
-msgstr "Actif"
+msgstr ""
 
 #: src/options.cpp:1701
 msgid "Prio"
-msgstr "Prio"
+msgstr ""
 
 #: src/options.cpp:1702
 msgid "Parm"
-msgstr "Parm"
+msgstr ""
 
 #: src/options.cpp:1702
 msgid "I/O"
-msgstr "I/O"
+msgstr ""
 
 #: src/options.cpp:1702 src/options.cpp:2311
 msgid "Filters"
-msgstr "Filtres"
+msgstr ""
 
 #: src/options.cpp:1771
 msgid "Filter NMEA Course and Speed data"
-msgstr "NMEA : Filtre des données COG et vitesse"
+msgstr ""
 
 #: src/options.cpp:1803
 msgid "Format uploads for Furuno GP3X"
-msgstr "Format de téléchargement pour Furuno GP3X"
+msgstr ""
 
 #: src/options.cpp:1809
 msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "Utiliser le mode Garmin GRMN (Hôte) en téléchargement"
+msgstr ""
 
 #: src/options.cpp:1840
 msgid "Add Connection"
-msgstr "Ajouter une connexion"
+msgstr ""
 
 #: src/options.cpp:1844
 msgid "Remove Connection"
-msgstr "Supprimer une connexion"
+msgstr ""
 
 #: src/options.cpp:1883
 msgid "Built-in Bluetooth SPP"
-msgstr "Built-in Bluetooth SPP"
+msgstr ""
 
 #: src/options.cpp:1897
 msgid "Bluetooth Data Sources"
-msgstr "Données reçues par bluetooth"
+msgstr ""
 
 #: src/options.cpp:2068
 msgid "Use Garmin (GRMN) mode for input"
-msgstr "Utiliser le mode Garmin GRMN en entrée."
+msgstr ""
 
 #: src/options.cpp:2083
 msgid "as autopilot or NMEA repeater"
-msgstr "comme le pilote automatique ou répéteur NMEA"
+msgstr ""
 
 #: src/options.cpp:2088
 msgid "blank = default ID"
-msgstr "blanc = ID par défaut"
+msgstr ""
 
 #: src/options.cpp:2105
 msgid "x"
-msgstr "x"
+msgstr ""
 
 #: src/options.cpp:2105
 msgid "x.x"
-msgstr "x.x"
+msgstr ""
 
 #: src/options.cpp:2105
 msgid "x.xx"
-msgstr "x.xx"
+msgstr ""
 
 #: src/options.cpp:2106
 msgid "x.xxx"
-msgstr "x.xxx"
+msgstr ""
 
 #: src/options.cpp:2106
 msgid "x.xxxx"
-msgstr "x.xxxx"
+msgstr ""
 
 #: src/options.cpp:2309 src/pluginmanager.cpp:4013 src/pluginmanager.cpp:4024
 msgid "Enable"
-msgstr "Activer"
+msgstr ""
 
 #: src/options.cpp:2310
 msgid "Parameters"
-msgstr "Paramètres"
+msgstr ""
 
 #: src/options.cpp:2310
 msgid "Connection"
-msgstr "Connexion"
+msgstr ""
 
 #: src/options.cpp:2396
 msgid "Display Options"
-msgstr "Options d'affichage du bateau"
+msgstr ""
 
 #: src/options.cpp:2406
 msgid "COG Predictor Length (min)"
-msgstr "COG            : Taille de la flèche de prédiction de la route en minutes"
+msgstr ""
 
 #: src/options.cpp:2413
 msgid "Heading Predictor Length (NMi)"
-msgstr "Cap compas : Longueur de la flèche indicatrice en mille(s) nautique(s)"
+msgstr ""
 
 #: src/options.cpp:2420
 msgid "Ship Icon Type"
-msgstr "Caractéristiques et icône du bateau"
+msgstr ""
 
 #: src/options.cpp:2423
 msgid "Real Scale Bitmap"
-msgstr "Echelle réelle en bitmap"
+msgstr ""
 
 #: src/options.cpp:2424
 msgid "Real Scale Vector"
-msgstr "Echelle réelle vectorielle"
+msgstr ""
 
 #: src/options.cpp:2438
 msgid "Length Over All (m)"
-msgstr "Longueur hors tout (m)"
+msgstr ""
 
 #: src/options.cpp:2444
 msgid "Width Over All (m)"
-msgstr "largeur hors tout (m)"
+msgstr ""
 
 #: src/options.cpp:2450
 msgid "GPS Offset from Bow (m)"
-msgstr "Distance entre la proue du bateau et l'antenne du GPS (m)"
+msgstr ""
 
 #: src/options.cpp:2456
 msgid "GPS Offset from Midship (m)"
-msgstr "Distance entre l'axe du bateau et l'antenne du GPS (m, - si côté babord, + si côté tribord)"
+msgstr ""
 
 #: src/options.cpp:2462
 msgid "Minimum Screen Size (mm)"
-msgstr "Taille minimale à l'écran (mm)"
+msgstr ""
 
 #: src/options.cpp:2474 src/routeprop.cpp:2573
 msgid "Show range rings"
-msgstr "Montrer les cercles"
+msgstr ""
 
 #: src/options.cpp:2477 src/routeprop.cpp:2584
 msgid "None"
-msgstr "Aucun"
+msgstr ""
 
 #: src/options.cpp:2491 src/options.cpp:2616 src/routeprop.cpp:2593
 msgid "Distance between rings"
-msgstr "Distance entre deux cercles"
+msgstr ""
 
 #: src/options.cpp:2500 src/options.cpp:2627 src/routeprop.cpp:2600
 msgid "Distance Unit"
-msgstr "Unité de la distance entre deux cercles"
+msgstr ""
 
 #: src/options.cpp:2503 src/options.cpp:3879 src/options.cpp:3987
 msgid "Nautical miles"
-msgstr "Milles marins"
+msgstr ""
 
 #: src/options.cpp:2503 src/options.cpp:3880 src/options.cpp:3988
 msgid "Kilometers"
-msgstr "Kilomètres"
+msgstr ""
 
 #: src/options.cpp:2511 src/routemanagerdialog.cpp:590
 msgid "Tracks"
-msgstr "Traces"
+msgstr ""
 
 #: src/options.cpp:2517
 msgid "Automatic Daily Tracks at midnight"
-msgstr "Trace journalière automatique à minuit"
+msgstr ""
 
 #: src/options.cpp:2524
 msgid "Automatic Daily Tracks at"
-msgstr "Trace journalière automatique à"
+msgstr ""
 
 #: src/options.cpp:2529
 msgid "Computer"
-msgstr "Ordinateur"
+msgstr ""
 
 #: src/options.cpp:2532 src/routeprop.cpp:903 src/routeprop.cpp:910
 #: src/routeprop.cpp:1252 src/routeprop.cpp:1261 src/TrackPropDlg.cpp:351
 #: src/TrackPropDlg.cpp:358 src/TrackPropDlg.cpp:691
 msgid "UTC"
-msgstr "UTC"
+msgstr ""
 
 #: src/options.cpp:2535
 msgid "LMT"
-msgstr "LMT"
+msgstr ""
 
 #: src/options.cpp:2541
 msgid "Highlight Tracks"
-msgstr "Trace : Surligner"
+msgstr ""
 
 #: src/options.cpp:2550
 msgid "Tracking Precision"
-msgstr "Précision de la trace"
+msgstr ""
 
 #: src/options.cpp:2553
 msgid "Low"
-msgstr "Faible"
+msgstr ""
 
 #: src/options.cpp:2553
 msgid "Medium"
-msgstr "Moyenne"
+msgstr ""
 
 #: src/options.cpp:2553
 msgid "High"
-msgstr "Grande"
+msgstr ""
 
 #: src/options.cpp:2561 src/routemanagerdialog.cpp:488
 msgid "Routes"
-msgstr "Routes"
+msgstr ""
 
 #: src/options.cpp:2571
 msgid "Waypoint Arrival Circle Radius (NMi)"
-msgstr "Waypoint de destination : Rayon du cercle d'approche en mille(s) nautique(s)"
+msgstr ""
 
 #: src/options.cpp:2580
 msgid "Advance route waypoint on arrival only"
-msgstr "Anticiper le waypoint à l'arrivée seulement"
+msgstr ""
 
 #: src/options.cpp:2585 src/routemanagerdialog.cpp:669 src/routeprop.cpp:970
 #: src/routeprop.cpp:1319 src/TrackPropDlg.cpp:418
 msgid "Waypoints"
-msgstr "Waypoint"
+msgstr ""
 
 #: src/options.cpp:2601
 msgid "Waypoint range rings"
-msgstr "Cercles centrés sur les waypoint"
+msgstr ""
 
 #: src/options.cpp:2638
 msgid "Waypoint Range Ring Colours"
-msgstr "Couleurs des cercles centrés sur les waypoint"
+msgstr ""
 
 #: src/options.cpp:2652
 msgid "Chart Files"
-msgstr "Dossiers des cartes"
+msgstr ""
 
 #: src/options.cpp:2658
 msgid "Directories"
-msgstr "Dossiers actifs des cartes"
+msgstr ""
 
 #: src/options.cpp:2689
 msgid "Add Directory..."
-msgstr "Ajout de dossier ..."
+msgstr ""
 
 #: src/options.cpp:2693 src/options.cpp:3536 src/routeprop.cpp:566
 msgid "Remove Selected"
-msgstr "Supprimer la sélection"
+msgstr ""
 
 #: src/options.cpp:2699
 msgid "Compress Selected"
-msgstr "Compresser la sélection"
+msgstr ""
 
 #: src/options.cpp:2707
 msgid "Update Control"
-msgstr "Contrôler la mise à jour"
+msgstr ""
 
 #: src/options.cpp:2715
 msgid "Scan Charts and Update Database"
-msgstr "Analyser les dossiers et mettre à jour la base de données"
+msgstr ""
 
 #: src/options.cpp:2718
 msgid "Force Full Database Rebuild"
-msgstr "Forcer la reconstruction de la base de données"
+msgstr ""
 
 #: src/options.cpp:2721
 msgid "Prepare all ENC Charts"
-msgstr "Analyser toutes les cartes ENC"
+msgstr ""
 
 #: src/options.cpp:2732 src/TrackPropDlg.cpp:804
 msgid "Advanced"
-msgstr "Avancées"
+msgstr ""
 
 #: src/options.cpp:2749
 msgid "De-skew Raster Charts"
-msgstr "Redresser les cartes rasters"
+msgstr ""
 
 #: src/options.cpp:2753 src/options.cpp:2908
 msgid "Disable Full Screen Quilting"
-msgstr "Mosaïque : Désactiver le plein écran"
+msgstr ""
 
 #: src/options.cpp:2757 src/options.cpp:2913
 msgid "Suppress blur/fog effects on overzoom"
-msgstr "Effet brouillard : Supprimer, même si le zoom est excessif"
+msgstr ""
 
 #: src/options.cpp:2761 src/options.cpp:2918
 msgid "Suppress scaled vector charts on overzoom"
-msgstr "Zoom excessif : Limiter le grossissement des objets vectoriels"
+msgstr ""
 
 #: src/options.cpp:2769
 msgid "Lock Waypoints"
-msgstr "Figer les waypoint"
+msgstr ""
 
 #: src/options.cpp:2774
 msgid "Confirm deletion"
-msgstr "Confirmer la suppression"
+msgstr ""
 
 #: src/options.cpp:2780 src/options.cpp:3070
 msgid "Enable Transparent Toolbar"
-msgstr "Barre d'icônes : Permettre la transparence"
+msgstr ""
 
 #: src/options.cpp:2793 src/options.cpp:3054
 msgid "Use Accelerated Graphics (OpenGL)"
-msgstr "Utiliser la technologie OpenGL d'accélération graphique"
+msgstr ""
 
 #: src/options.cpp:2811 src/options.cpp:2927
 msgid "Course-Up Update Period"
-msgstr "Période de MàJ si COG vers le haut"
+msgstr ""
 
 #: src/options.cpp:2824 src/options.cpp:2940 src/options.cpp:4429
 msgid "seconds"
-msgstr "Secondes"
+msgstr ""
 
 #: src/options.cpp:2832 src/options.cpp:2947
 msgid "Chart Zoom/Scale Weighting"
-msgstr "Pondération qté de détails/niveau de zoom"
+msgstr ""
 
 #: src/options.cpp:2848 src/options.cpp:3015
 msgid "Physical Screen Width"
-msgstr "Largeur physique de l'écran"
+msgstr ""
 
 #: src/options.cpp:2853 src/options.cpp:3020
 msgid "Auto"
-msgstr "Auto"
+msgstr ""
 
 #: src/options.cpp:2857 src/options.cpp:3024
 msgid "Manual:"
-msgstr "Manuel :"
+msgstr ""
 
 #: src/options.cpp:2867 src/options.cpp:3032
 msgid "mm"
-msgstr "mm"
+msgstr ""
 
 #: src/options.cpp:2898 src/options.cpp:3711
 msgid "Chart Display"
-msgstr "Cartes"
+msgstr ""
 
 #: src/options.cpp:2904
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr "Cartes raster obliques : Afficher nord vers le haut."
+msgstr ""
 
 #: src/options.cpp:2953
 msgid "Raster"
-msgstr "Raster"
+msgstr ""
 
 #: src/options.cpp:2963
 msgid "Vector"
-msgstr "Vectorielle"
+msgstr ""
 
 #: src/options.cpp:2976
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr "A niveau de zoom égal, et une valeur plus faible, la carte, automatiquement choisie, est moins détaillée.\n"
-"A niveau de zoom égal, et une valeur plus forte, la carte, automatiquement choisie, est plus détaillée."
+msgstr ""
 
 #: src/options.cpp:2992 src/options.cpp:3729
 msgid "Controls"
-msgstr "Commandes"
+msgstr ""
 
 #: src/options.cpp:2999
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr "Verrouiller les waypoint ( sauf si la fenêtre de propriétés de l'un d'eux est ouverte)"
+msgstr ""
 
 #: src/options.cpp:3005
 msgid "Confirm deletion of tracks and routes"
-msgstr "Confirmer la suppression des routes et des traces"
+msgstr ""
 
 #: src/options.cpp:3048
 msgid "Graphics"
-msgstr "Carte graphique"
+msgstr ""
 
 #: src/options.cpp:3079
 msgid "Vector Chart Display"
-msgstr "Cartes vectorielles"
+msgstr ""
 
 #: src/options.cpp:3098 src/options.cpp:3312
 msgid "Display Category"
-msgstr "Contenu affiché"
+msgstr ""
 
 #: src/options.cpp:3099 src/options.cpp:3313
 msgid "Standard"
-msgstr "Standard"
+msgstr ""
 
 #: src/options.cpp:3099 src/options.cpp:3313
 msgid "All"
-msgstr "Tout"
+msgstr ""
 
 #: src/options.cpp:3100 src/options.cpp:3271 src/options.cpp:3314
 #: src/options.cpp:3483
 msgid "Mariner's Standard"
-msgstr "Objets affichables"
+msgstr ""
 
 #: src/options.cpp:3110 src/options.cpp:4177 src/options.cpp:4757
 msgid "Display"
-msgstr "Affichage"
+msgstr ""
 
 #: src/options.cpp:3117 src/options.cpp:3328
 msgid "Depth Soundings"
-msgstr "Afficher : Sondes"
+msgstr ""
 
 #: src/options.cpp:3122 src/options.cpp:3333
 msgid "Chart Information Objects"
-msgstr "Cartes : Informations relatives aux objets."
+msgstr ""
 
 #: src/options.cpp:3126
 msgid "Buoys/Lights"
-msgstr "Bouées/feux"
+msgstr ""
 
 #: src/options.cpp:3133 src/options.cpp:3341
 msgid "Buoy/Light Labels"
-msgstr "Bouées/feux : Afficher leur nom"
+msgstr ""
 
 #: src/options.cpp:3138 src/options.cpp:3346
 msgid "Light Descriptions"
-msgstr "Afficher les caractéristiques des feux"
+msgstr ""
 
 #: src/options.cpp:3143 src/options.cpp:3351
 msgid "Extended Light Sectors"
-msgstr "Afficher les secteurs par rollover"
+msgstr ""
 
 #: src/options.cpp:3147
 msgid "Chart Texts"
-msgstr "Textes de carte"
+msgstr ""
 
 #: src/options.cpp:3154 src/options.cpp:3359
 msgid "National text on chart"
-msgstr "Texte en langue nationale dans la carte"
+msgstr ""
 
 #: src/options.cpp:3159 src/options.cpp:3364
 msgid "Important Text Only"
-msgstr "Afficher : Textes importants seulement"
+msgstr ""
 
 #: src/options.cpp:3164 src/options.cpp:3369
 msgid "De-Cluttered Text"
-msgstr "Désencombrer le texte"
+msgstr ""
 
 #: src/options.cpp:3168
 msgid "Chart Detail"
-msgstr "Détail de la carte"
+msgstr ""
 
 #: src/options.cpp:3171 src/options.cpp:3374
 msgid "Reduced Detail at Small Scale"
-msgstr "Réduire les détails à petite échelle"
+msgstr ""
 
 #: src/options.cpp:3180 src/options.cpp:3390
 msgid "Graphics Style"
-msgstr "Style graphique"
+msgstr ""
 
 #: src/options.cpp:3183 src/options.cpp:3393
 msgid "Paper Chart"
-msgstr "Carte papier"
+msgstr ""
 
 #: src/options.cpp:3183 src/options.cpp:3393
 msgid "Simplified"
-msgstr "Simplifiés"
+msgstr ""
 
 #: src/options.cpp:3189 src/options.cpp:3399
 msgid "Boundaries"
-msgstr "Limites de zones de cartes"
+msgstr ""
 
 #: src/options.cpp:3192 src/options.cpp:3402
 msgid "Plain"
-msgstr "Pointillées"
+msgstr ""
 
 #: src/options.cpp:3192 src/options.cpp:3402
 msgid "Symbolized"
-msgstr "Crénelées"
+msgstr ""
 
 #: src/options.cpp:3198 src/options.cpp:3408
 msgid "Colors"
-msgstr "Nombre de zones colorées"
+msgstr ""
 
 #: src/options.cpp:3201 src/options.cpp:3411
 msgid "2 Color"
-msgstr "Couleurs : 2"
+msgstr ""
 
 #: src/options.cpp:3201 src/options.cpp:3411
 msgid "4 Color"
-msgstr "Couleurs : 4"
+msgstr ""
 
 #: src/options.cpp:3212 src/options.cpp:3429
 msgid "Shallow Depth"
-msgstr "Faible profondeur"
+msgstr ""
 
 #: src/options.cpp:3223 src/options.cpp:3438
 msgid "Safety Depth"
-msgstr "Profondeur de sécurité"
+msgstr ""
 
 #: src/options.cpp:3233 src/options.cpp:3447
 msgid "Deep Depth"
-msgstr "Eaux profondes"
+msgstr ""
 
 #: src/options.cpp:3289 src/options.cpp:3490 src/options.cpp:8242
 msgid "Select All"
-msgstr "Tout sélectionner    "
+msgstr ""
 
 #: src/options.cpp:3291 src/options.cpp:3492 src/options.cpp:8243
 msgid "Clear All"
-msgstr "Ne rien sélectionner"
+msgstr ""
 
 #: src/options.cpp:3296
 msgid "Reset to STANDARD"
-msgstr "Réinitialiser à \"Standard\""
+msgstr ""
 
 #: src/options.cpp:3512
 msgid "Tides && Currents"
-msgstr "Marées et courants"
+msgstr ""
 
 #: src/options.cpp:3517
 msgid "Active Datasets"
-msgstr "Données actives"
+msgstr ""
 
 #: src/options.cpp:3534
 msgid "Add Dataset..."
-msgstr "Ajout de données ..."
+msgstr ""
 
 #: src/options.cpp:3579
 msgid "All Available Charts"
-msgstr "Tous les dossiers activés de cartes"
+msgstr ""
 
 #: src/options.cpp:3595
 msgid "Remove Chart"
-msgstr "Enlever ce dossier du groupe choisi"
+msgstr ""
 
 #: src/options.cpp:3619
 msgid "All Charts"
-msgstr "Toutes les cartes"
+msgstr ""
 
 #: src/options.cpp:3637
 msgid "New Group..."
-msgstr "Nouveau groupe"
+msgstr ""
 
 #: src/options.cpp:3639
 msgid "Delete Group"
-msgstr "Supprimer le groupe"
+msgstr ""
 
 #: src/options.cpp:3684
 msgid "Navigation Mode"
-msgstr "Mode de navigation"
+msgstr ""
 
 #: src/options.cpp:3692 src/options.cpp:3784
 msgid "North Up"
-msgstr "Nord vers le haut"
+msgstr ""
 
 #: src/options.cpp:3695 src/options.cpp:3787
 msgid "Course Up"
-msgstr "COG vers le haut"
+msgstr ""
 
 #: src/options.cpp:3702 src/options.cpp:3794
 msgid "Look Ahead Mode"
-msgstr "Décentrer la carte pour voir en avant du bateau"
+msgstr ""
 
 #: src/options.cpp:3721 src/options.cpp:3812
 msgid "Preserve scale when switching charts"
-msgstr "Echelle : Préserver lors d'un changement de carte"
+msgstr ""
 
 #: src/options.cpp:3735 src/options.cpp:3826
 msgid "Smooth Panning / Zooming"
-msgstr "Activer le lissage Panoramique"
+msgstr ""
 
 #: src/options.cpp:3739 src/options.cpp:3830
 msgid "Zoom to Cursor"
-msgstr "Zoomer en centrant sur le curseur"
+msgstr ""
 
 #: src/options.cpp:3749
 msgid "Display Features"
-msgstr "Afficher"
+msgstr ""
 
 #: src/options.cpp:3755 src/options.cpp:3845
 msgid "Show Grid"
-msgstr "La grille"
+msgstr ""
 
 #: src/options.cpp:3763 src/options.cpp:3853
 msgid "Show Depth Units"
-msgstr "L'unité de profondeur"
+msgstr ""
 
 #: src/options.cpp:3860
 msgid "Units"
-msgstr "Unités"
+msgstr ""
 
 #: src/options.cpp:3877 src/options.cpp:3985 src/routeprintout.cpp:113
 #: src/routeprintout.cpp:384 src/routeprop.cpp:1090 src/routeprop.cpp:1384
 #: src/TrackPropDlg.cpp:445 src/TrackPropDlg.cpp:717
 msgid "Distance"
-msgstr "Distance"
+msgstr ""
 
 #: src/options.cpp:3879 src/options.cpp:3987
 msgid "Statute miles"
-msgstr "Mile terrestre Américain"
+msgstr ""
 
 #: src/options.cpp:3890 src/options.cpp:3998
 msgid "Knots"
-msgstr "Noeud"
+msgstr ""
 
 #: src/options.cpp:3890 src/options.cpp:3998
 msgid "Mph"
-msgstr "M/h"
+msgstr ""
 
 #: src/options.cpp:3898 src/options.cpp:4006
 msgid "Depth"
-msgstr "Profondeur"
+msgstr ""
 
 #: src/options.cpp:3913 src/options.cpp:4021
 msgid "Lat/Long"
-msgstr "Lat/Long"
+msgstr ""
 
 #: src/options.cpp:3915 src/options.cpp:4023
 msgid "Degrees, Decimal Minutes"
-msgstr "Degrés, Minutes décimales"
+msgstr ""
 
 #: src/options.cpp:3916 src/options.cpp:4024
 msgid "Decimal Degrees"
-msgstr "Degrés décimaux"
+msgstr ""
 
 #: src/options.cpp:3917 src/options.cpp:4025
 msgid "Degrees, Minutes, Seconds"
-msgstr "Degrés, Minutes, Secondes"
+msgstr ""
 
 #: src/options.cpp:3929 src/options.cpp:4037
 msgid "Bearings"
-msgstr "Relèvements"
+msgstr ""
 
 #: src/options.cpp:3934
 msgid "Show true"
-msgstr "Montrer Vrai M"
+msgstr ""
 
 #: src/options.cpp:3937
 msgid "Show magnetic bearings and headings"
-msgstr "Montrer les relèvements et les directions magnétiques"
+msgstr ""
 
 #: src/options.cpp:3943
 msgid "Assumed magnetic variation"
-msgstr "Déclinaison magnétique supposée"
+msgstr ""
 
 #: src/options.cpp:3965 src/options.cpp:4068
 msgid "deg (-W, +E)"
-msgstr "Deg (- O, + E)"
+msgstr ""
 
 #: src/options.cpp:4045
 msgid "Show true bearings and headings"
-msgstr "Montrer les relèvements et les directions vrais"
+msgstr ""
 
 #: src/options.cpp:4048
 msgid "Show magnetic bearings and headings."
-msgstr "Montrer les relèvements et les directions magnétiques."
+msgstr ""
 
 #: src/options.cpp:4059 src/options.cpp:4909
 msgid "WMM Plugin calculated magnetic variation"
-msgstr "Complément \"Modèle magnétique mondial\""
+msgstr ""
 
 #: src/options.cpp:4073
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr " Régler la déclinaison magnétique manuellement, \n"
-" vous devez désactiver le plugin WMM."
+msgstr ""
 
 #: src/options.cpp:4108
 msgid "AIS Targets"
-msgstr "Cibles AIS"
+msgstr ""
 
 #: src/options.cpp:4115
 msgid "CPA Calculation"
-msgstr "CPA : Calcul du point d'abordage le plus proche"
+msgstr ""
 
 #: src/options.cpp:4125
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr "Aucune alerte de (T)CPA si la cible est à une distance supérieure à (NMi)"
+msgstr ""
 
 #: src/options.cpp:4132
 msgid "Warn if CPA less than (NMi)"
-msgstr "Déclencher un avertissement si le CPA est inférieur à... (milles) :"
+msgstr ""
 
 #: src/options.cpp:4144
 msgid "...and TCPA is less than (min)"
-msgstr "... et le temps vers le CPA (TCPA) est inférieur à ... (minutes) :"
+msgstr ""
 
 #: src/options.cpp:4152
 msgid "Lost Targets"
-msgstr "Cibles perdues"
+msgstr ""
 
 #: src/options.cpp:4161
 msgid "Mark targets as lost after (min)"
-msgstr "Marquer les cibles comme perdues après ... minutes :"
+msgstr ""
 
 #: src/options.cpp:4169
 msgid "Remove lost targets after (min)"
-msgstr "Effacer les cibles perdues après ... minutes :"
+msgstr ""
 
 #: src/options.cpp:4186
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "COG : Afficher les flèches indiquant la route fond, longueur (en minute )"
+msgstr ""
 
 #: src/options.cpp:4194
 msgid "Show target tracks, length (min)"
-msgstr "Afficher les traces, longueur (en minute )"
+msgstr ""
 
 #: src/options.cpp:4202
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr "Supprimer des cibles ancré/amarré, vitesse max (kn)"
+msgstr ""
 
 #: src/options.cpp:4210
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr "Permettre l'atténuation des cibles moins critiques s'il y a plus de... cibles"
+msgstr ""
 
 #: src/options.cpp:4218
 msgid "Show area notices (from AIS binary messages)"
-msgstr "Afficher les avis de la zone (à partir des données AIS)"
+msgstr ""
 
 #: src/options.cpp:4225
 msgid "Show AIS targets real size"
-msgstr "Afficher les cibles en taille réelle"
+msgstr ""
 
 #: src/options.cpp:4232
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr "Montrer les noms avec les cibles AIS à une échelle supérieure à 1 /"
+msgstr ""
 
 #: src/options.cpp:4240
 msgid "Treat WPL sentences as APRS position reports"
-msgstr "Traiter les phrases de type WPL comme des rapports de position APRS"
+msgstr ""
 
 #: src/options.cpp:4250
 msgid "Rollover"
-msgstr "Info par survol d'une cible."
+msgstr ""
 
 #: src/options.cpp:4256
 msgid "\"Ship Name\" MMSI (Call Sign)"
-msgstr "      \"Nom du bateau\"  MMSI  ( Indicatif )"
+msgstr ""
 
 #: src/options.cpp:4260
 msgid "[Class] Type (Status)"
-msgstr "[Classe] Type (Statut)"
+msgstr ""
 
 #: src/options.cpp:4263
 msgid "SOG COG"
-msgstr "SOG / COG  (vitesse/cap fond )"
+msgstr ""
 
 #: src/options.cpp:4266
 msgid "CPA TCPA"
-msgstr "CPA / TCPA"
+msgstr ""
 
 #: src/options.cpp:4271
 msgid "CPA/TCPA Alerts"
-msgstr "Alarmes CPA/TCPA ( TCPA = Durée avant le CPA)."
+msgstr ""
 
 #: src/options.cpp:4280
 msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Afficher la fenêtre de dialogue pour ces alarmes"
+msgstr ""
 
 #: src/options.cpp:4284
 msgid "Select Alert Sound"
-msgstr "Choisir l'alarme"
+msgstr ""
 
 #: src/options.cpp:4290
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
-msgstr "Activer l'alarme sonore des alertes CPA/TCPA et urgences DSC/SART "
+msgstr ""
 
 #: src/options.cpp:4294
 msgid "Test Alert Sound"
-msgstr "Tester l'alarme"
+msgstr ""
 
 #: src/options.cpp:4299
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Cibles mouillées ou amarrées : Ne pas déclencher d'alarme"
+msgstr ""
 
 #: src/options.cpp:4306
 msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr "Alerte sur cible : Activer le délai maximum d’acquittement (minutes)"
+msgstr ""
 
 #: src/options.cpp:4318
 msgid "General Options"
-msgstr "Options générales"
+msgstr ""
 
 #: src/options.cpp:4327
 msgid "Language"
-msgstr "Langue"
+msgstr ""
 
 #: src/options.cpp:4338
 msgid "Fonts"
-msgstr "Polices"
+msgstr ""
 
 #: src/options.cpp:4363
 msgid "Choose Font..."
-msgstr "Choix de police ..."
+msgstr ""
 
 #: src/options.cpp:4368
 msgid "Choose Font Color..."
-msgstr "Choix de la couleur de la police ..."
+msgstr ""
 
 #: src/options.cpp:4373
 msgid "Toolbar and Window Style"
-msgstr "Style de la barre d'icônes et de la fenêtre"
+msgstr ""
 
 #: src/options.cpp:4391
 msgid "Interface Options"
-msgstr "Options d'interface"
+msgstr ""
 
 #: src/options.cpp:4397
 msgid "Show Status Bar"
-msgstr "Montrer la barre d'état"
+msgstr ""
 
 #: src/options.cpp:4402
 msgid "Show Menu Bar"
-msgstr "Montrer la barre des menus"
+msgstr ""
 
 #: src/options.cpp:4412
 msgid "Show Compass/GPS Status Window"
-msgstr "Montrer les indicateurs : Nord de la carte et état du GPS"
+msgstr ""
 
 #: src/options.cpp:4420
 msgid "Enable Toolbar auto-hide"
-msgstr "Masquer automatiq. la barre de menu"
+msgstr ""
 
 #: src/options.cpp:4434
 msgid "Play Ships Bells"
-msgstr "Cloche de bord : Activer"
+msgstr ""
 
 #: src/options.cpp:4449
 msgid "Sound Device Index"
-msgstr "Index du périphérique audio"
+msgstr ""
 
 #: src/options.cpp:4457
 msgid "Enable Touchscreen interface"
-msgstr "Activer l'interface pour écran tactile"
+msgstr ""
 
 #: src/options.cpp:4461
 msgid "Enable Scaled Graphics interface"
-msgstr "Interface utilisateur : Facteur d'échelle"
+msgstr ""
 
 #: src/options.cpp:4465
 msgid "Use Settings for Inland ECDIS Version 2.3"
-msgstr "Utiliser les paramètres pour le système ECDIS Version 2.3"
+msgstr ""
 
 #: src/options.cpp:4477
 msgid "User Interface scale factor"
-msgstr "Facteur d'échelle de l'interface utilisateur"
+msgstr ""
 
 #: src/options.cpp:4491
 msgid "Chart Object scale factor"
-msgstr "Facteur d'échelle des objets affichables"
+msgstr ""
 
 #: src/options.cpp:4619 src/options.cpp:4788
 msgid "Connections"
-msgstr "Connexions"
+msgstr ""
 
 #: src/options.cpp:4754
 msgid "Apply"
-msgstr "Appliquer"
+msgstr ""
 
 #: src/options.cpp:4762
 msgid "Charts"
-msgstr "Cartes/données"
+msgstr ""
 
 #: src/options.cpp:4797
 msgid "Ships"
-msgstr "Bateaux"
+msgstr ""
 
 #: src/options.cpp:4802
 msgid "User Interface"
-msgstr "Personnaliser"
+msgstr ""
 
 #: src/options.cpp:4805 src/options.cpp:4806
 msgid "Plugins"
-msgstr "Compléments"
+msgstr ""
 
 #: src/options.cpp:4915
 msgid "User set magnetic variation"
-msgstr "Déclinaison magnétique définie par l'utilisateur"
+msgstr ""
 
 #: src/options.cpp:5298
 msgid "feet"
-msgstr "pieds"
+msgstr ""
 
 #: src/options.cpp:5298
 msgid "fathoms"
-msgstr "brasses"
+msgstr ""
 
 #: src/options.cpp:5519
 msgid "Add a directory containing chart files"
-msgstr "Ajouter un dossier contenant des fichiers de cartes"
+msgstr ""
 
 #: src/options.cpp:5730
 msgid "\n"
 " - your ship's length must be > 0"
-msgstr "\n"
-" - La longueur du bateau doit être > 0"
+msgstr ""
 
 #: src/options.cpp:5732
 msgid "\n"
 " - your ship's beam must be > 0"
-msgstr "\n"
-" - La largeur du bateau doit être > 0"
+msgstr ""
 
 #: src/options.cpp:5735
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
-msgstr "\n"
-" - la position du GPS par rapport à l'axe du bateau ne doit pas être extérieure au bateau."
+msgstr ""
 
 #: src/options.cpp:5739
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
-msgstr "\n"
-" - La position du GPS par rapport à la proue doit être <= à la longueur"
+msgstr ""
 
 #: src/options.cpp:5741
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
-msgstr "\n"
-" - La taille minimale de l'icône du bateau doit être entre 1 et 100 mm"
+msgstr ""
 
 #: src/options.cpp:5743
 msgid "The settings for own ship real size are not correct:"
-msgstr "Les données pour la taille réelle de votre bateau ne sont pas correctes :"
+msgstr ""
 
 #: src/options.cpp:5744 src/routemanagerdialog.cpp:1553
 msgid "OpenCPN info"
-msgstr "Informations OpenCPN "
+msgstr ""
 
 #: src/options.cpp:6556
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr "La compression va modifier les fichiers de cartes sur le disque. \n"
-"Ceci peut les rendre inutilisables par d'autres programmes ou par les anciennes versions d'OpenCPN\n"
-"Les cartes compressées peuvent être un peu plus longues à charger et à afficher sur certains systèmes. \n"
-"Elles peuvent être décompressées à l’aide d’un programme comme 7Zip."
+msgstr ""
 
 #: src/options.cpp:6560 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
-msgstr "Alerte d'OpenCPN"
+msgstr ""
 
 #: src/options.cpp:6573 src/options.cpp:6624
 msgid "OpenCPN Compress Charts"
-msgstr "Cartes OpenCPN compressées"
+msgstr ""
 
 #: src/options.cpp:6616
 msgid "No charts found to compress."
-msgstr "Aucune carte trouvée à compresser."
+msgstr ""
 
 #: src/options.cpp:6650
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr "compressée : %ld cartes\n"
-"de %.1fMB à %.1fMo\n"
-"sauvée : %.1fMo (%.1f%%)"
+msgstr ""
 
 #: src/options.cpp:7017 src/options.cpp:7028
 msgid "Select Sound File"
-msgstr "Sélectionner l'alarme sonore"
+msgstr ""
 
 #: src/options.cpp:7448
 msgid "Enter Group Name"
-msgstr "Entrer un nom de groupe"
+msgstr ""
 
 #: src/options.cpp:7448
 msgid "New Chart Group"
-msgstr "Nouveau groupe de cartes"
+msgstr ""
 
 #: src/options.cpp:7613 src/options.cpp:7627
 msgid "Select Tide/Current Data"
-msgstr "Choisissez des données de marées et courants"
+msgstr ""
 
 #: src/options.cpp:7685
 msgid "Stop Scan"
-msgstr "Arrêter le scan"
+msgstr ""
 
 #: src/options.cpp:8230
 msgid "Sentence Filter"
-msgstr "Filtre de phrases"
+msgstr ""
 
 #: src/options.cpp:8338
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
-msgstr "Entrer les phrases NMEA (2, 3 ou 5 caractères) "
+msgstr ""
 
 #: src/options.cpp:8339
 msgid "Enter the NMEA sentence"
-msgstr "Entrer la phrase NMEA"
+msgstr ""
 
 #: src/options.cpp:8356
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
@@ -5255,1077 +5226,1058 @@ msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
 "           You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n\n"
 "           The filter accepts just these three formats."
-msgstr "Une phrases NMEA est généralement constituée de  3 charactères (comme RMC, GGA etc.)\n"
-"           Il se peut aussi qu'il y ait un préfixe de deux caractères identifiant la provenance ou le fabricant des messages.\n"
-"           L'ensemble de la phrase ressemble alors à GPGGA ou AITXT.\n"
-"       Vous pouvez filtrer pour éliminer toutes les phrases ayant une certaine source ou préfixe (comme GP, AI etc.).\n\n"
-"           Le filtre accepte seulement ces trois formats."
+msgstr ""
 
 #: src/options.cpp:8403
 msgid "Texture Compression"
-msgstr "Compression de texture"
+msgstr ""
 
 #: src/options.cpp:8404
 msgid "Texture Compression with Caching"
-msgstr "Compression de texture avec mise en cache"
+msgstr ""
 
 #: src/options.cpp:8406
 msgid "Texture Compression Caching"
-msgstr "Mise en cache de la texture compressée"
+msgstr ""
 
 #: src/options.cpp:8408
 msgid "Texture Memory Size (MB)"
-msgstr "Taille de la mémoire de texture (Mb)"
+msgstr ""
 
 #: src/options.cpp:8412 src/options.cpp:8561
 msgid "Size: "
-msgstr "Taille : "
+msgstr ""
 
 #: src/options.cpp:8414
 msgid "Rebuild Texture Cache"
-msgstr "Reconstruire le cache de texture"
+msgstr ""
 
 #: src/options.cpp:8416
 msgid "Clear Texture Cache"
-msgstr "Effacer le cache de texture"
+msgstr ""
 
 #: src/options.cpp:8420
 msgid "Show FPS"
-msgstr "Afficher l'indicateur FPS d'efficacité du mode OpenGL"
+msgstr ""
 
 #: src/options.cpp:8422
 msgid "Software OpenGL (restart OpenCPN)"
-msgstr "Version OpenGL (Redémarrer OpenCPN)"
+msgstr ""
 
 #: src/options.cpp:8424
 msgid "Use Accelerated Panning"
-msgstr "Utiliser le défilement accéléré des cartes"
+msgstr ""
 
 #: src/options.cpp:8426
 msgid "Texture Settings"
-msgstr "Réglages de texture"
+msgstr ""
 
 #: src/options.cpp:8433
 msgid "Texture Cache"
-msgstr "Cache de la texture"
+msgstr ""
 
 #: src/options.cpp:8440
 msgid "Miscellaneous"
-msgstr "Divers"
+msgstr ""
 
 #: src/Osenc.cpp:1489
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "Objets présents ..."
+msgstr ""
 
 #: src/pluginmanager.cpp:403
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
-msgstr "Le complément %s détecté est incompatible avec cette version d'OpenCPN. S'il vous plait, téléchargez une version à jour."
+msgstr ""
 
 #: src/pluginmanager.cpp:1126
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn at the opencpn.org website."
-msgstr "Complément %s (%s), la version %i.%i a été détectée.\n"
-"  Cette version est connue pour être instable et ne doit pas être installée.\n"
-"  Allez sur la page de téléchargement des compléments et téléchargez la dernière version stable disponible de ce complément."
+msgstr ""
 
 #: src/pluginmanager.cpp:1127 src/pluginmanager.cpp:1133
 msgid "Blacklisted plugin detected..."
-msgstr "Complément blacklisté détecté ..."
+msgstr ""
 
 #: src/pluginmanager.cpp:1132
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
 " Please update this PlugIn at the opencpn.org website."
-msgstr "Complément %s (%s), version %i.%i détectée.\n"
-"  Cette version est connue pour être instable.\n"
-"  Allez sur la page de téléchargement des compléments et téléchargez la dernière version stable disponible."
+msgstr ""
 
 #: src/pluginmanager.cpp:1165
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
-msgstr "La bibliothèque de ce complément est inaccessible. Vérifiez les autorisations de fichier : \n"
+msgstr ""
 
 #: src/pluginmanager.cpp:1191
 msgid "Incompatible plugin detected"
-msgstr "    Complément incompatible détecté"
+msgstr ""
 
 #: src/pluginmanager.cpp:1194
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
-msgstr "Complément [ %s ] version %i.%i"
+msgstr ""
 
 #: src/pluginmanager.cpp:1199
 msgid ", and all previous versions,"
-msgstr ", et toutes les versions précédentes,"
+msgstr ""
 
 #: src/pluginmanager.cpp:1200
 msgid " is incompatible with this version of OpenCPN."
-msgstr " est incompatible avec cette version d'OpenCPN."
+msgstr ""
 
 #: src/pluginmanager.cpp:3932 src/pluginmanager.cpp:4022
 msgid "Disable"
-msgstr "Désactiver"
+msgstr ""
 
 #: src/RolloverWin.cpp:111 src/RolloverWin.cpp:195 src/RolloverWin.cpp:303
 msgid "AISRollover"
-msgstr "Info par survol d'une cible."
+msgstr ""
 
 #: src/RolloverWin.cpp:112 src/RolloverWin.cpp:196 src/RolloverWin.cpp:307
 msgid "TideCurrentGraphRollover"
-msgstr "Info marées et courants par survol"
+msgstr ""
 
 #: src/Route.cpp:1164
 msgid "Route Transmitted."
-msgstr "Route transmise."
+msgstr ""
 
 #: src/Route.cpp:1167
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr "Erreur au téléchargement de la route. Le GPS n'est pas connecté"
+msgstr ""
 
 #: src/Route.cpp:1169
 msgid "Error on Route Upload.  Please check logfiles..."
-msgstr "Erreur au téléchargement de la route. SVP, voyez le fichier log ..."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:522 src/routemanagerdialog.cpp:616
 msgid "Show"
-msgstr "Montrer"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:523
 msgid "Route Name"
-msgstr "Nom :"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:524
 msgid "From <-> To"
-msgstr "De <--> à"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:539 src/routemanagerdialog.cpp:637
 #: src/routemanagerdialog.cpp:710
 msgid "&Properties"
-msgstr "Propriétés ..."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:544
 msgid "&Activate"
-msgstr "Activer"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:551 src/routemanagerdialog.cpp:715
 msgid "&Center View"
-msgstr "Centrer la vue"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:558
 msgid "&Reverse"
-msgstr "Inverser"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:563 src/routemanagerdialog.cpp:642
 #: src/routemanagerdialog.cpp:720 src/routemanagerdialog.cpp:815
 msgid "&Delete"
-msgstr "Supprimer"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:568 src/routemanagerdialog.cpp:647
 #: src/routemanagerdialog.cpp:730
 msgid "&Export selected..."
-msgstr "Exporter la sélection"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:573 src/routemanagerdialog.cpp:735
 msgid "&Send to GPS"
-msgstr "Envoyer au GPS"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:580 src/routemanagerdialog.cpp:659
 msgid "&Delete All"
-msgstr "Supprimer tout"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:617
 msgid "Track Name"
-msgstr "Nom :"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:618
 msgid "Length"
-msgstr "Longueur"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:632
 msgid "&Start Track"
-msgstr "Démarrer"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:652
 msgid "Route from Track"
-msgstr "Trace -> Route"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:689 src/routeprop.cpp:2523
 msgid "Icon"
-msgstr "Icône"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:690
 msgid "Waypoint Name"
-msgstr "Nom :"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:691
 msgid "Distance from own ship"
-msgstr "Distance depuis le bateau"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:705
 msgid "&New"
-msgstr "Nouveau"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:725
 msgid "&Go To"
-msgstr "Aller à (+ route)"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:742
 msgid "Delete All"
-msgstr "Supprimer tout"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:753
 msgid "I&mport GPX..."
-msgstr "Importer GPX ......"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:763
 msgid "Export All Visible..."
-msgstr "Exporter tout ce qui est visible ..."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:773
 msgid "Layers"
-msgstr "Couches"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:795
 msgid "Layer Name"
-msgstr "Nom de la couche"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:796
 msgid "No. of items"
-msgstr "Nombre d'objet(s)"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:810
 msgid "Temporary layer"
-msgstr "Couche temporaire"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:820 src/routemanagerdialog.cpp:2445
 #: src/routemanagerdialog.cpp:2457 src/routeprop.cpp:2724
 #: src/TrackPropDlg.cpp:288 src/TrackPropDlg.cpp:607
 msgid "Show on chart"
-msgstr "Montrer sur la carte"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:825 src/routemanagerdialog.cpp:2450
 #: src/routemanagerdialog.cpp:2458
 msgid "Show WPT names"
-msgstr "WP : Montrer les noms"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:830 src/routemanagerdialog.cpp:2455
 #: src/routemanagerdialog.cpp:2459
 msgid "List contents"
-msgstr "---> Routes/Traces/WP"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1006 src/routemanagerdialog.cpp:1284
 msgid " - "
-msgstr " - "
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1130 src/routemanagerdialog.cpp:1829
 #: src/routemanagerdialog.cpp:2229
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Êtes vous certain de vouloir supprimer ce ou ces objet(s) ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1178
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les routes ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1374
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
-msgstr "Désirez vous également partager les waypoint faisant partie de cette route masquée ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1374
 msgid "Question"
-msgstr "Question"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1495
 msgid "&Merge Selected Tracks"
-msgstr "Fusionner les traces sélectionnées"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1497
 msgid "Reduce Data..."
-msgstr "Réduire le nombre de points de trace ..."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1499
 msgid "&Copy as text"
-msgstr "Copier comme du texte"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1531
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
-msgstr "Sélectionner l'erreur maximale permise (en mètres)\n"
-"après réduction des données :"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1532
 msgid "Reduce Data Precision"
-msgstr "Réduire la précision des données"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1551
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
-msgstr "Réduction du nombre de points de trace :\n"
-"                      %d%%."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1650
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
-msgstr "La trace  active sélectionnée n'a pas été fusionnée\n"
-"Vous pourrez la fusionner ultérieurement lorsqu'elle sera terminée."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1902
 msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN convertit la trace en route ...."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1903
 msgid "Processing Waypoints..."
-msgstr "Traitement des waypoint"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1913
 msgid "Done."
-msgstr "C'est fait"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:1936
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les traces ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2262
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
-msgstr "Le waypoint que vous voulez supprimer est utilisé dans une route. Voulez vous vraiment le supprimer ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2384
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les marques ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2390
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr "Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage.\n"
-"Voulez-vous les supprimer aussi ?\n"
-"Cela va changer les routes ou désactiver les alarmes de mouillage.\n"
-"Répondre non maintient les waypoint utilisés dans les routes ou les alarmes."
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2443
 msgid "Hide from chart"
-msgstr "Cacher sur la carte"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2448
 msgid "Hide WPT names"
-msgstr "WP : Masquer les noms"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2453
 msgid "Unlist contents"
-msgstr "Annul. Routes/Traces/WP"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2518
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr "Êtes vous certain de vouloir supprimer la ou les couche(s) sélectionnée(s) et  <TOUT > le(s) contenu(s) ?"
+msgstr ""
 
 #: src/routemanagerdialog.cpp:2792
 msgid "(Unnamed Layer)"
-msgstr "(Couche sans nom)"
+msgstr ""
 
 #: src/routeman.cpp:788 src/routeman.cpp:864
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
-msgstr "Vous essayez de supprimer une marque MOB. Voulez vous vraiment le faire ?"
+msgstr ""
 
 #: src/routeman.cpp:1006
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr "Les Waypoint peuvent être renommés pour respecter le nouvel ordre, les noms seront  '001', '002' etc.\n\n"
-"Voulez vous renommer les waypoint ?"
+msgstr ""
 
 #: src/RoutePoint.cpp:371 src/RoutePoint.cpp:372 src/RoutePoint.cpp:540
 #: src/RoutePoint.cpp:541
 msgid "Marks"
-msgstr "Marques"
+msgstr ""
 
 #: src/RoutePoint.cpp:801
 msgid "Waypoint(s) Transmitted."
-msgstr "Waypoint transmis."
+msgstr ""
 
 #: src/RoutePoint.cpp:804
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr "Erreur d'envoi du waypoint.  Le GPS Garmin n'est pas connecté."
+msgstr ""
 
 #: src/RoutePoint.cpp:806
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Erreur d'envoi du waypoint. S'il vous plait, regardez dans les fichiers log ...."
+msgstr ""
 
 #: src/routeprintout.cpp:116 src/routeprintout.cpp:391 src/routeprop.cpp:1102
 #: src/routeprop.cpp:1396 src/routeprop.cpp:2628 src/routeprop.cpp:2718
 #: src/TrackPropDlg.cpp:747
 msgid "Description"
-msgstr "Description"
+msgstr ""
 
 #: src/routeprintout.cpp:354
 msgid "Elements to print..."
-msgstr "Eléments à imprimer ..."
+msgstr ""
 
 #: src/routeprintout.cpp:367
 msgid "Show Waypoint name."
-msgstr "Montrer le nom des waypoint"
+msgstr ""
 
 #: src/routeprintout.cpp:374
 msgid "Show Waypoint position."
-msgstr "Montrer la position des waypoint"
+msgstr ""
 
 #: src/routeprintout.cpp:381
 msgid "Show course from each Waypoint to the next one. "
-msgstr "Montrer le COG d'un waypoint au suivant. "
+msgstr ""
 
 #: src/routeprintout.cpp:388
 msgid "Show Distance from each Waypoint to the next one."
-msgstr "Montrer la distance d'un waypoint au suivant."
+msgstr ""
 
 #: src/routeprintout.cpp:395
 msgid "Show Waypoint description."
-msgstr "Montrer la description des waypoint."
+msgstr ""
 
 #: src/routeprintout.cpp:460
 msgid "Route Print"
-msgstr "Route : Impression"
+msgstr ""
 
 #: src/routeprop.cpp:144
 msgid "MoTwilight"
-msgstr "Aube"
+msgstr ""
 
 #: src/routeprop.cpp:146
 msgid "Sunrise"
-msgstr "Lever du soleil"
+msgstr ""
 
 #: src/routeprop.cpp:148
 msgid "Daytime"
-msgstr "Journée"
+msgstr ""
 
 #: src/routeprop.cpp:150
 msgid "Sunset"
-msgstr "Coucher du soleil"
+msgstr ""
 
 #: src/routeprop.cpp:152
 msgid "EvTwilight"
-msgstr "Crépuscule"
+msgstr ""
 
 #: src/routeprop.cpp:154
 msgid "Nighttime"
-msgstr "Nuit"
+msgstr ""
 
 #: src/routeprop.cpp:573
 msgid "&Waypoint Properties..."
-msgstr "Waypoint : Propriétés ..."
+msgstr ""
 
 #: src/routeprop.cpp:575
 msgid "&Remove Selected"
-msgstr "Supprimer la sélection"
+msgstr ""
 
 #: src/routeprop.cpp:585 src/TrackPropDlg.cpp:1250
 msgid "&Copy all as text"
-msgstr "Copier tout comme du texte"
+msgstr ""
 
 #: src/routeprop.cpp:600 src/TrackPropDlg.cpp:1169
 msgid "_A"
-msgstr "_A"
+msgstr ""
 
 #: src/routeprop.cpp:601 src/TrackPropDlg.cpp:1170
 msgid "_B"
-msgstr "_B"
+msgstr ""
 
 #: src/routeprop.cpp:645 src/TrackPropDlg.cpp:1146
 msgid "_plus"
-msgstr "_plus"
+msgstr ""
 
 #: src/routeprop.cpp:661 src/routeprop.cpp:824 src/routeprop.cpp:1185
 #: src/TrackPropDlg.cpp:267 src/TrackPropDlg.cpp:1202
 msgid "Depart From"
-msgstr "Départ de"
+msgstr ""
 
 #: src/routeprop.cpp:663 src/routeprop.cpp:853 src/routeprop.cpp:1209
 #: src/TrackPropDlg.cpp:299 src/TrackPropDlg.cpp:653 src/TrackPropDlg.cpp:1204
 msgid "Total distance"
-msgstr "Distance totale"
+msgstr ""
 
 #: src/routeprop.cpp:664
 msgid "Speed (Kts)"
-msgstr "Vitesse, Noeuds "
+msgstr ""
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:892 src/routeprop.cpp:1226
 #: src/TrackPropDlg.cpp:1206
 msgid "Departure Time"
-msgstr "Heure de départ"
+msgstr ""
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:1226 src/TrackPropDlg.cpp:1206
 msgid "(m/d/y h:m)"
-msgstr "(m/d/y h:m)"
+msgstr ""
 
 #: src/routeprop.cpp:666 src/routeprop.cpp:880 src/routeprop.cpp:1220
 #: src/TrackPropDlg.cpp:667 src/TrackPropDlg.cpp:1207
 msgid "Time enroute"
-msgstr "Durée de navigation"
+msgstr ""
 
 #: src/routeprop.cpp:866 src/routeprop.cpp:1214 src/routeprop.cpp:1595
 msgid "Plan speed"
-msgstr "Vitesse prévue"
+msgstr ""
 
 #: src/routeprop.cpp:903 src/routeprop.cpp:913 src/routeprop.cpp:1252
 #: src/routeprop.cpp:1264 src/TrackPropDlg.cpp:351 src/TrackPropDlg.cpp:361
 #: src/TrackPropDlg.cpp:694
 msgid "Local @ PC"
-msgstr "Heure du PC"
+msgstr ""
 
 #: src/routeprop.cpp:903 src/routeprop.cpp:916 src/routeprop.cpp:1252
 #: src/routeprop.cpp:1267 src/TrackPropDlg.cpp:351 src/TrackPropDlg.cpp:364
 msgid "LMT @ Location"
-msgstr "Heure du lieu"
+msgstr ""
 
 #: src/routeprop.cpp:905 src/routeprop.cpp:1256 src/TrackPropDlg.cpp:353
 #: src/TrackPropDlg.cpp:687
 msgid "Time shown as"
-msgstr "Format de l'heure"
+msgstr ""
 
 #: src/routeprop.cpp:923 src/routeprop.cpp:1270 src/TrackPropDlg.cpp:371
 #: src/TrackPropDlg.cpp:610
 msgid "Color"
-msgstr "Couleur"
+msgstr ""
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Default color"
-msgstr "Couleur par défaut"
+msgstr ""
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Black"
-msgstr "Noir"
+msgstr ""
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Red"
-msgstr "Rouge foncé"
+msgstr ""
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Green"
-msgstr "Vert foncé"
+msgstr ""
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Yellow"
-msgstr "Jaune foncé"
+msgstr ""
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Blue"
-msgstr "Bleu foncé"
+msgstr ""
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Magenta"
-msgstr "Magenta foncé"
+msgstr ""
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Cyan"
-msgstr "Cyan foncé"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Light Gray"
-msgstr "Gris clair"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Dark Gray"
-msgstr "Gris foncé"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Red"
-msgstr "Rouge"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Green"
-msgstr "Vert"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Yellow"
-msgstr "Jaune"
+msgstr ""
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Blue"
-msgstr "Bleu"
+msgstr ""
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
 #: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "Magenta"
-msgstr "Magenta"
+msgstr ""
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
 #: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "Cyan"
-msgstr "Cyan"
+msgstr ""
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
 #: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "White"
-msgstr "Blanc"
+msgstr ""
 
 #: src/routeprop.cpp:937 src/routeprop.cpp:1285 src/TrackPropDlg.cpp:385
 #: src/TrackPropDlg.cpp:623
 msgid "Style"
-msgstr "Style"
+msgstr ""
 
 #: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
 msgid "Solid"
-msgstr "Trait plein"
+msgstr ""
 
 #: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
 msgid "Dot"
-msgstr "Pointillé"
+msgstr ""
 
 #: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
 msgid "Long dash"
-msgstr "Tiret long"
+msgstr ""
 
 #: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:390
 #: src/TrackPropDlg.cpp:627
 msgid "Short dash"
-msgstr "Tiret court"
+msgstr ""
 
 #: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:390
 #: src/TrackPropDlg.cpp:627
 msgid "Dot dash"
-msgstr "Trait mixte"
+msgstr ""
 
 #: src/routeprop.cpp:955 src/routeprop.cpp:1303 src/TrackPropDlg.cpp:403
 #: src/TrackPropDlg.cpp:633
 msgid "Width"
-msgstr "Largeur"
+msgstr ""
 
 #: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:637
 msgid "1 pixel"
-msgstr "1 pixel"
+msgstr ""
 
 #: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:637
 msgid "2 pixels"
-msgstr "2 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:637
 msgid "3 pixels"
-msgstr "3 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
 #: src/TrackPropDlg.cpp:638
 msgid "4 pixels"
-msgstr "4 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
 #: src/TrackPropDlg.cpp:638
 msgid "5 pixels"
-msgstr "5 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
 #: src/TrackPropDlg.cpp:638
 msgid "6 pixels"
-msgstr "6 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
 #: src/TrackPropDlg.cpp:638
 msgid "7 pixels"
-msgstr "7 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
 #: src/TrackPropDlg.cpp:638
 msgid "8 pixels"
-msgstr "8 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:409
 #: src/TrackPropDlg.cpp:639
 msgid "9 pixels"
-msgstr "9 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:409
 #: src/TrackPropDlg.cpp:639
 msgid "10 pixels"
-msgstr "10 pixels"
+msgstr ""
 
 #: src/routeprop.cpp:1042 src/routeprop.cpp:1342
 msgid "Print Route"
-msgstr "Route/trace : Imprimer"
+msgstr ""
 
 #: src/routeprop.cpp:1050 src/routeprop.cpp:1347 src/routeprop.cpp:1597
 #: src/TrackPropDlg.cpp:840
 msgid "Extend Route"
-msgstr "Route : Etendre"
+msgstr ""
 
 #: src/routeprop.cpp:1055 src/routeprop.cpp:1352 src/routeprop.cpp:1598
 msgid "Split Route"
-msgstr "Route : Fractionner"
+msgstr ""
 
 #: src/routeprop.cpp:1088 src/routeprop.cpp:1382 src/TrackPropDlg.cpp:444
 #: src/TrackPropDlg.cpp:716
 msgid "Leg"
-msgstr "Segment"
+msgstr ""
 
 #: src/routeprop.cpp:1089 src/routeprop.cpp:1383
 msgid "To Waypoint"
-msgstr "Vers le waypoint"
+msgstr ""
 
 #: src/routeprop.cpp:1095 src/routeprop.cpp:1389
 msgid "Bearing (M)"
-msgstr "Relèvement (M)"
+msgstr ""
 
 #: src/routeprop.cpp:1099 src/routeprop.cpp:1393
 msgid "ETE/ETD"
-msgstr "ETE/ETD"
+msgstr ""
 
 #: src/routeprop.cpp:1101 src/routeprop.cpp:1395 src/routeprop.cpp:1760
 msgid "Next tide event"
-msgstr "Marée : Prochain événement"
+msgstr ""
 
 #: src/routeprop.cpp:1107 src/routeprop.cpp:1401
 msgid "Course (M)"
-msgstr "Cap (M)"
+msgstr ""
 
 #: src/routeprop.cpp:1486
 msgid "Are you sure you want to remove this waypoint?"
-msgstr "Voulez-vous vraiment que la route ne passe plus par ce waypoint?"
+msgstr ""
 
 #: src/routeprop.cpp:1487
 msgid "OpenCPN Remove Waypoint"
-msgstr "Waypoint : Déconnexion"
+msgstr ""
 
 #: src/routeprop.cpp:1729 src/routeprop.cpp:1843
 msgid " %D D  %H H  %M M"
-msgstr " %D D  %H H  %M M"
+msgstr ""
 
 #: src/routeprop.cpp:1732 src/routeprop.cpp:1846
 msgid " %H H  %M M"
-msgstr " %H H  %M M"
+msgstr ""
 
 #: src/routeprop.cpp:1738 src/routeprop.cpp:1852
 msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D Jours  %H heures  %M minutes"
+msgstr ""
 
 #: src/routeprop.cpp:1741 src/routeprop.cpp:1855
 msgid " %H Hours  %M Minutes"
-msgstr " %H Heures  %M minutes"
+msgstr ""
 
 #: src/routeprop.cpp:1775
 msgid "ETA"
-msgstr "Date est. d'arrivée :"
+msgstr ""
 
 #: src/routeprop.cpp:1777
 msgid "ETE"
-msgstr "ETE"
+msgstr ""
 
 #: src/routeprop.cpp:2033
 msgid "Start"
-msgstr "Début"
+msgstr ""
 
 #: src/routeprop.cpp:2472 src/TrackPropDlg.cpp:535
 msgid "Basic"
-msgstr "Base"
+msgstr ""
 
 #: src/routeprop.cpp:2493
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr "Cette marque ou ce waypoint appartient à une couche et ne peut être édité"
+msgstr ""
 
 #: src/routeprop.cpp:2515
 msgid "Show name"
-msgstr "Afficher le nom"
+msgstr ""
 
 #: src/routeprop.cpp:2527
 msgid "Combo!"
-msgstr "Liste déroulante !"
+msgstr ""
 
 #: src/routeprop.cpp:2565
 msgid "Arrival Radius"
-msgstr "Rayon d'arrivée"
+msgstr ""
 
 #: src/routeprop.cpp:2581
 msgid "Range rings"
-msgstr "Nombre de cercles"
+msgstr ""
 
 #: src/routeprop.cpp:2609
 msgid "Ring Colour"
-msgstr "Couleur des couronnes"
+msgstr ""
 
 #: src/routeprop.cpp:2653 src/TrackPropDlg.cpp:754
 msgid "Links"
-msgstr "Liens"
+msgstr ""
 
 #: src/routeprop.cpp:2664 src/TrackPropDlg.cpp:760
 msgid "wxFB Website"
-msgstr "Site web wxFB"
+msgstr ""
 
 #: src/routeprop.cpp:2680 src/TrackPropDlg.cpp:767
 msgid "Add new"
-msgstr "Ajouter un nouveau"
+msgstr ""
 
 #: src/routeprop.cpp:2703 src/routeprop.cpp:3330 src/TrackPropDlg.cpp:793
 #: src/TrackPropDlg.cpp:1454
 msgid "Links are opened in the default browser."
-msgstr "Un clic gauche ouvre chaque lien à l'aide du logiciel par défaut de ce PC."
+msgstr ""
 
 #: src/routeprop.cpp:2731
 msgid "GUID"
-msgstr "Identificateur Unique"
+msgstr ""
 
 #: src/routeprop.cpp:2741
 msgid "GPX"
-msgstr "GPX (Format du fichier de trace)"
+msgstr ""
 
 #: src/routeprop.cpp:2754
 msgid "Extended"
-msgstr "Etendu"
+msgstr ""
 
 #: src/routeprop.cpp:3328 src/TrackPropDlg.cpp:1452
 msgid "Links are opened for editing."
-msgstr "Faites un clic gauche sur tous les liens que vous voulez modifier."
+msgstr ""
 
 #: src/routeprop.cpp:3529
 msgid "Copy"
-msgstr "Copier"
+msgstr ""
 
 #: src/routeprop.cpp:3530
 msgid "Copy lat/long"
-msgstr "Copier Lat/Long"
+msgstr ""
 
 #: src/routeprop.cpp:3531
 msgid "Paste"
-msgstr "Coller"
+msgstr ""
 
 #: src/routeprop.cpp:3532
 msgid "Paste lat/long"
-msgstr "Coller Lat/Long"
+msgstr ""
 
 #: src/s57chart.cpp:4607
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n"
 "Check the logfile for details."
-msgstr "La chaîne de mise à jour des cellules S57 est incomplète.\n"
-" Les informations contenues dans cette carte ENC peuvent être inexactes ou ne pas être à jour.\n"
-"Voyez dans le fichier log pour plus de détails."
+msgstr ""
 
 #: src/s57chart.cpp:4608
 msgid "OpenCPN Create SENC Warning"
-msgstr "OpenCPN crée une alerte SENC"
+msgstr ""
 
 #: src/s57chart.cpp:6339
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
-msgstr "<font size=-2>Les secteurs sont des relèvements vrais à partir de la mer</font><br>"
+msgstr ""
 
 #: src/SendToGpsDlg.cpp:86
 msgid "GPS/Plotter Port"
-msgstr "GPS/Plotter Port"
+msgstr ""
 
 #: src/SendToGpsDlg.cpp:116
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Préparer le GPS pour l'envoi d'une route, puis appuyer sur \"Envoyer\" ..."
+msgstr ""
 
 #: src/SendToGpsDlg.cpp:120
 msgid "Progress..."
-msgstr "Action en progression ..."
+msgstr ""
 
 #: src/tcmgr.cpp:761
 msgid "It seems you have no tide/current harmonic data installed."
-msgstr "Aucun fichier harmonic de données de prévision des marées et des courants ne semble installé."
+msgstr ""
 
 #: src/TCWin.cpp:88
 msgid "Tide"
-msgstr "Marées"
+msgstr ""
 
 #: src/TCWin.cpp:93
 msgid "Current"
-msgstr "Courants"
+msgstr ""
 
 #: src/TCWin.cpp:159
 msgid "Prev"
-msgstr "Precédent"
+msgstr ""
 
 #: src/TCWin.cpp:174
 msgid "Next"
-msgstr "Suivant"
+msgstr ""
 
 #: src/TCWin.cpp:250
 msgid "Reference Station :"
-msgstr "Port de référence :"
+msgstr ""
 
 #: src/TCWin.cpp:265
 msgid "Data Source :"
-msgstr "Source de données :"
+msgstr ""
 
 #: src/TCWin.cpp:541
 msgid "HW"
-msgstr "PM"
+msgstr ""
 
 #: src/TCWin.cpp:541
 msgid "LW"
-msgstr "BM"
+msgstr ""
 
 #: src/TCWin.cpp:727
 msgid "Today"
-msgstr "Aujourd'hui"
+msgstr ""
 
 #: src/TCWin.cpp:728 src/TCWin.cpp:733
 msgid "Tomorrow"
-msgstr "Demain"
+msgstr ""
 
 #: src/toolbar.cpp:1053
 msgid "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
-msgstr "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
-"Ceci rendrait la barre d'icônes inaccessible."
+msgstr ""
 
 #: src/toolbar.cpp:1189 src/toolbar.cpp:1204 src/toolbar.cpp:1220
 msgid "ToolTips"
-msgstr "Outils de renseignement"
+msgstr ""
 
 #: src/toolbar.cpp:2600
 msgid "No, I don't want to hide it."
-msgstr "Non, je ne veux pas le cacher"
+msgstr ""
 
 #: src/toolbar.cpp:2603
 msgid "No, and permanently remove the option to hide it."
-msgstr "Non, et de façon définitive, empêcher de masquer cette icône."
+msgstr ""
 
 #: src/toolbar.cpp:2606
 msgid "Yes, hide it."
-msgstr "Oui, cacher cette icône"
+msgstr ""
 
 #: src/toolbar.cpp:2612
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
-msgstr "Le bouton \"Homme à la mer\" (MOB) peut être un important facteur de sécurité.\n"
-"Etes vous certain de vouloir le masquer ?"
+msgstr ""
 
 #: src/toolbar.cpp:2708
 msgid "Choose Toolbar Icons"
-msgstr "Contenu affiché dans la barre d'icônes"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:312 src/TrackPropDlg.cpp:660
 msgid "Avg. speed"
-msgstr "Vitesse moyenne (Noeuds)"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:326
 msgid "Time Enroute"
-msgstr "Durée de navigation"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:449 src/TrackPropDlg.cpp:721
 msgid "Timestamp"
-msgstr "Horodatage"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:477 src/TrackPropDlg.cpp:827
 msgid "Print"
-msgstr "Imprimer"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:485 src/TrackPropDlg.cpp:835
 msgid "Split"
-msgstr "Fractionner"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:490
 msgid "Extend"
-msgstr "Etendre"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:494 src/TrackPropDlg.cpp:844
 msgid "To route"
-msgstr "Trace -> Route"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:587
 msgid "From"
-msgstr "De"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:594
 msgid "To"
-msgstr " A"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:604
 msgid "Display parameters"
-msgstr "Afficher les paramètres"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:647
 msgid "Statistics"
-msgstr "Statistiques"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:681
 msgid "Recorded points"
-msgstr "Waypoint enregistrés"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:697
 msgid "LMT @ Track Start"
-msgstr "LMT @ Track Start"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:848
 msgid "Export"
-msgstr "Exporter"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:1038
 msgid "%D Days, %H:%M"
-msgstr "%D Days, %H:%M"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:1041
 msgid "%H:%M"
-msgstr "%H:%M"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:1308
 msgid "track"
-msgstr "trace :"
+msgstr ""
 
 #: src/TrackPropDlg.cpp:1695
 msgid "--"
-msgstr "--"
+msgstr ""
 
 #: src/TTYWindow.cpp:63
 msgid "Filter"
-msgstr "Filtrer"
+msgstr ""
 
 #: src/TTYWindow.cpp:71
 msgid "Legend"
-msgstr "Légende"
+msgstr ""
 
 #: src/TTYWindow.cpp:79 src/TTYWindow.cpp:158
 msgid "Pause"
-msgstr "Pause"
+msgstr ""
 
 #: src/TTYWindow.cpp:115
 msgid "Message accepted"
-msgstr "Message accepté"
+msgstr ""
 
 #: src/TTYWindow.cpp:122
 msgid "Input message filtered, output message filtered and dropped"
-msgstr "Message en entré filtré, message en sortie filtré et refusé"
+msgstr ""
 
 #: src/TTYWindow.cpp:129
 msgid "Input Message filtered and dropped"
-msgstr "Message en entrée filtré et refusé"
+msgstr ""
 
 #: src/TTYWindow.cpp:136
 msgid "Output Message"
-msgstr "Message en sortie"
+msgstr ""
 
 #: src/TTYWindow.cpp:143
 msgid "Information Message or Message with errors"
-msgstr "Message d'information ou message avec erreurs"
+msgstr ""
 
 #: src/TTYWindow.cpp:153
 msgid "Resume"
-msgstr "Reprendre"
+msgstr ""
 
 #: src/undo.cpp:84
 msgid "Delete Waypoint"
-msgstr "Waypoint : Supprimer"
+msgstr ""
 
 #: src/undo.cpp:87
 msgid "Move Waypoint"
-msgstr "Waypoint : Déplacer"
+msgstr ""
 
