@@ -2554,6 +2554,25 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
         scale_factor = wxMax((sfactor - g_overzoom_emphasis_base)  / 4., scale_factor);
         scale_factor = wxMin(scale_factor, 20);
     }
+
+    // a few special cases here
+    if( (!strncmp(rzRules->obj->FeatureName, "notmrk", 6))
+        || (!strncmp(rzRules->obj->FeatureName, "NOTMRK", 6))
+    ){
+        // get the symbol size
+        wxRect trect;
+        ChartSymbols::GetGLTextureRect( trect, prule->name.SYNM );
+        
+        double scaled_length = trect.width / vp->view_scale_ppm;
+        
+        double target_length = 100;
+        
+        double xscale = target_length / scaled_length;
+        xscale = wxMin(xscale, 1.0);
+        xscale = wxMax(.2, xscale);
+        
+        scale_factor *= xscale;
+    }
     
     int pivot_x = prule->pos.line.pivot_x.SYCL;
     int pivot_y = prule->pos.line.pivot_y.SYRW;
