@@ -1899,6 +1899,7 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
+        v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
     }
 
     // Some useful display metrics
