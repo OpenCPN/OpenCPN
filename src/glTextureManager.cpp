@@ -68,6 +68,7 @@ extern ocpnGLOptions    g_GLOptions;
 extern long g_tex_mem_used;
 extern int              g_tile_size;
 extern int              g_uncompressed_tile_size;
+extern int              g_nCPUCount;
 
 extern bool             b_inCompressAllCharts;
 
@@ -743,6 +744,13 @@ glTextureManager::glTextureManager()
     // ideally we would use the cpu count -1, and only launch jobs
     // when the idle load average is sufficient (greater than 1)
     int nCPU =  wxMax(1, wxThread::GetCPUCount());
+    if(g_nCPUCount > 0)
+        nCPU = g_nCPUCount;
+
+    if (nCPU < 1) 
+        // obviously there's at least one CPU!
+        nCPU = 1;
+
     m_max_jobs =  wxMax(nCPU, 1);
     m_prevMemUsed = 0;    
 
@@ -861,7 +869,8 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             if(m_skipout)
                 m_progMsg = _T("Skipping, please wait...\n\n");
             
-            m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip );
+            if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
+                m_skip = true;
             if(m_skip)
                 m_skipout = true;
             return;
@@ -1420,7 +1429,7 @@ void glTextureManager::BuildCompressedCache()
     }
     
     // create progress dialog
-    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP;
+    long style = wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT;
     
     wxString msg0;
     msg0 = _T("                                                                               \n  \n  ");
@@ -1472,7 +1481,8 @@ void glTextureManager::BuildCompressedCache()
     
     m_skipout = false;
     m_skip = false;
-    
+    int yield = 0;
+        
     for( m_jcnt = 0; m_jcnt<ct_array.GetCount(); m_jcnt++) {
         
         wxString filename = ct_array.Item(m_jcnt).chart_path;
@@ -1534,7 +1544,18 @@ void glTextureManager::BuildCompressedCache()
                 //      Free all possible memory
                 ChartData->DeleteCacheChart(pchart);
                 delete tex_fact;
+                yield++;
+                if (yield == 200) {
+                    ::wxYield();
+                    yield = 0;
+                    if (!m_progDialog->Update(m_jcnt)) {
+                        m_skip = true;
+                        m_skipout = true;
+                    }
+                }
                 continue;
+
+                yield = 0;
                 
                 schedule:
                 ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);            
