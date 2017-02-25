@@ -2733,7 +2733,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
 			<instruction>SY(BRTHNO01);TX(OBJNAM,1,2,2,'15110',1,0,CHBLK,29);LS(DASH,2,CHMGD)</instruction>
-			<display-cat>Other</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>22440</comment>
 		</lookup>
 		<lookup id="246" RCID="32281" name="bridge">
@@ -6064,7 +6064,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
                         <instruction>SY(BRTHNO01);TX(OBJNAM,1,2,2,'15110',1,0,CHBLK,29);LS(DASH,2,CHMGD)</instruction>
-			<display-cat>Other</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>22440</comment>
 		</lookup>
 		<lookup id="587" RCID="32622" name="bridge">
@@ -8687,7 +8687,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Lines</table-name>
 			<instruction>LS(SOLD,3,CHGRD);SY(BRTHNO01);TX(OBJNAM,1,2,3,'14108',1,0,CHMGD,29)</instruction>
-			<display-cat>Other</display-cat>
+			<display-cat>Standard</display-cat>
 			<comment>32440</comment>
 		</lookup>
 		<lookup id="853" RCID="31929" name="bridge">
