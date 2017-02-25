@@ -124,6 +124,9 @@ extern wxString         g_locale;
 extern bool             g_btouch;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
+extern int              g_chart_zoom_modifier;
+extern int              g_chart_zoom_modifier_vector;
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -1905,6 +1908,10 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetPosition().x;
         v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetPosition().y;
     }    
+  
+    // Some rendering parameters
+    v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
+    v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier;
     
     wxJSONWriter w;
     wxString out;

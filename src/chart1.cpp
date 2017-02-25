@@ -5698,6 +5698,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     pConfig->UpdateSettings();
 
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
+    
     if( g_pActiveTrack ) {
         g_pActiveTrack->SetPrecision( g_nTrackPrecision );
     }
