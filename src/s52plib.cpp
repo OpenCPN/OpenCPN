@@ -1801,6 +1801,33 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 yp += ptext->yoffs * ( ptext->rendered_char_height );
                 //  X offset specified in units of average char width
                 xp += ptext->xoffs * ptext->avgCharWidth;
+
+                
+                // adjust for text justification
+                int w = ptext->avgCharWidth * ptext->frmtd.Length();
+                switch ( ptext->hjust){
+                    case '1':               // centered
+                    xp -= w/2;
+                    break;
+                    case '2':               // right
+                     xp -= w;
+                     break;
+                    case '3':               // left (default)
+                    default:
+                        break;
+                }
+                
+                switch ( ptext->vjust){
+                    case '3':               // top
+                    yp += ptext->rendered_char_height;
+                    break;
+                    case '2':               // centered
+                     yp += ptext->rendered_char_height/2;
+                     break;
+                    case '1':               // bottom (default)
+                    default:
+                        break;
+                }
                 
                 pRectDrawn->SetX( xp );
                 pRectDrawn->SetY( yp );
@@ -1901,6 +1928,33 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             //  X offset specified in units of average char width
             xp += ptext->xoffs * ptext->avgCharWidth;
             
+            
+            // adjust for text justification
+            switch ( ptext->hjust){
+                case '1':               // centered
+                    xp -= w/2;
+                    break;
+                case '2':               // right
+                     xp -= w;
+                     break;
+                case '3':               // left (default)
+                default:
+                    break;
+            }
+            
+            switch ( ptext->vjust){
+                case '3':               // top
+                    yp += h;
+                    break;
+                case '2':               // centered
+                     yp += h/2;
+                     break;
+                case '1':               // bottom (default)
+                default:
+                    break;
+            }
+            
+            
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
@@ -1939,7 +1993,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         }
             
     #endif
-        } else {                // OpenGL
+        } else {                // Not OpenGL
             wxFont oldfont = pdc->GetFont(); // save current font
 
             
@@ -1970,6 +2024,32 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             
             //  X offset specified in units of average char width
             xp += ptext->xoffs * ptext->avgCharWidth;
+
+            // adjust for text justification
+            switch ( ptext->hjust){
+                case '1':               // centered
+                    xp -= w/2;
+                    break;
+                case '2':               // right
+                     xp -= w;
+                     break;
+                case '3':               // left (default)
+                default:
+                    break;
+            }
+
+            switch ( ptext->vjust){
+                case '3':               // top
+                    yp += h;
+                    break;
+                case '2':               // centered
+                     yp += h/2;
+                     break;
+                case '1':               // bottom (default)
+                default:
+                    break;
+            }
+            
             
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
@@ -5776,8 +5856,8 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 //      if(rzRules->obj->Index != 1103)
 //          return 0; //int yyp = 0;
 
-//       if(strncmp(rzRules->obj->FeatureName, "BOYLAT", 6))
-//           return 0; //int yyp = 0;
+//        if(!strncmp(rzRules->obj->FeatureName, "berths", 6))
+//            int yyp = 0;
 
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
