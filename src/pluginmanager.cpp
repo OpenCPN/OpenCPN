@@ -4583,6 +4583,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
 bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
                                               const OCPNRegion &RectRegion, const LLRegion &Region)
 {
+    bool ret_val = false;
     #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
@@ -4611,7 +4612,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
                     
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
                     if(ppicb_x)
-                        ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+                        ret_val = ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     else if(ppicb)
                         ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
@@ -4626,9 +4627,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
         }
     }
     else
-        return false;
+        return ret_val;
     #endif    
-        return true;
+        return ret_val;
 }
 
 bool ChartPlugInWrapper::RenderRegionViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint,

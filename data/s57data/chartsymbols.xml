@@ -1146,7 +1146,7 @@
 			<disp-prio>Group 1</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
-                        <instruction>AC(LANDA);TX(OBJNAM,1,2,3,'15118',-1,-1,CHBLK,26)</instruction>
+                        <instruction>AP(VEGATN04);LS(DASH,1,CHGRD)</instruction>
 			<display-cat>Displaybase</display-cat>
 			<comment>12010</comment>
 		</lookup>

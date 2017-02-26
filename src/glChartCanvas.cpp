@@ -2667,7 +2667,11 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             else{
                                 ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                                 if(ChPI){
-                                    ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                    if(!ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region )){
+                                        wxLogMessage(_T("False return 1"));
+                                        ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
+                                    }
+                                        
                                 }
                                 else    
                                     chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
