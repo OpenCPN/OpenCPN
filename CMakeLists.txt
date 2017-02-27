@@ -2042,7 +2042,7 @@ ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 #       Install wxstd.mo in Windows and Mac
 IF(WIN32 OR APPLE)
 
-    FILE(GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/wxWidgets/locale/*.mo)
+    FILE(GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo)
 
     FOREACH ( _current_wx_mofile ${WXWIDGETS_MO_FILES})
       GET_FILENAME_COMPONENT(_absFile ${_current_wx_mofile} ABSOLUTE)
