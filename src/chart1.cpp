@@ -5501,6 +5501,7 @@ int MyFrame::DoOptionsDialog()
     if(NULL == g_options) {
         g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
+        g_options->SetColorScheme(global_color_scheme);
         g_Platform->HideBusySpinner();
     }
 
@@ -6477,7 +6478,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         case 4:
         {
             g_options = new options( this, -1, _("Options") );
-    
+            g_options->SetColorScheme(global_color_scheme);
+            
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
