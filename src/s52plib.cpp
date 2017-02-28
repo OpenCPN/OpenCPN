@@ -2370,6 +2370,12 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
              return 1;
     }
     
+    double render_angle = rot_angle;
+    
+    //  Very special case for ATON flare lights at 135 degrees, the standard render angle.
+    //  We don't want them to rotate with the viewport.
+    if(rzRules->obj->bIsAton && (!strncmp(rzRules->obj->FeatureName, "LIGHTS", 6))  && (fabs(rot_angle - 135.0) < 1.) )
+        render_angle -= vp->rotation * 180./PI;
     
     int width = prule->pos.symb.bnbox_x.SBXC + prule->pos.symb.bnbox_w.SYHL;
     width *= 4; // Grow the drawing bitmap to allow for rotation of symbols with highly offset pivot points
@@ -2393,7 +2399,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
     if( !m_pdc ) { // OpenGL Mode, do a direct render
         HPGL->SetTargetOpenGl();
-        HPGL->Render( str, col, r, pivot, origin, xscale, (double) rot_angle );
+        HPGL->Render( str, col, r, pivot, origin, xscale, render_angle );
 
     } else {
 
