@@ -4580,19 +4580,43 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
     return true;
 }
 
+//int indexrr;
+
 bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, const ViewPort& VPoint,
                                               const OCPNRegion &RectRegion, const LLRegion &Region)
 {
     #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
-        ViewPort vp = VPoint;           // non-const copy
+//        printf("\nCPIW::RRVOGLNT  %d %d \n", indexrr++, m_Chart_Scale);
         
         gs_plib_flags = 0;               // reset the CAPs flag
         PlugInChartBaseExtended *ppicb_x = dynamic_cast<PlugInChartBaseExtended*>(m_ppicb);
         PlugInChartBaseGL *ppicb = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
-        if(!Region.Empty() && (ppicb || ppicb_x))
+        if(!Region.Empty() && ppicb_x)
         {
+            
+            glPushMatrix(); //    Adjust for rotation
+            
+            // Start with a clean slate
+            glChartCanvas::SetClipRect(VPoint, VPoint.rv_rect, false);
+            glChartCanvas::DisableClipRegion();
+            
+            glChartCanvas::RotateToViewPort(VPoint);
+            
+            PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint );
+            wxRegion *r = RectRegion.GetNew_wxRegion();
+            
+            ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
+
+            glPopMatrix();
+            delete r;
+            
+        }
+        
+        else if(!Region.Empty() && ppicb ) // Legacy Vector GL Plugin chart (e.g.S63)
+        {
+            ViewPort vp = VPoint;           // non-const copy
             wxRegion *r = RectRegion.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( RectRegion ); upd.HaveRects(); upd.NextRect()) {
                 LLRegion chart_region = vp.GetLLRegion(upd.GetRect());
@@ -4610,11 +4634,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
                     glChartCanvas::RotateToViewPort(VPoint);
                     
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
-                    if(ppicb_x)
-                        ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
-                    else if(ppicb)
-                        ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
-                    
+                    ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
                     glPopMatrix();
                     glChartCanvas::DisableClipRegion();
@@ -4624,6 +4644,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
             } //for
             delete r;
         }
+        
     }
     else
         return false;
