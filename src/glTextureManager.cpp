@@ -384,8 +384,8 @@ int TextureTileSize(int level, bool compressed)
 
 bool JobTicket::DoJob()
 {
-    if(!rect.IsEmpty())
-        return DoJob(rect);
+    if(!m_rect.IsEmpty())
+        return DoJob(m_rect);
 
     // otherwise this ticket covers all the rects in the chart
     ChartBase *pchart = ChartData->OpenChartFromDB( m_ChartPath, FULL_INIT );
@@ -892,7 +892,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                     ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
     } else if(!b_inCompressAllCharts) {
         //   Normal completion from here
-        glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
+        glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
         if(ptd) {
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++)
                 ptd->comp_array[i] = ticket->comp_bits_array[i];
@@ -1006,7 +1006,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
         wxJobListNode *node = todo_list.GetFirst();
         while(node){
             JobTicket *ticket = node->GetData();
-            if( (ticket->m_ChartPath == chart_path) && (ticket->rect == rect)) {
+            if( (ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
                 // bump to front
                 todo_list.DeleteNode(node);
                 todo_list.Insert(ticket);
@@ -1021,7 +1021,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
         wxJobListNode *tnode = running_list.GetFirst();
         while(tnode){
             JobTicket *ticket = tnode->GetData();
-            if(ticket->rect == rect &&
+            if(ticket->m_rect == rect &&
                ticket->m_ChartPath == chart_path) {
                 return false;
             }
@@ -1031,9 +1031,9 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
     
     JobTicket *pt = new JobTicket;
     pt->pFact = client;
-    pt->rect = rect;
+    pt->m_rect = rect;
     pt->level_min_request = level;
-    glTextureDescriptor *ptd = client->GetOrCreateTD( pt->rect );
+    glTextureDescriptor *ptd = client->GetOrCreateTD( pt->m_rect );
     pt->ident = (ptd->tex_name << 16) + level;
     pt->b_throttle = b_throttle_thread;
     pt->m_ChartPath = chart_path;
@@ -1094,7 +1094,7 @@ bool glTextureManager::StartTopJob()
 
     todo_list.DeleteNode(node);
 
-    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
+    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
     // don't need the job if we already have the compressed data
     if(ptd->comp_array[0]) {
         delete ticket;

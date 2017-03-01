@@ -92,7 +92,7 @@ public:
     bool DoJob(const wxRect &rect);
     
     glTexFactory *pFact;
-    wxRect       rect;
+    wxRect      m_rect;
     int         level_min_request;
     int         ident;
     bool        b_throttle;
