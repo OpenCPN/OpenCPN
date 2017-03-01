@@ -909,7 +909,6 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             // We need to force a refresh to replace the uncompressed texture
             // This frees video memory and is also really required if we had
             // gone up a mipmap level
-            extern ChartCanvas *cc1;
             if(cc1) {
                 glChartCanvas::Invalidate(); // ensure we refresh
                 cc1->Refresh();
