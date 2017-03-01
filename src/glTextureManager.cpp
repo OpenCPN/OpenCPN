@@ -176,7 +176,7 @@ int CompareInts(int n1, int n2)
     return (int)(d1 - d2);
 }
 
-MySortedArrayInt idx_sorted_by_distance(CompareInts);
+static MySortedArrayInt idx_sorted_by_distance(CompareInts);
 
 class compress_target
 {
@@ -204,6 +204,7 @@ JobTicket::JobTicket()
  *   when compressed anyway, and this way the compression algorithm will use
  *   the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
  *   the lz4 compressed texture is smaller as well. */
+static 
 void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=true)
 {
     #ifdef __WXMSW__ /* undo BGR flip from ocpn_pixel (if ocpnUSE_ocpnBitmap is defined) */
@@ -226,6 +227,7 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 }
 
 /* return malloced data which is the etc compressed texture of the source */
+static 
 void CompressDataETC(const unsigned char *data, int dim, int size,
                      unsigned char *tex_data, volatile bool &b_abort)
 {
@@ -249,6 +251,7 @@ void CompressDataETC(const unsigned char *data, int dim, int size,
     }
 }
 
+static
 bool CompressUsingGPU(const unsigned char *data, int dim, int size,
                       unsigned char *tex_data, int level, bool inplace)
 {
@@ -290,6 +293,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
     return true;
 }
 
+static 
 void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &chart_path )
 {
     // Load level 0 uncompressed data
