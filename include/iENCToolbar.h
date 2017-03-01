@@ -48,7 +48,7 @@ public:
       void StateTimerEvent( wxTimerEvent& event );
       void SetColorScheme( ColorScheme cs );
       
-      wxBitmap m_bmMinimum, m_bmStandard, m_bmAll,m_bmRPlus, m_bmRMinus;
+      wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
       wxBitmap *m_pbmScratch;
       wxBitmap m_bmTemplate;
       

@@ -1559,6 +1559,7 @@ SET(uiData
         src/bitmaps/iconRPlus.png
         src/bitmaps/iconMinimum.png
         src/bitmaps/iconStandard.png
+        src/bitmaps/iconUserStd.png
         src/bitmaps/iconAll.png
 	)
 

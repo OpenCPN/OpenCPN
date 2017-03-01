@@ -112,7 +112,8 @@ void iENCToolbar::LoadToolBitmaps()
         m_bmMinimum = wxBitmap( dataDir + _T("iconMinimum.png"), wxBITMAP_TYPE_PNG);
         m_bmStandard = wxBitmap( dataDir + _T("iconStandard.png"), wxBITMAP_TYPE_PNG);
         m_bmAll = wxBitmap( dataDir + _T("iconAll.png"), wxBITMAP_TYPE_PNG);
-
+        m_bmUStd = wxBitmap( dataDir + _T("iconUserStd.png"), wxBITMAP_TYPE_PNG);
+        
         m_bmRPlus = wxBitmap( dataDir + _T("iconRPlus.png"), wxBITMAP_TYPE_PNG);
         m_bmRMinus = wxBitmap( dataDir + _T("iconRMinus.png"), wxBITMAP_TYPE_PNG);
     }
@@ -122,6 +123,7 @@ void iENCToolbar::LoadToolBitmaps()
         m_bmMinimum = wxBitmap( 96, 32);
         m_bmStandard = wxBitmap( 96, 32);;
         m_bmAll = wxBitmap( 96, 32);
+        m_bmUStd = wxBitmap( 96, 32);
         
         m_bmRPlus = wxBitmap( 96, 32);
         m_bmRMinus = wxBitmap( 96, 32);
@@ -142,7 +144,7 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
     switch(itemId){
         case ID_DENSITY:
 
-            if(++m_nDensity > 2)
+            if(++m_nDensity > 3)
                 m_nDensity = 0;
             
             SetDensityToolBitmap(m_nDensity);
@@ -235,6 +237,8 @@ void iENCToolbar::SetDensityToolBitmap( int nDensity)
         m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmStandard, &m_bmStandard );
     else if(nDensity == 2)
         m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmAll, &m_bmAll );
+    else if(nDensity == 3)
+        m_ptoolbar->SetToolBitmaps( ID_DENSITY, &m_bmUStd, &m_bmUStd );
     
 }    
 
