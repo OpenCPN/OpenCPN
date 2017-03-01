@@ -47,6 +47,7 @@ public:
       void SetDensityToolBitmap( int nDensity);
       void StateTimerEvent( wxTimerEvent& event );
       void SetColorScheme( ColorScheme cs );
+      void MouseEvent( wxMouseEvent& event );
       
       wxBitmap m_bmMinimum, m_bmStandard, m_bmAll, m_bmUStd, m_bmRPlus, m_bmRMinus;
       wxBitmap *m_pbmScratch;

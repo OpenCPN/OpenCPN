@@ -53,6 +53,7 @@ extern OCPNPlatform *g_Platform;
 BEGIN_EVENT_TABLE(iENCToolbar, ocpnFloatingToolbarDialog)
     EVT_MENU(wxID_ANY, iENCToolbar::OnToolLeftClick)
     EVT_TIMER ( STATE_TIMER, iENCToolbar::StateTimerEvent )
+    EVT_MOUSE_EVENTS ( iENCToolbar::MouseEvent )
 END_EVENT_TABLE()
 
 iENCToolbar::iENCToolbar( wxWindow *parent, wxPoint position, long orient, float size_factor ):
@@ -95,6 +96,13 @@ iENCToolbar::~iENCToolbar()
 
 }
 
+void iENCToolbar::MouseEvent( wxMouseEvent& event )
+{
+    if( event.IsButton() )
+        gFrame->Raise();
+}
+    
+    
 void iENCToolbar::SetColorScheme( ColorScheme cs )
 {
     m_range = 0;                // Forcw a redraw of tools

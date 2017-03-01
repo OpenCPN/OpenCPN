@@ -787,9 +787,6 @@ void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
         m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
     }
 
-    if( event.IsButton() )
-        gFrame->Raise();
-    
     event.Skip();
 }
 
