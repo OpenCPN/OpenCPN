@@ -317,6 +317,8 @@ BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
     EVT_MENU(wxID_ANY, ocpnFloatingToolbarDialog::OnToolLeftClick)
     EVT_TIMER ( FADE_TIMER, ocpnFloatingToolbarDialog::FadeTimerEvent )
     EVT_TIMER ( DESTROY_TIMER, ocpnFloatingToolbarDialog::DestroyTimerEvent )
+    EVT_KEY_DOWN(ocpnFloatingToolbarDialog::OnKeyDown )
+    EVT_KEY_UP(ocpnFloatingToolbarDialog::OnKeyUp )
     EVT_WINDOW_CREATE(ocpnFloatingToolbarDialog::OnWindowCreate)
 END_EVENT_TABLE()
 
@@ -400,6 +402,16 @@ ocpnFloatingToolbarDialog::~ocpnFloatingToolbarDialog()
     DestroyToolBar();
 }
 
+void ocpnFloatingToolbarDialog::OnKeyDown( wxKeyEvent &event )
+{
+    event.Skip();
+}
+    
+void ocpnFloatingToolbarDialog::OnKeyUp( wxKeyEvent &event )
+{
+    event.Skip();
+}
+    
 void ocpnFloatingToolbarDialog::CreateConfigMenu()
 {
     if(m_FloatingToolbarConfigMenu)
@@ -774,6 +786,11 @@ void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
     if(m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) ){
         m_fade_timer.Start( m_nAutoHideToolbar * 1000 );
     }
+
+    if( event.IsButton() )
+        gFrame->Raise();
+    
+    event.Skip();
 }
 
 void ocpnFloatingToolbarDialog::FadeTimerEvent( wxTimerEvent& event )
