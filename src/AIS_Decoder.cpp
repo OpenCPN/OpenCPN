@@ -2241,26 +2241,54 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         int target_posn_age = now.GetTicks() - td->PositionReportTicks;
         int target_static_age = now.GetTicks() - td->StaticReportTicks;
 
+        //        Global variables controlling lost target handling
+        //g_bMarkLost
+        //g_MarkLost_Mins       // Minutes until black "cross out
+        //g_bRemoveLost
+        //g_RemoveLost_Mins);   // minutes until target is removed from screen and internal lists
+        
+        //g_bInlandEcdis
+        
         //      Mark lost targets if specified
-        double iECD_TimeOut = 0.0;
-        if ( g_bInlandEcdis ){//special rules aply for europe inland ecdis timeout settings. overrule option settings
-            if ( (td->Class == AIS_CLASS_B) || (td->SOG < 0.5) || (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) ) 
-                iECD_TimeOut=190; //Class B or not moving 3 minutes
-            else iECD_TimeOut = 30;   
-            if( ( target_posn_age > iECD_TimeOut ) && ( td->Class != AIS_GPSG_BUDDY ) ) td->b_active =
-                    false;
-        }
-        else if( g_bMarkLost ) {
-            if( ( target_posn_age > g_MarkLost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) ) td->b_active =
-                    false;
-        }
-
-        //      Remove lost targets if specified
         double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
+        
+        if ( g_bInlandEcdis ){
+            double iECD_LostTimeOut = 0.0;
+            //special rules apply for europe inland ecdis timeout settings. overrule option settings
+            if ( td->Class == AIS_CLASS_B){
+                if( (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) )
+                    iECD_LostTimeOut = 18 * 60;
+                else
+                    iECD_LostTimeOut = 180;
+                
+            }
+            if ( td->Class == AIS_CLASS_A){
+                if( (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) ){
+                    if(td->SOG < 3.)
+                        iECD_LostTimeOut = 18 * 60;
+                    else
+                        iECD_LostTimeOut = 60;
+                }
+                else
+                    iECD_LostTimeOut = 60;
+            }
+                
+            if( ( target_posn_age > iECD_LostTimeOut ) && ( td->Class != AIS_GPSG_BUDDY ) )
+                    td->b_active = false;
+                
+            removelost_Mins = (2 * iECD_LostTimeOut) / 60.;
+        }               
+        else if( g_bMarkLost ) {
+            if( ( target_posn_age > g_MarkLost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) )
+                td->b_active = false;
+        }
 
-        if( td->Class == AIS_SART ) removelost_Mins = 18.0;
+        if( td->Class == AIS_SART )
+            removelost_Mins = 18.0;
+        
+        //      Remove lost targets if specified
 
-        if( g_bRemoveLost ) {
+        if( g_bRemoveLost || g_bInlandEcdis ) {
             bool b_arpalost = ( td->Class == AIS_ARPA  && td->b_lost ); //A lost ARPA target would be deleted at once
             if ( ( ( target_posn_age > removelost_Mins * 60 ) && ( td->Class != AIS_GPSG_BUDDY ) ) || b_arpalost ) {
                 //      So mark the target as lost, with unknown position, and make it not selectable

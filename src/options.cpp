@@ -4167,14 +4167,16 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pLostGrid->Add(m_pText_Mark_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
-  m_pCheck_Remove_Lost =
-      new wxCheckBox(panelAIS, -1, _("Remove lost targets after (min)"));
+  m_pCheck_Remove_Lost = new wxCheckBox(panelAIS, -1, _("Remove lost targets after (min)"));
   pLostGrid->Add(m_pCheck_Remove_Lost, 1, wxALL, group_item_spacing);
 
   m_pText_Remove_Lost = new wxTextCtrl(panelAIS, -1);
   pLostGrid->Add(m_pText_Remove_Lost, 1, wxALL | wxALIGN_RIGHT,
                  group_item_spacing);
 
+  if(g_bInlandEcdis)
+      lostSizer->Hide(pLostGrid, true);
+  
   //      Display
   wxStaticBox* displBox = new wxStaticBox(panelAIS, wxID_ANY, _("Display"));
   wxStaticBoxSizer* displSizer = new wxStaticBoxSizer(displBox, wxHORIZONTAL);
