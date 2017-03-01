@@ -3747,6 +3747,12 @@ void s57chart::SetSafetyContour(void)
      } else {
          m_next_safe_cnt = (double) 1e6;
      }
+     
+     // A safety contour greater than "Deep Depth" makes no sense...
+     // So, declare "no suitable safety depth contour"
+     if(m_next_safe_cnt > S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
+         m_next_safe_cnt = (double) 1e6;
+     
 }
 
 void s57chart::InvalidateCache()
