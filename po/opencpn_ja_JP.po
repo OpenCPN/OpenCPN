@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-03 23:45-0500\n"
-"PO-Revision-Date: 2017-02-04 00:23-0500\n"
+"POT-Creation-Date: 2017-02-24 21:32-0500\n"
+"PO-Revision-Date: 2017-02-25 13:33-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -16,15 +16,15 @@ msgstr ""
 "X-Crowdin-Language: ja\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/about.h:39 src/chart1.cpp:3022 src/chart1.cpp:5300
+#: include/about.h:39 src/chart1.cpp:3042 src/chart1.cpp:5355
 msgid "About OpenCPN"
 msgstr "OpenCPN について"
 
-#: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1129
-#: src/routemanagerdialog.cpp:1178 src/routemanagerdialog.cpp:1828
-#: src/routemanagerdialog.cpp:1936 src/routemanagerdialog.cpp:2228
-#: src/routemanagerdialog.cpp:2261 src/routemanagerdialog.cpp:2393
-#: src/routemanagerdialog.cpp:2518 src/toolbar.cpp:960 src/toolbar.cpp:2455
+#: include/AISTargetAlertDialog.h:52 src/routemanagerdialog.cpp:1130
+#: src/routemanagerdialog.cpp:1179 src/routemanagerdialog.cpp:1829
+#: src/routemanagerdialog.cpp:1937 src/routemanagerdialog.cpp:2229
+#: src/routemanagerdialog.cpp:2262 src/routemanagerdialog.cpp:2394
+#: src/routemanagerdialog.cpp:2519 src/toolbar.cpp:1054 src/toolbar.cpp:2593
 msgid "OpenCPN Alert"
 msgstr "OpenCPN 警告"
 
@@ -34,12 +34,12 @@ msgstr "OpenCPN 警告"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:58
 #: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53
-#: src/canvasMenu.cpp:386 src/canvasMenu.cpp:392 src/chcanv.cpp:6672
+#: src/canvasMenu.cpp:387 src/canvasMenu.cpp:393 src/chcanv.cpp:6719
 msgid "Object Query"
 msgstr "オブジェクトクエリ"
 
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:610
-#: src/canvasMenu.cpp:414
+#: src/canvasMenu.cpp:415
 msgid "Center view"
 msgstr ""
 
@@ -47,9 +47,9 @@ msgstr ""
 msgid "Link Properties"
 msgstr "リンクプロパティ"
 
-#: include/options.h:68 src/chart1.cpp:2949 src/chart1.cpp:5295
-#: src/chart1.cpp:5448 src/chart1.cpp:6389 src/options.cpp:2801
-#: src/options.cpp:3062
+#: include/options.h:68 src/chart1.cpp:2969 src/chart1.cpp:5350
+#: src/chart1.cpp:5503 src/chart1.cpp:6479 src/options.cpp:2802
+#: src/options.cpp:3063
 msgid "Options"
 msgstr "オプション"
 
@@ -57,14 +57,14 @@ msgstr "オプション"
 msgid "Print Route Selection"
 msgstr "選択したルートを印刷"
 
-#: include/routeprop.h:66 src/canvasMenu.cpp:1420 src/chcanv.cpp:5150
-#: src/routemanagerdialog.cpp:1221 src/routemanagerdialog.cpp:1223
+#: include/routeprop.h:66 src/canvasMenu.cpp:1421 src/chcanv.cpp:5197
+#: src/routemanagerdialog.cpp:1222 src/routemanagerdialog.cpp:1224
 msgid "Route Properties"
 msgstr "ルートプロパティ"
 
-#: include/routeprop.h:110 include/routeprop.h:361 src/chcanv.cpp:6798
-#: src/chcanv.cpp:6801 src/routemanagerdialog.cpp:2197
-#: src/routemanagerdialog.cpp:2200 src/routeprop.cpp:562
+#: include/routeprop.h:110 include/routeprop.h:361 src/chcanv.cpp:6845
+#: src/chcanv.cpp:6848 src/routemanagerdialog.cpp:2198
+#: src/routemanagerdialog.cpp:2201 src/routeprop.cpp:562
 msgid "Waypoint Properties"
 msgstr "ウェイポイント プロパティ"
 
@@ -72,29 +72,29 @@ msgstr "ウェイポイント プロパティ"
 msgid "Waypoint Information"
 msgstr "ウェイポイント情報"
 
-#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:662 src/canvasMenu.cpp:738
-#: src/canvasMenu.cpp:780 src/canvasMenu.cpp:1313 src/canvasMenu.cpp:1324
-#: src/canvasMenu.cpp:1337 src/canvasMenu.cpp:1349
-#: src/routemanagerdialog.cpp:1464 src/routemanagerdialog.cpp:2371
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:663 src/canvasMenu.cpp:739
+#: src/canvasMenu.cpp:781 src/canvasMenu.cpp:1314 src/canvasMenu.cpp:1325
+#: src/canvasMenu.cpp:1338 src/canvasMenu.cpp:1350
+#: src/routemanagerdialog.cpp:1465 src/routemanagerdialog.cpp:2372
 msgid "Send to GPS"
 msgstr "GPS に送信します。"
 
-#: include/TrackPropDlg.h:180 src/TrackPropDlg.cpp:1084
-#: src/TrackPropDlg.cpp:1097
+#: include/TrackPropDlg.h:179 src/TrackPropDlg.cpp:1085
+#: src/TrackPropDlg.cpp:1098
 msgid "Track properties"
 msgstr ""
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
-#: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1304 src/chart1.cpp:5914
-#: src/chart1.cpp:11407 src/chcanv.cpp:8458 src/chcanv.cpp:8489
-#: src/concanv.cpp:104 src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1252
-#: src/OCPNPlatform.cpp:1634 src/OCPNPlatform.cpp:1674 src/options.cpp:704
-#: src/options.cpp:1032 src/options.cpp:7223 src/options.cpp:8383
-#: src/options.cpp:8511 src/Osenc.cpp:1487 src/routemanagerdialog.cpp:452
+#: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1355 src/chart1.cpp:5979
+#: src/chart1.cpp:11499 src/chcanv.cpp:8586 src/chcanv.cpp:8617
+#: src/concanv.cpp:104 src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1263
+#: src/OCPNPlatform.cpp:1645 src/OCPNPlatform.cpp:1685 src/options.cpp:705
+#: src/options.cpp:1033 src/options.cpp:7236 src/options.cpp:8396
+#: src/options.cpp:8524 src/Osenc.cpp:1500 src/routemanagerdialog.cpp:453
 #: src/routeprop.cpp:502 src/routeprop.cpp:797 src/routeprop.cpp:1150
-#: src/routeprop.cpp:2436 src/TCWin.cpp:76 src/TCWin.cpp:185
-#: src/toolbar.cpp:2547 src/TrackPropDlg.cpp:108 src/TrackPropDlg.cpp:239
-#: src/TrackPropDlg.cpp:547
+#: src/routeprop.cpp:2436 src/TCWin.cpp:78 src/TCWin.cpp:187
+#: src/toolbar.cpp:2691 src/TrackPropDlg.cpp:109 src/TrackPropDlg.cpp:240
+#: src/TrackPropDlg.cpp:548
 msgid "Dialog"
 msgstr "ダイアログ"
 
@@ -130,1145 +130,1145 @@ msgstr "ヘルプ"
 msgid "Close"
 msgstr "閉じる"
 
-#: src/ais.cpp:151
+#: src/ais.cpp:152
 msgid "Underway"
 msgstr "進行中"
 
-#: src/ais.cpp:152
+#: src/ais.cpp:153
 msgid "At Anchor"
 msgstr "錨泊"
 
-#: src/ais.cpp:153
+#: src/ais.cpp:154
 msgid "Not Under Command"
 msgstr "操船不自由"
 
-#: src/ais.cpp:154
+#: src/ais.cpp:155
 msgid "Restricted Manoeuvrability"
 msgstr "制限された操縦"
 
-#: src/ais.cpp:155
+#: src/ais.cpp:156
 msgid "Constrained by draught"
 msgstr "ドラフトによる制約"
 
-#: src/ais.cpp:156
+#: src/ais.cpp:157
 msgid "Moored"
 msgstr "係留"
 
-#: src/ais.cpp:157
+#: src/ais.cpp:158
 msgid "Aground"
 msgstr "座礁"
 
-#: src/ais.cpp:158
+#: src/ais.cpp:159
 msgid "Engaged in Fishing"
 msgstr "漁業に従事"
 
-#: src/ais.cpp:159
+#: src/ais.cpp:160
 msgid "Under way sailing"
 msgstr "航行中"
 
-#: src/ais.cpp:160 src/ais.cpp:189
+#: src/ais.cpp:161 src/ais.cpp:190
 msgid "High Speed Craft"
 msgstr "高速艇"
 
-#: src/ais.cpp:161
+#: src/ais.cpp:162
 msgid "Wing In Ground Effect"
 msgstr "地面効果翼機"
 
-#: src/ais.cpp:162
+#: src/ais.cpp:163
 msgid "Power-driven vessel towing astern (regional use)"
 msgstr "動力船の曳航、後進(地域利用)"
 
-#: src/ais.cpp:163
+#: src/ais.cpp:164
 msgid "Power-driven vessel pushing ahead or towing alongside (regional use)"
 msgstr "推進又は並んで牽引の動力船(地域利用)"
 
-#: src/ais.cpp:164
+#: src/ais.cpp:165
 msgid "Reserved 13"
 msgstr "Reserved 13"
 
-#: src/ais.cpp:165
+#: src/ais.cpp:166
 msgid "Reserved 14"
 msgstr "Reserved 14"
 
-#: src/ais.cpp:166 src/AIS_Target_Data.cpp:401
+#: src/ais.cpp:167 src/AIS_Target_Data.cpp:401
 msgid "Undefined"
 msgstr "未定義"
 
-#: src/ais.cpp:167
+#: src/ais.cpp:168
 msgid "Virtual"
 msgstr "バーチャル"
 
-#: src/ais.cpp:168
+#: src/ais.cpp:169
 msgid "Virtual (On Position)"
 msgstr "バーチャル(オンポジション)"
 
-#: src/ais.cpp:169
+#: src/ais.cpp:170
 msgid "Virtual (Off Position)"
 msgstr "バーチャル(オフポジション)"
 
-#: src/ais.cpp:170
+#: src/ais.cpp:171
 msgid "Real"
 msgstr "リアル"
 
-#: src/ais.cpp:171
+#: src/ais.cpp:172
 msgid "Real (On Position)"
 msgstr "リアル(オンポジション)"
 
-#: src/ais.cpp:172
+#: src/ais.cpp:173
 msgid "Real(Off Position)"
 msgstr "リアル(オフポジション)"
 
-#: src/ais.cpp:181
+#: src/ais.cpp:182
 msgid "Vessel Fishing"
 msgstr "船釣り"
 
-#: src/ais.cpp:182
+#: src/ais.cpp:183
 msgid "Vessel Towing"
 msgstr "船舶の牽引中"
 
-#: src/ais.cpp:183
+#: src/ais.cpp:184
 msgid "Vessel Towing, Long"
 msgstr "船舶牽引中、長い"
 
-#: src/ais.cpp:184
+#: src/ais.cpp:185
 msgid "Vessel Dredging"
 msgstr "浚渫船"
 
-#: src/ais.cpp:185
+#: src/ais.cpp:186
 msgid "Vessel Diving"
 msgstr "ダイビング船"
 
-#: src/ais.cpp:186
+#: src/ais.cpp:187
 msgid "Military Vessel"
 msgstr "軍用艦船"
 
-#: src/ais.cpp:187
+#: src/ais.cpp:188
 msgid "Sailing Vessel"
 msgstr "帆船"
 
-#: src/ais.cpp:188
+#: src/ais.cpp:189
 msgid "Pleasure craft"
 msgstr "プレジャー ボート"
 
-#: src/ais.cpp:190
+#: src/ais.cpp:191
 msgid "Pilot Vessel"
 msgstr "パイロット船"
 
-#: src/ais.cpp:191
+#: src/ais.cpp:192
 msgid "Search and Rescue Vessel"
 msgstr "探索と救助船"
 
-#: src/ais.cpp:192 src/ais.cpp:257
+#: src/ais.cpp:193 src/ais.cpp:258
 msgid "Tug"
 msgstr "タグボート"
 
-#: src/ais.cpp:193
+#: src/ais.cpp:194
 msgid "Port Tender"
 msgstr "ポートテンダー"
 
-#: src/ais.cpp:194
+#: src/ais.cpp:195
 msgid "Pollution Control Vessel"
 msgstr "汚染防止船"
 
-#: src/ais.cpp:195
+#: src/ais.cpp:196
 msgid "Law Enforcement Vessel"
 msgstr "法執行船"
 
-#: src/ais.cpp:196
+#: src/ais.cpp:197
 msgid "Medical Transport"
 msgstr "医療搬送"
 
-#: src/ais.cpp:197
+#: src/ais.cpp:198
 msgid "Passenger Ship"
 msgstr "旅客船"
 
-#: src/ais.cpp:198
+#: src/ais.cpp:199
 msgid "Cargo Ship"
 msgstr "貨物船"
 
-#: src/ais.cpp:199 src/AIS_Decoder.cpp:254
+#: src/ais.cpp:200 src/AIS_Decoder.cpp:256
 msgid "Tanker"
 msgstr "タンカー"
 
-#: src/ais.cpp:200 src/AIS_Target_Data.cpp:387 src/AIS_Target_Data.cpp:672
+#: src/ais.cpp:201 src/AIS_Target_Data.cpp:387 src/AIS_Target_Data.cpp:672
 #: src/AIS_Target_Data.cpp:732 src/AIS_Target_Data.cpp:906
 #: src/chartdbs.cpp:1279
 msgid "Unknown"
 msgstr "不明"
 
-#: src/ais.cpp:201
+#: src/ais.cpp:202
 msgid "Unspecified"
 msgstr "詳細不明"
 
-#: src/ais.cpp:202
+#: src/ais.cpp:203
 msgid "Reference Point"
 msgstr "基準点"
 
-#: src/ais.cpp:203 src/ais.cpp:269
+#: src/ais.cpp:204 src/ais.cpp:270
 msgid "RACON"
 msgstr "レーコン"
 
-#: src/ais.cpp:204
+#: src/ais.cpp:205
 msgid "Fixed Structure"
 msgstr "固定構造物"
 
-#: src/ais.cpp:205
+#: src/ais.cpp:206
 msgid "Spare"
 msgstr "スペア"
 
-#: src/ais.cpp:206
+#: src/ais.cpp:207
 msgid "Light"
 msgstr "光"
 
-#: src/ais.cpp:207
+#: src/ais.cpp:208
 msgid "Light w/Sectors"
 msgstr "灯台/指向灯"
 
-#: src/ais.cpp:208
+#: src/ais.cpp:209
 msgid "Leading Light Front"
 msgstr "導灯フロント"
 
-#: src/ais.cpp:209
+#: src/ais.cpp:210
 msgid "Leading Light Rear"
 msgstr "導灯リア"
 
-#: src/ais.cpp:210
+#: src/ais.cpp:211
 msgid "Cardinal N Beacon"
 msgstr "北方位標識"
 
-#: src/ais.cpp:211
+#: src/ais.cpp:212
 msgid "Cardinal E Beacon"
 msgstr "東方位標識"
 
-#: src/ais.cpp:212
+#: src/ais.cpp:213
 msgid "Cardinal S Beacon"
 msgstr "南方位標識"
 
-#: src/ais.cpp:213
+#: src/ais.cpp:214
 msgid "Cardinal W Beacon"
 msgstr "西方位標識"
 
-#: src/ais.cpp:214
+#: src/ais.cpp:215
 msgid "Beacon, Port Hand"
 msgstr "ビーコン、ポートハンド"
 
-#: src/ais.cpp:215
+#: src/ais.cpp:216
 msgid "Beacon, Starboard Hand"
 msgstr "右舷標識"
 
-#: src/ais.cpp:216
+#: src/ais.cpp:217
 msgid "Beacon, Preferred Channel Port Hand"
 msgstr "左航路優先標識"
 
-#: src/ais.cpp:217
+#: src/ais.cpp:218
 msgid "Beacon, Preferred Channel Starboard Hand"
 msgstr "右航路優先標識"
 
-#: src/ais.cpp:218
+#: src/ais.cpp:219
 msgid "Beacon, Isolated Danger"
 msgstr "孤立障害標識"
 
-#: src/ais.cpp:219
+#: src/ais.cpp:220
 msgid "Beacon, Safe Water"
 msgstr "安全水域標識"
 
-#: src/ais.cpp:220
+#: src/ais.cpp:221
 msgid "Beacon, Special Mark"
 msgstr "特殊標識"
 
-#: src/ais.cpp:221
+#: src/ais.cpp:222
 msgid "Cardinal Mark N"
 msgstr "北方位標識"
 
-#: src/ais.cpp:222
+#: src/ais.cpp:223
 msgid "Cardinal Mark E"
 msgstr "東方位標識"
 
-#: src/ais.cpp:223
+#: src/ais.cpp:224
 msgid "Cardinal Mark S"
 msgstr "南方位標識"
 
-#: src/ais.cpp:224
+#: src/ais.cpp:225
 msgid "Cardinal Mark W"
 msgstr "西方位標識"
 
-#: src/ais.cpp:225
+#: src/ais.cpp:226
 msgid "Port Hand Mark"
 msgstr "左げん標識"
 
-#: src/ais.cpp:226
+#: src/ais.cpp:227
 msgid "Starboard Hand Mark"
 msgstr "右げん標識"
 
-#: src/ais.cpp:227
+#: src/ais.cpp:228
 msgid "Preferred Channel Port Hand"
 msgstr "左航路優先標識"
 
-#: src/ais.cpp:228
+#: src/ais.cpp:229
 msgid "Preferred Channel Starboard Hand"
 msgstr "右航路優先標識"
 
-#: src/ais.cpp:229
+#: src/ais.cpp:230
 msgid "Isolated Danger"
 msgstr "孤立障害標識"
 
-#: src/ais.cpp:230 src/ais.cpp:285 src/ais.cpp:296
+#: src/ais.cpp:231 src/ais.cpp:286 src/ais.cpp:297
 msgid "Safe Water"
 msgstr "安全水域標識"
 
-#: src/ais.cpp:231
+#: src/ais.cpp:232
 msgid "Special Mark"
 msgstr "特殊標識"
 
-#: src/ais.cpp:232
+#: src/ais.cpp:233
 msgid "Light Vessel/Rig"
 msgstr "船/光源"
 
-#: src/ais.cpp:233
+#: src/ais.cpp:234
 msgid "GpsGate Buddy"
 msgstr "GpsGate Buddy"
 
-#: src/ais.cpp:234
+#: src/ais.cpp:235
 msgid "Position Report"
 msgstr "位置レポート"
 
-#: src/ais.cpp:235 src/ais.cpp:301
+#: src/ais.cpp:236 src/ais.cpp:302
 msgid "Distress"
 msgstr "苦痛"
 
-#: src/ais.cpp:236
+#: src/ais.cpp:237
 msgid "ARPA radar target"
 msgstr "ARPA レーダー ターゲット"
 
-#: src/ais.cpp:237 src/AIS_Target_Data.cpp:903
+#: src/ais.cpp:238 src/AIS_Target_Data.cpp:903
 msgid "APRS Position Report"
 msgstr "APRS の位置報告"
 
-#: src/ais.cpp:246
+#: src/ais.cpp:247
 msgid "F/V"
 msgstr "F/V"
 
-#: src/ais.cpp:247
+#: src/ais.cpp:248
 msgid "Tow"
 msgstr "牽引"
 
-#: src/ais.cpp:248
+#: src/ais.cpp:249
 msgid "Long Tow"
 msgstr "長い牽引"
 
-#: src/ais.cpp:249
+#: src/ais.cpp:250
 msgid "Dredge"
 msgstr "浚渫"
 
-#: src/ais.cpp:250
+#: src/ais.cpp:251
 msgid "D/V"
 msgstr "D/V"
 
-#: src/ais.cpp:251
+#: src/ais.cpp:252
 msgid "Mil/V"
 msgstr "Mil/V"
 
-#: src/ais.cpp:252
+#: src/ais.cpp:253
 msgid "S/V"
 msgstr "S/V"
 
-#: src/ais.cpp:253
+#: src/ais.cpp:254
 msgid "Yat"
 msgstr "逸"
 
-#: src/ais.cpp:254
+#: src/ais.cpp:255
 msgid "HSC"
 msgstr "HSC"
 
-#: src/ais.cpp:255
+#: src/ais.cpp:256
 msgid "P/V"
 msgstr "P/V"
 
-#: src/ais.cpp:256
+#: src/ais.cpp:257
 msgid "SAR/V"
 msgstr "SAR/V"
 
-#: src/ais.cpp:258
+#: src/ais.cpp:259
 msgid "Tender"
 msgstr "作業船"
 
-#: src/ais.cpp:259
+#: src/ais.cpp:260
 msgid "PC/V"
 msgstr "PC/V"
 
-#: src/ais.cpp:260
+#: src/ais.cpp:261
 msgid "LE/V"
 msgstr "LE/V"
 
-#: src/ais.cpp:261
+#: src/ais.cpp:262
 msgid "Med/V"
 msgstr "Med/V"
 
-#: src/ais.cpp:262
+#: src/ais.cpp:263
 msgid "Pass/V"
 msgstr "Pass/V"
 
-#: src/ais.cpp:263
+#: src/ais.cpp:264
 msgid "M/V"
 msgstr "M/V"
 
-#: src/ais.cpp:264
+#: src/ais.cpp:265
 msgid "M/T"
 msgstr "M/T"
 
-#: src/ais.cpp:265 src/ais.cpp:271
+#: src/ais.cpp:266 src/ais.cpp:272
 msgid "?"
 msgstr ""
 
-#: src/ais.cpp:267 src/AIS_Target_Data.cpp:888
+#: src/ais.cpp:268 src/AIS_Target_Data.cpp:888
 msgid "AtoN"
 msgstr "AtoN"
 
-#: src/ais.cpp:268
+#: src/ais.cpp:269
 msgid "Ref. Pt"
 msgstr "Ref. Pt"
 
-#: src/ais.cpp:270
+#: src/ais.cpp:271
 msgid "Fix.Struct."
 msgstr "固定構造物"
 
-#: src/ais.cpp:272
+#: src/ais.cpp:273
 msgid "Lt"
 msgstr "灯火"
 
-#: src/ais.cpp:273
+#: src/ais.cpp:274
 msgid "Lt sect."
 msgstr "指向灯"
 
-#: src/ais.cpp:274
+#: src/ais.cpp:275
 msgid "Ldg Lt Front"
 msgstr "導灯フロント"
 
-#: src/ais.cpp:275
+#: src/ais.cpp:276
 msgid "Ldg Lt Rear"
 msgstr "導灯リア"
 
-#: src/ais.cpp:276 src/ais.cpp:287
+#: src/ais.cpp:277 src/ais.cpp:288
 msgid "Card. N"
 msgstr "北方位標識"
 
-#: src/ais.cpp:277 src/ais.cpp:288
+#: src/ais.cpp:278 src/ais.cpp:289
 msgid "Card. E"
 msgstr "東方位標識"
 
-#: src/ais.cpp:278 src/ais.cpp:289
+#: src/ais.cpp:279 src/ais.cpp:290
 msgid "Card. S"
 msgstr "南方位標識"
 
-#: src/ais.cpp:279 src/ais.cpp:290
+#: src/ais.cpp:280 src/ais.cpp:291
 msgid "Card. W"
 msgstr "西方位標識"
 
-#: src/ais.cpp:280 src/options.cpp:1700
+#: src/ais.cpp:281 src/options.cpp:1701
 msgid "Port"
 msgstr "ポート"
 
-#: src/ais.cpp:281
+#: src/ais.cpp:282
 msgid "Stbd"
 msgstr "右舷"
 
-#: src/ais.cpp:282 src/ais.cpp:283 src/ais.cpp:293 src/ais.cpp:294
+#: src/ais.cpp:283 src/ais.cpp:284 src/ais.cpp:294 src/ais.cpp:295
 msgid "Pref. Chnl"
 msgstr "優先航路"
 
-#: src/ais.cpp:284 src/ais.cpp:295
+#: src/ais.cpp:285 src/ais.cpp:296
 msgid "Isol. Dngr"
 msgstr "孤立障害標識"
 
-#: src/ais.cpp:286 src/ais.cpp:297
+#: src/ais.cpp:287 src/ais.cpp:298
 msgid "Special"
 msgstr "特殊標識"
 
-#: src/ais.cpp:291
+#: src/ais.cpp:292
 msgid "Port Hand"
 msgstr "左舷"
 
-#: src/ais.cpp:292
+#: src/ais.cpp:293
 msgid "Stbd Hand"
 msgstr "右舷"
 
-#: src/ais.cpp:298
+#: src/ais.cpp:299
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
 
-#: src/ais.cpp:299 src/AIS_Target_Data.cpp:892
+#: src/ais.cpp:300 src/AIS_Target_Data.cpp:892
 msgid "Buddy"
 msgstr "Buddy"
 
-#: src/ais.cpp:300 src/AIS_Target_Data.cpp:895 src/AIS_Target_Data.cpp:897
+#: src/ais.cpp:301 src/AIS_Target_Data.cpp:895 src/AIS_Target_Data.cpp:897
 msgid "DSC"
 msgstr "DSC"
 
-#: src/ais.cpp:302 src/AIS_Target_Data.cpp:901
+#: src/ais.cpp:303 src/AIS_Target_Data.cpp:901
 msgid "ARPA"
 msgstr "ARPA"
 
-#: src/ais.cpp:303 src/AIS_Target_Data.cpp:903
+#: src/ais.cpp:304 src/AIS_Target_Data.cpp:903
 msgid "APRS"
 msgstr "APRS"
 
-#: src/ais.cpp:310
+#: src/ais.cpp:311
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
 msgstr "注意エリア： 海洋哺乳類生息地 (認められなかったクジラを意味する)"
 
-#: src/ais.cpp:311
+#: src/ais.cpp:312
 msgid "Caution Area: Marine mammals in area - reduce speed"
 msgstr "注意エリア： マリン哺乳類の分野では、速度を減らす"
 
-#: src/ais.cpp:312
+#: src/ais.cpp:313
 msgid "Caution Area: Marine mammals in area - stay clear"
 msgstr "注意エリア： マリン哺乳類の分野で明確に滞在します。"
 
-#: src/ais.cpp:313
+#: src/ais.cpp:314
 msgid "Caution Area: Marine mammals in area - report sightings"
 msgstr "注意エリア： 海洋哺乳類目撃報告"
 
-#: src/ais.cpp:314
+#: src/ais.cpp:315
 msgid "Caution Area: Protected habitat - reduce speed"
 msgstr "注意領域： 保護された生息地 - 速度を減らす"
 
-#: src/ais.cpp:315
+#: src/ais.cpp:316
 msgid "Caution Area: Protected habitat - stay clear"
 msgstr "注意領域： 保護された生息地 - 滞在をクリアします。"
 
-#: src/ais.cpp:316
+#: src/ais.cpp:317
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
 msgstr "注意領域： 保護された生息地 - 釣り,　投錨禁止"
 
-#: src/ais.cpp:317
+#: src/ais.cpp:318
 msgid "Caution Area: Derelicts (drifting objects)"
 msgstr "注意エリア： 漂流物"
 
-#: src/ais.cpp:318
+#: src/ais.cpp:319
 msgid "Caution Area: Traffic congestion"
 msgstr "注意領域： 交通渋滞"
 
-#: src/ais.cpp:319
+#: src/ais.cpp:320
 msgid "Caution Area: Marine event"
 msgstr "注意エリア： マリン イベント"
 
-#: src/ais.cpp:320
+#: src/ais.cpp:321
 msgid "Caution Area: Divers down"
 msgstr "注意エリア： ダイバー ダウン"
 
-#: src/ais.cpp:321
+#: src/ais.cpp:322
 msgid "Caution Area: Swim area"
 msgstr "注意： 泳ぐエリア"
 
-#: src/ais.cpp:322
+#: src/ais.cpp:323
 msgid "Caution Area: Dredge operations"
 msgstr "注意エリア： 浚渫操作"
 
-#: src/ais.cpp:323
+#: src/ais.cpp:324
 msgid "Caution Area: Survey operations"
 msgstr "注意エリア： 調査業務"
 
-#: src/ais.cpp:324
+#: src/ais.cpp:325
 msgid "Caution Area: Underwater operation"
 msgstr "注意領域： 水中の操作"
 
-#: src/ais.cpp:325
+#: src/ais.cpp:326
 msgid "Caution Area: Seaplane operations"
 msgstr "注意エリア： 水上飛行機の操作"
 
-#: src/ais.cpp:326
+#: src/ais.cpp:327
 msgid "Caution Area: Fishery - nets in water"
 msgstr "注意エリア： 漁網有り"
 
-#: src/ais.cpp:327
+#: src/ais.cpp:328
 msgid "Caution Area: Cluster of fishing vessels"
 msgstr "注意領域： 漁船群"
 
-#: src/ais.cpp:328
+#: src/ais.cpp:329
 msgid "Caution Area: Fairway closed"
 msgstr "注意エリア： フェアウェイは閉鎖"
 
-#: src/ais.cpp:329
+#: src/ais.cpp:330
 msgid "Caution Area: Harbour closed"
 msgstr "注意エリア： 港は閉鎖"
 
-#: src/ais.cpp:330
+#: src/ais.cpp:331
 msgid "Caution Area: Risk (define in Associated text field)"
 msgstr "注意エリア： リスク (関連付けられたテキスト フィールドで定義)"
 
-#: src/ais.cpp:331
+#: src/ais.cpp:332
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "注意領域： 水中ビークルの操作"
 
-#: src/ais.cpp:332 src/ais.cpp:341 src/ais.cpp:349 src/ais.cpp:356
-#: src/ais.cpp:357 src/ais.cpp:358 src/ais.cpp:359 src/ais.cpp:360
-#: src/ais.cpp:361 src/ais.cpp:362 src/ais.cpp:363 src/ais.cpp:364
-#: src/ais.cpp:365 src/ais.cpp:369 src/ais.cpp:370 src/ais.cpp:371
-#: src/ais.cpp:372 src/ais.cpp:373 src/ais.cpp:387 src/ais.cpp:388
-#: src/ais.cpp:389 src/ais.cpp:396 src/ais.cpp:397 src/ais.cpp:419
-#: src/ais.cpp:420 src/ais.cpp:421 src/ais.cpp:423 src/ais.cpp:425
-#: src/ais.cpp:426 src/ais.cpp:427 src/ais.cpp:428 src/ais.cpp:429
-#: src/ais.cpp:433 src/ais.cpp:434
+#: src/ais.cpp:333 src/ais.cpp:342 src/ais.cpp:350 src/ais.cpp:357
+#: src/ais.cpp:358 src/ais.cpp:359 src/ais.cpp:360 src/ais.cpp:361
+#: src/ais.cpp:362 src/ais.cpp:363 src/ais.cpp:364 src/ais.cpp:365
+#: src/ais.cpp:366 src/ais.cpp:370 src/ais.cpp:371 src/ais.cpp:372
+#: src/ais.cpp:373 src/ais.cpp:374 src/ais.cpp:388 src/ais.cpp:389
+#: src/ais.cpp:390 src/ais.cpp:397 src/ais.cpp:398 src/ais.cpp:420
+#: src/ais.cpp:421 src/ais.cpp:422 src/ais.cpp:424 src/ais.cpp:426
+#: src/ais.cpp:427 src/ais.cpp:428 src/ais.cpp:429 src/ais.cpp:430
+#: src/ais.cpp:434 src/ais.cpp:435
 msgid "(reserved for future use)"
 msgstr "(将来の使用のために予約)"
 
-#: src/ais.cpp:333
+#: src/ais.cpp:334
 msgid "Environmental Caution Area: Storm front (line squall)"
 msgstr "環境注意エリア： ストーム ・ フロント (スコール ライン)"
 
-#: src/ais.cpp:334
+#: src/ais.cpp:335
 msgid "Environmental Caution Area: Hazardous sea ice"
 msgstr "環境注意エリア： 危険な海氷"
 
-#: src/ais.cpp:335
+#: src/ais.cpp:336
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr "環境注意エリア： 嵐の警告 (嵐のセルまたは嵐のライン)"
 
-#: src/ais.cpp:336
+#: src/ais.cpp:337
 msgid "Environmental Caution Area: High wind"
 msgstr "環境注意エリア： 強風"
 
-#: src/ais.cpp:337
+#: src/ais.cpp:338
 msgid "Environmental Caution Area: High waves"
 msgstr "環境注意エリア： 高波"
 
-#: src/ais.cpp:338
+#: src/ais.cpp:339
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
 msgstr "環境注意エリア： 制限された可視性 (霧、雨など)"
 
-#: src/ais.cpp:339
+#: src/ais.cpp:340
 msgid "Environmental Caution Area: Strong currents"
 msgstr "環境注意エリア： 強い流れ"
 
-#: src/ais.cpp:340
+#: src/ais.cpp:341
 msgid "Environmental Caution Area: Heavy icing"
 msgstr "環境注意エリア： ひどいアイシング"
 
-#: src/ais.cpp:342
+#: src/ais.cpp:343
 msgid "Restricted Area: Fishing prohibited"
 msgstr "禁止制限区域： 釣り"
 
-#: src/ais.cpp:343
+#: src/ais.cpp:344
 msgid "Restricted Area: No anchoring."
 msgstr "制限区域： 投錨禁止"
 
-#: src/ais.cpp:344
+#: src/ais.cpp:345
 msgid "Restricted Area: Entry approval required prior to transit"
 msgstr "輸送の前に必要な制限区域： 入場の承認"
 
-#: src/ais.cpp:345
+#: src/ais.cpp:346
 msgid "Restricted Area: Entry prohibited"
 msgstr "禁止制限区域： 入場禁止"
 
-#: src/ais.cpp:346
+#: src/ais.cpp:347
 msgid "Restricted Area: Active military OPAREA"
 msgstr "制限区域： アクティブな軍事エリア"
 
-#: src/ais.cpp:347
+#: src/ais.cpp:348
 msgid "Restricted Area: Firing - danger area."
 msgstr "制限区域： 射撃 - 危険区域。"
 
-#: src/ais.cpp:348
+#: src/ais.cpp:349
 msgid "Restricted Area: Drifting Mines"
 msgstr "制限区域： 漂流機雷"
 
-#: src/ais.cpp:350
+#: src/ais.cpp:351
 msgid "Anchorage Area: Anchorage open"
 msgstr "投錨区域：　投錨区域解放"
 
-#: src/ais.cpp:351
+#: src/ais.cpp:352
 msgid "Anchorage Area: Anchorage closed"
 msgstr "投錨区域：　投錨区域閉鎖"
 
-#: src/ais.cpp:352
+#: src/ais.cpp:353
 msgid "Anchorage Area: Anchoring prohibited"
 msgstr "投錨区域：　投錨禁止"
 
-#: src/ais.cpp:353
+#: src/ais.cpp:354
 msgid "Anchorage Area: Deep draft anchorage"
 msgstr "投錨区域：　深い喫水"
 
-#: src/ais.cpp:354
+#: src/ais.cpp:355
 msgid "Anchorage Area: Shallow draft anchorage"
 msgstr "投錨区域：　浅い喫水"
 
-#: src/ais.cpp:355
+#: src/ais.cpp:356
 msgid "Anchorage Area: Vessel transfer operations"
 msgstr "投錨区域：　船の転送操作"
 
-#: src/ais.cpp:366
+#: src/ais.cpp:367
 msgid "Security Alert - Level 1"
 msgstr "セキュリティの警告 - レベル 1"
 
-#: src/ais.cpp:367
+#: src/ais.cpp:368
 msgid "Security Alert - Level 2"
 msgstr "セキュリティの警告 - レベル 2"
 
-#: src/ais.cpp:368
+#: src/ais.cpp:369
 msgid "Security Alert - Level 3"
 msgstr "セキュリティの警告 - レベル 3"
 
-#: src/ais.cpp:374
+#: src/ais.cpp:375
 msgid "Distress Area: Vessel disabled and adrift"
 msgstr "被災区域：　 廃船と漂流"
 
-#: src/ais.cpp:375
+#: src/ais.cpp:376
 msgid "Distress Area: Vessel sinking"
 msgstr "被災区域：　沈船"
 
-#: src/ais.cpp:376
+#: src/ais.cpp:377
 msgid "Distress Area: Vessel abandoning ship"
 msgstr "被災区域：　船舶放棄"
 
-#: src/ais.cpp:377
+#: src/ais.cpp:378
 msgid "Distress Area: Vessel requests medical assistance"
 msgstr "被災区域：　船は医療支援を要求"
 
-#: src/ais.cpp:378
+#: src/ais.cpp:379
 msgid "Distress Area: Vessel flooding"
 msgstr "被災区域： 船の洪水"
 
-#: src/ais.cpp:379
+#: src/ais.cpp:380
 msgid "Distress Area: Vessel fire/explosion"
 msgstr "被災区域： 船舶火災/爆発"
 
-#: src/ais.cpp:380
+#: src/ais.cpp:381
 msgid "Distress Area: Vessel grounding"
 msgstr "被災区域： 船の座礁"
 
-#: src/ais.cpp:381
+#: src/ais.cpp:382
 msgid "Distress Area: Vessel collision"
 msgstr "被災区域： 船の衝突"
 
-#: src/ais.cpp:382
+#: src/ais.cpp:383
 msgid "Distress Area: Vessel listing/capsizing"
 msgstr "被災区域： 船舶一覧/転覆"
 
-#: src/ais.cpp:383
+#: src/ais.cpp:384
 msgid "Distress Area: Vessel under assault"
 msgstr "被災区域：襲撃下の船"
 
-#: src/ais.cpp:384
+#: src/ais.cpp:385
 msgid "Distress Area: Person overboard"
 msgstr "被災区域： 船外転落者"
 
-#: src/ais.cpp:385
+#: src/ais.cpp:386
 msgid "Distress Area: SAR area"
 msgstr "被災区域： SAR区域"
 
-#: src/ais.cpp:386
+#: src/ais.cpp:387
 msgid "Distress Area: Pollution response area"
 msgstr "被災区域： 汚染対応区域"
 
-#: src/ais.cpp:390
+#: src/ais.cpp:391
 msgid "Instruction: Contact VTS at this point/juncture"
 msgstr "指示： この地点、分岐について VTS に問い合わせて下さい"
 
-#: src/ais.cpp:391
+#: src/ais.cpp:392
 msgid "Instruction: Contact Port Administration at this point/juncture"
 msgstr "指示： この地点、分岐について 港の運営に問い合わせて下さい"
 
-#: src/ais.cpp:392
+#: src/ais.cpp:393
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "指示： この地点分岐を越えて進まないでください"
 
-#: src/ais.cpp:393
+#: src/ais.cpp:394
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
 msgstr "指示： この地点分岐を越えて進む前に指示をまちます"
 
-#: src/ais.cpp:394
+#: src/ais.cpp:395
 msgid "Proceed to this location - await instructions"
 msgstr "この場所に進むには指示を待たなければなりません。"
 
-#: src/ais.cpp:395
+#: src/ais.cpp:396
 msgid "Clearance granted - proceed to berth"
 msgstr "クリアランス付与 - 停泊に進みます"
 
-#: src/ais.cpp:398
+#: src/ais.cpp:399
 msgid "Information: Pilot boarding position"
 msgstr "情報： パイロット搭乗位置"
 
-#: src/ais.cpp:399
+#: src/ais.cpp:400
 msgid "Information: Icebreaker waiting area"
 msgstr "情報： 砕氷船待合区域"
 
-#: src/ais.cpp:400
+#: src/ais.cpp:401
 msgid "Information: Places of refuge"
 msgstr "情報： 避難場所"
 
-#: src/ais.cpp:401
+#: src/ais.cpp:402
 msgid "Information: Position of icebreakers"
 msgstr "情報： 砕氷船の位置"
 
-#: src/ais.cpp:402
+#: src/ais.cpp:403
 msgid "Information: Location of response units"
 msgstr "情報： 応答単位の位置"
 
-#: src/ais.cpp:403
+#: src/ais.cpp:404
 msgid "VTS active target"
 msgstr "VTS アクティブターゲット"
 
-#: src/ais.cpp:404
+#: src/ais.cpp:405
 msgid "Rogue or suspicious vessel"
 msgstr "不正なまたは不審船"
 
-#: src/ais.cpp:405
+#: src/ais.cpp:406
 msgid "Vessel requesting non-distress assistance"
 msgstr "非遭難の支援を要求する船舶"
 
-#: src/ais.cpp:406
+#: src/ais.cpp:407
 msgid "Chart Feature: Sunken vessel"
 msgstr "チャート機能： 沈没船"
 
-#: src/ais.cpp:407
+#: src/ais.cpp:408
 msgid "Chart Feature: Submerged object"
 msgstr "チャート機能： 水中物体"
 
-#: src/ais.cpp:408
+#: src/ais.cpp:409
 msgid "Chart Feature: Semi-submerged object"
 msgstr "チャート機能： 半水中物体"
 
-#: src/ais.cpp:409
+#: src/ais.cpp:410
 msgid "Chart Feature: Shoal area"
 msgstr "チャート機能： 浅瀬エリア"
 
-#: src/ais.cpp:410
+#: src/ais.cpp:411
 msgid "Chart Feature: Shoal area due north"
 msgstr "チャート機能： 浅瀬エリア真北"
 
-#: src/ais.cpp:411
+#: src/ais.cpp:412
 msgid "Chart Feature: Shoal area due east"
 msgstr "チャート機能： 浅瀬エリア真東"
 
-#: src/ais.cpp:412
+#: src/ais.cpp:413
 msgid "Chart Feature: Shoal area due south"
 msgstr "チャート機能： 浅瀬エリア真南"
 
-#: src/ais.cpp:413
+#: src/ais.cpp:414
 msgid "Chart Feature: Shoal area due west"
 msgstr "チャート機能： 浅瀬エリア真西"
 
-#: src/ais.cpp:414
+#: src/ais.cpp:415
 msgid "Chart Feature: Channel obstruction"
 msgstr "チャート機能： チャンネルの閉塞"
 
-#: src/ais.cpp:415
+#: src/ais.cpp:416
 msgid "Chart Feature: Reduced vertical clearance"
 msgstr "チャート機能： 垂直方向のクリアランス減少"
 
-#: src/ais.cpp:416
+#: src/ais.cpp:417
 msgid "Chart Feature: Bridge closed"
 msgstr "チャート機能： 橋の閉鎖"
 
-#: src/ais.cpp:417
+#: src/ais.cpp:418
 msgid "Chart Feature: Bridge partially open"
 msgstr "チャート機能： 橋を部分的に開く"
 
-#: src/ais.cpp:418
+#: src/ais.cpp:419
 msgid "Chart Feature: Bridge fully open"
 msgstr "チャート機能： 全開の橋"
 
-#: src/ais.cpp:422
+#: src/ais.cpp:423
 msgid "Report from ship: Icing info"
 msgstr "船からのレポート： アイシング"
 
-#: src/ais.cpp:424
+#: src/ais.cpp:425
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
 msgstr "船からのレポート： その他の情報 - 関連するテキスト フィールドの定義"
 
-#: src/ais.cpp:430
+#: src/ais.cpp:431
 msgid "Route: Recommended route"
 msgstr "ルート： おすすめのルート"
 
-#: src/ais.cpp:431
+#: src/ais.cpp:432
 msgid "Route: Alternative route"
 msgstr "ルート： 代替ルート"
 
-#: src/ais.cpp:432
+#: src/ais.cpp:433
 msgid "Route: Recommended route through ice"
 msgstr "Route： Recommended route through ice"
 
-#: src/ais.cpp:435
+#: src/ais.cpp:436
 msgid "Other - Define in associated text field"
 msgstr "その他 - 関連するテキスト フィールドの定義"
 
-#: src/ais.cpp:436
+#: src/ais.cpp:437
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "キャンセル - キャンセル領域はメッセージ リンク ID によって識別されます。"
 
-#: src/ais.cpp:437
+#: src/ais.cpp:438
 msgid "Undefined (default)"
 msgstr "未定義 (既定値)"
 
-#: src/ais.cpp:1600 src/ais.cpp:1601
+#: src/ais.cpp:1690 src/ais.cpp:1691
 msgid "AIS Target Name"
 msgstr "AIS ターゲット名"
 
-#: src/AIS_Decoder.cpp:191
+#: src/AIS_Decoder.cpp:193
 msgid "Vessel, type unknown"
 msgstr "船舶、不明な型"
 
-#: src/AIS_Decoder.cpp:192
+#: src/AIS_Decoder.cpp:194
 msgid "Freightbarge"
 msgstr "貨物バージ"
 
-#: src/AIS_Decoder.cpp:193
+#: src/AIS_Decoder.cpp:195
 msgid "Tankbarge"
 msgstr "タンクバージ"
 
-#: src/AIS_Decoder.cpp:194
+#: src/AIS_Decoder.cpp:196
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 msgstr "タンクバージ、流体のような乾燥した貨物 (セメントなど)"
 
-#: src/AIS_Decoder.cpp:195
+#: src/AIS_Decoder.cpp:197
 msgid "Service vessel, police patrol, port service"
 msgstr "サービス船、警察のパトロール、ポート サービス"
 
-#: src/AIS_Decoder.cpp:196 src/AIS_Decoder.cpp:242
+#: src/AIS_Decoder.cpp:198 src/AIS_Decoder.cpp:244
 msgid "Pushboat, single"
 msgstr "押し船、１隻"
 
-#: src/AIS_Decoder.cpp:197
+#: src/AIS_Decoder.cpp:199
 msgid "Object, not otherwise specified"
 msgstr "特に指定されていないオブジェクト"
 
-#: src/AIS_Decoder.cpp:198
+#: src/AIS_Decoder.cpp:200
 msgid "Object, towed, not otherwise specified"
 msgstr "オブジェクト、牽引、特に指定されていません。"
 
-#: src/AIS_Decoder.cpp:199
+#: src/AIS_Decoder.cpp:201
 msgid "Bunkership"
 msgstr "バンカー船"
 
-#: src/AIS_Decoder.cpp:200
+#: src/AIS_Decoder.cpp:202
 msgid "Motor freighter"
 msgstr "モーター貨物船"
 
-#: src/AIS_Decoder.cpp:201
+#: src/AIS_Decoder.cpp:203
 msgid "Motor tanker"
 msgstr "モーター タンカー"
 
-#: src/AIS_Decoder.cpp:202
+#: src/AIS_Decoder.cpp:204
 msgid "Motor tanker, liquid cargo, type N"
 msgstr "モーター タンカー、液体貨物、type N"
 
-#: src/AIS_Decoder.cpp:203
+#: src/AIS_Decoder.cpp:205
 msgid "Motor tanker, liquid cargo, type C"
 msgstr "モーター タンカー、液体貨物、タイプ C"
 
-#: src/AIS_Decoder.cpp:204
+#: src/AIS_Decoder.cpp:206
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 msgstr "モータータンカー、流動性のある乾燥した貨物 (セメントなど)"
 
-#: src/AIS_Decoder.cpp:205
+#: src/AIS_Decoder.cpp:207
 msgid "Container vessel"
 msgstr "コンテナー船"
 
-#: src/AIS_Decoder.cpp:206
+#: src/AIS_Decoder.cpp:208
 msgid "Gas tanker"
 msgstr "ガス ・ タンカー"
 
-#: src/AIS_Decoder.cpp:207
+#: src/AIS_Decoder.cpp:209
 msgid "Motor freighter, tug"
 msgstr "モーター貨物船、タグボート"
 
-#: src/AIS_Decoder.cpp:208
+#: src/AIS_Decoder.cpp:210
 msgid "Motor tanker, tug"
 msgstr "モーター タンカー、タグボート"
 
-#: src/AIS_Decoder.cpp:209
+#: src/AIS_Decoder.cpp:211
 msgid "Motor freighter with one or more ships alongside"
 msgstr "モーター貨物船と一緒の 1 つまたは複数の船"
 
-#: src/AIS_Decoder.cpp:210
+#: src/AIS_Decoder.cpp:212
 msgid "Motor freighter with tanker"
 msgstr "タンカーとモーター貨物船"
 
-#: src/AIS_Decoder.cpp:211
+#: src/AIS_Decoder.cpp:213
 msgid "Motor freighter pushing one or more freighters"
 msgstr "1 つまたは複数の貨物船を押すモーター貨物船"
 
-#: src/AIS_Decoder.cpp:212
+#: src/AIS_Decoder.cpp:214
 msgid "Motor freighter pushing at least one tank-ship"
 msgstr "少なくとも 1 つのタンク船を押すモーター貨物船"
 
-#: src/AIS_Decoder.cpp:213
+#: src/AIS_Decoder.cpp:215
 msgid "Tug, freighter"
 msgstr "タグボート, 貨物船"
 
-#: src/AIS_Decoder.cpp:214
+#: src/AIS_Decoder.cpp:216
 msgid "Tug, tanker"
 msgstr "タンカー タグボート"
 
-#: src/AIS_Decoder.cpp:215
+#: src/AIS_Decoder.cpp:217
 msgid "Tug freighter, coupled"
 msgstr "タグボート貨物船、結合"
 
-#: src/AIS_Decoder.cpp:216
+#: src/AIS_Decoder.cpp:218
 msgid "Tug, freighter/tanker, coupled"
 msgstr "タグボート, 貨物船/ タンカー、結合"
 
-#: src/AIS_Decoder.cpp:217
+#: src/AIS_Decoder.cpp:219
 msgid "Tankbarge, liquid cargo, type N"
 msgstr "タンクバージ、液体貨物 、type N"
 
-#: src/AIS_Decoder.cpp:218
+#: src/AIS_Decoder.cpp:220
 msgid "Tankbarge, liquid cargo, type C"
 msgstr "タンクバージ、液体貨物、type C"
 
-#: src/AIS_Decoder.cpp:219
+#: src/AIS_Decoder.cpp:221
 msgid "Freightbarge with containers"
 msgstr "コンテナーと貨物船"
 
-#: src/AIS_Decoder.cpp:220
+#: src/AIS_Decoder.cpp:222
 msgid "Tankbarge, gas"
 msgstr "タンクバージ、ガス"
 
-#: src/AIS_Decoder.cpp:221
+#: src/AIS_Decoder.cpp:223
 msgid "Pushtow, one cargo barge"
 msgstr "押し牽引、1 つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:222
+#: src/AIS_Decoder.cpp:224
 msgid "Pushtow, two cargo barges"
 msgstr "押し牽引、２ つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:223
+#: src/AIS_Decoder.cpp:225
 msgid "Pushtow, three cargo barges"
 msgstr "押し牽引、３ つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:224
+#: src/AIS_Decoder.cpp:226
 msgid "Pushtow, four cargo barges"
 msgstr "押し牽引、４ つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:225
+#: src/AIS_Decoder.cpp:227
 msgid "Pushtow, five cargo barges"
 msgstr "押し牽引、５つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:226
+#: src/AIS_Decoder.cpp:228
 msgid "Pushtow, six cargo barges"
 msgstr "押し牽引、６ つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:227
+#: src/AIS_Decoder.cpp:229
 msgid "Pushtow, seven cargo barges"
 msgstr "押し牽引、７つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:228
+#: src/AIS_Decoder.cpp:230
 msgid "Pushtow, eight cargo barges"
 msgstr "押し牽引、８つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:229
+#: src/AIS_Decoder.cpp:231
 msgid "Pushtow, nine or more barges"
 msgstr "押し牽引、９つの貨物バージ"
 
-#: src/AIS_Decoder.cpp:230
+#: src/AIS_Decoder.cpp:232
 msgid "Pushtow, one tank/gas barge"
 msgstr "押し牽引、1 つのタンク/ガスバージ船"
 
-#: src/AIS_Decoder.cpp:231
+#: src/AIS_Decoder.cpp:233
 msgid "Pushtow, two barges at least one tanker or gas barge"
 msgstr "押し牽引、2つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:232
+#: src/AIS_Decoder.cpp:234
 msgid "Pushtow, three barges at least one tanker or gas barge"
 msgstr "押し牽引、３つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:233
+#: src/AIS_Decoder.cpp:235
 msgid "Pushtow, four barges at least one tanker or gas barge"
 msgstr "押し牽引、４つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:234
+#: src/AIS_Decoder.cpp:236
 msgid "Pushtow, five barges at least one tanker or gas barge"
 msgstr "押し牽引、５つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:235
+#: src/AIS_Decoder.cpp:237
 msgid "Pushtow, six barges at least one tanker or gas barge"
 msgstr "押し牽引６つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:236
+#: src/AIS_Decoder.cpp:238
 msgid "Pushtow, seven barges at least one tanker or gas barge"
 msgstr "押し牽引、７つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:237
+#: src/AIS_Decoder.cpp:239
 msgid "Pushtow, eight barges at least one tanker or gas barge"
 msgstr "押し牽引、８つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:238
+#: src/AIS_Decoder.cpp:240
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr "押し牽引、９つのバージ少なくとも1つはタンカーかガスバージ"
 
-#: src/AIS_Decoder.cpp:239
+#: src/AIS_Decoder.cpp:241
 msgid "Tug, single"
 msgstr "タグボート、単独"
 
-#: src/AIS_Decoder.cpp:240
+#: src/AIS_Decoder.cpp:242
 msgid "Tug, one or more tows"
 msgstr "タグボート、1 つまたは複数の牽引"
 
-#: src/AIS_Decoder.cpp:241
+#: src/AIS_Decoder.cpp:243
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "タグボート、支援船または連結された組み合わせ"
 
-#: src/AIS_Decoder.cpp:243
+#: src/AIS_Decoder.cpp:245
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "旅客船、フェリー、クルーズ船、赤十字船"
 
-#: src/AIS_Decoder.cpp:244
+#: src/AIS_Decoder.cpp:246
 msgid "Ferry"
 msgstr "フェリー"
 
-#: src/AIS_Decoder.cpp:245
+#: src/AIS_Decoder.cpp:247
 msgid "Red cross ship"
 msgstr "赤十字船"
 
-#: src/AIS_Decoder.cpp:246
+#: src/AIS_Decoder.cpp:248
 msgid "Cruise ship"
 msgstr "クルーズ船"
 
-#: src/AIS_Decoder.cpp:247
+#: src/AIS_Decoder.cpp:249
 msgid "Passenger ship without accomodation"
 msgstr "宿泊施設なしの旅客船"
 
-#: src/AIS_Decoder.cpp:248
+#: src/AIS_Decoder.cpp:250
 msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
 msgstr "作業メンテナンス クラフト、浮動デリック、ケーブル船、ブイ船、浚渫船"
 
-#: src/AIS_Decoder.cpp:249
+#: src/AIS_Decoder.cpp:251
 msgid "Fishing boat"
 msgstr "釣り船"
 
-#: src/AIS_Decoder.cpp:250
+#: src/AIS_Decoder.cpp:252
 msgid "Barge, tanker, chemical"
 msgstr "はしけ、タンカー、化学"
 
-#: src/AIS_Decoder.cpp:251
+#: src/AIS_Decoder.cpp:253
 msgid "General cargo Vessel maritime"
 msgstr "海上の一般貨物船"
 
-#: src/AIS_Decoder.cpp:252
+#: src/AIS_Decoder.cpp:254
 msgid "Unit carrier maritime"
 msgstr "海上のコンテナ船"
 
-#: src/AIS_Decoder.cpp:253
+#: src/AIS_Decoder.cpp:255
 msgid "Bulk carrier maritime"
 msgstr "海上の一般貨物船"
 
-#: src/AIS_Decoder.cpp:255
+#: src/AIS_Decoder.cpp:257
 msgid "Liquified gas tanker"
 msgstr "液化ガス ・ タンカー"
 
-#: src/AIS_Decoder.cpp:256
+#: src/AIS_Decoder.cpp:258
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "プレジャーボート、２０ｍを超える"
 
-#: src/AIS_Decoder.cpp:257
+#: src/AIS_Decoder.cpp:259
 msgid "Fast ship"
 msgstr "高速船"
 
-#: src/AIS_Decoder.cpp:258
+#: src/AIS_Decoder.cpp:260
 msgid "Hydrofoil"
 msgstr "水中翼船"
 
-#: src/AIS_Decoder.cpp:2349
+#: src/AIS_Decoder.cpp:2401
 msgid "AIS Alert"
 msgstr "AIS の警告"
 
@@ -1288,7 +1288,7 @@ msgstr "承認（&A）"
 msgid "&Jump To"
 msgstr "ジャンプ（&J）"
 
-#: src/AISTargetAlertDialog.cpp:219 src/AISTargetQueryDialog.cpp:301
+#: src/AISTargetAlertDialog.cpp:219 src/AISTargetQueryDialog.cpp:302
 #: src/undo.cpp:81
 msgid "Create Waypoint"
 msgstr "ウェイポイントの作成"
@@ -1299,7 +1299,7 @@ msgid "SAR Aircraft"
 msgstr "SAR 航空機"
 
 #: src/AIS_Target_Data.cpp:343 src/AIS_Target_Data.cpp:352
-#: src/AISTargetListDialog.cpp:511 src/options.cpp:434 src/options.cpp:735
+#: src/AISTargetListDialog.cpp:511 src/options.cpp:435 src/options.cpp:736
 msgid "MMSI"
 msgstr "MMSI"
 
@@ -1350,7 +1350,7 @@ msgid "Report as of"
 msgstr "Report as of"
 
 #: src/AIS_Target_Data.cpp:525 src/routeprop.cpp:662 src/routeprop.cpp:834
-#: src/routeprop.cpp:1190 src/TrackPropDlg.cpp:276 src/TrackPropDlg.cpp:1202
+#: src/routeprop.cpp:1190 src/TrackPropDlg.cpp:277 src/TrackPropDlg.cpp:1203
 msgid "Destination"
 msgstr "行先"
 
@@ -1372,9 +1372,9 @@ msgstr "Right"
 msgid "Left"
 msgstr "Left"
 
-#: src/AIS_Target_Data.cpp:620 src/options.cpp:3887 src/options.cpp:3995
-#: src/routeprop.cpp:1100 src/routeprop.cpp:1394 src/TrackPropDlg.cpp:449
-#: src/TrackPropDlg.cpp:721 src/TrackPropDlg.cpp:1204
+#: src/AIS_Target_Data.cpp:620 src/options.cpp:3888 src/options.cpp:3996
+#: src/routeprop.cpp:1100 src/routeprop.cpp:1394 src/TrackPropDlg.cpp:450
+#: src/TrackPropDlg.cpp:722 src/TrackPropDlg.cpp:1205
 msgid "Speed"
 msgstr "速さ"
 
@@ -1396,7 +1396,7 @@ msgid "Range"
 msgstr "範囲"
 
 #: src/AIS_Target_Data.cpp:638 src/routeprop.cpp:1093 src/routeprop.cpp:1387
-#: src/TrackPropDlg.cpp:445 src/TrackPropDlg.cpp:717
+#: src/TrackPropDlg.cpp:446 src/TrackPropDlg.cpp:718
 msgid "Bearing"
 msgstr "方位"
 
@@ -1429,7 +1429,7 @@ msgstr "標高"
 msgid " COG Unavailable"
 msgstr " COG 利用不可"
 
-#: src/AIS_Target_Data.cpp:794 src/navutil.cpp:3746
+#: src/AIS_Target_Data.cpp:794 src/navutil.cpp:3803
 msgid "in"
 msgstr "in"
 
@@ -1449,7 +1449,7 @@ msgstr "B"
 msgid "Aid to Navigation"
 msgstr "ナビゲーションへの援助"
 
-#: src/AIS_Target_Data.cpp:890 src/options.cpp:3098 src/options.cpp:3312
+#: src/AIS_Target_Data.cpp:890 src/options.cpp:3099 src/options.cpp:3313
 msgid "Base"
 msgstr "ベース"
 
@@ -2436,7 +2436,7 @@ msgstr "ベネズエラ"
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:365 src/canvasMenu.cpp:577 src/chart1.cpp:5271
+#: src/AISTargetListDialog.cpp:365 src/canvasMenu.cpp:578 src/chart1.cpp:5326
 msgid "AIS target list"
 msgstr "AIS ターゲット リスト"
 
@@ -2446,8 +2446,8 @@ msgstr "Trk"
 
 #: src/AISTargetListDialog.cpp:495 src/routeprintout.cpp:104
 #: src/routeprintout.cpp:362 src/routeprop.cpp:660 src/routeprop.cpp:814
-#: src/routeprop.cpp:1172 src/routeprop.cpp:2502 src/TrackPropDlg.cpp:256
-#: src/TrackPropDlg.cpp:573 src/TrackPropDlg.cpp:1200
+#: src/routeprop.cpp:1172 src/routeprop.cpp:2502 src/TrackPropDlg.cpp:257
+#: src/TrackPropDlg.cpp:574 src/TrackPropDlg.cpp:1201
 msgid "Name"
 msgstr "名前"
 
@@ -2455,7 +2455,7 @@ msgstr "名前"
 msgid "Call"
 msgstr "コール"
 
-#: src/AISTargetListDialog.cpp:527 src/options.cpp:1700 src/options.cpp:2308
+#: src/AISTargetListDialog.cpp:527 src/options.cpp:1701 src/options.cpp:2309
 msgid "Type"
 msgstr "タイプ"
 
@@ -2515,32 +2515,32 @@ msgstr "範囲を制限： NM"
 msgid "Target Count"
 msgstr "ターゲット数"
 
-#: src/AISTargetQueryDialog.cpp:138 src/AISTargetQueryDialog.cpp:304
-#: src/AISTargetQueryDialog.cpp:338
+#: src/AISTargetQueryDialog.cpp:139 src/AISTargetQueryDialog.cpp:305
+#: src/AISTargetQueryDialog.cpp:339
 msgid "Record Track"
 msgstr "追跡を記録"
 
-#: src/AISTargetQueryDialog.cpp:172
+#: src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
 msgstr "このターゲットの最近捕捉された追跡が記録されています \n"
 " 現在の OpenCPN セッションが終了するまで記録を継続しますか?。"
 
-#: src/AISTargetQueryDialog.cpp:173 src/chart1.cpp:5623 src/chart1.cpp:10943
-#: src/chart1.cpp:10974 src/LinkPropDlg.cpp:130 src/options.cpp:533
-#: src/options.cpp:6604 src/options.cpp:6641 src/options.cpp:8348
-#: src/pluginmanager.cpp:399 src/pluginmanager.cpp:1094
-#: src/pluginmanager.cpp:1136 src/pluginmanager.cpp:1164
-#: src/pluginmanager.cpp:1198 src/Route.cpp:1170 src/RoutePoint.cpp:805
+#: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5678 src/chart1.cpp:11035
+#: src/chart1.cpp:11066 src/LinkPropDlg.cpp:130 src/options.cpp:534
+#: src/options.cpp:6617 src/options.cpp:6654 src/options.cpp:8361
+#: src/pluginmanager.cpp:403 src/pluginmanager.cpp:1098
+#: src/pluginmanager.cpp:1140 src/pluginmanager.cpp:1168
+#: src/pluginmanager.cpp:1202 src/Route.cpp:1171 src/RoutePoint.cpp:809
 #: src/tcmgr.cpp:762
 msgid "OpenCPN Info"
 msgstr "OpenCPN の情報"
 
-#: src/AISTargetQueryDialog.cpp:200 src/AISTargetQueryDialog.cpp:249
+#: src/AISTargetQueryDialog.cpp:201 src/AISTargetQueryDialog.cpp:250
 msgid "AISTargetQuery"
 msgstr "AIS　ターゲットクエリー"
 
-#: src/AISTargetQueryDialog.cpp:336
+#: src/AISTargetQueryDialog.cpp:337
 msgid "Stop Tracking"
 msgstr "追跡の停止"
 
@@ -2554,290 +2554,290 @@ msgstr "あなたのAndroidが内蔵GPSを持っていますが、無効にな�
 msgid "Nothing found"
 msgstr "何も見つかりませんでした。"
 
-#: src/canvasMenu.cpp:265 src/canvasMenu.cpp:281 src/options.cpp:664
+#: src/canvasMenu.cpp:266 src/canvasMenu.cpp:282 src/options.cpp:665
 msgid "Menu"
 msgstr "メニュー"
 
-#: src/canvasMenu.cpp:289
+#: src/canvasMenu.cpp:290
 msgid "Waypoint"
 msgstr "ウェイポイント"
 
-#: src/canvasMenu.cpp:290 src/chcanv.cpp:2357 src/chcanv.cpp:7548
+#: src/canvasMenu.cpp:291 src/chcanv.cpp:2401 src/chcanv.cpp:7595
 #: src/concanv.cpp:143 src/concanv.cpp:162 src/concanv.cpp:204
 msgid "Route"
 msgstr "ルート"
 
-#: src/canvasMenu.cpp:291
+#: src/canvasMenu.cpp:292
 msgid "Track"
 msgstr "追跡"
 
-#: src/canvasMenu.cpp:292
+#: src/canvasMenu.cpp:293
 msgid "AIS"
 msgstr "AIS"
 
-#: src/canvasMenu.cpp:302
+#: src/canvasMenu.cpp:303
 msgid "End Route"
 msgstr "エンド ルート"
 
-#: src/canvasMenu.cpp:307
+#: src/canvasMenu.cpp:308
 msgid "Measure Off"
 msgstr "測定終了"
 
-#: src/canvasMenu.cpp:309
+#: src/canvasMenu.cpp:310
 msgid "Measure"
 msgstr "測定"
 
-#: src/canvasMenu.cpp:316
+#: src/canvasMenu.cpp:317
 msgid "Undo"
 msgstr "取消"
 
-#: src/canvasMenu.cpp:322
+#: src/canvasMenu.cpp:323
 msgid "Redo"
 msgstr "やり直し"
 
-#: src/canvasMenu.cpp:380
+#: src/canvasMenu.cpp:381
 msgid "Max Detail Here"
 msgstr "ここでの 最大の詳細"
 
-#: src/canvasMenu.cpp:381 src/canvasMenu.cpp:396
+#: src/canvasMenu.cpp:382 src/canvasMenu.cpp:397
 msgid "Scale In"
 msgstr "スケールイン"
 
-#: src/canvasMenu.cpp:382 src/canvasMenu.cpp:397
+#: src/canvasMenu.cpp:383 src/canvasMenu.cpp:398
 msgid "Scale Out"
 msgstr "スケール アウト"
 
-#: src/canvasMenu.cpp:386 src/canvasMenu.cpp:392 src/options.cpp:1536
-#: src/options.cpp:1570 src/options.cpp:2143 src/options.cpp:2178
+#: src/canvasMenu.cpp:387 src/canvasMenu.cpp:393 src/options.cpp:1537
+#: src/options.cpp:1571 src/options.cpp:2144 src/options.cpp:2179
 #: src/routeprop.cpp:2641
 msgid "..."
 msgstr ""
 
-#: src/canvasMenu.cpp:404
+#: src/canvasMenu.cpp:405
 msgid "Drop Mark"
 msgstr "ドロップ マーク"
 
-#: src/canvasMenu.cpp:407
+#: src/canvasMenu.cpp:408
 msgid "Move Boat Here"
 msgstr "ボートをここに移動"
 
-#: src/canvasMenu.cpp:411
+#: src/canvasMenu.cpp:412
 msgid "Navigate To Here"
 msgstr "ここへナビゲート"
 
-#: src/canvasMenu.cpp:418 src/chart1.cpp:5201
+#: src/canvasMenu.cpp:419 src/chart1.cpp:5256
 msgid "Course Up Mode"
 msgstr "コースアップモード"
 
-#: src/canvasMenu.cpp:421
+#: src/canvasMenu.cpp:422
 msgid "Chart Up Mode"
 msgstr "チャートアップモード"
 
-#: src/canvasMenu.cpp:423 src/chart1.cpp:4851 src/chart1.cpp:5200
-#: src/chart1.cpp:7154
+#: src/canvasMenu.cpp:424 src/chart1.cpp:4881 src/chart1.cpp:5255
+#: src/chart1.cpp:7246
 msgid "North Up Mode"
 msgstr "ノースアップモード"
 
-#: src/canvasMenu.cpp:431 src/canvasMenu.cpp:438
+#: src/canvasMenu.cpp:432 src/canvasMenu.cpp:439
 msgid "Toggle Full Screen"
 msgstr "フルスクリーンの切り替え"
 
-#: src/canvasMenu.cpp:443
+#: src/canvasMenu.cpp:444
 msgid "Zero XTE"
 msgstr "ゼロ XTE"
 
-#: src/canvasMenu.cpp:450
+#: src/canvasMenu.cpp:451
 msgid "Paste Waypoint"
 msgstr "ウェイポイントの貼付け"
 
-#: src/canvasMenu.cpp:454 src/canvasMenu.cpp:462
+#: src/canvasMenu.cpp:455 src/canvasMenu.cpp:463
 msgid "Paste Route"
 msgstr "ルートの貼り付け"
 
-#: src/canvasMenu.cpp:458 src/canvasMenu.cpp:463
+#: src/canvasMenu.cpp:459 src/canvasMenu.cpp:464
 msgid "Paste Track"
 msgstr "追跡を貼り付け"
 
-#: src/canvasMenu.cpp:471
+#: src/canvasMenu.cpp:472
 msgid "CM93 Offset Dialog..."
 msgstr "CM93 オフセットダイアログ."
 
-#: src/canvasMenu.cpp:481 src/chart1.cpp:8366
+#: src/canvasMenu.cpp:482 src/chart1.cpp:8458
 msgid "Hide This Chart"
 msgstr "このチャートを隠す"
 
-#: src/canvasMenu.cpp:493 src/options.cpp:3555 src/options.cpp:3603
-#: src/options.cpp:7198
+#: src/canvasMenu.cpp:494 src/options.cpp:3556 src/options.cpp:3604
+#: src/options.cpp:7211
 msgid "Chart Groups"
 msgstr "チャートグループ"
 
-#: src/canvasMenu.cpp:503
+#: src/canvasMenu.cpp:504
 msgid "All Active Charts"
 msgstr "すべてのアクティブなチャート"
 
-#: src/canvasMenu.cpp:580
+#: src/canvasMenu.cpp:581
 msgid "Target Query..."
 msgstr "ターゲットクエリ..."
 
-#: src/canvasMenu.cpp:584
+#: src/canvasMenu.cpp:585
 msgid "Hide Target CPA"
 msgstr "ターゲットCPAを隠す"
 
-#: src/canvasMenu.cpp:586
+#: src/canvasMenu.cpp:587
 msgid "Show Target CPA"
 msgstr "ターゲット CPAを表示"
 
-#: src/canvasMenu.cpp:588
+#: src/canvasMenu.cpp:589
 msgid "Target List..."
 msgstr "ターゲット リスト."
 
-#: src/canvasMenu.cpp:591
+#: src/canvasMenu.cpp:592
 msgid "Hide Target Track"
 msgstr "ターゲット追跡を隠す"
 
-#: src/canvasMenu.cpp:593
+#: src/canvasMenu.cpp:594
 msgid "Show Target Track"
 msgstr "ターゲット 追跡を表示"
 
-#: src/canvasMenu.cpp:595
+#: src/canvasMenu.cpp:596
 msgid "Copy Target MMSI"
 msgstr ""
 
-#: src/canvasMenu.cpp:601 src/canvasMenu.cpp:607
+#: src/canvasMenu.cpp:602 src/canvasMenu.cpp:608
 msgid "Object Query..."
 msgstr "オブジェクトクエリ..."
 
-#: src/canvasMenu.cpp:624
+#: src/canvasMenu.cpp:625
 msgid "Layer Route"
 msgstr "ルートレイヤ"
 
-#: src/canvasMenu.cpp:625 src/canvasMenu.cpp:640 src/canvasMenu.cpp:689
-#: src/canvasMenu.cpp:692 src/canvasMenu.cpp:709 src/canvasMenu.cpp:715
-#: src/canvasMenu.cpp:765 src/canvasMenu.cpp:768 src/options.cpp:1251
-#: src/options.cpp:1854 src/routeprop.cpp:1167 src/routeprop.cpp:2480
+#: src/canvasMenu.cpp:626 src/canvasMenu.cpp:641 src/canvasMenu.cpp:690
+#: src/canvasMenu.cpp:693 src/canvasMenu.cpp:710 src/canvasMenu.cpp:716
+#: src/canvasMenu.cpp:766 src/canvasMenu.cpp:769 src/options.cpp:1252
+#: src/options.cpp:1855 src/routeprop.cpp:1167 src/routeprop.cpp:2480
 msgid "Properties"
 msgstr "プロパティ"
 
-#: src/canvasMenu.cpp:630 src/canvasMenu.cpp:645 src/canvasMenu.cpp:725
+#: src/canvasMenu.cpp:631 src/canvasMenu.cpp:646 src/canvasMenu.cpp:726
 msgid "Activate Next Waypoint"
 msgstr "次のウェイポイントをアクティブにします。"
 
-#: src/canvasMenu.cpp:632 src/canvasMenu.cpp:647
-#: src/routemanagerdialog.cpp:1070
+#: src/canvasMenu.cpp:633 src/canvasMenu.cpp:648
+#: src/routemanagerdialog.cpp:1071
 msgid "Deactivate"
 msgstr "無効にする"
 
-#: src/canvasMenu.cpp:635 src/canvasMenu.cpp:650 src/canvasMenu.cpp:712
-#: src/canvasMenu.cpp:718 src/routemanagerdialog.cpp:1064
+#: src/canvasMenu.cpp:636 src/canvasMenu.cpp:651 src/canvasMenu.cpp:713
+#: src/canvasMenu.cpp:719 src/routemanagerdialog.cpp:1065
 msgid "Activate"
 msgstr "有効にする"
 
-#: src/canvasMenu.cpp:653
+#: src/canvasMenu.cpp:654
 msgid "Insert Waypoint"
 msgstr "ウェイポイントを挿入"
 
-#: src/canvasMenu.cpp:654 src/undo.cpp:90
+#: src/canvasMenu.cpp:655 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "ウェイポイントの追加"
 
-#: src/canvasMenu.cpp:655 src/canvasMenu.cpp:693 src/canvasMenu.cpp:731
-#: src/canvasMenu.cpp:773
+#: src/canvasMenu.cpp:656 src/canvasMenu.cpp:694 src/canvasMenu.cpp:732
+#: src/canvasMenu.cpp:774
 msgid "Copy as KML"
 msgstr "KML としてコピー"
 
-#: src/canvasMenu.cpp:656 src/canvasMenu.cpp:694 src/canvasMenu.cpp:734
-#: src/canvasMenu.cpp:776 src/options.cpp:660 src/options.cpp:8232
-#: src/routeprop.cpp:2670 src/TrackPropDlg.cpp:770
+#: src/canvasMenu.cpp:657 src/canvasMenu.cpp:695 src/canvasMenu.cpp:735
+#: src/canvasMenu.cpp:777 src/options.cpp:661 src/options.cpp:8245
+#: src/routeprop.cpp:2670 src/TrackPropDlg.cpp:771
 msgid "Delete"
 msgstr "削除"
 
-#: src/canvasMenu.cpp:657
+#: src/canvasMenu.cpp:658
 msgid "Reverse..."
 msgstr "反転する"
 
-#: src/canvasMenu.cpp:671 src/canvasMenu.cpp:747
+#: src/canvasMenu.cpp:672 src/canvasMenu.cpp:748
 msgid "Send to new GPS"
 msgstr "新しい GPS に送信します。"
 
-#: src/canvasMenu.cpp:688
+#: src/canvasMenu.cpp:689
 msgid "Layer Track"
 msgstr "追跡レイヤー"
 
-#: src/canvasMenu.cpp:708
+#: src/canvasMenu.cpp:709
 msgid "Layer Routepoint"
 msgstr "ルートポイントレイヤー"
 
-#: src/canvasMenu.cpp:729
+#: src/canvasMenu.cpp:730
 msgid "Remove from Route"
 msgstr "ルートから削除"
 
-#: src/canvasMenu.cpp:764
+#: src/canvasMenu.cpp:765
 msgid "Layer Waypoint"
 msgstr "ウェイポイント レイヤー"
 
-#: src/canvasMenu.cpp:771
+#: src/canvasMenu.cpp:772
 msgid "Navigate To This"
 msgstr "ここにナビゲート"
 
-#: src/canvasMenu.cpp:790
+#: src/canvasMenu.cpp:791
 msgid "Clear Anchor Watch"
 msgstr "アンカーウォッチをクリア"
 
-#: src/canvasMenu.cpp:800
+#: src/canvasMenu.cpp:801
 msgid "Set Anchor Watch"
 msgstr "アンカーウォッチをセット"
 
-#: src/canvasMenu.cpp:816
+#: src/canvasMenu.cpp:817
 msgid "Show Tide Information"
 msgstr "潮汐情報を表示"
 
-#: src/canvasMenu.cpp:822
+#: src/canvasMenu.cpp:823
 msgid "Show Current Information"
 msgstr "現在の情報を表示"
 
-#: src/canvasMenu.cpp:902
+#: src/canvasMenu.cpp:903
 msgid "Temporary GOTO Route"
 msgstr "一時的移動ルート"
 
-#: src/canvasMenu.cpp:903 src/canvasMenu.cpp:955
-#: src/routemanagerdialog.cpp:2320
+#: src/canvasMenu.cpp:904 src/canvasMenu.cpp:956
+#: src/routemanagerdialog.cpp:2321
 msgid "Here"
 msgstr "ここ"
 
-#: src/canvasMenu.cpp:905
+#: src/canvasMenu.cpp:906
 msgid "There"
 msgstr "そこ"
 
-#: src/canvasMenu.cpp:951 src/routemanagerdialog.cpp:1994
-#: src/routemanagerdialog.cpp:2316
+#: src/canvasMenu.cpp:952 src/routemanagerdialog.cpp:1995
+#: src/routemanagerdialog.cpp:2317
 msgid "(Unnamed Waypoint)"
 msgstr "（無名のウェイポイント）"
 
-#: src/canvasMenu.cpp:952 src/routemanagerdialog.cpp:2317
+#: src/canvasMenu.cpp:953 src/routemanagerdialog.cpp:2318
 msgid "Go to "
 msgstr "移動 "
 
-#: src/canvasMenu.cpp:1157 src/routemanagerdialog.cpp:1272
+#: src/canvasMenu.cpp:1158 src/routemanagerdialog.cpp:1273
 msgid "Rename Waypoints?"
 msgstr "ウェイポイントの名前を変更しますか？"
 
-#: src/canvasMenu.cpp:1177
+#: src/canvasMenu.cpp:1178
 msgid "Are you sure you want to delete this route?"
 msgstr "このルートを削除してもよろしいですか。"
 
-#: src/canvasMenu.cpp:1178
+#: src/canvasMenu.cpp:1179
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN ルートの削除"
 
-#: src/canvasMenu.cpp:1432
+#: src/canvasMenu.cpp:1433
 msgid "Are you sure you want to delete this track?"
 msgstr "この追跡を削除してもよろしいですか。"
 
-#: src/canvasMenu.cpp:1433 src/routeman.cpp:921
+#: src/canvasMenu.cpp:1434 src/routeman.cpp:921
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 追跡の削除"
 
-#: src/chart1.cpp:772
+#: src/chart1.cpp:823
 msgid "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied\n"
@@ -2856,404 +2856,404 @@ msgstr "\n"
 "生命や財産の安全のためにOpenCPNに依存しないでください。\n\n"
 "同意する場合は「はい」を押してください、同意しない合場は「キャンセル」をクリックしてください。\n"
 
-#: src/chart1.cpp:787
+#: src/chart1.cpp:838
 msgid "Welcome to OpenCPN"
 msgstr "OpenCPN へようこそ"
 
-#: src/chart1.cpp:840
+#: src/chart1.cpp:891
 msgid "Show usage syntax."
 msgstr ""
 
-#: src/chart1.cpp:841
+#: src/chart1.cpp:892
 msgid "Run in portable mode."
 msgstr ""
 
-#: src/chart1.cpp:842
+#: src/chart1.cpp:893
 msgid "Switch to full screen mode on start."
 msgstr ""
 
-#: src/chart1.cpp:843
+#: src/chart1.cpp:894
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
 msgstr ""
 
-#: src/chart1.cpp:846
+#: src/chart1.cpp:897
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr ""
 
-#: src/chart1.cpp:1307
+#: src/chart1.cpp:1358
 msgid "OpenCPN ENC Prepare"
 msgstr ""
 
-#: src/chart1.cpp:1339
+#: src/chart1.cpp:1390
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "自船からの距離： %4.0f NMi"
 
-#: src/chart1.cpp:1367
+#: src/chart1.cpp:1420
 msgid "ENC Completed."
 msgstr ""
 
-#: src/chart1.cpp:1651 src/chart1.cpp:1657
+#: src/chart1.cpp:1706 src/chart1.cpp:1712
 msgid "Failed to initialize the user interface. "
 msgstr "ユーザー インターフェイスの初期化に失敗しました。 "
 
-#: src/chart1.cpp:1652
+#: src/chart1.cpp:1707
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN を起動できません。 "
 
-#: src/chart1.cpp:1653
+#: src/chart1.cpp:1708
 msgid "The necessary configuration files were not found. "
 msgstr "必要な構成ファイルが見つかりませんでした。 "
 
-#: src/chart1.cpp:1654
+#: src/chart1.cpp:1709
 msgid "See the log file at "
 msgstr "ログ ファイルを参照してください。 "
 
-#: src/chart1.cpp:1654
+#: src/chart1.cpp:1709
 msgid " for details."
 msgstr " 詳細については。"
 
-#: src/chart1.cpp:1968
+#: src/chart1.cpp:2023
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) executing from "
 
-#: src/chart1.cpp:2088
+#: src/chart1.cpp:2143
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "初期のチャートディレクトリの設定はWindowsのレジストリから取得します。"
 
-#: src/chart1.cpp:2151
+#: src/chart1.cpp:2206
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "構成ファイルのエントリからチャートデータベースを再構築."
 
-#: src/chart1.cpp:2154
+#: src/chart1.cpp:2209
 msgid "Elapsed time : "
 msgstr "経過時間： "
 
-#: src/chart1.cpp:2155
+#: src/chart1.cpp:2210
 msgid "Estimated time : "
 msgstr "推定時間： "
 
-#: src/chart1.cpp:2156
+#: src/chart1.cpp:2211
 msgid "Remaining time : "
 msgstr "残り時間： "
 
-#: src/chart1.cpp:2157 src/chart1.cpp:5909 src/chart1.cpp:5917
+#: src/chart1.cpp:2212 src/chart1.cpp:5974 src/chart1.cpp:5982
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN チャート更新"
 
-#: src/chart1.cpp:2173
+#: src/chart1.cpp:2228
 msgid "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr "チャートがインストールされていません\n"
 "オプション > チャート からチャートフォルダを選択して下さい。"
 
-#: src/chart1.cpp:2344
+#: src/chart1.cpp:2399
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN Initialized in %ld ms."
 
-#: src/chart1.cpp:2821 src/chcanv.cpp:9252
+#: src/chart1.cpp:2872 src/chcanv.cpp:9400
 msgid "AIS Target Query"
 msgstr "AIS ターゲット クエリ"
 
-#: src/chart1.cpp:2904 src/chart1.cpp:5204 src/chart1.cpp:5207
+#: src/chart1.cpp:2924 src/chart1.cpp:5259 src/chart1.cpp:5262
 msgid "Zoom In"
 msgstr "ズームイン"
 
-#: src/chart1.cpp:2910 src/chart1.cpp:5205 src/chart1.cpp:5208
+#: src/chart1.cpp:2930 src/chart1.cpp:5260 src/chart1.cpp:5263
 msgid "Zoom Out"
 msgstr "ズームアウト"
 
-#: src/chart1.cpp:2919
+#: src/chart1.cpp:2939
 msgid "Shift to Larger Scale Chart"
 msgstr "大スケールのチャートへシフト"
 
-#: src/chart1.cpp:2927
+#: src/chart1.cpp:2947
 msgid "Shift to Smaller Scale Chart"
 msgstr "小スケールのチャートへシフト"
 
-#: src/chart1.cpp:2935 src/chart1.cpp:5283
+#: src/chart1.cpp:2955 src/chart1.cpp:5338
 msgid "Create Route"
 msgstr "ルート作成"
 
-#: src/chart1.cpp:2942 src/chart1.cpp:5197
+#: src/chart1.cpp:2962 src/chart1.cpp:5252
 msgid "Auto Follow"
 msgstr "自動追尾"
 
-#: src/chart1.cpp:2962 src/chart1.cpp:4867
+#: src/chart1.cpp:2982 src/chart1.cpp:4897
 msgid "Hide ENC text"
 msgstr ""
 
-#: src/chart1.cpp:2964 src/chart1.cpp:4865 src/chart1.cpp:5233
-#: src/chart1.cpp:5238
+#: src/chart1.cpp:2984 src/chart1.cpp:4895 src/chart1.cpp:5288
+#: src/chart1.cpp:5293
 msgid "Show ENC text"
 msgstr ""
 
-#: src/chart1.cpp:2973 src/chart1.cpp:3063 src/chart1.cpp:3066
-#: src/chart1.cpp:4459
+#: src/chart1.cpp:2993 src/chart1.cpp:3083 src/chart1.cpp:3086
+#: src/chart1.cpp:4489
 msgid "Hide AIS Targets"
 msgstr "AIS ターゲットを隠す"
 
-#: src/chart1.cpp:2980 src/chart1.cpp:4216 src/chart1.cpp:5246
+#: src/chart1.cpp:3000 src/chart1.cpp:4246 src/chart1.cpp:5301
 msgid "Show Currents"
 msgstr "流れを表示"
 
-#: src/chart1.cpp:2986 src/chart1.cpp:4250 src/chart1.cpp:5245
+#: src/chart1.cpp:3006 src/chart1.cpp:4280 src/chart1.cpp:5300
 msgid "Show Tides"
 msgstr "潮の干満を表示"
 
-#: src/chart1.cpp:2992
+#: src/chart1.cpp:3012
 msgid "Print Chart"
 msgstr "チャートを印刷"
 
-#: src/chart1.cpp:2998 src/routemanagerdialog.cpp:449
+#: src/chart1.cpp:3018 src/routemanagerdialog.cpp:450
 msgid "Route & Mark Manager"
 msgstr "ルート と マーク マネージャー"
 
-#: src/chart1.cpp:3005 src/chart1.cpp:4751 src/chart1.cpp:5198
+#: src/chart1.cpp:3025 src/chart1.cpp:4781 src/chart1.cpp:5253
 msgid "Enable Tracking"
 msgstr "追跡を有効にする"
 
-#: src/chart1.cpp:3012 src/chart1.cpp:5249 src/chart1.cpp:5251
+#: src/chart1.cpp:3032 src/chart1.cpp:5304 src/chart1.cpp:5306
 msgid "Change Color Scheme"
 msgstr "配色の変更"
 
-#: src/chart1.cpp:3031 src/chart1.cpp:5289 src/chart1.cpp:5293
+#: src/chart1.cpp:3051 src/chart1.cpp:5344 src/chart1.cpp:5348
 msgid "Drop MOB Marker"
 msgstr "MOB（落水者）マーカーを置く"
 
-#: src/chart1.cpp:3031
+#: src/chart1.cpp:3051
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-スペース)"
 
-#: src/chart1.cpp:3061 src/chart1.cpp:4458 src/chart1.cpp:5266
+#: src/chart1.cpp:3081 src/chart1.cpp:4488 src/chart1.cpp:5321
 msgid "Attenuate less critical AIS targets"
 msgstr ""
 
-#: src/chart1.cpp:3070 src/chart1.cpp:5264
+#: src/chart1.cpp:3090 src/chart1.cpp:5319
 msgid "Show AIS Targets"
 msgstr "AIS ターゲットを表示"
 
-#: src/chart1.cpp:3467
+#: src/chart1.cpp:3483
 msgid "Anchorage created "
 msgstr "Anchorage created "
 
-#: src/chart1.cpp:3834 src/chcanv.cpp:3456 src/OCPNPlatform.cpp:1460
+#: src/chart1.cpp:3864 src/chcanv.cpp:3505 src/OCPNPlatform.cpp:1471
 msgid "StatusBar"
 msgstr "ステータスバー"
 
-#: src/chart1.cpp:4034
+#: src/chart1.cpp:4064
 msgid "Group \""
 msgstr "グループ\""
 
-#: src/chart1.cpp:4036
+#: src/chart1.cpp:4066
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" is empty, switching to \"All Active Charts\" group."
 
-#: src/chart1.cpp:4038
+#: src/chart1.cpp:4068
 msgid "OpenCPN Group Notice"
 msgstr "OpenCPN グループの通知"
 
-#: src/chart1.cpp:4218
+#: src/chart1.cpp:4248
 msgid "Hide Currents"
 msgstr "流れを隠す"
 
-#: src/chart1.cpp:4252
+#: src/chart1.cpp:4282
 msgid "Hide Tides"
 msgstr "潮の干満を隠す"
 
-#: src/chart1.cpp:4259
+#: src/chart1.cpp:4289
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr Not Available"
 
-#: src/chart1.cpp:4457
+#: src/chart1.cpp:4487
 msgid "Show all AIS Targets"
 msgstr "すべての AIS ターゲットを表示"
 
-#: src/chart1.cpp:4596 src/chart1.cpp:4654
+#: src/chart1.cpp:4626 src/chart1.cpp:4684
 msgid "MAN OVERBOARD"
 msgstr "落水者"
 
-#: src/chart1.cpp:4615
+#: src/chart1.cpp:4645
 msgid "1.0 NM along COG"
 msgstr "1.0 NM along COG"
 
-#: src/chart1.cpp:4626
+#: src/chart1.cpp:4656
 msgid "Temporary MOB Route"
 msgstr "一時的ルート（MOB）"
 
-#: src/chart1.cpp:4627
+#: src/chart1.cpp:4657
 msgid "Assumed 1 Mile Point"
 msgstr "想定される 1 マイル ポイント"
 
-#: src/chart1.cpp:4677
+#: src/chart1.cpp:4707
 msgid "Disable Tracking"
 msgstr "追跡を無効にする"
 
-#: src/chart1.cpp:4702 src/chart1.cpp:8730 src/chart1.cpp:8873
-#: src/routemanagerdialog.cpp:1698
+#: src/chart1.cpp:4732 src/chart1.cpp:8822 src/chart1.cpp:8965
+#: src/routemanagerdialog.cpp:1699
 msgid "(Unnamed Track)"
 msgstr "(無名の追跡)"
 
-#: src/chart1.cpp:5211
+#: src/chart1.cpp:5266
 msgid "Larger Scale Chart"
 msgstr "大きいスケールのチャート"
 
-#: src/chart1.cpp:5212
+#: src/chart1.cpp:5267
 msgid "Smaller Scale Chart"
 msgstr "小さいスケール のチャート"
 
-#: src/chart1.cpp:5215
+#: src/chart1.cpp:5270
 msgid "Exit OpenCPN"
 msgstr "OpenCPNの終了"
 
-#: src/chart1.cpp:5217
+#: src/chart1.cpp:5272
 msgid "&Navigate"
 msgstr "ナビゲート（&N）"
 
-#: src/chart1.cpp:5222 src/chart1.cpp:5225 src/options.cpp:3716
-#: src/options.cpp:3807
+#: src/chart1.cpp:5277 src/chart1.cpp:5280 src/options.cpp:3717
+#: src/options.cpp:3808
 msgid "Enable Chart Quilting"
 msgstr "チャートのキルティングを有効"
 
-#: src/chart1.cpp:5223 src/chart1.cpp:5226 src/options.cpp:3758
-#: src/options.cpp:3848
+#: src/chart1.cpp:5278 src/chart1.cpp:5281 src/options.cpp:3759
+#: src/options.cpp:3849
 msgid "Show Chart Outlines"
 msgstr "チャートの外枠を表示"
 
-#: src/chart1.cpp:5228 src/options.cpp:4406
+#: src/chart1.cpp:5283 src/options.cpp:4407
 msgid "Show Chart Bar"
 msgstr "チャートのバーを表示"
 
-#: src/chart1.cpp:5234 src/chart1.cpp:5239
+#: src/chart1.cpp:5289 src/chart1.cpp:5294
 msgid "Show ENC Lights"
 msgstr "ENC ライトを表示"
 
-#: src/chart1.cpp:5235 src/chart1.cpp:5240
+#: src/chart1.cpp:5290 src/chart1.cpp:5295
 msgid "Show ENC Soundings"
 msgstr "ENC の深さを表示"
 
-#: src/chart1.cpp:5236 src/chart1.cpp:5241
+#: src/chart1.cpp:5291 src/chart1.cpp:5296
 msgid "Show ENC Anchoring Info"
 msgstr "ENC の錨泊情報を表示"
 
-#: src/chart1.cpp:5256 src/chart1.cpp:5258
+#: src/chart1.cpp:5311 src/chart1.cpp:5313
 msgid "Enter Full Screen"
 msgstr "全画面表示"
 
-#: src/chart1.cpp:5260
+#: src/chart1.cpp:5315
 msgid "&View"
 msgstr "表示（&V）"
 
-#: src/chart1.cpp:5265
+#: src/chart1.cpp:5320
 msgid "Hide Moored AIS Targets"
 msgstr "係留中の AIS ターゲットを隠す"
 
-#: src/chart1.cpp:5267
+#: src/chart1.cpp:5322
 msgid "Show AIS Target Tracks"
 msgstr "AIS ターゲット追跡を表示"
 
-#: src/chart1.cpp:5268
+#: src/chart1.cpp:5323
 msgid "Show CPA Alert Dialogs"
 msgstr "CPA　警告ダイアログを表示"
 
-#: src/chart1.cpp:5269
+#: src/chart1.cpp:5324
 msgid "Sound CPA Alarms"
 msgstr "サウンド　CPA　アラーム"
 
-#: src/chart1.cpp:5272
+#: src/chart1.cpp:5327
 msgid "&AIS"
 msgstr "&AIS"
 
-#: src/chart1.cpp:5276 src/chart1.cpp:5278
+#: src/chart1.cpp:5331 src/chart1.cpp:5333
 msgid "Measure Distance"
 msgstr "距離を測定"
 
-#: src/chart1.cpp:5282
+#: src/chart1.cpp:5337
 msgid "Route && Mark Manager..."
 msgstr "ルート と マーク マネージャー..."
 
-#: src/chart1.cpp:5285
+#: src/chart1.cpp:5340
 msgid "Drop Mark at Boat"
 msgstr "ボートの位置にマークする"
 
-#: src/chart1.cpp:5286
+#: src/chart1.cpp:5341
 msgid "Drop Mark at Cursor"
 msgstr "カーソルの位置にマークする"
 
-#: src/chart1.cpp:5291 src/pluginmanager.cpp:3921
+#: src/chart1.cpp:5346 src/pluginmanager.cpp:3930
 msgid "Preferences"
 msgstr "設定"
 
-#: src/chart1.cpp:5298
+#: src/chart1.cpp:5353
 msgid "&Tools"
 msgstr "ツール（&T）"
 
-#: src/chart1.cpp:5301
+#: src/chart1.cpp:5356
 msgid "OpenCPN Help"
 msgstr "OpenCPN ヘルプ"
 
-#: src/chart1.cpp:5302
+#: src/chart1.cpp:5357
 msgid "&Help"
 msgstr "ヘルプ（&H）"
 
-#: src/chart1.cpp:5622
+#: src/chart1.cpp:5677
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "言語やスタイルの変更を反映するには OpenCPN を再起動してください。"
 
-#: src/chart1.cpp:7147
+#: src/chart1.cpp:7239
 msgid "Rotated Mode"
 msgstr "ローテート モード"
 
-#: src/chart1.cpp:8361
+#: src/chart1.cpp:8453
 msgid "Show This Chart"
 msgstr "このチャートを表示します。"
 
-#: src/chart1.cpp:8612 src/routeprintout.cpp:470
+#: src/chart1.cpp:8704 src/routeprintout.cpp:470
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "印刷の問題 \n"
 "おそらく、プリンターが正しく設定されていません"
 
-#: src/chart1.cpp:8794 src/chart1.cpp:8854 src/routemanagerdialog.cpp:1000
+#: src/chart1.cpp:8886 src/chart1.cpp:8946 src/routemanagerdialog.cpp:1001
 msgid "(Unnamed Route)"
 msgstr "(無名のルート)"
 
-#: src/chart1.cpp:9343
+#: src/chart1.cpp:9435
 msgid " Ship "
 msgstr " 船 "
 
-#: src/chart1.cpp:9596 src/chart1.cpp:9647
+#: src/chart1.cpp:9688 src/chart1.cpp:9739
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS 落水者"
 
-#: src/chart1.cpp:9609 src/options.cpp:2388
+#: src/chart1.cpp:9701 src/options.cpp:2389
 msgid "Own ship"
 msgstr ""
 
-#: src/chart1.cpp:9620
+#: src/chart1.cpp:9712
 msgid "Temporary AISMOB Route"
 msgstr "一時的ルート（AISMOB）"
 
-#: src/chart1.cpp:9621
+#: src/chart1.cpp:9713
 msgid "Present own ship"
 msgstr ""
 
-#: src/chart1.cpp:9691
+#: src/chart1.cpp:9783
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "AIS 落水者　更新"
 
-#: src/chart1.cpp:10938
+#: src/chart1.cpp:11030
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN シリアルNMEAデータを使用するには、シリアルポートへのアクセスを必要とします。\n"
 
-#: src/chart1.cpp:10940
+#: src/chart1.cpp:11032
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "システムにシリアル ポートが見つかりません \n"
 "シリアル ポートをインストール又はUSBシリアルポートを接続する必要があります \n"
 
-#: src/chart1.cpp:10962
+#: src/chart1.cpp:11054
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3273,9 +3273,9 @@ msgstr " チャートファイル：  "
 msgid " Name:  "
 msgstr " 名前：  "
 
-#: src/chartdbs.cpp:1233 src/chartdbs.cpp:1235 src/chcanv.cpp:3426
-#: src/chcanv.cpp:3428 src/chcanv.cpp:3431 src/chcanv.cpp:3434
-#: src/chcanv.cpp:3465
+#: src/chartdbs.cpp:1233 src/chartdbs.cpp:1235 src/chcanv.cpp:3470
+#: src/chcanv.cpp:3472 src/chcanv.cpp:3475 src/chcanv.cpp:3479
+#: src/chcanv.cpp:3483 src/chcanv.cpp:3514
 msgid "Scale"
 msgstr ""
 
@@ -3393,115 +3393,115 @@ msgstr "   VP 最終確認 内部ジオリファレンス：　チャートの�
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   結果： ok、内部ジオリファレンスソリューションを使用します。"
 
-#: src/chcanv.cpp:1654 src/options.cpp:3250 src/options.cpp:3462
+#: src/chcanv.cpp:1692 src/options.cpp:3251 src/options.cpp:3463
 msgid "CM93 Detail Level"
 msgstr "CM93 詳細レベル"
 
-#: src/chcanv.cpp:2359 src/chcanv.cpp:7550
+#: src/chcanv.cpp:2403 src/chcanv.cpp:7597
 msgid "Layer Route: "
 msgstr "ルートレイヤ "
 
-#: src/chcanv.cpp:2361
+#: src/chcanv.cpp:2405
 msgid "(unnamed)"
 msgstr "(無名)"
 
-#: src/chcanv.cpp:2365
+#: src/chcanv.cpp:2409
 msgid "Total Length: "
 msgstr "全長： "
 
-#: src/chcanv.cpp:2366
+#: src/chcanv.cpp:2410
 msgid "Leg: from "
 msgstr "区間：発 "
 
-#: src/chcanv.cpp:2367
+#: src/chcanv.cpp:2411
 msgid " to "
 msgstr " 着 "
 
-#: src/chcanv.cpp:5238 src/chcanv.cpp:5648
+#: src/chcanv.cpp:5285 src/chcanv.cpp:5695
 msgid "Use nearby waypoint?"
 msgstr "近くのウェイポイントを使用しますか?"
 
-#: src/chcanv.cpp:5239 src/chcanv.cpp:5291 src/chcanv.cpp:5649
-#: src/chcanv.cpp:5698
+#: src/chcanv.cpp:5286 src/chcanv.cpp:5338 src/chcanv.cpp:5696
+#: src/chcanv.cpp:5745
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN ルートを作成します。"
 
-#: src/chcanv.cpp:5285 src/chcanv.cpp:5693
+#: src/chcanv.cpp:5332 src/chcanv.cpp:5740
 msgid "For this leg the Great Circle route is "
 msgstr "この区間では大円ルートは "
 
-#: src/chcanv.cpp:5286 src/chcanv.cpp:5694
+#: src/chcanv.cpp:5333 src/chcanv.cpp:5741
 msgid " shorter than rhumbline.\n\n"
 msgstr " 等角航路より短い\n\n"
 
-#: src/chcanv.cpp:5287 src/chcanv.cpp:5695
+#: src/chcanv.cpp:5334 src/chcanv.cpp:5742
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "このレグには大円ルーティング ポイントが含まれますか?"
 
-#: src/chcanv.cpp:6666 src/chcanv.cpp:6678 src/S57QueryDialog.cpp:86
+#: src/chcanv.cpp:6713 src/chcanv.cpp:6725 src/S57QueryDialog.cpp:87
 msgid "ObjectQuery"
 msgstr "オブジェクトクエリー"
 
-#: src/chcanv.cpp:6798 src/chcanv.cpp:6846 src/routemanagerdialog.cpp:1223
-#: src/routemanagerdialog.cpp:2197
+#: src/chcanv.cpp:6845 src/chcanv.cpp:6893 src/routemanagerdialog.cpp:1224
+#: src/routemanagerdialog.cpp:2198
 msgid "Layer"
 msgstr ""
 
-#: src/chcanv.cpp:6883
+#: src/chcanv.cpp:6930
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "貼り付けたものと同じ場所に既存のウェイポイントがあります。貼り付けたデータを統合しますか? \n\n"
 
-#: src/chcanv.cpp:6884
+#: src/chcanv.cpp:6931
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "「いいえ」と答えると、同じ場所に新しいウェイ ポイントが作成されます。"
 
-#: src/chcanv.cpp:6885
+#: src/chcanv.cpp:6932
 msgid "Merge waypoint?"
 msgstr "ウェイポイントを統合しますか。"
 
-#: src/chcanv.cpp:6942
+#: src/chcanv.cpp:6989
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "既存のウェイポイントがあります。貼り付けたデータを統合してもよろしいですか? \n\n"
 
-#: src/chcanv.cpp:6943
+#: src/chcanv.cpp:6990
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "「いいえ」と答えると、このルートの為に新しいウェイポイントが作成されます。"
 
-#: src/chcanv.cpp:6944
+#: src/chcanv.cpp:6991
 msgid "Merge waypoints?"
 msgstr "ウェイポイントを統合しますか。"
 
-#: src/chcanv.cpp:7414 src/chcanv.cpp:7445 src/RolloverWin.cpp:114
+#: src/chcanv.cpp:7461 src/chcanv.cpp:7492 src/RolloverWin.cpp:114
 #: src/RolloverWin.cpp:198 src/RolloverWin.cpp:312
 msgid "RouteLegInfoRollover"
 msgstr "ルートレグ情報ロールオーバー"
 
-#: src/chcanv.cpp:8475 src/options.cpp:3900 src/options.cpp:4008
+#: src/chcanv.cpp:8603 src/options.cpp:3901 src/options.cpp:4009
 msgid "Feet"
 msgstr "フィート"
 
-#: src/chcanv.cpp:8476 src/options.cpp:3879 src/options.cpp:3900
-#: src/options.cpp:3987 src/options.cpp:4008
+#: src/chcanv.cpp:8604 src/options.cpp:3880 src/options.cpp:3901
+#: src/options.cpp:3988 src/options.cpp:4009
 msgid "Meters"
 msgstr "メートル"
 
-#: src/chcanv.cpp:8477 src/options.cpp:3900 src/options.cpp:4008
+#: src/chcanv.cpp:8605 src/options.cpp:3901 src/options.cpp:4009
 msgid "Fathoms"
 msgstr "Fathoms"
 
-#: src/chcanv.cpp:8480
+#: src/chcanv.cpp:8608
 msgid "OverZoom"
 msgstr "オーバーズーム"
 
-#: src/chcanv.cpp:8821 src/chcanv.cpp:8822
+#: src/chcanv.cpp:8949 src/chcanv.cpp:8950
 msgid "ExtendedTideIcon"
 msgstr "拡張潮汐アイコン"
 
-#: src/chcanv.cpp:9070
+#: src/chcanv.cpp:9216
 msgid "CurrentValue"
 msgstr "潮流"
 
-#: src/chcanv.cpp:9456
+#: src/chcanv.cpp:9604
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr "   外部アプリケーション\"xcalib\"が見つかりませんでした。画面の明るさは変更されません。"
 
@@ -3537,17 +3537,17 @@ msgstr "ユーザー X オフセット"
 msgid "User Y Offset"
 msgstr "ユーザー Y オフセット"
 
-#: src/cm93.cpp:6768 src/cm93.cpp:6775 src/options.cpp:3219
-#: src/options.cpp:3229 src/options.cpp:3239 src/options.cpp:3434
-#: src/options.cpp:3443 src/options.cpp:3451 src/options.cpp:5290
+#: src/cm93.cpp:6768 src/cm93.cpp:6775 src/options.cpp:3220
+#: src/options.cpp:3230 src/options.cpp:3240 src/options.cpp:3435
+#: src/options.cpp:3444 src/options.cpp:3452 src/options.cpp:5298
 msgid "meters"
 msgstr "メートル"
 
-#: src/cm93.cpp:6782 src/GoToPositionDialog.cpp:149 src/options.cpp:484
-#: src/options.cpp:4740 src/routeprintout.cpp:407 src/routeprop.cpp:1067
-#: src/routeprop.cpp:1364 src/routeprop.cpp:2763 src/TCWin.cpp:143
-#: src/TCWin.cpp:154 src/toolbar.cpp:2603 src/TrackPropDlg.cpp:508
-#: src/TrackPropDlg.cpp:858
+#: src/cm93.cpp:6782 src/GoToPositionDialog.cpp:149 src/options.cpp:485
+#: src/options.cpp:4747 src/routeprintout.cpp:407 src/routeprop.cpp:1067
+#: src/routeprop.cpp:1364 src/routeprop.cpp:2763 src/TCWin.cpp:145
+#: src/TCWin.cpp:156 src/toolbar.cpp:2748 src/TrackPropDlg.cpp:509
+#: src/TrackPropDlg.cpp:859
 msgid "OK"
 msgstr "OK"
 
@@ -3586,11 +3586,11 @@ msgstr "XTE R"
 msgid "ETA          "
 msgstr "ETA          "
 
-#: src/ConnectionParams.cpp:138 src/options.cpp:1260 src/options.cpp:1862
+#: src/ConnectionParams.cpp:138 src/options.cpp:1261 src/options.cpp:1863
 msgid "Serial"
 msgstr "Serial"
 
-#: src/ConnectionParams.cpp:140 src/options.cpp:1265 src/options.cpp:1867
+#: src/ConnectionParams.cpp:140 src/options.cpp:1266 src/options.cpp:1868
 msgid "Network"
 msgstr "ネットワーク"
 
@@ -3606,15 +3606,15 @@ msgstr "BT"
 msgid "Internal"
 msgstr "内蔵"
 
-#: src/ConnectionParams.cpp:169 src/options.cpp:1346 src/options.cpp:1949
+#: src/ConnectionParams.cpp:169 src/options.cpp:1347 src/options.cpp:1950
 msgid "TCP"
 msgstr "TCP"
 
-#: src/ConnectionParams.cpp:171 src/options.cpp:1352 src/options.cpp:1955
+#: src/ConnectionParams.cpp:171 src/options.cpp:1353 src/options.cpp:1956
 msgid "UDP"
 msgstr "UDP"
 
-#: src/ConnectionParams.cpp:173 src/options.cpp:1358 src/options.cpp:1961
+#: src/ConnectionParams.cpp:173 src/options.cpp:1359 src/options.cpp:1962
 msgid "GPSD"
 msgstr "GPSD"
 
@@ -3662,77 +3662,77 @@ msgstr "Out"
 msgid ", Out: None"
 msgstr ", Out： None"
 
-#: src/glChartCanvas.cpp:675
+#: src/glChartCanvas.cpp:676
 msgid "Failed to initialize OpenGL"
 msgstr ""
 
-#: src/glChartCanvas.cpp:979
+#: src/glChartCanvas.cpp:980
 msgid "OpenGL-> SSE2 Instruction set not available"
 msgstr "OpenGL-> 利用できないSSE2命令セット"
 
-#: src/glChartCanvas.cpp:995
+#: src/glChartCanvas.cpp:996
 msgid "OpenGL-> Using oes etc1 compression"
 msgstr "OpenGL-> oes etc1圧縮を使用"
 
-#: src/glChartCanvas.cpp:1016
+#: src/glChartCanvas.cpp:1017
 msgid "OpenGL-> Using s3tc dxt1 compression"
 msgstr "OpenGL-> s3tc dxt1圧縮を使用"
 
-#: src/glChartCanvas.cpp:1021
+#: src/glChartCanvas.cpp:1022
 msgid "OpenGL-> Using 3dfx fxt1 compression"
 msgstr "OpenGL-> 3dfx fxt1 圧縮を使用"
 
-#: src/glChartCanvas.cpp:1023
+#: src/glChartCanvas.cpp:1024
 msgid "OpenGL-> No Useable compression format found"
 msgstr "OpenGL-> 使用可能な圧縮フォーマットが見つかりませんでした"
 
-#: src/glChartCanvas.cpp:1466 src/s52plib.cpp:1912 src/s52plib.cpp:1980
-#: src/s52plib.cpp:2140
+#: src/glChartCanvas.cpp:1468 src/s52plib.cpp:1971 src/s52plib.cpp:2065
+#: src/s52plib.cpp:2225
 msgid "ChartTexts"
 msgstr "チャートテキスト"
 
-#: src/glChartCanvas.cpp:3682
+#: src/glChartCanvas.cpp:3807
 msgid "Waiting for raster chart compression thread exit."
 msgstr "ラスター チャート圧縮スレッドの終了を待っています。"
 
 #: src/GoToPositionDialog.cpp:122 src/routeprop.cpp:1097 src/routeprop.cpp:1391
-#: src/routeprop.cpp:2548 src/TrackPropDlg.cpp:446 src/TrackPropDlg.cpp:718
+#: src/routeprop.cpp:2548 src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:719
 msgid "Latitude"
 msgstr "緯度"
 
 #: src/GoToPositionDialog.cpp:132 src/routeprop.cpp:1098 src/routeprop.cpp:1392
-#: src/routeprop.cpp:2555 src/TrackPropDlg.cpp:447 src/TrackPropDlg.cpp:719
+#: src/routeprop.cpp:2555 src/TrackPropDlg.cpp:448 src/TrackPropDlg.cpp:720
 msgid "Longitude"
 msgstr "経度"
 
-#: src/GoToPositionDialog.cpp:145 src/options.cpp:481 src/routeprintout.cpp:403
+#: src/GoToPositionDialog.cpp:145 src/options.cpp:482 src/routeprintout.cpp:403
 #: src/routeprop.cpp:1063 src/routeprop.cpp:1360 src/routeprop.cpp:2761
-#: src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2599 src/TrackPropDlg.cpp:504
-#: src/TrackPropDlg.cpp:854
+#: src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2744 src/TrackPropDlg.cpp:505
+#: src/TrackPropDlg.cpp:855
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/kml.cpp:441
+#: src/kml.cpp:442
 msgid "OpenCPN Route"
 msgstr "OpenCPN ルート"
 
-#: src/kml.cpp:486
+#: src/kml.cpp:487
 msgid "OpenCPN Track"
 msgstr "OpenCPN 追跡"
 
-#: src/kml.cpp:534
+#: src/kml.cpp:535
 msgid "OpenCPN Waypoint"
 msgstr "OpenCPN ウェイポイント"
 
-#: src/kml.cpp:610
+#: src/kml.cpp:611
 msgid "Choose Format for Copy"
 msgstr "コピー形式を選択"
 
-#: src/kml.cpp:617
+#: src/kml.cpp:618
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML 標準 (Google Earth など)"
 
-#: src/kml.cpp:620
+#: src/kml.cpp:621
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KMLと拡張ウェイポイント データ (QtVlm)"
 
@@ -3760,133 +3760,133 @@ msgstr "ファイルを選択"
 msgid "Link not complete, can't be saved."
 msgstr "完全なリンクが、保存できません。"
 
-#: src/navutil.cpp:2309 src/navutil.cpp:2341 src/navutil.cpp:2373
-#: src/navutil.cpp:2406 src/navutil.cpp:2433
+#: src/navutil.cpp:2323 src/navutil.cpp:2357 src/navutil.cpp:2391
+#: src/navutil.cpp:2426 src/navutil.cpp:2455
 msgid "Export GPX file"
 msgstr "GPX ファイルにエクスポート"
 
-#: src/navutil.cpp:2321 src/navutil.cpp:2353 src/navutil.cpp:2386
-#: src/navutil.cpp:2421
+#: src/navutil.cpp:2336 src/navutil.cpp:2370 src/navutil.cpp:2405
+#: src/navutil.cpp:2442
 msgid "Overwrite existing file?"
 msgstr "既存のファイルを上書きしますか？"
 
-#: src/navutil.cpp:2527 src/navutil.cpp:2561
+#: src/navutil.cpp:2549 src/navutil.cpp:2583
 msgid "Import GPX file"
 msgstr "GPX ファイルのインポート"
 
-#: src/navutil.cpp:3107
+#: src/navutil.cpp:3164
 msgid "&Font family:"
 msgstr "フォントファミリ：（&F）"
 
-#: src/navutil.cpp:3113 src/navutil.cpp:3115
+#: src/navutil.cpp:3170 src/navutil.cpp:3172
 msgid "The font family."
 msgstr "フォント ファミリ"
 
-#: src/navutil.cpp:3120
+#: src/navutil.cpp:3177
 msgid "&Style:"
 msgstr "スタイル：（&S）"
 
-#: src/navutil.cpp:3124 src/navutil.cpp:3126
+#: src/navutil.cpp:3181 src/navutil.cpp:3183
 msgid "The font style."
 msgstr "フォントスタイル"
 
-#: src/navutil.cpp:3131
+#: src/navutil.cpp:3188
 msgid "&Weight:"
 msgstr "重量：（&W）"
 
-#: src/navutil.cpp:3135 src/navutil.cpp:3137
+#: src/navutil.cpp:3192 src/navutil.cpp:3194
 msgid "The font weight."
 msgstr "フォントの太さ。"
 
-#: src/navutil.cpp:3144
+#: src/navutil.cpp:3201
 msgid "C&olour:"
 msgstr "色（&o）"
 
-#: src/navutil.cpp:3154 src/navutil.cpp:3156
+#: src/navutil.cpp:3211 src/navutil.cpp:3213
 msgid "The font colour."
 msgstr "フォントの色。"
 
-#: src/navutil.cpp:3162
+#: src/navutil.cpp:3219
 msgid "&Point size:"
 msgstr "ポイントサイズ（&P）"
 
-#: src/navutil.cpp:3167 src/navutil.cpp:3169
+#: src/navutil.cpp:3224 src/navutil.cpp:3226
 msgid "The font point size."
 msgstr "フォントのポイント サイズ"
 
-#: src/navutil.cpp:3176
+#: src/navutil.cpp:3233
 msgid "&Underline"
 msgstr "アンダーライン（&U）"
 
-#: src/navutil.cpp:3179 src/navutil.cpp:3181
+#: src/navutil.cpp:3236 src/navutil.cpp:3238
 msgid "Whether the font is underlined."
 msgstr "フォントに下線を引くかどうか。"
 
-#: src/navutil.cpp:3188
+#: src/navutil.cpp:3245
 msgid "Preview:"
 msgstr "プレビュー："
 
-#: src/navutil.cpp:3193 src/navutil.cpp:3195
+#: src/navutil.cpp:3250 src/navutil.cpp:3252
 msgid "Shows the font preview."
 msgstr "フォントのプレビュー表示"
 
-#: src/navutil.cpp:3202 src/options.cpp:4744
+#: src/navutil.cpp:3259 src/options.cpp:4751
 msgid "&Cancel"
 msgstr "キャンセル（&C）"
 
-#: src/navutil.cpp:3204
+#: src/navutil.cpp:3261
 msgid "Click to cancel the font selection."
 msgstr "クリックでフォントの選択をキャンセル"
 
-#: src/navutil.cpp:3207
+#: src/navutil.cpp:3264
 msgid "&OK"
 msgstr "&OK"
 
-#: src/navutil.cpp:3209 src/navutil.cpp:3211
+#: src/navutil.cpp:3266 src/navutil.cpp:3268
 msgid "Click to confirm the font selection."
 msgstr "クリックでフォントの選択を確認"
 
-#: src/navutil.cpp:3728
+#: src/navutil.cpp:3785
 msgid "NMi"
 msgstr "海里"
 
-#: src/navutil.cpp:3731
+#: src/navutil.cpp:3788
 msgid "mi"
 msgstr "マイル"
 
-#: src/navutil.cpp:3734
+#: src/navutil.cpp:3791
 msgid "km"
 msgstr "km"
 
-#: src/navutil.cpp:3737
+#: src/navutil.cpp:3794
 msgid "m"
 msgstr "m"
 
-#: src/navutil.cpp:3740
+#: src/navutil.cpp:3797
 msgid "ft"
 msgstr "フィート"
 
-#: src/navutil.cpp:3743
+#: src/navutil.cpp:3800
 msgid "fa"
 msgstr "fa"
 
-#: src/navutil.cpp:3749
+#: src/navutil.cpp:3806
 msgid "cm"
 msgstr "cm"
 
-#: src/navutil.cpp:3817
+#: src/navutil.cpp:3874
 msgid "kts"
 msgstr "kts"
 
-#: src/navutil.cpp:3820
+#: src/navutil.cpp:3877
 msgid "mph"
 msgstr "mph"
 
-#: src/navutil.cpp:3823 src/options.cpp:3889 src/options.cpp:3997
+#: src/navutil.cpp:3880 src/options.cpp:3890 src/options.cpp:3998
 msgid "km/h"
 msgstr "km/h"
 
-#: src/navutil.cpp:3826 src/options.cpp:3889 src/options.cpp:3997
+#: src/navutil.cpp:3883 src/options.cpp:3890 src/options.cpp:3998
 msgid "m/s"
 msgstr "m/s"
 
@@ -3902,11 +3902,11 @@ msgstr "はい"
 msgid "No"
 msgstr "いいえ"
 
-#: src/OCPNPlatform.cpp:645
+#: src/OCPNPlatform.cpp:653
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "初期の言語の選択はWindowsのレジストリから取得します。"
 
-#: src/OCPNPlatform.cpp:1336
+#: src/OCPNPlatform.cpp:1347
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "古いログは opencpn.log.log に移動されます"
 
@@ -3920,1324 +3920,1328 @@ msgstr "'%s' からサウンド データをロードできませんでした。
 msgid "Sound file '%s' is in unsupported format."
 msgstr "サウンド ファイル '%s' は、サポートされていない形式です。"
 
-#: src/options.cpp:429
+#: src/options.cpp:430
 msgid "MMSI Extended Properties"
 msgstr "MMSI 拡張プロパティ"
 
-#: src/options.cpp:443
+#: src/options.cpp:444
 msgid "Tracking"
 msgstr "追跡"
 
-#: src/options.cpp:448
+#: src/options.cpp:449
 msgid "Default tracking"
 msgstr "デフォルトの追跡"
 
-#: src/options.cpp:453
+#: src/options.cpp:454
 msgid "Always track"
 msgstr "常に追跡"
 
-#: src/options.cpp:456
+#: src/options.cpp:457
 msgid " Never track"
 msgstr " 決して追跡しない"
 
-#: src/options.cpp:459 src/options.cpp:610
+#: src/options.cpp:460 src/options.cpp:611
 msgid "Persistent"
 msgstr "永続的です"
 
-#: src/options.cpp:465
+#: src/options.cpp:466
 msgid "Ignore this MMSI"
 msgstr "この MMSI を無視します。"
 
-#: src/options.cpp:469
+#: src/options.cpp:470
 msgid "Handle this MMSI as SART/PLB(AIS) MOB."
 msgstr "このMMSI を SART/PLB(AIS) MOB として処理します"
 
-#: src/options.cpp:472
+#: src/options.cpp:473
 msgid "Convert AIVDM to AIVDO for this MMSI"
 msgstr "この MMSI のため AIVDM を AIVDO に変換する."
 
-#: src/options.cpp:475
+#: src/options.cpp:476
 msgid "This MMSI is my Follower - No CPA Alert"
 msgstr "この MMSI は私のフォロワーです-CPA警告は無い"
 
-#: src/options.cpp:532
+#: src/options.cpp:533
 msgid "An MMSI Id is generally a number of nine digits.\n"
 "Please check your entries and cancel if necessary."
 msgstr "MMSI Idは、一般的に9桁の番号です。\n"
 "入力内容を確認し、必要に応じてキャンセルしてください。"
 
-#: src/options.cpp:598 src/options.cpp:2422 src/routeprop.cpp:941
+#: src/options.cpp:599 src/options.cpp:2423 src/routeprop.cpp:941
 #: src/routeprop.cpp:959 src/routeprop.cpp:1289 src/routeprop.cpp:1308
-#: src/routeprop.cpp:3055 src/TrackPropDlg.cpp:388 src/TrackPropDlg.cpp:406
-#: src/TrackPropDlg.cpp:626 src/TrackPropDlg.cpp:636
+#: src/routeprop.cpp:3055 src/TrackPropDlg.cpp:389 src/TrackPropDlg.cpp:407
+#: src/TrackPropDlg.cpp:627 src/TrackPropDlg.cpp:637
 msgid "Default"
 msgstr "デフォルト"
 
-#: src/options.cpp:601
+#: src/options.cpp:602
 msgid "Always"
 msgstr "常に"
 
-#: src/options.cpp:604
+#: src/options.cpp:605
 msgid "Never"
 msgstr "決して"
 
-#: src/options.cpp:641 src/options.cpp:685
+#: src/options.cpp:642 src/options.cpp:686
 msgid "Edit MMSI Properties"
 msgstr "MMSI プロパティを編集"
 
-#: src/options.cpp:655 src/options.cpp:4084 src/options.cpp:4091
+#: src/options.cpp:656 src/options.cpp:4085 src/options.cpp:4092
 msgid "MMSI Properties"
 msgstr "MMSI プロパティ"
 
-#: src/options.cpp:657 src/routeprop.cpp:2675 src/routeprop.cpp:2695
-#: src/TrackPropDlg.cpp:762 src/TrackPropDlg.cpp:789
+#: src/options.cpp:658 src/routeprop.cpp:2675 src/routeprop.cpp:2695
+#: src/TrackPropDlg.cpp:763 src/TrackPropDlg.cpp:790
 msgid "Edit"
 msgstr "編集"
 
-#: src/options.cpp:743
+#: src/options.cpp:744
 msgid "Track Mode"
 msgstr "追跡 モード"
 
-#: src/options.cpp:751
+#: src/options.cpp:752
 msgid "Ignore"
 msgstr "無視"
 
-#: src/options.cpp:760
+#: src/options.cpp:761
 msgid "MOB"
 msgstr "MOB"
 
-#: src/options.cpp:768
+#: src/options.cpp:769
 msgid "VDM->VDO"
 msgstr "VDM->VDO"
 
-#: src/options.cpp:776
+#: src/options.cpp:777
 msgid "Ship name"
 msgstr "船名"
 
-#: src/options.cpp:784
+#: src/options.cpp:785
 msgid "Follower"
 msgstr "フォロワー"
 
-#: src/options.cpp:788
+#: src/options.cpp:789
 msgid "New..."
 msgstr "新規..."
 
-#: src/options.cpp:811
+#: src/options.cpp:812
 msgid "Add MMSI Properties"
 msgstr "MMSI プロパティを追加"
 
-#: src/options.cpp:1144 src/options.cpp:1748
+#: src/options.cpp:1145 src/options.cpp:1749
 msgid "NMEA"
 msgstr "NMEA"
 
-#: src/options.cpp:1154 src/options.cpp:1758 src/options.cpp:3662
+#: src/options.cpp:1155 src/options.cpp:1759 src/options.cpp:3663
 msgid "General"
 msgstr "一般"
 
-#: src/options.cpp:1163
+#: src/options.cpp:1164
 msgid "Filter NMEA COG/SOG"
 msgstr "フィルター NMEA COG/SOG"
 
-#: src/options.cpp:1173 src/options.cpp:1776
+#: src/options.cpp:1174 src/options.cpp:1777
 msgid "Filter period (sec)"
 msgstr "フィルター期間 (秒)"
 
-#: src/options.cpp:1194 src/options.cpp:1796
+#: src/options.cpp:1195 src/options.cpp:1797
 msgid "Show NMEA Debug Window"
 msgstr "NMEA デバッグ ウィンドウを表示"
 
-#: src/options.cpp:1200
+#: src/options.cpp:1201
 msgid "Use Furuno GP3X for uploads"
 msgstr "アップロードに古野 GP3X を使用します。"
 
-#: src/options.cpp:1206
+#: src/options.cpp:1207
 msgid "Use GRMN for uploads"
 msgstr "アップロードに GRMN を使う"
 
-#: src/options.cpp:1212 src/options.cpp:1815
+#: src/options.cpp:1213 src/options.cpp:1816
 msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr "ECAPB出力文に磁気方位を使います。"
 
-#: src/options.cpp:1223 src/options.cpp:1826
+#: src/options.cpp:1224 src/options.cpp:1827
 msgid "Data Connections"
 msgstr "データ接続"
 
-#: src/options.cpp:1237 src/options.cpp:3592 src/options.cpp:8231
-#: src/routeprop.cpp:2691 src/TrackPropDlg.cpp:786
+#: src/options.cpp:1238 src/options.cpp:3593 src/options.cpp:8244
+#: src/routeprop.cpp:2691 src/TrackPropDlg.cpp:787
 msgid "Add"
 msgstr "追加"
 
-#: src/options.cpp:1241
+#: src/options.cpp:1242
 msgid "Remove"
 msgstr "削除"
 
-#: src/options.cpp:1271 src/options.cpp:1873
+#: src/options.cpp:1272 src/options.cpp:1874
 msgid "Built-in GPS"
 msgstr "内蔵GPS"
 
-#: src/options.cpp:1280
+#: src/options.cpp:1281
 msgid "Built-in Bluetooth"
 msgstr "内蔵Bluetooth"
 
-#: src/options.cpp:1284 src/options.cpp:1886 src/options.cpp:7726
+#: src/options.cpp:1285 src/options.cpp:1887 src/options.cpp:7739
 msgid "BT Scan"
 msgstr "BT スキャン"
 
-#: src/options.cpp:1292
+#: src/options.cpp:1293
 msgid "BT Sources"
 msgstr "BT ソース"
 
-#: src/options.cpp:1336 src/options.cpp:1417 src/options.cpp:1940
-#: src/options.cpp:2021
+#: src/options.cpp:1337 src/options.cpp:1418 src/options.cpp:1941
+#: src/options.cpp:2022
 msgid "Protocol"
 msgstr "プロトコル"
 
-#: src/options.cpp:1368 src/options.cpp:1968
+#: src/options.cpp:1369 src/options.cpp:1969
 msgid "Address"
 msgstr "アドレス"
 
-#: src/options.cpp:1376 src/options.cpp:1391 src/options.cpp:1977
-#: src/options.cpp:1995 src/options.cpp:2308
+#: src/options.cpp:1377 src/options.cpp:1392 src/options.cpp:1978
+#: src/options.cpp:1996 src/options.cpp:2309
 msgid "DataPort"
 msgstr "データポート"
 
-#: src/options.cpp:1400 src/options.cpp:2004
+#: src/options.cpp:1401 src/options.cpp:2005
 msgid "Baudrate"
 msgstr "ボーレート"
 
-#: src/options.cpp:1406 src/options.cpp:2010
+#: src/options.cpp:1407 src/options.cpp:2011
 msgid "150"
 msgstr ""
 
-#: src/options.cpp:1406 src/options.cpp:2010
+#: src/options.cpp:1407 src/options.cpp:2011
 msgid "300"
 msgstr ""
 
-#: src/options.cpp:1406 src/options.cpp:2010
+#: src/options.cpp:1407 src/options.cpp:2011
 msgid "600"
 msgstr ""
 
-#: src/options.cpp:1406 src/options.cpp:2010
+#: src/options.cpp:1407 src/options.cpp:2011
 msgid "1200"
 msgstr ""
 
-#: src/options.cpp:1406 src/options.cpp:2010
+#: src/options.cpp:1407 src/options.cpp:2011
 msgid "2400"
 msgstr ""
 
-#: src/options.cpp:1407 src/options.cpp:2011
+#: src/options.cpp:1408 src/options.cpp:2012
 msgid "4800"
 msgstr ""
 
-#: src/options.cpp:1407 src/options.cpp:2011
+#: src/options.cpp:1408 src/options.cpp:2012
 msgid "9600"
 msgstr ""
 
-#: src/options.cpp:1407 src/options.cpp:2011
+#: src/options.cpp:1408 src/options.cpp:2012
 msgid "19200"
 msgstr ""
 
-#: src/options.cpp:1407 src/options.cpp:2011
+#: src/options.cpp:1408 src/options.cpp:2012
 msgid "38400"
 msgstr ""
 
-#: src/options.cpp:1407 src/options.cpp:2011
+#: src/options.cpp:1408 src/options.cpp:2012
 msgid "57600"
 msgstr ""
 
-#: src/options.cpp:1408 src/options.cpp:2012
+#: src/options.cpp:1409 src/options.cpp:2013
 msgid "115200"
 msgstr ""
 
-#: src/options.cpp:1408 src/options.cpp:2012
+#: src/options.cpp:1409 src/options.cpp:2013
 msgid "230400"
 msgstr ""
 
-#: src/options.cpp:1408 src/options.cpp:2012
+#: src/options.cpp:1409 src/options.cpp:2013
 msgid "460800"
 msgstr ""
 
-#: src/options.cpp:1408 src/options.cpp:2012
+#: src/options.cpp:1409 src/options.cpp:2013
 msgid "921600"
 msgstr ""
 
-#: src/options.cpp:1422 src/options.cpp:2026
+#: src/options.cpp:1423 src/options.cpp:2027
 msgid "NMEA 0183"
 msgstr "NMEA 0183"
 
-#: src/options.cpp:1422 src/options.cpp:2026
+#: src/options.cpp:1423 src/options.cpp:2027
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 
-#: src/options.cpp:1423 src/options.cpp:2027
+#: src/options.cpp:1424 src/options.cpp:2028
 msgid "Seatalk"
 msgstr "Seatalk"
 
-#: src/options.cpp:1433 src/options.cpp:2037 src/options.cpp:2309
+#: src/options.cpp:1434 src/options.cpp:2038 src/options.cpp:2310
 msgid "Priority"
 msgstr "優先順位"
 
-#: src/options.cpp:1438 src/options.cpp:2042
+#: src/options.cpp:1439 src/options.cpp:2043
 msgid "0"
 msgstr ""
 
-#: src/options.cpp:1438 src/options.cpp:2042
+#: src/options.cpp:1439 src/options.cpp:2043
 msgid "1"
 msgstr ""
 
-#: src/options.cpp:1438 src/options.cpp:2042
+#: src/options.cpp:1439 src/options.cpp:2043
 msgid "2"
 msgstr ""
 
-#: src/options.cpp:1438 src/options.cpp:2042
+#: src/options.cpp:1439 src/options.cpp:2043
 msgid "3"
 msgstr ""
 
-#: src/options.cpp:1438 src/options.cpp:2042
+#: src/options.cpp:1439 src/options.cpp:2043
 msgid "4"
 msgstr ""
 
-#: src/options.cpp:1439 src/options.cpp:2043
+#: src/options.cpp:1440 src/options.cpp:2044
 msgid "5"
 msgstr ""
 
-#: src/options.cpp:1439 src/options.cpp:2043
+#: src/options.cpp:1440 src/options.cpp:2044
 msgid "6"
 msgstr ""
 
-#: src/options.cpp:1439 src/options.cpp:2043
+#: src/options.cpp:1440 src/options.cpp:2044
 msgid "7"
 msgstr ""
 
-#: src/options.cpp:1439 src/options.cpp:2043
+#: src/options.cpp:1440 src/options.cpp:2044
 msgid "8"
 msgstr ""
 
-#: src/options.cpp:1439 src/options.cpp:2043
+#: src/options.cpp:1440 src/options.cpp:2044
 msgid "9"
 msgstr ""
 
-#: src/options.cpp:1450 src/options.cpp:2059
+#: src/options.cpp:1451 src/options.cpp:2060
 msgid "Control checksum"
 msgstr "コントロール チェックサム"
 
-#: src/options.cpp:1454 src/options.cpp:2063
+#: src/options.cpp:1455 src/options.cpp:2064
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr "チェックした場合、チェックサムが有効な文だけが通過します。"
 
-#: src/options.cpp:1458
+#: src/options.cpp:1459
 msgid "Use GRMN mode for input"
 msgstr "入力に GRMN モードを使用します。"
 
-#: src/options.cpp:1467 src/options.cpp:2076
+#: src/options.cpp:1468 src/options.cpp:2077
 msgid "Receive Input on this Port"
 msgstr "このポートに対する入力を受け取る"
 
-#: src/options.cpp:1471 src/options.cpp:2082
+#: src/options.cpp:1472 src/options.cpp:2083
 msgid "Output on this port"
 msgstr "このポートで出力"
 
-#: src/options.cpp:1479 src/options.cpp:2087
+#: src/options.cpp:1480 src/options.cpp:2088
 msgid "Talker ID"
 msgstr "トーカーID"
 
-#: src/options.cpp:1490 src/options.cpp:2098
+#: src/options.cpp:1491 src/options.cpp:2099
 msgid "APB bearing precision"
 msgstr "APB 方位精度"
 
-#: src/options.cpp:1511 src/options.cpp:2118
+#: src/options.cpp:1512 src/options.cpp:2119
 msgid "Input filtering"
 msgstr "入力フィルタリング"
 
-#: src/options.cpp:1517 src/options.cpp:2124 src/options.cpp:8280
+#: src/options.cpp:1518 src/options.cpp:2125 src/options.cpp:8293
 msgid "Accept only sentences"
 msgstr "この文のみ許可"
 
-#: src/options.cpp:1521 src/options.cpp:2128 src/options.cpp:8280
+#: src/options.cpp:1522 src/options.cpp:2129 src/options.cpp:8293
 msgid "Ignore sentences"
 msgstr "この文を無視"
 
-#: src/options.cpp:1544 src/options.cpp:2152
+#: src/options.cpp:1545 src/options.cpp:2153
 msgid "Output filtering"
 msgstr "出力フィルタ リング"
 
-#: src/options.cpp:1551 src/options.cpp:2159 src/options.cpp:8278
+#: src/options.cpp:1552 src/options.cpp:2160 src/options.cpp:8291
 msgid "Transmit sentences"
 msgstr "この文を送信"
 
-#: src/options.cpp:1555 src/options.cpp:2163 src/options.cpp:8278
+#: src/options.cpp:1556 src/options.cpp:2164 src/options.cpp:8291
 msgid "Drop sentences"
 msgstr "この文を捨てる"
 
-#: src/options.cpp:1700
+#: src/options.cpp:1701
 msgid "On"
 msgstr "On"
 
-#: src/options.cpp:1700
+#: src/options.cpp:1701
 msgid "Prio"
 msgstr "Prio"
 
-#: src/options.cpp:1701
+#: src/options.cpp:1702
 msgid "Parm"
 msgstr "Parm"
 
-#: src/options.cpp:1701
+#: src/options.cpp:1702
 msgid "I/O"
 msgstr "I/O"
 
-#: src/options.cpp:1701 src/options.cpp:2310
+#: src/options.cpp:1702 src/options.cpp:2311
 msgid "Filters"
 msgstr "フィルタ"
 
-#: src/options.cpp:1770
+#: src/options.cpp:1771
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA の針路と速度データのフィルター処理をします。"
 
-#: src/options.cpp:1802
+#: src/options.cpp:1803
 msgid "Format uploads for Furuno GP3X"
 msgstr "古野 GP3X 形式のアップロード"
 
-#: src/options.cpp:1808
+#: src/options.cpp:1809
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "アップロードにガーミン GRMN (host) モードを使用します。"
 
-#: src/options.cpp:1839
+#: src/options.cpp:1840
 msgid "Add Connection"
 msgstr "コネクションを追加"
 
-#: src/options.cpp:1843
+#: src/options.cpp:1844
 msgid "Remove Connection"
 msgstr "コネクションを削除"
 
-#: src/options.cpp:1882
+#: src/options.cpp:1883
 msgid "Built-in Bluetooth SPP"
 msgstr "内蔵の Bluetooth SPP"
 
-#: src/options.cpp:1896
+#: src/options.cpp:1897
 msgid "Bluetooth Data Sources"
 msgstr "Bluetooth データ ソース"
 
-#: src/options.cpp:2067
+#: src/options.cpp:2068
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "入力に ガーミン(GRMN) モードを使用します。"
 
-#: src/options.cpp:2082
+#: src/options.cpp:2083
 msgid "as autopilot or NMEA repeater"
 msgstr ""
 
-#: src/options.cpp:2087
+#: src/options.cpp:2088
 msgid "blank = default ID"
 msgstr ""
 
-#: src/options.cpp:2104
+#: src/options.cpp:2105
 msgid "x"
 msgstr ""
 
-#: src/options.cpp:2104
+#: src/options.cpp:2105
 msgid "x.x"
 msgstr ""
 
-#: src/options.cpp:2104
+#: src/options.cpp:2105
 msgid "x.xx"
 msgstr ""
 
-#: src/options.cpp:2105
+#: src/options.cpp:2106
 msgid "x.xxx"
 msgstr ""
 
-#: src/options.cpp:2105
+#: src/options.cpp:2106
 msgid "x.xxxx"
 msgstr ""
 
-#: src/options.cpp:2308 src/pluginmanager.cpp:4004 src/pluginmanager.cpp:4015
+#: src/options.cpp:2309 src/pluginmanager.cpp:4013 src/pluginmanager.cpp:4024
 msgid "Enable"
 msgstr "有効"
 
-#: src/options.cpp:2309
+#: src/options.cpp:2310
 msgid "Parameters"
 msgstr "パラメータ"
 
-#: src/options.cpp:2309
+#: src/options.cpp:2310
 msgid "Connection"
 msgstr "接続"
 
-#: src/options.cpp:2395
+#: src/options.cpp:2396
 msgid "Display Options"
 msgstr "表示オプション"
 
-#: src/options.cpp:2405
+#: src/options.cpp:2406
 msgid "COG Predictor Length (min)"
 msgstr "COG 予測長さ (分)"
 
-#: src/options.cpp:2412
+#: src/options.cpp:2413
 msgid "Heading Predictor Length (NMi)"
 msgstr "ヘディング予測長さ (NMi)"
 
-#: src/options.cpp:2419
+#: src/options.cpp:2420
 msgid "Ship Icon Type"
 msgstr "船のアイコンの種類"
 
-#: src/options.cpp:2422
+#: src/options.cpp:2423
 msgid "Real Scale Bitmap"
 msgstr "リアル スケール ビットマップ"
 
-#: src/options.cpp:2423
+#: src/options.cpp:2424
 msgid "Real Scale Vector"
 msgstr "リアル スケールのベクター"
 
-#: src/options.cpp:2437
+#: src/options.cpp:2438
 msgid "Length Over All (m)"
 msgstr "すべての長さ(m)"
 
-#: src/options.cpp:2443
+#: src/options.cpp:2444
 msgid "Width Over All (m)"
 msgstr "すべての幅(m)"
 
-#: src/options.cpp:2449
+#: src/options.cpp:2450
 msgid "GPS Offset from Bow (m)"
 msgstr "GPS オフセット 船首から(m)"
 
-#: src/options.cpp:2455
+#: src/options.cpp:2456
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS オフセット 中央から(m)"
 
-#: src/options.cpp:2461
+#: src/options.cpp:2462
 msgid "Minimum Screen Size (mm)"
 msgstr "最小画面サイズ (mm)"
 
-#: src/options.cpp:2473 src/routeprop.cpp:2573
+#: src/options.cpp:2474 src/routeprop.cpp:2573
 msgid "Show range rings"
 msgstr "範囲リングを表示"
 
-#: src/options.cpp:2476 src/routeprop.cpp:2584
+#: src/options.cpp:2477 src/routeprop.cpp:2584
 msgid "None"
 msgstr "なし"
 
-#: src/options.cpp:2490 src/options.cpp:2615 src/routeprop.cpp:2593
+#: src/options.cpp:2491 src/options.cpp:2616 src/routeprop.cpp:2593
 msgid "Distance between rings"
 msgstr ""
 
-#: src/options.cpp:2499 src/options.cpp:2626 src/routeprop.cpp:2600
+#: src/options.cpp:2500 src/options.cpp:2627 src/routeprop.cpp:2600
 msgid "Distance Unit"
 msgstr "距離の単位"
 
-#: src/options.cpp:2502 src/options.cpp:3878 src/options.cpp:3986
+#: src/options.cpp:2503 src/options.cpp:3879 src/options.cpp:3987
 msgid "Nautical miles"
 msgstr "海里"
 
-#: src/options.cpp:2502 src/options.cpp:3879 src/options.cpp:3987
+#: src/options.cpp:2503 src/options.cpp:3880 src/options.cpp:3988
 msgid "Kilometers"
 msgstr "キロメートル"
 
-#: src/options.cpp:2510 src/routemanagerdialog.cpp:589
+#: src/options.cpp:2511 src/routemanagerdialog.cpp:590
 msgid "Tracks"
 msgstr "追跡"
 
-#: src/options.cpp:2516
+#: src/options.cpp:2517
 msgid "Automatic Daily Tracks at midnight"
 msgstr "デイリートラックを深夜に自動開始"
 
-#: src/options.cpp:2523
+#: src/options.cpp:2524
 msgid "Automatic Daily Tracks at"
 msgstr "デイリートラック自動開始時刻"
 
-#: src/options.cpp:2528
+#: src/options.cpp:2529
 msgid "Computer"
 msgstr "コンピューター"
 
-#: src/options.cpp:2531 src/routeprop.cpp:903 src/routeprop.cpp:910
-#: src/routeprop.cpp:1252 src/routeprop.cpp:1261 src/TrackPropDlg.cpp:350
-#: src/TrackPropDlg.cpp:357 src/TrackPropDlg.cpp:690
+#: src/options.cpp:2532 src/routeprop.cpp:903 src/routeprop.cpp:910
+#: src/routeprop.cpp:1252 src/routeprop.cpp:1261 src/TrackPropDlg.cpp:351
+#: src/TrackPropDlg.cpp:358 src/TrackPropDlg.cpp:691
 msgid "UTC"
 msgstr "UTC"
 
-#: src/options.cpp:2534
+#: src/options.cpp:2535
 msgid "LMT"
 msgstr "LMT"
 
-#: src/options.cpp:2540
+#: src/options.cpp:2541
 msgid "Highlight Tracks"
 msgstr "トラックをハイライト表示します。"
 
-#: src/options.cpp:2549
+#: src/options.cpp:2550
 msgid "Tracking Precision"
 msgstr "追跡精度"
 
-#: src/options.cpp:2552
+#: src/options.cpp:2553
 msgid "Low"
 msgstr "Low"
 
-#: src/options.cpp:2552
+#: src/options.cpp:2553
 msgid "Medium"
 msgstr "Medium"
 
-#: src/options.cpp:2552
+#: src/options.cpp:2553
 msgid "High"
 msgstr "High"
 
-#: src/options.cpp:2560 src/routemanagerdialog.cpp:487
+#: src/options.cpp:2561 src/routemanagerdialog.cpp:488
 msgid "Routes"
 msgstr "ルート"
 
-#: src/options.cpp:2570
+#: src/options.cpp:2571
 msgid "Waypoint Arrival Circle Radius (NMi)"
 msgstr "ウェイポイントの到着円の半径 (NMi)"
 
-#: src/options.cpp:2579
+#: src/options.cpp:2580
 msgid "Advance route waypoint on arrival only"
 msgstr "高度なルート ウェイポイント 到着時のみ"
 
-#: src/options.cpp:2584 src/routemanagerdialog.cpp:668 src/routeprop.cpp:970
-#: src/routeprop.cpp:1319 src/TrackPropDlg.cpp:417
+#: src/options.cpp:2585 src/routemanagerdialog.cpp:669 src/routeprop.cpp:970
+#: src/routeprop.cpp:1319 src/TrackPropDlg.cpp:418
 msgid "Waypoints"
 msgstr "ウェイポイント"
 
-#: src/options.cpp:2600
+#: src/options.cpp:2601
 msgid "Waypoint range rings"
 msgstr "ウェイポイント範囲リング"
 
-#: src/options.cpp:2637
+#: src/options.cpp:2638
 msgid "Waypoint Range Ring Colours"
 msgstr "ウェイポイント範囲リングの色"
 
-#: src/options.cpp:2651
+#: src/options.cpp:2652
 msgid "Chart Files"
 msgstr "チャートファイル"
 
-#: src/options.cpp:2657
+#: src/options.cpp:2658
 msgid "Directories"
 msgstr "ディレクトリ"
 
-#: src/options.cpp:2688
+#: src/options.cpp:2689
 msgid "Add Directory..."
 msgstr "ディレクトリの追加."
 
-#: src/options.cpp:2692 src/options.cpp:3535 src/routeprop.cpp:566
+#: src/options.cpp:2693 src/options.cpp:3536 src/routeprop.cpp:566
 msgid "Remove Selected"
 msgstr "選択項目を削除。"
 
-#: src/options.cpp:2698
+#: src/options.cpp:2699
 msgid "Compress Selected"
 msgstr ""
 
-#: src/options.cpp:2706
+#: src/options.cpp:2707
 msgid "Update Control"
 msgstr "コントロール 更新"
 
-#: src/options.cpp:2714
+#: src/options.cpp:2715
 msgid "Scan Charts and Update Database"
 msgstr "チャートスキャンとデータベースの更新"
 
-#: src/options.cpp:2717
+#: src/options.cpp:2718
 msgid "Force Full Database Rebuild"
 msgstr "強制的に完全なデータベースの再構築"
 
-#: src/options.cpp:2720
+#: src/options.cpp:2721
 msgid "Prepare all ENC Charts"
 msgstr ""
 
-#: src/options.cpp:2731 src/TrackPropDlg.cpp:803
+#: src/options.cpp:2732 src/TrackPropDlg.cpp:804
 msgid "Advanced"
 msgstr "高度な設定"
 
-#: src/options.cpp:2748
+#: src/options.cpp:2749
 msgid "De-skew Raster Charts"
 msgstr "歪んだラスターチャート"
 
-#: src/options.cpp:2752 src/options.cpp:2907
+#: src/options.cpp:2753 src/options.cpp:2908
 msgid "Disable Full Screen Quilting"
 msgstr "フルスクリーン キルティングを無効にする。"
 
-#: src/options.cpp:2756 src/options.cpp:2912
+#: src/options.cpp:2757 src/options.cpp:2913
 msgid "Suppress blur/fog effects on overzoom"
 msgstr "オーバーズーム時の、ぼかし/霧効果を抑制。"
 
-#: src/options.cpp:2760 src/options.cpp:2917
+#: src/options.cpp:2761 src/options.cpp:2918
 msgid "Suppress scaled vector charts on overzoom"
 msgstr "オーバーズーム時 のスケーリングされたベクトル チャートを抑制。"
 
-#: src/options.cpp:2768
+#: src/options.cpp:2769
 msgid "Lock Waypoints"
 msgstr "ウェイポイントをロック"
 
-#: src/options.cpp:2773
+#: src/options.cpp:2774
 msgid "Confirm deletion"
 msgstr "削除を確認"
 
-#: src/options.cpp:2779 src/options.cpp:3069
+#: src/options.cpp:2780 src/options.cpp:3070
 msgid "Enable Transparent Toolbar"
 msgstr "透明なツールバーを有効にする"
 
-#: src/options.cpp:2792 src/options.cpp:3053
+#: src/options.cpp:2793 src/options.cpp:3054
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "アクセラレータを使う (OpenGL)"
 
-#: src/options.cpp:2810 src/options.cpp:2926
+#: src/options.cpp:2811 src/options.cpp:2927
 msgid "Course-Up Update Period"
 msgstr "コースアップ　更新間隔"
 
-#: src/options.cpp:2823 src/options.cpp:2939 src/options.cpp:4428
+#: src/options.cpp:2824 src/options.cpp:2940 src/options.cpp:4429
 msgid "seconds"
 msgstr "秒"
 
-#: src/options.cpp:2831 src/options.cpp:2946
+#: src/options.cpp:2832 src/options.cpp:2947
 msgid "Chart Zoom/Scale Weighting"
 msgstr "チャートのズーム/スケール、重み付け"
 
-#: src/options.cpp:2847 src/options.cpp:3014
+#: src/options.cpp:2848 src/options.cpp:3015
 msgid "Physical Screen Width"
 msgstr "物理画面の幅"
 
-#: src/options.cpp:2852 src/options.cpp:3019
+#: src/options.cpp:2853 src/options.cpp:3020
 msgid "Auto"
 msgstr "自動"
 
-#: src/options.cpp:2856 src/options.cpp:3023
+#: src/options.cpp:2857 src/options.cpp:3024
 msgid "Manual:"
 msgstr "手動"
 
-#: src/options.cpp:2866 src/options.cpp:3031
+#: src/options.cpp:2867 src/options.cpp:3032
 msgid "mm"
 msgstr "mm"
 
-#: src/options.cpp:2897 src/options.cpp:3710
+#: src/options.cpp:2898 src/options.cpp:3711
 msgid "Chart Display"
 msgstr "チャート表示"
 
-#: src/options.cpp:2903
+#: src/options.cpp:2904
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "傾いたラスターチャートを北を上として表示します。"
 
-#: src/options.cpp:2952
+#: src/options.cpp:2953
 msgid "Raster"
 msgstr ""
 
-#: src/options.cpp:2962
+#: src/options.cpp:2963
 msgid "Vector"
 msgstr ""
 
-#: src/options.cpp:2975
+#: src/options.cpp:2976
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
 msgstr ""
 
-#: src/options.cpp:2991 src/options.cpp:3728
+#: src/options.cpp:2992 src/options.cpp:3729
 msgid "Controls"
 msgstr "コントロール"
 
-#: src/options.cpp:2998
+#: src/options.cpp:2999
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr "ウェイ ポイントをロック(ただし、ウェイ ポイントのプロパティ ダイアログ表示)"
 
-#: src/options.cpp:3004
+#: src/options.cpp:3005
 msgid "Confirm deletion of tracks and routes"
 msgstr "追跡とルートの削除を確認"
 
-#: src/options.cpp:3047
+#: src/options.cpp:3048
 msgid "Graphics"
 msgstr "グラフィックス"
 
-#: src/options.cpp:3078
+#: src/options.cpp:3079
 msgid "Vector Chart Display"
 msgstr "ベクトル チャートの表示"
 
-#: src/options.cpp:3097 src/options.cpp:3311
+#: src/options.cpp:3098 src/options.cpp:3312
 msgid "Display Category"
 msgstr "表示カテゴリ"
 
-#: src/options.cpp:3098 src/options.cpp:3312
+#: src/options.cpp:3099 src/options.cpp:3313
 msgid "Standard"
 msgstr "スタンダード"
 
-#: src/options.cpp:3098 src/options.cpp:3312
+#: src/options.cpp:3099 src/options.cpp:3313
 msgid "All"
 msgstr "すべて"
 
-#: src/options.cpp:3099 src/options.cpp:3270 src/options.cpp:3313
-#: src/options.cpp:3482
+#: src/options.cpp:3100 src/options.cpp:3271 src/options.cpp:3314
+#: src/options.cpp:3483
 msgid "Mariner's Standard"
 msgstr "マリナーの標準"
 
-#: src/options.cpp:3109 src/options.cpp:4176 src/options.cpp:4750
+#: src/options.cpp:3110 src/options.cpp:4177 src/options.cpp:4757
 msgid "Display"
 msgstr "画面表示"
 
-#: src/options.cpp:3116 src/options.cpp:3327
+#: src/options.cpp:3117 src/options.cpp:3328
 msgid "Depth Soundings"
 msgstr "水深"
 
-#: src/options.cpp:3121 src/options.cpp:3332
+#: src/options.cpp:3122 src/options.cpp:3333
 msgid "Chart Information Objects"
 msgstr "チャート オブジェクトの情報"
 
-#: src/options.cpp:3125
+#: src/options.cpp:3126
 msgid "Buoys/Lights"
 msgstr "ブイ/ライト"
 
-#: src/options.cpp:3132 src/options.cpp:3340
+#: src/options.cpp:3133 src/options.cpp:3341
 msgid "Buoy/Light Labels"
 msgstr "ブイ/ライト ラベル"
 
-#: src/options.cpp:3137 src/options.cpp:3345
+#: src/options.cpp:3138 src/options.cpp:3346
 msgid "Light Descriptions"
 msgstr "ライトの説明"
 
-#: src/options.cpp:3142 src/options.cpp:3350
+#: src/options.cpp:3143 src/options.cpp:3351
 msgid "Extended Light Sectors"
 msgstr "拡張ライトセクター"
 
-#: src/options.cpp:3146
+#: src/options.cpp:3147
 msgid "Chart Texts"
 msgstr "チャートのテキスト"
 
-#: src/options.cpp:3153 src/options.cpp:3358
+#: src/options.cpp:3154 src/options.cpp:3359
 msgid "National text on chart"
 msgstr "National text on chart"
 
-#: src/options.cpp:3158 src/options.cpp:3363
+#: src/options.cpp:3159 src/options.cpp:3364
 msgid "Important Text Only"
 msgstr "重要なテキストのみ"
 
-#: src/options.cpp:3163 src/options.cpp:3368
+#: src/options.cpp:3164 src/options.cpp:3369
 msgid "De-Cluttered Text"
 msgstr "逆に雑然としたテキスト"
 
-#: src/options.cpp:3167
+#: src/options.cpp:3168
 msgid "Chart Detail"
 msgstr "チャート詳細"
 
-#: src/options.cpp:3170 src/options.cpp:3373
+#: src/options.cpp:3171 src/options.cpp:3374
 msgid "Reduced Detail at Small Scale"
 msgstr "小スケールの詳細を削減"
 
-#: src/options.cpp:3179 src/options.cpp:3389
+#: src/options.cpp:3180 src/options.cpp:3390
 msgid "Graphics Style"
 msgstr "グラフィック スタイル"
 
-#: src/options.cpp:3182 src/options.cpp:3392
+#: src/options.cpp:3183 src/options.cpp:3393
 msgid "Paper Chart"
 msgstr "紙チャート"
 
-#: src/options.cpp:3182 src/options.cpp:3392
+#: src/options.cpp:3183 src/options.cpp:3393
 msgid "Simplified"
 msgstr "簡易化"
 
-#: src/options.cpp:3188 src/options.cpp:3398
+#: src/options.cpp:3189 src/options.cpp:3399
 msgid "Boundaries"
 msgstr "境界"
 
-#: src/options.cpp:3191 src/options.cpp:3401
+#: src/options.cpp:3192 src/options.cpp:3402
 msgid "Plain"
 msgstr "プレーン"
 
-#: src/options.cpp:3191 src/options.cpp:3401
+#: src/options.cpp:3192 src/options.cpp:3402
 msgid "Symbolized"
 msgstr "シンボライズ"
 
-#: src/options.cpp:3197 src/options.cpp:3407
+#: src/options.cpp:3198 src/options.cpp:3408
 msgid "Colors"
 msgstr "カラー"
 
-#: src/options.cpp:3200 src/options.cpp:3410
+#: src/options.cpp:3201 src/options.cpp:3411
 msgid "2 Color"
 msgstr "2色"
 
-#: src/options.cpp:3200 src/options.cpp:3410
+#: src/options.cpp:3201 src/options.cpp:3411
 msgid "4 Color"
 msgstr "4色"
 
-#: src/options.cpp:3211 src/options.cpp:3428
+#: src/options.cpp:3212 src/options.cpp:3429
 msgid "Shallow Depth"
 msgstr "浅い水深"
 
-#: src/options.cpp:3222 src/options.cpp:3437
+#: src/options.cpp:3223 src/options.cpp:3438
 msgid "Safety Depth"
 msgstr "安全な水深"
 
-#: src/options.cpp:3232 src/options.cpp:3446
+#: src/options.cpp:3233 src/options.cpp:3447
 msgid "Deep Depth"
 msgstr "深い水深"
 
-#: src/options.cpp:3288 src/options.cpp:3489 src/options.cpp:8229
+#: src/options.cpp:3289 src/options.cpp:3490 src/options.cpp:8242
 msgid "Select All"
 msgstr "全て選択"
 
-#: src/options.cpp:3290 src/options.cpp:3491 src/options.cpp:8230
+#: src/options.cpp:3291 src/options.cpp:3492 src/options.cpp:8243
 msgid "Clear All"
 msgstr "全てクリア"
 
-#: src/options.cpp:3295
+#: src/options.cpp:3296
 msgid "Reset to STANDARD"
 msgstr ""
 
-#: src/options.cpp:3511
+#: src/options.cpp:3512
 msgid "Tides && Currents"
 msgstr "干満と潮流"
 
-#: src/options.cpp:3516
+#: src/options.cpp:3517
 msgid "Active Datasets"
 msgstr "アクティブなデータセット"
 
-#: src/options.cpp:3533
+#: src/options.cpp:3534
 msgid "Add Dataset..."
 msgstr "データセットを追加"
 
-#: src/options.cpp:3578
+#: src/options.cpp:3579
 msgid "All Available Charts"
 msgstr "全ての利用可能なチャート"
 
-#: src/options.cpp:3594
+#: src/options.cpp:3595
 msgid "Remove Chart"
 msgstr "チャートを削除"
 
-#: src/options.cpp:3618
+#: src/options.cpp:3619
 msgid "All Charts"
 msgstr "全てのチャート"
 
-#: src/options.cpp:3636
+#: src/options.cpp:3637
 msgid "New Group..."
 msgstr "新しいグループ."
 
-#: src/options.cpp:3638
+#: src/options.cpp:3639
 msgid "Delete Group"
 msgstr "グループを消去"
 
-#: src/options.cpp:3683
+#: src/options.cpp:3684
 msgid "Navigation Mode"
 msgstr "ナビゲーション モード"
 
-#: src/options.cpp:3691 src/options.cpp:3783
+#: src/options.cpp:3692 src/options.cpp:3784
 msgid "North Up"
 msgstr "ノースアップ"
 
-#: src/options.cpp:3694 src/options.cpp:3786
+#: src/options.cpp:3695 src/options.cpp:3787
 msgid "Course Up"
 msgstr "コースアップ"
 
-#: src/options.cpp:3701 src/options.cpp:3793
+#: src/options.cpp:3702 src/options.cpp:3794
 msgid "Look Ahead Mode"
 msgstr "先読みモード"
 
-#: src/options.cpp:3720 src/options.cpp:3811
+#: src/options.cpp:3721 src/options.cpp:3812
 msgid "Preserve scale when switching charts"
 msgstr ""
 
-#: src/options.cpp:3734 src/options.cpp:3825
+#: src/options.cpp:3735 src/options.cpp:3826
 msgid "Smooth Panning / Zooming"
 msgstr "滑らかなパン/ズーム"
 
-#: src/options.cpp:3738 src/options.cpp:3829
+#: src/options.cpp:3739 src/options.cpp:3830
 msgid "Zoom to Cursor"
 msgstr "カーソル位置にズーム"
 
-#: src/options.cpp:3748
+#: src/options.cpp:3749
 msgid "Display Features"
 msgstr "表示機能"
 
-#: src/options.cpp:3754 src/options.cpp:3844
+#: src/options.cpp:3755 src/options.cpp:3845
 msgid "Show Grid"
 msgstr "グリッドを表示"
 
-#: src/options.cpp:3762 src/options.cpp:3852
+#: src/options.cpp:3763 src/options.cpp:3853
 msgid "Show Depth Units"
 msgstr "深さの単位を表示"
 
-#: src/options.cpp:3859
+#: src/options.cpp:3860
 msgid "Units"
 msgstr "単位"
 
-#: src/options.cpp:3876 src/options.cpp:3984 src/routeprintout.cpp:113
+#: src/options.cpp:3877 src/options.cpp:3985 src/routeprintout.cpp:113
 #: src/routeprintout.cpp:384 src/routeprop.cpp:1090 src/routeprop.cpp:1384
-#: src/TrackPropDlg.cpp:444 src/TrackPropDlg.cpp:716
+#: src/TrackPropDlg.cpp:445 src/TrackPropDlg.cpp:717
 msgid "Distance"
 msgstr "距離"
 
-#: src/options.cpp:3878 src/options.cpp:3986
+#: src/options.cpp:3879 src/options.cpp:3987
 msgid "Statute miles"
 msgstr "法定マイル"
 
-#: src/options.cpp:3889 src/options.cpp:3997
+#: src/options.cpp:3890 src/options.cpp:3998
 msgid "Knots"
 msgstr "ノット"
 
-#: src/options.cpp:3889 src/options.cpp:3997
+#: src/options.cpp:3890 src/options.cpp:3998
 msgid "Mph"
 msgstr "Mph"
 
-#: src/options.cpp:3897 src/options.cpp:4005
+#: src/options.cpp:3898 src/options.cpp:4006
 msgid "Depth"
 msgstr "深さ"
 
-#: src/options.cpp:3912 src/options.cpp:4020
+#: src/options.cpp:3913 src/options.cpp:4021
 msgid "Lat/Long"
 msgstr "緯度/経度"
 
-#: src/options.cpp:3914 src/options.cpp:4022
+#: src/options.cpp:3915 src/options.cpp:4023
 msgid "Degrees, Decimal Minutes"
 msgstr "度、10 進の分"
 
-#: src/options.cpp:3915 src/options.cpp:4023
+#: src/options.cpp:3916 src/options.cpp:4024
 msgid "Decimal Degrees"
 msgstr "10 進の度"
 
-#: src/options.cpp:3916 src/options.cpp:4024
+#: src/options.cpp:3917 src/options.cpp:4025
 msgid "Degrees, Minutes, Seconds"
 msgstr "度、分、秒"
 
-#: src/options.cpp:3928 src/options.cpp:4036
+#: src/options.cpp:3929 src/options.cpp:4037
 msgid "Bearings"
 msgstr "方位"
 
-#: src/options.cpp:3933
+#: src/options.cpp:3934
 msgid "Show true"
 msgstr ""
 
-#: src/options.cpp:3936
+#: src/options.cpp:3937
 msgid "Show magnetic bearings and headings"
 msgstr "磁気方位と船首方位を表示します。"
 
-#: src/options.cpp:3942
+#: src/options.cpp:3943
 msgid "Assumed magnetic variation"
 msgstr "想定される磁気変化"
 
-#: src/options.cpp:3964 src/options.cpp:4067
+#: src/options.cpp:3965 src/options.cpp:4068
 msgid "deg (-W, +E)"
 msgstr "度 (-W、+ E)"
 
-#: src/options.cpp:4044
+#: src/options.cpp:4045
 msgid "Show true bearings and headings"
 msgstr ""
 
-#: src/options.cpp:4047
+#: src/options.cpp:4048
 msgid "Show magnetic bearings and headings."
 msgstr ""
 
-#: src/options.cpp:4058 src/options.cpp:4901
+#: src/options.cpp:4059 src/options.cpp:4909
 msgid "WMM Plugin calculated magnetic variation"
 msgstr ""
 
-#: src/options.cpp:4072
+#: src/options.cpp:4073
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr ""
 
-#: src/options.cpp:4107
+#: src/options.cpp:4108
 msgid "AIS Targets"
 msgstr "AIS ターゲット"
 
-#: src/options.cpp:4114
+#: src/options.cpp:4115
 msgid "CPA Calculation"
 msgstr "CPA 計算"
 
-#: src/options.cpp:4124
+#: src/options.cpp:4125
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
 msgstr "いいえ(T)CPA警告は、対象範囲が (NMi)より大きい場合"
 
-#: src/options.cpp:4131
+#: src/options.cpp:4132
 msgid "Warn if CPA less than (NMi)"
 msgstr "警告　CPAが (NMi) 未満の場合"
 
-#: src/options.cpp:4143
+#: src/options.cpp:4144
 msgid "...and TCPA is less than (min)"
 msgstr "... そして TCPA が (分) 未満"
 
-#: src/options.cpp:4151
+#: src/options.cpp:4152
 msgid "Lost Targets"
 msgstr "目標消失"
 
-#: src/options.cpp:4160
+#: src/options.cpp:4161
 msgid "Mark targets as lost after (min)"
 msgstr "マーク ターゲット ロスト後(分)"
 
-#: src/options.cpp:4168
+#: src/options.cpp:4169
 msgid "Remove lost targets after (min)"
 msgstr "ロストターゲット削除まで(分)"
 
-#: src/options.cpp:4185
+#: src/options.cpp:4186
 msgid "Show target COG predictor arrow, length (min)"
 msgstr "ターゲット COG 予測方向、長さ (分)　を表示"
 
-#: src/options.cpp:4193
+#: src/options.cpp:4194
 msgid "Show target tracks, length (min)"
 msgstr "ターゲット トラック、長さ (分)　を表示"
 
-#: src/options.cpp:4201
+#: src/options.cpp:4202
 msgid "Suppress anchored/moored targets, speed max (kn)"
 msgstr "アンカー/係留ターゲットを抑制、最大速度 (kn)"
 
-#: src/options.cpp:4209
+#: src/options.cpp:4210
 msgid "Allow attenuation of less critical targets if more than ... targets"
 msgstr "Allow attenuation of less critical targets if more than ... targets"
 
-#: src/options.cpp:4217
+#: src/options.cpp:4218
 msgid "Show area notices (from AIS binary messages)"
 msgstr "(AIS バイナリ メッセージ) からエリア通知を表示"
 
-#: src/options.cpp:4224
+#: src/options.cpp:4225
 msgid "Show AIS targets real size"
 msgstr "AIS ターゲットの実際のサイズを表示"
 
-#: src/options.cpp:4231
+#: src/options.cpp:4232
 msgid "Show names with AIS targets at scale greater than 1:"
 msgstr "1 より大きいスケールで AIS ターゲット名を表示"
 
-#: src/options.cpp:4239
+#: src/options.cpp:4240
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "APRS の位置レポートをWPLセンテンスとして扱う"
 
-#: src/options.cpp:4249
+#: src/options.cpp:4250
 msgid "Rollover"
 msgstr "ロール オーバー"
 
-#: src/options.cpp:4255
+#: src/options.cpp:4256
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "「船名」MMSI (コールサイン)"
 
-#: src/options.cpp:4259
+#: src/options.cpp:4260
 msgid "[Class] Type (Status)"
 msgstr "[Class] Type (Status)"
 
-#: src/options.cpp:4262
+#: src/options.cpp:4263
 msgid "SOG COG"
 msgstr "SOG COG"
 
-#: src/options.cpp:4265
+#: src/options.cpp:4266
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 
-#: src/options.cpp:4270
+#: src/options.cpp:4271
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA 警告"
 
-#: src/options.cpp:4279
+#: src/options.cpp:4280
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "CPA/TCPA　警告ダイアログを表示"
 
-#: src/options.cpp:4283
+#: src/options.cpp:4284
 msgid "Select Alert Sound"
 msgstr "警告音の選択"
 
-#: src/options.cpp:4289
+#: src/options.cpp:4290
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "CPA/TCPA 警告や DSC/SART の緊急事態で警報を鳴らします。"
 
-#: src/options.cpp:4293
+#: src/options.cpp:4294
 msgid "Test Alert Sound"
 msgstr "警告音のテスト"
 
-#: src/options.cpp:4298
+#: src/options.cpp:4299
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "アンカー/係留ターゲットに対する警告を抑制"
 
-#: src/options.cpp:4305
+#: src/options.cpp:4306
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "ターゲット警告タイムアウト (分) を有効にする"
 
-#: src/options.cpp:4317
+#: src/options.cpp:4318
 msgid "General Options"
 msgstr "一般設定"
 
-#: src/options.cpp:4326
+#: src/options.cpp:4327
 msgid "Language"
 msgstr "言語"
 
-#: src/options.cpp:4337
+#: src/options.cpp:4338
 msgid "Fonts"
 msgstr "フォント"
 
-#: src/options.cpp:4362
+#: src/options.cpp:4363
 msgid "Choose Font..."
 msgstr "フォントの選択."
 
-#: src/options.cpp:4367
+#: src/options.cpp:4368
 msgid "Choose Font Color..."
 msgstr "フォントの色を選択."
 
-#: src/options.cpp:4372
+#: src/options.cpp:4373
 msgid "Toolbar and Window Style"
 msgstr "ツールバーとウィンドウ スタイル"
 
-#: src/options.cpp:4390
+#: src/options.cpp:4391
 msgid "Interface Options"
 msgstr "インタ フェース オプション"
 
-#: src/options.cpp:4396
+#: src/options.cpp:4397
 msgid "Show Status Bar"
 msgstr "ステータス バーを表示"
 
-#: src/options.cpp:4401
+#: src/options.cpp:4402
 msgid "Show Menu Bar"
 msgstr "メニュー バーを表示"
 
-#: src/options.cpp:4411
+#: src/options.cpp:4412
 msgid "Show Compass/GPS Status Window"
 msgstr "コンパス/GPS ステータス ウィンドウを表示"
 
-#: src/options.cpp:4419
+#: src/options.cpp:4420
 msgid "Enable Toolbar auto-hide"
 msgstr "ツールバーを自動的に隠す"
 
-#: src/options.cpp:4433
+#: src/options.cpp:4434
 msgid "Play Ships Bells"
 msgstr "船の鐘を再生します。"
 
-#: src/options.cpp:4448
+#: src/options.cpp:4449
 msgid "Sound Device Index"
 msgstr "サウンド デバイス インデックス"
 
-#: src/options.cpp:4456
+#: src/options.cpp:4457
 msgid "Enable Touchscreen interface"
 msgstr "タッチ スクリーン インターフェイスを有効にします。"
 
-#: src/options.cpp:4460
+#: src/options.cpp:4461
 msgid "Enable Scaled Graphics interface"
 msgstr ""
 
-#: src/options.cpp:4470
+#: src/options.cpp:4465
+msgid "Use Settings for Inland ECDIS Version 2.3"
+msgstr ""
+
+#: src/options.cpp:4477
 msgid "User Interface scale factor"
 msgstr "ユーザー インターフェイス規模係数"
 
-#: src/options.cpp:4484
+#: src/options.cpp:4491
 msgid "Chart Object scale factor"
 msgstr "チャート オブジェクトの尺度係数"
 
-#: src/options.cpp:4612 src/options.cpp:4781
+#: src/options.cpp:4619 src/options.cpp:4788
 msgid "Connections"
 msgstr "接続"
 
-#: src/options.cpp:4747
+#: src/options.cpp:4754
 msgid "Apply"
 msgstr "適用"
 
-#: src/options.cpp:4755
+#: src/options.cpp:4762
 msgid "Charts"
 msgstr "チャート"
 
-#: src/options.cpp:4790
+#: src/options.cpp:4797
 msgid "Ships"
 msgstr "船"
 
-#: src/options.cpp:4795
+#: src/options.cpp:4802
 msgid "User Interface"
 msgstr "ユーザー インターフェイス"
 
-#: src/options.cpp:4798 src/options.cpp:4799
+#: src/options.cpp:4805 src/options.cpp:4806
 msgid "Plugins"
 msgstr "プラグイン"
 
-#: src/options.cpp:4907
+#: src/options.cpp:4915
 msgid "User set magnetic variation"
 msgstr ""
 
-#: src/options.cpp:5290
+#: src/options.cpp:5298
 msgid "feet"
 msgstr "フィート"
 
-#: src/options.cpp:5290
+#: src/options.cpp:5298
 msgid "fathoms"
 msgstr "fathoms"
 
-#: src/options.cpp:5511
+#: src/options.cpp:5519
 msgid "Add a directory containing chart files"
 msgstr "チャート ファイルを含むディレクトリを追加します。"
 
-#: src/options.cpp:5722
+#: src/options.cpp:5730
 msgid "\n"
 " - your ship's length must be > 0"
 msgstr "\n"
 " - あなたの船の長さ > 0 でなければなりません"
 
-#: src/options.cpp:5724
+#: src/options.cpp:5732
 msgid "\n"
 " - your ship's beam must be > 0"
 msgstr "\n"
 " - あなたの船のビーム > 0 でなければなりません"
 
-#: src/options.cpp:5727
+#: src/options.cpp:5735
 msgid "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr "\n"
 " - ミッドシップからのオフセットあなたのGPSは、あなたの船のビーム内になければなりません"
 
-#: src/options.cpp:5731
+#: src/options.cpp:5739
 msgid "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr "\n"
 " - 船首からのオフセットあなたのGPSは、あなたの船の長さの範囲内でなければなりません"
 
-#: src/options.cpp:5733
+#: src/options.cpp:5741
 msgid "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr "\n"
 " - あなたの船の最小アイコン サイズは、1～100 mmにする必要があります"
 
-#: src/options.cpp:5735
+#: src/options.cpp:5743
 msgid "The settings for own ship real size are not correct:"
 msgstr "自船の実サイズの設定が正しくありません"
 
-#: src/options.cpp:5736 src/routemanagerdialog.cpp:1552
+#: src/options.cpp:5744 src/routemanagerdialog.cpp:1553
 msgid "OpenCPN info"
 msgstr "OpenCPN の情報"
 
-#: src/options.cpp:6543
+#: src/options.cpp:6556
 msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
 msgstr ""
 
-#: src/options.cpp:6547 src/routeman.cpp:788 src/routeman.cpp:864
+#: src/options.cpp:6560 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
 msgstr "OpenCPN 警告"
 
-#: src/options.cpp:6560 src/options.cpp:6611
+#: src/options.cpp:6573 src/options.cpp:6624
 msgid "OpenCPN Compress Charts"
 msgstr ""
 
-#: src/options.cpp:6603
+#: src/options.cpp:6616
 msgid "No charts found to compress."
 msgstr ""
 
-#: src/options.cpp:6637
+#: src/options.cpp:6650
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
 msgstr ""
 
-#: src/options.cpp:7004 src/options.cpp:7015
+#: src/options.cpp:7017 src/options.cpp:7028
 msgid "Select Sound File"
 msgstr "サウンドファイルの選択"
 
-#: src/options.cpp:7435
+#: src/options.cpp:7448
 msgid "Enter Group Name"
 msgstr "グループ名を入力します。"
 
-#: src/options.cpp:7435
+#: src/options.cpp:7448
 msgid "New Chart Group"
 msgstr "新しいチャートグループ"
 
-#: src/options.cpp:7600 src/options.cpp:7614
+#: src/options.cpp:7613 src/options.cpp:7627
 msgid "Select Tide/Current Data"
 msgstr "干満/潮流データを選択"
 
-#: src/options.cpp:7672
+#: src/options.cpp:7685
 msgid "Stop Scan"
 msgstr "スキャンを停止"
 
-#: src/options.cpp:8217
+#: src/options.cpp:8230
 msgid "Sentence Filter"
 msgstr "センテンス フィルター"
 
-#: src/options.cpp:8325
+#: src/options.cpp:8338
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
 msgstr "NMEA センテンス (2、3 または 5 文字) を入力してください。 "
 
-#: src/options.cpp:8326
+#: src/options.cpp:8339
 msgid "Enter the NMEA sentence"
 msgstr "NMEA センテンスを入力します。"
 
-#: src/options.cpp:8343
+#: src/options.cpp:8356
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
 "           It can also have a two letter prefix identifying the source, or TALKER, of the message.\n"
 "           The whole sentences then looks like GPGGA or AITXT.\n"
@@ -5250,68 +5254,68 @@ msgstr "NMEAセンテンスは(RMCのように、GGAなど) 3文字の長一般�
 " \n"
 "         フィルタは、ちょうどこれらの3つの形式があります。"
 
-#: src/options.cpp:8390
+#: src/options.cpp:8403
 msgid "Texture Compression"
 msgstr "テクスチャ圧縮"
 
-#: src/options.cpp:8391
+#: src/options.cpp:8404
 msgid "Texture Compression with Caching"
 msgstr "キャッシュとテクスチャ圧縮"
 
-#: src/options.cpp:8393
+#: src/options.cpp:8406
 msgid "Texture Compression Caching"
 msgstr "テクスチャ圧縮キャッシュ"
 
-#: src/options.cpp:8395
+#: src/options.cpp:8408
 msgid "Texture Memory Size (MB)"
 msgstr "テクスチャ メモリのサイズ (MB)"
 
-#: src/options.cpp:8399 src/options.cpp:8548
+#: src/options.cpp:8412 src/options.cpp:8561
 msgid "Size: "
 msgstr "サイズ： "
 
-#: src/options.cpp:8401
+#: src/options.cpp:8414
 msgid "Rebuild Texture Cache"
 msgstr "テクスチャ キャッシュを再構築"
 
-#: src/options.cpp:8403
+#: src/options.cpp:8416
 msgid "Clear Texture Cache"
 msgstr "テクスチャ キャッシュをクリア"
 
-#: src/options.cpp:8407
+#: src/options.cpp:8420
 msgid "Show FPS"
 msgstr "FPS を表示"
 
-#: src/options.cpp:8409
+#: src/options.cpp:8422
 msgid "Software OpenGL (restart OpenCPN)"
 msgstr "ソフトウェアの OpenGL (再起動 OpenCPN)"
 
-#: src/options.cpp:8411
+#: src/options.cpp:8424
 msgid "Use Accelerated Panning"
 msgstr "Use Accelerated Panning"
 
-#: src/options.cpp:8413
+#: src/options.cpp:8426
 msgid "Texture Settings"
 msgstr "テクスチャの設定"
 
-#: src/options.cpp:8420
+#: src/options.cpp:8433
 msgid "Texture Cache"
 msgstr "テクスチャ キャッシュ"
 
-#: src/options.cpp:8427
+#: src/options.cpp:8440
 msgid "Miscellaneous"
 msgstr "その他"
 
-#: src/Osenc.cpp:1476
+#: src/Osenc.cpp:1489
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC ファイルを作成."
 
-#: src/pluginmanager.cpp:399
+#: src/pluginmanager.cpp:403
 #, c-format
 msgid "The plugin %s is not compatible with this version of OpenCPN, please get an updated version."
 msgstr "プラグインの %s は OpenCPN のこのバージョンと互換性がありません、更新されたバージョンを入手してください。"
 
-#: src/pluginmanager.cpp:1122
+#: src/pluginmanager.cpp:1126
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable and will not be loaded.\n"
@@ -5320,11 +5324,11 @@ msgstr "プラグインの %s (%s)、バージョン %i.%i が検出されまし
 "このバージョンでは不安定であることが知られており、ロードされません 。 \n"
 " opencpn.org ウェブサイトで、このプラグインを更新してください。"
 
-#: src/pluginmanager.cpp:1123 src/pluginmanager.cpp:1129
+#: src/pluginmanager.cpp:1127 src/pluginmanager.cpp:1133
 msgid "Blacklisted plugin detected..."
 msgstr "ブラック リストのプラグインが検出された."
 
-#: src/pluginmanager.cpp:1128
+#: src/pluginmanager.cpp:1132
 #, c-format
 msgid "PlugIn %s (%s), version %i.%i was detected.\n"
 " This version is known to be unstable.\n"
@@ -5333,28 +5337,28 @@ msgstr "プラグインの %s (%s)、バージョン %i.%i が検出されまし
 " このバージョンは不安定なことが知られています 。 \n"
 " opencpn.org ウェブサイトで、このプラグインを更新してください。"
 
-#: src/pluginmanager.cpp:1161
+#: src/pluginmanager.cpp:1165
 msgid "Unreadable PlugIn library detected, check the file permissions:\n"
 msgstr "読み取り不可能なプラグイン ライブラリを検出、ファイルのアクセス許可をチェック： \n"
 
-#: src/pluginmanager.cpp:1187
+#: src/pluginmanager.cpp:1191
 msgid "Incompatible plugin detected"
 msgstr ""
 
-#: src/pluginmanager.cpp:1190
+#: src/pluginmanager.cpp:1194
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
 msgstr "プラグイン [%s] バージョン %i.%i"
 
-#: src/pluginmanager.cpp:1195
+#: src/pluginmanager.cpp:1199
 msgid ", and all previous versions,"
 msgstr "、とすべての以前のバージョン"
 
-#: src/pluginmanager.cpp:1196
+#: src/pluginmanager.cpp:1200
 msgid " is incompatible with this version of OpenCPN."
 msgstr " openCPN のこのバージョンと互換性がありません。"
 
-#: src/pluginmanager.cpp:3923 src/pluginmanager.cpp:4013
+#: src/pluginmanager.cpp:3932 src/pluginmanager.cpp:4022
 msgid "Disable"
 msgstr "無効にする"
 
@@ -5366,226 +5370,226 @@ msgstr "AISロールオーバー"
 msgid "TideCurrentGraphRollover"
 msgstr "潮汐潮流グラフ ロールオーバー"
 
-#: src/Route.cpp:1163
+#: src/Route.cpp:1164
 msgid "Route Transmitted."
 msgstr "ルートが送信されます"
 
-#: src/Route.cpp:1166
+#: src/Route.cpp:1167
 msgid "Error on Route Upload.  Garmin GPS not connected"
 msgstr "ルートのアップロード時のエラーです。 ガーミンの GPS が接続されていません。"
 
-#: src/Route.cpp:1168
+#: src/Route.cpp:1169
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "ルートのアップロード時のエラーです。 ログファイルを確認してください."
 
-#: src/routemanagerdialog.cpp:521 src/routemanagerdialog.cpp:615
+#: src/routemanagerdialog.cpp:522 src/routemanagerdialog.cpp:616
 msgid "Show"
 msgstr "表示"
 
-#: src/routemanagerdialog.cpp:522
+#: src/routemanagerdialog.cpp:523
 msgid "Route Name"
 msgstr "ルート名"
 
-#: src/routemanagerdialog.cpp:523
+#: src/routemanagerdialog.cpp:524
 msgid "From <-> To"
 msgstr "発 <->着"
 
-#: src/routemanagerdialog.cpp:538 src/routemanagerdialog.cpp:636
-#: src/routemanagerdialog.cpp:709
+#: src/routemanagerdialog.cpp:539 src/routemanagerdialog.cpp:637
+#: src/routemanagerdialog.cpp:710
 msgid "&Properties"
 msgstr "プロパティ（&P）"
 
-#: src/routemanagerdialog.cpp:543
+#: src/routemanagerdialog.cpp:544
 msgid "&Activate"
 msgstr "有効にする（&A）"
 
-#: src/routemanagerdialog.cpp:550 src/routemanagerdialog.cpp:714
+#: src/routemanagerdialog.cpp:551 src/routemanagerdialog.cpp:715
 msgid "&Center View"
 msgstr "表示中心（&C）"
 
-#: src/routemanagerdialog.cpp:557
+#: src/routemanagerdialog.cpp:558
 msgid "&Reverse"
 msgstr "反転（&R）"
 
-#: src/routemanagerdialog.cpp:562 src/routemanagerdialog.cpp:641
-#: src/routemanagerdialog.cpp:719 src/routemanagerdialog.cpp:814
+#: src/routemanagerdialog.cpp:563 src/routemanagerdialog.cpp:642
+#: src/routemanagerdialog.cpp:720 src/routemanagerdialog.cpp:815
 msgid "&Delete"
 msgstr "削除（&D）"
 
-#: src/routemanagerdialog.cpp:567 src/routemanagerdialog.cpp:646
-#: src/routemanagerdialog.cpp:729
+#: src/routemanagerdialog.cpp:568 src/routemanagerdialog.cpp:647
+#: src/routemanagerdialog.cpp:730
 msgid "&Export selected..."
 msgstr "選択したものをエクスポート（&E）"
 
-#: src/routemanagerdialog.cpp:572 src/routemanagerdialog.cpp:734
+#: src/routemanagerdialog.cpp:573 src/routemanagerdialog.cpp:735
 msgid "&Send to GPS"
 msgstr "GPS に送信（&S）"
 
-#: src/routemanagerdialog.cpp:579 src/routemanagerdialog.cpp:658
+#: src/routemanagerdialog.cpp:580 src/routemanagerdialog.cpp:659
 msgid "&Delete All"
 msgstr "全て削除（&D）"
 
-#: src/routemanagerdialog.cpp:616
+#: src/routemanagerdialog.cpp:617
 msgid "Track Name"
 msgstr "追跡名"
 
-#: src/routemanagerdialog.cpp:617
+#: src/routemanagerdialog.cpp:618
 msgid "Length"
 msgstr "長さ"
 
-#: src/routemanagerdialog.cpp:631
+#: src/routemanagerdialog.cpp:632
 msgid "&Start Track"
 msgstr "追跡開始（&S）"
 
-#: src/routemanagerdialog.cpp:651
+#: src/routemanagerdialog.cpp:652
 msgid "Route from Track"
 msgstr "追跡からのルート"
 
-#: src/routemanagerdialog.cpp:688 src/routeprop.cpp:2523
+#: src/routemanagerdialog.cpp:689 src/routeprop.cpp:2523
 msgid "Icon"
 msgstr "アイコン"
 
-#: src/routemanagerdialog.cpp:689
+#: src/routemanagerdialog.cpp:690
 msgid "Waypoint Name"
 msgstr "ウェイポイント名"
 
-#: src/routemanagerdialog.cpp:690
+#: src/routemanagerdialog.cpp:691
 msgid "Distance from own ship"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:704
+#: src/routemanagerdialog.cpp:705
 msgid "&New"
 msgstr "新規（&N）"
 
-#: src/routemanagerdialog.cpp:724
+#: src/routemanagerdialog.cpp:725
 msgid "&Go To"
 msgstr "移動（&G）"
 
-#: src/routemanagerdialog.cpp:741
+#: src/routemanagerdialog.cpp:742
 msgid "Delete All"
 msgstr "すべて削除"
 
-#: src/routemanagerdialog.cpp:752
+#: src/routemanagerdialog.cpp:753
 msgid "I&mport GPX..."
 msgstr "インポートGPX...（&m）"
 
-#: src/routemanagerdialog.cpp:762
+#: src/routemanagerdialog.cpp:763
 msgid "Export All Visible..."
 msgstr "全可視表示をエクスポート."
 
-#: src/routemanagerdialog.cpp:772
+#: src/routemanagerdialog.cpp:773
 msgid "Layers"
 msgstr "レイヤー"
 
-#: src/routemanagerdialog.cpp:794
+#: src/routemanagerdialog.cpp:795
 msgid "Layer Name"
 msgstr "レイヤーネーム"
 
-#: src/routemanagerdialog.cpp:795
+#: src/routemanagerdialog.cpp:796
 msgid "No. of items"
 msgstr "アイテムのナンバー"
 
-#: src/routemanagerdialog.cpp:809
+#: src/routemanagerdialog.cpp:810
 msgid "Temporary layer"
 msgstr "一時的レイヤー"
 
-#: src/routemanagerdialog.cpp:819 src/routemanagerdialog.cpp:2444
-#: src/routemanagerdialog.cpp:2456 src/routeprop.cpp:2724
-#: src/TrackPropDlg.cpp:287 src/TrackPropDlg.cpp:606
+#: src/routemanagerdialog.cpp:820 src/routemanagerdialog.cpp:2445
+#: src/routemanagerdialog.cpp:2457 src/routeprop.cpp:2724
+#: src/TrackPropDlg.cpp:288 src/TrackPropDlg.cpp:607
 msgid "Show on chart"
 msgstr "チャートに表示"
 
-#: src/routemanagerdialog.cpp:824 src/routemanagerdialog.cpp:2449
-#: src/routemanagerdialog.cpp:2457
+#: src/routemanagerdialog.cpp:825 src/routemanagerdialog.cpp:2450
+#: src/routemanagerdialog.cpp:2458
 msgid "Show WPT names"
 msgstr "WPT 名を表示"
 
-#: src/routemanagerdialog.cpp:829 src/routemanagerdialog.cpp:2454
-#: src/routemanagerdialog.cpp:2458
+#: src/routemanagerdialog.cpp:830 src/routemanagerdialog.cpp:2455
+#: src/routemanagerdialog.cpp:2459
 msgid "List contents"
 msgstr "内容の一覧"
 
-#: src/routemanagerdialog.cpp:1005 src/routemanagerdialog.cpp:1283
+#: src/routemanagerdialog.cpp:1006 src/routemanagerdialog.cpp:1284
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1129 src/routemanagerdialog.cpp:1828
-#: src/routemanagerdialog.cpp:2228
+#: src/routemanagerdialog.cpp:1130 src/routemanagerdialog.cpp:1829
+#: src/routemanagerdialog.cpp:2229
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "選択したオブジェクトを削除します"
 
-#: src/routemanagerdialog.cpp:1177
+#: src/routemanagerdialog.cpp:1178
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "<ALL>ルートを削除してもよろしいですか"
 
-#: src/routemanagerdialog.cpp:1373
+#: src/routemanagerdialog.cpp:1374
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
 msgstr "また目に見えないこのルートの一部である共有のウェイポイントを作成しますか。"
 
-#: src/routemanagerdialog.cpp:1373
+#: src/routemanagerdialog.cpp:1374
 msgid "Question"
 msgstr "質問"
 
-#: src/routemanagerdialog.cpp:1494
+#: src/routemanagerdialog.cpp:1495
 msgid "&Merge Selected Tracks"
 msgstr "選択したトラックの結合（&M）"
 
-#: src/routemanagerdialog.cpp:1496
+#: src/routemanagerdialog.cpp:1497
 msgid "Reduce Data..."
 msgstr "データを減らす..."
 
-#: src/routemanagerdialog.cpp:1498
+#: src/routemanagerdialog.cpp:1499
 msgid "&Copy as text"
 msgstr "テキストとしてコピー（&C）"
 
-#: src/routemanagerdialog.cpp:1530
+#: src/routemanagerdialog.cpp:1531
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr "データ削減後に\n"
 "許容される最大誤差(メートルで)："
 
-#: src/routemanagerdialog.cpp:1531
+#: src/routemanagerdialog.cpp:1532
 msgid "Reduce Data Precision"
 msgstr "データの有効桁数を減らす"
 
-#: src/routemanagerdialog.cpp:1550
+#: src/routemanagerdialog.cpp:1551
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr "追跡で使用されるデータの量が\n"
 "%d%% 減りました"
 
-#: src/routemanagerdialog.cpp:1649
+#: src/routemanagerdialog.cpp:1650
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr "現在実行中のトラックは結合できません。 \n"
 " 追跡が完了した後で結合することができます。"
 
-#: src/routemanagerdialog.cpp:1901
+#: src/routemanagerdialog.cpp:1902
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN 追跡をルートに変換..."
 
-#: src/routemanagerdialog.cpp:1902
+#: src/routemanagerdialog.cpp:1903
 msgid "Processing Waypoints..."
 msgstr "ウェイポイントを処理中"
 
-#: src/routemanagerdialog.cpp:1912
+#: src/routemanagerdialog.cpp:1913
 msgid "Done."
 msgstr "完了。"
 
-#: src/routemanagerdialog.cpp:1935
+#: src/routemanagerdialog.cpp:1936
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "<ALL>追跡を削除してもよろしいですか"
 
-#: src/routemanagerdialog.cpp:2261
+#: src/routemanagerdialog.cpp:2262
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
 msgstr "ルートで使用されているウェイポイントを削除しようとしています、本当に削除してもよろしいですか"
 
-#: src/routemanagerdialog.cpp:2383
+#: src/routemanagerdialog.cpp:2384
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "<ALL>ウェイポイントを削除してもよろしいですか"
 
-#: src/routemanagerdialog.cpp:2389
+#: src/routemanagerdialog.cpp:2390
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
@@ -5595,23 +5599,23 @@ msgstr "ルートまたはアンカーアラームで使用されるいくつか
 " これは、ルートを変更し、アンカーアラームを無効にします。\n"
 "「いいえ」を選ぶとルートやアラームで使用されるウェイポイントを保持します。"
 
-#: src/routemanagerdialog.cpp:2442
+#: src/routemanagerdialog.cpp:2443
 msgid "Hide from chart"
 msgstr "チャートから隠す"
 
-#: src/routemanagerdialog.cpp:2447
+#: src/routemanagerdialog.cpp:2448
 msgid "Hide WPT names"
 msgstr "WPT 名を隠す"
 
-#: src/routemanagerdialog.cpp:2452
+#: src/routemanagerdialog.cpp:2453
 msgid "Unlist contents"
 msgstr "非公開コンテンツ"
 
-#: src/routemanagerdialog.cpp:2517
+#: src/routemanagerdialog.cpp:2518
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
 msgstr "このレイヤーと、その内容の<ALL>を削除してもよろしいですか？"
 
-#: src/routemanagerdialog.cpp:2791
+#: src/routemanagerdialog.cpp:2792
 msgid "(Unnamed Layer)"
 msgstr "(無名レイヤー)"
 
@@ -5625,26 +5629,26 @@ msgid "Waypoints can be renamed to reflect the new order, the names will be '001
 msgstr "新しい順序を反映するようにウェイ ポイントの名前を変更できます、名前 '001'、'002' etc.\n\n"
 " ウェイポイントの名前を変更しますか?"
 
-#: src/RoutePoint.cpp:371 src/RoutePoint.cpp:372 src/RoutePoint.cpp:536
-#: src/RoutePoint.cpp:537
+#: src/RoutePoint.cpp:371 src/RoutePoint.cpp:372 src/RoutePoint.cpp:540
+#: src/RoutePoint.cpp:541
 msgid "Marks"
 msgstr "マーク"
 
-#: src/RoutePoint.cpp:797
+#: src/RoutePoint.cpp:801
 msgid "Waypoint(s) Transmitted."
 msgstr "ウェイポイント 送信"
 
-#: src/RoutePoint.cpp:800
+#: src/RoutePoint.cpp:804
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "ウェイポイントのアップロード時のエラーです。 ガーミンの GPS が接続されていません。"
 
-#: src/RoutePoint.cpp:802
+#: src/RoutePoint.cpp:806
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "ウェイ ポイントのアップロード時のエラーです。 ログファイルを確認してください."
 
 #: src/routeprintout.cpp:116 src/routeprintout.cpp:391 src/routeprop.cpp:1102
 #: src/routeprop.cpp:1396 src/routeprop.cpp:2628 src/routeprop.cpp:2718
-#: src/TrackPropDlg.cpp:746
+#: src/TrackPropDlg.cpp:747
 msgid "Description"
 msgstr "説明"
 
@@ -5708,29 +5712,29 @@ msgstr "ウェイポイント プロパティ...（&W）"
 msgid "&Remove Selected"
 msgstr "選択項目を削除（&R）"
 
-#: src/routeprop.cpp:585 src/TrackPropDlg.cpp:1249
+#: src/routeprop.cpp:585 src/TrackPropDlg.cpp:1250
 msgid "&Copy all as text"
 msgstr "全てテキストとしてコピー（&C）"
 
-#: src/routeprop.cpp:600 src/TrackPropDlg.cpp:1168
+#: src/routeprop.cpp:600 src/TrackPropDlg.cpp:1169
 msgid "_A"
 msgstr "_A"
 
-#: src/routeprop.cpp:601 src/TrackPropDlg.cpp:1169
+#: src/routeprop.cpp:601 src/TrackPropDlg.cpp:1170
 msgid "_B"
 msgstr "_B"
 
-#: src/routeprop.cpp:645 src/TrackPropDlg.cpp:1145
+#: src/routeprop.cpp:645 src/TrackPropDlg.cpp:1146
 msgid "_plus"
 msgstr "_plus"
 
 #: src/routeprop.cpp:661 src/routeprop.cpp:824 src/routeprop.cpp:1185
-#: src/TrackPropDlg.cpp:266 src/TrackPropDlg.cpp:1201
+#: src/TrackPropDlg.cpp:267 src/TrackPropDlg.cpp:1202
 msgid "Depart From"
 msgstr "出発"
 
 #: src/routeprop.cpp:663 src/routeprop.cpp:853 src/routeprop.cpp:1209
-#: src/TrackPropDlg.cpp:298 src/TrackPropDlg.cpp:652 src/TrackPropDlg.cpp:1203
+#: src/TrackPropDlg.cpp:299 src/TrackPropDlg.cpp:653 src/TrackPropDlg.cpp:1204
 msgid "Total distance"
 msgstr "総距離："
 
@@ -5739,16 +5743,16 @@ msgid "Speed (Kts)"
 msgstr "速度 (ノット)"
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:892 src/routeprop.cpp:1226
-#: src/TrackPropDlg.cpp:1205
+#: src/TrackPropDlg.cpp:1206
 msgid "Departure Time"
 msgstr "出発時刻"
 
-#: src/routeprop.cpp:665 src/routeprop.cpp:1226 src/TrackPropDlg.cpp:1205
+#: src/routeprop.cpp:665 src/routeprop.cpp:1226 src/TrackPropDlg.cpp:1206
 msgid "(m/d/y h:m)"
 msgstr ""
 
 #: src/routeprop.cpp:666 src/routeprop.cpp:880 src/routeprop.cpp:1220
-#: src/TrackPropDlg.cpp:666 src/TrackPropDlg.cpp:1206
+#: src/TrackPropDlg.cpp:667 src/TrackPropDlg.cpp:1207
 msgid "Time enroute"
 msgstr "航海時間"
 
@@ -5757,193 +5761,193 @@ msgid "Plan speed"
 msgstr "計画速度"
 
 #: src/routeprop.cpp:903 src/routeprop.cpp:913 src/routeprop.cpp:1252
-#: src/routeprop.cpp:1264 src/TrackPropDlg.cpp:350 src/TrackPropDlg.cpp:360
-#: src/TrackPropDlg.cpp:693
+#: src/routeprop.cpp:1264 src/TrackPropDlg.cpp:351 src/TrackPropDlg.cpp:361
+#: src/TrackPropDlg.cpp:694
 msgid "Local @ PC"
 msgstr "Local @ PC"
 
 #: src/routeprop.cpp:903 src/routeprop.cpp:916 src/routeprop.cpp:1252
-#: src/routeprop.cpp:1267 src/TrackPropDlg.cpp:350 src/TrackPropDlg.cpp:363
+#: src/routeprop.cpp:1267 src/TrackPropDlg.cpp:351 src/TrackPropDlg.cpp:364
 msgid "LMT @ Location"
 msgstr "LMT @ Location"
 
-#: src/routeprop.cpp:905 src/routeprop.cpp:1256 src/TrackPropDlg.cpp:352
-#: src/TrackPropDlg.cpp:686
+#: src/routeprop.cpp:905 src/routeprop.cpp:1256 src/TrackPropDlg.cpp:353
+#: src/TrackPropDlg.cpp:687
 msgid "Time shown as"
 msgstr "時間表示"
 
-#: src/routeprop.cpp:923 src/routeprop.cpp:1270 src/TrackPropDlg.cpp:370
-#: src/TrackPropDlg.cpp:609
+#: src/routeprop.cpp:923 src/routeprop.cpp:1270 src/TrackPropDlg.cpp:371
+#: src/TrackPropDlg.cpp:610
 msgid "Color"
 msgstr "色"
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
-#: src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:613
+#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Default color"
 msgstr "デフォルトの色"
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
-#: src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:613
+#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Black"
 msgstr "黒"
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
-#: src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:613
+#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Red"
 msgstr "暗い赤"
 
 #: src/routeprop.cpp:927 src/routeprop.cpp:1275 src/routeprop.cpp:2616
-#: src/TrackPropDlg.cpp:374 src/TrackPropDlg.cpp:613
+#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Green"
 msgstr "暗い緑"
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
-#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
+#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Yellow"
 msgstr "暗い黄"
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
-#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
+#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Blue"
 msgstr "暗い青"
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
-#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
+#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Magenta"
 msgstr "暗い赤紫"
 
 #: src/routeprop.cpp:928 src/routeprop.cpp:1276 src/routeprop.cpp:2617
-#: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
+#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Cyan"
 msgstr "暗い青緑"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Light Gray"
 msgstr "明るい灰"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Dark Gray"
 msgstr "暗い灰"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Red"
 msgstr "赤"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Green"
 msgstr "緑"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Yellow"
 msgstr "黄"
 
 #: src/routeprop.cpp:929 src/routeprop.cpp:1277 src/routeprop.cpp:2618
-#: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
+#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Blue"
 msgstr "青"
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
-#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
+#: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "Magenta"
 msgstr "赤紫"
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
-#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
+#: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "Cyan"
 msgstr "青緑"
 
 #: src/routeprop.cpp:930 src/routeprop.cpp:1278 src/routeprop.cpp:2619
-#: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
+#: src/TrackPropDlg.cpp:378 src/TrackPropDlg.cpp:617
 msgid "White"
 msgstr "白"
 
-#: src/routeprop.cpp:937 src/routeprop.cpp:1285 src/TrackPropDlg.cpp:384
-#: src/TrackPropDlg.cpp:622
+#: src/routeprop.cpp:937 src/routeprop.cpp:1285 src/TrackPropDlg.cpp:385
+#: src/TrackPropDlg.cpp:623
 msgid "Style"
 msgstr "スタイル"
 
-#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:388
-#: src/TrackPropDlg.cpp:626
+#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
+#: src/TrackPropDlg.cpp:627
 msgid "Solid"
 msgstr "ソリッド"
 
-#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:388
-#: src/TrackPropDlg.cpp:626
+#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
+#: src/TrackPropDlg.cpp:627
 msgid "Dot"
 msgstr "ドット"
 
-#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:388
-#: src/TrackPropDlg.cpp:626
+#: src/routeprop.cpp:941 src/routeprop.cpp:1289 src/TrackPropDlg.cpp:389
+#: src/TrackPropDlg.cpp:627
 msgid "Long dash"
 msgstr "ロングダッシュ"
 
-#: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:389
-#: src/TrackPropDlg.cpp:626
+#: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:390
+#: src/TrackPropDlg.cpp:627
 msgid "Short dash"
 msgstr "ショートダッシュ"
 
-#: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:389
-#: src/TrackPropDlg.cpp:626
+#: src/routeprop.cpp:942 src/routeprop.cpp:1290 src/TrackPropDlg.cpp:390
+#: src/TrackPropDlg.cpp:627
 msgid "Dot dash"
 msgstr "ドット・ダッシュ"
 
-#: src/routeprop.cpp:955 src/routeprop.cpp:1303 src/TrackPropDlg.cpp:402
-#: src/TrackPropDlg.cpp:632
+#: src/routeprop.cpp:955 src/routeprop.cpp:1303 src/TrackPropDlg.cpp:403
+#: src/TrackPropDlg.cpp:633
 msgid "Width"
 msgstr "幅"
 
-#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:406
-#: src/TrackPropDlg.cpp:636
+#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
+#: src/TrackPropDlg.cpp:637
 msgid "1 pixel"
 msgstr "1 ピクセル"
 
-#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:406
-#: src/TrackPropDlg.cpp:636
+#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
+#: src/TrackPropDlg.cpp:637
 msgid "2 pixels"
 msgstr "2 ピクセル"
 
-#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:406
-#: src/TrackPropDlg.cpp:636
+#: src/routeprop.cpp:959 src/routeprop.cpp:1308 src/TrackPropDlg.cpp:407
+#: src/TrackPropDlg.cpp:637
 msgid "3 pixels"
 msgstr "3 ピクセル"
 
-#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:407
-#: src/TrackPropDlg.cpp:637
+#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
+#: src/TrackPropDlg.cpp:638
 msgid "4 pixels"
 msgstr "4 ピクセル"
 
-#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:407
-#: src/TrackPropDlg.cpp:637
+#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
+#: src/TrackPropDlg.cpp:638
 msgid "5 pixels"
 msgstr "5 ピクセル"
 
-#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:407
-#: src/TrackPropDlg.cpp:637
+#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
+#: src/TrackPropDlg.cpp:638
 msgid "6 pixels"
 msgstr "6 ピクセル"
 
-#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:407
-#: src/TrackPropDlg.cpp:637
+#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
+#: src/TrackPropDlg.cpp:638
 msgid "7 pixels"
 msgstr "7 ピクセル"
 
-#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:407
-#: src/TrackPropDlg.cpp:637
+#: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:408
+#: src/TrackPropDlg.cpp:638
 msgid "8 pixels"
 msgstr "8 ピクセル"
 
-#: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:408
-#: src/TrackPropDlg.cpp:638
+#: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:409
+#: src/TrackPropDlg.cpp:639
 msgid "9 pixels"
 msgstr "9 ピクセル"
 
-#: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:408
-#: src/TrackPropDlg.cpp:638
+#: src/routeprop.cpp:961 src/routeprop.cpp:1310 src/TrackPropDlg.cpp:409
+#: src/TrackPropDlg.cpp:639
 msgid "10 pixels"
 msgstr "10ピクセル"
 
@@ -5952,7 +5956,7 @@ msgid "Print Route"
 msgstr "ルートを印刷"
 
 #: src/routeprop.cpp:1050 src/routeprop.cpp:1347 src/routeprop.cpp:1597
-#: src/TrackPropDlg.cpp:839
+#: src/TrackPropDlg.cpp:840
 msgid "Extend Route"
 msgstr "ルートを拡張"
 
@@ -5960,8 +5964,8 @@ msgstr "ルートを拡張"
 msgid "Split Route"
 msgstr "ルートを分割"
 
-#: src/routeprop.cpp:1088 src/routeprop.cpp:1382 src/TrackPropDlg.cpp:443
-#: src/TrackPropDlg.cpp:715
+#: src/routeprop.cpp:1088 src/routeprop.cpp:1382 src/TrackPropDlg.cpp:444
+#: src/TrackPropDlg.cpp:716
 msgid "Leg"
 msgstr "レグ"
 
@@ -6021,7 +6025,7 @@ msgstr "ETE"
 msgid "Start"
 msgstr "スタート"
 
-#: src/routeprop.cpp:2472 src/TrackPropDlg.cpp:534
+#: src/routeprop.cpp:2472 src/TrackPropDlg.cpp:535
 msgid "Basic"
 msgstr "Basic"
 
@@ -6049,20 +6053,20 @@ msgstr "範囲リング"
 msgid "Ring Colour"
 msgstr "リングの色"
 
-#: src/routeprop.cpp:2653 src/TrackPropDlg.cpp:753
+#: src/routeprop.cpp:2653 src/TrackPropDlg.cpp:754
 msgid "Links"
 msgstr "リンク"
 
-#: src/routeprop.cpp:2664 src/TrackPropDlg.cpp:759
+#: src/routeprop.cpp:2664 src/TrackPropDlg.cpp:760
 msgid "wxFB Website"
 msgstr "wxFB のウェブサイト"
 
-#: src/routeprop.cpp:2680 src/TrackPropDlg.cpp:766
+#: src/routeprop.cpp:2680 src/TrackPropDlg.cpp:767
 msgid "Add new"
 msgstr "新規追加"
 
-#: src/routeprop.cpp:2703 src/routeprop.cpp:3327 src/TrackPropDlg.cpp:792
-#: src/TrackPropDlg.cpp:1448
+#: src/routeprop.cpp:2703 src/routeprop.cpp:3330 src/TrackPropDlg.cpp:793
+#: src/TrackPropDlg.cpp:1454
 msgid "Links are opened in the default browser."
 msgstr "リンクは、デフォルトのブラウザーで開かれます。"
 
@@ -6078,27 +6082,27 @@ msgstr "GPX"
 msgid "Extended"
 msgstr "拡張"
 
-#: src/routeprop.cpp:3325 src/TrackPropDlg.cpp:1446
+#: src/routeprop.cpp:3328 src/TrackPropDlg.cpp:1452
 msgid "Links are opened for editing."
 msgstr "リンクを開いて編集"
 
-#: src/routeprop.cpp:3526
+#: src/routeprop.cpp:3529
 msgid "Copy"
 msgstr "コピー"
 
-#: src/routeprop.cpp:3527
+#: src/routeprop.cpp:3530
 msgid "Copy lat/long"
 msgstr "緯度/経度をコピー"
 
-#: src/routeprop.cpp:3528
+#: src/routeprop.cpp:3531
 msgid "Paste"
 msgstr "貼り付け"
 
-#: src/routeprop.cpp:3529
+#: src/routeprop.cpp:3532
 msgid "Paste lat/long"
 msgstr "緯度/経度を貼り付け"
 
-#: src/s57chart.cpp:4417
+#: src/s57chart.cpp:4607
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n"
 "Check the logfile for details."
@@ -6107,11 +6111,11 @@ msgstr "S57　セルアップデートチェーンは不完全です。\n"
 "詳細については、ログファイルを確認してください。\n"
 " "
 
-#: src/s57chart.cpp:4418
+#: src/s57chart.cpp:4608
 msgid "OpenCPN Create SENC Warning"
 msgstr "OpenCPN は、SENC 警告を作成"
 
-#: src/s57chart.cpp:6110
+#: src/s57chart.cpp:6339
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2> (セクター角はシーワードからの真方位です)</font><br>"
 
@@ -6131,147 +6135,147 @@ msgstr "処理中..."
 msgid "It seems you have no tide/current harmonic data installed."
 msgstr "潮汐、潮流データがインストールされてないようです"
 
-#: src/TCWin.cpp:86
+#: src/TCWin.cpp:88
 msgid "Tide"
 msgstr "潮汐"
 
-#: src/TCWin.cpp:91
+#: src/TCWin.cpp:93
 msgid "Current"
 msgstr "潮流"
 
-#: src/TCWin.cpp:157
+#: src/TCWin.cpp:159
 msgid "Prev"
 msgstr "前へ"
 
-#: src/TCWin.cpp:172
+#: src/TCWin.cpp:174
 msgid "Next"
 msgstr "次へ"
 
-#: src/TCWin.cpp:248
+#: src/TCWin.cpp:250
 msgid "Reference Station :"
 msgstr "基準局："
 
-#: src/TCWin.cpp:263
+#: src/TCWin.cpp:265
 msgid "Data Source :"
 msgstr "データソース："
 
-#: src/TCWin.cpp:535
+#: src/TCWin.cpp:541
 msgid "HW"
 msgstr "HW"
 
-#: src/TCWin.cpp:535
+#: src/TCWin.cpp:541
 msgid "LW"
 msgstr "LW"
 
-#: src/TCWin.cpp:712
+#: src/TCWin.cpp:727
 msgid "Today"
 msgstr "本日"
 
-#: src/TCWin.cpp:713 src/TCWin.cpp:718
+#: src/TCWin.cpp:728 src/TCWin.cpp:733
 msgid "Tomorrow"
 msgstr "明日"
 
-#: src/toolbar.cpp:959
+#: src/toolbar.cpp:1053
 msgid "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr "ツールバーにアクセスできなくなるので\n"
 "最後のツールは隠せません"
 
-#: src/toolbar.cpp:1091 src/toolbar.cpp:1106 src/toolbar.cpp:1122
+#: src/toolbar.cpp:1189 src/toolbar.cpp:1204 src/toolbar.cpp:1220
 msgid "ToolTips"
 msgstr "ツールチップ"
 
-#: src/toolbar.cpp:2462
+#: src/toolbar.cpp:2600
 msgid "No, I don't want to hide it."
 msgstr "いいえ、それを隠したくないです。"
 
-#: src/toolbar.cpp:2465
+#: src/toolbar.cpp:2603
 msgid "No, and permanently remove the option to hide it."
 msgstr "いいえ、それを隠すオプションを削除"
 
-#: src/toolbar.cpp:2468
+#: src/toolbar.cpp:2606
 msgid "Yes, hide it."
 msgstr "はい、隠します。"
 
-#: src/toolbar.cpp:2474
+#: src/toolbar.cpp:2612
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "落水ボタンは重要な安全機能です。 \n"
 " それを非表示にすることが必要ですか？。"
 
-#: src/toolbar.cpp:2564
+#: src/toolbar.cpp:2708
 msgid "Choose Toolbar Icons"
 msgstr "ツールバーのアイコンを選択します。"
 
-#: src/TrackPropDlg.cpp:311 src/TrackPropDlg.cpp:659
+#: src/TrackPropDlg.cpp:312 src/TrackPropDlg.cpp:660
 msgid "Avg. speed"
 msgstr "平均速度"
 
-#: src/TrackPropDlg.cpp:325
+#: src/TrackPropDlg.cpp:326
 msgid "Time Enroute"
 msgstr "航海時間"
 
-#: src/TrackPropDlg.cpp:448 src/TrackPropDlg.cpp:720
+#: src/TrackPropDlg.cpp:449 src/TrackPropDlg.cpp:721
 msgid "Timestamp"
 msgstr "タイムスタンプ"
 
-#: src/TrackPropDlg.cpp:476 src/TrackPropDlg.cpp:826
+#: src/TrackPropDlg.cpp:477 src/TrackPropDlg.cpp:827
 msgid "Print"
 msgstr "印刷"
 
-#: src/TrackPropDlg.cpp:484 src/TrackPropDlg.cpp:834
+#: src/TrackPropDlg.cpp:485 src/TrackPropDlg.cpp:835
 msgid "Split"
 msgstr "分割"
 
-#: src/TrackPropDlg.cpp:489
+#: src/TrackPropDlg.cpp:490
 msgid "Extend"
 msgstr "拡張"
 
-#: src/TrackPropDlg.cpp:493 src/TrackPropDlg.cpp:843
+#: src/TrackPropDlg.cpp:494 src/TrackPropDlg.cpp:844
 msgid "To route"
 msgstr "ルートへ"
 
-#: src/TrackPropDlg.cpp:586
+#: src/TrackPropDlg.cpp:587
 msgid "From"
 msgstr "発"
 
-#: src/TrackPropDlg.cpp:593
+#: src/TrackPropDlg.cpp:594
 msgid "To"
 msgstr "着"
 
-#: src/TrackPropDlg.cpp:603
+#: src/TrackPropDlg.cpp:604
 msgid "Display parameters"
 msgstr "表示パラメーター"
 
-#: src/TrackPropDlg.cpp:646
+#: src/TrackPropDlg.cpp:647
 msgid "Statistics"
 msgstr "Statistics"
 
-#: src/TrackPropDlg.cpp:680
+#: src/TrackPropDlg.cpp:681
 msgid "Recorded points"
 msgstr "記録地点"
 
-#: src/TrackPropDlg.cpp:696
+#: src/TrackPropDlg.cpp:697
 msgid "LMT @ Track Start"
 msgstr "LMT @ トラック スタート"
 
-#: src/TrackPropDlg.cpp:847
+#: src/TrackPropDlg.cpp:848
 msgid "Export"
 msgstr "エクスポート"
 
-#: src/TrackPropDlg.cpp:1037
+#: src/TrackPropDlg.cpp:1038
 msgid "%D Days, %H:%M"
 msgstr "%D 日, %時：%分"
 
-#: src/TrackPropDlg.cpp:1040
+#: src/TrackPropDlg.cpp:1041
 msgid "%H:%M"
 msgstr "%時：%分"
 
-#: src/TrackPropDlg.cpp:1302
+#: src/TrackPropDlg.cpp:1308
 msgid "track"
 msgstr "追跡"
 
-#: src/TrackPropDlg.cpp:1689
+#: src/TrackPropDlg.cpp:1695
 msgid "--"
 msgstr ""
 

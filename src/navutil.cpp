@@ -348,6 +348,7 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern int              g_tide_rectangle_scale;
+extern int              g_tcwin_scale;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 extern wxString         g_uploadConnection;
@@ -397,6 +398,8 @@ extern int              g_iENCToolbarPosY;
 
 
 extern wxString         g_uiStyle;
+
+int                     g_nCPUCount;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -531,7 +534,9 @@ int MyConfig::LoadMyConfig()
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes
-    
+
+    Read( _T( "NCPUCount" ), &g_nCPUCount, -1);    
+
     Read( _T ( "DebugGDAL" ), &g_bGDAL_Debug, 0 );
     Read( _T ( "DebugNMEA" ), &g_nNMEADebug, 0 );
     Read( _T ( "DebugOpenGL" ), &g_bDebugOGL, 0 );
@@ -906,7 +911,6 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "S57QueryDialogSizeX" ), &g_S57_dialog_sx, 400 );
     Read( _T ( "S57QueryDialogSizeY" ), &g_S57_dialog_sy, 400 );
     
-    SwitchInlandEcdisMode( g_bInlandEcdis );
 
     wxString strpres( _T ( "PresentationLibraryData" ) );
     wxString valpres;
@@ -915,22 +919,6 @@ int MyConfig::LoadMyConfig()
     g_UserPresLibData = valpres;
 
 #ifdef USE_S57
-    /*
-     wxString strd ( _T ( "S57DataLocation" ) );
-     SetPath ( _T ( "/Directories" ) );
-     Read ( strd, &val );              // Get the Directory name
-
-
-     wxString dirname ( val );
-     if ( !dirname.IsEmpty() )
-     {
-     if ( g_pcsv_locn->IsEmpty() )   // on second pass, don't overwrite
-     {
-     g_pcsv_locn->Clear();
-     g_pcsv_locn->Append ( val );
-     }
-     }
-     */
     wxString strs( _T ( "SENCFileLocation" ) );
     SetPath( _T ( "/Directories" ) );
     wxString vals;
@@ -940,6 +928,8 @@ int MyConfig::LoadMyConfig()
 
 #endif
 
+    SwitchInlandEcdisMode( g_bInlandEcdis );
+    
     SetPath( _T ( "/Directories" ) );
     wxString vald;
     Read( _T ( "InitChartDir" ), &vald );           // Get the Directory name
@@ -1347,6 +1337,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale, 100 );
+    Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
 
     SetPath( _T ( "/MMSIProperties" ) );
@@ -2001,7 +1992,6 @@ void MyConfig::UpdateSettings()
     
     if ( !g_bInlandEcdis ){  
         Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
-        //wxPuts(_T ( "Did write" ) + g_toolbarConfig);
         Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
         Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
         Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
@@ -2293,6 +2283,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "TideRectangleScale" ), g_tide_rectangle_scale );
+    Write( _T ( "TideCurrentWindowScale" ), g_tcwin_scale );
     Write( _T ( "DefaultWPIcon" ), g_default_wp_icon );
 
     DeleteGroup(_T ( "/MMSIProperties" ));
@@ -2344,11 +2335,13 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXRoutesList( pRoutes );
@@ -2376,11 +2369,13 @@ bool MyConfig::ExportGPXTracks( wxWindow* parent, TrackList *pTracks, const wxSt
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXTracksList( pTracks );
@@ -2409,11 +2404,13 @@ bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoint
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
+#endif
 
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
         pgpx->AddGPXPointsList( pRoutePoints );
@@ -2444,11 +2441,13 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         m_gpx_path = fn.GetPath();
         fn.SetExt(_T("gpx"));
 
+#ifndef __WXMAC__
         if( wxFileExists( fn.GetFullPath() ) ) {
             int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return;
         }
+#endif
 
         ::wxBeginBusyCursor();
 
@@ -2663,12 +2662,13 @@ void SwitchInlandEcdisMode( bool Switch )
 {
     if ( Switch ){
         wxLogMessage( _T("Switch InlandEcdis mode On") );
+        LoadS57();
         //Overule some sewttings to comply with InlandEcdis
         g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
         g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
-//        wxPuts(_("Setting to")+g_toolbarConfig);
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
+        g_bDrawAISSize = false;
         if (gFrame) gFrame->RequestNewToolbar(true);
     }
     else{      
@@ -2683,8 +2683,9 @@ void SwitchInlandEcdisMode( bool Switch )
             int read_int;
             pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
             if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+            pConfig->SetPath( _T ( "/Settings/AIS" ) );
+            pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
         }
-//        wxPuts(_("Reread to")+g_toolbarConfig);
         if (gFrame) gFrame->RequestNewToolbar(true);
     }        
 }

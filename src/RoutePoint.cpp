@@ -517,13 +517,17 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     if(r.x == INVALID_COORD)
         return;
 
-//    Substitue icon?
+//    Substitute icon?
     wxBitmap *pbm;
     if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
         pbm = pWayPointMan->GetIconBitmap(  _T ( "activepoint" ) );
     else
         pbm = m_pbmIcon;
 
+    //  If icon is corrupt, there is really nothing else to do...
+    if(!pbm->IsOk())
+        return;
+    
     int sx2 = pbm->GetWidth() / 2;
     int sy2 = pbm->GetHeight() / 2;
 

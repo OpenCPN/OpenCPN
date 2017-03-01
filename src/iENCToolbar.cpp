@@ -175,6 +175,8 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
             range = cc1->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
             
+            if(range > 8000.)
+                cc1->SetCanvasRangeMeters(8000.);
             if(range > 4000.)
                 cc1->SetCanvasRangeMeters(4000.);
             else if(range > 2000.)
@@ -187,14 +189,18 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                 cc1->SetCanvasRangeMeters(800.);
             else if(range > 500.)
                 cc1->SetCanvasRangeMeters(500.);
-                
+            else if(range > 300.)
+                cc1->SetCanvasRangeMeters(300.);
+            
             break;
                     
         case ID_RPLUS:
             range = cc1->GetCanvasRangeMeters();
             range = wxRound(range * 10) / 10.;
             
-            if(range < 500.)
+            if(range < 300.)
+                cc1->SetCanvasRangeMeters(300.);
+            else if(range < 500.)
                 cc1->SetCanvasRangeMeters(500.);
             else if(range < 800.)
                 cc1->SetCanvasRangeMeters(800.);
@@ -206,6 +212,8 @@ void iENCToolbar::OnToolLeftClick( wxCommandEvent& event )
                 cc1->SetCanvasRangeMeters(2000.);
             else if(range < 4000.)
                 cc1->SetCanvasRangeMeters(4000.);
+            else if(range < 8000.)
+                cc1->SetCanvasRangeMeters(8000.);
             
             break;
         

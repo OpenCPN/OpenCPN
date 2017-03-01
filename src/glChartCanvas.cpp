@@ -1239,7 +1239,8 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
             if( pWP && (!pWP->m_bIsBeingEdited) &&(!pWP->m_bIsInRoute ) )
-                pWP->DrawGL( vp );
+                if(vp.GetBBox().ContainsMarge(pWP->m_lat, pWP->m_lon, .5))
+                    pWP->DrawGL( vp );
         }
     }
 }

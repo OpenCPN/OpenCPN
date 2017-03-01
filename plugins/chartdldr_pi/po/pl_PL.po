@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-01-31 22:25-0500\n"
+"PO-Revision-Date: 2017-02-25 13:33-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -440,7 +440,7 @@ msgstr "Przesłano:"
 
 #: src/wxcurl/panel.cpp:111
 msgid "Username:"
-msgstr "Nazwa Użytkownika:"
+msgstr "Nazwa użytkownika:"
 
 #: src/wxcurl/panel.cpp:112
 msgid "Password:"

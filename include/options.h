@@ -244,6 +244,7 @@ class options : private Uncopyable,
 
   void OnClose(wxCloseEvent &event);
 
+  void CreateListbookIcons();
   void CreateControls(void);
   size_t CreatePanel(const wxString &title);
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
@@ -417,6 +418,7 @@ class options : private Uncopyable,
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
+  ColorScheme m_cs;
   
   // For "S57" page
   wxBoxSizer *vectorPanel;

@@ -340,11 +340,19 @@ void OCPNPlatform::Initialize_1( void )
     info.pszAppName = _T("OpenCPN");
     
     info.pszAppVersion = OpenCPNVersion.c_str();
+
+    int type =  MiniDumpNormal;
     
-    int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
     // This results in the inclusion of global variables
+    type |= MiniDumpWithDataSegs;
     
-    type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
+    //If this flag is specified, the contents of every readable and writeable private memory page will be included into the minidump.
+    type |=  MiniDumpWithPrivateReadWriteMemory;
+
+    //If this flag is specified, MiniDumpWriteDump function will scan the stack memory of every thread looking for pointers
+    //that point to other readable memory pages in the process’ address space.
+    type |=  MiniDumpWithIndirectlyReferencedMemory;
+    
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
     
     // Install all available exception handlers....
@@ -784,7 +792,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     // Initial S52/S57 options
     if(pConfig){
         pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
-        pConfig->Write( _T ( "bShowS57Text" ), false );
+        pConfig->Write( _T ( "bShowS57Text" ), true );
         pConfig->Write( _T ( "bShowS57ImportantTextOnly" ), false );
         pConfig->Write( _T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD );
         pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
@@ -797,13 +805,16 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bShowLightDescription" ), false );
         pConfig->Write( _T ( "bExtendLightSectors" ), true );
         pConfig->Write( _T ( "bDeClutterText" ), true );
-        pConfig->Write( _T ( "bShowNationalText" ), false );
+        pConfig->Write( _T ( "bShowNationalText" ), true );
         
-        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 5 );
-        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 2 );
-        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 10 );
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 4 );
+        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 4 );
+        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 6 );
         pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
         pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
+
+        pConfig->Write( _T ( "ZoomDetailFactorVector" ), 3 );
+        
      }
     
     

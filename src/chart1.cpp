@@ -789,12 +789,18 @@ void BuildiENCToolbar( bool bnew )
             
             wxPoint posn(g_iENCToolbarPosX, g_iENCToolbarPosY);
             
+            // Overlapping main toolbar?
+            if(g_MainToolbar){
+                if((g_iENCToolbarPosY > g_maintoolbar_y) && (g_iENCToolbarPosY < g_maintoolbar_y + g_MainToolbar->GetSize().y) )
+                    g_iENCToolbarPosY = -1;         // force a reposition
+            }
+            
             if((g_iENCToolbarPosX < 0) || (g_iENCToolbarPosY < 0)){
                 posn.x = 0;
                 posn.y = 100;
                 
                 if(g_MainToolbar)
-                    posn = wxPoint(g_maintoolbar_x, g_MainToolbar->GetSize().y + 2);
+                    posn = wxPoint(g_maintoolbar_x, g_maintoolbar_y + g_MainToolbar->GetSize().y + 2);
             }
             
             g_iENCToolbar = new iENCToolbar( cc1,  posn, g_maintoolbar_orient, g_toolbar_scalefactor );
@@ -5495,6 +5501,7 @@ int MyFrame::DoOptionsDialog()
     if(NULL == g_options) {
         g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
+        g_options->SetColorScheme(global_color_scheme);
         g_Platform->HideBusySpinner();
     }
 
@@ -5692,6 +5699,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     pConfig->UpdateSettings();
 
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
+    
     if( g_pActiveTrack ) {
         g_pActiveTrack->SetPrecision( g_nTrackPrecision );
     }
@@ -6017,6 +6027,13 @@ void MyFrame::ToggleQuiltMode( void )
             Refresh();
         }
         g_bQuiltEnable = cc1->GetQuiltMode();
+        
+#ifdef USE_S57
+        // Recycle the S52 PLIB so that vector charts will flush caches and re-render
+        if(ps52plib)
+            ps52plib->GenerateStateHash();
+#endif
+        
     }
 }
 
@@ -6461,7 +6478,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         case 4:
         {
             g_options = new options( this, -1, _("Options") );
-    
+            g_options->SetColorScheme(global_color_scheme);
+            
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );
 
@@ -6591,8 +6609,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();
 
+
         cc1->m_bFollow = false;
-        if( g_MainToolbar->GetToolbar() )
+        if( g_MainToolbar && g_MainToolbar->GetToolbar() )
             g_MainToolbar->GetToolbar()->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
         int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 

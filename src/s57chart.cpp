@@ -3272,7 +3272,10 @@ bool s57chart::IsCellOverlayType( char *pFullPath )
     wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
-    return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    if(cname.Length() >= 3)
+        return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    else
+        return false;
 }
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
@@ -3630,7 +3633,7 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
         SENCdir.Append( wxFileName::GetPathSeparator() );
     
     wxFileName s57File(m_SENCFileName);
-    wxFileName ThumbFileName( SENCdir, s57File.GetName(), _T("BMP") );
+    wxFileName ThumbFileName( SENCdir, s57File.GetName().Mid( 13 ), _T("BMP") );
 
     if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
         BuildThumbnail( ThumbFileName.GetFullPath() );
@@ -5444,27 +5447,19 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         }
 
         case GEO_LINE: {
+            //  Coarse test first
+            if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                return false;
+            
+            float sel_rad_meters = select_radius * 1852 * 60;       // approximately
+            double easting, northing;
+            toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
+            
             if( obj->geoPt ) {
-                //  Coarse test first
-                if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
 
                 //  Line geometry is carried in SM or CM93 coordinates, so...
                 //  make the hit test using SM coordinates, converting from object points to SM using per-object conversion factors.
 
-                float sel_rad_meters = select_radius * 1852 * 60;       // approximately
-
-                double easting, northing;
-                toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-                
-#if 0
-                float *ptest;
-                int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
-
-                if(!ntp)
-                    return false;
-
-                float *pfree = ptest;
-#endif
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -5475,20 +5470,9 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 double north0 = ( ppt->y * yr ) + yo;
                 double east0 = ( ppt->x * xr ) + xo;
-#if 0
-                float a0 = *ptest++;
-                float b0 = *ptest++;
-#endif
                 ppt++;
 
                 for( int ip = 1; ip < npt; ip++ ) {
-#if 0
-                    float a = *ptest++;
-                    float b = *ptest++;
-                    float c = ppt->y;
-                    float d = ppt->x;
-                    printf("%g %g %g %g\n", a,b,c,d);
-#endif
 
                     double north = ( ppt->y * yr ) + yo;
                     double east = ( ppt->x * xr ) + xo;
@@ -5498,8 +5482,6 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                         <= ( fmax(north, north0) + sel_rad_meters ) ) if( easting
                         >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
                         <= ( fmax(east, east0) + sel_rad_meters ) ) {
-                        //                                                    index = ip;
-                        //free (pfree);
                         return true;
                     }
 
@@ -5507,9 +5489,53 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     east0 = east;
                     ppt++;
                 }
-                //free (pfree);
             }
-
+            else{                       // in oSENC V2, Array of points is stored in prearranged VBO array.
+                if( obj->m_ls_list ){
+                
+                    float *ppt;
+                    unsigned char *vbo_point = (unsigned char *)obj->m_chart_context->chart->GetLineVertexBuffer();
+                    line_segment_element *ls = obj->m_ls_list;
+        
+                    while(ls && vbo_point){
+                        int nPoints;
+                        if( (ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV) ){
+                            ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
+                            nPoints = ls->pedge->nCount;
+                        }
+                        else{
+                            ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
+                            nPoints = 2;
+                        }
+                    
+                        float north0 = ppt[1];
+                        float east0 = ppt[0];
+                        
+                        ppt += 2;
+                    
+                        for(int ip=0 ; ip < nPoints - 1 ; ip++){
+                            
+                            float north = ppt[1];
+                            float east = ppt[0];
+                            
+                            if( northing >= ( fmin(north, north0) - sel_rad_meters ) )
+                                if( northing <= ( fmax(north, north0) + sel_rad_meters ) )
+                                    if( easting >= ( fmin(east, east0) - sel_rad_meters ) )
+                                        if( easting <= ( fmax(east, east0) + sel_rad_meters ) ) {
+                                 return true;
+                             }
+                                    
+                             north0 = north;
+                             east0 = east;
+                                    
+                             ppt += 2;
+                        }            
+                
+                        ls = ls->next;
+                    }
+                }
+            }
+            
             break;
         }
 
@@ -6227,7 +6253,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                             attribStr << _T("</font></td></tr>\n");
                             inDepthRange = false;
                         }
-                        attribStr << _T("<tr><td valign=top><font size=-2>") << curAttrName;
+                        attribStr << _T("<tr><td valign=top><font size=-2>");
+                        if(curAttrName == _T("catgeo"))
+                            attribStr << _T("CATGEO");
+                        else
+                            attribStr << curAttrName;
                         attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                     }
                 }
@@ -6243,9 +6273,13 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 if( isLight ) {
                     curLight->attributeValues.Add( value );
                 } else {
-                    if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") ) value.Replace(
-                            _T("|"), _T("<br>") );
-                    attribStr << value;
+                    if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") )
+                        value.Replace(_T("|"), _T("<br>") );
+                    
+                    if(curAttrName == _T("catgeo"))
+                        attribStr << type2str(current->obj->Primitive_type);
+                    else
+                        attribStr << value;
 
                     if( !( curAttrName == _T("DRVAL1") ) ) {
                         attribStr << _T("</font></td></tr>\n");
