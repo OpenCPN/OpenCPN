@@ -4914,14 +4914,14 @@ void MyFrame::SetENCDisplayCategory( enum _DisCat nset )
 #ifdef USE_S57
     if( ps52plib ) {
          
-//        SetMenubarItemState( ID_MENU_ENC_TEXT, ps52plib->GetShowS57Text() );
-        
-        ps52plib->SetDisplayCategory(nset);
-        
-        if(g_pi_manager)
+       ps52plib->SetDisplayCategory(nset);
+       
+       UpdateGlobalMenuItems();
+       
+       if(g_pi_manager)
             g_pi_manager->SendConfigToAllPlugIns();
         
-        cc1->ReloadVP();
+       cc1->ReloadVP();
     }
     
 #endif
@@ -5396,7 +5396,17 @@ void MyFrame::UpdateGlobalMenuItems()
         }
         m_pMenuBar->FindItem( ID_MENU_ENC_LIGHTS )->Check( (!ps52plib->IsObjNoshow("LIGHTS")) && light_state );
 
-        m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
+        // Menu "Anchor Info" entry is only accessible in "All" or "MarinersStandard" categories
+        DisCat nset = ps52plib->GetDisplayCategory();
+        if((nset == MARINERS_STANDARD) || (nset == OTHER) ){
+            m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
+            m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, true);
+        }
+        else{
+            m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( false );
+            m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, false);
+        }            
+            
     }
 #endif
 }
