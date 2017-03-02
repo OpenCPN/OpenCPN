@@ -330,81 +330,6 @@ wxDialog                *g_pcurtain;
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
 
-//    Constants for right click menus
-enum
-{
-    ID_DEF_MENU_MAX_DETAIL = 1,
-    ID_DEF_MENU_SCALE_IN,
-    ID_DEF_MENU_SCALE_OUT,
-    ID_DEF_MENU_DROP_WP,
-    ID_DEF_MENU_QUERY,
-    ID_DEF_MENU_MOVE_BOAT_HERE,
-    ID_DEF_MENU_GOTO_HERE,
-    ID_DEF_MENU_GOTOPOSITION,
-
-    ID_WP_MENU_GOTO,
-    ID_WP_MENU_DELPOINT,
-    ID_WP_MENU_PROPERTIES,
-    ID_RT_MENU_ACTIVATE,
-    ID_RT_MENU_DEACTIVATE,
-    ID_RT_MENU_INSERT,
-    ID_RT_MENU_APPEND,
-    ID_RT_MENU_COPY,
-    ID_TK_MENU_COPY,
-    ID_WPT_MENU_COPY,
-    ID_WPT_MENU_SENDTOGPS,
-    ID_WPT_MENU_SENDTONEWGPS,
-    ID_PASTE_WAYPOINT,
-    ID_PASTE_ROUTE,
-    ID_PASTE_TRACK,
-    ID_RT_MENU_DELETE,
-    ID_RT_MENU_REVERSE,
-    ID_RT_MENU_DELPOINT,
-    ID_RT_MENU_ACTPOINT,
-    ID_RT_MENU_DEACTPOINT,
-    ID_RT_MENU_ACTNXTPOINT,
-    ID_RT_MENU_REMPOINT,
-    ID_RT_MENU_PROPERTIES,
-    ID_RT_MENU_SENDTOGPS,
-    ID_RT_MENU_SENDTONEWGPS,
-    ID_WP_MENU_SET_ANCHORWATCH,
-    ID_WP_MENU_CLEAR_ANCHORWATCH,
-    ID_DEF_MENU_AISTARGETLIST,
-
-    ID_RC_MENU_SCALE_IN,
-    ID_RC_MENU_SCALE_OUT,
-    ID_RC_MENU_ZOOM_IN,
-    ID_RC_MENU_ZOOM_OUT,
-    ID_RC_MENU_FINISH,
-    ID_DEF_MENU_AIS_QUERY,
-    ID_DEF_MENU_AIS_CPA,
-    ID_DEF_MENU_AISSHOWTRACK,
-    ID_DEF_MENU_ACTIVATE_MEASURE,
-    ID_DEF_MENU_DEACTIVATE_MEASURE,
-
-    ID_UNDO,
-    ID_REDO,
-
-    ID_DEF_MENU_CM93OFFSET_DIALOG,
-
-    ID_TK_MENU_PROPERTIES,
-    ID_TK_MENU_DELETE,
-    ID_WP_MENU_ADDITIONAL_INFO,
-
-    ID_DEF_MENU_QUILTREMOVE,
-    ID_DEF_MENU_COGUP,
-    ID_DEF_MENU_NORTHUP,
-    ID_DEF_MENU_TOGGLE_FULL,
-    ID_DEF_MENU_TIDEINFO,
-    ID_DEF_MENU_CURRENTINFO,
-    ID_DEF_ZERO_XTE,
-    
-    ID_DEF_MENU_GROUPBASE,  // Must be last entry, as chart group identifiers are created dynamically
-
-    
-    ID_DEF_MENU_LAST
-};
-
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
 //------------------------------------------------------------------------------
@@ -8342,7 +8267,7 @@ void ChartCanvas::CancelMouseRoute()
 
 int ChartCanvas::GetNextContextMenuId()
 {
-    return ID_DEF_MENU_LAST + 100;  //Allowing for 100 dynamic menu item identifiers
+    return CanvasMenuHandler::GetNextContextMenuId();
 }
 
 bool ChartCanvas::SetCursor( const wxCursor &c )

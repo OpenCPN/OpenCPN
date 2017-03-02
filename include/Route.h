@@ -82,7 +82,6 @@ public:
       void AssembleRoute();
       bool IsEqualTo(Route *ptargetroute);
       void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix);
-      void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &vp, bool bdraw_arrow, int hilite_width = 0);
       void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &vp);
