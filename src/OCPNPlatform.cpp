@@ -347,11 +347,11 @@ void OCPNPlatform::Initialize_1( void )
     type |= MiniDumpWithDataSegs;
     
     //If this flag is specified, the contents of every readable and writeable private memory page will be included into the minidump.
-    type |=  MiniDumpWithPrivateReadWriteMemory;
+    //type |=  MiniDumpWithPrivateReadWriteMemory;
 
     //If this flag is specified, MiniDumpWriteDump function will scan the stack memory of every thread looking for pointers
     //that point to other readable memory pages in the process’ address space.
-    type |=  MiniDumpWithIndirectlyReferencedMemory;
+    //type |=  MiniDumpWithIndirectlyReferencedMemory;
     
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
     
