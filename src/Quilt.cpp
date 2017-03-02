@@ -953,8 +953,11 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                 return current_db_index;
         }
 
-//    if(( -1 == m_refchart_dbIndex) && (m_zout_dbindex >= 0))
+    if(( -1 == m_refchart_dbIndex) && (m_zout_dbindex >= 0))
         BuildExtendedChartStackAndCandidateArray(true, m_zout_dbindex, m_vp_quilt);
+    else
+        BuildExtendedChartStackAndCandidateArray(true, m_refchart_dbIndex, m_vp_quilt);
+    
 
 
     int proposed_ref_index = AdjustRefOnZoom( true, (ChartFamilyEnum)current_family, current_type, proposed_scale_onscreen );
