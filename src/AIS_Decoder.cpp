@@ -588,7 +588,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_mins = arpa_lat - arpa_degs * 100.0;
         arpa_lat = arpa_degs + arpa_mins / 60.0;
         token = tkz.GetNextToken(); // hemisphere N or S
-        if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains(  _T("s") ) == true )
+        if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains( _T("s") ) == true )
             arpa_lat = 0. - arpa_lat;
         token = tkz.GetNextToken(); //3) Longitude, E/W
         token.ToDouble( &arpa_lon );
@@ -596,7 +596,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_mins = arpa_lon - arpa_degs * 100.0;
         arpa_lon = arpa_degs + arpa_mins / 60.0;
         token = tkz.GetNextToken(); // hemisphere E or W
-        if( token.Mid( 0, 1 ).Contains(  _T("W") ) == true || token.Mid( 0, 1 ).Contains(  _T("w") ) == true )
+        if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true )
             arpa_lon = 0. - arpa_lon;
         token = tkz.GetNextToken(); //4) Target name
         if ( token == wxEmptyString )
@@ -646,7 +646,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         aprs_mins = aprs_lat - aprs_degs * 100.0;
         aprs_lat = aprs_degs + aprs_mins / 60.0;
         token = tkz.GetNextToken();            //2) hemisphere N or S
-        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) )
+        if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains( _T("s") ) == true )
             aprs_lat = 0. - aprs_lat;
         token = tkz.GetNextToken(); //3) Longitude, E/W
         token.ToDouble( &aprs_lon );
@@ -654,7 +654,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         aprs_mins = aprs_lon - aprs_degs * 100.0;
         aprs_lon = aprs_degs + aprs_mins / 60.0;
         token = tkz.GetNextToken();            //4) hemisphere E or W
-        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) )
+        if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true )
             aprs_lon = 0. - aprs_lon;
         token = tkz.GetNextToken(); //5) Target name
         int len = token.Length();
