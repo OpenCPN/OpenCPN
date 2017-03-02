@@ -837,12 +837,12 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     //  Find the smallest scale chart of the target type (i.e. skipping cm93)
     //  and make sure that its min scale is at least
     //  small enough to allow reasonable zoomout.
+    //  But this will be calculated without regard to zoom scale factor, so that the piano does not grow excessively
     if(CHART_FAMILY_VECTOR == family){
         for(size_t i = index_array.GetCount() ; i ; i--){
             int test_db_index = index_array.Item( i-1 );
             if( type == ChartData->GetDBChartType( test_db_index ) ){
-                int smallest_min_scale = min_scale.Item(i-1);
-                min_scale.Item(i-1) = smallest_min_scale * 80; //wxMax(smallest_min_scale, 200000);
+                min_scale.Item(i-1) = nom_scale.Item(i-1) * 80;
                 break;
             }
         }
@@ -953,7 +953,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                 return current_db_index;
         }
 
-    if(( -1 == m_refchart_dbIndex) && (m_zout_dbindex >= 0))
+//    if(( -1 == m_refchart_dbIndex) && (m_zout_dbindex >= 0))
         BuildExtendedChartStackAndCandidateArray(true, m_zout_dbindex, m_vp_quilt);
 
 
@@ -1435,8 +1435,20 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
     if( !bf && m_pcandidate_array->GetCount() ) {
         m_lost_refchart_dbIndex = m_refchart_dbIndex;    // save for later
-        m_refchart_dbIndex = GetNewRefChart();
-        BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+        int candidate_ref_index = GetNewRefChart();
+        if(m_refchart_dbIndex != candidate_ref_index){
+            m_refchart_dbIndex = candidate_ref_index;
+            BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+        }
+        //      There was no viable candidate of smaller scale than the "lost chart",
+        //      so choose the smallest scale chart in the candidate list.
+        else{
+            BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+            if(m_pcandidate_array->GetCount()){
+                m_refchart_dbIndex = m_pcandidate_array->Item( m_pcandidate_array->GetCount() - 1 ) ->dbIndex;
+                BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+            }
+        }
     }
 
     if((-1 != m_lost_refchart_dbIndex) && ( m_lost_refchart_dbIndex != m_refchart_dbIndex )) {
