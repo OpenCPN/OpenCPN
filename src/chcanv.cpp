@@ -7680,6 +7680,15 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     {
         if( m_pQuilt && !m_pQuilt->IsComposed() ) return;
 
+        bool busy = false;
+        if( cc1->m_pQuilt->IsQuiltVector() &&
+            ( m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm || m_cache_vp.rotation != VPoint.rotation))
+        {
+            OCPNPlatform::ShowBusySpinner();
+            busy = true;
+        }
+            
+            
         if( ( m_working_bm.GetWidth() != svp.pix_width )
                 || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
                         svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug
@@ -7798,6 +7807,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
             m_pQuilt->RenderQuiltRegionViewOnDCNoText( temp_dc, svp, chart_get_all_region );
         }
+        
+        if(busy)
+            OCPNPlatform::HideBusySpinner();
+        
     }
 
     else                  // not quilted

@@ -3384,7 +3384,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if( ext == _T("000") ) {
         if( m_bbase_file_attr_known ) {
-            OCPNPlatform::ShowBusySpinner();
 
             int sret = FindOrCreateSenc( m_FullPath );
             if( sret != BUILD_SENC_OK ) {
@@ -3399,14 +3398,12 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     }
 
     else if( ext == _T("S57") ) {
-        OCPNPlatform::ShowBusySpinner();
 
         m_SENCFileName = m_TempFilePath;
         ret_value = PostInit( flags, m_global_color_scheme );
 
     }
 
-    OCPNPlatform::HideBusySpinner();
     
     s_bInS57--;
     return ret_value;
@@ -4765,6 +4762,8 @@ bool s57chart::GetBaseFileAttr( const wxString& file000 )
 
 int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName, bool b_progress )
 {
+    OCPNPlatform::ShowBusySpinner();
+    
     //  LOD calculation
     double display_ppm = 1 / .00025;     // nominal for most LCD displays
     double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
@@ -4782,6 +4781,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
     int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
 
+    OCPNPlatform::HideBusySpinner();
+    
     if(ret == ERROR_INGESTING000)
         return BUILD_SENC_NOK_PERMANENT;
     else
