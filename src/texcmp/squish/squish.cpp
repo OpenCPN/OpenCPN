@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdint.h>
    
-#include <squish.h>
+#include "squish.h"
 #include "colourset.h"
 #include "maths.h"
 #include "rangefit.h"
