@@ -810,7 +810,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                         bar_length = 20;
                     
                     msgx += _T("\n[");
-                    wxString block = wxString::Format(_T("%c"), 0x2589);
+                    wxString block = wxString::Format(_T("%c"), 0x2588);
                     float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
                     for(int i=0 ; i < bar_length ; i++){
                         if(i <= cutoff)
