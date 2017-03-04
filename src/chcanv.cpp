@@ -8125,7 +8125,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     
     PaintCleanup();
-    OCPNPlatform::HideBusySpinner();
 
 }
 
