@@ -2139,10 +2139,10 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     }
 
     // all functions called with cc1-> are still slow because they go through ocpndc
-    AISDrawAreaNotices( dc );
+    AISDrawAreaNotices( dc, cc1->GetVP(), cc1 );
 
     cc1->DrawAnchorWatchPoints( dc );
-    AISDraw( dc );
+    AISDraw( dc, cc1->GetVP(), cc1 );
     ShipDraw( dc );
     cc1->AlertDraw( dc );
 
