@@ -6053,30 +6053,30 @@ int s52plib::DoRenderObjectTextOnly( wxDC *pdcin, ObjRazRules *rzRules, ViewPort
             return 0;
         
         // already added, nothing below can change its display category        
-            if(rzRules->obj->bCS_Added ) 
-                return 0;
-            
-            //  Otherwise, make sure the CS, if present, has been evaluated,
-                //  and then check the category again    
-                //  no rules 
-                if( !ObjectRenderCheckCS( rzRules, vp ) )
-                    return 0;
-                
-                
-                rzRules->obj->CSrules = NULL;
-                Rules *rules = rzRules->LUP->ruleList;
-                while( rules != NULL ) {
-                    if( RUL_CND_SY ==  rules->ruleType ){
-                        GetAndAddCSRules( rzRules, rules );
-                        rzRules->obj->bCS_Added = 1; // mark the object
-                        break;
-                    }
-                    rules = rules->next;
-                }
-                
-                // still not displayable    
-                if( !ObjectRenderCheckCat( rzRules, vp ) ) 
-                    return 0;
+        if(rzRules->obj->bCS_Added ) 
+            return 0;
+        
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        //  no rules 
+        if( !ObjectRenderCheckCS( rzRules, vp ) )
+            return 0;
+        
+        
+        rzRules->obj->CSrules = NULL;
+        Rules *rules = rzRules->LUP->ruleList;
+        while( rules != NULL ) {
+            if( RUL_CND_SY ==  rules->ruleType ){
+                GetAndAddCSRules( rzRules, rules );
+                rzRules->obj->bCS_Added = 1; // mark the object
+                break;
+            }
+            rules = rules->next;
+        }
+        
+        // still not displayable    
+        if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+            return 0;
     }
     
     m_pdc = pdcin; // use this DC
@@ -8733,7 +8733,8 @@ bool s52plib::ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp )
 
 bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
 {
-    if( rzRules->obj == NULL ) return false;
+    if( rzRules->obj == NULL ) 
+        return false;
 
     // Of course, the object must be at least partly visible in the viewport
     const LLBBox &vpBox = vp->GetBBox(), &testBox = rzRules->obj->BBObj;
