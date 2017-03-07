@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-01-27 16:14-0500\n"
+"PO-Revision-Date: 2017-03-07 13:51-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -23,11 +23,12 @@ msgstr "Saada päring"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Joonista soovitud ala\n"
+"või klikka siin päringu peatamiseks"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Korrektne ala ja jätka"
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -83,7 +84,7 @@ msgstr "Sätted"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Joonista soovitud ala või klikka siin päringu peatamiseks"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -95,7 +96,7 @@ msgstr "Vali GRIB-i fail"
 
 #: src/GribUIDialog.cpp:1679
 msgid " files don't exist!"
-msgstr ""
+msgstr " faile pole olemas!"
 
 #: src/GribUIDialog.cpp:1701
 msgid " can't be read!"
@@ -475,15 +476,15 @@ msgstr "Taasesituse valikud"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr ""
+msgstr "Kiiruse kontroll"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"
-msgstr ""
+msgstr "Aeglane"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Fast"
-msgstr ""
+msgstr "Kiire"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Loop Mode"
@@ -947,7 +948,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Sa palusid ilmaennustuse rohkem kui 8 päeva ette.\n"
+"See on vastuolus laine-andmetega, mis kõrvaldatakse te päringust,\n"
+"Ära unusta, et peale esimesi 8 päeva on eraldus ainult 2.5\\u00B0x2.5\\u00B0\n"
+"ja ajaintervall 12 tundi."
 
 #: src/GribRequestDialog.cpp:837
 msgid "Max"
@@ -969,7 +973,7 @@ msgstr "Viga! Max. laius on vähem kui min. laius või max. pikkus on vähem kui
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Liiga suur ala! Kumbgi külg peab olema vähem kui 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"

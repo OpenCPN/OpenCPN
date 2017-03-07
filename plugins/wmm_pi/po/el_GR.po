@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:17-0500\n"
-"PO-Revision-Date: 2017-02-25 13:33-0500\n"
+"PO-Revision-Date: 2017-03-07 13:52-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -40,15 +40,15 @@ msgstr "\n"
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
-msgstr ""
+msgstr "Πρόσθετο WMM"
 
 #: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
-msgstr ""
+msgstr "WMM"
 
 #: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
-msgstr ""
+msgstr "Πρόσθετο Παγκόσμιου Μαγνητικού Μοντέλου για το OpenCPN"
 
 #: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
@@ -68,19 +68,19 @@ msgstr "Πρόσθετο Παγκόσμιου Μαγνητικού Μοντέλ�
 
 #: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
-msgstr ""
+msgstr "Σφάλμα, δείτε το log."
 
 #: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
-msgstr ""
+msgstr "Προτιμήσεις WMM"
 
 #: src/wmm_pi.h:78 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
-msgstr ""
+msgstr "Ρυθμίσεις μαγνητικού διαγράμματος"
 
 #: src/WmmUIDialog.cpp:26
 msgid "Boat"
-msgstr ""
+msgstr "Πλοίο"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
@@ -88,7 +88,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
-msgstr ""
+msgstr "Συνολική ένταση"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
@@ -96,7 +96,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
-msgstr ""
+msgstr "Οριζόντια ένταση"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
@@ -104,7 +104,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
-msgstr ""
+msgstr "Βόρεια συνιστώσα"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
@@ -112,7 +112,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
-msgstr ""
+msgstr "Ανατολική συνιστώσα"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
@@ -120,113 +120,113 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
-msgstr ""
+msgstr "Κατακόρυφη συνιστώσα"
 
 #: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
 msgid "Incl"
-msgstr ""
+msgstr "Περιλ."
 
 #: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
 msgid "(DIP) - Geomagnetic Inclination "
-msgstr ""
+msgstr "(DIP) - γεωμαγνητικές κλίση "
 
 #: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
 msgid "Vari"
-msgstr ""
+msgstr "Αποκλ."
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr ""
+msgstr "Μαγνητική απόκλιση"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
-msgstr ""
+msgstr "Δρομέας"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Διάγραμμα"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Ενεργοποίηση διαγράμματος"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
-msgstr ""
+msgstr "Ρυθμίσεις..."
 
 #: src/WmmUIDialog.cpp:274
 msgid "Extended"
-msgstr ""
+msgstr "Επεκτταμένο"
 
 #: src/WmmUIDialog.cpp:274
 msgid "Variation only"
-msgstr ""
+msgstr "Μόνο απόκλιση"
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
-msgstr ""
+msgstr "Προβολή"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr ""
+msgstr "Επιλογές διαγράμματος"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
-msgstr ""
+msgstr "Δείξε τα δεδομένα στη θέση του δρομέα"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Δείξε το εικονίδιο της εργαλειοθήκης"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
-msgstr ""
+msgstr "Εμφάνιση δεδομένων στο εικονίδιο της εργαλειοθήκης"
 
 #: src/WmmUIDialog.cpp:293
 msgid "Window transparency"
-msgstr ""
+msgstr "Διαφάνεια του παράθυρου"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Declination"
-msgstr ""
+msgstr "Απόκλιση"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
-msgstr ""
+msgstr "Μοίρες"
 
 #: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
-msgstr ""
+msgstr "Κλίση"
 
 #: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
-msgstr ""
+msgstr "Ένταση πεδίου"
 
 #: src/WmmUIDialog.cpp:356
 msgid "Nano Tesla"
-msgstr ""
+msgstr "nTesla"
 
 #: src/WmmUIDialog.cpp:366
 msgid "Step Size"
-msgstr ""
+msgstr "Μέγεθος βήματος"
 
 #: src/WmmUIDialog.cpp:377
 msgid "Pole Accuracy"
-msgstr ""
+msgstr "Ακρίβεια πόλου"
 
 #: src/WmmUIDialog.cpp:381
 msgid "About"
-msgstr ""
+msgstr "Περί"
 
 #: src/WmmUIDialog.cpp:384
 msgid "Save"
-msgstr ""
+msgstr "Αποθήκευση"
 
 #: src/WmmUIDialog.cpp:387
 msgid "Cancel"
-msgstr ""
+msgstr "Ακύρωση"
 
 #: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
-msgstr ""
+msgstr "Δημιουργία μαγνητικού χάρτη"
 
