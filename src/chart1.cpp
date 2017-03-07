@@ -821,12 +821,12 @@ int ShowNavWarning()
 {
     wxString msg0(
             _("\n\
-OpenCPN is distributed in the hope that it will be useful,\n\
-but WITHOUT ANY WARRANTY; without even the implied\n\
-warranty of MERCHANTABILITY or FITNESS FOR A\n\
-PARTICULAR PURPOSE.\n\
+OpenCPN is distributed in the hope that it will be useful, \
+but WITHOUT ANY WARRANTY; without even the implied \
+warranty of MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.\n\n\
 See the GNU General Public License for more details.\n\n\
-OpenCPN must only be used in conjunction with approved\n\
+OpenCPN must only be used in conjunction with approved \
 paper charts and traditional methods of navigation.\n\n\
 DO NOT rely upon OpenCPN for safety of life or property.\n\n\
 Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
@@ -835,9 +835,36 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
         wxString::Format(wxT(" .. Version %i.%i.%i"),
             VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 
-    wxMessageDialog odlg( gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
+//    wxMessageDialog odlg( gFrame, msg0, _("Welcome to OpenCPN") + vs, wxCANCEL | wxOK );
 
-    return ( odlg.ShowModal() );
+//    return ( odlg.ShowModal() );
+        
+        wxString msg1;
+        msg1 << _T("<html><body><hr />");
+        
+        for(unsigned int i=0 ; i < msg0.Length() ; i++){
+            if(msg0[i] == '\n')
+                msg1 +=  _T("<br>");
+            else
+                msg1 += msg0[i];
+        }
+        
+        msg1 <<  _T("<hr /></body></html>");
+        
+        int sx, sy;
+        ::wxDisplaySize(&sx, &sy);
+        OCPN_TimedHTMLMessageDialog *pinfoDlg = new OCPN_TimedHTMLMessageDialog( gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
+        
+//         int ch = pinfoDlg->GetCharHeight();
+//         pinfoDlg->SetSize(wxSize(ch * 40, ch * 25));
+        
+        //pinfoDlg->SetSize(wxSize(sx / 3, sy /3));
+        pinfoDlg->Centre();
+        pinfoDlg->ShowModal();
+        
+        
+        return (pinfoDlg->GetReturnCode() );
+        
 }
 
 
@@ -1782,7 +1809,7 @@ bool MyApp::OnInit()
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
-    if( !n_NavMessageShown || ( vs != g_config_version_string ) ) {
+    if( 1 || !n_NavMessageShown || ( vs != g_config_version_string ) ) {
         if( wxID_CANCEL == ShowNavWarning() ) return false;
         n_NavMessageShown = 1;
     }
@@ -12466,3 +12493,138 @@ void ApplyLocale()
     if(gFrame)
         gFrame->RequestNewToolbar( true );
 }
+
+
+BEGIN_EVENT_TABLE(OCPN_TimedHTMLMessageDialog, wxDialog)
+EVT_BUTTON(wxID_YES, OCPN_TimedHTMLMessageDialog::OnYes)
+EVT_BUTTON(wxID_NO, OCPN_TimedHTMLMessageDialog::OnNo)
+EVT_BUTTON(wxID_CANCEL, OCPN_TimedHTMLMessageDialog::OnCancel)
+EVT_CLOSE(OCPN_TimedHTMLMessageDialog::OnClose)
+EVT_TIMER(-1, OCPN_TimedHTMLMessageDialog::OnTimer)
+
+END_EVENT_TABLE()
+
+
+OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
+                                                    const wxString& message,
+                                                    const wxString& caption,
+                                                    int tSeconds,
+                                                    long style,
+                                                    bool bFixedFont,
+                                                    const wxPoint& pos)
+: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
+{
+    m_style = style;
+    if(bFixedFont){
+        wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+        double font_size = dFont->GetPointSize();
+        wxFont *qFont = wxTheFontList->FindOrCreateFont( font_size,wxFONTFAMILY_TELETYPE, dFont->GetStyle(), dFont->GetWeight());
+        SetFont( *qFont );
+    }
+    
+    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+    
+    msgWindow = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                                wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
+    msgWindow->SetBorders( 30 );
+    
+    topsizer->Add( msgWindow, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND, 5 );
+    
+    wxString html;
+    html << message;
+    
+    wxCharBuffer buf = html.ToUTF8();
+    if( buf.data() )                            // string OK?
+       msgWindow->SetPage( html );
+    
+    // 3) buttons
+       int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
+       int center_flag = wxEXPAND;
+       if (style & wxYES_NO)
+           center_flag = wxALIGN_CENTRE;
+       wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
+       if ( sizerBtn )
+           topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
+       
+       SetSizer( topsizer );
+       
+       topsizer->Fit( this );
+       
+       RecalculateSize();
+//       wxSize szyv = msgWindow->GetVirtualSize();
+       
+//       SetClientSize(szyv.x + 20, szyv.y + 20); 
+       
+       CentreOnParent();
+       
+       //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
+       msgWindow->SetBackgroundColour(GetBackgroundColour());
+       
+       m_timer.SetOwner( this, -1 );
+       
+       if(tSeconds > 0)
+           m_timer.Start( tSeconds * 1000, wxTIMER_ONE_SHOT );
+       
+}
+
+void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
+{
+    wxSize esize;
+    esize.x = GetCharWidth() * 60;
+    int sx, sy;
+    ::wxDisplaySize(&sx, &sy);
+    esize.x = wxMin(esize.x, sx * 6 / 10);
+    esize.y = -1;
+    SetClientSize(esize);     // This will force a recalc of internal representation
+    
+    int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
+    SetClientSize(wxSize(esize.x, height1 + 70 ));   // constant is 2xBorders + a little slop.
+    
+}
+
+void OCPN_TimedHTMLMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
+{
+    SetReturnCode(wxID_YES);
+    if(IsModal())
+        EndModal( wxID_YES );
+    else
+        Hide();
+}
+
+void OCPN_TimedHTMLMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
+{
+    SetReturnCode(wxID_NO);
+    if(IsModal())
+        EndModal( wxID_NO );
+    else
+        Hide();
+}
+
+void OCPN_TimedHTMLMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
+{
+    // Allow cancellation via ESC/Close button except if
+    // only YES and NO are specified.
+    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
+    {
+        SetReturnCode(wxID_CANCEL);
+        EndModal( wxID_CANCEL );
+    }
+}
+
+void OCPN_TimedHTMLMessageDialog::OnClose( wxCloseEvent& event )
+{
+    SetReturnCode(wxID_CANCEL);
+    if(IsModal())
+        EndModal( wxID_CANCEL );
+    else
+        Hide();
+}
+
+void OCPN_TimedHTMLMessageDialog::OnTimer(wxTimerEvent &evt)
+{
+    if(IsModal())
+        EndModal( wxID_YES );
+    else
+        Hide();
+}
+
