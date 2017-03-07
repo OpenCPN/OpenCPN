@@ -4468,8 +4468,8 @@ void ChartCanvas::UpdateAIS()
 
         // Draw the AIS Targets on the temp_dc
         ocpnDC ocpndc = ocpnDC( temp_dc );
-        AISDraw( ocpndc );
-        AISDrawAreaNotices( ocpndc );
+        AISDraw( ocpndc, GetVP(), this );
+        AISDrawAreaNotices( ocpndc, GetVP(), this );
 
         //  Retrieve the drawing extents
         ais_rect = wxRect( temp_dc.MinX(), temp_dc.MinY(), temp_dc.MaxX() - temp_dc.MinX(),
@@ -8441,7 +8441,7 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
         g_pi_manager->RenderAllCanvasOverlayPlugIns( dc, GetVP() );
     }
 
-    AISDrawAreaNotices( dc );
+    AISDrawAreaNotices( dc, GetVP(), this);
     DrawEmboss( dc, EmbossDepthScale( ) );
     DrawEmboss( dc, EmbossOverzoomIndicator( dc ) );
 
@@ -8456,7 +8456,7 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     DrawAllWaypointsInBBox( dc, GetVP().GetBBox() );
     DrawAnchorWatchPoints( dc );
 
-    AISDraw( dc );
+    AISDraw( dc, GetVP(), this );
     ShipDraw( dc );
     AlertDraw( dc );
 

@@ -122,6 +122,25 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
     return wxColour( 0, 0, 0 );
 }
 
+bool FontMgr::SetFontColor( const wxString &TextElement, const wxColour color ) const
+{
+  //    Look thru the font list for a match
+  MyFontDesc *pmfd;
+  wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+  while( node ) {
+    pmfd = (MyFontDesc *) node->GetData();
+    if( pmfd->m_dialogstring == TextElement ) {
+      if(pmfd->m_configstring.BeforeFirst('-') == s_locale) {
+        pmfd->m_color = color;
+        return true;
+      }
+    }
+    node = node->GetNext();
+  }
+
+  return false;
+}
+
 wxString FontMgr::GetFontConfigKey( const wxString &description )
 {
     // Create the configstring by combining the locale with
