@@ -2252,9 +2252,10 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         //      Mark lost targets if specified
         double removelost_Mins = fmax(g_RemoveLost_Mins,g_MarkLost_Mins);
         
-        if ( g_bInlandEcdis ){
+        if (g_bInlandEcdis && (td->Class != AIS_ARPA)) {
             double iECD_LostTimeOut = 0.0;
             //special rules apply for europe inland ecdis timeout settings. overrule option settings
+            //Won't apply for ARPA targets where the radar has all control
             if ( td->Class == AIS_CLASS_B){
                 if( (td->NavStatus == MOORED) || (td->NavStatus == AT_ANCHOR) )
                     iECD_LostTimeOut = 18 * 60;
