@@ -1,0 +1,117 @@
+
+
+
+<h1>Linux</h1>
+<div class="level1">
+
+</div>
+
+<h4>32/64 bit Ubuntu/Debian Distributions</h4>
+<div class="level4">
+
+</div>
+
+<h4>32/64 bit Fedora / Cent OS</h4>
+<div class="level4">
+
+<p>
+<br/>
+
+If you are installing OpenCPN for the first time on a computer with Ubuntu, or any other Linux flavor, you have to go through a few steps to make sure that all dependencies are met. Ubuntu uses “deb” packages and Fedora uses the “rpm” packages.
+</p>
+<ul>
+<li class="level1"> For Debian based Linuxes: <b>Make sure that you belong to the “dialout” group.</b>  To find out, run the “$groups” command. If you&#039;re not in “dialout”, add yourself with the command <b>“$sudo usermod -a -G dialout $USER”</b>. Check this straight away, it will save you from frustration later on. If there is a problem connecting the GPS to a physical port, such as /dev/ttyS0, the reason is probably that you don&#039;t belong to “dialout”.</li>
+<li class="level1"> For other Linux distributions, replace “dialout” above, with the result of this command: $stat -c %G /dev/ttyS0</li>
+<li class="level1"> <b>It is recommended that you install the “xcalib” program, that is necessary to dim the screen for night time usage.</b>  Use your favourite package manager or just issue <em>$sudo apt-get install xcalib </em>from the command line (for debian based distros).</li>
+<li class="level1"> <b>It is recommended that you install the “xdg-utils” program, that helps the grib plugin compose a SailDoc grib-request-mail.</b>  Use your favourite package manager or just issue <em>$sudo apt-get install xdg-utils </em>from the command line (for debian based distros).</li>
+<li class="level1"> On Ubuntu, start “System→Administration→Synaptic”. In Synaptic  go to “Settings→Repositories” and tick the box “Community-maintained Open Source software (universe)”. Close Synaptic.</li>
+<li class="level1"> Download the correct .deb or .rpm from <a href="http://opencpn.org/download" class="urlextern" title="http://opencpn.org/download" rel="nofollow">Download OpenCPN</a>.</li>
+<li class="level1"> For Ubuntu, only use the download with an Ubuntu version number if you have exactly that version. Otherwise use the link “<a href="https://launchpad.net/~opencpn/+archive/opencpn" class="urlextern" title="https://launchpad.net/~opencpn/+archive/opencpn" rel="nofollow">Download </a>OpenCPN 3.X.X for all other *Ubuntu&#039;s”.</li>
+<li class="level1"> Use the stable release for navigation en route, or if you just started using OpenCPN.</li>
+<li class="level1"> Click on the downloaded package. An installation manager will guide you on most Linux distributions. All dependencies should automatically be installed. <b>For most Linux installations, this is all you have to do.</b>  Consult the following 3 paragraphs if you run into trouble.</li>
+<li class="level1"> If you have problems with dependencies, run the recommended command line in the next paragraph. First check that you really have downloaded the correct version of OpenCPN. se above.</li>
+<li class="level1"> sudo gdebi</li>
+</ul>
+
+<p>
+ &lt;downloaded_opencpn_file.deb&gt;. The command “gdebi” will automatically install the dependencies for you.
+</p>
+<ul>
+<li class="level1"> It is also possible to install the package via dpkg or rpm, on the condition that all dependencies are met. To make sure that this is the case on <b>Ubuntu</b>, open a terminal window to get a command line, (Applications→Accessories→Terminal) and copy and paste the following line:</li>
+</ul>
+<pre class="code">sudo apt-get install libwxgtk2.8-0 libwxbase2.8-0 wx-common libglu1-mesa libgl1-mesa-glx zlib1g bzip2 gpsd gpsd-clients xcalib xdg-utils libportaudio2 libkml0 libtinyxml2.6.2 liburiparser1 zlib1g libexpat1</pre>
+
+<p>
+Then proceed with the commands below.
+</p>
+<ul>
+<li class="level1"> For Ubuntu: $ sudo dpkg -i &lt;downloaded_file.deb <br/>
+For Fedora: # sudo yum install –nogpgcheck &lt;downloaded_file.rpm&gt;</li>
+</ul>
+<ul>
+<li class="level1"> The binary will be installed to <b>/</b><b>usr/bin/opencpn</b>  and the static data used by the program will be in <b>/usr/share/opencpn  </b></li>
+<li class="level3"> If this is a new installation, click on the Options icon <img src="../../opencpn/manual/settings.h.32_tok.90bb99_w.32.png" class="media" alt="" width="32" height="32" />and configure your GPS source, chart directories, and other settings.</li>
+<li class="level3"> <b>If there is a problem with sound</b>, make sure that you, as a user, belongs to the “audio” group. To find out, run the “$groups” command. If you&#039;re not in “audio”, add yourself with “$sudo usermod -a -G audio $USER”</li>
+<li class="level3"> If you are running Debian Squeeze and want to install OpenCPN from the distributions .deb package, you will need to install with something like this in order to satisfy install dependencies related to libtinyxml: <br/>
+$sudo dpkg -i –force-depends opencpn_3.1.1327-1_i386.deb</li>
+</ul>
+
+</div>
+
+<h2>Using Linux repositories, an easier way to install and update.</h2>
+<div class="level2">
+
+<p>
+Installing in a different, easy way.
+</p>
+
+</div>
+
+<h4>Installing on Ubuntu</h4>
+<div class="level4">
+
+<p>
+Add the OpenCPN ppa repository as explained in <em>configuring <a href="http://opencpn.org/ocpn/start_install_ubuntu-ppa" class="urlextern" title="http://opencpn.org/ocpn/start_install_ubuntu-ppa" rel="nofollow">Ubuntu PPA</a></em> <br/>
+- If you are using Synaptic, add the repository, reload the software sources as it suggests, search for and install opencpn <br/>
+- No need to install anything manually
+</p>
+
+</div>
+
+<h4>Other 32, 64bits, the armhf architecture, Linux Distributions and the BSD operating systems</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Currently other distributions requires compiling the source. This will involve resolving various dependencies and is for folks comfortable with developing on Linux.</li>
+<li class="level1"> Download the source from <a href="http://sourceforge.net/projects/opencpn/files/opencpn/2.3.1/OpenCPN-2.3.1-Source.tar.gz/download" class="urlextern" title="http://sourceforge.net/projects/opencpn/files/opencpn/2.3.1/OpenCPN-2.3.1-Source.tar.gz/download" rel="nofollow">sourceforge.net </a>or directly from the Git server. The SourceForge link for this project is <a href="http://sourceforge.net/projects/opencpn/" class="urlextern" title="http://sourceforge.net/projects/opencpn/" rel="nofollow">sourceforge.net/projects/opencpn/</a>. More about compiling on Linux here <a href="http://opencpn.org/compiling_source_linux" class="urlextern" title="http://opencpn.org/compiling_source_linux" rel="nofollow">Compiling - Linux.</a></li>
+<li class="level1"> Interested in maintaining a package for your favorite Linux distribution? Follow the SourceForge link above.</li>
+<li class="level1"> This also includes the different BSD distributions. Report your experiences back to the forum.</li>
+</ul>
+
+</div>
+
+<h4>openSUSE notes</h4>
+<div class="level4">
+
+<p>
+Starting with openSUSE 11.4 and onwards, wxWidgets framework is shipped in several mutually exclusive flavors — “STL”, “noSTL” (“wxContainer”), “ANSI”, — of which OpenCPN is only compatible with “<b>noSTL</b>” (“<b>wxContainer</b>”) flavor.
+</p>
+<ul>
+<li class="level1"> Older versions of OpenCPN support wxWidgets 2.8, which does not have a “default” flavor in openSUSE, and of which any flavor may be installed alongside with each other, but OpenCPN stricly requires “<b>wxContainer</b>”.</li>
+<li class="level1"> Modern versions of OpenCPN, starting with beta branch 4.5, use functionality that is only available in wxWidgets 2.9, but since that branch is not packaged by openSUSE maintainers, then wxWidgets 3.0 becomes a must. That one defaults to “STL” flavor, which is not appropriate for OpenCPN and will result in multitude of mysterious compilation errors if used, — OpenCPN requires “<b>noSTL</b>”.</li>
+</ul>
+
+<p>
+To install the required wxWidgets 3.0, use the following command:
+</p>
+<pre class="code">sudo zypper install wxWidgets-3_0-nostl-devel</pre>
+
+<p>
+For legacy OpenCPN builds against the older wxWidgets 2.8, some virtual wx libraries (with no real content) must also be installed in addition to real-deal wx libraries themselves:
+</p>
+<pre class="code">sudo zypper install wxWidgets-wxcontainer-compat-lib-config libwx_baseu-2_8-0-compat-lib-wxcontainer libwx_baseu_net-2_8-0-compat-lib-wxcontainer libwx_baseu_xml-2_8-0-compat-lib-wxcontainer libwx_gtk2u_adv-2_8-0-compat-lib-wxcontainer libwx_gtk2u_aui-2_8-0-compat-lib-wxcontainer libwx_gtk2u_core-2_8-0-compat-lib-wxcontainer libwx_gtk2u_gl-2_8-0-compat-lib-wxcontainer libwx_gtk2u_html-2_8-0-compat-lib-wxcontainer</pre>
+
+<p>
+The above commands will also automatically trigger installation of underlying real-deal libraries and other dependencies if they were not present before.
+</p>
+
+</div>

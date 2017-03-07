@@ -1,0 +1,112 @@
+
+
+
+<h2>Raspberry Pi 2/3</h2>
+<div class="level2">
+
+</div>
+
+<h3>Installing Raspbian</h3>
+<div class="level3">
+
+<p>
+OpenCPN works on Raspberry Pi 2 and 3 (recommended) models. You can install OpenCPN adding an Ubuntu PPA (Personal Packages Archives) to your system&#039;s Software Sources. We will see how to do this but first of all you need to have a running system.
+</p>
+
+<p>
+Raspbian is the official Operating System for Raspberry Pi. You have two options to install Raspbian on an SD card: with NOOBS (New Out Of Box Software) or installing an SD image directly. We recommend NOOBS.
+</p>
+
+<p>
+Follow this easy guide for both options: <a href="https://www.raspberrypi.org/learning/software-guide/quickstart/" class="urlextern" title="https://www.raspberrypi.org/learning/software-guide/quickstart/" rel="nofollow">https://www.raspberrypi.org/learning/software-guide/quickstart/</a>
+</p>
+
+<p>
+If you feel lazy you can try <a href="http://www.sailoog.com/en/openplotter" class="urlextern" title="http://www.sailoog.com/en/openplotter" rel="nofollow">OpenPlotter</a>, a complete marine Operating System for Raspberry Pi with OpenCPN + plugins installed and amazing extra tools ready to use. OpenPlotter can be installed with NOOBS following this guide: <a href="https://sailoog.gitbooks.io/openplotter-documentation/content/en/getting_started.html" class="urlextern" title="https://sailoog.gitbooks.io/openplotter-documentation/content/en/getting_started.html" rel="nofollow">https://sailoog.gitbooks.io/openplotter-documentation/content/en/getting_started.html</a>
+</p>
+
+</div>
+
+<h3>Adding OpenCPN Ubuntu PPA to Raspbian Software Sources</h3>
+<div class="level3">
+
+<p>
+Once you have Raspbian running on Raspberry Pi, go to Menu → Accessories → Terminal, and type:
+</p>
+<pre class="code">sudo nano /etc/apt/sources.list</pre>
+
+<p>
+A text editor will open. Move the cursor to the end and add this line:
+</p>
+<pre class="code">deb http://ppa.launchpad.net/opencpn/opencpn/ubuntu/ trusty main</pre>
+
+<p>
+Save the file pressing Ctrl+X, say Yes and press enter. Now type:
+</p>
+<pre class="code">sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C865EB40</pre>
+
+<p>
+and press enter. Now be sure you have Internet connection and type:
+</p>
+<pre class="code">sudo apt-get update</pre>
+
+<p>
+The Software sources will be updated and finally you will have to type:
+</p>
+<pre class="code">sudo apt-get install opencpn</pre>
+
+<p>
+<b>and you are done!</b>
+</p>
+
+<p>
+To install OpenCPN and all the available plugins for Linux, type:
+</p>
+<pre class="code">sudo apt-get install opencpn*</pre>
+
+<p>
+If you get an error doing this, you will have to install the plugins one by one typing:
+</p>
+<pre class="code">sudo apt-get install opencpn-plugin-watchdog
+sudo apt-get install opencpn-plugin-statusbar
+…</pre>
+
+<p>
+If a new version of OpenCPN is released, just type:
+</p>
+<pre class="code">sudo apt-get update
+sudo apt-get install opencpn</pre>
+
+</div>
+
+<h3>Advanced</h3>
+<div class="level3">
+
+</div>
+
+<h4>Installing OpenCPN betas</h4>
+<div class="level4">
+
+<p>
+Coming soon
+</p>
+
+</div>
+
+<h4>OpenGL acceleration</h4>
+<div class="level4">
+
+<p>
+Coming soon
+</p>
+
+</div>
+
+<h4>Compiling OpenCPN on Raspberry Pi</h4>
+<div class="level4">
+
+<p>
+<a href="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:developer_guide:compiling_linux:rpi2" class="urlextern" title="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:developer_guide:compiling_linux:rpi2" rel="nofollow">https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:developer_guide:compiling_linux:rpi2</a>
+</p>
+
+</div>

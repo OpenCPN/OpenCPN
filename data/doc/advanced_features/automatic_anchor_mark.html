@@ -1,0 +1,43 @@
+
+
+
+<h1>Automatic Anchor Mark</h1>
+<div class="level1">
+
+<p>
+Automatic Anchor Mark.  This is what it does. If the following are ALL true:
+</p>
+<ol>
+<li class="level1"> In “Cruising” mode, meaning that speed has at some point exceeded 3.0 kts.</li>
+<li class="level1"> Current speed is less than 0.5 kts.</li>
+<li class="level1"> OpenCPN has been up at least 30 minutes</li>
+<li class="level1"> OpenCPN is exiting normally</li>
+<li class="level1"> There is no anchor watch set on an “anchor…” icon mark.</li>
+<li class="level1"> Any “Anchorage - icon” waypoint within 0.25 NM of current GPS location is deleted.</li>
+</ol>
+
+<p>
+Then, OpenCPN will drop a waypoint at the current location, with the name - “Anchorage created on [Date Stamp]”.
+</p>
+
+<p>
+Thus waypoints are automatically created for known good anchorages as you shut down the computer.
+The 0.25 NM condition prevents clogging up frequently visited anchorages with closely spaced waypoints.
+The other conditions help to prevent spurious waypoints.
+</p>
+
+<p>
+To use this feature find opencpn.conf or opencpn.ini as it is called in windows.
+Search for a line like this:
+</p>
+<pre class="code">AutoAnchorDrop=0 </pre>
+
+<p>
+and change the value from “0” to “1”.
+</p>
+
+<p>
+Also see <a href="configuration_file.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:configuration_file">Configuration File</a>
+</p>
+
+</div>

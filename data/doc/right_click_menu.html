@@ -1,0 +1,255 @@
+
+
+
+<h1>Right Click Menu</h1>
+<div class="level1">
+
+<p>
+The right click menu is always available as long as the cursor is somewhere in the chart area. <b>The content of this menu is very context sensitive.</b> The reason for the “Focused Context Menus”, is to keep the number of options down to a reasonable level, and still be able to deal with all situations. Additionally, many Plugins add items to the right-click menu.
+</p>
+
+<p>
+There are basic right-click menus when clicking at a random point, and very focused menus when clicking on a waypoint, a route, a track or an AIS target. If you have just created or deleted a waypoint, or if chart groups are defined, there are further entries added to the basic menu. Some plugins also adds entries to the right-click menu when they are used. Below, the basic entries are explained.The more context specific entries are dealt with as the concerned feature is explained.
+</p>
+
+</div>
+
+<h3>The basic single charts right-click menus.</h3>
+<div class="level3">
+
+<p>
+Below is first the rastercharts menu to the left and then the vector chart menu.
+Available “hotkeys”, if any, are shown to the right.
+</p>
+
+<p>
+<img src="opencpn/manual/right-click-rnc-single-chart.h.273_tok.4fedf2_w.274.png" class="media" alt="" width="274" height="273" />
+<img src="opencpn/manual/right-click-enc-single-chart.h.252_tok.e226fb_w.254.png" class="media" alt="" width="254" height="252" />
+</p>
+
+<p>
+Starting with the <b>left menu</b> for <b>rastercharts</b>.
+</p>
+
+</div>
+
+<h4>Measure</h4>
+<div class="level4">
+
+<p>
+Activates a “pencil”. Move the pencil with the cursor. Put the tip of the <b>pencil on a position</b> that you want to measure from. <b>Left-click</b>, a dot Position with a circle around is created. <b>Move the pencil with the mouse</b> and s<b>ee the distance and bearing from the point</b> to the pencil-tip in “real time”. <b>Left-clicking again</b> creates a temporary waypoint. When moving the “pencil” again, distance and bearing, once again are shown from the temporary waypoint. The total distance from the original measure point, via the temporary wapoint(s) are also shown as “Route Distance”. <b>Right click</b> and mark <b>“Measure Off”</b> to stop measuring.
+</p>
+
+<p>
+For longer distances, specially on east.west courses on higher latitudes, the measure tool seamlessly switches to display and measure great circles instead of Mercator rhumb-lines. Read more <em><b><a href="toolbar_buttons/route_mark_manager/great_circle_sailing.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager:great_circle_sailing">Great-circle Sailing</a></b></em><br/>
+
+</p>
+
+<p>
+The  “Create Route” tool works in a similar way, but you can&#039;t use the two tools at the same time.
+</p>
+
+</div>
+
+<h4>Max Detail Here</h4>
+<div class="level4">
+
+<p>
+<img src="opencpn/manual/multileg.h.581_tok.464c0e_w.500.png" class="media" alt="" width="500" height="581" />
+</p>
+
+<p>
+Displays the largest scale, most detailed chart, available in the position of the cursor.<br/>
+
+It is assumed that there are more than one chart available at the position.
+</p>
+
+</div>
+
+<h4>Scale In</h4>
+<div class="level4">
+
+<p>
+Displays the next larger scale chart.<br/>
+
+It is assumed that there are more than one chart available at the position.
+</p>
+
+</div>
+
+<h4>Scale Out</h4>
+<div class="level4">
+
+<p>
+Displays the next smaller scale chart.<br/>
+
+It is assumed that there are more than one chart  available at the position.<br/>
+
+</p>
+
+</div>
+
+<h4>Create a Mark</h4>
+<div class="level4">
+
+<p>
+Drops a mark in the position of the cursor. Further explained on this page <em><b><a href="getting_started/marks_and_routes.html#create_a_mark" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started:marks_and_routes">Marks and Routes</a></b></em><br/>
+
+</p>
+
+</div>
+
+<h4>Move Boat Here</h4>
+<div class="level4">
+
+<p>
+Moves own boats position to the position pointed at. This item is only visible in the right click-menu if the GPS isn&#039;t connected.<br/>
+
+</p>
+
+</div>
+
+<h4>Navigate to here</h4>
+<div class="level4">
+
+<p>
+Creates an instant active route from own boat to the position clicked. The option does not appear when following an active route. More about routes: <em><b><a href="getting_started/marks_and_routes.html#create_a_mark" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started:marks_and_routes">Marks and Routes</a></b></em><br/>
+
+</p>
+
+</div>
+
+<h4>Center View</h4>
+<div class="level4">
+
+<p>
+Activates a small dialog where latitude and longitude can be entered. Pressing “OK” centers the display on this position, keeping the same scale. If a position has been copied, and is in your copy buffer, it will be displayed as default values. OpenCPN accepts a wide variety of position formats. The values entered is kept during a session, but goes when restarting OpenCPN.<br/>
+
+</p>
+
+</div>
+
+<h4>Course Up Mode</h4>
+<div class="level4">
+
+<p>
+Is shown because we are in North Up Mode. Clicking this entry changes the display to “North Up  Mode.” It is a toggle switch between “North Up” and “Course Up”. Read more about display orientation: <em><b><a href="toolbar_buttons/options_setting.html#navigation_modes" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:options_setting">navigation_modes</a></b></em><br/>
+
+</p>
+
+</div>
+
+<h4>Hide This Chart</h4>
+<div class="level4">
+
+<p>
+Hides the chart from quilting<br/>
+
+</p>
+
+</div>
+
+<h4>Chart Groups</h4>
+<div class="level4">
+
+<p>
+Selector list of all defined Chart Groups. Very useful.<br/>
+
+</p>
+
+</div>
+
+<h4>AIS Target List</h4>
+<div class="level4">
+
+<p>
+Shows a list of discovered AIS targets, if any. Read more on <em><b><a href="toolbar_buttons/ais.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:ais">AIS</a></b></em><br/>
+
+</p>
+
+<p>
+Looking at the right click menu for vector charts, to the right above,we can see these additional entries.<br/>
+
+</p>
+
+</div>
+
+<h4>Object Query</h4>
+<div class="level4">
+
+<p>
+Every point on a vector-chart has certain attributes, or information. This can vary from just the depth in mid ocean to much more. Double clicking is an alternative to display the object query dialog. Here is an example from a lateral buoy in the entrance channel to a medium sized port.<br/>
+
+</p>
+
+<p>
+<img src="opencpn/manual/objq.h.489_tok.b86de5_w.441.png" class="media" alt="" width="441" height="489" /><br/>
+
+</p>
+
+<p>
+The scrollbar on the right side of the dialog, reveals that more info is available by scrolling down. Much more about this on the <em><b><a href="charts/vector_display_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:vector_display_tab">Vector Display</a></b></em><br/>
+
+</p>
+
+</div>
+
+<h5>CM93 Offset Dialog</h5>
+<div class="level5">
+
+<p>
+Apply corrections to CM93 chart cells through this dialog. Read more on the  <em><b><a href="charts/cm93_offsets.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:cm93_offsets">CM93 Offsets</a></b></em><br/>
+
+</p>
+
+<p>
+page in the Advanced section of this manual.<br/>
+
+</p>
+
+</div>
+
+<h3>The basic quilted charts right-click menus, for raster charts and vector charts</h3>
+<div class="level3">
+
+<p>
+<img src="opencpn/manual/right-click-rnc-quilting.h.275_tok.26913e_w.274.png" class="media" alt="" width="274" height="275" />
+<img src="opencpn/manual/right-click-enc-quilting.h.251_tok.e3aa3a_w.254.png" class="media" alt="" width="254" height="251" /><br/>
+
+The only new item in the quilted menus is
+</p>
+
+</div>
+
+<h4>Hide this chart</h4>
+<div class="level4">
+
+<p>
+The chart becomes excluded from the quilt. To show the chart again, find it in the chart bar, now marked with a red “<span style='font-family: inherit; font-size:inherit; color: rgb(255,0,0);  background-color: inherit '>X</span>”, right click and press “<b>Show this Chart</b>”. Read more here: <em><b><a href="charts/chart_quilting.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_quilting">Chart Quilting</a></b></em>
+</p>
+
+</div>
+
+<h2>Left Mouse Click</h2>
+<div class="level2">
+
+<p>
+<b>Left Mouse click on chart </b>moves to center of view <br/>
+
+When  <b>Options&gt; UI &gt; Touchscreen interface</b> is checked  <b>Left-mouse Click</b> becomes a “Hand” which will grab and pan the screen.<br/>
+
+</p>
+
+</div>
+
+<h2>Scroll Wheel</h2>
+<div class="level2">
+
+<p>
+<b>Scroll Wheel</b>, zooming in/out<br/>
+
+<b>Alt + scroll wheel</b>, zooming in/out in small steps.<br/>
+
+</p>
+
+</div>

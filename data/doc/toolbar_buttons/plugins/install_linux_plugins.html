@@ -1,0 +1,69 @@
+
+
+
+<h1>Install Linux Plugins</h1>
+<div class="level1">
+
+<p>
+After releasing OpenCPN 4.0, the plugins are being migrated to the official OpenCPN PPA repository.
+</p>
+
+</div>
+
+<h3>Ubuntu / Debian</h3>
+<div class="level3">
+
+<p>
+To configure the your system to use the official repository, follow the instructions at <a href="../../getting_started/opencpn_installation/ubuntu_ppa.html" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started:opencpn_installation:ubuntu_ppa">Ubuntu PPA</a>
+</p>
+
+<p>
+After adding the repository, you can use the Software Center to install the OpenCPN plugins as any other software package or use the command line tools
+</p>
+
+<p>
+<b>sudo apt-get update <br/>
+
+sudo apt-get install opencpn-plugin&lt;PLUGIN_NAME&gt;</b>
+</p>
+
+<p>
+where <b>&lt;PLUGIN_NAME&gt;</b> is the name of the plugin. For example, to install the WMM plugin, the complete commad will be:
+</p>
+
+<p>
+<b>sudo apt-get install opencpn-plugin-wmm</b>
+</p>
+
+</div>
+
+<h3>Note for the users who previously installed the plugin packages manually</h3>
+<div class="level3">
+
+<p>
+Unfortunately, the new packages conflict with the plugins downloaded originally from opencpn.org. To resolve the conflict, either uninstall the plugin before using the version from the PPA or open the Terminal and use the following command to install a plugin:
+</p>
+
+<p>
+<b>sudo apt-get -o Dpkg::Options::=“–force-overwrite” install opencpn-plugin-&lt;PLUGIN_NAME&gt;</b><br/>
+
+</p>
+
+<p>
+where <b>&lt;PLUGIN_NAME&gt;</b> is the name of the plugin, for example to install the WMM plugin, the complete command will be:
+</p>
+
+<p>
+<b>sudo apt-get -o Dpkg::Options::=“–force-overwrite” install www-plugin-wmm</b>
+</p>
+
+</div>
+
+<h3>Fedora / CentOS</h3>
+<div class="level3">
+
+<p>
+<b>yum install opencpn-plugin-&lt;PLUGIN_NAME&gt;</b>
+</p>
+
+</div>

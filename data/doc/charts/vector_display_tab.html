@@ -1,0 +1,454 @@
+
+
+
+<h1>Vector Display Tab</h1>
+<div class="level1">
+
+<p>
+OpenCPN makes a serious effort to be compliant with IHO standards for ECDIS display of cartography.<br/>
+
+<img src="../opencpn/manual/text.h.32_tok.879d9c_w.32.png" class="media" alt="" width="32" height="32" />
+</p>
+
+<p>
+<b>First</b> One very important setting for vector charts is handled directly from the main toolbar.
+This button toggles all text displayed on a vector chart On and Off. The hotKey “<b>T</b>” is an alternative for toggling the text. In OpenGL mode, all text will always be horizontal when using the “Course Up” option.
+</p>
+
+<p>
+<b>Second</b>  Double clicking on a vector chart, as long as the cursor hasn&#039;t changed to a green arrow near the edges, brings up an information dialog, displaying the available vector-chart information at the selected point. Scroll down to see all the information. An alternative to double clicking is right-clicking an select “Object Query”. Note that a single normal (left) click will center the chart at that point.
+</p>
+
+<p>
+<a href="../opencpn/manual/dyngnaset.id.opencpn_3Aopencpn_user_manual_3Acharts_3Avector_display_tab.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Acharts%3Avector_display_tab&media=opencpn:manual:dyngnaset.png" class="media" title="opencpn:manual:dyngnaset.png"><img src="../opencpn/manual/dyngnaset.png" class="media" alt="" /></a>
+</p>
+
+<p>
+The example shown above is the result of double-clicking on a lighthouse in a busy area.
+</p>
+
+<p>
+Exactly what is shown in this dialog depend on the settings described below in “Display Categories”.
+</p>
+
+<p>
+<b>Third</b> It is possible to select what font is used for the text on vector charts. There is an entry in ToolBox &gt; Languages-Fonts &gt; Choose Fonts tab, called <b>ChartTexts</b>. Here you select what font-face to use, and a template size. Weight and final size of the displayed texts depends on the charts you are using, but if the charts contain various weights and sizes, they will all scale together depending on what size you select.
+</p>
+
+<p>
+<b>Options-Charts-Vector Charts Tab</b> is where everything else is handled.
+</p>
+
+<p>
+If the S63 chart plugin is active, there will also be a “S63 Charts” tab. Read more about <em><b><a href="../toolbar_buttons/plugins/charts/s63_vector_charts.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:charts:s63_vector_charts">S63 Vector Charts</a></b></em>, when you have read this page.<br/>
+
+</p>
+
+<p>
+<a href="../opencpn/manual/vector-display.id.opencpn_3Aopencpn_user_manual_3Acharts_3Avector_display_tab.jpg.detail.html?id=opencpn%3Aopencpn_user_manual%3Acharts%3Avector_display_tab&media=opencpn:manual:vector-display.jpg" class="media" title="opencpn:manual:vector-display.jpg"><img src="../opencpn/manual/vector-display.tok.c8094c_w.500.jpeg" class="media" title="vector-display.jpg" alt="vector-display.jpg" width="500" /></a>
+</p>
+
+</div>
+
+<h2>Display Categories</h2>
+<div class="level2">
+
+<p>
+<b>If you are new to OpenCPN and vector charts please start with the “All” Display Category</b>, to avoid risks and possible confusion. The Display Category is selected from the drop down menu. More below.
+</p>
+
+<p>
+Navigators has the choice of three pre-defined, different, presentations of ENC content, Base, Standard and All. OpenCPN also has the very flexible Mariners Standard, which is better described as “Mariners Choice”. <br/>
+
+</p>
+
+</div>
+
+<h4>Base</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Displays general information, including coastline, safety-contour, isolated danger,</li>
+<li class="level1"> buoy, beacon traffic separation zone, etc.</li>
+<li class="level1"> From the <abbr title="In my opinion">IMO</abbr> definitions:</li>
+<li class="level1"> Display Base means the level of SENC information which cannot be removed from the display, consisting of information which is required at all times in all geographic areas and all circumstances. It is not intended to be sufficient for safe navigation. <br/>
+</li>
+</ul>
+
+</div>
+
+<h4>Standard</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Everything in “Base” and aids to navigation, fairways, channel limits, restricted navigation zones, restricted areas, etc.. <br/>
+</li>
+</ul>
+
+</div>
+
+<h4>All</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Everything in “Standard” and more. This level shows all informatio, not contolled in other settings options. More about what the <em><b><a href="imho_ecdis.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:imho_ecdis">IMO ECDIS</a></b></em> says about the content of these three levels. This is also a good choice for actual, underway, navigation, avoiding the possible risks involved in “Mariners Standard”. See more below. <br/>
+</li>
+</ul>
+
+</div>
+
+<h4>Mariners Standard</h4>
+<div class="level4">
+<ul>
+<li class="level1"> <b>Reset to STANDARD</b> button. Change the tick marks to match STANDARD.</li>
+<li class="level1"> <b>Select All</b> button.  Select all items.</li>
+<li class="level1"> <b>Clear All</b> button.   Clear all items.</li>
+<li class="level1"> These buttons only work with Mariner&#039;s Standard.</li>
+<li class="level1"> Users can use the filter tick box to set the display of items. A large set of filters, about 186, can be employed. They are all to the IHO S57 standard, but has been given a label that is easy to understand.</li>
+<li class="level1"> Note that Mariners Standard gives the user a much wider choice of what to display, however it conforms to the approved IHO recommendations.  </li>
+<li class="level1 node"> NOTE: We now follow strictly the IHO recommendations. This modification will appear in the next OCPN Beta series. See FS#2091<ol>
+<li class="level2"> Items classed as DISPLAYBASE are always displayed in Mariners Standard, and may not be removed by the user.</li>
+<li class="level2"> Following S52 guidelines, four special safety items (“OBSTRN”, “WRECKS”, “DEPCNT”, “UWTROC”) are also visible in BASE and Mariners Standard, if their attributes (depth relative to containing depth area, mainly) require them to be so displayed.</li>
+<li class="level2"> The selected Safety Contour is always displayed in Mariners Standard.</li>
+<li class="level2"> User is free to add/remove items whose classification would normally have them appear in STANDARD or OTHER categories, allowing user customization if desired. These selections will be persistent across OCPN sessions.</li>
+<li class="level2"> There is a “Reset to STANDARD” button, which does what it says.</li>
+</ol>
+</li>
+</ul>
+
+<p>
+These <b>Hot Keys</b>  all work in “<b>Mariners standard</b>”. Features are toggled on-off with the keys. <br/>
+<b>Note:</b>  Hot Keys can be different for <abbr title="Operating System">OS</abbr>&#039;s. See <em><b><a href="../keyboard_shortcuts.html" class="wikilink1" title="opencpn:opencpn_user_manual:keyboard_shortcuts">Keyboard Shortcuts</a></b></em>
+</p>
+<ul>
+<li class="level1"> <b>T</b>  Texts. The visible text is still affected by the settings in the Vector Charts settings tab.</li>
+<li class="level1"> <b>L</b>  Lights. Lighthouses as well as buoys etc are all affected.</li>
+<li class="level1"> <b>S</b>  Soundings.</li>
+<li class="level1"> <b>A</b>  Anchoring. This will affect information needed when anchoring. Anchor berth and Anchorage areas. Submarine cables and pipelines. Type of bottom. Mariners Standard -Anchor berth and Anchorage area display categories.</li>
+<li class="level1"> <b>O</b>  Chart Outlines. <br/>
+</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/hotkeys3.h.363_tok.956bd3_w.681.gif" class="media" alt="" width="681" height="363" /> <br/>
+
+<br/>
+
+ <b>WARNING</b>  - it is possible to suppress essential information with “<b>Mariners Standard</b>”. If in doubt, switch to the “ <b>All</b>  ” Display Category, or use the “<b>Select All</b>” button for Mariners Standard.
+</p>
+<ol>
+<li class="level1"> The first time you use a vector chart with a brand new installation you will see nothing, if you use Mariners standard. Why?</li>
+<li class="level1"> The Mariners Standard list of Feature types is empty on a fresh install. When you load the first vector chart, the list is populated with the Features that are discovered on that particular vector chart.</li>
+<li class="level1"> The default visibility of the added Features in Mariners Standard category now shows all features as the are discovered.</li>
+<li class="level1"> If you load another ENC, any newly discovered Feature types are added to the list, again with viz=0, off. However, the visibility of Feature types as set previously by the tick boxes is not modified.</li>
+<li class="level1"> Use the “Select All” button frequently until you have initiated all the charts you intend to use and-or the feature list is fully populated. <br/>
+</li>
+</ol>
+
+</div>
+
+<h3>Vector Palettes</h3>
+<div class="level3">
+
+<p>
+It&#039;s possible to change the whole look of a vectorchart. One example below…. <br/>
+Detailed information is available in <em><b><a href="../opencpn/developer_manual/vector_palette.html" class="wikilink1" title="opencpn:developer_manual:vector_palette">Vector Palette</a></b></em><br/>
+
+ <br/>
+
+<img src="../opencpn/manual/swlook.h.389_tok.f5dcad_w.600.png" class="media" alt="" width="600" height="389" />
+<br/>
+
+</p>
+
+</div>
+
+<h4>Practical Use</h4>
+<div class="level4">
+
+<p>
+A general recommendation would be to use the “All” display category or “Mariners Standard” with “Select All” marked , and then switch of certain features as required. As an example let&#039;s look at passing through the British gas fields in the SW North Sea <br/>
+
+<img src="../opencpn/manual/europe1.h.415_tok.65838a_w.480.png" class="media" alt="" width="480" height="415" /> <br/>
+
+This is not easy, so we want to get rid of all those red and yellow circles. <br/>
+
+Double click on one of the platforms, square with a dot. <br/>
+
+<img src="../opencpn/manual/4objq.tok.45013f_w.500.png" class="media" alt="" width="500" /> <br/>
+
+At the top it reads “<b>Light </b>  (Lights)”, which means that you clicked on a light, which belongs to the Feature Class “Lights”. Find “Light” in the Mariners Standard list of available filters, and untick it. <br/>
+
+<img src="../opencpn/manual/vector-light.h.338_tok.9ce018_w.234.png" class="media" alt="" width="234" height="338" /> <br/>
+
+Press the “Apply” button <br/>
+
+<img src="../opencpn/manual/europe3.h.389_tok.1e9623_w.480.png" class="media" alt="" width="480" height="389" /> <br/>
+
+Much better In this particular case, there is a shortcut which does the same thing. 
+Use the Hot Key “<b>L</b>” to toggle all lights on/off. <br/>
+
+<a href="../opencpn/manual/vector-display.id.opencpn_3Aopencpn_user_manual_3Acharts_3Avector_display_tab.jpg.detail.html?id=opencpn%3Aopencpn_user_manual%3Acharts%3Avector_display_tab&media=opencpn:manual:vector-display.jpg" class="media" title="opencpn:manual:vector-display.jpg"><img src="../opencpn/manual/vector-display.tok.c8094c_w.500.jpeg" class="media" title="Display" alt="Display" width="500" /></a> <br/>
+
+<br/>
+
+</p>
+
+</div>
+
+<h4>Display</h4>
+<div class="level4">
+
+<p>
+<b>Depth Soundings</b>  turns the depths on and off. Other settings also affects when soundings are displayed, for example “Reduced Detail at Small Scale”. The dark black numbers are not soundings. Instead they refer to heights of nearby islets or cays. On official paper charts the soundings are printed in italics. <br/>
+
+<img src="../opencpn/manual/sounding.h.299_tok.4d5179_w.374.png" class="media" alt="" width="374" height="299" /> <br/>
+
+The bold number 20  refers to the land height of the unnamed cay SW of the number. <br/>
+
+Safety Depth is set to 20 m, so the 20 m contour stands out in black. <br/>
+
+<br/>
+
+How soundings behave when zooming. “Chart sounding symbols” are represented by small raster images. As a chart is zoomed in, these raster symbols will increase in size by about 2x. Currently they increase in size well after the “<b>Overzoom</b>” notice, for the largest scale chart available. <br/>
+
+<br/>
+
+<b>Chart Information Objects</b>  relates to information about the chart itself. With this switch on, an object query reveals such information as the buoy system for the area, the quality of the survey, the latest NTM update and sources for the chart. <br/>
+
+<img src="../opencpn/manual/meta.h.400_tok.371751_w.400.png" class="media" alt="" width="400" height="400" />
+<br/>
+
+</p>
+
+</div>
+
+<h4>Buoys-Lights</h4>
+<div class="level4">
+
+<p>
+<b>Bouy-Light Labels</b>  Displays names and purposes of aids to navigation, such as number or name of buoys, information about conspicuous objects etc. <br/>
+
+<b>Light Descriptions</b>  This tick box control display of light characteristics. Checking this displays a label with a text describing the marker or lighthouse&#039;s characteristics. <br/>
+
+<b>Extended Light Sectors</b>  It is often difficult, on a vector chart, to see exactly what the light-sectors are supposed to do. <br/>
+
+<img src="../opencpn/manual/havannah-noext.h.249_tok.411f64_w.500.png" class="media" alt="" width="500" height="249" /> <br/>
+
+Activating the Extended Light sectors clarifies the situation. All sectors are extended and leading white sectors are emphasized in yellow and extend the full nominal range of the light. Just hold the cursor over a light and the extended sectors are activated. <br/>
+
+<img src="..//manual/charts/havannah-ext.h.254_tok.40ab03_w.500.png" class="media" alt="" width="500" height="254" /> <br/>
+
+Light sectors as narrow as 0.3° are displayed. 
+<img src="../opencpn/manual/halfadegree.h.152_tok.10740e_w.607.png" class="media" alt="" width="607" height="152" /> <br/>
+
+This sector is 0.5°. <br/>
+
+A light sector is extended if: <br/>
+
+The words “Leading” or “Directional” can be found in the Object Query. <br/>
+
+Otherwise, the rules are <br/>
+
+</p>
+<ul>
+<li class="level1"> The sector is &lt; 15° wide.</li>
+<li class="level1"> It is White.</li>
+<li class="level1"> The light also has Red and-or Green sectors. <br/>
+</li>
+</ul>
+
+<p>
+These rules work quite well, but there are exceptions that are difficult to catch. <br/>
+
+As always, it&#039;s the responsibility of the navigator, how a light and its sectors are used for practical navigation. <br/>
+
+<br/>
+
+<br/>
+
+<img src="../opencpn/manual/vector-display-scale.tok.7d67b7_w.350.jpeg" class="media" title="vector-display-scale.jpg" alt="vector-display-scale.jpg" width="350" /> <br/>
+
+The parameters above are described in more detail below. <br/>
+
+<br/>
+
+</p>
+
+</div>
+
+<h4>Chart Text</h4>
+<div class="level4">
+
+<p>
+<b>National text on chart.</b>  Vector charts may have attributes with the texts in the national language. For example a Russian chart with texts in Cyrillic. With this option activated OpenCPN will display text in the local language and character set, in this case Russian written in Cyrillic. <br/>
+
+<b>Important Text Only</b>  displays only a bare minimum of text essential for navigation, such as course and bearing in a leading line (range) and bridge clearances. <br/>
+
+<b>De-Cluttered Text.</b>  Even when using “Reduced Detail at Small Scale”, there are cases when text labels overlaps or overwrites other labels and creates a cluttered impression. Ticking this box tries to clear the view. This setting may hide needed information. <br/>
+
+</p>
+
+</div>
+
+<h4>Chart Detail</h4>
+<div class="level4">
+
+<p>
+<b>Reduced Detail at Small Scale</b>  makes sure that a minimum scale is required before certain objects are shown. If this box is <b>not </b>ticked<b>, </b>everything is always shown, leading to very cluttered view at small scale (zoomed out).  <br/>
+
+</p>
+
+</div>
+
+<h4>Graphics Style</h4>
+<div class="level4">
+
+<p>
+<b>Paper chart</b>  draw the markers and lights just like the printed paper chart, while <b>Simplified </b>uses icons to represent the same. Some like the one and some the other, a matter of taste. Paper Chart mode closely follows the IHO standard standard in this area. This mode is currently more developed than the simplified mode, as it has a higher priority in the development effort. 
+<br/>
+
+</p>
+
+</div>
+
+<h4>Boundaries</h4>
+<div class="level4">
+
+<p>
+<b>Plain</b>  normally just uses a dashed line, while the <br/>
+
+<b>Symbolized </b>version also uses triangles pointing into the area. 
+<br/>
+
+</p>
+
+</div>
+
+<h4>Colors</h4>
+<div class="level4">
+
+<p>
+Depth on the chart can be displayed with<b> either 2 or 4 colors</b>. This setting is closely related to the “Depths Settings”. With 2 colors, and using a relatively large scale, areas with depth less than “Safety Depth” is blue, the rest is white. With 4 colors, there are different colors for areas less than “Shallow Depth”, areas between “Shallow Depth” and “Safety Depth”, areas between “Safety Depth” and “Deep Depth” and finally for areas deeper than “Deep Depth”. 
+<br/>
+
+</p>
+
+</div>
+
+<h3>Depth Settings</h3>
+<div class="level3">
+
+<p>
+<b>Units</b>  for depths is set in <b>Options &gt; Display &gt; Units</b>. All depths units are rounded off to the nearest number. If the value is half way between, the nearest higher number is used. Underlined values indicates drying heights. <br/>
+
+<b>Feet</b>  Only whole digits are shown. A value of 12 feet covers all soundings between 11.5 feet and 12.4 feet. 
+<br/>
+
+</p>
+
+</div>
+
+<h4>Meters</h4>
+<div class="level4">
+
+<p>
+Meters are show as whole numbers for depths greater than 30 m. Depths below 30 m are shown as whole meters and decimeters as subscript, like this 12<sub>7</sub>  This is the same as 12.7 meters and is shown for all soundings between 12.65 m and 12.74 m. 
+<br/>
+
+</p>
+
+</div>
+
+<h4>Fathoms</h4>
+<div class="level4">
+
+<p>
+Fathoms are shown as whole numbers for depths greater than 31 fathoms. Depths below this value are shown as whole fathoms and tenths of fathoms as subscript. Compare to the notes above for meters.<br/>
+
+</p>
+
+</div>
+
+<h3>Shallow, Safety and Deep depths</h3>
+<div class="level3">
+
+<p>
+<b>These settings</b>  are very important as they affect how the different depths are colored. They can help you identify a deep channel for example, or they can, in the worst case scenario, prevent you from being aware of a shallow area. There is no setting that fits all circumstances. For example a Sea Mount with a depth of 20m in the middle of an ocean should be regarded as “shallow” and be avoided, while 20 m depth in a harbor approach in protected water, probably is safe. The Depth Settings controls the coloring of the water as a function of depth. By setting the Safety and Deep water right you will have a visible border to show when to take care about shallow water. <br/>
+
+<b>CM93 charts and ENC</b>  works very similar in this area. The charts contains depth area features according to fixed depth cutoff zones, usually 5, 10, and 20 meters. Intermediate values are not available in the database,if you select a value between those available, OpenCPN chooses the next higher value available for display of color. <br/>
+
+The charts are inconsistent in this area, depending on the country issuing the original charts. <br/>
+
+For example in UK and the Netherlands the depth contours in CM93 are 2, 5 and 10 meter while in US the are based on feet but expressed in meters, such as 3.7, 5.5, 9.1 and 18.3 m. <br/>
+
+<b>Generally</b>  for both ENC and CM93, find these fixed depth cutoffs by double-clicking so the Object Query dialog pops up. The last entry is usually Depth Area. The two values in the range, represents these built in cutoffs.  <img src="../opencpn/manual/dpare.h.215_tok.d8d416_w.410.png" class="media" alt="" width="410" height="215" /> <br/>
+
+An example from UK with cutoff values of 5m and 10m. <b>If for example</b>  as is the case on the South China Sea Hydrographic Commissions charts, the shallowest area has a range “0 m - 10 m”, there is, in most cases, no point in setting “Shallow Depth” to anything but 10 m. Find out these cut off depth for your area and set the “Depth Settings” with this knowledge together with your preferences and activity. <br/>
+
+With all the reservations above, the general case for 4 colors, will be described. <br/>
+
+</p>
+
+</div>
+
+<h4>Shallow Depth</h4>
+<div class="level4">
+
+<p>
+Will color all water areas with water depths shallower than the set depth to a dark blue color. Soundings are in black. <br/>
+
+</p>
+
+</div>
+
+<h4>Safety Depth</h4>
+<div class="level4">
+
+<p>
+Water deeper that Shallow but shallower that this depth will have a paler blue color. The Shallow Depth contour clearly marked with a thicker black borderline. Soundings less than this depth are in black, while soundings greater than this value are gray. <br/>
+
+</p>
+
+</div>
+
+<h4>Deep Depth</h4>
+<div class="level4">
+
+<p>
+Water deeper than Safety Depth but less than Deep Depth will display a light gray color. The Safety Depth contour is clearly marked with black borderline. Water deeper than Deep Depth is displayed in white. <br/>
+
+<b>Finally</b>  a word about <b>drying heights</b>, displayed in green. There is no detailed information available for drying heights, neither in CM93 ver2 nor in many ENC charts. Some ENC charts have negative ranges, for example “-2 m - 0 m” in areas with drying heights. This adds very little, as it really only gives the information that the drying height is less than the first value in the range, in an area of unspecified size. <br/>
+
+This situation is changing though. A set of new charts released in april 2012, by the Dutch Authorities, sets a standard for others to follow in this regard. See picture below. Modern Australian S63 charts are equally good. <br/>
+
+<img src="..//opencpn/opencpn_user_manual/dh.png_nolink_406x324_compared_to_cm93._when_is_safe_to_pass_across_bramble_bank_the_cm93_vectorchart_gives_you_no_information_whatsoever_neither_on_the_chart_nor_in_the_object_query_dialog/opencpn/manual/bramb.h.325_tok.f2374e_w.600.png" class="mediaright" alt="" width="600" height="325" /> <br/>
+
+While a raster chart tells us that we need a Height of Tide that is 1.2m + safety margin + the draft of our own vessel. <br/>
+
+<img src="../opencpn/manual/bramb2.h.425_tok.be8f12_w.600.png" class="media" alt="" width="600" height="425" /> <br/>
+
+Heights of islands etc. are not available in CM93, while ENC charts, in many cases, have info about heights of summits and some contour lines. Is Balls Pyramid a high Island, that the name implies, or is it named with the same sarcastic humor as “Greenland” ? CM93 can&#039;t tell.  
+<img src="../opencpn/manual/bramb1.h.335_tok.e843bd_w.600.png" class="media" alt="" width="600" height="335" /> <br/>
+
+</p>
+
+</div>
+
+<h4>CM93 Detail Level</h4>
+<div class="level4">
+
+<p>
+The CM93 charts slider control that allows the user to adjust the screen complexity to suit the actual situation as well as the available processor capability. <br/>
+
+Normal settings depend on a combination of personal preferences and present usage of map. To see more details, the “<b>CM93 Detail Level</b>” slider, can be set to a higher positive number or for navigation in shipping lanes to a negative numbers. Typical zoom level 5 is good for fishing when as much details are possible is of interest. Zoom level of +1, zero or -1 is usually fine for normal use. <br/>
+
+Positive values give more detail, but at a cost:
+</p>
+<ol>
+<li class="level1"> It simply takes longer to render larger scale charts covering more screen real estate.</li>
+<li class="level1"> There will be more instances of gray (NODATA) areas surrounding the larger scale charts as you zoom out, unless quilting is activated.</li>
+<li class="level1"> It can become dramatically slower if high detail is specified, and chart outlines are requested. In this case, the program has to read a lot more cells to get their outlines.</li>
+<li class="level1"> Conversely, negative values give less detail. Zooms are faster. </li>
+<li class="level1"> The slider can also be activated through the “d” hotkey, and displayed directly on the screen. <br/>
+</li>
+</ol>
+
+</div>

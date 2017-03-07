@@ -1,0 +1,148 @@
+
+
+
+<h1>Debugging</h1>
+<div class="level1">
+
+</div>
+
+<h2>Navico Broadband Radar Debugging</h2>
+<div class="level2">
+
+</div>
+
+<h2>What to do if it does not work</h2>
+<div class="level2">
+
+<p>
+Of course you updated to the newest version first?<br/>
+
+Recent versions show this message dialog if not all conditions to show a radar image are met:
+</p>
+
+<p>
+<img src="../../../../opencpn/manual/plugins/br24_radar/br24_overlay_messages.h.204_tok.b7b54e_w.362.png" class="media" alt="" width="362" height="204" />
+</p>
+
+</div>
+
+<h3>No boat position</h3>
+<div class="level3">
+
+<p>
+Check your GPS interface and/or NMEA inputs.
+</p>
+
+</div>
+
+<h3>No heading</h3>
+<div class="level3">
+
+<p>
+No compass data found. Check the NMEA inputs for HDT, HDM or HDG sentences. HDT is preferred. If none are available COG is used if the boat is travelling, but this is very bad for the overlay. Get a compass!
+</p>
+
+</div>
+
+<h3>No radar present</h3>
+<div class="level3">
+
+<p>
+Is the system connected to the radar, either directly or via switch? Does the IP address of the network device show up in the “ZeroConf” line?
+</p>
+
+<p>
+If the radar does not transmit radar data but it is detected then the “Radar present” line will get a checkmark and the text will change to “Radar IP &lt;ip-addr&gt;”. Check that this is the correct IP address. If the system does not show the IP address of the ethernet device that is on the same network as your radar, check your ethernet configuration.
+</p>
+
+<p>
+If the radar transmits data the dialog will change to the controls dialog, but the log file will still show the information such as IP address.
+</p>
+
+</div>
+
+<h3>Everything looks OK but still no picture</h3>
+<div class="level3">
+
+<p>
+If you get the normal radar control dialog and the little &#039;light&#039; in the radar button shows green, but you still do not get a picture, you can use the radar <em>emulator</em>.
+</p>
+
+<p>
+The emulator was created for debugging during development, but it can be used to check that your OpenGL driver is compatible and whether your system performs well enough. It uses (almost) the same code path as the normal UDP reception of radar data, but &#039;invents&#039; an artificial radar image in &#039;standalone&#039; mode.
+</p>
+
+<p>
+In the preferences dialog (<em>Options &gt; Plugins &gt; BR24Radar &gt; Preferences</em>) choose <em>Display Option</em> for <em>Radar display</em> as <em>Emulator</em> and close the preferences and options dialogs. You should now see a picture like this, even if you have fulfilled none of the overlay requirements:
+</p>
+
+<p>
+<img src="../../../../opencpn/manual/plugins/br24_radar/br24_emulator.h.308_tok.db76e3_w.382.png" class="media" alt="" width="382" height="308" />
+</p>
+
+</div>
+
+<h2>Firewall</h2>
+<div class="level2">
+
+<p>
+Most issues so far that we have been asked to look in to were related to a <em>firewall</em> preventing the plugin to access the network at will, especially for Microsoft Windows users. Please try again with your firewall switched off completely. If it works without the firewall, just add a rule in the firewall that allows <em>opencpn.exe</em> full access. Most consumer grade firewalls do not allow sufficient control over multicast settings.
+</p>
+
+</div>
+
+<h2>Multiple ethernet devices</h2>
+<div class="level2">
+
+<p>
+The Navico radar continuously sends out its status, and it tries to locate such a message. Since the plugin doesn&#039;t know which ethernet device it should use it loops over the list of active devices until it receives such a status message, and then uses that device until it looses the connection, at which point it starts searching again.
+</p>
+
+<p>
+This algorithm has been developed for the situation where a radar may be on one ethernet device (a USB Ethernet dongle) one moment and a different ethernet device (a Thunderbolt Ethernet converter attached to a docking station) the next moment. This is useful as it allows you to keep OpenCPN running for days at a time without restarting, and it will still be able to use the radar when the tablet is docked or wired to the network, without stopping OpenCPN when using the tablet in a wireless fashion.
+</p>
+
+<p>
+Although the software tries to detect automatically which ethernet device the radar is using there are still situations where this breaks. In particular this will matter most when the <abbr title="Operating System">OS</abbr> requires the plugin to set the proper IP address on the multicast output data and the plugin chooses the wrong IP address. This will surface as a situation where the radar is detected but it cannot be turned on.
+</p>
+
+<p>
+The following situations are examples of such setups:
+</p>
+<ul>
+<li class="level1"> When you have a bridged network over two devices and it accidentally binds to one of the underlying devices (which, because of Murphy, will be the wrong one). This should only occur when the underlying device has an IPv4 address which (because it is bridged) it should not have. The plugin should use the bridge device only.</li>
+<li class="level1"> When you have a virtual ethernet device that passes the multicast data from the radar on to the plugin but does not pass multicast send data from the plugin to the radar.</li>
+<li class="level1"> When you have both a wired and a wireless network connected to the radar network.</li>
+</ul>
+
+<p>
+To see if this is the case please check the list of ethernet devices using ipconfig / ifconfig (command line) or <abbr title="Graphical User Interface">GUI</abbr> control panel (MS Win), network manager (Linux) / System preferences (<abbr title="Operating System">OS</abbr> X). Disable all devices except for the one that the radar is connected to. If it works now, enable the other devices one by one and restart OpenCPN after each attempt. Once you locate the network that is interfering, determine whether it has a correct IPv4 address. It should be on a different network as that of the ethernet device where the radar is connected to.
+</p>
+
+<p>
+Note that devices that have <em>no</em> IPv4 address (not even a self-assigned one) or have a <em>loopback</em> address (starts with 127) will never interfere and do not need to be disabled.
+</p>
+
+</div>
+
+<h2>Verbose logging to file</h2>
+<div class="level2">
+
+<p>
+Use the following to increase the amount of logging to the opencpn.log file:
+</p>
+<ol>
+<li class="level1"> Click on the question mark in the button bar and note where the ini file (and log file) are kept.</li>
+<li class="level1"> Stop OpenCPN.</li>
+<li class="level1"> Edit the ini file and change the <em>VerboseLog</em>  in the [Plugins/BR24radar] section to a number higher than 0. Values from 1 to 4 are different. At level 4 your file will grow very quickly!</li>
+<li class="level1"> Start OpenCPN.</li>
+<li class="level1"> Start the radar (or attempt to do so.)</li>
+<li class="level1"> Stop OpenCPN.</li>
+<li class="level1"> Check the content of the logfile. You may also be asked to upload this file to a location that it can be examined.</li>
+</ol>
+
+<p>
+<a href="#hardware_installation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar:debugging ↵" class="wikilink1">⇒Back to BR24 Hardware installation</a>
+</p>
+
+</div>

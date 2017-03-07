@@ -1,0 +1,83 @@
+
+
+
+<h2>Ubuntu PPA</h2>
+<div class="level2">
+
+<p>
+<img src="../../opencpn/dev/linux_0.tok.047706_w.60.png" class="media" alt="" width="60" />
+</p>
+
+</div>
+
+<h4>How to add the OpenCPN PPA into an Ubuntu system</h4>
+<div class="level4">
+
+<p>
+You have two options to add the PPA to your system, either using the commandline Terminal or the <abbr title="Graphical User Interface">GUI</abbr> provided by the system, chose one that suits you better, not both.<br/>
+
+<br/>
+
+If you are using a non-standard variant of Ubuntu or a newer/older/whatever version than the one used while creating this guide, the <abbr title="Graphical User Interface">GUI</abbr> may be slightly different, try to use common sense before you start to be furious that the guide below does not work - it does. If it still does not work for you, ask in the support forum, providing exact steps you performed and exact error output you get.
+</p>
+
+<p>
+<b>There are two PPA repositories, one for stable versions only and one that includes beta versions. If you want the beta versions replace the “ppa:opencpn/opencpn” string in the following instructions with “ppa:bdbcat/opencpn”.</b>
+</p>
+
+</div>
+
+<h4>From the command line</h4>
+<div class="level4">
+
+<p>
+<br/>
+
+Open a <b>Terminal</b> and enter the following commands:
+</p>
+<pre class="code">sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:opencpn/opencpn
+sudo apt-get update
+sudo apt-get install opencpn</pre>
+
+<p>
+===<br/>
+
+Using the graphical configuration tools ===<br/>
+
+Start the <b>Ubuntu Software Center</b> <br/>
+
+<img src="../../opencpn/manual/ppa_1.h.251_tok.2bff23_w.452.jpeg" class="media" title="ppa_1.jpg" alt="ppa_1.jpg" width="452" height="251" /><br/>
+
+<br/>
+
+From the <b>Edit</b> menu, select <b>Software Sources…</b> <br/>
+
+<img src="../../opencpn/manual/ppa_2.h.267_tok.65e27a_w.384.jpeg" class="media" title="ppa_2.jpg" alt="ppa_2.jpg" width="384" height="267" /><br/>
+
+<br/>
+
+On the <b>Other</b> tab, click on <b>Add…</b> button<br/>
+
+<img src="../../opencpn/manual/ppa_3.h.471_tok.9e831c_w.606.png" class="media" alt="" width="606" height="471" /><br/>
+
+<br/>
+
+In the dialog shown, fill in <b>ppa:opencpn/opencpn</b> (for stable versions) or <b>ppa:bdbcat/opencpn</b> (for beta versions) and click on the <b>Add Source</b> button<br/>
+
+<img src="../../opencpn/manual/ppa_4.h.229_tok.c9d81c_w.604.png" class="media" alt="" width="604" height="229" /><br/>
+
+<br/>
+
+Wait until Ubuntu Downloads the necessary information and the progress indicator disappears<br/>
+
+<img src="../../opencpn/manual/ppa_5.h.93_tok.00ed6b_w.606.jpeg" class="media" title="ppa_5.jpg" alt="ppa_5.jpg" width="606" height="93" /><br/>
+
+<br/>
+
+From now on you are able to install OpenCPN as any other software. You will also get new stable versions automatically while updating your system.<br/>
+
+<img src="../../opencpn/manual/ppa_6.h.421_tok.b5f019_w.613.jpeg" class="media" title="ppa_6.jpg" alt="ppa_6.jpg" width="613" height="421" />
+</p>
+
+</div>

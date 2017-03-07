@@ -1,0 +1,764 @@
+
+
+
+<h1>BR24 Radar</h1>
+<div class="level1">
+
+</div>
+
+<h2>OpenCPN radar plugin for Navico Broadband Radars</h2>
+<div class="level2">
+
+</div>
+
+<h3>(BR24, 3G, 4G models)</h3>
+<div class="level3">
+
+<p>
+BR24radar_pi is a plugin for <a href="http://www.opencpn.org" class="urlextern" title="http://www.opencpn.org" rel="nofollow">OpenCPN</a> that allows full integration of Navico Simrad, Lowrance or B&amp;G broadband radars. It supports all broadband radomes – BR24, 3G and 4G.
+</p>
+
+<p>
+The latest plugin version available is 2.1 which requires Opencpn 4.4.0 or later. The plugin requires also accelerated graphics OpenGL mode. It does not work without OpenGL, and never will. This means that a computer with good and fast OpenGL drivers is recommended.
+</p>
+
+<p>
+by Kees Verruijt
+</p>
+
+<p>
+<a href="#basic_operation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">BASIC OPERATION</a><br/>
+
+<a href="#hardware_installation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">HARDWARE INSTALLATION</a><br/>
+
+<a href="#software_requirements" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">SOFTWARE REQUIREMENTS</a>
+</p>
+
+<p>
+Binary releases are available at:<br/>
+
+<a href="https://github.com/canboat/BR24radar_pi/releases" class="urlextern" title="https://github.com/canboat/BR24radar_pi/releases" rel="nofollow">https://github.com/canboat/BR24radar_pi/releases</a><br/>
+
+<a href="http://opencpn.org/OpenCPN/plugins/navicoradar.html" class="urlextern" title="http://opencpn.org/OpenCPN/plugins/navicoradar.html" rel="nofollow">OpenCPN Download Navico Radar Plugin</a><br/>
+
+Source code available here:<br/>
+
+<a href="https://github.com/canboat/BR24radar_pi" class="urlextern" title="https://github.com/canboat/BR24radar_pi" rel="nofollow">https://github.com/canboat/BR24radar_pi</a><br/>
+
+Wiki (not up to date):<br/>
+
+<a href="https://github.com/canboat/BR24radar_pi/wiki" class="urlextern" title="https://github.com/canboat/BR24radar_pi/wiki" rel="nofollow">https://github.com/canboat/BR24radar_pi/wiki</a>
+</p>
+
+<p>
+The plugin can be operated as the only control station for your scanner, as it allows access to all setup operations such as antenna direction correction and antenna height, as well as cooperate in a multi-station setup – whether multiple OpenCPN installations or one or more Navico MFDs/plotters. In fact using a mixed setup is what 2 out of 3 developers use, and recommend (our laptops and tablets don&#039;t work nearly as well outside as the dedicated plotters.)
+</p>
+
+<p>
+With the 4G model it supports dual range (“two radar”) mode, where both radars can be operated individually (transmit state, gain &amp; other settings, guard zones, etc.) Compared to the plotters the only functionality missing is MARPA but it has better _target trails_ support than the plotters and comparable _guard zone_ support. It supports two guard zones per radar as well as two _Electronic Bearing Lines_ (EBL) and Variable Range Markers (VRM) per radar.
+</p>
+<ol>
+<li class="level1"> <a href="#hardware_installation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Hardware installation</a></li>
+<li class="level1"> <a href="#software_requirements" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Software installation</a></li>
+<li class="level1"> <a href="#basic_operation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Basic operation</a></li>
+<li class="level1"> <a href="#view_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Target trails</a></li>
+<li class="level1"> <a href="#eblvrm" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Cursor, EBL and VRM</a></li>
+<li class="level1"> <a href="#guard_zone" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Guard zones</a></li>
+<li class="level1"> <a href="#timed_transmit" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Timed transmit</a></li>
+</ol>
+
+</div>
+
+<h3>Credits</h3>
+<div class="level3">
+
+<p>
+The plugin was initially developed by Dave Cowell who took Dave Register&#039;s Garmin plugin and modified it to work with the BR24. Over the years code was contributed by @Hakansv, @douwefokkema, @seandepagnier, @nohal, @chucksk, and @canboat.
+</p>
+
+</div>
+
+<h2>BASIC OPERATION</h2>
+<div class="level2">
+
+<p>
+<a href="#the_toolbar_button" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">The toolbar button</a><br/>
+
+<a href="#the_context_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">The context menu</a><br/>
+
+<a href="#the_main_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">The main menu</a><br/>
+
+<a href="#full_main_control_menu_when_transmitting" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Full main control menu when transmitting</a><br/>
+
+<a href="#adjust_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Adjust menu</a><br/>
+
+<a href="#advanced_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Advanced menu</a><br/>
+
+<a href="#preferences" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Preferences</a><br/>
+
+<a href="#view_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">View menu</a><br/>
+
+<a href="#guard_zone" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Guard Zone</a><br/>
+
+<a href="#timed_transmit" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Timed Transmit</a><br/>
+
+<a href="#ebl_vrm" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">EBL/VRM</a>
+</p>
+
+<p>
+<a href="#hardware_installation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">HARDWARE INSTALLATION</a><br/>
+
+<a href="#software_requirements" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">SOFTWARE REQUIREMENTS</a><br/>
+
+<a href="br24_radar/debugging.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar:debugging">Installation trouble shooting</a>
+</p>
+
+</div>
+
+<h3>The toolbar button</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/toolbar.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:toolbar.png" class="media" title="opencpn:manual:plugins:br24_radar:toolbar.png"><img src="../../../opencpn/manual/plugins/br24_radar/toolbar.tok.1d817f_w.400.png" class="media" alt="" width="400" /></a><br/>
+
+The toolbar button shows the state of the radar: <br/>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_not_detected.tok.19a094_w.64.png" class="media" alt="" width="64" />= Radar not detected <img src="../../../opencpn/manual/plugins/br24_radar/radar_standby.tok.c5b795_w.64.png" class="media" alt="" width="64" />= Radar standby <br/>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_transmit.tok.d351f4_w.64.png" class="media" alt="" width="64" />= Radar transmitting <img src="../../../opencpn/manual/plugins/br24_radar/radar_hidden.tok.3372c3_w.64.png" class="media" alt="" width="64" />= Radar windows hidden
+</p>
+
+<p>
+The action taken when clicking the icon depends on the current state:
+</p>
+<ul>
+<li class="level1"> When radar overlay is enabled but the control menu is not shown it shows the control menu.</li>
+<li class="level1"> Otherwise it toggles the radar windows and overlay off (hidden) or on (shown).</li>
+</ul>
+
+<p>
+Hiding all radar windows and overlay is useful if you are sailing into a highly complex situation where you want full view of the chart display and not have the distraction of radar windows and paints over your charts. The radar keeps its current settings (it keeps transmitting if this was on) until you un-hide (show) it again.
+</p>
+
+</div>
+
+<h3>The context menu</h3>
+<div class="level3">
+
+<p>
+There are also two entries in the OpenCPN control menu for the radar plugin. The context menu is usually accessed by clicking the right mouse button on the chart window.
+</p>
+
+<p>
+<img src="../../../lib/exe/fetch.php?w=171&amp;tok=450a2c&amp;media=https://raw.githubusercontent.com/canboat/BR24radar_pi/master/wiki/radar_context_menu.png" class="media" alt="" width="171" />
+</p>
+
+<p>
+These are:
+</p>
+<ul>
+<li class="level1"> Hide radar/Show radar</li>
+<li class="level1"> Radar control</li>
+</ul>
+
+<p>
+… Hide or Show radar should be self-explanatory. If chart overlay is enabled the *Radar control…* button will show the control menu for that radar only. If chart overlay is disabled it will show the control menu(s) for one or two radars.
+</p>
+
+</div>
+
+<h3>The PPI window(s)</h3>
+<div class="level3">
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_ppi.tok.6c3a9a_w.497.png" class="media" alt="" width="497" />
+</p>
+
+<p>
+Either one or two classic radar displays, known as Position Plot Indicators (PPI) by professionals, can be shown. You can hide these if so desired (which makes sense only if you enabled the overlay over the chart). You can resize, move or dock them into the chart display. To close them you use the default <abbr title="Operating System">OS</abbr> button on the top of the window. To dock them, drag them to the side or bottom of the chart window and wait for a colored rectangle to be drawn over the chart.
+</p>
+
+<p>
+The author likes to use two radar ranges with the windows docked on the right side of the display, one above the other. But just try it out to see what you like best.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_ppi_docked.tok.944e94_w.1323.png" class="media" alt="" width="1323" />
+</p>
+
+<p>
+The PPI window has a *Menu* button that accesses the control menu. If you moved the PPI window since the last time you accessed the control menu the menu will come up immediately above the Menu button on the PPI window.
+</p>
+
+</div>
+
+<h3>The control menu</h3>
+<div class="level3">
+
+<p>
+Every radar (again, in the case of a 4G you can have two) has its own *control menu*. If radar overlay is enabled and you have hidden the control menu of the radar assigned to radar overlay, press the toolbar icon to access the control menu. If all else fails you can access this using the context menu on the chart display (_Right mouse button &gt; Radar control …_) The control menu only shows those options which are functional for the particular state of the radar, and has various sub-menus.
+</p>
+
+</div>
+
+<h3>The main menu</h3>
+<div class="level3">
+
+<p>
+When the radar is not transmitting the menu looks like this:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_menu_standby.tok.c762a2_w.166.png" class="media" alt="" width="166" />
+</p>
+
+<span class='np_break'>&nbsp;</span>
+<div class="table sectionedit1"><table class="inline">
+	<tr class="row0">
+		<td class="col0"><b>Button</b> </td><td class="col1"><b>Possible Values</b> </td><td class="col2"><b>Purpose</b> </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0">Standby/Transmit/Standby</td><td class="col1">Standby, Transmit</td><td class="col2">Toggle radar Transmit state</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">Show/Hide Window</td><td class="col1">Show window(s), Hide window(s), Show other window</td><td class="col2">Show or hide the PPI windows</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">Overlay</td><td class="col1">Off, On, Radar A, Radar B</td><td class="col2">Toggles radar overlay over chart</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">Timed Transmit</td><td class="col1">Off, mins</td><td class="col2">Chooses time that radar is in standby and then automatically transmits again</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">Info</td><td class="col1"> </td><td class="col2">Show information dialog</td>
+	</tr>
+</table>
+<span class='np_break'>&nbsp;</span>
+</div>
+</div>
+
+<h3>Full main control menu when transmitting</h3>
+<div class="level3">
+
+<p>
+When the radar is transmitting the menu looks like this:<br/>
+
+Most control menu text will change value according to actual status. Some are buttons for further settings. Click a button to change the menu for additional settings. The picture shows how each button calls for detailed menus.
+</p>
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/menublocks.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:menublocks.png" class="media" title="opencpn:manual:plugins:br24_radar:menublocks.png"><img src="../../../opencpn/manual/plugins/br24_radar/menublocks.tok.86eef6_w.750.png" class="media" alt="" width="750" /></a>
+</p>
+
+<span class='np_break'>&nbsp;</span>
+<div class="table sectionedit2"><table class="inline">
+	<tr class="row0">
+		<td class="col0 leftalign"><b>Button</b>   </td><td class="col1 leftalign"><b>Possible Values</b>   </td><td class="col2 leftalign"><b>Purpose</b>   </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0">Standby/Transmit</td><td class="col1 leftalign">Standby, Transmit  </td><td class="col2">Toggle radar Transmit state</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0 leftalign">Show Window  </td><td class="col1">Show window(s), Hide window(s), Show other window</td><td class="col2">Show or hide the PPI window(s)</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0 leftalign">Overlay  </td><td class="col1 leftalign">Off, On, Radar A, Radar B  </td><td class="col2">Toggles radar overlay over chart</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"><a href="#adjust_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Adjust</a></td><td class="col1 leftalign">Adjust  </td><td class="col2">Change menu to adjust range, gain and clutter</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0 leftalign"><a href="#advanced_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Advanced</a>  </td><td class="col1 leftalign">Advanced  </td><td class="col2">Change menu to advanced preferences</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0 leftalign"><a href="#view_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">View</a>  </td><td class="col1 leftalign">View  </td><td class="col2">Change menu to adjust appearance preferences</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0 leftalign"><a href="#eblvrm" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">EBL/VRM</a>  </td><td class="col1 leftalign">   </td><td class="col2">Set/Reset EBM and WRM in PPI window(s)</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0 leftalign"><a href="#guard_zone" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Guard zone 1</a>  </td><td class="col1 leftalign">Arc/Circle-On/Off  </td><td class="col2">Change menu to adjust guard zone 1</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0 leftalign"><a href="#guard_zone" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Guard zone 2</a>  </td><td class="col1 leftalign">Arc/Circle-On/Off  </td><td class="col2">Change menu to adjust guard zone 2</td>
+	</tr>
+	<tr class="row10">
+		<td class="col0 leftalign"><a href="#timed_transmit" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Timed Transmit</a>  </td><td class="col1 leftalign">Off / xx mins  </td><td class="col2">Change menu to set timed transmit</td>
+	</tr>
+	<tr class="row11">
+		<td class="col0 leftalign"><a href="#enabling_the_plugin" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Info</a>  </td><td class="col1 leftalign">   </td><td class="col2">Show connection and other info</td>
+	</tr>
+</table>
+<span class='np_break'>&nbsp;</span>
+</div>
+</div>
+
+<h3>Adjust menu</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/adjust_menu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:adjust_menu.png" class="media" title="opencpn:manual:plugins:br24_radar:adjust_menu.png"><img src="../../../opencpn/manual/plugins/br24_radar/adjust_menu.tok.3ce0a1_w.150.png" class="medialeft" alt="" width="150" /></a>
+</p>
+
+<p>
+<br/>
+<br/>
+
+</p>
+<ul>
+<li class="level1"> <b>Back</b>  Return to previous menu.</li>
+<li class="level1"> <b>Range</b>  Set Auto and the range is adjusted to cover the chart screen and will change according to OCPN zoom level. Or set a manual range.</li>
+<li class="level1"> <b>Gain</b>  Set Auto and the radar built-in method will adjust to “best” performance. Or adjust manually.</li>
+<li class="level1"> <b>Sea clutter</b>  Set Auto and the radar built-in method will adjust to “best” performance. Or adjust manually.</li>
+<li class="level1"> <b>Rain clutter</b>  Adjust manually to a suitable level when needed. A zero value is for normal use. When heavy rain clutters the screen increase the value to best performance. A to high value may also filter out important targets.</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>Advanced menu</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/advanced_menu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:advanced_menu.png" class="media" title="opencpn:manual:plugins:br24_radar:advanced_menu.png"><img src="../../../opencpn/manual/plugins/br24_radar/advanced_menu.tok.97b40f_w.150.png" class="medialeft" alt="" width="150" /></a>
+</p>
+
+<p>
+Most of these menu items are buttons opening an adjustment box where a click on “+” or “-” will adjust the value.
+</p>
+<ul>
+<li class="level1"> <b>Noise rejection</b>  Off-Low-High. Filter out noise what&#039;s not rain or sea clutter.</li>
+<li class="level1"> <b>Target separation</b>  Off-Low-Medium-High. Let the radar try to distinguish between targets</li>
+<li class="level1"> <b>Target expansion</b>  Off-On. Let the radar expand targets.</li>
+<li class="level1"> <b>Interference rejection</b>  Off-Low-Medium-High. Suppress interference from other broadband (close) radars.</li>
+<li class="level1"> <b>Scan speed</b>  Normal-Fast. Set the rotation speed of the radar scanner for example to follow high speed targets.</li>
+<li class="level1"> <b>Target boost</b>  Off-Low-High. Let the radar make targets bigger - more “blobs” for each echo.</li>
+<li class="level1"> <b>Installation</b>  Set installation preferences like heading offset and radar hight above water surface.</li>
+<li class="level1"> <b>Preferences</b>  While radar is transmitting the preferences menu can be reached here from the control menu. The other patch is from OCPN Tools &gt; Options &gt; Plugins &gt; BR24 Radar &gt; Preferences.</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+ <br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>Preferences</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/preferences_menu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:preferences_menu.png" class="media" title="opencpn:manual:plugins:br24_radar:preferences_menu.png"><img src="../../../opencpn/manual/plugins/br24_radar/preferences_menu.tok.1230cf_w.450.png" class="medialeft" alt="" width="450" /></a>
+</p>
+
+<p>
+<b>Options</b>
+</p>
+<ul>
+<li class="level1"> <b>Show Guard Zone on overlay</b>: When set guard zones are drawn over the charts. Otherwise only in the PPI window. Styled as of the upper right settings.</li>
+<li class="level1"> <b>Show Target trails on overlay</b>: When set trails are drawn over the charts. Otherwise only in the PPI window. Fill colors as of the upper settings.</li>
+<li class="level1"> <b>Enable Dual radars</b>: If a 4G radar type is connected two PPI windows can be shown. Each view will then get its own control menu.</li>
+<li class="level1"> <b>Ignore radar heading</b>: In case a compass heading is connected to both OCPN and the radar this option sets which of them the plugin will use.</li>
+<li class="level1"> <b>Pass radar heading to OpenCPN</b>: In the case the radar has a compass heading connected that signal will be passed from the plugin to OpenCPN if set.</li>
+<li class="level1"> <b>Enable COG as heading</b>: In the case no compass heading is available the GPS course over ground, COG, can exceptionally be used. The radar view will often be misdirected and can lead to insecure misinterpretations.</li>
+<li class="level1"> <b>Emulator mode</b>: A tool to test the function of the plugin. A dummy radar image will be shown. Many control menus are not functional.</li>
+<li class="level1"> <b>Reverse mouse wheel zoom direction</b>: Reverse the wheel zoom function in the PPI window(s).</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>View menu</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/view_menu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:view_menu.png" class="media" title="opencpn:manual:plugins:br24_radar:view_menu.png"><img src="../../../opencpn/manual/plugins/br24_radar/view_menu.tok.cce67e_w.150.png" class="medialeft" alt="" width="150" /></a>
+</p>
+<ul>
+<li class="level1"> <b>Target trails</b>  Click to open an edit box to increase/decrease the trails length in time. Increase down to “Off” will switch trails off. The color of the trails can be set in <a href="#preferences" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">preferences</a> where also options for where to show trails, PPI/chart overlay, are present.</li>
+<li class="level1"> <b>True/Relative trails</b>  Click to toggle between True/Relative. True will obviously show trails from positions where the target has been. Relative will show target movements relative your own ship during the stated time; A target in front you at the same speed and heading will though get no trail. If you are running faster the trail will show a target moving towards yourself. Also static targets like marks and shore will get a trail since relative your ship they are moving opposite your heading. Try it! Sometimes it&#039;s very informative, sometimes disturbing.</li>
+<li class="level1"> <b>Clear trails</b>  Click the button to immediately clear all trails. If trails are not set to “Off” all trails will restart.</li>
+<li class="level1"> <b>Multi sweep filter</b>  Click the button to toggle between Off/On. When “On” a guard zone alarm will not be detected until several radar sweeps have seen a target at the same position. Can be useful where waves are high. But use it with care! The filter can also make small targets not alarming.</li>
+<li class="level1"> <b>Orientation</b>  Click the button to toggle between Head up/North up in the PPI window. For chart overlay OCPN&#039;s own settings are valid also for the radar picture.</li>
+<li class="level1"> <b>Refresh rate</b>  Click to open an edit box to increase/decrease the refresh rate. I high value will increase screen update time for the radar picture. Fast targets will be shown without interruptions. A high level will use significant more CPU. Two is default.</li>
+<li class="level1"> <b>Transparency</b>  Click to open an edit box to increase/decrease the radar overlay transparency. A low value will cover what&#039;s on the chart, a very high value is hardly visible. Five is default.</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>EBL/VRM</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/eblmenu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:eblmenu.png" class="media" title="opencpn:manual:plugins:br24_radar:eblmenu.png"><img src="../../../opencpn/manual/plugins/br24_radar/eblmenu.tok.519322_w.200.png" class="medialeft" alt="" width="200" /></a>
+</p>
+<ul>
+<li class="level1"> To set EBLs in a PPI window you first click a cursor mark to point out an angle from centrum for the line. </li>
+<li class="level1"> <b>Clear cursor</b> is used to clear any cursor mark in the window.</li>
+<li class="level1"> <b>Place/Clear EBL/WRM 1</b> When this button is clicked a line will be drawn from centrum and trough your cursor mark. When drawn the button will change so you clear the line when desired.</li>
+<li class="level1"> <b>Place/Clear EBL/WRM 2</b> Equal functions but for the second EBL/WRM. Before setting the second line you have to make a new cursor mark for the that line.</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>Guard zone</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/guardzonealert.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:guardzonealert.png" class="media" title="opencpn:manual:plugins:br24_radar:guardzonealert.png"><img src="../../../opencpn/manual/plugins/br24_radar/guardzonealert.tok.5cfd13_w.100.png" class="mediaright" alt="" width="100" /></a>
+<a href="../../../opencpn/manual/plugins/br24_radar/guardzonemenu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:guardzonemenu.png" class="media" title="opencpn:manual:plugins:br24_radar:guardzonemenu.png"><img src="../../../opencpn/manual/plugins/br24_radar/guardzonemenu.tok.698d10_w.150.png" class="medialeft" alt="" width="150" /></a>
+</p>
+
+<p>
+<br/>
+ <br/>
+
+</p>
+
+<p>
+<b>Guard zone 1 / 2</b> You can use two guard zone simultaneously and independent of each others. Guard zone menu 1 and 2 are used to set properties for each of them. Both menus are equal. Each zone is indicated on the chart overlay and/or in the PPI window. The style can be outlined and/or shaded. Once a guard alert is activated by a target inside a zone an alert box is shown and the alert sound will play. Zone style and sound to play are all set in <a href="#preferences" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Preferences</a>.<br/>
+
+Once a guard zone alert is active the alert box is shown. In the message box it&#039;s indicated which zone is alarming and the strength of the target echo. The alarm is sounding repeatably and a count down timer will indicate next alarm. The alarm sound can be silenced by the <b>Confirm</b>  or <b>Close</b> buttons. The close button will also hide the alert box. Both confirm and close actions are valid for one target. If another target appears inside a zone but at another range and bearing as earlier confirmed a new alert will occur.
+</p>
+<ul>
+<li class="level1"> <b>Zone type</b> The guard can be “Off” or on and shaped as an arc or a circle.</li>
+<li class="level1"> <b>Inner range</b> Enter the distance from own ship where the zone shall start. Range units are set in <a href="#preferences" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Preferences</a>.</li>
+<li class="level1"> <b>Outer range</b> Enter the range from own ship where the zone shall end.</li>
+<li class="level1"> <b>Start and End bearing</b> If the zone is set to a circle these settings are grayed out. For an arc enter start and end bearings. Zero is own ships heading. Negative values can be used so one method to cover 40 degrees on each side in front of the boat is to set start to -40 and end to 40. (Start at 320 and end at 40 will do as well.)</li>
+<li class="level1"> <b>Multi sweep filter</b> Click to set the filter described in detail in <a href="#view_menu" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">View menu</a>.</li>
+</ul>
+
+<p>
+<br/>
+ <br/>
+ <br/>
+ <br/>
+
+</p>
+
+</div>
+
+<h3>Timed transmit</h3>
+<div class="level3">
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/timed_menu.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:timed_menu.png" class="media" title="opencpn:manual:plugins:br24_radar:timed_menu.png"><img src="../../../opencpn/manual/plugins/br24_radar/timed_menu.tok.cf7562_w.120.png" class="medialeft" alt="" width="120" /></a>
+</p>
+
+<p>
+<a href="../../../opencpn/manual/plugins/br24_radar/timed_paused.id.opencpn_3Aopencpn_user_manual_3Atoolbar_buttons_3Aplugins_3Aradar_overlay_ais_3Abr24_radar.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Atoolbar_buttons%3Aplugins%3Aradar_overlay_ais%3Abr24_radar&media=opencpn:manual:plugins:br24_radar:timed_paused.png" class="media" title="opencpn:manual:plugins:br24_radar:timed_paused.png"><img src="../../../opencpn/manual/plugins/br24_radar/timed_paused.tok.2b65da_w.120.png" class="medialeft" alt="" width="120" /></a>
+</p>
+<ul>
+<li class="level1"> <b>Timed transmit</b> can be used to repeatably pause the radar transmission for a chosen time. Use the “+” / “-” buttons to change the time in five minutes steps. Decreasing to “Off” will deactivate the function. Guard zone(s) to monitor during transmit periods has to be set before the timed transmit function is activated.</li>
+<li class="level1"> <b>Back</b>  Once a time is set the function will initiate when the “back” button is clicked. The function will start with a transmit cycle.</li>
+<li class="level1"> <b>Function</b>  While Timed Transmit is pausing the control menu will inform it&#039;s status. The count down timer show remaining time till transmission. Expired timer will start the radar for two minutes and then return to a new pause. During transmit a count down timer indicates remaining time to next pause.</li>
+<li class="level1 node"> <b>Timed transmit reset</b>  The timed function will reset if:<ul>
+<li class="level3"> A guard zone alert is detected during the transmit period.</li>
+<li class="level3"> A user mouse click on either the timer count down button or</li>
+<li class="level3"> A click on the Timed transmit button and decrease the timer value to “Off”.</li>
+</ul>
+</li>
+</ul>
+
+<p>
+<em>Advanced: To change default transmit time after the pause change “BR24Radar/RunTimeOnIdle=120” in OpenCPN  <a href="#configuration_file" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">configuration file.</a></em>
+</p>
+
+</div>
+
+<h2>HARDWARE INSTALLATION</h2>
+<div class="level2">
+
+<p>
+<a href="#ri1011" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">RI10/11</a><br/>
+
+<a href="#shared_setup_with_a_navico_mfd" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Shared setup with a Navico MFD</a><br/>
+
+<a href="#installation_with_only_a_scanner" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Installation_with_only_a_Scanner</a><br/>
+
+<a href="#choosing_an_ethernet_switch" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Choosing an Ethernet switch</a><br/>
+
+<a href="#wifi" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">WiFi</a><br/>
+
+</p>
+
+<p>
+<a href="#basic_operation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">BASIC OPERATION</a><br/>
+
+<a href="#software_requirements" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">SOFTWARE REQUIREMENTS</a><br/>
+
+</p>
+
+<p>
+The Navico radars are very easy to use with OpenCPN. All you need is a wired Ethernet connection.
+</p>
+
+<p>
+Read your Navico/Simrad/Lowrance BR24/3G/4G installation manual for schematic pictures corresponding to below descriptions. Also  power connections and patch cable pin outs, when needed, are well described in the manuals.
+</p>
+
+<p>
+You can add as many computers as desired, the system will allow operation from all connected MFDs (plotters) and computers.
+</p>
+
+</div>
+
+<h3>RI10/11</h3>
+<div class="level3">
+
+<p>
+In all installation packages (except Lowrance 3G USA) the scanner also ships with a small black box – either a RI10 with NMEA 2000 input or a RI11 with NMEA 0183. It uses the data from the heading sensor on the NMEA network to add this to the radar data.
+</p>
+<ul>
+<li class="level1"> The Navico plotters require heading input to the RI-10/11 for MARPA operation.</li>
+<li class="level1"> The plugin uses this heading as the “best” source of heading for radar overlay.</li>
+</ul>
+
+<p>
+This box also helps isolating the system electrically, and will improve protection of the computer from damage in case of electrical storms (lightning.)
+</p>
+
+</div>
+
+<h3>Shared setup with a Navico MFD</h3>
+<div class="level3">
+
+<p>
+If you already have a Navico MFD installed the installation consists of:
+</p>
+<ul>
+<li class="level1"> Installing an Ethernet switch, or a WiFi router with a built in Ethernet switch. You need a wired port for each device – the radar, the MFD(s) and the computer running OpenCPN.</li>
+<li class="level1"> Connect all devices to the switch.</li>
+</ul>
+
+<p>
+In all cases you will need at least one RJ45 to Navico radar connector cable. The cheapest solution is to cut Navico Ethernet cables with two yellow connectors at both ends, and crimp a RJ45 connector onto both halves. Or get a standard Ethernet patch cable. So for the most common case where you have a single MFD connected to a radar scanner:
+</p>
+<ul>
+<li class="level1"> Cut the Ethernet cable between MFD and scanner and crimp on two RJ45 connectors.</li>
+<li class="level1"> OR - Get another Ethernet patch cable, preferable shielded, STP. (Cat5 or Cat6 will both work.)</li>
+<li class="level1"> Insert these into a switch.</li>
+<li class="level1"> Connect the computer to the switch as well.</li>
+</ul>
+
+</div>
+
+<h3>Installation with only a scanner.</h3>
+<div class="level3">
+
+<p>
+If your scanner came with a RI10:
+</p>
+<ul>
+<li class="level1"> Cut the supplied Navico ethernet cable in half or get another Ethernet patch cable as of above paragraph.</li>
+<li class="level1"> Crimp on a RJ45 connector.</li>
+<li class="level1"> Insert the RJ45 connector into the computer&#039;s Ethernet port or a standard Ethernet switch and the other side into the RI10.</li>
+</ul>
+
+<p>
+Install the scanner as detailed in the Navico installation instructions. The same instruction also contains RJ45 cable pin out scheme.
+</p>
+
+<p>
+If you bought a USA Lowrance 3G scanner:
+</p>
+<ul>
+<li class="level1"> Insert the RJ45 connector from the radar scanner into a standard 100 Mbit switch. _or_</li>
+<li class="level1"> Cut the supplied Navico conversion cable that has a RJ45 female connector and a yellow Navico connector in half, and replace the yellow connector with a RJ45 connector.</li>
+</ul>
+
+<p>
+We recommend always using a 100 Mbit switch in this setup to provide some electrical isolation between the scanner and the computer. We don&#039;t know whether the connection between the radar and the RI10 uses the four other wires for some non-Ethernet purposes, so some damage may occur if you insert the radar cable directly into your computer.
+</p>
+
+</div>
+
+<h3>Choosing an Ethernet switch</h3>
+<div class="level3">
+
+<p>
+If you are going to use a switch you may as well use a Gigabit switch. The scanner has a 100 Mbit interface, but a Gigabit switch will use slightly less power than a 100 MBit switch. You should probably also use one that has a 12V input which can be powered directly from the 12V house battery (or a DC/DC converter if you have a 24 V house battery bank.)
+</p>
+
+<p>
+The author uses a 5 port Netgear GS105 which according to Netgear: <em><u>Both GS105 and GS108 support the latest Energy E cient Ethernet (IEEE 802.3az) standard, which reduces energy consumption when there is light traffic on an active port or when there is no link or no activity detected. It can further save energy when a short cable (&lt;100m) is used. Energy savings lead directly to cost savings in operation.</u> </em>
+</p>
+
+<p>
+Note: make sure you get the _metal cased_ GS105/GS108 that uses 12 V input. There are now also other models with a plastic case that have a 5 V input, which requires an extra DC/DC converter.
+</p>
+
+</div>
+
+<h3>WiFi</h3>
+<div class="level3">
+
+<p>
+The _multicast_ transmission system used by the scanner means that transmission over WiFi must happen at the lowest rate that any device connected to the WiFi network is capable of. For 802.11b and g this rate is 1 Mbit/s. Since the radar data is ~ 1 Mbit/s as well this means it <u>does not work well at all</u>. The solution is to either:
+</p>
+<ul>
+<li class="level1"> Modify the base rate to be higher. This reduces the maximum range of your WiFi network for all devices.</li>
+<li class="level1"> Get a faster WiFi network, for example 802.11a or 802.1ac (5 <abbr title="Gigahertz">GHz</abbr>). This has a much faster base rate (6 Mbit/s). Unfortunately, most WiFi routers do not allow you to change the base rate. If yours is Linux based and uses &#039;hostapd&#039; you can edit the following section in &#039;hostapd.conf&#039;. The example disables basic rates 10 and 20 (= 1 and 2 Mbit/s):</li>
+</ul>
+
+<p>
+<em># Basic rate set configuration <br/>
+# List of rates (in 100 kbps) that are included in the basic rate set. <br/>
+# If this item is not included, usually reasonable default set is used. <br/>
+#basic_rates=10 20 <br/>
+#basic_rates=10 20 55 110 <br/>
+#basic_rates=55 110 <br/>
+#basic_rates=60 120 240</em>
+</p>
+
+<p>
+For additional IP connection help see: <a href="br24_radar/debugging.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar:debugging">Radar Debugging</a>
+</p>
+
+</div>
+
+<h2>SOFTWARE REQUIREMENTS</h2>
+<div class="level2">
+
+<p>
+<a href="#network_setup" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Network Setup</a><br/>
+
+<a href="#installing_the_plugin" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Installing the plugin</a><br/>
+
+<a href="#enabling_the_plugin" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Enabling the plugin</a><br/>
+
+</p>
+
+<p>
+<a href="#basic_operation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">BASIC OPERATION</a><br/>
+
+<a href="#hardware_installation" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">HARDWARE INSTALLATION</a><br/>
+
+<a href="br24_radar/debugging.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar:debugging">Trouble shooting if below not works</a>
+</p>
+
+<p>
+The plugin requires the following software requirements:
+</p>
+<ul>
+<li class="level1"> OpenCPN 4.2 or higher installed. Generally the latest production release is recommended, at the time of writing this is OpenCPN 4.4.</li>
+<li class="level1"> Firewall disabled or with exceptions enabled for opencpn.exe.</li>
+<li class="level1"> OpenGL mode enabled in OpenCPN. The frequent screen updates produced by a radar make traditional window calls impractical.</li>
+</ul>
+
+</div>
+
+<h3>Network setup</h3>
+<div class="level3">
+
+<p>
+The scanner and the displays communicate using a system called _multicast_. This has the advantage that the data only needs to be sent once, and is received by all displays. Uniquely, it also means that there is no issue with Ethernet addresses. _Any ethernet address is acceptable._ A disadvantage is that it can be hard to setup a firewall rule as you don&#039;t just “open” a particular port. The simplest solution is to allow `opencpn.exe` full access to the network for both receive and transmit.
+</p>
+
+</div>
+
+<h3>Installing the plugin</h3>
+<div class="level3">
+
+<p>
+Download the latest production version and run the installation package.
+</p>
+<ul>
+<li class="level1"> Microsoft Windows and macOS releases are available from the [release page on this site](<a href="https://github.com/canboat/BR24radar_pi/releases" class="urlextern" title="https://github.com/canboat/BR24radar_pi/releases" rel="nofollow">https://github.com/canboat/BR24radar_pi/releases</a>).</li>
+<li class="level1"> Linux (apt): see the [standard instructions](<a href="http://opencpn.org/ocpn/download" class="urlextern" title="http://opencpn.org/ocpn/download" rel="nofollow">http://opencpn.org/ocpn/download</a>) for installing OpenCPN on Linux. The plugin package name is &#039;opencpn-plugin-br24radar&#039;.</li>
+</ul>
+
+</div>
+
+<h3>Enabling the plugin</h3>
+<div class="level3">
+<ul>
+<li class="level1"> Start OpenCPN</li>
+<li class="level1"> Go to Options &gt; Plugins &gt; BR24radar. Click <b>Enable</b>.</li>
+<li class="level1"> Close the options dialog. You now have a new icon in the toolbar.</li>
+</ul>
+
+<p>
+If the radar has not been detected yet it will show as:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_not_detected.tok.19a094_w.64.png" class="media" alt="" width="64" />
+</p>
+
+<p>
+and if the radar has been detected it will show:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_standby.tok.c5b795_w.64.png" class="media" alt="" width="64" />
+</p>
+
+<p>
+There is also an information window that shows whether the scanner has been detected, and whether there is a valid heading input:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_info.tok.adfdb9_w.336.png" class="media" alt="" width="336" />
+</p>
+
+<p>
+If a condition is not satisfied this dialog will open automatically. You can also open it using the control menu (see next page.) As you can see the Info dialog shows whether you have OpenGL mode enabled.
+</p>
+
+<p>
+It also shows whether radar presence has been detected, and its IP address. Until it has it will cycle through all Ethernet cards at the rate of one card every two seconds. In the image above the scanner has not been seen yet and it is listening on the card with IP address 10.0.67.166.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/br24_radar/radar_info_type.tok.fccff7_w.336.png" class="media" alt="" width="336" />
+</p>
+
+<p>
+In the above image the radar type and firmware release date are shown, this shows that the radar has been detected successfully.
+</p>
+
+<p>
+For <b>North Up</b>  display and radar overlay you must have a heading sensor attached, either via the RI10/11 (preferred) or via NMEA0183 input to OpenCPN directly. If you use a magnetic sensor the variation is also required, but that is easy to do by enabling the WMM plugin.
+</p>
+
+<p>
+For radar overlay you must have a boat position via GNSS input to OpenCPN. The most common is a GPS sensor sending NMEA0183 data.
+</p>
+
+<p>
+By customer demand it has been made possible to use Course Over Ground as the heading input, but we think this is such a bad idea that we have not enabled it by default. Go to the __Options &gt; Plugins &gt; BR24radar &gt; <a href="#preferences" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:radar_overlay_ais:br24_radar ↵" class="wikilink1">Preferences</a>  page to enable it. Please don&#039;t enable it and then complain that the overlay is out when you are going slowly or are docked.
+</p>
+
+<p>
+<br/>
+
+</p>
+
+</div>
+<!-- EDIT2 TABLE [7604-] --><!-- EDIT1 TABLE [6781-] -->

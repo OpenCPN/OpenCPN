@@ -1,0 +1,245 @@
+
+
+
+<h1>Route &amp; Mark Manager</h1>
+<div class="level1">
+
+<p>
+<img src="../opencpn/manual/route-button.h.31_tok.dfd02a_w.30.png" class="media" alt="" width="30" height="31" />
+</p>
+
+<p>
+Through the Route Manager <img src="../opencpn/manual/route-button.h.31_tok.dfd02a_w.30.png" class="media" alt="" width="30" height="31" /> OpenCPN can save and load waypoints, routes, tracks and layers using the GPX transfer format. This lets you save your routes and marks so you can have more than the active ones - for example to do route planning, or archive existing data.
+</p>
+<ul>
+<li class="level1"> GPX format is supported by a wide variety of programs.</li>
+<li class="level1"> You can have as many saved files as you wish, there are no limits on the number of saved files.</li>
+<li class="level1"> Use this for passage planning by saving multiple possible routes for a passage.</li>
+<li class="level1"> Save routes and tracks for historical-log purposes.</li>
+<li class="level1"> Prepare layers as an aid to navigation en route.</li>
+</ul>
+
+<p>
+<b>All Navigation Objects</b> on this page, except for “Temporary Layers”, <b>are persistent</b> between sessions. More here: <a href="../advanced_features/navigation_data_backup.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:navigation_data_backup">Navigation Data Backup</a>
+<b>All objects visibility</b> is toggled by clicking the “eye” <img src="../opencpn/manual/eye33.h.18_tok.7aec0e_w.24.png" class="media" alt="" width="24" height="18" />, or other icon, to the left of the route-track-waypoint-layers name, on each line. A red X across the “eye” or icon (for marks) means that the object is invisible.  <b>All objects can be sorted</b> by the header in the columns in the Manager. By clicking “Route Name below, the routes will be sorted alphabetically, pressing once again reverses the order. Similar for the column “To”, the destination.  <b>Select multiple objects</b> in the Routes, Tracks, or Waypoints tabs,individually by CTRL + leftclick, or in group by SHIFT + leftclick, for export or deletion.  <b>Double-clicking</b> on a  <b>Waypoint</b>,  <b>Route</b> or  <b>Track</b> brings up the respective Properties dialog.
+</p>
+
+</div>
+
+<h2>Routes</h2>
+<div class="level2">
+<ul>
+<li class="level1"> The route points have exactly the same properties as the isolated waypoints, but does not show in the waypoint tab, to avoid clutter. To create a route that uses real waypoints, create them first and join them with the route tool. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route21.h.383_tok.496007_w.600.png" class="media" alt="" width="600" height="383" />
+</p>
+<ul>
+<li class="level1"> Click the “eye” <img src="../opencpn/manual/eye33.h.18_tok.7aec0e_w.24.png" class="media" alt="" width="24" height="18" />to the far left on the line with the route to toggle if the route is displayed or hidden on the chart. A small dialog let you choose, if existing marks, included in a route, will also become invisible. When a route is turned visible, all the shared waypoints are also made visible. Once a route is deleted, such a mark will go back to be a “normal” waypoint.</li>
+<li class="level1"> To Sort routes click “Route Name” or “To”</li>
+<li class="level1">  <b>Properties</b>:This button brings up a new dialog with settings that can be changed for each route.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-properties.h.385_tok.25605f_w.600.png" class="media" alt="" width="600" height="385" />
+</p>
+<ul>
+<li class="level1"> Wpt 005 is right-clicked, and new dialog has popped up. The waypoint properties can be reached and edited. For example, change the default name, “005” in this case, to something more appropriate. Read more in the <a href="../advanced_features/extended_marks.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:extended_marks">Extended Marks</a> section. The waypoint can also be deleted. The last entry, “Copy all as text” copies all Route Properties for pasting into a text or Spreadsheet document.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-properties1.h.230_tok.9c1d23_w.600.png" class="media" alt="" width="600" height="230" />
+</p>
+<ul>
+<li class="level1">  <b>Plan Speed</b> The overall planned speed for the route. The speed for each leg can be set by going to the waypoint Properties→Description tab for the waypoint that starts the leg, and write in the speed. For example ” VMG=9.7“. [Unfortunately this approach presently excludes writing descriptions for the waypoint. One or the other, be warned!] The Plan Speed value is persistent and will be used for further routes, unless changed. The default value is 6.0 knots.</li>
+<li class="level1">  <b>Departure Time</b>: For Planning: With no departure time the ETE (Estimated Time En route) is calculated. Route is Inactive and normal calculation is ETE. The ETE will be calculated from the First Waypoint of the Route.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-properties-normal-ete.h.425_tok.de4316_w.637.jpeg" class="media" title="route-properties-normal-ete.jpg" alt="route-properties-normal-ete.jpg" width="637" height="425" />
+</p>
+<ul>
+<li class="level1">  <b>ETA For Planning Date &amp; Time:</b> with Route Inactive or Active. Enter a Departure Date and Time eg: 06/07/2014 14:00 and the ETA will be calculated. Make sure to press “Enter-Return” after entering a departure time. This guarantees that the entered time is used in calculations. The ETA will be calculated from OwnShip to the first Waypoint of the Route and then for each waypoint. Note the Active Waypoint Console.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-inactive-active-date-time-eta.h.440_tok.bc49ed_w.639.jpeg" class="media" title="route-inactive-active-date-time-eta.jpg" alt="route-inactive-active-date-time-eta.jpg" width="639" height="440" />
+</p>
+<ul>
+<li class="level1">  <b>ETA Planning Now</b> Route can be Inactive or Active with first WP active. To enter the present time, enter ”&gt;“ (meaning: “Now”) in the departure time box. <u>This works provided “Time shown as” → Local@PC</u> is selected. Press “Enter” and all the times in the “ETA” column will change. ”&gt;“ differs from entering the same time manually, say “06/04/2016 14:23”. Distance from Ownship to first Waypoint (active) will be shown with ETA&#039;s for all waypoints in the route. Calculates departure Now from the current boat position, including the distance to the first waypoint of the route Use prior to leaving harbour, all calculations pass through the very first WP of the route and ETA is calculated from the boat position through the first waypoint and then to the end of the route. Note the Active Waypoint Console.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-active-now-eta-wp1.h.425_tok.8c3ef0_w.638.jpeg" class="media" title="route-active-now-eta-wp1.jpg" alt="route-active-now-eta-wp1.jpg" width="638" height="425" />
+</p>
+<ul>
+<li class="level1">  <b>ETA Planning Now from Intermediate WP</b> If the Route is Active and an intermediate Waypoint is Active, say WP5, then ”- “&gt;” - issued at 14:00 on 06/04/2016 - calculates departure “Now” from the current boat position, including the distance to the currently “active waypoint” of the route. Waypoints before the active waypoint are left empty.</li>
+<li class="level1">  <b>During Passage</b> - Set Route “Active” Route &amp; &amp; time shown as “Local@PC”. If you are simulating this condition you may need to right click on the next WP and pick “Active”. On an ocean passage, after a week of sailing, calculate ETA to the following WP. Set the route as “active” &amp; next WP as “active”. Then, when entering “&gt;”=“now” as Departure Time, all the ETAs are from your real position TO THE NEXT WP, not to the beginning of the route. The ETA to the active waypoint is from Ownship to the WP. Note the Active Waypoint Console.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-active-now-eta-wp4.h.400_tok.2f06c6_w.633.jpeg" class="media" title="route-active-now-eta-wp4.jpg" alt="route-active-now-eta-wp4.jpg" width="633" height="400" />
+</p>
+<ul>
+<li class="level1">  <b>Times shown as:</b> UTC is a new name for GMT. LMT is a local mean time based on the present longitude. For Local Zone Time one can also enter the keyword “now”.</li>
+<li class="level1">  <b>Color:</b> Set the displayed color of the track or keep the default.</li>
+<li class="level1">  <b>Style:</b> Solid, dashes, dots, a combination or keep the default.</li>
+<li class="level1">  <b>Width:</b> Set the width of the track or keep or keep the default.</li>
+<li class="level1"> Marking a line with the leg number and the destination Waypoint in the Properties Dialog also marks the Waypoint on the chart with a blue square. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/bluesquare.h.38_tok.fc3d76_w.40.png" class="media" alt="" width="40" height="38" />
+</p>
+
+<p>
+<img src="../opencpn/manual/printroute.h.55_tok.8ac4fa_w.597.png" class="media" alt="" width="597" height="55" />
+</p>
+
+<p>
+The lower part of the Route properties dialog now has a  <b>Print Route</b> button. It is possible to first select what features to print before being sent to the normal print routine.
+</p>
+<ul>
+<li class="level1">  <b>Extend Route</b>:Extending is possible only when it is obvious, what should be joined with the current route (current=visible in the Dialog). Eligible are all visible route points shared with, or lying nearby to the current route&#039;s endpoint. If there is exactly 1 such point, then it is considered obvious, and the Extend button is enabled. If there are more, some should be hidden before proceeding, until just 1 remains. </li>
+<li class="level1"> Routes are extended forward, based on the geographic location, next route point must be very near, as when mouse-extending the route. If the next route point is to far away for extending, just create the joining leg and extend twice.</li>
+<li class="level1">  <b>Split Route:</b> For splitting, the split point is selected as the row in the listing. The point-of-split becomes part of both new routes (shared) or tracks (cloned). Original route-track is deleted.</li>
+<li class="level1"> Here is a basic example of first splitting then extending. The test route is shown below  * </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/orig.h.455_tok.584687_w.421.png" class="media" alt="" width="421" height="455" />
+</p>
+<ul>
+<li class="level1">  <b>Split Test_A</b> In the Route Managers property dialog for the route we have selected a waypoint where we would like to split the route. The “Split Test” Route now consists of two parts, that has been renamed.  * </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/orig1.h.359_tok.3984fb_w.600.png" class="media" alt="" width="600" height="359" />
+</p>
+<ul>
+<li class="level1"> Next we extend the first leg “Split Test_A” with the second leg “Split Test_B”. This extended route is now named “Split Test_B_plus. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/orig2.h.316_tok.dc4f91_w.600.png" class="media" alt="" width="600" height="316" />
+</p>
+<ul>
+<li class="level1">  <b>Activate-Deactivate</b>: Activates-Deactivates a route marked in the left part of the window.  *  <b>Zoom to</b>: Zooms in on a route marked in the left part of the window.  *  <b>Reverse</b>: Reverses a selected route. It&#039;s possible to cancel the reverse operation through a confirmation dialog.  *  <b>Delete</b>: Deletes selected route or track. Use the Shift key to mark multiple routes for deletion. This also work in the other Route manager tabs.  *  <b>Export Route</b>: Save the route on your computer for later use (import)  *  <b>Send to GPS.</b> Send the Route to your GPS. Pressing the button activates a dialog were an output port is selected. This port does not have to be listed in “Connections” as it is an independent feature. This choice also appears in the right click menu for routes and waypoints. For  <b>Garmin Users</b>, make sure that the ToolBox→GPS→”Use Garmin GRMN-GRMN (Host) mode for Waypoint and Route uploads“ box is ticked. The reason for this is that Garmin units cannot accept route uploads via NMEA0183. This is a “design feature” of all Garmin receivers.  * </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/4sendtogps.h.280_tok.166ebd_w.442.png" class="media" alt="" width="442" height="280" />
+</p>
+<ul>
+<li class="level1">  <b>Delete All</b>. Be careful. If you  <b>know</b> you have saved the routes on your computer and are able to import the again, this is a simple way to clear the screen from routes. Better be safe than sorry, so save before deleting, if you want to be able to use the routes again.</li>
+<li class="level1">  <b>Import</b>. Import one or more previously saved Routes, or Routes from other gpx compatible applications. It is possible to select and import multiple routes. The default waypoint icon bitmap is a circle. This kicks in if the icon in the imported gpx-file is not recognized.  * Export All, now called “<b>Export All Visible…</b>” Saves all visible routes, waypoints and layers, in one gpx file. This is done through a normal file saving dialog.  * If a Tidal Height Curve Dialog, for an individual tidal station is shown on the screen, the tidal situation for this station will be tabulated along all route points in the route properties dialog. It is essential to enter a departure time and a planned speed. Once “Enter” is pressed the tidal column will show the nearest High or Low water considering the ETA at each waypoint. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/plan1.h.455_tok.cf829c_w.600.png" class="media" alt="" width="600" height="455" />
+</p>
+
+<p>
+<img src="../opencpn/manual/plan2.h.292_tok.37a349_w.600.png" class="media" alt="" width="600" height="292" />
+</p>
+<ul>
+<li class="level1"> If no tide dialog for any station is open and a waypoints name contains the string @~~&lt;name&gt;, for example ”@~~York Spit Light“, then the tide report for the closest station with matching name is shown in the tide column for this waypoint. The most appropriate tidal station for each waypoint can thus be selected.</li>
+<li class="level1"> When entering a departure time the ETA, Expected Time of Arrival will be shown, instead of ETE, Expected Time En-route.</li>
+<li class="level1"> The individual waypoints “Description” field can contain the setting of planned speed specific just to the next route leg (e.g. “VMG=4.5;”) and-or the specification of Estimated Time of Departure from this waypoint (e.g. ” ETD=2/14/2011 12:00;“), allowing for planning extended stopovers. Time can be specified as UT, LMT or local zone time at the PC (default). </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/plan5.h.283_tok.c5d7e5_w.600.png" class="media" alt="" width="600" height="283" />
+</p>
+
+</div>
+
+<h2>Tracks</h2>
+<div class="level2">
+
+<p>
+<img src="../opencpn/manual/4trackstab.h.366_tok.a09fc7_w.556.png" class="media" alt="" width="556" height="366" />
+</p>
+<ul>
+<li class="level1"> Make sure that you have read all about Automatic Daily tracks and track Highlighting in the Documentation on the Own Ship</li>
+<li class="level1"> The visibility of tracks is controlled by clicking the “eye” on each line. Tracks can be sorted by clicking the column headers.</li>
+<li class="level1"> Tracks are extended backward, based on the time-stamp sequence, a track is selected, which ends as the latest one before the start of current track. Tracks are extended as a single segment if they share the extending point. If they ha no common point a new “empty” segment, with no visible track, is added. Joining two tracks (i.e. extending a track) results in just track one remaining. It may look like two tracks but the Route Manager treats it as a single track.</li>
+<li class="level1"> “Merge Selected Tracks” is an alternative to “Extend Track”, where tracks are joined. The difference is that Merged tracks are visibly joined by straight track-lines. Read on for instructions on merging tracks.</li>
+<li class="level1"> If you have ever hit the Track icon by mistake, or closed down OpenCPN in the middle of a passage, you know that it&#039;s very frustrating it is, to have a voyage split up in a number of different tracks that does not come together.</li>
+<li class="level1"> This can be fixed. Just select any number of tracks in the Track tab of the Route Manager window, right click the mouse to bring up the context menu, and choose to Merge Selected Tracks. The selected tracks will be merged in chronological order, with the track properties (name, color etc) of the resulting track keeping those of the earliest track in the selection. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/route-properties2.h.287_tok.419fcc_w.400.png" class="media" alt="" width="400" height="287" />
+</p>
+<ul>
+<li class="level1"> “Copy as text” copies the track name, unless it&#039;s the default time stamp, and the track distance.  * The result of clicking the merge button.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/mad-track2.h.314_tok.d521ef_w.400.png" class="media" alt="" width="400" height="314" />
+</p>
+
+<p>
+<img src="../opencpn/manual/mad-track.h.323_tok.a045d5_w.400.png" class="media" alt="" width="400" height="323" />
+</p>
+
+</div>
+
+<h3>Reduce Track Data</h3>
+<div class="level3">
+<ul>
+<li class="level1"> Do you have have massive amounts of tracks and finds them bogging down OpenCPN? This feature is for you!</li>
+<li class="level1"> It is available from the context menu in the Track Manager. Right click on an existing track, and then click “Reduce Data…”  .</li>
+<li class="level1"> Pick one of the options, it reduces the amount of points in an existing track while maintaining the specified maximum error between the original track and the reduced track. Testing on an old OpenCPN track or an imported track, with an error setting of 10 or 20 meters tracks, will, in many cases, reduce the size to less than half and one can&#039;t really see the difference.</li>
+<li class="level1"> Tracks made with the new intelligent dynamic tracking available in OpenCPN will not reduce much, unless a large error is tolerated. </li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/reduce-data1.h.311_tok.f28742_w.400.png" class="media" alt="" width="400" height="311" />
+</p>
+
+<p>
+<img src="../opencpn/manual/reduce-data.h.415_tok.d195d5_w.600.png" class="media" alt="" width="600" height="415" />
+</p>
+
+</div>
+
+<h3>Track Properties</h3>
+<div class="level3">
+
+<p>
+The track properties dialog is similar to the route properties dialog above. There are some obvious differences as a track describes something that took place in the past and a route is planning for the future. Track properties also has an  <b>Advanced</b> tab that works similar to the Extended Marks dialog. 
+</p>
+
+</div>
+
+<h2>Waypoints</h2>
+<div class="level2">
+
+<p>
+<img src="../opencpn/manual/4trackproperties.tok.d3a2f6_w.600.png" class="media" alt="" width="600" />
+</p>
+
+<p>
+<img src="../opencpn/manual/wpt21.h.383_tok.9d0a86_w.600.png" class="media" alt="" width="600" height="383" />
+</p>
+<ul>
+<li class="level1"> Control the visibility of each waypoint by clicking the waypoint icon to the left on each line. Sort the waypoints by clicking the column headers.  *  <b>New.  </b>Create a new waypoint. This brings up the waypoints properties dialog. The default position is set to the current position of “Own Ship”.</li>
+<li class="level1">  <b>Properties.</b> All about the dialog in Extended Marks</li>
+<li class="level1">  <b>Zoom to</b> centers the chart display on the waypoint.</li>
+<li class="level1">  <b>Go To</b>. Makes an instant route from present position to the mark and activates the route. A similar instant route is created by right clicking and selecting “Go To Here” without first creating a mark. This instant route will be listed in the Route Tab.</li>
+<li class="level1">  <b>Export Wpt</b> and  <b>Send to GPS</b> buttons behaves similar to corresponding buttons for Routes.</li>
+<li class="level1">  <b>Delete All</b>, does<b> not  </b>delete any  <b>Man Over Board</b> marks. All other marks are deleted.</li>
+<li class="level1"> Use the Shift key to mark multiple waypoints for deletion. This also work in the other Route manager tabs.</li>
+</ul>
+<ul>
+<li class="level1"> Refer to <span class="curid"><a href="route_mark_manager.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager">Route &amp; Mark Manager</a></span></li>
+<li class="level1"> Refer to <a href="route_mark_manager/layers.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager:layers">Layers</a></li>
+<li class="level1"> Refer to <a href="../advanced_features/layers_library.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:layers_library">Layers Library</a></li>
+<li class="level1"> Refer to <a href="ais.html#aids_to_navigation_aton" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:ais">AtoN</a></li>
+<li class="level1"> Refer to <a href="route_mark_manager/using_routes.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager:using_routes">Using Routes</a></li>
+</ul>
+
+</div>

@@ -1,0 +1,103 @@
+
+
+
+<h1>Calculator</h1>
+<div class="level1">
+
+<p>
+<b>Beta Windows version is here: <a href="../../../opencpn/developer_manual/plugins/beta_plugins/calculator.html" class="wikilink1" title="opencpn:developer_manual:plugins:beta_plugins:calculator">Calculator for Windows </a></b>
+</p>
+
+</div>
+
+<h2>Aim</h2>
+<div class="level2">
+
+<p>
+<b>The calculator plugin allows you to carry out all nautical calculations, without having to leave the OpenCPN environment. The scientific calculator is capable of working with, and retaining variables</b>.<br/>
+
+* When starting the plugin for the first time, go to <img src="../../../opencpn/manual/settings.h.32_tok.90bb99_w.32.png" class="media" alt="" width="32" height="32" />to find the plugin tab. Click on the calculator plugin, then the “Enable” button.
+</p>
+<ul>
+<li class="level1"> Back in the OpenCPN menu the calculator icon <img src="../../../opencpn/manual/plugins/calculator/calculator.png" class="media" alt="" />brings up the calculator.</li>
+<li class="level1"> <img src="../../../opencpn/manual/plugins/calculator/calculator_screenshot.png" class="media" alt="" /></li>
+<li class="level1"> Tick the “Help” tickbox to bring up a comprehensive help screen. Unticking the help button brings you back to the calculator only interface and resizes the menu to the original size.</li>
+<li class="level1"> Enter calculations in the box and press enter or “Calculate” for evaluation. Press the up or down button, to retrieve historic input and results (max 30).</li>
+<li class="level1 node"> <b>Examples</b>  of expression that work in the calculator are: (<em>comments are in parentheses, some results depend on other example calculations</em>):<ul>
+<li class="level3 node"> <b>Hull speed:</b><ul>
+<li class="level4"> LWL=48 (<em>water line length in feet</em>)</li>
+<li class="level4"> vhull=1.34*LWL^(1/2) (<em>hull speed in knots</em>)</li>
+</ul>
+</li>
+<li class="level3 node"> <b>Conversions</b>:<ul>
+<li class="level4"> ftm=0.3048 (<em>feet to meters</em>)</li>
+<li class="level4"> km_to_nm=0.539957 (<em>Kilometers to nautical Mile</em>)</li>
+<li class="level4"> ftm*LWL (<em>waterline length in meters</em>)</li>
+</ul>
+</li>
+<li class="level3 node"> <b>Distance to horizon</b><ul>
+<li class="level4"> R=6378.1*1000 (<em>Radius of the earth in m</em>)</li>
+<li class="level4"> H=2.5 (<em>Height of the eye above sea-level in m</em>)</li>
+<li class="level4"> d = R * acos(R/(R + h)) (<em>Distance to horizon in m</em>)</li>
+<li class="level4"> ans*km_to_nm (<em>Distance to horizon in nm</em>, <em>km_to_nm was entered under conversions</em>)</li>
+</ul>
+</li>
+<li class="level3 node"> <b>Distance to lighthouse</b><ul>
+<li class="level4"> H1=200 (<em>height of lighthouse in m</em>)</li>
+<li class="level4"> d1 = R*acos(R/(R + H1)) (<em>Distance to horizon in m</em>)</li>
+<li class="level4"> distance=d1+d (<em>visibility range of lighthouse in m</em>)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="level1"> <b>Ans</b>  is the result of the previous calculation</li>
+<li class="level1"> <b>Variables</b>  can be defined (e.g. myvariable=10/8*cos(dtr*90) or yourvariable=Ans)</li>
+<li class="level1 node"> <b>Operators:</b><ul>
+<li class="level3"> + plus</li>
+<li class="level3"></li>
+</ul>
+</li>
+</ul>
+
+<p>
+- minus
+</p>
+<ul>
+<li class="level1"> * multiplication</li>
+<li class="level1"> / division</li>
+<li class="level1"> ^ exponentiation (use ^(1/2) for square root)</li>
+<li class="level1"> % modulus - Divides the value of one expression by the value of another, and returns the remainder.</li>
+<li class="level1"> ! factorial</li>
+<li class="level1"> <b>Functions</b>:</li>
+<li class="level1"> Abs Absolute value</li>
+<li class="level1"> Exp Exponential</li>
+<li class="level1"> Sign Returns .-1 for negative numbers and 1 for positive numbers</li>
+<li class="level1"> Sqrt Square root</li>
+<li class="level1"> Log natural logarithm</li>
+<li class="level1"> Log10 base 10 logarithm</li>
+<li class="level1 node"> Trigonometry (default entry is in radians use e.g. sin(dtr*90) to calculate in degree) :<ul>
+<li class="level3"> Sin</li>
+<li class="level3"> Cos</li>
+<li class="level3"> Tan</li>
+<li class="level3"> ASin</li>
+<li class="level3"> ACos</li>
+<li class="level3"> Atan</li>
+</ul>
+</li>
+<li class="level1"> Factorial Variables: Pi, e</li>
+<li class="level1"> dtr is the conversion factor from degrees to radians</li>
+<li class="level1"> <b>Bitwise operators</b></li>
+<li class="level1"> || logical OR</li>
+<li class="level1"> &amp; logical AND</li>
+<li class="level1"> |</li>
+<li class="level1"> «</li>
+<li class="level1"> »</li>
+<li class="level1"> =</li>
+<li class="level1"> &lt;&gt;</li>
+<li class="level1"> &lt;</li>
+<li class="level1"> &gt;</li>
+<li class="level1"> ⇐</li>
+<li class="level1"> &gt;=</li>
+</ul>
+
+</div>

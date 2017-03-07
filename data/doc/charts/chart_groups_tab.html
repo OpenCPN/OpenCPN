@@ -1,0 +1,122 @@
+
+
+
+<h1>Chart Groups Tab</h1>
+<div class="level1">
+
+<p>
+If this is a new of, or if new chart directories need to be added, use: <br/>
+
+<em><b>Options&gt;Charts&gt;<a href="chart_files_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_files_tab">Chart Files Tab</a></b></em> or<br/>
+
+<em><b>Options&gt;Charts&gt;<a href="chart_downloader_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_downloader_tab">Chart Downloader Tab</a></b></em> <br/>
+
+to Add the new chart directories. 
+</p>
+
+<p>
+Then click <b>OK</b> to exit from Options and to <em><b>Scan Charts and Update Database</b></em>. <br/>
+
+After the update finishes, select: <br/>
+
+<em><b>Options&gt;Charts&gt;<span class="curid"><a href="chart_groups_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_groups_tab">Chart Groups Tab</a></span></b></em><br/>
+
+in order to <b>Add</b> a <b>New Group</b>. 
+</p>
+
+<p>
+Now, directories of charts or individual chart file(s) can be added to the chart group(s).
+</p>
+
+<p>
+<img src="../opencpn/manual/4chartgroups2.tok.345ac3_w.500.png" class="media" alt="" width="500" />
+</p>
+
+<p>
+In <b>Options→Charts select “Chart Groups Tab”</b>
+</p>
+
+<p>
+You will see two panes. The top pane contains “All Available Charts”, which are the charts you have installed. The bottom pane allows you to create, edit, and delete Groups. Note that there is always an “All Charts” group. This Group is not editable. New Groups which you create may have chart directories or individual charts added to them by selecting the item in the top pane and touching the “Add” button.
+</p>
+
+<p>
+You may also remove individual charts or directories from Groups by selecting the desired item in the bottom pane, and touch  “<b>Remove Chart</b>”. Please note that “removing” an item from the Group does not remove it from your “Available” set of charts. The item is simply made unavailable when the Group is in use.
+</p>
+
+<p>
+It is a good idea to have a empty chart group, only the background Map will be shown. “Unlimited” zooming is allowed. This can be useful for very large scale plotting, for example.
+</p>
+
+</div>
+
+<h4>Chart Groups solve the following problem</h4>
+<div class="level4">
+
+<p>
+You may have many charts loaded in your active database. Some of them have overlapping coverage at the same scale, so that when quilted the logic does not know which of potentially several charts at the same scale to choose from. Some examples:
+</p>
+<ol>
+<li class="level1"> In the Bahamas there are a few publishers of charts, covering the same areas, with radically different presentations. Sometimes you may want to see one set (say planning charts of small scale), and other times you only want navigation charts of the best scale possible.</li>
+<li class="level1"> Leave a Group empty, in which case only the background chart will be displayed, very useful sometimes.</li>
+<li class="level1"> Pilot charts as one Group, normal navigation charts as another Group, makes it possible to quickly switch between them.</li>
+<li class="level1"> You have both Raster and Vector charts of the same area and want to be able to display each type separately, and switch quickly between them.</li>
+<li class="level1"> In another universe, NGA charts in one group, standard NOAA RNCs in another, standard NOAA ENCs in another group,  British UKHO in a third group or even a group with both ENC and RNC of a particular USCG District.</li>
+<li class="level1"> The Chart Group function allows us to define multiple Groups, with different chart directories in each group.  The Group desired for viewing may be selected quickly, through the right-click menu, without adding or deleting charts from the Active database.</li>
+</ol>
+
+<p>
+If there are no chart directories listed under <b>All available charts </b>you will not be able to <b>“Add”</b> Chart Groups. A newly added chart directory (also called a folder) cannot be added to a Chart Group unless the <b><em>Chart Database has been Updated</em></b>.<br/>
+
+</p>
+
+</div>
+
+<h2>Using your Groups</h2>
+<div class="level2">
+
+<p>
+<img src="../opencpn/manual/chartgroups321.h.387_tok.39b405_w.600.png" class="media" alt="" width="600" height="387" />
+</p>
+
+<p>
+In this illustration the navigator generally uses the US charts, when available. Coming into Baia do Porto Santo a detailed chart would be great, but no such US chart is available on board. A switch to the UK chart group solves the problem.
+</p>
+
+<p>
+<img src="../opencpn/manual/chartgroups322.h.412_tok.669cdb_w.600.png" class="media" alt="" width="600" height="412" />
+</p>
+
+<p>
+Select the Group you want to use, by a right-click context menu item called “Chart Groups”. As you switch Groups the logic tries to select a chart and scale that closely matches the situation present before the switch. As you may understand, sometimes the fit is not reasonable, so the resulting view may be surprising.
+</p>
+
+<p>
+Finally, if you have no Groups defined, as in the default installation, all installed charts are always available.
+</p>
+
+<p>
+<b>Chart Groups and CM93</b>
+</p>
+
+<p>
+<img src="../opencpn/manual/cm93grp.h.165_tok.59117c_w.600.png" class="media" alt="" width="600" height="165" />
+</p>
+
+<p>
+It is possible to have multiple instances of CM93v2 in different Chart Groups. Above we have 5 instances loaded in various chart groups. The view is of “All Active Charts”.
+</p>
+
+<p>
+OpenCP also supports multiple partial CM93 data sets.
+</p>
+
+<p>
+The instances are loaded, from left to right, in the order of the chart groups.
+</p>
+
+<p>
+In this situation, only the leftmost instance of CM93, that is not excluded from the quilt, will be displayed. Above, it is the instance represented by the yellow rectangle.
+</p>
+
+</div>

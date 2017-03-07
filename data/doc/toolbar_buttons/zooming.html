@@ -1,0 +1,153 @@
+
+
+
+<h1>Zooming</h1>
+<div class="level1">
+
+<p>
+<img src="../opencpn/manual/zoomin.h.32_tok.161869_w.32.png" class="media" alt="" width="32" height="32" /><img src="../opencpn/manual/zoomout.h.32_tok.0104c9_w.32.png" class="media" alt="" width="32" height="32" />
+</p>
+
+<p>
+It is essential to understand what happens when both zooming in and zooming out in a chart view. Vector charts have their own issues, with both over- and under-zooming. Both can be potentially dangerous, and it&#039;s essential to understand what&#039;s going on.
+</p>
+
+</div>
+
+<h4>How too Zoom in/out</h4>
+<div class="level4">
+
+<p>
+Zooming in makes the chart scale larger while zooming out makes the scale smaller
+</p>
+
+<p>
+<img src="../opencpn/manual/zoomin.h.32_tok.161869_w.32.png" class="media" alt="" width="32" height="32" /><img src="../opencpn/manual/zoomout.h.32_tok.0104c9_w.32.png" class="media" alt="" width="32" height="32" />These buttons allow you to zoom in and out on the chart currently being displayed.
+</p>
+
+<p>
+<img src="../opencpn/manual/zoomin.h.32_tok.161869_w.32.png" class="media" alt="" width="32" height="32" />Will zoom the chart in for more detail, larger scale.
+</p>
+
+<p>
+<img src="../opencpn/manual/zoomout.h.32_tok.0104c9_w.32.png" class="media" alt="" width="32" height="32" />Will zoom the chart view out for more area, smaller scale.
+</p>
+
+<p>
+Alternatively, the + and - keys on your keyboard will zoom in and out. If you have a mouse with a scroll wheel, it can also be used to quickly zoom in and out.
+</p>
+
+<p>
+Other alternatives for zooming includes:
+</p>
+<ul>
+<li class="level1"> Page Up for zooming in.</li>
+<li class="level1"> Page Down for zooming out.</li>
+<li class="level1"> Menu Bar→Navigate click Zoom In / Zoom Out</li>
+</ul>
+
+<p>
+For zooming in smaller steps try
+</p>
+<ul>
+<li class="level1"> Alt + for fine scale zooming in.</li>
+<li class="level1"> Alt - for fine scale zooming out.</li>
+<li class="level1"> Alt + scroll wheel, zooming in/out in small steps.</li>
+</ul>
+
+<p>
+Some settings for zooming are available in the Options→Display→General tab. Read more about “Smooth Panning/Zooming” and “Zoom to Cursor” in <a href="options_setting.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:options_setting">Options Setting</a>.  Note that
+</p>
+<ul>
+<li class="level1"> Keyboard, Menubar, and Toolbar zooms always zoom to the center of the screen.</li>
+<li class="level1"> Wheel zoom behaviour changes depending on “Zoom To Cursor” and “SmoothZoom” settings.</li>
+</ul>
+
+</div>
+
+<h2>Overzooming</h2>
+<div class="level2">
+
+<p>
+<img src="../opencpn/manual/rasteroverz.h.455_tok.27e4e5_w.600.png" class="media" alt="" width="600" height="455" /><br/>
+
+<em>Overzooming a raster chart.</em>
+</p>
+
+<p>
+<img src="../opencpn/manual/vecoverz.h.455_tok.9a8f4a_w.600.png" class="media" alt="" width="600" height="455" /><br/>
+
+<em>Overzooming a vector chart.</em>
+</p>
+
+<p>
+If you zoom in enough there will appear a warning <b>“OverZoom”</b> in the upper left part of the chart area.  This means that you have zoomed in way to far, and are using the chart at a scale that was never intended, and that is not supported by the original survey. <b>No new information will be seen, and the situation is potentially dangerous </b>as it could give the impression of increased distance between dangers.  On a raster-chart pixelation will be seen, but on a vector chart it is not so obvious when you have over zoomed.  This is where the warning is useful.
+</p>
+
+<p>
+Your first action when the warning appears should be to zoom out at least one snap.  Charts are generally based on surveys in twice the scale of the released chart, so when zooming in beyond a factor of 2, there is no support, increased details etc, in the underlying survey. OpenCPN warns for “OverZoom” when zooming with a factor of 4 or more.
+</p>
+
+<p>
+<b>Overzooming settings</b>  are explained in <a href="options_setting.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:options_setting">Options Setting</a>. In short OpenCPN, by default, blurs vector-charts and expands the text and lines to imitate what happens with raster charts when zooming in beyond a factor 10.0 x.
+</p>
+
+<p>
+<b>Unlimited zooming</b>  is available using the background Map. Just create an empty chartgroup and switch to this map at any time. More in <a href="../charts/chart_groups_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_groups_tab">Chart Groups Tab</a>.
+</p>
+
+</div>
+
+<h2>Underzooming</h2>
+<div class="level2">
+
+<p>
+Underzooming is only a general problem with CM93 V2, in OpenCPN. The reason is the very poor graphical representation in small scale charts, of reefs, small islands and other dangers.  The case with the Cargados Carajos Shoals in Indian Ocean is well known since Team Vestas grounding in the 2014/2015 Volvo Ocean Race.
+</p>
+
+<p>
+This is what you see. All pictures are in a scale of approximately 1:650.000.  In the normal view, no indication at all appears of islands or reefs, even though the name in itself indicates, to a seasoned navigator, that more information should be sought elsewhere.  Look upon a blue area as a warning sign. Zoom in to see if more deatails are available.  If no more details show up, even using a large scale view, it indicates that the CM93 coverage is poor in the area. Once again, use alternative sources.
+</p>
+
+<p>
+<img src="../opencpn/manual/oz.tok.618612_w.500.png" class="media" alt="" width="500" />
+</p>
+
+<p>
+Switching to single mode view, and with chart outlines active, OpenCPN shows that a larger scale chart is available. This will show on zooming in further. The available chart does not cover the southern end of the reef where Vestas ran aground. In some editions of CM93 more charts of the area are available, including the southern part.
+</p>
+
+<p>
+<img src="../opencpn/manual/oz1.tok.d3bea2_w.500.png" class="media" alt="" width="500" />
+</p>
+
+<p>
+Compare this to the well thought out representation in the raster chart INT 702 in scale 1:3.500.000.
+</p>
+
+<p>
+<img src="../opencpn/manual/oz2-int702.tok.3950a7_w.500.png" class="media" alt="" width="500" />
+</p>
+
+</div>
+
+<h4>Using CM93 in OpenCPN</h4>
+<div class="level4">
+
+<p>
+It all starts with passage planning. The bottom line is: Don&#039;t trust CM93. Always check with other reliable sources, meaning, for example, raster charts, paper charts, Pilot Books, or ENC charts, <b>not</b> another privately issued vector chart, with similar problems (for example Navionics).
+</p>
+
+<p>
+<b>Doing the best you can with OpenCPN and only CM93 available.</b>
+</p>
+
+<p>
+For passages including small scale CM93 charts (A or Z scale):  Create a route that you plan to follow.  Switch to single chart mode. (Shortcut key “Q”.)  Activate chart outlines.  (Shortcut key “O”.)  “Fly” along the route, making sure you are zoomed in to a factor of at least 2.5 x.  Available charts should now be outlined in magenta.  Drop suitable marks documenting these charts, and the dangers they represent, for later reference.
+</p>
+
+<p>
+<b>Nigel Calder: “How to read a Nautical Chart, Second ed. 2012”</b> is recommended to all users who want to know more about charts, the surveys they are based on, and their horizontal and vertical accuracy.        
+</p>
+
+</div>

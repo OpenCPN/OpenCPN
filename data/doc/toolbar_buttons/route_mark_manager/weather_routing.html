@@ -1,0 +1,185 @@
+
+
+
+<h1>Weather-Routing</h1>
+<div class="level1">
+
+<p>
+Users have the choice between using qtVlm or the <a href="../plugins/weather/weather_routing.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:weather:weather_routing">Weather Routing</a> Plugin.
+</p>
+
+<p>
+It is recommended that you use the weather routing plugin as it is now stable and qtVlm is no longer free software (source code is not available).
+</p>
+
+<p>
+Routing with an older version of qtVlm is described here.
+</p>
+
+<p>
+OpenCPN can import optimized routes from the Free and OpenSource QtVlm program. Make yourself familiar with QtVlm if you intend to use it, as many things are done differently from OpenCPN.
+</p>
+
+<p>
+QtVlm <a href="http://wiki.virtual-loup-de-mer.org/index.php/QtVlm/en" class="urlextern" title="http://wiki.virtual-loup-de-mer.org/index.php/QtVlm/en" rel="nofollow">Documentation and Installation</a> <br/>
+
+QtVlm <a href="http://www.cruisersforum.com/forums/f121/free-routing-software-74738.html" class="urlextern" title="http://www.cruisersforum.com/forums/f121/free-routing-software-74738.html" rel="nofollow">Thread on OpenCpn Cruiser&#039;s Forum</a><br/>
+
+OpenCPN and QtVlm Summary of Route Transfer, see below
+</p>
+
+<p>
+Before going any further, make sure you really <b>understand grib files</b>, what they are and their limitations. A good place to start is <a href="http://weather.mailasail.com/Franks-Weather/Grib-Files-Getting-And-Using" class="urlextern" title="http://weather.mailasail.com/Franks-Weather/Grib-Files-Getting-And-Using" rel="nofollow">Franks Singletons pages.</a>
+</p>
+
+<p>
+Let&#039;s look at an example of importing an optimized route from QtVlm. It&#039;s a situation most of us try to avoid. Going across the Bay of Biscay with an active Atlantic Low just west of the British Isles.<br/>
+
+The busy, time constrained, delivery skipper intend to find the best route from Lizard Point to Cape Finisterre. He has entered into QtVlm, the constraint, to route away from more than 30 kts headwinds. Below is the QtVlm optimized route based on the latest available grib file. Note that QtVlm doesn&#039;t know anything about tidal streams, currents local squalls nor about the state of the crew etc. These are more reasons why the final route always is the responsibility of the skipper.
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing1.h.732_tok.cdfe08_w.744.png" class="media" alt="" width="744" height="732" />
+</p>
+
+<p>
+Right-click on the route and export in the kml format.
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing2.png" class="media" alt="" />
+</p>
+
+<p>
+Open OpenCPN. Right-click and “Paste Route”
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing3.png" class="media" alt="" />
+</p>
+
+<p>
+This looks a bit ugly, and both the route and all waypoint have been exported. We want something better!
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing5.png" class="media" alt="" />
+</p>
+
+<p>
+One alternative is to let QtVlm (Edit Route) “Simplify” the route before copying.
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing6.png" class="media" alt="" />
+</p>
+
+<p>
+Another alternative is to first use the “Paste Track” option.
+</p>
+
+<p>
+Note that this is no true track, it&#039;s just another way of exporting a route, possible due to the KML format. A track describes where we have been in the past, while routing is planning for the future. Importing the track gives a “light-weight” overview of the suggested route. Read more about the <a href="../../opencpn/manual/toolbar_buttons/plugins/included_plugins/grib_weather" class="wikilink2" title="opencpn:manual:toolbar_buttons:plugins:included_plugins:grib_weather" rel="nofollow">Grib Weather</a> Plugin.
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing7.png" class="media" alt="" />
+</p>
+
+<p>
+Next open OpenCPNs Route Manager Track Tab and press “Route from Track”.
+</p>
+
+<p>
+<img src="../../opencpn/manual/routing8.png" class="media" alt="" />
+</p>
+
+<p>
+Much better. We now have a track with a route on top. Right-click and delete the track. Next, it is smart to display the same gribfile used by QtVlm in OpenCPN, using the Grib Plugin.
+</p>
+
+<p>
+All this looks impressive, but it&#039;s still based on a grib file. So it&#039;s still based on a computer prognosis, with no human input. All other reservations connected with gribs, still apply. An on board calibrated barometer is a good way to check what confidence can put on a grib forecast. Read more about the <a href="../plugins/included_plugins/grib_weather.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:included_plugins:grib_weather">Grib Weather</a> Plugin.
+</p>
+
+<p>
+A reasonable polar diagram is essential as well. Producing one is standard procedure on racing boats, but not that common on cruising boats. Cruising specific factors, such as “comfort” also plays a part in a cruisers true performance capabilities.
+</p>
+
+</div>
+
+<h3>Summary of Route transfer process.</h3>
+<div class="level3">
+
+<p>
+Using OpenCPNand  qtVlm in “Real Boat Mode”<br/>
+
+QtVlm  English Documentation and Download is <a href="http://wiki.virtual-loup-de-mer.org/index.php/QtVlm/en" class="urlextern" title="http://wiki.virtual-loup-de-mer.org/index.php/QtVlm/en" rel="nofollow">here</a>.
+</p>
+
+</div>
+
+<h3>Copy Routes</h3>
+<div class="level3">
+
+</div>
+
+<h4>OpenCPN to QtVlm</h4>
+<div class="level4">
+<ul>
+<li class="level1"> OpenCPN Right click on the route, pick “Copy as KML”,  Pick “KML with extended waypoint data (qtVlm)”</li>
+<li class="level1"> QtVlm  Right click on the Ocean, pick “Paste a Route”   or   Hit “CTRL-V”</li>
+</ul>
+
+</div>
+
+<h4>QtVlm to OpenCPN</h4>
+<div class="level4">
+<ul>
+<li class="level1"> QtVlm  Right click on the route, pick “Copy Route xxx”</li>
+<li class="level1"> OpenCPN Right click on the Ocean, pick “Paste Route”</li>
+</ul>
+
+</div>
+
+<h3>Copy Tracks</h3>
+<div class="level3">
+
+</div>
+
+<h4>OpenCPN to QtVlm</h4>
+<div class="level4">
+<ul>
+<li class="level1"> OpenCPNRight click on the Track, pick “Copy as KML” Open Text Editor, Paste into new txt, save as .KML .</li>
+<li class="level1"> QtVlm  Pick “Routes- Imports Routes - In Ortho mode - browse to the directory, Pick the *.kml file.</li>
+<li class="level1"> Note  If all of the Track (now route) does not show up, current Grib data is notlong enough.</li>
+<li class="level1"> Note:  Route Manager “Route from Track” selection, then simply copy the route.</li>
+<li class="level1"> Note: Route Manager also provides Export Track as Gpx, however qtVlm does not support *.gpx format.</li>
+</ul>
+
+</div>
+
+<h4>QtVlm to O</h4>
+<div class="level4">
+<ul>
+<li class="level1"> QtVlm  There are no tracks in qtVlm, just copy the route.</li>
+</ul>
+
+</div>
+
+<h4>Using GPS in OpenCPN and qtVLM at the same time</h4>
+<div class="level4">
+
+<p>
+Linux only:<br/>
+
+Connect to your Gps using GPSD in OpenCPN.<br/>
+
+Then issue this command:<br/>
+
+$gpspipe -r | socat - PTY,link=/tmp/gpsout,raw<br/>
+
+Now use ”/tmp/gpsout“ as the serial port name in QtVlm.
+</p>
+
+</div>

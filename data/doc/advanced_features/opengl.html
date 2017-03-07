@@ -1,0 +1,133 @@
+
+
+
+<h1>OpenGL</h1>
+<div class="level1">
+
+</div>
+
+<h3>What is OpenGL?  An Overview</h3>
+<div class="level3">
+
+<p>
+OpenGL is an open standard, cross platform, advanced graphic library. It uses the graphic cards processor (GPU) and memory, to speed up applications. With OpenCPN a user with a typical modern graphic card will have an enhanced experience. Much faster and smoother zooming and panning as well as clearer and sharper chart rendering.
+</p>
+
+<p>
+In OpenCPN, OpenGL is a choice; however. the old graphic engine is still there. OpenGL will not work for everyone. Performance may not be improved with embedded graphics chips, often found in older laptops and netbooks.
+</p>
+
+<p>
+Microsoft has gone from <em>support</em> to <em>hostility</em> towards OpenGL. There is currently a lot of trouble in Windows for all OpenGL applications, not just OpenCPN. OpenCPN has been forced to disable a handful of OpenGL features for all <em>Intel OpenGL graphics drivers on Windows</em>, for example.
+</p>
+
+<p>
+Mac <abbr title="Operating System">OS</abbr> X has full supports for OpenGL. 
+</p>
+
+<p>
+For Linux the situation is slightly different. Linux supports OpenGL, as it generally tends to support open standards. The user is however dependent on a driver from the graphic cards maker, and their support for OpenGL. This may change with projects like <a href="http://nouveau.freedesktop.org/wiki/" class="urlextern" title="http://nouveau.freedesktop.org/wiki/" rel="nofollow">nouveau</a>, a free driver for nVidias cards.
+</p>
+
+<p>
+<img src="../opencpn/manual/nogl.h.167_tok.e9efce_w.200.png" class="media" alt="" width="200" height="167" />…
+<img src="../opencpn/manual/gl.h.172_tok.554a05_w.200.png" class="media" alt="" width="200" height="172" />
+</p>
+
+<p>
+Without OpenGL         and               With OpenGL
+</p>
+
+<p>
+Heavy over zooming reveals some of the secrets behind OpenGL
+</p>
+
+</div>
+
+<h3>Why introduce OpenGL in OpenCPN?</h3>
+<div class="level3">
+
+<p>
+The main reasons are:
+</p>
+<ul>
+<li class="level1"> Better performance, leveraging modern PC graphics cards that are ubiquitous and powerful.</li>
+<li class="level1"> Better “eye candy”, such as smooth zoom and pan, with little impact on responsiveness.</li>
+<li class="level1"> Future cross-platform support (e.g Android/IOS)</li>
+<li class="level1"> Some features depends on OpenGL, such as horizontal text and numbers on skewed (course up) vectorcharts.</li>
+</ul>
+
+</div>
+
+<h3>Is OpenGL a good choice for everyone?</h3>
+<div class="level3">
+
+<p>
+OpenCPNs performance with OpenGL is highly dependent upon your graphics hardware and drivers.
+</p>
+<ul>
+<li class="level1"> On some systems using Intel HD Graphics adapters, especially running 64bit editions of Windows 7, OpenCPN gets killed due to errors in the display adapter drivers. You may try to get updated drivers or as a workaround, on Windows run <b>OpenCPN - no OpenGL</b>  from <em>Start</em> menu. On all the platforms, you can use the <b>-no_opengl</b>  <a href="command_line.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:command_line">Command Line</a> switch while starting the program to run it with OpenGL disabled.</li>
+<li class="level1"> Some graphics chip sets (e.g.intel 945G) have rather poor OpenGL driver support, so that we cannot fully utilize the hardware acceleration potential of these systems.</li>
+<li class="level1"> nVidia graphics, even very old cards, seem to perform very well.</li>
+<li class="level1"> Performance may not be improved with embedded graphics chips as often found in older laptops and netbooks.</li>
+<li class="level1"> There is a lot of trouble with OpenGL on Vista and W7. Microsoft implemented a new screen compositing model for Vista and later, which “broke” many OpenGL apps</li>
+<li class="level1"> Conclusion:Using OpenGL with OpenCPN will be a significant upgrade for some users of OpenCPN, but OpenGL may not be “better” for everyone&#039;s OCPN application.</li>
+<li class="level1"> So, user&#039;s choice. If OpenGL works better for you, then use it. If not, the old DC based graphics render system is still in place.</li>
+</ul>
+
+<p>
+<b>Start using OpenGL</b>
+</p>
+<ul>
+<li class="level1"> Find the latest driver for your graphic card. The driver that came with your operating system, is not likely to be the best. Start looking at your graphic card makers home page.</li>
+<li class="level1"> Go to the <em>ToolBox→Settings</em> and tick the two boxes <em>“Use Accelerated Graphics(OpenGL)”</em> and <em>“Enable Smooth Panning/Zooming”</em>.  Read all the details in the <a href="../toolbar_buttons/options_setting.html#the_display" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:options_setting">Options Setting &gt; Display Tab</a>.</li>
+</ul>
+
+</div>
+
+<h3>Other tricks</h3>
+<div class="level3">
+
+<p>
+If you have a lot of graphic memory, or very little, try to add the following to your config (.ini on windows) file: 
+</p>
+<pre class="code">[Settings] ....
+GPUMemorySize=nnn</pre>
+
+<p>
+where nnn is graphics card memory size, in MBytes. 256 MBytes is the default.
+</p>
+
+</div>
+
+<h3>Supplementary Software to test Graphics Adapter Opengl compatibility</h3>
+<div class="level3">
+
+<p>
+Troubles in OpenGL mode?**
+</p>
+<ul>
+<li class="level1"> Make sure the proper updated drivers for your graphics card.</li>
+<li class="level1"> Earlier Intel HP Graphics, chips do not offer full OpenGL support. This is where the opengl issues tend to occur.</li>
+<li class="level1"> One good option is to get a newer graphics board that supports OpenGL fully. (I would suggest Nvidia, but there will be various opions about that.)</li>
+<li class="level1"> Another option is to try adjusting the OpenCPN OpenGL settings, unchecking all the advanced features and testing.</li>
+<li class="level1"> Then if there are still difficulties, running this software may show exactly what the problem is.</li>
+</ul>
+
+<p>
+This free adapter testing software is for various operating systems, including Windows 32bit and 64bit.
+</p>
+
+<p>
+GLview: <a href="http://www.realtech-vr.com/glview/" class="urlextern" title="http://www.realtech-vr.com/glview/" rel="nofollow">OpenGL Extensions Viewer</a> <a href="http://www.realtech-vr.com/glview/" class="urlextern" title="http://www.realtech-vr.com/glview/" rel="nofollow">http://www.realtech-vr.com/glview/</a>
+</p>
+
+<p>
+This software tool tests your graphics card capabilities and makes a report log. It is useful in tracking down particular problems with OpenGL on a given system. The Developers can then help determine what is wrong. 
+</p>
+
+<p>
+However when other software like GoogleEarth works OK with OpenGL on,  then there are possibly other reasons why OpenCPN fails, related to the Opencpn OpenGL implimentation. There are many, many graphics cards and they have differing capabilities and sometimes the Opencpn opengl implimentation has to be adjusted for a particular card.
+</p>
+
+</div>
