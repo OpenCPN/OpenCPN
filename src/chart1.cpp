@@ -851,19 +851,11 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
         
         msg1 <<  _T("<hr /></body></html>");
         
-        int sx, sy;
-        ::wxDisplaySize(&sx, &sy);
-        OCPN_TimedHTMLMessageDialog *pinfoDlg = new OCPN_TimedHTMLMessageDialog( gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
+        OCPN_TimedHTMLMessageDialog infoDlg( gFrame, msg1, _("Welcome to OpenCPN") + vs, -1, wxCANCEL | wxOK);
         
-//         int ch = pinfoDlg->GetCharHeight();
-//         pinfoDlg->SetSize(wxSize(ch * 40, ch * 25));
+        infoDlg.ShowModal();
         
-        //pinfoDlg->SetSize(wxSize(sx / 3, sy /3));
-        pinfoDlg->Centre();
-        pinfoDlg->ShowModal();
-        
-        
-        return (pinfoDlg->GetReturnCode() );
+        return (infoDlg.GetReturnCode() );
         
 }
 
