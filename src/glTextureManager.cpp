@@ -175,7 +175,7 @@ int CompareInts(int n1, int n2)
     return (int)(d1 - d2);
 }
 
-MySortedArrayInt idx_sorted_by_distance(CompareInts);
+static MySortedArrayInt idx_sorted_by_distance(CompareInts);
 
 class compress_target
 {
@@ -203,6 +203,7 @@ JobTicket::JobTicket()
  *   when compressed anyway, and this way the compression algorithm will use
  *   the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
  *   the lz4 compressed texture is smaller as well. */
+static 
 void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=true)
 {
     #ifdef __WXMSW__ /* undo BGR flip from ocpn_pixel (if ocpnUSE_ocpnBitmap is defined) */
@@ -225,6 +226,7 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 }
 
 /* return malloced data which is the etc compressed texture of the source */
+static 
 void CompressDataETC(const unsigned char *data, int dim, int size,
                      unsigned char *tex_data, volatile bool &b_abort)
 {
@@ -248,6 +250,7 @@ void CompressDataETC(const unsigned char *data, int dim, int size,
     }
 }
 
+static
 bool CompressUsingGPU(const unsigned char *data, int dim, int size,
                       unsigned char *tex_data, int level, bool inplace)
 {
@@ -289,6 +292,7 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
     return true;
 }
 
+static 
 void GetLevel0Map( glTextureDescriptor *ptd,  const wxRect &rect, wxString &chart_path )
 {
     // Load level 0 uncompressed data
@@ -379,8 +383,8 @@ int TextureTileSize(int level, bool compressed)
 
 bool JobTicket::DoJob()
 {
-    if(!rect.IsEmpty())
-        return DoJob(rect);
+    if(!m_rect.IsEmpty())
+        return DoJob(m_rect);
 
     // otherwise this ticket covers all the rects in the chart
     ChartBase *pchart = ChartData->OpenChartFromDB( m_ChartPath, FULL_INIT );
@@ -809,7 +813,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                         bar_length = 20;
                     
                     msgx += _T("\n[");
-                    wxString block = wxString::Format(_T("%c"), 0x2589);
+                    wxString block = wxString::Format(_T("%c"), 0x2588);
                     float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
                     for(int i=0 ; i < bar_length ; i++){
                         if(i <= cutoff)
@@ -887,7 +891,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                     ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
     } else if(!b_inCompressAllCharts) {
         //   Normal completion from here
-        glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
+        glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
         if(ptd) {
             for(int i=0 ; i < g_mipmap_max_level+1 ; i++)
                 ptd->comp_array[i] = ticket->comp_bits_array[i];
@@ -904,7 +908,6 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             // We need to force a refresh to replace the uncompressed texture
             // This frees video memory and is also really required if we had
             // gone up a mipmap level
-            extern ChartCanvas *cc1;
             if(cc1) {
                 glChartCanvas::Invalidate(); // ensure we refresh
                 cc1->Refresh();
@@ -1001,7 +1004,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
         wxJobListNode *node = todo_list.GetFirst();
         while(node){
             JobTicket *ticket = node->GetData();
-            if( (ticket->m_ChartPath == chart_path) && (ticket->rect == rect)) {
+            if( (ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
                 // bump to front
                 todo_list.DeleteNode(node);
                 todo_list.Insert(ticket);
@@ -1016,7 +1019,7 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
         wxJobListNode *tnode = running_list.GetFirst();
         while(tnode){
             JobTicket *ticket = tnode->GetData();
-            if(ticket->rect == rect &&
+            if(ticket->m_rect == rect &&
                ticket->m_ChartPath == chart_path) {
                 return false;
             }
@@ -1026,9 +1029,9 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
     
     JobTicket *pt = new JobTicket;
     pt->pFact = client;
-    pt->rect = rect;
+    pt->m_rect = rect;
     pt->level_min_request = level;
-    glTextureDescriptor *ptd = client->GetOrCreateTD( pt->rect );
+    glTextureDescriptor *ptd = client->GetOrCreateTD( pt->m_rect );
     pt->ident = (ptd->tex_name << 16) + level;
     pt->b_throttle = b_throttle_thread;
     pt->m_ChartPath = chart_path;
@@ -1089,7 +1092,7 @@ bool glTextureManager::StartTopJob()
 
     todo_list.DeleteNode(node);
 
-    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
+    glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
     // don't need the job if we already have the compressed data
     if(ptd->comp_array[0]) {
         delete ticket;

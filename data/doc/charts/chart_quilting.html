@@ -1,0 +1,229 @@
+
+
+
+<h1>Chart Quilting</h1>
+<div class="level1">
+
+<p>
+Chart quilting is a way to display parts of several charts together on the screen, redrawn to the same scale.
+</p>
+
+<p>
+Former Limitation Removed - With the introduction of OpenCPN 4.2; Raster Mercator charts, Raster Transverse Mercator charts, Raster Polyconic charts and Raster skewed charts, of these same projections, may exist in the same quilt. The transition from one type of projection to another is seamless. Quilting the skewed charts is very computationally heavy and can&#039;t be used in non-OpenGL, make sure you have the use of accelerated graphics (OpenGL) enabled in <b>Toolbox</b>→<b>Display</b>→<b>Advanced.</b>
+</p>
+
+</div>
+
+<h4>Quick Start</h4>
+<div class="level4">
+<ol>
+<li class="level1"> Go to <b>Options→Display→General→Enable Chart Quilting</b>. Tick the box. </li>
+<li class="level1"> Another, more simple way, is to use the “<b>Q</b>” short-cut key to toggle quilting on/off.</li>
+</ol>
+
+<p>
+Zooming in, automatically brings up larger scale charts, if available. Panning reveals a continuous quilt of the available charts. If you started with a raster chart, only raster charts will, with the exception noted below, be in the quilt. The same logic applies to S57 and S63 Vector Charts (ENCS). Make sure you are familiar with the 
+<em><b><a href="../chart_status_bar.html" class="wikilink1" title="opencpn:opencpn_user_manual:chart_status_bar">Chart Status Bar</a></b></em> as this will help you interpret all available information. 
+</p>
+
+<p>
+The quilt, like a single chart can be displayed North Up or Course Up 
+</p>
+
+</div>
+
+<h4>Read more</h4>
+<div class="level4">
+
+<p>
+Own Ship <em><b><a href="../toolbar_buttons/auto_follow.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:auto_follow"> Auto Follow</a></b></em> and <em><b><a href="../display_orientation.html" class="wikilink1" title="opencpn:opencpn_user_manual:display_orientation">Display Orientation</a></b></em> <br/>
+
+</p>
+
+<p>
+The one quilting exception occurs when quilting Raster or ENC charts. If a Raster or ENC chart is not available to be displayed and a CM93 ver2 chart of suitable scale is available, then the CM93 ver 2 chart will be added to the quilt.
+</p>
+
+</div>
+
+<h4>What is the use of Quilting?</h4>
+<div class="level4">
+
+<p>
+<img src="../opencpn/manual/quilt2.h.530_tok.718cb3_w.700.png" class="media" alt="" width="700" height="530" />
+</p>
+
+<p>
+In single chart mode, getting near the edge of the chart there is no information outside the chart. You manually have to change to the next chart, by selecting one of the charts in the chart bar.<br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/quilt3.h.530_tok.2db4fb_w.700.png" class="media" alt="" width="700" height="530" />
+</p>
+
+<p>
+The situation changes dramatically when quilting mode is activated. The amount of  relevant information on the screen increases, and the next chart is automatically available.
+</p>
+
+</div>
+
+<h3>Displaying charts</h3>
+<div class="level3">
+
+<p>
+OpenCPN has two modes of displaying charts, <b>single chart mode</b> and <b>quilting mode</b>. In a new installation, quilting is on by default.
+</p>
+
+</div>
+
+<h4>To activate single chart mode</h4>
+<div class="level4">
+
+<p>
+Go to <b>Options→Display→General</b>  and deselect the box <b>Enable Chart Quilting</b>. This mode only shows one chart at a time, and a switch to other charts  must be done by clicking another chart in the Chart Bar. All printed general chart information, outside the chart proper, can easily be read.
+</p>
+
+</div>
+
+<h4>To activate chart quilting</h4>
+<div class="level4">
+
+<p>
+Go to <b>Options→Display→General</b>  and tick the box <b>Enable Chart Quilting</b>, or use the shortcut key <b>Q</b> to toggle quilting. Tick the box “Show Chart Outlines” at the same time as this will help you see individual charts.
+</p>
+
+</div>
+
+<h4>Full Screen Quilting</h4>
+<div class="level4">
+
+<p>
+<b>Options→Display→Disable Fullscreen Quilting</b>.
+By default all visible charts of an appropriate scale are used in the quilt. With this box checked only charts that overlap the center of the screen are used in the quilt. Checking this box may give a performance boost in certain circumstances.
+</p>
+
+</div>
+
+<h4>To determine if Chart quilting is on</h4>
+<div class="level4">
+
+<p>
+There are some visual indications on screen to confirm if quilting is on or off.
+</p>
+<ul>
+<li class="level1"> If the right click menu contains the entry “Hide This Chart”, quilting is on. Clicking the entry excludes the chart from the quilt.</li>
+<li class="level1"> The colored rectangles in the status bar have rounded corners and the white borders of the charts are invisible when quilting is on. When quilting is off in ToolBox→Settings, the colored rectangles have “square” corners.r.</li>
+<li class="level1"> When hovering with the mouse pointer over a inactive raster chart button in single chart mode, a thumbnail of the chart is displayed in the upper left corner of the screen. At the same time an information box pops up above the button with details about the chart.  This changes with quilting, as the thumbnails are replaced with a transparent reddish high-lighting of the charts that is a part of the present quilt or has a larger scale than the reference chart in the quilt.</li>
+<li class="level1"> The exception to the last rule is CM93 charts. When an area is only covered by CM93 charts, indicated by a long yellow chart button in the status bar, and in quilting mode, no info-box is displayed and no reddish highlighting takes place.</li>
+<li class="level1"> CM93 individual cells are outlined in magenta.</li>
+</ul>
+
+<p>
+With chart quilting more than one chart can be displayed and active at the same time, in the screen above, for example there are two pale blue buttons, as there are two raster-charts in this quilt. In single mode only one chart button is highlighted at a time.
+</p>
+
+<p>
+Depth units. that are normally shown in the upper right corner of the display (if activated in the toolbox), are only displayed in quilting mode if all participating charts  uses the same unit. 
+</p>
+
+<p>
+Many of these features are illustrated in this screen-dump.
+</p>
+
+<p>
+<img src="../opencpn/manual/quilt4.h.530_tok.b48484_w.700.png" class="media" alt="" width="700" height="530" />
+</p>
+
+<p>
+This is a quilt consisting of three raster charts, two that are actually displayed and one smaller scale chart that is hidden behind the larger scaled charts of St Croix.
+</p>
+
+<p>
+<img src="../opencpn/manual/hidden-quilt.h.21_tok.d676fb_w.150.png" class="media" alt="" width="150" height="21" />
+</p>
+
+<p>
+This is the button for the not displayed chart in the quilt.
+</p>
+
+<p>
+The mouse pointer is over the middle raster chart and the chart information box is shown, together with the red highlighting of the chart on the screen. 
+</p>
+
+<p>
+If the chart info box contains much less info than above, just click the button to display the chart, then go back and hover with the cursor over the chart button again. The full info will now be available. 
+</p>
+
+<p>
+No depth unit is shown in the quilt as the left chart is in Feet and the right in Fathoms and parts thereof. Notice the lack of zoom level in the status bar, a quilt , by definition, consists of several different zoom levels.
+</p>
+
+</div>
+
+<h4>Which charts are quilted?</h4>
+<div class="level4">
+
+<p>
+There are several rules built into OpenCPN governing exactly how different chart styles reacts  to the quilting mode.
+</p>
+<ol>
+<li class="level1 node"> Raster charts and Vector charts are quilted separately. You can quilt either raster charts or vector charts, but not both at the same time. <ul>
+<li class="level3"> The exception to this rule is: CM93 ver2 charts, if available, may be quilted with raster and vector charts under certain conditions e.g. the view is so far zoomed out that the rightmost (smallest scale) raster chart is too small to be useful. </li>
+</ul>
+</li>
+<li class="level1"> CM93 ver2 charts can be quilted separately.</li>
+<li class="level1"> BSB4 and nv-charts, using plugins, quilts with other Raster Charts, following the rules above. </li>
+</ol>
+
+</div>
+
+<h4>User control</h4>
+<div class="level4">
+
+<p>
+Users can control if an individual chart, is allowed in the quilt or not. 
+</p>
+<ul>
+<li class="level1"> Right clicking on any chart in a quilt in the chart-bar and clicking “Hide This Chart” on the pop up menu, removes the chart from the quilt. The chart button in the Status bar changes to {opencpn:manual:not_participate.png?nolink&amp;60&times;20}}. </li>
+<li class="level1"> The same thing can be achieved through the right-click menu when clicking on a displayed chart.</li>
+<li class="level1"> To activate the chart again <b>right click</b> this button an then click “Add this chart to quilt” </li>
+</ul>
+
+</div>
+
+<h4>Controlling the scale of the quilt view.</h4>
+<div class="level4">
+
+<p>
+<img src="../opencpn/manual/quilt-ref.h.27_tok.7cccc3_w.600.png" class="media" alt="" width="600" height="27" />
+</p>
+
+<p>
+The “quilt reference chart” is the left-most, largest scale chart, highlighted in the chart bar. This is the left of the two pale blue chart buttons above. 
+</p>
+
+<p>
+Click the next chart blue button “one-to-the-right” of the of the current reference chart. The reference scale of the quilt will be decreased, but the viewpoint will not change. The same logic applies if clicking a chart-to-the-left of the present reference chart, except that the scale of the quilt will increase. Zooming in/out will also move the reference chart to the left/right.
+</p>
+
+</div>
+
+<h3>Known issue with some NOAA ENC:s</h3>
+<div class="level3">
+
+<p>
+<img src="../opencpn/manual/stxhole1.h.547_tok.a17e77_w.600.png" class="media" alt="" width="600" height="547" />
+</p>
+
+<p>
+Some NOAA ENC:s are produced with “holes” in. OpenCPNs handles almost all of these cases.  The picture above is from S:t Croix in the Caribbean, using an old version of OpenCPN. There are still some gray areas in this vicinity but only if the scale is larger than 1:10,000. Very few users are likely to notice this. <br/>
+
+The gray rectangle above is a “hole” in a chart, where a smaller scale chart with coverage exists. The “hole” is due to the fact that this area wasn&#039;t surveyed to the scale of the chart. <br/>
+ <br/>
+<b>Clipped Objects </b> <br/>
+
+Clipped objects at the edge of quilted vector charts S57/S63 of different scales may not show the complete object.“
+</p>
+
+</div>

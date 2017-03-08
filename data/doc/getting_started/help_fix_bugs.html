@@ -1,0 +1,212 @@
+
+
+
+<h1>Help Fix Bugs!</h1>
+<div class="level1">
+
+<p>
+If you experience a crash in OpenCPN, the developers are very keen on knowing why. This is how you can help making OpenCPN, even better.
+</p>
+
+</div>
+
+<h2>Windows</h2>
+<div class="level2">
+
+<p>
+In OpenCPN ver 4.0 the semi-automatic Crash reporting for Windows is disabled by default.<br/>
+
+Crash Reports are saved in the OpenCPN config directory, i.e. where the log file is stored now. End users may occasionally be asked privately to send these reports to a designated recipient.<br/>
+
+<br/>
+
+The semi-automatic Crash reporting can be enabled by editing the opencpn.ini file.<br/>
+
+</p>
+<pre class="code">[Settings] …..
+EmailCrashReport=1</pre>
+
+<p>
+<b>Here is what you will see if OpenCPN causes a crash with the crashreport enabled.</b> <br/>
+
+<br/>
+
+<img src="../opencpn/manual/werror1.h.293_tok.8a028d_w.496.png" class="media" alt="" width="496" height="293" />
+<br/>
+
+Provide additional information, such as your email or forum name, so the developers can contact you for more info, if necessary.<br/>
+
+<br/>
+
+<img src="../opencpn/manual/werror2.h.382_tok.e5dd0b_w.491.png" class="media" alt="" width="491" height="382" /><br/>
+
+<br/>
+
+This is what the report will contain. Use the “Export” button if yoy don&#039;t have an Internet connection at the time of the crash. Mail the report later.<br/>
+
+<br/>
+
+<img src="../opencpn/manual/werror3.h.404_tok.984e50_w.442.png" class="media" alt="" width="442" height="404" />
+</p>
+
+<span class='np_break'>&nbsp;</span>
+<div class="table sectionedit1"><table class="inline">
+	<tr class="row0">
+		<td class="col0">Also, for fun, you may test this option by the keystroke Alt-F12. This will induce a benign crash, and give you a chance to see what it will look like before the real thing happens. <br/>
+Please don&#039;t send this kind of report by pressing “Send report”. Just press “Close the program” when you are done. Restart OpenCPN! <br/>
+<em><b>This feature is temporary and will not be available in the Beta Release following 3.3.814.</b> </em> </td>
+	</tr>
+</table>
+<span class='np_break'>&nbsp;</span>
+</div>
+</div>
+
+<h2>Linux</h2>
+<div class="level2">
+
+<p>
+<br/>
+
+In Linux there is an excellent tool, “ddd”, the Data Display Debugger, to help the developers pinpoint where an error, or bug, is located in the source code. “ddd” is a graphical front-end to the text based “gdb”, the GNU debugger.<br/>
+
+<br/>
+
+Install ddd through Synaptic, Ubuntu Software Center or similar for other Linux distributions.<br/>
+
+From a command line, in a Debian based Linux, such as Ubuntu, issue this command:<br/>
+
+$sudo apt-get install ddd
+</p>
+<ul>
+<li class="level1"> The “$” sign above, just marks that this is a command line for a normal user. Do not include it in the actual command. This is a Linux convention used everywhere.</li>
+</ul>
+
+</div>
+
+<h4>Start ddd</h4>
+<div class="level4">
+
+<p>
+To start ddd, find a command-line and <br/>
+$ddd opencpn <br/>
+ <br/>
+ddd starts and this is what you will see. <br/>
+ <br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/ddd1.tok.ad29dc_w.750.png" class="media" alt="" width="750" /> <br/>
+ <br/>
+
+</p>
+
+<p>
+Click “Run”. If you don&#039;t get this small dialog, go to Program → Run, or hit F2 <br/>
+This will start OpenCPN. Just continue in OpenCPN and proceed to create a crash. <br/>
+Then go back to the ddd window. <br/>
+This is how it will look like after a crash. <br/>
+ <br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/ddd2.tok.d45d1a_w.750.png" class="media" alt="" width="750" />
+</p>
+
+<p>
+ <br/>
+ <br/>
+Notice “Program received signal SIGSEGV, Segmentation fault.” <br/>
+This is programmers way of saying a “crash”. Exactly what this means, does not matter for a normal user. Interested anyway? Read more, <a href="http://en.wikipedia.org/wiki/Segmentation_fault" class="urlextern" title="http://en.wikipedia.org/wiki/Segmentation_fault" rel="nofollow">http://en.wikipedia.org/wiki/Segmentation_fault</a> <br/>
+
+To actually help the developers we need a back trace from the crash. This is the path that the program followed in the source code, leading to the crash. <br/>
+
+ <br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/ddd3.tok.55e84f_w.750.png" class="media" alt="" width="750" />
+</p>
+
+<p>
+<br/>
+
+Go to Status → Backtrace. <br/>
+
+This is what comes up, from this particular crash. <br/>
+
+ <br/>
+
+<img src="../opencpn/manual/ddd4.tok.d8d761_w.750.png" class="media" alt="" width="750" />
+<br/>
+
+The crash happened at #0 and this very short back trace started at #9. <br/>
+
+Your job now is to take a screen-dump, similar to the picture above, and send it on. <br/>
+
+Try to get as much of the back trace as possible, by expanding the Back trace dialog. <br/>
+
+This is important, so the developers can see the trouble point in the source code. <br/>
+
+Look at #3 above, ending in “….chart1.cpp:2367”. “chart1.cpp” is a part of the OpenCPN source code, and something on line 2367 was involved, directly or indirectly in the crash. <br/>
+
+Lines ending in “……… .so.0” are external libraries used to run OpenCPN. <br/>
+
+ <br/>
+
+On the odd occasion, when the back trace is very long, the developers may still complain that they need to see more.
+</p>
+
+</div>
+
+<h4>Using gdb</h4>
+<div class="level4">
+
+<p>
+Gdb, the command line debugger, is the answer. <br/>
+Start like this <br/>
+$gdb opencpn <br/>
+Gdb starts and you get the gdb command prompt (gdb). <br/>
+Just type “r”, for run and hit Enter. Like this: <br/>
+(gdb) r <br/>
+ <br/>
+OpenCPN will now start, once again, make it crash. <br/>
+The console will look similar to below. <br/>
+ <br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/gdb.tok.5bdf50_w.750.png" class="media" alt="" width="750" />
+</p>
+
+<p>
+<br/>
+All the lines before the “Segmentation fault” line, are just “chatter” from PortAudio and Gdk, and are not directly related to OpenCPN. <br/>
+ <br/>
+To get a back trace, simply <br/>
+(gdb)bt <br/>
+That is type “bt”, for back trace, and hit enter. <br/>
+ <br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/gdb1.tok.6809f1_w.750.png" class="media" alt="" width="750" />
+</p>
+
+<p>
+ <br/>
+ <br/>
+You will now have access to the full back trace, with more details and reverse order to “ddd”. <br/>
+Copy the text, and send it on. <br/>
+Press “q” to exit gdb. <br/>
+ <br/>
+<b>Send it on to the Programmers</b> <br/>
+Tell the programmers about your findings through an entry in the tracker <a href="http://willkamp.com/opencpn/flyspray/" class="urlextern" title="http://willkamp.com/opencpn/flyspray/" rel="nofollow">http://willkamp.com/opencpn/flyspray/</a> , or through posting on the forum <a href="http://www.cruisersforum.com/forums/f134" class="urlextern" title="http://www.cruisersforum.com/forums/f134" rel="nofollow">http://www.cruisersforum.com/forums/f134</a> , if you have found a new bug.
+</p>
+
+</div>
+<!-- EDIT1 TABLE [1163-] -->

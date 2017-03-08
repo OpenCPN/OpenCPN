@@ -1,0 +1,90 @@
+
+
+
+<h1>DSC Buddy via AIS.</h1>
+<div class="level1">
+
+<p>
+If  DSC or GPSGate Buddy-messages are available in an incoming NMEA 0183 data stream, OpenCPN will show them with their own icons, and they will show in the “AIS Target list”. They are not a part of AIS, but are displayed the same way, for convenience.
+</p>
+
+<p>
+DSC is used on all new VHF set (or should be!). More on <a href="http://en.wikipedia.org/wiki/Digital_Selective_Calling" class="urlextern" title="http://en.wikipedia.org/wiki/Digital_Selective_Calling" rel="nofollow">Wikipedia.</a> To use this feature, check that your VHF set outputs NMEA 0183, in a way that can be connected to OpenCPN.
+</p>
+
+<p>
+GPSGate is a commercial <b><a href="http://en.wikipedia.org/wiki/GpsGate" class="urlextern" title="http://en.wikipedia.org/wiki/GpsGate" rel="nofollow">GPS tracking and sharing </a></b>service<a href="http://en.wikipedia.org/wiki/GpsGate" class="urlextern" title="http://en.wikipedia.org/wiki/GpsGate" rel="nofollow">.</a> GPSGate Buddy Tracking is<b> </b> <b><a href="http://gpsgate.com/products/gpsgate_server_buddytracker" class="urlextern" title="http://gpsgate.com/products/gpsgate_server_buddytracker" rel="nofollow">part of that service**.</a></b>
+</p>
+
+<p>
+Make sure that Options–&gt; AIS Targets –&gt;“Play Sound on CPA/TCPA Alerts” box is ticked, otherwise the alarm sound (see below) will not be heard.
+</p>
+
+<p>
+<b>If OpenCPN receives a DSC Distress call, an alarm will be triggered, both visually and by sound</b>.
+</p>
+
+<p>
+<img src="../../opencpn/manual/dsc-alert.tok.52a06b_w.600.png" class="media" alt="" width="600" />
+</p>
+
+<p>
+<b>A VHF/DSC distress call is treated in the same way as an AIS/SART call. Both should be treated as MAYDAY calls.</b>
+</p>
+
+<p>
+<b>Two different types of alerts.</b>
+DSC Distress alert, coming from a specific vessel, presumably by crew activating a switch on the transponder. These are occasionally seen as false alerts, for testing. For the second type look under AIS SART section. SART, which is a SearchAndRescueTransponder.  The MMSI starts with 97….. and will have Class: SART. This might be from a
+PLB (and PLB-AIS) on man overboard, for instance.  PLB AIS devices are under the AIS SART type.
+</p>
+
+<p>
+<b>Quick Reference</b>
+</p>
+
+<p>
+<img src="../../opencpn/manual/dsc-ok.h.44_tok.a9ec04_w.45.png" class="media" alt="" width="45" height="44" />DSC Station. Only the DSC message received. The position contains only degrees and minutes of Latitude and Longitude.
+</p>
+
+<p>
+<img src="../../opencpn/manual/dse1.png" class="media" alt="" />DSC Station. DSC <b>and </b>DSE messages received. The DSE message contains the missing decimals of minutes of Latitude and Longitude. The result is a much more accurate position.
+</p>
+
+<p>
+<img src="../../opencpn/manual/dsc-not-ok.h.42_tok.573539_w.45.png" class="media" alt="" width="45" height="42" />DSC Station transmitting a <b>distress</b> signal. <b>This is a “Mayday”.</b>
+</p>
+
+<p>
+<img src="../../opencpn/manual/bud-icon.h.45_tok.e02594_w.46.png" class="media" alt="" width="46" height="45" />GpsGate Buddy target.
+</p>
+
+<p>
+A normal DSC target, is someone using a dsc-capable VHF
+</p>
+
+<p>
+<img src="../../opencpn/manual/dsc-ok2.h.223_tok.89bba3_w.400.png" class="media" alt="" width="400" height="223" />
+</p>
+
+<p>
+Distress message via DSC, Digital selective Calling, from an unidentified AIS target.
+</p>
+
+<p>
+<img src="../../opencpn/manual/dsc_distress.h.260_tok.fa92b4_w.400.jpeg" class="media" title="dsc_distress.jpg" alt="dsc_distress.jpg" width="400" height="260" />
+</p>
+
+<p>
+A green Buddy target on an island.
+</p>
+
+<p>
+<img src="../../opencpn/manual/gpsg_buddy.h.209_tok.3b5dcb_w.400.jpeg" class="media" title="gpsg_buddy.jpg" alt="gpsg_buddy.jpg" width="400" height="209" />
+</p>
+
+<p>
+The AIS Target List View
+<img src="../../opencpn/manual/dsc-list.h.280_tok.f809cf_w.800.png" class="media" alt="" width="800" height="280" />
+</p>
+
+</div>

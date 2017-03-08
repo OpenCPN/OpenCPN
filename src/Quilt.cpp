@@ -60,17 +60,39 @@ extern bool g_bopengl;
 
 #define GetChartTableEntry(i) GetChartTable()[i]
 
-static int CompareScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
+
+static int CompareScales( int *i1, int *i2 )
 {
     if( !ChartData ) return 0;
 
-    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry( qc1->dbIndex );
-    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry( qc2->dbIndex );
+    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry( *i1 );
+    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry( *i2 );
 
-    if( cte1.GetScale() == cte2.GetScale() )          // same scales, so sort on dbIndex
-        return qc1->dbIndex - qc2->dbIndex;
+    if( cte1.GetScale() == cte2.GetScale() ) {         // same scales, so sort on dbIndex
+        float lat1, lat2;
+        lat1 = cte1.GetLatMax();
+        lat2 = cte2.GetLatMax();
+        if (roundf(lat1*100.) == roundf(lat2*100.)) {
+            float lon1, lon2;
+            lon1 = cte1.GetLonMin();
+            lon2 = cte2.GetLonMin();
+            if (lon1 == lon2) {
+                return *i1 -*i2;
+            }
+            else 
+                return (lon1 < lon2)?-1:1;
+        }
+        else 
+            return (lat1 < lat2)?1:-1;
+    }
     else
         return cte1.GetScale() - cte2.GetScale();
+}
+
+static int CompareQuiltCandidateScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
+{
+    if( !ChartData ) return 0;
+    return CompareScales(&qc1->dbIndex, &qc2->dbIndex);
 }
 
 const LLRegion &QuiltCandidate::GetCandidateRegion()
@@ -179,7 +201,7 @@ Quilt::Quilt()
     m_bbusy = false;
     m_b_hidef = false;
 
-    m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareScales );
+    m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareQuiltCandidateScales );
     m_nHiLiteIndex = -1;
 
     m_zout_family = -1;
@@ -799,9 +821,9 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     wxArrayInt min_scale;
     wxArrayInt index_array;
 
-    //  For Vector charts, we can switch to any chart that is on screen.
+    //  For Vector charts, or for ZoomIN operations, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
-    bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR);
+    bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR) || b_zin;
 
     //  Walk the extended chart array, capturing data
     int i_first = 0;
@@ -837,12 +859,12 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     //  Find the smallest scale chart of the target type (i.e. skipping cm93)
     //  and make sure that its min scale is at least
     //  small enough to allow reasonable zoomout.
+    //  But this will be calculated without regard to zoom scale factor, so that the piano does not grow excessively
     if(CHART_FAMILY_VECTOR == family){
         for(size_t i = index_array.GetCount() ; i ; i--){
             int test_db_index = index_array.Item( i-1 );
             if( type == ChartData->GetDBChartType( test_db_index ) ){
-                int smallest_min_scale = min_scale.Item(i-1);
-                min_scale.Item(i-1) = smallest_min_scale * 80; //wxMax(smallest_min_scale, 200000);
+                min_scale.Item(i-1) = nom_scale.Item(i-1) * 80;
                 break;
             }
         }
@@ -955,6 +977,9 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
     if(( -1 == m_refchart_dbIndex) && (m_zout_dbindex >= 0))
         BuildExtendedChartStackAndCandidateArray(true, m_zout_dbindex, m_vp_quilt);
+    else
+        BuildExtendedChartStackAndCandidateArray(true, m_refchart_dbIndex, m_vp_quilt);
+    
 
 
     int proposed_ref_index = AdjustRefOnZoom( true, (ChartFamilyEnum)current_family, current_type, proposed_scale_onscreen );
@@ -1248,24 +1273,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
     // Re sort the extended stack array on scale
     if( b_need_resort && m_extended_stack_array.GetCount() > 1 ) {
-        int swap = 1;
-        int ti;
-        while( swap == 1 ) {
-            swap = 0;
-            for( unsigned int is = 0; is < m_extended_stack_array.GetCount() - 1; is++ ) {
-                const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is ) );
-                const ChartTableEntry &n = ChartData->GetChartTableEntry(
-                                               m_extended_stack_array.Item( is + 1 ) );
-
-                if( n.GetScale() < m.GetScale() ) {
-                    ti = m_extended_stack_array.Item( is );
-                    m_extended_stack_array.RemoveAt( is );
-                    m_extended_stack_array.Insert( ti, is + 1 );
-                    swap = 1;
-                }
-            }
-        }
+        m_extended_stack_array.Sort(CompareScales);
     }
     return true;
 }
@@ -1435,8 +1443,20 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
     if( !bf && m_pcandidate_array->GetCount() ) {
         m_lost_refchart_dbIndex = m_refchart_dbIndex;    // save for later
-        m_refchart_dbIndex = GetNewRefChart();
-        BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+        int candidate_ref_index = GetNewRefChart();
+        if(m_refchart_dbIndex != candidate_ref_index){
+            m_refchart_dbIndex = candidate_ref_index;
+            BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+        }
+        //      There was no viable candidate of smaller scale than the "lost chart",
+        //      so choose the smallest scale chart in the candidate list.
+        else{
+            BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+            if(m_pcandidate_array->GetCount()){
+                m_refchart_dbIndex = m_pcandidate_array->Item( m_pcandidate_array->GetCount() - 1 ) ->dbIndex;
+                BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+            }
+        }
     }
 
     if((-1 != m_lost_refchart_dbIndex) && ( m_lost_refchart_dbIndex != m_refchart_dbIndex )) {

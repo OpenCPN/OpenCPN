@@ -1559,6 +1559,7 @@ SET(uiData
         src/bitmaps/iconRPlus.png
         src/bitmaps/iconMinimum.png
         src/bitmaps/iconStandard.png
+        src/bitmaps/iconUserStd.png
         src/bitmaps/iconAll.png
 	)
 
@@ -1698,25 +1699,32 @@ IF(OCPN_USE_SVG)
   
 ENDIF(OCPN_USE_SVG)
 
-SET_SOURCE_FILES_PROPERTIES(
-           data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
-IF(BUNDLE_DOCS MATCHES "ON")
-  SET_SOURCE_FILES_PROPERTIES(
-           data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-  FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
-  FOREACH (_currentDocFile ${DOC_FILES})
-    SET_SOURCE_FILES_PROPERTIES(
-           ${_currentDocFile}
-           PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/images" )
-  ENDFOREACH (_currentDocFile )
+IF(BUNDLE_DOCS MATCHES "ON")
+  SET_SOURCE_FILES_PROPERTIES( data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+
+  FILE(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
+  FOREACH (_currentWikiDocFile ${WIKI_DOC_FILES})
+ 
+    file(RELATIVE_PATH
+    _docfileRelPath # Output variable
+    "${CMAKE_SOURCE_DIR}/data/doc/" # Base directory
+    ${_currentWikiDocFile} # Absolute path to the file
+    )
+
+    GET_FILENAME_COMPONENT(_docfileLocation ${_docfileRelPath} DIRECTORY)
+    SET(_location "SharedSupport/doc/${_docfileLocation}")
+#    MESSAGE (STATUS "    Adding Wiki Doc File : " ${_currentWikiDocFile}  "  Destination: "  ${_location})
+    SET_SOURCE_FILES_PROPERTIES( ${_currentWikiDocFile}  PROPERTIES MACOSX_PACKAGE_LOCATION ${_location} )
+  ENDFOREACH (_currentWikiDocFile )
+  
+  
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
-SET_SOURCE_FILES_PROPERTIES(
-           buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+SET_SOURCE_FILES_PROPERTIES( buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
-SET_SOURCE_FILES_PROPERTIES(
-           buildosx/MainMenu.xib PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj )
+SET_SOURCE_FILES_PROPERTIES( buildosx/MainMenu.xib PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj )
 
 #  These variables get substituted into the Info.plist template file at build time
 SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
@@ -1741,7 +1749,7 @@ IF(BUNDLE_DOCS MATCHES "ON")
   ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       data/doc/help_web.html
       data/doc/help_en_US.html
-      ${DOC_FILES}
+      ${WIKI_DOC_FILES}
   )
 ELSE(BUNDLE_DOCS MATCHES "ON")
   ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE

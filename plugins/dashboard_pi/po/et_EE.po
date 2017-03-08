@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-01-27 16:14-0500\n"
+"PO-Revision-Date: 2017-03-07 13:51-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -268,11 +268,11 @@ msgstr "spidomeetri max väärtus:"
 
 #: src/dashboard_pi.cpp:1814
 msgid "Speed Over Ground Damping Factor:"
-msgstr ""
+msgstr "Kiiruse põhja suhtes summutamise tegur:"
 
 #: src/dashboard_pi.cpp:1820
 msgid "COG Damping Factor:"
-msgstr ""
+msgstr "COG summutamise tegur:"
 
 #: src/dashboard_pi.cpp:1825
 msgid "Boat speed units:"

@@ -42,7 +42,6 @@
 #include "chart1.h"
 #include "navutil.h"        // for Select
 #include "georef.h"
-#include "pluginmanager.h"  // for PlugInManager
 #include "styles.h"
 #include "datastream.h"
 #include "Select.h"
@@ -57,7 +56,7 @@ extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
 extern ChartCanvas      *cc1;
-extern MyFrame          *gFrame;
+//extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
 extern OCPNPlatform     *g_Platform;
 
@@ -135,7 +134,6 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 extern bool             g_bresponsive;
 extern float            g_ChartScaleFactorExp;
 
-extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if !defined(NAN)
@@ -438,6 +436,17 @@ wxString ais8_001_22_notice_names[] = { // 128] = {
     _("Undefined (default)") //, // 127
 };
 
+static bool GetCanvasPointPix( ViewPort& vp, ChartCanvas *cp, double rlat, double rlon, wxPoint *r )
+{
+  if( cp != NULL )
+  {
+    return cp->GetCanvasPointPix(rlat, rlon, r);
+  }
+  *r = vp.GetPixFromLL(rlat, rlon);
+  return true;
+}
+
+
 wxString trimAISField( char *data )
 {
     //  Clip any unused characters (@) from data
@@ -471,7 +480,7 @@ static void transrot_pts( int n, wxPoint *pt, float sin_theta, float cos_theta, 
         pt[i] = transrot(pt[i], sin_theta, cos_theta, offset);
 }
 
-void AISDrawAreaNotices( ocpnDC& dc )
+void AISDrawAreaNotices( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
     if( !g_pAIS || !g_bShowAIS || !g_bShowAreaNotices ) return;
 
@@ -490,7 +499,7 @@ void AISDrawAreaNotices( ocpnDC& dc )
 
     AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
 
-    float vp_scale = cc1->GetVPScale();
+    float vp_scale = vp.view_scale_ppm;
 
     for( AIS_Target_Hash::iterator target = current_targets->begin();
             target != current_targets->end(); ++target ) {
@@ -545,7 +554,7 @@ void AISDrawAreaNotices( ocpnDC& dc )
                         switch( sa->shape ) {
                         case AIS8_001_22_SHAPE_CIRCLE: {
                             wxPoint target_point;
-                            cc1->GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
+                            GetCanvasPointPix(vp, cp, sa->latitude, sa->longitude, &target_point );
                             points.push_back( target_point );
                             if( sa->radius_m > 0.0 )
                                 dc.DrawCircle( target_point, sa->radius_m * vp_scale );
@@ -560,7 +569,7 @@ void AISDrawAreaNotices( ocpnDC& dc )
                                 ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                           &lat, &lon );
                                 wxPoint target_point;
-                                cc1->GetCanvasPointPix( lat, lon, &target_point );
+                                GetCanvasPointPix(vp, cp, lat, lon, &target_point );
                                 points.push_back( target_point );
                             }
                         }
@@ -865,7 +874,7 @@ static void spherical_ll_gc_ll(float lat, float lon, float brg, float dist, floa
     *dlat = asinf(sy*cD + cy*sD*ca) * 180/M_PI;
 }
 
-static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
+static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
     //      Target data must be valid
     if( NULL == td ) return;
@@ -913,7 +922,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->n_alert_state == AIS_ALERT_SET ) drawit++;
     else
     //    Is target in Vpoint?
-    if( cc1->GetVP().GetBBox().Contains( td->Lat,  td->Lon ))
+    if( vp.GetBBox().Contains( td->Lat,  td->Lon ))
         drawit++;                       // yep
     else
     //  If AIS tracks are shown, is the first point of the track on-screen?
@@ -921,7 +930,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
         if( node ) {
             AISTargetTrackPoint *ptrack_point = node->GetData();
-            if( cc1->GetVP().GetBBox().Contains( ptrack_point->m_lat,  ptrack_point->m_lon ) )
+            if( vp.GetBBox().Contains( ptrack_point->m_lat,  ptrack_point->m_lon ) )
                 drawit++;
         }
     }
@@ -932,14 +941,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
 
     //    Is predicted point in the VPoint?
-    if( cc1->GetVP().GetBBox().Contains( pred_lat,  pred_lon ) )
+    if( vp.GetBBox().Contains( pred_lat,  pred_lon ) )
         drawit++;                     // yep
     else {
         LLBBox box;
         box.SetFromSegment(td->Lon, td->Lat, pred_lon, pred_lat);
     // And one more test to catch the case where target COG line crosses the screen,
     // but the target itself and its pred point are both off-screen
-        if( !cc1->GetVP().GetBBox().IntersectOut(box))
+        if( !vp.GetBBox().IntersectOut(box))
             drawit++;
     }
 
@@ -947,15 +956,15 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( !drawit )
         return;
 
-    cc1->GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
-    cc1->GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
+    GetCanvasPointPix(vp, cp, td->Lat, td->Lon, &TargetPoint );
+    GetCanvasPointPix(vp, cp, pred_lat, pred_lon, &PredPoint );
 
     bool b_hdgValid = true;
     
     float theta;
     //    If the target reported a valid HDG, then use it for icon
     if( (int) ( td->HDG ) != 511 ) {
-        theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
+        theta = ( ( td->HDG - 90 ) * PI / 180. ) + vp.rotation;
     } else {
         b_hdgValid = false;   // tentative judgement
 
@@ -963,12 +972,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             // question: why can we not compute similar to above using COG instead of HDG?
             //  Calculate the relative angle for this chart orientation
             //    Use a 100 pixel vector to calculate angle
-            float angle_distance_nm = ( 100. / cc1->GetVP().view_scale_ppm ) / 1852.;
+            float angle_distance_nm = ( 100. / vp.view_scale_ppm ) / 1852.;
             float angle_lat, angle_lon;
             spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
 
             wxPoint AnglePoint;
-            cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+            GetCanvasPointPix(vp, cp, angle_lat, angle_lon, &AnglePoint );
 
             if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
                 if( target_sog > g_ShowMoored_Kts ){
@@ -1047,8 +1056,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         {
             double ref_lat, ref_lon;
             ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat, &ref_lon );
-            wxPoint2DDouble b_point = cc1->GetVP().GetDoublePixFromLL( td->Lat, td->Lon );
-            wxPoint2DDouble r_point = cc1->GetVP().GetDoublePixFromLL( ref_lat, ref_lon );
+            wxPoint2DDouble b_point = vp.GetDoublePixFromLL( td->Lat, td->Lon );
+            wxPoint2DDouble r_point = vp.GetDoublePixFromLL( ref_lat, ref_lon );
             double ppm = r_point.GetDistance(b_point) / 100.;
             double offwid = (td->DimC + td->DimD) * ppm * 0.25;
             double offlen = (td->DimA + td->DimB) * ppm * 0.15;
@@ -1181,11 +1190,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
         wxPoint tCPAPoint;
         wxPoint TPoint = TargetPoint;
-        cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
+        GetCanvasPointPix(vp, cp, tcpa_lat, tcpa_lon, &tCPAPoint );
 
         //  Draw the intercept line from target
         ClipResult res = cohen_sutherland_line_clip_i( &TPoint.x, &TPoint.y, &tCPAPoint.x,
-                                                       &tCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+                                                       &tCPAPoint.y, 0, vp.pix_width, 0, vp.pix_height );
 
         if( res != Invisible ) {
             wxPen ppPen2( URED, width_cogpredictor_line, wxPENSTYLE_USER_DASH );
@@ -1209,8 +1218,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         wxPoint oCPAPoint;
 
-        cc1->GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
-        cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
+        GetCanvasPointPix(vp, cp, ocpa_lat, ocpa_lon, &oCPAPoint );
+        GetCanvasPointPix(vp, cp, tcpa_lat, tcpa_lon, &tCPAPoint );
 
         //        Save a copy of these unclipped points
         wxPoint oCPAPoint_unclipped = oCPAPoint;
@@ -1218,7 +1227,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //  Draw a line from target CPA point to ownship CPA point
         ClipResult ores = cohen_sutherland_line_clip_i( &tCPAPoint.x, &tCPAPoint.y,
-                                                        &oCPAPoint.x, &oCPAPoint.y, 0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+                                                        &oCPAPoint.x, &oCPAPoint.y, 0, vp.pix_width, 0, vp.pix_height );
 
         if( ores != Invisible ) {
             wxColour yellow = GetGlobalColor( _T ( "YELO1" ) );
@@ -1242,12 +1251,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         // Draw the intercept line from ownship
         wxPoint oShipPoint;
-        cc1->GetCanvasPointPix ( gLat, gLon, &oShipPoint );
+        GetCanvasPointPix(vp, cp, gLat, gLon, &oShipPoint );
         oCPAPoint = oCPAPoint_unclipped;    // recover the unclipped point
 
         ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y,
                                                            &oCPAPoint.x, &oCPAPoint.y,
-                                                           0, cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+                                                           0, vp.pix_width, 0, vp.pix_height );
 
         if ( ownres != Invisible ) {
             wxPen ppPen2 ( URED, width_interceptline, wxPENSTYLE_USER_DASH );
@@ -1262,9 +1271,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     }
 
     //  Highlight the AIS target symbol if an alert dialog is currently open for it
-    if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
+    if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() && cp ) {
         if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
-            cc1->JaggyCircle( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 100 );
+            cp->JaggyCircle( dc, wxPen( URED , 2 ), TargetPoint.x, TargetPoint.y, 100 );
     }
 
     //  Highlight the AIS target symbol if a query dialog is currently open for it
@@ -1286,7 +1295,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         if( l > 24 ) {
             ClipResult res = cohen_sutherland_line_clip_i( &pixx, &pixy, &pixx1, &pixy1, 0,
-                                                           cc1->GetVP().pix_width, 0, cc1->GetVP().pix_height );
+                                                           vp.pix_width, 0, vp.pix_height );
 
             if( res != Invisible ) {
                     //    Draw a wider coloured line
@@ -1680,7 +1689,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     }
 
     if ( (g_bShowAISName) && (targetscale > 75) ) {
-        int true_scale_display = (int) (floor( cc1->GetVP().chart_scale / 100. ) * 100);
+        int true_scale_display = (int) (floor( vp.chart_scale / 100. ) * 100);
         if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
 
             wxString tgt_name = td->GetFullName();
@@ -1742,7 +1751,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
             for (TrackPointCount = 0; node && (TrackPointCount < TrackLength); TrackPointCount++) {
                 AISTargetTrackPoint *ptrack_point = node->GetData();
-                cc1->GetCanvasPointPix(ptrack_point->m_lat, ptrack_point->m_lon, &TrackPoints[TrackPointCount]);
+                GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon, &TrackPoints[TrackPointCount]);
                 node = node->GetNext();
             }
             TrackLength = TrackPointCount;
@@ -1763,7 +1772,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     }           // Draw tracks
 }
 
-void AISDraw( ocpnDC& dc )
+void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
 {
     if( !g_pAIS ) return;
 
@@ -1792,7 +1801,7 @@ void AISDraw( ocpnDC& dc )
         if( ( td->SOG < g_ShowMoored_Kts )
                 && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) ) 
         {
-            AISDrawTarget( td, dc );
+            AISDrawTarget( td, dc, vp, cp );
             if( td->importance > low )
             {
                 temp = low; low = 999999;
@@ -1811,9 +1820,9 @@ void AISDraw( ocpnDC& dc )
         if( ( td->SOG >= g_ShowMoored_Kts )
                 && !( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) )
         {
-            AISDrawTarget( td, dc ); // yes this is a doubling of code;(
+            AISDrawTarget( td, dc, vp, cp ); // yes this is a doubling of code;(
             if( td->importance > 0 )
-            AISDrawTarget( td, dc );
+            AISDrawTarget( td, dc, vp, cp );
             if( td->importance > low )
             {
                 temp = low; low = 999999;
@@ -1828,7 +1837,7 @@ void AISDraw( ocpnDC& dc )
 
     for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
         AIS_Target_Data *td = it->second;
-        if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) AISDrawTarget( td, dc );
+        if( ( td->Class == AIS_GPSG_BUDDY ) || ( td->Class == AIS_DSC ) ) AISDrawTarget( td, dc, vp, cp );
     }
     ImportanceSwitchPoint = low;
     delete [] p_Array;  // When done, free memory pointed to by p_Array.

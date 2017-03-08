@@ -1,0 +1,670 @@
+
+
+
+<h1>Celestial Navigation</h1>
+<div class="level1">
+
+</div>
+
+<h3>Plugin to record Sextant Sights and show Circles of Position to obtain a Fix</h3>
+<div class="level3">
+
+<p>
+Celestial navigation support makes it possible to establish your position when other means are not available. Also, users may find this plugin, which is still under development, useful for cross checking their position fixes obtained in other ways, or to to better visualize a celestial fix. You find the forum thread here:  <a href="../../../lib/exe/fetch.php?tok=5588d4&amp;media=http://www.cruisersforum.com/forums/f134/celestial-navigation-plugin-redux-98748.html" class="media mediafile mf_html" title="http://www.cruisersforum.com/forums/f134/celestial-navigation-plugin-redux-98748.html">Cruisersforum thread: celestial navigation plugin</a>
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/four-circles-of-position.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h4>Types of Observations</h4>
+<div class="level4">
+
+<p>
+Currently 3 types of observations are, more or less,  supported:
+</p>
+<ol>
+<li class="level1"> <b>Altitude</b>  (sextant measurement) – Measure the angle between the horizon and a heavenly body, and enter the required data in the plugin. Each measurement results in a Circle of Position on the sphere (COP, or Circle of Equal Altitude). Two or more observations result in intersecting COP&#039;s from which a position fix can be obtained.</li>
+<li class="level1"> <b>Azimuth</b>  (compass measurement) – Measure the azimuth (bearing) of a heavenly body. This method is hopelessly inaccurate, especially on a small boat in high seas. However, it is interesting for demonstration purposes, and possibly - with accurate digital compasses - it may be a viable navigation method in the future.</li>
+<li class="level1"> <b>Lunar distance </b> (sextant measurement) – Measure the angle between two heavenly bodies. The computer then attempts to determine clock error from this measurement, and the system time may be corrected.</li>
+</ol>
+
+</div>
+
+<h2>Process</h2>
+<div class="level2">
+
+</div>
+
+<h4>1. Obtaining Sights with Sextant</h4>
+<div class="level4">
+
+<p>
+Standard practice in navy and merchant navy with regard to celestial positioning is as follows (assuming no artificial horizon is available on the sextant):
+</p>
+<ol>
+<li class="level1"> During morning nautical twilight (about 15 minutes): if possible take 6 star/planet observations.</li>
+<li class="level1"> In the morning at about 09:00LT: take a Sun&#039;s observation (later to be shifted to noon-time).</li>
+<li class="level1"> At local noon: take a Sun&#039;s observation (traditionally only direct latitude calculation from sun at meridian passage). Construct a fix for noon from both sun observations.</li>
+<li class="level1"> During evening nautical twilight (about 15 minutes): if possible take 6 star/planet observations.</li>
+<li class="level1"> Use the Moon for an observation in above practice when situation permits.</li>
+</ol>
+
+<p>
+Many books have been written about the art and science of celestial positioning (see below).
+</p>
+
+<p>
+This is the document containing the test data used for the example below: <a href="../../../opencpn/manual/plugins/celestial_navigation/textbook_data.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:textbook_data.pdf (14.6 KB)">Example worksheet</a>(4 star observations).
+</p>
+
+</div>
+
+<h4>2. Sight Properties - Sight Tab - Enter Star Data</h4>
+<div class="level4">
+
+<p>
+Enter Type (Altitude, Azimuth, Lunar), Celestial Body, Limb, Measurement and Degrees of Certainty. Degrees of Certainty is the accuracy the navigator assumes for the observation. A larger value results in a larger line width for the Circle of Position on the chart.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/sight-1-degrees-minutes-uncertainty.h.272_tok.d40974_w.399.png" class="media" alt="" width="399" height="272" />
+</p>
+
+</div>
+
+<h4>3. Sight Properties - Date and Time Tab</h4>
+<div class="level4">
+
+<p>
+Enter Date (based on GMT/UT) and Time in GMT/UT, Certainty and Shift. Note that entering a shift removes the calculated numerical fix. This is due to the computation method used, which presently does not allow to shift COP&#039;s. However, a position fix can be established by visually observing the COP&#039;s (which are graphically shifted) on the chart.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/sight-2-date-time-certainty-shift.h.272_tok.fa90db_w.400.png" class="media" alt="" width="400" height="272" />
+</p>
+
+</div>
+
+<h4>4. Sight Properties - Config Tab - Display Characteristics</h4>
+<div class="level4">
+
+<p>
+Enter Transparency and Color you wish to use for the COP.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/sight-3-configuration.h.272_tok.2705f3_w.400.png" class="media" alt="" width="400" height="272" />
+</p>
+
+</div>
+
+<h4>5. Sight Properties - Parameters Tab</h4>
+<div class="level4">
+
+<p>
+Enter Eye Height, Temperature, Pressure and Index Error.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/sight-4-parameters.h.273_tok.1320be_w.401.png" class="media" alt="" width="401" height="273" />
+</p>
+
+</div>
+
+<h4>6. Sight Properties - Calculations Tab</h4>
+<div class="level4">
+
+<p>
+Showing the input figures and some calculated results for the observation. Together with the calculated numerical position fix showed in the main window of the plugin, this can be used for comparison with results that are obtained by other calculation methods (traditional manual method using logarithms, traditional or direct computation methods as mentioned in Nautical Almanac, shortened methods using e.g. <a href="http://msi.nga.mil/NGAPortal/MSI.portal?_nfpb=true&amp;_st=&amp;_pageLabel=msi_portal_page_62&amp;pubCode=0013" class="urlextern" title="http://msi.nga.mil/NGAPortal/MSI.portal?_nfpb=true&amp;_st=&amp;_pageLabel=msi_portal_page_62&amp;pubCode=0013" rel="nofollow">US Pub. 229</a> or <a href="http://thenauticalalmanac.com/" class="urlextern" title="http://thenauticalalmanac.com/" rel="nofollow">US Pub. 249</a>, other computer applications).
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/sight-5-calculations.h.618_tok.5ac133_w.507.png" class="media" alt="" width="507" height="618" />
+</p>
+
+</div>
+
+<h4>7. Celestial Navigation Sights - Circles of Position and Sights</h4>
+<div class="level4">
+
+<p>
+A Circle of Position (COP) indicates all the positions on earth where a navigator may observe the same altitude of a heavenly body at a certain time. Using traditional methods, only the part of a COP the navigator is interested in is used, and replaced by a tangent line (LOP).
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/four-circles-of-position.h.441_tok.cd3e6b_w.601.png" class="media" alt="" width="601" height="441" />
+</p>
+
+</div>
+
+<h4>8. Four Circles of Position (showing DR position as MOB and fix as Waypoint)</h4>
+<div class="level4">
+
+<p>
+The MOB icon shows the initial DR position entered. The red circle indicates the intersection of the crossing red lines, the calculated position fix. Hover cursor over the crossing, right click and place a mark. If required, visually adjust this to get best latitude and longitude of the fix. In Sight Properties - Sight Tab, Degrees Certainty was set to 0.05.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/celestial_navigation/four-sights-entered.h.443_tok.99bd9c_w.601.png" class="media" alt="" width="601" height="443" />
+</p>
+
+</div>
+
+<h2>Methodology</h2>
+<div class="level2">
+
+</div>
+
+<h4>General Traditional Theory</h4>
+<div class="level4">
+
+<p>
+A general, but very clear text on celestial positioning is available in the PDF file on the web site of Henning Umland:
+</p>
+<ul>
+<li class="level1"> <a href="http://www.celnav.de/page2.htm" class="urlextern" title="http://www.celnav.de/page2.htm" rel="nofollow">A Short Guide to Celestial Navigation (pdf 5mb)</a></li>
+</ul>
+
+<p>
+Many thanks to Henning Umland for this concise text. Naturally, also the information provided by the Nautical Almanac and Bowditch is of interest (see &#039;Links&#039;).
+</p>
+
+</div>
+
+<h4>Plugin Computation Methods</h4>
+<div class="level4">
+
+<p>
+The plugin is still under development and the computation methods used are innovative and based on vector, matrix and least squares methods. The author, Sean d&#039;Epagnier, uses this innovative method to directly calculate a fix position. Only he knows the background and details.
+</p>
+
+<p>
+General information on direct computation methods can be found on pages 277 to 285 of the Nautical Almanac 1994 (see &#039;Links&#039;) and in the following articles:
+</p>
+<ul>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/cel_nav_new_computational_methods_04_2014_01_2_.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:cel_nav_new_computational_methods_04_2014_01_2_.pdf (1.7 MB)">New Computational Methods for Solving Problems of the Astronomical Vessel Position (pdf 1.7mb)</a></li>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/cel_nav_direct_fix_v44n1-2.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:cel_nav_direct_fix_v44n1-2.pdf (1 MB)">The Direct Fix of Latitude and Longitude from two observed Altitudes (pdf 1mb)</a></li>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/cel_nav_generic_03_2012_06.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:cel_nav_generic_03_2012_06.pdf (435.5 KB)">Genetic Algorithm for Solving Celestial Navigation Problems (pdf 435kb)</a></li>
+</ul>
+
+<p>
+Presently, the plugin is not capable of advancing COP&#039;s to a common time. When a shift is entered, the calculated numerical position on the main window disappears. In this case, the fix can only be established by visual examination of the graphics on the screen (see also 3. Sight Properties - Date and Time Tab, and 8. Four Circles of Position) and a fix time cannot be established.
+</p>
+
+</div>
+
+<h2>Accuracy of Data</h2>
+<div class="level2">
+<ul>
+<li class="level1"> <a href="http://aa.usno.navy.mil/data/docs/celnavtable.php" class="urlextern" title="http://aa.usno.navy.mil/data/docs/celnavtable.php" rel="nofollow">Celestial Navigation Data for Assumed Position and Time- Navy</a></li>
+<li class="level1"> <a href="http://www.clearskyinstitute.com/xephem/" class="urlextern" title="http://www.clearskyinstitute.com/xephem/" rel="nofollow">Astronomical Software Ephemeris</a></li>
+</ul>
+
+</div>
+
+<h4>Comparison of Plugin Astronomical Data and Nautical Almanac Data</h4>
+<div class="level4">
+
+<p>
+The data and formulae contained in the Nautical Almanac form a standard in itself. The plugin utilizes astronomical data from VOP87d (for the planets and indirectly for the sun), ELP2000/82 (for the moon) and contains Right Ascension (RA; star&#039;s SHA = 360° - star&#039;s RA) and Declination (Dec) data for the selected stars.
+</p>
+
+<p>
+During development of the plugin, the calculated (intermediate) correction values for dip, refraction, horizontal parallax, parallax in altitude and semi diameter, as well as the calculated position fix, should be compared to values that result from other computation methods.
+</p>
+
+<p>
+The astronomical data used in the plugin is more accurate than data taken from the Nautical Almanac. However, for navigation purposes the differences are generally not important. With regard to altitude reductions, so far test data indicates that the differences found in calculated observed altitude (Ho) are small. Measurement and reading errors made by the navigator will be larger. Using the present version, calculated fix positions can still differ from those calculated with traditional methods.
+</p>
+
+</div>
+
+<h4>Accuracy of Plugin Astronomical Data</h4>
+<div class="level4">
+
+<p>
+The plugin astronomical data are from Jean Meeus&#039; Astronomical Algorithms <a href="https://en.wikipedia.org/wiki/Jean_Meeus" class="urlextern" title="https://en.wikipedia.org/wiki/Jean_Meeus" rel="nofollow">Wikapedia</a> <a href="https://sourceforge.net/projects/astroalgorithms/" class="urlextern" title="https://sourceforge.net/projects/astroalgorithms/" rel="nofollow">Sourceforge</a>.
+</p>
+<ul>
+<li class="level1"> Planetary positions are based upon a truncated version of <a href="http://adsabs.harvard.edu/abs/1988A%26A...202..309B" class="urlextern" title="http://adsabs.harvard.edu/abs/1988A%26A...202..309B" rel="nofollow">Bretagnon and Francou&#039;s VSOP87</a> theory <a href="https://en.wikipedia.org/wiki/VSOP_(planets)" class="urlextern" title="https://en.wikipedia.org/wiki/VSOP_(planets)" rel="nofollow">Wikipedia VSOP</a> . The estimated maximum error in the heliocentric longitude is several arc-seconds. Geocentric positions are accurate to within a few arc-seconds.</li>
+<li class="level1"> Lunar positions are calculated using a truncated version of the <a href="http://adsabs.harvard.edu/full/1983A%26A...124...50C" class="urlextern" title="http://adsabs.harvard.edu/full/1983A%26A...124...50C" rel="nofollow">lunar theory ELP-2000/82 of Chapront-Touzé and Chapront</a>. The estimated maximum error in the geocentric longitude is about 10 arc-seconds.</li>
+</ul>
+
+</div>
+
+<h4>Accuracy of Data in the Printed Nautical Almanac</h4>
+<div class="level4">
+
+<p>
+The largest error that can occur in GHA and declination of any body other than the Sun or Moon is less than 0.2&#039;; it may reach 0.25&#039; for the Sun and 0.3&#039; for that of the Moon. In practice it may be expected that only one third of the values of GHA and declination will have errors larger than 0.05&#039;, and less than one tenth will have errors larger than 0.1&#039;.
+</p>
+
+<p>
+The errors in the altitude corrections are nominally in the same order (but the actual values of dip and refraction at low altitudes may differ considerably in extreme atmospheric conditions).
+</p>
+
+<p>
+Depending on the type of sextant, the reading accuracy of the sextant can be 0.2&#039;, 0.1&#039; or 10“. Measurement and reading errors made by the navigator will be larger.
+</p>
+
+</div>
+
+<h4>Recent Calculation &amp; Accuracy Improvements to Plugin</h4>
+<div class="level4">
+
+<p>
+by Povl Abrahamsen, 2/26/2017
+</p>
+
+<p>
+<a href="../../../opencpn/manual/plugins/celestial_navigation/cel-nav-accuracy.jpeg" class="media" title="opencpn:manual:plugins:celestial_navigation:cel-nav-accuracy.jpg"><img src="../../../opencpn/manual/plugins/celestial_navigation/cel-nav-accuracy.tok.68debb_w.300.jpeg" class="media" title="cel-nav-accuracy.jpg" alt="cel-nav-accuracy.jpg" width="300" /></a>
+</p>
+
+<p>
+While the existing plugin worked well with sun, moon, and planet sights, it was not treating stars correctly. This update adds corrections for star sights.
+</p>
+<ol>
+<li class="level1"> It uses updated star positions from the SIMBAD Astronomical Database (<a href="http://simbad.u-strasbg.fr/simbad/" class="urlextern" title="http://simbad.u-strasbg.fr/simbad/" rel="nofollow">http://simbad.u-strasbg.fr/simbad/</a>)</li>
+<li class="level1"> Positions are corrected for proper motion and parallax.</li>
+<li class="level1"> Positions are corrected for frame bias, precession, and nutation.</li>
+</ol>
+
+<p>
+See: <a href="https://github.com/seandepagnier/celestial_navigation_pi/pull/9" class="urlextern" title="https://github.com/seandepagnier/celestial_navigation_pi/pull/9" rel="nofollow">Githb Pull Request #9</a>
+</p>
+
+<p>
+New files:
+</p>
+<ul>
+<li class="level1"> transform_star.cpp has been written by me, using equations from the US Naval Observatory Circular No. 179 (<a href="http://aa.usno.navy.mil/publications/docs/Circular_179.pdf" class="urlextern" title="http://aa.usno.navy.mil/publications/docs/Circular_179.pdf" rel="nofollow">http://aa.usno.navy.mil/publications/docs/Circular_179.pdf</a>)</li>
+<li class="level1"> epv00.cpp comes from the SOFA library (<a href="http://www.iausofa.org/" class="urlextern" title="http://www.iausofa.org/" rel="nofollow">http://www.iausofa.org/</a>), with a wrapper function written by Povl Abrahamsen.</li>
+</ul>
+
+<p>
+Also we would like to acknowledge the use of the SOFA function and library. <br/>
+See “Article: Earth Rotation and Equatorial Coordinates” below for general information about the error.
+</p>
+
+</div>
+
+<h2>Abbreviations</h2>
+<div class="level2">
+
+<p>
+Some abbreviations of terms are given in the list hereunder. Not all of these abbreviations conform to a standard.
+</p>
+
+<p>
+<b>AP</b>- Assumed Position- where you are <em>or think you are </em>based on Latitude and Longitude.
+</p>
+
+<p>
+<b>COP</b>- Circle of Position (Circle of Equal Altitude)
+</p>
+
+<p>
+<b>Dec</b>- Declination- the angle in degrees of a celestial body above or below the celestial equator. It&#039;s analogous to latitude on earth.
+</p>
+
+<p>
+<b>DR</b>- Dead Reckoning Position (from <em>Deduced Reckoning)</em>
+</p>
+
+<p>
+<b>HA</b>- Hour Angle
+</p>
+
+<p>
+<b>GP</b>- Geographical Position of a heavenly body. It has two components; declination and GHA. <em>Dec, </em>or declination, mentioned above, is analogous to latitude on earth. In Western longitudes a heavenly body&#039;s GHA equals the longitude of the GP. In Eastern longitudes the GP equals 360° <em>minus</em> GHA. If at a given point in time you were at the GP of a celestial body it would be directly over your head- your zenith.
+</p>
+
+<p>
+<b>GMT/UT</b>- Greenwich Mean Time and Universal Time. For celestial navigation work all observations are recorded in time and date based on Greenwich, England. GMT is also known as “UT”.
+</p>
+
+<p>
+<b>GHA</b>- <em>Greenwich Hour Angle</em>- the angular distance in degrees between Greenwich (0°) and a celestial object. GHA is always measured West of Greenwich.
+</p>
+
+<p>
+<b>LHA</b>- <em>Local Hour Angle</em>- the horizontal angular distance in degrees between the Ap (Assumed position) and a celestial object. It is always measured West from the Ap. to the celestial object.
+</p>
+
+<p>
+<b>LOP</b>- Line of Position
+</p>
+
+<p>
+<b>MPP</b>- Most Probable Position
+</p>
+
+<p>
+<b>RA</b>- Right Ascension (star&#039;s SHA = 360<sup>o</sup>  <em>minus</em> the star&#039;s RA)
+</p>
+
+<p>
+<b>SHA</b>- Sidereal Hour Angle
+</p>
+
+<p>
+<b>D-R-I-P-S</b>
+</p>
+<ul>
+<li class="level1"> <b>Dip</b>  of the Horizon (function of eye height)</li>
+<li class="level1"> <b>R</b>- Refraction (function of Ha, temperature and pressure)</li>
+<li class="level1"> <b><abbr title="Internet Explorer">IE</abbr></b>- Index Error (= + or <em>minus</em>  Index Error of sextant)</li>
+<li class="level1"> <b>PA</b>- Parallax in Altitude (function of HP and Ha)</li>
+<li class="level1"> <b>SD</b>- Semi-Diameter. One half of the angular width of the Sun or Moon.</li>
+</ul>
+
+<p>
+<b>HP</b>- Horizontal Parallax
+</p>
+
+<p>
+<b>Hs</b>- Sextant Altitude- the initial, uncorrected, sextant measurement from the horizon to a celestial body. Also known as <em>Height of sextant.</em>
+</p>
+
+<p>
+<b>Ha</b>- Apparent Altitude= Hs <em>minus</em>  Dip +<em> </em>or<em> minus</em>  IC (Index Correction) Also known as <em>Apparent Height.</em>
+</p>
+
+<p>
+<b>Ho</b>- Observed Altitude- final corrected sextant angular measurement. Also known as <em>Height observed.</em>
+</p>
+
+<p>
+<b>Hc</b>- Computed Altitude. Also known as <em>Height computed.</em>
+</p>
+
+<p>
+<b>Int</b>- Intercept (=Ho + or <em>minus</em>  Hc) Always subtract the smaller figure from the larger.
+</p>
+
+<p>
+<b>Z</b>- Azimuth. Horizontal angle in degrees between True North and the celestial body.
+</p>
+
+</div>
+
+<h2>Resources</h2>
+<div class="level2">
+
+</div>
+
+<h3>Article: Genetic Algorithm for Solving Celestial Navigation Fix Problems</h3>
+<div class="level3">
+
+<p>
+by Ming-Cheng Tsou, Ph.D., National Kaohsiung Marine University, Taiwan POLISH MARITIME RESEARCH 3(75) 2012 Vol 19; pp. 53-59 10.2478/v10012-012-0031-5
+</p>
+<ul>
+<li class="level1"> <a href="../../../lib/exe/fetch.php?tok=acc1cc&amp;media=http://yadda.icm.edu.pl/yadda/element/bwmeta1.element.baztech-article-BWM4-0041-0021/c/Genetic_03_2012_06.pdf" class="media mediafile mf_pdf" title="http://yadda.icm.edu.pl/yadda/element/bwmeta1.element.baztech-article-BWM4-0041-0021/c/Genetic_03_2012_06.pdf">122939.celnavalg tsau.pdf</a></li>
+</ul>
+
+<p>
+ABSTRACT <br/>
+In this work, we employ a genetic algorithm, from the field of artificial intelligence, due to its superior search ability that mimics the natural process of biological evolution. Unique encodings and genetic operators designed in this study, in combination with the fix principle of celestial circles of equal altitude in celestial navigation, allow the rapid and direct attainment of accurate optimum vessel position. Test results indicate that this method has more flexibility, and avoids tedious and complicated computation and graphical procedures.
+</p>
+
+</div>
+
+<h3>Article: The Direct Fix of Latitude and Longitude from Two Observed Altitudes</h3>
+<div class="level3">
+
+<p>
+by Stanley W. Gery<br/>
+
+Neptune Power Squadron, Huntington, New York, Received April 1996, Revised December 1996
+</p>
+<ul>
+<li class="level1"> <a href="../../../lib/exe/fetch.php?tok=83d69d&amp;media=http://fer3.com/arc/imgx/v44n1-2.pdf" class="media mediafile mf_pdf" title="http://fer3.com/arc/imgx/v44n1-2.pdf">v44n1-2.pdf</a></li>
+</ul>
+
+<p>
+ABSTRACT <br/>
+
+This work presents a direct method for obtaining the latitude and longitude of an observer from the observed altitudes of two celestial bodies. No assumed position or dead-reckoned position or plotting is required. Starting with the Greenwich hour angles, declinations, and observed altitudes of each pair, the latitude and longitude of the two points from which the observations must have been made are directly computed. The algorithm is presented in the paper, along with its derivation. Two different, inexpensive, programmable pocket electronic calculators were programmed to execute the algorithm, and they do it in under 30 s. The algorithm was also programmed to run on a personal computer to examine the effect of the precision of the calculations on the error in the results. The findings show that the use of eight decimal places in the trigonometric computations provides acceptable results.
+</p>
+
+</div>
+
+<h3>Article: New Computational Methods for Solving Problems of the Astronomical Vessel Position</h3>
+<div class="level3">
+
+<p>
+by Tien-Pen Hsu (1), Chih-Li Chen (2) and Jiang-Ren Chang (3)
+</p>
+
+<p>
+(1) Institute of Civil Engineering, National Taiwan University <br/>
+
+(2) Institute of Merchant Marine, National Taiwan Ocean University <br/>
+
+(3) Institute of Systems Engineering and Naval Architecture, National Taiwan Ocean University; E-mail: <a href="mailto:&#x63;&#x6a;&#x72;&#x40;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x6e;&#x74;&#x6f;&#x75;&#x2e;&#x65;&#x64;&#x75;&#x2e;&#x74;&#x77;" class="mail" title="&#x63;&#x6a;&#x72;&#x40;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x6e;&#x74;&#x6f;&#x75;&#x2e;&#x65;&#x64;&#x75;&#x2e;&#x74;&#x77;">cjr@mail.ntou.edu.tw</a><br/>
+
+THE JOURNAL OF NAVIGATION (2005), 58, 315–335. The Royal Institute of Navigation, doi: 10.1017/S0373463305003188, Printed in the United Kingdom
+</p>
+<ul>
+<li class="level1"> <a href="../../../lib/exe/fetch.php?tok=50bc1e&amp;media=https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-341a8953-47f5-4270-937d-8e3f46892879/c/04_2014_01__282_29.pdf" class="media mediafile mf_pdf" title="https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-341a8953-47f5-4270-937d-8e3f46892879/c/04_2014_01__282_29.pdf">JON 58(2) 315-335.pdf</a></li>
+</ul>
+
+<p>
+ABSTRACT <br/>
+
+In this paper, a simplified and direct computation method formulated by the fixed coordinate system and relative meridian concept in conjunction with vector algebra is developed to deal with the classical problems of celestial navigation. It is found that the proposed approach, the Simultaneous Equal-altitude Equation Method (SEEM), can directly calculate the Astronomical Vessel Position (AVP) without an additional graphical procedure. The SEEM is not only simpler than the matrix method but is also more straightforward than the Spherical Triangle Method (STM). Due to tedious computation procedures existing in the commonly used methods for determining the AVP, a set of optimal computation procedures for the STM is also suggested. In addition, aimed at drawbacks of the intercept method, an improved approach with a new computation procedure is also presented to plot the celestial line of position without the intercept. The improved approach with iteration scheme is used to solve the AVP and validate the SEEM successfully. Methods of solving AVP problems are also discussed in detail. Finally, a benchmark example is included to demonstrate these proposed methods.
+</p>
+
+</div>
+
+<h3>Article: Use of Rotation Matrices to Plot a Circle of Equal Altitude</h3>
+<div class="level3">
+
+<p>
+by A. Ruiz <br/>
+
+Industrial engineer, Navigational Algorithms <br/>
+
+Journal of Maritime Research, Vol. VIII. No. 3, pp.51-58, 2011
+</p>
+<ul>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/cel_nav_use_of_rotation_matrices_to_plot_a_circle_of_equal_altitude.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:cel_nav_use_of_rotation_matrices_to_plot_a_circle_of_equal_altitude.pdf (3.4 MB)">Download Rotation Matrices (pdf 3mb)</a></li>
+</ul>
+
+<p>
+ABSTRACT <br/>
+
+A direct method for obtaining the points of a circle of equal altitude using the vector analysis as an alternative to the spherical trigonometry is presented, and a solution where celestial navigation and Global Navigation Satellite Systems are complementary and coexist is proposed.
+</p>
+
+</div>
+
+<h3>Article: Determining the Position and Motion of a Vessel from Celestial Observations</h3>
+<div class="level3">
+
+<p>
+by George H. Kaplan,   U.S. Naval Observatory<br/>
+
+</p>
+<pre class="code">* {{http://aa.usno.navy.mil/publications/reports/ghk_posmo.pdf|Determine Position &amp; Motion of a Vessel (pdf)}}
+* See also [[http://aa.usno.navy.mil/publications/docs/celnav.php|Other Articles by George Kaplan]]</pre>
+
+<p>
+ABSTRACT <br/>
+
+Although many mathematical approaches to the celestial fix problem have been published, all of them fundamentally assume a stationary observer. Since this situation seldom occurs in practice, methods have been developed that effectively remove the observer&#039;s motion from the problem before a fix is determined. As an alternative, this paper presents a development of celestial navigation that incorporates a moving observer as part of its basic construction. This development allows recovery of the information on the vessel&#039;s course and speed contained in the observations. Thus, it provides the means for determining, from a suitable ensemble of celestial observations, the values of all four parameters describing a vessel&#039;s rhumb-line track across the earth: latitude and longitude at a specified time, course, and speed. In many cases, this technique will result in better fixes than traditional methods.
+</p>
+
+</div>
+
+<h3>Article: Vector Solution for the Intersection of two Circles of Equal Altitude</h3>
+<div class="level3">
+
+<p>
+by Andrés Ruiz González   <a href="http://www.geocities.com/andresruizgonzalez" class="urlextern" title="http://www.geocities.com/andresruizgonzalez" rel="nofollow">Navigational Algorithms</a> San Sebastián. 
+second website: <a href="https://sites.google.com/site/navigationalalgorithms/papersnavigation" class="urlextern" title="https://sites.google.com/site/navigationalalgorithms/papersnavigation" rel="nofollow">Navigational Algorithms</a>
+</p>
+<ul>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/vector2cop.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:vector2cop.pdf (66.7 KB)">Vector Solution for the Intersection of two Circles of Equal Altitude (pdf 70kb)</a></li>
+<li class="level1"> <a href="../../../lib/exe/fetch.php?tok=8f846e&amp;media=https://5bda2dca-a-62cb3a1a-s-sites.googlegroups.com/site/navigationalalgorithms/papersnavigation/Vector2CoP.pdf" class="media mediafile mf_pdf" title="https://5bda2dca-a-62cb3a1a-s-sites.googlegroups.com/site/navigationalalgorithms/papersnavigation/Vector2CoP.pdf">Vector Solution for the Intersection of two Circles of Equal Altitude</a></li>
+</ul>
+
+<p>
+ABSTRACT<br/>
+
+A direct method for obtaining the two possible positions derived from two sights using the  vector  analysis  instead  the  spherical  trigonometry  is  presented.  The  geometry  of  the  circle of equal altitude and of the two body fixes is analyzed, and then the vector equation for simultaneous sights is constructed. Also the running fix problem is treated. Finally the C++ source code for the algorithm is provided in an easy implementation, susceptible for being translated to other common programming language
+</p>
+
+</div>
+
+<h3>Article: Earth Rotation and Equatorial Coordinates</h3>
+<div class="level3">
+
+<p>
+Rick Fisher  August 2010
+</p>
+<ul>
+<li class="level1"> <a href="https://www.cv.nrao.edu/~rfisher/Ephemerides/earth_rot.html" class="urlextern" title="https://www.cv.nrao.edu/~rfisher/Ephemerides/earth_rot.html" rel="nofollow">https://www.cv.nrao.edu/~rfisher/Ephemerides/earth_rot.html</a></li>
+</ul>
+
+<p>
+Abstract <br/>
+
+“By the standards of modern astrometry, the earth is quite a wobbly platform from which to observe the sky. The earth&#039;s rotation rate is not uniform, its axis of rotation is not fixed in space, and even its shape and relative positions of its surface locations are not fixed. For the purposes of pointing a telescope to one-arcsecond accuracy, we need not worry about shape and surface feature changes, but changes in the orientation of the earth&#039;s rotation axis are very important. ”
+</p>
+
+<p>
+Discusses small errors in measurements and standards due to perturbations of the earth. 2/28/2017
+</p>
+
+</div>
+
+<h3>Article:Coordinates, Time and the Sky</h3>
+<div class="level3">
+
+<p>
+Coordinate Systems for Direction <br/>
+
+John Thorstensen, Department of Physics and Astronomy, Dartmouth College, Hanover, NH 03755<br/>
+
+</p>
+<ul>
+<li class="level1"> <a href="../../../lib/exe/fetch.php?tok=940549&amp;media=http://www.dartmouth.edu/~ast15/notes/coords.pdf" class="media mediafile mf_pdf" title="http://www.dartmouth.edu/~ast15/notes/coords.pdf">Coordinates, Time and the Sky</a></li>
+</ul>
+
+<p>
+This subject is fundamental to anyone who looks at the heavens;  it is aesthetically and mathematically beautiful, and rich in history…
+</p>
+
+</div>
+
+<h3>Book: A Short Guide to Celestial Navigation</h3>
+<div class="level3">
+
+<p>
+Copyright © 1997-2011 Henning Umland; PDF file can be found on this page on his web site:
+</p>
+<ul>
+<li class="level1"> <a href="http://www.celnav.de/page2.htm" class="urlextern" title="http://www.celnav.de/page2.htm" rel="nofollow">http://www.celnav.de/page2.htm</a></li>
+</ul>
+
+<p>
+Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts and no Back-Cover Texts. A copy of the license is included in the section entitled “GNU Free Documentation License”. <br/>
+
+Revised October 1st, 2011,  First Published May 20th, 1997
+</p>
+
+</div>
+
+<h3>Book: The Sextant Handbook</h3>
+<div class="level3">
+
+<p>
+Copyright © 1986, 1992 Bruce A. Bauer <br/>
+
+International Marine <br/>
+
+ISBN 0-07-005219-0
+</p>
+<ul>
+<li class="level1"> <a href="http://www.amazon.com/The-Sextant-Handbook-Bruce-Bauer/dp/0070052190" class="urlextern" title="http://www.amazon.com/The-Sextant-Handbook-Bruce-Bauer/dp/0070052190" rel="nofollow">Amazon web site: The Sextant Handbook, Adjustment, Repair, Use and History - 2nd Edition</a></li>
+</ul>
+
+<p>
+The Sextant Handbook is dedicated to the premise that electronic navigation devices, while too convenient to disregard, are too vulnerable to rely on exclusively. The book is designed to make beginner and expert alike conversant with this most beautiful and and functional of the navigator&#039;s tools.
+</p>
+
+</div>
+
+<h3>Other Celestial Links</h3>
+<div class="level3">
+<ul>
+<li class="level1"> <a href="http://thenauticalalmanac.com" class="urlextern" title="http://thenauticalalmanac.com" rel="nofollow">TheNauticalAlmanac</a> An extensive source for celestial navigation. Nautical Almanac PDF&#039;S and other tools.</li>
+</ul>
+<ul>
+<li class="level1"> <a href="https://thenauticalalmanac.com/Bowditch-%20American%20Practical%20Navigator.html" class="urlextern" title="https://thenauticalalmanac.com/Bowditch-%20American%20Practical%20Navigator.html" rel="nofollow">Bowditch 2002</a> (Organized for easy Chapter download)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.celnav.de/page4.htm" class="urlextern" title="http://www.celnav.de/page4.htm" rel="nofollow">Cool Celestial Navigation Links</a> (on the web site of Henning Umland)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://reednavigation.com/files/Nautical-Almanac-1994.pdf" class="urlextern" title="http://reednavigation.com/files/Nautical-Almanac-1994.pdf" rel="nofollow">Nautical Almanac 1994.pdf</a> (large download of 140 Mb from the web site of Reed Navigation)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="https://sites.google.com/site/navigationalalgorithms/" class="urlextern" title="https://sites.google.com/site/navigationalalgorithms/" rel="nofollow">Navigational Algorithms</a> (web site of Andres Ruiz)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="https://sites.google.com/site/navigationalalgorithms/papersnavigation" class="urlextern" title="https://sites.google.com/site/navigationalalgorithms/papersnavigation" rel="nofollow">Papers on Advanced Navigation</a> (web site of Andres Ruiz)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="../../../opencpn/supplementary_software/celestial_navigation.html" class="wikilink1" title="opencpn:supplementary_software:celestial_navigation">Supplementary celestial software on OpenCPN web site</a> (by Andres Ruiz)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.siranah.de/html/fr_sail.htm" class="urlextern" title="http://www.siranah.de/html/fr_sail.htm" rel="nofollow">Erik&#039;s Nautical Web Pages</a> (web site of Erik de Man)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.seasources.net/celestial_navigation.htm" class="urlextern" title="http://www.seasources.net/celestial_navigation.htm" rel="nofollow">Online Study of Celestial Navigation</a> (e-learning via web site of Seasources.net)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.backbearing.com/index.html" class="urlextern" title="http://www.backbearing.com/index.html" rel="nofollow">Backbearing Astronavigation</a></li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://fer3.com/arc/" class="urlextern" title="http://fer3.com/arc/" rel="nofollow">NavList</a></li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.fer3.com/arc/navbooks2.html" class="urlextern" title="http://www.fer3.com/arc/navbooks2.html" rel="nofollow">Bowditch 1995</a> (but also other, historical, navigation books online)</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://msi.nga.mil/NGAPortal/MSI.portal?_nfpb=true&amp;_pageLabel=msi_portal_page_62&amp;pubCode=0002" class="urlextern" title="http://msi.nga.mil/NGAPortal/MSI.portal?_nfpb=true&amp;_pageLabel=msi_portal_page_62&amp;pubCode=0002" rel="nofollow">American Practical Navigator</a> Complete=35m also convenient separate chapters.</li>
+</ul>
+<ul>
+<li class="level1"> <a href="../../../ftp://tycho.usno.navy.mil/pub/TimeAndNavigation/FutureOfCelestialNavigation_Steve.Bell.pdf" class="urlextern" title="ftp://tycho.usno.navy.mil/pub/TimeAndNavigation/FutureOfCelestialNavigation_Steve.Bell.pdf" rel="nofollow">UKHO Future of Celestial Navigation</a></li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://digitalcommons.odu.edu/cgi/viewcontent.cgi?article=1040&amp;context=ots_masters_projects" class="urlextern" title="http://digitalcommons.odu.edu/cgi/viewcontent.cgi?article=1040&amp;context=ots_masters_projects" rel="nofollow">Future of Celestial Navigation</a> (pdf; <b><em>also points out the vulnerability of GPS </em></b> )</li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.naval-technology.com/features/featurecelestial-navigation-ancient-craft-reinstated-as-cyber-warfare-looms-large-4809513/" class="urlextern" title="http://www.naval-technology.com/features/featurecelestial-navigation-ancient-craft-reinstated-as-cyber-warfare-looms-large-4809513/" rel="nofollow">Celestial Navigation in the Navy</a></li>
+</ul>
+<ul>
+<li class="level1"> <a href="http://www.navigation-spreadsheets.com/" class="urlextern" title="http://www.navigation-spreadsheets.com/" rel="nofollow">Interactive Spreadsheets</a></li>
+</ul>
+
+</div>
+
+<h3>Examples of Test Data</h3>
+<div class="level3">
+<ul>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/textbook_data.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:textbook_data.pdf (14.6 KB)">Example worksheet</a>  (observation of 4 stars for fix calculation)</li>
+<li class="level1"> <a href="../../../opencpn/manual/plugins/celestial_navigation/nautical_almanac_alt_reduction.pdf" class="media mediafile mf_pdf" title="opencpn:manual:plugins:celestial_navigation:nautical_almanac_alt_reduction.pdf (19.6 KB)">Alternative worksheet</a> (observation of Sun, Moon, Venus and Polaris for altitude reduction only)</li>
+</ul>
+
+<p>
+We should thank Sean who has advanced the work of others admirably, and NAV for his technical review of the plugin, his knowledge, and his generous assistance in preparing this documentation. Rick.
+</p>
+
+</div>

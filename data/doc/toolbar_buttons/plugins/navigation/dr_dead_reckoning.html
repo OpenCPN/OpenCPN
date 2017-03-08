@@ -1,0 +1,136 @@
+
+
+
+<h1>Dead Reckoning</h1>
+<div class="level1">
+
+</div>
+
+<h3>BETA available</h3>
+<div class="level3">
+
+<p>
+Add DR positions to a route by means of editing a gpx file, which has been exported from &#039;Route Manager&#039;.
+</p>
+
+</div>
+
+<h2>Definition</h2>
+<div class="level2">
+
+<p>
+In navigation, dead reckoning or dead-reckoning (also ded for deduced reckoning or <b>DR</b>) is the process of calculating one&#039;s current <b>position</b> by using a previously determined <b>position</b>, or fix, and advancing that <b>position</b> based upon known or estimated speeds over elapsed time and course.
+</p>
+
+</div>
+
+<h2>1. What and Why</h2>
+<div class="level2">
+
+<p>
+The DR plugin is a means of adding DR positions to a route. Because the plugin cannot access &#039;Route Manager&#039; directly it works by editing a gpx file, which has been exported from &#039;Route Manager&#039;.
+</p>
+
+<p>
+DR speed and the time between the DR positions can be changed before the DR gpx is finally created.
+</p>
+
+<p>
+This plugin is a temporary solution to the problem of creating DR positions. The <b>Draw plugin</b> now allows the creation of DR positions for course legs.
+</p>
+
+</div>
+
+<h2>2. Install</h2>
+<div class="level2">
+
+<p>
+Copy &#039;DR_pi.dll&#039; to the plugins folder.  Start OpenCPN. Tools/Options and select &#039;Enable&#039; for the DR entry.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/tools_plugins.tok.9f6db6_w.575.png" class="media" alt="" width="575" />
+</p>
+
+</div>
+
+<h2>3. Standard actions</h2>
+<div class="level2">
+
+<p>
+Save the route which you want to add DR positions to by using &#039;Route Manager&#039;. Make a note of the folder where this original route file can be found.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/export_route.tok.1b1885_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+Start DR:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/menu_bar.tok.46d1d5_w.375.png" class="media" alt="" width="375" />
+</p>
+
+<p>
+The main page of the plugin appears:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/add_options.tok.db567d_w.375.png" class="media" alt="" width="375" />
+</p>
+
+<p>
+The DR speed and interval between DR positions have been added. The DR route name is entered in the bottom box.
+</p>
+
+<p>
+The process of creating the DR route is started by pressing &#039;Generate GPX&#039;. A file dialog box appears.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/import_gpx.tok.ec6b7a_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+Select the route GPX file where DR positions will be added.
+</p>
+
+<p>
+Immediately after selecting this file a new file dialog box appears.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/export_dr_gpx.tok.ed4aa4_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+After pressing &#039;Save&#039; the route_dr gpx file is created in the folder you have chosen. If the original file is not needed you can use the same file name and the original file will be over-written.
+</p>
+
+<p>
+The plugin can now be closed.
+</p>
+
+<p>
+Using &#039;Route Manager&#039; import the DR gpx:
+</p>
+
+<p>
+<img src="../../../opencpn/manual/import_dr_gpx.tok.bb7416_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+<img src="../../../opencpn/manual/import_dr_gpx_route_manager.tok.4e61e2_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+<img src="../../../opencpn/manual/show_dr_gpx.tok.2fd813_w.575.png" class="media" alt="" width="575" />
+</p>
+
+<p>
+The DR route is now available. To avoid confusion the original route can be hidden by using the &#039;Eye&#039; symbol.
+</p>
+
+</div>

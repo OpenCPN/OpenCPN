@@ -1,0 +1,345 @@
+
+
+
+<h1>Weatherfax</h1>
+<div class="level1">
+
+<p>
+<b>Weatherfax<br/>
+
+<img src="../../../opencpn/manual/oicon/weatherfax_icon.png" class="media" alt="" /></b>
+</p>
+
+<p>
+Retrieves internet image files, reads image files or decodes audio and then Overlays the image on top of charts.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-0-retrieve-internet-overlaid-on-chart.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h3>Preparation</h3>
+<div class="level3">
+
+<p>
+Install Weatherfax Plugin. Enable it in the Settings &gt; Plugin Tab. 
+Then open it and explore the top menus.
+</p>
+
+<p>
+With an internet connection it is quite easy to select the “HF Radio Schedules” to select and set alarms for use with a reciever, or to select the Internet Schedules and then retrieve Weatherfaxes via the Internet and overlay on the chart. Audio Capture requires a connection.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-2-retrieve-menu.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h3>Retrieve Weatherfax Image files with an internet connection</h3>
+<div class="level3">
+
+<p>
+If you have an internet connection, first Retrieve &gt; All &gt; HF Radio Schedules.<br/>
+
+Then Retrieve &gt; Internet &gt; Select NOAA &gt; Select Boston (for example) &gt; Select 24hr 500mb Forecast<br/>
+
+The Weatherfax image file will download and be overlaid directly onto a chart.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c0-ret-inet-menu-1_0.png" class="media" alt="" /><br/>
+
+Lat 42 Long -70 –&gt; Servers: Noaa  —&gt; Regions: Atlantic —→  Select Contents —→ Retrieve
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c0-ret-inet-menu-1_0.png" class="media" alt="" /><br/>
+
+Lat 42 Long -70 –&gt; Servers: Passage  —&gt; Regions: N. Atlantic —→  Select Contents —→ Retrieve
+</p>
+
+<p>
+The plugin data directory contains an WeatherFaxInternetRetrieval.xml file that has database for meterological sites. The “Internet Retrieval” Option uses this schedule. It is a wonderful planning tool for cruises or passagemaking.  There are several options, but first Select “Internet” to retrieve HF Radio Schedules via the internet. Then Select “NOAA” Under “Servers” you will see “Stations” fill up. Then select “Boston” and the Internet Retrieval choices are automatically listed in the menu area.  Select several faxes and pick “Retrieve Scheduled” or “Retrieve Selected”.
+</p>
+<hr />
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c1-ret-inet-aviation-americas.png" class="media" alt="" /><br/>
+
+Aviation Americas Forecast retrieved via the internet.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c2-ret-inet-passsage-atlantic-012wind.png" class="media" alt="" /><br/>
+
+Passage Weather Atlantic 012 Wind via internet.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c3-ret-inet-bermuda-3day.png" class="media" alt="" /><br/>
+
+Bermuda 3 day via internet.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c4-ret-inet-noaa-atlantic-24hr-500mb.png" class="media" alt="" /><br/>
+
+NOAA Atlantic 24hr 500mb via internet.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c5-ret-inet-noaa-atlantic-24hrsurf.png" class="media" alt="" /><br/>
+
+NOAA Atlantic 24hr Surface via internet.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c6-ret-inet-passage-ne.png" class="media" alt="" /><br/>
+
+Passage Weather New England Wind 012
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c7-ret-inet-passage-novasoctia.png" class="media" alt="" /><br/>
+
+Passage Weather Nova Scotia Wind 021
+</p>
+<hr />
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-c8-ret-inet-downloaded-list.png" class="media" alt="" /><br/>
+
+List of Weatherfaxes downloaded. Highlighted one shows overlaid on charts.
+</p>
+
+<p>
+The weatherfax will be overlayed generally in the proper location provided the weather service has not changed their fax formats. (The user can modify the associated WeatherFaxInternetRetrieval.xml file appropriately to add or modify the actions.) Users should please post changes to this file to the Weatherfax Thread for the next release.
+</p>
+
+</div>
+
+<h3>HF Radio Weather Faxes</h3>
+<div class="level3">
+
+<p>
+The plugin has a builtin database (WeatherFaxSchedules.xml) for HF Radio Weather Service Fax transmissions, which when used properly can automatically alert the user and begin decoding these faxes.
+</p>
+
+<p>
+<b>Retrieve &gt; RF Radio Schedule Menu</b> on the Filter Tab.<br/>
+
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-b1-ret-hfradiosch-filtertab-menu.png" class="media" alt="" />
+</p>
+
+<p>
+<b>Retrieve &gt; RF Radio Schedule  Menu</b> on the 1 minute Alarm Tab.<br/>
+
+<img src="../../..//http_3a_2f_2fopencpn.org_2focpn_2fsites_2fdefault_2ffiles_2fusers_2frgleason_2fwx-b2-ret-hfradiosch-alarmtab-menu.tok.fec220.png" class="media" alt="" />
+</p>
+
+<p>
+<b>Retrieve &gt; RF Radio Schedule  Menu</b> on the Capture Options Tab.<br/>
+
+<img src="../../..//http_3a_2f_2fopencpn.org_2focpn_2fsites_2fdefault_2ffiles_2fusers_2frgleason_2fwx-b3-ret-hfradiosch-captureoptionstab-menu.tok.d95b27.png" class="media" alt="" />
+</p>
+
+<p>
+<b>Retrieve &gt; RF Radio Schedule  Menu</b> on the Information Tab.<br/>
+
+<img src="../../..//http_3a_2f_2fopencpn.org_2focpn_2fsites_2fdefault_2ffiles_2fusers_2frgleason_2fwx-b4-ret-hfradiosch-infotab-menu.tok.66986d.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h3>Decoding Sound via SSB</h3>
+<div class="level3">
+
+<p>
+Select Retrieve → Audio Capture (Ctrl+A)
+</p>
+
+<p>
+A line from the SSB radio to the audio input of the sound card should be attached, and the radio tuned to the appropriate frequency (1.9khz below listed frequency and SSB mode)  The SSB BFO must be adjusted correctly.
+</p>
+
+</div>
+
+<h3>Retrieve &gt; Audio Capture shown while recieving</h3>
+<div class="level3">
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-a1-ret-audiocapture-recieving.png" class="media" alt="" />
+</p>
+
+<p>
+The images decoded can then be calibrated and overlayed on charts.  The resulting image can be exported to a chart, so the plugin also works as a general purpose conversion tool to make charts from images.
+</p>
+
+</div>
+
+<h2>Weatherfax Image Wizard</h2>
+<div class="level2">
+
+</div>
+
+<h3>Working with Files</h3>
+<div class="level3">
+
+<p>
+The plugin can read and open numerous common image files, and audio files, and can save Kap files. The next step in development is to have it read Kap for ease of use with respect to coordinates being recorded and reused.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-1-file-menu.png" class="media" alt="" />
+</p>
+
+</div>
+
+<h3>Some Sources of Image files</h3>
+<div class="level3">
+
+<p>
+Here are some examples of the gif, png, tif weatherfax files that can be used:
+</p>
+<ul>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/marine.shtml" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/marine.shtml" rel="nofollow">NOAA Marine Radio Forecast Charts</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/marshlatest.shtml" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/marshlatest.shtml" rel="nofollow">NOAA Boston Radio Forecast -Atlantic</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/PYAD10.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/PYAD10.gif" rel="nofollow">Preliminary Surface Analysis</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/PYAA11.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/PYAA11.gif" rel="nofollow">00Z-12Z Surface Analysis Atlantic -Part 1 </a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/PYAA12.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/PYAA12.gif" rel="nofollow">00Z-12Z Surface Analysis Atlantic -Part 2</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/QDTM10.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/QDTM10.gif" rel="nofollow">48 hr Surface Analysis Atlantic</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/PWAM99.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/PWAM99.gif" rel="nofollow">96 hr Surface Analysis Atlantic</a></li>
+<li class="level1"> <a href="http://weather.noaa.gov/pub/fax/PWAE98.gif" class="urlextern" title="http://weather.noaa.gov/pub/fax/PWAE98.gif" rel="nofollow">Atlantic</a></li>
+<li class="level1"> <a href="http://tgftp.nws.noaa.gov/fax/PPAE11.gif" class="urlextern" title="http://tgftp.nws.noaa.gov/fax/PPAE11.gif" rel="nofollow">24 hr 500mb Atlantic</a></li>
+<li class="level1"> <a href="http://www.opc.ncep.noaa.gov/Atl_tab.shtml" class="urlextern" title="http://www.opc.ncep.noaa.gov/Atl_tab.shtml" rel="nofollow">NOAA Ocean Prediction Center -Atlantic</a></li>
+<li class="level1"> <a href="http://www.weathercharts.org/" class="urlextern" title="http://www.weathercharts.org/" rel="nofollow">UK Atlantic Forecasts</a></li>
+<li class="level1"> <a href="http://www.cincfleetwoc.com/HF-Fax/North_Atlantic/matrix.html#matrixLatestZData" class="urlextern" title="http://www.cincfleetwoc.com/HF-Fax/North_Atlantic/matrix.html#matrixLatestZData" rel="nofollow">Northwood N.Atlantic Latest Data</a></li>
+</ul>
+
+</div>
+
+<h3>How to use Weatherfax files and the Image Wizard:</h3>
+<div class="level3">
+<ul>
+<li class="level1"> Save the files in a new directory on your hard drive in the same directory as your Charts. (I called the directory FaxWx).</li>
+<li class="level1"> Open the Plugin and a fax file and use the Weatherfax Image Wizard</li>
+<li class="level1"> From OpenCPN select the Weatherfax Icon, a window pops up.</li>
+<li class="level1"> Select Open and browse to the  FaxWx directory and select a fax file.</li>
+<li class="level1"> Open the file.</li>
+</ul>
+
+</div>
+
+<h3>Objective:</h3>
+<div class="level3">
+
+<p>
+The objective is to set the x/y coordinates and lat/long properly so that the image will map directly over the proper area on the charts/globe.  The Image Wizard allows user control over the necessary settings in a step by step process which ends in a successful chart overlay or not, depending on the skill of the user. If it does not work properly the first time, simply try it again. There are two basic types of projections the wizard can handle.
+</p>
+
+</div>
+
+<h4>Mercator Projections</h4>
+<div class="level4">
+
+<p>
+If the fax is a Mercator projection (orthogonal, not polar), click through the next screen that comes up and at the second screen set the coordinates and lat/long properly.  (Screenshots will be added later) and click on through to see the fax overlaid on the charts.  
+</p>
+
+<p>
+Note: It is very difficult to test for poor coordinate and lat/long input, so it is best to have your lat long correct, otherwise strange things may happen with the overlay in Opencpn.
+</p>
+
+<p>
+I first use a separate image viewer with the selected fax image, to zoom in and to write down the Lat/long and coordinates that I will be using.   If you plan to export to a chart file then you should select “Get Aspect Ratio”
+</p>
+
+<p>
+<img src="../../../opencpn/manual/mercator.h.353_tok.9d52a9_w.599.jpeg" class="media" title="mercator.jpg" alt="mercator.jpg" width="599" height="353" />
+</p>
+
+</div>
+
+<h4>Polar Projections</h4>
+<div class="level4">
+
+<p>
+There are other techniques used to modify a Polar fax onto a Mercator projection chart which are reviewed on the forum and will be more fully described later.  Review the posts following this <a href="http://www.cruisersforum.com/forums/showthread.php?p=1185034" class="urlextern" title="http://www.cruisersforum.com/forums/showthread.php?p=1185034" rel="nofollow">Cruiser&#039;s Forum Post in the Weatherfax Thread</a> in the Forums.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-polarsu1.h.366_tok.d24fbe_w.600.jpeg" class="media" title="wx-polarsu1.jpg" alt="wx-polarsu1.jpg" width="600" height="366" />
+</p>
+
+<p>
+<b><em>Coordinate </em>1 </b> (Red) -Select a high latitude which must also lie on the vertical meridian running through the pole (N or S) <br/>
+<em><b>Coordinate 2</b>  </em> (Blue) - Select an opposing corner (either side) with lower latitude. Then hit Get Map, the Blue circles should follow the latitudes of respective coords. Adjust the left/right location with the PoleX value and adjust the circle radius with the PoleY value. Set the True Width Ratio value to 1.0.
+</p>
+
+<p>
+From here, it should be possible to click “get mapping”
+</p>
+
+<p>
+<em><b>True width Ratio </b></em>- Adjusts the width of the blue circles (a fraction like .8 makes the circles wider, and 1.2 makes them narrower). Adjust the true width ratio such that the blue circles align with the associated latitude lines, otherwise the “Apply” transformation will not render straight lat/long lines or will fail.
+</p>
+
+<p>
+<em><b>Pole X</b>  </em>- Moves the center of the blue circles left and right. The blue circles should be centered on the vertical meridian which goes through the pole.
+</p>
+
+<p>
+<b><em>Pole Y </em>-</b>  Moves the center of the blue circles up and down. The blue circles should be centered on the pole. Hit get mapping to see how this is working, because the blue rings change in width, and sometime the ring closest to the pole flips if the value is too far out of whack.
+</p>
+
+<p>
+<b><em>Equator Y </em>-</b>  This does not appear to do much when you change the value, more about this value later. 
+</p>
+
+<p>
+If you are starting fresh with a Polar, and the blue rings are too wide after hitting Get Mapping, first check the lat/long entered and reset coords to be sure they are hit, then Hit &#039;get mapping again&#039; then adjust the “True width ratio” so the blue rings align with the latitude lines. Once that is done don&#039;t hit “Get Mapping” again, hit “Apply” the lines should be straight and orthogonal.
+</p>
+
+<p>
+Here is an example of a WxFax overlay in Opencpn
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-overlay.h.353_tok.dcb18b_w.600.jpeg" class="media" title="wx-overlay.jpg" alt="wx-overlay.jpg" width="600" height="353" />
+</p>
+
+</div>
+
+<h2>File Export as KAP, File Open KAP</h2>
+<div class="level2">
+
+</div>
+
+<h3>File Export as KAP</h3>
+<div class="level3">
+
+<p>
+Image files that are downloaded and overlaid onto charts with specific coordinates, can now be saved as Kap files that save  long/lat and coordinates with the file.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/weatherfax/wx-export-open-kap-files.h.350_tok.d07c6a_w.601.jpeg" class="media" title="wx-export-open-kap-files.jpg" alt="wx-export-open-kap-files.jpg" width="601" height="350" />
+</p>
+
+</div>
+
+<h3>File Open KAP (Next Improvement)</h3>
+<div class="level3">
+
+<p>
+Hopefully the plugin will also be made to read Kap files so that they can be automatically overlaid on charts without having to use the WeatherFax Image Wizard.
+</p>
+
+<p>
+Thanks to Sean for a great Plugin!
+</p>
+
+</div>

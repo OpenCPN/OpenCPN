@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-02-25 13:33-0500\n"
+"PO-Revision-Date: 2017-03-07 13:53-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -23,8 +23,8 @@ msgstr "Iniciar uma solicitação"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr "Marque a área do pedido\n"
-"ou prima aqui para interromper o pedido"
+msgstr "Solicitada Area\n"
+"ou clique aqui para parar o pedido"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
@@ -84,7 +84,7 @@ msgstr "Configurações"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr "Marque a área do pedido ou prima aqui para interromper o pedido"
+msgstr "Marque a área do pedido ou clicar aqui para interromper o pedido"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -96,7 +96,7 @@ msgstr "Selecione um arquivo GRIB"
 
 #: src/GribUIDialog.cpp:1679
 msgid " files don't exist!"
-msgstr " ficheiros inexistentes!"
+msgstr " arquivos não existem!"
 
 #: src/GribUIDialog.cpp:1701
 msgid " can't be read!"
@@ -476,7 +476,7 @@ msgstr "Opções de reprodução"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr "Controlo de Velocidade"
+msgstr "Controle de Velocidade"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"

@@ -1,0 +1,172 @@
+
+
+
+<h1>Install and Enable</h1>
+<div class="level1">
+
+<p>
+The core OpenCPN tries to keep features to a minimum so that it is lean, mean and easy to use. Features can still be added through the plugin infrastructure.
+</p>
+
+<p>
+The release of OpenCPN 4.2 upgrades the user framework for Plugins to a newer version, which means it is not binary compatible with the previous releases and all Plugins for Windows and Linux must be rebuilt for compatibility.
+</p>
+
+<p>
+These newly rebuilt plugins will not work with older versions of OpenCPN.
+</p>
+
+<p>
+<img src="../../opencpn/manual/4plugins.h.640_tok.075191_w.440.png" class="media" alt="" width="440" height="640" />
+</p>
+
+</div>
+
+<h3>OpenCPN has four default plugins pre-installed:</h3>
+<div class="level3">
+
+<p>
+<a href="included_plugins/grib_weather.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:included_plugins:grib_weather">Grib Weather</a><br/>
+
+<a href="included_plugins/dashboard.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:included_plugins:dashboard">Dashboard</a><br/>
+
+<a href="included_plugins/wmm.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:included_plugins:wmm">WMM Plugin</a><br/>
+
+<a href="included_plugins/chart_downloader.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:included_plugins:chart_downloader">Chart Downloader</a>
+</p>
+
+</div>
+
+<h3>Download Plugins</h3>
+<div class="level3">
+
+<p>
+Many more plugins are available. See below.<br/>
+
+Go to the dedicated page for downloading plugins: <a href="http://opencpn.org/OpenCPN/info/downloadplugins.html" class="urlextern" title="http://opencpn.org/OpenCPN/info/downloadplugins.html" rel="nofollow">PlugIns</a><br/>
+
+Currently there are about 20 different plugins available for download.<br/>
+
+For a complete list of plugins read the <a href="http://www.cruisersforum.com/forums/f134/plugin-threads-list-100306.html#post1189427" class="urlextern" title="http://www.cruisersforum.com/forums/f134/plugin-threads-list-100306.html#post1189427" rel="nofollow"> recent posts in this forum thread</a>.
+</p>
+
+</div>
+
+<h3>Plugin Versions</h3>
+<div class="level3">
+
+<p>
+The release of OpenCPN 4.2 upgrades the user frameworks for Plugins to a newer version, which means it is not binary compatible with the previous releases and all Plugins for Windows and Linux must be rebuilt for compatibility. It is expected that this Plugin interface will remain stable for some time so Plugins will work across different (future) versions of OpenCPN.
+</p>
+
+</div>
+
+<h3>Blacklisted Plugins</h3>
+<div class="level3">
+
+<p>
+Plugins or versions of plugins known to be problematic can be Blacklisted.
+</p>
+
+<p>
+<img src="../../opencpn/manual/33blacklist.h.136_tok.26648a_w.403.png" class="media" alt="" width="403" height="136" />
+</p>
+
+<p>
+A dialog pops up for 5 seconds when starting OpenCPN, if a blacklisted plugin is detected. This will happen even if the plugin is not enabled. A number of plugins are blacklisted. They are, mainly, old problematic versions of plugins. There is always a newer version of a blacklisted plugin, or, in worst case scenario, one will soon be released.
+</p>
+
+</div>
+
+<h3>Installing a Plugin</h3>
+<div class="level3">
+
+<p>
+For <b>Linux</b>, place the downloaded “pluginxx.so” in {prefix}/lib/opencpn, which means /usr/lib/opencpn for a standard installation, using the provided packages. If you are compiling yourself {prefix} may be “/usr/local” instead of “/usr”. Check “opencpn.log” if necessary.
+</p>
+
+<p>
+For <b>Windows</b> the downloaded file is usually an executable “.exe” installation file. Click on the file and follow the instructions. If the file is a “_.dll” place the downloaded “pluginxx.dll” in a “plugins” sub folder of your OpenCPN installation folder. A common location is C:\Program Files\OpenCPN\plugins.
+</p>
+
+<p>
+Once the plugin is in the right directory, restart OpenCPN and proceed to enabling the plugin.
+</p>
+
+<p>
+For <b>Mac</b> the plugin will come as a pkg file. Double-click the pkg file and follow the install instructions.
+</p>
+
+<p>
+This will place the plugin files in the proper locations.
+</p>
+
+</div>
+
+<h3>Enabling a Plugin</h3>
+<div class="level3">
+
+<p>
+Plugins are made available by clicking on the plugin in the Options→Plugins Tab. Once this is done, an “Enable” button appears. Pressing this button activates the plugin icon in the ToolBar and changes the the default “grayed out” text to black in the list. Not all plugins have an icon when active. For most plugins there is a “Preferences” Button for configuration.
+</p>
+
+<p>
+When a plugin is disabled in the Options→Plugin tab, the plugin Icon disappears from the ToolBar.
+</p>
+
+<p>
+The Plugin Icon works as a toggle switch for the plugin. Pressing the Grib Icon, for example, activates the Grib plugin. Pressing one more time deactivates it.
+</p>
+
+<p>
+The WMM Icon uses a new feature, by displaying the magnetic variation, at the position of OwnShip in the button itself.
+</p>
+
+</div>
+
+<h3>Re-Enable a Plugin after a Plugin Update</h3>
+<div class="level3">
+
+<p>
+Version 4.2 has implemented automatic reload of updated PlugIns by visiting the <b>Options→Plugins</b> screen.
+</p>
+
+<p>
+Presumably the plugins are rescanned and loaded.
+</p>
+
+<p>
+Previously, after a plugin was Disabled, the program had to be shut down and reopened for the full change of Opencpn status to occur. This is no longer necessary, simply go to the Option→Plugins screen and all plugins will be reloaded.
+</p>
+
+<p>
+<img src="../../opencpn/manual/plugins/grib/gribplugin33.h.722_tok.d9df8c_w.549.png" class="media" alt="" width="549" height="722" />
+</p>
+
+</div>
+
+<h3>Problems with Plugins</h3>
+<div class="level3">
+
+<p>
+If you run into problems with plugins, first check what the opencpn.log file says.
+</p>
+
+<p>
+For each plugin you will find lines similar to:
+</p>
+<pre class="code">    08:59:25 CEST: PlugInManager searching for PlugIns in location /usr/lib/opencpn\\
+08:59:25 CEST: PlugInManager: Loading PlugIn: /usr/lib/opencpn/libweather_routing_pi.so\\
+08:59:25 CEST: /usr/lib/opencpn/libweather_routing_pi.so\\
+API Version detected: 110\\
+PlugIn Version detected: 101</pre>
+
+<p>
+This example is from Linux.
+</p>
+
+<p>
+On Windows systems the location of the log file will be displayed when you click “Help” (the ? mark icon) on the toolbar. Alternatively, to find the “opencpn.log” on your system read <a href="../../getting_started/opencpn_installation.html" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started:opencpn_installation">OpenCPN Installation</a>.
+</p>
+
+</div>

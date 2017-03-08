@@ -92,7 +92,7 @@ public:
     bool DoJob(const wxRect &rect);
     
     glTexFactory *pFact;
-    wxRect       rect;
+    wxRect      m_rect;
     int         level_min_request;
     int         ident;
     bool        b_throttle;
@@ -167,7 +167,5 @@ class glTextureDescriptor;
 void GetFullMap( glTextureDescriptor *ptd,  const wxRect &rect, wxString chart_path, int level);
 int TextureDim(int level);
 int TextureTileSize(int level, bool compressed);
-bool CompressUsingGPU(const unsigned char *data, int dim, int size,
-                      unsigned char *tex_data, int level, bool inplace);
 
 #endif

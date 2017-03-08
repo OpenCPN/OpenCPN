@@ -83,6 +83,7 @@ class OCPN_MsgEvent;
 class options;
 class Track;
 class OCPN_ThreadMessageEvent;
+class wxHtmlWindow;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -665,6 +666,33 @@ private:
     wxTimer m_timer_timeout;
     int m_timeout_sec;
     bool isActive;
+    
+    DECLARE_EVENT_TABLE()
+};
+
+class  OCPN_TimedHTMLMessageDialog: public wxDialog
+{
+    
+public:
+    OCPN_TimedHTMLMessageDialog(wxWindow *parent, const wxString& message,
+                           const wxString& caption = wxMessageBoxCaptionStr,
+                           int tSeconds = -1,
+                           long style = wxOK|wxCENTRE,  
+                           bool bFixedFont = false,
+                           const wxPoint& pos = wxDefaultPosition);
+    
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
+    void OnCancel(wxCommandEvent& event);
+    void OnClose( wxCloseEvent& event );
+    void OnTimer(wxTimerEvent &evt);
+    void RecalculateSize( void );
+    
+    
+private:
+    int m_style;
+    wxTimer m_timer;
+    wxHtmlWindow *msgWindow;
     
     DECLARE_EVENT_TABLE()
 };

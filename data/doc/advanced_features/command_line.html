@@ -1,0 +1,75 @@
+
+
+
+<h1>Command Line</h1>
+<div class="level1">
+
+</div>
+
+<h4>OpenCPN has a minimal command line interface (CLI)</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Windows Usage : opencpn.exe [/unit_test_1] [/p] [/no_opengl] [/fullscreen] [/rebuild_gl_raster_cache]</li>
+</ul>
+<ul>
+<li class="level1"> Linux Usage: opencpn [-unit_test_1] [-p] [-no_opengl] [-fullscreen] [-rebuild_gl_raster_cache]</li>
+</ul>
+
+</div>
+
+<h4>The options:</h4>
+<div class="level4">
+
+<p>
+<b>[/unit_test_1]</b>
+This command test cycles through all possible charts in the currently loaded chart database, adjusting the viewport to show the loaded chart automatically. The value of this test is clear: it provide an unattended stress test of OpenCPN, It is most fun to watch in quilt mode…..
+The test runs until all charts in the database have been visited once.
+A side-effect of this switch is that it can be used to process a set of ENC charts into SENC files. The first, time consuming  processing of ENC charts, can this way be done unattended.
+</p>
+
+<p>
+<b>[/p ]</b>
+The portable option is explained here → Portable OpenCPN
+</p>
+
+<p>
+<b>[/no_opengl]</b>
+A total switch-off of OpenGL, in a more thorough way than in “Options”. Read more in OpenGL .
+</p>
+
+<p>
+<b>[/fullscreen ]</b>
+Starts OpenCPN in FullScreen mode.
+</p>
+
+<p>
+<b>[/rebuild_gl_raster_cache]</b>
+Read more in Options Setting
+</p>
+
+</div>
+
+<h4>For Windows</h4>
+<div class="level4">
+
+<p>
+When using a .bat file to launch OpenCPN, you may type this MSDOS line :
+</p>
+<pre class="code">START /REALTIME C:&quot;\Program Files&quot;\OpenCPN/opencpn</pre>
+
+<p>
+Where:
+</p>
+
+<p>
+  START : MSDOS Command  <br/>
+
+  /REALTIME : gives the highest priority to the program  <br/>
+
+  C:&quot;\program Files&quot;\OpenCPN/opencpn : pathway where OpenCPN&#039;s Executable is downloaded  <br/>
+
+  (specific to each windows version) <br/>
+
+</p>
+
+</div>

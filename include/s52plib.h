@@ -128,6 +128,7 @@ public:
     void SetGLRendererString(const wxString &renderer);
 
     bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
+    bool ObjectRenderCheckRules( ObjRazRules *rzRules, ViewPort *vp, bool check_noshow = false );
     bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
     bool ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp );
     bool ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp );
