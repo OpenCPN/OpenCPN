@@ -2356,6 +2356,8 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         fsf *= xscale;
     }
     
+    xscale *= g_ChartScaleFactorExp;
+    
     //  Special case for GEO_AREA objects with centred symbols
     if( rzRules->obj->Primitive_type == GEO_AREA ) {
         wxPoint r;
