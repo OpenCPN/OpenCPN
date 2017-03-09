@@ -126,6 +126,7 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
 extern int              g_chart_zoom_modifier;
 extern int              g_chart_zoom_modifier_vector;
+extern double           g_display_size_mm;
 
 unsigned int      gs_plib_flags;
 
@@ -1927,6 +1928,7 @@ void PlugInManager::SendConfigToAllPlugIns()
     // Some rendering parameters
     v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
     v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier;
+    v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
     
     wxJSONWriter w;
     wxString out;
