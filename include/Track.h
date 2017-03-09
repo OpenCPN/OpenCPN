@@ -46,7 +46,7 @@ struct SubTrack
 class TrackPoint
 {
 public:
-      TrackPoint(double lat, double lon) : m_lat(lat), m_lon(lon) { m_bPtIsSelected = false; }
+      TrackPoint(double lat, double lon) : m_lat(lat), m_lon(lon) {}
       TrackPoint( TrackPoint* orig );
 
       wxDateTime GetCreateTime(void);
@@ -57,7 +57,6 @@ public:
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
       wxString          m_timestring;
-      bool              m_bPtIsSelected;
 private:
       wxDateTime        m_CreateTimeX;
 };
@@ -79,7 +78,6 @@ public:
     void AddPoint( TrackPoint *pNewPoint );
     void AddPointFinalized( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
-    void ClearHighlights();
     
     void SetVisible(bool visible = true) { m_bVisible = visible; }
     void SetListed(bool listed = true) { m_bListed = listed; }
@@ -116,6 +114,7 @@ public:
     int               m_CurrentTrackSeg;
 
     HyperlinkList     *m_HyperlinkList;
+    int m_HighlightedTrackPoint;
 
     void Clone( Track *psourcetrack, int start_nPoint, int end_nPoint, const wxString & suffix);
 
