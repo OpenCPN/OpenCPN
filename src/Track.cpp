@@ -148,8 +148,6 @@ void TrackPoint::Draw(ocpnDC& dc )
     wxPoint r;
     wxRect hilitebox;
  
-    if( !m_bPtIsSelected ) return;
-       
     cc1->GetCanvasPointPix( m_lat, m_lon, &r );
     
     wxPen *pen;
@@ -199,6 +197,7 @@ Track::Track()
     m_btemp = false;
 
     m_HyperlinkList = new HyperlinkList;
+    m_HighlightedTrackPoint = -1;
 }
 
 Track::~Track( void )
@@ -570,14 +569,6 @@ void Track::Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
     Assemble(pointlists, box, 1/scale/scale, last, level, 0);
 }
 
-void Track::ClearHighlights( void )
-{
-    for(size_t i = 0; i < TrackPoints.size(); i++) {
-        TrackPoint *t = TrackPoints[i];
-        t->m_bPtIsSelected = false;
-    }
-}
-
 void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 {
     std::list< std::list<wxPoint> > pointlists;
@@ -690,11 +681,8 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     }
 #endif
 
-    for(size_t i = 0; i < TrackPoints.size(); i++) {
-        TrackPoint *t = TrackPoints[i];
-        if( t->m_bPtIsSelected )
-            t->Draw(dc);
-    }
+    if(m_HighlightedTrackPoint >= 0)
+        TrackPoints[m_HighlightedTrackPoint]->Draw(dc);
 }
 
 TrackPoint *Track::GetPoint( int nWhichPoint )

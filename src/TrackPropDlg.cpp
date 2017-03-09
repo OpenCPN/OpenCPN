@@ -1264,12 +1264,12 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
     else
         selected_no = itemno;
 
-    m_pTrack->ClearHighlights();
+    m_pTrack->m_HighlightedTrackPoint = -1;
 
     if( itemno >= 0 ) {
         TrackPoint *prp = m_pTrack->GetPoint(itemno);
         if( prp ) {
-            prp->m_bPtIsSelected = true;                // highlight the trackpoint
+            m_pTrack->m_HighlightedTrackPoint = itemno; // highlight the trackpoint
 
             if( !( m_pTrack->m_bIsInLayer ) && !( m_pTrack == g_pActiveTrack ) ) {
                 m_nSelected = selected_no + 1;
