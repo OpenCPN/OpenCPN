@@ -1454,7 +1454,8 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
                 
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+        
         
         wxImage image = pbm->ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
@@ -1477,7 +1478,6 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
                     r = d[off * 3 + 0];
                     g = d[off * 3 + 1];
                     b = d[off * 3 + 2];
-                    
                     e[off * 4 + 0] = r;
                     e[off * 4 + 1] = g;
                     e[off * 4 + 2] = b;
