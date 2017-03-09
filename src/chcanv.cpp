@@ -2655,7 +2655,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
     double zlat = m_cursor_lat;
     double zlon = m_cursor_lon;
 
-    double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * factor );
+    double proposed_scale_onscreen = GetVP().chart_scale / factor; // GetCanvasScaleFactor() / ( GetVPScale() * factor );
     bool b_do_zoom = false;
     
     if(factor > 1)
@@ -2678,8 +2678,8 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         }
 
         if( pc ) {
-            double target_scale_ppm = GetVPScale() * zoom_factor;
-            proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
+//             double target_scale_ppm = GetVPScale() * zoom_factor;
+//             proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
             
             //  Query the chart to determine the appropriate zoom range
             double min_allowed_scale = 800;    // Roughly, latitude dependent for mercator charts
@@ -2751,10 +2751,11 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             b_do_zoom = false;
     }
 
+    double new_scale = GetVPScale() * (GetVP().chart_scale / proposed_scale_onscreen);
     if( b_do_zoom ) {
         if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
             //  Arrange to combine the zoom and pan into one operation for smoother appearance
-            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen, false );   // adjust, but deferred refresh
+            SetVPScale( new_scale, false );   // adjust, but deferred refresh
  
             wxPoint r;
             GetCanvasPointPix( zlat, zlon, &r );
@@ -2763,7 +2764,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             ClearbFollow();      // update the follow flag
         }
         else
-            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+            SetVPScale( new_scale );
         
     }
     
@@ -3335,6 +3336,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     }
 
     parent_frame->UpdateControlBar();
+
+    VPoint.chart_scale = 1.0;           // fallback default value
     
     if( !VPoint.GetBBox().GetValid() ) VPoint.SetBoxes();
 
