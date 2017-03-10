@@ -111,6 +111,7 @@
 #include "glTexCache.h"
 #include "Track.h"
 #include "iENCToolbar.h"
+#include "Quilt.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -7433,7 +7434,7 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
         
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
-            if( ChartData ) ChartData->PurgeCache();
+//            if( ChartData ) ChartData->PurgeCache();
 
 
             //  If the chart is a vector chart, and of very large scale,
@@ -7556,6 +7557,11 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         // Otherwise, we get severe performance problems on all platforms
 
         double max_underzoom_multiplier = 2.0;
+        if(cc1->GetVP().b_quilt){
+            int scale_max = cc1->m_pQuilt->GetNomScaleMin(pchart->GetNativeScale(), pchart->GetChartType(), pchart->GetChartFamily());
+            max_underzoom_multiplier = scale_max / pchart->GetNativeScale();
+        }
+        
         proposed_scale_onscreen =
                wxMin(proposed_scale_onscreen,
                      pchart->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()) *
@@ -7587,8 +7593,8 @@ void MyFrame::SelectQuiltRefdbChart( int db_index, bool b_autoscale )
     ChartBase *pc = ChartData->OpenChartFromDB( db_index, FULL_INIT );
     if( pc ) {
         if(b_autoscale) {
-            double best_scale = GetBestVPScale( pc );
-            cc1->SetVPScale( best_scale );
+            double best_scale_ppm = GetBestVPScale( pc );
+            cc1->SetVPScale( best_scale_ppm );
         }
     }
     else
@@ -7630,7 +7636,7 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
             zLon = vLon;
         }
 
-        double best_scale = GetBestVPScale( Current_Ch );
+        double best_scale_ppm = GetBestVPScale( Current_Ch );
         double rotation = cc1->GetVPRotation();
         double oldskew = cc1->GetVPSkew();
         double newskew = Current_Ch->GetChartSkew() * PI / 180.0;
@@ -7642,7 +7648,7 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
                 rotation = newskew;
         }
 
-        cc1->SetViewPoint( zLat, zLon, best_scale, newskew, rotation );
+        cc1->SetViewPoint( zLat, zLon, best_scale_ppm, newskew, rotation );
 
         SetChartUpdatePeriod( cc1->GetVP() );
 
@@ -7687,10 +7693,10 @@ void MyFrame::SelectdbChart( int dbindex )
             zLon = vLon;
         }
 
-        double best_scale = GetBestVPScale( Current_Ch );
+        double best_scale_ppm = GetBestVPScale( Current_Ch );
 
         if( Current_Ch )
-            cc1->SetViewPoint( zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
+            cc1->SetViewPoint( zLat, zLon, best_scale_ppm, Current_Ch->GetChartSkew() * PI / 180.,
                 cc1->GetVPRotation() );
 
         SetChartUpdatePeriod( cc1->GetVP() );
@@ -8173,23 +8179,16 @@ bool MyFrame::DoChartUpdate( void )
                     }
                 }
 
-                // Try to bound the inital Viewport scale to something reasonable for the selected reference chart
+                //  Try to bound the initial Viewport scale to something reasonable for the selected reference chart
+                //  Use the last shutdown value if possible
                 if( ChartData ) {
                     ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
+                    
                     if( pc ) {
-                        
-                        // If the chart zoom modifier is greater than 1, allow corresponding underzoom (with a 10% fluff) on startup
-                        double mod = ((double)g_chart_zoom_modifier + 5.)/5.;  // 0->2
-                        mod = wxMax(mod, 1.0);
-                        mod = wxMin(mod, 2.0);
-                        
-                        proposed_scale_onscreen =
-                                wxMin(proposed_scale_onscreen, mod * 1.10 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-                        proposed_scale_onscreen =
-                                wxMax(proposed_scale_onscreen, pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
+                        double best_scale_ppm = GetBestVPScale( pc );
+                        double best_proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / best_scale_ppm;
                     }
                 }
-
             }
 
             bNewView |= cc1->SetViewPoint( vpLat, vpLon,
