@@ -884,9 +884,18 @@ void ChartTableEntry::Disable()
     // Mark this chart in the database, so that it will not be seen during this run
     // How?  By setting the chart bounding box to an absurd value
     // TODO... Fix this heinous hack
-    LatMax = (float) 100.;
-    LatMin = (float)91.;
+    LatMax += (float) 1000.;
+    LatMin += (float)1000.;
 }
+
+void ChartTableEntry::ReEnable()
+{
+    if(LatMax >90.){
+        LatMax -= (float) 1000.;
+        LatMin -= (float) 1000.;
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 // ChartDatabase

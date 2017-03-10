@@ -195,6 +195,8 @@ struct ChartTableEntry
     bool Write(const ChartDatabase *pDb, wxOutputStream &os);
     void Clear();
     void Disable();
+    void ReEnable();
+    
     void SetValid(bool valid) { bValid = valid; }
     time_t GetFileTime() const { return file_date; }
 
