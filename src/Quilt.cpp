@@ -1100,7 +1100,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             // only charts of the proper projection and type may be quilted....
             // Also, only unskewed charts if so directed
             // and we avoid adding CM93 Composite until later
-            if( ( reference_type == cte.GetChartType() )
+            if( ( reference_family == cte.GetChartFamily() )
             && ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
             && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj )
             && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
@@ -1131,11 +1131,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
-            int type = cte.GetChartType();
-
-            if( reference_type != type ) continue;
-
-            if( type == CHART_TYPE_CM93COMP ) continue;
+            if( reference_family != cte.GetChartFamily() ) continue;
+            
+            if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
             const LLBBox &chart_box = cte.GetBBox();
             if( ( viewbox.IntersectOut( chart_box ) ) ) continue;
