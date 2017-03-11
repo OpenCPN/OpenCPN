@@ -220,6 +220,9 @@ public:
     bool IsQuiltVector( void );
     LLRegion GetHiliteRegion( );
     static LLRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
+
+    int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
+    int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
 private:
     bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
@@ -229,8 +232,6 @@ private:
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
 
-    int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
-    int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
     
     bool IsChartS57Overlay( int db_index );
     
