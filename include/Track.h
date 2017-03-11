@@ -93,6 +93,8 @@ public:
     int Simplify( double maxDelta );
     Route *RouteFromTrack(wxGenericProgressDialog *pprog);
 
+    void ClearHighlights();
+    
     wxString    m_GUID;
     bool        m_bIsInLayer;
     int         m_LayerID;

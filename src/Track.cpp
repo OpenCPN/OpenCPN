@@ -569,6 +569,11 @@ void Track::Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
     Assemble(pointlists, box, 1/scale/scale, last, level, 0);
 }
 
+void Track::ClearHighlights()
+{
+    m_HighlightedTrackPoint = -1;
+}
+
 void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 {
     std::list< std::list<wxPoint> > pointlists;

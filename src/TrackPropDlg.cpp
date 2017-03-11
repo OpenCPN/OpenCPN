@@ -1568,7 +1568,7 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
 
     if( b_found_track ) {
         SaveChanges();              // write changes to globals and update config
-//        m_pRoute->ClearHighlights();
+        m_pTrack->ClearHighlights();
     }
 
     m_bStartNow = false;
@@ -1585,7 +1585,23 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
 
 void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
 {
+    bool b_found_track = false;
+    wxTrackListNode *node = pTrackList->GetFirst();
+    while( node ) {
+        Track *ptrack = node->GetData();
+        
+        if( ptrack == m_pTrack ) {
+            b_found_track = true;
+            break;
+        }
+        node = node->GetNext();
+    }
+    
+    if( b_found_track )
+        m_pTrack->ClearHighlights();
+        
     Hide();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     event.Skip();
