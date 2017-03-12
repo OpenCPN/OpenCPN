@@ -5729,9 +5729,6 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     pConfig->UpdateSettings();
 
-    if(g_pi_manager)
-        g_pi_manager->SendConfigToAllPlugIns();
-    
     if( g_pActiveTrack ) {
         g_pActiveTrack->SetPrecision( g_nTrackPrecision );
     }
@@ -5799,6 +5796,9 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
 
     cc1->SetDisplaySizeMM( g_display_size_mm );
 
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
+    
     if(g_MainToolbar){
         g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
         g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
