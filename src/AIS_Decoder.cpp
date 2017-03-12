@@ -987,6 +987,11 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                             }
                             outfile.close();
                         }
+#if 0          
+    //  There is no need to validate the mapping between MMSI and declared vessel name.  It is what it is...
+    //  I suppose we could declare all info for this target to be invalid (forever?) due to the inconsistency,
+    //  but the occurrence of this event will be so rare in real life that there is really no need.
+    
                         else{               // there is an entry in the cache for this MMSI
                                             // Verify that the cached name matches the name just received.
                             wxString ship_name = trimAISField( pTargetData->ShipName );
@@ -1006,6 +1011,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                                 outfile.close();
                             }
                         }
+#endif                        
                     }
                 }
                 
