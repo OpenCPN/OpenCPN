@@ -3978,21 +3978,28 @@ void CalcGridSpacing( float view_scale_ppm, float& MajorSpacing, float&MinorSpac
     // [1] spacing between major grid lines in degrees
     // [2] spacing between minor grid lines in degrees
     const float lltab[][3] =
-        { { 0.0f, 90.0f, 30.0f },                  { 1e-5f, 45.0f, 15.0f },
-          { 2e-4f, 30.0f, 10.0f },                 { 3e-4f, 10.0f, 2.0f  },
-          { 6e-4f, 5.0f, 1.0f },                   { 2e-3f, 2.0f, 30.0f / 60.0f },
-          { 3e-3f, 1.0f, 20.0f / 60.0f },          { 6e-3f, 0.5f, 10.0f / 60.0f },
-          { 1e-2f, 15.0f / 60.0f, 5.0f / 60.0f },  { 2e-2f, 10.0f / 60.0f, 2.0f / 60.0f },
-          { 3e-2f, 5.0f / 60.0f, 1.0f / 60.0f },   { 6e-2f, 2.0f / 60.0f, 0.5f / 60.0f },
-          { 1e-1f, 1.0f / 60.0f, 0.2f / 60.0f },   { 4e-1f, 0.5f / 60.0f, 0.1f / 60.0f },
-          { 8e-1f, 0.2f / 60.0f, 0.05f / 60.0f },  { 1e10f, 0.1f / 60.0f, 0.02f / 60.0f }
+        { {  0.0f, 90.0f, 30.0f },
+          { .000001f, 45.0f, 15.0f },
+          { .0002f,   30.0f, 10.0f },
+          { .0003f,   10.0f, 2.0f  },
+          { .0008f,   5.0f, 1.0f },
+          { .001f,    2.0f,          30.0f / 60.0f },
+          { .003f,    1.0f,          20.0f / 60.0f },
+          { .006f,    0.5f,          10.0f / 60.0f },
+          { .03f,     15.0f / 60.0f, 5.0f / 60.0f },
+          { .01f,     10.0f / 60.0f, 2.0f / 60.0f },
+          { .06f,     5.0f / 60.0f,  1.0f / 60.0f },
+          { .1f,      2.0f / 60.0f,  1.0f / 60.0f },
+          { .4f,      1.0f / 60.0f,  0.5f / 60.0f },
+          { .6f,      0.5f / 60.0f,  0.1f / 60.0f },
+          { 1.0f,     0.2f / 60.0f,  0.1f / 60.0f },
+          { 1e10f,    0.1f / 60.0f,  0.05f / 60.0f }
     };
 
     unsigned int tabi;
     for( tabi = 0; tabi < (sizeof lltab) / (sizeof *lltab); tabi++ )
         if( view_scale_ppm < lltab[tabi][0] )
             break;
-
     MajorSpacing = lltab[tabi][1]; // major latitude distance
     MinorSpacing = lltab[tabi][2]; // minor latitude distance
     return;
