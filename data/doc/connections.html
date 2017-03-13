@@ -1,11 +1,11 @@
-
+<meta charset="utf-8">
 
 
 <h1>Connections</h1>
 <div class="level1">
 
 <p>
-<a href="opencpn/manual/options-connection-icon.id.opencpn_3Aopencpn_user_manual_3Aconnections.png.detail.html?id=opencpn%3Aopencpn_user_manual%3Aconnections&media=opencpn:manual:options-connection-icon.png" class="media" title="opencpn:manual:options-connection-icon.png"><img src="opencpn/manual/options-connection-icon.png" class="media" alt="" /></a>
+<a href="towebsite.html" class="media" title="opencpn:manual:options-connection-icon.png"><img src="opencpn/manual/options-connection-icon.png" class="media" alt="" /></a>
 </p>
 
 </div>
@@ -79,9 +79,6 @@ OpenCPN version 3.2 featured a complete redesign of the NMEA message handling st
 Make sure that you belong to the “<code>dialout</code>” group. To find out, run the “<code>$groups</code>” command. If you&#039;re not in “<code>dialout</code>”, add yourself with the command “<code>$sudo usermod -a -G dialout $USER</code>”. Logout of your current session for group changes to take effect. Check this straight away, it will save you from frustration later on. If there is a problem connecting the GPS to a physical port, such as <code>/dev/ttyS0</code>, the reason is probably that you don&#039;t belong to “dialout”. OpenCPN will display a warning, once per session, if you try to configure a serial connection, or starts the program with an active serial connection, and don&#039;t belong to the right group.
 </p>
 
-<p>
-<a href="opencpn/manual/group.id.opencpn_3Aopencpn_user_manual_3Aconnections.jpeg.detail.html?id=opencpn%3Aopencpn_user_manual%3Aconnections&media=opencpn:manual:group.jpeg" class="media" title="opencpn:manual:group.jpeg"><img src="opencpn/manual/group.jpeg" class="media" title="group.jpeg" alt="group.jpeg" /></a>
-</p>
 
 <p>
 Red Hat based Linux versions are using the “<code>uucp</code>” group. Check what applies to your version of Linux, by using the return from the command <code>stat -c %G `ls /dev/*|grep -m1 tty[A-Z,a-z][0]</code> If the return is “<code>root</code>”, upgrade to a contemporary Linux version.
@@ -374,7 +371,7 @@ Filtering can be observed in real time, through color coding in the Debug Window
 </p>
 
 <p>
-<b>Accept only sentences</b>: Either base your filtering on stating which sentences to accept or which to ignore. 
+<b>Accept only sentences</b>: Either base your filtering on stating which sentences to accept or which to ignore.
 </p>
 
 <p>
@@ -428,9 +425,6 @@ Note: The “APB bearing precision” (or NMEAAPBPrecision in Opencpn.ini file) 
 <li class="level1"> This change was made as some auto pilots are limited in the precision they can accept in the APB message. So all other messages and internally the precision is not changed. There is no change to the XTE message as that was not requested at the time. “XTE - Measured cross track error” NMEA message, that is a part of the APB message is not adjusted by the APB bearing precision setting.</li>
 </ul>
 
-<p>
-<img src="/opencpn/manual2/action-filter.h.30_tok.8ae103_w.28.png" class="media" alt="" width="28" height="30" />
-</p>
 
 </div>
 
@@ -590,11 +584,11 @@ When you <b>send to the autopilot</b> you should see <b>blue output sentences in
 </p>
 
 <p>
-<b>There is no multicast address mandated for NMEA-0183 data in this context</b> although you should avoid those addresses used by other protocols. 
+<b>There is no multicast address mandated for NMEA-0183 data in this context</b> although you should avoid those addresses used by other protocols.
 </p>
 
 <p>
-<b>When using multicast with OpenCPN it is suggested</b> that an address be used in the range 239.192.0.0/14 specified by <abbr title="Request for Comments">RFC</abbr> 2365 as the “Organization Local Scope”. If in doubt, try 239.194.4.4. 
+<b>When using multicast with OpenCPN it is suggested</b> that an address be used in the range 239.192.0.0/14 specified by <abbr title="Request for Comments">RFC</abbr> 2365 as the “Organization Local Scope”. If in doubt, try 239.194.4.4.
 </p>
 
 <p>
@@ -676,7 +670,7 @@ Then in the Chart window we hover over the temporary goto waypoint and right cli
 <div class="level4">
 
 <p>
-Refer to <a href="http://willkamp.com/opencpn/flyspray/index.php?do=details&amp;task_id=1706" class="urlextern" title="http://willkamp.com/opencpn/flyspray/index.php?do=details&amp;task_id=1706" rel="nofollow">http://willkamp.com/opencpn/flyspray/index.php?do=details&amp;task_id=1706</a> Check the cables and connectors and for USB Port timeout. How to Add or Remove “USB 3 Link Power Mangement” in Power Options in Windows 8 <a href="http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html" class="urlextern" title="http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html" rel="nofollow">http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html</a> <a href="http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/" class="urlextern" title="http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/" rel="nofollow">http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/</a>
+Refer to <a href="towebsite.html" class="urlextern" title="http://willkamp.com/opencpn/flyspray/index.php?do=details&amp;task_id=1706" rel="nofollow">http://willkamp.com/opencpn/flyspray/index.php?do=details&amp;task_id=1706</a> Check the cables and connectors and for USB Port timeout. How to Add or Remove “USB 3 Link Power Mangement” in Power Options in Windows 8 <a href="http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html" class="urlextern" title="http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html" rel="nofollow">http://www.eightforums.com/tutorials/50276-power-options-add-remove-usb-3-link-power-mangement.html</a> <a href="http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/" class="urlextern" title="http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/" rel="nofollow">http://helpdeskgeek.com/windows-xp-tips/prevent-windows-from-powering-off-usb-device/</a>
 </p>
 
 </div>
