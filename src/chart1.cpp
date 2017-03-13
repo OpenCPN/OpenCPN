@@ -7558,7 +7558,7 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
 
         double max_underzoom_multiplier = 2.0;
         if(cc1->GetVP().b_quilt){
-            int scale_max = cc1->m_pQuilt->GetNomScaleMin(pchart->GetNativeScale(), pchart->GetChartType(), pchart->GetChartFamily());
+            double scale_max = cc1->m_pQuilt->GetNomScaleMin(pchart->GetNativeScale(), pchart->GetChartType(), pchart->GetChartFamily());
             max_underzoom_multiplier = scale_max / pchart->GetNativeScale();
         }
         
