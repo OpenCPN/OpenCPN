@@ -808,7 +808,7 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bDeClutterText" ), true );
         pConfig->Write( _T ( "bShowNationalText" ), true );
         
-        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 4 );
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 3 );
         pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 4 );
         pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 6 );
         pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
