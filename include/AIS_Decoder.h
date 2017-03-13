@@ -119,7 +119,8 @@ private:
     AIS_Target_Data  *m_ptentative_dsctarget;
     wxTimer          m_dsc_timer;
     wxString         m_dsc_last_string;
-
+    std::vector<int> m_MMSI_MismatchVec;
+    
 DECLARE_EVENT_TABLE()
 };
 
