@@ -8097,6 +8097,18 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 
                 //  Render the text directly to the scratch bitmap
                 OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
+                
+                if(g_bShowChartBar && g_Piano) {
+                    wxRect chart_bar_rect(0, GetVP().pix_height - g_Piano->GetHeight(),
+                                          GetVP().pix_width, g_Piano->GetHeight());
+                    
+                    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+                    if(!style->chartStatusWindowTransparent)
+                        chart_all_text_region.Subtract(chart_bar_rect);
+                }
+                
+                mscratch_dc.DestroyClippingRegion();
+                
                 m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( mscratch_dc, svp, chart_all_text_region );
                 
             }
