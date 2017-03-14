@@ -626,7 +626,8 @@ void ocpnFloatingToolbarDialog::SubmergeToGrabber()
     Hide();
     if( m_ptoolbar ) m_ptoolbar->KillTooltip();
 
-    m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
+    if(!m_pRecoverwin)
+        m_pRecoverwin = new GrabberWin( m_pparent, this, m_sizefactor, _T("grabber_ext" ), wxPoint(10,10) );
    
     m_pRecoverwin->Show();
     m_pRecoverwin->Raise();
@@ -718,7 +719,6 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
         gFrame->TriggerResize(m_recoversize);
     Raise();
 #endif
-    
     if(!m_destroyTimer.IsRunning()){
         m_destroyGrabber = m_pRecoverwin;
         m_pRecoverwin = NULL;
