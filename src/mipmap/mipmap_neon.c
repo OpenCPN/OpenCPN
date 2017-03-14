@@ -47,8 +47,9 @@ void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char
     unsigned char *t = source;
     unsigned char *u = t+stride;
 
-    for( int y = 0; y < newheight; y++ ) {
-        for( int x = 0; x < newwidth; x+=16 ) {
+    int y, x;
+    for( y = 0; y < newheight; y++ ) {
+        for( x = 0; x < newwidth; x+=16 ) {
             uint8x16_t a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aa, ab;
 
             memcpy(&a0, t,    16);
@@ -85,8 +86,9 @@ void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char
             memcpy(b+64, &a4, 16);
             memcpy(b+80, &a5, 16);
 
-            for(int i=0; i<16; i++)
-                for(int j=0; j<3; j++)
+            int i,j;
+            for( i=0; i<16; i++)
+                for( j=0; j<3; j++)
                     s[3*i+j] = (b[3*2*i+j] + b[3*(2*i+1)+j]) / 2;
 #else
             // full neon version with swizzel (ugly but fast)
