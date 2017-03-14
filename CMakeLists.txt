@@ -1743,7 +1743,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${s57data}
       ${tcData}
       data/license.txt
-      data/CoC-909_2013-InlandECDIS_20170308.pdf
+      data/CoC-909_2013-InlandECDIS_20170308s.pdf
       ${SOUND_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
