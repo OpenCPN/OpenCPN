@@ -1198,39 +1198,19 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
 
             if( ( candidate_chart_scale >= reference_scale ) || ( zoom_factor > .2 ) ) {
-                bool b_add = true;
-
                 //    Special case for S57 ENC
                 //    Add the chart only if the chart's fractional area exceeds n%
-                if( CHART_TYPE_S57 == reference_type ) {
-                    //Get the fractional area of this chart
-                    //                    double chart_fractional_area = 0.;
-//                    double quilt_area = vp_local.pix_width * vp_local.pix_height;
+                /* if( CHART_TYPE_S57 == reference_type ) { 
+                //Get the fractional area of this chart
+                    double chart_fractional_area = 0.;
+                    double quilt_area = vp_local.pix_width * vp_local.pix_height;
+                */
+                LLRegion cell_region = GetChartQuiltRegion( cte, vp_local );
 
-                    //                  LLRegion cell_region = GetChartQuiltRegion( cte, vp_local );
-
-//                    if( !cell_region.Empty() ) {
-//                        chart_fractional_area = ( cell_rect.GetWidth() * cell_rect.GetHeight() )
-                        //                                                / quilt_area;
-//                    } else
-//                        b_add = false;  // this chart has no actual overlap on screen
-                    // probably because it has a concave outline
-                    // or lots of NoCovr regions.  US3EC04.000 is a good example
-                    // i.e the full bboxes overlap, but the actual vp intersect is null.
-
-//                    if( chart_fractional_area < .05 ) {
- //                       b_add = false;
- //                   }
-
-                    //  Allow S57 charts that are near normal zoom, no matter what their fractional area coverage
-                    if(( zoom_factor > 0.1)/* && ( chart_fractional_area > .001 )*/ )
-                        b_add = true;
-                }
-
-                if( ref_db_index == i)
-                    b_add = true;
-
-                if( b_add ) {
+                // this is false if the chart has no actual overlap on screen
+                // or lots of NoCovr regions.  US3EC04.000 is a good example
+                // i.e the full bboxes overlap, but the actual vp intersect is null.
+                if( ! cell_region.Empty() ) {
                     // Check to see if this chart is already in the stack array
                     // by virtue of being under the Viewport center point....
                     bool b_exists = false;
