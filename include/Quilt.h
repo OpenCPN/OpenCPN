@@ -80,6 +80,12 @@ private:
 WX_DECLARE_LIST( QuiltPatch, PatchList );
 WX_DEFINE_SORTED_ARRAY( QuiltCandidate *, ArrayOfSortedQuiltCandidates );
 
+// equal
+#define charts_scale_eq( a, b ) ( abs ( (a) - (b)) <= 500 )
+
+// greater or equal
+#define charts_scale_ge( a, b ) ( charts_scale_eq( (a), (b) ) || (a) > (b))
+
 class Quilt
 {
 public:
