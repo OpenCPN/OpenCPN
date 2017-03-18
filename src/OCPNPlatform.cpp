@@ -257,6 +257,11 @@ extern wxArrayString             g_locale_catalog_array;
 OCPNPlatform::OCPNPlatform()
 {
     m_pt_per_pixel = 0;                 // cached value
+    m_bdisableWindowsDisplayEnum = false;
+    m_displaySize = wxSize(0,0);
+    m_displaySizeMM = wxSize(0,0);
+    m_monitorWidth = m_monitorHeight = 0;
+    
 }
 
 OCPNPlatform::~OCPNPlatform()
@@ -1530,24 +1535,32 @@ wxSize OCPNPlatform::getDisplaySize()
 #ifdef __OCPN__ANDROID__
     return getAndroidDisplayDimensions();
 #else
-    return (::wxGetDisplaySize());               // default, for most platforms
+    if(m_displaySize.x < 10)
+        m_displaySize = ::wxGetDisplaySize();               // default, for most platforms
+    return m_displaySize;
 #endif
 
 }
 
 double  OCPNPlatform::GetDisplaySizeMM()
 {
-    double ret = wxGetDisplaySizeMM().GetWidth();
+    if(m_displaySizeMM.x < 1)
+        m_displaySizeMM = wxGetDisplaySizeMM();
+
+    double ret = m_displaySizeMM.GetWidth();
     
 #ifdef __WXMSW__    
     int w,h;
     
-    bool GetWindowsMonitorSize( int *w, int *h );
-       
-    if( GetWindowsMonitorSize( &w, &h) ){
-        if(w > 100)             // sanity check
+    if( !m_bdisableWindowsDisplayEnum){
+        if(GetWindowsMonitorSize( &w, &h) && (w > 100) ){             // sanity check
+            m_displaySizeMM == wxSize(w, h);
             ret = w;
+        }
+        else
+            m_bdisableWindowsDisplayEnum = true;        // disable permanently
     }
+    
 #endif
 
 #ifdef __WXOSX__
@@ -1570,7 +1583,7 @@ double OCPNPlatform::GetDisplayDPmm()
 #ifdef __OCPN__ANDROID__
     return getAndroidDPmm();
 #else
-    double r = ::wxGetDisplaySize().x;            // dots
+    double r = getDisplaySize().x;            // dots
     return r / GetDisplaySizeMM();
 #endif    
 }
@@ -1924,51 +1937,60 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
     return bRes;
 }
 
-bool GetWindowsMonitorSize( int *width, int *height)
+bool OCPNPlatform::GetWindowsMonitorSize( int *width, int *height)
 {
-    int WidthMm = 0;
-    int HeightMm = 0;
+    bool bFoundDevice = true;
     
-    DISPLAY_DEVICE dd;
-    dd.cb = sizeof(dd);
-    DWORD dev = 0; // device index
-    int id = 1; // monitor number, as used by Display Properties > Settings
-    
-    wxString DeviceID;
-    bool bFoundDevice = false;
-    while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
-    {
-        DISPLAY_DEVICE ddMon;
-        ZeroMemory(&ddMon, sizeof(ddMon));
-        ddMon.cb = sizeof(ddMon);
-        DWORD devMon = 0;
-        
-        while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
-        {
-            if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
-                !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
-            {
-                DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
-                DeviceID = DeviceID.Mid (8);
-                DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
-                
-                bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
-            }
-            devMon++;
+    if(m_monitorWidth < 10){
             
+        int WidthMm = 0;
+        int HeightMm = 0;
+        
+        DISPLAY_DEVICE dd;
+        dd.cb = sizeof(dd);
+        DWORD dev = 0; // device index
+        int id = 1; // monitor number, as used by Display Properties > Settings
+        
+        wxString DeviceID;
+        bFoundDevice = false;
+        while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
+        {
+            DISPLAY_DEVICE ddMon;
             ZeroMemory(&ddMon, sizeof(ddMon));
             ddMon.cb = sizeof(ddMon);
+            DWORD devMon = 0;
+            
+            while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
+            {
+                if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
+                    !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
+                {
+                    DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
+                    DeviceID = DeviceID.Mid (8);
+                    DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
+                    
+                    bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
+                }
+                devMon++;
+                
+                ZeroMemory(&ddMon, sizeof(ddMon));
+                ddMon.cb = sizeof(ddMon);
+            }
+            
+            ZeroMemory(&dd, sizeof(dd));
+            dd.cb = sizeof(dd);
+            dev++;
+            
         }
+        m_monitorWidth = WidthMm;
+        m_monitorHeight = HeightMm;
         
-        ZeroMemory(&dd, sizeof(dd));
-        dd.cb = sizeof(dd);
-        dev++;
     }
     
     if(width)
-        *width = WidthMm;
+        *width = m_monitorHeight;
     if(height)
-        *height = HeightMm;
+        *height = m_monitorHeight;
     
     return bFoundDevice;
 }
