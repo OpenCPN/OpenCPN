@@ -1061,7 +1061,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
     int reference_scale = 1.;
     int reference_type = -1;
-    int reference_family;
+    int reference_family = -1;
     int quilt_proj = m_bquiltanyproj ? vp_in.m_projection_type : PROJECTION_UNKNOWN;
 
     if( ref_db_index >= 0 ) {
