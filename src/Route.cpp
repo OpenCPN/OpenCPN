@@ -143,12 +143,6 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
     return;
 }
 
-void Route::AddTentativePoint( const wxString& GUID )
-{
-    RoutePointGUIDList.Add( GUID );
-    return;
-}
-
 RoutePoint *Route::GetPoint( int nWhichPoint )
 {
     RoutePoint *prp;
@@ -706,8 +700,6 @@ RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
     int nRP = pRoutePointList->IndexOf( pRP );
     pRoutePointList->Insert( nRP, newpoint );
 
-    RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
-
     if( bRenamePoints ) RenameRoutePoints();
 
     FinalizeForRendering();
@@ -731,8 +723,6 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
     newpoint->SetNameShown( false );
     
     pRoutePointList->Insert( nRP, newpoint );
-    
-    RoutePointGUIDList.Insert( pRP->m_GUID, nRP );
     
     if( bRenamePoints ) RenameRoutePoints();
     
@@ -779,9 +769,6 @@ void Route::DeletePoint( RoutePoint *rp, bool bRenamePoints )
 
     pRoutePointList->DeleteObject( rp );
 
-    if( ( rp->m_GUID.Len() ) && ( wxNOT_FOUND != RoutePointGUIDList.Index( rp->m_GUID ) ) ) RoutePointGUIDList.Remove(
-            rp->m_GUID );
-
     delete rp;
 
     if( bRenamePoints ) RenameRoutePoints();
@@ -791,7 +778,6 @@ void Route::DeletePoint( RoutePoint *rp, bool bRenamePoints )
         pSelect->AddAllSelectableRoutePoints( this );
 
         pConfig->UpdateRoute( this );
-        RebuildGUIDList();                  // ensure the GUID list is intact and good
 
         FinalizeForRendering();
         UpdateSegmentDistances();
@@ -807,8 +793,6 @@ void Route::RemovePoint( RoutePoint *rp, bool bRenamePoints )
     pSelect->DeleteAllSelectableRouteSegments( this );
 
     pRoutePointList->DeleteObject( rp );
-    if( wxNOT_FOUND != RoutePointGUIDList.Index( rp->m_GUID ) ) RoutePointGUIDList.Remove(
-            rp->m_GUID );
 
     // check all other routes to see if this point appears in any other route
     Route *pcontainer_route = g_pRouteMan->FindRouteContainingWaypoint( rp );
@@ -827,7 +811,6 @@ void Route::RemovePoint( RoutePoint *rp, bool bRenamePoints )
         pSelect->AddAllSelectableRoutePoints( this );
 
         pConfig->UpdateRoute( this );
-        RebuildGUIDList();                  // ensure the GUID list is intact and good
 
         FinalizeForRendering();
         UpdateSegmentDistances();
@@ -1044,22 +1027,33 @@ void Route::UpdateSegmentDistances( double planspeed )
 
 void Route::Reverse( bool bRenamePoints )
 {
-    RebuildGUIDList();                        // ensure the GUID list is intact and good
-
     //    Reverse the GUID list
-    wxArrayString ArrayTemp;
+    wxArrayString      RoutePointGUIDList;
 
-    int ncount = RoutePointGUIDList.GetCount();
+    int ncount = pRoutePointList->GetCount();
     for( int i = 0; i < ncount; i++ )
-        ArrayTemp.Add( RoutePointGUIDList[ncount - 1 - i] );
-
-    RoutePointGUIDList = ArrayTemp;
+        RoutePointGUIDList.Add( GetPoint(ncount - 1 - i)->m_GUID );
 
     pRoutePointList->DeleteContents( false );
     pRoutePointList->Clear();
     m_route_length = 0.0;
-    
-    AssembleRoute();                          // Rebuild the route points from the GUID list
+
+    //    iterate over the RoutePointGUIDs
+    for( unsigned int ip = 0; ip < RoutePointGUIDList.GetCount(); ip++ ) {
+        wxString GUID = RoutePointGUIDList[ip];
+
+        //    And on the RoutePoints themselves
+        wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+        while( prpnode ) {
+            RoutePoint *prp = prpnode->GetData();
+
+            if( prp->m_GUID == GUID ) {
+                AddPoint( prp );
+                break;
+            }
+            prpnode = prpnode->GetNext(); //RoutePoint
+        }
+    }
 
     if( bRenamePoints ) RenameRoutePoints();
 
@@ -1069,20 +1063,6 @@ void Route::Reverse( bool bRenamePoints )
     m_RouteEndString = tmp;
 }
 
-void Route::RebuildGUIDList( void )
-{
-    RoutePointGUIDList.Clear();               // empty the GUID list
-
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
-
-    RoutePoint *rp;
-    while( node ) {
-        rp = node->GetData();
-        RoutePointGUIDList.Add( rp->m_GUID );
-
-        node = node->GetNext();
-    }
-}
 void Route::SetVisible( bool visible, bool includeWpts )
 {
     m_bVisible = visible;
@@ -1110,22 +1090,6 @@ void Route::SetListed( bool visible )
 
 void Route::AssembleRoute( void )
 {
-    //    iterate over the RoutePointGUIDs
-    for( unsigned int ip = 0; ip < RoutePointGUIDList.GetCount(); ip++ ) {
-        wxString GUID = RoutePointGUIDList[ip];
-
-        //    And on the RoutePoints themselves
-        wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
-        while( prpnode ) {
-            RoutePoint *prp = prpnode->GetData();
-
-            if( prp->m_GUID == GUID ) {
-                AddPoint( prp );
-                break;
-            }
-            prpnode = prpnode->GetNext(); //RoutePoint
-        }
-    }
 }
 
 void Route::RenameRoutePoints( void )

@@ -600,11 +600,9 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
         m_pTail->CloneRoute( m_pRoute, m_nSelected, m_pRoute->GetnPoints(), _("_B") );
         pRouteList->Append( m_pHead );
         pConfig->AddNewRoute( m_pHead );
-        m_pHead->RebuildGUIDList();
 
         pRouteList->Append( m_pTail );
         pConfig->AddNewRoute( m_pTail );
-        m_pTail->RebuildGUIDList();
 
         pConfig->DeleteConfigRoute( m_pRoute );
 

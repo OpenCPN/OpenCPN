@@ -4700,8 +4700,6 @@ void MyFrame::ActivateMOB( void )
 
         temp_route->SetRouteArrivalRadius( -1.0 );                    // never arrives
 
-        temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
-
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
         g_pRouteMan->ActivateRoute( temp_route, pWP_MOB );
 
@@ -6409,9 +6407,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             // Reload the ownship icon from UserIcons, if present
             if(cc1->SetUserOwnship())
                 cc1->SetColorScheme(global_color_scheme);
-            
             pConfig->LoadNavObjects();
-
             //    Re-enable anchor watches if set in config file
             if( !g_AW1GUID.IsEmpty() ) {
                 pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
@@ -6429,7 +6425,6 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 wxString laymsg;
                 laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
                 wxLogMessage( laymsg );
-
                 pConfig->LoadLayers(layerdir);
             }
 
@@ -6563,6 +6558,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             
             if(b_reloadForPlugins)
                 ChartsRefresh(g_restore_dbindex, cc1->GetVP(), false);
+
             break;
         }
     }   // switch
@@ -9785,8 +9781,6 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         pAISMOBRoute->m_bDeleteOnArrival = false;
 
         pAISMOBRoute->SetRouteArrivalRadius( -1.0 );                    // never arrives
-
-        pAISMOBRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
 
         if( g_pRouteMan->GetpActiveRoute() )
             g_pRouteMan->DeactivateRoute();

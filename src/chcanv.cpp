@@ -7031,7 +7031,6 @@ void pupHandler_PasteRoute() {
     if( createNewRoute ) {
         pRouteList->Append( newRoute );
         pConfig->AddNewRoute( newRoute );    // use auto next num
-        newRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( newRoute );
@@ -7154,15 +7153,9 @@ void ChartCanvas::FinishRoute( void )
                 g_pRouteMan->DeleteRoute( m_pMouseRoute );
                 m_pMouseRoute = NULL;
             }
-
-            if( m_pMouseRoute )
-                m_pMouseRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
         }
-        if( m_pMouseRoute ){
-            m_pMouseRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
+        if( m_pMouseRoute )
             m_pMouseRoute->SetHiLite(0);
-        }
-            
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );

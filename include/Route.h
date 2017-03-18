@@ -55,7 +55,7 @@ public:
                     bool b_rename_in_sequence = true,
                     bool b_deferBoxCalc = false);
 
-      void AddTentativePoint(const wxString& GUID);
+      RoutePoint *GetPoint(int nPoint);
       RoutePoint *GetPoint ( const wxString &guid );
       int GetIndexOf(RoutePoint *prp);
       RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
@@ -124,7 +124,6 @@ public:
       wxString    m_TimeDisplayFormat;
 
       RoutePointList     *pRoutePointList;
-      wxArrayString      RoutePointGUIDList;
 
       wxRect      active_pt_rect;
       wxString    m_Colour;

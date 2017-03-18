@@ -989,8 +989,6 @@ void InsertRouteA( Route *pTentRoute )
     if( bAddroute ) {
             
         pRouteList->Append( pTentRoute );
-        pTentRoute->RebuildGUIDList();                  // ensure the GUID list is intact
-        
                  
                 //    Do the (deferred) calculation of BBox
                     pTentRoute->FinalizeForRendering();
