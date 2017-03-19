@@ -49,7 +49,6 @@ public:
 
       virtual void Draw(ocpnDC& dc, ViewPort &pvp, const LLBBox &box);
       virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
-      virtual RoutePoint *GetPoint(int nPoint);
       
       void AddPoint(RoutePoint *pNewPoint,
                     bool b_rename_in_sequence = true,
