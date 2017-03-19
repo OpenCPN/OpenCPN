@@ -7035,7 +7035,7 @@ void pupHandler_PasteTrack() {
 
     newTrack->m_TrackNameString = pasted->m_TrackNameString;
 
-    for( int i = 1; i <= pasted->GetnPoints(); i++ ) {
+    for( int i = 0; i < pasted->GetnPoints(); i++ ) {
         curPoint = pasted->GetPoint( i );
 
         newPoint = new TrackPoint( curPoint );
