@@ -6864,7 +6864,6 @@ void ChartCanvas::ShowTrackPropertiesDialog( Track* selected )
 
 void pupHandler_PasteWaypoint() {
     Kml kml;
-    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml.ParsePasteBuffer();
     RoutePoint* pasted = kml.GetParsedRoutePoint();
@@ -6904,7 +6903,6 @@ void pupHandler_PasteWaypoint() {
 
 void pupHandler_PasteRoute() {
     Kml kml;
-    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml.ParsePasteBuffer();
     Route* pasted = kml.GetParsedRoute();
@@ -7021,7 +7019,6 @@ void pupHandler_PasteRoute() {
 
 void pupHandler_PasteTrack() {
     Kml kml;
-    OCPNPlatform::ShowBusySpinner();
 
     int pasteBuffer = kml.ParsePasteBuffer();
     Track* pasted = kml.GetParsedTrack();
