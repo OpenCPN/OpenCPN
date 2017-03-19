@@ -1073,6 +1073,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
         reference_family = cte_ref.GetChartFamily();
     }
 
+    
     bool b_need_resort = false;
 
     ViewPort vp_local = vp_in;          // non-const copy
@@ -1082,6 +1083,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
         ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
     }
 
+    
     int n_charts = 0;
     if( pCurrentStack ) {
         n_charts = pCurrentStack->nEntry;
@@ -1100,17 +1102,44 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             // only charts of the proper projection and type may be quilted....
             // Also, only unskewed charts if so directed
             // and we avoid adding CM93 Composite until later
-            if( ( reference_family == cte.GetChartFamily() )
-            && ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
-            && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj )
-            && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
-                QuiltCandidate *qcnew = new QuiltCandidate;
-                qcnew->dbIndex = i;
-                qcnew->ChartScale = cte.GetScale();
-
-                m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
-
+         
+            // If any PlugIn charts are involved, we make the inclusion test on chart familiy, instead of chart type.
+            if( (cte.GetChartType() == CHART_TYPE_PLUGIN ) || (reference_type == CHART_TYPE_PLUGIN )){
+                if( reference_family != cte.GetChartFamily() ){
+                    continue;
+                }
             }
+            else{
+                if( reference_type != cte.GetChartType() ){
+                    continue;
+                }
+            }
+            
+            if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
+
+            if( ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
+                && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj ) ) {
+                    QuiltCandidate *qcnew = new QuiltCandidate;
+                    qcnew->dbIndex = i;
+                    qcnew->ChartScale = cte.GetScale();
+                    m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
+            }
+            
+
+//             if( ( reference_type == cte.GetChartType() ) ||
+//                 ( (cte.GetChartType() == CHART_TYPE_PLUGIN ) && (reference_family == cte.GetChartFamily() ))  ||
+//                 ( (reference_type == CHART_TYPE_PLUGIN ) && (reference_family == cte.GetChartFamily() )) ){
+//                 
+//                 if( ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
+//                     && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj )
+//                     && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
+//                         QuiltCandidate *qcnew = new QuiltCandidate;
+//                         qcnew->dbIndex = i;
+//                         qcnew->ChartScale = cte.GetScale();
+// 
+//                         m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
+//                 }
+//             }
         }
     }
 
@@ -1131,7 +1160,17 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
-            if( reference_family != cte.GetChartFamily() ) continue;
+            // If any PlugIn charts are involved, we make the inclusion test on chart familiy, instead of chart type.
+            if( (cte.GetChartType() == CHART_TYPE_PLUGIN ) || (reference_type == CHART_TYPE_PLUGIN )){
+                if( reference_family != cte.GetChartFamily() ){
+                    continue;
+                }
+            }
+            else{
+                if( reference_type != cte.GetChartType() ){
+                    continue;
+                }
+            }
             
             if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
