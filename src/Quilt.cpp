@@ -1094,16 +1094,18 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             int i = pCurrentStack->GetDBIndex( ics );
             m_extended_stack_array.Add( i );
 
+            //  If the reference chart is cm93, we need not add any charts to the candidate array from the vp center.
+            //  All required charts will be added (by family) as we consider the entire database (group) and full screen later
+            if(reference_type == CHART_TYPE_CM93COMP)
+               continue;
+            
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
-
-            double skew_norm = cte.GetChartSkew();
-            if( skew_norm > 180. ) skew_norm -= 360.;
 
             // only charts of the proper projection and type may be quilted....
             // Also, only unskewed charts if so directed
             // and we avoid adding CM93 Composite until later
          
-            // If any PlugIn charts are involved, we make the inclusion test on chart familiy, instead of chart type.
+            // If any PlugIn charts are involved, we make the inclusion test on chart family, instead of chart type.
             if( (cte.GetChartType() == CHART_TYPE_PLUGIN ) || (reference_type == CHART_TYPE_PLUGIN )){
                 if( reference_family != cte.GetChartFamily() ){
                     continue;
@@ -1117,6 +1119,9 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             
             if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
+            double skew_norm = cte.GetChartSkew();
+            if( skew_norm > 180. ) skew_norm -= 360.;
+            
             if( ( m_bquiltskew ? 1: fabs( skew_norm ) < 1.0 )
                 && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj ) ) {
                     QuiltCandidate *qcnew = new QuiltCandidate;
@@ -1158,26 +1163,18 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    We can eliminate some charts immediately
             //    Try to make these tests in some sensible order....
 
+            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
+            
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
-            // If any PlugIn charts are involved, we make the inclusion test on chart familiy, instead of chart type.
-            if( (cte.GetChartType() == CHART_TYPE_PLUGIN ) || (reference_type == CHART_TYPE_PLUGIN )){
-                if( reference_family != cte.GetChartFamily() ){
-                    continue;
-                }
-            }
-            else{
-                if( reference_type != cte.GetChartType() ){
-                    continue;
-                }
-            }
-            
             if( cte.GetChartType() == CHART_TYPE_CM93COMP ) continue;
 
+            if( reference_family != cte.GetChartFamily() )
+                continue;
+            
             const LLBBox &chart_box = cte.GetBBox();
             if( ( viewbox.IntersectOut( chart_box ) ) ) continue;
 
-            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
 
             if( !m_bquiltanyproj && quilt_proj != cte.GetChartProjectionType() ) continue;
 
