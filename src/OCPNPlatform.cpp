@@ -1988,7 +1988,7 @@ bool OCPNPlatform::GetWindowsMonitorSize( int *width, int *height)
     }
     
     if(width)
-        *width = m_monitorHeight;
+        *width = m_monitorWidth;
     if(height)
         *height = m_monitorHeight;
     
