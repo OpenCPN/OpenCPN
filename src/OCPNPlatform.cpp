@@ -615,6 +615,8 @@ void OCPNPlatform::SetLocaleSearchPrefixes( void )
 
 wxString OCPNPlatform::GetDefaultSystemLocale()
 {
+    wxLogMessage(_T("Getting DefaultSystemLocale..."));
+    
     wxString retval = _T("en_US");
     
 #if wxUSE_XLOCALE
@@ -622,18 +624,30 @@ wxString OCPNPlatform::GetDefaultSystemLocale()
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
     if (languageInfo)
         retval = languageInfo->CanonicalName;
-    
+
     #if defined(__WXMSW__) 
-    LANGID lang_id = GetUserDefaultUILanguage();
-    wxChar lngcp[100];
-    const wxLanguageInfo* languageInfoW = 0;
-    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
-        languageInfoW = wxLocale::FindLanguageInfo(lngcp);
-    }
-    else
-        languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    retval = languageInfoW->CanonicalName;
-    #endif
+        LANGID lang_id = GetUserDefaultUILanguage();
+        
+        wchar_t lngcp[101];
+        const wxLanguageInfo* languageInfoW = 0;
+        if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
+            wxString lstring = wxString(lngcp);
+            
+            languageInfoW = wxLocale::FindLanguageInfo(lngcp);
+            if(languageInfoW)
+                wxLogMessage(_T("Found LanguageInfo for: ") + lstring);
+            else
+                wxLogMessage(_T("Could not find LanguageInfo for: ") + lstring);
+        }
+        else{
+            wxLogMessage(_T("Could not get LocaleInfo, using wxLANGUAGE_DEFAULT"));
+            languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+        }
+        
+        if(languageInfoW)
+            retval = languageInfoW->CanonicalName;
+     #endif
+            
     
     #if defined(__OCPN__ANDROID__)
     retval = androidGetAndroidSystemLocale();
