@@ -64,9 +64,13 @@ public:
 
     const LLRegion &GetCandidateRegion();
     LLRegion &GetReducedCandidateRegion(double factor);
+    void SetScale(int scale);
+    bool Scale_eq( int b ) const { return abs ( ChartScale - b) <= rounding; }
+    bool Scale_ge( int b ) const { return  Scale_eq( b ) || ChartScale > b; }
     
     int dbIndex;
     int ChartScale;
+    int rounding;
     bool b_include;
     bool b_eclipsed;
     bool b_locked;
@@ -79,12 +83,6 @@ private:
 
 WX_DECLARE_LIST( QuiltPatch, PatchList );
 WX_DEFINE_SORTED_ARRAY( QuiltCandidate *, ArrayOfSortedQuiltCandidates );
-
-// equal
-#define charts_scale_eq( a, b ) ( abs ( (a) - (b)) <= 500 )
-
-// greater or equal
-#define charts_scale_ge( a, b ) ( charts_scale_eq( (a), (b) ) || (a) > (b))
 
 class Quilt
 {

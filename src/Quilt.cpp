@@ -68,7 +68,7 @@ static int CompareScales( int *i1, int *i2 )
     const ChartTableEntry &cte1 = ChartData->GetChartTableEntry( *i1 );
     const ChartTableEntry &cte2 = ChartData->GetChartTableEntry( *i2 );
 
-    if( charts_scale_eq(cte1.GetScale(), cte2.GetScale()) ) {  // same scales, so sort on dbIndex
+    if( cte1.Scale_eq( cte2.GetScale()) ) {  // same scales, so sort on dbIndex
         float lat1, lat2;
         lat1 = cte1.GetLatMax();
         lat2 = cte2.GetLatMax();
@@ -178,6 +178,15 @@ LLRegion &QuiltCandidate::GetReducedCandidateRegion(double factor)
     }
 
     return reduced_candidate_region;
+}
+
+void QuiltCandidate::SetScale( int scale )
+{
+    ChartScale = scale;
+    rounding = 0;
+    // XXX find the right rounding
+    if (scale >= 1000)
+       rounding = 5 *pow(10, log10(scale) -2);
 }
 
 Quilt::Quilt()
@@ -322,7 +331,7 @@ ArrayOfInts Quilt::GetCandidatedbIndexArray( bool from_ref_chart, bool exclude_u
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
         if( from_ref_chart )                     // only add entries of smaller scale than ref scale
         {
-            if( charts_scale_ge ( pqc->ChartScale, m_reference_scale) ) {
+            if( pqc->Scale_ge( m_reference_scale) ) {
                 // Search the no-show array
                 if( exclude_user_hidden ) {
                     bool b_noshow = false;
@@ -756,7 +765,7 @@ int Quilt::GetNewRefChart( void )
             double skew_norm = m.GetChartSkew();
             if( skew_norm > 180. ) skew_norm -= 360.;
 
-            if( ( charts_scale_ge (m.GetScale(), m_reference_scale) )
+            if( ( m.Scale_ge( m_reference_scale) )
                     && ( m_reference_family == m.GetChartFamily() )
                     && ( m_bquiltanyproj || m_quilt_proj == m.GetChartProjectionType() )
                     && ( m_bquiltskew || (fabs(skew_norm) < 1.0) ) ){
@@ -1127,7 +1136,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 && ( m_bquiltanyproj || cte.GetChartProjectionType() == quilt_proj ) ) {
                     QuiltCandidate *qcnew = new QuiltCandidate;
                     qcnew->dbIndex = i;
-                    qcnew->ChartScale = ((cte.GetScale()+50)/100)*100;
+                    qcnew->SetScale (cte.GetScale() );
                     m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
         }
             
@@ -1191,8 +1200,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             //  Try to guarantee that there is one chart added with scale larger than reference scale
             //    Take note here, and keep track of the smallest scale chart that is larger scale than reference....
-            if( !charts_scale_ge (candidate_chart_scale, reference_scale) ) {
-                if( candidate_chart_scale > sure_index_scale ) {
+            if( ! cte.Scale_ge( reference_scale) ) {
+                if( cte.Scale_gt( sure_index_scale ) ) {
                     sure_index = i;
                     sure_index_scale = candidate_chart_scale;
                 }
@@ -1201,7 +1210,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    At this point, the candidate is the right type, skew, and projection, and is on-screen somewhere....
             //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
 
-            if( ( charts_scale_ge (candidate_chart_scale, reference_scale) ) || ( zoom_factor > .2 ) ) {
+            if(  cte.Scale_ge( reference_scale) || ( zoom_factor > .2 ) ) {
                 bool b_add = true;
 
                 //    Special case for S57 ENC
@@ -1251,7 +1260,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                             QuiltCandidate *qcnew = new QuiltCandidate;
                             qcnew->dbIndex = i;
-                            qcnew->ChartScale = candidate_chart_scale; //ChartData->GetDBChartScale( i );
+                            qcnew->SetScale ( candidate_chart_scale ); //ChartData->GetDBChartScale( i );
 
                             m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 
@@ -1279,7 +1288,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = sure_index;
-                qcnew->ChartScale = ChartData->GetDBChartScale( sure_index );
+                qcnew->SetScale ( ChartData->GetDBChartScale( sure_index ) );
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 
                 b_need_resort = true;
@@ -1572,7 +1581,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
 #endif
             
-            if( charts_scale_ge (cte.GetScale() , m_reference_scale)  ) {
+            if( cte.Scale_ge(m_reference_scale)  ) {
                 //  If this chart appears in the no-show array, then simply include it, but
                 //  don't subtract its region when determining the smaller scale charts to include.....
                 bool b_in_noshow = false;
@@ -1626,7 +1635,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
             
-            if( charts_scale_ge (cte.GetScale(), m_reference_scale) ) {
+            if( cte.Scale_ge( m_reference_scale) ) {
                 bool b_in_noshow = false;
                 for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.GetCount(); ins++ ) {
                     if( g_quilt_noshow_index_array.Item( ins ) == pqc->dbIndex ) // chart is in the noshow list
@@ -1679,7 +1688,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         if( !pqc->b_include ) {
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
-            if( charts_scale_ge (cte.GetScale(), m_reference_scale) ) {
+            if( cte.Scale_ge( m_reference_scale) ) {
                 m_eclipsed_stack_array.Add( pqc->dbIndex );
                 pqc->b_eclipsed = true;
             }
@@ -1711,7 +1720,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 if( CHART_TYPE_CM93COMP == ChartData->GetDBChartType( i ) ) {
                     QuiltCandidate *qcnew = new QuiltCandidate;
                     qcnew->dbIndex = i;
-                    qcnew->ChartScale = ChartData->GetDBChartScale( i );
+                    qcnew->SetScale( ChartData->GetDBChartScale( i ) );
 
                     m_pcandidate_array->Add( qcnew );
                 }
@@ -1751,7 +1760,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
             if( !vpck_region.Empty() ) {
                 if( add_scale ) {
-                    if( charts_scale_eq(add_scale, cte.GetScale()) ) 
+                    if( cte.Scale_eq(add_scale) ) 
                         pqc->b_include = true;
                     ;
                 } else {

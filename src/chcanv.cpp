@@ -1123,7 +1123,7 @@ int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
             for( unsigned int is = 0; is < im; is++ ) {
                 const ChartTableEntry &m = ChartData->GetChartTableEntry(
                                                m_pQuilt->GetExtendedStackIndexArray().Item( is ) );
-                if( ( charts_scale_ge(m.GetScale() , scale ) )/* && (m_reference_family == m.GetChartFamily())*/) {
+                if( ( m.Scale_ge(scale ) )/* && (m_reference_family == m.GetChartFamily())*/) {
                     new_dbIndex = m_pQuilt->GetExtendedStackIndexArray().Item( is );
                     break;
                 }
