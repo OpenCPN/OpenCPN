@@ -2032,7 +2032,7 @@ wxString *CSQUAPNT01(S57Obj *obj)
     wxString quapnt01;
     int accurate  = TRUE;
     int qualty = 10;
-    bool bquapos = GetIntAttr(obj, "QUALTY", qualty);
+    bool bquapos = GetIntAttr(obj, "QUAPOS", qualty);
 
     if (bquapos) {
         if ( 2 <= qualty && qualty < 10)
