@@ -823,7 +823,11 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
 
     //  For Vector charts, or for ZoomIN operations, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
-    bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR) || b_zin;
+    
+    //  Since this rule is mainly for preservation of performance,
+    //  we can also allow fullscreen reference chart selection if opengl is active
+    
+    bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR) || b_zin || g_bopengl;
 
     //  Walk the extended chart array, capturing data
     int i_first = 0;
