@@ -102,7 +102,7 @@ public:
     void PopulateComboDataList();
     void ComputeBestForecastForNow();
     void SetViewPort( PlugIn_ViewPort *vp );
-    void SetDataBackGroundColor();
+//    void SetDataBackGroundColor();
     void SetTimeLineMax( bool SetValue );
 	void SetCursorLatLon( double lat, double lon );
     void UpdateTrackingControl();
