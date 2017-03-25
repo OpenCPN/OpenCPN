@@ -518,80 +518,138 @@ static inline bool isClearSky(int settings, double v) {
 }
 
 #ifdef ocpnUSE_GL
+void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in, unsigned char *data)
+{
+    unsigned char r, g, b, a;
+    if( val_in != GRIB_NOTDEF ) {
+        val_in = m_Settings.CalibrateValue(settings, val_in);
+        //set full transparency if no rain or no clouds at all
+        // TODO: make map support this
+        if (( settings == GribOverlaySettings::PRECIPITATION ||
+              settings == GribOverlaySettings::CLOUD ) && val_in < 0.01) 
+        {
+            r = g = b = 255;
+            a = 0;
+        } else {
+            a = m_Settings.m_iOverlayTransparency;
+            GetGraphicColor(settings, val_in, r, g, b);
+        }
+    } else
+        r = 255, g = 255, b = 255, a = 0;
+
+    /* for some reason r g b values are inverted, but not alpha,
+       this fixes it, but I would like to find the actual cause */
+    data[0] = 255-r;
+    data[1] = 255-g;
+    data[2] = 255-b;
+    data[3] = a;
+}
+
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR)
 {
     bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
 
     // create the texture to the size of the grib data plus a transparent border
-    int tw = pGR->getNi(), th = pGR->getNj();
-    
-    //    Dont try to create enormous GRIB textures
-    if( tw > 1022 || th > 1022 )
-        return false;
-
-    double latstep = fabs(pGR->getDj()), lonstep = pGR->getDi();
+    int tw, th, samples = 1;
 
     // oversample up to 16x
-    for(int i=0; i<4; i++) {
-        if(tw >= 256 || th >= 256) // faster processor could handle larger sizes smoothly, how to test?
+    for(;;) {
+        tw = samples*(pGR->getNi()-1)+1 + 2*!repeat;
+        th = samples*(pGR->getNj()-1)+1 + 2;
+        if(tw >= 512 || th >= 512 || samples == 16)
             break;
-        tw *= 2, lonstep /= 2;
-        th *= 2, latstep /= 2;
+        samples *= 2;
     }
 
-    tw += 2*!repeat;
-    th += 2;
+    //    Dont try to create enormous GRIB textures
+    if( tw > 1024 || th > 1024 )
+        return false;
 
     unsigned char *data = new unsigned char[tw*th*4];
 
-    double lat = pGR->getLatMin();
-    for( int y = 0; y < th; y++ ) {
-        double lon = pGR->getLonMin();
-        for( int x = 0; x < tw; x++ ) {
-            // we could write a specially optimized version here for binary steps
-            double v = pGR->getInterpolatedValue(lon, lat);
-            unsigned char r, g, b, a;
-            if( v != GRIB_NOTDEF ) {
-                v = m_Settings.CalibrateValue(settings, v);
-                //set full transparency if no rain or no clouds at all
-                if (( settings == GribOverlaySettings::PRECIPITATION || settings == GribOverlaySettings::CLOUD ) && v < 0.01) 
-                {
-                    r = g = b = 255;
-                    a = 0;
-                }
-                else {
-                    a = m_Settings.m_iOverlayTransparency;
-                    wxColour c = GetGraphicColor(settings, v);
-                    r = c.Red();
-                    g = c.Green();
-                    b = c.Blue();
-                }
-            } else {
-                r = 255;
-                g = 255;
-                b = 255;
-                a = 0;
+    if(samples == 1 ) { // optimized case when there is only 1 sample
+        for( int j = 0; j < pGR->getNj(); j++ ) {
+            for( int i = 0; i < pGR->getNi(); i++ ) {
+                double v = pGR->getValue(i,   j);
+                int y = j + 1;
+                int x = i + !repeat;
+                int doff = 4*(y*tw + x);
+                GetCalibratedGraphicColor(settings, v, data + doff);
             }
-
-            if(y == 0 || y == th - 1)
-                a = 0;
-            if(!repeat && (x == 0 || x == tw - 1))
-                a = 0;
-
-            int doff = 4*(y*tw + x);
-            /* for some reason r g b values are inverted, but not alpha,
-               this fixes it, but I would like to find the actual cause */
-            data[doff + 0] = 255-r;
-            data[doff + 1] = 255-g;
-            data[doff + 2] = 255-b;
-            data[doff + 3] = a;
-
-            if(repeat || (x != 0 && x != tw - 2))
-                lon += lonstep;
         }
-        if(y != 0 && y != th - 2)
-            lat += latstep;
+    } else {
+        for( int j = 0; j < pGR->getNj(); j++ ) {
+            for( int i = 0; i < pGR->getNi(); i++ ) {
+                double v00 = pGR->getValue(i,   j), v01 = GRIB_NOTDEF;
+                double v10 = GRIB_NOTDEF, v11 = GRIB_NOTDEF;
+                if(i < pGR->getNi()-1) {
+                    v01 = pGR->getValue(i+1, j);
+                    if(j < pGR->getNj()-1)
+                        v11 = pGR->getValue(i+1, j+1);
+                }
+                if(j < pGR->getNj()-1)
+                    v10 = pGR->getValue(i,   j+1);
+
+                for( int ys = 0; ys<samples; ys++) {
+                    int y = j * samples + ys + 1;
+                    double yd = (double)ys/samples;
+                    double v0, v1;
+                    if(v10 == GRIB_NOTDEF || yd == 1)
+                        v0 = v00;
+                    else if(v00 == GRIB_NOTDEF && yd != 1)
+                        v0 = v10;
+                    else
+                        v0 = (1-yd)*v00 + yd*v10;
+                    if(v11 == GRIB_NOTDEF || yd == 1)
+                        v1 = v01;
+                    else if(v00 == GRIB_NOTDEF && yd != 1)
+                        v1 = v11;
+                    else
+                        v1 = (1-yd)*v01 + yd*v11;
+
+                    for( int xs = 0; xs<samples; xs++) {
+                        int x = i * samples + xs + !repeat;
+                        double xd = (double)xs/samples;
+                        double v;
+                        if(v1 == GRIB_NOTDEF || xd == 1)
+                            v = v0;
+                        else if(v0 == GRIB_NOTDEF && xd != 1)
+                            v = v1;
+                        else
+                            v = (1-xd)*v0 + xd*v1;
+
+                        int doff = 4*(y*tw + x);
+                        GetCalibratedGraphicColor(settings, v, data + doff);
+
+                        if(i == pGR->getNi()-1)
+                            break;
+                    }
+                    if(j == pGR->getNj()-1)
+                        break;
+                }
+            }
+        }
     }
+
+    /* complete borders */
+    memcpy(data              , data + 4*tw*1     , 4*tw);
+    memcpy(data + 4*tw*(th-1), data + 4*tw*(th-2), 4*tw);
+    for(int x = 0; x < tw; x++) {
+        int doff = 4*x;
+        data[doff+3] = 0;
+        doff = 4*((th-1)*tw + x);
+        data[doff+3] = 0;
+    }
+
+    if(!repeat)
+        for(int y = 0; y < th; y++) {
+            int doff = 4*y*tw, soff = doff + 4; 
+            memcpy(data + doff, data + soff, 4);
+            data[doff+3] = 0;
+            doff = 4*(y*tw + tw-1), soff = doff - 4;
+            memcpy(data + doff, data + soff, 4);
+            data[doff+3] = 0;
+        }
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -772,7 +830,7 @@ void GRIBOverlayFactory::InitColorsTable( )
     InitColor(CloudMap, (sizeof CloudMap) / (sizeof *CloudMap));
 }
 
-wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
+void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in, unsigned char &r, unsigned char &g, unsigned char &b)
 {
     int colormap_index = m_Settings.Settings[settings].m_iOverlayMapColors;
     ColorMap *map;
@@ -814,7 +872,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
         maplen = (sizeof CloudMap) / (sizeof *CloudMap);
         break;
     default:
-        return *wxBLACK;
+        return;
     }
 
     /* normalize map from 0 to 1 */
@@ -824,22 +882,29 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
         double nmapvala = map[i-1].val/cmax;
         double nmapvalb = map[i].val/cmax;
         if(nmapvalb > val_in || i==maplen-1) {
-            wxColour c;
             if(m_bGradualColors) {
                 double d = (val_in-nmapvala)/(nmapvalb-nmapvala);
-                c.Set((1-d)* map[i -1].r  + d* map[i].r,
-                      (1-d)* map[i -1].g + d* map[i].g,
-                      (1-d)* map[i -1].b  + d* map[i].b);
+                r = (1-d)* map[i -1].r  + d* map[i].r;
+                g = (1-d)* map[i -1].g + d* map[i].g;
+                b = (1-d)* map[i -1].b  + d* map[i].b;
+            } else {
+                r = map[i].r;
+                g = map[i].g;
+                b = map[i].b;
             }
-            else
-                c.Set(map[i].r, map[i].g, map[i].b);
-
-            return c;
+            return;
         }
     }
-    return wxColour(0, 0, 0); /* unreachable */
+    /* unreachable */
 }
 
+wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
+{
+    unsigned char r, g, b;
+    GetGraphicColor(settings, val_in, r, g, b);
+    return wxColour(r, g, b);
+}
+    
 wxString GRIBOverlayFactory::getLabelString(double value, int settings)
 {
     int p;   
@@ -2212,7 +2277,7 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     // certainly not for all projections, and may result in
     // more tiles than actually needed in some cases
 
-    double pw = vp->view_scale_ppm * 2e6/(pow(2, fabs(vp->clat)/25));
+    double pw = vp->view_scale_ppm * 1e6/(pow(2, fabs(vp->clat)/25));
     if(pw < 20) // minimum 20 pixel to avoid too many tiles
         pw = 20;
 
@@ -2224,18 +2289,20 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
 
     // It is possible to have only 1 square when the viewport covers more than
     // 180 longitudes but there is more logic needed.  This is simpler.
-    if(vp->lon_max - vp->lon_min >= 180) {
+//    if(vp->lon_max - vp->lon_min >= 180) {
         xsquares = wxMax(xsquares, 2);
         ysquares = wxMax(ysquares, 2);
-    }
+//    }
 
     glBegin(GL_QUADS);
     double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
     int i = 0, j = 0;
     double lva[2][xsquares+1][2];
     int tw = pGO->m_iTextureDim[0], th = pGO->m_iTextureDim[1];
-    double latstep = fabs(pGR->getDj()) / (th-2) * pGR->getNj();
-    double lonstep = pGR->getDi() / (tw-2*!repeat) * pGR->getNi();
+    double latstep = fabs(pGR->getDj()) / (th-2-1) * (pGR->getNj()-1);
+    double lonstep = pGR->getDi() / (tw-2*!repeat-1) * (pGR->getNi()-1);
+    
+    double clon = (lon_min + pGR->getLonMax())/2;
     
     for(double y = 0; y < vp->pix_height+ys/2; y += ys) {
         i = 0;
@@ -2244,13 +2311,18 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
             wxPoint p(x, y);
             GetCanvasLLPix(vp, p, &lat, &lon);
 
-            if(vp->clon - lon > 180)
-                lon += 360;
-            else if(lon - vp->clon > 180)
-                lon -= 360;
+            if(!repeat) {
+                if(clon - lon > 180)
+                    lon += 360;
+                else if(lon - clon > 180)
+                    lon -= 360;
+            }
 
             lva[j][i][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
             lva[j][i][1] = ((lat - lat_min) / latstep          + 1.5) / th;
+
+            if(pGR->getDj() < 0)
+                lva[j][i][1] = 1 - lva[j][i][1];
 
             if(x > 0 && y > 0) {
                 double u0 = lva[!j][i-1][0], v0 = lva[!j][i-1][1];
