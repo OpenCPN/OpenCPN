@@ -3858,6 +3858,7 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
                       m_FullExtent.NLAT, m_FullExtent.ELON );
 
     vp.chart_scale = 10000000 - 1;
+    vp.ref_scale = vp.chart_scale;
     vp.Validate();
 
     // cause a clean new render
