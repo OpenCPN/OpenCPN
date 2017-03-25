@@ -523,17 +523,33 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
 
     // create the texture to the size of the grib data plus a transparent border
-    int tw = pGR->getNi()+2*!repeat, th = pGR->getNj()+2;
+    int tw = pGR->getNi(), th = pGR->getNj();
     
     //    Dont try to create enormous GRIB textures
-    if( tw > 2048 || th > 2048 )
+    if( tw > 1022 || th > 1022 )
         return false;
 
+    double latstep = fabs(pGR->getDj()), lonstep = pGR->getDi();
+
+    // oversample up to 16x
+    for(int i=0; i<4; i++) {
+        if(tw >= 256 || th >= 256) // faster processor could handle larger sizes smoothly, how to test?
+            break;
+        tw *= 2, lonstep /= 2;
+        th *= 2, latstep /= 2;
+    }
+
+    tw += 2*!repeat;
+    th += 2;
+
     unsigned char *data = new unsigned char[tw*th*4];
-    memset(data, 0, tw*th*4); // ensure transparent
-    for( int y = 0; y < pGR->getNj(); y++ ) {
-        for( int x = 0; x < pGR->getNi(); x++ ) {
-            double v = pGR->getValue(x, y);
+
+    double lat = pGR->getLatMin();
+    for( int y = 0; y < th; y++ ) {
+        double lon = pGR->getLonMin();
+        for( int x = 0; x < tw; x++ ) {
+            // we could write a specially optimized version here for binary steps
+            double v = pGR->getInterpolatedValue(lon, lat);
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
@@ -557,7 +573,12 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                 a = 0;
             }
 
-            int doff = 4*((y+1)*tw + x+!repeat);
+            if(y == 0 || y == th - 1)
+                a = 0;
+            if(!repeat && (x == 0 || x == tw - 1))
+                a = 0;
+
+            int doff = 4*(y*tw + x);
             /* for some reason r g b values are inverted, but not alpha,
                this fixes it, but I would like to find the actual cause */
             data[doff + 0] = 255-r;
@@ -596,6 +617,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     delete [] data;
 
     pGO->m_iTexture = texture;
+    pGO->m_iTextureDim[0] = tw;
+    pGO->m_iTextureDim[1] = th;
 
     return true;
 }
@@ -2189,7 +2212,7 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     // certainly not for all projections, and may result in
     // more tiles than actually needed in some cases
 
-    double pw = vp->view_scale_ppm * 3e6/(pow(2, fabs(vp->clat)/25));
+    double pw = vp->view_scale_ppm * 2e6/(pow(2, fabs(vp->clat)/25));
     if(pw < 20) // minimum 20 pixel to avoid too many tiles
         pw = 20;
 
@@ -2210,7 +2233,9 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
     int i = 0, j = 0;
     double lva[2][xsquares+1][2];
-    int tw = pGR->getNi()+2*!repeat, th = pGR->getNj()+2;
+    int tw = pGO->m_iTextureDim[0], th = pGO->m_iTextureDim[1];
+    double latstep = fabs(pGR->getDj()) / (th-2) * pGR->getNj();
+    double lonstep = pGR->getDi() / (tw-2*!repeat) * pGR->getNi();
     
     for(double y = 0; y < vp->pix_height+ys/2; y += ys) {
         i = 0;
@@ -2224,10 +2249,8 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
             else if(lon - vp->clon > 180)
                 lon -= 360;
 
-            lva[j][i][0] = ((lon - lon_min) / pGR->getDi() - repeat + 1.5) / tw;
-            lva[j][i][1] = ((lat - lat_min) / fabs(pGR->getDj()) + 1.5) / th;
-            if(pGR->getDj() < 0)
-                lva[j][i][1] = 1 - lva[j][i][1];
+            lva[j][i][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
+            lva[j][i][1] = ((lat - lat_min) / latstep          + 1.5) / th;
 
             if(x > 0 && y > 0) {
                 double u0 = lva[!j][i-1][0], v0 = lva[!j][i-1][1];
