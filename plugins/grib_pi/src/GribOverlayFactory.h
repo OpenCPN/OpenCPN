@@ -61,7 +61,7 @@ public:
         delete m_pDCBitmap;
     }
 
-    unsigned int m_iTexture, m_iTextureDim[2]; /* opengl mode */
+    unsigned int m_iTexture; /* opengl mode */
     wxBitmap *m_pDCBitmap; /* dc mode */
 };
 
