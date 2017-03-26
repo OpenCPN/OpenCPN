@@ -1046,7 +1046,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
     }
 #if 1
     if (ret == 255) {
-        printf("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
+        erreur("unknown %d %d %d\n", productDiscipline,  dataCat,dataNum);
     }
 #endif    
     return ret;    
