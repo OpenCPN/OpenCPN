@@ -523,7 +523,6 @@ private:
     std::string GetAttributeAcronymFromTypecode( int typeCode );
     
     PolyTessGeo *BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record, unsigned char **bytes_consumed );
-    LineGeometryDescriptor *BuildLineGeometry( _OSENC_LineGeometry_Record_Payload *pPayload );
     bool CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar );
     
     wxString            errorMessage;
