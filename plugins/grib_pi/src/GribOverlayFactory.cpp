@@ -1925,7 +1925,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
 
                 wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240-alpha/2), alpha};
 
-                if(lp) {
+                if(lp && fabsf(lp[0]-sp[0]) < vp->pix_width) {
                     float sip[2];
 
                     // interpolate between points..  a cubic interpolation
