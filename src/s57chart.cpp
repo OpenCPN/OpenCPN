@@ -1714,28 +1714,7 @@ ThumbData *s57chart::GetThumbData( int tnx, int tny, float lat, float lon )
         ChangeThumbColor(m_global_color_scheme);
     }
 
-    if( pThumbData->pDIBThumb ) {
-        float lat_top = m_FullExtent.NLAT;
-        float lat_bot = m_FullExtent.SLAT;
-        float lon_left = m_FullExtent.WLON;
-        float lon_right = m_FullExtent.ELON;
-
-        // Build the scale factors just as the thumbnail was built
-        float ext_max = fmax((lat_top - lat_bot), (lon_right - lon_left));
-
-        float thumb_view_scale_ppm = ( S57_THUMB_SIZE / ext_max ) / ( 1852 * 60 );
-        double east, north;
-        toSM( lat, lon, ( lat_top + lat_bot ) / 2., ( lon_left + lon_right ) / 2., &east, &north );
-
-        pThumbData->ShipX = pThumbData->pDIBThumb->GetWidth() / 2
-                + (int) ( east * thumb_view_scale_ppm );
-        pThumbData->ShipY = pThumbData->pDIBThumb->GetHeight() / 2
-                - (int) ( north * thumb_view_scale_ppm );
-
-    } else {
-        pThumbData->ShipX = 0;
-        pThumbData->ShipY = 0;
-    }
+    UpdateThumbData( lat, lon );
 
     return pThumbData;
 }
