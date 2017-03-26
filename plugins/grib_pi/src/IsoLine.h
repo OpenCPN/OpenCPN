@@ -83,7 +83,7 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 class Segment
 {
     public:
-        Segment (int I, int J,
+        Segment (int I, int w, int J,
                 char c1, char c2, char c3, char c4,
                 const GribRecord *rec, double pressure);
 
@@ -94,7 +94,7 @@ class Segment
         bool  bUsed;
 
     private:
-        void traduitCode(int I, int J, char c1, int &i, int &j);
+        void traduitCode(int I, int w, int J, char c1, int &i, int &j);
 
         void intersectionAreteGrille(int i,int j, int k,int l,
                 double *x, double *y,
