@@ -152,7 +152,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate Wind gusts data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Wind Gust"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetWindGust(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -161,7 +160,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND ||
             m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
                 AddDataRow( nrows, i, _("Waves"), doubledatarow );
-                doubledatarow->IncRef();
                 m_pGribTable->SetCellValue(nrows, i, GetWaves(RecordArray));
                 m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
                 nrows++;
@@ -169,7 +167,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate total rainfall data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Rainfall"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetRainfall(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -177,7 +174,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate total cloud control
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Cloud Cover"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetCloudCover(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -185,7 +181,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate the Air Temperature data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Air\nTemperature"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetAirTemp(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -193,7 +188,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate the Sea Surface Temperature data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Sea\nTemperature"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetSeaTemp(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -201,7 +195,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         //create and polulate the Convective Available Potential Energy (CAPE) data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("CAPE"), singledatarow );
-            singledatarow->IncRef();
             m_pGribTable->SetCellValue(nrows, i, GetCAPE(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
@@ -210,7 +203,6 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND &&
             m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND) {
                 AddDataRow( nrows, i, _("Current"), doubledatarow );
-                doubledatarow->IncRef();
                 m_pGribTable->SetCellValue(nrows, i, GetCurrent(RecordArray));
                 m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
                 nrows++;
@@ -224,6 +216,8 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     this->Fit();
     this->Refresh();
+    singledatarow->DecRef();    // Give up pointer control to Grid
+    doubledatarow->DecRef();
 }
 
 void GRIBTable::OnClose( wxCloseEvent& event )
@@ -271,6 +265,7 @@ void GRIBTable::AddDataRow( int num_rows, int num_cols, wxString label, wxGridCe
     if(m_pGribTable->GetNumberRows() == num_rows) {
         m_pGribTable->AppendRows(1);
         m_pGribTable->SetRowLabelValue(num_rows, label);
+        row_attr->IncRef();
         m_pGribTable->SetRowAttr(num_rows, row_attr);
     }
     m_pDataCellsColour = m_pGribTable->GetCellBackgroundColour(num_rows, num_cols);  //set default colour
