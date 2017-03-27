@@ -1697,7 +1697,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
             if ( tgt_name != wxEmptyString ) {
                 dc.SetFont( *FontMgr::Get().GetFont( _( "AIS Target Name" ), 12 ) );
-                dc.SetTextForeground( FontMgr::Get().GetFontColor( _( "AIS Target Name" ) ) );
+                dc.SetTextForeground( GetGlobalColor( _T ( "AISPT" )) );
 
                 int w, h;
                 dc.GetTextExtent( tgt_name, &w, &h );
