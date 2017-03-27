@@ -2635,9 +2635,10 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             // delete any old private data
             ClearRulesCache( prule );
 
-            int w0 = Image.GetWidth();
-            int h0 = Image.GetHeight();
-            Image.Rescale(w0 * scale_factor, h0 * scale_factor, wxIMAGE_QUALITY_HIGH);
+            // always display something, TMARDEF1 as width of 2
+            int w0 = wxMax(1, Image.GetWidth() * scale_factor);
+            int h0 = wxMax(1, Image.GetHeight() * scale_factor);
+            Image.Rescale(w0 , h0 , wxIMAGE_QUALITY_HIGH);
             
             int w = Image.GetWidth();
             int h = Image.GetHeight();
