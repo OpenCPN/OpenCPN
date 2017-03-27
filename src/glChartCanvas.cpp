@@ -1187,7 +1187,7 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
         bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() + 360,
                  bbox.GetMaxLat(), bbox.GetMaxLon() + 360);
         cvp.SetBBoxDirect(bbox);
-    } else if(bbox.GetMaxLon() > cvp.GetBBox().GetMaxLon()) {
+    } else if(bbox.GetMinLon() > cvp.GetBBox().GetMaxLon()) {
         bbox.Set(bbox.GetMinLat(), bbox.GetMinLon() - 360,
                  bbox.GetMaxLat(), bbox.GetMaxLon() - 360);
         cvp.SetBBoxDirect(bbox);

@@ -589,11 +589,21 @@ void LLRegion::Optimize()
             continue;
         }
 
+        // Round coordinates to avoid numerical errors in region computations
+        const double eps = 6e-6;  // about 1cm on earth's surface at equator
+        for(poly_contour::iterator j = i->begin(); j != i->end(); j++) {
+            //j->x -= fmod(j->x, 1e-8);
+            j->x = round(j->x/eps)*eps;
+            j->y = round(j->y/eps)*eps;
+        }
+
+#if 0
         // round toward 180 and -180 as this is where adjusted longitudes
         // are split, and so zero contours can get eliminated by the next step
         for(poly_contour::iterator j = i->begin(); j != i->end(); j++)
             if(fabs(j->x - 180) < 2e-4) j->x = 180;
             else if(fabs(j->x + 180) < 2e-4) j->x = -180;
+#endif
 
         // eliminiate parallel segments
         contour_pt l = *i->rbegin();
