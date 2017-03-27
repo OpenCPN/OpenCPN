@@ -1064,7 +1064,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
                     // XDR Pitch (=Nose up/down) or Heel (stb/port)
                     if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
-                        if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")) {
+                        if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PTCH")
+                            || m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("PITCH")) {
                             if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
                                 xdrunit = _T("\u00B0 Nose up");
                             }
