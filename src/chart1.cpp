@@ -8158,9 +8158,10 @@ bool MyFrame::DoChartUpdate( void )
                 if( !cc1->IsChartQuiltableRef( initial_db_index ) ) {
                     // If it is not quiltable, then walk the stack up looking for a satisfactory chart
                     // i.e. one that is quiltable and of the same type
+                    // XXX if there's none?
                     int stack_index = g_restore_stackindex;
 
-                    while( ( stack_index < pCurrentStack->nEntry - 1 ) && ( stack_index >= 0 ) ) {
+                    if ( stack_index >= 0 ) while( ( stack_index < pCurrentStack->nEntry - 1 ) ) {
                         int test_db_index = pCurrentStack->GetDBIndex( stack_index );
                         if( cc1->IsChartQuiltableRef( test_db_index )
                                 && ( initial_type == ChartData->GetDBChartType( initial_db_index ) ) ) {
@@ -8171,23 +8172,10 @@ bool MyFrame::DoChartUpdate( void )
                     }
                 }
 
-                if( ChartData ) {
-                    ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
-                    if( pc ) {
-                        cc1->SetQuiltRefChart( initial_db_index );
-                        pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
-                    }
-                }
-
-                //  Try to bound the initial Viewport scale to something reasonable for the selected reference chart
-                //  Use the last shutdown value if possible
-                if( ChartData ) {
-                    ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
-                    
-                    if( pc ) {
-                        double best_scale_ppm = GetBestVPScale( pc );
-                        double best_proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / best_scale_ppm;
-                    }
+                ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
+                if( pc ) {
+                    cc1->SetQuiltRefChart( initial_db_index );
+                    pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
                 }
             }
 
