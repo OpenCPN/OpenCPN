@@ -1935,7 +1935,13 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
     // If the button is enabled and it is not a toggle tool and it is
     // in the pressed state, then raise the button and call OnLeftClick.
     //
-    if( event.LeftUp() && tool->IsEnabled() && m_leftDown) {
+    // Unfortunately, some touch screen drivers do not send "LeftIsDown" events.
+    // Nor do they report "LeftIsDown" in any state.
+    // c.f rPI "official" 7" panel.
+    
+    // So, for this logic, assume in touch mode that the m_leftDown flag may not be set,
+    // and process the left-up event anyway.
+    if( event.LeftUp() && tool->IsEnabled() && (m_leftDown || g_btouch) ) {
         // Pass the OnLeftClick event to tool
         if( !OnLeftClick( tool->GetId(), tool->IsToggled() ) && tool->CanBeToggled() ) {
             // If it was a toggle, and OnLeftClick says No Toggle allowed,
