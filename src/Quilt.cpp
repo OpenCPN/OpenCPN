@@ -1455,7 +1455,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    if( !bf && m_pcandidate_array->GetCount() ) {
+    if( !bf && m_pcandidate_array->GetCount() && ( m_reference_type != CHART_TYPE_CM93COMP) ) {
         m_lost_refchart_dbIndex = m_refchart_dbIndex;    // save for later
         int candidate_ref_index = GetNewRefChart();
         if(m_refchart_dbIndex != candidate_ref_index){
@@ -1823,19 +1823,56 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    //    Generate the final render regions for the patches, one by one, smallest to largest scale
-//    LLRegion unrendered_region( vp_local.GetLLRegion(wxRect(0, 0, vp_local.pix_width, vp_local.pix_height)) );
+    //    Generate the final render regions for the patches, one by one
 
     m_covered_region.Clear();
 #if 1 // this does the same as before with a lot less operations if there are many charts
+    
+    //  If the reference chart is cm93, we need to render it first.
+    bool b_skipCM93 = false;
+    if(m_reference_type == CHART_TYPE_CM93COMP){
+       
+        // find cm93 in the list
+        for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
+            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            QuiltPatch *piqp = pcinode->GetData();
+            if( !piqp->b_Valid )                         // skip invalid entries
+                continue;
+        
+            const ChartTableEntry &m = ChartData->GetChartTableEntry( piqp->dbIndex );
+        
+            if(m.GetChartType() == CHART_TYPE_CM93COMP){
+                //    Start with the chart's full region coverage.
+                piqp->ActiveRegion = piqp->quilt_region;
+                piqp->ActiveRegion.Intersect(cvp_region);
+            
+                //    Update the next pass full region to remove the region just allocated
+                m_covered_region.Union( piqp->quilt_region );
+                
+                b_skipCM93 = true;      // did this already...
+                break;
+            }
+        }
+    }
+        
+     //  Proceeding from largest scale to smallest....           
+    
     for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
         wxPatchListNode *pcinode = m_PatchList.Item( i );
         QuiltPatch *piqp = pcinode->GetData();
         if( !piqp->b_Valid )                         // skip invalid entries
             continue;
 
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry( piqp->dbIndex );
+        
+        if(b_skipCM93){
+            if(cte.GetChartType() == CHART_TYPE_CM93COMP)
+                continue;
+        }
+            
         //    Start with the chart's full region coverage.
         piqp->ActiveRegion = piqp->quilt_region;
+        
         // this operation becomes expensive with lots of charts
         if(!b_has_overlays && m_PatchList.GetCount() < 25)
             piqp->ActiveRegion.Subtract(m_covered_region);
@@ -1843,12 +1880,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
         piqp->ActiveRegion.Intersect(cvp_region);
 
         //    Could happen that a larger scale chart covers completely a smaller scale chart
-        if( piqp->ActiveRegion.Empty() )
+        if( piqp->ActiveRegion.Empty() && (piqp->dbIndex != m_refchart_dbIndex))
             piqp->b_eclipsed = true;
 
-        //    Update the next pass full region to remove the region just allocated
         //    Maintain the present full quilt coverage region
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry( piqp->dbIndex );
         piqp->b_overlay = false;
         if(cte.GetChartFamily() == CHART_FAMILY_VECTOR){
             piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
