@@ -507,7 +507,6 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     wxPoint r;
     wxRect hilitebox;
     unsigned char transparency = 150;
-    double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
     
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
@@ -731,7 +730,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
         pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
-        
+
+        double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
         wxPen ppPen1( m_wxcWaypointRangeRingsColour, platform_pen_width );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
