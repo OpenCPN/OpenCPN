@@ -53,6 +53,8 @@ extern s57RegistrarMgr          *m_pRegistrarMan;
 extern wxString                 g_csv_locn;
 extern bool                     g_bGDAL_Debug;
 
+bool chain_broken_mssage_shown = false;
+
 using namespace std;
 
 #include <wx/arrimpl.cpp>
@@ -1093,17 +1095,10 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
     
     if( UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
-        //      to perform all the updates.  However, some NOAA ENC distributions are
-        //      not complete, as apparently some interim updates have been  withdrawn.
-        //      Example:  as of 20 Dec, 2005, the update set for US5MD11M.000 includes
-        //      US5MD11M.017, ...018, and ...019.  Updates 001 through 016 are missing.
-        //
-        //      Workaround.
-        //      Create temporary dummy update files to fill out the set before invoking
-        //      ogr file open/ingest.  Delete after SENC file create finishes.
-        //      Set starts with .000, which has the effect of copying the base file to the working dir
+        //      to perform all the updates. 
         
-//        bool chain_broken_mssage_shown = false;
+        //  It is to be considered a WARNING if the update chain is broken,
+        //  With appropriate user dialog and logfile messages
         
         if( b_copyfiles ) {
             
@@ -1144,7 +1139,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                 }
                 
                 if( ufile.FileExists() && ( flen > 25 ) )        // a valid update file or base file
-                        {
+                {
                             //      Copy the valid file to the SENC directory
                             bool cpok = wxCopyFile( ufile.GetFullPath(), cp_ufile );
                             if( !cpok ) {
@@ -1154,39 +1149,29 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                                 msg.Append( cp_ufile );
                                 wxLogMessage( msg );
                             }
-                        }
+                }
                         
-                        else {
-                            // Create a dummy ISO8211 file with no real content
-                            // Correct this.  We should break the walk, and notify the user  See FS#1406
-                            
-//                             if( !chain_broken_mssage_shown ){
-//                                 OCPNMessageBox(NULL, 
-//                                                _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."),
-//                                                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
-//                                                chain_broken_mssage_shown = true;
-//                             }
-                            
-                            wxString msg( _T("WARNING---ENC Update chain incomplete. Substituting NULL update file: "));
-                            msg += ufile.GetFullName();
-                            wxLogMessage(msg);
-                            wxLogMessage(_T("   Subsequent ENC updates may produce errors.") );
-                            wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
-                            
-                            bool bstat;
-                            DDFModule *dupdate = new DDFModule;
-                            dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
-                            bstat = !( dupdate->Create( cp_ufile.mb_str() ) == 0 );
-                            dupdate->Close();
-                            
-                            if( !bstat ) {
-                                wxString msg( _T("   Error creating dummy update file: ") );
-                                msg.Append( cp_ufile );
-                                wxLogMessage( msg );
-                            }
-                        }
+                else {
+                    
+                    //  Update chain is broken, so stop the walk, inform user, and use the last update that we safely can 
+                    retval = iff-1;
+                    wxString msg( _T("WARNING---ENC Update chain incomplete. First missing update is:"));
+                    msg += ufile.GetFullName();
+                    wxLogMessage(msg);
+                    wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+                    
+                         
+                    if( !chain_broken_mssage_shown ){
+                         OCPNMessageBox(NULL, 
+                         _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
+                         _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                         chain_broken_mssage_shown = true;
+                    }
+                    break;
+                    
+                }
                         
-                        m_tmpup_array.Add( cp_ufile );
+                m_tmpup_array.Add( cp_ufile );
             }
         }
         
