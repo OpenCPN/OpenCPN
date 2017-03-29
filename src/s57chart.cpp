@@ -4551,8 +4551,10 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
 
                 delete poModule;
 
-                if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
-                dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
+                if( umdate.IsValid() ){
+                    if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
+                        dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
+                }
             }
         }
 
