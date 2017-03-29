@@ -1092,6 +1092,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
       ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
       
+      if(cte.GetLatMax() > 90.0)          // Chart has been disabled...
+          return NULL;
+      
       ChartBase *Ch = NULL;
       CacheEntry *pce = NULL;
       int old_lock = 0;
