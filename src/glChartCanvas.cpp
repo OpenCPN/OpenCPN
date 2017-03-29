@@ -3823,7 +3823,7 @@ void glChartCanvas::Render()
     
     SwapBuffers();
     if(b_timeGL && g_bShowFPS){
-        if(n_render % 10 == 0){
+        if(n_render % 10){
             glFinish();
         
             double filter = .05;
