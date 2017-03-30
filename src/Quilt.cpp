@@ -1779,8 +1779,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 QuiltPatch *pqp = new QuiltPatch;
                 pqp->dbIndex = pqc->dbIndex;
                 pqp->ProjType = m.GetChartProjectionType();
-                //pqp->quilt_region = pqc->GetCandidateRegion();
-                pqp->quilt_region = pqc->GetReducedCandidateRegion(factor);
+                // this is the region used for drawing, don't reduce it
+                // it's visible
+                pqp->quilt_region = pqc->GetCandidateRegion();
+                //pqp->quilt_region = pqc->GetReducedCandidateRegion(factor);
                 
                 pqp->b_Valid = true;
 
