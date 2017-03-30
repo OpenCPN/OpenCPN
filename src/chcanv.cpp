@@ -3067,14 +3067,16 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         skew -= 2*PI;
 
     //  Any sensible change?
-    if( ( fabs( VPoint.view_scale_ppm - scale_ppm ) < 1e-9 )
+    if (VPoint.IsValid()) {
+        if( ( fabs( VPoint.view_scale_ppm - scale_ppm ) < 1e-9 )
             && ( fabs( VPoint.skew - skew ) < 1e-9 )
             && ( fabs( VPoint.rotation - rotation ) < 1e-9 )
             && ( fabs( VPoint.clat - lat ) < 1e-9 )
             && ( fabs( VPoint.clon - lon ) < 1e-9 )
-            && (VPoint.m_projection_type == projection || projection == PROJECTION_UNKNOWN)
-            && VPoint.IsValid() ) return false;
-
+            && (VPoint.m_projection_type == projection || projection == PROJECTION_UNKNOWN) ) 
+                return false;
+    }
+    
     if(VPoint.m_projection_type != projection)
         VPoint.InvalidateTransformCache(); // invalidate
 
