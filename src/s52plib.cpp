@@ -2568,18 +2568,22 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     }
 
     // a few special cases here
-    if( (!strncmp(rzRules->obj->FeatureName, "notmrk", 6))
-        || (!strncmp(rzRules->obj->FeatureName, "NOTMRK", 6))
-    ){
+    if( !strncmp(rzRules->obj->FeatureName, "notmrk", 6 )
+        || !strncmp(rzRules->obj->FeatureName, "NOTMRK", 6)
+        || !strncmp(prule->name.SYNM, "ADDMRK", 6)    
+        )
+    {
         // get the symbol size
         wxRect trect;
         ChartSymbols::GetGLTextureRect( trect, prule->name.SYNM );
         
-        double scaled_length = trect.width / vp->view_scale_ppm;
+        int scale_dim = wxMax(trect.width, trect.height);
         
-        double target_length = 100;
+        double scaled_size = scale_dim / vp->view_scale_ppm;
         
-        double xscale = target_length / scaled_length;
+        double target_size = 100;               // roughly, meters maximum scaled size for these inland signs
+        
+        double xscale = target_size / scaled_size;
         xscale = wxMin(xscale, 1.0);
         xscale = wxMax(.2, xscale);
         
