@@ -40,10 +40,28 @@ enum { Idx_WIND_VX, Idx_WIND_VX850, Idx_WIND_VX700, Idx_WIND_VX500, Idx_WIND_VX3
 class GribRecordSet {
 public:
     GribRecordSet() {
-        for(int i=0; i<Idx_COUNT; i++)
-            m_GribRecordPtrArray[i] = NULL;
+        for(int i=0; i<Idx_COUNT; i++) {
+            m_GribRecordPtrArray[i] = 0;
+            m_GribRecordCopied[i] = false;
+        }
+    }
+
+    /* copy and paste by plugins, keep functions in header */
+    void RefGribRecord(int i, GribRecord *pGR ) { 
+        m_GribRecordPtrArray[i] = pGR;
+        m_GribRecordCopied[i] = true;
+    }
+
+    void RemoveGribRecords( ) { 
+        for(int i=0; i<Idx_COUNT; i++) {
+            if (m_GribRecordCopied[i] == false) {
+                delete m_GribRecordPtrArray[i];
+            }
+        }
     }
 
     time_t m_Reference_Time;
     GribRecord *m_GribRecordPtrArray[Idx_COUNT];
+private:
+    bool        m_GribRecordCopied[Idx_COUNT];
 };

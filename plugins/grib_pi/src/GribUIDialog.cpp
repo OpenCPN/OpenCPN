@@ -115,58 +115,10 @@ GribTimelineRecordSet::GribTimelineRecordSet()
     for(int i=0; i<Idx_COUNT; i++)
         m_IsobarArray[i] = NULL;
 }
-#if 0
-GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
-{
-    for(int i=0; i<Idx_COUNT; i++) {
-        m_GribRecordPtrArray[i] = NULL;
-        m_IsobarArray[i] = NULL;
-    }
-
-    for(int i=0; i<Idx_COUNT; i++) {
-        if(m_GribRecordPtrArray[i])
-            continue;
-
-        GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
-        GribRecord *GR2 = GRS2.m_GribRecordPtrArray[i];
-
-        if(!GR1 || !GR2)
-            continue;
-
-        /* if this is a vector interpolation use the 2d method */
-        if(i < Idx_WIND_VY) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[i + Idx_WIND_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i <= Idx_WIND_VY300)
-            continue;
-        else if(i == Idx_SEACURRENT_VX) {
-            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
-            if(GR1y && GR2y) {
-                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
-                    (m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
-                continue;
-            }
-        } else if(i == Idx_SEACURRENT_VY)
-            continue;
-
-        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const, i == Idx_WVDIR);
-    }
-
-    m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
-        + interp_const*GRS2.m_Reference_Time;
-}
-#endif
 
 GribTimelineRecordSet::~GribTimelineRecordSet()
 {
-    for(int i=0; i<Idx_COUNT; i++)
-        delete m_GribRecordPtrArray[i]; /* delete these for timeline */
+    RemoveGribRecords();
     ClearCachedData();
 }
 
@@ -1333,7 +1285,8 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
 
         double interp_const;
         if(minute1 == minute2) {
-            set->m_GribRecordPtrArray[i] = new GribRecord(*GR1);
+            // with big grib a copy is slow.
+            set->RefGribRecord(i, GR1);
             continue;
         } else
             interp_const = (nminute-minute1) / (minute2-minute1);
