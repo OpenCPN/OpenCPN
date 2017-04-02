@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-04 11:14-0500\n"
-"PO-Revision-Date: 2017-03-07 13:53-0500\n"
+"PO-Revision-Date: 2017-03-14 08:55-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -82,7 +82,7 @@ msgstr "Загрузить в GPS"
 #: include/TrackPropDlg.h:179 src/TrackPropDlg.cpp:1085
 #: src/TrackPropDlg.cpp:1098
 msgid "Track properties"
-msgstr "Параметры траектории"
+msgstr "Параметры пути"
 
 #: src/about.cpp:205 src/about.cpp:255 src/about.cpp:388
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1374 src/chart1.cpp:6009
@@ -2501,7 +2501,7 @@ msgstr "Переключить отслеживание пути"
 
 #: src/AISTargetListDialog.cpp:640
 msgid "Copy MMSI"
-msgstr "Копировать MMSI"
+msgstr "Копировать MMSI цели"
 
 #: src/AISTargetListDialog.cpp:646
 msgid "AutoSort"
@@ -2523,7 +2523,7 @@ msgstr "Записать путь"
 #: src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
-msgstr "Траектория движения этой цели была записана.\n"
+msgstr "Путь движения этой цели был записан.\n"
 "Желаете продолжить запись до конца текущего сеанса работы OpenCPN?"
 
 #: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5708 src/chart1.cpp:11066
@@ -2569,7 +2569,7 @@ msgstr "Маршрут"
 
 #: src/canvasMenu.cpp:296
 msgid "Track"
-msgstr "Траектория"
+msgstr "Путь"
 
 #: src/canvasMenu.cpp:297
 msgid "AIS"
@@ -2761,7 +2761,7 @@ msgstr "Загрузить в GPS"
 
 #: src/canvasMenu.cpp:693
 msgid "Layer Track"
-msgstr "Траектория (в слое)"
+msgstr "Путь (в слое)"
 
 #: src/canvasMenu.cpp:713
 msgid "Layer Routepoint"
@@ -2844,7 +2844,10 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr ""
+msgstr "\n"
+"Программа OpenCPN распространяется с целью быть полезной, но без какой-либо гарантии, — в том числе без подразумеваемой гарантии приспособленности или пригодности для какой-либо конкретной цели. Подробнее см. в тексте лиценции GNU General Public License.\n"
+"Программа OpenCPN должна использоваться только совместно с утверждёнными бумажными картами и традиционными методами навигации. Не полагайтесь на OpenCPN по части безопасности жизни и имущества.\n"
+"Нажмите «OK», если согласны и готовы продолжить, либо «Отмена» в противном случае, чтобы выйти из программы.\n"
 
 #: src/chart1.cpp:852
 msgid "Welcome to OpenCPN"
@@ -2852,27 +2855,27 @@ msgstr "Добро пожаловать в OpenCPN"
 
 #: src/chart1.cpp:910
 msgid "Show usage syntax."
-msgstr "Показать синтаксис использования."
+msgstr "Показать синтаксис запуска программы."
 
 #: src/chart1.cpp:911
 msgid "Run in portable mode."
-msgstr "Запустить в портативном режиме."
+msgstr "Работать в портативном режиме."
 
 #: src/chart1.cpp:912
 msgid "Switch to full screen mode on start."
-msgstr "Полноэкранный режим при запуске."
+msgstr "Переключиться в полноэкранный режим при запуске."
 
 #: src/chart1.cpp:913
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr "Отключите аппаратного ускорение видео OpenGL. Этот параметр будет сохранен."
+msgstr "Отключить аппаратное ускорение видео OpenGL. Этот параметр будет сохранён."
 
 #: src/chart1.cpp:916
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
-msgstr "Показать слайд-шоу из <num>карт, и затем выйти. Zero or negative <num> specifies no limit."
+msgstr "Показать слайд-шоу из N карт и затем выйти. Используйте N ≤ 0 для снятия ограничений."
 
 #: src/chart1.cpp:1377
 msgid "OpenCPN ENC Prepare"
-msgstr "Подготовка OpenCPN ENC"
+msgstr "OpenCPN — Подготовка карт"
 
 #: src/chart1.cpp:1409
 #, c-format
@@ -2881,7 +2884,7 @@ msgstr "Расстояние от собственного судна: %4.0f �
 
 #: src/chart1.cpp:1439
 msgid "ENC Completed."
-msgstr "ENC завершена."
+msgstr "Подготовка карты завершена."
 
 #: src/chart1.cpp:1725 src/chart1.cpp:1731
 msgid "Failed to initialize the user interface. "
@@ -2972,12 +2975,12 @@ msgstr "Автоматически центрировать"
 
 #: src/chart1.cpp:3001 src/chart1.cpp:4916
 msgid "Hide ENC text"
-msgstr "Скрыть надписи"
+msgstr "Скрыть векторные надписи"
 
 #: src/chart1.cpp:3003 src/chart1.cpp:4914 src/chart1.cpp:5307
 #: src/chart1.cpp:5312
 msgid "Show ENC text"
-msgstr "Показывать надписи"
+msgstr "Показывать векторные надписи"
 
 #: src/chart1.cpp:3012 src/chart1.cpp:3102 src/chart1.cpp:3105
 #: src/chart1.cpp:4508
@@ -3482,7 +3485,7 @@ msgstr "мор. саж"
 
 #: src/chcanv.cpp:8561
 msgid "OverZoom"
-msgstr "          Завышение масштаба"
+msgstr "Завышение масштаба"
 
 #: src/chcanv.cpp:8902 src/chcanv.cpp:8903
 msgid "ExtendedTideIcon"
@@ -3655,7 +3658,7 @@ msgstr ", Выход: нет"
 
 #: src/glChartCanvas.cpp:673
 msgid "Failed to initialize OpenGL"
-msgstr "Не удалось инициализировать OpenGL"
+msgstr "Не удалось инициализировать OpenGL"
 
 #: src/glChartCanvas.cpp:977
 msgid "OpenGL-> SSE2 Instruction set not available"
@@ -3709,7 +3712,7 @@ msgstr "OpenCPN — Маршрут"
 
 #: src/kml.cpp:487
 msgid "OpenCPN Track"
-msgstr "OpenCPN — Траектория"
+msgstr "OpenCPN — Путь"
 
 #: src/kml.cpp:535
 msgid "OpenCPN Waypoint"
@@ -3921,7 +3924,7 @@ msgstr "Отслеживание пути"
 
 #: src/options.cpp:449
 msgid "Default tracking"
-msgstr "По умолчанию"
+msgstr "Отслеживание пути по умолчанию"
 
 #: src/options.cpp:454
 msgid "Always track"
@@ -3987,7 +3990,7 @@ msgstr "Редактировать"
 
 #: src/options.cpp:744
 msgid "Track Mode"
-msgstr "Отслеживание"
+msgstr "Режим отслеживания"
 
 #: src/options.cpp:752
 msgid "Ignore"
@@ -4314,11 +4317,11 @@ msgstr "Использовать протокол устройства Garmin п
 
 #: src/options.cpp:2085
 msgid "as autopilot or NMEA repeater"
-msgstr "как автопилот или NMEA репитер"
+msgstr "автопилот или повторитель NMEA"
 
 #: src/options.cpp:2090
 msgid "blank = default ID"
-msgstr "пустой = идентификатор по умолчанию"
+msgstr "пустой = идентификатор по умолчанию"
 
 #: src/options.cpp:2107
 msgid "x"
@@ -4422,7 +4425,7 @@ msgstr "км"
 
 #: src/options.cpp:2513 src/routemanagerdialog.cpp:590
 msgid "Tracks"
-msgstr "Траектории"
+msgstr "Пути"
 
 #: src/options.cpp:2519
 msgid "Automatic Daily Tracks at midnight"
@@ -4509,7 +4512,7 @@ msgstr "Удалить выделенное"
 
 #: src/options.cpp:2701
 msgid "Compress Selected"
-msgstr "Сжать Выбранное"
+msgstr "Сжать выделенное"
 
 #: src/options.cpp:2709
 msgid "Update Control"
@@ -4525,7 +4528,7 @@ msgstr "Принудительно выполнить полное перест�
 
 #: src/options.cpp:2723
 msgid "Prepare all ENC Charts"
-msgstr "Подготовьте все ENC карты"
+msgstr "Подготовить все карты ENC"
 
 #: src/options.cpp:2734 src/TrackPropDlg.cpp:804
 msgid "Advanced"
@@ -4610,8 +4613,8 @@ msgstr "Вектор"
 #: src/options.cpp:2978
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr "Меньшее значение даёт низкую детализацию при том же масштабе.\n"
-"Большое значение даёт высокую детализацию."
+msgstr "Меньшее значение понижает детализацию при том же масштабе.\n"
+"Большее значение повышает детализацию при том же масштабе."
 
 #: src/options.cpp:2994 src/options.cpp:3731
 msgid "Controls"
@@ -4728,7 +4731,7 @@ msgstr "Символьные"
 
 #: src/options.cpp:3200 src/options.cpp:3410
 msgid "Colors"
-msgstr "Цвет"
+msgstr "Окраска глубин"
 
 #: src/options.cpp:3203 src/options.cpp:3413
 msgid "2 Color"
@@ -4760,7 +4763,7 @@ msgstr "Снять выделение"
 
 #: src/options.cpp:3298
 msgid "Reset to STANDARD"
-msgstr "Сброс к стандартному"
+msgstr "Сброс к стандартному набору"
 
 #: src/options.cpp:3514
 msgid "Tides && Currents"
@@ -4882,7 +4885,7 @@ msgstr "Пеленги"
 
 #: src/options.cpp:3936
 msgid "Show true"
-msgstr "Показать истенное значение"
+msgstr "Показывать истинное значение"
 
 #: src/options.cpp:3939
 msgid "Show magnetic bearings and headings"
@@ -4902,17 +4905,16 @@ msgstr "Показывать магнитные пеленги и путевы�
 
 #: src/options.cpp:4050
 msgid "Show magnetic bearings and headings."
-msgstr "Показывать магнитные пеленги и путевые углы."
+msgstr "Показывать магнитные пеленги и путевые углы"
 
 #: src/options.cpp:4061 src/options.cpp:4925
 msgid "WMM Plugin calculated magnetic variation"
-msgstr "WMM плагин для вариации магнитного склонения"
+msgstr "Магнитное склонение, вычисленное плагином WMM"
 
 #: src/options.cpp:4075
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr " Чтобы задать магнитное склонение вручную, \n"
-" необходимо отключить плагин WMM."
+msgstr "Чтобы задать магнитное склонение вручную, необходимо отключить плагин WMM."
 
 #: src/options.cpp:4110
 msgid "AIS Targets"
@@ -5124,7 +5126,7 @@ msgstr "Плагины"
 
 #: src/options.cpp:4931
 msgid "User set magnetic variation"
-msgstr "Предполагаемое магнитное склонение"
+msgstr "Заданное магнитное склонение"
 
 #: src/options.cpp:5314
 msgid "feet"
@@ -5181,10 +5183,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr "Сжатие будет изменять файлы карт на диске. \n"
-"Это может сделать их несовместимыми с другими программами или более старые версии OpenCPN.\n"
-"Сжатие карт может занять немного больше времени для загрузки и отображения на некоторых системах. \n"
-"Их можно распаковать снова, используя unxz или 7 zip программ."
+msgstr "Файлы карт на диске будут изменены в процессе сжатия. \n"
+"Это может сделать их несовместимыми с другими программами или более старыми версиями OpenCPN.\n"
+"Загрузка и отображение сжатых карт происходит медленнее обычного.\n"
+"Карты можно будет распаковать обратно, используя программы unxz или 7-Zip."
 
 #: src/options.cpp:6576 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
@@ -5192,20 +5194,20 @@ msgstr "OpenCPN — Предупреждение"
 
 #: src/options.cpp:6589 src/options.cpp:6640
 msgid "OpenCPN Compress Charts"
-msgstr "Сжатие карт"
+msgstr "OpenCPN — Сжатие карт"
 
 #: src/options.cpp:6632
 msgid "No charts found to compress."
-msgstr "Не найдено карт для сжатия."
+msgstr "Не найдено карт для сжатия."
 
 #: src/options.cpp:6666
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr "сжато %ld карт\n"
-"из %.1fMB в %.1fMB\n"
-"сохранено %.1fMB (%.1f%%)"
+msgstr "сжато %ld карт\n"
+"из %.1f Мбайт в %.1f Мбайт\n"
+"сохранено %.1f Мбайт (%.1f %%)"
 
 #: src/options.cpp:7033 src/options.cpp:7044
 msgid "Select Sound File"
@@ -5340,7 +5342,7 @@ msgstr "Обнаружен нечитаемый программный моду�
 
 #: src/pluginmanager.cpp:1191
 msgid "Incompatible plugin detected"
-msgstr "    Обнаружен несовместимый плагин"
+msgstr "Обнаружен несовместимый программный модуль"
 
 #: src/pluginmanager.cpp:1194
 #, c-format
@@ -5747,7 +5749,7 @@ msgstr "Время отбытия"
 
 #: src/routeprop.cpp:664 src/routeprop.cpp:1225 src/TrackPropDlg.cpp:1206
 msgid "(m/d/y h:m)"
-msgstr "(д/г ч:мин)"
+msgstr "(м/д/г ч:мин)"
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:879 src/routeprop.cpp:1219
 #: src/TrackPropDlg.cpp:667 src/TrackPropDlg.cpp:1207
@@ -5942,7 +5944,7 @@ msgstr "8 пикселей"
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:409
 #: src/TrackPropDlg.cpp:639
 msgid "9 pixels"
-msgstr "9 пикселей"
+msgstr "9 пикселей"
 
 #: src/routeprop.cpp:960 src/routeprop.cpp:1309 src/TrackPropDlg.cpp:409
 #: src/TrackPropDlg.cpp:639
@@ -6270,7 +6272,7 @@ msgstr "%H ч %M мин."
 
 #: src/TrackPropDlg.cpp:1308
 msgid "track"
-msgstr "Траектория"
+msgstr "путь"
 
 #: src/TrackPropDlg.cpp:1695
 msgid "--"

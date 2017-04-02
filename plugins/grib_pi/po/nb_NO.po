@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-02-23 09:22-0500\n"
+"PO-Revision-Date: 2017-04-01 22:45-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -475,15 +475,15 @@ msgstr "Avspillingsalternativer"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr ""
+msgstr "Hastighetskontroll"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"
-msgstr ""
+msgstr "Sakte"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Fast"
-msgstr ""
+msgstr "Rask"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Loop Mode"

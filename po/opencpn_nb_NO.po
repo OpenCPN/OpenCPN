@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-04 11:14-0500\n"
-"PO-Revision-Date: 2017-03-07 13:52-0500\n"
+"PO-Revision-Date: 2017-04-01 22:45-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -2844,7 +2844,12 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr ""
+msgstr "\n"
+"OpenCPN er distribuert i håpet om at det vil være til god hjelp,men UTEN NOEN FORM FOR GARANTI; uten selv underforstått garanti av SALGBARHET eller FUNKSJONALITET FOR ET SPESIELT FORMÅL.\n\n"
+"Se GNU Generell Åpen Lisens for flere detaljer.\n\n"
+"OpenCPN må bare brukes sammen med godkjente papirkarter og tradisjonelle navigasjonsmetoder.\n\n"
+"IKKE stol på OpenCPN for sikkerheten til de ombord eller materiell.\n\n"
+"Vennligst klikk \"OK\" for å godta og fortsette, \"Avbryt\" for å avslutte.\n"
 
 #: src/chart1.cpp:852
 msgid "Welcome to OpenCPN"
@@ -3227,7 +3232,7 @@ msgstr "Midlertidig AISMOB rute"
 
 #: src/chart1.cpp:9744
 msgid "Present own ship"
-msgstr ""
+msgstr "Nåværende fartøy posisjon"
 
 #: src/chart1.cpp:9814
 msgid "AIS MAN OVERBOARD UPDATE"
@@ -4609,7 +4614,8 @@ msgstr "Vektor"
 #: src/options.cpp:2978
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Med en lavere verdi, samme zoom-nivå vises et mindre detaljert kart.\n"
+"Med en høyere verdi, viser den samme zoom-verdi et mer detaljert kart."
 
 #: src/options.cpp:2994 src/options.cpp:3731
 msgid "Controls"
@@ -4758,7 +4764,7 @@ msgstr "Tøm alt"
 
 #: src/options.cpp:3298
 msgid "Reset to STANDARD"
-msgstr ""
+msgstr "Tilbakestill til STANDARD"
 
 #: src/options.cpp:3514
 msgid "Tides && Currents"
@@ -4810,7 +4816,7 @@ msgstr "Se forover modus"
 
 #: src/options.cpp:3723 src/options.cpp:3814
 msgid "Preserve scale when switching charts"
-msgstr ""
+msgstr "Bevar skala ved bytte av karter"
 
 #: src/options.cpp:3737 src/options.cpp:3828
 msgid "Smooth Panning / Zooming"
@@ -4880,7 +4886,7 @@ msgstr "Kurser"
 
 #: src/options.cpp:3936
 msgid "Show true"
-msgstr ""
+msgstr "Vis sann"
 
 #: src/options.cpp:3939
 msgid "Show magnetic bearings and headings"
@@ -4896,20 +4902,21 @@ msgstr "grad. (-V, +Ø)"
 
 #: src/options.cpp:4047
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "Vis sanne retninger og kurser"
 
 #: src/options.cpp:4050
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "Vis magnetiske retninger og kurser."
 
 #: src/options.cpp:4061 src/options.cpp:4925
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "Magnetisk variasjon kalkulert av WMM utvidelse"
 
 #: src/options.cpp:4075
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr ""
+msgstr " For å sette magnetisk variasjon manuelt,\n"
+" må du deaktivere WMM utvidelsen."
 
 #: src/options.cpp:4110
 msgid "AIS Targets"
@@ -5081,11 +5088,11 @@ msgstr "Aktiver berøringsskjerm grensesnitt"
 
 #: src/options.cpp:4465
 msgid "Enable Scaled Graphics interface"
-msgstr ""
+msgstr "Aktiver skalert grafisk brukergrensesnitt"
 
 #: src/options.cpp:4469
 msgid "Use Settings for Inland ECDIS Version 2.3"
-msgstr ""
+msgstr "Benytt innstillinger for innenlands ECDIS versjon 2.3"
 
 #: src/options.cpp:4481
 msgid "User Interface scale factor"
@@ -5121,7 +5128,7 @@ msgstr "Utvidelser"
 
 #: src/options.cpp:4931
 msgid "User set magnetic variation"
-msgstr ""
+msgstr "Brukersatt magnetisk variasjon"
 
 #: src/options.cpp:5314
 msgid "feet"
@@ -5178,7 +5185,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr ""
+msgstr "Komprimering vil endre kartfiler på disk.\n"
+"Dette kan gjøre dem inkompatible med andre programmer eller eldre versjoner av OpenCPN.\n"
+"Komprimerte kart kan ta litt lengre tid å åpne på noen systemer.\n"
+"Kartene kan dekomprimeres ved å benytte UNXZ eller 7zip programmer."
 
 #: src/options.cpp:6576 src/routeman.cpp:788 src/routeman.cpp:864
 msgid "OpenCPN Warning"
@@ -5186,18 +5196,20 @@ msgstr "OpenCPN advarsel"
 
 #: src/options.cpp:6589 src/options.cpp:6640
 msgid "OpenCPN Compress Charts"
-msgstr ""
+msgstr "OpenCPN komprimer karter"
 
 #: src/options.cpp:6632
 msgid "No charts found to compress."
-msgstr ""
+msgstr "Ingen kart funnet for komprimering."
 
 #: src/options.cpp:6666
 #, c-format
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr ""
+msgstr "komprimert %ld karter\n"
+"fra %.1fMB til %.1fMB\n"
+"spart %.1fMB (%.1f%%)"
 
 #: src/options.cpp:7033 src/options.cpp:7044
 msgid "Select Sound File"
@@ -5328,7 +5340,7 @@ msgstr "Oppdaget uleselig utvidelsesbibliotek, sjekk filrettigheter:\n"
 
 #: src/pluginmanager.cpp:1191
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "Inkompatibel utvidelse oppdaget"
 
 #: src/pluginmanager.cpp:1194
 #, c-format
@@ -5440,7 +5452,7 @@ msgstr "Veipunktnavn"
 
 #: src/routemanagerdialog.cpp:691
 msgid "Distance from own ship"
-msgstr ""
+msgstr "Distanse fra eget skip"
 
 #: src/routemanagerdialog.cpp:705
 msgid "&New"
@@ -5731,7 +5743,7 @@ msgstr "Avreise tidspunkt"
 
 #: src/routeprop.cpp:664 src/routeprop.cpp:1225 src/TrackPropDlg.cpp:1206
 msgid "(m/d/y h:m)"
-msgstr ""
+msgstr "(m/d/å t:m)"
 
 #: src/routeprop.cpp:665 src/routeprop.cpp:879 src/routeprop.cpp:1219
 #: src/TrackPropDlg.cpp:667 src/TrackPropDlg.cpp:1207

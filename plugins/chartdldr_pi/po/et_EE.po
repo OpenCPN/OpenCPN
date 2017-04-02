@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-03-07 13:52-0500\n"
+"PO-Revision-Date: 2017-04-01 22:44-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -349,11 +349,11 @@ msgstr "Pärast kataloogi uuendust vali allalaadimiseks"
 
 #: src/chartdldrgui.cpp:487
 msgid "All updated charts"
-msgstr "Kõik uuendatud kaardid"
+msgstr "kõik uuendatud kaardid"
 
 #: src/chartdldrgui.cpp:491
 msgid "All new charts"
-msgstr "Kõik uued kaardid"
+msgstr "kõik uued kaardid"
 
 #: src/chartdldrgui.cpp:497
 msgid "Allow bulk update of all configured chart sources and charts"

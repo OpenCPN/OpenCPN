@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-04 11:14-0500\n"
-"PO-Revision-Date: 2017-03-07 13:51-0500\n"
+"PO-Revision-Date: 2017-04-01 22:44-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -2849,7 +2849,7 @@ msgstr "\n"
 "Vaata GNU General Public License täpsustamiseks.\n\n"
 "OpenCPN-i peab kasutama ainult koos heakskiidetud paberkaartidega ja navigatsiooni traditsiooniliste meetoditega.\n\n"
 "ÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n\n"
-"Palun vajuta \"OK\" nõustumiseks ja jätkamiseks, \"Katkesta\" väljumiseks.\n"
+"Palun vajuta \"OK\" nõustumiseks ja jätkamiseks, \"Tühista\" väljumiseks.\n"
 
 #: src/chart1.cpp:852
 msgid "Welcome to OpenCPN"
@@ -4094,7 +4094,7 @@ msgstr "aadress"
 #: src/options.cpp:1379 src/options.cpp:1394 src/options.cpp:1980
 #: src/options.cpp:1998 src/options.cpp:2311
 msgid "DataPort"
-msgstr "andmeport"
+msgstr "Andmeport"
 
 #: src/options.cpp:1403 src/options.cpp:2007
 msgid "Baudrate"
@@ -4418,7 +4418,7 @@ msgstr "Vahemaa ühik"
 
 #: src/options.cpp:2505 src/options.cpp:3881 src/options.cpp:3989
 msgid "Nautical miles"
-msgstr "meremiil"
+msgstr "meremiilid"
 
 #: src/options.cpp:2505 src/options.cpp:3882 src/options.cpp:3990
 msgid "Kilometers"
@@ -4874,7 +4874,7 @@ msgstr "kraadid, minutite kümnendikud"
 
 #: src/options.cpp:3918 src/options.cpp:4026
 msgid "Decimal Degrees"
-msgstr "Kraadi kümnendikud"
+msgstr "kraadi kümnendikud"
 
 #: src/options.cpp:3919 src/options.cpp:4027
 msgid "Degrees, Minutes, Seconds"
@@ -4902,11 +4902,11 @@ msgstr "kraadi (-W + E)"
 
 #: src/options.cpp:4047
 msgid "Show true bearings and headings"
-msgstr "näita magnetsuundi ja -kursse"
+msgstr "näita tegelikke suundi ja kursse"
 
 #: src/options.cpp:4050
 msgid "Show magnetic bearings and headings."
-msgstr "näita magnetsuundi ja -kursse"
+msgstr "Näita magnetsuundi ja -kursse."
 
 #: src/options.cpp:4061 src/options.cpp:4925
 msgid "WMM Plugin calculated magnetic variation"
@@ -4916,7 +4916,7 @@ msgstr "WMM-plugina arvutatud magnetiline variatsioon"
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
 msgstr " Käsitsi magneetilise variatsiooni määramiseks \n"
-" pead sa keelama WMM-plugina."
+"pead sa keelama WMM-plugina."
 
 #: src/options.cpp:4110
 msgid "AIS Targets"
@@ -5088,11 +5088,11 @@ msgstr "võimalda puutepinna kasutajaliides"
 
 #: src/options.cpp:4465
 msgid "Enable Scaled Graphics interface"
-msgstr "Võimalda skaleeritud graafikaga kasutajaliides"
+msgstr "võimalda skaleeritud graafikaga kasutajaliides"
 
 #: src/options.cpp:4469
 msgid "Use Settings for Inland ECDIS Version 2.3"
-msgstr "Kasuta sätteid sisevete-ECDIS'e versioon 2.3 jaoks"
+msgstr "kasuta sätteid sisevete-ECDIS'e versiooni 2.3 jaoks"
 
 #: src/options.cpp:4481
 msgid "User Interface scale factor"
@@ -5261,7 +5261,7 @@ msgstr "Tekstuuri tihendamine"
 
 #: src/options.cpp:8420
 msgid "Texture Compression with Caching"
-msgstr "Tekstuuri pakkimine vahemällu"
+msgstr "tekstuuri pakkimine vahemällu"
 
 #: src/options.cpp:8422
 msgid "Texture Compression Caching"
@@ -5273,7 +5273,7 @@ msgstr "Tekstuuri mälu maht (MB)"
 
 #: src/options.cpp:8428 src/options.cpp:8577
 msgid "Size: "
-msgstr "Suurus: "
+msgstr "suurus: "
 
 #: src/options.cpp:8430
 msgid "Rebuild Texture Cache"
@@ -5285,7 +5285,7 @@ msgstr "Tühjenda tekstuuri vahemälu"
 
 #: src/options.cpp:8436
 msgid "Show FPS"
-msgstr "Näita FPS'i"
+msgstr "näita FPS'i"
 
 #: src/options.cpp:8438
 msgid "Software OpenGL (restart OpenCPN)"
@@ -5293,7 +5293,7 @@ msgstr "Tarkvaraline OpenGL (OpenCPN taaskäivitus)"
 
 #: src/options.cpp:8440
 msgid "Use Accelerated Panning"
-msgstr "Kasuta kiirendatud nihutamist"
+msgstr "kasuta kiirendatud nihutamist"
 
 #: src/options.cpp:8442
 msgid "Texture Settings"
