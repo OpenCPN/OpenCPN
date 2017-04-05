@@ -1404,7 +1404,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
             off += len*8;
         }
         if (grib_msg->num_grids != 1) {
-            ok = false;
+            dataType = 255;
             return;
         }
     }
