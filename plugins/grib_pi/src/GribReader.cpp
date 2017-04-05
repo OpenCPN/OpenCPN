@@ -84,6 +84,13 @@ void GribReader::clean_vector(std::vector<GribRecord *> &ls)
 //---------------------------------------------------------------------------------
 void GribReader::storeRecordInMap(GribRecord *rec)
 {
+#if 0
+    fprintf(stderr,
+        "GribReader: STORE record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
+            rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
+            rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
+        );
+#endif
 	std::map <std::string, std::vector<GribRecord *>* >::iterator it;
 	it = mapGribRecords.find(rec->getKey());
 	if (it == mapGribRecords.end())
@@ -321,7 +328,7 @@ void GribReader::readAllGribRecords()
                         else
                         {
 #if 1
-                              printf(
+                              fprintf(stderr,
                                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
                                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
                               rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
