@@ -261,6 +261,12 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 
 static inline void getBits(unsigned char *buf, int *loc, size_t first, size_t nbBits)
 {
+    if (nbBits == 0) {
+        // x >> 32 is undefined behavior, on x86 it returns x
+        *loc = 0;
+        return;
+    }
+
     zuint oct = first / 8;
     zuint bit = first % 8;
 
