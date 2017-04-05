@@ -79,6 +79,7 @@ grib_pi::grib_pi(void *ppimgr)
       initialize_images();
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
+      m_GUIScaleFactor = -1.;
 }
 
 grib_pi::~grib_pi(void)
@@ -404,16 +405,16 @@ void grib_pi::OnToolbarToolCallback(int id)
     if(m_bShowGrib) {
         if( starting ) {
             SetDialogFont( m_pGribCtrlBar );
-			m_GUIScaleFactor = scale_factor;
-			m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
+            m_GUIScaleFactor = scale_factor;
+            m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             m_pGribCtrlBar->Refresh();
         } else {
-			MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
+            MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
             if( m_DialogStyle >> 1 == SEPARATED ) {
-				MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
+                MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
-                }
+            }
         }
         m_pGribCtrlBar->Show();
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {
