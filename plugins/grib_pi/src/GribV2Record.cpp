@@ -738,7 +738,7 @@ static bool unpackBMS(GRIBMessage *grib_msg)
 	len=(len-6)*8;
 	grib_msg->md.bitmap = new unsigned char[len];
 	grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
-	memcpy (grib_msg->md.bms, grib_msg->buffer +grib_msg->offset + 6, grib_msg->md.bmssize);
+	memcpy (grib_msg->md.bms, grib_msg->buffer + (grib_msg->offset/8) + 6, grib_msg->md.bmssize);
 	for (n=0; n < len; n++) {
 	  getBits(grib_msg->buffer, &bit, grib_msg->offset+48+n, 1);
 	  grib_msg->md.bitmap[n]=bit;
