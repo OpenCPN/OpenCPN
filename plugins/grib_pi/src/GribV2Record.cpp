@@ -783,10 +783,12 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 	break;
     case 3:
+#if 0
 	if (grib_msg->md.scan_mode != 0) {
 	  fprintf(stderr,"Unable to decode ddef3 for scan mode %d\n",grib_msg->md.scan_mode);
 	  return false; // XXX exit(1);
 	}
+#endif
 	(grib_msg->grids[grid_num]).gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
 	if (grib_msg->md.complex_pack.num_groups > 0) {
 	  if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
