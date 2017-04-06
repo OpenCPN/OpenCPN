@@ -49,6 +49,8 @@ import java.util.Locale ;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.SecretKey;
@@ -844,6 +846,43 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return m_settingsReturn;
     }
 
+
+
+    public String callFromCpp(){
+        Log.i("DEBUGGER_TAG", "callFromCpp");
+
+        try {
+            Process process = Runtime.getRuntime().exec(
+                    "/data/data/org.opencpn.opencpn/hello");
+            System.out.print("Process LAUNCHED\n");
+
+            // Reads stdout.
+            // NOTE: You can write to stdin of the command using
+            // process.getOutputStream().
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            int read;
+            char[] buffer = new char[4096];
+            StringBuffer output = new StringBuffer();
+            while ((read = reader.read(buffer)) > 0) {
+                output.append(buffer, 0, read);
+            }
+            reader.close();
+
+            // Waits for the command to finish.
+            process.waitFor();
+            System.out.print(output);
+            System.out.print("Process FINISHED\n");
+
+            // return output.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return "OK";
+    }
 
 
 

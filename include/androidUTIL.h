@@ -128,6 +128,8 @@ bool androidSetFullscreen( bool bFull );
 void androidLaunchHelpView();
 void androidTerminate();
 
+void androidTestCPP();
+
 int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI);
 
 bool androidShowDisclaimer( wxString title, wxString msg );

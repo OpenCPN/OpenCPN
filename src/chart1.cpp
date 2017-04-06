@@ -4259,6 +4259,9 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_SHOW_TIDES:
         case ID_TIDE: {
+            
+            androidTestCPP();
+            
             LoadHarmonics();
 
             if( ptcmgr->IsReady() ) {

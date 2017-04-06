@@ -3633,6 +3633,10 @@ wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned i
     }
 }
 
+void androidTestCPP()
+{
+    callActivityMethod_vs("callFromCpp");
+}
 
 
 
