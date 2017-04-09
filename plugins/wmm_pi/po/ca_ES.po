@@ -1,0 +1,223 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-26 22:17-0500\n"
+"PO-Revision-Date: 2017-01-27 16:13-0500\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Catalan\n"
+"Language: ca_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: ca\n"
+"X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
+
+#: src/wmm_pi.cpp:86
+msgid "\n"
+"World Magnetic Model Plotting allows users to cross reference the magnetic declination values printed on many raster charts.\n\n"
+"Declination is the angle between true and magnetic north.\n"
+"Inclination is the vertical angle of the magnetic field.\n"
+"\t(+- 90 at the magnetic poles)\n"
+"Field Strength is the magnetic field in nano tesla from\n"
+"\t20000 to 66000\n\n"
+"The plotted lines are similar to a topographic map.  The space between them can be adjusted; more space takes less time to calculate.\n\n"
+"The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.\n\n"
+"The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
+msgstr ""
+
+#: src/wmm_pi.cpp:102
+msgid "WMM Plugin"
+msgstr "Connector WMM"
+
+#: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
+msgid "WMM"
+msgstr "WMM"
+
+#: src/wmm_pi.cpp:283
+msgid "World Magnetic Model PlugIn for OpenCPN"
+msgstr "Connector del Model Magnètic Mundial per a OpenCPN"
+
+#: src/wmm_pi.cpp:288
+msgid "World Magnetic Model PlugIn for OpenCPN\n"
+"Implements the NOAA World Magnetic Model\n"
+"More information: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"The bundled WMM2015 model expires on December 31, 2019.\n"
+"After then, if new version of the plugin will not be released\n"
+"in time, get a new WMM.COF from NOAA and place it to the\n"
+"location you can find in the OpenCPN logfile."
+msgstr "El Connector World Magnetic Model per a OpenCPN\n"
+"Executa el NOAA World Magnetic Model\n"
+"Més informació a: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"The bundled WMM2015 aquest model expirarà el 31 de Desembre del 2019\n"
+"Després d'aquesta data, si no se us ha proporcionat un nou model\n"
+"Podreu obtenir el nou WMM.COF des de NOAA i col·locar-lo a la\n"
+"localització que podeu trobar al fitxer de registre d'OpenCPN."
+
+#: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
+msgid "Error, see log."
+msgstr "Error, veure el fitxer log."
+
+#: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
+msgid "WMM Preferences"
+msgstr "Preferències WMM"
+
+#: src/wmm_pi.h:78 src/WmmUIDialog.h:152
+msgid "Magnetic Plot Settings"
+msgstr "Paràmetres de traçat magnètics"
+
+#: src/WmmUIDialog.cpp:26
+msgid "Boat"
+msgstr "Vaixell"
+
+#: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
+msgid "F "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
+msgid "Total Intensity"
+msgstr "Intensitat total"
+
+#: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
+msgid "H "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
+msgid "Horizontal Intensity"
+msgstr "Intensitat horitzontal"
+
+#: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
+msgid "X "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
+msgid "North Component"
+msgstr "Component nord"
+
+#: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
+msgid "Y "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
+msgid "East Component"
+msgstr "Component est"
+
+#: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
+msgid "Z "
+msgstr ""
+
+#: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
+msgid "Vertical Component"
+msgstr "Vertical Component"
+
+#: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
+msgid "Incl"
+msgstr "Incl"
+
+#: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
+msgid "(DIP) - Geomagnetic Inclination "
+msgstr "(DIP) - inclinació geomagnètica "
+
+#: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
+msgid "Vari"
+msgstr "Declinació"
+
+#: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
+msgid "Magnetic Variation"
+msgstr "Declinació magnetica"
+
+#: src/WmmUIDialog.cpp:122
+msgid "Cursor"
+msgstr "Cursor"
+
+#: src/WmmUIDialog.cpp:222
+msgid "Plot"
+msgstr "Traçat"
+
+#: src/WmmUIDialog.cpp:231
+msgid "Enable plot"
+msgstr "Permetre el traçat"
+
+#: src/WmmUIDialog.cpp:235
+msgid "Settings..."
+msgstr "Configuració..."
+
+#: src/WmmUIDialog.cpp:274
+msgid "Extended"
+msgstr "Estès"
+
+#: src/WmmUIDialog.cpp:274
+msgid "Variation only"
+msgstr "Només la declinació"
+
+#: src/WmmUIDialog.cpp:276
+msgid "View"
+msgstr "Veure"
+
+#: src/WmmUIDialog.cpp:280
+msgid "Show Plot Options"
+msgstr "Mostra opcions de trama"
+
+#: src/WmmUIDialog.cpp:283
+msgid "Show also data at cursor position"
+msgstr "Mostrar les dades en la posició del cursor"
+
+#: src/WmmUIDialog.cpp:286
+msgid "Show toolbar icon"
+msgstr "Mostra la icona de la barra d'eines"
+
+#: src/WmmUIDialog.cpp:289
+msgid "Show data in toolbar icon"
+msgstr "Mostrar dades en icona de la barra d'eines"
+
+#: src/WmmUIDialog.cpp:293
+msgid "Window transparency"
+msgstr "Transparència de finestra"
+
+#: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
+msgid "Declination"
+msgstr "Declinació"
+
+#: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
+msgid "Degrees"
+msgstr "Graus"
+
+#: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
+msgid "Inclination"
+msgstr "Inclinació"
+
+#: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
+msgid "Field Strength"
+msgstr "Intensitat del camp"
+
+#: src/WmmUIDialog.cpp:356
+msgid "Nano Tesla"
+msgstr "Nano Tesla"
+
+#: src/WmmUIDialog.cpp:366
+msgid "Step Size"
+msgstr "Mida del pas"
+
+#: src/WmmUIDialog.cpp:377
+msgid "Pole Accuracy"
+msgstr "Precisió de pol"
+
+#: src/WmmUIDialog.cpp:381
+msgid "About"
+msgstr "Sobre"
+
+#: src/WmmUIDialog.cpp:384
+msgid "Save"
+msgstr "Desar"
+
+#: src/WmmUIDialog.cpp:387
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#: src/MagneticPlotMap.cpp:361
+msgid "Building Magnetic Map"
+msgstr "Construir mapa magnètic"
+
