@@ -23,7 +23,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+
+#ifndef _TOOLBAR_H__
+#define _TOOLBAR_H__
+
 #include "wx/tbarbase.h"
+#include "styles.h"
+#include <vector>
+
+class ocpnFloatingToolbarDialog;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Definition
@@ -331,6 +339,8 @@ public:
       void OnClose( wxCloseEvent& event );
       void OnWindowCreate( wxWindowCreateEvent& event );
       void OnToolLeftClick( wxCommandEvent& event );
+      virtual void OnKeyDown( wxKeyEvent &event );
+      virtual void OnKeyUp( wxKeyEvent &event );
       void MouseEvent( wxMouseEvent& event );
       void FadeTimerEvent( wxTimerEvent& event );
       bool IsToolbarShown() { return ( m_ptoolbar != 0 ); }
@@ -338,8 +348,14 @@ public:
       void SetGrabber( wxString icon_name );
       void DestroyTimerEvent( wxTimerEvent& event );
       
+      void EnableSubmerge(bool enable){ m_benableSubmerge = enable; }
       void Realize();
       ocpnToolBarSimple *GetToolbar();
+      ocpnToolBarSimple *CreateNewToolbar();
+      
+      void CreateConfigMenu();
+      bool _toolbarConfigMenuUtil( int toolid, wxString tipString );
+      
       void Submerge();
       void SubmergeToGrabber();
       bool isSubmergedToGrabber();
@@ -349,13 +365,16 @@ public:
       void ShowTooltips();
       void EnableTooltips() { if(m_ptoolbar) m_ptoolbar->EnableTooltips(); }
       void DisableTooltips() { if(m_ptoolbar) m_ptoolbar->DisableTooltips(); }
-
+      void UpdateRecoveryWindow(bool b_toolbarEnable);
+      void EnableTool( int toolid, bool enable );
+      void SetToolShortHelp( int toolid, const wxString& helpString );
+      
       void DestroyToolBar();
       void ToggleOrientation();
       void MoveDialogInScreenCoords( wxPoint posn, wxPoint posn_old );
       void RePosition();
       void LockPosition(bool lock){ m_block = lock; }
-      void SetColorScheme( ColorScheme cs );
+      virtual void SetColorScheme( ColorScheme cs );
       ColorScheme GetColorScheme(){ return m_cs; }
       bool CheckSurfaceRequest( wxMouseEvent &event );
       
@@ -377,6 +396,11 @@ public:
       GrabberWin *m_pRecoverwin;
       bool m_bnavgrabber;
       
+      wxMenu  *m_FloatingToolbarConfigMenu;
+
+protected:
+    ocpnToolBarSimple *m_ptoolbar;
+    
 private:
       void DoFade( int value );
 
@@ -384,7 +408,6 @@ private:
       bool  m_bsubmergedToGrabber;
       
       wxWindow *m_pparent;
-      ocpnToolBarSimple *m_ptoolbar;
       wxBoxSizer *m_topSizer;
 
       GrabberWin *m_pGrabberwin;
@@ -408,6 +431,7 @@ private:
       
       bool m_bAutoHideToolbar;
       int m_nAutoHideToolbar;
+      bool m_benableSubmerge;
 
 };
 
@@ -433,7 +457,7 @@ class ToolbarChoicesDialog: public wxDialog
 public:
     /// Constructors
     ToolbarChoicesDialog( );
-    ToolbarChoicesDialog( wxWindow* parent, wxWindowID id = -1,
+    ToolbarChoicesDialog( wxWindow* parent, wxWindow *sponsor, wxWindowID id = -1,
                         const wxString& caption = _T(""),
                           const wxPoint& pos = wxDefaultPosition,
                           const wxSize& size = wxDefaultSize,
@@ -453,6 +477,8 @@ public:
     wxButton*     m_OKButton;
 
     std::vector<wxCheckBox*> cboxes;
+    wxMenu        *m_configMenu;
     
 };
 
+#endif

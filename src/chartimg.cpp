@@ -4435,57 +4435,6 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
           pt->bValid = true;
       }
 
-#if 0
-      //    Here is some test code, using full RGB line buffers in LineCache
-      //    instead of pallete dereferencing for every access....
-      //    Uses lots of memory, needs ColorScheme considerations
-      if(pt->pRGB == NULL)
-      {
-            pt->pRGB = (unsigned char *)malloc(Size_X * BPP/8);
-
-            ix = 0;
-            unsigned char *prgb = pt->pRGB;           // destination
-            unsigned char *pCL = xtemp_line;          // line of pallet pointers
-
-            while(ix < Size_X-1)
-            {
-                  unsigned char cur_by = *pCL;
-                  rgbval = (int)(pPalette[cur_by]);
-                  while((ix < Size_X-1))
-                  {
-                        if(cur_by != *pCL)
-                              break;
-                        *((int *)prgb) = rgbval;
-                        prgb += BPP/8 ;
-                        pCL ++;
-                        ix  ++;
-                  }
-
-                  // Get the last pixel explicitely
-
-                  unsigned char *pCLast = xtemp_line + (Size_X - 1);
-                  unsigned char *prgb_last = pt->pRGB + ((Size_X - 1)) * BPP/8;
-
-                  rgbval = (int)(pPalette[*pCLast]);        // last pixel
-                  unsigned char a = rgbval & 0xff;
-                  *prgb_last++ = a;
-                  a = (rgbval >> 8) & 0xff;
-                  *prgb_last++ = a;
-                  a = (rgbval >> 16) & 0xff;
-                  *prgb_last = a;
-
-            }
-      }
-
-      if(pt->pRGB)
-      {
-            unsigned char *ps = pt->pRGB + (xs * BPP/8);
-            int len = wxMin((xl - xs), (Size_X - xs));
-            memmove(pLineBuf, ps, len * BPP/8);
-            return 1;
-      }
-#endif
-
 //          Line is valid, de-reference thru proper pallete directly to target
 
       if(xl > Size_X)
@@ -4623,7 +4572,7 @@ nocachestart:
                   // it is probably possible to gain even faster performance by ensuring alignment
                   // to 16 or 32byte boundary (depending on processor) then using inline assembly
 
-#ifdef ARMHF          
+#ifdef __ARM_ARCH
 //  ARM needs 8 byte alignment for *(uint64_T *x) = *(uint64_T *y)
 //  because the compiler will (probably) use the ldrd/strd instuction pair.
 //  So, advance the prgb pointer until it is 8-byte aligned,
@@ -4668,16 +4617,6 @@ nocachestart:
                   }
               }
           }
-#if 0
-          else {
-              int dest_inc_val_bytes = (BPP/8) * sub_samp;
-              for(;i<nRunCount; i+=sub_samp) {
-                  *(uint32_t*)prgb = rgbval;
-                  prgb+=dest_inc_val_bytes ;
-              }
-              i -= nRunCount;
-          }
-#endif
 
           ix += nRunCount;
       }

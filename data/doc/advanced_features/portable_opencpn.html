@@ -1,0 +1,134 @@
+<meta charset="utf-8">
+
+
+<h1>Portable OpenCPN</h1>
+<div class="level1">
+
+<p>
+The OpenCPN portable option allows the program to run from an USB stick, or run independent from, and parallel to a normal installation.
+</p>
+
+<p>
+Using Windows,  it is not possible to run concurrent instances of OpenCPN, unless using the portable option.
+</p>
+<ul>
+<li class="level1"> You can start the regular OpenCPN and a portable version later. The other way around will not work.</li>
+<li class="level1"> You can run multiple portable instances at the same time. It makes sense to run these from different folders, to avoid possible data corruption.</li>
+</ul>
+
+<p>
+To differ between various instances of the program, the titlebar on portable versions looks like this.
+</p>
+
+<p>
+<img src="../opencpn/manual/portable.h.31_tok.fbbae4_w.605.png" class="media" alt="" width="605" height="31" /><br/>
+
+</p>
+
+<p>
+It is thus possible to run multiple portable instances and identify each version.
+</p>
+
+</div>
+
+<h3>To create a portable Windows version</h3>
+<div class="level3">
+<ol>
+<li class="level1"> Create a new directory dedicated to the portable OpenCPN.<br/>
+</li>
+<li class="level1 node"> In a separate window, navigate to C:\Program Files (x86)\OpenCPN (on 64-bit systems) or C:\Program Files\OpenCPN (on 32-bit systems), and copy (don&#039;t move) the following data directories (with containing files) into this new directory:<ul>
+<li class="level2"> doc/</li>
+<li class="level2"> plugins/</li>
+<li class="level2"> s57data/</li>
+<li class="level2"> share/</li>
+<li class="level2"> sounds/</li>
+<li class="level2"> tcdata/</li>
+<li class="level2"> uidata/</li>
+<li class="level2"> wvsdata/ (only for OpenCPN 3.2.0 and earlier)</li>
+</ul>
+</li>
+<li class="level1 node"> From the same OpenCPN folder, copy the following files into the new directory:<ul>
+<li class="level2"> crashrpt_lang.ini</li>
+<li class="level2"> CrashRpt1401.dll</li>
+<li class="level2"> CrashSender1401.exe</li>
+<li class="level2"> license.txt</li>
+<li class="level2"> OpenCPN.exe (of course)</li>
+<li class="level2"> Eight wxWidgets dlls beginning with the name “wxbase” (This needs an expert&#039;s attention)</li>
+</ul>
+</li>
+<li class="level1 node"> Now navigate to C:\Windows\SysWOW64 (on 64-bit systems) or C:\Windows\System32 (on 32-bit systems) and copy the following files into the new directory:<ul>
+<li class="level2"> msvcp100.dll</li>
+<li class="level2"> msvcr100.dll</li>
+</ul>
+</li>
+<li class="level1"> If running Windows, create MSDOS batch file “opencpn portable.bat” (or other name of user choice) containing the one line:</li>
+</ol>
+<pre class="code">&lt;code&gt;
+opencpn -p 
+&lt;/code&gt;</pre>
+
+<p>
+This file must be in the new directory. If you want your batch file to be in a different directory, you must edit the batch file to include “cd” commands to navigate into the new directory before the line containing the 
+“opencpn -p” command.
+</p>
+
+<p>
+To run OpenCPN portably within this directory, simply execute the “opencpn portable” batch file. There may be a way to build a click-able shortcut to OpenCPN, with the -p option specified in the shortcut. But I could not figure it out. Windows insists upon a drive letter in the command line of the shortcut, which would defeat the whole purpose of portability.Thus, the batch file….
+</p>
+
+<p>
+If the charts are also in the current dir, then the entire installation is “portable”, meaning there are no hard-coded drive letter dependencies, and all write activities occur in the current dir only.
+</p>
+
+<p>
+This setup works very well from a USB stick.
+</p>
+
+</div>
+
+<h5>Additional Notes for OpenCPN v4.1.xx and 4.2</h5>
+<div class="level5">
+
+<p>
+Use these files they are more current
+</p>
+<ul>
+<li class="level1"> msvcp120.dll  ←-better than msvcp100.dll</li>
+<li class="level1"> msvcr120.dll  ←-better than msvcr100.dll</li>
+<li class="level1"> libcurl.dll   ←-needed for chartdownloader and other features.</li>
+<li class="level1"> 16 wxWidgets  ←-Files in main directory, rather than the 8 mentioned, best to copy all.</li>
+<li class="level1"> zlib1.dll     ←-Also best to copy  zlib1.dll</li>
+</ul>
+
+<p>
+<b>For a higher running priority see</b>: <em><a href="command_line.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:command_line">Command Line</a></em>
+</p>
+
+</div>
+
+<h3>A Linux version</h3>
+<div class="level3">
+
+<p>
+On Linux, a similar functionality exists. The 32 and 64 bits issue is similar.
+</p>
+
+<p>
+32 bits version can be made to work on a 64 bits Linux by installing  <em>ia32-libs</em> or <em>multiarch</em> support packages. The opposite way, a 64 bit version on a 32 bit system, will not work.
+</p>
+
+<p>
+Copy the opencpn executable binary and the data directories mentioned above to a local directory.
+</p>
+
+<p>
+In that directory, do:
+</p>
+<pre class="code">$ ./opencpn -p</pre>
+
+<p>
+This will cause all user data files to be created and used from within that local directory.
+This can be useful for side-by-side testing…
+</p>
+
+</div>

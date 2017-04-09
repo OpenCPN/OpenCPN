@@ -236,6 +236,7 @@ public:
     wxRect      rText;          // rectangle of the text as currently rendered, used for declutter
     bool        bnat;           // frmtd is National text, UTF-8 encoded
     bool        bspecial_char;  // frmtd has special ASCII characters, i.e. > 127
+    int         avgCharWidth;
 };
 
 
@@ -378,7 +379,6 @@ public:
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
       PolyTessGeo             *pPolyTessGeo;
-      PolyTessGeoTrap         *pPolyTrapGeo;
 
       LLBBox                  BBObj;                  // lat/lon BBox of the rendered object
       double                  m_lat;                  // The lat/lon of the object's "reference" point

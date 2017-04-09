@@ -15,9 +15,6 @@ ENDIF (COMMAND cmake_policy)
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
-#<<<<<<< HEAD
-#configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
-#=======
 #configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
@@ -26,7 +23,6 @@ IF(NOT SKIP_VERSION_CONFIG)
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
-#>>>>>>> master
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
 
 #SET(CMAKE_BUILD_TYPE Debug)

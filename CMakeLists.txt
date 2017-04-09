@@ -51,6 +51,10 @@ ENDIF(APPLE)
 
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
+IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+    MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
+ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
+
 
 #Red Hat:   /etc/redhat-release
 #Slackware: /etc/slackware-version
@@ -68,38 +72,61 @@ IF (NOT WIN32)
     SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2")
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "amd64")
-#      SET (LIB_INSTALL_DIR "lib64")
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "arm64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "amd64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
     SET(TENTATIVE_PREFIX "/usr/local")
   ENDIF (EXISTS /etc/debian_version)
   IF (EXISTS /etc/redhat-release)
     SET (PACKAGE_FORMAT "RPM")
     #    SET (PACKAGE_DEPS  "wxGTK mesa-libGLU mesa-libGL gettext zlib bzip2 portaudio")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "x86_64")
-      SET (LIB_INSTALL_DIR "lib64")
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-      SET (LIB_INSTALL_DIR "lib")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "aarch64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "x86_64")
+        SET (LIB_INSTALL_DIR "lib64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+        SET (LIB_INSTALL_DIR "lib")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   ENDIF (EXISTS /etc/redhat-release)
   IF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
     SET (PACKAGE_FORMAT "RPM")
     #    SET (PACKAGE_DEPS  "libwx_baseu-2_8-0-wxcontainer MesaGLw libbz2-1 portaudio")
-    IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "x86_64")
-      SET (LIB_INSTALL_DIR "lib")
+    IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "aarch64")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "armhf")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ELSE (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "x86_64")
+        SET (LIB_INSTALL_DIR "lib")
         # In recent openSUSE versions (as of 2016), lib64 is mostly used when there are both 32-bit and 64-bit versions, although not limited to that.
         # This CMake variable only affects the location of OpenCPN plugins at installation time, and nothing more than that.
         # At run time, the plugin directory is determined by wxStandardPaths::GetPluginsDir(), which returns "lib", so this can be considered canonical.
-    ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
-      SET (ARCH "i386")
-      SET (LIB_INSTALL_DIR "lib")
-    ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
+        SET (ARCH "i386")
+        SET (LIB_INSTALL_DIR "lib")
+      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
   ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
   IF (EXISTS /etc/gentoo-release)
     SET (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
@@ -116,17 +143,22 @@ ELSE (NOT WIN32)
   SET (ARCH "i386")
 ENDIF (NOT WIN32)
 
-IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-  SET (ARCH "armhf")
-ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
-
-IF (ARCH MATCHES "armhf")
-  ADD_DEFINITIONS(-DARMHF)
-ENDIF (ARCH MATCHES "armhf")
-
+#IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
+#  SET (ARCH "armhf")
+#ENDIF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
 
 MESSAGE (STATUS "*** Build Architecture is ${ARCH}")
 SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
+
+#  Detect the Apple Version of the build machine
+IF (APPLE)
+   EXEC_PROGRAM(uname ARGS -v  OUTPUT_VARIABLE DARWIN_VERSION)
+   STRING(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
+   MESSAGE(STATUS "*** Building on DARWIN_VERSION=${DARWIN_VERSION}")
+   IF (DARWIN_VERSION GREATER 11)
+     SET(APPLE_MODERN 1 INTERNAL)
+   ENDIF (DARWIN_VERSION GREATER 11)
+ENDIF(APPLE)
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
@@ -254,12 +286,11 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
-
 #  To build for android, use this cmake invocation..
 #$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
 #-DCMAKE_TOOLCHAIN_FILE=../buildandroid/build_android.cmake
-#-DwxQt_Build=build_android_53 -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
-#-DQt_Base /home/dsr/Qt/5.3) ..
+#-DwxQt_Build=build_android_55_intl -DwxQt_Base=/home/dsr/Projects/wxqt/wxWidgets
+#-DQt_Base=/home/dsr/Projects/qt5bare -DQt_Build=build_release/qtbase ..
 
 IF(DEFINED _wx_selected_config)
 
@@ -275,15 +306,6 @@ IF(_wx_selected_config MATCHES "androideabi-qt")
   MESSAGE (STATUS "Qt_Base/Build: " ${Qt_Base} "/" ${Qt_Build})
   MESSAGE (STATUS "wxQt_Base/Build: " ${wxQt_Base} "/" ${wxQt_Build})
   SET(QT_ANDROID "ON")
-  SET(QT_LINUX "OFF")
-  SET(QT "ON")
-ELSE(_wx_selected_config MATCHES "androideabi-qt")
-  IF(_wx_selected_config MATCHES "qt")
-    MESSAGE (STATUS "Building for wxQt-linux")
-    SET(QT_ANDROID "OFF")
-    SET(QT_LINUX "ON")
-    SET(QT "ON")
-  ENDIF(_wx_selected_config MATCHES "qt")
 ENDIF(_wx_selected_config MATCHES "androideabi-qt")
 
 ENDIF(DEFINED _wx_selected_config)
@@ -308,7 +330,6 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     MESSAGE (STATUS "Found OpenGLESv1")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     SET(OPENGLES_FOUND "YES")
     SET(OPENGL_FOUND "YES")
@@ -318,7 +339,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
 
     add_subdirectory(src/glu)
 
-    SET(OPENGL_LIBRARIES "GL_static" "GLU_static" "EGL" "X11" "drm" "dri2" )
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm" "dri2" )
   ENDIF()
 ENDIF()
 
@@ -329,7 +350,6 @@ IF(QT_ANDROID)
     MESSAGE (STATUS "Using GLESv1 for Android")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
     ADD_DEFINITIONS(-DARMHF)
 
     SET(OPENGLES_FOUND "YES")
@@ -338,7 +358,8 @@ IF(QT_ANDROID)
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     add_subdirectory(src/glshim)
 
-    add_subdirectory(src/glu)
+    ADD_DEFINITIONS(-DUSE_GLU_TESS)
+    #add_subdirectory(src/glu)
 
 ENDIF(QT_ANDROID)
 
@@ -360,7 +381,6 @@ IF(OPENGL_FOUND)
     MESSAGE (STATUS "    GL Lib: " ${OPENGL_LIBRARIES})
     MESSAGE (STATUS "    GL Include: " ${OPENGL_INCLUDE_DIR})
     ADD_DEFINITIONS(-DocpnUSE_GL)
-    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
     # We need to remove GLU from the OPENGL_LIBRARIES list
     FOREACH (_currentLibFile ${OPENGL_LIBRARIES})
@@ -372,18 +392,17 @@ IF(OPENGL_FOUND)
         ENDIF()
     ENDFOREACH (_currentLibFile )
 
-    MESSAGE (STATUS "    Adding local GLU" )
-    add_subdirectory(src/glu)
-
-    SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
     MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
-
 
 ELSE(OPENGL_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_FOUND)
 
 ENDIF()
+
+MESSAGE (STATUS "    Adding local GLU" )
+add_subdirectory(src/glu)
+SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
 
 IF(NOT QT_ANDROID)
 # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -401,7 +420,8 @@ STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_
 ENDIF(MSYS)
 
 INCLUDE(${wxWidgets_USE_FILE})
-    MESSAGE (STATUS "Found wxWidgets..." )
+MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 
     # We need to remove GLU from the wxWidgets_LIBRARIES list
@@ -471,7 +491,7 @@ ENDIF(MINGW)
 IF( APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations" )
+  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas" )
   ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
@@ -487,7 +507,7 @@ IF(OCPN_USE_CRASHREPORT)
         MESSAGE (STATUS "Using Windows CrashRpt")
         ADD_DEFINITIONS(-DOCPN_USE_CRASHRPT)
         INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
-        SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.lib)
+        SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.lib)
         SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
     ELSE(MSVC)
         IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
@@ -598,7 +618,10 @@ IF(NOT QT_ANDROID)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
     SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
+    
     MESSAGE (STATUS "wxCurl configured...")
+    MESSAGE (STATUS "CURL_LIBRARIES:"  ${CURL_LIBRARIES})
+    
     IF(WIN32 AND OCPN_USE_EXTERN_CURL)
         find_library(CURL_LIBRARY_DLL NAMES
             curl
@@ -626,14 +649,39 @@ IF(OCPN_USE_SVG)
         SET( CAIRO_FIND_QUIETLY TRUE )
       ENDIF( CAIRO_INCLUDE_DIR )
 
-      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
-              PATHS /usr/local/include /usr/include
-              PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/ )
+      SET(CAIRO_INC_LOOK_PATHS /usr/local/include /usr/include )
 
+      IF(APPLE)
+        IF(NOT APPLE_MODERN)
+            SET(CAIRO_INC_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/include)
+            SET(LOOK_OPTION NO_DEFAULT_PATH)
+        ENDIF(NOT APPLE_MODERN)
+      ENDIF(APPLE)
+        
+      FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
+              PATHS ${CAIRO_INC_LOOK_PATHS}
+              PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
+              ${LOOK_OPTION} )
+              
+      message(STATUS " Cairo include directory found: ${CAIRO_INCLUDE_DIR}")
+
+      
+      SET(CAIRO_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+      IF(APPLE)
+        IF(NOT APPLE_MODERN)
+            SET(CAIRO_LIB_LOOK_PATHS /usr/local/Cellar/cairo/1.14.6/lib)
+            SET(LOOK_OPTION NO_DEFAULT_PATH)
+        ENDIF(NOT APPLE_MODERN)
+      ENDIF(APPLE)
+      
       SET( CAIRO_NAMES libcairo cairo )
+
       FIND_LIBRARY( CAIRO_LIBRARY
               NAMES ${CAIRO_NAMES}
-              PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+              PATHS ${CAIRO_LIB_LOOK_PATHS}
+              ${LOOK_OPTION})
+
+      message(STATUS " Cairo library found: ${CAIRO_LIBRARY}")
 
       GET_FILENAME_COMPONENT( CAIRO_LIBRARY_DIR ${CAIRO_LIBRARY} PATH )
 
@@ -649,12 +697,15 @@ IF(OCPN_USE_SVG)
 
       #  Some systems (e.g ARMHF RPI2) require some extra libraries
       #  This is not exactly a general solution, but probably harmless where not needed.
+      IF(NOT APPLE)
       FIND_LIBRARY( PANGOCAIRO_LIBRARY  NAMES pangocairo-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( PANGOFT2_LIBRARY NAMES pangoft2-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( PANGOXFT_LIBRARY NAMES pangoxft-1.0 PATHS /usr/lib /usr/local/lib)
       FIND_LIBRARY( GDK_PIXBUF_LIBRARY NAMES gdk_pixbuf-2.0 PATHS /usr/lib /usr/local/lib)
       FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
                                             PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
+      ENDIF(NOT APPLE)
+      
       IF ( CAIRO_EXTRAS_FOUND )                                           
         SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
         message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
@@ -832,6 +883,7 @@ FIND_PACKAGE(LibLZMA)
 IF(LIBLZMA_FOUND)
     message (STATUS "Building with lzma support")
     ADD_DEFINITIONS(-DUSE_LZMA)
+    INCLUDE_DIRECTORIES(${LIBLZMA_INCLUDE_DIR})
 ELSE(LIBLZMA_FOUND)
     message (STATUS "lzma library not found")
 ENDIF(LIBLZMA_FOUND)
@@ -1015,6 +1067,7 @@ SET(HDRS
                 include/OCPNPlatform.h
                 include/S57Sector.h
                 include/FlexHash.h
+                include/iENCToolbar.h
 )
 
 SET(SRCS
@@ -1107,6 +1160,7 @@ SET(SRCS
                 src/canvasMenu.cpp
                 src/OCPNPlatform.cpp 
                 src/FlexHash.cpp
+                src/iENCToolbar.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -1183,7 +1237,6 @@ IF (USE_S57)
 		src/cm93.cpp
 		src/mygeom.cpp
 		include/cm93.h
-		src/tri.c
 		src/Osenc.cpp
 		include/Osenc.h
                 include/s57RegistrarMgr.h
@@ -1390,7 +1443,8 @@ IF (OPENGL_FOUND)
     src/mipmap/mipmap_sse.c
     src/mipmap/mipmap_sse2.c
     src/mipmap/mipmap_ssse3.c
-    src/mipmap/mipmap_avx2.c)
+    src/mipmap/mipmap_avx2.c
+    src/mipmap/mipmap_neon.c)
 
   ADD_LIBRARY(MIPMAP ${SRC_MIPMAP})
   SET(EXTRA_LIBS ${EXTRA_LIBS} MIPMAP)
@@ -1413,7 +1467,6 @@ IF (OPENGL_FOUND)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
       ELSE ()
-#        neon version not yet tested or implemented
 #        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       ENDIF ()
   ELSE (NOT MSVC)
@@ -1521,6 +1574,12 @@ SET(uiData
 	src/bitmaps/toolicons_journeyman.png
 	src/bitmaps/toolicons_journeyman_flat.png
 	src/bitmaps/toolicons_traditional.png
+	src/bitmaps/iconRMinus.png
+        src/bitmaps/iconRPlus.png
+        src/bitmaps/iconMinimum.png
+        src/bitmaps/iconStandard.png
+        src/bitmaps/iconUserStd.png
+        src/bitmaps/iconAll.png
 	)
 
 IF (USE_S57)
@@ -1620,6 +1679,9 @@ ENDIF(BUNDLE_TCDATA MATCHES "ON")
 SET_SOURCE_FILES_PROPERTIES(
            data/license.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
 
+SET_SOURCE_FILES_PROPERTIES(
+           data/CoC-909_2013-InlandECDIS_20170308.pdf PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
+
 FILE(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/data/sounds/*)
 FOREACH (_currentSoundFile ${SOUND_FILES})
   SET_SOURCE_FILES_PROPERTIES(
@@ -1659,25 +1721,32 @@ IF(OCPN_USE_SVG)
   
 ENDIF(OCPN_USE_SVG)
 
-SET_SOURCE_FILES_PROPERTIES(
-           data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
-IF(BUNDLE_DOCS MATCHES "ON")
-  SET_SOURCE_FILES_PROPERTIES(
-           data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+SET_SOURCE_FILES_PROPERTIES( data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-  FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
-  FOREACH (_currentDocFile ${DOC_FILES})
-    SET_SOURCE_FILES_PROPERTIES(
-           ${_currentDocFile}
-           PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/images" )
-  ENDFOREACH (_currentDocFile )
+IF(BUNDLE_DOCS MATCHES "ON")
+  SET_SOURCE_FILES_PROPERTIES( data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+
+  FILE(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
+  FOREACH (_currentWikiDocFile ${WIKI_DOC_FILES})
+ 
+    file(RELATIVE_PATH
+    _docfileRelPath # Output variable
+    "${CMAKE_SOURCE_DIR}/data/doc/" # Base directory
+    ${_currentWikiDocFile} # Absolute path to the file
+    )
+
+    GET_FILENAME_COMPONENT(_docfileLocation ${_docfileRelPath} DIRECTORY)
+    SET(_location "SharedSupport/doc/${_docfileLocation}")
+#    MESSAGE (STATUS "    Adding Wiki Doc File : " ${_currentWikiDocFile}  "  Destination: "  ${_location})
+    SET_SOURCE_FILES_PROPERTIES( ${_currentWikiDocFile}  PROPERTIES MACOSX_PACKAGE_LOCATION ${_location} )
+  ENDFOREACH (_currentWikiDocFile )
+  
+  
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
-SET_SOURCE_FILES_PROPERTIES(
-           buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+SET_SOURCE_FILES_PROPERTIES( buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
-SET_SOURCE_FILES_PROPERTIES(
-           buildosx/MainMenu.xib PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj )
+SET_SOURCE_FILES_PROPERTIES( buildosx/MainMenu.xib PROPERTIES MACOSX_PACKAGE_LOCATION Resources/English.lproj )
 
 #  These variables get substituted into the Info.plist template file at build time
 SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
@@ -1693,6 +1762,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${s57data}
       ${tcData}
       data/license.txt
+      data/CoC-909_2013-InlandECDIS_20170308s.pdf
       ${SOUND_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
@@ -1702,7 +1772,7 @@ IF(BUNDLE_DOCS MATCHES "ON")
   ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       data/doc/help_web.html
       data/doc/help_en_US.html
-      ${DOC_FILES}
+      ${WIKI_DOC_FILES}
   )
 ELSE(BUNDLE_DOCS MATCHES "ON")
   ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
@@ -1814,10 +1884,21 @@ IF(UNIX)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
 
-IF(QT_LINUX)
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
-ENDIF(QT_LINUX)
 
+IF( UNIX AND NOT APPLE )
+    FIND_PATH( LIBELF_INCLUDE_DIR NAMES libelf.h gelf.h PATH_SUFFIXES libelf )
+    FIND_LIBRARY( LIBELF_LIBRARY NAMES elf )
+    IF( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+        MESSAGE( STATUS "Found LibELF..." )
+        MESSAGE( STATUS "    ELF Lib: ${LIBELF_INCLUDE_DIR}" )
+        MESSAGE( STATUS "    ELF Include: ${LIBELF_LIBRARY}" )
+        TARGET_COMPILE_DEFINITIONS( ${PACKAGE_NAME} PUBLIC USE_LIBELF )
+        TARGET_INCLUDE_DIRECTORIES( ${PACKAGE_NAME} PUBLIC "${LIBELF_INCLUDE_DIR}" )
+        TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "${LIBELF_LIBRARY}" )
+    ELSE( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+        MESSAGE( WARNING "Did not found LibELF, plugin compatibility check will be simplified." )
+    ENDIF( LIBELF_INCLUDE_DIR AND LIBELF_LIBRARY )
+ENDIF( UNIX AND NOT APPLE )
 
 IF(NOT APPLE)
 
@@ -1856,7 +1937,9 @@ IF(BUNDLE_TCDATA MATCHES "ON")
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+INSTALL(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
 IF(PACKAGE_FORMAT EQUAL "DEB")
 	INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 ELSE(PACKAGE_FORMAT EQUAL "DEB")
@@ -1992,7 +2075,7 @@ ENDIF(GETTEXT_MSGFMT_EXECUTABLE)
 #       Install wxstd.mo in Windows and Mac
 IF(WIN32 OR APPLE)
 
-    FILE(GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/wxWidgets/locale/*.mo)
+    FILE(GLOB WXWIDGETS_MO_FILES ${CMAKE_SOURCE_DIR}/buildwin/wxWidgets/locale/*.mo)
 
     FOREACH ( _current_wx_mofile ${WXWIDGETS_MO_FILES})
       GET_FILENAME_COMPONENT(_absFile ${_current_wx_mofile} ABSOLUTE)
@@ -2026,8 +2109,8 @@ IF(WIN32 AND NOT UNIX)
 ENDIF(WIN32 AND NOT UNIX)
 
 IF(MSVC AND OCPN_USE_CRASHREPORT)
-    INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1402.dll DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-    INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1402.exe DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1403.dll DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashSender1403.exe DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
     INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/crashrpt_lang.ini DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
     INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/dbghelp.dll DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
     INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/PrivacyPolicy.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)

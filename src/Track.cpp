@@ -143,6 +143,39 @@ void TrackPoint::SetCreateTime( wxDateTime dt )
     m_CreateTimeX = dt;
 }
 
+void TrackPoint::Draw(ocpnDC& dc )
+{
+    wxPoint r;
+    wxRect hilitebox;
+ 
+    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    
+    wxPen *pen;
+    pen = g_pRouteMan->GetRoutePointPen();
+        
+    int sx2 = 8;
+    int sy2 = 8;
+            
+     wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
+            
+     hilitebox = r1;
+     hilitebox.x -= r.x;
+     hilitebox.y -= r.y;
+     float radius;
+     hilitebox.Inflate( 4 );
+     radius = 4.0f;
+            
+     wxColour hi_colour = pen->GetColour();
+     unsigned char transparency = 100;
+            
+     //  Highlite any selected point
+     AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, radius,
+                               hi_colour, transparency );
+            
+}
+
+
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -164,6 +197,7 @@ Track::Track()
     m_btemp = false;
 
     m_HyperlinkList = new HyperlinkList;
+    m_HighlightedTrackPoint = -1;
 }
 
 Track::~Track( void )
@@ -535,6 +569,11 @@ void Track::Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
     Assemble(pointlists, box, 1/scale/scale, last, level, 0);
 }
 
+void Track::ClearHighlights()
+{
+    m_HighlightedTrackPoint = -1;
+}
+
 void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 {
     std::list< std::list<wxPoint> > pointlists;
@@ -612,7 +651,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
             delete [] points;
         }
-    } else { // opengl version
+    }
+#ifdef ocpnUSE_GL    
+    else { // opengl version
         glColor3ub(col.Red(), col.Green(), col.Blue());
         glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
 
@@ -643,6 +684,10 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
         delete [] points;
     }
+#endif
+
+    if(m_HighlightedTrackPoint >= 0)
+        TrackPoints[m_HighlightedTrackPoint]->Draw(dc);
 }
 
 TrackPoint *Track::GetPoint( int nWhichPoint )

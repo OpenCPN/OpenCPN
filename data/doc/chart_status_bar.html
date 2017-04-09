@@ -1,0 +1,119 @@
+<meta charset="utf-8">
+
+
+<h1>Chart Status Bar</h1>
+<div class="level1">
+
+<p>
+<br/>
+
+<img src="opencpn/manual/options-chart-buttons-enc.h.24_tok.e801b5_w.148.png" class="media" alt="" width="148" height="24" />
+<br/>
+
+<img src="opencpn/manual/options-chart-buttons-rnc-icon.h.26_tok.3857ac_w.197.png" class="media" alt="" width="197" height="26" /><br/>
+
+<br/>
+
+At the bottom of the display, is the Status Bar, activated from “<b>Options→User Interface→Show Status Bar</b>”.
+<br/>
+
+Just above the Status Bar is the &#039;Chart Selection Bar&#039;. <b>Ctrl+B toggles</b> this bar on/off.<br/>
+
+It shows all the available chart for the present view, represented by one colored segment for each chart. The order between the segments represents the scale of the charts. Largest scale to the left, smallest to the right. If CM93 is available, it is always furthest to the right.<br/>
+
+The segmented color bars in the Status Bar represent:
+</p>
+<ul>
+<li class="level1"> Blue for Raster</li>
+<li class="level1"> Green For ENC&#039;s</li>
+<li class="level1"> Brown/Yellow for CM93 charts</li>
+<li class="level1"> The current chart displays as a lighter shade of its color, or if quilting is active, the charts currently making up the quilt are displayed in lighter shade.</li>
+<li class="level1"> The Chart bar below consisting of 12 segments shows a quilt of two active charts. Five charts in the quilt are hidden, due to small scale. CM93 is in it&#039;s place, to the right. Four charts of larger scale than the present view are available. The largest scale chart is a Transverse Mercator chart.</li>
+</ul>
+
+<p>
+<br/>
+
+<img src="opencpn/manual/seg.h.97_tok.715b88_w.550.png" class="media" alt="" width="550" height="97" />
+<br/>
+
+</p>
+
+</div>
+
+<h3>Limitation</h3>
+<div class="level3">
+
+<p>
+<br/>
+
+The Chart Bar handles a maximum of 100 charts. The largest scale charts will be dropped first if more than 100 chart are available on a position. It is unlikely that this will be much of a limitation, but the possibility certainly exists if a lot of info charts, pilot charts and weather charts etc, are loaded. The symptom will be that large scale charts becomes impossible to display.
+<br/>
+
+When you hover the mouse pointer over the bar, and not in quilting mode, a thumbnail of the chart will appear under the <em><a href="toolbar_buttons/scaling_charts.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:scaling_charts">Scaling Charts</a></em> icons and a chart information box will pop up just above the button. If quilting is on, instead of a thumbnail, the chart represented by the button will be highlighted in a transparent reddish color. By clicking on the appropriate bar, or using the appropriate <em><a href="keyboard_shortcuts.html" class="wikilink1" title="opencpn:opencpn_user_manual:keyboard_shortcuts">Keyboard Shortcuts</a></em>, you will switch to the chart shown in the thumbnail. This feature is especially useful if you wish to view an ENC or a Raster chart of the same area.
+<br/>
+
+<img src="opencpn/manual/status-bar.h.18_tok.68e43c_w.550.png" class="media" alt="" width="550" height="18" />
+<br/>
+
+The bottom line starting from the left, a bar, that imitates a paddle wheel, if a gps position is received, and the gps position. Then follows SOG, COG, the position of the cursor, and course and distance from the gps position to the cursor. To the far right there is true Scale of the display and the Zoom Factor. The Zoom factor is the Scale (as above) divided with the natural scale of the chart.
+<br/>
+
+The buttons, or colored segments, are displaying a lot more information however.
+<br/>
+
+<img src="opencpn/manual/tmerc.h.30_tok.4b16af_w.130.png" class="media" alt="" width="130" height="30" />
+<br/>
+
+These buttons shows that the two charts are <b>Transverse Mercator</b>, and that single char mode is used as the corners of the segments are not rounded.
+<br/>
+
+<img src="opencpn/manual/polyconic.h.30_tok.08ce5d_w.130.png" class="media" alt="" width="130" height="30" />
+<br/>
+
+This button indicates that the chart is a <b>Polyconic</b> chart.
+<br/>
+
+<img src="opencpn/manual/skewed.h.30_tok.2be2d9_w.130.png" class="media" alt="" width="130" height="30" />
+<br/>
+
+This button shows that the chart is <b>Skewed</b>, meaning that north is<b> not</b> up on the chart.
+<br/>
+
+<img src="opencpn/manual/not_participate.h.30_tok.e7318f_w.130.png" class="media" alt="" width="130" height="30" />
+<br/>
+
+This chart is <b>excluded from quilting</b> because of user action. Right click to include in quilting again. Notice the rounded corners due to quilt mode.
+<br/>
+
+<img src="opencpn/manual/hidden-quilt.h.30_tok.d7da46_w.130.png" class="media" alt="" width="130" height="30" />
+<br/>
+
+The raster chart represented by this button don&#039;t participate in the quilt because it is hidden by other, larger scale charts. Vector charts are represented similar.
+<br/>
+
+To illustrate a lot of this, here is a screen shot in quilting mode.
+<br/>
+
+<img src="opencpn/manual/quilt1.h.424_tok.fba310_w.551.png" class="media" alt="" width="551" height="424" />
+<br/>
+
+The screen is a quilt of two Polyconical charts. Hovering the mouse pointer over the left chart-button highlights the lager scale chart for Manitowoc. Two smaller scale charts that cover the area displayed on the screen are included in the quilt, but are invisible as they are covered by the larger scale charts. To view these charts, right-click anywhere on a chart in the quilt and select “Remove this chart from quilt”, one of these charts will now be shown in the quilt.
+<br/>
+
+The Brown right most button shows that CM93 version 2, charts are available for the area, but not currently displayed.
+<br/>
+
+The information box shows relevant information about the chart.
+</p>
+
+</div>
+
+<h3>To Hide the Chart Bar</h3>
+<div class="level3">
+
+<p>
+Use these hotkeys: <b>Ctrl + B</b> hide/show the Chart Bar.
+</p>
+
+</div>

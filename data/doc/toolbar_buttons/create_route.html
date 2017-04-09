@@ -1,0 +1,168 @@
+<meta charset="utf-8">
+
+
+<h1>Create Route</h1>
+<div class="level1">
+
+<p>
+<img src="../opencpn/manual/route.h.32_tok.481319_w.32.png" class="media" alt="" width="32" height="32" />
+</p>
+
+<p>
+Press the <img src="../opencpn/manual/route.h.32_tok.481319_w.32.png" class="media" alt="" width="32" height="32" /> button or use the short cut “Ctrl-R” to start the creation of a route. “Esc” ends the route. The cursor changes to a pencil (<img src="../opencpn/manual/pencil2.h.16_tok.1bbff1_w.31.png" class="media" alt="" width="31" height="16" />). Left click to create sequential numbered  route points.  The numbers will not be visible, but are available in the Route Properties Dialog, accessible through the right click menu or the Route Manager. The running total distance of the whole route will be shown along the “pencil” together with the course and distance from the last marked route point. When creating routes, OpenCPN will ask if it should use a nearby mark, when a route point is added that is close to an already existing mark.
+</p>
+
+<p>
+<a href="../opencpn/manual/use-nearby-waypoint.png" class="media" title="opencpn:manual:use-nearby-waypoint.png"><img src="../opencpn/manual/use-nearby-waypoint.png" class="media" alt="" /></a>
+</p>
+
+<p>
+If you click “Yes”, the existing mark is copied to the route.
+</p>
+
+<p>
+<img src="../opencpn/manual/gc1.h.244_tok.13fed8_w.500.png" class="media" alt="" width="500" height="244" />
+</p>
+
+<p>
+For longer distances, especially on east-west courses in higher latitudes, the Create Route tool seamlessly switches to also offer a Great Circle alternative to Mercator rhumb-line route legs. 
+</p>
+
+<p>
+Read more <a href="route_mark_manager/great_circle_sailing.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager:great_circle_sailing">Great-circle Sailing</a>.
+</p>
+
+<p>
+<img src="../opencpn/manual/route-rollover.h.535_tok.74dbb6_w.650.png" class="media" alt="" width="650" height="535" />
+</p>
+
+<p>
+Hovering the cursor over the route brings up a yellow roll-over rectangle. It shows the name of the route (if it is set in the properties dialog), the total length of the route, the course and distance for the leg under the cursor and distance run so far along the route to the first waypoint in the current leg.  Looking at the four legged route above. The total distance is 8.8 NMi. The third leg is 1.89 NMi in true direction 160° and the accumulated distance in the first two legs is 4.76 NMi.
+</p>
+
+<p>
+If your desired route extends off the currently displayed chart, move the route cursor in the desired direction and the display will automatically pan to show the area. You can zoom in and out with the mouse scroll wheel or keyboard +/- keys during route creating. You can also right click and select &#039;MAX DETAIL HERE&#039; or &#039;Scale Out&#039; during route creation. When finished right click and choose end route from the context menu or press the “Esc” key.
+</p>
+
+<p>
+The new route will be shown in blue to indicate it is inactive.  Active routes are red.
+</p>
+
+<p>
+Right-clicking on a route brings up a focused menu
+</p>
+
+<p>
+<img src="../opencpn/manual/4rightclroute.h.356_tok.b1f839_w.345.png" class="media" alt="" width="345" height="356" />
+</p>
+
+<p>
+To prevent deleting a route by mistake, a confirmation dialog is activated if you choose “Delete” from the pop-up menu.
+</p>
+
+</div>
+
+<h3>Multiple Routes</h3>
+<div class="level3">
+
+<p>
+In OpenCPN multiple routes can be handled in a couple of different ways.  Many routes can be created in a session or imported into a session.
+</p>
+
+<p>
+The visibility of every route is controlled in the Route Manager. There is an “eye” to the far left on the line for each route. This works as a toggle switch. A plain Eye means that the route is visible, while an eye with a red cross means that it&#039;s hidden.  This allows you to show only the routes of current interest.
+</p>
+
+<p>
+Another way is to create and export routes, and later import them when needed.  To keep the chart clear of useful, but not currently needed, routes follow these steps:
+</p>
+<ol>
+<li class="level1"> Create a folder called, &#039;GPX_Routes&#039;, or another suitable name.</li>
+<li class="level1"> Create your route.</li>
+<li class="level1"> Use the Route Manager to export the route with a descriptive file name and save it in GPX_Routes.</li>
+<li class="level1"> Delete the route from the chart.</li>
+<li class="level1"> Repeat for each new route.</li>
+<li class="level1"> When needed, simply use the Route Managers “Import” Button to open the route file.</li>
+</ol>
+
+<p>
+You can export any number of routes to one big file or export each route to a separate file.
+</p>
+
+<p>
+When you import a route that uses shared waypoints those waypoints will be left on the chart when you delete the route.  To get rid of the way points left on the chart when a route has been deleted follow these steps.
+</p>
+<ol>
+<li class="level1"> Open the Route Managers Waypoint tab and press the “Delete All” button</li>
+<li class="level1"> Say &#039;Yes&#039; to: &#039;Are you sure you want to delete &lt;ALL&gt; waypoints?&#039;</li>
+</ol>
+
+</div>
+
+<h3>Saving and Loading Routes and Marks</h3>
+<div class="level3">
+<ul>
+<li class="level1"> Refer to <a href="route_mark_manager.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager">Route &amp; Mark Manager</a> for more information on loading and saving data using the Route Manager</li>
+</ul>
+
+</div>
+
+<h3>Activating and using routes</h3>
+<div class="level3">
+
+<p>
+Right clicking on the track, changes the color from blue to orange and brings up a comprehensive menu.
+</p>
+
+<p>
+<img src="../opencpn/manual/zeroxte.tok.95a100_w.500.png" class="media" alt="" width="500" />
+</p>
+
+<p>
+Clicking “Activate Route” or performing the same action through the Route Manager changes the route color to red and a new route information window appears on the right side of the display.
+</p>
+
+<p>
+Once a route is activated, you are presented with the choice of “Deactivate Route” in the different menus.
+</p>
+
+<p>
+There is one unique item in the route focused right-click menu above.  <b>Zero XTE</b> sets the present XTE (Cross Track Error) to zero. This comes in handy if you for some reason are off course following a route and want the autopilot to follow the route adjusted for your current position rather than the position of the last route waypoint.
+</p>
+
+<p>
+Right clicking on a waypoint in a route brings up this menu.
+</p>
+
+<p>
+<img src="../opencpn/manual/activeroutewpt.h.222_tok.5495fd_w.206.png" class="media" alt="" width="206" height="222" />
+</p>
+<ul>
+<li class="level1"> <b>Properties</b> The dialog is the same as for an individual mark.</li>
+<li class="level1"> <b>Activate </b> (or Ctrl-N) Gives the direction to the chosen waypoint instead of the first waypoint in the route, which is the default. Useful when joining, for example, an imported route at an arbitrary waypoint.</li>
+<li class="level1"> <b>Remove from Route</b>, but don&#039;t delete it.</li>
+<li class="level1"> <b>Copy as kml,</b>  for use with Qtvlm or Google Earth.</li>
+<li class="level1"> <b>Delete</b>  waypoint from Route.</li>
+<li class="level1"> <b>Send to GPS</b>  is seen in the rightclick menus for routes and waypoints. If a port is not selected, the case in the picture above, a dialog is shown to select an output port. To change the selected port, go to the route manager and select “Send to GPS”.</li>
+</ul>
+
+<p>
+<img src="../opencpn/manual/anegpass.h.569_tok.315273_w.750.png" class="media" alt="" width="750" height="569" />
+</p>
+
+<p>
+<img src="../opencpn/manual/route-legs.h.446_tok.b6d0a5_w.110.png" class="media" alt="" width="110" height="446" />
+</p>
+<ul>
+<li class="level1"> XTE Cross Track Error shows how far off course your boat is. “L”=left, “R”=right.</li>
+<li class="level1"> BRG Direction to next waypoint.</li>
+<li class="level1"> VMG Velocity made good to next waypoint</li>
+<li class="level1"> RNG Distance to next waypoint.</li>
+<li class="level1"> TTG Time To Go to next waypoint.</li>
+</ul>
+
+<p>
+Right clicking on “This Leg” above brings up this dialog   
+</p>
+
+</div>

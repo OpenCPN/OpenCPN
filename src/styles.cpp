@@ -226,6 +226,16 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
     return result;
 }
 
+
+bool Style::NativeToolIconExists(const wxString & name)
+{
+    if( toolIndex.find( name ) == toolIndex.end() )
+        return false;
+    else
+        return true;
+}
+    
+
 // Tools and Icons perform on-demand loading and dimming of bitmaps.
 // Changing color scheme invalidatres all loaded bitmaps.
 

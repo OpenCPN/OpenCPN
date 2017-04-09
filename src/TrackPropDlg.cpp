@@ -31,6 +31,7 @@
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
+#include "Track.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -296,7 +297,7 @@ void TrackPropDlg::CreateControlsCompact()
     itemBoxSizer2->Add( itemFlexGridSizer6a, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
 
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-            _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+            _("Total distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
@@ -350,7 +351,7 @@ void TrackPropDlg::CreateControlsCompact()
 
     wxString pDispTimeZone[] = { _("UTC"), _("Local @ PC"), _("LMT @ Location") };
 
-    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Times shown as"),
+    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Time shown as"),
                                                                                     wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer2->Add( itemStaticText12b, 0, wxEXPAND | wxALL, 5 );
 
@@ -368,7 +369,7 @@ void TrackPropDlg::CreateControlsCompact()
     wxFlexGridSizer* itemFlexGridSizer6b = new wxFlexGridSizer( 3, 2, 0, 0 );
     itemBoxSizer2->Add( itemFlexGridSizer6b, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
 
-    wxStaticText *m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    wxStaticText *m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -382,7 +383,7 @@ void TrackPropDlg::CreateControlsCompact()
     m_cColor->SetSelection( 0 );
     itemFlexGridSizer6b->Add( m_cColor, 0,  wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -400,7 +401,7 @@ void TrackPropDlg::CreateControlsCompact()
 #endif
 
 
-    m_stWidth = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+    m_stWidth = new wxStaticText( itemDialog1, wxID_ANY, _("Width") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_stWidth, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -510,25 +511,6 @@ void TrackPropDlg::CreateControlsCompact()
       wxDefaultSize, 0 );
       itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
       m_sdbBtmBtnsSizerOK->SetDefault();
-
-/*
-      //Make it look nice and add the needed non-standard buttons
-      int w1, w2, h;
-      ((wxWindowBase *)m_stName)->GetSize( &w1, &h );
-      ((wxWindowBase *)m_stFrom)->GetSize( &w2, &h );
-      ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-      ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
-*/
-#if 0
-      Connect( m_menuItemDelete->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
-      Connect( m_menuItemEdit->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
-      Connect( m_menuItemAdd->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-#endif
-
-
 
     int char_size = GetCharWidth();
     //Set the maximum size of the entire  dialog
@@ -884,14 +866,6 @@ void TrackPropDlg::CreateControls( void )
       ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
       ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
 
-#if 0
-      Connect( m_menuItemDelete->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnDeleteLink ) );
-      Connect( m_menuItemEdit->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnEditLink ) );
-      Connect( m_menuItemAdd->GetId(), wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler( TrackPropDlg::OnAddLink ) );
-#endif
 
       m_panelBasic->SetScrollRate(5, 5);
       m_panelAdvanced->SetScrollRate(5, 5);
@@ -961,7 +935,6 @@ void TrackPropDlg::InitializeList()
                 item.SetText(m_lcPoints->OnGetItemText( in, j) );
                 m_lcPoints->SetItem(item);
             }
-            in++;
         }
     }
 
@@ -1106,7 +1079,7 @@ bool TrackPropDlg::UpdateProperties()
         m_cWidth->Enable( false );
         m_sdbBtmBtnsSizerExtend->Enable( false );
         m_sdbBtmBtnsSizerSplit->Enable( false );
-        SetTitle( wxString::Format( _("Track Properties, Layer: %d"), m_pTrack->m_LayerID ) );
+        SetTitle( wxString::Format( _T("%s, %s: %d"), _("Track properties"), _T("Layer"), m_pTrack->m_LayerID ) );
     } else {
         m_tName->SetEditable( true );
         m_tFrom->SetEditable( true );
@@ -1119,7 +1092,7 @@ bool TrackPropDlg::UpdateProperties()
 
         m_sdbBtmBtnsSizerExtend->Enable( IsThisTrackExtendable() );
         //m_sdbBtmBtnsSizerSplit->Enable( false );
-        SetTitle( _("Track Properties") );
+        SetTitle( _("Track properties") );
     }
 
     ::wxEndBusyCursor();
@@ -1225,10 +1198,10 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
             << _("Name") << tab << m_pTrack->m_TrackNameString << eol
             << _("Depart From") << tab << m_pTrack->m_TrackStartString << eol
             << _("Destination") << tab << m_pTrack->m_TrackEndString << eol
-            << _("Total Distance") << tab << m_tTotDistance->GetValue() << eol
+            << _("Total distance") << tab << m_tTotDistance->GetValue() << eol
             << _("Speed") << tab << m_tAvgSpeed->GetValue() << eol
-            << _("Departure Time (m/d/y h:m)") << tab << m_pTrack->GetPoint(1)->GetCreateTime().Format() << eol
-            << _("Time Enroute") << tab << m_tTimeEnroute->GetValue() << eol << eol;
+            << _("Departure Time") + _T(" ") + _("(m/d/y h:m)") << tab << m_pTrack->GetPoint(1)->GetCreateTime().Format() << eol
+            << _("Time enroute") << tab << m_tTimeEnroute->GetValue() << eol << eol;
 
     int noCols;
     int noRows;
@@ -1288,22 +1261,27 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
     else
         selected_no = itemno;
 
-//    m_pRoute->ClearHighlights();
+    m_pTrack->m_HighlightedTrackPoint = -1;
 
     if( itemno >= 0 ) {
         TrackPoint *prp = m_pTrack->GetPoint(itemno);
         if( prp ) {
-//            prp->m_bPtIsSelected = true;                // highlight the trackpoint
+            m_pTrack->m_HighlightedTrackPoint = itemno; // highlight the trackpoint
 
             if( !( m_pTrack->m_bIsInLayer ) && !( m_pTrack == g_pActiveTrack ) ) {
                 m_nSelected = selected_no + 1;
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
             gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+#ifdef __WXMSW__            
+            if(m_lcPoints)
+                m_lcPoints->SetFocus();
+#endif            
         }
     }
     if( selected_no == 0 || selected_no == m_pTrack->GetnPoints() - 1)
         m_sdbBtmBtnsSizerSplit->Enable( false );
+    
 }
 
 void TrackPropDlg::OnTrackPropMenuSelected( wxCommandEvent& event )
@@ -1588,7 +1566,7 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
 
     if( b_found_track ) {
         SaveChanges();              // write changes to globals and update config
-//        m_pRoute->ClearHighlights();
+        m_pTrack->ClearHighlights();
     }
 
     m_bStartNow = false;
@@ -1605,7 +1583,23 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
 
 void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
 {
+    bool b_found_track = false;
+    wxTrackListNode *node = pTrackList->GetFirst();
+    while( node ) {
+        Track *ptrack = node->GetData();
+        
+        if( ptrack == m_pTrack ) {
+            b_found_track = true;
+            break;
+        }
+        node = node->GetNext();
+    }
+    
+    if( b_found_track )
+        m_pTrack->ClearHighlights();
+        
     Hide();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
 
     event.Skip();

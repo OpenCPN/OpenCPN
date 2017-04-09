@@ -113,6 +113,7 @@ public:
 
     static void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
+    
     void DrawGLOverLayObjects(void);
     void GridDraw( );
     void FlushFBO( void );
@@ -139,6 +140,8 @@ public:
 
 protected:
     void RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region );
+    void RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region );
+    
     void BuildFBO();
     bool buildFBOSize(int fboSize);
     void SetupOpenGL();

@@ -76,11 +76,12 @@ void MipMap_24_ssse3( int width, int height, unsigned char *source, unsigned cha
             a4 = _mm_avg_epu8(a4, aa);
             a5 = _mm_avg_epu8(a5, ab);
 
+            // shuffle table
+            unsigned char Z = 0x80;
+
 //          a00 a01 a02 a06 a07 a08 a0c a0d a0e a12 a13 a14 a18 a19 a1a a1e
 //          a03 a04 a05 a09 a0a a0b a0f a10 a11 a15 a16 a17 a1b a1c a1d a21
 
-            // shuffle table
-            unsigned char Z = 0x80;
             __m128i s0 = _mm_set_epi8(Z, Z, Z, Z, Z, Z, Z, 14, 13, 12, 8, 7, 6, 2, 1, 0);
             __m128i s1 = _mm_set_epi8(14, 10, 9, 8, 4, 3, 2, Z, Z, Z, Z, Z, Z, Z, Z, Z);
 

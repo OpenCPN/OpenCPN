@@ -63,7 +63,9 @@ class RouteManagerDialog : public wxDialog {
             void UpdateWptListCtrl(RoutePoint *rp_select = NULL, bool b_retain_sort = false);
             void UpdateLayListCtrl();
             void UpdateWptListCtrlViz();
-            
+
+            void UpdateLists();
+
             void OnTabSwitch(wxNotebookEvent& event);
             static void WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent );
             void TrackToRoute( Track *track );

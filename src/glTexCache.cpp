@@ -223,7 +223,7 @@ bool glTexFactory::OnTimer()
         }
     }
 
-#if 1
+#if 0 // this is proven unreliable and slow
     // if we have the data in the catalog of level 0 or doubly compressed
     // for an entire row of tiles, then we can free rows from the linebuffer
     if(g_GLOptions.m_bTextureCompression) {
@@ -788,17 +788,6 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     if((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 9 / 10))
         ptd->FreeAll();
 
-#if 0
-       // why is the entire chart+factory not freed instead?
-    unsigned int nCache = 0;
-    unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
-        if(ChartData) {
-        nCache = ChartData->GetChartCache()->GetCount();
-        if(g_nCacheLimit && (nCache > lcache_limit))
-            ptd->FreeAll();
-        }
-#endif
-    
 //    g_Platform->HideBusySpinner();
     
     return true;
@@ -1283,55 +1272,6 @@ bool glTexFactory::WriteCatalogAndHeader()
     else
         return false;
 }
-
-// return false on error (currently not used by callers)
-#if 0
-bool glTexFactory::UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
-                               ColorScheme color_scheme, bool write_catalog)
-{
-    if (level < 0 || level >= MAX_TEX_LEVEL)
-        return false;	// XXX BUG wrong level, assert ?
-
-    //  Search the catalog for this particular texture
-    if (GetCacheEntryValue(level, ptd->x, ptd->y, color_scheme) != 0) 
-        return false;
-
-    // not found, so add it
-    // Make sure the file exists
-    wxASSERT(m_fs != 0);
-    
-    if( !m_fs->IsOpened() )
-        return false;
-
-    //      Create a new catalog entry
-    CatalogEntry p( level, ptd->x, ptd->y, color_scheme);
-    
-    n_catalog_entries++;
-    
-    //      Write the compressed data to disk
-     p.v.texture_offset = m_catalog_offset;
-    
-    int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-    char *compressed_data = new char[max_compressed_size];
-    
-    int compressed_size = LZ4_compressHC2((char*)data, compressed_data, data_size, 4);
-    p.v.compressed_size = compressed_size;
-    AddCacheEntryValue(p);
-    
-    //      We write the new data at the current catalog offset, overwriting the old catalog
-    m_fs->Seek( m_catalog_offset );
-    m_fs->Write( compressed_data, compressed_size );
-    
-    delete [] compressed_data;
-    
-    //      Write the catalog and Header (which follows the catalog at the end of the file
-    m_catalog_offset += compressed_size;
-    if (write_catalog)
-        WriteCatalogAndHeader();
-    
-    return true;
-}
-#endif
 
 bool glTexFactory::UpdateCachePrecomp(unsigned char *data, int data_size, const wxRect &rect,
                                       int level, ColorScheme color_scheme, bool write_catalog)

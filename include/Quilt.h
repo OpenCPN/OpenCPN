@@ -104,6 +104,8 @@ public:
     ChartBase *GetFirstChart();
     ChartBase *GetNextChart();
     ChartBase *GetLargestScaleChart();
+    ChartBase *GetNextSmallerScaleChart();
+    
     ArrayOfInts GetQuiltIndexArray( void );
     bool IsQuiltDelta( ViewPort &vp );
     bool IsChartQuiltableRef( int db_index );
@@ -131,7 +133,9 @@ public:
     
 
     void ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region );
-    bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
+    bool RenderQuiltRegionViewOnDCNoText( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
+    bool RenderQuiltRegionViewOnDCTextOnly( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
+    
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( ViewPort &VPoint, wxPoint p );
     ChartBase *GetOverlayChartAtPix( ViewPort &VPoint, wxPoint p );
@@ -175,6 +179,9 @@ public:
     int GetRefChartdbIndex( void ) {
         return m_refchart_dbIndex;
     }
+    
+    ChartBase *GetRefChart();
+    
     int GetQuiltProj( void )
     {
         return m_quilt_proj;
@@ -224,6 +231,9 @@ public:
     ChartFamilyEnum GetPreferredFamily( void ){ return m_preferred_family; }
     
 private:
+    bool DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );
+    bool DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, OCPNRegion &chart_region );
+    
     void EmptyCandidateArray( void );
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );

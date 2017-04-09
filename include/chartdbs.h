@@ -26,7 +26,8 @@
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
 
-//#include "chart1.h"
+#include <map>
+
 #include "ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
@@ -194,6 +195,8 @@ struct ChartTableEntry
     bool Write(const ChartDatabase *pDb, wxOutputStream &os);
     void Clear();
     void Disable();
+    void ReEnable();
+    
     void SetValid(bool valid) { bValid = valid; }
     time_t GetFileTime() const { return file_date; }
 
@@ -342,6 +345,7 @@ public:
     void ApplyGroupArray(ChartGroupArray *pGroupArray);
     bool IsChartAvailable( int dbIndex );
     ChartTable    active_chartTable;
+    std::map <wxString, int> active_chartTable_pathindex;
     
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;

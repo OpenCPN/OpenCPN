@@ -114,7 +114,7 @@ public:
     bool SetFullscreen( bool bFull );
     bool AllowAlertDialog(const wxString& class_name);
     double GetDisplayDensityFactor();
-
+    double m_pt_per_pixel;
 //--------------------------------------------------------------------------
 //      Per-Platform file/directory support
 //--------------------------------------------------------------------------
@@ -165,6 +165,8 @@ public:
 #endif
     
 private:
+    bool        GetWindowsMonitorSize( int *width, int *height);
+    
     wxString    m_homeDir;
     wxString    m_exePath;
     wxString    m_SData_Dir;
@@ -176,9 +178,10 @@ private:
     FILE        *flog;
     wxLog       *m_Oldlogger;
     wxString    large_log_message;
-    
-    
-
+    wxSize      m_displaySize;
+    wxSize      m_displaySizeMM;
+    int         m_monitorWidth, m_monitorHeight;
+    bool        m_bdisableWindowsDisplayEnum;
 };
 
 

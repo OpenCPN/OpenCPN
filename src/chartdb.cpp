@@ -522,6 +522,14 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
             bool b_pos_add = false;
             if(b_group_add)
             {
+                //  Plugin loading is deferred, so the chart may have been disabled elsewhere.
+                //  Tentatively reenable the chart so that it appears in the piano.
+                //  It will get disabled later if really not useable
+                  if(cte.GetChartType() == CHART_TYPE_PLUGIN){
+                      ChartTableEntry *pcte = (ChartTableEntry*)&cte;
+                      pcte->ReEnable();
+                  }
+                  
                   if(CheckPositionWithinChart(db_index, lat, lon)  &&  (j < MAXSTACK) )
                       b_pos_add = true;
 
@@ -550,8 +558,10 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                     pcte->SetAvailable(false);
                     b_available = false;
                 }
-                else
+                else{
                     pcte->SetAvailable(true);
+                    pcte->ReEnable();
+                }
             }
             
             if(b_group_add && b_pos_add && b_available){                // add it
@@ -1081,6 +1091,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
       wxString ChartFullPath(cte.GetpFullPath(), wxConvUTF8 );
       ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
       ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
+      
+      if(cte.GetLatMax() > 90.0)          // Chart has been disabled...
+          return NULL;
       
       ChartBase *Ch = NULL;
       CacheEntry *pce = NULL;

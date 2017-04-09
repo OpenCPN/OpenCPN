@@ -1336,9 +1336,9 @@ int GshhsReader::selectBestQuality( ViewPort &vp )
         if( bestQuality < 0 ) break;
     }
 
-    if( bestQuality < 0 )
-        for( int i=0; i<5; i++ )
-            if( qualityAvailable[i] ) bestQuality = i;
+//    if( bestQuality < 0 )
+//        for( int i=0; i<5; i++ )
+//            if( qualityAvailable[i] ) bestQuality = i;
 
     return bestQuality;
 }

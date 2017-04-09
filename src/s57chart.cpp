@@ -235,8 +235,6 @@ S57Obj::~S57Obj()
             delete pPolyTessGeo;
         }
 
-        if( pPolyTrapGeo ) delete pPolyTrapGeo;
-
         if( FText ) delete FText;
 
         if( geoPt ) free( geoPt );
@@ -264,7 +262,6 @@ void S57Obj::Init()
     n_attr = 0;
 
     pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
 
     bCS_Added = 0;
     CSrules = NULL;
@@ -522,7 +519,6 @@ S57Obj::S57Obj( char *buf, int size, wxInputStream *pfpx, double dummy, double d
     auxParm3 = 0;
 
     pPolyTessGeo = NULL;
-    pPolyTrapGeo = NULL;
     bCS_Added = 0;
     CSrules = NULL;
     FText = NULL;
@@ -1324,7 +1320,24 @@ s57chart::~s57chart()
     
     m_pcs_vector.clear();
     m_pve_vector.clear();
-    
+
+    for( VE_Hash::iterator it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+        VE_Element *pedge = it->second;
+        if(pedge){
+            free(pedge->pPoints);
+            delete pedge;
+        }
+    }
+    m_ve_hash.clear();
+
+    for( VC_Hash::iterator itc = m_vc_hash.begin(); itc != m_vc_hash.end(); ++itc ) {
+        VC_Element *pcs = itc->second;
+        if(pcs) {
+            free(pcs->pPoint);
+            delete pcs;
+        }
+    }
+    m_vc_hash.clear();
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
@@ -1448,6 +1461,21 @@ bool s57chart::GetChartExtent( Extent *pext )
         return false;
 }
 
+static void free_mps(mps_container *mps)
+{
+    
+    if ( mps == 0)
+        return;
+    if( ps52plib && mps->cs_rules ){
+        for(unsigned int i=0 ; i < mps->cs_rules->GetCount() ; i++){
+            Rules *rule_chain_top = mps->cs_rules->Item(i);
+            ps52plib->DestroyRulesChain( rule_chain_top );
+        }
+        delete mps->cs_rules;
+    }
+    free( mps );
+}
+
 void s57chart::FreeObjectsAndRules()
 {
 //      Delete the created ObjRazRules, including the S57Objs
@@ -1479,19 +1507,9 @@ void s57chart::FreeObjectsAndRules()
                         ctop = cnxx;
                     }
                 }
+                free_mps( top->mps );
 
-                if( top->mps ){
-                    if( ps52plib && top->mps->cs_rules ){
-                        for(unsigned int i=0 ; i < top->mps->cs_rules->GetCount() ; i++){
-                            Rules *rule_chain_top = top->mps->cs_rules->Item(i);
-                            ps52plib->DestroyRulesChain( rule_chain_top );
-                        }
-                        delete top->mps->cs_rules;
-                    }
-                    free( top->mps );
-                }
-
-                 nxx = top->next;
+                nxx = top->next;
                 free( top );
                 top = nxx;
             }
@@ -2443,12 +2461,42 @@ bool s57chart::RenderOverlayRegionViewOnGL( const wxGLContext &glc, const ViewPo
     return DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, true );
 }
 
+bool s57chart::RenderRegionViewOnGLNoText( const wxGLContext &glc, const ViewPort& VPoint,
+                                     const OCPNRegion &RectRegion, const LLRegion &Region )
+{
+    bool b_text = ps52plib->GetShowS57Text();
+    ps52plib->m_bShowS57Text = false;
+    bool b_ret =  DoRenderRegionViewOnGL( glc, VPoint, RectRegion, Region, false );
+    ps52plib->m_bShowS57Text = b_text;
+    
+    return b_ret;
+}
+
+bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& VPoint)
+{
+#ifdef ocpnUSE_GL
+    
+    if( !ps52plib ) return false;
+    
+    SetVPParms( VPoint );
+    
+    glPushMatrix(); //    Adjust for rotation
+    glChartCanvas::RotateToViewPort(VPoint);
+           
+    glChartCanvas::DisableClipRegion();
+    DoRenderOnGLText( glc, VPoint );
+            
+    glPopMatrix();
+    
+    
+#endif
+    return true;
+}
+
 bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
                                        const OCPNRegion &RectRegion, const LLRegion &Region, bool b_overlay )
 {
 #ifdef ocpnUSE_GL
-//     CALLGRIND_START_INSTRUMENTATION
-//      g_bDebugS57 = true;
 
     if( !ps52plib ) return false;
 
@@ -2479,19 +2527,6 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
     //        Clear the text declutter list
     ps52plib->ClearTextList();
-
-#if 0
-    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-    float r, g, b;
-    if( color.IsOk() ) {
-        r = color.Red() / 255.;
-        g = color.Green() / 255.;
-        b = color.Blue() / 255.;
-    } else
-        r = g = b = 0;
-
-    glColor3f( r, g, b ); /* nodta color */
-#endif
 
     ViewPort vp = VPoint;
 
@@ -2544,9 +2579,10 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
-        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
         else
-            top = razRules[i][3];           // Area Plain Boundaries
+            top = razRules[i][3]; // Area Plain Boundaries
 
         while( top != NULL ) {
             crnt = top;
@@ -2558,9 +2594,10 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 
     //    Render the lines and points
     for( i = 0; i < PRIO_NUM; ++i ) {
-        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
         else
-            top = razRules[i][3];           // Area Plain Boundaries
+            top = razRules[i][3]; // Area Plain Boundaries
         while( top != NULL ) {
             crnt = top;
             top = top->next;               // next object
@@ -2570,13 +2607,14 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 
         top = razRules[i][2];           //LINES
         while( top != NULL ) {
-            ObjRazRules *crnt = top;
+            crnt = top;
             top = top->next;
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToGL( glc, crnt, &tvp );
         }
 
-        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) top = razRules[i][0];       //SIMPLIFIED Points
+        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
+            top = razRules[i][0];       //SIMPLIFIED Points
         else
             top = razRules[i][1];           //Paper Chart Points Points
 
@@ -2591,6 +2629,126 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
 
 #endif          //#ifdef ocpnUSE_GL
 
+    return true;
+}
+
+bool s57chart::DoRenderOnGLText( const wxGLContext &glc, const ViewPort& VPoint )
+{
+#ifdef ocpnUSE_GL
+    
+    int i;
+    ObjRazRules *top;
+    ObjRazRules *crnt;
+    ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
+
+#if 0    
+    //      Render the areas quickly
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES )
+            top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3];           // Area Plain Boundaries
+            
+            while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+///                ps52plib->RenderAreaToGL( glc, crnt, &tvp );
+            }
+    }
+#endif
+    
+    //    Render the lines and points
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3]; // Area Plain Boundaries
+
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+        }
+            
+        top = razRules[i][2];           //LINES
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+        }
+            
+        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
+            top = razRules[i][0];       //SIMPLIFIED Points
+        else
+            top = razRules[i][1];           //Paper Chart Points Points
+            
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToGLText( glc, crnt, &tvp );
+        }
+            
+    }
+    
+#endif          //#ifdef ocpnUSE_GL
+    
+    return true;
+}
+
+
+bool s57chart::RenderRegionViewOnDCNoText( wxMemoryDC& dc, const ViewPort& VPoint,
+                                     const OCPNRegion &Region )
+{
+    bool b_text = ps52plib->GetShowS57Text();
+    ps52plib->m_bShowS57Text = false;
+    bool b_ret = DoRenderRegionViewOnDC( dc, VPoint, Region, false );
+    ps52plib->m_bShowS57Text = b_text;
+    
+    return b_ret;
+}
+
+bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPoint,
+                                           const OCPNRegion &Region )
+{
+    if(!dc.IsOk())
+        return false;
+
+    SetVPParms( VPoint );
+
+    ViewPort temp_vp = VPoint;
+    double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
+    
+    //    Decompose the region into rectangles,
+    OCPNRegionIterator upd( Region ); // get the requested rect list
+    while( upd.HaveRects() ) {
+        wxRect rect = upd.GetRect();
+        
+        wxPoint p;
+        p.x = rect.x;
+        p.y = rect.y;
+        
+        temp_vp.GetLLFromPix( p, &temp_lat_top, &temp_lon_left);
+        
+        p.x += rect.width;
+        p.y += rect.height;
+        temp_vp.GetLLFromPix( p, &temp_lat_bot, &temp_lon_right);
+    
+        if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
+                temp_lon_right += 360.;
+    
+    
+        temp_vp.GetBBox().Set(temp_lat_bot, temp_lon_left, temp_lat_top, temp_lon_right);
+
+        wxDCClipper clip(dc, rect);
+        DCRenderText( dc, temp_vp );
+        
+        upd.NextRect();
+    }
+    
     return true;
 }
 
@@ -2994,9 +3152,10 @@ int s57chart::DCRenderRect( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
 
 //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
-        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
         else
-            top = razRules[i][3];           // Area Plain Boundaries
+            top = razRules[i][3]; // Area Plain Boundaries
 
         while( top != NULL ) {
             crnt = top;
@@ -3057,7 +3216,8 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
 //         pdcc = new wxDCClipper(dcinput, nr);
         }
 
-        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
         else
             top = razRules[i][3];           // Area Plain Boundaries
         while( top != NULL ) {
@@ -3069,13 +3229,14 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
 
         top = razRules[i][2];           //LINES
         while( top != NULL ) {
-            ObjRazRules *crnt = top;
+            crnt = top;
             top = top->next;
             crnt->sm_transform_parms = &vp_transform;
             ps52plib->RenderObjectToDC( &dcinput, crnt, &tvp );
         }
 
-        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) top = razRules[i][0];       //SIMPLIFIED Points
+        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
+            top = razRules[i][0];       //SIMPLIFIED Points
         else
             top = razRules[i][1];           //Paper Chart Points Points
 
@@ -3100,12 +3261,63 @@ bool s57chart::DCRenderLPB( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
     return true;
 }
 
+bool s57chart::DCRenderText( wxMemoryDC& dcinput, const ViewPort& vp )
+{
+    int i;
+    ObjRazRules *top;
+    ObjRazRules *crnt;
+    ViewPort tvp = vp;                    // undo const  TODO fix this in PLIB
+    
+    for( i = 0; i < PRIO_NUM; ++i ) {
+        
+        if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
+            top = razRules[i][4]; // Area Symbolized Boundaries
+        else
+            top = razRules[i][3]; // Area Plain Boundaries
+
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;               // next object
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+        }
+            
+        top = razRules[i][2];           //LINES
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+        }
+            
+        if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
+            top = razRules[i][0];       //SIMPLIFIED Points
+        else
+            top = razRules[i][1];           //Paper Chart Points Points
+            
+        while( top != NULL ) {
+                crnt = top;
+                top = top->next;
+                crnt->sm_transform_parms = &vp_transform;
+                ps52plib->RenderObjectToDCText( &dcinput, crnt, &tvp );
+        }
+    }
+            
+    return true;
+}
+
+
+
+
 bool s57chart::IsCellOverlayType( char *pFullPath )
 {
     wxFileName fn( wxString( pFullPath, wxConvUTF8 ) );
     //      Get the "Usage" character
     wxString cname = fn.GetName();
-    return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    if(cname.Length() >= 3)
+        return ( (cname[2] == 'L') || (cname[2] == 'A'));
+    else
+        return false;
 }
 
 InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
@@ -3213,7 +3425,6 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
 
     if( ext == _T("000") ) {
         if( m_bbase_file_attr_known ) {
-            OCPNPlatform::ShowBusySpinner();
 
             int sret = FindOrCreateSenc( m_FullPath );
             if( sret != BUILD_SENC_OK ) {
@@ -3228,14 +3439,12 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     }
 
     else if( ext == _T("S57") ) {
-        OCPNPlatform::ShowBusySpinner();
 
         m_SENCFileName = m_TempFilePath;
         ret_value = PostInit( flags, m_global_color_scheme );
 
     }
 
-    OCPNPlatform::HideBusySpinner();
     
     s_bInS57--;
     return ret_value;
@@ -3456,12 +3665,13 @@ InitReturn s57chart::PostInit( ChartInitFlag flags, ColorScheme cs )
 
 //      Check for and if necessary rebuild Thumbnail
 //      Going to be in the global (user) SENC file directory
-#if 0
+#if 1
     wxString SENCdir = g_SENCPrefix;
-    if( SENCdir.Last() != m_SENCFileName.GetPathSeparator() )
-        SENCdir.Append( m_SENCFileName.GetPathSeparator() );
-
-    wxFileName ThumbFileName( SENCdir, m_SENCFileName.GetName(), _T("BMP") );
+    if( SENCdir.Last() != wxFileName::GetPathSeparator() )
+        SENCdir.Append( wxFileName::GetPathSeparator() );
+    
+    wxFileName s57File(m_SENCFileName);
+    wxFileName ThumbFileName( SENCdir, s57File.GetName().Mid( 13 ), _T("BMP") );
 
     if( !ThumbFileName.FileExists() || m_bneed_new_thumbnail )
         BuildThumbnail( ThumbFileName.GetFullPath() );
@@ -3575,6 +3785,12 @@ void s57chart::SetSafetyContour(void)
      } else {
          m_next_safe_cnt = (double) 1e6;
      }
+     
+     // A safety contour greater than "Deep Depth" makes no sense...
+     // So, declare "no suitable safety depth contour"
+     if(m_next_safe_cnt > S52_getMarinerParam(S52_MAR_DEEP_CONTOUR))
+         m_next_safe_cnt = (double) 1e6;
+     
 }
 
 void s57chart::InvalidateCache()
@@ -3646,7 +3862,8 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
 
 //      Also, save some other settings
     bool bsavem_bShowSoundgp = ps52plib->m_bShowSoundg;
-
+    bool bsave_text = ps52plib->m_bShowS57Text;
+    
     // SetDisplayCategory may clear Noshow array
     ps52plib->SaveObjNoshow();
 
@@ -3657,11 +3874,22 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
         if( !strncmp( pOLE->OBJLName, "DEPARE", 6 ) ) pOLE->nViz = 1;
     }
 
+    
     ps52plib->m_bShowSoundg = false;
-
+    ps52plib->m_bShowS57Text = false;
+    
 //      Use display category MARINERS_STANDARD to force use of OBJLArray
     DisCat dsave = ps52plib->GetDisplayCategory();
     ps52plib->SetDisplayCategory( MARINERS_STANDARD );
+
+    ps52plib->AddObjNoshow( "BRIDGE" );
+    ps52plib->AddObjNoshow( "GATCON" );
+    
+    double safety_depth = S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
+    S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, -100);  
+    double safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
+    S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, -100);
+                        
 
 #ifdef ocpnUSE_DIBSECTION
     ocpnMemDC memdc, dc_org;
@@ -3688,8 +3916,15 @@ bool s57chart::BuildThumbnail( const wxString &bmpname )
     ps52plib->SetDisplayCategory(dsave);
     ps52plib->RestoreObjNoshow();
 
+    ps52plib->RemoveObjNoshow( "BRIDGE" );
+    ps52plib->RemoveObjNoshow( "GATCON" );
+    
     ps52plib->m_bShowSoundg = bsavem_bShowSoundgp;
-
+    ps52plib->m_bShowS57Text = bsave_text;
+    
+    S52_setMarinerParam(S52_MAR_SAFETY_DEPTH, safety_depth);  
+    S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR, safety_contour);
+    
 //      Reset the color scheme
     ps52plib->RestoreColorScheme();
 
@@ -4315,8 +4550,10 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
 
                 delete poModule;
 
-                if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
-                dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
+                if( umdate.IsValid() ){
+                    if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
+                        dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
+                }
             }
         }
 
@@ -4568,6 +4805,8 @@ bool s57chart::GetBaseFileAttr( wxFileName fn )
 
 int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName, bool b_progress  )
 {
+    OCPNPlatform::ShowBusySpinner();
+    
     //  LOD calculation
     double display_ppm = 1 / .00025;     // nominal for most LCD displays
     double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
@@ -4581,6 +4820,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
     int ret = senc.createSenc200( FullPath000, SENCFileName, b_progress );
 
+    OCPNPlatform::HideBusySpinner();
+    
     if(ret == ERROR_INGESTING000)
         return BUILD_SENC_NOK_PERMANENT;
     else
@@ -5070,6 +5311,8 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->bCS_Added = 0;
+                free_mps( top->mps );
+                top->mps = 0;
                 if (top->LUP)
                     top->obj->m_DisplayCat = top->LUP->DISC;
 
@@ -5089,6 +5332,9 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
                     ObjRazRules *ctop = top->child;
                     while( NULL != ctop ) {
                         ctop->obj->bCS_Added = 0;
+                        free_mps( ctop->mps );
+                        ctop->mps = 0;
+
                         if (ctop->LUP)
                             ctop->obj->m_DisplayCat = ctop->LUP->DISC;
                         ctop = ctop->next;
@@ -5106,741 +5352,6 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
     // TODO really should make the dynamic LUPs belong to the chart class that created them
 }
 
-#if 0
-void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S57Reader *poReader )
-{
-
-#define MAX_HDR_LINE    400
-
-    char line[MAX_HDR_LINE + 1];
-    wxString sheader;
-
-    fprintf( fpOut, "OGRFeature(%s):%ld\n", pFeature->GetDefnRef()->GetName(), pFeature->GetFID() );
-
-//      In the interests of output file size, DO NOT report fields that are not set.
-    for( int iField = 0; iField < pFeature->GetFieldCount(); iField++ ) {
-        if( pFeature->IsFieldSet( iField ) ) {
-            if( ( iField == 1 ) || ( iField > 7 ) ) {
-                OGRFieldDefn *poFDefn = pFeature->GetDefnRef()->GetFieldDefn( iField );
-                const char *pType = OGRFieldDefn::GetFieldTypeName( poFDefn->GetType() );
-                const char *pAttrName = poFDefn->GetNameRef();
-                const char *pAttrVal = pFeature->GetFieldAsString( iField );
-
-                if(strlen( pAttrVal ) ) {
-                    snprintf( line, MAX_HDR_LINE - 2, "  %s (%c) = ", pAttrName, *pType);
-                    wxString AttrStringPrefix = wxString( line, wxConvUTF8 );
-
-                    wxString wxAttrValue;
-
-                    if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
-                        (0 == strncmp("NINFOM",pAttrName, 6) ) ||
-                        (0 == strncmp("NPLDST",pAttrName, 6) ) ||
-                        (0 == strncmp("NTXTDS",pAttrName, 6) ) )
-                    {
-                        if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
-                            wxMBConvUTF16 conv;
-                            wxString att_conv(pAttrVal, conv);
-                            att_conv.RemoveLast();      // Remove the \037 that terminates UTF-16 strings in S57
-                            att_conv.Replace(_T("\n"), _T("|") );  //Replace  <new line> with special break character
-                            wxAttrValue = att_conv;
-                        }
-                        else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
-                            wxCSConv conv(_T("iso8859-1") );
-                            wxString att_conv(pAttrVal, conv);
-                            wxAttrValue = att_conv;
-                        }
-                    }
-
-                    if( wxAttrValue.IsEmpty()) {
-        // Attempt different conversions to accomodate different language encodings in
-        // the original ENC files.
-
-        //  For attribute fields other that "National" Objects, (handled above)  See FS#1464
-        //  the text must be encoded in simple ASCII, or in lex level 1 (i.e. iso8859-1)
-
-                        wxAttrValue = wxString( pAttrVal, wxConvUTF8 );
-
-                        if( 0 ==wxAttrValue.Length() ) {
-                            wxCSConv conv(_T("iso8859-1") );
-                            wxString att_conv(pAttrVal, conv);
-                            wxAttrValue = att_conv;
-                        }
-
-                        if( 0 ==wxAttrValue.Length() ) {
-                            wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
-                        }
-                    }
-
-                    sheader += AttrStringPrefix;
-                    sheader += wxAttrValue;
-                    sheader += '\n';
-                }
-            }
-        }
-    }
-
-    OGRGeometry *pGeo = pFeature->GetGeometryRef();
-
-//    Special geometry cases
-///172
-    if( wkbPoint == pGeo->getGeometryType() ) {
-        OGRPoint *pp = (OGRPoint *) pGeo;
-        int nqual = pp->getnQual();
-        if( 10 != nqual )                    // only add attribute if nQual is not "precisely known"
-                {
-            snprintf( line, MAX_HDR_LINE - 2, "  %s (%c) = %d", "QUALTY", 'I', nqual );
-            sheader += wxString( line, wxConvUTF8 );
-            sheader += '\n';
-        }
-
-    }
-
-    if( mode == 1 ) {
-        sprintf( line, "  %s %f %f\n", pGeo->getGeometryName(), ref_lat, ref_lon );
-        sheader += wxString( line, wxConvUTF8 );
-    }
-    wxCharBuffer buffer=sheader.ToUTF8();
-    fprintf( fpOut, "HDRLEN=%lu\n", (unsigned long) strlen(buffer) );
-    fwrite( buffer.data(), 1, strlen(buffer), fpOut );
-
-    if( ( pGeo != NULL ) /*&& (mode == 1)*/) {
-        int wkb_len = pGeo->WkbSize();
-        unsigned char *pwkb_buffer = (unsigned char *) malloc( wkb_len );
-
-//  Get the GDAL data representation
-        pGeo->exportToWkb( wkbNDR, pwkb_buffer );
-
-        //  Convert to opencpn SENC representation
-
-        //  Set absurd bbox starting limits
-        float lonmax = -1000;
-        float lonmin = 1000;
-        float latmax = -1000;
-        float latmin = 1000;
-
-        int i, ip, sb_len;
-        float *pdf;
-        double *psd;
-        unsigned char *ps;
-        unsigned char *pd;
-        unsigned char *psb_buffer;
-        double lat, lon;
-        int nPoints;
-        wxString msg;
-
-        OGRwkbGeometryType gType = pGeo->getGeometryType();
-        switch( gType ){
-            case wkbLineString: {
-                sb_len = ( ( wkb_len - 9 ) / 2 ) + 9 + 16;  // data will be 4 byte float, not double
-                                                            // and bbox limits are tacked on end
-                fprintf( fpOut, "  %d\n", sb_len );
-
-                psb_buffer = (unsigned char *) malloc( sb_len );
-                pd = psb_buffer;
-                ps = pwkb_buffer;
-
-                memcpy( pd, ps, 9 );                                  // byte order, type, and count
-
-                ip = *( (int *) ( ps + 5 ) );                              // point count
-
-                pd += 9;
-                ps += 9;
-                psd = (double *) ps;
-                pdf = (float *) pd;
-
-                for( i = 0; i < ip; i++ )                           // convert doubles to floats
-                        {                                                 // computing bbox as we go
-
-                    float lon, lat;
-                    double easting, northing;
-#ifdef ARMHF
-                    double east_d, north_d;
-                    memcpy(&east_d, psd++, sizeof(double));
-                    memcpy(&north_d, psd++, sizeof(double));
-                    lon = east_d;
-                    lat = north_d;
-
-                    //  Calculate SM from chart common reference point
-                    toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-                    memcpy(pdf++, &easting, sizeof(float));
-                    memcpy(pdf++, &northing, sizeof(float));
-
-#else
-                    lon = (float) *psd++;
-                    lat = (float) *psd++;
-
-                    //  Calculate SM from chart common reference point
-                    toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
-                    *pdf++ = easting;
-                    *pdf++ = northing;
-#endif
-                    lonmax = fmax(lon, lonmax);
-                    lonmin = fmin(lon, lonmin);
-                    latmax = fmax(lat, latmax);
-                    latmin = fmin(lat, latmin);
-
-                }
-
-#ifdef ARMHF
-                float tmp;
-                tmp = lonmax;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = lonmin;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = latmax;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = latmin;
-                memcpy(pdf, &tmp, sizeof(float));
-#else
-                //      Store the Bounding Box as lat/lon
-                *pdf++ = lonmax;
-                *pdf++ = lonmin;
-                *pdf++ = latmax;
-                *pdf = latmin;
-#endif
-                fwrite( psb_buffer, 1, sb_len, fpOut );
-                fprintf( fpOut, "\n" );
-                free( psb_buffer );
-
-//    Capture the Vector Table geometry indices
-                int *pNAME_RCID;
-                int *pORNT;
-                int nEdgeVectorRecords;
-                OGRFeature *pEdgeVectorRecordFeature;
-
-                pNAME_RCID = (int *) pFeature->GetFieldAsIntegerList( "NAME_RCID",
-                        &nEdgeVectorRecords );
-
-                pORNT = (int *) pFeature->GetFieldAsIntegerList( "ORNT", NULL );
-
-                fprintf( fpOut, "LSINDEXLIST %d\n", nEdgeVectorRecords );
-//                    fwrite(pNAME_RCID, 1, nEdgeVectorRecords * sizeof(int), fpOut);
-
-                //  Set up the options, adding RETURN_PRIMITIVES
-                char ** papszReaderOptions = NULL;
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES,
-                        "ON" );
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                        "ON" );
-                poReader->SetOptions( papszReaderOptions );
-
-//    Capture the beginning and end point connected nodes for each edge vector record
-                for( i = 0; i < nEdgeVectorRecords; i++ ) {
-                    int start_rcid, end_rcid;
-                    int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
-                    pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-
-                    if( NULL != pEdgeVectorRecordFeature ) {
-                        start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
-                        end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
-
-                        //    Make sure the start and end points exist....
-                        //    Note this poReader method was converted to Public access to
-                        //     facilitate this test.  There might be another clean way....
-                        //    Problem first found on Holand ENC 1R5YM009.000
-                        if( !poReader->FetchPoint( RCNM_VC, start_rcid, NULL, NULL, NULL, NULL ) ) start_rcid =
-                                -1;
-                        if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) ) end_rcid =
-                                -2;
-
-                        int edge_ornt = 1;
-                        //  Allocate some storage for converted points
-
-                        if( edge_ornt == 1 )                                    // forward
-                                {
-                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
-                        } else                                                  // reverse
-                        {
-                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
-                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                        }
-
-                        delete pEdgeVectorRecordFeature;
-                    } else {
-                        start_rcid = -1;                                    // error indication
-                        end_rcid = -2;
-
-                        fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                        fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                        fwrite( &end_rcid, 1, sizeof(int), fpOut );
-                    }
-                }
-
-                fprintf( fpOut, "\n" );
-
-                //  Reset the options
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                        "OFF" );
-                poReader->SetOptions( papszReaderOptions );
-                CSLDestroy( papszReaderOptions );
-
-//                    free(pVectorEdgeHelperTable);
-
-                break;
-            }
-            case wkbMultiLineString:
-                msg = _T("   Warning: Unimplemented SENC wkbMultiLineString record in file ");
-                msg.Append( m_SENCFileName.GetFullPath() );
-                wxLogMessage( msg );
-
-                wkb_len = pGeo->WkbSize();
-                fprintf( fpOut, "  %d\n", wkb_len );
-                fwrite( pwkb_buffer, 1, wkb_len, fpOut );
-                break;
-
-            case wkbPoint: {
-                int nq_len = 4;                                     // nQual length
-
-                sb_len = ( ( wkb_len - ( 5 + nq_len ) ) / 2 ) + 5; // data will be 4 byte float, not double
-                                                                   // and skipping nQual
-
-                fprintf( fpOut, "  %d\n", sb_len );
-
-                psb_buffer = (unsigned char *) malloc( sb_len );
-                pd = psb_buffer;
-                ps = pwkb_buffer;
-
-                memcpy( pd, ps, 5 );                                 // byte order, type
-
-                pd += 5;
-                ps += 5 + nq_len;
-                psd = (double *) ps;
-                pdf = (float *) pd;
-
-#ifdef ARMHF
-                double lata, lona;
-                memcpy(&lona, psd, sizeof(double));
-                memcpy(&lata, &psd[1], sizeof(double));
-                lon = lona;
-                lat = lata;
-#else
-                lon = *psd++;                                      // fetch the point
-                lat = *psd;
-#endif
-
-
-                //  Calculate SM from chart common reference point
-                double easting, northing;
-                toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
-#ifdef ARMHF
-                float east, north;
-                east = easting;
-                north = northing;
-                memcpy(pdf++, &east, sizeof(float));
-                memcpy(pdf,   &north, sizeof(float));
-#else
-                *pdf++ = easting;
-                *pdf = northing;
-#endif
-                //  And write it out
-                fwrite( psb_buffer, 1, sb_len, fpOut );
-                fprintf( fpOut, "\n" );
-
-                free( psb_buffer );
-
-                break;
-            }
-
-            case wkbMultiPoint:
-            case wkbMultiPoint25D:
-                ps = pwkb_buffer;
-                ps += 5;
-                nPoints = *( (int *) ps );                     // point count
-
-                sb_len = ( 9 + nPoints * 3 * sizeof(float) ) + 16; // GTYPE and count, points as floats
-                                                                   // and trailing bbox
-                fprintf( fpOut, "  %d\n", sb_len );
-
-                psb_buffer = (unsigned char *) malloc( sb_len );
-                pd = psb_buffer;
-                ps = pwkb_buffer;
-
-                memcpy( pd, ps, 9 );                                  // byte order, type, count
-
-                ps += 9;
-                pd += 9;
-
-                pdf = (float *) pd;
-
-                for( ip = 0; ip < nPoints; ip++ ) {
-
-                    // Workaround a bug?? in OGRGeometryCollection
-                    // While exporting point geometries serially, OGRPoint->exportToWkb assumes that
-                    // if Z is identically 0, then the point must be a 2D point only.
-                    // So, the collection Wkb is corrupted with some 3D, and some 2D points.
-                    // Workaround:  Get reference to the points serially, and explicitly read X,Y,Z
-                    // Ignore the previously read Wkb buffer
-
-                    OGRGeometryCollection *temp_geometry_collection = (OGRGeometryCollection *) pGeo;
-                    OGRGeometry *temp_geometry = temp_geometry_collection->getGeometryRef( ip );
-                    OGRPoint *pt_geom = (OGRPoint *) temp_geometry;
-
-                    lon = pt_geom->getX();
-                    lat = pt_geom->getY();
-                    double depth = pt_geom->getZ();
-
-                     //  Calculate SM from chart common reference point
-                    double easting, northing;
-                    toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
-#ifdef ARMHF
-                    float east = easting;
-                    float north = northing;
-                    float deep = depth;
-                    memcpy(pdf++, &east, sizeof(float));
-                    memcpy(pdf++, &north, sizeof(float));
-                    memcpy(pdf++, &deep, sizeof(float));
-
-#else
-                    *pdf++ = easting;
-                    *pdf++ = northing;
-                    *pdf++ = (float) depth;
-#endif
-
-                    //  Keep a running calculation of min/max
-                    lonmax = fmax(lon, lonmax);
-                    lonmin = fmin(lon, lonmin);
-                    latmax = fmax(lat, latmax);
-                    latmin = fmin(lat, latmin);
-                }
-
-                //      Store the Bounding Box as lat/lon
-#ifdef ARMHF
-                float tmp;
-                tmp = lonmax;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = lonmin;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = latmax;
-                memcpy(pdf++, &tmp, sizeof(float));
-                tmp = latmin;
-                memcpy(pdf, &tmp, sizeof(float));
-#else
-                *pdf++ = lonmax;
-                *pdf++ = lonmin;
-                *pdf++ = latmax;
-                *pdf = latmin;
-#endif
-                //  And write it out
-                fwrite( psb_buffer, 1, sb_len, fpOut );
-                free( psb_buffer );
-                fprintf( fpOut, "\n" );
-
-                break;
-
-                //      Special case, polygons are handled separately
-            case wkbPolygon: {
-                int error_code;
-
-                PolyTessGeo *ppg = NULL;
-
-                OGRPolygon *poly = (OGRPolygon *) ( pGeo );
-
-                ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, false, m_LOD_meters );   //try to use glu library
-
-                error_code = ppg->ErrorCode;
-                if( error_code == ERROR_NO_DLL ) {
-                    if( !bGLUWarningSent ) {
-                        wxLogMessage( _T("   Warning...Could not find glu32.dll, trying internal tess.") );
-                        bGLUWarningSent = true;
-                    }
-
-                    delete ppg;
-                    //  Try with internal tesselator
-                    ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, true, m_LOD_meters );
-                    error_code = ppg->ErrorCode;
-                }
-
-                if( error_code )
-                    wxLogMessage( _T("   Warning: S57 SENC Geometry Error %d, Some Features ignored."), ppg->ErrorCode );
-                else
-                    ppg->Write_PolyTriGroup( fpOut );
-
-                delete ppg;
-
-                //    Capture the Vector Table geometry indices
-                if( !error_code ) {
-                    int *pNAME_RCID;
-                    int nEdgeVectorRecords;
-                    OGRFeature *pEdgeVectorRecordFeature;
-
-                    pNAME_RCID = (int *) pFeature->GetFieldAsIntegerList( "NAME_RCID",
-                            &nEdgeVectorRecords );
-
-                    fprintf( fpOut, "LSINDEXLIST %d\n", nEdgeVectorRecords );
-
-                    //  Set up the options, adding RETURN_PRIMITIVES
-                    char ** papszReaderOptions = NULL;
-                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
-                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES,
-                            "ON" );
-                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                            "ON" );
-                    poReader->SetOptions( papszReaderOptions );
-
-    //    Capture the beginning and end point connected nodes for each edge vector record
-                    for( i = 0; i < nEdgeVectorRecords; i++ ) {
-                        int start_rcid, end_rcid;
-                        /*
-                        //  Filter out absurd RCIDs, found first on cell IT300017.000
-                        if((pNAME_RCID[i] >= 0) && (pNAME_RCID[i] <= m_nvector_table_size))
-                        {
-                        int target_record_feid = m_pVectorEdgeHelperTable[pNAME_RCID[i]];
-                        pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-                        }
-                        else
-                        pEdgeVectorRecordFeature = NULL;
-                        */
-                        int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
-                        pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-
-                        if( NULL != pEdgeVectorRecordFeature ) {
-                            start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
-                            end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
-
-                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
-
-                            delete pEdgeVectorRecordFeature;
-                        } else {
-                            start_rcid = -1;                                    // error indication
-                            end_rcid = -2;
-
-                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
-                        }
-                    }
-
-                    fprintf( fpOut, "\n" );
-
-                    //  Reset the options
-                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                            "OFF" );
-                    poReader->SetOptions( papszReaderOptions );
-                    CSLDestroy( papszReaderOptions );
-                }
-
-                break;
-            }
-
-                //      All others
-            default:
-                msg = _T("   Warning: Unimplemented ogr geotype record in file ");
-                msg.Append( m_SENCFileName.GetFullPath() );
-                wxLogMessage( msg );
-
-                wkb_len = pGeo->WkbSize();
-                fprintf( fpOut, "  %d\n", wkb_len );
-                fwrite( pwkb_buffer, 1, wkb_len, fpOut );
-                break;
-        }       // switch
-
-        free( pwkb_buffer );
-    }
-}
-
-#endif
-
-
-#if 0
-void s57chart::CreateSENCVectorEdgeTable( FILE * fpOut, S57Reader *poReader )
-{
-    fprintf( fpOut, "VETableStart\n" );
-
-    //  Set up the options, adding RETURN_PRIMITIVES
-    char ** papszReaderOptions = NULL;
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES, "ON" );
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON" );
-    poReader->SetOptions( papszReaderOptions );
-
-    int feid = 0;
-    OGRLineString *pLS = NULL;
-    OGRGeometry *pGeo;
-    OGRFeature *pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
-
-    while( NULL != pEdgeVectorRecordFeature ) {
-        int record_id = pEdgeVectorRecordFeature->GetFieldAsInteger( "RCID" );
-        fwrite( &record_id, 1, sizeof(int), fpOut );
-
-        int nPoints = 0;
-        if( pEdgeVectorRecordFeature->GetGeometryRef() != NULL ) {
-            pGeo = pEdgeVectorRecordFeature->GetGeometryRef();
-            if( pGeo->getGeometryType() == wkbLineString ) {
-                pLS = (OGRLineString *) pGeo;
-                nPoints = pLS->getNumPoints();
-            } else
-                nPoints = 0;
-        }
-
-        //  Transcribe points to a buffer
-
-        if(nPoints){
-            double *ppd = (double *)malloc(nPoints * sizeof(MyPoint));
-            double *ppr = ppd;
-
-            for( int i = 0; i < nPoints; i++ ) {
-                OGRPoint p;
-                pLS->getPoint( i, &p );
-
-            //  Calculate SM from chart common reference point
-                double easting, northing;
-                toSM( p.getY(), p.getX(), ref_lat, ref_lon, &easting, &northing );
-
-                *ppr++ = easting;
-                *ppr++ = northing;
-            }
-
-        //      Reduce the LOD of this linestring
-            wxArrayInt index_keep;
-            if(nPoints > 5 && (m_LOD_meters > .01)){
-                index_keep.Clear();
-                index_keep.Add(0);
-                index_keep.Add(nPoints-1);
-
-                DouglasPeucker(ppd, 0, nPoints-1, m_LOD_meters, &index_keep);
- //               printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
-
-            }
-            else {
-                index_keep.Clear();
-                for(int i = 0 ; i < nPoints ; i++)
-                    index_keep.Add(i);
-            }
-
-            int nPointReduced = index_keep.GetCount();
-
-        //  And make a new array
-            double *npp = (double *)malloc(nPoints * 2 * sizeof(double));
-            double *npp_run = npp;
-            ppr = ppd;
-            for(int ip = 0 ; ip < nPoints ; ip++)
-            {
-                double x = *ppr++;
-                double y = *ppr++;
-
-                for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-                    if(index_keep.Item(j) == ip){
-                        *npp_run++ = x;
-                        *npp_run++ = y;
-                        break;
-                    }
-                }
-            }
-
-            fwrite( &nPointReduced, 1, sizeof(int), fpOut );
-
-            fwrite( npp, nPointReduced, sizeof(MyPoint), fpOut );
-
-            free( ppd );
-            free( npp );
-        }
-        else{
-            fwrite( &nPoints, 1, sizeof(int), fpOut );
-        }
-
-#if 0
-        fwrite( &nPoints, 1, sizeof(int), fpOut );
-
-        for( int i = 0; i < nPoints; i++ ) {
-            OGRPoint p;
-            pLS->getPoint( i, &p );
-
-            //  Calculate SM from chart common reference point
-            double easting, northing;
-            toSM( p.getY(), p.getX(), ref_lat, ref_lon, &easting, &northing );
-
-            MyPoint pd;
-            pd.x = easting;
-            pd.y = northing;
-            fwrite( &pd, 1, sizeof(MyPoint), fpOut );
-        }
-#endif
-
-        //    Next vector record
-        feid++;
-        delete pEdgeVectorRecordFeature;
-        pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
-    }
-
-    //    Write a finishing record
-    int last_rcid = -1;
-    fwrite( &last_rcid, 1, sizeof(int), fpOut );
-    fprintf( fpOut, "\nVETableEnd\n" );
-
-    //  Reset the options
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF" );
-    poReader->SetOptions( papszReaderOptions );
-    CSLDestroy( papszReaderOptions );
-}
-
-void s57chart::CreateSENCConnNodeTable( FILE * fpOut, S57Reader *poReader )
-{
-    fprintf( fpOut, "VCTableStart\n" );
-
-    //  Set up the options, adding RETURN_PRIMITIVES
-    char ** papszReaderOptions = NULL;
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES, "ON" );
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON" );
-    poReader->SetOptions( papszReaderOptions );
-
-    int feid = 0;
-    OGRPoint *pP;
-    OGRGeometry *pGeo;
-    OGRFeature *pConnNodeRecordFeature = poReader->ReadVector( feid, RCNM_VC );
-
-    while( NULL != pConnNodeRecordFeature ) {
-        if( pConnNodeRecordFeature->GetGeometryRef() != NULL ) {
-            pGeo = pConnNodeRecordFeature->GetGeometryRef();
-            if( pGeo->getGeometryType() == wkbPoint ) {
-                pP = (OGRPoint *) pGeo;
-
-                int record_id = pConnNodeRecordFeature->GetFieldAsInteger( "RCID" );
-
-                fwrite( &record_id, 1, sizeof(int), fpOut );
-
-                //  Calculate SM from chart common reference point
-                double easting, northing;
-                toSM( pP->getY(), pP->getX(), ref_lat, ref_lon, &easting, &northing );
-
-                MyPoint pd;
-                pd.x = easting;
-                pd.y = northing;
-                fwrite( &pd, 1, sizeof(MyPoint), fpOut );
-            }
-//                  else
-//                        int yyp = 5;
-        }
-//            else
-//                  int eep = 4;
-
-        //    Next vector record
-        feid++;
-        delete pConnNodeRecordFeature;
-        pConnNodeRecordFeature = poReader->ReadVector( feid, RCNM_VC );
-    }
-
-    //    Write a finishing record
-    int last_rcid = -1;
-    fwrite( &last_rcid, 1, sizeof(int), fpOut );
-    fprintf( fpOut, "\nVCTableEnd\n" );
-
-    //  Reset the options
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "OFF" );
-    poReader->SetOptions( papszReaderOptions );
-    CSLDestroy( papszReaderOptions );
-}
-
-#endif
 
 ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float select_radius,
         ViewPort *VPoint, int selection_mask )
@@ -5982,27 +5493,19 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         }
 
         case GEO_LINE: {
+            //  Coarse test first
+            if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) )
+                return false;
+            
+            float sel_rad_meters = select_radius * 1852 * 60;       // approximately
+            double easting, northing;
+            toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
+            
             if( obj->geoPt ) {
-                //  Coarse test first
-                if( !obj->BBObj.ContainsMarge( lat, lon, select_radius ) ) return false;
 
                 //  Line geometry is carried in SM or CM93 coordinates, so...
                 //  make the hit test using SM coordinates, converting from object points to SM using per-object conversion factors.
 
-                float sel_rad_meters = select_radius * 1852 * 60;       // approximately
-
-                double easting, northing;
-                toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-                
-#if 0
-                float *ptest;
-                int ntp = GetLineFeaturePointArray(obj, (void **) &ptest);
-
-                if(!ntp)
-                    return false;
-
-                float *pfree = ptest;
-#endif
                 pt *ppt = obj->geoPt;
                 int npt = obj->npt;
 
@@ -6013,20 +5516,9 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 double north0 = ( ppt->y * yr ) + yo;
                 double east0 = ( ppt->x * xr ) + xo;
-#if 0
-                float a0 = *ptest++;
-                float b0 = *ptest++;
-#endif
                 ppt++;
 
                 for( int ip = 1; ip < npt; ip++ ) {
-#if 0
-                    float a = *ptest++;
-                    float b = *ptest++;
-                    float c = ppt->y;
-                    float d = ppt->x;
-                    printf("%g %g %g %g\n", a,b,c,d);
-#endif
 
                     double north = ( ppt->y * yr ) + yo;
                     double east = ( ppt->x * xr ) + xo;
@@ -6036,8 +5528,6 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                         <= ( fmax(north, north0) + sel_rad_meters ) ) if( easting
                         >= ( fmin(east, east0) - sel_rad_meters ) ) if( easting
                         <= ( fmax(east, east0) + sel_rad_meters ) ) {
-                        //                                                    index = ip;
-                        //free (pfree);
                         return true;
                     }
 
@@ -6045,9 +5535,53 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                     east0 = east;
                     ppt++;
                 }
-                //free (pfree);
             }
-
+            else{                       // in oSENC V2, Array of points is stored in prearranged VBO array.
+                if( obj->m_ls_list ){
+                
+                    float *ppt;
+                    unsigned char *vbo_point = (unsigned char *)obj->m_chart_context->chart->GetLineVertexBuffer();
+                    line_segment_element *ls = obj->m_ls_list;
+        
+                    while(ls && vbo_point){
+                        int nPoints;
+                        if( (ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV) ){
+                            ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
+                            nPoints = ls->pedge->nCount;
+                        }
+                        else{
+                            ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
+                            nPoints = 2;
+                        }
+                    
+                        float north0 = ppt[1];
+                        float east0 = ppt[0];
+                        
+                        ppt += 2;
+                    
+                        for(int ip=0 ; ip < nPoints - 1 ; ip++){
+                            
+                            float north = ppt[1];
+                            float east = ppt[0];
+                            
+                            if( northing >= ( fmin(north, north0) - sel_rad_meters ) )
+                                if( northing <= ( fmax(north, north0) + sel_rad_meters ) )
+                                    if( easting >= ( fmin(east, east0) - sel_rad_meters ) )
+                                        if( easting <= ( fmax(east, east0) + sel_rad_meters ) ) {
+                                 return true;
+                             }
+                                    
+                             north0 = north;
+                             east0 = east;
+                                    
+                             ppt += 2;
+                        }            
+                
+                        ls = ls->next;
+                    }
+                }
+            }
+            
             break;
         }
 
@@ -6289,130 +5823,6 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
         }
 
     }           // if pPolyTessGeo
-
-    else if( obj->pPolyTrapGeo ) {
-        if( !obj->pPolyTrapGeo->IsOk() ) obj->pPolyTrapGeo->BuildTess();
-
-        PolyTrapGroup *ptg = obj->pPolyTrapGeo->Get_PolyTrapGroup_head();
-
-        //  Polygon geometry is carried in SM coordinates, so...
-        //  make the hit test thus.
-        //  However, since PolyTrapGeo geometry is (always??) in cm-93 coordinates, convert to sm as necessary
-        double easting, northing;
-        toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
-
-        //  It turns out that trapezoid tesselation is only used for cm93,
-        //  So we get better accuracy if we use the cell-referenced points instead of global SM points
-        {
-            double y_rate = obj->y_rate;
-            double y_origin = obj->y_origin;
-            double x_rate = obj->x_rate;
-            double x_origin = obj->x_origin;
-
-            double northing_scaled = ( northing - y_origin ) / y_rate;
-            double easting_scaled = ( easting - x_origin ) / x_rate;
-            northing = northing_scaled;
-            easting = easting_scaled;
-        }
-
-        int ntraps = ptg->ntrap_count;
-        trapz_t *ptraps = ptg->trap_array;
-        MyPoint *segs = (MyPoint *) ptg->ptrapgroup_geom; //TODO convert MyPoint to wxPoint2DDouble globally
-
-        MyPoint pvert_list[4];
-
-        for( int i = 0; i < ntraps; i++, ptraps++ ) {
-            //      Y test
-
-            double hiy = ptraps->hiy;
-            if( northing > hiy ) continue;
-
-            double loy = ptraps->loy;
-            if( northing < loy ) continue;
-
-            //      Use the segment endpoints to calculate the corners of a trapezoid
-            int lseg = ptraps->ilseg;
-            int rseg = ptraps->irseg;
-
-            //    Left edge
-            double xmax = segs[lseg].x;
-            double xmin = segs[lseg + 1].x;
-
-            double ymax = segs[lseg].y;
-            double ymin = segs[lseg + 1].y;
-
-            double xt, yt, xca, xcb;
-
-            if( ymax < ymin ) {
-                xt = xmin;
-                xmin = xmax;
-                xmax = xt;                // interchange min/max
-                yt = ymin;
-                ymin = ymax;
-                ymax = yt;
-            }
-
-            if( xmin == xmax ) {
-                xca = xmin;
-                xcb = xmin;
-            } else {
-                double slope = ( ymax - ymin ) / ( xmax - xmin );
-                xca = xmin + ( ptraps->loy - ymin ) / slope;
-                xcb = xmin + ( ptraps->hiy - ymin ) / slope;
-            }
-
-            //  Test point is west of leftmost trap point
-            double x_quad_left = wxMin(xca, xcb);
-            if( x_quad_left > easting )
-                continue;
-
-            pvert_list[0].x = xca;
-            pvert_list[0].y = loy;
-
-            pvert_list[1].x = xcb;
-            pvert_list[1].y = hiy;
-
-            //    Right edge
-            xmax = segs[rseg].x;
-            xmin = segs[rseg + 1].x;
-            ymax = segs[rseg].y;
-            ymin = segs[rseg + 1].y;
-
-            if( ymax < ymin ) {
-                xt = xmin;
-                xmin = xmax;
-                xmax = xt;
-                yt = ymin;
-                ymin = ymax;
-                ymax = yt;
-            }
-
-            if( xmin == xmax ) {
-                xca = xmin;
-                xcb = xmin;
-            } else {
-                double slope = ( ymax - ymin ) / ( xmax - xmin );
-                xca = xmin + ( ptraps->hiy - ymin ) / slope;
-                xcb = xmin + ( ptraps->loy - ymin ) / slope;
-            }
-
-            //  Test point is east of rightmost trap point
-            double x_quad_right = wxMax(xca, xcb);
-            if( x_quad_right < easting )
-                continue;
-
-            pvert_list[2].x = xca;
-            pvert_list[2].y = hiy;
-
-            pvert_list[3].x = xcb;
-            pvert_list[3].y = loy;
-
-            if( G_PtInPolygon( (MyPoint *) pvert_list, 4, easting, northing ) ) {
-                ret = true;
-                break;
-            }
-        }
-    }           // if pPolyTrapGeo
 
     return ret;
 }
@@ -6889,7 +6299,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                             attribStr << _T("</font></td></tr>\n");
                             inDepthRange = false;
                         }
-                        attribStr << _T("<tr><td valign=top><font size=-2>") << curAttrName;
+                        attribStr << _T("<tr><td valign=top><font size=-2>");
+                        if(curAttrName == _T("catgeo"))
+                            attribStr << _T("CATGEO");
+                        else
+                            attribStr << curAttrName;
                         attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
                     }
                 }
@@ -6905,9 +6319,13 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 if( isLight ) {
                     curLight->attributeValues.Add( value );
                 } else {
-                    if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") ) value.Replace(
-                            _T("|"), _T("<br>") );
-                    attribStr << value;
+                    if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") )
+                        value.Replace(_T("|"), _T("<br>") );
+                    
+                    if(curAttrName == _T("catgeo"))
+                        attribStr << type2str(current->obj->Primitive_type);
+                    else
+                        attribStr << value;
 
                     if( !( curAttrName == _T("DRVAL1") ) ) {
                         attribStr << _T("</font></td></tr>\n");
@@ -7448,9 +6866,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         ListOfObjRazRules::Node *snode = NULL;
         ListOfPI_S57Obj::Node *pnode = NULL;
 
-        if(Chs57)
+        if(Chs57 && rule_list)
             snode = rule_list->GetLast();
-        else if( target_plugin_chart )
+        else if( target_plugin_chart && pi_rule_list)
             pnode = pi_rule_list->GetLast();
 
 

@@ -254,13 +254,7 @@ OCPNRegion M_COVR_Desc::GetRegion ( const ViewPort &vp, wxPoint *pwp )
 
 
             double easting, northing, epix, npix;
-#if 0
-            ViewPort avp = vp;
-            wxPoint2DDouble q = avp.GetDoublePixFromLL( p->y, plon);
-            easting = q.m_x, northing = q.m_y;
-#else
             toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
-#endif
 
 //            easting -= transform_WGS84_offset_x;
             easting -=  user_xoff;
@@ -3484,7 +3478,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   case 'R':
                       pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
                       pf = ( float * ) aval;
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                         float tf1;
                         memcpy(&tf1, pf, sizeof(float));
                         *pAVR = tf1;
@@ -3814,22 +3808,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->y_rate   = m_CIB.transform_y_rate;
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
 
-                        //    Set up a deferred tesselation
-                        //      If OpnGL is not available, use the trapezoid tesselator 
-                        //        instead of the triangle tesselator
-                        
-                        //      Two reasons for this:
-                        //      a.  Tri tesselator is buggy, some tris not rendered correctly
-                        //      b.  Tri tesselator is slower than trapezoids for direct rendering
-#ifdef ocpnUSE_GL
-                        if(g_bopengl)
-                            pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
-                        else
-                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
-                        
-#else                        
-                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
-#endif                        
+                        pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
                   }
 
                   break;
@@ -4295,7 +4274,7 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     if ( vtype == 'R' )
                                     {
                                           float *pf = ( float * ) aval;
-#ifdef ARMHF
+#ifdef __ARM_ARCH
                                           float tf1;
                                           memcpy(&tf1, pf, sizeof(float));
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
@@ -4371,9 +4350,6 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     m_pcovr_set->Add_Update_MCD ( pmcd );
 
                                     
-                                    //  Update the parent cell mcovr bounding box
-                                    m_covr_bbox.Expand(pmcd->m_covr_bbox);
-                                    
                                     //    Clean up the xgeom
                                     free ( xgeom->pvector_index );
 
@@ -4408,6 +4384,7 @@ bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
                         ProcessMCOVRObjects ( vpcells.Item ( i ), '0' );
                         Unload_CM93_Cell();           // all done with this (sub)cell
                   }
+                  m_pcovr_set->m_cell_hash[vpcells.Item ( i )] = 1;
 
                   char loadcell_key = 'A';               // starting subcells
 
@@ -4769,8 +4746,6 @@ cm93compchart::cm93compchart()
       m_last_cell_adjustvp = NULL;
 
       m_pcm93mgr = new cm93manager();
-
-
 }
 
 cm93compchart::~cm93compchart()
@@ -5980,6 +5955,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
+      bool secondpass = false;
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
@@ -6008,6 +5984,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
               nvp = glChartCanvas::NormalizedViewPort(vp);
           } else
               nvp = vp;
+
+          // test viewport for accelerated panning and idl crossing
+          if((vp.m_projection_type == PROJECTION_MERCATOR ||
+              vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
+             ( vp.GetBBox().GetMinLon() < -180 ||
+               vp.GetBBox().GetMaxLon() > 180 ))
+              secondpass = true;
       }
 #endif
 
@@ -6024,6 +6007,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       bool bdrawn = false;
 
       nss_max = 7;
+      int cnt = 0;
 
 #if 0 /* only if chart outlines are rendered grounded to the charts */
       if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
@@ -6064,58 +6048,40 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
               //      Make sure the covr bounding box is complete
               psc->UpdateCovrSet ( &vp );
                               
-              /* test rectangle for entire set to reduce number of tests */
-              if( !psc->m_covr_bbox.GetValid() ||
-                  !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) 
-              {
-                  if ( psc ) 
-                  {
-                      //    Render the chart outlines
-                      covr_set *pcover = psc->GetCoverSet();
+              //    Render the chart outlines
+              covr_set *pcover = psc->GetCoverSet();
                                   
-                      for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
-                          M_COVR_Desc *mcd = pcover->GetCover ( im );
-#ifdef ocpnUSE_GL        
-                          if (g_bopengl) {
-                              RenderCellOutlinesOnGL(nvp, mcd); 
-                                      
-                              // if signs don't agree we need to render a second pass
-                              // translating around the world
-                              if( (vp.m_projection_type == PROJECTION_MERCATOR ||
-                                   vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) &&
-                                  ( vp.GetBBox().GetMinLon() < -180 ||
-                                    vp.GetBBox().GetMaxLon() > 180) ) {
-                                  #define NORM_FACTOR 4096.0                                              
-                                  double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
-                                  glPushMatrix();
-                                  glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
-                                  RenderCellOutlinesOnGL(nvp, mcd); 
-                                  glPopMatrix();
-                              }
-    
-                              // TODO: this calculation doesn't work crossing IDL
-                              // was anything actually drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                  bdrawn = true;
+              for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ ){
+                  M_COVR_Desc *mcd = pcover->GetCover ( im );
 
-                                  //  Does current vp cross international dateline?
-                                  // if so, translate to the other side of it.
-                              }
-                          } else
-#endif
-                              //    Anything actually to be drawn?
-                              if(! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
-                                            
-                                  wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
-                                  bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
-                              }
+                  if(vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ))
+                      continue;
+#ifdef ocpnUSE_GL        
+                  if (g_bopengl) {
+                      RenderCellOutlinesOnGL(nvp, mcd);
+                                      
+                      // if signs don't agree we need to render a second pass
+                      // translating around the world
+                      if( secondpass ) {
+#define NORM_FACTOR 4096.0                                              
+                          double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+                          glPushMatrix();
+                          glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
+                          RenderCellOutlinesOnGL(nvp, mcd); 
+                          glPopMatrix();
                       }
-                  }                          
-              }
+                      bdrawn = true;
+                  } else
+#endif
+                  {
+                      wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
+                      bdrawn = RenderCellOutlinesOnDC(dc, vp, pwp, mcd);
+                  }
+              }                          
           }
           nss ++;
       }
-
+      
 #ifdef ocpnUSE_GL        
       if(g_bopengl) {
           glPopMatrix();
@@ -6126,7 +6092,6 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           glDisable( GL_BLEND );
       }
 #endif
-
       return true;
 }
 
@@ -6166,7 +6131,8 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
 #ifdef ocpnUSE_GL
     // cannot reuse coordinates
     if(vp.m_projection_type != mcd->gl_screen_projection_type ||
-       !glChartCanvas::HasNormalizedViewPort(vp)) {
+       !glChartCanvas::HasNormalizedViewPort(vp) ||
+       vp.m_projection_type == PROJECTION_POLAR /* could speed up by also testing for n-s switch */) {
         delete [] mcd->gl_screen_vertices;
         mcd->gl_screen_vertices = NULL;
     }
@@ -6811,14 +6777,14 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
       wxBoxSizer* boxSizer02 = new wxBoxSizer ( wxVERTICAL );
       boxSizer02->AddSpacer ( 22 );
 
-      wxStaticText *pStaticTextXoff = new wxStaticText ( this, wxID_ANY, _ ( "User X Offset (Metres)" ), wxDefaultPosition, wxDefaultSize, 0 );
+      wxStaticText *pStaticTextXoff = new wxStaticText ( this, wxID_ANY, wxString::Format(_T( "%s (%s)" ), _( "User X Offset" ), _( "meters" ) ), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add ( pStaticTextXoff, 0, wxALL, 0 );
 
       m_pSpinCtrlXoff = new wxSpinCtrl ( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize ( 50, -1 ), wxSP_ARROW_KEYS, -10000, 10000, 0 );
       m_pSpinCtrlXoff->Connect ( wxEVT_COMMAND_SPINCTRL_UPDATED, wxCommandEventHandler ( CM93OffsetDialog::OnOffSetSet ), NULL, this );
       boxSizer02->Add ( m_pSpinCtrlXoff, 0, wxEXPAND|wxALL, 0 );
 
-      wxStaticText *pStaticTextYoff = new wxStaticText ( this, wxID_ANY, _ ( "User Y Offset (Metres)" ), wxDefaultPosition, wxDefaultSize, 0 );
+      wxStaticText *pStaticTextYoff = new wxStaticText ( this, wxID_ANY, wxString::Format(_T( "%s (%s)" ), _( "User Y Offset" ), _( "meters" ) ), wxDefaultPosition, wxDefaultSize, 0 );
       boxSizer02->Add ( pStaticTextYoff, 0, wxALL, 0 );
 
       m_pSpinCtrlYoff = new wxSpinCtrl ( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize ( 50, -1 ), wxSP_ARROW_KEYS, -10000, 10000, 0 );

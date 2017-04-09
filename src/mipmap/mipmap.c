@@ -87,6 +87,7 @@ void MipMap_24_generic( int width, int height, unsigned char *source, unsigned c
     }
 }
 
+// Note: does not blend alpha
 void MipMap_32_generic( int width, int height, unsigned char *source, unsigned char *target )
 {
     int newwidth = width / 2;
@@ -100,10 +101,14 @@ void MipMap_32_generic( int width, int height, unsigned char *source, unsigned c
     int i, j, k;
     for( i = 0; i < newheight; i++ ) {
         for( j = 0; j < newwidth; j++ ) {
+#if defined(__ARM_ARCH)||(MIPMAP_32_ALPHA) // better to always work at 32bites on arm
+            for( k = 0; k < 4; k++)
+                *s++ = ( t[k] + t[k+4] + u[k] + u[k+4] ) / 4;
+#else            
             for( k = 0; k < 3; k++)
                 *s++ = ( t[k] + t[k+4] + u[k] + u[k+4] ) / 4;
-
             s++;
+#endif            
             t += 8;
             u += 8;
         }
@@ -111,49 +116,6 @@ void MipMap_32_generic( int width, int height, unsigned char *source, unsigned c
         u += stride;
     }
 }
-
-#if 0 // disabled until verified
-
-#ifdef __ARM__
-void MipMap_32_arm( int width, int height, unsigned char *source, unsigned char *target )
-{
-    int newwidth = width / 2;
-    int newheight = height / 2;
-    int stride = width * 4;
-    
-    unsigned char *s = target;
-    unsigned char *t = source;
-    unsigned char *u = t+stride;
-
-    for( int y = 0; y < newheight; y++ ) {
-        for( int x = 0; x < newwidth; x+=2 ) {
-            uint4x8_t a0, a1, a2, a3;
-
-            memcpy(&a0, t,    4);
-            memcpy(&a1, t+4,  4);
-            memcpy(&a2, u,    4);
-            memcpy(&a3, u+4,  4);
-
-            // average first and second scan lines
-            a0 = __uhadd8(a0, a2);
-            a1 = __uhadd8(a1, a3);
-
-            // average even and odd x pixels
-            a0 = __uhadd8(a0, a1);
-
-            memcpy(s, &a0, 4);
-
-            s+=4;
-            t+=8;
-            u+=8;
-        }
-        t += stride;
-        u += stride;
-    }
-}
-#endif
-
-#endif
 
 void (*MipMap_24)( int width, int height, unsigned char *source, unsigned char *target ) = MipMap_24_generic;
 void (*MipMap_32)( int width, int height, unsigned char *source, unsigned char *target ) = MipMap_32_generic;
@@ -193,5 +155,10 @@ void MipMap_ResolveRoutines()
     }
 #endif
 
+#endif
+
+#ifdef __ARM_NEON
+    MipMap_24 = MipMap_24_neon;
+    MipMap_32 = MipMap_32_neon;
 #endif
 }

@@ -1,0 +1,101 @@
+<meta charset="utf-8">
+
+
+<h1>BSB4 Charts</h1>
+<div class="level1">
+
+<p>
+Provides support of BSB Version 4 Raster charts, a format used by many hydrographic authorities throughout the world.
+BSB4 charts are raster charts, manufactured according to a standard developed by MAPTEC.  The BSB4 plug-in enables OpenCPN to open and read the encrypted charts correctly provided that the charts have been purchased, registered and the plugin is installed properly. Supported charts must have been installed with appropriate encryption certificates in place. This plug-in only works with Windows.
+</p>
+
+<p>
+There are several sources of charts:
+</p>
+<ul>
+<li class="level1"> Charts published by the company MAPTEC,</li>
+<li class="level1"> Charts published by the<a href="http://www.charts.gc.ca/index-eng.asp" class="urlextern" title="http://www.charts.gc.ca/index-eng.asp" rel="nofollow">Canadian Hydrographics Service</a> <a href="http://www.charts.gc.ca/index-eng.asp" class="urlextern" title="http://www.charts.gc.ca/index-eng.asp" rel="nofollow">(CHS)</a></li>
+<li class="level1"> Legacy charts produced by the <a href="../../../towebsite.html" class="urlextern" title="http://www.hydro.gov.au/prodserv/digital/ausRNC/rnc.htm" rel="nofollow">Australian Hydrographic Service</a>.</li>
+</ul>
+
+<p>
+The chart installation procedure is independent of OpenCPN.  At the time this plugin was first published the creator of the plugin posted on <a href="../../../towebsite.html" class="urlextern" title="http://www.cruisersforum" rel="nofollow">www.cruisersforum</a> as follows:
+</p>
+<ul>
+<li class="level1"> This plugin supports Windows only.</li>
+<li class="level1"> The BSB4 charts will be available only on the computer where they were successfully first installed and registered by the original end user.</li>
+<li class="level1"> The plug-in makes no attempt to understand or “crack” the encryption algorithms.  The DLL interface is treated as an opaque portal to read the decrypted files.  The plug-in acts as a “wrapper” to make the charts visible.</li>
+<li class="level1"> The BSB4 PlugIn won&#039;t be distributed as open source.</li>
+</ul>
+
+<p>
+It will be a binary-only DLL, looking just like all other PlugIns at run-time.
+</p>
+<ul>
+<li class="level1"> Please take careful notes of the 2nd point above. If a user somehow “acquires” a copy of an encrypted BSB4 chart folio, it won&#039;t be useable with this plugin.</li>
+</ul>
+
+<p>
+<b>In summary, the plug-in will only work for registered charts on the computer where they were first installed and registered.  The plug-in is NOT a means to obtain free charts.</b>
+</p>
+
+<p>
+The downloaded file is an installer which will place a DLL in the “plugins” folder of the OpenCPN installation. The installer will attempt to place it in the correct location but if your directory structure is “non-standard” the plug-in may not end up in the correct location.  On a standard installation the plug-in folder will be C:\Program Files (x86)\OpenCPN\plugins\  If you have a non-standard installation then it will be up to you to ensure that the BSB4 plug-in (bsb4_pi.dll) appears in the correct folder - just copy it into the right location if it doesn&#039;t get there by itself.
+</p>
+
+<p>
+Once the plug-in DLL is in the correct plug-ins folder it will appear in the options/plugins menu when you start OpenCPN.  You will need to navigate to Options (the wrench menu item), select the plug-ins tab, find the BSB4 plug-in and click “enable” in order to use the plug-in.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/ocpn-optionsmenu.jpeg" class="media" title="ocpn-optionsmenu.jpg" alt="ocpn-optionsmenu.jpg" />
+</p>
+
+<p>
+<img src="../../../opencpn/manual/ocpn-bsb4-dll-enable.jpeg" class="media" title="ocpn-bsb4-dll-enable.jpg" alt="ocpn-bsb4-dll-enable.jpg" />
+</p>
+
+<p>
+With the plug-in successfully installed in the OpenCPN plug-ins directory and enabled there is one further step necessary to view your encrypted charts.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/ocpn-bsb4-install.jpeg" class="media" title="ocpn-bsb4-install.jpg" alt="ocpn-bsb4-install.jpg" />
+</p>
+
+<p>
+From the Options menu, select the Charts tab.  
+</p>
+
+<p>
+Then add the appropriate directory(ies) where your encryption certificates are located, followed by the directory(ies) where the encrypted charts are located.  
+</p>
+
+<p>
+The screenshot above is from a successful installation.  Your directory structure will no doubt be completely different but the same principles apply.  
+</p>
+
+<p>
+In the example above, the non-encrypted charts are located on Dropbox.  
+</p>
+
+<p>
+Then there are two separate encryption directories followed by the directory which contains the encrypted charts.
+</p>
+
+<p>
+To recap the process, the following are the steps necessary to install and use the BSB4 plug-in:
+</p>
+<ol>
+<li class="level1"> Purchase and install encrypted BSB4 charts on the same computer that will run OpenCPN with the BSB4 plug-in</li>
+<li class="level1"> Download and run the BSB4 plug-in installer</li>
+<li class="level1"> Ensure that the plug-in DLL has in fact been created in the appropriate plug-in folder.  If not, copy the DLL to the required location.</li>
+<li class="level1"> Start the OpenCPN software and enable the BSB4 plug-in</li>
+<li class="level1"> Add the appropriate encryption and chart directories to the OpenCPN chart locator.</li>
+</ol>
+
+<p>
+Typically if you follow all the steps the charts will immediately be visible at this point.  On occasion however they will not immediately appear and you may need to exit the OpenCPN software, closing it completely and then reopening it. At that point the encrypted charts should be visible.
+</p>
+
+</div>

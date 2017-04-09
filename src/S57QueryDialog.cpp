@@ -32,6 +32,7 @@ extern S57QueryDialog *g_pObjectQueryDialog;
 extern int g_S57_dialog_sx;
 extern int g_S57_dialog_sy;
 extern bool g_bresponsive;
+extern bool g_btouch;
 
 IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )
 // S57QueryDialog event table definition
@@ -136,8 +137,11 @@ void S57QueryDialog::CreateControls()
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( topSizer );
 
-    m_phtml = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
+    long style = wxHW_SCROLLBAR_AUTO;
+    if(g_btouch)
+        style |= wxHW_NO_SELECTION;
+        
+    m_phtml = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
     
     m_phtml->SetBorders( 5 );
 

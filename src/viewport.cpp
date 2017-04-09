@@ -183,11 +183,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
-#if 0
-        toSM( lat, xlon, clat, clon, &easting, &northing );
-#else
         toSMcache( lat, xlon, cache0, clon, &easting, &northing );
-#endif
         break;
 
     case PROJECTION_TRANSVERSE_MERCATOR:
@@ -534,18 +530,19 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         pp = ppoints;
 
     float *pfp = llpoints;
-
     
     wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
     int poly_x_max = INVALID_COORD, poly_y_max = INVALID_COORD,
         poly_x_min = INVALID_COORD, poly_y_min = INVALID_COORD;
     
     bool valid = false;
-    for( unsigned int ip = 0; ip < nPoints; ip++ ) {
+    int npPoints = 0;
+    for( int ip=0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
-        pp[ip] = p;
         if(p.x == INVALID_COORD)
             continue;
+
+        pp[npPoints++] = p;
 
         if(valid) {
             poly_x_max = wxMax(poly_x_max, p.x);
@@ -596,13 +593,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         p3.y = lat; p3.x = lon;
         
         
-        for(size_t i=0 ; i < nPoints-1 ; i++){            
+        for(size_t i=0 ; i < npPoints-1 ; i++){            
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
 
-            if(y0 == INVALID_COORD || y1 == INVALID_COORD)
-                continue;
-            
             if( ((y0 < rect.y) && (y1 < rect.y)) ||
                 ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
                 continue;               // both ends of line outside of box, top or bottom
@@ -656,15 +650,11 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         while( screen_region_it2.HaveRects() ) {
             wxRect rect = screen_region_it2.GetRect();
  
-            for(size_t i=0 ; i < nPoints-1 ; i++){
+            for(size_t i=0 ; i < npPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
-                if(x0 == INVALID_COORD)
-                    continue;
 
-                if((x0 < rect.x) || (x0 > rect.x+rect.width))
-                    continue;
-                
-                if((y0 < rect.y) || (y0 > rect.y+rect.height))
+                if((x0 < rect.x) || (x0 > rect.x+rect.width) ||
+                   (y0 < rect.y) || (y0 > rect.y+rect.height))
                     continue;
                 
                 b_contained = true;
@@ -725,7 +715,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     else if(b_contained && !b_intersect){
         //  subject polygon is entirely withing the target Region,
         //  so the intersection is the subject polygon
-        OCPNRegion r = OCPNRegion( nPoints, pp );
+        OCPNRegion r = OCPNRegion( npPoints, pp );
         if( NULL == ppoints ) delete[] pp;
         return r;
     }
@@ -758,7 +748,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     else
     {
 
-        OCPNRegion r = OCPNRegion(nPoints, pp);
+        OCPNRegion r = OCPNRegion(npPoints, pp);
         if(NULL == ppoints)
             delete[] pp;
 
@@ -768,7 +758,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
     }
 
 #else
-    OCPNRegion r = OCPNRegion( nPoints, pp );
+    OCPNRegion r = OCPNRegion( npPoints, pp );
 
     if( NULL == ppoints ) delete[] pp;
 

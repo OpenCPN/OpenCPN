@@ -1,0 +1,129 @@
+<meta charset="utf-8">
+
+
+<h1>Network Repeater</h1>
+<div class="level1">
+
+<p>
+From Gilletarom&#039;s website some excellent information on Networking<br/>
+
+<a href="http://www.plaisance-pratique.com/OpenCPN-Networking-repeater-to" class="urlextern" title="http://www.plaisance-pratique.com/OpenCPN-Networking-repeater-to" rel="nofollow">http://www.plaisance-pratique.com/OpenCPN-Networking-repeater-to</a><br/>
+
+</p>
+
+</div>
+
+<h3>Opencpn network/RJ45 (Ethernet) cable</h3>
+<div class="level3">
+
+<p>
+<b>The means :</b>
+</p>
+<ol>
+<li class="level1"> OpenCPN, know IP of the server PC, has an RJ45 (Ethernet) cable or Wifi on both, PC</li>
+<li class="level1"> Has set both networked PCs, cable or Wifi</li>
+<li class="level1"> OpenCPN on the PC server</li>
+</ol>
+
+<p>
+<b>Setting OpenCPN on the PC server</b>
+</p>
+<ul>
+<li class="level1 node"> Setting Options<ul>
+<li class="level3 node"> connections<ul>
+<li class="level4"> add Connection</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="level1 node"> Set as follows by putting your IP address followed by : xx<ul>
+<li class="level3"> Properties “Network”</li>
+<li class="level3"> Protocol “UDP”</li>
+<li class="level3"> Adress your IP address followed by : “.x.x”</li>
+<li class="level3"> Data Port com “10110”</li>
+<li class="level3"> Output on this port “OK”</li>
+</ul>
+</li>
+<li class="level1"> Set “Apply” and then “OK”</li>
+</ul>
+
+<p>
+<a href="../opencpn/manual/ba_serveur_2-910db.jpeg" class="media" title="opencpn:manual:ba_serveur_2-910db.jpeg"><img src="../opencpn/manual/ba_serveur_2-910db.jpeg" class="media" title="ba_serveur_2-910db.jpeg" alt="ba_serveur_2-910db.jpeg" /></a>
+</p>
+
+<p>
+<b>Setting OpenCPN on PC Receiver</b>
+</p>
+<ul>
+<li class="level1 node"> Setting Options<ul>
+<li class="level3 node"> connections<ul>
+<li class="level4"> add Connection</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="level1 node"> Set as follows by putting only this IP address, for UDP protocol : 0.0.0.0<ul>
+<li class="level3"> Properties “Network”</li>
+<li class="level3"> Protocol “UDP”</li>
+<li class="level3"> Adress “0.0.0.0”</li>
+<li class="level3"> Data Port com “10110”</li>
+<li class="level3"> Receive Input on this port “OK”</li>
+<li class="level3"> Set “Apply” and then “OK ”</li>
+</ul>
+</li>
+</ul>
+
+<p>
+<a href="../opencpn/manual/bb_receveur_2-78e4c.jpeg" class="media" title="opencpn:manual:bb_receveur_2-78e4c.jpeg"><img src="../opencpn/manual/bb_receveur_2-78e4c.jpeg" class="media" title="bb_receveur_2-78e4c.jpeg" alt="bb_receveur_2-78e4c.jpeg" /></a>
+</p>
+
+</div>
+
+<h3>Networking</h3>
+<div class="level3">
+
+<p>
+<b>On the server PC                          On the PC Receiver</b>
+</p>
+
+<p>
+<a href="../opencpn/manual/ca_serveur.jpeg" class="media" title="opencpn:manual:ca_serveur.jpeg"><img src="../opencpn/manual/ca_serveur.jpeg" class="media" title="ca_serveur.jpeg" alt="ca_serveur.jpeg" /></a> ..
+<a href="../opencpn/manual/cb_receveur.jpeg" class="media" title="opencpn:manual:cb_receveur.jpeg"><img src="../opencpn/manual/cb_receveur.jpeg" class="media" title="cb_receveur.jpeg" alt="cb_receveur.jpeg" /></a>
+</p>
+
+<p>
+For this example, all the NMEA data from the GPS and display of AIS data
+</p>
+
+<p>
+**On the server PC  On the PC Receiver
+</p>
+
+<p>
+<a href="../opencpn/manual/da_rezo-ocpn_w7.jpeg" class="media" title="opencpn:manual:da_rezo-ocpn_w7.jpeg"><img src="../opencpn/manual/da_rezo-ocpn_w7.jpeg" class="media" title="da_rezo-ocpn_w7.jpeg" alt="da_rezo-ocpn_w7.jpeg" /></a> ..
+<a href="../opencpn/manual/db_rezo-ocpn_xp.jpeg" class="media" title="opencpn:manual:db_rezo-ocpn_xp.jpeg"><img src="../opencpn/manual/db_rezo-ocpn_xp.jpeg" class="media" title="db_rezo-ocpn_xp.jpeg" alt="db_rezo-ocpn_xp.jpeg" /></a>
+</p>
+<ul>
+<li class="level1"> The emission readings and receiving NMEA sentences, under the AIS receptions.</li>
+<li class="level1"> We see that every sentence received by the transmitter is immediately re-shipped by outgoing connection</li>
+</ul>
+
+<p>
+<a href="../opencpn/manual/ea_nmea_emission_w7.jpeg" class="media" title="opencpn:manual:ea_nmea_emission_w7.jpeg"><img src="../opencpn/manual/ea_nmea_emission_w7.jpeg" class="media" title="ea_nmea_emission_w7.jpeg" alt="ea_nmea_emission_w7.jpeg" /></a> ..
+<a href="../opencpn/manual/eb_nmea_reception_xp.jpeg" class="media" title="opencpn:manual:eb_nmea_reception_xp.jpg"><img src="../opencpn/manual/eb_nmea_reception_xp.jpeg" class="media" title="eb_nmea_reception_xp.jpeg" alt="eb_nmea_reception_xp.jpeg" /></a>
+</p>
+
+<p>
+NMEA information goes through the RJ45 cable or WiFi and are received on the other PC. <br/>
+
+</p>
+
+<p>
+With this application you can have a PC inside and another type tablet outdoors
+</p>
+
+<p>
+For more information on OpenCPN Wifi Networking, OpenCPN WiFi network between XP, W7 and W8 tablet, Creation of a network using a batch file see <a href="http://www.plaisance-pratique.com/OpenCPN-Networking-repeater-to?lang=fr" class="urlextern" title="http://www.plaisance-pratique.com/OpenCPN-Networking-repeater-to?lang=fr" rel="nofollow">Pratiques et Techniques de la Plaisance</a>
+</p>
+
+</div>

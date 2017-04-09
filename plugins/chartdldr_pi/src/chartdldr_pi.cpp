@@ -594,7 +594,7 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
     wxPoint point = event.GetPosition();
     wxPoint p1 = ((wxWindow *)m_clCharts)->GetPosition();
 
-#ifdef __WXQT__    
+#ifdef __OCPN_ANDROID__    
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
     
     // add stuff
@@ -1389,9 +1389,7 @@ void ChartDldrPanelImpl::AddSource( wxCommandEvent& event )
         SelectCatalog(m_lbChartSources->GetItemCount() - 1);
         pPlugIn->SaveConfig();
     }
-//    dialog->Close();
-    dialog->Destroy();
-    wxDELETE(dialog);
+    delete dialog;
     event.Skip();
     
     Show();
@@ -1450,9 +1448,7 @@ void ChartDldrPanelImpl::DoEditSource()
         pPlugIn->SaveConfig();
         SetSource(cat);
     }
-//    dialog->Close();
-    dialog->Destroy();
-    wxDELETE(dialog);
+    delete dialog;
     
     Show();
 }

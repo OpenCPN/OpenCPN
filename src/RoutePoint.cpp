@@ -494,7 +494,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
                 double radius = factor * m_iWaypointRangeRingsNumber * m_fWaypointRangeRingsStep  / 60.;
 
                 LLBBox radar_box = m_wpBBox;
-                radar_box.EnLarge(radius);
+                radar_box.EnLarge(radius * 2 );
                 if( vpBBox.IntersectOut( radar_box ) ){
                     return;
                 }
@@ -507,7 +507,6 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     wxPoint r;
     wxRect hilitebox;
     unsigned char transparency = 150;
-    double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
     
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
@@ -517,13 +516,17 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     if(r.x == INVALID_COORD)
         return;
 
-//    Substitue icon?
+//    Substitute icon?
     wxBitmap *pbm;
     if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
         pbm = pWayPointMan->GetIconBitmap(  _T ( "activepoint" ) );
     else
         pbm = m_pbmIcon;
 
+    //  If icon is corrupt, there is really nothing else to do...
+    if(!pbm->IsOk())
+        return;
+    
     int sx2 = pbm->GetWidth() / 2;
     int sy2 = pbm->GetHeight() / 2;
 
@@ -727,7 +730,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
         pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
-        
+
+        double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
         wxPen ppPen1( m_wxcWaypointRangeRingsColour, platform_pen_width );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();

@@ -27,6 +27,7 @@
 #include "vector2D.h"
 #include "navutil.h"
 #include "chcanv.h"
+#include "Track.h"
 
 extern ChartCanvas *cc1;
 

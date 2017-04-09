@@ -933,10 +933,6 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 
 void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask )
 {
-#ifdef ocpnUSE_GLES  // Do not attempt to do anything with glDrawPixels if using opengles
-        return;
-#endif
-
     wxBitmap bmp;
     if( x < 0 || y < 0 ) {
         int dx = ( x < 0 ? -x : 0 );
@@ -956,6 +952,9 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
         dc->DrawBitmap( bmp, x, y, usemask );
 #ifdef ocpnUSE_GL
     else {
+#ifdef ocpnUSE_GLES  // Do not attempt to do anything with glDrawPixels if using opengles
+        return; // this should not be hit anymore ever anyway
+#endif
         wxImage image = bmp.ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
 

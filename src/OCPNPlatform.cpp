@@ -97,6 +97,7 @@ extern sigjmp_buf env;                    // the context saved by sigsetjmp();
 
 
 extern OCPNPlatform              *g_Platform;
+extern bool                      g_bFirstRun;
 
 extern int                       quitflag;
 extern MyFrame                   *gFrame;
@@ -238,6 +239,10 @@ extern Select                    *pSelect;
 extern Select                    *pSelectTC;
 extern Select                    *pSelectAIS;
 
+extern Select                    *pSelect;
+extern Select                    *pSelectTC;
+extern Select                    *pSelectAIS;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions            g_GLOptions;
 #endif
@@ -268,6 +273,12 @@ extern wxArrayString             g_locale_catalog_array;
 
 OCPNPlatform::OCPNPlatform()
 {
+    m_pt_per_pixel = 0;                 // cached value
+    m_bdisableWindowsDisplayEnum = false;
+    m_displaySize = wxSize(0,0);
+    m_displaySizeMM = wxSize(0,0);
+    m_monitorWidth = m_monitorHeight = 0;
+    
 }
 
 OCPNPlatform::~OCPNPlatform()
@@ -352,11 +363,19 @@ void OCPNPlatform::Initialize_1( void )
     info.pszAppName = _T("OpenCPN");
     
     info.pszAppVersion = OpenCPNVersion.c_str();
+
+    int type =  MiniDumpNormal;
     
-    int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
     // This results in the inclusion of global variables
+    type |= MiniDumpWithDataSegs;
     
-    type |=  MiniDumpNormal;// | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
+    //If this flag is specified, the contents of every readable and writeable private memory page will be included into the minidump.
+    //type |=  MiniDumpWithPrivateReadWriteMemory;
+
+    //If this flag is specified, MiniDumpWriteDump function will scan the stack memory of every thread looking for pointers
+    //that point to other readable memory pages in the process’ address space.
+    //type |=  MiniDumpWithIndirectlyReferencedMemory;
+    
     info.uMiniDumpType = (MINIDUMP_TYPE)type;
     
     // Install all available exception handlers....
@@ -464,10 +483,10 @@ void OCPNPlatform::Initialize_1( void )
     _set_new_mode(1);
 #endif    
     
-    //    On MSW, force the entire process to run on one CPU core only
-    //    This resolves some difficulty with wxThread syncronization
 #if 0
 #ifdef __WXMSW__
+    //    On MSW, force the entire process to run on one CPU core only
+    //    This resolves some difficulty with wxThread syncronization
     //Gets the current process handle
     HANDLE hProc = GetCurrentProcess();
     DWORD procMask;
@@ -578,43 +597,74 @@ void OCPNPlatform::OnExit_2( void ){
 void OCPNPlatform::SetLocaleSearchPrefixes( void )
 {
 #if wxUSE_XLOCALE
-    
     // Add a new prefixes for search order.
-    #ifdef __WXMSW__
+    #if defined(__WINDOWS__)
+
     wxString locale_location = GetSharedDataDir();
     locale_location += _T("share/locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
-    #endif
-    
-    #ifdef __OCPN__ANDROID__ 
+
+    #elif defined(__OCPN__ANDROID__)
+
     wxString locale_location = GetSharedDataDir() + _T("locale");
     wxLocale::AddCatalogLookupPathPrefix( locale_location );
-    #endif    
-    
+
+    #elif defined(__UNIX__) && !defined(__WINE__)
+
+    // On Unix, wxWidgets defaults to installation prefix of its own, usually "/usr".
+    // On the other hand, canonical installation prefix for OpenCPN is "/usr/local".
+    wxString locale_location;
+    if( !wxGetEnv( _T("OPENCPN_PREFIX"), &locale_location ) )
+    {
+        locale_location = _T("/usr/local");
+    }
+    wxFileName location;
+    location.AssignDir( locale_location );
+    location.AppendDir( _T("share") );
+    location.SetName( _T("locale") );
+    locale_location = location.GetFullPath();
+    wxLocale::AddCatalogLookupPathPrefix( locale_location );
+
+    #endif
+
 #endif
 }
 
 wxString OCPNPlatform::GetDefaultSystemLocale()
 {
+    wxLogMessage(_T("Getting DefaultSystemLocale..."));
+    
     wxString retval = _T("en_US");
     
 #if wxUSE_XLOCALE
     
     const wxLanguageInfo* languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    retval =languageInfo->CanonicalName;
-    
+    if (languageInfo)
+        retval = languageInfo->CanonicalName;
+
     #if defined(__WXMSW__) 
-    LANGID lang_id = GetUserDefaultUILanguage();
-    wxChar lngcp[100];
-    const wxLanguageInfo* languageInfo = 0;
-    if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
-        languageInfo = wxLocale::FindLanguageInfo(lngcp);define
-    }
-    else
-        languageInfo = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
-    retval = languageInfo->CanonicalName();
-    #endif
-    
+        LANGID lang_id = GetUserDefaultUILanguage();
+        
+        wchar_t lngcp[101];
+        const wxLanguageInfo* languageInfoW = 0;
+        if (0 != GetLocaleInfo(MAKELCID(lang_id, SORT_DEFAULT), LOCALE_SENGLANGUAGE, lngcp, 100)){
+            wxString lstring = wxString(lngcp);
+            
+            languageInfoW = wxLocale::FindLanguageInfo(lngcp);
+            if(languageInfoW)
+                wxLogMessage(_T("Found LanguageInfo for: ") + lstring);
+            else
+                wxLogMessage(_T("Could not find LanguageInfo for: ") + lstring);
+        }
+        else{
+            wxLogMessage(_T("Could not get LocaleInfo, using wxLANGUAGE_DEFAULT"));
+            languageInfoW = wxLocale::GetLanguageInfo(wxLANGUAGE_DEFAULT);
+        }
+        
+        if(languageInfoW)
+            retval = languageInfoW->CanonicalName;
+     #endif
+            
     #if defined(__OCPN__ANDROID__)
     retval = androidGetAndroidSystemLocale();
     #endif
@@ -705,7 +755,6 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         //  So, Load the catalogs saved in a global string array which is populated as PlugIns request a catalog load.
         //  We want to load the PlugIn catalogs first, so that core opencpn translations loaded later will become precedent.
         
-        //wxLog::SetVerbose(true);            // log all messages for debugging language stuff
         
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
@@ -779,7 +828,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     // Initial S52/S57 options
     if(pConfig){
         pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
-        pConfig->Write( _T ( "bShowS57Text" ), false );
+        pConfig->Write( _T ( "bShowS57Text" ), true );
         pConfig->Write( _T ( "bShowS57ImportantTextOnly" ), false );
         pConfig->Write( _T ( "nDisplayCategory" ), (int)(_DisCat)STANDARD );
         pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
@@ -792,13 +841,16 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "bShowLightDescription" ), false );
         pConfig->Write( _T ( "bExtendLightSectors" ), true );
         pConfig->Write( _T ( "bDeClutterText" ), true );
-        pConfig->Write( _T ( "bShowNationalText" ), false );
+        pConfig->Write( _T ( "bShowNationalText" ), true );
         
-        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 5 );
-        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 2 );
-        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 10 );
+        pConfig->Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), 3 );
+        pConfig->Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), 4 );
+        pConfig->Write( _T ( "S52_MAR_DEEP_CONTOUR" ), 6 );
         pConfig->Write( _T ( "S52_MAR_TWO_SHADES" ), 0  );
         pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
+
+        pConfig->Write( _T ( "ZoomDetailFactorVector" ), 3 );
+        
      }
     
     
@@ -1520,20 +1572,25 @@ double OCPNPlatform::getFontPointsperPixel( void )
     //  For reference, see http://pixplicity.com/dp-px-converter/
     pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
     
-#else    
+#else 
+    
+    if(m_pt_per_pixel == 0){
     //  Make a measurement...
-    wxScreenDC dc;
+        wxScreenDC dc;
     
-    wxFont *f = FontMgr::Get().FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
+        wxFont *f = FontMgr::Get().FindOrCreateFont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
                                                 wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
-    dc.SetFont(*f);
+        dc.SetFont(*f);
     
-    wxSize sz = dc.GetTextExtent(_T("H"));
-    pt_per_pixel = 12.0 / (double)sz.y;
+        wxSize sz = dc.GetTextExtent(_T("H"));
+        if(sz.y > 0)
+            m_pt_per_pixel = 12.0 / (double)sz.y;
+    }
+    if(m_pt_per_pixel > 0)
+        pt_per_pixel = m_pt_per_pixel;
 #endif
     
     return pt_per_pixel;
-    
     
 }
 
@@ -1542,24 +1599,32 @@ wxSize OCPNPlatform::getDisplaySize()
 #ifdef __OCPN__ANDROID__
     return getAndroidDisplayDimensions();
 #else
-    return (::wxGetDisplaySize());               // default, for most platforms
+    if(m_displaySize.x < 10)
+        m_displaySize = ::wxGetDisplaySize();               // default, for most platforms
+    return m_displaySize;
 #endif
 
 }
 
 double  OCPNPlatform::GetDisplaySizeMM()
 {
-    double ret = wxGetDisplaySizeMM().GetWidth();
+    if(m_displaySizeMM.x < 1)
+        m_displaySizeMM = wxGetDisplaySizeMM();
+
+    double ret = m_displaySizeMM.GetWidth();
     
 #ifdef __WXMSW__    
     int w,h;
     
-    bool GetWindowsMonitorSize( int *w, int *h );
-       
-    if( GetWindowsMonitorSize( &w, &h) ){
-        if(w > 100)             // sanity check
+    if( !m_bdisableWindowsDisplayEnum){
+        if(GetWindowsMonitorSize( &w, &h) && (w > 100) ){             // sanity check
+            m_displaySizeMM == wxSize(w, h);
             ret = w;
+        }
+        else
+            m_bdisableWindowsDisplayEnum = true;        // disable permanently
     }
+    
 #endif
 
 #ifdef __WXOSX__
@@ -1582,7 +1647,7 @@ double OCPNPlatform::GetDisplayDPmm()
 #ifdef __OCPN__ANDROID__
     return getAndroidDPmm();
 #else
-    double r = ::wxGetDisplaySize().x;            // dots
+    double r = getDisplaySize().x;            // dots
     return r / GetDisplaySizeMM();
 #endif    
 }
@@ -1639,6 +1704,7 @@ void OCPNPlatform::PositionAISAlert(wxWindow *alert_window)
 wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog* dlg)
 {
     wxDirDialog* ret_dlg = dlg;
+#ifndef __WXGTK__            
     
         dlg->Show();
         dlg->SetSize( container->GetSize());
@@ -1669,13 +1735,14 @@ wxDirDialog* OCPNPlatform::AdjustDirDialogFont(wxWindow *container, wxDirDialog*
             
         }
         ret_dlg->Hide();
-        
+#endif        
     return ret_dlg;
 }
         
 wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDialog* dlg)
 {
             wxFileDialog* ret_dlg = dlg;
+#ifndef __WXGTK__            
             
             dlg->Show();
             dlg->SetSize( container->GetSize());
@@ -1708,7 +1775,7 @@ wxFileDialog* OCPNPlatform::AdjustFileDialogFont(wxWindow *container, wxFileDial
                 
             }
             ret_dlg->Hide();
-            
+#endif            
             return ret_dlg;
 }
         
@@ -1937,51 +2004,60 @@ bool GetSizeForDevID(wxString &TargetDevID, int *WidthMm, int *HeightMm)
     return bRes;
 }
 
-bool GetWindowsMonitorSize( int *width, int *height)
+bool OCPNPlatform::GetWindowsMonitorSize( int *width, int *height)
 {
-    int WidthMm = 0;
-    int HeightMm = 0;
+    bool bFoundDevice = true;
     
-    DISPLAY_DEVICE dd;
-    dd.cb = sizeof(dd);
-    DWORD dev = 0; // device index
-    int id = 1; // monitor number, as used by Display Properties > Settings
-    
-    wxString DeviceID;
-    bool bFoundDevice = false;
-    while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
-    {
-        DISPLAY_DEVICE ddMon;
-        ZeroMemory(&ddMon, sizeof(ddMon));
-        ddMon.cb = sizeof(ddMon);
-        DWORD devMon = 0;
-        
-        while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
-        {
-            if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
-                !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
-            {
-                DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
-                DeviceID = DeviceID.Mid (8);
-                DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
-                
-                bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
-            }
-            devMon++;
+    if(m_monitorWidth < 10){
             
+        int WidthMm = 0;
+        int HeightMm = 0;
+        
+        DISPLAY_DEVICE dd;
+        dd.cb = sizeof(dd);
+        DWORD dev = 0; // device index
+        int id = 1; // monitor number, as used by Display Properties > Settings
+        
+        wxString DeviceID;
+        bFoundDevice = false;
+        while (EnumDisplayDevices(0, dev, &dd, 0) && !bFoundDevice)
+        {
+            DISPLAY_DEVICE ddMon;
             ZeroMemory(&ddMon, sizeof(ddMon));
             ddMon.cb = sizeof(ddMon);
+            DWORD devMon = 0;
+            
+            while (EnumDisplayDevices(dd.DeviceName, devMon, &ddMon, 0) && !bFoundDevice)
+            {
+                if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE &&
+                    !(ddMon.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
+                {
+                    DeviceID = wxString(ddMon.DeviceID, wxConvUTF8);
+                    DeviceID = DeviceID.Mid (8);
+                    DeviceID = DeviceID.Mid (0, DeviceID.Find ( '\\' ));
+                    
+                    bFoundDevice = GetSizeForDevID(DeviceID, &WidthMm, &HeightMm);
+                }
+                devMon++;
+                
+                ZeroMemory(&ddMon, sizeof(ddMon));
+                ddMon.cb = sizeof(ddMon);
+            }
+            
+            ZeroMemory(&dd, sizeof(dd));
+            dd.cb = sizeof(dd);
+            dev++;
+            
         }
+        m_monitorWidth = WidthMm;
+        m_monitorHeight = HeightMm;
         
-        ZeroMemory(&dd, sizeof(dd));
-        dd.cb = sizeof(dd);
-        dev++;
     }
     
     if(width)
-        *width = WidthMm;
+        *width = m_monitorWidth;
     if(height)
-        *height = HeightMm;
+        *height = m_monitorHeight;
     
     return bFoundDevice;
 }
@@ -2082,7 +2158,7 @@ void OCPNPlatform::setChartTypeMaskSel(int mask, wxString &indicator)
     
 }
 
-#ifdef __WXQT__
+#ifdef __OCPN__ANDROID__
 QString g_qtStyleSheet;
 
 bool LoadQtStyleSheet(wxString &sheet_file)

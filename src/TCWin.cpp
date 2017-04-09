@@ -10,12 +10,11 @@
 #include "cutil.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
-#include "chart1.h"
-#include "OCPNPlatform.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
+#include "OCPNPlatform.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;
@@ -25,6 +24,8 @@ extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 extern wxString g_locale;
 extern OCPNPlatform *g_Platform;
+
+int g_tcwin_scale;
 
 enum
 {
@@ -61,7 +62,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE /*| wxRESIZE_BORDER*/ ;
+    long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
@@ -186,7 +187,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         m_bcompactText = true;
         
     
-    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( 0,0 /*sx - (m_refDIM + 5), sy - (m_refBTN + 10)*/ ),
+    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - (2 * m_tsy + 10), sy - (m_tsy + 10) ),
                               wxDefaultSize );
 
     PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 0,0 /*10, sy - (m_refBTN + 10)*/ ),
@@ -209,7 +210,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 
-    m_button_height = OK_button->GetSize().y;
+    int text_height;
+    dc.GetTextExtent(_T("W"), NULL, &text_height);
+    m_button_height = m_tsy; //text_height + 20;
 
 
     // Build graphics tools
@@ -226,13 +229,18 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     pLFont = FontMgr::Get().FindOrCreateFont( dlg_font_size+1, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD,
                                                       FALSE, wxString( _T ( "Arial" ) ) );
 
-    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1, wxPENSTYLE_SOLID );
-    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 2, wxPENSTYLE_SOLID );
-    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), 1, wxPENSTYLE_SOLID );
-    pblack_4 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 4, wxPENSTYLE_SOLID );
-    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), 4, wxPENSTYLE_SOLID );
-    pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),wxBRUSHSTYLE_SOLID );
-    pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ), wxBRUSHSTYLE_SOLID );
+    pblack_1 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
+					      wxPENSTYLE_SOLID );
+    pblack_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(2,(int)(2*m_tcwin_scaler+0.5)),
+					      wxPENSTYLE_SOLID );
+    pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
+                                                                          wxPENSTYLE_SOLID );
+    pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), wxMax(4,(int)(4*m_tcwin_scaler+0.5)),
+                                                                        wxPENSTYLE_SOLID );
+    pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
+                                                                               wxBRUSHSTYLE_SOLID );
+    pltgray2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "DILG1" ) ),
+                                                                                wxBRUSHSTYLE_SOLID );
 
     DimeControl( this );
 
@@ -309,31 +317,35 @@ void TCWin::RecalculateSize()
     if( pParent )
         parent_size = pParent->GetClientSize();
     
-    if(m_created){
-        m_tc_size.x = m_refDIM * 22;
-        m_tc_size.y = m_refDIM * 20;
-#ifdef __OCPN__ANDROID__
-        if(GetAndroidDisplaySize() < 120){  // a phone or a tablet?
+    int unscaledheight = 600;
+    int unscaledwidth  = 650;
+
+    // value of m_tcwin_scaler should be about unity on a 100 dpi display,
+    // when scale parameter g_tcwin_scale is 100
+    // parameter g_tcwin_scale is set in config file as value of TideCurrentWindowScale
+    g_tcwin_scale = wxMax(g_tcwin_scale,10); // sanity check on g_tcwin_scale
+    m_tcwin_scaler = g_Platform->GetDisplayDPmm() * 0.254 * g_tcwin_scale / 100.0;
+
+    m_tc_size.x = (int) (unscaledwidth * m_tcwin_scaler + 0.5);
+    m_tc_size.y = (int) (unscaledheight * m_tcwin_scaler + 0.5);
+    
+    m_tc_size.x = wxMin(m_tc_size.x, parent_size.x);
+    m_tc_size.y = wxMin(m_tc_size.y, parent_size.y);
+   
+   #ifdef __OCPN__ANDROID__
+   if(GetAndroidDisplaySize() < 120){  // a phone or a tablet?
             m_tc_size.x = parent_size.x - 40;
             m_tc_size.y = parent_size.y - 40;
-        }
-        else{
-            m_tc_size.x = parent_size.x - 200;
-            m_tc_size.y = parent_size.y - 200;
-        }
-        
-#endif        
-    }
-    else{
-        m_tc_size.x = 650;
-        m_tc_size.x = 480;
-    }
-    
-    
-    m_tc_size.x = wxMin(m_tc_size.x, parent_size.x-20);
-    m_tc_size.y = wxMin(m_tc_size.y, parent_size.y-20);
-    
-    //qDebug() << m_refDIM << m_tc_size.x << m_tc_size.y;
+   }
+   else{
+       m_tc_size.x = parent_size.x - 200;
+       m_tc_size.y = parent_size.y - 200;
+   }
+   
+   m_tc_size.x = wxMin(m_tc_size.x, parent_size.x-20);
+   m_tc_size.y = wxMin(m_tc_size.y, parent_size.y-20);
+   
+   #endif        
    
     int xc = m_x + 8;
     int yc = m_y;
@@ -555,12 +567,12 @@ void TCWin::OnPaint( wxPaintEvent& event )
                     int x_shim = -20;
                     dc.DrawText( wxString( sbuf, wxConvUTF8 ), xd + x_shim + ( m_graph_rect.width / 25 ) / 2, m_graph_rect.y + m_graph_rect.height + 8 );
                 }
-                else{
+                else {
                     dc.SetPen( *pblack_1 );
                     dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
                 }
             }
-            else{
+            else {
                 dc.SetPen( *pblack_1 );
                 dc.DrawLine( xd, m_graph_rect.y, xd, m_graph_rect.y + m_graph_rect.height + 5 );
                 wxString sst;
@@ -667,6 +679,19 @@ void TCWin::OnPaint( wxPaintEvent& event )
                 val_off = ib;
             }
 
+	    // Arrange to skip some lines and legends if there are too many for the vertical space we have
+	    int height_stext;
+	    dc.GetTextExtent( _T("1"), NULL, &height_stext );
+	    float available_lines = (float) m_graph_rect.height / height_stext;
+	    i_skip = (int) ceil(im / available_lines); 
+	    
+	    if( CURRENT_PLOT == m_plot_type && i_skip != 1) {
+	      // Adjust steps so slack current "0" line is always drawn on graph
+	      ib -= it % i_skip;
+	      it = -ib;
+	      im = 2 * it;
+	    }
+
 //    Build spline list of points
 
             m_sList.DeleteContents( true );
@@ -688,20 +713,15 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         //    Vertical Axis
 
-        //      Maybe skip some lines and legends if the range is too high
-        int height_stext;
-         dc.GetTextExtent( _T("1"), NULL, &height_stext );
-
-        int i_skip = 1;
-        if( height_stext > m_graph_rect.height / im ) i_skip = 2;
 
         i = ib;
         while( i < it + 1 ) {
             int yd = m_graph_rect.y + ( m_plot_y_offset ) - ( ( i - val_off ) * m_graph_rect.height / im );
 
-            if( ( m_plot_y_offset + m_graph_rect.y ) == yd ) dc.SetPen( *pblack_2 );
+            if( ( m_plot_y_offset + m_graph_rect.y ) == yd ) 
+	      dc.SetPen( *pblack_2 );
             else
-                dc.SetPen( *pblack_1 );
+	      dc.SetPen( *pblack_1 );
 
             dc.DrawLine( m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd );
             snprintf( sbuf, 99, "%d", i );
@@ -760,7 +780,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         dc.SetFont( *pSFont );
         dc.GetTextExtent( m_stz, &w, &h );
-        dc.DrawText( m_stz, x / 2 - w / 2, y - 2 * m_button_height );
+        dc.DrawText( m_stz, x / 2 - w / 2, y - 2.5 * m_button_height );
 
         wxString sdate;
         if(g_locale == _T("en_US"))
@@ -770,7 +790,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
         
         dc.SetFont( *pMFont );
         dc.GetTextExtent( sdate, &w, &h );
-        dc.DrawText( sdate, x / 2 - w / 2, y - 1.2 * m_button_height );
+        dc.DrawText( sdate, x / 2 - w / 2, y - 2.0 * m_button_height );
 
         Station_Data *pmsd = pIDX->pref_sta_data;
         if( pmsd ) {
@@ -794,22 +814,25 @@ void TCWin::OnPaint( wxPaintEvent& event )
         }
 
 //    Today or tomorrow
-        wxString sday;
-        wxDateTime this_now = wxDateTime::Now();
+        if( (m_button_height * 15) < x ){        // large enough horizontally?
+            wxString sday;
+            wxDateTime this_now = wxDateTime::Now();
 
-        int day = m_graphday.GetDayOfYear();
-        if( m_graphday.GetYear() == this_now.GetYear() ) {
-            if( day == this_now.GetDayOfYear() ) sday.Append( _( "Today" ) );
-            else if( day == this_now.GetDayOfYear() + 1 ) sday.Append( _( "Tomorrow" ) );
-            else
-                sday.Append( m_graphday.GetWeekDayName( m_graphday.GetWeekDay() ) );
-        } else if( m_graphday.GetYear() == this_now.GetYear() + 1
-                   && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() ) sday.Append(
-                           _( "Tomorrow" ) );
+            int day = m_graphday.GetDayOfYear();
+            if( m_graphday.GetYear() == this_now.GetYear() ) {
+                if( day == this_now.GetDayOfYear() ) sday.Append( _( "Today" ) );
+                else if( day == this_now.GetDayOfYear() + 1 ) sday.Append( _( "Tomorrow" ) );
+                else
+                    sday.Append( m_graphday.GetWeekDayName( m_graphday.GetWeekDay() ) );
+            } else if( m_graphday.GetYear() == this_now.GetYear() + 1
+                    && day == this_now.Add( wxTimeSpan::Day() ).GetDayOfYear() ) sday.Append(
+                            _( "Tomorrow" ) );
 
-        dc.SetFont( *pSFont );
-        dc.DrawText( sday, 10, y - 2 * m_button_height );
-
+            dc.SetFont( *pSFont );
+            dc.GetTextExtent( sday, &w, &h );
+            dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
+        }
+        
         //  Render "Spot of interest"
         double spotDim = 4 * g_Platform->GetDisplayDPmm();
         
@@ -838,7 +861,7 @@ void TCWin::OnSize( wxSizeEvent& event )
     int x_graph = x * 1 / 10;
     int y_graph = y * 32 / 100;
     int x_graph_w = x * 8 / 10;
-    int y_graph_h = (y * .7)  - (3 * m_button_height);
+    int y_graph_h = (y * .7)  - (7 * m_button_height / 2);
     m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
     
     
@@ -864,18 +887,20 @@ void TCWin::OnSize( wxSizeEvent& event )
 //     }
 //     m_ptextctrl->SetSize(texc_size);
     
-    wxSize okbs = OK_button->GetSize();
-    OK_button->Move( wxPoint( x - (okbs.x + 10), y - (okbs.y + 10) ));                            
-    PR_button->Move( wxPoint( 10, y - (okbs.y + 10) ) );
+    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));                            
+    PR_button->Move( wxPoint( 10, y - (m_tsy + 10) ) );
  
     int bsx, bsy, bpx, bpy;
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
     
-    NX_button->Move( wxPoint( bpx + bsx + 5, y - (okbs.y + 10) ) );
+    // Android??NX_button->Move( wxPoint( bpx + bsx + 5, y - (okbs.y + 10) ) );
+    NX_button->Move( wxPoint( bpx + bsx + 5, y - (m_tsy + 10) ) );
     
     btc_valid = false;
     
+    Refresh(true);
+    Update();
 }
 
 void TCWin::MouseEvent( wxMouseEvent& event )

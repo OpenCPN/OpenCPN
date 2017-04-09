@@ -46,6 +46,7 @@ class FontMgr
         void SetLocale( wxString &newLocale );
         wxFont *GetFont(const wxString &TextElement, int default_size = 0);
         wxColour GetFontColor( const wxString &TextElement ) const;
+        bool SetFontColor( const wxString &TextElement, const wxColour color ) const;
     
         int GetNumFonts(void) const;
         const wxString & GetConfigString(int i) const;

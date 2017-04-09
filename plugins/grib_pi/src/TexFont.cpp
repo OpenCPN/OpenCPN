@@ -186,7 +186,7 @@ void TexFont::Delete( )
 void TexFont::GetTextExtent(const char *string, int len, int *width, int *height)
 {
     int w=0, h=0;
-
+    
     for(int i = 0; i < len; i++ ) {
         unsigned char c = string[i];
         if(c == '\n') {
@@ -199,7 +199,7 @@ void TexFont::GetTextExtent(const char *string, int len, int *width, int *height
         }
         if( c < MIN_GLYPH || c >= MAX_GLYPH)
             continue;
-
+        
         TexGlyphInfo &tgisi = tgi[c];
         w += tgisi.advance;
         if(tgisi.height > h)

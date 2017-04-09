@@ -108,7 +108,6 @@ include/timers.h
 include/tinyxml.h
 include/toolbar.h
 include/TrackPropDlg.h
-include/triangulate.h
 include/TTYScroll.h
 include/TTYWindow.h
 include/tzdata.h

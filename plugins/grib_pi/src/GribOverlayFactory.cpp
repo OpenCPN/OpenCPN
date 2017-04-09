@@ -1753,7 +1753,7 @@ void GRIBOverlayFactory::RenderGribParticles( int settings, GribRecord **pGR,
             lvp = *vp;
         }
 
-    double mtime = 0, ptime = 0, ctime = 0, ttime = 0;
+    double ptime = 0;
 
     // update particle map
     if(m_bUpdateParticles) {

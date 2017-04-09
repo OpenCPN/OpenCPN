@@ -134,6 +134,7 @@ GLAPI void GLAPIENTRY glTranslatef( GLfloat x, GLfloat y, GLfloat z );
 
 GLAPI void GLAPIENTRY glReadBuffer( GLenum mode );
 GLAPI void GLAPIENTRY glColor3ubv( const GLubyte *v );
+GLAPI void GLAPIENTRY glColor4fv( const GLfloat *v );
 
 /*
  * Depth Buffer
@@ -335,6 +336,8 @@ void (* eglGetProcAddress(   char const * procname))( void );
 #define GL_TEXTURE_BIT                          0x00040000
 #define GL_SCISSOR_BIT                          0x00080000
 #define GL_ALL_ATTRIB_BITS                      0x000FFFFF
+
+#define GL_CURRENT_COLOR                        0x0B00
 
 /* Hints */
 #define GL_PERSPECTIVE_CORRECTION_HINT          0x0C50

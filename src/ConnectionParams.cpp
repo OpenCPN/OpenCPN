@@ -137,7 +137,7 @@ wxString ConnectionParams::GetSourceTypeStr()
     if ( Type == SERIAL )
         return _("Serial");
     else if ( Type == NETWORK )
-        return _("Net");
+        return _("Network");
     else if ( Type == INTERNAL_GPS )
         return _("GPS");
     else if ( Type == INTERNAL_BT )

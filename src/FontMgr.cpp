@@ -124,6 +124,25 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
     return wxColour( 0, 0, 0 );
 }
 
+bool FontMgr::SetFontColor( const wxString &TextElement, const wxColour color ) const
+{
+  //    Look thru the font list for a match
+  MyFontDesc *pmfd;
+  wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+  while( node ) {
+    pmfd = (MyFontDesc *) node->GetData();
+    if( pmfd->m_dialogstring == TextElement ) {
+      if(pmfd->m_configstring.BeforeFirst('-') == s_locale) {
+        pmfd->m_color = color;
+        return true;
+      }
+    }
+    node = node->GetNext();
+  }
+
+  return false;
+}
+
 wxString FontMgr::GetFontConfigKey( const wxString &description )
 {
     // Create the configstring by combining the locale with
@@ -210,49 +229,6 @@ wxString FontMgr::GetSimpleNativeFont( int size, wxString face )
     nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, face)
     .GetNativeFontInfoDesc();
     
-#if 0
-    //    For those platforms which have no native font description string format
-    nativefont.Printf( _T ( "%d;%d;%d;%d;%d;%d;%s;%d" ),
-            0,                                 // version
-            size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL, false,
-            "", (int) wxFONTENCODING_DEFAULT );
-
-//    If we know of a detailed description string format, use it.
-#ifdef __WXGTK__
-    nativefont.Printf ( _T ( "Fixed %2d" ), size );
-#endif
-
-#ifdef __WXX11__
-    nativefont = _T ( "0;-*-fixed-*-*-*-*-*-120-*-*-*-*-iso8859-1" );
-#endif
-
-#ifdef __WXMSW__
-//      nativefont = _T ( "0;-11;0;0;0;400;0;0;0;0;0;0;0;0;MS Sans Serif" );
-
-    wxFont sys_font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    sys_font.SetPointSize( size + 1 );
-
-    int size_px = sys_font.GetPixelSize().GetHeight();
-
-    nativefont.Printf( _T("%d;%ld;%ld;%ld;%ld;%ld;%d;%d;%d;%d;%d;%d;%d;%d;"), 0, // version, in case we want to change the format later
-            size_px,             //lf.lfHeight
-            0,                   //lf.lfWidth,
-            0,                   //lf.lfEscapement,
-            0,                   //lf.lfOrientation,
-            400,                 //lf.lfWeight,
-            0,                   //lf.lfItalic,
-            0,                   //lf.lfUnderline,
-            0,                   //lf.lfStrikeOut,
-            0,                   //lf.lfCharSet,
-            0,                   //lf.lfOutPrecision,
-            0,                   //lf.lfClipPrecision,
-            0,                   //lf.lfQuality,
-            0 );                    //lf.lfPitchAndFamily,
-
-    nativefont.Append( sys_font.GetFaceName() );
-
-#endif
-#endif
     return nativefont;
 }
 

@@ -53,6 +53,8 @@ extern s57RegistrarMgr          *m_pRegistrarMan;
 extern wxString                 g_csv_locn;
 extern bool                     g_bGDAL_Debug;
 
+bool chain_broken_mssage_shown = false;
+
 using namespace std;
 
 #include <wx/arrimpl.cpp>
@@ -1093,20 +1095,26 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
     
     if( UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
-        //      to perform all the updates.  However, some NOAA ENC distributions are
-        //      not complete, as apparently some interim updates have been  withdrawn.
-        //      Example:  as of 20 Dec, 2005, the update set for US5MD11M.000 includes
-        //      US5MD11M.017, ...018, and ...019.  Updates 001 through 016 are missing.
-        //
-        //      Workaround.
-        //      Create temporary dummy update files to fill out the set before invoking
-        //      ogr file open/ingest.  Delete after SENC file create finishes.
-        //      Set starts with .000, which has the effect of copying the base file to the working dir
+        //      to perform all the updates. 
         
-//        bool chain_broken_mssage_shown = false;
+        //  It is to be considered a WARNING if the update chain is broken,
+        //  With appropriate user dialog and logfile messages
         
         if( b_copyfiles ) {
-          
+            
+            //  Empty the target directory of any files which might contaminate the ingestion.
+            //  Especially, old update files that have apparently later extensions than we are looking for
+
+            wxArrayString files_to_erase;
+            wxString fileTemplate = file000.GetName() + _T(".???");
+            
+            wxDir::GetAllFiles(CopyDir, &files_to_erase, fileTemplate, wxDIR_FILES);
+            for(unsigned int i=0 ; i < files_to_erase.GetCount() ; i++){
+                wxString f = files_to_erase[i];
+                ::wxRemoveFile(files_to_erase[i]);
+            }
+            
+            
             for( int iff = 0; iff < retval + 1; iff++ ) {
                 wxFileName ufile( file000 );
                 wxString sext;
@@ -1131,7 +1139,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                 }
                 
                 if( ufile.FileExists() && ( flen > 25 ) )        // a valid update file or base file
-                        {
+                {
                             //      Copy the valid file to the SENC directory
                             bool cpok = wxCopyFile( ufile.GetFullPath(), cp_ufile );
                             if( !cpok ) {
@@ -1141,39 +1149,29 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                                 msg.Append( cp_ufile );
                                 wxLogMessage( msg );
                             }
-                        }
+                }
                         
-                        else {
-                            // Create a dummy ISO8211 file with no real content
-                            // Correct this.  We should break the walk, and notify the user  See FS#1406
-                            
-//                             if( !chain_broken_mssage_shown ){
-//                                 OCPNMessageBox(NULL, 
-//                                                _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."),
-//                                                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
-//                                                chain_broken_mssage_shown = true;
-//                             }
-                            
-                            wxString msg( _T("WARNING---ENC Update chain incomplete. Substituting NULL update file: "));
-                            msg += ufile.GetFullName();
-                            wxLogMessage(msg);
-                            wxLogMessage(_T("   Subsequent ENC updates may produce errors.") );
-                            wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
-                            
-                            bool bstat;
-                            DDFModule *dupdate = new DDFModule;
-                            dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
-                            bstat = !( dupdate->Create( cp_ufile.mb_str() ) == 0 );
-                            dupdate->Close();
-                            
-                            if( !bstat ) {
-                                wxString msg( _T("   Error creating dummy update file: ") );
-                                msg.Append( cp_ufile );
-                                wxLogMessage( msg );
-                            }
-                        }
+                else {
+                    
+                    //  Update chain is broken, so stop the walk, inform user, and use the last update that we safely can 
+                    retval = iff-1;
+                    wxString msg( _T("WARNING---ENC Update chain incomplete. First missing update is:"));
+                    msg += ufile.GetFullName();
+                    wxLogMessage(msg);
+                    wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+                    
+                         
+                    if( !chain_broken_mssage_shown ){
+                         OCPNMessageBox(NULL, 
+                         _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
+                         _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                         chain_broken_mssage_shown = true;
+                    }
+                    break;
+                    
+                }
                         
-                        m_tmpup_array.Add( cp_ufile );
+                m_tmpup_array.Add( cp_ufile );
             }
         }
         
@@ -1483,7 +1481,6 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     
     if(wxThread::IsMain() && b_showProg){
         m_ProgDialog = new wxGenericProgressDialog();
-        
         wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
         m_ProgDialog->SetFont( *qFont );
         
@@ -1517,6 +1514,9 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
                 sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
                 
                 bcont = m_ProgDialog->Update( iObj, sobj );
+#ifdef __WXMSW__            
+                wxSafeYield();
+#endif                
             }
 #endif
 
@@ -1811,7 +1811,7 @@ bool Osenc::CreateMultiPointFeatureGeometryRecord200( OGRFeature *pFeature, Osen
         double easting, northing;
         toSM( lat, lon, m_ref_lat, m_ref_lon, &easting, &northing );
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         float east = easting;
         float north = northing;
         float deep = depth;
@@ -1903,7 +1903,7 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
                                                          // computing bbox as we go
         float lon, lat;
         double easting, northing;
-    #ifdef ARMHF
+    #ifdef __ARM_ARCH
         double east_d, north_d;
         memcpy(&east_d, psd++, sizeof(double));
         memcpy(&north_d, psd++, sizeof(double));
@@ -2063,20 +2063,9 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
     OGRGeometry *pGeo = pFeature->GetGeometryRef();
     OGRPolygon *poly = (OGRPolygon *) ( pGeo );
     
-    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, false, m_LOD_meters );   //try to use glu library
+    ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, m_LOD_meters );
     
     error_code = ppg->ErrorCode;
-    if( error_code == ERROR_NO_DLL ) {
-        //                        if( !bGLUWarningSent ) {
-            //                            wxLogMessage( _T("   Warning...Could not find glu32.dll, trying internal tess.") );
-            //                            bGLUWarningSent = true;
-            //                        }
-            
-            delete ppg;
-            //  Try with internal tesselator
-            ppg = new PolyTessGeo( poly, true, m_ref_lat, m_ref_lon, true, m_LOD_meters );
-            error_code = ppg->ErrorCode;
-    }
     
     if( error_code ){
         wxLogMessage( _T("   Warning: S57 SENC Geometry Error %d, Some Features ignored."), ppg->ErrorCode );
@@ -2521,22 +2510,23 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
     }   // while
     
     // Now we know the payload length and the Feature count
-    
-    //  Now write the record out
-    OSENC_VET_Record record;
-    
-    record.record_type = VECTOR_EDGE_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VET_Record_Base) + payloadSize + sizeof(uint32_t);
+    if(nFeatures){
+        //  Now write the record out
+        OSENC_VET_Record record;
+        
+        record.record_type = VECTOR_EDGE_NODE_TABLE_RECORD;
+        record.record_length = sizeof(OSENC_VET_Record_Base) + payloadSize + sizeof(uint32_t);
 
-    // Write out the record
-    stream->Write(&record , sizeof(OSENC_VET_Record_Base));
+        // Write out the record
+        stream->Write(&record , sizeof(OSENC_VET_Record_Base));
+        
+        //  Write out the Feature(Object) count
+        stream->Write(&nFeatures , sizeof(uint32_t));
+        
+        //  Write out the payload
+        stream->Write(pPayload, payloadSize);
     
-    //  Write out the Feature(Object) count
-    stream->Write(&nFeatures , sizeof(uint32_t));
-    
-    //  Write out the payload
-    stream->Write(pPayload, payloadSize);
-    
+    }
     //  All done with buffer
     free(pPayload);
     
@@ -2619,19 +2609,21 @@ void Osenc::CreateSENCVectorConnectedTableRecord200( Osenc_outstream *stream, S5
     // Now we know the payload length and the Feature count
     
     //  Now write the record out
-    OSENC_VCT_Record record;
+    if(featureCount){
+        OSENC_VCT_Record record;
     
-    record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
-    record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
-    
-    // Write out the record
-    stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
-    
-    //  Write out the Feature(Object) count
-    stream->Write(&featureCount , sizeof(uint32_t));
-    
-    //  Write out the payload
-    stream->Write(pPayload, payloadSize);
+        record.record_type = VECTOR_CONNECTED_NODE_TABLE_RECORD;
+        record.record_length = sizeof(OSENC_VCT_Record_Base) + payloadSize + sizeof(int);
+        
+        // Write out the record
+        stream->Write(&record , sizeof(OSENC_VCT_Record_Base));
+        
+        //  Write out the Feature(Object) count
+        stream->Write(&featureCount , sizeof(uint32_t));
+        
+        //  Write out the payload
+        stream->Write(pPayload, payloadSize);
+    }
     
     //  All done with buffer
     free(pPayload);
@@ -2838,6 +2830,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     
                     case 4:             // Ascii String
                     {
+                        
                         valueType = OGRvalueType;
                         const char *pAttrVal = pFeature->GetFieldAsString( iField );
                         unsigned int stringPayloadLength = strlen(pAttrVal);
@@ -2876,7 +2869,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                     //  Get a reference to the class persistent buffer
                     unsigned char *pBuffer = getBuffer( recordLength );
-                
+                    
                     OSENC_Attribute_Record *pRecord = (OSENC_Attribute_Record *)pBuffer;
                     memset(pRecord, 0, sizeof(OSENC_Attribute_Record));
                     pRecord->record_type = FEATURE_ATTRIBUTE_RECORD;
@@ -2897,7 +2890,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
     }
 
     free( payloadBuffer );
-    
     
 #if 0    
     //    Special geometry cases
@@ -2938,6 +2930,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     return false;
                 
                 break;
+            }
                 
             case wkbPoint: {
                 
@@ -2958,7 +2951,7 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 double *psd = (double *) ps;
                 
                 double lat, lon;
-                #ifdef ARMHF
+                #ifdef __ARM_ARCH
                 double lata, lona;
                 memcpy(&lona, psd, sizeof(double));
                 memcpy(&lata, &psd[1], sizeof(double));
@@ -2987,7 +2980,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 
                 if(!CreateMultiPointFeatureGeometryRecord200( pFeature, stream))
                     return false;
-                
                 break;
             }
                 
@@ -2995,9 +2987,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 //      Special case, polygons are handled separately
                 case wkbPolygon: {
                     
-                    if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
-                        return false;
-                }
+                     if( !CreateAreaFeatureGeometryRecord200(poReader, pFeature, stream) )
+                         return false;
                    
                     break;
                 }
@@ -3111,7 +3102,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
 
         double      minxt, minyt, maxxt, maxyt;
         
-        #ifdef ARMHF
+        #ifdef __ARM_ARCH
         double abox[4];
         memcpy(&abox[0], pbb, 4 * sizeof(double));
         
@@ -3553,8 +3544,8 @@ bool Osenc::CalculateExtent( S57Reader *poReader, S57ClassRegistrar *poRegistrar
 
 void Osenc::InitializePersistentBuffer( void ){
 
-    pBuffer = NULL;
-    bufferSize = 0;
+    pBuffer = (unsigned char *)malloc(1024);
+    bufferSize = 1024;
 }
 
 unsigned char *Osenc::getBuffer( size_t length){

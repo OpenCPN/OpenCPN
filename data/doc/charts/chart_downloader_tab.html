@@ -1,0 +1,230 @@
+<meta charset="utf-8">
+
+
+<h1>Chart Downloader Tab</h1>
+<div class="level1">
+
+</div>
+
+<h2>Chart Downloader</h2>
+<div class="level2">
+
+<p>
+The <b>Chart Downloader Plugin</b> is now included in your OpenCPN installation.  It lets you download, install and keep up to date the navigational charts provided by various free governmental sources worldwide directly from within OpenCPN&#039;s Toolbox.
+</p>
+
+<p>
+The supported charts include both the raster and vector charts for the US waters provided by the NOAA, official raster navigational charts published by Argentina, Brasil and New Zealand (covering also huge areas of the Pacific ocean) as well as electronic charts of the inland waterways of the USA and more than a dozen European Union countries.
+</p>
+
+</div>
+
+<h2>A Few Basic Concepts</h2>
+<div class="level2">
+
+</div>
+
+<h3>Chart Catalogs</h3>
+<div class="level3">
+
+<p>
+The <b>Chart Downloader</b> relies on <b>catalogs</b> of charts. A <b>catalog</b> is an <b>XML</b> file containing the names of charts along with the most recent chart update date and time together with the Internet address of the actual chart data. Before being able to <b>download any charts</b> we have to <b>configure</b> and <b>download one or more chart catalogs</b>.
+</p>
+
+<p>
+The <b>catalogs</b> are provided by the agencies publishing the charts (NOAA and the Army Corps of Engineers in the USA) and by the <b><a href="http://chartcatalogs.github.io/" class="urlextern" title="http://chartcatalogs.github.io/" rel="nofollow">ChartCatalogs </a></b> project created by the author of this plugin. When a catalog is loaded the <b>Chart Downloader</b> automatically scans the existing charts on your computer looking for updated or new charts listed in the catalog.
+</p>
+
+</div>
+
+<h3>Chart Downloader Tab</h3>
+<div class="level3">
+
+<p>
+In the current version of OpenCPN, <b>Chart Downloader</b> is automatically included.
+</p>
+
+<p>
+This is what the plugin looks like when first opened by clicking Chart Downloader
+</p>
+
+<p>
+<img src="../opencpn/manual/plugins/chart_downloader/03-chart-downloader-tab-first-time.h.639_tok.100f8b_w.724.png" class="media" alt="" width="724" height="639" />
+</p>
+
+</div>
+
+<h3>Using the Chart Downloader</h3>
+<div class="level3">
+
+<p>
+The screen has two sections. 
+</p>
+
+<p>
+The <b>top section</b> is for <b>Chart Catalogs</b>.
+</p>
+
+<p>
+Some chart sources provide many different catalogs for the same set of charts. For example, in the USA, NOAA provides chart catalogs for each state, region and Coast Guard district as well as the huge complete set. 
+There are also separate catalogs for raster (RNC) and vector (ENC) NOAA charts. 
+The first step in getting new charts is to select the appropriate Chart Catalog, make sure you think first though - having everything is not always the best option to organize your charts, so especially in the US, consider using more smaller catalogs over the one with the complete set of thousands of charts.
+</p>
+
+</div>
+
+<h3>Adding a chart source</h3>
+<div class="level3">
+
+<p>
+Click the button to get the dialog. There are catalogs for all the free chart sources worldwide known at the time of the release of this plugin. The catalogs are organized in a folder structure. Open each folder to see subfolders. Open subfolders to see catalogs. Select any catalog you like by clicking the catalog description.
+</p>
+
+<p>
+<a href="../opencpn/manual/5ad702b840787080111986d68eeef27d.jpeg" class="media" title="opencpn:manual:5ad702b840787080111986d68eeef27d.jpeg"><img src="../opencpn/manual/5ad702b840787080111986d68eeef27d.jpeg" class="media" title="5ad702b840787080111986d68eeef27d.jpg" alt="5ad702b840787080111986d68eeef27d.jpg" /></a>
+</p>
+
+<p>
+<b>After clicking the catalog</b> you want, the “<b>Chart Directory</b>” will be <b>automatically filled in</b>. This is the directory on your computer where the catalog and the charts for this catalog will be downloaded. If the recommended directory is acceptable click “<b>OK</b>”.  
+</p>
+
+<p>
+First time users will find it much easier to accept this default. Otherwise you can use the “<b>Browse</b>” button to browse to another directory where you want the catalog and charts to be kept. Once you are happy with the Chart Directory click “OK”.
+</p>
+
+<p>
+In case you selected a path to save the charts not covered by the current OpenCPN configuration, the plugin configures it for you.
+</p>
+
+<p>
+You can check the configuration on the “<b>Chart Files Tab</b>”. For more details about managing your charts, you should definitely read <em><a href="chart_files_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_files_tab">Chart Files Tab</a> - Installing Charts</em><br/>
+
+</p>
+
+<p>
+<img src="../opencpn/manual/1pleaseupdate.h.667_tok.95954f_w.719.jpeg" class="media" title="1pleaseupdate.jpg" alt="1pleaseupdate.jpg" width="719" height="667" /><br/>
+
+</p>
+
+<p>
+Now you will see the <b>Chart Catalog</b> listed in the <b>Catalogs section</b>. Note that it will say (<b>Please update first</b>) under the <b>Released column</b>. 
+</p>
+
+<p>
+Click the catalog name then click the “<b>Update</b>” button. The Downloader will retrieve the catalog from the server. After the catalog is saved a list of charts will appear in the lower section. Each chart has a check box. If the box is checked then that chart is scheduled to be downloaded. Depending on the Preferences you selected earlier the boxes will be automatically checked. You can check or uncheck individual charts or use the right mouse button to check and uncheck groups of charts.
+</p>
+
+</div>
+
+<h3>Updating the catalogs</h3>
+<div class="level3">
+
+<p>
+The US agencies update their catalogs on a standard weekly schedule, related to the Notice to Mariners releases. The catalogs from the Chart Catalogs project are updated occasionally, without any fixed schedule. You should select the chart source and click the <b>Update</b> every once in a while to get the latest chart updates.
+</p>
+
+</div>
+
+<h3>Selecting charts for download</h3>
+<div class="level3">
+
+<p>
+You can select the charts to be downloaded by ticking the check boxes in the list of charts. In case you want to select multiple charts at once, <b>right-click</b> in Chart Window will show a context menu, allowing you to
+</p>
+<ul>
+<li class="level1"> Select all</li>
+<li class="level1"> Deselect all</li>
+<li class="level1"> Invert selection</li>
+<li class="level1"> Select updated</li>
+<li class="level1"> Select newly released</li>
+</ul>
+
+<p>
+charts. You can configure the plugin to automatically preselect the updated and/or new charts after an update of the chart catalog in the preferences.
+</p>
+
+<p>
+<img src="../opencpn/manual/15-chart-status-selection.h.632_tok.4aa60f_w.800.png" class="media" alt="" width="800" height="632" />
+</p>
+
+</div>
+
+<h3>Downloading charts</h3>
+<div class="level3">
+
+<p>
+After selecting the charts for download, click the “Download selected charts” button to start downloading the charts. It can be a lengthy progress and a dialog box showing progress will pop as each chart is downloaded. If any charts do not download correctly a warning will pop up at the end. The status of the charts that have been downloaded successfully will change to <b>Up to Date</b>. Sometimes a slow or flaky Internet connection will cause a chart not to download and the status will remain the same. You can just click the <b>Download selected charts</b> button again give them a second chance.
+</p>
+
+<p>
+A recent improvement is the use of a separate CPU thread (when it is available) for downloading charts.
+</p>
+
+<p>
+<b>Chart Folder Tab and Chart Group Tab reminder</b>. A reminder box will pop up to tell you that you have to notify OpenCPN where to find the charts. We’ll do that in the next step.
+</p>
+
+</div>
+
+<h3>After the download</h3>
+<div class="level3">
+
+<p>
+Upon <b>Closing</b> the Chart Downloader will automatically complete a <b>Scan and Database Rebuild</b> of the Chart Database, so the charts will be ready for use.
+</p>
+
+<p>
+If you should see the dialog below please Update the internal chart database and the plugin will remind you about it with a dialog.
+</p>
+
+<p>
+<img src="../opencpn/manual/plugins/chart_downloader/08-afterdownloading.h.174_tok.aefbd2_w.478.png" class="media" alt="" width="478" height="174" />
+</p>
+
+<p>
+For more details about managing your charts, you should definitely read <em><a href="chart_files_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_files_tab">Chart Files Tab</a> - Installing Charts</em>
+</p>
+
+<p>
+To make it short, go to <b>Options &gt; Chart Files Tab</b> and tick the <b>Scan Charts and Update Database</b> checkbox and when you <b>close</b> the Toolbox using the <b>OK</b>, your newly downloaded charts will be scanned and made available for viewing.
+</p>
+
+</div>
+
+<h3>Checking the downloaded charts</h3>
+<div class="level3">
+
+<p>
+The button <b>Show Local Files</b> on the lower right will open your default file manager in a separate window, which allows you to check files and directories easily.
+</p>
+
+<p>
+<img src="../opencpn/manual/16-show-local-files.h.480_tok.fe4fab_w.800.png" class="media" alt="" width="800" height="480" />
+</p>
+
+</div>
+
+<h3>The Preferences</h3>
+<div class="level3">
+
+<p>
+You can customize the behavior of the plugin to certain extent. To access the preferences, select the Chart Downloader plugin on the <b>Options &gt; Plugins Tab</b> and click on the <b>Preferences</b> button
+</p>
+
+<p>
+<img src="../opencpn/manual/17preferences.h.356_tok.0e6ce4_w.464.png" class="media" alt="" width="464" height="356" />
+</p>
+
+<p>
+The <b>Default Path to Charts</b> option allows you to set the top directory for all your charts, used to construct the suggested locations for the chart sources you configure.
+</p>
+
+<p>
+The <b>All updated charts</b> and <b>All new charts</b> check boxes tell the plugin which charts you want to select for download automatically upon a catalog update.
+</p>
+
+<p>
+The <b>Allow bulk update of all configured chart sources and charts</b> checkbox adds a new button to the Chart Downloader Tab, allowing you to update and download all the charts you are managing using the plugin with a single click. The behavior of this function depends on the aforementioned check boxes - either it downloads only new or updated charts or both.
+</p>
+
+</div>

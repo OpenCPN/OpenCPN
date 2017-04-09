@@ -74,7 +74,7 @@ extern RouteProp          *pRoutePropDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
-extern bool                g_bShowMag;
+extern bool                g_bShowTrue, g_bShowMag;
 extern wxColour            g_colourWaypointRangeRingsColour;
 
 extern MyFrame            *gFrame;
@@ -447,7 +447,6 @@ BEGIN_EVENT_TABLE( RouteProp, wxDialog )
     EVT_BUTTON( ID_ROUTEPROP_CANCEL, RouteProp::OnRoutepropCancelClick )
     EVT_BUTTON( ID_ROUTEPROP_OK, RouteProp::OnRoutepropOkClick )
     EVT_LIST_ITEM_SELECTED( ID_LISTCTRL, RouteProp::OnRoutepropListClick )
-    EVT_LIST_ITEM_SELECTED( ID_TRACKLISTCTRL, RouteProp::OnRoutepropListClick )
     EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
     EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
     EVT_BUTTON( ID_ROUTEPROP_PRINT, RouteProp::OnRoutepropPrintClick )
@@ -503,6 +502,8 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     SetFont( *qFont );
         
     m_bcompact = false;
+    for(int i=0; i<COL_COUNT; i++)
+        cols[i] = -1;
     
 #ifdef __OCPN__ANDROID__
     m_bcompact = true;
@@ -553,11 +554,11 @@ void RouteProp::OnRoutePropRightClick( wxListEvent &event )
 
     if( ! m_pRoute->m_bIsInLayer ) {
             
-#ifdef __WXQT__    
+#ifdef __OCPN_ANDROID__    
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
             
         // add stuff
-        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties..."));
+        wxMenuItem *editItem = new wxMenuItem(&menu, ID_RCLK_MENU_EDIT_WP, _("Waypoint Properties") + _T("..."));
         editItem->SetFont(*pf);
         menu.Append(editItem);
         
@@ -658,10 +659,10 @@ void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
             << _("Name") << tab << m_pRoute->m_RouteNameString << eol
             << _("Depart From") << tab << m_pRoute->m_RouteStartString << eol
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
-            << _("Total Distance") << tab << m_TotalDistCtl->GetValue() << eol
+            << _("Total distance") << tab << m_TotalDistCtl->GetValue() << eol
             << _("Speed (Kts)") << tab << m_PlanSpeedCtl->GetValue() << eol
-            << _("Departure Time (m/d/y h:m)") << tab << m_StartTimeCtl->GetValue() << eol
-            << _("Time Enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
+            << _("Departure Time") + _T(" ") + _("(m/d/y h:m)") << tab << m_StartTimeCtl->GetValue() << eol
+            << _("Time enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
 
     int noCols;
     int noRows;
@@ -848,7 +849,7 @@ void RouteProp::CreateControlsCompact()
     itemBoxSizer2->Add( itemFlexGridSizer6a, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
 
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-            _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+            _("Total distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
             5 );
@@ -861,7 +862,7 @@ void RouteProp::CreateControlsCompact()
     
     
     
-    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
+    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan speed"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -875,7 +876,7 @@ void RouteProp::CreateControlsCompact()
     
     
     
-    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
+    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time enroute"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
             wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -900,7 +901,7 @@ void RouteProp::CreateControlsCompact()
 
     wxString pDispTimeZone[] = { _("UTC"), _("Local @ PC"), _("LMT @ Location") };
     
-    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Times shown as"),
+    wxStaticText* itemStaticText12b = new wxStaticText( itemDialog1, wxID_STATIC, _("Time shown as"),
                                                                                     wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer2->Add( itemStaticText12b, 0, wxEXPAND | wxALL, 5 );
     
@@ -918,7 +919,7 @@ void RouteProp::CreateControlsCompact()
     wxFlexGridSizer* itemFlexGridSizer6b = new wxFlexGridSizer( 3, 2, 0, 0 );
     itemBoxSizer2->Add( itemFlexGridSizer6b, 0, wxEXPAND | wxALIGN_LEFT | wxALL, 5 );
     
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -932,7 +933,7 @@ void RouteProp::CreateControlsCompact()
     m_chColor->SetSelection( 0 );
     itemFlexGridSizer6b->Add( m_chColor, 0,  wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+    wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -950,7 +951,7 @@ void RouteProp::CreateControlsCompact()
 #endif    
     
     
-    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width") + _T(":"), wxDefaultPosition, wxDefaultSize,
             0 );
     itemFlexGridSizer6b->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
@@ -1080,27 +1081,29 @@ void RouteProp::CreateControlsCompact()
     
     int char_size = GetCharWidth();
 
-    m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 10 );
-    m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
-    m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+#define C(COL) (cols[COL] = c++)
+    int c = 0;
 
+    m_wpList->InsertColumn( C(LEG), _("Leg"), wxLIST_FORMAT_LEFT, 10 );
+    m_wpList->InsertColumn( C(TO_WAYPOINT), _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
+    m_wpList->InsertColumn( C(DISTANCE), _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+
+    if(g_bShowTrue)
+        m_wpList->InsertColumn( C(BEARING), _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
     if(g_bShowMag)
-        m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-    else
-        m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
+        m_wpList->InsertColumn( C(BEARING_MAGNETIC), _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
 
-    m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
-    m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
-    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
-    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(LATITUDE), _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(LONGITUDE), _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(ETE_ETD), _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
+    m_wpList->InsertColumn( C(SPEED), _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
+    m_wpList->InsertColumn( C(NEXT_TIDE), _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( C(DESCRIPTION), _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+
+    if(g_bShowTrue)
+        m_wpList->InsertColumn( C(COURSE), _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
     if(g_bShowMag)
-        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-    else
-        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
-
-    
+        m_wpList->InsertColumn( C(COURSE_MAGNETIC), _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
    
     //Set the maximum size of the entire  dialog
     int width, height;
@@ -1201,24 +1204,24 @@ void RouteProp::CreateControls()
     itemStaticBoxSizer3->Add( itemFlexGridSizer6a, 1, wxALIGN_LEFT | wxALL, 5 );
     
     wxStaticText* itemStaticText11 = new wxStaticText( itemDialog1, wxID_STATIC,
-                                                       _("Total Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+                                                       _("Total distance"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText11, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan Speed"),
+    m_PlanSpeedLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Plan speed"),
                                          wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_PlanSpeedLabel, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time Enroute"),
+    wxStaticText* itemStaticText12a = new wxStaticText( itemDialog1, wxID_STATIC, _("Time enroute"),
                                                         wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( itemStaticText12a, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
                               5 );
     
-    m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time (m/d/y h:m)"),
+    m_StartTimeLabel = new wxStaticText( itemDialog1, wxID_STATIC, _("Departure Time") + _T(" ") + _("(m/d/y h:m)"),
                                          wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer6a->Add( m_StartTimeLabel, 0,
                               wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxTOP,
@@ -1248,7 +1251,7 @@ void RouteProp::CreateControls()
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );
     
-    wxStaticBox* itemStaticBoxTZ = new wxStaticBox( itemDialog1, wxID_ANY,  _("Times shown as") );
+    wxStaticBox* itemStaticBoxTZ = new wxStaticBox( itemDialog1, wxID_ANY,  _("Time shown as") );
     wxStaticBoxSizer* itemStaticBoxSizerTZ = new wxStaticBoxSizer( itemStaticBoxTZ, wxHORIZONTAL );
     bSizer2->Add( itemStaticBoxSizerTZ, 0, wxEXPAND | wxALL, 5 );
     
@@ -1262,7 +1265,7 @@ void RouteProp::CreateControls()
     m_prb_tzLMT = new wxRadioButton(itemDialog1, ID_TIMEZONESEL_LMT, _("LMT @ Location"));
     itemStaticBoxSizerTZ->Add( m_prb_tzLMT, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,5 );
     
-    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color") + _T(":"), wxDefaultPosition, wxDefaultSize,
                                       0 );
     //m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1277,7 +1280,7 @@ void RouteProp::CreateControls()
       m_chColor->SetSelection( 0 );
       bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       
-      wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+      wxStaticText *staticTextStyle = new wxStaticText( itemDialog1, wxID_ANY, _("Style") + _T(":"), wxDefaultPosition, wxDefaultSize,
         0 );
       bSizer2->Add( staticTextStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
       
@@ -1295,7 +1298,7 @@ void RouteProp::CreateControls()
       #endif    
       
       
-      m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+      m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width") + _T(":"), wxDefaultPosition, wxDefaultSize,
         0 );
       //m_staticText2->Wrap( -1 );
       bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1371,27 +1374,29 @@ void RouteProp::CreateControls()
       
       
       int char_size = GetCharWidth();
-      
-      m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, char_size * 6 );
-      m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
-      m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
-      
+
+#define C(COL) (cols[COL] = c++)
+      int c = 0;
+      m_wpList->InsertColumn( C(LEG), _("Leg"), wxLIST_FORMAT_LEFT, char_size * 6 );
+      m_wpList->InsertColumn( C(TO_WAYPOINT), _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
+      m_wpList->InsertColumn( C(DISTANCE), _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
+
+      if(g_bShowTrue)
+          m_wpList->InsertColumn( C(BEARING), _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
       if(g_bShowMag)
-          m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      else
-          m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
+          m_wpList->InsertColumn( C(BEARING_MAGNETIC), _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
       
-      m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
-      m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
-      m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
-      m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(LATITUDE), _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(LONGITUDE), _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(ETE_ETD), _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
+      m_wpList->InsertColumn( C(SPEED), _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
+      m_wpList->InsertColumn( C(NEXT_TIDE), _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
+      m_wpList->InsertColumn( C(DESCRIPTION), _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );
+
+      if(g_bShowTrue)
+          m_wpList->InsertColumn( C(COURSE), _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
       if(g_bShowMag)
-          m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      else
-          m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );
-      
+          m_wpList->InsertColumn( C(COURSE_MAGNETIC), _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
       
       //Set the maximum size of the entire  dialog
       int width, height;
@@ -1749,7 +1754,7 @@ bool RouteProp::UpdateProperties()
 
         //    Update the "tides event" column header
         wxListItem column_info;
-        if( m_wpList->GetColumn( 8, column_info ) ) {
+        if( m_wpList->GetColumn( cols[NEXT_TIDE], column_info ) ) {
             wxString c = _("Next tide event");
             if( gpIDX && m_starttime.IsValid() ) {
                 c = _T("@~~");
@@ -1759,16 +1764,16 @@ bool RouteProp::UpdateProperties()
 
             }
             column_info.SetText( c );
-            m_wpList->SetColumn( 8, column_info );
+            m_wpList->SetColumn( cols[NEXT_TIDE], column_info );
         }
 
         //Update the "ETE/Timestamp" column header
 
-        if( m_wpList->GetColumn( 6, column_info ) ) {
+        if( m_wpList->GetColumn( cols[ETE_ETD], column_info ) ) {
             if( m_starttime.IsValid() ) column_info.SetText( _("ETA") );
             else
                 column_info.SetText( _("ETE") );
-            m_wpList->SetColumn( 6, column_info );
+            m_wpList->SetColumn( cols[ETE_ETD], column_info );
         }
 
         m_pRoute->UpdateSegmentDistances( m_planspeed );           // get segment and total distance
@@ -1887,7 +1892,7 @@ bool RouteProp::UpdateProperties()
             wxString t;
             t.Printf( _T("%d"), i );
             if( i == 0 ) t = _T("---");
-            if( arrival ) m_wpList->SetItem( item_line_index, 0, t );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LEG], t );
 /*
             if( arrival ){
                 wxListItem item;
@@ -1901,9 +1906,9 @@ bool RouteProp::UpdateProperties()
             */
             
             //  Mark Name
-            if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[TO_WAYPOINT], prp->GetName() );
         // Store Dewcription
-            if( arrival ) m_wpList->SetItem( item_line_index, 9, prp->GetDescription() );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[DESCRIPTION], prp->GetDescription() );
 
             //  Distance
             //  Note that Distance/Bearing for Leg 000 is as from current position
@@ -1954,26 +1959,36 @@ bool RouteProp::UpdateProperties()
 
             t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
             if( arrival )
-                m_wpList->SetItem( item_line_index, 2, t );
+                m_wpList->SetItem( item_line_index, cols[DISTANCE], t );
             if( !enroute )
-                m_wpList->SetItem( item_line_index, 2, nullify );
+                m_wpList->SetItem( item_line_index, cols[DISTANCE], nullify );
             prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
                 //  Bearing
-            if( g_bShowMag ){
-                double latAverage = (prp->m_lat + slat)/2;
-                double lonAverage = (prp->m_lon + slon)/2;
-                double varBrg = gFrame->GetTrueOrMag( brg, latAverage, lonAverage);
-                
-                t.Printf( _T("%03.0f Deg. M"), varBrg );
+            if( g_bShowTrue ) {
+                if( enroute )
+                    t.Printf( _T("%03.0f Deg. T"), brg );
+                else
+                    t = nullify;
+                if( arrival )
+                    m_wpList->SetItem( item_line_index, cols[BEARING], t );
             }
-            else
-                t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
 
-            if( arrival )
-                m_wpList->SetItem( item_line_index, 3, t );
-            if( !enroute )
-                m_wpList->SetItem( item_line_index, 3, nullify );
+            if( g_bShowMag ){
+                if( enroute ) {
+                    double latAverage = (prp->m_lat + slat)/2;
+                    double lonAverage = (prp->m_lon + slon)/2;
+                    double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+                
+                    t.Printf( _T("%03.0f Deg. M"), varBrg );
+                } else
+                    t = nullify;
+
+                if( arrival )
+                    m_wpList->SetItem( item_line_index, cols[BEARING_MAGNETIC], t );
+            }
+
+
 
             // Course (bearing of next )
             if (_next_prp){
@@ -1987,24 +2002,24 @@ bool RouteProp::UpdateProperties()
 
                     double latAverage = (prp->m_lat + next_lat)/2;
                     double lonAverage = (prp->m_lon + next_lon)/2;
-                    double varCourse = gFrame->GetTrueOrMag( course, latAverage, lonAverage);
+                    double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
 
                     t.Printf( _T("%03.0f Deg. M"), varCourse );
                 }
                 else
-                    t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+                    t.Printf( _T("%03.0f Deg. T"), course );
                 if( arrival )
-                    m_wpList->SetItem( item_line_index, 10, t );
+                    m_wpList->SetItem( item_line_index, cols[COURSE], t );
             }
             else
-                m_wpList->SetItem( item_line_index, 10, nullify );
+                m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
-            if( arrival ) m_wpList->SetItem( item_line_index, 4, tlat );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LATITUDE], tlat );
 
             wxString tlon = toSDMM( 2, prp->m_lon, false );
-            if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[LONGITUDE], tlon );
 
 
             tide_form = _T("");
@@ -2096,19 +2111,19 @@ bool RouteProp::UpdateProperties()
             }  // end of repeatable route point
 
             if( enroute && ( arrival || m_starttime.IsValid() ) ) m_wpList->SetItem(
-                    item_line_index, 6, time_form );
+                item_line_index, cols[ETE_ETD], time_form );
             else
-                m_wpList->SetItem( item_line_index, 6, _T("----") );
+                m_wpList->SetItem( item_line_index, cols[ETE_ETD], _T("----") );
 
             //Leg speed
             wxString s;
             s.Printf( _T("%5.2f"), toUsrSpeed( leg_speed ) );
-            if( arrival ) m_wpList->SetItem( item_line_index, 7, s );
+            if( arrival ) m_wpList->SetItem( item_line_index, cols[SPEED], s );
 
-            if( enroute ) m_wpList->SetItem( item_line_index, 8, tide_form );
+            if( enroute ) m_wpList->SetItem( item_line_index, cols[NEXT_TIDE], tide_form );
             else {
-                m_wpList->SetItem( item_line_index, 7, nullify );
-                m_wpList->SetItem( item_line_index, 8, nullify );
+                m_wpList->SetItem( item_line_index, cols[NEXT_TIDE], nullify );
+                m_wpList->SetItem( item_line_index, cols[DESCRIPTION], nullify );
             }
 
             //  Save for iterating distance/bearing calculation
@@ -2551,12 +2566,22 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
      m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
      LLGrid->Add( m_textArrivalRadius, 1, wxALL , 5 );
      
-    int box_size = 140 * g_Platform->GetDisplayDensityFactor();
-    
-    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show Range Rings"),
+    wxBoxSizer* bSizerArrivalRadius;
+    bSizerArrivalRadius = new wxBoxSizer( wxHORIZONTAL );
+    m_staticTextArrivalRadius = new wxStaticText( m_panelBasicProperties, wxID_ANY, _("Arrival Radius"));
+    bSizerArrivalRadius->Add( m_staticTextArrivalRadius, 0, wxALL, 0 );
+
+    m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
+    bSizerArrivalRadius->Add( m_textArrivalRadius, 0, wxALL | wxALIGN_RIGHT, 5 );
+    bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
+
+    //  Waypoints
+    m_checkBoxShowWaypointRangeRings = new wxCheckBox( m_panelBasicProperties, ID_SHOWWAYPOINTRANGERINGS, _("Show range rings"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
     bSizerTextProperties->Add( m_checkBoxShowWaypointRangeRings, 0, wxALL, 0 );
 
+    int box_size = 140 * g_Platform->GetDisplayDensityFactor();
+    
     waypointrrSelect = new wxFlexGridSizer( 1, 2, 1, 1 );
     waypointrrSelect->AddGrowableCol( 1 );
     bSizerTextProperties->Add( waypointrrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, 0 );
@@ -2573,7 +2598,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     waypointradarGrid->AddGrowableCol( 1 );
     bSizerTextProperties->Add( waypointradarGrid, 0, wxLEFT | wxRIGHT| wxEXPAND, 5 );
 
-    wxStaticText* waypointdistanceText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Ring Spacing") );
+    wxStaticText* waypointdistanceText = new wxStaticText( m_panelBasicProperties, wxID_STATIC, _("Distance between rings") );
     waypointradarGrid->Add( waypointdistanceText, 1, wxEXPAND | wxALL, 1 );
 
     m_textWaypointRangeRingsStep = new wxTextCtrl( m_panelBasicProperties, ID_TEXTCTRL, _T(""), wxDefaultPosition,
@@ -3108,10 +3133,13 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
         
-        double factor = GetCharHeight() / (double)16.0;   // Because I know what the base icon size is....
+        double factor = (0.7 * (double)GetCharHeight()) / (double)16.0;   // Because I know what the base icon size is....
         factor = wxMin(3.0, factor);            // not greater than 3
         factor = wxMax(1.0, factor);            // nor less than 1
         
+        //  A little optimization for "normal" situations, requiring no scaling
+        if(factor < 2.) factor = 1.;
+            
         wxImageList *icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
 
         int target = 16;

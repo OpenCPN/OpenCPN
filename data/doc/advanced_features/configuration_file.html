@@ -1,0 +1,159 @@
+<meta charset="utf-8">
+
+
+<h1>Configuration File</h1>
+<div class="level1">
+<ul>
+<li class="level1">  <b>Always exit OpenCPN</b> before editing the configuration file. </li>
+<li class="level1">  Edit the file with a text editor, and save your changes. </li>
+<li class="level1">  Restart OpenCPN.  </li>
+</ul>
+
+<p>
+Some of the user settings available through the config file.
+</p>
+
+<p>
+<b>APB bearing precision</b> setting is set in the <em>Toolbar &gt; Options &gt; Connections</em> settings page for connections that have outgoing messages. The precision is applied to:
+</p>
+<ul>
+<li class="level1"> CrossTrackErrorMagnitude</li>
+<li class="level1"> BearingOriginToDestination</li>
+<li class="level1"> BearingPresentPositionToDestination</li>
+<li class="level1"> HeadingToSteer</li>
+</ul>
+
+<p>
+This change was made as some auto pilots are limited in the precision they can accept in the APB message.
+All other messages and internally the precision is not changed. 
+There is no change to the XTE message as that was not requested at the time.
+Setting added in OpenCPN Version 4.2.0 
+</p>
+<pre class="code">[Settings]  .....
+NMEAAPBPrecision=3</pre>
+
+<p>
+<b>Ais name caching</b>  can be turned off in the <em>opencpn.ini/opencpn.config</em> file by adding a line like this.
+</p>
+<pre class="code">[Settings] .....
+EnableAISNameCache=0</pre>
+
+<p>
+<b>Crash reporting</b>
+for Windows icon be enabled by editing the opencpn.ini file. Add the line below to enable the crash-report. Sett the value to “0” to disable it.
+</p>
+<pre class="code">[Settings] .....
+EmailCrashReport=1</pre>
+
+<p>
+<b>Rotating</b>  the canvas, is unsupported but possible….. 
+</p>
+<pre class="code">[Settings] ....
+EnableRotateKeys=1</pre>
+
+<p>
+Enables
+</p>
+<ul>
+<li class="level1"> <b>[</b> = Rotate chart left.  <b>]</b> = Rotate chart right.</li>
+<li class="level1"> <b>Alt + [</b> = Rotate chart left in fine steps.</li>
+<li class="level1"> <b>Alt + ]</b> = Rotate chart right in fine steps.</li>
+<li class="level1"> <b>\</b>  = Reset rotation</li>
+<li class="level1"> Some keyboards have to use <b>AltGR + ]</b>, etc.</li>
+</ul>
+
+<p>
+Also an Alternative, see the RotateCtrl_pi plugin which has Toolbar buttons.
+</p>
+
+<p>
+<b>Graphic memory</b>, If you have a lot of graphic memory, or very little, try to add the following to your config (ini on windows) file:
+</p>
+<pre class="code">[Settings] .....
+GPUMemorySize=nnn</pre>
+
+<p>
+where nnn is graphics card memory size, in MBytes.
+256 MBytes is the default.
+</p>
+
+<p>
+<b>Application memory limit target</b>. Try to limit the total memory used by OCPN to the specified value, approximately.
+Specify this mode by:
+</p>
+<pre class="code">[Settings] ......
+MEMCacheLimit=xxx</pre>
+
+<p>
+<b>Open chart limit.</b>
+This is the default mode under Linux, and the default value is 20 open charts at any one time.
+Modify this limit by the following:
+</p>
+<pre class="code">[Settings]  ....
+NCacheLimit=yy</pre>
+
+<p>
+<b>Width of the COG Predictor</b>  can be adjusted in the <em>opencpn.ini</em> configuration file. Find the line below and adjust the value.
+</p>
+<pre class="code">[Settings]  ....
+OwnshipCOGPredictorWidth=3</pre>
+
+<p>
+<b>Maximum Waypoint Name Length</b>
+</p>
+<pre class="code">[Settings] ....
+MaxWaypointNameLength=6</pre>
+
+<p>
+Allow the use of setting MaxWaypointNameLength in opencpn.ini to enable sending longer than 6 character waypoint names to GPS
+</p>
+
+<p>
+<b>Number of Navobject Backups</b>
+In the <em>opencpn.ini or opencpn.config</em> file you can find a configuration setting to control the <b>number of backups kept</b>, defaulting to KeepNavobjBackups=5. This value can be changed using a text editor.
+</p>
+<pre class="code">[Settings] ...
+KeepNavobjBackups=5</pre>
+
+<p>
+<b>AnchorWatch</b>
+Both the default Anchor Watch Radius and Max distance  from mark can be changed by editing the configuration file
+</p>
+<pre class="code"> 
+[Settings] ....
+AnchorWatchDefault=45
+AnchorWatchMax=2500</pre>
+
+<p>
+Enter your own preferences, 45 &amp; 2500 are just for illustration, defaults are 50 and 1852 respectively.
+</p>
+
+<p>
+<b>Automatic Anchor Mark</b>
+Search for a line like this:
+</p>
+<pre class="code">[Settings] .....
+AutoAnchorDrop=0</pre>
+
+<p>
+and change the value from “0” to “1”.
+</p>
+
+<p>
+<b>Using all four processors</b>
+</p>
+<pre class="code">[Settings] .....
+NCPUCount=4</pre>
+
+<p>
+<b>GPS timeout</b>
+</p>
+<pre class="code">[Settings] ....
+GPSDogTimeout=6</pre>
+
+<p>
+OCPN must get a valid position report (e.g. RMC, GLL, etc) every six seconds (default) or else the ownship icon will go grey, and many other functions will stop working. Adjustment to the defaut value may be necessary on, for example, a very busy network.
+</p>
+
+
+</div>

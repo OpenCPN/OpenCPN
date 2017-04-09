@@ -1,0 +1,518 @@
+<meta charset="utf-8">
+
+
+<h1>GPS Setup</h1>
+<div class="level1">
+
+<p>
+<a href="../opencpn/manual/1gps_status.png" class="media" title="opencpn:manual:1gps_status.png"><img src="../opencpn/manual/1gps_status.png" class="media" alt="" /></a>   <img src="../opencpn/manual/course-up_0.h.28_tok.11b8b1_w.28.png" class="media" alt="" width="28" height="28" />  <a href="../opencpn/manual/gray-nogps.png" class="media" title="opencpn:manual:gray-nogps.png"><img src="../opencpn/manual/gray-nogps.png" class="media" alt="" /></a> <a href="../opencpn/manual/red-gps.png" class="media" title="opencpn:manual:red-gps.png"><img src="../opencpn/manual/red-gps.png" class="media" alt="" /></a>
+</p>
+
+<p>
+Below we describe only the basics of getting a gps up and running.<br/>
+
+</p>
+
+<p>
+<a href="../opencpn/manual/menubar-toolbar-chart.png" class="media" title="opencpn:manual:menubar-toolbar-chart.png"><img src="../opencpn/manual/menubar-toolbar-chart.png" class="media" alt="" /></a>
+</p>
+
+<p>
+For a full description of all options read <em><a href="../toolbar_buttons/options_setting.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:options_setting">Options Setting</a></em> <br/>
+
+<br/>
+
+<b>Make sure your GPS is set to output positions using the WGS 84 Geodetic Datum.</b> This is less of an issue nowadays, compared to, say 10 - 15 years ago.<br/>
+
+Some units can&#039;t be changed, and is permanently set to WGS 84. The BU-353 is one of those.
+</p>
+
+<p>
+<b>Matrix of GPS Devices</b> <br/>
+
+<a href="../towebsite.html" class="wikilink1" title="opencpn:supplementary_hardware:gps_devices">Matrix of GPS Devices</a><br/>
+
+</p>
+
+<p>
+Refer to <a href="../gps_setup_and_status.html" class="wikilink1" title="opencpn:opencpn_user_manual:gps_setup_and_status">GPS Setup &amp; Status</a>
+</p>
+
+</div>
+
+<h2>Windows 10</h2>
+<div class="level2">
+
+<p>
+Windows 10 users generally must purchase a new GPS Puck specifically configured for Windows 10. For Example, the BU-353 which works with earlier versions of Windows does not work without an elaborate work around involving preventing automatic update of Prolific USB drivers by the <abbr title="Operating System">OS</abbr>. It is far easier and more reliable to simply purchase another Windows 10 compatible GPS Puck (similar to the BU-353 S4) and use the associated drivers.<br/>
+
+<br/>
+
+This Windows 8 Microsolft <a href="../towebsite.html" class="wikilink1" title="opencpn:supplementary_software:win8_gnss_sensor">GNSS drive</a> has been found to be helpful. (Also described more completely below.)
+</p>
+
+</div>
+
+<h2>Windows XP/Vista/7/8</h2>
+<div class="level2">
+
+<p>
+Note that the extensive use of the cheap gps mouse BU-353 as an example below, should only be seen as an illustration.
+<br/>
+
+To use OpenCPN with a GPS, a GPS receiver is needed.
+</p>
+
+<p>
+There are a variety of possible choices for a GPS receiver:
+</p>
+<ul>
+<li class="level1"> A computer, such as a Sony Vaio P has a built in GPS receiver</li>
+<li class="level1"> A NMEA Expander to amplify a nmea stream to multiple listeners</li>
+<li class="level1"> A hand-held GPS receiver</li>
+<li class="level1"> A dedicated GPS receiver</li>
+</ul>
+
+<p>
+The remainder of this section describes using OpenCPN with a dedicated GPS receiver, however, the instructions for a dedicated receiver will be similar for any serial/USB connected NMEA data stream.
+</p>
+
+</div>
+
+<h4>A Dedicated GPS Receiver</h4>
+<div class="level4">
+
+<p>
+There are several companies making dedicated GPS receivers. The Supplementary Hardware section for GPS devices lists several manufacturers.
+</p>
+
+<p>
+NMEA has traditionally been implemented as a serial protocol and therefore, even if a USB connection is used, there needs to be a USB to Serial Port conversion. The specific driver for the each GPS receiver will handle this conversion.
+</p>
+
+</div>
+
+<h4>An Example - Configuring BU-353</h4>
+<div class="level4">
+
+<p>
+It is not necessary to use the installation disk to setup the BU-353. Following the steps listed below will result in the latest driver being installed.
+</p>
+<ol>
+<li class="level1"> Download the latest driver from Prolific - <a href="http://www.usglobalsat.com/s-24-support-drivers.aspx#A" class="urlextern" title="http://www.usglobalsat.com/s-24-support-drivers.aspx#A" rel="nofollow">http://www.usglobalsat.com/s-24-support-drivers.aspx#A</a></li>
+<li class="level1"> Unzip and install the driver</li>
+<li class="level1"> Plug in the BU-353.</li>
+<li class="level1"> Start → (Right Click) My Computer → Properties → Hardware →Device Manager <br/>
+or Start→Run devmgmt.msc</li>
+<li class="level1"> Expand Ports</li>
+<li class="level1"> Look for the “Prolific USB-to-Serial Comm Port” and note the com port number (e.g., COM4) </li>
+</ol>
+
+<p>
+<img src="../opencpn/manual/devicemanager-1.h.610_tok.e7eae4_w.410.jpeg" class="media" title="devicemanager-1.jpg" alt="devicemanager-1.jpg" width="410" height="610" />
+</p>
+<ol>
+<li class="level1"> Right click on the “Prolific USB-to-Serial Comm Port”. Choose Driver</li>
+<li class="level1"> Select 4800 bits per second, 8 data bits, None parity, 1 stop bit, and None for Flow Control </li>
+</ol>
+
+<p>
+<img src="../opencpn/manual/prolific.h.450_tok.a9205d_w.410.jpeg" class="media" title="prolific.jpg" alt="prolific.jpg" width="410" height="450" />
+</p>
+<ol>
+<li class="level1"> Start OpenCPN</li>
+<li class="level1"> Click on the Options Icon <img src="../opencpn/manual/settings.png" class="media" alt="" /></li>
+<li class="level1"> Select “Connections”, and “Add Connection” and “Serial”</li>
+<li class="level1"> Under “Data Port” select the Com port noted in #6</li>
+<li class="level1"> Choose OK</li>
+<li class="level1"> Select Auto Follow to center the map over your GPS location</li>
+</ol>
+
+</div>
+
+<h4>Troubleshooting</h4>
+<div class="level4">
+
+<p>
+There is a small LED located on the BU-353. If the LED is off there is no power being received. Check the connection.
+</p>
+
+<p>
+If the LED is solid it indicates the BU-353 is searching for a GPS signal. Try moving the GPS receiver to a clear location.
+</p>
+
+<p>
+If the LED is flashing it indicates the BU-353 has a position fix and is transmitting data.
+</p>
+<ol>
+<li class="level1"> Try viewing the NMEA data stream in OpenCPN. Choose Options→Connections→Show NMEA Debug Window</li>
+<li class="level1"> Alternatively, a diagnostic program is included on the installation CD called GPSInfo.exe. Launch this program to install the diagnostic utility.</li>
+</ol>
+
+<p>
+If it appears that the NMEA data stream is being received, the most likely issue is that OpenCPN is not centered over your location. Click AutoFollow to center the map at your GPS location.
+</p>
+
+</div>
+
+<h4>Known Issues</h4>
+<div class="level4">
+
+<p>
+If you change the USB port for the GPS receiver Prolific will reassign the COM port number. This will require repeating steps 4-12 above. If you are having trouble with Prolific drivers and an Error Code, try reading this page <a href="http://www.ifamilysoftware.com/news37.html" class="urlextern" title="http://www.ifamilysoftware.com/news37.html" rel="nofollow">http://www.ifamilysoftware.com/news37.html</a>
+</p>
+
+<p>
+On some computer / GPS receiver combinations when the computer resumes from Stand By the GPS receiver will no longer transmit its NMEA data stream, and only garbage instead of <abbr title="American Standard Code for Information Interchange">ASCII</abbr> characters will be visible in the NMEA Data Stream Window. The red indicator led will not work. <br/>
+ <br/>
+To change back to NMEA mode search for and download SIRFDemo.exe. <br/>
+Unpack and start. Set correct Baud rate and and com port as above. <br/>
+Click connect to data source button. Action → Switch to NMEA protocol, then exit. <br/>
+There are many more settings available in SIRFDemo.exe
+</p>
+
+<p>
+An alternative workaround for this issue is provided by using a COM port splitter such as XPort <a href="http://www.curioustech.net/xport.html" class="urlextern" title="http://www.curioustech.net/xport.html" rel="nofollow">http://www.curioustech.net/xport.html</a>
+</p>
+<ol>
+<li class="level1"> Download <a href="http://www.curioustech.net/xport.html" class="urlextern" title="http://www.curioustech.net/xport.html" rel="nofollow">XPort</a>.</li>
+<li class="level1"> Unzip it to a folder of your choice</li>
+<li class="level1"> Double Click XPort.exe</li>
+<li class="level1"> Set the Baud Rate to 4800</li>
+<li class="level1"> Under Enable Ports add an entry for COM10</li>
+<li class="level1"> Click “Find GPS”. The port returned should match the port identified in Step #6 in the Configuring BU-353 Section</li>
+<li class="level1"> Select Prolific USB-to-Serial Comm Port in the check box section</li>
+<li class="level1"> Return to OpenCPN</li>
+<li class="level1"> Click on the ToolBox Icon <img src="../opencpn/manual/settings.png" class="media" alt="" /></li>
+<li class="level1"> Select GPS</li>
+</ol>
+
+<p>
+Under NMEA Data Source change the Com port to COM10
+</p>
+
+</div>
+
+<h4>How to use OpenCPN on a tablet windows 8 with GNSS Sensor</h4>
+<div class="level4">
+
+<p>
+<a href="http://www.cruisersforum.com/forums/showthread.php?p=1341714" class="urlextern" title="http://www.cruisersforum.com/forums/showthread.php?p=1341714" rel="nofollow">http://www.cruisersforum.com/forums/showthread.php?p=1341714</a> <br/>
+
+A small application that enables windows 8 tablets (or notebooks with GNSS sensor) to use OpenCPN. Tested and GNSS sensor seems to be able to pick up the signal quite well. See the details here: <a href="https://bitbucket.org/petrsimon/geolocationtcp/wiki/Home" class="urlextern" title="https://bitbucket.org/petrsimon/geolocationtcp/wiki/Home" rel="nofollow">https://bitbucket.org/petrsimon/geol...ntcp/wiki/Home</a> <br/>
+
+Also refer to <a href="../towebsite.html" class="wikilink1" title="opencpn:supplementary_software:win8_gnss_sensor">Win8 GNSS Sensor</a> <br/>
+
+</p>
+
+</div>
+
+<h2>Linux</h2>
+<div class="level2">
+
+<p>
+To proceed, the “<b>user</b>” you use on your computer must belong to a <b>group</b> that is allowed to open <b>serial connections</b>. This group is normally “<b>dialout</b>” on Debian based Linuxes, including Ubuntu, and “<b>uucp</b>” on Red Hat based distributions. Read more in <em><a href="../connections.html" class="wikilink1" title="opencpn:opencpn_user_manual:connections">Connections</a></em>. <br/>
+Check your status by writing “groups” on a command line. The response will be all groups that the user belongs to. Make sure that “dialout” or “uucp” is included. If not, you have to add your user to this group. There are many ways to do this, one is to issue this command: <br/>
+“sudo usermod -a -G dialout $USER”. Logout of your current session for group changes to take effect. <br/>
+This applies to many Debian based distributions, for other distros just drop the sudo and do the command as root, using “su”. <br/>
+All major Linux distribution includes a graphical user settings dialog, where adding a user to a group, could be fixed.
+</p>
+
+</div>
+
+<h3>Two methods are available, direct connection or through gpsd.</h3>
+<div class="level3">
+
+</div>
+
+<h5>We start with gpsd.</h5>
+<div class="level5">
+<ul>
+<li class="level1"> Install the gpsd and gpsd-clients packages</li>
+</ul>
+<pre class="code">      
+$ sudo apt-get install gpsd gpsd-clients</pre>
+<ul>
+<li class="level1"> Go to Options→ Connections→ Add Connection and select “Network” plus the GPSD radio button. Address should be “localhost” and DataPorts should be set to 2947.</li>
+<li class="level1"> On Ubuntu 10.04 and later, that is really all you have to do. When you plug in your gps this will trigger gpsd to start.</li>
+<li class="level1"> “xgps” is client that comes with the gpsd-clients package, and is useful for testing that the gps and gpsd is working properly. If xgps isn&#039;t working, it&#039;s a gps or gpsd problem, not an OpenCPN problem</li>
+</ul>
+
+</div>
+
+<h5>Direct connection.</h5>
+<div class="level5">
+<ul>
+<li class="level1"> Make sure that gpsd isn&#039;t running then connect your gps and start OpenCPN. On Ubuntu 12.04 the easiest way to achieve this is to uninstall gpsd.</li>
+<li class="level1"> In the Options→Connections → Add Connection, select “Serial”.Set “dataPort to the port where you plugged in your gps. If you plugged in BU 353 this will probably be /dev/ttyUSB0.</li>
+<li class="level1"> Choose 4800 baud, unless you know that the gps is set to something else.</li>
+<li class="level1"> The gps should now work…if not, check the NMEA data stream window. If only binary garbage is visible, the gps has to be reset to NMEA mode, see more about this above in windows section. An alternative is to use gpsd, that will work with the gps in Sirf mode.</li>
+<li class="level1"> To do this in Linux for BU 353 as well as many other gps:es, make sure that gpsd is running and that the package “gpsd-clients” is installed. On Ubuntu 12.04 gpsd needs to be temporarily installed. Make sure to kill any instances of gpsd with the command: </li>
+</ul>
+<pre class="code"> &quot;sudo killall gpsd&quot;</pre>
+<ul>
+<li class="level1"> This command will put the GPS into NMEA mode. </li>
+</ul>
+<pre class="code">  * $gpsctl -n </pre>
+<ul>
+<li class="level1"> If that doesn&#039;t work, try </li>
+</ul>
+<pre class="code">$ gpsctl -f -n /dev/ttyUSB0</pre>
+<ul>
+<li class="level1"> This will force a low-level access, bypassing gpsd. For more information: $man gpsctl</li>
+<li class="level1"> More information is as always available through “man gpsctl” Close down OpenCPN before running gpsctl. <br/>
+ <br/>
+None of this is normally noticed when using gpsd, as this program reads both NMEA and SIRF binary sentences.</li>
+</ul>
+
+</div>
+
+<h3>More Linux hints</h3>
+<div class="level3">
+<ul>
+<li class="level1"> If you can&#039;t connect to a physical port, such as <b>/dev/ttyUSBO</b>, indicated by a line in the opencpn.log file. <u>Check that you, as a user, belong to the group “dialout”.</u> To see which groups you belong to, run the command “groups”. Not all Linux distributions add the user to this group by default. To add yourself to the dialout group </li>
+</ul>
+<pre class="code">&quot;sudo usermod -a -G dialout $USER&quot;</pre>
+<ul>
+<li class="level1"> Check if gpsd is working:</li>
+</ul>
+<pre class="code">$ ps aux | grep gpsd
+nobody 12338 0.3 0.1 4124 1448 ? S&lt;s 18:31 0:00 gpsd -F /var/run/gpsd.sock 
+you 12356 0.0 0.0 3036 800 pts/3 S+ 18:32 0:00 grep –color=tty -d skip gpsd</pre>
+<ul>
+<li class="level1"> This or similar responses indicate that gpsd is running. If you only have something like the second line,…it is not running.</li>
+<li class="level1"> Run the command </li>
+</ul>
+<pre class="code">&quot;$ls -lrtd /dev/*|tail -10&quot;</pre>
+<ul>
+<li class="level1"> and see the 10 latest created device files. Run this just after plugin in your gps to see which device was created.</li>
+<li class="level1"> Determine which device your GPS is on your linux system by checking the startup. Look for a line that says something about GPS and /dev/ttyUSB# in the command “dmesg”</li>
+<li class="level1"> Or even better, after connecting a gps mouse, BU-353, we look for a dmesg by running this command.</li>
+</ul>
+<pre class="code">$ dmesg | grep tty
+and get this response back.
+[13616.095305] usb 2-3: pl2303 converter now attached to ttyUSB0</pre>
+<ul>
+<li class="level1"> Add a script to start gpsd, if this is not done by your distribution. I saved mine as startgps and set the executable attribute. Edit line 3 to match your device, ie /dev/ttyUSB0</li>
+</ul>
+<pre class="code">#!/bin/sh
+ sudo killall gpsd
+ sudo gpsd -n -D 2 /dev/ttyUSB0</pre>
+<ul>
+<li class="level1"> Run the script:</li>
+</ul>
+<pre class="code">$ ./startgps</pre>
+
+<p>
+If this is a new installation, click on the Toolbox icon <img src="../opencpn/manual/settings.png" class="media" alt="" /> and configure your GPS source, chart directories, and other settings.
+</p>
+
+</div>
+
+<h3>Other Distributions</h3>
+<div class="level3">
+<ul>
+<li class="level1"> Install gpsd from source. More information is available here: <a href="http://catb.org/gpsd/" class="urlextern" title="http://catb.org/gpsd/" rel="nofollow">http://catb.org/gpsd/</a></li>
+</ul>
+
+</div>
+
+<h4>Udev Rules</h4>
+<div class="level4">
+<ul>
+<li class="level1"> If you have problem with, for example gps, connecting to different ports each time you restart udev is your friend.</li>
+<li class="level1"> udev supports persistent device naming, which does not depend on, for example, the order in which the devices are plugged into the system. The default udev setup provides persistent names for storage devices.</li>
+<li class="level1"> There is a lot about udev on the Internet. For OpenCPN specifics, read the cruisersforum.</li>
+</ul>
+
+</div>
+
+<h4>Bluetooth GPS</h4>
+<div class="level4">
+
+<p>
+More user experience of setting up bluetooth GPS are welcome, as the notes below just reflects a few users experience. Please use the Forum.
+</p>
+
+</div>
+
+<h4>Ubuntu 10.10 and older.</h4>
+<div class="level4">
+
+<p>
+If you have a bluetooth GPS you will need to first configure it through the standard Ubuntu Bluetooth “set up new device ” proceedure. Once you have done that you will need to find what the address of the GPS is. To do that you run this command:   
+</p>
+<pre class="code">&quot;sudo hcitool scan&quot; </pre>
+
+<p>
+it will then start looking for the Bluetooth GPS and hopefully find your GPS. You should see something similar to: 
+</p>
+<pre class="code">Scanning …
+00:1C:88:10:D3:4D    iBT-GPS </pre>
+
+<p>
+In this case I have a IBT-GPS at address 00:1C:88:10:D3:4D (Your GPS address will be different)
+</p>
+
+<p>
+Next we have to bind the GPS address to a “virtual” device OpenCPN understands in this case rfcomm0. We do this with the following command: 
+</p>
+<pre class="code">sudo rfcomm bind /dev/rfcomm0 00:1C:88:10:D3:4D </pre>
+
+<p>
+Note put your GPS address in this line
+You should not have to run these commands each time your linux is restarted as it will remember your GPS address. 
+</p>
+
+<p>
+Now all you need to do is go into OpenCPN Toolbox and select GPS. 
+Now in the NMEA Data Source options select from the pulldown menu: 
+“<b>/dev/rfcomm0</b>”, or write it in the box, if not present as an alternative. 
+</p>
+
+<p>
+That&#039;s it - you should now have a Bluetooth GPS Connected.
+</p>
+
+<p>
+<b>Ubuntu</b><b> 12.04</b>
+</p>
+
+<p>
+-Pair GPS with bluetooth icon 
+-break connection with bluetooth icon
+-get device id: sudo hcitool scan
+-get channel for gps: sdptool records 00:02:78:0A:4E:E9 (put your actual number here)
+-sudo gedit /etc/bluetooth/rfcomm.conf #edit rfcomm input file. Text should be:
+</p>
+<pre class="code"># RFCOMM configuration file.
+#
+# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $
+# rfcomm0 {
+# Automatically bind the device at startup
+bind yes;</pre>
+
+<p>
+&#039;
+</p>
+<pre class="code"># Bluetooth address of the device
+device xx:xx:xx:xx:xx:xx;</pre>
+
+<p>
+&#039;
+</p>
+<pre class="code"># RFCOMM channel for the connection
+channel 1;#use channel number as provided by sdptool records XX:XX:XX:XX:XX:XX</pre>
+
+<p>
+&#039;
+</p>
+<pre class="code"># Description of the connection
+comment &quot;Your GPS Device Here&quot;;
+}</pre>
+
+<p>
+&#039;
+</p>
+<pre class="code">sudo rfcomm release 0 (not strictly neccesary) </pre>
+
+<p>
+.
+</p>
+<pre class="code">sudo rfcomm connect 0 </pre>
+
+<p>
+You only need to to this once, not required if you reboot at this point).
+</p>
+<pre class="code">…connected /dev/rfcomm0 to 00:00:00:00:00:00 (whatever) 
+Press CTRL-C for hangup </pre>
+
+<p>
+in a separate terminal, you can test the connection with 
+</p>
+<pre class="code">rfcomm show /dev/rfcomm0 
+…rfcomm0: 00:08:1B:14:18:B6 channel 1 connected [tty-attached] </pre>
+
+<p>
+Your bluetooth GPS should now be working in open CPN. 
+Run 
+</p>
+<pre class="code">sudo opencpn</pre>
+
+<p>
+To check that it works (/dev/rfcomm0 under GPS NMEA data source). If it works, try running opencpn without sudo, chances are that you cannot see the gps. if this is the case, use the following fix: 
+</p>
+<pre class="code">sudo usermod -a -G dialout $USER &#039;&#039;</pre>
+
+</div>
+
+<h4>Fedora</h4>
+<div class="level4">
+
+<p>
+Run 
+</p>
+<pre class="code">hcitool scan</pre>
+
+<p>
+to get the ID of your bluetooth gps device.
+Make a file “rfcomm.config” and put it in /etc/bluetooth.
+</p>
+
+<p>
+This file is already present in Ubuntu, but needs editing for persistent connection.
+</p>
+<pre class="code"># RFCOMM configuration file. 
+# 
+# $Id: rfcomm.conf,v 1.1 2002/10/07 05:58:18 maxk Exp $ 
+# 
+rfcomm0 { 
+# Automatically bind the device at startup 
+bind yes; 
+# Bluetooth address of the device 
+device XX:XX:XX:XX:XX:XX; 
+# RFCOMM channel for the connection 
+channel 1; 
+# Description of the connection 
+comment &quot;Your GPS Device Here&quot;; 
+} </pre>
+
+<p>
+Change XX:XX:XX…. to your device ID
+Open Opencpn and write <b>/dev/rfcomm0</b> as GPS NMEA device. Note that you can add it yourself by writing directly into the scroll down box. 
+Permissions for <b>/dev/rfcomm0</b> are for group “<b>dialou</b>t”. Make sure you belong to that group. 
+The command “groups” will show all the groups you belong to. 
+Make sure that “gpsd” isn&#039;t running, issuing “killall gpsd” as root.
+</p>
+
+</div>
+
+<h2>Mac OSX</h2>
+<div class="level2">
+
+<p>
+Attaching a GPS device to a Mac is done via one of the USB ports. Whether using a device with its own USB lead or via a serial-USB adapter lead or an NMEA multiplexer with USB port, the appropriate <abbr title="Operating System">OS</abbr> X driver needs to be installed. Nearly all hardware uses one of just two chip makes: those from FTDI or Prolific. Both those companies make <abbr title="Operating System">OS</abbr> X drivers available on their web sites, but manufacturers of GPS devices usually package the driver with device. 
+</p>
+
+<p>
+When the driver is installed and the device connected, start OpenCPN, select the Toolbox and click the GPS tab. Open the “NMEA Data Source” menu &amp; select the the device from the list. It is not always obvious which is the correct one, but in general the device will have a name starting: ”/dev/cu.“ or ”/dev/tty.“. Some manufacturers make it obvious, like ”/dev/cu.MiniPlex-99000125“, but others may be more generic, like: ”/dev/cu.usbserial“. Set the “NMEA Baud Rate” to 4800 and click “OK”. If the correct selection has been made, you should see the GPS status icon change from red to green. 
+</p>
+
+</div>
+
+<h2>Virtualized Environments</h2>
+<div class="level2">
+
+<p>
+Use of Virtualized Environments such as Parallels, VM, VirtualBox, etc to run an alternative version of Opencpn on your Mac or PC are beyond the scope of this section. However experienced users are invited to report the specifics about using USB ports with Virtual Configurations. Please be specific about the setup and software and explain how virtual USB ports work in that environment. These commenta will eventually make their way into this section. 
+</p>
+
+<p>
+It should be noted that each Virtual Software handles virtualization of USB and Sharing differently. This can affect the connection and reliability of the connection for GPS.  
+</p>
+
+<p>
+OpenCPN is user powered, so we depend on User&#039;s sharing their experiences. Please assist us.
+</p>
+
+</div>

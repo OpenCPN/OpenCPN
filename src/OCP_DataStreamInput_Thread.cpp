@@ -26,8 +26,16 @@
 #include "datastream.h"
 #include "dychart.h"
 
+#ifdef __WXQT__
+#define __POSIX__
+#endif
+
 #ifdef __POSIX__
-	#include <sys/termios.h>
+    #ifdef __OCPN__ANDROID__
+        #include <termios.h>
+    #else
+        #include <sys/termios.h>
+    #endif
 #endif
 
 #define DS_RX_BUFFER_SIZE 4096
@@ -101,13 +109,6 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 
 //      Sadly, the thread itself must implement the underlying OS serial port
 //      in a very machine specific way....
-
-#ifdef __WXQT__
-#define __POSIX__
-#include <termios.h>
-#include <unistd.h>
-#endif
-
 
 #ifdef __POSIX__
 //    Entry Point

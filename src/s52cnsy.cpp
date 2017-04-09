@@ -982,6 +982,7 @@ static void *DEPCNT02 (void *param)
 //            rule_str.Prepend(_T(";OP(8OD13010)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(8OD13010)");
            //  Move this object to DisplayBase category
             rzRules->obj->m_DisplayCat = DISPLAYBASE;
+            rzRules->obj->Scamin = 1e8;                 // effectively no SCAMIN
 //            rzRules->LUP->DPRI = PRIO_HAZARDS;
 
       } else {
@@ -1455,7 +1456,7 @@ static void *LIGHTS05 (void *param)
 
 l05_end:
 
-      if( ps52plib->m_bShowLdisText )
+//      if( ps52plib->m_bShowLdisText )
       {
             // Only show Light in certain position once. Otherwise there will be clutter.
             static double lastLat, lastLon;

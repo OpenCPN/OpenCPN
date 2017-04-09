@@ -1,0 +1,80 @@
+<meta charset="utf-8">
+
+
+<h1>Low Powered Systems</h1>
+<div class="level1">
+
+<p>
+This is an advanced subject. <br/>
+
+Beginners need only bother, if they have a system with very low resources and if the system feels very sluggish. The background is that OpenCPN, quite aggressively uses memory, to speed up the application, this can backfire in certain situations….
+</p>
+
+<p>
+There is a simple memory management scheme, for use with systems that has limited resources.<br/>
+
+<em>Two modes are available, only one of which can be active at any given time.</em> <br/>
+
+The modes must be specified in the “opencpn.conf” file, called “opencpn.ini” in Windows and Mac.<br/>
+
+</p>
+
+<p>
+1. Application memory limit target. Try to limit the total memory used by OCPN to the specified value, approximately. Specify this mode by:
+</p>
+<pre class="code">[Settings]....
+MEMCacheLimit=xxx</pre>
+
+<p>
+Where xxx is memory use target in Mbytes. Overrides NCacheLimit below.<br/>
+
+</p>
+
+<p>
+2. Open chart limit. This is the default mode under Linux, and the default value is 20 open charts at any one time.
+</p>
+
+<p>
+Modify this limit by the following:
+</p>
+<pre class="code">[Settings] ....
+NCacheLimit=yy</pre>
+
+<p>
+Where yy is the maximum number of simultaneously open charts.<br/>
+
+</p>
+<ul>
+<li class="level1"> If you do not enter any memory management specification in the config file, the following defaults apply:<br/>
+</li>
+<li class="level1"> Linux systems has a soft memory limit at 50% of available RAM. Open chart limit is 20 charts.<br/>
+</li>
+<li class="level1"> Windows and Mac…Application memory limit target is used. Target limit is 50% of available physical RAM, up to a maximum of 1 gigabyte.</li>
+</ul>
+
+</div>
+
+<h4>Settings for increased speed.</h4>
+<div class="level4">
+
+<p>
+Texture Settings
+</p>
+
+<p>
+In <em>Options→Display-Advanced Tab</em> activate “Disable Full Screen Quilting” to start with. 
+</p>
+
+<p>
+Use OpenGL if your hardware is up to it. If you are using OpenGL on a low-<abbr title="specification">spec</abbr> machine, you will have better performance if you
+</p>
+<ol>
+<li class="level1"> Disable texture caching, or\</li>
+<li class="level1"> Pre-build the texture cache in a region of interest. That is, move the boat to say Dover. Then do <em>Options→Advanced&gt;(OpenGL)Options→Build Texture Cache</em>. You do not need to wait the entire time, which may be hours for a large chart set. “Skip” out when the distance reported is 100 miles or so.</li>
+</ol>
+
+<p>
+Eventually, after steady use, your texture cache will be filled automatically in the background, and performance will increase steadily.
+</p>
+
+</div>

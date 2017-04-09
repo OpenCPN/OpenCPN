@@ -1,0 +1,54 @@
+<meta charset="utf-8">
+
+
+<h1>Display Orientation</h1>
+<div class="level1">
+
+<p>
+<img src="opencpn/manual/options-gps-orient-icon.h.44_tok.c8c5c6_w.84.png" class="media" alt="" width="84" height="44" />
+</p>
+
+</div>
+
+<h3>Chart Orientation and GPS Status Icon</h3>
+<div class="level3">
+<ul>
+<li class="level1"> There are three main options for display orientation: <b>North Up</b><img src="opencpn/manual/north-up.h.34_tok.bdfc3d_w.29.png" class="media" alt="" width="29" height="34" /><span style='font-family: inherit; font-size:12px line-height; font-weight: 19.2px;;  color: inherit;  background-color: inherit '></span> (for planning),  <b>Course Up</b><img src="opencpn/manual/course-up_0.h.28_tok.11b8b1_w.28.png" class="media" alt="" width="28" height="28" /> (for navigating with a GPS) and <b>Chart UP</b>  (for skewed charts). With Course Up OpenCPN uses COG (Course Over Ground). A head Up mode, is not available. The easiest way to change between these two modes is through the “Right Click” menu. One situation where course up might be considered is when navigating a river or a canal. The third orientation is when skewed charts are displayed, they are simply shown as “<b>Chart Up</b>”,  but an optional setting exists to show them as “<b>North Up</b>”.</li>
+<li class="level1"> In the picture below the Course Up is active. COG is 41Deg. Notice how all text on the vector chart, is aligned correctly. This only works in OpenGL mode. The red arrow, in the upper right corner, is always pointing North.</li>
+</ul>
+
+<p>
+<img src="opencpn/manual/course-up.h.605_tok.cfc969_w.800.png" class="media" alt="" width="800" height="605" />
+</p>
+<ul>
+<li class="level1"> If the option “Show skewed raster charts as North-up” in the <b>Options→Display→Advanced tab</b>, is <b>not</b>  ticked, the right-click toggle option “Course Up Mode/North Up Mode” will be replaced by “Course Up Mode /Chart Up Mode”, for skewed charts.</li>
+<li class="level1"> If an electronic compass is available in the NMEA stream the own ship icon will be orientated according to this heading. The difference can be seen on the chart if there is a cross current, for example.  The boat below is heading WNW but is being set SW. An AIS CPA, Closest Point of Approach is also visible.</li>
+</ul>
+
+<p>
+<img src="opencpn/manual/plugins/dashboard/dashn3.h.187_tok.d24f84_w.200.png" class="media" alt="" width="200" height="187" /> <br/>
+
+</p>
+<ul>
+<li class="level1"> <img src="opencpn/manual/north-up.h.34_tok.bdfc3d_w.29.png" class="media" alt="" width="29" height="34" />  This icon (blue color) to the far right in the ToolBar indicates that the display is in <b>North Up </b>mode. It may also indicate Chart Up mode for skewed charts, if chart up mode instead of North up mode i selected. See above</li>
+<li class="level1"> <img src="opencpn/manual/course-up_0.h.28_tok.11b8b1_w.28.png" class="media" alt="" width="28" height="28" /> The red version of the icon indicates <b>Course Up </b>  mode. Clicking the icon toggles North Up / Course up. These settings can also be toggled in the rightclick menu, as well as in Options → Display →General Tab. In the Options-Display→Advanved Tab, the update period for course up, can be set. This comes in handy, for example, to prevent the display jerking around in a chop.</li>
+<li class="level1"> The Course Up/North Up icon share a small dialog with the GPS indicator. This dialog can be toggled on/of with the “<b>Ctrl + i</b>” shortcut.</li>
+<li class="level1"> Note that both the red and the blue arrows are <b>always</b>  pointing North.</li>
+<li class="level1"> <b>Look Ahead!</b>  To see more of the chart in front of the boat, activate <b>Options → Display → Look Ahead  Mode</b>. Your own boat will no longer be in the center of the screen. Instead it will be located away from the center, in the opposite direction to your present gps course(COG).</li>
+<li class="level1"> <b>Don&#039;t always Look Ahead!</b>  If you are at anchor, swinging on the hook produces random courses and low speeds.If Look Ahead is on in this situation  the chart rendering will constantly be redrawn, with the boat in all possible lookahead positions as the course changes. To prevent this kind of scenario OpenCPN works like this: </li>
+</ul>
+<ul>
+<li class="level1">If the boat speed is less than 1 kt, then lookahead is disabled. <br/>
+</li>
+<li class="level2">If boat speed is greater than 3 kts, lookahead is enabled. <br/>
+</li>
+<li class="level2">In between 1 and 3 kts, the lookahead “distance” is adjusted smoothly. <br/>
+</li>
+<li class="level2">If  the problems still there when doing more than 3 kts, consider using  “<b>Options→Connections → FilterNMEA Course and Speed data</b>”  to average out the “jumpiness”.</li>
+</ul>
+<ul>
+<li class="level1"> <b>Show skewed raster charts as North-up</b>. Skewed charts are normally showed “chart up”, as intended by design. If ticking this box, these charts are shown North-Up. In both cases, activating course up, works as expected, the difference is when course up is <b>n</b><b>ot</b>  on.</li>
+<li class="level1"> <b>Full Screen</b>. Enter Full Screen Mode with the F11 toggle. Toggling full scree is also possible through the <b>Menu Bar → View</b>. Once in full screen mode the <b>Right-Click-menu</b> contains the item “<b>Toggle Full Screen</b>”.</li>
+</ul>
+
+</div>

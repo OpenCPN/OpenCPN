@@ -167,6 +167,7 @@ enum {
   ID_ZTCCHECKBOX,
   ID_DELETECHECKBOX,
   ID_NATIONALTEXTCHECKBOX,
+  ID_TRUESHOWCHECKBOX,
   ID_MAGSHOWCHECKBOX,
   ID_MAGAPBCHECKBOX,
   ID_MOBILEBOX,
@@ -179,7 +180,9 @@ enum {
   ID_TRACKROTATEUTC,
   ID_TRACKROTATELMT,
   ID_TRACKROTATECOMPUTER,
-  ID_SETSTDLIST
+  ID_SETSTDLIST,
+  ID_VECZOOM,
+  ID_INLANDECDISBOX
 };
 
 /* Define an int bit field for dialog return value
@@ -245,10 +248,11 @@ class options : private Uncopyable,
 
   void OnClose(wxCloseEvent &event);
 
+  void CreateListbookIcons();
   void CreateControls(void);
   size_t CreatePanel(const wxString &title);
   wxScrolledWindow *AddPage(size_t parent, const wxString &title);
-  bool DeletePage(wxScrolledWindow *page);
+  bool DeletePluginPage(wxScrolledWindow *page);
   void SetColorScheme(ColorScheme cs);
   void RecalculateSize(void);
 
@@ -281,7 +285,7 @@ class options : private Uncopyable,
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
   void OnChooseFontColor(wxCommandEvent &event);
 #endif
   void OnGLClicked(wxCommandEvent &event);
@@ -345,12 +349,13 @@ class options : private Uncopyable,
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor;
-
+  wxSlider *m_pSlider_Zoom_Vector;
+  
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
 
@@ -415,6 +420,10 @@ class options : private Uncopyable,
   bool connectionsaved;
   bool m_connection_enabled;
 
+  bool b_haveWMM;
+  bool b_oldhaveWMM;
+  ColorScheme m_cs;
+  
   // For "S57" page
   wxBoxSizer *vectorPanel;
   wxScrolledWindow *ps57Ctl;
@@ -438,7 +447,7 @@ class options : private Uncopyable,
 
   // For "Units" page
   wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect;
-  wxCheckBox *pCBMagShow;
+  wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
   // For "Charts" page

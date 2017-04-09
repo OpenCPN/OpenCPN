@@ -96,6 +96,7 @@ public:
  
       void CanvasPopupMenu( int x, int y, int seltype );
       void PopupMenuHandler( wxCommandEvent& event );
+      static int GetNextContextMenuId();
       
  private:
        

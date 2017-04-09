@@ -347,22 +347,6 @@ void about::Populate( void )
         
     pLicenseHTMLCtl->SetPage( licenseText );
         
-        
-#if 0    
-    wxTextFile license_file( m_DataLocn + _T("license.txt") );
-    if ( license_file.Open() ) {
-        for ( wxString str = license_file.GetFirstLine(); !license_file.Eof() ; str = license_file.GetNextLine() )
-            pLicenseTextCtl->AppendText( str + '\n' );
-        license_file.Close();
-    } else {
-        wxLogMessage( _T("Could not open License file: ") + m_DataLocn );
-    }
-    
-    wxString suppLicense = g_Platform->GetSupplementalLicenseString();
-    pLicenseTextCtl->AppendText( suppLicense );
-    
-    pLicenseTextCtl->SetInsertionPoint( 0 );
-#endif
 
     SetColorScheme();
 }
@@ -409,8 +393,9 @@ void about::CreateControls( void )
     pST1->SetFont( *headerFont );
     mainSizer->Add( pST1, 0, wxALL | wxEXPAND, 8 );
 
+    bool orient =  m_displaySize.x < m_displaySize.y;
 #ifndef __OCPN__ANDROID__    
-    wxSizer *buttonSizer = new wxBoxSizer( m_displaySize.x < m_displaySize.y ? wxVERTICAL : wxHORIZONTAL );
+    wxBoxSizer *buttonSizer = new wxBoxSizer( orient ? wxVERTICAL : wxHORIZONTAL );
     mainSizer->Add( buttonSizer, 0, wxALL, 0 );
     
     wxButton* donateButton = new wxBitmapButton( this, ID_DONATE,
@@ -419,14 +404,14 @@ void about::CreateControls( void )
 
     buttonSizer->Add( new wxButton( this, ID_COPYLOG, _("Copy Log File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( new wxButton( this, ID_COPYINI, _("Copy Settings File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
-    buttonSizer->Add( donateButton, 1, wxALL | wxEXPAND | wxALIGN_RIGHT, 3 );
+    buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? wxALIGN_RIGHT : 0), 3 );
 #endif
     
     //  Main Notebook
     pNotebook = new wxNotebook( this, ID_NOTEBOOK_HELP, wxDefaultPosition,
             wxSize( -1, -1 ), wxNB_TOP );
     pNotebook->InheritAttributes();
-    mainSizer->Add( pNotebook, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND | wxALL, 5 );
+    mainSizer->Add( pNotebook, 1, (orient ? wxALIGN_CENTER_VERTICAL : 0) | wxEXPAND | wxALL, 5 );
 
     //  About Panel
     itemPanelAbout = new wxPanel( pNotebook, -1, wxDefaultPosition, wxDefaultSize,

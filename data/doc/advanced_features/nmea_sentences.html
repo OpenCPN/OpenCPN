@@ -1,0 +1,444 @@
+<meta charset="utf-8">
+
+
+<h1>NMEA Sentences</h1>
+<div class="level1">
+
+<p>
+<b>For a comprehensive explanation of the NMEA protocol</b> please read 
+</p>
+
+<p>
+<a href="http://www.catb.org/gpsd/NMEA.html" class="urlextern" title="http://www.catb.org/gpsd/NMEA.html" rel="nofollow">NMEA Revealed by Eric S. Raymond</a>
+</p>
+
+</div>
+
+<h3>OpenCPN Recognized NMEA Sentences:</h3>
+<div class="level3">
+
+</div>
+
+<h4>The Core Program:</h4>
+<div class="level4">
+<ul>
+<li class="level1"> <b>HDM - Heading, Magnetic</b></li>
+</ul>
+<ol>
+<li class="level1"> Heading Degrees, magnetic</li>
+<li class="level1"> M = magnetic</li>
+</ol>
+<ul>
+<li class="level1"> <b>HDG - Magnetic heading, deviation, variation</b></li>
+</ul>
+<ol>
+<li class="level1"> Magnetic Sensor heading in degrees</li>
+<li class="level1"> Magnetic Deviation, degrees</li>
+<li class="level1"> Magnetic Deviation direction, E = Easterly, W = Westerly</li>
+<li class="level1"> Magnetic Variation degrees</li>
+<li class="level1"> Magnetic Variation direction, E = Easterly, W = Westerly&lt;</li>
+</ol>
+<ul>
+<li class="level1"> <b>HDT - Heading, True</b></li>
+</ul>
+<ol>
+<li class="level1"> Heading Degrees, true</li>
+<li class="level1"> T = True</li>
+</ol>
+<ul>
+<li class="level1"> <b>RMB - Recommended Minimum Navigation Information</b></li>
+</ul>
+
+<p>
+To be sent by a navigation receiver when a destination waypoint is active.
+</p>
+<pre class="code">&#039;&#039;
+                                                            14
+        1 2   3 4    5    6       7 8        9 10  11  12  13|  15
+        | |   | |    |    |       | |        | |   |   |   | |   |
+ $--RMB,A,x.x,a,c--c,c--c,llll.ll,a,yyyyy.yy,a,x.x,x.x,x.x,A,m,*hh&lt;CR&gt;&lt;LF&gt;&#039;&#039;</pre>
+
+<p>
+Field Number:
+</p>
+<ol>
+<li class="level1"> Status, A= Active, V = Void</li>
+<li class="level1"> Cross Track error - nautical miles</li>
+<li class="level1"> Direction to Steer, Left or Right</li>
+<li class="level1"> TO Waypoint ID</li>
+<li class="level1"> FROM Waypoint ID</li>
+<li class="level1"> Destination Waypoint Latitude</li>
+<li class="level1"> N or S</li>
+<li class="level1"> Destination Waypoint Longitude</li>
+<li class="level1"> E or W</li>
+<li class="level1"> Range to destination in nautical miles</li>
+<li class="level1"> Bearing to destination in degrees True</li>
+<li class="level1"> Destination closing velocity in knots</li>
+<li class="level1"> Arrival Status, A = Arrival Circle Entered</li>
+<li class="level1"> FAA mode indicator (NMEA 2.3 and later)</li>
+</ol>
+<ul>
+<li class="level1"> <b>RMC -Recommended Minimum Navigation Information</b></li>
+</ul>
+<ol>
+<li class="level1"> Time (UTC)</li>
+<li class="level1"> Status, V = Navigation receiver warning</li>
+<li class="level1"> Latitude</li>
+<li class="level1"> N or S</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> E or W</li>
+<li class="level1"> Speed over ground, knots</li>
+<li class="level1"> Track Made Good, degrees true</li>
+<li class="level1"> Date, ddmmyy</li>
+<li class="level1"> Magnetic variation, degrees</li>
+<li class="level1"> E or W</li>
+</ol>
+<ul>
+<li class="level1"> <b>xxWPL - Waypoint Location</b> Used to send routes and waypoints up to a GPS receiver. OpenCPN does not process these sentences as input.</li>
+</ul>
+<ol>
+<li class="level1"> Latitude</li>
+<li class="level1"> N or S (North or South)</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> E or W (East or West)</li>
+<li class="level1"> Waypoint Name</li>
+</ol>
+<ul>
+<li class="level1"> <b>xxRTE - Routes.</b> Used to send routes and waypoints up to a GPS receiver.OpenCPN does not process these sentences as input.</li>
+</ul>
+<ol>
+<li class="level1"> Total number of messages being transmitted</li>
+<li class="level1"> Message Number</li>
+<li class="level1 node"> Message Mode<ol>
+<li class="level3"> c = complete route, all waypoints</li>
+<li class="level3"> w = working route, the waypoint you just left, the waypoint you&#039;re heading to, then all the rest</li>
+</ol>
+</li>
+<li class="level1"> Waypoint ID</li>
+<li class="level1"> More Waypoints</li>
+</ol>
+<ul>
+<li class="level1"> <b>GGA - Global Positioning System Fix Data</b></li>
+</ul>
+<ol>
+<li class="level1"> Universal Time Coordinated (UTC)</li>
+<li class="level1"> Latitude</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> GPS Quality Indicator</li>
+<li class="level1"> Number of satellites in view, 00 - 12</li>
+<li class="level1"> Horizontal Dilution of Precision (HDOP)</li>
+<li class="level1"> Antenna altitude above/below mean-sea-level (geoid)</li>
+<li class="level1"> Units of antenna altitude, meters</li>
+<li class="level1"> Geoidal separation, the vertical difference between the WGS-84 elipsoid and the geoid</li>
+<li class="level1"> Units of geoidal separation, meters</li>
+<li class="level1"> Age of differential GPS data, time in seconds since last SC104</li>
+<li class="level1"> Differential reference station ID, 0000-102</li>
+</ol>
+<ul>
+<li class="level1"> <b>GLL - Geographic Position, Latitude / Longitude</b></li>
+</ul>
+<ol>
+<li class="level1"> Latitude</li>
+<li class="level1"> N or S (North or South)</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> E or W (East or West)</li>
+<li class="level1"> Time (UTC)</li>
+<li class="level1"> Status A - Data Valid, V - Data Invalid</li>
+</ol>
+<ul>
+<li class="level1">  <b>GSV - Satellites in view</b></li>
+</ul>
+<ol>
+<li class="level1"> Number of sentences for full data / sentence 1 of 2</li>
+<li class="level1"> Number of satellites in view</li>
+<li class="level1"> Satellite PRN number</li>
+<li class="level1"> Elevation, degrees</li>
+<li class="level1"> Azimuth, degrees</li>
+<li class="level1"> SNR - higher is better / for up to 4 satellites per sentence</li>
+</ol>
+<ul>
+<li class="level1"> <b>VTG - Track Made Good and Ground Speed</b></li>
+</ul>
+<ol>
+<li class="level1"> Track Degrees</li>
+<li class="level1"> T = True</li>
+<li class="level1"> Track Degrees</li>
+<li class="level1"> M = Magnetic</li>
+<li class="level1"> Speed Knots</li>
+<li class="level1"> N = Knots</li>
+<li class="level1"> Speed Kilometers Per Hour</li>
+<li class="level1"> K = Kilometers Per Hour</li>
+</ol>
+<ul>
+<li class="level1"> <b>GPwpl</b>  - <b>Waypoint data, only when there is an active route (this is sometimes bidirectional).</b></li>
+</ul>
+<ul>
+<li class="level1"> <b>APB - Autopilot Sentence “B”</b>  This is a fixed form of the APA sentence with some ambiguities removed.</li>
+</ul>
+
+<p>
+   Note: Some autopilots, Robertson in particular, misinterpret “bearing from origin to destination” as “bearing from present position to destination”. This is likely due to the difference between the APB sentence and the APA sentence. for the APA sentence this would be the correct thing to do for the data in the same field. APA only differs from APB in this one field and APA leaves off the last two fields where this distinction is clearly spelled out. This will result in poor performance if the boat is sufficiently off-course that the two bearings are different.
+</p>
+
+<p>
+Field Number:
+</p>
+<ol>
+<li class="level1"> Status V = LORAN-C Blink or SNR warning V = general warning flag or other navigation systems when a reliable fix is not available <br/>
+</li>
+<li class="level1"> Status V = Loran-C Cycle Lock warning flag A = OK or not used <br/>
+</li>
+<li class="level1"> Cross Track Error Magnitude <br/>
+</li>
+<li class="level1"> Direction to steer, L or R <br/>
+</li>
+<li class="level1"> Cross Track Units, N = Nautical Miles <br/>
+</li>
+<li class="level1"> Status A = Arrival Circle Entered <br/>
+</li>
+<li class="level1"> Status A = Perpendicular passed at waypoint <br/>
+</li>
+<li class="level1"> Bearing origin to destination <br/>
+</li>
+<li class="level1"> M = Magnetic, T = True <br/>
+</li>
+<li class="level1"> Destination Waypoint ID <br/>
+</li>
+<li class="level1"> Bearing, present position to Destination <br/>
+</li>
+<li class="level1"> M = Magnetic, T = True <br/>
+</li>
+<li class="level1"> Heading to steer to destination waypoint <br/>
+</li>
+<li class="level1"> M = Magnetic, T = True <br/>
+</li>
+</ol>
+<ul>
+<li class="level1"> <b>XTE - Measured cross track error </b>   Measured cross track error is a part of the RMB message, for compatibility with some older equipment designed to work with Loran.</li>
+</ul>
+<ol>
+<li class="level1"> Cross track error, measured</li>
+<li class="level1"> General warning flag V = warning</li>
+<li class="level1"> (Loran-C Blink or SNR warning)</li>
+<li class="level1"> Not used for GPS (Loran-C cycle lock flag)</li>
+<li class="level1"> Cross track error distance</li>
+<li class="level1"> L - Steer left to correct error (or R for right)</li>
+<li class="level1"> N- Distance units - Nautical miles</li>
+</ol>
+<ul>
+<li class="level1"> <b>AIVDM - Automatic Information System (AIS) position reports from other vessels </b></li>
+</ul>
+<ol>
+<li class="level1"> Time (UTC)</li>
+<li class="level1"> MMSI Number</li>
+<li class="level1"> Latitude</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> Speed Knots</li>
+<li class="level1"> Heading</li>
+<li class="level1"> Course over Ground</li>
+<li class="level1"> Rate of turn</li>
+<li class="level1"> Navigation status</li>
+</ol>
+<ul>
+<li class="level1"> <b>AIVDO - Automatic Information System (AIS) position reports from own vessel </b></li>
+</ul>
+<ol>
+<li class="level1"> Latitude</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> Speed over ground</li>
+<li class="level1"> Course over ground</li>
+<li class="level1"> MMSI, navigational status, ship type, call sign, destination, sizes (in AIS target list)</li>
+</ol>
+<ul>
+<li class="level1"> <b>xxTTM - Tracked Target Message</b></li>
+</ul>
+<ol>
+<li class="level1"> Target Number (0-99)</li>
+<li class="level1"> Target Distance</li>
+<li class="level1"> Bearing from own ship</li>
+<li class="level1"> Bearing Units</li>
+<li class="level1"> Target Speed</li>
+<li class="level1"> Target Course</li>
+<li class="level1"> Course Units</li>
+<li class="level1"> Distance of closest-point-of-approach</li>
+<li class="level1"> Time until closest-point-of-approach “-” means increasing</li>
+<li class="level1"> “-” means increasing</li>
+<li class="level1"> Target name</li>
+<li class="level1"> Target Status</li>
+<li class="level1"> Reference Target</li>
+</ol>
+<ul>
+<li class="level1"> <b>xxTLL </b><b>- Target Latitude and Longitude</b></li>
+</ul>
+<ol>
+<li class="level1"> Target Number (not used/ignored)</li>
+<li class="level1"> Latitude</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> Name</li>
+<li class="level1"> Status</li>
+<li class="level1"> Reference Target (not used/ignored)</li>
+</ol>
+<ul>
+<li class="level1"> <b>xxOSD</b>  - <b>Own Ship Data</b></li>
+</ul>
+<ol>
+<li class="level1"> Heading, degrees true</li>
+<li class="level1"> Status, A = Data Valid</li>
+<li class="level1"> Vessel Course, degrees True</li>
+<li class="level1"> Course Reference</li>
+<li class="level1"> Vessel Speed</li>
+<li class="level1"> Speed Reference</li>
+<li class="level1"> Vessel Set, degrees True</li>
+<li class="level1"> Vessel drift (speed)</li>
+<li class="level1"> Speed Units</li>
+</ol>
+<ul>
+<li class="level1"> <b>FPROS - GPSGate Buddy Position Update.</b></li>
+</ul>
+<ol>
+<li class="level1"> Latitude</li>
+<li class="level1"> Hemisphere N/S</li>
+<li class="level1"> Longitude</li>
+<li class="level1"> Hemisphere E/W</li>
+<li class="level1"> Altitude in meters above sea level</li>
+<li class="level1"> Speed over ground in knots</li>
+<li class="level1"> Heading over ground in degrees</li>
+<li class="level1"> Date</li>
+<li class="level1"> Time UTC</li>
+<li class="level1"> Name of buddy this position info belongs to.</li>
+</ol>
+<ul>
+<li class="level1"> <b>CDDSC - Digital Selective Calling Information</b></li>
+</ul>
+<ul>
+<li class="level1"> <b>CDDSE - Extended Digital Selective Calling Information, including a more accurate position.</b></li>
+</ul>
+
+<p>
+For more details on how OpenCPN interprets all recognized sentences, look at the “AIS_DecoderA.cpp” file in the source code. For the Dashboard plugin, look at the different files in the “nmea0183” directory.
+</p>
+
+</div>
+
+<h4>The Dashboard Plugin recognizes the following input NMEA sentences:</h4>
+<div class="level4">
+<ul>
+<li class="level1"> <b>DBT</b> - Depth Below Transducer</li>
+<li class="level1"> <b>DPT</b> - Depth of Water</li>
+<li class="level1"> <b>GGA</b> - Global Positioning System Fix Data</li>
+<li class="level1"> <b>GLL</b> - Geographic Position - Latitude/Longitude HDG  Heading - Deviation &amp; Variation</li>
+<li class="level1"> <b>HDM</b> - Heading - Magnetic</li>
+<li class="level1"> <b>HDT</b> - Heading - True</li>
+<li class="level1"> <b>MTA</b> - Air Temperature (obsolete)</li>
+<li class="level1"> <b>MDA</b> - Meteorological Composite (obsolete)</li>
+</ul>
+
+<p>
+This message is obsolete and NMEA recommends to use XDR transducer messages instead. <br/>
+
+However, old instruments might still sending this message. <br/>
+
+OpenCPN reads the second value “Barometric pressure, bars”, but only if the number provided is between 0.8 and 1.1  <br/>
+
+All other values are ignored. <br/>
+
+</p>
+<pre class="code">&#039;&#039;
+$--MDA,x.x,I,**x.x,B**,x.x,C,x.x,C,x.x,x.x,x.x,C,x.x,T,x.x,M,x.x,N,x.x,M*hh&lt;CR&gt;&lt;LF&gt; \\
+      |      |        |        |    |    |    |        |    |        |    | \\
+      |      |        |        |    |    |    |        |    |        |    Wind speed, meters/second \\
+      |      |        |        |    |    |    |        |    |        Wind speed, knots \\
+      |      |        |        |    |    |    |        |    Wind direction, degrees Magnetic     \\
+      |      |        |        |    |    |    |        Wind direction, degrees True \\
+      |      |        |        |    |    |    Dew point, degrees C \\
+      |      |        |        |    |    Absolute humidity, percent \\
+      |      |        |        |    Relative humidity, percent \\
+      |      |        |        Water temperature, degrees C \\
+      |      |        Air temperature, degrees C \\
+      |      **//Barometric pressure, bars// ** \\
+      Barometric pressure, inches of mercury&#039;&#039;</pre>
+<ul>
+<li class="level1"> <b>MTW</b> - Mean Temperature of Water</li>
+<li class="level1"> <b>VLW</b> - Distance Traveled through Water</li>
+<li class="level1"> <b>MWD</b> - Wind Direction &amp; Speed</li>
+<li class="level1"> <b>MWV</b> - Wind Speed and Angle</li>
+<li class="level1"> <b>RMC</b> - Recommended Minimum Navigation Information</li>
+<li class="level1"> <b>RSA</b> - Rudder Sensor Angle</li>
+<li class="level1"> <b>VHW</b> - Water speed and heading</li>
+<li class="level1"> <b>VTG</b> - Track made good and Ground speed</li>
+<li class="level1"> <b>VWR</b> - Relative Wind Speed and Angle</li>
+<li class="level1"> <b>VWT</b> - True Windspeed and Angle (obsolete)</li>
+<li class="level1"> <b>XDR</b> - Transducer Values</li>
+</ul>
+<pre class="code">            1 2   3 4       n \\
+            | |   | |       | \\
+  *  $--XDR,a,x.x,a,c--c, ..... *hh&lt;CR&gt;&lt;LF&gt; \\</pre>
+<ul>
+<li class="level1">  Field Number: <br/>
+</li>
+<li class="level1">  1) Transducer Type <br/>
+</li>
+<li class="level1">  2) Measurement Data <br/>
+</li>
+<li class="level1">  3) Units of measurement <br/>
+</li>
+<li class="level1">  4) Name of transducer <br/>
+</li>
+<li class="level1">  x) More of the same <br/>
+</li>
+<li class="level1">  n) Checksum <br/>
+</li>
+</ul>
+<ul>
+<li class="level1">  Example: <br/>
+</li>
+<li class="level1">  $IIXDR,C,19.52,C,TempAir*3D <br/>
+</li>
+<li class="level1">  $IIXDR,P,1.02481,B,Barometer*0D <br/>
+</li>
+</ul>
+<ul>
+<li class="level1">  Currently, OpenCPN recognizes the following transducers:</li>
+</ul>
+<hr />
+<pre class="code">Measured Value | Transducer Type | Measured Data   | Unit of measure | Transducer Name
+------------------------------------------------------------------------------------------------------
+barometric     | &quot;P&quot; pressure    | 0.8..1.1 or 800..1100           | &quot;B&quot; bar         | &quot;Barometer&quot;
+air temperature| &quot;C&quot; temperature |   2 decimals                    | &quot;C&quot; celsius     | &quot;TempAir&quot; or &quot;ENV_OUTAIR_T&quot;
+pitch          | &quot;A&quot; angle       |-180..0 nose down 0..180 nose up | &quot;D&quot; degrees     | &quot;PTCH&quot;
+rolling        | &quot;A&quot; angle       |-180..0 L         0..180 R       | &quot;D&quot; degrees     | &quot;ROLL&quot;
+water temp     | &quot;C&quot; temperature |   2 decimals                    | &quot;C&quot; celsius     | &quot;ENV_WATER_T&quot;
+-----------------------------------------------------------------------------------------------------</pre>
+<ul>
+<li class="level1"> <b>ZDA -Time &amp; Date - UTC, day, month, year and local time zone</b></li>
+</ul>
+<ul>
+<li class="level1"> <b>AIVDO - Automatic Information System (AIS) position reports from own vessel</b></li>
+</ul>
+
+<p>
+<b>NMEA version 2.3</b>.added a mode indicator to many sentences to indicate what <br/>
+
+kind of fix the receiver has.  The value can be one of <br/>
+
+ A=autonomous <br/>
+
+ D=differential <br/>
+
+ E=Estimated <br/>
+
+ N=not valid, <br/>
+
+ S=Simulator. <br/>
+
+ Sometimes there can even be a null value as well. <br/>
+
+ The A and D are the only vales that will indicate an Active and reliable Sentence. <br/>
+
+ This mode character has been added to the end of  RMC, RMB, VTG, and GLL sentences. <br/>
+
+ Optionally, to some others as well, including the BWC and XTE sentences. <br/>
+
+</p>
+
+</div>

@@ -1,0 +1,151 @@
+<meta charset="utf-8">
+
+
+<h1>WMM</h1>
+<div class="level1">
+
+<p>
+The “<b>World Magnetic Model PlugIn</b> for OpenCPN” implements the NOAA World Magnetic Model.<br/>
+
+More information:<br/>
+
+<a href="http://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml" class="urlextern" title="http://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml" rel="nofollow">http://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml</a>
+</p>
+
+<p>
+The bundled WMM2010 model expires on December 31, 2014.<br/>
+
+After then, if a new version of the plugin is not released in time, you will have to get a new WMM.COF from NOAA and place it in the location you can find in the OpenCPN logfile.
+</p>
+
+</div>
+
+<h3>A Quick-Start Guide.</h3>
+<div class="level3">
+
+<p>
+This plugin is all about the value of the magnetic variation. The value at your boat position, at the position of the cursor, and the rest of the world.
+</p>
+
+<p>
+Download and install the plugin. Go to Options–&gt;Plugins. Press the “Enable” button.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm1.h.236_tok.8d84bc_w.500.png" class="media" alt="" width="500" height="236" />
+</p>
+
+<p>
+Then press the Preference button, and copy the settings below.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm2.h.236_tok.520b1c_w.250.png" class="media" alt="" width="250" height="236" />
+</p>
+
+<p>
+Press OK twice.
+The WMM icon will now be found in your ToolBar. The numbers in the button is the variation at your position.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm3.h.46_tok.012448_w.118.png" class="media" alt="" width="118" height="46" />
+</p>
+
+<p>
+Press the Toolbar Button and the small dialog below will appear on the screen.
+The first value is the same as in the button, the variation at your boat (gps) position.
+The second value is the variation at the position of the cursor.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm4.h.159_tok.e16801_w.225.png" class="media" alt="" width="225" height="159" />
+</p>
+
+<p>
+That is all you need to know to get started, and for most of your daily use.
+Need more details? Read on!
+</p>
+
+</div>
+
+<h3>The Details</h3>
+<div class="level3">
+
+<p>
+World Magnetic Model Plotting allows users to cross reference the magnetic deviation values printed on many raster charts.
+</p>
+
+<p>
+<b>Variation</b> is the angle between true and magnetic north.<br/>
+
+<b>Inclination</b> is the vertical angle of the magnetic field.<br/>
+
+A compass is adjusted for the inclination in the intended sales region.
+If you buy a compass in Europe; it will not be level in Australia, for example.<br/>
+
+<b>Field Strength</b> is the magnetic field in nano tesla from 20000 to 66000.<br/>
+
+Currently the total field strength is shown, with no immediate practical use. Hopefully this will change to show the horizontal component in the future, that has an impact on whether the compass works or not, near the magnetical poles.
+</p>
+
+<p>
+The plotted lines are similar to a topographic map. The space between them can be adjusted; more space takes less time to calculate.
+</p>
+
+<p>
+The Step size and Pole accuracy sliders allow a trade off for speed vs computation time.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm5.h.236_tok.9ae836_w.250.png" class="media" alt="" width="250" height="236" />
+</p>
+
+<p>
+With the extended Radio-button, this dialog will show on the screen
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm6.h.681_tok.4ffe1f_w.225.png" class="media" alt="" width="225" height="681" />
+</p>
+
+<p>
+<b>F - Total Intensity</b> of the geomagnetic field<br/>
+
+<b>H - Horizontal Intensity</b> of the geomagnetic field<br/>
+
+<b>X - North Component</b> of the geomagnetic field<br/>
+
+<b>Y - East Component</b> of the geomagnetic field<br/>
+
+<b>Z - Vertical Component</b> of the geomagnetic field<br/>
+
+<b>I (DIP) - Geomagnetic Inclination</b> <br/>
+
+<b>D (DEC) - Geomagnetic Declination</b> (Magnetic Variation)<br/>
+
+</p>
+
+<p>
+Click “Settings” and adjust the display of the graphical plot.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm7.h.240_tok.1e1a85_w.417.png" class="media" alt="" width="417" height="240" /><br/>
+
+Show variation only.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm9.h.500_tok.84954c_w.500.png" class="media" alt="" width="500" height="500" />
+</p>
+
+<p>
+Or all options together.
+</p>
+
+<p>
+<img src="../../../opencpn/manual/plugins/wmm/wmm8.h.500_tok.63e4dd_w.500.png" class="media" alt="" width="500" height="500" />
+</p>
+
+</div>

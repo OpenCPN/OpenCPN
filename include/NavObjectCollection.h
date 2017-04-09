@@ -28,7 +28,9 @@
 #include "pugixml.hpp"
 #include "Route.h"
 #include "RoutePoint.h"
-#include "Track.h"
+class Track;
+class TrackList;
+class TrackPoint;
 
 //      Bitfield definition controlling the GPX nodes output for point objects
 #define         OUT_TYPE        1 << 1          //  Output point type

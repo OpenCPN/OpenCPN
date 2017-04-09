@@ -53,6 +53,9 @@ void MipMap_32_sse2( int width, int height, unsigned char *source, unsigned char
 void MipMap_24_ssse3( int width, int height, unsigned char *source, unsigned char *target );
 void MipMap_32_avx2( int width, int height, unsigned char *source, unsigned char *target );
 
+void MipMap_24_neon( int width, int height, unsigned char *source, unsigned char *target );
+void MipMap_32_neon( int width, int height, unsigned char *source, unsigned char *target );
+
 #ifdef  __cplusplus
 }
 #endif

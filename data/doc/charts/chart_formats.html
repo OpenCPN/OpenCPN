@@ -1,0 +1,162 @@
+<meta charset="utf-8">
+
+
+<h1>Chart Formats</h1>
+<div class="level1">
+
+</div>
+
+<h3>OpenCPN supported chart formats</h3>
+<div class="level3">
+
+</div>
+
+<h4>Raster Charts</h4>
+<div class="level4">
+
+<p>
+<em>BSB Versions 1, 2 and 3</em>, with chart files ending with “.kap”<br/>
+
+This is the de facto standard format used by the US NOAA, New Zealand and Brazil, just to name a few.
+</p>
+
+<p>
+<em>BSB Version 4</em>, with chart files ending with “.cap”<br/>
+
+works with a non free plugin, for Windows only. See the <em><a href="http://opencpn.org/downloadplugins" class="urlextern" title="http://opencpn.org/downloadplugins" rel="nofollow">PlugIns</a></em> download page. This format is used for Canadian charts and others.
+</p>
+
+<p>
+<em>Nv-charts</em> with chart files ending with “.eap”<br/>
+
+are supported through  a non free plugin, for Windows only. See the <em><a href="http://opencpn.org/downloadplugins" class="urlextern" title="http://opencpn.org/downloadplugins" rel="nofollow">PlugIns</a></em> download page. “nv-charts” are available for many parts of the world.
+</p>
+
+<p>
+<em>NOS/GEO Version 1</em>, with chart files ending with “.nos” and “.geo”<br/>
+
+Subsequent versions are probably supported but need to be tested. However, this format is obsolete for new charts.
+</p>
+
+</div>
+
+<h4>Vector Charts</h4>
+<div class="level4">
+
+<p>
+<em>S57 ENC</em> charts, with chart files ending with “.000”.<br/>
+
+ENC update files (ending with .001, .002, …) are included automatically, if present, and must be placed in the same directory as the corresponding base chart (.000). OpenCPNs internal<b> </b>SENC files has a “.S57” file extension.
+</p>
+
+<p>
+<em>Senc</em> (Proprietary)<br/>
+
+If a chart is said to be a S57 Vector chart, and has a different file ending, it is likely to be a SENC file, a processed version of a “.000” chart file, in a proprietary, platform specific format, that OpenCPN can&#039;t handle.
+</p>
+
+<p>
+<em><a href="../toolbar_buttons/plugins/charts/oesenc.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:plugins:charts:oesenc">oeSENC</a></em> (Proprietary) O-Charts<br/>
+
+These are vector charts licensed from official bodies for OpenCPN, especially for users in Europe. This is an encrypted format with its own plug-in, the oeSENC plug-in. Special and exclusive for OCPN. Derived from S-57, but already in an easy to digest format for OCPN (ocpn encrypted SENC).
+</p>
+
+<p>
+<em>Inland ENCs</em><br/>
+
+OpenCPN supports the international Inland ENC standard (S57 based).
+</p>
+
+<p>
+<em>S63 Encrypted ENC</em> charts, with chart files ending with “.os63”.<br/>
+
+This chart format is supported in OpenCPN from version 4. It is the format for all vector charts from national hydrographic offices worldwide. Apart from being encrypted, S63 charts are exactly the same as S57.
+</p>
+
+<p>
+All <em>S63 charts</em> worldwide, from <em>O-charts.org</em> are available for purchase.
+</p>
+<ul>
+<li class="level1"> The support is through a two part plugin, one part open source and the other part closed. The encryption and the commercial aspect is handled by a separate  entity, <em><a href="http://www.o-charts.org/" class="urlextern" title="http://www.o-charts.org/" rel="nofollow">o-charts.org</a></em><br/>
+</li>
+</ul>
+
+<p>
+<em>CM93 Version 2.</em><br/>
+
+(C-map Version 3, and later, are in a preprocessed proprietary SENC format and are not supported.)<br/>
+
+</p>
+<ul>
+<li class="level1"> Read this please: <em>“The first thing to check if using CM93 is the version!!!  Of course we read that version 3 could not be used but we didn&#039;t verify it to the bitter end. It was our fault. One way to tell what version you have is that V2 has extra chart folders plus extra files which include the .EXD file. V3 does not have the extra files.”</em><br/>
+</li>
+<li class="level1"> Read the whole sad story with a happy ending <em><a href="http://www.cruisersforum.com/forums/f134/unable-to-load-cm93-charts-167534.html#post2140155" class="urlextern" title="http://www.cruisersforum.com/forums/f134/unable-to-load-cm93-charts-167534.html#post2140155" rel="nofollow">On Cruisers Forum</a></em>. So use <b>CM93 Version 2</b></li>
+<li class="level1"> Check <b>Chart Files tab</b> go to the directory that is listed and have a look at the files you see. If you have the whole world, there should be 144 folders with 8 digit numeric names, and a handful of separate files. If you see less than 144 folders, that&#039;s OK. It just means you don&#039;t have the whole world. If the folder does not look like that then it is not the standard CM93 format. – If they don&#039;t work, verify that they are Version 2.</li>
+</ul>
+
+</div>
+
+<h3>Pictures of charts, can be converted, and used.</h3>
+<div class="level3">
+
+<p>
+Generally chart pictures in <b>gif, jpeg, pdf, png, tif, bmp</b> and other formats can be used, when properly geo-referenced, to generate raster charts. For the details about this process read the Chart Conversion Manual  See online  <a href="..\2owiki.html">Owiki</a>.  Also, make sure to browse around the forum as there are a handful of interesting chart related threads.
+</p>
+
+</div>
+
+<h3>Not supported formats that can be converted.</h3>
+<div class="level3">
+
+</div>
+
+<h4>WCI charts</h4>
+<div class="level4">
+
+<p>
+Generated with <em><a href="http://www.sping.com/seaclear/" class="urlextern" title="http://www.sping.com/seaclear/" rel="nofollow">SeaClear and MapCal</a></em> can also be transformed to BSB charts and used by OpenCPN. The key is to open a WCI chart in MapCal and then “Tools→Convert→Current WCI to BMP” to convert the chart to a BMP picture. More about using MapCal, a part of SeaClear, for chart conversions, is available here: See online  <a href="..\2owiki.html">Owiki</a> Conversion Using Linux</a></em>. MapCal works just fine with Linux, using Wine.<br/>
+
+</p>
+
+<p>
+The necessary utilities for making or converting charts usually only run on Windows or Linux.
+For  <b>Mac <abbr title="Operating System">OS</abbr> X</b>, use boot camp, Parallels or VMware to run one of these operating systems.<br/>
+
+</p>
+
+</div>
+
+<h4>OziExplorer</h4>
+<div class="level4">
+
+<p>
+Charts consisting of picture in one of the standard formats, together with a georeferencing “.map” file, can be converted to a bsb kapfile. A Ruby script for this conversion is available Ruby Script. See online  <a href="..\2owiki.html">Owiki</a> and a more developed windows version <em><a href="http://www.cruisersforum.com/forums/f134/map2kap-oziexplorer-to-opencpn-47828-10.html#post929755" class="urlextern" title="http://www.cruisersforum.com/forums/f134/map2kap-oziexplorer-to-opencpn-47828-10.html#post929755" rel="nofollow">Map2kap-Ozi-2-OpenCPN</a></em> Ozi charts of the ozfx2 or ozfx3 format can not be converted with this tool. These Ozi formats are not documented and proprietary, and cannot be displayed in OpenCPN.
+</p>
+
+</div>
+
+<h4>HDR/PCX Charts</h4>
+<div class="level4">
+
+<p>
+Used prior to the BSB format, was used from the late eighties to mid nineties. While these charts cannot be used directly in OpenCPN, the chart-picture as such, can be extracted. These charts consists of many picture tiles in <b>pcx </b>format, more than 100 tiles is not unusual. The tiles can be merged to one big picture, and then used as any other picture, to make an OpenCPN compatible chart. For details on this process see the Chart Conversion Manual See online  <a href="..\2owiki.html">Owiki</a> and <em><a href="http://www.cruisersforum.com/forums/f134/open-chart-standard-32731-4.html#post381315" class="urlextern" title="http://www.cruisersforum.com/forums/f134/open-chart-standard-32731-4.html#post381315" rel="nofollow">Cruiser&#039;s Forum Post</a></em> and the following posts in the forum. <em><a href="../towebsite.html" class="media mediafile mf_zip" title="opencpn:files:tools:pcx2tif.zip (3.7 KB)">Script for merging PCX files to one picture.</a></em>
+</p>
+
+<p>
+The HDR format is from an era when computer-memory and processing power were less powerful than today, as a consequence these charts are not of the same quality as more modern charts. Furthermore, most of these charts are not using WGS 84 as reference datum. These charts should not be the first choice, but can be useful if nothing else is available.
+</p>
+
+</div>
+
+<h3>Other formats that are not supported.</h3>
+<div class="level3">
+
+<p>
+The Hydrographic Chart Raster Format, <b>HCRF</b>, used by the United Kingdom Hydrographic Offices&#039; ARCS (Admiralty Raster Chart Service).  This is also due to proprietary encryption algorithms and copyright issues. UKHO is now alone in using this format, since New Zeeland switched to the BSB/Kap format and Australia no longer publishes official raster charts.
+</p>
+
+<p>
+Charts from<b> Mapmedia</b>, <b>Navionics</b>, <b>C-map</b> (with the exception of CM93 version 2), <b>Garmin</b> and various other private vendors, are not supported, for the same reasons as for the other proprietary charts. It is not possible for users to convert these charts to an OpenCPN recognized format, but it is possible for these companies, to release OpenCPN plugins, if they  wish.
+</p>
+
+</div>

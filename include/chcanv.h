@@ -150,7 +150,10 @@ public:
       void PopupMenuHandler(wxCommandEvent& event);
 
       bool SetUserOwnship();
-          
+      
+      double GetCanvasRangeMeters();
+      void SetCanvasRangeMeters( double range );
+      
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
       virtual void Refresh( bool eraseBackground = true,
@@ -333,6 +336,7 @@ public:
 
       Route       *m_pMouseRoute;
       bool        m_bMeasure_Active;
+      bool        m_bMeasure_DistCircle;
       wxString    m_active_upload_port;
       bool        m_bAppendingRoute;
       int         m_nMeasureState;
@@ -342,6 +346,8 @@ public:
       CanvasMenuHandler  *m_canvasMenu;
       
 private:
+      void CallPopupMenu( int x, int y );
+      
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
     
@@ -501,7 +507,8 @@ private:
       bool        warp_flag;
 
 
-      float       current_draw_scaler;
+      float       current_draw_scaler; // Affect displayed size of current arrows
+      float       tide_draw_scaler;    // Affect displayed size of tide rectangles
 
 
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
@@ -626,6 +633,7 @@ private:
 //#endif
 
       //Smooth movement member variables
+      wxPoint     m_pan_drag;
       int         m_panx, m_pany, m_modkeys;
       double      m_panspeed;
       bool        m_bmouse_key_mod;

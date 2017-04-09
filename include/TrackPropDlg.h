@@ -59,10 +59,9 @@
 #include "scrollingdialog.h"
 #endif
 
-#include "Track.h"
 #include "LinkPropDlg.h"
 
-#define ID_RCLK_MENU_COPY_TEXT 7014
+#define ID_RCLK_MENU_COPY_TEXT 7013
 
 /*!
  * Forward declarations
@@ -177,7 +176,7 @@ private:
         void CreateControlsCompact( void );
         
 public:
-        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
+        static TrackPropDlg *getInstance( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track properties"),
                                       const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
                                       long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
         static bool getInstanceFlag(){ return instanceFlag; } 

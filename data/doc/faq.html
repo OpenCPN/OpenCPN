@@ -1,0 +1,320 @@
+<meta charset="utf-8"><img src="favicon.ico" alt="" /><img src="favicon.ico" alt="" /><meta charset="utf-8">
+
+
+<h1>FAQ</h1>
+<div class="level1">
+
+</div>
+
+<h4>Where is my log file?</h4>
+<div class="level4">
+
+<p>
+Read this explanation - <em><a href="getting_started.html" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started">Getting Started</a></em>
+</p>
+
+</div>
+
+<h4>Where is my config.ini file?</h4>
+<div class="level4">
+
+<p>
+Read this explanation - <em><a href="getting_started.html" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started">Getting Started</a></em>
+</p>
+
+</div>
+
+<h4>I can&#039;t find all those files you are talking about</h4>
+<div class="level4">
+
+<p>
+A big contributing factor to this problem is that Windows default settings hides system files, and also by default, don&#039;t show file extensions.
+</p>
+<ol>
+<li class="level1"> These settings can be changed however. </li>
+<li class="level1"> In XP go to <em>My Computer →Tools → Folder Options -View</em>. Mark “Show hidden files and folders” and untick the box “Hide extensions for known file types”. </li>
+<li class="level1"> Other versions of Windows are similar, but may not be exactly like this. </li>
+</ol>
+
+<p>
+Now you should find the files we talked about in the previous paragraph.
+</p>
+
+</div>
+
+<h4>I have read the manual, Is there a compatible Hardware List?</h4>
+<div class="level4">
+
+<p>
+Keeping an updated list of all the devices available is virtually impossible.
+</p>
+<ol>
+<li class="level1"> As long as your device is able to produce NMEA 0183, OpenCPN most likely won&#039;t have any problem understanding it. </li>
+<li class="level1"> Rather than looking for a list, which can&#039;t contain everything, ask in the support forum whether your equipment of choice is likely to work with OpenCPN before going shopping. </li>
+</ol>
+
+</div>
+
+<h4>I am having trouble with Installation, finding Charts, and connecting GPS &amp; Instruments.</h4>
+<div class="level4">
+<ol>
+<li class="level1"> <em><a href="getting_started/opencpn_installation.html" class="wikilink1" title="opencpn:opencpn_user_manual:getting_started:opencpn_installation">OpenCPN Installation</a></em></li>
+<li class="level1"> <em><a href="charts/chart_files_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_files_tab">Chart Files Tab</a></em></li>
+<li class="level1"> Installing Charts with Chart Downloader Plugin <em><a href="charts/chart_downloader_tab.html" class="wikilink1" title="opencpn:opencpn_user_manual:charts:chart_downloader_tab">Chart Downloader</a></em></li>
+<li class="level1"> Installing GPS <em><a href="gps_setup_and_status.html" class="wikilink1" title="opencpn:opencpn_user_manual:gps_setup_and_status">GPS Setup and Status</a></em></li>
+<li class="level1"> Instruments - Devices must provide NMEA 0183 data via Serial or Network with a range of protocols and settings available. The description for connecting to hardware is in the Options &gt; Data Connections section. <a href="connections.html" class="wikilink1" title="opencpn:opencpn_user_manual:connections">Connections</a> and for additional assistance <em><a href="advanced_features/nmea_sentences.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:nmea_sentences">NMEA Sentences</a></em></li>
+<li class="level1"> See <a href="towebsite.html" class="wikilink1" title="opencpn:supplementary_hardware">Supplementary Hardware</a></li>
+<li class="level1"> Also read the <a href="towebsite.html" class="wikilink1" title="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:supplementary_software">Supplementary Software</a> which has information about using an android phone&#039;s gps, etc.</li>
+</ol>
+
+</div>
+
+<h4>OpenCPN crashes, what should I do?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> It is highly unlikely that uninstalling and reinstalling OpenCPN is going to resolve anything, really. But if you can&#039;t resist the temptation, help yourself, it is equally unlikely that it makes the things worse.</li>
+<li class="level1"> You should have a look into the logfile to find out whether it contains some clues that could help isolate the problem. If the crash is related to displaying a chart, try to isolate on which one and create the simplest possible scenario we could reproduce. You should try to get fresh charts.</li>
+<li class="level1"> You should try disabling OpenGL if it is enabled or vice versa.</li>
+<li class="level1"> While OpenCPN is not running, move the complete data folder (<em>C:\ProgramData\opencpn</em>  on Windows, <em>~/.opencpn </em>on Linux <em>~/Library/Preferences/opencpn</em>  / on Mac ) to a backup location and see whether something was rotten in your local OpenCPN data. Do <b>not</b>  delete it if you want to keep your waypoints, routes and tracks!</li>
+<li class="level1"> If on Linux, run opencpn from command line and see whether it produces a backtrace to help identify the cause of the crash.</li>
+<li class="level1"> Still on Linux, you can use gdb or another debugger to get the backtrace and help identify the cause of the crash.</li>
+</ol>
+
+</div>
+
+<h4>I have a problem so I reinstalled - but that did not help.</h4>
+<div class="level4">
+
+<p>
+ - Try this approach instead - <em><a href="http://opencpn.org/ocpn/Start_install-troubleshoot" class="urlextern" title="http://opencpn.org/ocpn/Start_install-troubleshoot" rel="nofollow">Troubleshoot Installation</a></em>
+</p>
+
+</div>
+
+<h4>My charts used to show up just fine in OpenCPN, but using 3.0.2 and later, they no longer work.</h4>
+<div class="level4">
+<ol>
+<li class="level1"> OpenCPN used to display charts with an unknown projection as a Mercator chart. The same thing applies to an “UNKNOWN” or not recognized geodetic datum, where OpenCPN used to default to WGS84. </li>
+<li class="level1 node"> This is no longer the case. If OpenCPN don&#039;t recognize the chart projection, it will not be displayed. <ul>
+<li class="level2"> Potentially serious errors are thus avoided. </li>
+<li class="level2"> The event is logged in the opencpn.log. </li>
+<li class="level2"> Users may run into problems if a chart projection is stated as “UNKNOWN” even though it really is a prefect Mercator chart.</li>
+</ul>
+</li>
+<li class="level1 node"> Unfortunately, some conversion tools take a shortcut and don&#039;t enter the “PR” tag in the kap-chart-header correctly. <ul>
+<li class="level2"> The projection of a chart can always be found, and the “PR=UNKNOWN” should always be avoided. </li>
+</ul>
+</li>
+</ol>
+
+<p>
+Official charts that OpenCPN really can&#039;t display, with a latitude &lt; 70 degrees north/south, are very few indeed. Really only a handful of legacy, Gnomonic, large scale charts. Charts with “UNKNOWN” or blank geodetic datum are best avoided, they may be dangerously inaccurate.
+</p>
+
+</div>
+
+<h4>I get a lot of error messages when starting OpenCPN from the Linux command line.</h4>
+<div class="level4">
+
+<p>
+Messages like:<br/>
+
+</p>
+<ul>
+<li class="level1"> “<code>ALSA lib pcm.c:2217:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side ALSA lib audio/pcm_bluetooth.c:1614:(audioservice_expect) BT_GET_CAPABILITIES failed : Input/output error(5)</code>” or <br/>
+</li>
+<li class="level1"> “<code>(opencpn:8979): Gdk-CRITICAL : IA_gdk_drawable_get_size: assertion `GDK_IS_DRAWABLE (drawable)&#039; failed</code>“<br/>
+</li>
+<li class="level1"> <code>&#039;(opencpn:8979): Gdk-CRITICAL : IA_gdk_drawable_get_depth: assertion `GDK_IS_DRAWABLE (drawable)&#039; failed Error opening coefficient file</code>“<br/>
+</li>
+<li class="level1"> ”<code>(opencpn:8979): Gdk-CRITICAL : IA_gdk_window_get_origin: assertion `GDK_IS_WINDOW (window)&#039; failed</code>“<br/>
+</li>
+</ul>
+
+<p>
+are quite normal and have nothing to do with OpenCPN. Just ignore them!
+</p>
+
+</div>
+
+<h4>Why doesn&#039;t the plugin work?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> See <a href="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:developer_manual:plugins:plugin_api" class="wikilink1" title="opencpn:developer_manual:plugins:plugin_api:plugin_api_versions">Plugin API Versions</a></li>
+</ol>
+
+</div>
+
+<h4>When will OpenCPN be ported to Android?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> There are two versions in the Google Play Store. There is a forum at <a href="http://bigdumboat.com/aocpn/forum/" class="urlextern" title="http://bigdumboat.com/aocpn/forum/" rel="nofollow">http://bigdumboat.com/aocpn/forum/</a>.</li>
+</ol>
+
+</div>
+
+<h4>Why does it take so long time to load vector charts?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> The behavior you see is expected for ENC charts. ENCs must be converted to internal SENC format before use for navigation. This takes a little bit of time, depending on your system capabilities. But it only has to be done once, and the converted SENCs are stored on your system for later use.</li>
+<li class="level1"> All ECS systems must convert ENCs to SENCs. Some take longer, (like OpenCPN), so that subsequent access is faster. Some convert faster, leaving more work to do at the time of actual chart display. Its a design decision. OpenCPN is optimized for speed in real use, not for speed in conversion.</li>
+</ol>
+
+</div>
+
+<h4>Why don&#039;t charts show at all zoom levels while quilting is enabled?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> If I turn off quilting, I can select the individual maps just fine and zoom to any level on them. No amount of clicking/hiding the maps using the map bar at the bottom of the screen show the maps. Only a zoom allows them to be seen. This problem of disappearing maps happens all over the country at different zoom levels.</li>
+<li class="level1"> Answer: OpenGL is turned off. Without OpenGL, OpenCPN will not quilt Mercator and Transverse Mercator charts together. Try enabling OpenGL with Options (wrench tool icon)&gt; Display&gt; Advanced. Click on the box between “Graphics” and “Use Accelerated Graphics (OpenGL)” to put a checkmark in the box.</li>
+<li class="level1"> When OpenGL is enabled, OpenCPN will quilt Mercator and Transverse Mercator charts (and some other projections).</li>
+<li class="level1"> If “Texture Compression with Caching” is enabled under “OpenGL Options” there will be a delay before each chart is displayed for the first time. Subsequent display of the charts in the cache will be faster.</li>
+</ol>
+
+</div>
+
+<h4>What are all those &#039;U&#039; things all over my chart?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> Category of Zone of Confidence = Un-assessed.</li>
+<li class="level1"> The feature being rendered is S57 Text relating to &#039;M_QUAL&#039;, called “Quality of Data” in “Mariners Standardy </li>
+<li class="level1"> This is a meta-object describing the quality of data shown. The Attribute of interest is CATZOC, or “Category of Zone of Confidence”.  </li>
+<li class="level1"> The value on most US ENC&#039;s is “6”, or “un-assessed”. Thus, the &#039;U&#039;.</li>
+<li class="level1"> Unticking the box “Chart Information Objects” hides the “U” symbols. </li>
+<li class="level1"> For a finer grain control, if you are using Display Category “Mariners Standard”, you can turn this symbol off in OpenCPN by de-selecting the box next to “Quality of Data” in &#039;Tool Box&#039; / &#039;Vector Charts&#039; tab &#039;Mariners Standard&#039; selection list box.</li>
+</ol>
+
+</div>
+
+<h4>What are those acronyms?</h4>
+<div class="level4">
+
+<p>
+To learn the acronyms used in this application search the S57 &#039;Object and Attribute&#039; catalog at: <a href="http://www.s-57.com/" class="urlextern" title="http://www.s-57.com/" rel="nofollow">http://www.s-57.com/</a> <br/>
+
+Also, when viewing ENC charts: <br/>
+
+</p>
+<ol>
+<li class="level1"> “U&#039;s” show up all over the charts <br/>
+</li>
+<li class="level1"> Text detail seems to be missing ..like bouy identification ..Bridge names and clearances etc… <br/>
+</li>
+<li class="level1"> Depth sounding seem to disappear zooming in and out. <br/>
+</li>
+</ol>
+
+<p>
+Hit Text: The <em>A+</em>  button. To show text.
+</p>
+
+</div>
+
+<h4>Kap files used to be displayed correctly, now they aren&#039;t. Why?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> Old versions of OpenCPN were correcting broken KAPs on the fly. (They work on 3.2 but not on any 4. release ) The new ones don&#039;t do it anymore as the number of damaged charts circulating around decreased significantly and we gained some extra performance during chart loading. Refer to these sections of the User Documentation too. <br/>
+</li>
+<li class="level1"> <a href="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:supplementary_software:chart_conversion_manual" class="wikilink1" title="opencpn:supplementary_software:chart_conversion_manual">Chart Conversion Manual</a> Specifically libBSB and ImgKap and Kap files. <br/>
+</li>
+<li class="level1"> To fix your charts, run bdbfix on them.</li>
+</ol>
+
+</div>
+
+<h4>What causes spurious waypoints that have to be deleted?</h4>
+<div class="level4">
+<ol>
+<li class="level1"> Condition: Multitude of repeated waypoints, which get copied when a waypoint is dragged. Sometimes a route WP is shifted, two routes are made, one with the name, the other unnamed.</li>
+<li class="level1"> Possible Solutions: Determine if the addition of waypoints are from inadvertantly hitting the wrong keys on the keyboard, or the mouse. <br/>
+</li>
+<li class="level1"> The other possiblity is that the navobj change file is corrupted. Close O and try to delete the change file In W8.1 it is found in C:\ProgramData\opencpn/navobj.xml.changes. Normally, after that O will work again.</li>
+</ol>
+
+</div>
+
+<h4>Can I use my Seaclear wci Charts?</h4>
+<div class="level4">
+
+<p>
+See <a href="http://www.cruisersforum.com/forums/f134/rookie-question-use-seaclear-wci-charts-126639.html" class="urlextern" title="http://www.cruisersforum.com/forums/f134/rookie-question-use-seaclear-wci-charts-126639.html" rel="nofollow">http://www.cruisersforum.com/forums/f134/rookie-question-use-seaclear-wci-charts-126639.html</a>
+</p>
+
+</div>
+
+<h4>I have routes and way points in Sea Clear and I would like to import them into OpenCPN. Can I do it?</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Yes. I had originally created and maintained all my routes and waypoints in SeaClear, exported them, loaded them into GPSUtility (for Windows) and saved them as text files.</li>
+<li class="level1"> To import into OpenCPN I opened all my text files (routes and waypoints) with GPSUtility, saved that out as one big gpx file, and loaded it into OpenCPN. Works like a champ.</li>
+<li class="level1"> I&#039;ve edited them and saved them back out as GPX files with no trouble.</li>
+<li class="level1"> Individual routes can be edited and saved in appropriately named GPX files.</li>
+</ul>
+
+</div>
+
+<h4>I would like to send routes to my GPS via USB or via NMEA Serial connection</h4>
+<div class="level4">
+
+<p>
+There are so many GPS models that the answer is a bit complicated.  A lot depends on which GPS model you have.  OpenCPN can communicate with many GPS receivers via a serial connection.  Some GPS receivers have a serial connector that can be wired to a DB-9 serial connector.  Newer ones have a USB port that will appear like a serial connection to your computer.  Still newer ones appear to your computer like an external drive.
+</p>
+
+<p>
+If your GPS receiver shows up as a serial connection on your computer chances are you can upload routes and waypoints directly to it from within OpenCPN.  The GPS and OpenCPN have to be set to the same communication protocol.  If you normally have them set to NMEA (for updating the OpenCPN chart display with position data from the GPS) you may need to change a Garmin GPS to the GRMN proprietary protocol to upload routes, waypoints, and tracks.  If your GPS doesn&#039;t show up as a serial connection you may still be able to transfer routes and waypoints to it outside of OpenCPN.  If the GPS appears as an external drive on your computer try this.  Use OpenCPN to export your routes and waypoints to a GPX file (read the User Manual section on the Route &amp; Mark Manager for more details).  Then use your operating system to copy the GPX file from your hard drive to your GPS.  If that doesn&#039;t work, try GPSBabel or EasyGPS for the transfer.
+</p>
+
+<p>
+Depending on your GPS model and the way the route was created in OpenCPN you may wind up with a route on your GPS or just a list of waypoints.  The route points may or may not appear as waypoints on the GPS.
+</p>
+<ul>
+<li class="level1"> Garmin has a program called Homeport which connects to most of their small GPSmap and Plotters which will upload/download waypoints and routes. I believe it will also import gpx routes.</li>
+<li class="level1"> <a href="http://www.easygps.com/" class="urlextern" title="http://www.easygps.com/" rel="nofollow">EasyGPS</a> is a free program that allows you to transfer routes, waypoints, and tracks between your Windows computer and your Garmin, Magellan, or Lowrance GPS.</li>
+<li class="level1"> <a href="https://www.gpsbabel.org/" class="urlextern" title="https://www.gpsbabel.org/" rel="nofollow">GPSBabel</a> is another free program that allows you to transfer data between your computer and your GPS.  It runs on Windows, Mac, and Linux operating systems and supports a wide range of GPS models.</li>
+<li class="level1"> There are also some helpful notes in the manual. </li>
+<li class="level1"> <a href="toolbar_buttons/route_mark_manager.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager">Route &amp; Mark Manager</a></li>
+<li class="level1"> <a href="connections.html#sending_routes_and_waypoints_to_a_gps" class="wikilink1" title="opencpn:opencpn_user_manual:connections">Sending Routes and Waypoints to a GPS</a></li>
+<li class="level1"> <a href="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:supplementary_hardware:gps_devices" class="wikilink1" title="opencpn:supplementary_hardware:gps_devices">Hardware GPS Devices</a></li>
+<li class="level1"> The oBabel plugin uses GPSBabel to transfer routes without leaving OpenCPN.</li>
+</ul>
+
+</div>
+
+<h4>Whenever I try to open a particular chart OpenCPN crashes. What&#039;s going on?</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Chances are the chart file is corrupted. </li>
+<li class="level1"> Note the name and number of the suspect chart and replace it with a fresh download. </li>
+<li class="level1"> Read the log file that may contain relevant information regarding the chart. </li>
+<li class="level1"> Sometimes the bad chart blocks OpenCPN from restarting. Follow these instructions instead - <em><a href="http://opencpn.org/ocpn/Start_install-troubleshoot" class="urlextern" title="http://opencpn.org/ocpn/Start_install-troubleshoot" rel="nofollow">Troubleshoot Installation//</a></em></li>
+</ul>
+
+</div>
+
+<h4>Night time Mode Title bar is bright in Windows</h4>
+<div class="level4">
+<ul>
+<li class="level1"> In Windows, Night, F5, mode. The title bar on the floating plugin window is a bit glaring (this mode is controlled by windows by way of a theme and is not possible to change from an application) . </li>
+<li class="level1"> The best solution is to simply “dock” the dashboard window at night, either left or right. This brings the window decorations back under OCPN control, and we recently added logic to dim it in this mode.</li>
+</ul>
+
+</div>
+
+<h4>OpenCPN and Great Circle Navigation</h4>
+<div class="level4">
+<ol>
+<li class="level1"> Raster charts display bearings and headings as straight, measurable lines on the chart. Similarly, Vector ENC&#039;s are rendered as Mercator projections in OpenCPN and most other ECS&#039;s for the same reason.</li>
+<li class="level1"> For typical coastal navigation, errors which occur using rhumb line instead of great circle calculations are small for the distances usually covered by one chart.</li>
+<li class="level1"> Mercator Charts and Mercator navigation is the standard for most navigational purposes. Other terms used instead of “Mercator Sailing” is “Loxodrome Sailing” or “Rhumb Line Sailing”.</li>
+</ol>
+
+</div>
+
+<h4>As of OpenCPN 3.2.0 Great Circles are handled directly</h4>
+<div class="level4">
+<ul>
+<li class="level1"> Great Circle Routes are explained <a href="toolbar_buttons/route_mark_manager/great_circle_sailing.html" class="wikilink1" title="opencpn:opencpn_user_manual:toolbar_buttons:route_mark_manager:great_circle_sailing">Great Circle Sailing</a>. </li>
+<li class="level1"> There is also a plugin available as well as some <a href="https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:supplementary_software:chart_work" class="wikilink1" title="opencpn:supplementary_software:chart_work">Supplementary Software</a> to handle great Circles.</li>
+</ul>
+
+</div>

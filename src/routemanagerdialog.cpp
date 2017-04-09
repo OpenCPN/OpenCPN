@@ -46,6 +46,7 @@
 #include "TrackPropDlg.h"
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
+#include "Track.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -540,7 +541,7 @@ void RouteManagerDialog::Create()
     wxBoxSizer *bsRouteButtonsInner = new wxBoxSizer( wxVERTICAL );
     winr->SetSizer(bsRouteButtonsInner);
     
-    btnRteProperties = new wxButton( winr, -1, _("&Properties...") );
+    btnRteProperties = new wxButton( winr, -1, _("&Properties") + _T("...") );
     bsRouteButtonsInner->Add( btnRteProperties, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnRteProperties->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                                wxCommandEventHandler(RouteManagerDialog::OnRtePropertiesClick), NULL, this );
@@ -692,7 +693,7 @@ void RouteManagerDialog::Create()
     
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
-    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from Ownship"), wxLIST_FORMAT_LEFT, 14 * char_width );
+    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from own ship"), wxLIST_FORMAT_LEFT, 14 * char_width );
     
     wxBoxSizer *bsWptButtons = new wxBoxSizer( wxVERTICAL );
     itemBoxSizer4->Add( bsWptButtons, 0, wxALIGN_RIGHT | wxEXPAND );
@@ -879,10 +880,7 @@ void RouteManagerDialog::Create()
     
     SetColorScheme();
     
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
+    UpdateLists();
     
     // This should work under Linux :-(
     //m_pNotebook->Connect(wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxNotebookEventHandler(RouteManagerDialog::OnTabSwitch), NULL, this);
@@ -1249,8 +1247,7 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
     if( !route->m_bIsInLayer )
         pRoutePropDialog->SetDialogTitle( _("Route Properties") );
     else {
-        wxString caption( _T("Route Properties, Layer: ") );
-        caption.Append( GetLayerName( route->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Route Properties"), _("Layer"), GetLayerName( route->m_LayerID ) ) );
         pRoutePropDialog->SetDialogTitle( caption );
     }
 
@@ -1494,7 +1491,7 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     pdlg->SetFont(fo);
     
     wxString source;
-    pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
+    pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
     
 #ifdef __WXOSX__
     HideWithEffect(wxSHOW_EFFECT_BLEND );
@@ -2227,8 +2224,7 @@ void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* pare
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();
     if( wp->m_bIsInLayer ) {
-        wxString caption( _("Waypoint Properties, Layer: ") );
-        caption.Append( GetLayerName( wp->m_LayerID ) );
+        wxString caption( wxString::Format( _T("%s, %s: %s"), _("Waypoint Properties"), _("Layer"), GetLayerName( wp->m_LayerID ) ) );
         pMarkPropDialog->SetDialogTitle( caption );
     } else
         pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
@@ -2402,7 +2398,7 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
     pdlg->SetWaypoint( wp );
 
     wxString source;
-    pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
+    pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
     pdlg->ShowModal();
 
     delete pdlg;
@@ -2514,6 +2510,14 @@ void RouteManagerDialog::OnLayToggleVisibility( wxMouseEvent &event )
     event.Skip();
 }
 
+void RouteManagerDialog::UpdateLists()
+{
+    UpdateRouteListCtrl();
+    UpdateTrkListCtrl();
+    UpdateWptListCtrl();
+    UpdateLayListCtrl();
+}
+
 void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
 {
     bool show_flag = g_bShowLayers;
@@ -2522,11 +2526,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
     pConfig->UI_ImportGPX( this, true, _T("") );
     
     g_bShowLayers = show_flag;
-
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
+    UpdateLists();
     cc1->Refresh();
 }
 
@@ -2602,10 +2602,7 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
 
     pLayerList->DeleteObject( layer );
 
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
+    UpdateLists();
 
     cc1->Refresh();
 
@@ -2661,11 +2658,8 @@ void RouteManagerDialog::ToggleLayerContentsOnChart( Layer *layer )
 
         node = node->GetNext();
     }
+    UpdateLists();
 
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
     UpdateLayButtons();
 
     cc1->Refresh();
@@ -2774,10 +2768,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
         node = node->GetNext();
     }
 
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
+    UpdateLists();
 
     ::wxEndBusyCursor();
 
@@ -2863,10 +2854,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     
     pConfig->UI_ImportGPX( this );
     
-    UpdateRouteListCtrl();
-    UpdateTrkListCtrl();
-    UpdateWptListCtrl();
-    UpdateLayListCtrl();
+    UpdateLists();
 
     cc1->Refresh();
 }
