@@ -190,9 +190,12 @@ svg_deployment.files += $$PWD/../data/svg/traditional/zoomout.svg
 svg_deployment.path = /assets/files/uidata/traditional
 INSTALLS += svg_deployment
 
-gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_i.b
-gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_i.b
-gshhs_deployment.files += $$PWD/../data/gshhs/poly-i-1.dat
+#gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_i.b
+#gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_i.b
+#gshhs_deployment.files += $$PWD/../data/gshhs/poly-i-1.dat
+gshhs_deployment.files += $$PWD/../data/gshhs/wdb_borders_c.b
+gshhs_deployment.files += $$PWD/../data/gshhs/wdb_rivers_c.b
+gshhs_deployment.files += $$PWD/../data/gshhs/poly-c-1.dat
 gshhs_deployment.path = /assets/files/gshhs
 INSTALLS += gshhs_deployment
 
