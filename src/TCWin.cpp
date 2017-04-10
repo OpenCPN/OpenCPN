@@ -171,9 +171,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 
 
     //  Measure the size of a generic button, with label
-//    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
-//    test_button->GetSize( &m_tsx, &m_refBTN );
-//    delete test_button;
+    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
+    test_button->GetSize( &m_tsx, &m_tsy );
+    delete test_button;
 
     //  In the interest of readability, if the width of the dialog is too narrow, 
     //  simply skip showing the "Hi/Lo" list control.
@@ -190,7 +190,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - (2 * m_tsy + 10), sy - (m_tsy + 10) ),
                               wxDefaultSize );
 
-    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 0,0 /*10, sy - (m_refBTN + 10)*/ ),
+    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (m_tsy + 10) ),
                               wxSize( -1, -1 ) );
 
     wxSize texc_size = wxSize( ( sx * 60 / 100 ), ( sy *29 / 100 ) );
@@ -205,7 +205,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     PR_button->GetSize( &bsx, &bsy );
     PR_button->GetPosition( &bpx, &bpy );
 
-    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( 0,0 /*bpx + bsx + 5, sy - (m_refDIM + 10)*/ ),
+    NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, sy - (m_tsy + 10)  ),
                               wxSize( -1, -1 ) );
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
@@ -235,6 +235,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
 					      wxPENSTYLE_SOLID );
     pblack_3 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UWHIT" ) ), wxMax(1,(int)(m_tcwin_scaler+0.5)),
                                                                           wxPENSTYLE_SOLID );
+    pblack_4 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), wxMax(4,(int)(m_tcwin_scaler+0.5)),
+                                                                          wxPENSTYLE_SOLID );
+    
     pred_2 = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFR" ) ), wxMax(4,(int)(4*m_tcwin_scaler+0.5)),
                                                                         wxPENSTYLE_SOLID );
     pltgray = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBCK" ) ),
@@ -389,7 +392,7 @@ void TCWin::RecalculateSize()
         
         m_tList->SetSize( wxSize( ( m_tc_size.x * 32 / 100 ), ( m_tc_size.y * 20 / 100 ) ) );
         if(m_tc_size.x > m_tc_size.y)              // landscape?
-            m_tList->SetSize( wxSize( ( m_tc_size.x * 32 / 100 ), ( m_tc_size.y * 40 / 100 ) ) );
+            m_tList->SetSize( wxSize( ( m_tc_size.x * 32 / 100 ), ( m_tc_size.y * 29 / 100 ) ) );
     }
 #endif    
 
@@ -830,7 +833,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
             dc.SetFont( *pSFont );
             dc.GetTextExtent( sday, &w, &h );
-            dc.DrawText( sday, 55 - w / 2, y - 2 * m_button_height );
+            dc.DrawText( sday, 10, y - 2 * m_button_height );
         }
         
         //  Render "Spot of interest"
