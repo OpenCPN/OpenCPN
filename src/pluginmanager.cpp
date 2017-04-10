@@ -1081,6 +1081,13 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
 
 #else
     // this is 3x faster than the other method
+    
+    //  But Android Plugins do not include the wxlib specification in their ELF file.
+    //  So we assume Android Plugins are compatible....
+#ifdef __OCPN__ANDROID__
+    return true;
+#endif
+    
     FILE *f = fopen(plugin_file, "r");
     char strver[26]; //Enough space even for very big integers...
 
