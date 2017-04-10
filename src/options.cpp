@@ -26,6 +26,7 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -2814,45 +2815,57 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
 
     //  Course Up display update period
-    wrapperSizer->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                       _("Course-Up Update Period")),
-                      inputFlags);
+    
+    wxStaticText *uuu_text = new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Course-Up Update Period"));
+    uuu_text->Wrap(-1);
+    wrapperSizer->Add(uuu_text, inputFlags);
 
     wxBoxSizer* pCOGUPFilterRow = new wxBoxSizer(wxHORIZONTAL);
     wrapperSizer->Add(pCOGUPFilterRow, 0, wxALL | wxEXPAND, group_item_spacing);
 
     pCOGUPUpdateSecs =
-        new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""),
-                       wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
-    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL,
-                         group_item_spacing);
+        new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
+    pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
-    pCOGUPFilterRow->Add(
-        new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("seconds")),
-        inputFlags);
+    pCOGUPFilterRow->Add( new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("seconds")), inputFlags);
 
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
     // Chart Zoom Scale Weighting
-    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                         _("Chart Zoom/Scale Weighting")), 0, wxEXPAND);
-    m_pSlider_Zoom = new wxSlider(
-        m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
-
-#ifdef __OCPN__ANDROID__
+    
+    wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
+    zoomTextHead->Wrap(-1);
+    itemBoxSizerUI->Add(zoomTextHead, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing); //inputFlags);
+    itemBoxSizerUI->Add(0, border_size * 1);
+    
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), inputFlags);
+    m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
+                                  wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+    
+    #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
-#endif
-
+    #endif
+    
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
-
+    
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), inputFlags);
+    m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
+                                         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+    
+    #ifdef __OCPN__ANDROID__
+    m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
+    #endif
+    
+    itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
+    
+    itemBoxSizerUI->Add(0, border_size * 3);
+    
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
     //  Display size/DPI
-    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                         _("Physical Screen Width")),
+    itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Physical Screen Width")),
                         inputFlags);
     wxBoxSizer* pDPIRow = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(pDPIRow, 0, wxEXPAND);
