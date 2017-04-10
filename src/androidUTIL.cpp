@@ -3545,6 +3545,22 @@ void prepareAndroidStyleSheets()
     qtStyleSheetDialog.clear();
     qtStyleSheetDialog.append(qtStyleSheetDialogProto);
     
+    // add the Slider specification
+    
+    int slider_handle_width = g_Platform->GetDisplayDPmm() * 6;
+    
+    char sb[400];
+    snprintf(sb, sizeof(sb),
+    "QSlider::groove { border: 1px solid #999999;  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #E6E6E6, stop:1 #EEEEEE); } \
+    QSlider::groove:disabled { background: #efefef; } \
+    QSlider::handle { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #7cb0e9, stop:1 #7cb0e9); border: 1px solid #5c5c5c; \
+    border-radius: 3px; width: %dpx; height: 45px; } \
+    QSlider::handle:disabled { background: #D3D0CD;}", slider_handle_width);
+    
+    qtStyleSheetDialog.append(sb);
+    
+    
+    
     // add the checkbox specification
     int cbSize = 30 * getAndroidDisplayDensity();
     char cb[400];

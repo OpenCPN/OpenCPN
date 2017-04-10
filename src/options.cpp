@@ -2740,6 +2740,9 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
   m_ChartDisplayPage = AddPage(parent, _("Advanced"));
 
   if (m_bcompact) {
+    wxSize sz = g_Platform->getDisplaySize();
+    double dpmm = g_Platform->GetDisplayDPmm();
+    
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     m_ChartDisplayPage->SetSizer(wrapperSizer);
 
@@ -2768,7 +2771,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
                                     _("Suppress scaled vector charts on overzoom"));
     boxCharts->Add(pOZScaleVector, inputFlags);
-
+#ifdef __OCPN__ANDROID__
+    pOverzoomEmphasis->Hide();
+    pOZScaleVector->Hide();
+#endif
+    
     // Control Options
     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
     itemBoxSizerUI->Add(boxCtrls, groupInputFlags);
@@ -2790,6 +2797,10 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     if (g_bopengl && !g_bTransparentToolbarInOpenGLOK)
       pTransparentToolbar->Disable();
 
+#ifdef __OCPN__ANDROID__
+      pTransparentToolbar->Hide();
+#endif
+      
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
@@ -2803,11 +2814,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pOpenGL->Enable(!g_bdisable_opengl);
 
 #ifdef __OCPN__ANDROID__
-    pOpenGL->Disable();
+    pOpenGL->Hide();
 #endif
 
     wxButton* bOpenGL =
-        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("Options") + _T("..."));
+        new wxButton(m_ChartDisplayPage, ID_OPENGLOPTIONS, _("OpenGL Options") + _T("..."));
     OpenGLSizer->Add(bOpenGL, inputFlags);
     bOpenGL->Enable(!g_bdisable_opengl);
 
@@ -2818,13 +2829,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     
     wxStaticText *uuu_text = new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Course-Up Update Period"));
     uuu_text->Wrap(-1);
-    wrapperSizer->Add(uuu_text, inputFlags);
+    wrapperSizer->Add(uuu_text, 0, wxEXPAND | wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL, 1);
 
     wxBoxSizer* pCOGUPFilterRow = new wxBoxSizer(wxHORIZONTAL);
     wrapperSizer->Add(pCOGUPFilterRow, 0, wxALL | wxEXPAND, group_item_spacing);
 
     pCOGUPUpdateSecs =
-        new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
+        new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(sz.x / 5, -1), wxTE_RIGHT);
     pCOGUPFilterRow->Add(pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
     pCOGUPFilterRow->Add( new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("seconds")), inputFlags);
@@ -2834,14 +2845,17 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     // Chart Zoom Scale Weighting
     
+    int slider_width = sz.x * 3 / 4;
+    int slider_height = dpmm * 6.0;
+    
     wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
     zoomTextHead->Wrap(-1);
-    itemBoxSizerUI->Add(zoomTextHead, 0, wxALL | wxALIGN_CENTRE_VERTICAL, group_item_spacing); //inputFlags);
+    itemBoxSizerUI->Add(zoomTextHead, 0, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL, group_item_spacing);
     itemBoxSizerUI->Add(0, border_size * 1);
     
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), inputFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-                                  wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+                                  wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
     #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
@@ -2851,7 +2865,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), inputFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-                                         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+                                         wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
     #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -2873,19 +2887,16 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     pRBSizeAuto = new wxRadioButton(m_ChartDisplayPage, wxID_ANY, _("Auto"));
     pDPIRow->Add(pRBSizeAuto, inputFlags);
     pDPIRow->AddSpacer(10);
-    pRBSizeManual = new wxRadioButton(m_ChartDisplayPage,
-                                      ID_SIZEMANUALRADIOBUTTON, _("Manual:"));
+    pRBSizeManual = new wxRadioButton(m_ChartDisplayPage, ID_SIZEMANUALRADIOBUTTON, _("Manual:"));
     pDPIRow->Add(pRBSizeManual, inputFlags);
 
     wxBoxSizer* pmmRow = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(pmmRow, 0, wxEXPAND);
 
-    pScreenMM = new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""),
-                               wxDefaultPosition, wxSize(100, -1), wxTE_RIGHT);
+    pScreenMM = new wxTextCtrl(m_ChartDisplayPage, ID_OPTEXTCTRL, _T(""), wxDefaultPosition, wxSize(sz.x / 5, -1), wxTE_RIGHT);
     pmmRow->Add(pScreenMM, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
-    pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")),
-                inputFlags);
+    pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")), inputFlags);
 
     pRBSizeAuto->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                          wxCommandEventHandler(options::OnSizeAutoButton), NULL,
@@ -4511,17 +4522,19 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pResponsive->Hide();
 #endif
 
-  pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
-                                _("Use Settings for Inland ECDIS Version 2.3"));
+  pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,  _("Use Inland ECDIS V2.3"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
   
   miscOptions->AddSpacer(10);
   
   int slider_width = wxMax(m_fontHeight * 4, 300);
-
-  m_pSlider_GUI_Factor = new wxSlider(
-      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+  
+  int slider_height = 50;
+  if(g_btouch)
+      slider_height = g_Platform->GetDisplayDPmm() * 6.0;
+  
+  m_pSlider_GUI_Factor = new wxSlider(itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
+      wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_GUI_Factor->Hide();
   
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("User Interface scale factor")), 0, wxEXPAND);
@@ -4533,9 +4546,8 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
 
-  m_pSlider_Chart_Factor = new wxSlider(
-      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+  m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
+      wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
   m_pSlider_Chart_Factor->Hide();
   
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")), 0, wxEXPAND);
