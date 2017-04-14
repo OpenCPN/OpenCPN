@@ -1006,6 +1006,7 @@ bool TrackPropDlg::UpdateProperties()
     // Calculate AVG speed if we are showing a track and total time
     TrackPoint *last_point = m_pTrack->GetLastPoint();
     TrackPoint *first_point = m_pTrack->GetPoint( 0 );
+    double trackLength = m_pTrack->Length( );
     double total_seconds = 0.;
 
     wxString speed( _T("--") );
@@ -1015,7 +1016,7 @@ bool TrackPropDlg::UpdateProperties()
             total_seconds =
                     last_point->GetCreateTime().Subtract( first_point->GetCreateTime() ).GetSeconds().ToDouble();
             if( total_seconds != 0. ) {
-                m_avgspeed = m_pTrack->trackLength / total_seconds * 3600;
+                m_avgspeed = trackLength / total_seconds * 3600;
             } else {
                 m_avgspeed = 0;
             }
@@ -1027,7 +1028,7 @@ bool TrackPropDlg::UpdateProperties()
 
     //  Total length
     wxString slen;
-    slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( m_pTrack->trackLength ) );
+    slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( trackLength ) );
 
     m_tTotDistance->SetValue( slen );
 
