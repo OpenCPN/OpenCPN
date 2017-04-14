@@ -968,9 +968,9 @@ bool TrackPropDlg::UpdateProperties()
         }
 ///        m_scrolledWindowLinks->DestroyChildren();
         int NbrOfLinks = m_pTrack->m_HyperlinkList->GetCount();
-            HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
+        HyperlinkList *hyperlinklist = m_pTrack->m_HyperlinkList;
     //            int len = 0;
-            if( NbrOfLinks > 0 ) {
+        if( NbrOfLinks > 0 ) {
             wxHyperlinkListNode *linknode = hyperlinklist->GetFirst();
             while( linknode ) {
                 Hyperlink *link = linknode->GetData();
@@ -1015,7 +1015,7 @@ bool TrackPropDlg::UpdateProperties()
             total_seconds =
                     last_point->GetCreateTime().Subtract( first_point->GetCreateTime() ).GetSeconds().ToDouble();
             if( total_seconds != 0. ) {
-                m_avgspeed = m_pTrack->Length() / total_seconds * 3600;
+                m_avgspeed = m_pTrack->trackLength / total_seconds * 3600;
             } else {
                 m_avgspeed = 0;
             }
@@ -1027,7 +1027,7 @@ bool TrackPropDlg::UpdateProperties()
 
     //  Total length
     wxString slen;
-    slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( m_pTrack->Length() ) );
+    slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( m_pTrack->trackLength ) );
 
     m_tTotDistance->SetValue( slen );
 
