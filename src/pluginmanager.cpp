@@ -354,7 +354,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     
     for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
         wxString file_name = file_list[i];
-        wxString plugin_file = wxFileName(file_name).GetFullName();
+		wxString plugin_file = wxFileName(file_name).GetFullName();
         wxDateTime plugin_modification = wxFileName(file_name).GetModificationTime();
 
         // this gets called every time we switch to the plugins tab.
@@ -3227,6 +3227,16 @@ wxArrayString GetWaypointGUIDArray( void )
     return result;
 }
 
+wxArrayString GetIconNameArray(void)
+{
+	wxArrayString result;
+
+	for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
+		wxString *ps = pWayPointMan->GetIconKey(i);
+		result.Add(*ps);
+	}
+	return result;
+}
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
