@@ -43,7 +43,7 @@
 
 #include <map>
 
-#include "version.h"
+#include "chartdldr_version.h"
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    13

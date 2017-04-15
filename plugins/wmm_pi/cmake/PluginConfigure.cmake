@@ -19,7 +19,7 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-    configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
+    configure_file(cmake/wmm_version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/wmm_version.h)
     INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
