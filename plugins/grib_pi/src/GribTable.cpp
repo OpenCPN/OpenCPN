@@ -216,6 +216,8 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
     this->Fit();
     this->Refresh();
+    singledatarow->DecRef();    // Give up pointer control to Grid
+    doubledatarow->DecRef();
 }
 
 void GRIBTable::OnClose( wxCloseEvent& event )
@@ -263,6 +265,7 @@ void GRIBTable::AddDataRow( int num_rows, int num_cols, wxString label, wxGridCe
     if(m_pGribTable->GetNumberRows() == num_rows) {
         m_pGribTable->AppendRows(1);
         m_pGribTable->SetRowLabelValue(num_rows, label);
+        row_attr->IncRef();
         m_pGribTable->SetRowAttr(num_rows, row_attr);
     }
     m_pDataCellsColour = m_pGribTable->GetCellBackgroundColour(num_rows, num_cols);  //set default colour
