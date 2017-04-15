@@ -2712,15 +2712,15 @@ END_EVENT_TABLE()
     itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 3 );
 
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 3 );
+    itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALL, 3 );
 
     m_CancelButton = new wxButton( this, -1, _("Cancel"), wxDefaultPosition,
             wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+    itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1 );
 
     m_OKButton = new wxButton( this, -1, _("OK"), wxDefaultPosition,
             wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1);
+    itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
     m_OKButton->SetDefault();
 
     m_CancelButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ToolbarChoicesDialog::OnCancelClick ), NULL, this );

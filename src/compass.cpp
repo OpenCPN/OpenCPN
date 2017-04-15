@@ -294,11 +294,11 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     wxMemoryDC mdc;
     mdc.SelectObject( m_StatBmp );
-    mdc.SetBackground( wxBrush( GetGlobalColor( _T("COMP1") ), wxSOLID ) );
+    mdc.SetBackground( wxBrush( GetGlobalColor( _T("COMP1") ), wxBRUSHSTYLE_SOLID ) );
     mdc.Clear();
 
     mdc.SetPen( wxPen( GetGlobalColor( _T("UITX1") ), 1 ) );
-    mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxTRANSPARENT ) );
+    mdc.SetBrush( wxBrush( GetGlobalColor( _T("UITX1") ), wxBRUSHSTYLE_TRANSPARENT ) );
     
     if( !style->marginsInvisible )
         mdc.DrawRoundedRectangle( 0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),radius );

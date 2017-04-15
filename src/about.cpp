@@ -407,7 +407,11 @@ void about::CreateControls( void )
 
     buttonSizer->Add( new wxButton( this, ID_COPYLOG, _("Copy Log File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( new wxButton( this, ID_COPYINI, _("Copy Settings File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
+<<<<<<< HEAD
     buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? 0 : wxALIGN_RIGHT), 3 );
+=======
+    buttonSizer->Add( donateButton, 1, wxALL, 3 );
+>>>>>>> Correct numerous wx alignment traps.
 #endif
     
     //  Main Notebook

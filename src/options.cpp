@@ -4780,7 +4780,7 @@ void options::CreateControls(void) {
   }
 
   labelFlags = wxSizerFlags(0)
-                   .Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL)
+                   .Align(wxALIGN_RIGHT)
                    .Border(wxALL, group_item_spacing);
   inputFlags = wxSizerFlags(0)
                    .Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL)

@@ -1648,8 +1648,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 
     wxNotebook *itemNotebook = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
             wxNB_TOP );
-    itemBoxSizerMainPanel->Add( itemNotebook, 1,
-            wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
+    itemBoxSizerMainPanel->Add( itemNotebook, 1, wxALL | wxEXPAND, border_size );
 
     wxPanel *itemPanelNotebook01 = new wxPanel( itemNotebook, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );

@@ -368,7 +368,7 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase()
 GRIBUICDataBase::GRIBUICDataBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxSize( -1,-1 ), wxDefaultSize );
-	this->SetFont( wxFont( 9, 70, 90, 90, false, wxEmptyString ) );
+	this->SetFont( wxFont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 
 	wxFlexGridSizer* fgSizer57;
 	fgSizer57 = new wxFlexGridSizer( 0, 2, 0, 0 );
@@ -2010,6 +2010,12 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 
 	m_pGribTable = new CustomGrid( this, wxID_ANY, wxDefaultPosition, wxSize( -1,50 ), 0, _T(" ") );
 
+<<<<<<< HEAD
+=======
+	// Cell Defaults
+	m_pGribTable->SetDefaultCellFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
+	m_pGribTable->SetDefaultCellAlignment( wxALIGN_CENTRE, wxALIGN_TOP );
+>>>>>>> Correct numerous wx alignment traps.
 	fgSizer20->Add( m_pGribTable, 0, wxALL|wxEXPAND, 5 );
 
 

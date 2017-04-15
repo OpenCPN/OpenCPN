@@ -1331,7 +1331,7 @@ void RouteProp::CreateControls()
         
         
         wxBoxSizer* itemBoxSizerBottom = new wxBoxSizer( wxHORIZONTAL );
-        itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
+        itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALL | wxEXPAND, 5 );
         
         wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
         itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 3 );
@@ -2521,7 +2521,11 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     m_checkBoxShowName = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show name"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
+<<<<<<< HEAD
     bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL, 5 );
+=======
+    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER, 5 );
+>>>>>>> Correct numerous wx alignment traps.
 
     ///
     wxBoxSizer* bSizer8 = new wxBoxSizer( wxHORIZONTAL );
@@ -2709,7 +2713,11 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_staticTextEditEnabled = new wxStaticText( m_panelBasicProperties, wxID_ANY,
                                                 _("Links are opened in the default browser."), wxDefaultPosition, wxDefaultSize,
                                                 0 );
+<<<<<<< HEAD
     sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL, 5 );
+=======
+    sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER, 5 );
+>>>>>>> Correct numerous wx alignment traps.
     
 
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,

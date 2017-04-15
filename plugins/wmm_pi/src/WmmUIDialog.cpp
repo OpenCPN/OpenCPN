@@ -109,7 +109,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tbD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tbD->SetMaxLength( 0 ); 
-	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+	m_tbD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer3->Add( m_tbD, 1, wxEXPAND, 5 );
 	
@@ -205,7 +205,7 @@ WmmUIDialogBase::WmmUIDialogBase( wxWindow* parent, wxWindowID id, const wxStrin
 	
 	m_tcD = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY|wxSIMPLE_BORDER );
 	m_tcD->SetMaxLength( 0 ); 
-	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 92, false, wxEmptyString ) );
+	m_tcD->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 	
 	gSizer4->Add( m_tcD, 0, wxEXPAND, 5 );
 	
