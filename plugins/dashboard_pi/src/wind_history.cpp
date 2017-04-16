@@ -104,7 +104,7 @@ void DashboardInstrument_WindDirHistory::SetData(int st, double data, wxString u
     if (st == OCPN_DBP_STC_TWS && data < 200.0) {
       m_WindSpd = data;
 	  // if unit changes, reset everything ...
-	  if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _("--")) {
+	  if (unit != m_WindSpeedUnit && m_WindSpeedUnit != _T("--")) {
 		  m_MaxWindDir = -1;
 		  m_WindDir = -1;
 		  m_WindDirRange = 90;
@@ -328,7 +328,7 @@ void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
   //round maxWindSpd up to the next full knot; nicer view ...
   m_MaxWindSpdScale=(int)m_MaxWindSpd + 1;
   if(!m_IsRunning) {
- 	label1.Printf(_("--- %s"), m_WindSpeedUnit.c_str());
+ 	label1.Printf(_T("--- %s"), m_WindSpeedUnit.c_str());
 	label2 = label1;
 	label3 = label1;
 	label4 = label1;
@@ -572,7 +572,10 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
     min=m_ArrayRecTime[i].GetMinute();
     hour=m_ArrayRecTime[i].GetHour();
   }
-  dc->DrawText(wxString::Format(_("Max %.1f %s since %02d:%02d  Overall %.1f %s"), m_MaxWindSpd, m_WindSpeedUnit.c_str(), hour, min, m_TotalMaxWindSpd, m_WindSpeedUnit.c_str()), m_LeftLegend + 3 + 2 + degw, m_TopLineHeight - degh + 5);
+  wxString sMax = _( "Max" ), sSince = _( "since" ), sOverall = _( "Overall" );
+  dc->DrawText( wxString::Format( _T( "%s %.1f %s %s %02d:%02d  %s %.1f %s" ),
+      sMax, m_MaxWindSpd, m_WindSpeedUnit.c_str(), sSince, hour, min, sOverall, m_TotalMaxWindSpd,
+      m_WindSpeedUnit.c_str() ), m_LeftLegend + 3 + 2 + degw, m_TopLineHeight - degh + 5 );
   pen.SetStyle(wxPENSTYLE_SOLID);
   pen.SetColour(wxColour(61,61,204,96)); //blue, transparent
   pen.SetWidth(1);
