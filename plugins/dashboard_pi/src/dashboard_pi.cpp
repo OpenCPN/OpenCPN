@@ -2229,7 +2229,7 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
         }
         case ID_DASH_UNDOCK: {
             ChangePaneOrientation( GetSizerOrientation( ), true );
-            break;
+            return;     // Nothing changed so nothing need be saved
         }
     }
     m_plugin->SaveConfig();
