@@ -106,9 +106,11 @@ public:
      s52plib( const wxString& PLib, bool b_forceLegacy = false );
     ~s52plib();
 
-    void SetPPMM( float ppmm ) { canvas_pix_per_mm = ppmm;}
+    void SetPPMM( float ppmm );
     float GetPPMM() { return canvas_pix_per_mm; }
 
+    double GetRVScaleFactor() { return m_rv_scale_factor; }
+    
     LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
         S57Obj *pObj, bool bStrict = 0 );
     int _LUP2rules( LUPrec *LUP, S57Obj *pObj );
@@ -344,7 +346,8 @@ private:
     wxString m_plib_file;
 
     float canvas_pix_per_mm; // Set by parent, used to scale symbols/lines/patterns
-
+    double m_rv_scale_factor;
+    
     S52color m_unused_color;
     wxColor m_unused_wxColor;
 
@@ -400,7 +403,7 @@ public:
 #if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
 #endif
-    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle);
+    bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin, float scale, double rot_angle, bool bSymbol);
 
 private:
     const char* findColorNameInRef( char colorCode, char* col );
