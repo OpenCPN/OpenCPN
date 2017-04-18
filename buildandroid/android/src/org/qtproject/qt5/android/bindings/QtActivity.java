@@ -35,6 +35,9 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;
+import java.io.BufferedOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -849,13 +852,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
     public String callFromCpp(){
-        Log.i("DEBUGGER_TAG", "callFromCpp");
+        Log.i("OpenCPN", "callFromCpp");
 
-        try {
-            Process process = Runtime.getRuntime().exec(
-                    "/data/data/org.opencpn.opencpn/hello");
-            System.out.print("Process LAUNCHED\n");
+        try
+        {
+            Process process = Runtime.getRuntime().exec("/data/user/0/org.opencpn.opencpn/oeserverda");
+            Log.i("OpenCPN", "Process launched");
 
+            /*
             // Reads stdout.
             // NOTE: You can write to stdin of the command using
             // process.getOutputStream().
@@ -874,11 +878,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             System.out.print("Process FINISHED\n");
 
             // return output.toString();
+            */
+
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } /*catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
 
         return "OK";
@@ -2001,7 +2007,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        //          PlugIns as well.  Just somehow install the PlugIn .so file into ".../files/plugins" dir,
        //          and it will be moved to the proper load location on restart.
 
-       Log.i("DEBUGGER_TAG", "relocateOCPNPlugins");
+       Log.i("OpenCPN", "relocateOCPNPlugins");
 
        // On Moto G
        // This produces "/data/data/org.opencpn.opencpn/files"
@@ -2032,7 +2038,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        if (dirs != null) {
            for (int j=0; j < dirs.length; j++){
                File sfile = dirs[j];
-               Log.i("DEBUGGER_TAG", "sfile: " + sfile.getName());
+               Log.i("OpenCPN", "relocateOCPNPlugins processing: " + sfile.getName());
 
                if (sfile.isFile()){
 
@@ -2046,25 +2052,117 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                   copyFile(inputStream, outputStream);
                                   inputStream.close();
                                   outputStream.close();
-                                 Log.i("DEBUGGER_TAG", "copyFile OK: " + source + " to " + dest);
+
+                                  if(!dest.endsWith(".so")){
+                                      Log.i("OpenCPN", "relocateOCPNPlugins setting executable on: " + dest);
+                                      File file = new File(dest);
+                                      file.setExecutable(true);
+                                  }
+
+                                 Log.i("OpenCPN", "relocateOCPNPlugins copyFile OK: " + source + " to " + dest);
                               }
                               catch (Exception e) {
                                   e.printStackTrace();
-                                  Log.i("DEBUGGER_TAG", "copyFile Exception");
+                                  Log.i("OpenCPN", "relocateOCPNPlugins copyFile Exception");
                               }
               }
           }
       }
    }
 
+   void processStagingFiles(){
+
+       Log.i("OpenCPN", "processStagingFiles starts...");
+
+       // Is there anything in the "staging" directory?
+       File stageDir = new File( getFilesDir() + "/staging");
+       if(stageDir.exists()){
+           if(stageDir.isDirectory()){
+               Log.i("OpenCPN", "Staging directory exists at: " + getFilesDir() + "/staging");
+
+               File[] files = stageDir.listFiles();
+
+               if (files != null) {
+                   for (int j=0; j < files.length; j++){
+                       File sfile = files[j];
+
+                       if (sfile.isFile()){
+                           Log.i("OpenCPN", "Processing staged file: " + sfile.getName());
+
+                           String source = sfile.getAbsolutePath();
+                           if(source.toUpperCase().endsWith("ZIP")){
+                               Log.i("OpenCPN", "Processing staged ZIP file: " + sfile.getName());
+
+                               // We unzip the file into the app "files" directory.
+
+                               // For normal plugin zip packages, that will put the plugin .so and helper files
+                               // into "files/plugins/", from whence they will be relocated to the data directory for runtime.
+
+                               String finalDestination = getFilesDir().getAbsolutePath() + File.separator;
+
+                               unzip(sfile.getAbsolutePath(), finalDestination);
+
+                           }
+                       }
+                   }
+               }
+           }
+       }
+   }
+
+   public void unzip(String _zipFile, String _targetLocation) {
+       Log.i("OpenCPN", "ZIP unzipping " + _zipFile + " to " + _targetLocation);
+
+    try {
+        FileInputStream fin = new FileInputStream(_zipFile);
+        ZipInputStream zin = new ZipInputStream(fin);
+        ZipEntry ze = null;
+        while ((ze = zin.getNextEntry()) != null) {
+
+            Log.i("OpenCPN", "ZIP Entry: " + ze.getName());
+
+            //create dir if required while unzipping
+            if (ze.isDirectory()) {
+                File dir = new File( ze.getName());
+                if(!dir.exists()){
+                     dir.mkdirs();
+                }
+
+            } else {
+                int size;
+                byte[] buffer = new byte[2048];
+
+                FileOutputStream outStream = new FileOutputStream(_targetLocation + ze.getName());
+                BufferedOutputStream bufferOut = new BufferedOutputStream(outStream, buffer.length);
+
+                while((size = zin.read(buffer, 0, buffer.length)) != -1) {
+                    bufferOut.write(buffer, 0, size);
+                }
+
+                bufferOut.flush();
+                bufferOut.close();
+
+                zin.closeEntry();
+
+
+            }
+        }
+        zin.close();
+        } catch (Exception e) {
+             System.out.println(e);
+        }
+   }
 
     // this function is used to load and start the loader
     private void loadApplication(Bundle loaderParams)
     {
         Log.i("OpenCPN", "LoadApplication");
 
+        processStagingFiles();
+
         relocateOCPNPlugins();
 
+        callFromCpp();
 
         try {
             final int errorCode = loaderParams.getInt(ERROR_CODE_KEY);

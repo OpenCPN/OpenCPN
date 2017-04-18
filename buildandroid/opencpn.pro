@@ -347,6 +347,13 @@ fr_FR_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lp
 fr_FR_mo_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
 INSTALLS += fr_FR_mo_deployment
 
+
+# osenc_pi---------------------------------------------------------------
+#library
+#so_oesenc_plugin_deployment.files += /home/dsr/Projects/oesenc_pi/build_android/liboesenc_pi.so
+#so_oesenc_plugin_deployment.path = /assets/files/plugins
+#INSTALLS += so_oesenc_plugin_deployment
+
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
 
