@@ -3020,48 +3020,56 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
             @Override
             public void onReceive(Context context, Intent intent) {
-//                Log.i("DEBUGGER_TAG", "mGattUpdateReceiver");
+//                Log.i("OpenCPN", "mGattUpdateReceiver");
 
                 final String action = intent.getAction();
-                if (ACTION_DATA_AVAILABLE.equals(action)) {
-                     if (intent.getExtras().containsKey(AWD_DATA)) {
-//                         Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWD_DATA");
+                Bundle b = intent.getExtras();
+                if(null == b){
+//                    Log.i("OpenCPN", "mGattUpdateReceiver:  NULL Bundle");
+                }
+
+                else{
+//                    Log.i("OpenCPN", "mGattUpdateReceiver:  process Bundle");
+                    if (ACTION_DATA_AVAILABLE.equals(action)) {
+                        if (intent.getExtras().containsKey(AWD_DATA)) {
+ //                           Log.i("OpenCPN", "mGattUpdateReceiver AWD_DATA");
                             String awd = intent.getStringExtra(AWD_DATA);
 
                             try {
                                  windDirection = Double.parseDouble(decryptIt(awd,hash));
                             } catch (Exception e) {
                             }
-                     }
+                        }
 
-                    if (intent.getExtras().containsKey(AWS_DATA)) {
-//                        Log.i("DEBUGGER_TAG", "mGattUpdateReceiver AWS_DATA");
+                        if (intent.getExtras().containsKey(AWS_DATA)) {
+ //                           Log.i("OpenCPN", "mGattUpdateReceiver AWS_DATA");
                             String aws = intent.getStringExtra(AWS_DATA);
+
                             try {
                                 windSpeed = Double.parseDouble(decryptIt(aws,hash));
                             } catch (Exception e) {
                             }
+                        }
                     }
-                }
 
                 //  Low pass filter...
-                windSpeedAvg = (windSpeedAvg * (averageCount-1) / averageCount) + ( windSpeed / averageCount );
-                windDirectionAvg = (windDirectionAvg * (averageCount-1) / averageCount) + ( windDirection / averageCount );
+                    windSpeedAvg = (windSpeedAvg * (averageCount-1) / averageCount) + ( windSpeed / averageCount );
+                    windDirectionAvg = (windDirectionAvg * (averageCount-1) / averageCount) + ( windDirection / averageCount );
 
-                final double wsa = windSpeedAvg;
-                final double wda = windDirectionAvg;
+                    final double wsa = windSpeedAvg;
+                    final double wda = windDirectionAvg;
 
-                if(null != nativeLib){
-                    Thread thread = new Thread() {
-                         @Override
-                         public void run() {
-                             nativeLib.processSailTimer(wda, wsa);
-                         }
-                    };
+                    if(null != nativeLib){
+                        Thread thread = new Thread() {
+                             @Override
+                            public void run() {
+                                 nativeLib.processSailTimer(wda, wsa);
+                            }
+                        };
 
-                    // Don't forget to start the thread.
-                    thread.start();
-
+                        // Don't forget to start the thread.
+                        thread.start();
+                    }
                 }
             }
     };
