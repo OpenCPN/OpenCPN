@@ -859,26 +859,36 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 		  groups.group_miss_val=GRIB_MISSING_VALUE;
 		}
 		for (m=0; m < groups.lengths[n]; ) {
-		  if ((grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) || pval == groups.group_miss_val) {
-		    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
-		  }
-		  else {
-		    getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
-		    off+=groups.widths[n];
-		    grib_msg->grids[grid_num].gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
-		    ++m;
+		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+                      grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                  }
+                  else {
+                      getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
+                      off+=groups.widths[n];
+		      if (pval == groups.group_miss_val) {
+                           grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+		      }
+		      else {
+		          grib_msg->grids[grid_num].gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
+                      }
+                      ++m;
 		  }
 		  ++l;
 		}
 	    }
 	    else {
-// constant group
+// constant group XXX bitmap?
 		for (m=0; m < groups.lengths[n]; ) {
-		  if ((grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) || groups.ref_vals[n] == groups.miss_val) {
+		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
 		    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
 		  }
 		  else {
-		    grib_msg->grids[grid_num].gridpoints[l]=groups.ref_vals[n]+groups.omin;
+		    if (groups.ref_vals[n] == groups.miss_val) {
+                        grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                    }
+                    else {
+		        grib_msg->grids[grid_num].gridpoints[l]=groups.ref_vals[n]+groups.omin;
+                    }
 		    ++m;
 		  }
 		  ++l;
