@@ -554,7 +554,7 @@ void RouteProp::OnRoutePropRightClick( wxListEvent &event )
 
     if( ! m_pRoute->m_bIsInLayer ) {
             
-#ifdef __OCPN_ANDROID__    
+#ifdef __OCPN__ANDROID__    
         wxFont *pf = OCPNGetFont(_T("Menu"), 0);
             
         // add stuff
