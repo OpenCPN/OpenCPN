@@ -594,7 +594,7 @@ void ChartDldrPanelImpl::OnContextMenu( wxMouseEvent& event )
     wxPoint point = event.GetPosition();
     wxPoint p1 = ((wxWindow *)m_clCharts)->GetPosition();
 
-#ifdef __OCPN_ANDROID__    
+#ifdef __OCPN__ANDROID__    
     wxFont *pf = OCPNGetFont(_T("Menu"), 0);
     
     // add stuff
