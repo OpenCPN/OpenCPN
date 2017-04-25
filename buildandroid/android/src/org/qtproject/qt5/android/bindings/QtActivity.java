@@ -855,20 +855,24 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     public String Executer(String command) {
 
+                Log.i("OpenCPN", "Executor process launched as: [" + command + "]");
+
                 StringBuffer output = new StringBuffer();
 
                 Process p;
                 try {
                     p = Runtime.getRuntime().exec(command);
                     p.waitFor();
+                    Log.i("OpenCPN", "Executer wait done");
                     BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
                     String line = "";
                     while ((line = reader.readLine())!= null) {
-                        output.append(line + "n");
+                        output.append(line + "\n");
                     }
 
                 } catch (Exception e) {
+                    Log.i("OpenCPN", "Executer exception");
                     e.printStackTrace();
                 }
                 String response = output.toString();
@@ -884,8 +888,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         {
             Process process = Runtime.getRuntime().exec( cmd );
 
+        Log.i("OpenCPN", "Process launched as: {" + cmd + "}");
+
+            Log.i("OpenCPN", "Process ClassName: " + process.getClass().getName());
+
             if(process.getClass().getName().equals("java.lang.UNIXProcess")) {
               /* get the PID on unix/linux systems */
+              Log.i("OpenCPN", "Fetching PID...");
               try {
                 Field f = process.getClass().getDeclaredField("pid");
                 f.setAccessible(true);
@@ -893,13 +902,18 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
               } catch (Throwable e) {
               }
             }
+            else{
+                pid = 1;
+                Log.i("OpenCPN", "Process:  unknown Class name");
+            }
 
-            Log.i("OpenCPN", "Process launched as: {" + cmd + "}");
         } catch (Exception e) {
+            Log.i("OpenCPN", "createProc exception");
             e.printStackTrace();
         }
 
         String ret = String.valueOf( pid );
+        Log.i("OpenCPN", "Process PID: " + ret);
         return ret;
     }
 
@@ -908,27 +922,13 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     public String callFromCpp(){
         Log.i("OpenCPN", "callFromCpp");
 
-/*        String res = Executer("/data/data/org.opencpn.opencpn/oeserverda");
+        String res = Executer("/data/user/0/org.opencpn.opencpn/oeserverda");
+        //String res = Executer("/data/user/0/org.opencpn.opencpn/oeserverda -h");
         //String res = Executer("pwd");
+        //String res = Executer("ls -l /data/user/0/org.opencpn.opencpn/lib/*");
         Log.i("OpenCPN", "Process launched");
         Log.i("OpenCPN", "result: " + res);
-*/
-
-
-
-        try
-        {
-            Process process = Runtime.getRuntime().exec("/data/data/org.opencpn.opencpn/oeserverda");
-            Log.i("OpenCPN", "Process launched");
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        return "OK";
+        return res;
     }
 
 
@@ -2203,7 +2203,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         relocateOCPNPlugins();
 
-        //callFromCpp();
+        callFromCpp();
 
         try {
             final int errorCode = loaderParams.getInt(ERROR_CODE_KEY);
