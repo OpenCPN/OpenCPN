@@ -141,6 +141,7 @@ import android.widget.Toast;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.webkit.WebView;
 
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -156,6 +157,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.Display;
 import android.view.MenuInflater;
 import android.view.InputDevice;
+import android.view.LayoutInflater ;
 
 import dalvik.system.DexClassLoader;
 import android.app.AlertDialog;
@@ -502,6 +504,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     }
 
+
     public String buildSVGIcon(String inFile, String outFile, int width, int height){
 
 //        Log.i("OpenCPN", inFile + " " + outFile);
@@ -655,6 +658,71 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
           String ret = "OK";
           return ret;
       }
+
+
+      public String showHTMLAlertDialog( String title, String htmlString) {
+
+          WebView wv = new WebView(getApplicationContext());
+
+          wv.getSettings().setLoadWithOverviewMode(true);
+          wv.getSettings().setUseWideViewPort(true);
+          wv.getSettings().setMinimumFontSize(50);
+          wv.loadData(htmlString, "text/html", "utf-8");
+
+
+
+          AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
+
+              // set title
+          alertDialogBuilder.setTitle(title);
+
+              // set dialog message
+          alertDialogBuilder
+                      .setView(wv)
+                      .setCancelable(false)
+                      .setNegativeButton("OK",new DialogInterface.OnClickListener() {
+                              public void onClick(DialogInterface dialog,int id) {
+                                      // if this button is clicked, just close
+                                      // the dialog box and do nothing
+                                      dialog.cancel();
+                              }
+                      });
+
+ //                     alertDialogBuilder.setPositiveButton("Cancel",new DialogInterface.OnClickListener() {
+ //                             public void onClick(DialogInterface dialog,int id) {
+                                      // if this button is clicked, close
+                                      // current activity
+ //                                     QtActivity.this.finish();
+ //                             }
+ //                       });
+
+                      // create alert dialog
+                      AlertDialog alertDialog = alertDialogBuilder.create();
+
+                      // show it
+                      alertDialog.show();
+
+                      return ("OK");
+
+    }
+
+    public String displayHTMLAlertDialog( final String title, final String htmlString) {
+        //Log.i("OpenCPN", "displayHTMLAlertDialog" + htmlString);
+
+            final QtActivityDelegate delegate = QtNative.activityDelegate();
+
+            if(null != delegate){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showHTMLAlertDialog( title, htmlString );
+
+                    }});
+            }
+
+            String ret = "OK";
+            return ret;
+    }
 
 
     private String m_settingsReturn;
