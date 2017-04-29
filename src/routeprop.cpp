@@ -1469,6 +1469,10 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
 
             gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
 
+#ifdef __WXMSW__            
+            if (m_wpList)
+                m_wpList->SetFocus();
+#endif            
         }
     }
 }
