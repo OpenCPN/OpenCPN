@@ -749,6 +749,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "OK";
     }
 
+    public String startActivityWithIntent( String target_package, String activity, String extra_name, String extra_data){
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(new ComponentName(target_package, target_package + "." + activity));
+
+        Bundle b = new Bundle();
+        b.putString(extra_name, extra_data);
+        intent.putExtras(b);
+
+        startActivity(intent);
+
+        return "OK";
+    }
+
     private void toggleFullscreen(){
         m_fullScreen = !m_fullScreen;
         setFullscreen(m_fullScreen);
