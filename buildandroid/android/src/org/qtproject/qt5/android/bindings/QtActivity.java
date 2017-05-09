@@ -731,7 +731,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         Intent intent = new Intent(this, WebViewActivity.class);
 
         Bundle b = new Bundle();
-        b.putString(WebViewActivity.SELECTED_URL, "file:///android_asset/doc/doc/help_en_US.html");
+        b.putString(WebViewActivity.SELECTED_URL, "file:///" + getFilesDir().getPath() + "/doc/doc/help_en_US.html");
         intent.putExtras(b);
 
         startActivity(intent);
