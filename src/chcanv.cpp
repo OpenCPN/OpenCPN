@@ -2255,10 +2255,6 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {
-#ifdef __OCPN__ANDROID__
-    return;
-#endif
-    
     bool b_need_refresh = false;
 
     //  Handle the AIS Rollover Window first
@@ -4988,7 +4984,7 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
 
  
 //      Retrigger the route leg / AIS target popup timer
-    if( !g_btouch )
+//    if( !g_btouch )
     {
         if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
             m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
