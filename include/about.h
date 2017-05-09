@@ -73,7 +73,7 @@ class about: public wxDialog
     void CreateControls( void );
     void Populate( void );
     void OnXidOkClick( wxCommandEvent& event );
-    void OnPageChange(wxNotebookEvent& event);
+    void OnNBPageChange(wxNotebookEvent& event);
     void OnDonateClick( wxCommandEvent& event );
     void OnCopyClick( wxCommandEvent& event );
     void OnClose( wxCloseEvent& event );
@@ -82,6 +82,7 @@ class about: public wxDialog
     wxString m_DataLocn;
     wxWindow *m_parent;
     bool m_btips_loaded;
+    bool m_blicensePageSet;
 
     wxPanel* itemPanelAbout;
     wxPanel* itemPanelAuthors;
