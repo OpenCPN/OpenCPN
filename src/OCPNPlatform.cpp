@@ -249,12 +249,13 @@ extern ocpnGLOptions            g_GLOptions;
 extern int                      g_default_font_size;
 extern wxString                 g_default_font_facename;
 
-wxLog       *g_logger;
-bool         g_bEmailCrashReport;
+wxLog                           *g_logger;
+bool                             g_bEmailCrashReport;
 extern int                       g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int                       g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 
 extern double                    g_ChartNotRenderScaleFactor;
+extern bool                      g_bRollover;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
 extern wxLocale                  *plocale_def_lang;
@@ -920,6 +921,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_cm93_zoom_factor = -5;
     g_oz_vector_scale = false;
     g_fog_overzoom = false;
+    
+    g_bRollover = true;
     
     g_GUIScaleFactor = 0;               // nominal
     g_ChartNotRenderScaleFactor = 2.0;

@@ -270,6 +270,7 @@ extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern float g_ChartScaleFactorExp;
+extern bool g_bRollover;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -4522,6 +4523,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pResponsive->Hide();
 #endif
 
+  pRollover = new wxCheckBox(itemPanelFont, ID_ROLLOVERBOX, _("Enable route/AIS info block"));
+  miscOptions->Add(pRollover, 0, wxALL, border_size);
+  
+  
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,  _("Use Inland ECDIS V2.3"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
   
@@ -5062,6 +5067,7 @@ void options::SetInitialSettings(void) {
   pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
+  pRollover->SetValue(g_bRollover);
   pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis); 
@@ -6079,6 +6085,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bskew_comp = pSkewComp->GetValue();
   g_btouch = pMobile->GetValue();
   g_bresponsive = pResponsive->GetValue();
+  g_bRollover = pRollover->GetValue();
   
   g_bAutoHideToolbar = pToolbarAutoHideCB->GetValue();
 

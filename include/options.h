@@ -182,7 +182,8 @@ enum {
   ID_TRACKROTATECOMPUTER,
   ID_SETSTDLIST,
   ID_VECZOOM,
-  ID_INLANDECDISBOX
+  ID_INLANDECDISBOX,
+  ID_ROLLOVERBOX
 };
 
 /* Define an int bit field for dialog return value
@@ -349,7 +350,7 @@ class options : private Uncopyable,
   wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
-  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis;
+  wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
   wxChoice *m_pShipIconType, *m_pcTCDatasets;

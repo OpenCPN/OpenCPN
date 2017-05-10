@@ -696,6 +696,7 @@ wxString g_config_version_string;
 
 bool             g_btouch;
 bool             g_bresponsive;
+bool             g_bRollover;
 
 bool             b_inCompressAllCharts;
 bool             g_bGLexpert;

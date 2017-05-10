@@ -396,6 +396,7 @@ extern float            g_ChartScaleFactorExp;
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
 extern int              g_iENCToolbarPosY;
+extern bool             g_bRollover;
 
 
 extern wxString         g_uiStyle;
@@ -673,9 +674,10 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor, 1.5 );
 
-    Read( _T ( "MobileTouch" ), &g_btouch, 0 );
     Read( _T ( "ResponsiveGraphics" ), &g_bresponsive, 0 );
-
+    Read( _T ( "MobileTouch" ), &g_btouch, 0 );
+    Read( _T ( "EnableRolloverBlock" ), &g_bRollover, 1 );
+    
     Read( _T ( "ZoomDetailFactor" ), &g_chart_zoom_modifier, 0 );
     g_chart_zoom_modifier = wxMin(g_chart_zoom_modifier,5);
     g_chart_zoom_modifier = wxMax(g_chart_zoom_modifier,-5);
@@ -2013,7 +2015,8 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "MobileTouch" ), g_btouch );
     Write( _T ( "ResponsiveGraphics" ), g_bresponsive );
-
+    Write( _T ( "EnableRolloverBlock" ), g_bRollover );
+    
     Write( _T ( "AutoHideToolbar" ), g_bAutoHideToolbar );
     Write( _T ( "AutoHideToolbarSecs" ), g_nAutoHideToolbar );
     
