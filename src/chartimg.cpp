@@ -1303,6 +1303,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                   }
             }
 
+/*            
             else if(!strncmp(buffer, "CED", 3))
             {
                 wxStringTokenizer tkz(str_buf, _T("/,="));
@@ -1359,7 +1360,63 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                   }
             }
-
+*/            
+            else if(!strncmp(buffer, "NTM", 3))
+            {
+                wxStringTokenizer tkz(str_buf, _T("/,="));
+                while ( tkz.HasMoreTokens() )
+                {
+                    wxString token = tkz.GetNextToken();
+                    if(token.IsSameAs(_T("ND"), TRUE))                  // extract NTM update Date
+                        {
+                            
+                            int i;
+                            i = tkz.GetPosition();
+                            
+                            char date_string[40];
+                            char date_buf[10];
+                            sscanf(&buffer[i], "%s\r\n", date_string);
+                            wxString date_wxstr(date_string,  wxConvUTF8);
+                            
+                            wxDateTime dt;
+                            if(dt.ParseDate(date_wxstr))       // successful parse?
+                              {
+                                  int iyear = dt.GetYear(); // GetYear() fails on W98, DMC compiler, wx2.8.3
+                                  //    BSB charts typically list publish date as xx/yy/zz
+                                  //  This our own little version of the Y2K problem.
+                                  //  Just apply some sensible logic
+                                  
+                                  if(iyear < 50){
+                                      iyear += 2000;
+                                      dt.SetYear(iyear);
+                                  }
+                                  else if((iyear >= 50) && (iyear < 100)){
+                                      iyear += 1900;
+                                      dt.SetYear(iyear);
+                                  }
+                                  sprintf(date_buf, "%d", iyear);
+                                  
+                                  //    Initialize the wxDateTime menber for Edition Date
+                                  m_EdDate = dt;
+                              }
+                              else
+                              {
+                                  sscanf(date_string, "%s", date_buf);
+                                  m_EdDate.Set(1, wxDateTime::Jan, 2000);                    //Todo this could be smarter
+                              }
+                              
+                              m_PubYear = wxString(date_buf,  wxConvUTF8);
+                        }
+                        else if(token.IsSameAs(_T("NE"), TRUE))                  // extract Source Edition with NTM appended
+                        {
+                            int i;
+                            i = tkz.GetPosition();
+                            wxString str(&buffer[i], iso_conv);
+                            m_SE = str.BeforeFirst(',');
+                        }
+                        
+                }
+            }
       }
 
       //    Some charts improperly encode the DTM parameters.
