@@ -753,10 +753,19 @@ wxString squiddio_pi::DownloadLayer(wxString url_path) {
     if( result == OCPN_DL_NO_ERROR )
     {
         if(wxFileExists(fn)){
-             wxFile f( fn );
-             f.ReadAll( &res );
-             f.Close();
+            
+            wxTextFile poiFile(fn );
+            if ( poiFile.Open() ) {
+                for ( wxString str = poiFile.GetFirstLine(); !poiFile.Eof() ; str = poiFile.GetNextLine() )
+                    res.Append( str );
+                poiFile.Close();
+            } else {
+                wxLogMessage(_T("Squiddio_pi: could not open downloaded file: ") + fn);
+            }
+
          }
+         else
+             wxLogMessage(_T("Squiddio_pi: downloaded file does not exist"));
     }
     else
     {
@@ -768,10 +777,12 @@ wxString squiddio_pi::DownloadLayer(wxString url_path) {
 
     if(wxFileExists(fn))
         wxRemoveFile( fn );
-        
+    //wxLogMessage(_T("Squiddio_pi: res : \n") + res);
+
     if(res.Length() < 20){
         wxMessageBox( _("Squiddio_pi download failed with short or corrupt file.\nRepeat the operation if needed."),
                       _("Squiddio PlugIn"), wxOK | wxICON_ERROR );
+        wxLogMessage(_T("Squiddio_pi: download failed with short file."));
     }
     return res;
 }
