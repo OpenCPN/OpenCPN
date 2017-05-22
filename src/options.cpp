@@ -4529,6 +4529,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   
   pInlandEcdis = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,  _("Use Inland ECDIS V2.3"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
+
+#ifdef __OCPN__ANDROID__
+  pInlandEcdis->Hide();
+#endif
   
   miscOptions->AddSpacer(10);
   
