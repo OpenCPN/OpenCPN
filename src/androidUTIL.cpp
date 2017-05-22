@@ -594,11 +594,11 @@ bool androidUtilInit( void )
             g_bExternalApp = true;
         
         token = tk.GetNextToken();              
-        g_androidFilesDir = token;
+        g_androidFilesDir = token;              // used for "home dir"
         token = tk.GetNextToken();              
         g_androidCacheDir = token;
         token = tk.GetNextToken();              
-        g_androidExtFilesDir = token;
+        g_androidExtFilesDir = token;           // used as PrivateDataDir, "/storage/emulated/0/Android/data/org.opencpn.opencpn/files"
         token = tk.GetNextToken();              
         g_androidExtCacheDir = token;
         token = tk.GetNextToken();              
