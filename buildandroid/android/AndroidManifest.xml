@@ -81,16 +81,29 @@
         <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
         </activity>
 
-        <activity android:name="org.opencpn.OCPNPluginInstallerActivity">
-                <meta-data android:name="android.app.lib_name" android:value="opencpn" android:label="@string/app_name" android:theme="@android:style/Theme.NoDisplay"/>
 
-                <intent-filter>
-                    <action android:name="android.intent.action.SEND"/>
-                    <category android:name="android.intent.category.DEFAULT"/>
-                    <data android:mimeType="text/plain"/>
-                </intent-filter>
+        <activity android:name="OCPNChartInstallActivity" android:exported="true">
+            <meta-data android:name="android.app.lib_name" android:value="opencpn"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="OCPNPluginInstallerActivity" android:exported="true">
+            <meta-data android:name="android.app.lib_name" android:value="opencpn"
+             android:label="@string/app_name" android:theme="@android:style/Theme.NoDisplay"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
 
         </activity>
+
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyC_Xl0ZmeX0GSvD7PDGiclzYpUml9GUkX0"/>
 
@@ -98,6 +111,8 @@
 
         <service android:name="org.opencpn.DownloadService"/>
     </application>
+
+
 
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>

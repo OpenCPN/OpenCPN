@@ -244,6 +244,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private final static int OCPN_FILECHOOSER_REQUEST_CODE = 0x5555;
     private final static int OCPN_AFILECHOOSER_REQUEST_CODE = 0x5556;
+    private final static int OCPN_ARBITRARY_REQUEST_CODE = 0x5557;
 
     private final static int OCPN_ACTION_FOLLOW = 0x1000;
     private final static int OCPN_ACTION_ROUTE = 0x1001;
@@ -359,6 +360,10 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private Float lastX;
     private Float lastY;
+
+    private Boolean m_activityARBComplete = false;
+    private String m_activityArbResult;
+    private String m_arbResultStringName;           // name of string result expected
 
     private Boolean m_GPSServiceStarted = false;
     private GPSServer m_GPSServer;
@@ -749,17 +754,32 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         return "OK";
     }
 
-    public String startActivityWithIntent( String target_package, String activity, String extra_name, String extra_data){
+    public String startActivityWithIntent( String target_package, String activity, String extra_name_in, String extra_data_in, String extra_data_out_name){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setComponent(new ComponentName(target_package, target_package + "." + activity));
+        Log.i("OpenCPN", "startActivityWithIntent: " + target_package + ", " + target_package + "." + activity);
 
         Bundle b = new Bundle();
-        b.putString(extra_name, extra_data);
+        b.putString(extra_name_in, extra_data_in);
         intent.putExtras(b);
 
-        startActivity(intent);
+        m_activityARBComplete = false;      // Mark the activity as incomplete
+        m_arbResultStringName = extra_data_out_name;
+
+        startActivityForResult(intent, OCPN_ARBITRARY_REQUEST_CODE);
 
         return "OK";
+    }
+
+    public String getArbActivityStatus(){
+        if(m_activityARBComplete)
+            return "COMPLETE";
+        else
+            return "INCOMPLETE";
+    }
+
+    public String getArbActivityResult(){
+        return m_activityArbResult;
     }
 
     private void toggleFullscreen(){
@@ -1053,6 +1073,118 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
      }
 
+
+     public String createProcSync( String cmd, String arg1, String arg2, String libPath ){
+         Log.i("OpenCPN", "createProc");
+         Log.i("OpenCPN", "cmd: " + cmd);
+         Log.i("OpenCPN", "arg1: "  + arg1);
+         Log.i("OpenCPN", "arg2: " + arg2);
+         Log.i("OpenCPN", "libPath: " + libPath);
+
+
+         long pid = 0;
+         try
+         {
+             ProcessBuilder pb = new ProcessBuilder( cmd,  arg1,  arg2);
+
+              Map<String, String> env = pb.environment();
+              env.put("LD_LIBRARY_PATH", libPath);
+
+              //env.remove("OTHERVAR");
+              //env.put("VAR2", env.get("VAR1") + "suffix");
+
+              //pb.directory(new File("myDir"));
+              //File log = new File("log");
+              //pb.redirectErrorStream(true);
+              //pb.redirectOutput(Redirect.appendTo(log));
+
+              Log.i("OpenCPN", "Process launched as: [" + cmd + "]");
+
+              Process process = pb.start();
+
+              Log.i("OpenCPN", "Process ClassName: " + process.getClass().getName());
+
+              if(process.getClass().getName().equals("java.lang.UNIXProcess")) {
+                /* get the PID on unix/linux systems */
+                Log.i("OpenCPN", "Fetching PID...");
+                try {
+                  Field f = process.getClass().getDeclaredField("pid");
+                  f.setAccessible(true);
+                  pid = f.getLong( process );
+                } catch (Throwable e) {
+                }
+              }
+              else{
+                  pid = 1;
+                  Log.i("OpenCPN", "Process:  unknown Class name");
+              }
+
+              process.waitFor();
+
+          } catch (Exception e) {
+              Log.i("OpenCPN", "createProcS exception");
+              e.printStackTrace();
+          }
+
+          String ret = String.valueOf( pid );
+          Log.i("OpenCPN", "Process PID: " + ret);
+          return ret;
+
+      }
+
+
+      public String createProcSync4( String cmd, String arg1, String arg2, String arg3, String arg4, String libPath ){
+          Log.i("OpenCPN", "createProcSync4");
+          Log.i("OpenCPN", "cmd: " + cmd);
+          Log.i("OpenCPN", "arg1: " + arg1);
+          Log.i("OpenCPN", "arg2: " + arg2);
+          Log.i("OpenCPN", "arg3: " + arg3);
+          Log.i("OpenCPN", "arg4: " + arg4);
+          Log.i("OpenCPN", "libPath: " + libPath);
+
+
+          long pid = 0;
+          try
+          {
+              ProcessBuilder pb = new ProcessBuilder( cmd,  arg1,  arg2, arg3, arg4);
+
+               Map<String, String> env = pb.environment();
+               env.put("LD_LIBRARY_PATH", libPath);
+
+
+               Log.i("OpenCPN", "Process launched as: [" + cmd + "]");
+
+               Process process = pb.start();
+
+               Log.i("OpenCPN", "Process ClassName: " + process.getClass().getName());
+
+               if(process.getClass().getName().equals("java.lang.UNIXProcess")) {
+                 /* get the PID on unix/linux systems */
+                 Log.i("OpenCPN", "Fetching PID...");
+                 try {
+                   Field f = process.getClass().getDeclaredField("pid");
+                   f.setAccessible(true);
+                   pid = f.getLong( process );
+                 } catch (Throwable e) {
+                 }
+               }
+               else{
+                   pid = 1;
+                   Log.i("OpenCPN", "Process:  unknown Class name");
+               }
+
+               process.waitFor();
+
+           } catch (Exception e) {
+               Log.i("OpenCPN", "createProcSync4 exception");
+               e.printStackTrace();
+           }
+
+           String ret = String.valueOf( pid );
+           Log.i("OpenCPN", "Process PID: " + ret);
+           return ret;
+
+       }
 
 
     public String callFromCpp(){
@@ -1759,7 +1891,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 m_downloadStatus = 16;      // STATUS_ERROR
 
             nativeLib.setDownloadStatus( m_downloadStatus, m_downloadURL);
-            Log.i("OpenCPN", "DOWNLOAD_DONE " + m_downloadTotal + " " + m_downloadTotal + " " + m_downloadFilelength);
+            Log.i("OpenCPN", "DOWNLOAD_DONE " + m_downloadStatus + " " + m_downloadTotal + " " + m_downloadTotal + " " + m_downloadFilelength);
         }
 
     }
@@ -2114,11 +2246,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
        ApplicationInfo ai = getApplicationInfo();
        if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
-           //Log.i("DEBUGGER_TAG", "External");
+           //Log.i("OpenCPN", "External");
            result = "EXTAPP;";
        }
        else{
-           //Log.i("DEBUGGER_TAG", "Internal");
+           //Log.i("OpenCPN", "Internal");
            result = "INTAPP;";
        }
 
@@ -2130,7 +2262,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        result = result.concat(getExternalCacheDir().getPath() + ";");
        result = result.concat(Environment.getExternalStorageDirectory().getPath() + ";");
 
-       //Log.i("DEBUGGER_TAG", result);
+       Log.i("OpenCPN", "getSystemDirs  result: " + result);
 
        return result;
    }
@@ -3116,6 +3248,28 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
             super.onActivityResult(requestCode, resultCode, data);
 
+            return;
+        }
+
+        if (requestCode == OCPN_ARBITRARY_REQUEST_CODE) {
+            Log.i("OpenCPN", "onqtActivityResult ARB");
+
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK){
+                // Get the results
+
+                Log.i("OpenCPN", "onqtActivityResult ARB OK");
+                m_activityArbResult = data.getStringExtra(m_arbResultStringName);
+                Log.i("OpenCPN", "onqtActivityResult ARB Result: " +  m_arbResultStringName + " : " + m_activityArbResult);
+
+            }
+            else if (resultCode == RESULT_CANCELED){
+                Log.i("OpenCPN", "onqtActivityResult ARB Cancelled");
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            m_activityARBComplete = true;       // Activity is complete
             return;
         }
 

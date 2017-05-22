@@ -1,5 +1,5 @@
 
-package org.opencpn;
+package org.opencpn.opencpn;
 
 import android.app.Activity;
 import android.os.Bundle;
