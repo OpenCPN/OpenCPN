@@ -175,9 +175,9 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
         box.y += y;
 
         if( m_brounded ) {
-            dc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
+            dc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, box.height/5 );
             if(shapeDC)
-                shapeDC->DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
+                shapeDC->DrawRoundedRectangle( box.x, box.y, box.width, box.height, box.height/5 );
         } else {
             dc.DrawRectangle( box.x, box.y, box.width, box.height );
             if(shapeDC)
@@ -188,7 +188,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
             dc.SetBrush( m_backBrush );
             int w = 3;
             dc.DrawRoundedRectangle( box.x + w, box.y + w, box.width - ( 2 * w ),
-                                     box.height - ( 2 * w ), 3 );
+                                     box.height - ( 2 * w ), box.height/5 - 1 );
         }
 
         //    Look in the current noshow array for this index
@@ -223,279 +223,8 @@ static void SetColor(unsigned char color[4], const wxBrush &brush)
     color[0] = c.Red(), color[1] = c.Green(), color[2] = c.Blue(), color[3] = 255;
 }
 
-#if 0 // alternate implementation, it is much faster most frames (only a single quad is rendered),
-// but requires updating the texture if the piano changes which is slower (although still quite fast)
-// the other problem is the code is difficult to follow and maintain
-// can remove this when we know we aren't going to ever be using it
-void Piano::UpdateGLTexture()
-{
-    extern GLenum       g_texture_rectangle_format;
-    int w = cc1->GetClientSize().x, h = GetHeight(), tex_w, tex_h;
-    if(g_texture_rectangle_format == GL_TEXTURE_2D)
-        tex_w = w, tex_h = h;
-    else
-        tex_w = NextPow2(w), tex_h = NextPow2(h);
-    m_texcoords[0] = (float)w / tex_w;
-    m_texcoords[1] = (float)h / tex_h;
 
-    // this isn't very pretty but should at least be fast enough
-    unsigned char bgcolor[4], tbgcolor[4];
-    SetColor(bgcolor, m_backBrush);
-    SetColor(tbgcolor, m_backBrush);
-
-    wxColour b = GetGlobalColor( _T("CHBLK") );
-    unsigned char bcolor[4] = {b.Red(), b.Green(), b.Blue(), 255};
-
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    if(style->chartStatusWindowTransparent)
-        tbgcolor[3] = 0;
-
-    unsigned char *data = new unsigned char[4*w*h];
-
-    // fill to background color
-    for(int x = 0; x < w; x++) {
-        unsigned char *pos = data + 4*x;
-        memcpy(pos, tbgcolor, 4);
-    }
-
-    for(int y = 1; y < 8; y++) {
-        unsigned char *pos = data + 4*(y*w);
-        memcpy(pos, data, 4*w);
-    }
-
-    int nKeys = m_key_array.GetCount();
-    // draw the keys
-    for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
-
-        if( -1 == key_db_index ) continue;
-
-        bool selected = InArray(m_active_index_array, key_db_index);
-        unsigned char color[4];
-        if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93 ||
-            ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93COMP ) {
-            if(selected)
-                SetColor(color, m_scBrush );
-            else
-                SetColor(color, m_cBrush );
-        } else if( ChartData->GetDBChartFamily( key_db_index ) == CHART_FAMILY_VECTOR ) {
-            if(selected)
-                SetColor(color, m_svBrush );
-            else
-                SetColor(color, m_vBrush );
-        } else { // Raster Chart
-            if(selected)
-                SetColor(color, m_slBrush );
-            else
-                SetColor(color, m_tBrush );
-        }
-
-        if(m_bBusy)
-            SetColor(color, m_uvBrush );
-            
-        wxRect box = KeyRect.Item( i );
-
-        bool eclipsed = InArray(m_eclipsed_index_array, key_db_index);
-
-        int sympoint =  m_brounded ? (eclipsed ? 5 : 3) : 1;
-        for(int y = 0; y < 6; y++) {
-            unsigned char *pos = data + 4*((box.y+y)*w + box.x);
-            if(y > sympoint) {
-                int line;
-                if(y < box.height - sympoint)
-                    line = sympoint;
-                else
-                    line = box.height-y-1; // shouldn't hit
-                memcpy(pos, data + 4*((box.y+line)*w + box.x), 4*box.width);
-                continue;
-            }
-            
-            for(int x = 0; x < box.width; x++, pos+=4) {
-                if(y == 0) {
-                    if( m_brounded && (x <= 2 || x >= box.width - 3) )
-                        memcpy(pos, tbgcolor, 4);
-                    else
-                        memcpy(pos, bcolor, 4);
-                } else if(m_brounded) {
-                    if(y == 1) {
-                        if(x == 0 || x == box.width - 1)
-                            memcpy(pos, tbgcolor, 4);
-                        else if(x == 1 || x == 2 || x == box.width - 3 || x == box.width - 2)
-                            memcpy(pos, bcolor, 4);
-                        else
-                            memcpy(pos, color, 4);
-                    } else if(y == 2) {
-                        if(x == 0 || x == box.width - 1)
-                            memcpy(pos, tbgcolor, 4);
-                        else if(x == 1 || x == box.width - 2)
-                            memcpy(pos, bcolor, 4);
-                        else
-                            memcpy(pos, color, 4);
-                    } else if(eclipsed) {
-                        if(x == 0 || x == box.width - 1)
-                            memcpy(pos, bcolor, 4);
-                        else {
-                            if(y == 3) {
-                                if(x <= 4 || x >= box.width - 5)
-                                    memcpy(pos, color, 4);
-                                else
-                                    memcpy(pos, bcolor, 4);
-                            } else if(y == 4) {
-                                if(x <= 3 || x >= box.width - 4)
-                                    memcpy(pos, color, 4);
-                                else if(x == 4 || x == box.width - 5)
-                                    memcpy(pos, bcolor, 4);
-                                else
-                                    memcpy(pos, bgcolor, 4);
-                            } else {
-                                if(x <= 2 || x >= box.width - 3)
-                                    memcpy(pos, color, 4);
-                                else if(x == 3 || x == box.width - 4)
-                                    memcpy(pos, bcolor, 4);
-                                else
-                                    memcpy(pos, bgcolor, 4);
-                            }
-                        }
-                    } else
-                        goto def;
-                } else {
-                def:
-                    if(x == 0 || x == box.width - 1)
-                        memcpy(pos, bcolor, 4);
-                    else
-                        memcpy(pos, color, 4);
-                }
-            }
-        }
-    }
-
-    // quickly fill the rest via symmetry
-    for(int y = 8; y < h; y++) {
-        int line;
-        if(y < h - 7)
-            line = 7;
-        else
-            line = h-y-1;
-        memcpy(data + 4*(y*w), data + 4*(line*w), 4*w);
-    }
-
-    if(!m_tex)
-        glGenTextures( 1, &m_tex );
-
-    glBindTexture(GL_TEXTURE_2D, m_tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-
-    if(g_texture_rectangle_format == GL_TEXTURE_2D)
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-    else {
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-        glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, data );
-    }
-
-    delete [] data;
-}
-
-void Piano::DrawGL(int off)
-{
-    OCPNStopWatch sw;
-    int w = cc1->GetClientSize().x, h = GetHeight();
-
-    printf("t0: %f\n", sw.Time());
-
-    glBindTexture(GL_TEXTURE_2D, m_tex);
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-    if(style->chartStatusWindowTransparent) {
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-        glColor4ub(255, 255, 255, 200); // perhaps we could allow the style to set this
-        glEnable(GL_BLEND);
-    } else
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-    glEnable(GL_TEXTURE_2D);
-    glBegin(GL_QUADS);
-
-    for(int i=0; i<30; i++) {
-        glTexCoord2f(0,                           0), glVertex2f(0, off);
-        glTexCoord2f(m_texcoords[0],              0), glVertex2f(w, off);
-        glTexCoord2f(m_texcoords[0], m_texcoords[1]), glVertex2f(w, off+h);
-        glTexCoord2f(0,              m_texcoords[1]), glVertex2f(0, off+h);
-    }
-    glEnd();
-
-    printf("t1: %f\n", sw.Time());
-    int iw = 9, ih = 13;
-    if(!m_icontex) {
-        glGenTextures( 1, &m_icontex );
-        glBindTexture(GL_TEXTURE_2D, m_icontex);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
-
-        iw = m_pPolyIconBmp->GetWidth();
-        ih = m_pPolyIconBmp->GetHeight();
-
-        wxImage im = m_pPolyIconBmp->ConvertToImage();
-        unsigned char *data = new unsigned char[4*iw*ih], *d = data, *e = im.GetData(), *a = im.GetAlpha();
-        for(int i=0; i<iw*ih; i++) {
-            memcpy(d, e, 3), d+=3, e+=3;
-            *d = *a, d++, a++;
-        }
-
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, iw, ih, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-        delete [] data;
-    }
-    printf("t2: %f\n", sw.Time());
-
-    glBindTexture(GL_TEXTURE_2D, m_icontex);
-    glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-
-    printf("t3: %f\n", sw.Time());
-    glBegin(GL_QUADS);
-
-    int nKeys = m_key_array.GetCount();
-    // draw the bitmaps
-    for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
-
-        if( -1 == key_db_index ) continue;
-
-        wxRect box = KeyRect.Item( i );
-
-        float u1 = 0, u2 = 1, v = 1;
-
-        int x1, y1;
-        if(InArray(m_noshow_index_array, key_db_index))
-            x1 = box.x + 4, y1 = box.y + 3;
-        else {
-            x1 = box.x + box.width - iw - 4, y1 = box.y + 2;
-            if(InArray(m_skew_index_array, key_db_index))
-                ;
-            else if(InArray(m_tmerc_index_array, key_db_index))
-                ;
-            else if(InArray(m_poly_index_array, key_db_index))
-                ;
-            else
-                continue;
-        }
-
-        y1 += off;
-        int x2 = x1 + iw, y2 = y1 + ih;
-
-        glTexCoord2f(u1, 0), glVertex2i(x1, y1);
-        glTexCoord2f(u2, 0), glVertex2i(x2, y1);
-        glTexCoord2f(u2, v), glVertex2i(x2, y2);
-        glTexCoord2f(u1, v), glVertex2i(x1, y2);
-    }
-    glEnd();
-    printf("t4: %f\n", sw.Time());
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_BLEND);
-}
-#endif
-
-// build a texture to hold minimum sized rectangles and icons used to render the chart bar
+// build a texture to hold rectangles and icons used to render the chart bar
 // this texture is only updated if the color scheme or chart bar height change
 void Piano::BuildGLTexture()
 {
@@ -511,13 +240,20 @@ void Piano::BuildGLTexture()
 
     wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_slBrush, m_tBrush, m_uvBrush };
 
+    m_ref = h;
+    m_pad = h / 7;                  // spacing between buttons
+    m_radius = h / 4;
+    m_texPitch = ((2*m_ref) + (2*m_pad));
+    
     m_tex_piano_height = h;
-    m_texw = 64;
+    m_texw = m_texPitch * 3;
+    
     m_texh = ((sizeof brushes) / (sizeof *brushes)) * h;
-    m_texh += 4*16; // for icons;
+    m_texh += 4 * m_ref; // for icons;
 
     m_texh = NextPow2(m_texh);
-
+    m_texw= NextPow2(m_texw);
+    
     if(!m_tex)
         glGenTextures( 1, &m_tex );
 
@@ -532,30 +268,33 @@ void Piano::BuildGLTexture()
     dc.SetBrush(tbackBrush);
     dc.DrawRectangle(0, 0, m_texw, m_texh);
 
-    // draw the needed rectangles with minimal width
-    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+    
+    // draw the needed rectangles 
+    wxPen ppPen( GetGlobalColor( _T("CHBLK") ), nominal_line_width_pix, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
+    
     for(unsigned int b = 0; b < (sizeof brushes) / (sizeof *brushes); b++) {
-        unsigned int x = 0, y = h * b;
+        unsigned int y = h * b;
 
         dc.SetBrush(brushes[b]);
 
-        int u = 3, v = 2;
-        dc.DrawRectangle(x+u, y+v, 3, h-2*v);
-        x+=3+2*u;
+        int v = 2;
+        int x=0;
+        dc.DrawRectangle(x + m_pad, y+v, 2*m_ref, h-2*v);
+         
+        x += m_texPitch;
+        dc.DrawRoundedRectangle(x + m_pad, y+v, 2*m_ref, h-2*v, m_radius);
         
-        dc.DrawRoundedRectangle(x+u, y+v, 9, h-2*v, 4);
-        x+=9+2*u;
-
-        int w = 3;
-        dc.DrawRoundedRectangle(x+u, y+v, 12, h-2*v, 4);
+        int w = m_ref / 6;      // border width of eclipsed chart
+        
+        x += m_texPitch;
+        dc.DrawRoundedRectangle(x + m_pad, y+v, 2*m_ref, h-2*v, m_radius);
         dc.SetBrush( m_backBrush );
-        dc.DrawRoundedRectangle(x+u+w, y+v+w, 12-2*w, h-2*v-2*w, 3);
-        x+=12+2*u;
-
-        if(x >= m_texw)
-            printf("texture too small\n");
+        dc.DrawRoundedRectangle(x + m_pad +w, y+v+w, (2*m_ref)-(2*w), h-2*v-2*w, m_radius * (h-2*v-2*w) / (h-2*v));  // slightly smaller radius
     }
+    
+     
     dc.SelectObject( wxNullBitmap );
 
     wxImage image = bmp.ConvertToImage();
@@ -579,16 +318,16 @@ void Piano::BuildGLTexture()
 
     for(unsigned int i = 0; i < (sizeof bitmaps) / (sizeof *bitmaps); i++) {
         int iw = bitmaps[i]->GetWidth(), ih = bitmaps[i]->GetHeight();
-        wxASSERT(ih <= 16);
-
+        
         wxImage im = bitmaps[i]->ConvertToImage();
+        
         unsigned char *data = new unsigned char[4*iw*ih], *d = data, *e = im.GetData(), *a = im.GetAlpha();
         for(int j = 0; j<iw*ih; j++) {
             memcpy(d, e, 3), d+=3, e+=3;
             *d = *a, d++, a++;
         }
 
-        int off = ((sizeof brushes) / (sizeof *brushes))*h + 16*i;
+        int off = ((sizeof brushes) / (sizeof *brushes))*h + m_ref*i;
         glTexSubImage2D( GL_TEXTURE_2D, 0, 0, off, iw, ih, GL_RGBA, GL_UNSIGNED_BYTE, data );
         delete [] data;
     }
@@ -631,10 +370,9 @@ void Piano::DrawGL(int off)
 
         wxRect box = KeyRect.Item( i );
         float y = h*b, v1 = (y+.5)/m_texh, v2 = (y+h-.5)/m_texh;
-        // u contains the pixel coordinates in the texture for the three possible rectangles
-        const float u[3][6] = {{0, 3, 4, 4, 5, 8},
-                               {9, 14, 15, 15, 18, 23},
-                               {24, 31, 32, 32, 34, 41}};
+        
+        // texcord contains the texture pixel coordinates in the texture for the three rectangle parts
+        const float texcord[6] = {0, (float)m_ref-1, (float)m_ref, (float)m_ref, (float)m_ref+1, (float)m_texPitch-1};
         int uindex;
         if(m_brounded) {
             if(InArray(m_eclipsed_index_array, key_db_index))
@@ -644,17 +382,20 @@ void Piano::DrawGL(int off)
         } else
             uindex = 0;
 
-        // if the chart is too narrow.. we maybe render the "wrong" rectangle because it can be thinner
-        int x1 = box.x, x2 = x1+box.width, w = 2*uindex+1;
-        while(x1 + w > x2 - w && uindex > 0)
-            uindex--, w -= 2;
+        int x1 = box.x, x2 = x1+box.width;
 
-        // the minimal width rectangles are texture mapped to the
+        // the rectangles are texture mapped to the
         // width needed by mapping 3 quads: left middle and right
-        const int x[6] = {x1 - 3, x1 + w, x2 - w, x2+3};
+        int x[6] = {x1 - 3, x1 + m_ref, x2 - m_ref, x2+3};
 
+        // adjust for very narrow keys
+        if(x[1] > x[2]){
+            int avg = (x[1] + x[2])/2;
+            x[1] = x[2] = avg;
+        }
+            
         for(int i=0; i<3; i++ ) {
-            float u1 = (u[uindex][2*i]+.5)/m_texw, u2 = (u[uindex][2*i+1]+.5)/m_texw;
+            float u1 = ((uindex * m_texPitch) + texcord[2*i]+.5)/m_texw, u2 = ((uindex * m_texPitch) + texcord[2*i+1]+.5)/m_texw;
             int x1 = x[i], x2 = x[i+1];
             texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1, coords[vc++] = y1;
             texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2, coords[vc++] = y1;
@@ -666,12 +407,12 @@ void Piano::DrawGL(int off)
 
     // if not transparent, fill the rest of the chart bar with the background
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    if(!style->chartStatusWindowTransparent && endx < w) {
-        texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx, coords[vc++] = y1;
-        texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,    coords[vc++] = y1;
-        texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,    coords[vc++] = y2;
-        texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx, coords[vc++] = y2;
-    }
+     if(!style->chartStatusWindowTransparent && endx < w) {
+         texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx, coords[vc++] = y1;
+         texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,    coords[vc++] = y1;
+         texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = w,    coords[vc++] = y2;
+         texcoords[tc++] = 0, texcoords[tc++] = 0, coords[vc++] = endx, coords[vc++] = y2;
+     }
 
     glBindTexture(GL_TEXTURE_2D, m_tex);
 
@@ -714,20 +455,29 @@ void Piano::DrawGL(int off)
                 continue;
         }
 
-        int x1, y1, iw = bitmaps[index]->GetWidth(), ih = bitmaps[index]->GetHeight();
+        int x1, y1;
+        int iwt = bitmaps[index]->GetWidth();
+        int iht = bitmaps[index]->GetHeight();
+        
+        //  Scale the bitmaps
+        float ihs = m_ref * 5 / 10;
+        float iws = iwt * (ihs / iht);
+        int ih = ihs;
+        int iw = iws;
+        
         if(InArray(m_noshow_index_array, key_db_index))
-            x1 = box.x + 4, y1 = box.y + 3;
+            x1 = box.x + m_ref/5, y1 = box.y + (box.height / 2) - (ih/2);
         else
-            x1 = box.x + box.width - iw - 4, y1 = box.y + 2;
+            x1 = box.x + box.width - iw - m_ref/5, y1 = box.y + (box.height / 2) - (ih/2);
 
         y1 += off;
         int x2 = x1 + iw, y2 = y1 + ih;
 
         wxBrush brushes[] = { m_scBrush, m_cBrush, m_svBrush, m_vBrush, m_slBrush, m_tBrush, m_uvBrush };
 
-        float yoff = ((sizeof brushes) / (sizeof *brushes))*h + 16*index;
-        float u1 = 0, u2 = (float)iw / m_texw;
-        float v1 = yoff / m_texh, v2 = (yoff + ih) / m_texh;
+        float yoff = ((sizeof brushes) / (sizeof *brushes))*h + m_ref*index;
+        float u1 = 0, u2 = (float)iwt / m_texw;
+        float v1 = yoff / m_texh, v2 = (yoff + iht) / m_texh;
 
         texcoords[tc++] = u1, texcoords[tc++] = v1, coords[vc++] = x1, coords[vc++] = y1;
         texcoords[tc++] = u2, texcoords[tc++] = v1, coords[vc++] = x2, coords[vc++] = y1;
@@ -1016,7 +766,7 @@ void Piano::ResetRollover( void )
 
 int Piano::GetHeight()
 {
-    int height = 22;
+    int height = 22;            // default desktop value
     if(g_btouch){
         double size_mult =  exp( g_GUIScaleFactor * 0.0953101798043 ); //ln(1.1)
         height *= size_mult;
@@ -1024,6 +774,10 @@ int Piano::GetHeight()
         height = wxMax(height, 10);
     }
     height *= g_Platform->GetDisplayDensityFactor();
+    
+#ifdef __OCPN__ANDROID__    
+    height = wxMax(height, 5 * g_Platform->GetDisplayDPmm());
+#endif    
     
     return height;
 }
