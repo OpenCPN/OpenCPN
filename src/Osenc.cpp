@@ -1032,15 +1032,14 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //      Alternatively, we can explicitely find and apply updates from any source directory.
     //      We need to keep track of the last sequential update applied, to look out for new updates
     
-//    int last_applied_update = 0;
     wxString LastUpdateDate = m_date000.Format( _T("%Y%m%d") );
     
-    m_last_applied_update = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
-    m_LastUpdateDate = LastUpdateDate;
+    int available_updates = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
+    m_LastUpdateDate = LastUpdateDate;          // tentative, adjusted later on failure of update
     
-    if(m_bVerbose && ( m_last_applied_update > 0 ) ){
+    if(m_bVerbose && ( available_updates > 0 ) ){
         wxString msg1;
-        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), m_last_applied_update );
+        msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), available_updates );
         wxLogMessage( msg1 );
     }
     
@@ -1051,7 +1050,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     //  Set up the options
     char ** papszReaderOptions = NULL;
     //    papszReaderOptions = CSLSetNameValue(papszReaderOptions, S57O_LNAM_REFS, "ON" );
-    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
+//    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES, "ON" );
     papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES, "ON" );
     poS57DS->SetOptionList( papszReaderOptions );
@@ -1064,11 +1063,83 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     
     if(poS57DS->Open( m_tmpup_array.Item( 0 ).mb_str(), TRUE, NULL))
         return 1;
-    
-    g_bGDAL_Debug = b_current_debug;
-    
+
     //      Get a pointer to the reader
     S57Reader *poReader = poS57DS->GetModule( 0 );
+     
+    m_last_applied_update = 0;
+    // Apply the updates...
+    for(int i_up = 1 ; i_up < available_updates + 1 ; i_up++){
+        DDFModule oUpdateModule;
+        if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
+            m_last_applied_update = i_up - 1;
+            break;
+        }
+        int upResult = poReader->ApplyUpdates( &oUpdateModule, i_up );
+        if(upResult){
+            m_last_applied_update = i_up - 1;
+            break;
+        }
+        m_last_applied_update = i_up;
+    }
+        
+    
+    //  Check for bad/broken update chain....
+    //  It is a "warning" condition if an update fails.
+    //  We use the cell with all good updates applied so far, and so inform the user.
+    //  "Better a slightly out-of-date chart than no chart at all..."
+    
+    // The logic will attempt to build a SENC on each instance of OCPN, so eventually the 
+    //  updates may be corrected, and the chart SENC is built correctly.
+    //  Or, the update files following the last good update may be manually deleted.
+    
+    if(m_last_applied_update != available_updates){
+        
+        //  Get the update date from the last good update module
+        bool bSuccess;
+        DDFModule oUpdateModule;
+        wxString LastGoodUpdateDate;
+        wxDateTime now = wxDateTime::Now();
+        LastGoodUpdateDate = now.Format( _T("%Y%m%d") );
+        
+        bSuccess = !( oUpdateModule.Open( m_tmpup_array.Item( m_last_applied_update ).mb_str(), TRUE ) == 0 );
+        
+        if( bSuccess ) {
+            //      Get publish/update date
+            oUpdateModule.Rewind();
+            DDFRecord *pr = oUpdateModule.ReadRecord();                     // Record 0
+            
+            int nSuccess;
+            char *u = NULL;
+            
+            if( pr ) u = (char *) ( pr->GetStringSubfield( "DSID", 0, "ISDT", 0, &nSuccess ) );
+            
+            if( u ) {
+                if( strlen( u ) ) {
+                    LastGoodUpdateDate = wxString( u, wxConvUTF8 );
+                }
+            }
+            m_LastUpdateDate = LastGoodUpdateDate;
+        }
+        
+        // Inform the user
+        wxString msg( _T("WARNING---ENC Update failed.  Last valid update file is:"));
+        msg +=  m_tmpup_array.Item( m_last_applied_update ).mb_str();
+        wxLogMessage(msg);
+        wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+        
+        
+        if( 1 /*!chain_broken_mssage_shown*/ ){
+            OCPNMessageBox(NULL, 
+                _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
+                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+        }
+    }
+    
+    
+    //  Unset verbose debug option
+    g_bGDAL_Debug = b_current_debug;
+    
     
     //      Update the options, removing the RETURN_PRIMITIVES flags
     //      This flag needed to be set on ingest() to create the proper field defns,
