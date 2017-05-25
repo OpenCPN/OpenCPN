@@ -744,6 +744,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
     public String launchWebView( String url){
+        Log.i("OpenCPN", "launchWebView: " + url);
+
         Intent intent = new Intent(this, WebViewActivity.class);
 
         Bundle b = new Bundle();
@@ -751,6 +753,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         intent.putExtras(b);
 
         startActivity(intent);
+        return "OK";
+    }
+
+    public String launchBrowser( String url){
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse( url)));
         return "OK";
     }
 
