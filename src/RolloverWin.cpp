@@ -68,7 +68,11 @@ RolloverWin::~RolloverWin()
 }
 void RolloverWin::OnTimer( wxTimerEvent& event )
 {
-    if( IsShown() ) Hide();
+    if( IsActive() ){
+        Hide();
+        GetParent()->Refresh( true );
+        IsActive(false);
+    }
 }
 
 void RolloverWin::OnMouseEvent( wxMouseEvent& event )
@@ -159,7 +163,9 @@ void RolloverWin::SetBitmap( int rollover )
     #endif
     
     // Retrigger the auto timeout
-    if( m_timeout_sec > 0 ) m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
+    if( m_timeout_sec > 0 ){
+        m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
+    }
 }
 
 
