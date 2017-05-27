@@ -265,8 +265,7 @@ enum
 class DashboardWindow : public wxWindow
 {
 public:
-    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
-             int orient, DashboardWindowContainer* mycont );
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,  DashboardWindowContainer* mycont );
     ~DashboardWindow();
 
     void SetColorScheme( PI_ColorScheme cs );
@@ -276,7 +275,7 @@ public:
     void OnContextMenu( wxContextMenuEvent& evt );
     void OnContextMenuSelect( wxCommandEvent& evt );
     bool isInstrumentListEqual( const wxArrayInt& list );
-    void SetInstrumentList( wxArrayInt list );
+    void SetInstrumentList( wxArrayInt list, int orient );
     void SendSentenceToAllInstruments( int st, double value, wxString unit );
     void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
     void SendUtcTimeToAllInstruments( wxDateTime value );
@@ -289,8 +288,7 @@ private:
       wxAuiManager         *m_pauimgr;
       dashboard_pi*         m_plugin;
 
-//wx2.9      wxWrapSizer*          itemBoxSizer;
-      wxBoxSizer*          itemBoxSizer;
+      wxFlexGridSizer*          itemSizer;
       wxArrayOfInstrument  m_ArrayOfInstrument;
 };
 
