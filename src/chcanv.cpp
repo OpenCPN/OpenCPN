@@ -3587,10 +3587,20 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
                                       wxPoint lPredPoint, bool b_render_hdt,
                                       wxPoint lShipMidPoint)
 {
+    //  Establish some graphic element line widths dependent on the platform display resolution
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.5));             //0.4 mm nominal, but not less than 1 pixel
+    
+    // If the calculated value is greater than the config file spec value, then use it.
+    if(nominal_line_width_pix > g_cog_predictor_width)
+        g_cog_predictor_width = nominal_line_width_pix;
+    
+    
     // draw course over ground if they are longer than the ship
     if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
         if( lpp >= img_height / 2 ) {
-            const double png_pred_icon_scale_factor = .4;
+            double nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 1.5));             //1.5 mm nominal, but not less than 4 pixel
+            double png_pred_icon_scale_factor = nominal_icon_size_pixels / 20;                                   // icon is 20 unit square
+            
             wxPoint icon[4];
 
             for( int i = 0; i < 4; i++ ) {
@@ -3624,15 +3634,15 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
             dash_long3[1] = g_cog_predictor_width * dash_long[1];
 
             if( g_cog_predictor_width > 1 ) {
-                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_USER_DASH );
+                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, g_cog_predictor_width/3), wxPENSTYLE_USER_DASH );
                 ppPen3.SetDashes( 2, dash_long3 );
                 dc.SetPen( ppPen3 );
                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
             }
-            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
+            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), g_cog_predictor_width/2, wxPENSTYLE_SOLID );
             dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( PredColor() ) ); //*wxWHITE_BRUSH);
+            dc.SetBrush( wxBrush( PredColor() ) ); 
 
             dc.StrokePolygon( 4, icon );
         }
@@ -3641,21 +3651,22 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
     //      HDT Predictor
     if( b_render_hdt ) {
         wxDash dash_short[2];
-        dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
-        dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
+        dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * 1.5) );  // Short dash  <---------+
+        dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * 1.8) );  // Short gap            |
 
-        wxPen ppPen2( PredColor(), 2, wxPENSTYLE_USER_DASH );
+        wxPen ppPen2( PredColor(), g_cog_predictor_width, wxPENSTYLE_USER_DASH );
         ppPen2.SetDashes( 2, dash_short );
 
         dc.SetPen( ppPen2 );
         dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                        lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
 
-        wxPen ppPen1( PredColor(), 2, wxPENSTYLE_SOLID );
+        wxPen ppPen1( PredColor(), g_cog_predictor_width, wxPENSTYLE_SOLID );
         dc.SetPen( ppPen1 );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
 
-        dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, 4 );
+        double nominal_circle_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 1));             //1.0 mm nominal diameter, but not less than 4 pixel
+        dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, nominal_circle_size_pixels/2 );
     }
 
     // Draw radar rings if activated
@@ -3675,7 +3686,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
                            pow( (double) (lGPSPoint.y - r.y), 2 ) );
         int pix_radius = (int) lpp;
 
-        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
+        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), g_cog_predictor_width );
         dc.SetPen( ppPen1 );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
 

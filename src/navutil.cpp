@@ -1954,7 +1954,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UseMagAPB" ), g_bMagneticAPB );
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
-    Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
+    //Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
     Write( _T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
