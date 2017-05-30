@@ -278,7 +278,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
          button_download.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Log.i("GRIB", "DownloadPrefActivity button_download");
+               Log.i("OpenCPN", "DownloadPrefActivity button_download");
 
                onDownloadButtonClick();
            }
@@ -315,11 +315,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("GRIB", "onActivityResult");
+        Log.i("OpenCPN", "onActivityResult");
 
         // Check which request we're responding to
         if (requestCode == 0xf3ec) {
-            Log.i("GRIB", "onActivityResult from Download");
+            Log.i("OpenCPN", "onActivityResult from Download");
 
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
@@ -350,7 +350,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
     @Override
     public void finish() {
-        Log.i("DEBUGGER_TAG", "GRIB Download Activity finish");
+        Log.i("OpenCPN", "GRIB Download Activity finish");
 
         String json = "{}";
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -463,7 +463,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         String formattedTime = tn.format("%Y%m%d_%H%M%S");
 
 
-        Log.i("GRIB", "model: " + model);
+        Log.i("OpenCPN", "model: " + model);
 
         String gfsFilter = "";
         String gfsFilterPl = "";
@@ -491,7 +491,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         File trootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
-        Log.i("GRIB", "dest_file: " + dest_file);
+        Log.i("OpenCPN", "dest_file: " + dest_file);
 
         // persist the target file name
         Editor editor = preferences.edit();
@@ -600,7 +600,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 + "&bottomlat=" + String.format("%d", lat_min)
                 + "&dir=" + DIR;
 
-            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
+            Log.i("OpenCPN", "URL_FETCH: " + URL_FETCH);
 
             // Make the server local storage file name
             String sequence = String.format("SEQ%02d", t);
@@ -609,7 +609,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-//            Log.i("GRIB", "localFileName: " + fullFileName);
+//            Log.i("OpenCPN", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);
@@ -638,7 +638,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         int niBlock = (int)nBlock;
 
         String bmsg = String.format("%d\n", niBlock);
-        Log.i("GRIB", "nBlock: " + bmsg);
+        Log.i("OpenCPN", "nBlock: " + bmsg);
 
 
         Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
@@ -769,7 +769,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
 
-        Log.i("GRIB", "dest_file: " + dest_file);
+        Log.i("OpenCPN", "dest_file: " + dest_file);
 
         // persist the target file name
         Editor editor = preferences.edit();
@@ -812,7 +812,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 + "&bottomlat=" + String.format("%d", lat_min)
                 + "&dir=" + DIR;
 
-            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
+            Log.i("OpenCPN", "URL_FETCH: " + URL_FETCH);
 
             // Make the server local storage file name
             String sequence = String.format("SEQ%02d", t);
@@ -821,7 +821,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-            Log.i("GRIB", "localFileName: " + fullFileName);
+            Log.i("OpenCPN", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);
@@ -848,7 +848,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         int niBlock = (int)nBlock;
 
         String bmsg = String.format("%d\n", niBlock);
-//        Log.i("GRIB", "nBlock: " + bmsg);
+//        Log.i("OpenCPN", "nBlock: " + bmsg);
 
 
         Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
@@ -938,7 +938,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
         int loop_count = (days * 24) / time_step;
 //        String msga = String.format( "%d %d %d\n", days, time_step, loop_count);
-//        Log.i("GRIB", msga);
+//        Log.i("OpenCPN", msga);
 
 
         Time tn = new Time(Time.getCurrentTimezone());
@@ -952,7 +952,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         File tdFile = new File(trootDir.getAbsolutePath() , tdest_file);
         String dest_file = tdFile.getAbsolutePath();
 
-        Log.i("GRIB", "dest_file: " + dest_file);
+        Log.i("OpenCPN", "dest_file: " + dest_file);
 
         // persist the target file name
         Editor editor = preferences.edit();
@@ -1002,7 +1002,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 + "&bottomlat=" + String.format("%d", lat_min)
                 + "&dir=" + DIR;
 
-            Log.i("GRIB", "URL_FETCH: " + URL_FETCH);
+            Log.i("OpenCPN", "GRIB URL_FETCH: " + URL_FETCH);
 
             // Make the server local storage file name
             String sequence = String.format("SEQ%02d", t);
@@ -1011,7 +1011,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             File dFile = new File(rootDir.getAbsolutePath() , localFileName);
             String fullFileName = dFile.getAbsolutePath();
 
-            Log.i("GRIB", "localFileName: " + fullFileName);
+            Log.i("OpenCPN", "localFileName: " + fullFileName);
 
             URLList.add(URL_FETCH);
             fileNameList.add(fullFileName);
@@ -1036,7 +1036,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         int niBlock = (int)nBlock;
 
         String bmsg = String.format("%d\n", niBlock);
-        Log.i("GRIB", "nBlock: " + bmsg);
+        Log.i("OpenCPN", "nBlock: " + bmsg);
 
 
         Intent intent = new Intent(this, org.opencpn.downloadGFSCombine.class);
@@ -1224,7 +1224,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 url = url.concat("&lon_min=" + String.format("%d", lon_min));
                 url = url.concat("&lon_max=" + String.format("%d", lon_max));
 
-                //Log.i("GRIB", "url: " + url);
+                Log.i("OpenCPN", "url: " + url);
 
                 //http://localhost/get_grib.php?model=GFS25&start_time=2016021218&time_step=3&time_count=2
                 // &lat_min=20&lat_max=40&lon_min=280&lon_max=300
