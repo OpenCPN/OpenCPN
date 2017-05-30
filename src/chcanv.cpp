@@ -3620,9 +3620,9 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
 
             //      COG Predictor
             wxDash dash_long[2];
-            dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
-            dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
-
+            dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * 6.0) / g_cog_predictor_width );  // Long dash , in mm <---------+
+            dash_long[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * 3.0) / g_cog_predictor_width );  // Short gap            |
+            
             wxPen ppPen2( PredColor(), g_cog_predictor_width, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_long );
             dc.SetPen( ppPen2 );
@@ -3651,8 +3651,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
     //      HDT Predictor
     if( b_render_hdt ) {
         wxDash dash_short[2];
-        dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * 1.5) );  // Short dash  <---------+
-        dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * 1.8) );  // Short gap            |
+        dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * 4.0) / g_cog_predictor_width );  // Short dash , in mm <---------+
+        dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * 3.5) / g_cog_predictor_width );  // Short gap            |
 
         wxPen ppPen2( PredColor(), g_cog_predictor_width, wxPENSTYLE_USER_DASH );
         ppPen2.SetDashes( 2, dash_short );
