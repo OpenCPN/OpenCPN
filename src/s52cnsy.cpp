@@ -2624,7 +2624,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     }
 
     // Continuation A
-    if (depth_value < 10.0) {
+    if (fabs(depth_value) < 10.0) {
         
         //      If showing as "feet", round off to one digit only
         if( (ps52plib->m_nDepthUnitDisplay == 0) && (depth_value > 0) ){
@@ -2655,17 +2655,19 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         }
     }
 
-    if (depth_value < 31.0) {
+    if (fabs(depth_value) < 31.0) {
+        bool b_2digit = false;
         
         //      If showing as "feet", round off to two digits only
-        if( (ps52plib->m_nDepthUnitDisplay == 0) && (depth_value > 0) ){
+        if( (ps52plib->m_nDepthUnitDisplay == 0) && (fabs(depth_value) > 0) ){
             double r1 = depth_value ;
             depth_value = wxRound( r1 ) ;
-            leading_digit = (int) depth_value;
+            leading_digit = (int) fabs(depth_value);
+            b_2digit = true;
         }
             
             
-        double fraction = depth_value - floor(leading_digit);
+        double fraction = fabs(depth_value - floor(leading_digit));
 
         if (fraction != 0.0) {
             fraction = fraction * 10;
@@ -2679,11 +2681,20 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
             snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-            if((int)fraction > 0) {
-                snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
+            
+            if(!b_2digit){
+                if((int)fraction > 0) {
+                    snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
+                    sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+                }
+            }
+            
+            if (depth_value < 0.0)
+            {
+                snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
-
+            
             goto return_point;
         }
     }
