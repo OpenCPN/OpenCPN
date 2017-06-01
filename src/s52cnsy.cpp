@@ -2115,7 +2115,7 @@ static void *SLCONS03(void *param)
                 ival = 0;
                 bvalstr  = GetIntAttr(obj, "CATSLC", ival);
 
-                if (bvalstr && ( 4 == ival || 6  == ival || 8  == ival || 15 == ival || 16 == ival ))
+                if (bvalstr && ( 6  == ival || 15 == ival || 16 == ival ))      // Some sort of wharf
                     cmdw = "LS(SOLD,4,CSTLN)";
                 else {
                     bvalstr = GetIntAttr(obj, "WATLEV", ival);
