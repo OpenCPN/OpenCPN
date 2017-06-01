@@ -2525,8 +2525,6 @@ static void *SOUNDG03(void *param)
     return r;
 }
 
-
-
 wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 // Remarks: Soundings differ from plain text because they have to be readable under all
 // circumstances and their digits are placed according to special rules. This
@@ -2537,77 +2535,77 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 {
     wxString sndfrm02;
     char     temp_str[LISTSIZE] = {'\0'};
-
+    
     wxString symbol_prefix;
-
+    
     char symbol_prefix_a[200];
-
+    
     wxString *tecsoustr = GetStringAttrWXS(obj, "TECSOU");
     char     tecsou[LISTSIZE] = {'\0'};
-
+    
     wxString *quasoustr = GetStringAttrWXS(obj, "QUASOU");
     char     quasou[LISTSIZE] = {'\0'};
-
+    
     wxString *statusstr = GetStringAttrWXS(obj, "STATUS");
     char     status[LISTSIZE] = {'\0'};
-
+    
     double   leading_digit    = 0.0;
-
+    
     double safety_depth = S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
-
+    
     //      Do the math to convert soundings to ft/metres/fathoms on request
     double depth_value = depth_value_in;
-
+    
     //      If the sounding value from the ENC (or SENC) is bogus, so state
     if(depth_value_in > 40000.)
         depth_value = 99999.;
     if(depth_value_in < -1000.)
         depth_value = 0.;
-
+    
     switch(ps52plib->m_nDepthUnitDisplay)
     {
-          case 0:
-                depth_value = depth_value   * 3 * 39.37 / 36;              // feet
-                safety_depth = safety_depth * 3 * 39.37 / 36;
-                break;
-          case 2:
-                depth_value = depth_value   * 3 * 39.37 / (36 * 6);        // fathoms
-                safety_depth = safety_depth * 3 * 39.37 / (36 * 6);
-                break;
-          default:
-                break;
+        case 0:
+            depth_value = depth_value   * 3 * 39.37 / 36;              // feet
+            safety_depth = safety_depth * 3 * 39.37 / 36;
+            break;
+        case 2:
+            depth_value = depth_value   * 3 * 39.37 / (36 * 6);        // fathoms
+            safety_depth = safety_depth * 3 * 39.37 / (36 * 6);
+            break;
+        default:
+            break;
     }
-
-
+    
+    
     // FIXME: test to fix the rounding error (!?)
     depth_value  += (depth_value > 0.0)? 0.01: -0.01;
-    leading_digit = (int) depth_value;
-
+    leading_digit = (int) fabs(depth_value);
+    
     if (depth_value <= safety_depth)            //S52_getMarinerParam(S52_MAR_SAFETY_DEPTH)
         symbol_prefix = _T("SOUNDS");
     else
         symbol_prefix = _T("SOUNDG");
-
+    
     strcpy(symbol_prefix_a,symbol_prefix.mb_str());
-
+    
     if (NULL != tecsoustr)
     {
-          _parseList(tecsoustr->mb_str(), tecsou, sizeof(tecsou));
+        _parseList(tecsoustr->mb_str(), tecsou, sizeof(tecsou));
         if (strpbrk(tecsou, "\006"))
         {
             snprintf(temp_str, LISTSIZE, ";SY(%sB1)", symbol_prefix_a);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         }
     }
-
+    
     if (NULL != quasoustr) _parseList(quasoustr->mb_str(), quasou, sizeof(quasou));
     if (NULL != statusstr) _parseList(statusstr->mb_str(), status, sizeof(status));
-
+    
     if (strpbrk(quasou, "\003\004\005\010\011") || strpbrk(status, "\022"))
     {
         snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        
     }
     else
     {
@@ -2622,7 +2620,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             }
         }
     }
-
+    
     // Continuation A
     if (fabs(depth_value) < 10.0) {
         
@@ -2636,16 +2634,16 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         if (depth_value < 10.0) {
             // can be above water (negative)
             int fraction = (int)ABS((depth_value - leading_digit)*10);
-
-
+            
+            
             snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             if(fraction > 0) {
                 snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, fraction);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
-
-        // above sea level (negative)
+            
+            // above sea level (negative)
             if (depth_value < 0.0)
             {
                 snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
@@ -2654,21 +2652,22 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             goto return_point;
         }
     }
-
+    
     if (fabs(depth_value) < 31.0) {
         bool b_2digit = false;
+        double depth_value_pos = fabs(depth_value);
         
         //      If showing as "feet", round off to two digits only
-        if( (ps52plib->m_nDepthUnitDisplay == 0) && (fabs(depth_value) > 0) ){
+        if( (ps52plib->m_nDepthUnitDisplay == 0) && (depth_value_pos > 0) ){
             double r1 = depth_value ;
             depth_value = wxRound( r1 ) ;
-            leading_digit = (int) fabs(depth_value);
+            leading_digit = (int) depth_value_pos;
             b_2digit = true;
         }
-            
-            
-        double fraction = fabs(depth_value - floor(leading_digit));
-
+        
+        
+        double fraction = fabs(depth_value_pos - floor(leading_digit));
+        
         if (fraction != 0.0) {
             fraction = fraction * 10;
             if (leading_digit >= 10.0)
@@ -2676,7 +2675,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
                 snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)leading_digit/10);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
-
+            
             double first_digit = floor(leading_digit / 10);
             int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
             snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
@@ -2698,45 +2697,45 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             goto return_point;
         }
     }
-
+    
     // Continuation B
     depth_value = leading_digit;    // truncate to integer
     if (depth_value < 100.0)
     {
         double first_digit = floor(leading_digit / 10);
         double secnd_digit = floor(leading_digit - (first_digit * 10));
-
+        
         snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        
         goto return_point;
     }
-
+    
     if (depth_value < 1000.0)
     {
         double first_digit = floor(leading_digit / 100);
         double secnd_digit = floor((leading_digit - (first_digit * 100)) / 10);
         double third_digit = floor(leading_digit - (first_digit * 100) - (secnd_digit * 10));
-
+        
         snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        
         goto return_point;
     }
-
+    
     if (depth_value < 10000.0)
     {
         double first_digit = floor(leading_digit / 1000);
         double secnd_digit = floor((leading_digit - (first_digit * 1000)) / 100);
         double third_digit = floor((leading_digit - (first_digit * 1000) - (secnd_digit * 100)) / 10);
         double last_digit  = floor(leading_digit - (first_digit * 1000) - (secnd_digit * 100) - (third_digit * 10)) ;
-
+        
         snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
@@ -2745,10 +2744,10 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        
         goto return_point;
     }
-
+    
     // Continuation C
     {
         double first_digit  = floor(leading_digit / 10000);
@@ -2756,7 +2755,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double third_digit  = floor((leading_digit - (first_digit * 10000) - (secnd_digit * 1000)) / 100 );
         double fourth_digit = floor((leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100)) / 10 ) ;
         double last_digit   = floor(leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100) - (fourth_digit * 10)) ;
-
+        
         snprintf(temp_str, LISTSIZE, ";SY(%s3%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)secnd_digit);
@@ -2767,18 +2766,18 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        
         goto return_point;
     }
-
-return_point:
-        sndfrm02.Append('\037');
-
-        delete tecsoustr;
-        delete quasoustr;
-        delete statusstr;
-
-        return sndfrm02;
+    
+    return_point:
+    sndfrm02.Append('\037');
+    
+    delete tecsoustr;
+    delete quasoustr;
+    delete statusstr;
+    
+    return sndfrm02;
 }
 
 
