@@ -5,13 +5,11 @@
     <string-array name="GRIB_model_ListArray">
         <item>@string/ocpn_grib_model_array_item_gfs5</item>
         <item>@string/ocpn_grib_model_array_item_gfs1</item>
-        <item>@string/ocpn_grib_model_array_item_rtofs</item>
         <item>@string/ocpn_grib_model_array_item_ww3</item>
     </string-array>
     <string-array name="GRIB_model_ListValues">
         <item>GFS50</item>
         <item>GFS100</item>
-        <item>RTOFS</item>
         <item>WW3</item>
     </string-array>
 
