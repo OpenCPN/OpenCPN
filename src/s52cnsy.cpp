@@ -2700,17 +2700,29 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     }
 
     // Continuation B
-    depth_value = leading_digit;    // truncate to integer
-    if (depth_value < 100.0)
+    if (fabs(depth_value) < 100.0)
     {
+        leading_digit = fabs(leading_digit);
+        
         double first_digit = floor(leading_digit / 10);
         double secnd_digit = floor(leading_digit - (first_digit * 10));
 
-        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
-        sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
-        sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-
+        if (depth_value < 0.0)
+        {
+            snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
+            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+        }
+        else{
+            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
+            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
+            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+        }
+        
         goto return_point;
     }
 
