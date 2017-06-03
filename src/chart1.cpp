@@ -673,7 +673,8 @@ bool                      g_bserial_access_checked;
 wxString                  g_uiStyle;
 
 //      Values returned from WMM_PI for variation computation request
-double                    gQueryVar;
+//      Initialize to invalid value so we don't use if if WMM hasn't updated yet
+double                    gQueryVar = 361.0;
 
 
 char bells_sound_file_name[2][12] = { "1bells.wav", "2bells.wav" };
@@ -7071,6 +7072,7 @@ double MyFrame::GetMag(double a)
 
 double MyFrame::GetMag(double a, double lat, double lon)
 {
+    double Variance = wxIsNaN( gVar ) ? g_UserVar : gVar;
     if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
             
         // Request variation at a specific lat/lon
@@ -7080,24 +7082,13 @@ double MyFrame::GetMag(double a, double lat, double lon)
         // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
         wxDateTime now = wxDateTime::Now();
         SendJSON_WMM_Var_Request(lat, lon, now);
-            
-        if((a - gQueryVar) >360.)
-            return (a - gQueryVar - 360.);
-        else
-            return ((a - gQueryVar) >= 0.) ? (a - gQueryVar) : (a - gQueryVar + 360.);
+        if ( abs(gQueryVar) < 360.0 )   // Don't use WMM variance if not updated yet
+            Variance = gQueryVar;
     }
-    else if(!wxIsNaN(gVar)){
-        if((a - gVar) >360.)
-            return (a - gVar - 360.);
-        else
-            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
-    }
-    else{
-        if((a - g_UserVar) >360.)
-            return (a - g_UserVar - 360.);
-        else
-            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-    }
+    if((a - Variance ) > 360.)
+        return (a - Variance - 360.);
+    else
+        return ((a - Variance) >= 0.) ? (a - Variance) : (a - Variance + 360.);
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
