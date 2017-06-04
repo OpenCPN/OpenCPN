@@ -8641,6 +8641,19 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
 
     int emboss_width = 500;
     int emboss_height = 200;
+    
+    wxClientDC dc( this );
+    dc.SetFont( font );
+    int w, h;
+    dc.GetTextExtent( _T("FATHOMS"), &w, &h );
+    
+    while( font.GetPointSize() > 10 && (w > emboss_width || h > emboss_height) )
+    {
+        font.SetPointSize( font.GetPointSize() - 1 );
+        dc.SetFont( font );
+        dc.GetTextExtent( _T("FATHOMS"), &w, &h );
+    }
+    
 
 // Free any existing emboss maps
     delete m_pEM_Feet;
