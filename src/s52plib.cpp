@@ -3142,11 +3142,16 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     glColor3ub( c->R, c->G, c->B );
     
     //    Set drawing width
+    
     float lineWidth = w;
+    GLint parms[2];
+    glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+    GLint parmsa[2];
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parmsa[0] );
+    GLint parmsb[2];
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parmsb[0] );
     
     if( w > 1 ) {
-        GLint parms[2];
-        glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
         if( w > parms[1] )
             lineWidth = wxMax(g_GLMinCartographicLineWidth, parms[1]);
         else
@@ -3155,7 +3160,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         lineWidth = wxMax(g_GLMinCartographicLineWidth, 1);
 
     // Manage super high density displays
-    float target_w_mm;
+    float target_w_mm = 0.5 * w;;
     if(GetPPMM() > 7){               // arbitrary, leaves average desktop/laptop display untweaked...
         target_w_mm = ((float)w) / 6.0;  // Target width in mm
                                                //  The value "w" comes from S52 library CNSY procedures, in "nominal" pixels
@@ -3164,8 +3169,21 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         lineWidth =  wxMax(g_GLMinCartographicLineWidth, target_w_mm * GetPPMM() );
     }
 
+    glDisable( GL_LINE_SMOOTH );
+    glDisable( GL_BLEND );
+        
+#ifdef __OCPN__ANDROID__
+    lineWidth = wxMin(lineWidth, parms[1]);
     glLineWidth(lineWidth);
     
+#else    
+    glLineWidth(lineWidth);
+    if(lineWidth > 4.0){
+         glEnable( GL_LINE_SMOOTH );
+         glEnable( GL_BLEND );
+    }
+#endif
+
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
     if( !strncmp( str, "DASH", 4 ) ) {
         glLineStipple( 1, 0x3F3F );
@@ -3178,11 +3196,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else
         glDisable( GL_LINE_STIPPLE );
 #endif
-
-    if(lineWidth > 4){
-         glEnable( GL_LINE_SMOOTH );
-         glEnable( GL_BLEND );
-    }
 
     glPushMatrix();
     
