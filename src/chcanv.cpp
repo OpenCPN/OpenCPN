@@ -1006,8 +1006,12 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     
     double max_physical = wxMax(sx, sy);
     
-    m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
-    m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
+//    m_pix_per_mm = ( max_physical ) / ( (double) m_display_size_mm );
+//    m_canvas_scale_factor = ( max_physical ) / (m_display_size_mm /1000.);
+    
+    m_pix_per_mm = g_Platform->GetDisplayDPmm();
+    wxSize ds = g_Platform->getDisplaySize();
+    m_canvas_scale_factor = ( wxMax(ds.x, ds.y)) / (m_display_size_mm /1000.);
     
     // set values of tide_draw_scaler, current_draw_scaler
     // each "scaler" is intended to be about unity on a 100 dpi display,
@@ -1025,7 +1029,7 @@ void ChartCanvas::SetDisplaySizeMM( double size )
 #endif
     
      wxString msg;
-     msg.Printf(_T("Metrics:  m_display_size_mm: %g     wxDisplaySize:  %d:%d   "), m_display_size_mm, sx, sy);
+     msg.Printf(_T("SetDisplaySize Metrics:  m_display_size_mm: %g    wxDisplaySize: %d:%d   pix_per_mm: %g"), m_display_size_mm, sx, sy,  m_pix_per_mm);
      wxLogMessage(msg);
     
 }
