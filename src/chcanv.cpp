@@ -1698,6 +1698,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }
 
         case 15:             // Ctrl O - Drop Marker at boat's position
+        case 32:
         {
             DropMarker(true);
             break;
