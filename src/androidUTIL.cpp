@@ -3611,6 +3611,7 @@ void setChoiceStyleSheet( wxChoice *win, int refDim)
     
     float fontDimFloat = ((float)refDim) * 0.5;
     int fontDim = (int)fontDimFloat;
+    int pixRadius = refDim / 4;
     
     QString styleString;
     char sb[1400];
@@ -3634,12 +3635,12 @@ void setChoiceStyleSheet( wxChoice *win, int refDim)
     
     // This one is necessary to set min height of drop list items, otherwise they are squished.
     snprintf(sb, sizeof(sb),
-             "QComboBox QAbstractItemView::item {  min-height: %dpx; border: 10px outset darkgray; border-radius: 40px;  }", refDim);
+             "QComboBox QAbstractItemView::item {  min-height: %dpx; border: 10px outset darkgray; border-radius: %dpx;  }", refDim, pixRadius);
     styleString.append(sb); 
     
-    qDebug() << styleString;
+    //qDebug() << styleString;
     
-    win->GetHandle()->setView(new QListView());
+    win->GetHandle()->setView(new QListView());         // Magic
     win->GetHandle()->setStyleSheet(styleString);
  
     
