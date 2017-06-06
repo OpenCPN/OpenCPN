@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.4.2, 2017-05-21T00:17:30. -->
+<!-- Written by QtCreator 3.4.2, 2017-06-05T11:20:16. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -546,8 +546,8 @@ OCPN_Build=build_android_55_46</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.AndroidPackageInstallationStep</value>
      </valuemap>
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.3">
-      <value type="QString" key="BuildTargetSdk">android-20</value>
-      <value type="QString" key="KeystoreLocation"></value>
+      <value type="QString" key="BuildTargetSdk">android-21</value>
+      <value type="QString" key="KeystoreLocation">/home/dsr/Projects/opencpn/DONOTPUBLISH/ocpn-release-key.keystore</value>
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Build Android APK</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>

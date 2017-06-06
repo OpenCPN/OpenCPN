@@ -93,8 +93,7 @@
         </activity>
 
         <activity android:name="OCPNPluginInstallerActivity" android:exported="true">
-            <meta-data android:name="android.app.lib_name" android:value="opencpn"
-             android:label="@string/app_name" android:theme="@android:style/Theme.NoDisplay"/>
+            <meta-data android:name="android.app.lib_name" android:value="opencpn" android:label="@string/app_name" android:theme="@android:style/Theme.NoDisplay"/>
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
@@ -114,7 +113,7 @@
 
 
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET"/>
