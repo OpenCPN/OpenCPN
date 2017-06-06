@@ -304,6 +304,8 @@ extern bool              g_bShowFPS;
 extern double            g_gl_ms_per_frame;
 extern bool              g_benable_rotate;
 
+extern bool              g_bSpaceDropMark;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -1700,6 +1702,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 15:             // Ctrl O - Drop Marker at boat's position
         {
             DropMarker(true);
+            break;
+        }
+
+        case 32:            // Special needs use space bar
+        {
+            if ( g_bSpaceDropMark )
+                DropMarker( true );
             break;
         }
 
