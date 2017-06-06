@@ -709,6 +709,8 @@ int              g_maxWPNameLength;
 
 bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 
+bool             g_bSpaceDropMark;
+
 wxArrayString    g_locale_catalog_array;
 bool             b_reloadForPlugins;
 

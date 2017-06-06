@@ -396,6 +396,7 @@ extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
 extern int              g_iENCToolbarPosY;
 
+extern bool             g_bSpaceDropMark;
 
 extern wxString         g_uiStyle;
 
@@ -529,6 +530,7 @@ int MyConfig::LoadMyConfig()
      
     Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );// First read if in iENC mode as this will override some config settings
 
+    Read( _T( "SpaceDropMark" ), &g_bSpaceDropMark, 0 );
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
     
@@ -1864,7 +1866,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
     Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
     Write( _T ( "UIexpert" ), g_bUIexpert );
-    
+    Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
