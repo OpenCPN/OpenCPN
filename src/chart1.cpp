@@ -1702,8 +1702,7 @@ bool MyApp::OnInit()
     if(b_initial_load)
         g_Platform->SetDefaultOptions();
     
-    if(g_vs != g_config_version_string)
-        g_Platform->SetUpgradeOptions(g_vs, g_config_version_string);
+    g_Platform->SetUpgradeOptions(g_vs, g_config_version_string);
     
     g_Platform->applyExpertMode(g_bUIexpert);
 
@@ -1726,8 +1725,8 @@ bool MyApp::OnInit()
     //      Init the WayPoint Manager
     pWayPointMan = NULL;
 
-    g_display_size_mm = wxMax(100, g_Platform->GetDisplaySizeMM());
-
+    g_display_size_mm = g_Platform->GetDisplaySizeMM();
+    
     // User override....
     if((g_config_display_size_mm > 0) &&(g_config_display_size_manual)){
         g_display_size_mm = g_config_display_size_mm;
@@ -1736,6 +1735,8 @@ bool MyApp::OnInit()
         wxLogMessage(msg);
     }
 
+    g_display_size_mm = wxMax(80, g_display_size_mm);
+    
     if(g_btouch){
         int SelectPixelRadius = 50;
 
@@ -5733,6 +5734,10 @@ int MyFrame::DoOptionsDialog()
 
     SetToolbarScale();
     RequestNewToolbar();
+    
+    if(cc1)
+        cc1->CreateDepthUnitEmbossMaps(global_color_scheme);
+    
 
     bDBUpdateInProgress = false;
     if( g_MainToolbar ) {
@@ -10020,6 +10025,9 @@ void MyFrame::applySettingsString( wxString settings)
 
         g_Platform->HideBusySpinner();
     }
+    
+    if(cc1)
+        cc1->CreateDepthUnitEmbossMaps(global_color_scheme);
 
     //  We do this to remove an orphan recovery window
 #ifdef __OCPN__ANDROID__
@@ -10036,7 +10044,8 @@ void MyFrame::applySettingsString( wxString settings)
     
     Raise();
 
-    cc1->InvalidateGL();
+    if(cc1)
+        cc1->InvalidateGL();
     DoChartUpdate();
     UpdateControlBar();
     Refresh();

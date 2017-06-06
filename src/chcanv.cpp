@@ -82,6 +82,7 @@
 #include "canvasMenu.h"
 #include "wx28compat.h"
 #include "Track.h"
+#include "emboss_data.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -8639,8 +8640,8 @@ void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
     else
         font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
 
-    int emboss_width = 500;
-    int emboss_height = 200;
+    int emboss_width = style->GetToolSize().x * 4 * g_Platform->GetToolbarScaleFactor( g_GUIScaleFactor );
+    int emboss_height = emboss_width * 2 / 5;
     
     wxClientDC dc( this );
     dc.SetFont( font );

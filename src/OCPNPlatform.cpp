@@ -911,6 +911,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_GLOptions.m_bTextureCompression = 1;
     g_GLOptions.m_bTextureCompressionCaching = 1;
 #endif
+
+    qDebug() << "SetDefaultOptions";
     
     g_btouch = true;
     g_bresponsive = true;
@@ -937,6 +939,8 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     new_params->bEnabled = true;
     g_pConnectionParams->Add(new_params);
+    
+    g_default_font_facename = _T("Roboto");
     
     //  Enable some default PlugIns, and their default options
     
@@ -971,6 +975,8 @@ void OCPNPlatform::SetDefaultOptions( void )
         
         pConfig->Write (str, pval );
         FontMgr::Get().LoadFontNative( &str, &pval );
+        
+        qDebug() << "SetDefaultOptions.Config";
     }
         
         
@@ -981,11 +987,15 @@ void OCPNPlatform::SetDefaultOptions( void )
 //      Setup global options on upgrade detected
 //      The global config object (pConfig) is available, so direct updates are also allowed
 
-void OCPNPlatform::SetUpgradeOptions( wxString vString, wxString vStringConfig )
+void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
 {
 #ifdef __OCPN__ANDROID__
 
-        if(wxNOT_FOUND != vString.Find(_T("4.5.1"))){            // upgrade
+        qDebug() << "Upgrade check" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
+
+        if( (wxNOT_FOUND != vNew.Find(_T("4.6.1"))) && (wxNOT_FOUND != vOld.Find(_T("4.5.1"))) ){            // upgrade
+            qDebug() << "Upgrade detected" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
+            
             g_ChartNotRenderScaleFactor = 2.0;
         
         //  Experience indicates a slightly larger default font size is better

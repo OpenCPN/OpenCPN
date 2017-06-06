@@ -45,12 +45,8 @@
 #include "CM93DSlide.h"
 #include "RolloverWin.h"
 #include "timers.h"
-#include "emboss_data.h"
 #include "S57Sector.h"
 
-class wxGLContext;
-class GSHHSChart;
-class IDX_entry;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -93,6 +89,11 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
       class ChInfoWin;
       class glChartCanvas;
       class CanvasMenuHandler;
+      class wxGLContext;
+      class GSHHSChart;
+      class IDX_entry;
+      class emboss_data;
+      
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -290,6 +291,7 @@ public:
       void ShowTrackPropertiesDialog( Track* selected );
       void DrawTCWindow(int x, int y, void *pIDX);
       
+      void CreateDepthUnitEmbossMaps(ColorScheme cs);
       
       wxColour GetFogColor(){ return m_fog_color; }      
       
@@ -475,7 +477,6 @@ private:
 
       emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxString &str, ColorScheme cs);
-      void CreateDepthUnitEmbossMaps(ColorScheme cs);
       wxBitmap CreateDimBitmap(wxBitmap &Bitmap, double factor);
 
       void CreateOZEmbossMapData(ColorScheme cs);
