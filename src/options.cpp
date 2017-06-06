@@ -43,6 +43,7 @@
 #include <wx/stdpaths.h>
 #include "wx/tokenzr.h"
 #include "wx/dir.h"
+#include "wx/odcombo.h"
 
 #if wxCHECK_VERSION(2, 9, \
                     4) /* does this work in 2.8 too.. do we need a test? */
@@ -856,6 +857,133 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
 
 void MMSI_Props_Panel::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
+
+WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
+//#include <wx/arrimpl.cpp> 
+//WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
+
+class  OCPNFatCombo : public wxOwnerDrawnComboBox
+{
+public:
+    
+    OCPNFatCombo();
+    
+    OCPNFatCombo(wxWindow* parent, wxWindowID id, const wxString& value = _T(""),
+                  const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+                  int n = 0, const wxString choices[] = NULL,
+                  long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = _T("OCPNFatCombo") );
+    
+    
+    
+    ~OCPNFatCombo ();
+    
+    void OnDrawItem(wxDC& dc, const wxRect& rect, int item, int flags) const;
+    wxCoord OnMeasureItem(size_t item) const;
+    wxCoord OnMeasureItemWidth(size_t item) const;
+    bool SetFont(const wxFont& font);
+    
+    int Append(const wxString& item, wxBitmap bmp);
+    void Clear( void );
+ 
+    const wxFont *dfont;
+    
+private:
+    int         itemHeight;
+    ArrayOfBitmaps  bmpArray;
+
+};
+
+OCPNFatCombo::OCPNFatCombo()
+    :wxOwnerDrawnComboBox(){}
+    
+OCPNFatCombo::OCPNFatCombo (wxWindow* parent, wxWindowID id, const wxString& value,
+                                  const wxPoint& pos, const wxSize& size, int n, const wxString choices[],
+                                  long style, const wxValidator& validator, const wxString& name)
+                        :wxOwnerDrawnComboBox(parent, id, value, pos, size, n, choices, style, validator, name)
+{
+    double fontHeight = GetFont().GetPointSize() / g_Platform->getFontPointsperPixel();
+    itemHeight = (int)wxRound(fontHeight);
+    SetPopupMaxHeight(::wxGetDisplaySize().y / 2);
+}
+
+OCPNFatCombo::~OCPNFatCombo ()
+{
+}
+
+bool OCPNFatCombo::SetFont(const wxFont& font)
+{
+    dfont = &font;
+    return true;
+}
+
+void OCPNFatCombo::OnDrawItem( wxDC& dc,
+                                       const wxRect& rect,
+                                       int item,
+                                       int flags ) const
+{
+    
+    int offset_x =  10;
+//    dc.DrawBitmap(bmpArray.Item(item), rect.x, rect.y + (rect.height - bmpHeight)/2, true);
+    dc.SetFont(*dfont);
+
+    wxColor bg = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
+    wxBrush br = wxBrush(bg);
+    wxBrush sv = dc.GetBrush();
+    dc.SetBrush(br);
+    dc.DrawRectangle(0, 0, rect.width, rect.height);
+    dc.SetBrush(sv);
+    dc.SetTextForeground(wxColour(0, 0, 0));
+    
+    if ( flags & wxODCB_PAINTING_CONTROL )
+    {
+        wxString text = GetValue();
+        int margin_x = 2;
+        dc.DrawText( text, rect.x + margin_x + offset_x, (rect.height-dc.GetCharHeight())/2 + rect.y );
+    }
+    else
+    {
+        dc.SetBackground(wxBrush(br));
+        dc.Clear();
+        dc.DrawText( GetVListBoxComboPopup()->GetString(item), rect.x + 2 + offset_x, (rect.height-dc.GetCharHeight())/2 + rect.y );
+    }
+}
+
+
+
+wxCoord OCPNFatCombo::OnMeasureItem( size_t item ) const
+{
+    if(item < bmpArray.GetCount())
+        return wxMax(itemHeight, bmpArray.Item(item).GetHeight());
+    
+    return itemHeight * 12 /10;
+}
+
+wxCoord OCPNFatCombo::OnMeasureItemWidth( size_t item ) const
+{
+    return -1;
+}
+
+int OCPNFatCombo::Append(const wxString& item, wxBitmap bmp)
+{
+    bmpArray.Add(bmp);
+    int idx = wxOwnerDrawnComboBox::Append(item);
+    
+    return idx;
+}
+
+void OCPNFatCombo::Clear( void )
+{
+    wxOwnerDrawnComboBox::Clear();
+    bmpArray.Clear();
+}
+    
+
+
+
+
+
+
+
 BEGIN_EVENT_TABLE(options, wxDialog)
 EVT_CHECKBOX(ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click)
 EVT_BUTTON(ID_BUTTONADD, options::OnButtonaddClick)
@@ -1035,6 +1163,12 @@ void options::Init(void) {
   m_BTscanning = 0;
 
   dialogFont = GetOCPNScaledFont(_("Dialog"));
+  
+  dialogFontPlus =  new wxFont(*dialogFont);  // we can't use Smaller() because wx2.8 doesn't support it
+  dialogFontPlus->SetPointSize((dialogFontPlus->GetPointSize() * 1.2) +  0.5);  // + 0.5 to round instead of truncate
+  dialogFontPlus->SetWeight(wxFONTWEIGHT_BOLD);
+
+  
   m_bVectorInit = false;
 
   // This variable is used by plugin callback function AddOptionsPage
@@ -1045,6 +1179,7 @@ void options::Init(void) {
 #ifdef __OCPN__ANDROID__
   m_bcompact = true;
 #endif
+  m_bcompact = true;
 }
 
 size_t options::CreatePanel(const wxString& title) {
@@ -3330,7 +3465,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     marinersSizer->Add(btnRow2);
   }
 
-  else {
+  else {                // compact
     vectorPanel = new wxBoxSizer(wxVERTICAL);
     ps57Ctl->SetSizer(vectorPanel);
 
@@ -3345,8 +3480,21 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     wxString pDispCatStrings[] = {_("Base"), _("Standard"), _("All"),
                                   _("Mariner's Standard")};
     pDispCat = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                            wxSize(350, -1), 4, pDispCatStrings);
+                            wxSize(m_fontHeight * 5, -1), 4, pDispCatStrings);
+    #ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet( pDispCat, m_fontHeight);
+    #endif
+    
     optionsColumn->Add(pDispCat, 0, wxALL, 2);
+
+#if 0        
+    m_pcomboBoxIcon = new OCPNFatCombo( ps57Ctl, wxID_ANY, _("Combo!"), wxDefaultPosition,
+                                   wxSize(-1, -1), 4, pDispCatStrings, wxCB_READONLY );
+    m_pcomboBoxIcon->SetFont(*dialogFontPlus);
+    m_pcomboBoxIcon->SetMinSize( wxSize(m_fontHeight * 4, m_fontHeight) );
+    
+    optionsColumn->Add(m_pcomboBoxIcon, 0, wxALL, 2);
+#endif
 
     // spacer
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _T("")));
@@ -3419,31 +3567,40 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     StyleColumn->AddGrowableCol(1, 3);
     optionsColumn->Add(StyleColumn);
 
-    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Graphics Style")),
-                     inputFlags);
+    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Graphics Style")), inputFlags);
     wxString pPointStyleStrings[] = {
         _("Paper Chart"), _("Simplified"),
     };
     pPointStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxSize(220, -1), 2, pPointStyleStrings);
+                               wxSize(m_fontHeight * 3, m_fontHeight), 2, pPointStyleStrings);
+    #ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet( pPointStyle, m_fontHeight *8/10);
+    #endif
+    
     StyleColumn->Add(pPointStyle, inputFlags);
 
-    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")),
-                     inputFlags);
+    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Boundaries")), inputFlags);
     wxString pBoundStyleStrings[] = {
         _("Plain"), _("Symbolized"),
     };
     pBoundStyle = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                               wxSize(220, -1), 2, pBoundStyleStrings);
+                               wxSize(m_fontHeight * 3, m_fontHeight), 2, pBoundStyleStrings);
+    #ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet( pBoundStyle, m_fontHeight *8/10);
+    #endif
+    
     StyleColumn->Add(pBoundStyle, inputFlags);
 
-    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")),
-                     inputFlags);
+    StyleColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Colors")), inputFlags);
+    
     wxString pColorNumStrings[] = {
         _("2 Color"), _("4 Color"),
     };
     p24Color = new wxChoice(ps57Ctl, ID_RADARDISTUNIT, wxDefaultPosition,
-                            wxSize(220, -1), 2, pColorNumStrings);
+                            wxSize(m_fontHeight * 3, m_fontHeight), 2, pColorNumStrings);
+    #ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet( p24Color, m_fontHeight *8/10);
+    #endif
     StyleColumn->Add(p24Color, inputFlags);
 
     // spacer
@@ -3458,28 +3615,25 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(DepthColumn);
 
     // depth options
+    
     DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Shallow Depth")),
                      inputFlags);
-    m_ShallowCtl =
-        new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(100, -1), wxTE_RIGHT);
+    m_ShallowCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
+                       wxSize(m_fontHeight * 2, m_fontHeight), wxTE_RIGHT);
     DepthColumn->Add(m_ShallowCtl, inputFlags);
     m_depthUnitsShal = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsShal, inputFlags);
 
-    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")),
-                     inputFlags);
-    m_SafetyCtl =
-        new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
-                       wxSize(100, -1), wxTE_RIGHT);
+    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Safety Depth")), inputFlags);
+    m_SafetyCtl =  new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
+                       wxSize(m_fontHeight * 2, m_fontHeight), wxTE_RIGHT);
     DepthColumn->Add(m_SafetyCtl, inputFlags);
     m_depthUnitsSafe = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsSafe, inputFlags);
 
-    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")),
-                     inputFlags);
-    m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""),
-                               wxDefaultPosition, wxSize(100, -1), wxTE_RIGHT);
+    DepthColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Deep Depth")), inputFlags);
+    m_DeepCtl = new wxTextCtrl(ps57Ctl, ID_OPTEXTCTRL, _T(""), wxDefaultPosition,
+                        wxSize(m_fontHeight * 2, m_fontHeight), wxTE_CENTER);
     DepthColumn->Add(m_DeepCtl, inputFlags);
     m_depthUnitsDeep = new wxStaticText(ps57Ctl, wxID_ANY, _("meters"));
     DepthColumn->Add(m_depthUnitsDeep, inputFlags);
@@ -3918,6 +4072,8 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     // another sizer instead of letting it grow.
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     panelUnits->SetSizer(wrapperSizer);
+    
+    wrapperSizer->Add(1, border_size * 24);
     wrapperSizer->Add(unitsSizer, 1, wxALL | wxALIGN_CENTER, border_size);
 
     // spacer
@@ -3931,8 +4087,11 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                    _("Kilometers"), _("Meters")};
     int m_DistanceFormatsNChoices = sizeof(pDistanceFormats) / sizeof(wxString);
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
-                                   wxDefaultPosition, wxSize(250, -1),
+                                   wxDefaultPosition, wxSize(m_fontHeight * 4, -1),
                                    m_DistanceFormatsNChoices, pDistanceFormats);
+    #ifdef __OCPN__ANDROID__
+    setChoiceStyleSheet( pDistanceFormat, m_fontHeight *8/10);
+    #endif
     unitsSizer->Add(pDistanceFormat, inputFlags);
 
     // speed units
@@ -3942,7 +4101,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     int m_SpeedFormatsNChoices = sizeof(pSpeedFormats) / sizeof(wxString);
     pSpeedFormat =
         new wxChoice(panelUnits, ID_SPEEDUNITSCHOICE, wxDefaultPosition,
-                     wxSize(250, -1), m_SpeedFormatsNChoices, pSpeedFormats);
+                     wxSize(m_fontHeight * 4, -1), m_SpeedFormatsNChoices, pSpeedFormats);
+    #ifdef __OCPN__ANDROID__
+        setChoiceStyleSheet( pSpeedFormat, m_fontHeight *8/10);
+    #endif
     unitsSizer->Add(pSpeedFormat, inputFlags);
 
     // depth units
@@ -3953,7 +4115,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     };
     pDepthUnitSelect =
         new wxChoice(panelUnits, ID_DEPTHUNITSCHOICE, wxDefaultPosition,
-                     wxSize(250, -1), 3, pDepthUnitStrings);
+                     wxSize(m_fontHeight * 4, -1), 3, pDepthUnitStrings);
+    #ifdef __OCPN__ANDROID__
+        setChoiceStyleSheet( pDepthUnitSelect, m_fontHeight *8/10);
+    #endif
     unitsSizer->Add(pDepthUnitSelect, inputFlags);
 
     // spacer
@@ -3969,7 +4134,10 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     int m_SDMMFormatsNChoices = sizeof(pSDMMFormats) / sizeof(wxString);
     pSDMMFormat =
         new wxChoice(panelUnits, ID_SDMMFORMATCHOICE, wxDefaultPosition,
-                     wxSize(350, -1), m_SDMMFormatsNChoices, pSDMMFormats);
+                     wxSize(m_fontHeight * 4, -1), m_SDMMFormatsNChoices, pSDMMFormats);
+    #ifdef __OCPN__ANDROID__
+        setChoiceStyleSheet( pSDMMFormat, m_fontHeight *8/10);
+    #endif
     unitsSizer->Add(pSDMMFormat, inputFlags);
 
     // spacer
@@ -3981,13 +4149,14 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     groupLabelFlags);
 
     //  "Mag Heading" checkbox
-    pCBTrueShow =
-        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show true"));
+    pCBTrueShow =  new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show true"));
     unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
-    pCBMagShow =
-        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings"));
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+    
+    pCBMagShow =  new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic"));
     unitsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
-
+    unitsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")));
+    
     //  Mag Heading user variation
 
     wxStaticBox* itemStaticBoxVar = new wxStaticBox(panelUnits, wxID_ANY, _T(""));
@@ -4689,7 +4858,7 @@ void options::CreateControls(void) {
   int font_size_y, font_descent, font_lead;
   GetTextExtent(_T("0"), NULL, &font_size_y, &font_descent, &font_lead);
   m_fontHeight = font_size_y + font_descent + font_lead;
-
+  
   m_small_button_size =
       wxSize(-1, (int)(1.4 * (font_size_y + font_descent + font_lead)));
 
@@ -5422,7 +5591,7 @@ void options::SetInitialVectorSettings(void)
         }
 
         pDispCat->SetSelection(nset);
-
+        
         if( ps57CtlListBox )
             ps57CtlListBox->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
         itemButtonClearList->Enable(MARINERS_STANDARD == ps52plib->GetDisplayCategory());
@@ -5620,7 +5789,7 @@ void options::OnChartDirListSelect(wxCommandEvent& event) {
 }
 
 void options::OnDisplayCategoryRadioButton(wxCommandEvent& event) {
-  const bool select = pDispCat->GetSelection() == 3;
+  const bool select =  pDispCat->GetSelection() == 3;
   ps57CtlListBox->Enable(select);
   itemButtonClearList->Enable(select);
   itemButtonSelectList->Enable(select);
@@ -6287,19 +6456,19 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
 
     enum _DisCat nset = OTHER;
-    switch (pDispCat->GetSelection()) {
-      case 0:
-        nset = DISPLAYBASE;
-        break;
-      case 1:
-        nset = STANDARD;
-        break;
-      case 2:
-        nset = OTHER;
-        break;
-      case 3:
-        nset = MARINERS_STANDARD;
-        break;
+     switch (pDispCat->GetSelection()) {
+       case 0:
+         nset = DISPLAYBASE;
+         break;
+       case 1:
+         nset = STANDARD;
+         break;
+       case 2:
+         nset = OTHER;
+         break;
+       case 3:
+         nset = MARINERS_STANDARD;
+         break;
     }
     ps52plib->SetDisplayCategory(nset);
 

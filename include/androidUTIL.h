@@ -144,6 +144,7 @@ void prepareAndroidStyleSheets();
 QString getAdjustedDialogStyleSheet();
 QString getListBookStyleSheet();
 QString getScrollBarsStyleSheet();
+void setChoiceStyleSheet( wxChoice *win, int refDim);
 
 //      SVG Support
 wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );

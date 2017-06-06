@@ -63,6 +63,7 @@ class ChartGroup;
 class MMSI_Props_Panel;
 class MMSIProperties;
 class OCPNCheckedListCtrl;
+class OCPNFatCombo;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE \
@@ -444,6 +445,7 @@ class options : private Uncopyable,
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
   wxStaticText *m_depthUnitsShal, *m_depthUnitsSafe, *m_depthUnitsDeep;
   wxSlider *m_pSlider_CM93_Zoom;
+  
   int k_vectorcharts;
 
   // For "Units" page
@@ -586,7 +588,7 @@ class options : private Uncopyable,
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
 
   wxNotebookPage *m_groupsPage;
-  wxFont *smallFont, *dialogFont;
+  wxFont *smallFont, *dialogFont, *dialogFontPlus;
   wxSize m_small_button_size;
   wxTimer m_BTScanTimer;
   wxArrayString m_BTscan_results;

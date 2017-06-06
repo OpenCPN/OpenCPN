@@ -3460,8 +3460,9 @@ QTreeWidget QScrollBar::sub-line:horizontal {\
     height: 0px;\
     subcontrol-position: bottom;\
     subcontrol-origin: margin;\
-}\
-";
+}";
+
+
 
 QString qtStyleSheetScrollbarsProto ="\
 QScrollBar:horizontal {\
@@ -3602,6 +3603,47 @@ void prepareAndroidStyleSheets()
     qtStyleSheetScrollbars.append(qtStyleSheetScrollbarsProto);
 }    
     
+void setChoiceStyleSheet( wxChoice *win, int refDim)
+{
+    qDebug() << "refDim" << refDim;
+//    int points = font.GetPointSize();
+//    int fontPix = points / g_Platform->getFontPointsperPixel();
+    
+    float fontDimFloat = ((float)refDim) * 0.5;
+    int fontDim = (int)fontDimFloat;
+    
+    QString styleString;
+    char sb[1400];
+    
+    
+     //  This one control the appearance of the "un-dropped" control.
+    snprintf(sb, sizeof(sb),
+             "QComboBox { font-size: %dpx; font-weight: bold; min-height: %dpx; color: rgb(0,0,0); background-color: rgb(250,250,250); }", fontDim, refDim );
+    styleString.append(sb);
+    
+    // This one controls the color and style of the drop list items
+    snprintf(sb, sizeof(sb),
+             "QComboBox QListView::item { color: rgb(0,0,0); background-color: rgb(95, 163, 237); }");
+    styleString.append(sb);
+    
+    
+    // This one controls the drop list font
+    snprintf(sb, sizeof(sb),
+             "QComboBox QAbstractItemView { font-size: %dpx; font-weight: bold;}", fontDim);
+    styleString.append(sb);
+    
+    // This one is necessary to set min height of drop list items, otherwise they are squished.
+    snprintf(sb, sizeof(sb),
+             "QComboBox QAbstractItemView::item {  min-height: %dpx; border: 10px outset darkgray; border-radius: 40px;  }", refDim);
+    styleString.append(sb); 
+    
+    qDebug() << styleString;
+    
+    win->GetHandle()->setView(new QListView());
+    win->GetHandle()->setStyleSheet(styleString);
+ 
+    
+}
 
 
 QString getAdjustedDialogStyleSheet()
