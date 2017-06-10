@@ -319,94 +319,123 @@ class FileChooserCore {
         }
 
         public String isRemovableSDCardAvailable() {
-            final String FLAG = "mnt";
-            final String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
-            final String EXTERNAL_STORAGE_DOCOMO = System.getenv("EXTERNAL_STORAGE_DOCOMO");
-            final String EXTERNAL_SDCARD_STORAGE = System.getenv("EXTERNAL_SDCARD_STORAGE");
-            final String EXTERNAL_SD_STORAGE = System.getenv("EXTERNAL_SD_STORAGE");
-            final String EXTERNAL_STORAGE = System.getenv("EXTERNAL_STORAGE");
+                String directory = null;
 
-            Map<Integer, String> listEnvironmentVariableStoreSDCardRootDirectory = new HashMap<Integer, String>();
-            listEnvironmentVariableStoreSDCardRootDirectory.put(0, SECONDARY_STORAGE);
-            listEnvironmentVariableStoreSDCardRootDirectory.put(1, EXTERNAL_STORAGE_DOCOMO);
-            listEnvironmentVariableStoreSDCardRootDirectory.put(2, EXTERNAL_SDCARD_STORAGE);
-            listEnvironmentVariableStoreSDCardRootDirectory.put(3, EXTERNAL_SD_STORAGE);
-            listEnvironmentVariableStoreSDCardRootDirectory.put(4, EXTERNAL_STORAGE);
+                File externalStorageList[] = null;
+                int version = android.os.Build.VERSION.SDK_INT;
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {        // KITKAT = 19/20
+                        Log.e("OpenCPN", "Found SDK 19 or greater");
+                        externalStorageList = this.chooser.getContext().getExternalFilesDirs(null);
+
+                        if(null != externalStorageList){
+                                Log.e("OpenCPN", "eSL not null");
 
 
-            String directory = null;
-
-            File externalStorageList[] = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                externalStorageList = this.chooser.getContext().getExternalFilesDirs(null);
-
-                if(null != externalStorageList){
-                    Log.e("OpenCPN", "eSL not null");
-
-
-                    for(int i = 0 ; i < externalStorageList.length ; i++){
-                        Log.e("OpenCPN", String.valueOf(i) + "/ " + String.valueOf(externalStorageList.length));
-                        if(null != externalStorageList[i])
-                            Log.e("OpenCPN", "eSL content: " + String.valueOf(i) + " " + externalStorageList[i].getAbsolutePath());
-                    }
-
-                    for(int i = 0 ; i < externalStorageList.length ; i++){
-                        if(null != externalStorageList[i]){
-                            directory = externalStorageList[i].getAbsolutePath();
-
-                            Log.e("OpenCPN", "Checking directory: " + directory);
-
-                            if(android.os.Environment.isExternalStorageRemovable(externalStorageList[i])){
-                                Log.e("OpenCPN", "... is removable");
-
-                                directory = canCreateFile(directory);
-                                if(null != directory){
-                                    Log.e("OpenCPN", "... is writable");
-                                    Log.e("OpenCPN", "SD Card's directory: " + directory);
-                                    return directory;
+                                for(int i = 0 ; i < externalStorageList.length ; i++){
+                                        Log.e("OpenCPN", String.valueOf(i) + "/ " + String.valueOf(externalStorageList.length));
+                                        if(null != externalStorageList[i])
+                                                Log.e("OpenCPN", "eSL content: " + String.valueOf(i) + " " + externalStorageList[i].getAbsolutePath());
                                 }
-                            }
+
+                                if(android.os.Build.VERSION.SDK_INT >= 21){
+                                        // Lollipop snd later takes this path
+                                        Log.e("OpenCPN", "Found SDK 21 or greater");
+                                        for(int i = 0 ; i < externalStorageList.length ; i++){
+                                                if(null != externalStorageList[i]){
+                                                        directory = externalStorageList[i].getAbsolutePath();
+
+                                                        Log.e("OpenCPN", "Checking directory: " + directory);
+
+                                                        if(android.os.Environment.isExternalStorageRemovable(externalStorageList[i])) {  // added in API 21
+                                                                Log.e("OpenCPN", "... is removable");
+
+                                                                directory = canCreateFile(directory);
+                                                                if (null != directory) {
+                                                                        Log.e("OpenCPN", "... is writable");
+                                                                        Log.e("OpenCPN", "SD Card's directory: " + directory);
+                                                                        return directory;
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                                else {
+                                        // KitKat takes this path
+                                        Log.e("OpenCPN", "Found SDK 19/20");
+                                        if(externalStorageList.length > 1){
+                                                // Force to use the second in the list
+                                                directory = externalStorageList[1].getAbsolutePath();
+                                                Log.e("OpenCPN", "Checking directory: " + directory);
+
+                                                directory = canCreateFile(directory);
+                                                if (null != directory) {
+                                                        Log.e("OpenCPN", "... is writable");
+                                                        Log.e("OpenCPN", "SD Card's directory: " + directory);
+                                                        return directory;
+                                                }
+
+                                        }
+                                }
                         }
-                    }
                 }
-            }
 
 
-            // Pre KITKAT, or other problem...
-            for(int i = 0 ; i < listEnvironmentVariableStoreSDCardRootDirectory.size() ; i++){
-                Log.e("OpenCPN", "Environment list content: " + String.valueOf(i) + " " + listEnvironmentVariableStoreSDCardRootDirectory.get(i));
-            }
+                // Pre 19 (KitKat), or other problem...
+                Log.e("OpenCPN", "Found SDK less than 19");
 
-            directory = null;
-            int size = listEnvironmentVariableStoreSDCardRootDirectory.size();
-            for (int i = 0; i < size; i++) {
-                directory = listEnvironmentVariableStoreSDCardRootDirectory.get(i);
+                final String FLAG = "mnt";
+                final String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
+                final String EXTERNAL_STORAGE_DOCOMO = System.getenv("EXTERNAL_STORAGE_DOCOMO");
+                final String EXTERNAL_SDCARD_STORAGE = System.getenv("EXTERNAL_SDCARD_STORAGE");
+                final String EXTERNAL_SD_STORAGE = System.getenv("EXTERNAL_SD_STORAGE");
+                final String EXTERNAL_STORAGE = System.getenv("EXTERNAL_STORAGE");
 
-                Log.e("OpenCPN", "Checking directory: " + directory);
+                Map<Integer, String> listEnvironmentVariableStoreSDCardRootDirectory = new HashMap<Integer, String>();
+                listEnvironmentVariableStoreSDCardRootDirectory.put(0, SECONDARY_STORAGE);
+                listEnvironmentVariableStoreSDCardRootDirectory.put(1, EXTERNAL_STORAGE_DOCOMO);
+                listEnvironmentVariableStoreSDCardRootDirectory.put(2, EXTERNAL_SDCARD_STORAGE);
+                listEnvironmentVariableStoreSDCardRootDirectory.put(3, EXTERNAL_SD_STORAGE);
+                listEnvironmentVariableStoreSDCardRootDirectory.put(4, EXTERNAL_STORAGE);
 
-                if(directory != null)
-                    directory = canCreateFile(directory);
 
-                if (directory != null && directory.length() != 0) {
-                    if (i == size - 1) {
-                        if (directory.contains(FLAG)) {
-                            Log.e("OpenCPN", "SD Card's directory w/FLAG: " + directory);
-                            return directory;
-                        } else {
-                            Log.e("OpenCPN", "SD Card's directory wo/FLAG: " + directory);
-                            Log.e("OpenCPN", "Writable SD Card directory not found. ");
-                            return null;
+                for(int i = 0 ; i < listEnvironmentVariableStoreSDCardRootDirectory.size() ; i++){
+                        Log.e("OpenCPN", "Environment list content: " + String.valueOf(i) + " " + listEnvironmentVariableStoreSDCardRootDirectory.get(i));
+                }
+
+                directory = null;
+                int size = listEnvironmentVariableStoreSDCardRootDirectory.size();
+                for (int i = 0; i < size; i++) {
+                        directory = listEnvironmentVariableStoreSDCardRootDirectory.get(i);
+
+                        Log.e("OpenCPN", "Checking directory: " + directory);
+
+                        if(directory != null)
+                                directory = canCreateFile(directory);
+
+                        if (directory != null && directory.length() != 0) {
+                                if (i == size - 1) {
+                                        if (directory.contains(FLAG)) {
+                                                Log.e("OpenCPN", "SD Card's directory w/FLAG: " + directory);
+                                                return directory;
+                                        } else {
+                                                Log.e("OpenCPN", "SD Card's directory wo/FLAG: " + directory);
+                                                Log.e("OpenCPN", "Writable SD Card directory not found. ");
+                                                return null;
+                                        }
+                                }
+                                Log.e("OpenCPN", "SD Card's directory: " + directory);
+                                return directory;
                         }
-                    }
-                    Log.e("OpenCPN", "SD Card's directory: " + directory);
-                    return directory;
                 }
-            }
 
-            Log.e("OpenCPN", "Writable SD Card directory not found. ");
-            return null;
+                Log.e("OpenCPN", "Writable SD Card directory not found. ");
+                return null;
 
         }
+
+
+
 
 
 	// ----- Events methods ----- //
