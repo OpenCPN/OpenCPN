@@ -107,18 +107,31 @@ public class GPSServer extends Service implements LocationListener {
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
 //                    Log.i("DEBUGGER_TAG", "GPS_EVENT_SATELLITE_STATUS Event");
 
-                        int nSatsUsed = 0;
-                         // int maxSatellites = gpsStatus.getMaxSatellites();    // appears fixed at 255
-                         Iterable<GpsSatellite>satellites = mStatus.getSatellites();
-                         Iterator<GpsSatellite>satI = satellites.iterator();
-                         while (satI.hasNext()) {
+                      int nSatsUsed = 0;
+                      boolean bSatsValid = true;
+                      // int maxSatellites = gpsStatus.getMaxSatellites();    // appears fixed at 255
+
+                      // The Android GPS locator service runs in another thread.
+                      // So, the list of satellites may be changed while our thread is waling the iterator.
+                      // That may provoke a NoSuchElementException exception, so we handle that case quietly...
+
+                      try{
+                             Iterable<GpsSatellite>satellites = mStatus.getSatellites();
+                             Iterator<GpsSatellite>satI = satellites.iterator();
+
+                             while (satI.hasNext()) {
                              GpsSatellite satellite = satI.next();
 //                             Log.i("DEBUGGER_TAG", "onGpsStatusChanged(): " + satellite.getPrn() + "," + satellite.usedInFix() + "," + satellite.getSnr() + "," + satellite.getAzimuth() + "," + satellite.getElevation());
                              if(satellite.usedInFix())
                              nSatsUsed++;
-                         }
+                             }
+                      }catch(Exception e){
+                            Log.i("OpenCPN", "GPS_EVENT_SATELLITE_STATUS Exception");
+                            bSatsValid = false;
+                      }
 
-                    if(nSatsUsed < 3)
+
+                    if( bSatsValid && (nSatsUsed < 3))
                         isGPSFix = false;
 
                     break;
