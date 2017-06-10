@@ -215,16 +215,18 @@ public class BluetoothService {
         boolean isRunning = true;
 
         public AcceptThread(boolean isAndroid) {
-            BluetoothServerSocket tmp = null;
+            BluetoothServerSocket tmpSocket = null;
 
             // Create a new listening server socket
             try {
                 if(isAndroid)
-                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE, UUID_ANDROID_DEVICE);
+                    tmpSocket = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE, UUID_ANDROID_DEVICE);
                 else
-                    tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE, UUID_OTHER_DEVICE);
-            } catch (IOException e) { }
-            mmServerSocket = tmp;
+                    tmpSocket = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE, UUID_OTHER_DEVICE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mmServerSocket = tmpSocket;
         }
 
         public void run() {
@@ -236,9 +238,11 @@ public class BluetoothService {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
-                    socket = mmServerSocket.accept();
-                } catch (IOException e) {
-                    break;
+                    if(null != mmServerSocket)
+                        socket = mmServerSocket.accept();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;      // nothing to do but give up.
                 }
 
                 // If a connection was accepted
@@ -256,7 +260,9 @@ public class BluetoothService {
                             // Either not ready or already connected. Terminate new socket.
                             try {
                                 socket.close();
-                            } catch (IOException e) { }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             break;
                         }
                     }
@@ -266,7 +272,8 @@ public class BluetoothService {
 
         public void cancel() {
             try {
-                mmServerSocket.close();
+                if(null != mmServerSocket)
+                    mmServerSocket.close();
                 mmServerSocket = null;
             } catch (IOException e) { }
         }
