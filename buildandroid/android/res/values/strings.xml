@@ -326,4 +326,15 @@
     <string name="ocpn_grib_currentspeedunits_array_item_mph">mph</string>
     <string name="ocpn_grib_currentspeedunits_array_item_kmh">km/h</string>
 
+    <string name="install_status_ready">Ready</string>
+    <string name="install_button_select_new">Select chart install location</string>
+    <string name="install_browser_title">Select chart install location</string>
+    <string name="install_createdir_error">Cannot create new directory here due to file system permissions.\n\nPlease choose another location to install new charts.</string>
+    <string name="install_complete">Install complete</string>
+    <string name="install_ready_to_install">OpenCPN is ready to install new charts.\nPlease confirm the default install location, or choose a new location now.</string>
+    <string name="install_root_di">New charts root directory name:</string>
+    <string name="install_proposed_location">Proposed chart install location:</string>
+    <string name="install_button_install_charts">Install charts</string>
+    <string name="install_done">Done.</string>
+
 </resources>

@@ -14,8 +14,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OpenCPN is ready to install new charts.\nPlease confirm the default install location, or choose a new location now."
-        android:id="@+id/textView"
+        android:text="@string/install_ready_to_install"
+        android:id="@+id/tipView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp" />
@@ -23,7 +23,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select new chart install location"
+        android:text="@string/install_button_select_new"
         android:id="@+id/buttonSelectDir"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/textView"
@@ -32,16 +32,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New charts root directory name:"
+        android:text="@string/install_root_di"
         android:id="@+id/textView5"
-        android:layout_below="@+id/textView"
+        android:layout_below="@+id/tipView"
         android:layout_alignStart="@+id/textView"
         android:layout_marginTop="37dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Proposed chart install location:"
+        android:text="@string/install_proposed_location"
         android:id="@+id/textView7"
         android:layout_below="@+id/textView6"
         android:layout_alignParentStart="true"
@@ -59,7 +59,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Install new charts..."
+        android:text="@string/install_button_install_charts"
         android:id="@+id/buttonInstall"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/button"
@@ -73,6 +73,15 @@
         android:id="@+id/textView6"
         android:layout_below="@+id/textView5"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/install_done"
+        android:id="@+id/buttonDone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/button"
+        android:layout_marginBottom="49dp" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -29,18 +29,24 @@ import android.app.Dialog;
 import android.app.Activity;
 import android.net.Uri ;
 
+import org.opencpn.opencpn.R;
+
 import ar.com.daidalos.afiledialog.FileChooserDialog;
 
 public class OCPNChartInstallActivity extends Activity {
 
     Button selectDirButton;
     Button installButton;
+    Button doneButton;
+
     String m_dirSelected;
     String m_chartzip;
-    String m_currentDir;
+    String m_currentDir = "";
     String m_zipRoot;
     TextView statusText;
     Uri m_chartzipUri;
+
+    boolean m_bComplete = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +70,20 @@ public class OCPNChartInstallActivity extends Activity {
             m_chartzip = sharedFile;
         }
 
-        statusText = (TextView)findViewById(R.id.statusText);
-        statusText.setText("Ready");
+        // Extract the passed parameters from the string bundle...
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String installLoc = extras.getString("installLocation");
+            if(null != installLoc){
+                m_currentDir = installLoc;
+            }
+         }
+         Log.i("OpenCPN", "OCPNChartInstallActivity installLocation: " + m_currentDir);
 
-        ((TextView)findViewById(R.id.textView8)).setText(m_currentDir);
+
+        statusText = (TextView)findViewById(R.id.statusText);
+        statusText.setText(R.string.install_status_ready);
+
 
         // Read the chart zip file, and get the name of the root entry
         if( null != m_chartzip ){
@@ -106,6 +122,9 @@ public class OCPNChartInstallActivity extends Activity {
 
         addListenerOnButtonSelectDir();
         addListenerOnButtonInstall();
+        addListenerOnButtonDone();
+
+        updateGUI();
 
     }
 
@@ -130,7 +149,7 @@ public class OCPNChartInstallActivity extends Activity {
                 dialog.setCanCreateFiles( true );
 
 
-                dialog.setTitle( "Select chart install location..." );
+                dialog.setTitle( R.string.install_browser_title );
 
                 dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
                     public void onFileSelected(Dialog source, File file) {
@@ -140,12 +159,14 @@ public class OCPNChartInstallActivity extends Activity {
 
                         m_dirSelected = file.getAbsolutePath();
 
-                        TextView view = (TextView) findViewById(R.id.textView8);
-                        view.setText(m_dirSelected);
+                        m_currentDir = m_dirSelected;
+                        //TextView view = (TextView) findViewById(R.id.textView8);
+                        //view.setText(m_dirSelected);
 
                         //Log.i("OpenCPN", "Activity onFileSelectedA: " + file.getPath());
                        // m_filechooserString = "file:" + file.getPath();
                         //m_FileChooserDone = true;
+                        updateGUI();
 
                     }
                     public void onFileSelected(Dialog source, File folder, String name) {
@@ -159,7 +180,7 @@ public class OCPNChartInstallActivity extends Activity {
                         if(!success){
 
                             AlertDialog.Builder builder1 = new AlertDialog.Builder(source.getContext());
-                            builder1.setMessage("Cannot create new directory here due to file system permissions.\n\nPlease choose another location to install new charts.");
+                            builder1.setMessage(R.string.install_createdir_error);
                             builder1.setCancelable(true);
 
                             builder1.setPositiveButton(
@@ -227,15 +248,63 @@ public class OCPNChartInstallActivity extends Activity {
                     }
                     unzip(m_chartzipUri, unzipDir);
 
-                    statusText.setText("Install complete.");
+                    statusText.setText(R.string.install_complete);
+                    m_bComplete = true;
+                    updateGUI();
 
                 }
 
             }
 
         });
+    }
+
+    public void addListenerOnButtonDone() {
+
+            doneButton = (Button) findViewById(R.id.buttonDone);
+            doneButton.setVisibility(View.GONE);
+
+            doneButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+
+                    finish();
+
+                }
+
+            });
 
     }
+
+    private void updateGUI(){
+        Log.i("OpenCPN", "OCPNChartInstallActivity updateGUI m_currentDir: " + m_currentDir);
+
+        if(m_currentDir.length() > 0)
+            installButton.setVisibility(View.VISIBLE);
+        else
+            installButton.setVisibility(View.GONE);
+
+        ((TextView)findViewById(R.id.textView8)).setText(m_currentDir);
+
+        if(m_bComplete){
+            TextView tipView = (TextView) findViewById(R.id.tipView);
+            tipView.setVisibility(View.INVISIBLE);
+
+            installButton.setVisibility(View.GONE);
+            selectDirButton.setVisibility(View.GONE);
+            doneButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            doneButton.setVisibility(View.GONE);
+        }
+
+
+
+    }
+
+
+
 
     public void unzip(Uri inputUri, String _targetLocation) {
         Log.i("OpenCPN", "OCPNChartInstallActivity ZIP unzipping " + inputUri.toString() + " to " + _targetLocation);
@@ -295,7 +364,7 @@ public class OCPNChartInstallActivity extends Activity {
     public void finish() {
 
         Bundle b = new Bundle();
-        b.putString("installLocation", m_dirSelected);
+        b.putString("installLocation", m_currentDir);
         b.putString("rootDir", m_zipRoot);
         Intent intent = new Intent();
         intent.putExtras(b);
