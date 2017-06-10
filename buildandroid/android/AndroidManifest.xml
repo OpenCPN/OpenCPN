@@ -113,7 +113,7 @@
 
 
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21"/>
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET"/>
