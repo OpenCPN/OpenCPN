@@ -109,56 +109,73 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
             boolean opened = false;
             try {
                 Log.d(TAG, "claiming interfaces, count=" + mDevice.getInterfaceCount());
-                mControlInterface = mDevice.getInterface(0);
-                Log.d(TAG, "Control iface=" + mControlInterface);
-                // class should be USB_CLASS_COMM
 
-                if (!mConnection.claimInterface(mControlInterface, true)) {
-                    throw new IOException("Could not claim control interface.");
+                if(mDevice.getInterfaceCount() > 0){
+                    mControlInterface = mDevice.getInterface(0);
+                    Log.d(TAG, "Control iface=" + mControlInterface);
+                    // class should be USB_CLASS_COMM
+
+                    if (!mConnection.claimInterface(mControlInterface, true)) {
+                        throw new IOException("Could not claim control interface.");
+                    }
                 }
+                else{
+                    throw new IOException("No interfaces declared.");
+                }
+
                 mControlEndpoint = mControlInterface.getEndpoint(0);
                 Log.d(TAG, "Control endpoint direction: " + mControlEndpoint.getDirection());
 
-                Log.d(TAG, "Claiming data interface.");
-                mDataInterface = mDevice.getInterface(1);
-                Log.d(TAG, "data iface=" + mDataInterface);
-                // class should be USB_CLASS_CDC_DATA
+                if(mDevice.getInterfaceCount() > 1){
 
-                if (!mConnection.claimInterface(mDataInterface, true)) {
-                    throw new IOException("Could not claim data interface.");
-                }
+                    Log.d(TAG, "Claiming data interface.");
+                    mDataInterface = mDevice.getInterface(1);
+                    Log.d(TAG, "data iface=" + mDataInterface);
+                    // class should be USB_CLASS_CDC_DATA
+
+                    if (!mConnection.claimInterface(mDataInterface, true)) {
+                        throw new IOException("Could not claim data interface.");
+                    }
+
+
 
                 //  Read and Write endpoints can come in either order.
                 //  So this code that assumes the read Endpoint is always at (index=1) is incorrect.
 
-//                mReadEndpoint = mDataInterface.getEndpoint(1);
-//                Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
-//                mWriteEndpoint = mDataInterface.getEndpoint(0);
-//                Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+//                  mReadEndpoint = mDataInterface.getEndpoint(1);
+//                  Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
+//                  mWriteEndpoint = mDataInterface.getEndpoint(0);
+//                  Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
 
-                if(mDataInterface.getEndpointCount() > 1){
-                    // Determine which endpoint is the READ (Input) endpoint.
-                    if( mDataInterface.getEndpoint(0).getDirection() == 128){  // input
-                        mReadEndpoint = mDataInterface.getEndpoint(0);
-                        mWriteEndpoint = mDataInterface.getEndpoint(1);
-                    }
-                    else{
-                        mReadEndpoint = mDataInterface.getEndpoint(1);
-                        mWriteEndpoint = mDataInterface.getEndpoint(0);
-                    }
+                    if(mDataInterface.getEndpointCount() > 1){
+                        // Determine which endpoint is the READ (Input) endpoint.
+                        if( mDataInterface.getEndpoint(0).getDirection() == 128){  // input
+                            mReadEndpoint = mDataInterface.getEndpoint(0);
+                            mWriteEndpoint = mDataInterface.getEndpoint(1);
+                        }
+                        else{
+                            mReadEndpoint = mDataInterface.getEndpoint(1);
+                            mWriteEndpoint = mDataInterface.getEndpoint(0);
+                        }
 
                     //  Confirmation...
                     Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
                     Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+                    }
+                    else if(mDataInterface.getEndpointCount() == 1){
+                        Log.d(TAG, "Interface has only one endpoint, assuming it is a Read Point");
+                        mReadEndpoint = mDataInterface.getEndpoint(0);
+                        mWriteEndpoint = null;
+                    }
+                    else{
+                        throw new IOException(" Data interface has no endpoints.");
+                    }
                 }
-                else if(mDataInterface.getEndpointCount() == 1){
-                    Log.d(TAG, "Interface has only one endpoint, assuming it is a Read Point");
-                    mReadEndpoint = mDataInterface.getEndpoint(0);
-                    mWriteEndpoint = null;
+                else{        // Only one interface declared, cannot proceed
+                    Log.d(TAG, "No data interface found.");
+                    throw new IOException("No data interface found.");
                 }
-                else{
-                    throw new IOException("Interface has no endpoints.");
-                }
+
 
                 if (mEnableAsyncReads) {
                   Log.d(TAG, "Async reads enabled");
@@ -167,6 +184,9 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
                 }
 
                 opened = true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 if (!opened) {
                     mConnection = null;
