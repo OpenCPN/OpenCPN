@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-02-25 13:33-0500\n"
+"PO-Revision-Date: 2017-06-10 12:06-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -23,11 +23,12 @@ msgstr "Начать запрос"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Выделите запрашиваемую область \n"
+"или Нажмите здесь, чтобы остановить запрос"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Подтвердить выбор области и продолжить"
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -83,7 +84,7 @@ msgstr "Настройки"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Выделите запрашиваемую область или Нажмите здесь, чтобы остановить запрос"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -441,7 +442,7 @@ msgstr "Цветовая схема"
 
 #: src/GribUIDialogBase.cpp:899
 msgid "Generic"
-msgstr "Типовая"
+msgstr "Общий"
 
 #: src/GribUIDialogBase.cpp:905 src/CursorData.cpp:497 src/CursorData.cpp:503
 #: src/CursorData.cpp:507 src/CursorData.cpp:515 src/CursorData.cpp:520
@@ -845,7 +846,7 @@ msgstr "Отдалите карту или уменьшите масштаб, �
 
 #: src/grib_pi.cpp:136
 msgid "Grib"
-msgstr "GRIB"
+msgstr "Метеокарты GRIB"
 
 #: src/grib_pi.cpp:204
 msgid "GRIB PlugIn for OpenCPN"

@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"PO-Revision-Date: 2017-06-10 12:05-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Finnish\n"
+"Language: fi_FI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: fi\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.cpp:125
+msgid "Show local sQuiddio destinations"
+msgstr "Näytä paikalliset sQuiddio kohteet"
+
+#: src/squiddio_pi.cpp:130
+msgid "Hide local sQuiddio destinations"
+msgstr "Piilota paikalliset sQuiddio kohteet"
+
+#: src/squiddio_pi.cpp:135
+msgid "Download local sQuiddio destinations"
+msgstr "Lataa paikalliset sQuiddio kohteet"
+
+#: src/squiddio_pi.cpp:140
+msgid "Report a Destination at this location"
+msgstr "Ilmoita kohde tässä sijainnissa"
+
+#: src/squiddio_pi.cpp:201
+msgid "sQuiddio"
+msgstr "sQuiddio"
+
+#: src/squiddio_pi.cpp:610
+msgid "Local destinations have been updated"
+msgstr "Paikalliset kohteet on päivitetty"
+
+#: src/squiddio_pi.cpp:613
+msgid "No destinations available for the region"
+msgstr "Kohteita ei ole saatavilla tälle alueelle"
+
+#: src/squiddio_pi.cpp:616
+msgid "Server not responding. Check your Internet connection"
+msgstr "Palvelin ei vastaa. Tarkista Internet-yhteys"
+
+#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr "Oletusselainta ei voitu käynnistää. Tarkista Internet-yhteys"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading"
+msgstr "Ladataan"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading: "
+msgstr "Ladataan: "
+
+#: src/squiddio_pi.cpp:666
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: ei saa yhteyttä palvelimeen"
+
+#: src/squiddio_pi.cpp:737
+msgid "Squiddio"
+msgstr "Squiddio"
+
+#: src/squiddio_pi.cpp:741
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio OpenCPN:lle"
+
+#: src/squiddio_pi.cpp:746
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "== Käyttäjien päivittämä purjehduskohdetietokanta == \n"
+"Jos lataat kohteita haluamaltasi alueelta (vaatii Internet-yhteyden): \n"
+"* Sijoita kohdistin alueella jossa haluat tarkastella kohteita ja oikeaklikkaa hiirellä\n"
+" * Valitse 'Lataa paikalliset sQuiddio kohteet' tilannekohtaisesta menusta.\n\n"
+"Kohteet näkyvät OpenCPN reittipisteinä: \n"
+"* kakkospainikkeella reittipisteen linkki sQuiddio:n kohdesivulle. \n"
+"* seuraa linkkiä arvioi kohde ja lisää kommentteja online.\n\n"
+"Muut valikkovaihtoehdot: Käännä etsii paikallisten kohteiden näkyvyys päälle/pois \n"
+"* \n"
+"* Uuden kohteen tarjoaminen(vaatii Internet-yhteyden ja ilmainen käyttäjätili) \n\n"
+"==Kartalla lokin jakaminen veneilijöille == \n"
+"* Jaa GPS-koordinaatit veneilijä ystäviesi kanssa ja näe heidän sijaintinsa\n"
+"OpenCPN:n kartalla (vaatii vapaan sQuiddio tilin) \n\n"
+"TÄRKEÄÄ: Käyttämällä tätä laajennusta hyväksyt sQuidd.io:n ehdot \n"
+"ja käyttöehdot,jotka ovat  osoitteessa http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:838
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Lokin jakaminen ei ole aktivoitu. Anna sQuiddio käyttäjätunnuksesi ja API-avain. \n\n"
+"Jotta saat API-avaimen, kirjaudu sQuiddio:n (http://squidd.io/signup) ja siirryverkkoprofiilisivullesi (ks. Muokkaa profiilia linkkiä kojelaudassa) \"Numerot & näppäimet\" välilehdellä."
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Juuri nyt"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "Sekunnti sitten"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr "%i sekuntia sitten"
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr "Noin minuutti sitten"
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr "%i minuuttia sitten"
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr "Noin tunti sitten"
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr "%i tuntia sitten"
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr "Eilen"
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr "%i päivää sitten"
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr "Loki lähetetty:"
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr "Lokit vastaanotettu"
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr "sQuiddio lokin päivitys muodostettu:"
+
+#: src/squiddioPrefsDialogBase.cpp:28
+msgid "View Destinations"
+msgstr "Katso kohteita"
+
+#: src/squiddioPrefsDialogBase.cpp:35
+msgid "All"
+msgstr "Kaikki"
+
+#: src/squiddioPrefsDialogBase.cpp:38
+msgid "Marinas"
+msgstr "Satamat"
+
+#: src/squiddioPrefsDialogBase.cpp:41
+msgid "Anchorages"
+msgstr "Ankkuripaikat"
+
+#: src/squiddioPrefsDialogBase.cpp:44
+msgid "Yacht clubs"
+msgstr "Pursiseurat"
+
+#: src/squiddioPrefsDialogBase.cpp:47
+msgid "Docks/piers"
+msgstr "Telakkat/laiturit"
+
+#: src/squiddioPrefsDialogBase.cpp:50
+msgid "Boat ramps"
+msgstr "Venerampit"
+
+#: src/squiddioPrefsDialogBase.cpp:53
+msgid "Fuel Stations"
+msgstr "Huoltoasemat"
+
+#: src/squiddioPrefsDialogBase.cpp:56
+msgid "Other"
+msgstr "Muut"
+
+#: src/squiddioPrefsDialogBase.cpp:59
+msgid "AIS marker"
+msgstr "AIS majakka"
+
+#: src/squiddioPrefsDialogBase.cpp:69
+msgid "Share logs with friends"
+msgstr "Jaa lokit ystävien kesken"
+
+#: src/squiddioPrefsDialogBase.cpp:76
+msgid "Send"
+msgstr "Lähetä"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Never"
+msgstr "Ei koskaan"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a day"
+msgstr "Kerran päivässä"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a day"
+msgstr "Kahdesti päivässä"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once an hour"
+msgstr "Kerran tunnissa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice an hour"
+msgstr "Kaksi kertaa tunnissa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a minute"
+msgstr "Kerran minuutissa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a minute"
+msgstr "Kahdesti minuutissa"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Every 10 seconds"
+msgstr "10 sekunnin välein"
+
+#: src/squiddioPrefsDialogBase.cpp:88
+msgid "Receive"
+msgstr "Vastaanota"
+
+#: src/squiddioPrefsDialogBase.cpp:100
+msgid "sQuiddio ID"
+msgstr "sQuiddio ID"
+
+#: src/squiddioPrefsDialogBase.cpp:106
+msgid "The email address you use to log into sQuidd.io"
+msgstr "Sähköpostiosoite, jota käytät kirjautuessa sQuidd.io:n"
+
+#: src/squiddioPrefsDialogBase.cpp:110
+msgid "API Key"
+msgstr "API avain"
+
+#: src/squiddioPrefsDialogBase.cpp:116
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "Hae uudelleen API avaimesi sQuidd.io profiilistasi. Kirjaudu http://squidd.io:n ja klikkaa kojelaudassa Edit Profilea, sitten valitse Numbers and Keys välilehti. Klikkaa Helppiä, saat lisää Infoa. \n\n"
+"TÄRKEÄÄ! Älä käytä sQuiddio salasanaasi API avaimenasi! "
+

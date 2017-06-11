@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-03-07 13:51-0500\n"
+"PO-Revision-Date: 2017-06-10 12:05-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -580,19 +580,19 @@ msgstr "Üldised valikud"
 
 #: src/GribUIDialogBase.cpp:1388
 msgid "Use High Definition Graphics"
-msgstr "Kasuta kõrgresulutsioonil graafikat"
+msgstr "kasuta kõrgresulutsiooni graafikat"
 
 #: src/GribUIDialogBase.cpp:1391
 msgid "Use Gradual Colors"
-msgstr "Kasuta astmelisi värve"
+msgstr "kasuta astmelisi värve"
 
 #: src/GribUIDialogBase.cpp:1394
 msgid "Copy First Cumulative Missing Record"
-msgstr "Kopeeri esimene puuduv koondkirje"
+msgstr "kopeeri esimene puuduv koondkirje"
 
 #: src/GribUIDialogBase.cpp:1397
 msgid "Copy Missing Wave Records"
-msgstr "Kopeeri puuduvad lainekirjed"
+msgstr "kopeeri puuduvad lainekirjed"
 
 #: src/GribUIDialogBase.cpp:1406
 msgid "Load the More Recent File in Directory"

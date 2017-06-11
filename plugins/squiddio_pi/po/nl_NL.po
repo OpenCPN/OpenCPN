@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"PO-Revision-Date: 2017-06-10 12:04-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: nl\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.cpp:125
+msgid "Show local sQuiddio destinations"
+msgstr "Toon lokale sQuiddio-bestemmingen"
+
+#: src/squiddio_pi.cpp:130
+msgid "Hide local sQuiddio destinations"
+msgstr "Verberg lokale sQuiddio-bestemmingen"
+
+#: src/squiddio_pi.cpp:135
+msgid "Download local sQuiddio destinations"
+msgstr "Download lokale sQuiddio-bestemmingen"
+
+#: src/squiddio_pi.cpp:140
+msgid "Report a Destination at this location"
+msgstr "Rapporteer deze locatie als bestemming"
+
+#: src/squiddio_pi.cpp:201
+msgid "sQuiddio"
+msgstr "sQuiddio"
+
+#: src/squiddio_pi.cpp:610
+msgid "Local destinations have been updated"
+msgstr "Lokale bestemmingen zijn bijgewerkt"
+
+#: src/squiddio_pi.cpp:613
+msgid "No destinations available for the region"
+msgstr "Geen bestemmingen beschikbaar voor dit gebied"
+
+#: src/squiddio_pi.cpp:616
+msgid "Server not responding. Check your Internet connection"
+msgstr "Server reageert niet. Controleer uw internetverbinding."
+
+#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr "Kon de standaardbrowser niet starten. Controleer uw internetverbinding."
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading"
+msgstr "Downloaden"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading: "
+msgstr "Downloaden:"
+
+#: src/squiddio_pi.cpp:666
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: kon geen verbinding maken met de host"
+
+#: src/squiddio_pi.cpp:737
+msgid "Squiddio"
+msgstr "Squiddio"
+
+#: src/squiddio_pi.cpp:741
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio voor OpenCPN"
+
+#: src/squiddio_pi.cpp:746
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "== Database van zeilbestemmingen == \n"
+"Om mogelijke bestemmingen van een gewenste regio te downloaden (internetverbinding vereist): \n"
+"* Plaats cursor op een gebied van bestemmingen dat u wilt bekijken en klik met de rechtermuisknop\n"
+" * Klik op 'Download lokale sQuiddio bestemmingen' in het contextgevoelige menu.\n\n"
+"Bestemmingen verschijnen als OpenCPN markeringspunten: \n"
+"* Klik met de rechtermuisknop op het markeringspunt om via link naar sQuiddio's doelpagina te gaan. \n"
+"* Volg de link om voor de  bestemming te stemmen en voeg online opmerkingen toe.\n\n"
+"Andere menu-opties: \n"
+"* Schakel zichtbaarheid voor lokale bestemmingen aan/uit\n"
+"* Indienen van een nieuwe bestemming (vereist internetverbinding en gratis gebruikersaccount) \n\n"
+"== Positiegegevens delen met anderen == \n"
+"* Deel uw GPS-coördinaten met uw zeilvrienden en toon hun positie op uw\n"
+" OpenCPN kaarten (vereist een gratis sQuiddio-account) \n\n"
+"BELANGRIJK: Met het gebruik van deze PlugIn gaat u akkoord met de sQuidd.io voorwaarden, \n"
+"die beschikbaar zijn op http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:838
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Posities delen is niet geactiveerd. Vul uw sQuiddio gebruikersnaam en API-sleutel in. \n\n"
+"Meldt u aan bij sQuiddio (http://squidd.io/signup) om een API-sleutel te verkrijgen en bezoek uw online profielpagina (zie de link 'Profiel bewerken' in het Dashboard, 'Numbers & Keys' tabblad)."
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Zojuist"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "Een seconde geleden"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr "%i seconden geleden"
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr "Ongeveer een minuut geleden"
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr "%i minuten geleden"
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr "Ongeveer een uur geleden"
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr "%i uren geleden"
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr "Gisteren"
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr "%i dagen geleden"
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr "Positielog verzonden:"
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr "Positielogs ontvangen"
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr "sQuiddio log update gecreëerd:"
+
+#: src/squiddioPrefsDialogBase.cpp:28
+msgid "View Destinations"
+msgstr "Bekijk bestemmingen"
+
+#: src/squiddioPrefsDialogBase.cpp:35
+msgid "All"
+msgstr "Alle"
+
+#: src/squiddioPrefsDialogBase.cpp:38
+msgid "Marinas"
+msgstr "Jachthavens"
+
+#: src/squiddioPrefsDialogBase.cpp:41
+msgid "Anchorages"
+msgstr "Ankerplaatsen"
+
+#: src/squiddioPrefsDialogBase.cpp:44
+msgid "Yacht clubs"
+msgstr "Jachtclubs"
+
+#: src/squiddioPrefsDialogBase.cpp:47
+msgid "Docks/piers"
+msgstr "Havens/pieren"
+
+#: src/squiddioPrefsDialogBase.cpp:50
+msgid "Boat ramps"
+msgstr "Boothellingen"
+
+#: src/squiddioPrefsDialogBase.cpp:53
+msgid "Fuel Stations"
+msgstr "Tankstations"
+
+#: src/squiddioPrefsDialogBase.cpp:56
+msgid "Other"
+msgstr "Overige"
+
+#: src/squiddioPrefsDialogBase.cpp:59
+msgid "AIS marker"
+msgstr "AIS-markering"
+
+#: src/squiddioPrefsDialogBase.cpp:69
+msgid "Share logs with friends"
+msgstr "Deel positielogs met vrienden"
+
+#: src/squiddioPrefsDialogBase.cpp:76
+msgid "Send"
+msgstr "Verzenden"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Never"
+msgstr "Nooit"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a day"
+msgstr "Een keer per dag"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a day"
+msgstr "Twee keer per dag"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once an hour"
+msgstr "Een keer per uur"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice an hour"
+msgstr "Twee keer per uur"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a minute"
+msgstr "Een keer per minuut"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a minute"
+msgstr "Twee keer per minuut"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Every 10 seconds"
+msgstr "Elke 10 seconden"
+
+#: src/squiddioPrefsDialogBase.cpp:88
+msgid "Receive"
+msgstr "Ontvangen"
+
+#: src/squiddioPrefsDialogBase.cpp:100
+msgid "sQuiddio ID"
+msgstr "sQuiddio ID"
+
+#: src/squiddioPrefsDialogBase.cpp:106
+msgid "The email address you use to log into sQuidd.io"
+msgstr "E-mail adres om bij sQuidd.io in te loggen"
+
+#: src/squiddioPrefsDialogBase.cpp:110
+msgid "API Key"
+msgstr "API sleutel"
+
+#: src/squiddioPrefsDialogBase.cpp:116
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "Haal uw API-sleutel op vanaf uw sQuidd.io profiel. Log in bij http://squidd.io, klik op 'Profiel Bewerken' in het Dashboard en selecteer het tabblad 'Numbers & Keys'. Klik op Help voor meer informatie. \n\n"
+"BELANGRIJK! Gebruik NIET uw sQuiddio wachtwoord als uw API-sleutel! "
+

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-03-07 13:51-0500\n"
+"PO-Revision-Date: 2017-06-10 12:05-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -280,11 +280,11 @@ msgstr "kaatri kiiruse ühikud:"
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1846
 msgid "Honor OpenCPN settings"
-msgstr "Austa OpenCPN väärtusi"
+msgstr "austa OpenCPN väärtusi"
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "Kts"
-msgstr "slm"
+msgstr "sõlmed"
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "mph"
@@ -304,7 +304,7 @@ msgstr "sügavuse ühikud:"
 
 #: src/dashboard_pi.cpp:1837 src/dashboard_pi.cpp:1846
 msgid "Meters"
-msgstr "Meetrid"
+msgstr "meetrid"
 
 #: src/dashboard_pi.cpp:1837
 msgid "Feet"

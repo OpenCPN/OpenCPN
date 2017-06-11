@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-01 12:44-0600\n"
+"PO-Revision-Date: 2017-03-14 08:55-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Greek\n"
+"Language: el_GR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: el\n"
+"X-Crowdin-File: /plugins/squiddio_pi/po/squiddio_pi.pot\n"
+
+#: src/squiddio_pi.cpp:125
+msgid "Show local sQuiddio destinations"
+msgstr "Εμφάνιση των τοπικών προορισμών sQuiddio"
+
+#: src/squiddio_pi.cpp:130
+msgid "Hide local sQuiddio destinations"
+msgstr "Απόκρυψη των τοπικών προορισμών sQuiddio"
+
+#: src/squiddio_pi.cpp:135
+msgid "Download local sQuiddio destinations"
+msgstr "Κατέβασμα τοπικών προορισμών sQuiddio"
+
+#: src/squiddio_pi.cpp:140
+msgid "Report a Destination at this location"
+msgstr "Ανάφερε έναν Προορισμό σε αυτό το μέρος"
+
+#: src/squiddio_pi.cpp:201
+msgid "sQuiddio"
+msgstr "sQuiddio"
+
+#: src/squiddio_pi.cpp:610
+msgid "Local destinations have been updated"
+msgstr "Οι τοπικοί προορισμοί έχουν ενημερωθεί"
+
+#: src/squiddio_pi.cpp:613
+msgid "No destinations available for the region"
+msgstr "Δεν υπάρχουν διαθέσιμοι προορισμοί για την περιοχή"
+
+#: src/squiddio_pi.cpp:616
+msgid "Server not responding. Check your Internet connection"
+msgstr "Ο διακομιστής δεν ανταποκρίνεται. Ελέγξτε τη σύνδεσή σας στο Internet"
+
+#: src/squiddio_pi.cpp:644 src/squiddio_pi.cpp:960
+msgid "Could not launch default browser. Check your Internet connection"
+msgstr "Δεν μπόρεσε να ξεκινήσει το προεπιλεγμένο πρόγραμμα περιήγησης. Ελέγξτε τη σύνδεσή σας στο Internet"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading"
+msgstr "Γίνεται λήψη"
+
+#: src/squiddio_pi.cpp:654
+msgid "Downloading: "
+msgstr "Γίνεται λήψη: "
+
+#: src/squiddio_pi.cpp:666
+msgid "Squiddio_pi: unable to connect to host"
+msgstr "Squiddio_pi: δεν είναι δυνατή η σύνδεση με κεντρικό υπολογιστή"
+
+#: src/squiddio_pi.cpp:737
+msgid "Squiddio"
+msgstr "Squiddio"
+
+#: src/squiddio_pi.cpp:741
+msgid "Squiddio for OpenCPN"
+msgstr "Squiddio για το OpenCPN"
+
+#: src/squiddio_pi.cpp:746
+msgid "== User-sourced database of sailing destinations ==\n"
+"To download destinations for a desired region (requires Internet connection):\n"
+"* Position cursor on area where you want to view destinations and right click mouse\n"
+"* Select 'Download local sQuiddio destinations' from context-sensitive menu.\n\n"
+"Destinations appear as OpenCPN waypoints: \n"
+"* Right-click on waypoint for link to sQuiddio's destination page. \n"
+"* Follow link to rate destination and add comments online.\n\n"
+"Other menu options: \n"
+"* Toggle visibility for local destinations on/off \n"
+"* Submit a new destination (requires Internet connection and free user account)\n\n"
+"== In-chart log-sharing for cruisers ==\n"
+"* Share your GPS coordinates with your cruising friends and visualize their position\n"
+"on your OpenCPN charts (requires a free sQuiddio account)\n\n"
+"IMPORTANT: By using this plugin you are agreeing to the sQuidd.io Terms \n"
+"and Conditions, available at http://squidd.io/enduser_agreement"
+msgstr "==Bάση δεδομένων για Ιστιοπλοϊκούς προορισμούς == \n"
+"Για να κατεβάζετε προορισμούς σε κάποια περιοχή (απαιτεί σύνδεση στο διαδίκτυο): \n"
+"* Βάλτε τον δρομέα στην περιοχή όπου θέλετε να βρείτε προορισμούς και κάντε δεξί κλικ\n"
+" * Επιλέξτε 'λήψη τοπικών προορισμών sQuiddio' από το μενού.\n\n"
+"Οι προορισμοί εμφανίζονται ως σημεία του OpenCPN:\n"
+"* Κάντε δεξί κλικ στο σημείο για να συνδεθείτε με τη αντίστοιχη σελίδα του sQuiddio. \n"
+"* Ακολουθήστε τον σύνδεσμο για να αξιολογήσετε τον προορισμό και να προσθέσετε παρατηρήσεις.\n\n"
+"Άλλες επιλογές του μενού: \n"
+"* Εναλλαγή ορατότητας τοπικών προορισμών\n"
+"* Υποβολή νέου προορισμού (απαιτεί σύνδεση στο Internet και δωρεάν λογαριασμό χρήστη) \n\n"
+"== Μοίρασμα πληροφοριών μέσα από τον χάρτη == \n"
+"* Μοίρασμα των συντεταγμένων GPS με τους φίλους σας και εμφάνιση της θέσης τους\n"
+"στον χάρτη του OpenCPN (απαιτεί έναν δωρεάν λογαριασμό sQuiddio) \n\n"
+"ΣΗΜΑΝΤΙΚΟ: Η χρήση αυτού του πρόσθετου υπονοεί ότι ΣΥΜΦΩΝΕΙΤΕ με τους όρους του sQuidd.io \n"
+"που είναι, διαθέσιμοι στο http://squidd.io/enduser_agreement"
+
+#: src/squiddio_pi.cpp:838
+msgid "Log sharing was not activated. Please enter your sQuiddio user ID and API Key. \n\n"
+"To obtain your API Key, sign up for sQuiddio (http://squidd.io/signup) and visit your online profile page (see Edit Profile link in the Dashboard), 'Numbers & Keys' tab."
+msgstr "Δεν ενεργοποιήθηκε το μοίρασμα του Log. Παρακαλούμε εισάγετε το userID του sQuiddio και τον κωδικό API. \n\n"
+"Για να αποκτήσετε τον κωδικό API, γραφτείτε στο sQuiddio (http://squidd.io/signup) και επισκεφτείτε τη σελίδα του προφίλ σας στην καρτέλα «Numbers & Keys» (βλ. σύνδεσμο Edit Profile στο Dashboard)."
+
+#: src/logs.cpp:94
+msgid "Just now"
+msgstr "Μόλις τώρα"
+
+#: src/logs.cpp:97
+msgid "One second ago"
+msgstr "1 δευτερόλεπτο πριν"
+
+#: src/logs.cpp:100
+#, c-format
+msgid "%i seconds ago"
+msgstr "%i δευτερόλεπτα πριν"
+
+#: src/logs.cpp:104
+msgid "About a minute ago"
+msgstr "Περίπου πριν από ένα λεπτό"
+
+#: src/logs.cpp:107
+#, c-format
+msgid "%i minutes ago"
+msgstr "%i λεπτά πριν"
+
+#: src/logs.cpp:111
+msgid "About an hour ago"
+msgstr "Περίπου μία ώρα πριν"
+
+#: src/logs.cpp:114
+#, c-format
+msgid "%i hours ago"
+msgstr "%i ώρες πριν"
+
+#: src/logs.cpp:118
+msgid "Yesterday"
+msgstr "Χθές"
+
+#: src/logs.cpp:121
+#, c-format
+msgid "%i days ago"
+msgstr "πριν %i ημέρες"
+
+#: src/logs.cpp:199
+msgid "Log sent:"
+msgstr "Σταλμένο Log:"
+
+#: src/logs.cpp:215
+msgid "Logs received"
+msgstr "Ληφθέντα Log"
+
+#: src/logs.cpp:305
+msgid "Created sQuiddio log update:"
+msgstr "Δημιουργήθηκε το Log για την ανανέωση του sQuiddio:"
+
+#: src/squiddioPrefsDialogBase.cpp:28
+msgid "View Destinations"
+msgstr "Προορισμοί"
+
+#: src/squiddioPrefsDialogBase.cpp:35
+msgid "All"
+msgstr "Όλα"
+
+#: src/squiddioPrefsDialogBase.cpp:38
+msgid "Marinas"
+msgstr "Μαρίνες"
+
+#: src/squiddioPrefsDialogBase.cpp:41
+msgid "Anchorages"
+msgstr "Αγκυροβόλια"
+
+#: src/squiddioPrefsDialogBase.cpp:44
+msgid "Yacht clubs"
+msgstr "ΙστιοπλοΪκοί όμιλοι"
+
+#: src/squiddioPrefsDialogBase.cpp:47
+msgid "Docks/piers"
+msgstr "Αποβάθρες/προβλήτες"
+
+#: src/squiddioPrefsDialogBase.cpp:50
+msgid "Boat ramps"
+msgstr "Γλίστρες"
+
+#: src/squiddioPrefsDialogBase.cpp:53
+msgid "Fuel Stations"
+msgstr "Καύσιμα"
+
+#: src/squiddioPrefsDialogBase.cpp:56
+msgid "Other"
+msgstr "Άλλα"
+
+#: src/squiddioPrefsDialogBase.cpp:59
+msgid "AIS marker"
+msgstr "Δείκτης AIS"
+
+#: src/squiddioPrefsDialogBase.cpp:69
+msgid "Share logs with friends"
+msgstr "Μοιραστείτε με τους φίλους σας"
+
+#: src/squiddioPrefsDialogBase.cpp:76
+msgid "Send"
+msgstr "Αποστολή"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Never"
+msgstr "Ποτέ"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a day"
+msgstr "Μία φορά την ημέρα"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a day"
+msgstr "Δύο φορές την ημέρα"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once an hour"
+msgstr "Μία φορά την ώρα"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice an hour"
+msgstr "Δύο φορές την ώρα"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Once a minute"
+msgstr "Μια φορά το λεπτό"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Twice a minute"
+msgstr "Δύο φορές ένα λεπτό"
+
+#: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
+msgid "Every 10 seconds"
+msgstr "Κάθε 10 δευτερόλεπτα"
+
+#: src/squiddioPrefsDialogBase.cpp:88
+msgid "Receive"
+msgstr "Λήψη"
+
+#: src/squiddioPrefsDialogBase.cpp:100
+msgid "sQuiddio ID"
+msgstr "sQuiddio ID"
+
+#: src/squiddioPrefsDialogBase.cpp:106
+msgid "The email address you use to log into sQuidd.io"
+msgstr "Η διεύθυνση ηλεκτρονικού ταχυδρομείου που χρησιμοποιείτε για να συνδεθείτε στο sQuidd.io"
+
+#: src/squiddioPrefsDialogBase.cpp:110
+msgid "API Key"
+msgstr "Κλειδί API"
+
+#: src/squiddioPrefsDialogBase.cpp:116
+msgid "Retrieve your API Key from your sQuidd.io profile. Log into http://squidd.io and click Edit Profile in the Dashboard, then select the Numbers and Keys tab. Click Help for more information. \n\n"
+"IMPORTANT! Do not use your sQuiddio Password as your API Key! "
+msgstr "Ανακτήστε το κλειδί API από το προφίλ του sQuidd.io σας. Συνδεθείτε στο http://squidd.io και κάντε κλικ στο κουμπί Επεξεργασία Προφίλ στο ταμπλό και, στη συνέχεια, επιλέξτε το αριθμούς και τα πλήκτρα tab. Κάντε κλικ στο κουμπί Βοήθεια για περισσότερες πληροφορίες. \n\n"
+"IMPORTANT! Μην χρησιμοποιείτε σας sQuiddio τον κωδικό πρόσβασης ως το κλειδί API! "
+
