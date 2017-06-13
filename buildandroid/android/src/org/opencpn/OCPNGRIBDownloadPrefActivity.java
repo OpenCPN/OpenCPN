@@ -162,7 +162,13 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             try {
                 m_grib_PrefsJSON  = new JSONObject( settings );
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                System.out.println(e);
+
+                try{
+                    m_grib_PrefsJSON  = new JSONObject("{}");
+                } catch(JSONException e1) {
+                    System.out.println(e1);
+                }
             }
         }
 
@@ -170,9 +176,13 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
         //  Set up inital values of "Summaries" fields
 
+        // Be careful here, the values in preferences may be invalid....
         mGRIB_modelPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_model");
-        if(null != mGRIB_modelPreference)
-            mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+        if(null != mGRIB_modelPreference){
+            if(null != mGRIB_modelPreference.getEntry()){
+                mGRIB_modelPreference.setSummary(mGRIB_modelPreference.getEntry().toString());
+            }
+        }
 
         mGRIB_TimestepPreference = (ListPreference)getPreferenceScreen().findPreference("GRIB_prefs_timestep");
         if(null != mGRIB_TimestepPreference){
@@ -364,7 +374,8 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
             json = m_grib_PrefsJSON.toString(2);
 
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
+            json = "{}";
         }
 
 
@@ -421,7 +432,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 }
 
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                System.out.println(e);
+                lat_min = 0;
+                lat_max = 1;
+                lon_min = 0;
+                lon_max = 1;
             }
         }
 
@@ -724,7 +739,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 }
 
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                System.out.println(e);
+                lat_min = 0;
+                lat_max = 1;
+                lon_min = 0;
+                lon_max = 1;
             }
         }
 
@@ -902,7 +921,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 }
 
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                lat_min = 0;
+                lat_max = 1;
+                lon_min = 0;
+                lon_max = 1;
+                System.out.println(e);
             }
         }
 
@@ -1159,7 +1182,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 }
 
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                lat_min = 0;
+                lat_max = 1;
+                lon_min = 0;
+                lon_max = 1;
+                System.out.println(e);
             }
         }
 
