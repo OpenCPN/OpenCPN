@@ -301,6 +301,13 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     wxMenu *subMenuChart = new wxMenu;
 
+    #ifdef __OCPN__ANDROID__
+    setMenuStyleSheet(menuRoute, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuWaypoint, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuTrack, GetOCPNGUIScaledFont(_T("Menu")));
+    setMenuStyleSheet(menuAIS, GetOCPNGUIScaledFont(_T("Menu")));
+    #endif
+    
     wxMenu *menuFocus = contextMenu;    // This is the one that will be shown
 
     popx = x;

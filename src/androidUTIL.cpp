@@ -3605,9 +3605,7 @@ void prepareAndroidStyleSheets()
     
 void setChoiceStyleSheet( wxChoice *win, int refDim)
 {
-    qDebug() << "refDim" << refDim;
-//    int points = font.GetPointSize();
-//    int fontPix = points / g_Platform->getFontPointsperPixel();
+    //qDebug() << "refDim" << refDim;
     
     float fontDimFloat = ((float)refDim) * 0.5;
     int fontDim = (int)fontDimFloat;
@@ -3644,6 +3642,31 @@ void setChoiceStyleSheet( wxChoice *win, int refDim)
     win->GetHandle()->setStyleSheet(styleString);
  
     
+}
+
+
+void setMenuStyleSheet( wxMenu *win, const wxFont& font)
+{
+    int points = font.GetPointSize();
+    int fontPix = points / g_Platform->getFontPointsperPixel();
+     
+    //qDebug() << points << g_Platform->getFontPointsperPixel() << fontPix;
+    
+    QString styleString;
+    char sb[1400];
+    
+    snprintf(sb, sizeof(sb),
+             "QMenu { font: bold %dpx; }", fontPix );
+    styleString.append(sb);
+
+    snprintf(sb, sizeof(sb),
+             "QMenu::separator { height: 4px; background: lightblue; margin-left: 10px; margin-right: 5px; }");
+    styleString.append(sb);
+    
+    
+    //qDebug() << styleString;
+    
+    win->GetHandle()->setStyleSheet(styleString);
 }
 
 
