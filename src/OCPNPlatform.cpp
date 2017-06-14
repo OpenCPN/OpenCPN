@@ -996,6 +996,12 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         if( (wxNOT_FOUND != vNew.Find(_T("4.6.1"))) && (wxNOT_FOUND != vOld.Find(_T("4.5.1"))) ){            // upgrade
             qDebug() << "Upgrade detected" << "from: " << vOld.mb_str() << " to: " << vNew.mb_str();
             
+            // Set some S52/S57 options
+            if(pConfig){
+                pConfig->SetPath( _T ( "/Settings/GlobalState" ) );
+                pConfig->Write( _T ( "bShowS57Text" ), true );
+            }
+                
             g_ChartNotRenderScaleFactor = 2.0;
         
         //  Experience indicates a slightly larger default font size is better
@@ -1579,13 +1585,13 @@ double OCPNPlatform::getFontPointsperPixel( void )
 {
     double pt_per_pixel = 1.0;
     
-#ifdef __OCPN__ANDROID__
+//#ifdef __OCPN__ANDROID__
     // On Android, this calculation depends on the density bucket in use.
     //  Also uses some magic numbers...
     //  For reference, see http://pixplicity.com/dp-px-converter/
-    pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
+    //pt_per_pixel = 14.0 / (31.11 * getAndroidDisplayDensity()) ;
     
-#else 
+//#else 
     
     if(m_pt_per_pixel == 0){
     //  Make a measurement...
@@ -1601,7 +1607,7 @@ double OCPNPlatform::getFontPointsperPixel( void )
     }
     if(m_pt_per_pixel > 0)
         pt_per_pixel = m_pt_per_pixel;
-#endif
+//#endif
     
     return pt_per_pixel;
     
