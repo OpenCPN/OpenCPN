@@ -1106,10 +1106,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
               //pb.redirectOutput(Redirect.appendTo(log));
 
               Log.i("OpenCPN", "Process launched as: [" + cmd + "]");
-
               Process process = pb.start();
 
-              Log.i("OpenCPN", "Process ClassName: " + process.getClass().getName());
+              // Reads stdout.
+              // NOTE: You can write to stdin of the command using
+              //       process.getOutputStream().
+              BufferedReader reader = new BufferedReader(
+                      new InputStreamReader(process.getInputStream()));
+              int read;
+              char[] buffer = new char[4096];
+              StringBuffer output = new StringBuffer();
+              while ((read = reader.read(buffer)) > 0) {
+                  output.append(buffer, 0, read);
+              }
+              reader.close();
+
+              String result = output.toString();
+              Log.i("OpenCPN", "createProcSync cmd output: " + result);
+
+
+              Log.i("OpenCPN", " createProcSync Process ClassName: " + process.getClass().getName());
 
               if(process.getClass().getName().equals("java.lang.UNIXProcess")) {
                 /* get the PID on unix/linux systems */
@@ -1129,12 +1145,12 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
               process.waitFor();
 
           } catch (Exception e) {
-              Log.i("OpenCPN", "createProcS exception");
+              Log.i("OpenCPN", "createProcSync exception");
               e.printStackTrace();
           }
 
           String ret = String.valueOf( pid );
-          Log.i("OpenCPN", "Process PID: " + ret);
+          Log.i("OpenCPN", "createProcSync Process PID: " + ret);
           return ret;
 
       }
@@ -1162,6 +1178,19 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                Log.i("OpenCPN", "Process launched as: [" + cmd + "]");
 
                Process process = pb.start();
+
+               // Reads stdout.
+               BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+               int read;
+               char[] buffer = new char[4096];
+               StringBuffer output = new StringBuffer();
+               while ((read = reader.read(buffer)) > 0) {
+                   output.append(buffer, 0, read);
+               }
+               reader.close();
+
+               String result = output.toString();
+               Log.i("OpenCPN", "createProcSync4 cmd output: " + result);
 
                Log.i("OpenCPN", "Process ClassName: " + process.getClass().getName());
 
@@ -3586,11 +3615,34 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         super.onCreate(savedInstanceState);
 
+
+
         //  Bug fix, see http://code.google.com/p/android/issues/detail?id=26658
         if(!isTaskRoot()) {
             Log.i("OpenCPN", "onCreate NOT ROOT");
             finish();
             return;
+        }
+
+        try {
+            String dir = getExternalCacheDir().getAbsolutePath();
+
+            final File path = new File(getExternalCacheDir(), "OCPN_logs");
+            if (!path.exists()) {
+                path.mkdir();
+            }
+            String spath = path.getAbsolutePath() + File.separator + "OCPN_logcat" + ".txt";
+
+            final File oldFile = new File(spath);
+            if(oldFile.exists()){
+                Log.i("OpenCPN", "Delete logfile: " + spath);
+                oldFile.delete();
+            }
+
+            Runtime.getRuntime().exec( "logcat " + "-f " + spath + " -s OpenCPN -s libopencpn.so ");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         Log.i("OpenCPN", "onCreate Root");
@@ -4162,6 +4214,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 case R.id.ocpn_action_toggle_fullscreen:
                         toggleFullscreen();
                         return true;
+
+                case R.id.ocpn_action_email:
+                        ShareViaEmail("OCPN_logs", "OCPN_logcat.txt");
+                        return true;
+
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -4802,6 +4859,24 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //ANDROID-12
 
 
+    private void ShareViaEmail(String folder_name, String file_name) {
+        try {
+        File Root= getExternalCacheDir();
+        String filelocation=Root.getAbsolutePath() + "/" + folder_name + "/" + file_name;
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setType("text/plain");
+        String message="File to be shared is " + filelocation + ".";
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse( "file://"+filelocation));
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+        intent.setData(Uri.parse("mailto:bdbcat@yahoo.com"));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(intent);
+        } catch(Exception e)  {
+        System.out.println("Exception raised during sending mail"+e);
+        }
+    }
 
 
 }

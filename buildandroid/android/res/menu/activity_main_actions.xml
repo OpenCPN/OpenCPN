@@ -82,5 +82,9 @@
           android:title="@string/ocpn_action_settings_basic"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/ocpn_action_email"
+          android:icon="@drawable/settings"
+          android:title="Send logs"
+          android:showAsAction="ifRoom"/>
 
  </menu>
