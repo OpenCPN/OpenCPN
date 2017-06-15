@@ -91,6 +91,10 @@ GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, fl
     m_scale_factor = scale_factor;
     m_ptoolbar = toolbar;
     m_dragging = false;
+    m_dragThreshold = g_Platform->GetDisplayDPmm() / 2;         // 0.5 mm threshold
+    m_dragThreshold = wxMax(m_dragThreshold, 2);
+    m_dragThreshold = wxMin(m_dragThreshold, 12);
+    
     Hide();
     
 }
@@ -168,9 +172,12 @@ void GrabberWin::MouseEvent( wxMouseEvent& event )
     }
     
 
-
+    int dx = spt.x - s_gspt.x;
+    int dy = spt.y - s_gspt.y;
+    
     if( event.Dragging() ) {
-        if(m_ptoolbar && m_ptoolbar->IsShown() /*&& m_ptoolbar->m_bnavgrabber*/){
+         
+        if(m_ptoolbar && m_ptoolbar->IsShown() && ( (abs(dx) > m_dragThreshold) || (abs(dy) > m_dragThreshold) ) ){
             wxPoint par_pos_old = m_ptoolbar->GetPosition();
 
             wxPoint par_pos = par_pos_old;

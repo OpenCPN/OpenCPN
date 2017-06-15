@@ -54,6 +54,7 @@ public:
       ocpnFloatingToolbarDialog *m_ptoolbar;
       bool m_dragging;
       wxString m_icon_name;
+      double m_dragThreshold;
 
 DECLARE_EVENT_TABLE()
 };
