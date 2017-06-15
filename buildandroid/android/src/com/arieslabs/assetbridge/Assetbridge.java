@@ -50,7 +50,7 @@ public class Assetbridge {
 
             // iterate on the files...
             for(String asset : assets) {
-                Log.i("OpenCPN", "assetbridge asset: " + asset);
+                //Log.i("OpenCPN", "assetbridge asset: " + asset);
                 copyAssetItem(am, "files/"+asset, targetDir + "/" + asset);
             }
 
@@ -65,7 +65,7 @@ public class Assetbridge {
     public static void copyAssetItem(AssetManager am, String src, String dest)
     	throws IOException{
 
-        Log.i("OpenCPN", "assetbridge copyAssetItem " + src + " " + dest);
+        //Log.i("OpenCPN", "assetbridge copyAssetItem " + src + " " + dest);
 
         InputStream srcIS = null;
         File destfh;
@@ -103,7 +103,7 @@ public class Assetbridge {
 
     	} else {
 
-            Log.i("OpenCPN", "assetbridge copying file " + dest);
+            //Log.i("OpenCPN", "assetbridge copying file " + dest);
             int count, buffer_len = 2048;
             byte[] data = new byte[buffer_len];
 
