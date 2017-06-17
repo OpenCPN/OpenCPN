@@ -1120,12 +1120,25 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                   output.append(buffer, 0, read);
               }
               reader.close();
-
               String result = output.toString();
-              Log.i("OpenCPN", "createProcSync cmd output: " + result);
+              Log.i("OpenCPN", "createProcSync stdout output:\n " + result);
 
 
-              Log.i("OpenCPN", " createProcSync Process ClassName: " + process.getClass().getName());
+              BufferedReader ereader = new BufferedReader(
+                      new InputStreamReader(process.getErrorStream()));
+              int eread;
+              char[] ebuffer = new char[4096];
+              StringBuffer eoutput = new StringBuffer();
+              while ((eread = ereader.read(ebuffer)) > 0) {
+                  eoutput.append(ebuffer, 0, eread);
+              }
+              ereader.close();
+
+              String eresult = eoutput.toString();
+              Log.i("OpenCPN", "createProcSync stderr output:\n " + eresult);
+
+
+              Log.i("OpenCPN", "\ncreateProcSync Process ClassName: " + process.getClass().getName());
 
               if(process.getClass().getName().equals("java.lang.UNIXProcess")) {
                 /* get the PID on unix/linux systems */
@@ -2421,10 +2434,25 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        Log.i("OpenCPN", "processStagingFiles starts...");
 
        // Is there anything in the "staging" directory?
-       File stageDir = new File( getFilesDir() + "/staging");
+       String stagingPath = getFilesDir().getPath() + File.separator + "staging";
+
+       //  The destination after unzipping
+       String finalDestination = getFilesDir().getAbsolutePath() + File.separator;
+
+       //  Maybe the app has been migrated to SDCard...
+       ApplicationInfo ai = getApplicationInfo();
+       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+           Log.i("OpenCPN", "processStagingFiles:  OCPN is on EXTERNAL_STORAGE");
+           stagingPath = getExternalFilesDir(null).getPath() + File.separator + "staging";
+           finalDestination = getExternalFilesDir(null).getAbsolutePath() + File.separator;
+       }
+       Log.i("OpenCPN", "   Staging directory:: " + stagingPath );
+       Log.i("OpenCPN", "   Destination directory:: " + finalDestination );
+
+       File stageDir = new File( stagingPath );
        if(stageDir.exists()){
            if(stageDir.isDirectory()){
-               Log.i("OpenCPN", "Staging directory exists at: " + getFilesDir() + "/staging");
+               Log.i("OpenCPN", "Staging directory exists at: " + stagingPath );
 
                File[] files = stageDir.listFiles();
 
@@ -2440,11 +2468,11 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                Log.i("OpenCPN", "Processing staged ZIP file: " + sfile.getName());
 
                                // We unzip the file into the app "files" directory.
+                               //  May be on SDCard for migrated apps.
 
                                // For normal plugin zip packages, that will put the plugin .so and helper files
                                // into "files/plugins/", from whence they will be relocated to the data directory for runtime.
 
-                               String finalDestination = getFilesDir().getAbsolutePath() + File.separator;
 
                                unzip(sfile.getAbsolutePath(), finalDestination);
 
@@ -2751,9 +2779,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         outputStream.close();
     }
 
-    private boolean cleanCacheIfNecessary(String prefix, long packageVersion, String cacheName)
+    private boolean cleanCacheIfNecessary(String prefix, String cacheName)
     {
         Log.i("OpenCPN", "cleanCacheIfNecessary " + prefix);
+
+        long packageVersion = -1;
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            packageVersion = packageInfo.lastUpdateTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ApplicationInfo ai = getApplicationInfo();
+        if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+            packageVersion++;
+
+        Log.i("OpenCPN", "cleanCacheIfNecessary: current running packageVersion " + String.valueOf(packageVersion));
+
+
+
         File versionFile = new File(prefix + cacheName);
 
         Log.i("OpenCPN", "version file: " + prefix + cacheName);
@@ -2770,6 +2815,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
              }
         }
 
+        Log.i("OpenCPN", "cleanCacheIfNecessary:  cached value is: " + String.valueOf(cacheVersion));
+
         if (cacheVersion != packageVersion) {
             //deleteRecursively(new File(prefix));
  //           Log.i("OpenCPN", "cleanCacheIfNecessary return true");
@@ -2784,22 +2831,33 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     private void extractBundledPluginsAndImports(String pluginsPrefix)
         throws IOException
     {
+        Log.i("OpenCPN", "extractBundledPluginsAndImports:  pluginsPrefix is: " + pluginsPrefix);
+
         ArrayList<String> libs = new ArrayList<String>();
 
         String dataDir = getApplicationInfo().dataDir + "/";
 
-        long packageVersion = -1;
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            packageVersion = packageInfo.lastUpdateTime;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        if (!cleanCacheIfNecessary(pluginsPrefix, packageVersion, "cache.version"))
-            return;
+//        if (!cleanCacheIfNecessary(pluginsPrefix, "cache.version"))
+//            return;
 
         {
+            Log.i("OpenCPN", "extractBundledPluginsAndImports:  writing new cache file to: " + pluginsPrefix);
+
+            long packageVersion = -1;
+            try {
+                PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                packageVersion = packageInfo.lastUpdateTime;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            ApplicationInfo ai = getApplicationInfo();
+            if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+                packageVersion++;
+
+            Log.i("OpenCPN", "extractBundledPluginsAndImports:  value is: " + String.valueOf(packageVersion));
+
             File versionFile = new File(pluginsPrefix + "cache.version");
 
             File parentDirectory = versionFile.getParentFile();
@@ -2861,12 +2919,16 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private void cleanOldCacheIfNecessary(String oldLocalPrefix, String localPrefix)
     {
+        Log.i("OpenCPN", "cleanOldCacheIfNecessary:  old: " + oldLocalPrefix + " new: " + localPrefix);
+
         File newCache = new File(localPrefix);
         if (!newCache.exists()) {
             {
                 File oldPluginsCache = new File(oldLocalPrefix + "plugins/");
-                if (oldPluginsCache.exists() && oldPluginsCache.isDirectory())
+                if (oldPluginsCache.exists() && oldPluginsCache.isDirectory()){
+                    Log.i("OpenCPN", "cleanOldCacheIfNecessary:  clearing old cache");
                     deleteRecursively(oldPluginsCache);
+                }
             }
 
             {
@@ -3745,27 +3807,33 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                 setContentView(m_activityInfo.metaData.getInt("android.app.splash_screen"));
 
     String tmpdir = "";
-    ApplicationInfo ai = getApplicationInfo();
-    if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
-        tmpdir = getExternalFilesDir(null).getPath();
-    else
-        tmpdir = getFilesDir().getPath();
+ //   ApplicationInfo ai = getApplicationInfo();
+ //   if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+ //       tmpdir = getExternalFilesDir(null).getPath();
+ //   else
+        //tmpdir = getFilesDir().getPath();
 
+        tmpdir = getApplicationInfo().dataDir + "/qt-reserved-files/";
 
-        long packageVersion = -1;
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            packageVersion = packageInfo.lastUpdateTime;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         boolean b_needcopy = false;
-        if (cleanCacheIfNecessary(tmpdir + "/", packageVersion, "OCPNcache.version"))
+        if (cleanCacheIfNecessary(tmpdir + "/", "OCPNcache.version"))
             b_needcopy = true;
 
 
         try{
+            long packageVersion = -1;
+            try {
+                PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                packageVersion = packageInfo.lastUpdateTime;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            ApplicationInfo ai = getApplicationInfo();
+            if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
+                    packageVersion++;
+
             File versionFile = new File(tmpdir + "/OCPNcache.version");
 
             File parentDirectory = versionFile.getParentFile();
