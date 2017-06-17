@@ -39,8 +39,7 @@ public class OCPNChartInstallActivity extends Activity {
     Button installButton;
     Button doneButton;
 
-    String m_dirSelected;
-    String m_chartzip;
+    String m_chartzip = "";
     String m_currentDir = "";
     String m_zipRoot;
     TextView statusText;
@@ -157,7 +156,7 @@ public class OCPNChartInstallActivity extends Activity {
                         //Toast toast = Toast.makeText(source.getContext(), "File selected: " + file.getAbsolutePath(), Toast.LENGTH_LONG);
                         //toast.show();
 
-                        m_dirSelected = file.getAbsolutePath();
+                        String m_dirSelected = file.getAbsolutePath();
 
                         m_currentDir = m_dirSelected;
                         //TextView view = (TextView) findViewById(R.id.textView8);
@@ -240,9 +239,11 @@ public class OCPNChartInstallActivity extends Activity {
             @Override
             public void onClick(View arg0) {
 
+                Log.i("OpenCPN", "OCPNChartInstallActivity addListenerOnButtonInstall:m_currentDir: " + m_currentDir);
+                Log.i("OpenCPN", "OCPNChartInstallActivity addListenerOnButtonInstall:m_chartzip: " + m_chartzip);
 
-                if( (m_chartzip.length() > 0) && (m_dirSelected.length() > 0) ){
-                    String unzipDir = m_dirSelected;
+                if( (m_chartzip.length() > 0) && (m_currentDir.length() > 0) ){
+                    String unzipDir = m_currentDir;
                     if(!unzipDir.endsWith("/")){
                         unzipDir += "/";
                     }
