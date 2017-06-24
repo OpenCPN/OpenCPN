@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.Map;
 import android.os.Environment;
 import android.annotation.TargetApi;
+import android.content.Intent;
 
 /**
  * This class implements the common features of a file chooser.
@@ -350,12 +351,33 @@ class FileChooserCore {
                                                         if(android.os.Environment.isExternalStorageRemovable(externalStorageList[i])) {  // added in API 21
                                                                 Log.e("OpenCPN", "... is removable");
 
-                                                                directory = canCreateFile(directory);
-                                                                if (null != directory) {
-                                                                        Log.e("OpenCPN", "... is writable");
-                                                                        Log.e("OpenCPN", "SD Card's directory: " + directory);
-                                                                        return directory;
+                                                                File dirTest = new File(directory);
+                                                                if(!dirTest.exists()){
+                                                                    Log.e("OpenCPN", "Creating: " + directory);
+                                                                    try{
+                                                                        dirTest.createNewFile();
+                                                                    } catch(IOException e){
+                                                                       Log.e("OpenCPN", "Exception creating: " + directory);
+                                                                       directory = null;
+                                                                    }
+
                                                                 }
+
+                                                                if(canCreateFiles){
+                                                                    directory = canCreateFile(directory);
+                                                                    if (null != directory) {
+                                                                            Log.e("OpenCPN", "... is writable");
+                                                                            Log.e("OpenCPN", "SD Card's directory: " + directory);
+                                                                            return directory;
+                                                                    }
+                                                                }
+                                                                else{
+                                                                    Log.e("OpenCPN", "... only need R/O");
+                                                                    Log.e("OpenCPN", "SD Card's directory: " + directory);
+                                                                    return directory;
+                                                                }
+
+
                                                         }
                                                 }
                                         }
@@ -433,10 +455,6 @@ class FileChooserCore {
                 return null;
 
         }
-
-
-
-
 
 	// ----- Events methods ----- //
 
