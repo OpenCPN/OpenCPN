@@ -67,11 +67,15 @@ public class OCPNPluginInstallerActivity extends Activity {
                 // Create the destination directory
                 String stagingPath = getFilesDir().getPath() + File.separator + "staging";
 
+
                 //  Maybe the app has been migrated to SDCard...
                 ApplicationInfo ai = getApplicationInfo();
                 if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
                     Log.i("OpenCPN", "OCPNPluginInstallerActivity:  OCPN is on EXTERNAL_STORAGE");
-                    stagingPath = getExternalFilesDir(null).getPath() + File.separator + "staging";
+                    File[] fx = getExternalFilesDirs(null);
+                    if(fx.length > 1){
+                        stagingPath = fx[1].getPath() + File.separator + "staging";
+                    }
                 }
 
                 Log.i("OpenCPN", "OCPNPluginInstallerActivity:  Staging directory: " + stagingPath);
