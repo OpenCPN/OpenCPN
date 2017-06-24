@@ -20,29 +20,43 @@ public class Assetbridge {
 
 
     // unpack
-    public static void unpack(Context c) {
+    public static void unpack(Context c, String targetDir) {
 
         try {
+/*
             String targetDir = "";
 
             // first let's get the target directory
 
             ApplicationInfo ai = c.getApplicationInfo();
-            if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
-                targetDir = c.getExternalFilesDir(null).getPath();
-            else
-                targetDir = c.getFilesDir().getPath();
+            if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+                File[] fx = c.getExternalFilesDirs(null);
+                if(fx.length > 1){
+                    targetDir = fx[1].getPath();
+                }
+                else{
+                    targetDir = c.getExternalFilesDir(null).getPath();
+                }
+            }
+            else{
+                targetDir = c.getExternalFilesDir(Environment.getDataDirectory().getAbsolutePath()).getAbsolutePath();
+                //targetDir = c.getExternalFilesDir().getPath();
+            }
 
+*/
             Log.i("OpenCPN", "assetbridge target " + targetDir);
 
 
             // Sometimes, due to an app startup race condition, the getFilesDir() does not yet exist, or is inaccessible.
             //  So, in this case, we hardcode/set the targetDIR directly.
             //  Note that this method WILL PROBABLY NOT WORK if the app is moved to the sdCard.  But it does not always happen, so...
-            // See https://code.google.com/p/android/issues/detail?id=8886
+            //  See https://code.google.com/p/android/issues/detail?id=8886
 
-            if(targetDir.isEmpty())
+            if(targetDir.isEmpty()){
                 targetDir = "/data/data/org.opencpn.opencpn/files";
+                Log.i("OpenCPN", "assetbridge target is empty, substituting:" + targetDir);
+            }
+
 
             // now we need the assetmanager
             AssetManager am = c.getAssets();
@@ -86,14 +100,18 @@ public class Assetbridge {
         // and now, depending on ..
     	if(isDir) {
 
-            Log.i("OpenCPN", "assetbridge copying dir " + dest);
+            Log.i("OpenCPN", "assetbridge copying dir " + src + " to: " + dest);
 
             // If the directory doesn't yet exist, create it
             if( !destfh.exists() ){
-                destfh.mkdir();
+                destfh.mkdirs();
+            }
+            if( !destfh.exists() ){
+                Log.i("OpenCPN", "assetbridge cannot create directory: " + dest);
             }
 
-            // list the assets in the directory...
+
+            // list the assets in the source directory...
             String assets[] = am.list(src);
 
             // and copy them all using same.
