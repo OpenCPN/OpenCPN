@@ -1444,7 +1444,7 @@ IF (OPENGL_FOUND)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
       ELSE ()
-#        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
+        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       ENDIF ()
   ELSE (NOT MSVC)
         # try to use sse on x86 based systems
