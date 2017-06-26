@@ -4030,6 +4030,14 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         if (cleanCacheIfNecessary(tmpdir + "/", "OCPNcache.version"))
             b_needcopy = true;
 
+        //  Take a look for a specific file in the data directory, just to confirm...
+        File testFile = new File(m_filesDir + "/license.txt");
+        Log.i("OpenCPN", "Checking for required UI files...");
+        if(!testFile.exists()){
+            Log.i("OpenCPN", "Force copy invoked.");
+            b_needcopy = true;
+        }
+
 
         try{
             long packageVersion = -1;
@@ -4125,9 +4133,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         bDirReady = true;
 
 
-     if(!bDirReady){
-         Log.i("OpenCPN", "Start SAF here ");
-     }
 
 
 
@@ -4146,17 +4151,27 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
      Log.i("OpenCPN", "Write access check result: " + String.valueOf(bWrite));
 
+     // Actually try a write....
+     File testWriteDir = new File (dirFiles + "/uidata");
+     try{
+         if(testWriteDir.mkdirs()){
+             Log.i("OpenCPN", "Write access verify result: OK");
+         }
+     }catch(Exception e){
+         Log.i("OpenCPN", "Write access verify result: FAILS");
+         bWrite = false;
+     }
 
-     // test
-//     File destfh = new File(dirFiles + "/doc");
 
-     // If the directory doesn't yet exist, create it
-//     if( !destfh.exists() ){
-//         destfh.mkdirs();
-//     }
-//     if( !destfh.exists() ){
-//         Log.i("OpenCPN", "TESTING cannot create directory: " + dirFiles + "/doc");
-//     }
+    // Absolute bailout....
+    if(!bWrite || !bDirReady){
+        m_filesDir = getFilesDir().getAbsolutePath();
+        dirFiles = m_filesDir;
+        Log.i("OpenCPN", "Forcing Application filesDir to: " + m_filesDir );
+    }
+
+
+
 
 
 
