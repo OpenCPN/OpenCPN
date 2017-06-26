@@ -579,6 +579,8 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event){
 
 bool androidUtilInit( void )
 {
+    qDebug() << "androidUtilInit()";
+    
     g_androidUtilHandler = new androidUtilHandler();
 
     //  Initialize some globals
@@ -587,6 +589,8 @@ bool androidUtilInit( void )
     s_androidMemUsed  = 50;
     
     wxString dirs = callActivityMethod_vs("getSystemDirs");
+    qDebug() << "dirs: " << dirs.mb_str();
+    
     wxStringTokenizer tk(dirs, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();
@@ -599,6 +603,8 @@ bool androidUtilInit( void )
         g_androidCacheDir = token;
         token = tk.GetNextToken();              
         g_androidExtFilesDir = token;           // used as PrivateDataDir, "/storage/emulated/0/Android/data/org.opencpn.opencpn/files"
+                                                // if app has been moved to sdcard, this gives like (on Android 6)
+                                                // /storage/2385-1BF8/Android/data/org.opencpn.opencpn/files
         token = tk.GetNextToken();              
         g_androidExtCacheDir = token;
         token = tk.GetNextToken();              
