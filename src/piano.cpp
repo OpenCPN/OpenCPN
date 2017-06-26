@@ -776,7 +776,7 @@ int Piano::GetHeight()
     height *= g_Platform->GetDisplayDensityFactor();
     
 #ifdef __OCPN__ANDROID__    
-    height = wxMax(height, 5 * g_Platform->GetDisplayDPmm());
+    height = wxMax(height, 4 * g_Platform->GetDisplayDPmm());
 #endif    
     
     return height;
