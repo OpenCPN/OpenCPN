@@ -18,45 +18,63 @@ public class Assetbridge {
         System.loadLibrary("assetbridge");
     }
 
+    public static void unpackNoDoc(Context c, String targetDir) {
+
+        try {
+            Log.i("OpenCPN", "assetbridge unpackNoDoc target " + targetDir);
+
+
+             // now we need the assetmanager
+            AssetManager am = c.getAssets();
+            String[] assets = am.list("files");
+
+            // iterate on the files...
+            for(String asset : assets) {
+                if(asset.startsWith("doc")){
+                    Log.i("OpenCPN", "assetbridge unpackNoDoc skipping: " + asset);
+                }
+                else{
+                   //Log.i("OpenCPN", "assetbridge asset: " + asset);
+                    copyAssetItem(am, "files/"+asset, targetDir + "/" + asset);
+                }
+            }
+
+
+        } catch (IOException e) {
+            Log.e("OpenCPN", "Can't unpack assets from APK", e);
+        }
+    }
+
+
+    public static void unpackDocOnly(AssetManager am, String targetDir) {
+
+        try {
+            Log.i("OpenCPN", "assetbridge unpackDocOnly target " + targetDir);
+
+
+             String[] assets = am.list("files");
+
+            // iterate on the files...
+            for(String asset : assets) {
+                if(asset.startsWith("doc")){
+                    copyAssetItem(am, "files/"+asset, targetDir + "/" + asset);
+                }
+                else{
+                    Log.i("OpenCPN", "assetbridge unpackDocOnly skipping: " + asset);
+                }
+            }
+
+
+        } catch (IOException e) {
+            Log.e("OpenCPN", "Can't unpack assets from APK", e);
+        }
+    }
+
 
     // unpack
     public static void unpack(Context c, String targetDir) {
 
         try {
-/*
-            String targetDir = "";
-
-            // first let's get the target directory
-
-            ApplicationInfo ai = c.getApplicationInfo();
-            if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
-                File[] fx = c.getExternalFilesDirs(null);
-                if(fx.length > 1){
-                    targetDir = fx[1].getPath();
-                }
-                else{
-                    targetDir = c.getExternalFilesDir(null).getPath();
-                }
-            }
-            else{
-                targetDir = c.getExternalFilesDir(Environment.getDataDirectory().getAbsolutePath()).getAbsolutePath();
-                //targetDir = c.getExternalFilesDir().getPath();
-            }
-
-*/
-            Log.i("OpenCPN", "assetbridge target " + targetDir);
-
-
-            // Sometimes, due to an app startup race condition, the getFilesDir() does not yet exist, or is inaccessible.
-            //  So, in this case, we hardcode/set the targetDIR directly.
-            //  Note that this method WILL PROBABLY NOT WORK if the app is moved to the sdCard.  But it does not always happen, so...
-            //  See https://code.google.com/p/android/issues/detail?id=8886
-
-            if(targetDir.isEmpty()){
-                targetDir = "/data/data/org.opencpn.opencpn/files";
-                Log.i("OpenCPN", "assetbridge target is empty, substituting:" + targetDir);
-            }
-
 
             // now we need the assetmanager
             AssetManager am = c.getAssets();
