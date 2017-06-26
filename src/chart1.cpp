@@ -5901,6 +5901,12 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     }
 #endif
 
+   if(rr & PARSE_ENC){
+        cc1->Disable();
+        ParseAllENC();
+        cc1->Enable();
+    }
+
 
     if(g_config_display_size_mm > 0){
         g_display_size_mm = g_config_display_size_mm;
