@@ -555,6 +555,7 @@ void OCPNPlatform::Initialize_1( void )
 #endif
 
 #ifdef __OCPN__ANDROID__
+    qDebug() << "Initialize_1()";        
     androidUtilInit( );
 #endif            
             
@@ -966,6 +967,11 @@ void OCPNPlatform::SetDefaultOptions( void )
 
         pConfig->SetPath ( _T ( "/Settings/GRIB" ) );
         pConfig->Write ( _T ( "CursorDataShown" ), 0 );
+
+        // This is ugly hack
+        // TODO
+        pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
         
         pConfig->SetPath ( _T ( "/Settings/QTFonts" ) );
 
@@ -1011,6 +1017,12 @@ void OCPNPlatform::SetUpgradeOptions( wxString vNew, wxString vOld )
         
             FontMgr::Get().Shutdown();      // Restart the font manager
         }
+        
+        // This is ugly hack
+        // TODO
+        pConfig->SetPath( _T ( "/PlugIns/liboesenc_pi.so" ) );
+        pConfig->Write( _T ( "bEnabled" ), true );
+        
         
 #endif    
 }
