@@ -79,6 +79,9 @@ GrabberWin::GrabberWin( wxWindow *parent, ocpnFloatingToolbarDialog *toolbar, fl
     // Special case for small grabber tools
     if( wxNOT_FOUND == icon_name.Find(_T("ext")) )
         width = 12 * scale_factor;
+
+    if( wxNOT_FOUND != icon_name.Find(_T("4WayMove")) )
+        width = m_style->GetToolSize().x * scale_factor;
     
     m_bitmap = m_style->GetIcon( icon_name, width, height, true );
     
@@ -726,10 +729,14 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
     
 #ifdef __WXQT__
     wxSize s = gFrame->GetSize();               // check for rotation
-    if(m_recoversize.x == s.x)
-        gFrame->TriggerResize(m_recoversize);
+    if(1/*m_recoversize.x == s.x*/){
+        s.y--;
+        gFrame->TriggerResize(s);
+    }
+    
     Raise();
 #endif
+    
     if(!m_destroyTimer.IsRunning()){
         m_destroyGrabber = m_pRecoverwin;
         m_pRecoverwin = NULL;
@@ -740,9 +747,11 @@ void ocpnFloatingToolbarDialog::SurfaceFromGrabber()
 
 void ocpnFloatingToolbarDialog::DestroyTimerEvent( wxTimerEvent& event )
 {
-    delete m_destroyGrabber;
-    m_destroyGrabber = NULL;
-   
+    if(m_destroyGrabber){
+            
+        delete m_destroyGrabber;
+        m_destroyGrabber = NULL;
+    }
 }
 
 bool ocpnFloatingToolbarDialog::isSubmergedToGrabber()
