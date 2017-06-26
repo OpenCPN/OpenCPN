@@ -83,6 +83,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.kde.necessitas.ministro.IMinistro;
 import org.kde.necessitas.ministro.IMinistroCallback;
 
+//import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
+
+import android.support.v4.app.FragmentManager;
+
 import android.os.SystemClock;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -171,12 +176,17 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.os.AsyncTask;
+import android.os.Message;
+import android.os.Handler;
 
 
 import org.opencpn.opencpn.R;
 
 //ANDROID-11
 import android.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+
 import android.view.ActionMode;
 import android.view.ActionMode.Callback;
 //ANDROID-11
@@ -230,8 +240,11 @@ import android.support.v4.provider.DocumentFile;
 import android.provider.OpenableColumns;
 import android.provider.MediaStore;
 import android.os.ParcelFileDescriptor;
+import android.content.res.AssetManager;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class QtActivity extends Activity implements ActionBar.OnNavigationListener, Receiver
+public class QtActivity extends FragmentActivity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
     private final static int OCPN_SETTINGS_REQUEST_CODE = 0xf3ef; // request code used to know when OCPNsettings dialog activity is done
@@ -353,6 +366,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                                         // this repository is used to push Qt snapshots.
     private String[] m_qtLibs = null; // required qt libs
 
+    private String m_filesDir = "";
+    public FragmentManager fm;
+
     private DownloadManager m_dm;
     private long m_enqueue;
 
@@ -427,6 +443,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private boolean m_fullScreen;
     private String m_scannedSerial = "";
+
+    public taskHandler m_taskHandler;
+    public MyDocSpinnerDialog myDocSpinnerInstance;
 
     //BroadcastReceiver which receives broadcasted Intents
     private final BroadcastReceiver mLocaleChangeReceiver = new BroadcastReceiver() {
@@ -732,15 +751,78 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
     private String m_settingsReturn;
 
+    public class MyDocSpinnerDialog extends DialogFragment {
+
+        ProgressDialog _dialog;
+
+        public MyDocSpinnerDialog() {
+            // use empty constructors. If something is needed use onCreate's
+        }
+
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+
+            _dialog = new ProgressDialog(getActivity());
+            this.setStyle(STYLE_NO_TITLE, getTheme()); // You can use styles or inflate a view
+            _dialog.setMessage("Please stand by while OpenCPN installs the User Manual"); // set your messages if not inflated from XML
+
+            _dialog.setCancelable(false);
+
+            return _dialog;
+        }
+
+        public void setMyMessage( String message ){
+            if(null != _dialog){
+                _dialog.setMessage(message);
+            }
+        }
+    }
+
+
+
+
+    private Context docUnpackContext;
+
     public String launchHelpView(){
-        Intent intent = new Intent(this, WebViewActivity.class);
+        String dirFiles = m_filesDir;
 
-        Bundle b = new Bundle();
-        b.putString(WebViewActivity.SELECTED_URL, "file:///" + getFilesDir().getPath() + "/doc/doc/help_en_US.html");
-        intent.putExtras(b);
+        // Docs unpacked yet?
+        File dc = new File(dirFiles + "/doc/doc/help_en_US.html");
+        if(!dc.exists())
+        {
+            myDocSpinnerInstance = new MyDocSpinnerDialog();
+            myDocSpinnerInstance.show(fm, "some_tag");
 
-        startActivity(intent);
+            Log.i("OpenCPN", "Start UnpackUserManual");
+
+            //Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN configures the User Manual", Toast.LENGTH_LONG).show();
+            docUnpackContext = (Context) this;
+
+            Timer T=new Timer();
+                 T.schedule(new TimerTask() {
+                     @Override
+                     public void run() {
+                         Log.i("OpenCPN", "Timed Start UnpackUserManual");
+                         UnpackUserManual task = new UnpackUserManual(m_filesDir, getAssets(), m_taskHandler, docUnpackContext);
+                         task.execute((Void) null);
+
+                     }
+                 }, 200);
+
+        }
+        else{
+            Log.i("OpenCPN", "launch Help WebView");
+
+            Intent intent = new Intent(this, WebViewActivity.class);
+            Bundle b = new Bundle();
+            b.putString(WebViewActivity.SELECTED_URL, "file:///" + dirFiles + "/doc/doc/help_en_US.html");
+            intent.putExtras(b);
+
+            startActivity(intent);
+        }
+
         return "OK";
+
     }
 
     public String launchWebView( String url){
@@ -2293,23 +2375,57 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
    public String getSystemDirs(){
        String result = "";
 
+
+//       String extFiles = getExternalFilesDir(null).getPath();   // Provisional
+
+       //  Maybe the app has been migrated to SDCard...
        ApplicationInfo ai = getApplicationInfo();
        if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
            //Log.i("OpenCPN", "External");
            result = "EXTAPP;";
+//           File[] fx = getExternalFilesDirs(null);
+//           if(fx.length > 1){
+//               extFiles = fx[1].getPath();
+//           }
        }
        else{
            //Log.i("OpenCPN", "Internal");
            result = "INTAPP;";
        }
 
+       String extFiles = m_filesDir;
+
+       // Find the external cache directory
+       String cacheDir = "";
+
+       File cache = getExternalCacheDir();
+       if(null == cache){
+           File fc = new File(m_filesDir);
+           cacheDir = fc.getParent() + "/cache";
+       }
+       else{
+           cacheDir = cache.getAbsolutePath();
+       }
+
+       //  Verify the ExternalStorage Directory
+       String sxsd = "";
+       File xsd = Environment.getExternalStorageDirectory();
+       if(null == xsd){
+           sxsd = getFilesDir().getPath();
+       }
+       else{
+           sxsd = xsd.getPath();
+       }
+
+
+
 
 
        result = result.concat(getFilesDir().getPath() + ";");
        result = result.concat(getCacheDir().getPath() + ";");
-       result = result.concat(getExternalFilesDir(null).getPath() + ";");
-       result = result.concat(getExternalCacheDir().getPath() + ";");
-       result = result.concat(Environment.getExternalStorageDirectory().getPath() + ";");
+       result = result.concat(extFiles + ";");
+       result = result.concat(cacheDir + ";");
+       result = result.concat(sxsd + ";");
 
        Log.i("OpenCPN", "getSystemDirs  result: " + result);
 
@@ -2367,25 +2483,26 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        //          and it will be moved to the proper load location on restart.
 
        Log.i("OpenCPN", "relocateOCPNPlugins");
-
+/*
        // On Moto G
        // This produces "/data/data/org.opencpn.opencpn/files"
        //  Which is where the app files would be with default load
        String iDir = getFilesDir().getPath();
-       Log.i("DEBUGGER_TAG", "iDir: " + iDir);
-
-       // This produces "/storage/emulated/0/Android/data/org.opencpn.opencpn/files"
-       //  Which is where the app files would be if the app were "moved to SDCARD"
-       String xDir = getExternalFilesDir(null).getPath();
-       Log.i("DEBUGGER_TAG", "xDir: " + xDir);
-
-
-       //   If the app is installed on external media, then that is where the assets have been stored...
        String ssd = iDir + "/plugins";
-       ApplicationInfo ai = getApplicationInfo();
-       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE)
-            ssd = xDir + "/plugins/";
 
+
+       //  Maybe the app has been migrated to SDCard...
+       sApplicationInfo ai = getApplicationInfo();
+       if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+           Log.i("OpenCPN", "relocateOCPNPlugins:  OCPN is on EXTERNAL_STORAGE");
+           File[] fx = getExternalFilesDirs(null);
+           if(fx.length > 1){
+               ssd = fx[1].getPath() + File.separator + "plugins";
+           }
+       }
+*/
+       File fd = new File(m_filesDir);
+       String ssd = fd.getPath() + File.separator + "plugins";
 
        File sourceDir = new File( ssd );
 
@@ -2411,6 +2528,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                   copyFile(inputStream, outputStream);
                                   inputStream.close();
                                   outputStream.close();
+                                  Log.i("OpenCPN", "relocateOCPNPlugins copyFile OK: " + source + " to " + dest);
 
                                   if(!dest.endsWith(".so")){
                                       Log.i("OpenCPN", "relocateOCPNPlugins setting executable on: " + dest);
@@ -2418,7 +2536,6 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
                                       file.setExecutable(true);
                                   }
 
-                                 Log.i("OpenCPN", "relocateOCPNPlugins copyFile OK: " + source + " to " + dest);
                               }
                               catch (Exception e) {
                                   e.printStackTrace();
@@ -2429,13 +2546,46 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
       }
    }
 
-   void processStagingFiles(){
+   /**
+       * Get a list of external SD card paths. (Kitkat or higher.)
+       *
+       * @return A list of external SD card paths.
+       */
+      private String[] getExtSdCardPaths() {
+          List<String> paths = new ArrayList<String>();
 
+
+
+              for (File file : this.getExternalFilesDirs("external")) {
+                  if (file != null && !file.equals(this.getExternalFilesDir("external"))) {
+                      int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                      if (index < 0) {
+                          //Log.w(Application.TAG, "Unexpected external file dir: " + file.getAbsolutePath());
+                      } else {
+                          String path = file.getAbsolutePath().substring(0, index);
+                          try {
+                              path = new File(path).getCanonicalPath();
+                          } catch (IOException e) {
+                              // Keep non-canonical path.
+                          }
+                          paths.add(path);
+                      }
+                  }
+              }
+
+          return paths.toArray(new String[paths.size()]);
+      }
+
+
+   void processStagingFiles(){
        Log.i("OpenCPN", "processStagingFiles starts...");
+
+
 
        // Is there anything in the "staging" directory?
        String stagingPath = getFilesDir().getPath() + File.separator + "staging";
 
+/*
        //  The destination after unzipping
        String finalDestination = getFilesDir().getAbsolutePath() + File.separator;
 
@@ -2443,9 +2593,14 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
        ApplicationInfo ai = getApplicationInfo();
        if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
            Log.i("OpenCPN", "processStagingFiles:  OCPN is on EXTERNAL_STORAGE");
-           stagingPath = getExternalFilesDir(null).getPath() + File.separator + "staging";
-           finalDestination = getExternalFilesDir(null).getAbsolutePath() + File.separator;
+           File[] fx = getExternalFilesDirs(null);
+           if(fx.length > 1){
+               stagingPath = fx[1].getPath() + File.separator + "staging";
+               finalDestination = fx[1].getAbsolutePath() + File.separator;
+           }
        }
+*/
+       String finalDestination = m_filesDir + File.separator;
        Log.i("OpenCPN", "   Staging directory:: " + stagingPath );
        Log.i("OpenCPN", "   Destination directory:: " + finalDestination );
 
@@ -2490,16 +2645,18 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
    public void unzip(String _zipFile, String _targetLocation) {
        Log.i("OpenCPN", "ZIP unzipping " + _zipFile + " to " + _targetLocation);
 
+       ZipEntry ze = null;
+
     try {
         FileInputStream fin = new FileInputStream(_zipFile);
         ZipInputStream zin = new ZipInputStream(fin);
-        ZipEntry ze = null;
-        while ((ze = zin.getNextEntry()) != null) {
+         while ((ze = zin.getNextEntry()) != null) {
 
             Log.i("OpenCPN", "ZIP Entry: " + ze.getName());
 
             //create dir if required while unzipping
             if (ze.isDirectory()) {
+                Log.i("OpenCPN", "Unzip dir: "  + ze.getName());
                 File dir = new File( ze.getName());
                 if(!dir.exists()){
                      dir.mkdirs();
@@ -2508,6 +2665,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
             } else {
                 int size;
                 byte[] buffer = new byte[2048];
+                Log.i("OpenCPN", "Unzip file: " + _targetLocation + ze.getName());
 
                 FileOutputStream outStream = new FileOutputStream(_targetLocation + ze.getName());
                 BufferedOutputStream bufferOut = new BufferedOutputStream(outStream, buffer.length);
@@ -2526,7 +2684,8 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         }
         zin.close();
         } catch (Exception e) {
-             System.out.println(e);
+            Log.i("OpenCPN", "ZIP Exception: " + ze.getName());
+            System.out.println(e);
         }
    }
 
@@ -3677,6 +3836,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         super.onCreate(savedInstanceState);
 
+        fm = getSupportFragmentManager();
 
 
         //  Bug fix, see http://code.google.com/p/android/issues/detail?id=26658
@@ -3709,10 +3869,60 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
         Log.i("OpenCPN", "onCreate Root");
 
+
         m_backButtonEnable = false;
         Log.i("OpenCPN", "back button enable: " + m_backButtonEnable);
-//        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
+
+        // We need to get the local data directory, available to all
+        Log.i("OpenCPN", "Getting App filesDir..");
+
+        // Verify we have access to the files directory
+        //File fa = Environment.getDataDirectory();
+        //if(null == fa)
+          // Log.i("OpenCPN", "fa null");
+
+
+        //String sa = Environment.getDataDirectory().getAbsolutePath();
+        //if(null == sa)
+           //Log.i("OpenCPN", "sa null");
+        //else
+           //Log.i("OpenCPN", "sa: " + sa);
+
+        String filesDir = "";
+        File fFiles = getExternalFilesDir(null);
+        if(null != fFiles){
+            filesDir = fFiles.getAbsolutePath();
+        }
+        else{
+            filesDir = getFilesDir().getAbsolutePath();
+        }
+
+
+        //  Maybe the app has been migrated to SDCard...
+        ApplicationInfo aif = getApplicationInfo();
+        if((aif.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+            Log.i("OpenCPN", "App might be on EXTERNAL_STORAGE");
+            File[] fx = getExternalFilesDirs(null);
+            if(null != fx){
+                if(fx.length > 1){
+                    Log.i("OpenCPN", "App is really on EXTERNAL_STORAGE");
+                    filesDir = fx[1].getAbsolutePath();
+                }
+            }
+            else{
+                Log.i("OpenCPN", "App has no ExternalFilesDirs");
+            }
+
+        }
+
+        m_filesDir = filesDir;
+        Log.i("OpenCPN", "Application filesDir: " + m_filesDir);
+
+
+        //  Set up a handler to catch messages from async tasks
+         m_taskHandler = new taskHandler();
 
 
         try {
@@ -3860,11 +4070,98 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 
 
 
-    if (b_needcopy){
-     Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
+
+     if (b_needcopy){
+        Toast.makeText(getApplicationContext(), "Please stand by while OpenCPN initializes..." ,Toast.LENGTH_LONG).show();
+
+
+/*
+     // Verify we have access to the files directory
+     File fa = Environment.getDataDirectory();
+     if(null == fa)
+        Log.i("OpenCPN", "fa null");
+
+
+     String sa = Environment.getDataDirectory().getAbsolutePath();
+     if(null == sa)
+        Log.i("OpenCPN", "sa null");
+     else
+        Log.i("OpenCPN", "sa: " + sa);
+
+     String sb = getExternalFilesDir(sa).getAbsolutePath();
+
+     String dirFilesData = getExternalFilesDir(Environment.getDataDirectory().getAbsolutePath()).getAbsolutePath();
+
+     File f1 = new File(dirFilesData);
+     String dirFiles = f1.getParent();
+
+     File[] fx = getExternalFilesDirs(null);
+     //dirData = fx[0].getAbsolutePath();
+
+     //  Maybe the app has been migrated to SDCard...
+     sApplicationInfo ai = getApplicationInfo();
+     if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
+         if(fx.length > 1){
+             dirFiles = fx[1].getAbsolutePath();
+         }
+     }
+*/
+     String dirFiles = m_filesDir;
+
+     Log.i("OpenCPN", "Checking write access to: " + dirFiles);
+     File fc =new File(dirFiles);
+     boolean bDirReady = false;
+     if(!fc.exists()){
+         Log.i("OpenCPN", "Dir does not exist: " + dirFiles);
+
+         try{
+             if(fc.mkdirs())
+                bDirReady = true;
+         }catch(Exception e){
+             Log.i("OpenCPN", "Exception on mkdirs: " + dirFiles);
+         }
+     }
+     else
+        bDirReady = true;
+
+
+     if(!bDirReady){
+         Log.i("OpenCPN", "Start SAF here ");
+     }
+
+
+
+
+
+
+
+     boolean bWrite = false;
+     try{
+         if(fc.canWrite()){
+            bWrite = true;
+        }
+     }catch(Exception e){
+        bWrite = false;
+     }
+
+     Log.i("OpenCPN", "Write access check result: " + String.valueOf(bWrite));
+
+
+     // test
+//     File destfh = new File(dirFiles + "/doc");
+
+     // If the directory doesn't yet exist, create it
+//     if( !destfh.exists() ){
+//         destfh.mkdirs();
+//     }
+//     if( !destfh.exists() ){
+//         Log.i("OpenCPN", "TESTING cannot create directory: " + dirFiles + "/doc");
+//     }
+
+
 
       Log.i("OpenCPN", "asset bridge start unpack");
-      Assetbridge.unpack(this);
+      Assetbridge.unpackNoDoc(this, dirFiles);
       Log.i("OpenCPN", "asset bridge finish unpack");
     }
 
@@ -3980,6 +4277,9 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
              itemTrackInActive.setVisible(!m_isTrackActive);
          }
 
+
+         MenuItem itemSendEmailActive = menu.findItem(R.id.ocpn_action_email);
+         itemSendEmailActive.setVisible(false);
 
 
         return super.onCreateOptionsMenu(menu);
@@ -4474,7 +4774,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
         QtApplication.invokeDelegate();
     }
     //---------------------------------------------------------------------------
-
+/*
     @Override
     public Object onRetainNonConfigurationInstance()
     {
@@ -4490,7 +4790,7 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
 //        else
 //            return super.onRetainNonConfigurationInstance();
     }
-
+*/
     public Object super_onRetainNonConfigurationInstance()
     {
         return super.onRetainNonConfigurationInstance();
@@ -4947,4 +5247,81 @@ public class QtActivity extends Activity implements ActionBar.OnNavigationListen
     }
 
 
+    /**
+      * Asynchronous task used to unpack the user manual.
+      */
+
+     static final int MESSAGE_DOC_UNPACK_DONE = 1;
+
+     class UnpackUserManual extends AsyncTask<Void, Void, Boolean> {
+         private final String mTarget;
+         private android.os.Handler mHandler = null;
+         private AssetManager mAssetManager;
+         private Context mctx;
+
+
+         UnpackUserManual(String targetDir, AssetManager assetManager, android.os.Handler handler, Context ctx){
+             Log.i("OpenCPN", "ctor UnpackUserManual");
+             mTarget = targetDir;
+             mAssetManager = assetManager;
+             mctx = ctx;
+             mHandler = handler;
+         }
+
+         @Override
+         protected Boolean doInBackground(Void... params) {
+
+             Log.i("OpenCPN", "Start UnpackUserManual unpack");
+
+             Assetbridge.unpackDocOnly(mAssetManager, mTarget);
+
+             return true;
+         }
+
+         @Override
+         protected void onPostExecute(final Boolean success) {
+
+
+             Message message = Message.obtain (mHandler, MESSAGE_DOC_UNPACK_DONE, 0, 0, mctx);
+             if(null != message)
+                message.sendToTarget();
+
+         }
+
+         @Override
+         protected void onCancelled() {
+
+             Message message = Message.obtain (mHandler, MESSAGE_DOC_UNPACK_DONE, 0, 0, mctx);
+             message.sendToTarget();
+         }
+     }
+
+
+     public class taskHandler extends Handler {
+
+         @Override
+         public void handleMessage(Message msg) {
+             Log.i("OpenCPN", "Got Message");
+
+             switch (msg.what) {
+                 case MESSAGE_DOC_UNPACK_DONE:
+                    Log.i("OpenCPN", "launch Help WebView");
+                    if(null != myDocSpinnerInstance)
+                        myDocSpinnerInstance.dismiss();
+
+                    Context ctx = (Context) msg.obj;
+                    Intent intent = new Intent(ctx, WebViewActivity.class);
+                    Bundle b = new Bundle();
+                    b.putString(WebViewActivity.SELECTED_URL, "file:///" + m_filesDir + "/doc/doc/help_en_US.html");
+                    intent.putExtras(b);
+
+                    startActivity(intent);
+                    break;
+             }
+         }
+     }
+
+
 }
+
+
