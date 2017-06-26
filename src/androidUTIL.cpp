@@ -1841,22 +1841,22 @@ wxString androidGetPrivateDir()                 // Used for logfile, config file
 
 wxString androidGetSharedDir()                 // Used for assets like uidata, s57data, etc
 {
-    if(g_bExternalApp){
-        if(g_androidExtFilesDir.Length())
-            return g_androidExtFilesDir + _T("/");
-    }
+//    if(g_bExternalApp){
+//        if(g_androidExtFilesDir.Length())
+//            return g_androidExtFilesDir + _T("/");
+//    }
     
-    return g_androidFilesDir + _T("/");
+    return g_androidExtFilesDir + _T("/");
 }
 
 wxString androidGetCacheDir()                 // Used for raster_texture_cache, mmsitoname.csv, etc
 {
-    if(g_bExternalApp){
-        if(g_androidExtCacheDir.Length())
-            return g_androidExtCacheDir;
-    }
+//    if(g_bExternalApp){
+//        if(g_androidExtCacheDir.Length())
+//            return g_androidExtCacheDir;
+//    }
     
-    return g_androidCacheDir;
+    return g_androidExtCacheDir;
 }
 
 // Android notes:
