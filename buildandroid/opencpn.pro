@@ -187,6 +187,8 @@ svg_deployment.files += $$PWD/../data/svg/traditional/zoomin_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomin.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomout_rollover.svg
 svg_deployment.files += $$PWD/../data/svg/traditional/zoomout.svg
+svg_deployment.files += $$PWD/../data/svg/traditional/4WayMove.svg
+
 svg_deployment.path = /assets/files/uidata/traditional
 INSTALLS += svg_deployment
 
