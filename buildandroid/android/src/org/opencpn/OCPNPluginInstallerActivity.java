@@ -6,6 +6,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import org.opencpn.opencpn.R;
 import android.content.Intent;
+import android.app.PendingIntent;
+import android.app.AlarmManager;
+import android.content.Context;
+import android.app.ActivityManager;
 import android.util.Log;
 import android.net.Uri ;
 import java.io.File;
@@ -14,6 +18,8 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.util.List;
+import org.qtproject.qt5.android.bindings.QtActivity;
 
 public class OCPNPluginInstallerActivity extends Activity {
 
@@ -34,6 +40,34 @@ public class OCPNPluginInstallerActivity extends Activity {
                     handleSendText(intent); // Handle uri being sent
                 }
             }
+
+            boolean bRestart = true;
+
+            // Want to avoid restarting OCPN now?
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                bRestart = extras.getBoolean("RestartFlag", true);
+            }
+
+
+
+            if(bRestart){
+                Intent mStartActivity = new Intent(getApplicationContext(), QtActivity.class);
+                Log.i("OpenCPN", "OCPNPluginInstallerActivity mStartActivity: " + mStartActivity);
+
+                mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                mStartActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mStartActivity.addFlags(0x8000); // equal to Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+               int mPendingIntentId = 123456;
+
+
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getApplicationContext(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, mPendingIntent);
+
+            }
+
 
             finish();
         }
@@ -68,6 +102,7 @@ public class OCPNPluginInstallerActivity extends Activity {
                 String stagingPath = getFilesDir().getPath() + File.separator + "staging";
 
 
+/*
                 //  Maybe the app has been migrated to SDCard...
                 ApplicationInfo ai = getApplicationInfo();
                 if((ai.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
@@ -77,6 +112,7 @@ public class OCPNPluginInstallerActivity extends Activity {
                         stagingPath = fx[1].getPath() + File.separator + "staging";
                     }
                 }
+*/
 
                 Log.i("OpenCPN", "OCPNPluginInstallerActivity:  Staging directory: " + stagingPath);
 
