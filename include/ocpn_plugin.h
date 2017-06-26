@@ -1062,6 +1062,7 @@ extern DECL_EXP void SetCanvasTilt(double tilt);
 extern DECL_EXP bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex=-1 );
 extern DECL_EXP void AddChartDirectory( wxString &path );
 extern DECL_EXP void ForceChartDBUpdate();
+extern DECL_EXP void ForceChartDBRebuild();
 
 extern  DECL_EXP wxString GetWritableDocumentsDir( void );
 extern  DECL_EXP wxDialog *GetActiveOptionsDialog();

@@ -5779,6 +5779,15 @@ void ForceChartDBUpdate()
     if( g_options )
     {
         g_options->pScanCheckBox->SetValue(true);
+        g_options->pUpdateCheckBox->SetValue(true);
+    }
+}
+
+void ForceChartDBRebuild()
+{
+    if( g_options )
+    {
+        g_options->pUpdateCheckBox->SetValue(true);
     }
 }
 
