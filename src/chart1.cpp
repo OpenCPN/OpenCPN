@@ -6656,7 +6656,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             if(g_pi_manager)
                 g_pi_manager->SendConfigToAllPlugIns();
             
-            wxLogMessage( wxString::Format(_("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
+            wxLogMessage( wxString::Format(_T("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
             
         }
