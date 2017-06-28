@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-09 20:48-0400\n"
-"PO-Revision-Date: 2017-06-10 20:26-0400\n"
+"POT-Creation-Date: 2017-06-26 21:47-0400\n"
+"PO-Revision-Date: 2017-06-26 22:18-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Crowdin-Language: fr\n"
 "X-Crowdin-File: /po/opencpn.pot\n"
 
-#: include/about.h:39 src/chart1.cpp:3086 src/chart1.cpp:5439
+#: include/about.h:39 src/chart1.cpp:3088 src/chart1.cpp:5441
 msgid "About OpenCPN"
 msgstr "A propos d'OpenCPN"
 
@@ -24,7 +24,7 @@ msgstr "A propos d'OpenCPN"
 #: src/routemanagerdialog.cpp:1205 src/routemanagerdialog.cpp:1858
 #: src/routemanagerdialog.cpp:1966 src/routemanagerdialog.cpp:2258
 #: src/routemanagerdialog.cpp:2291 src/routemanagerdialog.cpp:2423
-#: src/routemanagerdialog.cpp:2552 src/toolbar.cpp:1072 src/toolbar.cpp:2622
+#: src/routemanagerdialog.cpp:2552 src/toolbar.cpp:1088 src/toolbar.cpp:2638
 msgid "OpenCPN Alert"
 msgstr "Alerte déclenchée par OpenCPN"
 
@@ -34,12 +34,12 @@ msgstr "Alerte AIS par OpenCPN"
 
 #: include/AISTargetQueryDialog.h:46 include/AISTargetQueryDialog.h:58
 #: include/S57QueryDialog.h:43 include/S57QueryDialog.h:53
-#: src/canvasMenu.cpp:394 src/canvasMenu.cpp:400 src/chcanv.cpp:6742
+#: src/canvasMenu.cpp:401 src/canvasMenu.cpp:407 src/chcanv.cpp:6743
 msgid "Object Query"
 msgstr "Liste des objets :"
 
 #: include/GoToPositionDialog.h:38 src/AISTargetListDialog.cpp:614
-#: src/canvasMenu.cpp:422
+#: src/canvasMenu.cpp:429
 msgid "Center view"
 msgstr "Centrer la vue"
 
@@ -47,8 +47,8 @@ msgstr "Centrer la vue"
 msgid "Link Properties"
 msgstr "Propriétés du lien"
 
-#: include/options.h:71 src/chart1.cpp:3013 src/chart1.cpp:5434
-#: src/chart1.cpp:5624 src/chart1.cpp:6625 src/options.cpp:3230
+#: include/options.h:71 src/chart1.cpp:3015 src/chart1.cpp:5436
+#: src/chart1.cpp:5626 src/chart1.cpp:6633 src/options.cpp:3230
 msgid "Options"
 msgstr "Options :"
 
@@ -56,13 +56,13 @@ msgstr "Options :"
 msgid "Print Route Selection"
 msgstr "Route sélectionnée : Imprimer"
 
-#: include/routeprop.h:66 src/canvasMenu.cpp:1454 src/chcanv.cpp:5534
+#: include/routeprop.h:66 src/canvasMenu.cpp:1461 src/chcanv.cpp:5535
 #: src/routemanagerdialog.cpp:1248 src/routemanagerdialog.cpp:1250
 msgid "Route Properties"
 msgstr "Route : Propriétés"
 
-#: include/routeprop.h:109 include/routeprop.h:360 src/chcanv.cpp:6872
-#: src/chcanv.cpp:6875 src/routemanagerdialog.cpp:2227
+#: include/routeprop.h:109 include/routeprop.h:360 src/chcanv.cpp:6873
+#: src/chcanv.cpp:6876 src/routemanagerdialog.cpp:2227
 #: src/routemanagerdialog.cpp:2230 src/routeprop.cpp:561
 msgid "Waypoint Properties"
 msgstr "Waypoint : Propriétés"
@@ -71,9 +71,9 @@ msgstr "Waypoint : Propriétés"
 msgid "Waypoint Information"
 msgstr "Waypoint/marque : description"
 
-#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:684 src/canvasMenu.cpp:760
-#: src/canvasMenu.cpp:802 src/canvasMenu.cpp:1347 src/canvasMenu.cpp:1358
-#: src/canvasMenu.cpp:1371 src/canvasMenu.cpp:1383
+#: include/SendToGpsDlg.h:38 src/canvasMenu.cpp:691 src/canvasMenu.cpp:767
+#: src/canvasMenu.cpp:809 src/canvasMenu.cpp:1354 src/canvasMenu.cpp:1365
+#: src/canvasMenu.cpp:1378 src/canvasMenu.cpp:1390
 #: src/routemanagerdialog.cpp:1494 src/routemanagerdialog.cpp:2401
 msgid "Send to GPS"
 msgstr "Envoyer au GPS"
@@ -84,16 +84,16 @@ msgid "Track properties"
 msgstr "Propriétés de la trace"
 
 #: src/about.cpp:216 src/about.cpp:266 src/about.cpp:399 src/about.cpp:500
-#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1366 src/chart1.cpp:6125
-#: src/chart1.cpp:11393 src/chart1.cpp:12374 src/chcanv.cpp:8635
-#: src/chcanv.cpp:8679 src/cm93.cpp:6730 src/concanv.cpp:104
-#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1346 src/OCPNPlatform.cpp:1741
-#: src/OCPNPlatform.cpp:1781 src/options.cpp:708 src/options.cpp:1165
+#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1368 src/chart1.cpp:6133
+#: src/chart1.cpp:11401 src/chart1.cpp:12382 src/chcanv.cpp:8636
+#: src/chcanv.cpp:8680 src/cm93.cpp:6730 src/concanv.cpp:104
+#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1368 src/OCPNPlatform.cpp:1763
+#: src/OCPNPlatform.cpp:1803 src/options.cpp:708 src/options.cpp:1165
 #: src/options.cpp:7563 src/options.cpp:7787 src/options.cpp:8754
 #: src/options.cpp:8882 src/Osenc.cpp:1555 src/routemanagerdialog.cpp:458
 #: src/routeprop.cpp:501 src/routeprop.cpp:796 src/routeprop.cpp:1148
 #: src/routeprop.cpp:2437 src/TCWin.cpp:88 src/TCWin.cpp:220
-#: src/toolbar.cpp:2720 src/TrackPropDlg.cpp:110 src/TrackPropDlg.cpp:241
+#: src/toolbar.cpp:2736 src/TrackPropDlg.cpp:110 src/TrackPropDlg.cpp:241
 #: src/TrackPropDlg.cpp:549
 msgid "Dialog"
 msgstr "Boite de dialogue"
@@ -2436,7 +2436,7 @@ msgstr "Venezuela"
 msgid "-"
 msgstr "-"
 
-#: src/AISTargetListDialog.cpp:369 src/canvasMenu.cpp:599 src/chart1.cpp:5410
+#: src/AISTargetListDialog.cpp:369 src/canvasMenu.cpp:606 src/chart1.cpp:5412
 msgid "AIS target list"
 msgstr "AIS : Liste des cibles ..."
 
@@ -2526,8 +2526,8 @@ msgid "The recently captured track of this target has been recorded.\n"
 msgstr "La trace de cette cible AIS a été enregistrée.\n"
 "Voulez-vous continuer à l'enregistrer jusqu'à la fin de la session en cours d'OpenCPN ?"
 
-#: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5823 src/chart1.cpp:10929
-#: src/chart1.cpp:10960 src/LinkPropDlg.cpp:134 src/options.cpp:537
+#: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5825 src/chart1.cpp:10937
+#: src/chart1.cpp:10968 src/LinkPropDlg.cpp:134 src/options.cpp:537
 #: src/options.cpp:6948 src/options.cpp:6985 src/options.cpp:8719
 #: src/pluginmanager.cpp:423 src/pluginmanager.cpp:1127
 #: src/pluginmanager.cpp:1169 src/pluginmanager.cpp:1197
@@ -2544,13 +2544,13 @@ msgstr "Informations émises par cette cible"
 msgid "Stop Tracking"
 msgstr "Arrêter la trace"
 
-#: src/androidUTIL.cpp:2259
+#: src/androidUTIL.cpp:2265
 msgid "Your android device has an internal GPS, but it is disabled.\n"
 "                       Please visit android Settings/Location dialog to enable GPS"
 msgstr "Votre appareil Android a un GPS interne, mais il est hors service. \n"
 " s'il vous plaît activez le dans les paramètres d'Androïd"
 
-#: src/androidUTIL.cpp:2408
+#: src/androidUTIL.cpp:2414
 msgid "Nothing found"
 msgstr "Rien n'a été trouvé"
 
@@ -2563,7 +2563,7 @@ msgstr "Menu"
 msgid "Waypoint"
 msgstr "Waypoint"
 
-#: src/canvasMenu.cpp:298 src/chcanv.cpp:2365 src/chcanv.cpp:7620
+#: src/canvasMenu.cpp:298 src/chcanv.cpp:2365 src/chcanv.cpp:7621
 #: src/concanv.cpp:140 src/concanv.cpp:159 src/concanv.cpp:201
 msgid "Route"
 msgstr "Route :"
@@ -2576,264 +2576,264 @@ msgstr "Trace"
 msgid "AIS"
 msgstr "AIS"
 
-#: src/canvasMenu.cpp:310
+#: src/canvasMenu.cpp:317
 msgid "End Route"
 msgstr "Fin de la route"
 
-#: src/canvasMenu.cpp:315
+#: src/canvasMenu.cpp:322
 msgid "Measure Off"
 msgstr "Mesure : Arrêter"
 
-#: src/canvasMenu.cpp:317
+#: src/canvasMenu.cpp:324
 msgid "Measure"
 msgstr "Mesure : Démarrer"
 
-#: src/canvasMenu.cpp:324
+#: src/canvasMenu.cpp:331
 msgid "Undo"
 msgstr "Défaire"
 
-#: src/canvasMenu.cpp:330
+#: src/canvasMenu.cpp:337
 msgid "Redo"
 msgstr "Refaire"
 
-#: src/canvasMenu.cpp:388
+#: src/canvasMenu.cpp:395
 msgid "Max Detail Here"
 msgstr "Plus de détail ici"
 
-#: src/canvasMenu.cpp:389 src/canvasMenu.cpp:404
+#: src/canvasMenu.cpp:396 src/canvasMenu.cpp:411
 msgid "Scale In"
 msgstr "Echelle +"
 
-#: src/canvasMenu.cpp:390 src/canvasMenu.cpp:405
+#: src/canvasMenu.cpp:397 src/canvasMenu.cpp:412
 msgid "Scale Out"
 msgstr "Echelle -"
 
-#: src/canvasMenu.cpp:394 src/canvasMenu.cpp:400 src/options.cpp:1676
+#: src/canvasMenu.cpp:401 src/canvasMenu.cpp:407 src/options.cpp:1676
 #: src/options.cpp:1710 src/options.cpp:2282 src/options.cpp:2317
 #: src/routeprop.cpp:2651
 msgid "..."
 msgstr "..."
 
-#: src/canvasMenu.cpp:412
+#: src/canvasMenu.cpp:419
 msgid "Drop Mark"
 msgstr "Placer une marque"
 
-#: src/canvasMenu.cpp:415
+#: src/canvasMenu.cpp:422
 msgid "Move Boat Here"
 msgstr "Placer le bateau ici"
 
-#: src/canvasMenu.cpp:419
+#: src/canvasMenu.cpp:426
 msgid "Navigate To Here"
 msgstr "Naviguer jusqu'ici"
 
-#: src/canvasMenu.cpp:426 src/chart1.cpp:5340
+#: src/canvasMenu.cpp:433 src/chart1.cpp:5342
 msgid "Course Up Mode"
 msgstr "COG vers le haut : Activer"
 
-#: src/canvasMenu.cpp:429
+#: src/canvasMenu.cpp:436
 msgid "Chart Up Mode"
 msgstr "Mode haut de la carte en haut"
 
-#: src/canvasMenu.cpp:431 src/chart1.cpp:4965 src/chart1.cpp:5339
-#: src/chart1.cpp:7403
+#: src/canvasMenu.cpp:438 src/chart1.cpp:4967 src/chart1.cpp:5341
+#: src/chart1.cpp:7411
 msgid "North Up Mode"
 msgstr "Nord vers le haut : Activer"
 
-#: src/canvasMenu.cpp:439 src/canvasMenu.cpp:446
+#: src/canvasMenu.cpp:446 src/canvasMenu.cpp:453
 msgid "Toggle Full Screen"
 msgstr "Va et vient plein écran"
 
-#: src/canvasMenu.cpp:451
+#: src/canvasMenu.cpp:458
 msgid "Zero XTE"
 msgstr "Zéro XTE"
 
-#: src/canvasMenu.cpp:458
+#: src/canvasMenu.cpp:465
 msgid "Paste Waypoint"
 msgstr "Coller le waypoint"
 
-#: src/canvasMenu.cpp:462 src/canvasMenu.cpp:470
+#: src/canvasMenu.cpp:469 src/canvasMenu.cpp:477
 msgid "Paste Route"
 msgstr "Coller la route"
 
-#: src/canvasMenu.cpp:466 src/canvasMenu.cpp:471
+#: src/canvasMenu.cpp:473 src/canvasMenu.cpp:478
 msgid "Paste Track"
 msgstr "Coller la trace"
 
-#: src/canvasMenu.cpp:479
+#: src/canvasMenu.cpp:486
 msgid "CM93 Offset Dialog..."
 msgstr "Gestion des réglages des CM93 ..."
 
-#: src/canvasMenu.cpp:489 src/chart1.cpp:8612
+#: src/canvasMenu.cpp:496 src/chart1.cpp:8620
 msgid "Hide This Chart"
 msgstr "Cacher cette carte"
 
-#: src/canvasMenu.cpp:501 src/options.cpp:3745 src/options.cpp:3802
+#: src/canvasMenu.cpp:508 src/options.cpp:3745 src/options.cpp:3802
 msgid "Chart Groups"
 msgstr "Groupes de cartes"
 
-#: src/canvasMenu.cpp:513
+#: src/canvasMenu.cpp:520
 msgid "All Active Charts"
 msgstr "Toutes les cartes actives"
 
-#: src/canvasMenu.cpp:602
+#: src/canvasMenu.cpp:609
 msgid "Target Query..."
 msgstr "Informations émises par cette cible ..."
 
-#: src/canvasMenu.cpp:606
+#: src/canvasMenu.cpp:613
 msgid "Hide Target CPA"
 msgstr "Masquer la CPA de cette cible"
 
-#: src/canvasMenu.cpp:608
+#: src/canvasMenu.cpp:615
 msgid "Show Target CPA"
 msgstr "Montrer la CPA de cette cible"
 
-#: src/canvasMenu.cpp:610
+#: src/canvasMenu.cpp:617
 msgid "Target List..."
 msgstr "Liste des cibles AIS ..."
 
-#: src/canvasMenu.cpp:613
+#: src/canvasMenu.cpp:620
 msgid "Hide Target Track"
 msgstr "Masquer la trace de cette cible"
 
-#: src/canvasMenu.cpp:615
+#: src/canvasMenu.cpp:622
 msgid "Show Target Track"
 msgstr "Montrer la trace de cette cible"
 
-#: src/canvasMenu.cpp:617
+#: src/canvasMenu.cpp:624
 msgid "Copy Target MMSI"
 msgstr "Copier le MMSI de la cible"
 
-#: src/canvasMenu.cpp:623 src/canvasMenu.cpp:629
+#: src/canvasMenu.cpp:630 src/canvasMenu.cpp:636
 msgid "Object Query..."
 msgstr "Propriétés des objets ..."
 
-#: src/canvasMenu.cpp:646
+#: src/canvasMenu.cpp:653
 msgid "Layer Route"
 msgstr "Couche de route"
 
-#: src/canvasMenu.cpp:647 src/canvasMenu.cpp:662 src/canvasMenu.cpp:711
-#: src/canvasMenu.cpp:714 src/canvasMenu.cpp:731 src/canvasMenu.cpp:737
-#: src/canvasMenu.cpp:787 src/canvasMenu.cpp:790 src/options.cpp:1391
+#: src/canvasMenu.cpp:654 src/canvasMenu.cpp:669 src/canvasMenu.cpp:718
+#: src/canvasMenu.cpp:721 src/canvasMenu.cpp:738 src/canvasMenu.cpp:744
+#: src/canvasMenu.cpp:794 src/canvasMenu.cpp:797 src/options.cpp:1391
 #: src/options.cpp:1993 src/routeprop.cpp:1165 src/routeprop.cpp:2481
 msgid "Properties"
 msgstr "Propriétés"
 
-#: src/canvasMenu.cpp:652 src/canvasMenu.cpp:667 src/canvasMenu.cpp:747
+#: src/canvasMenu.cpp:659 src/canvasMenu.cpp:674 src/canvasMenu.cpp:754
 msgid "Activate Next Waypoint"
 msgstr "Activer le prochain waypoint"
 
-#: src/canvasMenu.cpp:654 src/canvasMenu.cpp:669
+#: src/canvasMenu.cpp:661 src/canvasMenu.cpp:676
 #: src/routemanagerdialog.cpp:1097
 msgid "Deactivate"
 msgstr "Désactiver"
 
-#: src/canvasMenu.cpp:657 src/canvasMenu.cpp:672 src/canvasMenu.cpp:734
-#: src/canvasMenu.cpp:740 src/routemanagerdialog.cpp:1091
+#: src/canvasMenu.cpp:664 src/canvasMenu.cpp:679 src/canvasMenu.cpp:741
+#: src/canvasMenu.cpp:747 src/routemanagerdialog.cpp:1091
 msgid "Activate"
 msgstr "Activer"
 
-#: src/canvasMenu.cpp:675
+#: src/canvasMenu.cpp:682
 msgid "Insert Waypoint"
 msgstr "Insérer un waypoint"
 
-#: src/canvasMenu.cpp:676 src/undo.cpp:90
+#: src/canvasMenu.cpp:683 src/undo.cpp:90
 msgid "Append Waypoint"
 msgstr "Prolonger"
 
-#: src/canvasMenu.cpp:677 src/canvasMenu.cpp:715 src/canvasMenu.cpp:753
-#: src/canvasMenu.cpp:795
+#: src/canvasMenu.cpp:684 src/canvasMenu.cpp:722 src/canvasMenu.cpp:760
+#: src/canvasMenu.cpp:802
 msgid "Copy as KML"
 msgstr "Copier au format KML"
 
-#: src/canvasMenu.cpp:678 src/canvasMenu.cpp:716 src/canvasMenu.cpp:756
-#: src/canvasMenu.cpp:798 src/options.cpp:664 src/options.cpp:8603
+#: src/canvasMenu.cpp:685 src/canvasMenu.cpp:723 src/canvasMenu.cpp:763
+#: src/canvasMenu.cpp:805 src/options.cpp:664 src/options.cpp:8603
 #: src/routeprop.cpp:2681 src/TrackPropDlg.cpp:768
 msgid "Delete"
 msgstr "Supprimer"
 
-#: src/canvasMenu.cpp:679
+#: src/canvasMenu.cpp:686
 msgid "Reverse..."
 msgstr "Inverser ..."
 
-#: src/canvasMenu.cpp:693 src/canvasMenu.cpp:769
+#: src/canvasMenu.cpp:700 src/canvasMenu.cpp:776
 msgid "Send to new GPS"
 msgstr "Envoyer au nouveau GPS"
 
-#: src/canvasMenu.cpp:710
+#: src/canvasMenu.cpp:717
 msgid "Layer Track"
 msgstr "Couche de trace"
 
-#: src/canvasMenu.cpp:730
+#: src/canvasMenu.cpp:737
 msgid "Layer Routepoint"
 msgstr "Couche de points de route"
 
-#: src/canvasMenu.cpp:751
+#: src/canvasMenu.cpp:758
 msgid "Remove from Route"
 msgstr "Retirer de la route"
 
-#: src/canvasMenu.cpp:786
+#: src/canvasMenu.cpp:793
 msgid "Layer Waypoint"
 msgstr "Couche de waypoint"
 
-#: src/canvasMenu.cpp:793
+#: src/canvasMenu.cpp:800
 msgid "Navigate To This"
 msgstr "Naviguer jusqu'ici"
 
-#: src/canvasMenu.cpp:812
+#: src/canvasMenu.cpp:819
 msgid "Clear Anchor Watch"
 msgstr "Arrêter l'alerte de mouillage"
 
-#: src/canvasMenu.cpp:822
+#: src/canvasMenu.cpp:829
 msgid "Set Anchor Watch"
 msgstr "Démarrer l'alerte de mouillage"
 
-#: src/canvasMenu.cpp:838
+#: src/canvasMenu.cpp:845
 msgid "Show Tide Information"
 msgstr "Montrer les informations relatives aux marées"
 
-#: src/canvasMenu.cpp:844
+#: src/canvasMenu.cpp:851
 msgid "Show Current Information"
 msgstr "Montrer les informations relatives aux courants"
 
-#: src/canvasMenu.cpp:934
+#: src/canvasMenu.cpp:941
 msgid "Temporary GOTO Route"
 msgstr "Suivre cette route temporaire"
 
-#: src/canvasMenu.cpp:935 src/canvasMenu.cpp:987
+#: src/canvasMenu.cpp:942 src/canvasMenu.cpp:994
 #: src/routemanagerdialog.cpp:2350
 msgid "Here"
 msgstr "Ici"
 
-#: src/canvasMenu.cpp:937
+#: src/canvasMenu.cpp:944
 msgid "There"
 msgstr "Là"
 
-#: src/canvasMenu.cpp:983 src/routemanagerdialog.cpp:2024
+#: src/canvasMenu.cpp:990 src/routemanagerdialog.cpp:2024
 #: src/routemanagerdialog.cpp:2346
 msgid "(Unnamed Waypoint)"
 msgstr "(Marque sans nom)"
 
-#: src/canvasMenu.cpp:984 src/routemanagerdialog.cpp:2347
+#: src/canvasMenu.cpp:991 src/routemanagerdialog.cpp:2347
 msgid "Go to "
 msgstr "Aller au curseur (avec route)"
 
-#: src/canvasMenu.cpp:1189 src/routemanagerdialog.cpp:1299
+#: src/canvasMenu.cpp:1196 src/routemanagerdialog.cpp:1299
 msgid "Rename Waypoints?"
 msgstr "Renommer les waypoint ?"
 
-#: src/canvasMenu.cpp:1209
+#: src/canvasMenu.cpp:1216
 msgid "Are you sure you want to delete this route?"
 msgstr "Etes vous certain de vouloir supprimer cette route ?"
 
-#: src/canvasMenu.cpp:1210
+#: src/canvasMenu.cpp:1217
 msgid "OpenCPN Route Delete"
 msgstr "Route supprimée par OpenCPN"
 
-#: src/canvasMenu.cpp:1466
+#: src/canvasMenu.cpp:1473
 msgid "Are you sure you want to delete this track?"
 msgstr "Etes vous certain de vouloir supprimer cette trace ?"
 
-#: src/canvasMenu.cpp:1467 src/routeman.cpp:921
+#: src/canvasMenu.cpp:1474 src/routeman.cpp:921
 msgid "OpenCPN Track Delete"
 msgstr "Supprimer la trace dans OpenCPN"
 
@@ -2879,397 +2879,401 @@ msgstr "Désactiver l’accélération vidéo OpenGL. Ce paramètre sera mémori
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
 msgstr "Afficher un diaporama de <num> cartes, puis quitter. Un nombre nul ou négatif de cartes  <num> ne spécifie aucune limite."
 
-#: src/chart1.cpp:1369
+#: src/chart1.cpp:1365
+msgid "&Skip"
+msgstr "Passer"
+
+#: src/chart1.cpp:1371
 msgid "OpenCPN ENC Prepare"
 msgstr "Analyser les cartes ENC"
 
-#: src/chart1.cpp:1401
+#: src/chart1.cpp:1403
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr "Distance au bateau : %4.0f Nm"
 
-#: src/chart1.cpp:1431
+#: src/chart1.cpp:1433
 msgid "ENC Completed."
 msgstr "Analyse terminée."
 
-#: src/chart1.cpp:1713 src/chart1.cpp:1719
+#: src/chart1.cpp:1715 src/chart1.cpp:1721
 msgid "Failed to initialize the user interface. "
 msgstr "Echec de l'initialisation de l'interface utilisateur"
 
-#: src/chart1.cpp:1714
+#: src/chart1.cpp:1716
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN ne peut pas démarrer"
 
-#: src/chart1.cpp:1715
+#: src/chart1.cpp:1717
 msgid "The necessary configuration files were not found. "
 msgstr "Les  fichiers de configuration nécessaires sont introuvables"
 
-#: src/chart1.cpp:1716
+#: src/chart1.cpp:1718
 msgid "See the log file at "
 msgstr "Voyez le fichier log à :"
 
-#: src/chart1.cpp:1716
+#: src/chart1.cpp:1718
 msgid " for details."
 msgstr "Pour plus de détails."
 
-#: src/chart1.cpp:2033
+#: src/chart1.cpp:2035
 msgid " -- [Portable(-p) executing from "
 msgstr " --[Version portable(-p) exécutée à partir de (ou depuis) "
 
-#: src/chart1.cpp:2148
+#: src/chart1.cpp:2150
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Récupération du dossier, contenant les cartes, initialement défini dans le registre Windows."
 
-#: src/chart1.cpp:2211
+#: src/chart1.cpp:2213
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Reconstruction de la base de données des cartes, à partir du fichier de configuration ...."
 
-#: src/chart1.cpp:2214
+#: src/chart1.cpp:2216
 msgid "Elapsed time : "
 msgstr "Durée écoulée :  "
 
-#: src/chart1.cpp:2215
+#: src/chart1.cpp:2217
 msgid "Elapsed time:"
 msgstr "Durée écoulée:"
 
-#: src/chart1.cpp:2216
+#: src/chart1.cpp:2218
 msgid "Estimated time : "
 msgstr "Durée estimée :  "
 
-#: src/chart1.cpp:2217
+#: src/chart1.cpp:2219
 msgid "Estimated time:"
 msgstr "Durée estimée:"
 
-#: src/chart1.cpp:2218
+#: src/chart1.cpp:2220
 msgid "Remaining time : "
 msgstr "Durée restante : "
 
-#: src/chart1.cpp:2219
+#: src/chart1.cpp:2221
 msgid "Remaining time:"
 msgstr "Durée restante:"
 
-#: src/chart1.cpp:2220 src/chart1.cpp:6120 src/chart1.cpp:6128
+#: src/chart1.cpp:2222 src/chart1.cpp:6128 src/chart1.cpp:6136
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN met à jour la liste des cartes"
 
-#: src/chart1.cpp:2236
+#: src/chart1.cpp:2238
 msgid "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr "Pas de carte installée \n"
 "Veuillez sélectionner le ou les dossiers de cartes dans le sous onglet \"Dossier des cartes\" de l'onglet \"Cartes/données\" dans les \"Options\"."
 
-#: src/chart1.cpp:2405 src/chart1.cpp:2436
+#: src/chart1.cpp:2438
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr "OpenCPN est initialisé à %ld ms."
 
-#: src/chart1.cpp:2916 src/chcanv.cpp:9474
+#: src/chart1.cpp:2918 src/chcanv.cpp:9475
 msgid "AIS Target Query"
 msgstr "Informations émises par cette cible"
 
-#: src/chart1.cpp:2968 src/chart1.cpp:5343 src/chart1.cpp:5346
+#: src/chart1.cpp:2970 src/chart1.cpp:5345 src/chart1.cpp:5348
 msgid "Zoom In"
 msgstr "Zoomer"
 
-#: src/chart1.cpp:2974 src/chart1.cpp:5344 src/chart1.cpp:5347
+#: src/chart1.cpp:2976 src/chart1.cpp:5346 src/chart1.cpp:5349
 msgid "Zoom Out"
 msgstr "Dézoomer"
 
-#: src/chart1.cpp:2983
+#: src/chart1.cpp:2985
 msgid "Shift to Larger Scale Chart"
 msgstr "Passer à l'échelle supérieure"
 
-#: src/chart1.cpp:2991
+#: src/chart1.cpp:2993
 msgid "Shift to Smaller Scale Chart"
 msgstr "Passer à l'échelle inférieure"
 
-#: src/chart1.cpp:2999 src/chart1.cpp:5422
+#: src/chart1.cpp:3001 src/chart1.cpp:5424
 msgid "Create Route"
 msgstr "Route : Créer"
 
-#: src/chart1.cpp:3006 src/chart1.cpp:5336
+#: src/chart1.cpp:3008 src/chart1.cpp:5338
 msgid "Auto Follow"
 msgstr "Centrage automatique"
 
-#: src/chart1.cpp:3026 src/chart1.cpp:4981
+#: src/chart1.cpp:3028 src/chart1.cpp:4983
 msgid "Hide ENC text"
 msgstr "Texte : Cacher"
 
-#: src/chart1.cpp:3028 src/chart1.cpp:4979 src/chart1.cpp:5372
-#: src/chart1.cpp:5377
+#: src/chart1.cpp:3030 src/chart1.cpp:4981 src/chart1.cpp:5374
+#: src/chart1.cpp:5379
 msgid "Show ENC text"
 msgstr "Texte : Montrer"
 
-#: src/chart1.cpp:3037 src/chart1.cpp:3127 src/chart1.cpp:3130
-#: src/chart1.cpp:4573
+#: src/chart1.cpp:3039 src/chart1.cpp:3129 src/chart1.cpp:3132
+#: src/chart1.cpp:4575
 msgid "Hide AIS Targets"
 msgstr "Cacher les cibles AIS"
 
-#: src/chart1.cpp:3044 src/chart1.cpp:4300 src/chart1.cpp:5385
+#: src/chart1.cpp:3046 src/chart1.cpp:4302 src/chart1.cpp:5387
 msgid "Show Currents"
 msgstr "Afficher les courants"
 
-#: src/chart1.cpp:3050 src/chart1.cpp:4335 src/chart1.cpp:5384
+#: src/chart1.cpp:3052 src/chart1.cpp:4337 src/chart1.cpp:5386
 msgid "Show Tides"
 msgstr "Afficher les marées"
 
-#: src/chart1.cpp:3056
+#: src/chart1.cpp:3058
 msgid "Print Chart"
 msgstr "Imprimer la carte"
 
-#: src/chart1.cpp:3062 src/routemanagerdialog.cpp:455
+#: src/chart1.cpp:3064 src/routemanagerdialog.cpp:455
 msgid "Route & Mark Manager"
 msgstr "Gestionnaire de routes, traces, marques et couches"
 
-#: src/chart1.cpp:3069 src/chart1.cpp:4865 src/chart1.cpp:5337
+#: src/chart1.cpp:3071 src/chart1.cpp:4867 src/chart1.cpp:5339
 msgid "Enable Tracking"
 msgstr "Activer la trace"
 
-#: src/chart1.cpp:3076 src/chart1.cpp:5388 src/chart1.cpp:5390
+#: src/chart1.cpp:3078 src/chart1.cpp:5390 src/chart1.cpp:5392
 msgid "Change Color Scheme"
 msgstr "Choisir l'affichage :  Jour / Crépuscule / Nuit"
 
-#: src/chart1.cpp:3095 src/chart1.cpp:5428 src/chart1.cpp:5432
+#: src/chart1.cpp:3097 src/chart1.cpp:5430 src/chart1.cpp:5434
 msgid "Drop MOB Marker"
 msgstr "Insérer une marque MOB (Homme à la mer)"
 
-#: src/chart1.cpp:3095
+#: src/chart1.cpp:3097
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Espace)"
 
-#: src/chart1.cpp:3125 src/chart1.cpp:4572 src/chart1.cpp:5405
+#: src/chart1.cpp:3127 src/chart1.cpp:4574 src/chart1.cpp:5407
 msgid "Attenuate less critical AIS targets"
 msgstr "Atténuer les cibles AIS moins critiques"
 
-#: src/chart1.cpp:3134 src/chart1.cpp:5403
+#: src/chart1.cpp:3136 src/chart1.cpp:5405
 msgid "Show AIS Targets"
 msgstr "Afficher les cibles"
 
-#: src/chart1.cpp:3532
+#: src/chart1.cpp:3534
 msgid "Anchorage created "
 msgstr "Mouillage créé"
 
-#: src/chart1.cpp:3918 src/chcanv.cpp:3497 src/OCPNPlatform.cpp:1554
+#: src/chart1.cpp:3920 src/chcanv.cpp:3497 src/OCPNPlatform.cpp:1576
 msgid "StatusBar"
 msgstr "Barre d'état"
 
-#: src/chart1.cpp:4118
+#: src/chart1.cpp:4120
 msgid "Group \""
 msgstr "Groupe \""
 
-#: src/chart1.cpp:4120
+#: src/chart1.cpp:4122
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" est vide. Activation automatique du groupe de cartes \"Toutes les cartes\"."
 
-#: src/chart1.cpp:4122
+#: src/chart1.cpp:4124
 msgid "OpenCPN Group Notice"
 msgstr "Avis du groupe OpenCPN"
 
-#: src/chart1.cpp:4302
+#: src/chart1.cpp:4304
 msgid "Hide Currents"
 msgstr "Cacher les courants"
 
-#: src/chart1.cpp:4337
+#: src/chart1.cpp:4339
 msgid "Hide Tides"
 msgstr "Cacher les marées"
 
-#: src/chart1.cpp:4344
+#: src/chart1.cpp:4346
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carte1: Evénement...TCMgr invalide"
 
-#: src/chart1.cpp:4571
+#: src/chart1.cpp:4573
 msgid "Show all AIS Targets"
 msgstr "Afficher toutes les cibles AIS"
 
-#: src/chart1.cpp:4710 src/chart1.cpp:4768
+#: src/chart1.cpp:4712 src/chart1.cpp:4770
 msgid "MAN OVERBOARD"
 msgstr "Homme à la mer (MOB)"
 
-#: src/chart1.cpp:4729
+#: src/chart1.cpp:4731
 msgid "1.0 NM along COG"
 msgstr "1.0 NM sur le cap du COG"
 
-#: src/chart1.cpp:4740
+#: src/chart1.cpp:4742
 msgid "Temporary MOB Route"
 msgstr "Route de retour au MOB"
 
-#: src/chart1.cpp:4741
+#: src/chart1.cpp:4743
 msgid "Assumed 1 Mile Point"
 msgstr "Position estimée : 1 mille."
 
-#: src/chart1.cpp:4791
+#: src/chart1.cpp:4793
 msgid "Disable Tracking"
 msgstr "Désactiver la trace"
 
-#: src/chart1.cpp:4816 src/chart1.cpp:8976 src/chart1.cpp:9119
+#: src/chart1.cpp:4818 src/chart1.cpp:8984 src/chart1.cpp:9127
 #: src/routemanagerdialog.cpp:1728
 msgid "(Unnamed Track)"
 msgstr "(Trace sans nom)"
 
-#: src/chart1.cpp:5350
+#: src/chart1.cpp:5352
 msgid "Larger Scale Chart"
 msgstr "Echelle de carte plus grande"
 
-#: src/chart1.cpp:5351
+#: src/chart1.cpp:5353
 msgid "Smaller Scale Chart"
 msgstr "Echelle de carte plus petite"
 
-#: src/chart1.cpp:5354
+#: src/chart1.cpp:5356
 msgid "Exit OpenCPN"
 msgstr "Fermer OpenCPN"
 
-#: src/chart1.cpp:5356
+#: src/chart1.cpp:5358
 msgid "&Navigate"
 msgstr "&1: Naviguer"
 
-#: src/chart1.cpp:5361 src/chart1.cpp:5364 src/options.cpp:3917
+#: src/chart1.cpp:5363 src/chart1.cpp:5366 src/options.cpp:3917
 #: src/options.cpp:4007
 msgid "Enable Chart Quilting"
 msgstr "Activer l'affichage en mosaïque"
 
-#: src/chart1.cpp:5362 src/chart1.cpp:5365 src/options.cpp:3958
+#: src/chart1.cpp:5364 src/chart1.cpp:5367 src/options.cpp:3958
 #: src/options.cpp:4054
 msgid "Show Chart Outlines"
 msgstr "Montrer la bordure des cartes"
 
-#: src/chart1.cpp:5367 src/options.cpp:4632
+#: src/chart1.cpp:5369 src/options.cpp:4632
 msgid "Show Chart Bar"
 msgstr "Montrer la barre des cartes"
 
-#: src/chart1.cpp:5373 src/chart1.cpp:5378
+#: src/chart1.cpp:5375 src/chart1.cpp:5380
 msgid "Show ENC Lights"
 msgstr "Montrer les feux des cartes ENC"
 
-#: src/chart1.cpp:5374 src/chart1.cpp:5379
+#: src/chart1.cpp:5376 src/chart1.cpp:5381
 msgid "Show ENC Soundings"
 msgstr "Montrer les sondes des cartes ENC"
 
-#: src/chart1.cpp:5375 src/chart1.cpp:5380
+#: src/chart1.cpp:5377 src/chart1.cpp:5382
 msgid "Show ENC Anchoring Info"
 msgstr "Montrer les informations de mouillage"
 
-#: src/chart1.cpp:5395 src/chart1.cpp:5397
+#: src/chart1.cpp:5397 src/chart1.cpp:5399
 msgid "Enter Full Screen"
 msgstr "Afficher/Quitter plein écran"
 
-#: src/chart1.cpp:5399
+#: src/chart1.cpp:5401
 msgid "&View"
 msgstr "&2: Voir"
 
-#: src/chart1.cpp:5404
+#: src/chart1.cpp:5406
 msgid "Hide Moored AIS Targets"
 msgstr "Masquer les cibles AIS mouillées"
 
-#: src/chart1.cpp:5406
+#: src/chart1.cpp:5408
 msgid "Show AIS Target Tracks"
 msgstr "Afficher les traces des cibles AIS"
 
-#: src/chart1.cpp:5407
+#: src/chart1.cpp:5409
 msgid "Show CPA Alert Dialogs"
 msgstr "Afficher la fenêtre des alertes CPA"
 
-#: src/chart1.cpp:5408
+#: src/chart1.cpp:5410
 msgid "Sound CPA Alarms"
 msgstr "Alarmes sonores des CPA"
 
-#: src/chart1.cpp:5411
+#: src/chart1.cpp:5413
 msgid "&AIS"
 msgstr "&3: AIS"
 
-#: src/chart1.cpp:5415 src/chart1.cpp:5417
+#: src/chart1.cpp:5417 src/chart1.cpp:5419
 msgid "Measure Distance"
 msgstr "Mesurer les distances"
 
-#: src/chart1.cpp:5421
+#: src/chart1.cpp:5423
 msgid "Route && Mark Manager..."
 msgstr "Gestionnaire de routes, traces, marques et couches ..."
 
-#: src/chart1.cpp:5424
+#: src/chart1.cpp:5426
 msgid "Drop Mark at Boat"
 msgstr "Placer une marque sous le bateau"
 
-#: src/chart1.cpp:5425
+#: src/chart1.cpp:5427
 msgid "Drop Mark at Cursor"
 msgstr "Placer une marque sous le curseur"
 
-#: src/chart1.cpp:5430 src/pluginmanager.cpp:3987
+#: src/chart1.cpp:5432 src/pluginmanager.cpp:3987
 msgid "Preferences"
 msgstr "Préférences"
 
-#: src/chart1.cpp:5437
+#: src/chart1.cpp:5439
 msgid "&Tools"
 msgstr "&4: Outils"
 
-#: src/chart1.cpp:5440
+#: src/chart1.cpp:5442
 msgid "OpenCPN Help"
 msgstr "Aide d'OpenCPN"
 
-#: src/chart1.cpp:5441
+#: src/chart1.cpp:5443
 msgid "&Help"
 msgstr "&5: Aide"
 
-#: src/chart1.cpp:5822
+#: src/chart1.cpp:5824
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Redémarrez OpenCPN pour mettre à jour la langue ou changer le style"
 
-#: src/chart1.cpp:6653
+#: src/chart1.cpp:6661
 #, c-format
 msgid "OpenCPN Startup in %ld ms."
 msgstr "Démarrage de OpenCPN en %ld ms."
 
-#: src/chart1.cpp:7396
+#: src/chart1.cpp:7404
 msgid "Rotated Mode"
 msgstr "Mode rotation de la carte"
 
-#: src/chart1.cpp:8607
+#: src/chart1.cpp:8615
 msgid "Show This Chart"
 msgstr "Montrer cette carte"
 
-#: src/chart1.cpp:8858 src/routeprintout.cpp:470
+#: src/chart1.cpp:8866 src/routeprintout.cpp:470
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Problème d'impression.\n"
 "Votre imprimante actuelle est elle bienl configurée ?"
 
-#: src/chart1.cpp:9040 src/chart1.cpp:9100 src/routemanagerdialog.cpp:1027
+#: src/chart1.cpp:9048 src/chart1.cpp:9108 src/routemanagerdialog.cpp:1027
 msgid "(Unnamed Route)"
 msgstr "(Route sans nom)"
 
-#: src/chart1.cpp:9589
+#: src/chart1.cpp:9597
 msgid " Ship "
 msgstr " Bat. "
 
-#: src/chart1.cpp:9842 src/chart1.cpp:9893
+#: src/chart1.cpp:9850 src/chart1.cpp:9901
 msgid "AIS MAN OVERBOARD"
 msgstr "AIS HOMME A LA MER"
 
-#: src/chart1.cpp:9855 src/options.cpp:2527
+#: src/chart1.cpp:9863 src/options.cpp:2527
 msgid "Own ship"
 msgstr "Bateau de l'utilisateur"
 
-#: src/chart1.cpp:9866
+#: src/chart1.cpp:9874
 msgid "Temporary AISMOB Route"
 msgstr "Route temporaire de retour à l'AISMOB"
 
-#: src/chart1.cpp:9867
+#: src/chart1.cpp:9875
 msgid "Present own ship"
 msgstr "Bateau présent"
 
-#: src/chart1.cpp:9937
+#: src/chart1.cpp:9945
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr "Mise à jour de l'AIS HOMME A LA MER"
 
-#: src/chart1.cpp:10924
+#: src/chart1.cpp:10932
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr "OpenCPN requiert l'accès au port série pour utiliser les données NMEA série.\n"
 
-#: src/chart1.cpp:10926
+#: src/chart1.cpp:10934
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Aucun port série ne peut être trouvé sur ce système.\n"
 "Vous devez installer un port série ou le compléter par un port série USB.\n"
 
-#: src/chart1.cpp:10948
+#: src/chart1.cpp:10956
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
 "It is suggested that you exit OpenCPN now,\n"
 "and add yourself to the correct group to enable serial port access.\n\n"
@@ -3413,7 +3417,7 @@ msgstr "   Résultat : OK, la solution interne de géo-référencement sera util
 msgid "CM93 Detail Level"
 msgstr "CM93 : Niveau de détails"
 
-#: src/chcanv.cpp:2367 src/chcanv.cpp:7622
+#: src/chcanv.cpp:2367 src/chcanv.cpp:7623
 msgid "Layer Route: "
 msgstr "Route (Couche) :"
 
@@ -3433,91 +3437,91 @@ msgstr "Segment : De "
 msgid " to "
 msgstr " à "
 
-#: src/chcanv.cpp:5622 src/chcanv.cpp:6032
+#: src/chcanv.cpp:5623 src/chcanv.cpp:6033
 msgid "Use nearby waypoint?"
 msgstr "Utiliser le waypoint situé à proximité ?"
 
-#: src/chcanv.cpp:5623 src/chcanv.cpp:5675 src/chcanv.cpp:6033
-#: src/chcanv.cpp:6082
+#: src/chcanv.cpp:5624 src/chcanv.cpp:5676 src/chcanv.cpp:6034
+#: src/chcanv.cpp:6083
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN, route"
 
-#: src/chcanv.cpp:5669 src/chcanv.cpp:6077
+#: src/chcanv.cpp:5670 src/chcanv.cpp:6078
 msgid "For this leg the Great Circle route is "
 msgstr "Pour ce segment, la route orthodromique est "
 
-#: src/chcanv.cpp:5670 src/chcanv.cpp:6078
+#: src/chcanv.cpp:5671 src/chcanv.cpp:6079
 msgid " shorter than rhumbline.\n\n"
 msgstr "plus court que la route loxodromique.\n\n"
 
-#: src/chcanv.cpp:5671 src/chcanv.cpp:6079
+#: src/chcanv.cpp:5672 src/chcanv.cpp:6080
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Voulez-vous inclure les points de la route orthodromique pour ce segment ?"
 
-#: src/chcanv.cpp:6736 src/chcanv.cpp:6748 src/S57QueryDialog.cpp:87
+#: src/chcanv.cpp:6737 src/chcanv.cpp:6749 src/S57QueryDialog.cpp:87
 msgid "ObjectQuery"
 msgstr "Afficher les propriétés de l'objet"
 
-#: src/chcanv.cpp:6872 src/chcanv.cpp:6921 src/routemanagerdialog.cpp:1250
+#: src/chcanv.cpp:6873 src/chcanv.cpp:6922 src/routemanagerdialog.cpp:1250
 #: src/routemanagerdialog.cpp:2227
 msgid "Layer"
 msgstr "Couche"
 
-#: src/chcanv.cpp:6957
+#: src/chcanv.cpp:6958
 msgid "There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n"
 msgstr "Il existe déjà un waypoint à cette même position. Voulez vous les fusionner en un seul ?\n\n"
 
-#: src/chcanv.cpp:6958
+#: src/chcanv.cpp:6959
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Répondre «Non» créera un nouveau waypoint à la même position."
 
-#: src/chcanv.cpp:6959
+#: src/chcanv.cpp:6960
 msgid "Merge waypoint?"
 msgstr "Fusionner le waypoint ?"
 
-#: src/chcanv.cpp:7015
+#: src/chcanv.cpp:7016
 msgid "There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n"
 msgstr "Il existe des waypoint aux mêmes positions que ceux que vous voulez créer. Voulez vous seulement recopier leurs caractéristiques dans les nouveaux waypoint\n"
 
-#: src/chcanv.cpp:7016
+#: src/chcanv.cpp:7017
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Répondre «Non» créera tous les nouveaux waypoint de cette route."
 
-#: src/chcanv.cpp:7017
+#: src/chcanv.cpp:7018
 msgid "Merge waypoints?"
 msgstr "Fusionner les waypoint ?"
 
-#: src/chcanv.cpp:7486 src/chcanv.cpp:7517 src/RolloverWin.cpp:118
+#: src/chcanv.cpp:7487 src/chcanv.cpp:7518 src/RolloverWin.cpp:118
 #: src/RolloverWin.cpp:204 src/RolloverWin.cpp:318
 msgid "RouteLegInfoRollover"
 msgstr "Info affichées par survol d'un segment de route"
 
-#: src/chcanv.cpp:8665 src/options.cpp:4114 src/options.cpp:4226
+#: src/chcanv.cpp:8666 src/options.cpp:4114 src/options.cpp:4226
 msgid "Feet"
 msgstr "Pieds"
 
-#: src/chcanv.cpp:8666 src/options.cpp:4087 src/options.cpp:4114
+#: src/chcanv.cpp:8667 src/options.cpp:4087 src/options.cpp:4114
 #: src/options.cpp:4205 src/options.cpp:4226
 msgid "Meters"
 msgstr "Mètres"
 
-#: src/chcanv.cpp:8667 src/options.cpp:4114 src/options.cpp:4226
+#: src/chcanv.cpp:8668 src/options.cpp:4114 src/options.cpp:4226
 msgid "Fathoms"
 msgstr "Brasses"
 
-#: src/chcanv.cpp:8670
+#: src/chcanv.cpp:8671
 msgid "OverZoom"
 msgstr "Zoom excessif"
 
-#: src/chcanv.cpp:9011 src/chcanv.cpp:9012
+#: src/chcanv.cpp:9012 src/chcanv.cpp:9013
 msgid "ExtendedTideIcon"
 msgstr "Hauteur de marée ( sous l'indicateur)"
 
-#: src/chcanv.cpp:9289
+#: src/chcanv.cpp:9290
 msgid "CurrentValue"
 msgstr "Force du courant"
 
-#: src/chcanv.cpp:9678
+#: src/chcanv.cpp:9679
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
 msgstr "  Application externe \"xcalib\" introuvable. La brillance de l'écran est inchangée"
 
@@ -3562,7 +3566,7 @@ msgstr "mètres"
 #: src/cm93.cpp:6794 src/GoToPositionDialog.cpp:149 src/options.cpp:488
 #: src/options.cpp:5086 src/routeprintout.cpp:407 src/routeprop.cpp:1066
 #: src/routeprop.cpp:1362 src/routeprop.cpp:2783 src/TCWin.cpp:174
-#: src/TCWin.cpp:190 src/toolbar.cpp:2777 src/TrackPropDlg.cpp:510
+#: src/TCWin.cpp:190 src/toolbar.cpp:2793 src/TrackPropDlg.cpp:510
 #: src/TrackPropDlg.cpp:856
 msgid "OK"
 msgstr "Ok"
@@ -3702,8 +3706,8 @@ msgstr "OpenGL-> Using 3dfx fxt1 compression"
 msgid "OpenGL-> No Useable compression format found"
 msgstr "OpenGL-> No Useable compression format found"
 
-#: src/glChartCanvas.cpp:1641 src/s52plib.cpp:1990 src/s52plib.cpp:2084
-#: src/s52plib.cpp:2244
+#: src/glChartCanvas.cpp:1641 src/s52plib.cpp:1993 src/s52plib.cpp:2087
+#: src/s52plib.cpp:2247
 msgid "ChartTexts"
 msgstr "Texte des cartes"
 
@@ -3723,7 +3727,7 @@ msgstr "Longitude "
 
 #: src/GoToPositionDialog.cpp:145 src/options.cpp:485 src/routeprintout.cpp:403
 #: src/routeprop.cpp:1062 src/routeprop.cpp:1358 src/routeprop.cpp:2781
-#: src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2773 src/TrackPropDlg.cpp:506
+#: src/SendToGpsDlg.cpp:132 src/toolbar.cpp:2789 src/TrackPropDlg.cpp:506
 #: src/TrackPropDlg.cpp:852
 msgid "Cancel"
 msgstr "Annuler"
@@ -3918,11 +3922,11 @@ msgstr "Oui"
 msgid "No"
 msgstr "Non"
 
-#: src/OCPNPlatform.cpp:690
+#: src/OCPNPlatform.cpp:691
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Récupération de la langue, initialement sélectionnée, dans le registre Windows."
 
-#: src/OCPNPlatform.cpp:1430
+#: src/OCPNPlatform.cpp:1452
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "L'ancien fichier log sera renommé opencpn.log.log"
 
@@ -6220,35 +6224,35 @@ msgstr "Aujourd'hui"
 msgid "Tomorrow"
 msgstr "Demain"
 
-#: src/toolbar.cpp:1071
+#: src/toolbar.cpp:1087
 msgid "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
 "Ceci rendrait la barre d'icônes inaccessible."
 
-#: src/toolbar.cpp:1207 src/toolbar.cpp:1222 src/toolbar.cpp:1238
+#: src/toolbar.cpp:1223 src/toolbar.cpp:1238 src/toolbar.cpp:1254
 msgid "ToolTips"
 msgstr "Outils de renseignement"
 
-#: src/toolbar.cpp:2629
+#: src/toolbar.cpp:2645
 msgid "No, I don't want to hide it."
 msgstr "Non, je ne veux pas le cacher"
 
-#: src/toolbar.cpp:2632
+#: src/toolbar.cpp:2648
 msgid "No, and permanently remove the option to hide it."
 msgstr "Non, et de façon définitive, empêcher de masquer cette icône."
 
-#: src/toolbar.cpp:2635
+#: src/toolbar.cpp:2651
 msgid "Yes, hide it."
 msgstr "Oui, cacher cette icône"
 
-#: src/toolbar.cpp:2641
+#: src/toolbar.cpp:2657
 msgid "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr "Le bouton \"Homme à la mer\" (MOB) peut être un important facteur de sécurité.\n"
 "Etes vous certain de vouloir le masquer ?"
 
-#: src/toolbar.cpp:2737
+#: src/toolbar.cpp:2753
 msgid "Choose Toolbar Icons"
 msgstr "Contenu affiché dans la barre d'icônes"
 
