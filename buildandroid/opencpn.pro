@@ -228,6 +228,27 @@ doc_deployment.files += $$PWD/../data/doc
 doc_deployment.path = /assets/files/doc
 INSTALLS += doc_deployment
 
+
+# wxWidgets Core locale(s)
+fr_mo_wxbase.files += $$PWD/../Resources/locale/fr/LC_MESSAGES/wxstd.mo
+fr_mo_wxbase.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_wxbase
+
+es_mo_wxbase.files += $$PWD/../Resources/locale/es/LC_MESSAGES/wxstd.mo
+es_mo_wxbase.path = /assets/files/locale/es/LC_MESSAGES
+INSTALLS += es_mo_wxbase
+
+
+# OpenCPN Core locale(s)
+OCPN_fr_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lproj/opencpn.mo
+OCPN_fr_mo_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += OCPN_fr_mo_deployment
+
+OCPN_es_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_es.lproj/opencpn.mo
+OCPN_es_mo_deployment.path = /assets/files/locale/es/LC_MESSAGES
+INSTALLS += OCPN_es_mo_deployment
+
+
 # The built-in PlugIns
 
 # Chart Downloader-------------------------------------------------------------------
@@ -241,9 +262,9 @@ dldr_plugin_deployment.path = /assets/files/plugins/chartdldr_pi/data
 INSTALLS += dldr_plugin_deployment
 
 #locale
-fr_FR_mo_dldr_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/fr_FR.lproj/opencpn-chartdldr_pi.mo
-fr_FR_mo_dldr_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_dldr_deployment
+fr_mo_dldr_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/fr_FR.lproj/opencpn-chartdldr_pi.mo
+fr_mo_dldr_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_dldr_deployment
 
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
@@ -269,9 +290,9 @@ svg_wmm_plugin_deployment.path = /assets/files/plugins/wmm_pi/data
 INSTALLS += svg_wmm_plugin_deployment
 
 #locale
-fr_FR_mo_wmm_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/fr_FR.lproj/opencpn-wmm_pi.mo
-fr_FR_mo_wmm_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_wmm_deployment
+fr_mo_wmm_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/fr_FR.lproj/opencpn-wmm_pi.mo
+fr_mo_wmm_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_wmm_deployment
 
 #------------------------------------------------------------------------------------
 
@@ -282,9 +303,9 @@ so_grib_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_grib_plugin_deployment
 
 #locale
-fr_FR_mo_grib_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/fr_FR.lproj/opencpn-grib_pi.mo
-fr_FR_mo_grib_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_grib_deployment
+fr_mo_grib_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/fr_FR.lproj/opencpn-grib_pi.mo
+fr_mo_grib_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_grib_deployment
 
 #SVG
 svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
@@ -327,9 +348,9 @@ svg_dashboard_plugin_deployment.path = /assets/files/plugins/dashboard_pi/data
 INSTALLS += svg_dashboard_plugin_deployment
 
 #locale
-fr_FR_mo_dashboard_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/fr_FR.lproj/opencpn-dashboard_pi.mo
-fr_FR_mo_dashboard_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_dashboard_deployment
+fr_mo_dashboard_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/fr_FR.lproj/opencpn-dashboard_pi.mo
+fr_mo_dashboard_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_dashboard_deployment
 #------------------------------------------------------------------------------------
 
 # Squiddio---------------------------------------------------------------
@@ -339,22 +360,12 @@ so_squiddio_plugin_deployment.path = /assets/files/plugins
 INSTALLS += so_squiddio_plugin_deployment
 
 #locale
-fr_FR_mo_squiddio_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fr_FR.lproj/opencpn-squiddio_pi.mo
-fr_FR_mo_squiddio_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_squiddio_deployment
+fr_mo_squiddio_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fr_FR.lproj/opencpn-squiddio_pi.mo
+fr_mo_squiddio_deployment.path = /assets/files/locale/fr/LC_MESSAGES
+INSTALLS += fr_mo_squiddio_deployment
 #------------------------------------------------------------------------------------
 
 
-fr_FR_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lproj/opencpn.mo
-fr_FR_mo_deployment.path = /assets/files/locale/fr_FR/LC_MESSAGES
-INSTALLS += fr_FR_mo_deployment
-
-
-# osenc_pi---------------------------------------------------------------
-#library
-#so_oesenc_plugin_deployment.files += /home/dsr/Projects/oesenc_pi/build_android/liboesenc_pi.so
-#so_oesenc_plugin_deployment.path = /assets/files/plugins
-#INSTALLS += so_oesenc_plugin_deployment
 
 ANDROID_EXTRA_LIBS = \
         /home/dsr/Projects/opencpn_android/buildandroid/../buildandroid/assetbridge/libs/armeabi/libassetbridge.so
