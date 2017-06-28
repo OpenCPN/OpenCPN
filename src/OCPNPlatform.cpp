@@ -711,6 +711,9 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
 {
     wxString return_val;
     
+    wxString imsg = _T("ChangeLocale: Language load for:  ");
+    imsg += newLocaleID;
+    wxLogMessage( imsg );
     
     //  Old locale is done.
     delete (wxLocale*)presentLocale;
@@ -727,9 +730,14 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         // of the wxWidgets strings is not present.
         // So try again, without attempting to load defaults wxstd.mo.
         if( !locale->IsOk() ){
+            wxString imsg = _T("ChangeLocale:  could not initialize:  ");
+            imsg += newLocaleID;
+            wxLogMessage( imsg );
+            
             delete locale;
             locale = new wxLocale;
             locale->Init( pli->Language, 0 );
+            
         }
         loc_lang_canonical = pli->CanonicalName;
         
@@ -740,6 +748,9 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
     }
     
     if( !b_initok ) {
+        wxString imsg = _T("ChangeLocale: Fall back to en_US");
+        wxLogMessage( imsg );
+        
         delete locale;
         locale = new wxLocale;
         locale->Init( wxLANGUAGE_ENGLISH_US, 0 );
@@ -747,7 +758,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
     }
     
     if(b_initok){
-        wxString imsg = _T("Opencpn language load for:  ");
+        wxString imsg = _T("ChangeLocale: Locale Init OK for:  ");
         imsg += loc_lang_canonical;
         wxLogMessage( imsg );
         
@@ -760,7 +771,7 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
-            wxString imsg = _T("Loading catalog for:  ");
+            wxString imsg = _T("Loading Plugin catalog for:  ");
             imsg += g_locale_catalog_array.Item(i);
             wxLogMessage( imsg );
             if(!locale->AddCatalog( g_locale_catalog_array.Item(i) ))
