@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:16-0500\n"
-"PO-Revision-Date: 2017-06-10 12:05-0400\n"
+"PO-Revision-Date: 2017-06-29 10:42-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -23,11 +23,12 @@ msgstr "Anfrage-Start"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Angefragtes Gebiet zeichnen\n"
+"oder hier Klicken, um die Anfrage abzubrechen"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Gebiet validieren und fortsetzen"
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -83,7 +84,7 @@ msgstr "Einstellungen"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Angefragtes Gebiet zeichnen oder hier Klicken, um die Anfrage abzubrechen"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -95,7 +96,7 @@ msgstr "Grib-Verzeichnis auswählen"
 
 #: src/GribUIDialog.cpp:1679
 msgid " files don't exist!"
-msgstr ""
+msgstr " Dateien sind nicht vorhanden!"
 
 #: src/GribUIDialog.cpp:1701
 msgid " can't be read!"
@@ -270,7 +271,8 @@ msgstr "Eine Titel/Kopf-Zeile dem Dialog hinzufügen\n"
 #: src/GribSettingsDialog.cpp:869
 msgid "This change needs a complete reload.\n"
 "It will be applied after closing and re-opening the plugin"
-msgstr ""
+msgstr "Diese Veränderung erfordert ein komplettes Neuladen. \n"
+"Die Änderungen sind nach Schließen und erneutem Öffnen des Plugins aktiv"
 
 #: src/GribSettingsDialog.cpp:889
 msgid "You have chosen to authorize interpolation.\n"
@@ -351,15 +353,15 @@ msgstr "Konvektiv verfügb. potentielle Energie"
 
 #: src/GribUIDialogBase.cpp:557 src/CursorData.cpp:241
 msgid "Altitude"
-msgstr ""
+msgstr "Höhe"
 
 #: src/GribUIDialogBase.cpp:574
 msgid "Temp."
-msgstr ""
+msgstr "Temp."
 
 #: src/GribUIDialogBase.cpp:591
 msgid "Relat. Hum."
-msgstr ""
+msgstr "Rel. Feuchte."
 
 #: src/GribUIDialogBase.cpp:734
 msgid "Data Display Options"
@@ -474,15 +476,15 @@ msgstr "Abspiel-Optionen"
 
 #: src/GribUIDialogBase.cpp:996
 msgid "Speed Control"
-msgstr ""
+msgstr "Geschwindigkeit"
 
 #: src/GribUIDialogBase.cpp:1008
 msgid "Slow"
-msgstr ""
+msgstr "Langsam"
 
 #: src/GribUIDialogBase.cpp:1016
 msgid "Fast"
-msgstr ""
+msgstr "Schnell"
 
 #: src/GribUIDialogBase.cpp:1022
 msgid "Loop Mode"
@@ -518,35 +520,35 @@ msgstr "Dialog-Stil"
 
 #: src/GribUIDialogBase.cpp:1091
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
+msgstr "Daten am Cursor sind an Symbolleiste angefügt - mit Kopfzeile"
 
 #: src/GribUIDialogBase.cpp:1094
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
+msgstr "Daten am Cursor sind an Symbolleiste angefügt - keine Kopfzeile"
 
 #: src/GribUIDialogBase.cpp:1097
 msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
+msgstr "Daten am Cursor werden abgekoppelt und horizontal angezeigt"
 
 #: src/GribUIDialogBase.cpp:1100
 msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
+msgstr "Daten am Cursor werden abgekoppelt und vertikal angezeigt"
 
 #: src/GribUIDialogBase.cpp:1113
 msgid "Buttons Visibility"
-msgstr ""
+msgstr "Sichtbarkeit der Schaltflächen"
 
 #: src/GribUIDialogBase.cpp:1127
 msgid "Attached icon bar"
-msgstr ""
+msgstr "Angefügte Symbolleiste"
 
 #: src/GribUIDialogBase.cpp:1132
 msgid "Isolated icon bar"
-msgstr ""
+msgstr "Abgekoppelte Icon-Leiste"
 
 #: src/GribUIDialogBase.cpp:1140
 msgid "Geopot. Height Choice"
-msgstr ""
+msgstr "Auswahl Höhe Geo. Pot."
 
 #: src/GribUIDialogBase.cpp:1172
 msgid "Zoom to Center"
@@ -790,7 +792,7 @@ msgstr " (Max Größe)"
 
 #: src/GribUIDialogBase.cpp:1988
 msgid "Data at Position:"
-msgstr ""
+msgstr "Grib Daten an Position:"
 
 #: src/smapi.cpp:119
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
@@ -802,7 +804,7 @@ msgstr "Grib-Anzeige Einstellungen"
 
 #: src/GribUIDialogBase.h:341
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: src/GribUIDialogBase.h:427
 msgid "Write and send eMail request"
@@ -820,7 +822,7 @@ msgstr "Dialog"
 
 #: src/GribOverlayFactory.cpp:518
 msgid "Warning : Data at Geopotential Height"
-msgstr ""
+msgstr "Warnung: Daten auf Geopotential Höhe"
 
 #: src/GribOverlayFactory.cpp:1119
 msgid "Building Isobar map"
@@ -948,7 +950,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Sie fordern eine Vorhersage von mehr als 8 Tagen an.\n"
+"Dies konfligiert mit Wellen-Daten. Diese werden deshalb von Ihrer Anfrage entfernt.\n"
+"Beachten Sie, daß nach den ersten 8 Tagen die Auflösung nur 2.5\\u00B0x2.5\\u00B0\n"
+" im Zeitintervall von 12 Stunden beträgt."
 
 #: src/GribRequestDialog.cpp:837
 msgid "Max"
@@ -970,7 +975,7 @@ msgstr "Fehler! Max Breite weniger als min. Breite oder max. Länge weniger als 
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Die Fläche ist zu gross! Jede Seite muss kleiner als 180\\u00B0 sein!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"
@@ -1010,27 +1015,27 @@ msgstr "Daten am Cursor"
 
 #: src/CursorData.cpp:239
 msgid "at Geopotential Height"
-msgstr ""
+msgstr "auf Geopotential Höhe"
 
 #: src/CursorData.cpp:242
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatur"
 
 #: src/CursorData.cpp:245
 msgid "at"
-msgstr ""
+msgstr "an"
 
 #: src/CursorData.cpp:250
 msgid "Wind Speed"
-msgstr ""
+msgstr "Windgeschwindigkeit"
 
 #: src/CursorData.cpp:251
 msgid "Wind Speed in Bf"
-msgstr ""
+msgstr "Windgeschwindigkeit in Bf"
 
 #: src/CursorData.cpp:252
 msgid "Wind Direction"
-msgstr ""
+msgstr "Wind-Richtung"
 
 #: src/CursorData.cpp:255
 msgid "Wind Gust at"
@@ -1042,7 +1047,7 @@ msgstr "Luft-Temperatur bei "
 
 #: src/CursorData.cpp:258
 msgid "surface level"
-msgstr ""
+msgstr "Bodenhöhe"
 
 #: src/CursorData.cpp:258
 msgid "Sea Surface Temperature"

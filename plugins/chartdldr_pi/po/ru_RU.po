@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-06-10 12:06-0400\n"
+"PO-Revision-Date: 2017-06-29 09:35-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:976 src/chartdldr_pi.cpp:982
 msgid "No charts selected for download."
-msgstr ""
+msgstr "Файлы для скачивания не выбраны."
 
 #: src/chartdldr_pi.cpp:992
 msgid "Abort download"
@@ -179,7 +179,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1078 src/chartdldrgui.cpp:400
 msgid "Download selected charts"
-msgstr ""
+msgstr "Скачать выбранные карты"
 
 #: src/chartdldr_pi.cpp:1108 src/chartdldrgui.cpp:95
 msgid "Catalog"
@@ -212,7 +212,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1223
 msgid "Edit Chart Source"
-msgstr ""
+msgstr "Редактировать источник карт"
 
 #: src/chartdldr_pi.cpp:1262
 #, c-format
@@ -238,11 +238,11 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1793
 msgid "Chart source definition problem"
-msgstr ""
+msgstr "Проблема определения источника карт"
 
 #: src/chartdldrgui.cpp:104
 msgid "Predefined"
-msgstr ""
+msgstr "Стандартные"
 
 #: src/chartdldrgui.cpp:125
 msgid "Name"
@@ -258,7 +258,7 @@ msgstr "Пользовательское"
 
 #: src/chartdldrgui.cpp:149
 msgid "Chart Directory"
-msgstr ""
+msgstr "Каталог Карт"
 
 #: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:472
 msgid "Select a folder"
@@ -266,11 +266,11 @@ msgstr "Выбрать папку"
 
 #: src/chartdldrgui.cpp:197 src/chartdldrgui.cpp:529
 msgid "Choose Chart File Directory"
-msgstr ""
+msgstr "Выбор каталога для файлов карт"
 
 #: src/chartdldrgui.cpp:222 src/chartdldrgui.cpp:335
 msgid "Catalogs"
-msgstr ""
+msgstr "Каталоги"
 
 #: src/chartdldrgui.cpp:245 src/chartdldrgui.cpp:346
 msgid "Add"
@@ -278,7 +278,7 @@ msgstr "Добавить"
 
 #: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
 msgid "Add a new chart catalog."
-msgstr ""
+msgstr "Добавьте новый каталог карт."
 
 #: src/chartdldrgui.cpp:250 src/chartdldrgui.cpp:351
 msgid "Delete"
@@ -306,7 +306,7 @@ msgstr "Обновить все"
 
 #: src/chartdldrgui.cpp:269 src/chartdldrgui.cpp:378
 msgid "Charts"
-msgstr ""
+msgstr "Карты"
 
 #: src/chartdldrgui.cpp:290 src/chartdldrgui.cpp:394
 msgid "Help"
@@ -323,11 +323,11 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:463
 msgid "Default Path to Charts"
-msgstr ""
+msgstr "Путь к картам по умолчанию"
 
 #: src/chartdldrgui.cpp:479
 msgid "Preferences"
-msgstr ""
+msgstr "Настройки"
 
 #: src/chartdldrgui.cpp:483
 msgid "After catalog update select for download"
@@ -335,63 +335,63 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:487
 msgid "All updated charts"
-msgstr ""
+msgstr "Все обновленные карты"
 
 #: src/chartdldrgui.cpp:491
 msgid "All new charts"
-msgstr ""
+msgstr "Все новые карты"
 
 #: src/chartdldrgui.cpp:497
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr ""
+msgstr "Разрешить полное обновление всех карт"
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"
-msgstr ""
+msgstr "Новый источник карт"
 
 #: src/chartdldrgui.h:154
 msgid "Chart Downloader Preferences"
-msgstr ""
+msgstr "Настройки загрузчика карт"
 
 #: src/wxcurl/dialog.cpp:137
 msgid "Not available"
-msgstr ""
+msgstr "Недоступно"
 
 #: src/wxcurl/dialog.cpp:168
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: src/wxcurl/dialog.cpp:187
 msgid "Speed:"
-msgstr ""
+msgstr "Скорость:"
 
 #: src/wxcurl/dialog.cpp:196
 msgid "Elapsed time:"
-msgstr ""
+msgstr "Прошло времени:"
 
 #: src/wxcurl/dialog.cpp:198
 msgid "Estimated total time:"
-msgstr ""
+msgstr "Расчетное время:"
 
 #: src/wxcurl/dialog.cpp:200
 msgid "Estimated remaining time:"
-msgstr ""
+msgstr "Примерное время ожидания:"
 
 #: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
 msgid "Abort"
-msgstr ""
+msgstr "Отмена"
 
 #: src/wxcurl/dialog.cpp:245
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
 msgid "Pause"
-msgstr ""
+msgstr "Приостановить"
 
 #: src/wxcurl/dialog.cpp:252
 msgid "Start"
-msgstr ""
+msgstr "Начать"
 
 #: src/wxcurl/dialog.cpp:397
 msgid "Close"
