@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 4.6.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-26 21:47-0400\n"
+"POT-Creation-Date: 2017-06-27 23:11-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: include/about.h:39 src/chart1.cpp:3088 src/chart1.cpp:5441
+#: include/about.h:39 src/chart1.cpp:3086 src/chart1.cpp:5439
 msgid "About OpenCPN"
 msgstr ""
 
@@ -48,8 +48,8 @@ msgstr ""
 msgid "Link Properties"
 msgstr ""
 
-#: include/options.h:71 src/chart1.cpp:3015 src/chart1.cpp:5436
-#: src/chart1.cpp:5626 src/chart1.cpp:6633 src/options.cpp:3230
+#: include/options.h:71 src/chart1.cpp:3013 src/chart1.cpp:5434
+#: src/chart1.cpp:5624 src/chart1.cpp:6631 src/options.cpp:3230
 msgid "Options"
 msgstr ""
 
@@ -85,11 +85,11 @@ msgid "Track properties"
 msgstr ""
 
 #: src/about.cpp:216 src/about.cpp:266 src/about.cpp:399 src/about.cpp:500
-#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1368 src/chart1.cpp:6133
-#: src/chart1.cpp:11401 src/chart1.cpp:12382 src/chcanv.cpp:8636
+#: src/AISTargetListDialog.cpp:305 src/chart1.cpp:1366 src/chart1.cpp:6131
+#: src/chart1.cpp:11399 src/chart1.cpp:12380 src/chcanv.cpp:8636
 #: src/chcanv.cpp:8680 src/cm93.cpp:6730 src/concanv.cpp:104
-#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1368 src/OCPNPlatform.cpp:1763
-#: src/OCPNPlatform.cpp:1803 src/options.cpp:708 src/options.cpp:1165
+#: src/LinkPropDlg.cpp:38 src/OCPNPlatform.cpp:1375 src/OCPNPlatform.cpp:1770
+#: src/OCPNPlatform.cpp:1810 src/options.cpp:708 src/options.cpp:1165
 #: src/options.cpp:7563 src/options.cpp:7787 src/options.cpp:8754
 #: src/options.cpp:8882 src/Osenc.cpp:1555 src/routemanagerdialog.cpp:458
 #: src/routeprop.cpp:501 src/routeprop.cpp:796 src/routeprop.cpp:1148
@@ -2441,7 +2441,7 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:369 src/canvasMenu.cpp:606 src/chart1.cpp:5412
+#: src/AISTargetListDialog.cpp:369 src/canvasMenu.cpp:606 src/chart1.cpp:5410
 msgid "AIS target list"
 msgstr ""
 
@@ -2532,8 +2532,8 @@ msgid ""
 "session?"
 msgstr ""
 
-#: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5825 src/chart1.cpp:10937
-#: src/chart1.cpp:10968 src/LinkPropDlg.cpp:134 src/options.cpp:537
+#: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5823 src/chart1.cpp:10935
+#: src/chart1.cpp:10966 src/LinkPropDlg.cpp:134 src/options.cpp:537
 #: src/options.cpp:6948 src/options.cpp:6985 src/options.cpp:8719
 #: src/pluginmanager.cpp:423 src/pluginmanager.cpp:1127
 #: src/pluginmanager.cpp:1169 src/pluginmanager.cpp:1197
@@ -2633,7 +2633,7 @@ msgstr ""
 msgid "Navigate To Here"
 msgstr ""
 
-#: src/canvasMenu.cpp:433 src/chart1.cpp:5342
+#: src/canvasMenu.cpp:433 src/chart1.cpp:5340
 msgid "Course Up Mode"
 msgstr ""
 
@@ -2641,8 +2641,8 @@ msgstr ""
 msgid "Chart Up Mode"
 msgstr ""
 
-#: src/canvasMenu.cpp:438 src/chart1.cpp:4967 src/chart1.cpp:5341
-#: src/chart1.cpp:7411
+#: src/canvasMenu.cpp:438 src/chart1.cpp:4965 src/chart1.cpp:5339
+#: src/chart1.cpp:7409
 msgid "North Up Mode"
 msgstr ""
 
@@ -2670,7 +2670,7 @@ msgstr ""
 msgid "CM93 Offset Dialog..."
 msgstr ""
 
-#: src/canvasMenu.cpp:496 src/chart1.cpp:8620
+#: src/canvasMenu.cpp:496 src/chart1.cpp:8618
 msgid "Hide This Chart"
 msgstr ""
 
@@ -2891,402 +2891,393 @@ msgid ""
 "specifies no limit."
 msgstr ""
 
-#: src/chart1.cpp:1365
-msgid "&Skip"
-msgstr ""
-
-#: src/chart1.cpp:1371
+#: src/chart1.cpp:1369
 msgid "OpenCPN ENC Prepare"
 msgstr ""
 
-#: src/chart1.cpp:1403
+#: src/chart1.cpp:1401
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
 msgstr ""
 
-#: src/chart1.cpp:1433
+#: src/chart1.cpp:1431
 msgid "ENC Completed."
 msgstr ""
 
-#: src/chart1.cpp:1715 src/chart1.cpp:1721
+#: src/chart1.cpp:1713 src/chart1.cpp:1719
 msgid "Failed to initialize the user interface. "
 msgstr ""
 
-#: src/chart1.cpp:1716
+#: src/chart1.cpp:1714
 msgid "OpenCPN cannot start. "
 msgstr ""
 
-#: src/chart1.cpp:1717
+#: src/chart1.cpp:1715
 msgid "The necessary configuration files were not found. "
 msgstr ""
 
-#: src/chart1.cpp:1718
+#: src/chart1.cpp:1716
 msgid "See the log file at "
 msgstr ""
 
-#: src/chart1.cpp:1718
+#: src/chart1.cpp:1716
 msgid " for details."
 msgstr ""
 
-#: src/chart1.cpp:2035
+#: src/chart1.cpp:2033
 msgid " -- [Portable(-p) executing from "
 msgstr ""
 
-#: src/chart1.cpp:2150
+#: src/chart1.cpp:2148
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr ""
 
-#: src/chart1.cpp:2213
+#: src/chart1.cpp:2211
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 
-#: src/chart1.cpp:2216
+#: src/chart1.cpp:2214
 msgid "Elapsed time : "
 msgstr ""
 
-#: src/chart1.cpp:2217
+#: src/chart1.cpp:2215
 msgid "Elapsed time:"
 msgstr ""
 
-#: src/chart1.cpp:2218
+#: src/chart1.cpp:2216
 msgid "Estimated time : "
 msgstr ""
 
-#: src/chart1.cpp:2219
+#: src/chart1.cpp:2217
 msgid "Estimated time:"
 msgstr ""
 
-#: src/chart1.cpp:2220
+#: src/chart1.cpp:2218
 msgid "Remaining time : "
 msgstr ""
 
-#: src/chart1.cpp:2221
+#: src/chart1.cpp:2219
 msgid "Remaining time:"
 msgstr ""
 
-#: src/chart1.cpp:2222 src/chart1.cpp:6128 src/chart1.cpp:6136
+#: src/chart1.cpp:2220 src/chart1.cpp:6126 src/chart1.cpp:6134
 msgid "OpenCPN Chart Update"
 msgstr ""
 
-#: src/chart1.cpp:2238
+#: src/chart1.cpp:2236
 msgid ""
 "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr ""
 
-#: src/chart1.cpp:2438
+#: src/chart1.cpp:2436
 #, c-format
 msgid "OpenCPN Initialized in %ld ms."
 msgstr ""
 
-#: src/chart1.cpp:2918 src/chcanv.cpp:9475
+#: src/chart1.cpp:2916 src/chcanv.cpp:9475
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chart1.cpp:2970 src/chart1.cpp:5345 src/chart1.cpp:5348
+#: src/chart1.cpp:2968 src/chart1.cpp:5343 src/chart1.cpp:5346
 msgid "Zoom In"
 msgstr ""
 
-#: src/chart1.cpp:2976 src/chart1.cpp:5346 src/chart1.cpp:5349
+#: src/chart1.cpp:2974 src/chart1.cpp:5344 src/chart1.cpp:5347
 msgid "Zoom Out"
 msgstr ""
 
-#: src/chart1.cpp:2985
+#: src/chart1.cpp:2983
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:2993
+#: src/chart1.cpp:2991
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:3001 src/chart1.cpp:5424
+#: src/chart1.cpp:2999 src/chart1.cpp:5422
 msgid "Create Route"
 msgstr ""
 
-#: src/chart1.cpp:3008 src/chart1.cpp:5338
+#: src/chart1.cpp:3006 src/chart1.cpp:5336
 msgid "Auto Follow"
 msgstr ""
 
-#: src/chart1.cpp:3028 src/chart1.cpp:4983
+#: src/chart1.cpp:3026 src/chart1.cpp:4981
 msgid "Hide ENC text"
 msgstr ""
 
-#: src/chart1.cpp:3030 src/chart1.cpp:4981 src/chart1.cpp:5374
-#: src/chart1.cpp:5379
+#: src/chart1.cpp:3028 src/chart1.cpp:4979 src/chart1.cpp:5372
+#: src/chart1.cpp:5377
 msgid "Show ENC text"
 msgstr ""
 
-#: src/chart1.cpp:3039 src/chart1.cpp:3129 src/chart1.cpp:3132
-#: src/chart1.cpp:4575
+#: src/chart1.cpp:3037 src/chart1.cpp:3127 src/chart1.cpp:3130
+#: src/chart1.cpp:4573
 msgid "Hide AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:3046 src/chart1.cpp:4302 src/chart1.cpp:5387
+#: src/chart1.cpp:3044 src/chart1.cpp:4300 src/chart1.cpp:5385
 msgid "Show Currents"
 msgstr ""
 
-#: src/chart1.cpp:3052 src/chart1.cpp:4337 src/chart1.cpp:5386
+#: src/chart1.cpp:3050 src/chart1.cpp:4335 src/chart1.cpp:5384
 msgid "Show Tides"
 msgstr ""
 
-#: src/chart1.cpp:3058
+#: src/chart1.cpp:3056
 msgid "Print Chart"
 msgstr ""
 
-#: src/chart1.cpp:3064 src/routemanagerdialog.cpp:455
+#: src/chart1.cpp:3062 src/routemanagerdialog.cpp:455
 msgid "Route & Mark Manager"
 msgstr ""
 
-#: src/chart1.cpp:3071 src/chart1.cpp:4867 src/chart1.cpp:5339
+#: src/chart1.cpp:3069 src/chart1.cpp:4865 src/chart1.cpp:5337
 msgid "Enable Tracking"
 msgstr ""
 
-#: src/chart1.cpp:3078 src/chart1.cpp:5390 src/chart1.cpp:5392
+#: src/chart1.cpp:3076 src/chart1.cpp:5388 src/chart1.cpp:5390
 msgid "Change Color Scheme"
 msgstr ""
 
-#: src/chart1.cpp:3097 src/chart1.cpp:5430 src/chart1.cpp:5434
+#: src/chart1.cpp:3095 src/chart1.cpp:5428 src/chart1.cpp:5432
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/chart1.cpp:3097
+#: src/chart1.cpp:3095
 msgid " (Ctrl-Space)"
 msgstr ""
 
-#: src/chart1.cpp:3127 src/chart1.cpp:4574 src/chart1.cpp:5407
+#: src/chart1.cpp:3125 src/chart1.cpp:4572 src/chart1.cpp:5405
 msgid "Attenuate less critical AIS targets"
 msgstr ""
 
-#: src/chart1.cpp:3136 src/chart1.cpp:5405
+#: src/chart1.cpp:3134 src/chart1.cpp:5403
 msgid "Show AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:3534
+#: src/chart1.cpp:3532
 msgid "Anchorage created "
 msgstr ""
 
-#: src/chart1.cpp:3920 src/chcanv.cpp:3497 src/OCPNPlatform.cpp:1576
+#: src/chart1.cpp:3918 src/chcanv.cpp:3497 src/OCPNPlatform.cpp:1583
 msgid "StatusBar"
 msgstr ""
 
-#: src/chart1.cpp:4120
+#: src/chart1.cpp:4118
 msgid "Group \""
 msgstr ""
 
-#: src/chart1.cpp:4122
+#: src/chart1.cpp:4120
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 
-#: src/chart1.cpp:4124
+#: src/chart1.cpp:4122
 msgid "OpenCPN Group Notice"
 msgstr ""
 
-#: src/chart1.cpp:4304
+#: src/chart1.cpp:4302
 msgid "Hide Currents"
 msgstr ""
 
-#: src/chart1.cpp:4339
+#: src/chart1.cpp:4337
 msgid "Hide Tides"
 msgstr ""
 
-#: src/chart1.cpp:4346
+#: src/chart1.cpp:4344
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 
-#: src/chart1.cpp:4573
+#: src/chart1.cpp:4571
 msgid "Show all AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:4712 src/chart1.cpp:4770
+#: src/chart1.cpp:4710 src/chart1.cpp:4768
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:4731
+#: src/chart1.cpp:4729
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/chart1.cpp:4742
+#: src/chart1.cpp:4740
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/chart1.cpp:4743
+#: src/chart1.cpp:4741
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/chart1.cpp:4793
+#: src/chart1.cpp:4791
 msgid "Disable Tracking"
 msgstr ""
 
-#: src/chart1.cpp:4818 src/chart1.cpp:8984 src/chart1.cpp:9127
+#: src/chart1.cpp:4816 src/chart1.cpp:8982 src/chart1.cpp:9125
 #: src/routemanagerdialog.cpp:1728
 msgid "(Unnamed Track)"
 msgstr ""
 
-#: src/chart1.cpp:5352
+#: src/chart1.cpp:5350
 msgid "Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:5353
+#: src/chart1.cpp:5351
 msgid "Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:5356
+#: src/chart1.cpp:5354
 msgid "Exit OpenCPN"
 msgstr ""
 
-#: src/chart1.cpp:5358
+#: src/chart1.cpp:5356
 msgid "&Navigate"
 msgstr ""
 
-#: src/chart1.cpp:5363 src/chart1.cpp:5366 src/options.cpp:3917
+#: src/chart1.cpp:5361 src/chart1.cpp:5364 src/options.cpp:3917
 #: src/options.cpp:4007
 msgid "Enable Chart Quilting"
 msgstr ""
 
-#: src/chart1.cpp:5364 src/chart1.cpp:5367 src/options.cpp:3958
+#: src/chart1.cpp:5362 src/chart1.cpp:5365 src/options.cpp:3958
 #: src/options.cpp:4054
 msgid "Show Chart Outlines"
 msgstr ""
 
-#: src/chart1.cpp:5369 src/options.cpp:4632
+#: src/chart1.cpp:5367 src/options.cpp:4632
 msgid "Show Chart Bar"
 msgstr ""
 
-#: src/chart1.cpp:5375 src/chart1.cpp:5380
+#: src/chart1.cpp:5373 src/chart1.cpp:5378
 msgid "Show ENC Lights"
 msgstr ""
 
-#: src/chart1.cpp:5376 src/chart1.cpp:5381
+#: src/chart1.cpp:5374 src/chart1.cpp:5379
 msgid "Show ENC Soundings"
 msgstr ""
 
-#: src/chart1.cpp:5377 src/chart1.cpp:5382
+#: src/chart1.cpp:5375 src/chart1.cpp:5380
 msgid "Show ENC Anchoring Info"
 msgstr ""
 
-#: src/chart1.cpp:5397 src/chart1.cpp:5399
+#: src/chart1.cpp:5395 src/chart1.cpp:5397
 msgid "Enter Full Screen"
 msgstr ""
 
-#: src/chart1.cpp:5401
+#: src/chart1.cpp:5399
 msgid "&View"
 msgstr ""
 
-#: src/chart1.cpp:5406
+#: src/chart1.cpp:5404
 msgid "Hide Moored AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:5408
+#: src/chart1.cpp:5406
 msgid "Show AIS Target Tracks"
 msgstr ""
 
-#: src/chart1.cpp:5409
+#: src/chart1.cpp:5407
 msgid "Show CPA Alert Dialogs"
 msgstr ""
 
-#: src/chart1.cpp:5410
+#: src/chart1.cpp:5408
 msgid "Sound CPA Alarms"
 msgstr ""
 
-#: src/chart1.cpp:5413
+#: src/chart1.cpp:5411
 msgid "&AIS"
 msgstr ""
 
-#: src/chart1.cpp:5417 src/chart1.cpp:5419
+#: src/chart1.cpp:5415 src/chart1.cpp:5417
 msgid "Measure Distance"
 msgstr ""
 
-#: src/chart1.cpp:5423
+#: src/chart1.cpp:5421
 msgid "Route && Mark Manager..."
 msgstr ""
 
-#: src/chart1.cpp:5426
+#: src/chart1.cpp:5424
 msgid "Drop Mark at Boat"
 msgstr ""
 
-#: src/chart1.cpp:5427
+#: src/chart1.cpp:5425
 msgid "Drop Mark at Cursor"
 msgstr ""
 
-#: src/chart1.cpp:5432 src/pluginmanager.cpp:3987
+#: src/chart1.cpp:5430 src/pluginmanager.cpp:3987
 msgid "Preferences"
 msgstr ""
 
-#: src/chart1.cpp:5439
+#: src/chart1.cpp:5437
 msgid "&Tools"
 msgstr ""
 
-#: src/chart1.cpp:5442
+#: src/chart1.cpp:5440
 msgid "OpenCPN Help"
 msgstr ""
 
-#: src/chart1.cpp:5443
+#: src/chart1.cpp:5441
 msgid "&Help"
 msgstr ""
 
-#: src/chart1.cpp:5824
+#: src/chart1.cpp:5822
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/chart1.cpp:6661
-#, c-format
-msgid "OpenCPN Startup in %ld ms."
-msgstr ""
-
-#: src/chart1.cpp:7404
+#: src/chart1.cpp:7402
 msgid "Rotated Mode"
 msgstr ""
 
-#: src/chart1.cpp:8615
+#: src/chart1.cpp:8613
 msgid "Show This Chart"
 msgstr ""
 
-#: src/chart1.cpp:8866 src/routeprintout.cpp:470
+#: src/chart1.cpp:8864 src/routeprintout.cpp:470
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 
-#: src/chart1.cpp:9048 src/chart1.cpp:9108 src/routemanagerdialog.cpp:1027
+#: src/chart1.cpp:9046 src/chart1.cpp:9106 src/routemanagerdialog.cpp:1027
 msgid "(Unnamed Route)"
 msgstr ""
 
-#: src/chart1.cpp:9597
+#: src/chart1.cpp:9595
 msgid " Ship "
 msgstr ""
 
-#: src/chart1.cpp:9850 src/chart1.cpp:9901
+#: src/chart1.cpp:9848 src/chart1.cpp:9899
 msgid "AIS MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:9863 src/options.cpp:2527
+#: src/chart1.cpp:9861 src/options.cpp:2527
 msgid "Own ship"
 msgstr ""
 
-#: src/chart1.cpp:9874
+#: src/chart1.cpp:9872
 msgid "Temporary AISMOB Route"
 msgstr ""
 
-#: src/chart1.cpp:9875
+#: src/chart1.cpp:9873
 msgid "Present own ship"
 msgstr ""
 
-#: src/chart1.cpp:9945
+#: src/chart1.cpp:9943
 msgid "AIS MAN OVERBOARD UPDATE"
 msgstr ""
 
-#: src/chart1.cpp:10932
+#: src/chart1.cpp:10930
 msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 
-#: src/chart1.cpp:10934
+#: src/chart1.cpp:10932
 msgid ""
 "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a "
 "usb serial device.\n"
 msgstr ""
 
-#: src/chart1.cpp:10956
+#: src/chart1.cpp:10954
 msgid ""
 "You do currently not have permission to access the serial ports on this "
 "system.\n"
@@ -3732,8 +3723,8 @@ msgstr ""
 msgid "OpenGL-> No Useable compression format found"
 msgstr ""
 
-#: src/glChartCanvas.cpp:1641 src/s52plib.cpp:1993 src/s52plib.cpp:2087
-#: src/s52plib.cpp:2247
+#: src/glChartCanvas.cpp:1641 src/s52plib.cpp:1990 src/s52plib.cpp:2084
+#: src/s52plib.cpp:2244
 msgid "ChartTexts"
 msgstr ""
 
@@ -3952,7 +3943,7 @@ msgstr ""
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr ""
 
-#: src/OCPNPlatform.cpp:1452
+#: src/OCPNPlatform.cpp:1459
 msgid "Old log will be moved to opencpn.log.log"
 msgstr ""
 
