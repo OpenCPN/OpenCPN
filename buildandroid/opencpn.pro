@@ -242,6 +242,9 @@ de_mo_wxbase.files += $$PWD/../Resources/locale/de/LC_MESSAGES/wxstd.mo
 de_mo_wxbase.path = /assets/files/locale/de/LC_MESSAGES
 INSTALLS += de_mo_wxbase
 
+sv_mo_wxbase.files += $$PWD/../Resources/locale/sv/LC_MESSAGES/wxstd.mo
+sv_mo_wxbase.path = /assets/files/locale/sv/LC_MESSAGES
+INSTALLS += sv_mo_wxbase
 
 # OpenCPN Core locale(s)
 OCPN_fr_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fr.lproj/opencpn.mo
@@ -256,6 +259,9 @@ OCPN_de_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_de.
 OCPN_de_mo_deployment.path = /assets/files/locale/de/LC_MESSAGES
 INSTALLS += OCPN_de_mo_deployment
 
+OCPN_sv_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_sv.lproj/opencpn.mo
+OCPN_sv_mo_deployment.path = /assets/files/locale/sv/LC_MESSAGES
+INSTALLS += OCPN_sv_mo_deployment
 
 # The built-in PlugIns
 
@@ -273,6 +279,7 @@ INSTALLS += dldr_plugin_deployment
 OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/fr_FR.lproj/opencpn-chartdldr_pi.mo
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/es_ES.lproj/opencpn-chartdldr_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/de_DE.lproj/opencpn-chartdldr_pi.mo
+OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/sv_SE.lproj/opencpn-chartdldr_pi.mo
 
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
@@ -301,6 +308,7 @@ INSTALLS += svg_wmm_plugin_deployment
 OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/fr_FR.lproj/opencpn-wmm_pi.mo
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/es_ES.lproj/opencpn-wmm_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/de_DE.lproj/opencpn-wmm_pi.mo
+OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/sv_SE.lproj/opencpn-wmm_pi.mo
 
 #------------------------------------------------------------------------------------
 
@@ -314,6 +322,7 @@ INSTALLS += so_grib_plugin_deployment
 OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/fr_FR.lproj/opencpn-grib_pi.mo
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/es_ES.lproj/opencpn-grib_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/de_DE.lproj/opencpn-grib_pi.mo
+OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/sv_SE.lproj/opencpn-grib_pi.mo
 
 #SVG
 svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
@@ -359,6 +368,7 @@ INSTALLS += svg_dashboard_plugin_deployment
 OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/fr_FR.lproj/opencpn-dashboard_pi.mo
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/es_ES.lproj/opencpn-dashboard_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/de_DE.lproj/opencpn-dashboard_pi.mo
+OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/sv_SE.lproj/opencpn-dashboard_pi.mo
 
 #------------------------------------------------------------------------------------
 
@@ -372,6 +382,7 @@ INSTALLS += so_squiddio_plugin_deployment
 OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fr_FR.lproj/opencpn-squiddio_pi.mo
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/es_ES.lproj/opencpn-squiddio_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/de_DE.lproj/opencpn-squiddio_pi.mo
+OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/sv_SE.lproj/opencpn-squiddio_pi.mo
 
 #------------------------------------------------------------------------------------
 
