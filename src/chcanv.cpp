@@ -8372,6 +8372,9 @@ void ChartCanvas::CancelMouseRoute()
     parent_frame->nRoute_State = 0;
     m_pMouseRoute = NULL;
     m_bDrawingRoute = false;
+    m_pMeasureRoute = NULL;
+    m_bMeasure_Active = false;
+    m_nMeasureState  = 0;
 }
 
 int ChartCanvas::GetNextContextMenuId()
