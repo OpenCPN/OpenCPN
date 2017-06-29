@@ -11,7 +11,7 @@
   <string name="ocpn_action_tracktoggle_on">Trace : Conserver</string>
   <string name="ocpn_action_tracktoggle_off">Trace : Cesser</string>
   <string name="ocpn_action_createroute">Créer une route</string>
-  <string name="ocpn_action_endroute">Finalisez la nouvelle route</string>
+  <string name="ocpn_action_endroute">Fin de la route</string>
   <string name="ocpn_action_tides">Marées : Montrer/Cacher</string>
   <string name="ocpn_action_currents">Courants : Montrer/Cacher</string>
   <string name="ocpn_action_settings_basic">Paramètres OpenCPN</string>
@@ -283,13 +283,13 @@
   <string name="ocpn_grib_currentspeedunits_array_item_mph">mph</string>
   <string name="ocpn_grib_currentspeedunits_array_item_kmh">km/h</string>
   <string name="install_status_ready">Prêt</string>
-  <string name="install_button_select_new">Sélectionnez l\'emplacement de stockage des cartes</string>
-  <string name="install_browser_title">Emplacement proposé pour les cartes</string>
+  <string name="install_button_select_new">Sélectionnez le lieu de stockage</string>
+  <string name="install_browser_title">Sélectionnez le lieu de stockage</string>
   <string name="install_createdir_error">Impossible de créer le nouveau répertoire en raison des droits d\'accés.\n\n Merci de choisir un autre emplacement pour installer les nouvelles cartes.</string>
   <string name="install_complete">Installation terminée</string>
   <string name="install_ready_to_install">OpenCPN est prêt pour installer de nouvelles cartes. \n Merci de confirmer l’ emplacement donné par défaut ou de choisir un nouvel emplacemen.</string>
-  <string name="install_root_di">Nom du nouveau répertoire pour les cartes :</string>
-  <string name="install_proposed_location">Emplacement proposé pour les cartes :</string>
+  <string name="install_root_di">Nom du nouveau dossier pour les cartes :</string>
+  <string name="install_proposed_location">Dossier de stockage proposé :</string>
   <string name="install_button_install_charts">Installez les cartes</string>
   <string name="install_done">Effectué.</string>
 </resources>
