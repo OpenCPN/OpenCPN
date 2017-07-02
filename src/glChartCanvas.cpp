@@ -592,7 +592,7 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
          // Allow LeftUp() event through if the pan action is very small
          //  Otherwise, drop the LeftUp() event, since it is not wanted for a Pan Gesture.
          if(event.LeftUp()){
-             qDebug() << panx << pany;
+             //qDebug() << panx << pany;
              if((abs(panx) > 2) || (abs(pany) > 2)){
                 return;
              }
@@ -4548,6 +4548,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             panx = pany = 0;
             m_binPan = true;
             m_binGesture = true;
+            //qDebug() << "pg1";
             break;
             
         case GestureUpdated:
@@ -4623,6 +4624,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             m_binPinch = true;
             m_binPan = false;   // cancel any tentative pan gesture, in case the "pan cancel" event was lost
             m_binGesture = true;
+            //qDebug() << "pg2";
             m_pinchStart = event.GetCenterPoint();
             m_lpinchPoint = m_pinchStart;
             
@@ -4711,7 +4713,9 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
 void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
 {
     //  On some devices, the pan GestureFinished event fails to show up
-    //  Watch for this case, and fix it.....
+    //  Watch for this case, and fix it..... 
+    //qDebug() << "onGestureTimerEvent";
+    
     if(m_binPan){
         m_binPan = false;
         Invalidate();
@@ -4719,10 +4723,14 @@ void glChartCanvas::onGestureTimerEvent(wxTimerEvent &event)
     }
     m_bgestureGuard = false;
     m_bpinchGuard = false;
+    m_binGesture = false;
+    
 }
 
 void glChartCanvas::onGestureFinishTimerEvent(wxTimerEvent &event)
 {
+    //qDebug() << "onGestureFinishTimerEvent";
+    
     // signal gesture is finished after a delay
     m_binGesture = false;
 }
