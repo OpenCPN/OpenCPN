@@ -53,6 +53,10 @@
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
 
 #include <fstream>
+    
+#ifdef __OCPN__ANDROID__
+#include "androidSupport.h"
+#endif    
 
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
@@ -932,45 +936,30 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
         }
     }
 
-    ///
-//     long id = GetSelectedCatalog();
-//     SetSource(id);
-//     
-//     FillFromFile(url.GetPath(), fn.GetPath(), pPlugIn->m_preselect_new, pPlugIn->m_preselect_updated);
-//     m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
-//     m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
-//     m_lbChartSources->SetItem(id, 2, cs->GetDir());
-//     return;
-    ///
-    
-    bool b_usetmpfile = true;
-#ifdef __OCPN__ANDROID__
-    b_usetmpfile = false;
-#endif    
-
-    wxFileName tfn;
-    
-    if(b_usetmpfile)
-        tfn = wxFileName::CreateTempFileName( fn.GetFullPath() );
-    else
-        tfn = fn;
+    bool bok = false;
     
 #ifdef __OCPN__ANDROID__
-    wxString file_URI = _T("file://") + tfn.GetFullPath();
+    wxString file_URI = _T("file://") + fn.GetFullPath();
+    
+//     wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
+//     if(!testFile.IsOpened()){
+//         wxMessageBox(wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
+//         return;
+//     }
+//     testFile.Close();
+//     ::wxRemoveFile(tfn.GetFullPath());
+    
+    _OCPN_DLStatus ret = OCPN_downloadFile( cs->GetUrl(), file_URI,
+                                 _("Downloading file"),
+                                 _("Reading Headers: ") + url.BuildURI(), wxNullBitmap, this,
+                                 OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_AUTO_CLOSE,
+                                 10);
+    bok = true;
+    
+    
 #else
+    wxFileName tfn = wxFileName::CreateTempFileName( fn.GetFullPath() );
     wxString file_URI = tfn.GetFullPath();
-#endif    
-
-    
-#ifdef __OCPN__ANDROID__
-    wxFile testFile(tfn.GetFullPath().c_str(), wxFile::write);
-    if(!testFile.IsOpened()){
-        wxMessageBox(wxString::Format(_("File  %s can't be written. \nChoose a writable folder for Chart Downloader file storage."), tfn.GetFullPath().c_str()), _("Chart Downloader"));
-        return;
-    }
-    testFile.Close();
-    ::wxRemoveFile(tfn.GetFullPath());
-#endif    
     
     _OCPN_DLStatus ret = OCPN_downloadFile( cs->GetUrl(), file_URI,
                                  _("Downloading file"),
@@ -978,16 +967,17 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
                                  OCPN_DLDS_ELAPSED_TIME|OCPN_DLDS_ESTIMATED_TIME|OCPN_DLDS_REMAINING_TIME|OCPN_DLDS_SPEED|OCPN_DLDS_SIZE|OCPN_DLDS_URL|OCPN_DLDS_CAN_PAUSE|OCPN_DLDS_CAN_ABORT|OCPN_DLDS_AUTO_CLOSE,
                                  10);
 
+    bok = wxCopyFile( tfn.GetFullPath(), fn.GetFullPath() );
+    wxRemoveFile ( tfn.GetFullPath() );
+    
+#endif
+    
 //    wxLogMessage(_T("chartdldr_pi:  OCPN_downloadFile done:"));
     
     switch( ret )
     {
         case OCPN_DL_NO_ERROR:
         {
-            bool bok = true;
-            if ( b_usetmpfile)
-                bok = wxCopyFile( tfn.GetFullPath(), fn.GetFullPath() );
-            
             if( bok )
             {
                 long id = GetSelectedCatalog();
@@ -1030,8 +1020,6 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
 
 
 
-    if(b_usetmpfile)
-        wxRemoveFile ( tfn.GetFullPath() );
 }
 
 void ChartSource::GetLocalFiles()
@@ -1099,8 +1087,13 @@ void ChartSource::LoadUpdateData()
 
 void ChartSource::SaveUpdateData()
 {
-    wxString fn = GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+    wxString fn;
+    fn = GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
 
+#ifdef __OCPN__ANDROID__
+    fn = AndroidGetCacheDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+#endif
+    
     std::ofstream outfile( fn.mb_str() );
     if( !outfile.is_open() )
         return;
@@ -1113,6 +1106,11 @@ void ChartSource::SaveUpdateData()
     }
 
     outfile.close();
+    
+#ifdef __OCPN__ANDROID__
+    AndroidSecureCopyFile(fn, GetDir() + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME));
+#endif
+    
 }
 
 void ChartSource::ChartUpdated( wxString chart_number, time_t timestamp )
@@ -1228,9 +1226,15 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 
                 while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
                 {
-                    m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                    if(failed_downloads)
+                        m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
                                                                  downloading, to_download, failed_downloads,
                                                                  m_transferredsize.c_str(), m_totalsize.c_str() ) );
+                    else
+                        m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u (%s / %s)"),
+                                                                     downloading, to_download,
+                                                                     m_transferredsize.c_str(), m_totalsize.c_str() ) );
+                        
                     wxMilliSleep(1000);
                     wxYield();
 //                    if( !IsShownOnScreen() )
@@ -1646,16 +1650,24 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 {
     bool ret = true;
 
+#ifdef __OCPN__ANDROID__
+    int nStrip = 0;
+    if(aStripPath)
+        nStrip = 1;
+    
+    ret = AndroidUnzip(aZipFile, aTargetDir, nStrip, true);
+#else
+    
     std::auto_ptr<wxZipEntry> entry(new wxZipEntry());
 
     do
     {
-        //wxLogError(_T("chartdldr_pi: Going to extract '")+aZipFile+_T("'."));
+        wxLogMessage(_T("chartdldr_pi: Going to extract '")+aZipFile+_T("'."));
         wxFileInputStream in(aZipFile);
 
         if( !in )
         {
-            wxLogError(_T("Can not open file '")+aZipFile+_T("'."));
+            wxLogMessage(_T("Can not open file '")+aZipFile+_T("'."));
             ret = false;
             break;
         }
@@ -1688,7 +1700,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 int perm = entry->GetMode();
                 if( !wxFileName::Mkdir(name, perm, wxPATH_MKDIR_FULL) )
                 {
-                    wxLogError(_T("Can not create directory '") + name + _T("'."));
+                    wxLogMessage(_T("Can not create directory '") + name + _T("'."));
                     ret = false;
                     break;
                 }
@@ -1697,13 +1709,13 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
             {
                 if( !zip.OpenEntry(*entry.get()) )
                 {
-                    wxLogError(_T("Can not open zip entry '") + entry->GetName() + _T("'."));
+                    wxLogMessage(_T("Can not open zip entry '") + entry->GetName() + _T("'."));
                     ret = false;
                     break;
                 }
                 if( !zip.CanRead() )
                 {
-                    wxLogError(_T("Can not read zip entry '") + entry->GetName() + _T("'."));
+                    wxLogMessage(_T("Can not read zip entry '") + entry->GetName() + _T("'."));
                     ret = false;
                     break;
                 }
@@ -1713,7 +1725,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
                 {
                     if( !wxFileName::Mkdir(fn.GetPath()) )
                     {
-                        wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
+                        wxLogMessage(_T("Can not create directory '") + fn.GetPath() + _T("'."));
                         ret = false;
                         break;
                     }
@@ -1723,7 +1735,7 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
                 if( !file )
                 {
-                    wxLogError(_T("Can not create file '")+name+_T("'."));
+                    wxLogMessage(_T("Can not create file '")+name+_T("'."));
                     ret = false;
                     break;
                 }
@@ -1743,7 +1755,8 @@ bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aT
 
     if( aRemoveZip )
         wxRemoveFile(aZipFile);
-
+#endif
+        
     return ret;
 }
 

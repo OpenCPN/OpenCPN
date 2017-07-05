@@ -25,6 +25,7 @@ import java.util.List;
 
 import ar.com.daidalos.afiledialog.R;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -50,7 +51,10 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	 * The listeners for the event of select a file.
 	 */
 	private List<OnFileSelectedListener> listeners;
-	
+
+	public Context mContext;
+	public Activity mActivity;
+
 	// ----- Constructors ----- //
 	
 	/**
@@ -71,7 +75,10 @@ public class FileChooserDialog extends Dialog implements FileChooser {
 	public FileChooserDialog(Context context, String folderPath) {
 		// Call superclass constructor.
 		super(context);
-        
+
+		mContext = context;
+        mActivity = getOwnerActivity();
+
 		// Set layout.
 		this.setContentView(R.layout.daidalos_file_chooser);
 

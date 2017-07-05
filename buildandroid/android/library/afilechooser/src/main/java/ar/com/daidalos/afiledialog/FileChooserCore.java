@@ -20,14 +20,17 @@
 package ar.com.daidalos.afiledialog;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.UriPermission;
 import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
@@ -226,7 +229,7 @@ class FileChooserCore {
                                 File parent = new File(this.currentFolder.getParent());
                                 if(parent.exists()) {
                                         FileItem par = new FileItem(this.chooser.getContext(), parent, "..");
-                                        par.addListener(this.fileItemClickListener);;
+                                        par.addListener(this.fileItemClickListener);
                                         layout.addView( par );
                                 }
 
@@ -387,16 +390,18 @@ class FileChooserCore {
                                         Log.e("OpenCPN", "Found SDK 19/20");
                                         if(externalStorageList.length > 1){
                                                 // Force to use the second in the list
-                                                directory = externalStorageList[1].getAbsolutePath();
-                                                Log.e("OpenCPN", "Checking directory: " + directory);
+                                            directory = externalStorageList[1].getAbsolutePath();
+                                            Log.e("OpenCPN", "Checking directory: " + directory);
 
+                                            return directory;
+/*
                                                 directory = canCreateFile(directory);
                                                 if (null != directory) {
                                                         Log.e("OpenCPN", "... is writable");
                                                         Log.e("OpenCPN", "SD Card's directory: " + directory);
                                                         return directory;
                                                 }
-
+*/
                                         }
                                 }
                         }
@@ -455,6 +460,33 @@ class FileChooserCore {
                 return null;
 
         }
+/*
+        private void triggerStorageAccessFramework() {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, REQUEST_CODE_STORAGE_ACCESS);
+        }
+
+        @Override
+        public final void onActivityResult(final int requestCode, final int resultCode, final Intent resultData) {
+            if (requestCode == SettingsFragment.REQUEST_CODE_STORAGE_ACCESS) {
+                Uri treeUri = null;
+                if (resultCode == Activity.RESULT_OK) {
+                    // Get Uri from Storage Access Framework.
+                    treeUri = resultData.getData();
+
+                    // Persist URI in shared preference so that you can use it later.
+                    // Use your own framework here instead of PreferenceUtil.
+                    //PreferenceUtil.setSharedPreferenceUri(R.string.key_internal_uri_extsdcard, treeUri);
+
+                    // Persist access permissions.
+                    final int takeFlags = resultData.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getActivity().getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
+                }
+            }
+        }
+
+*/
 
 	// ----- Events methods ----- //
 
@@ -532,9 +564,12 @@ class FileChooserCore {
          */
         private View.OnClickListener sdcardButtonClickListener = new View.OnClickListener() {
                 public void onClick(View v) {
-//                    loadFolder("/storage/C02C-1BF1");
-                    if(null != m_sdcardDir)
-                        loadFolder(m_sdcardDir);
+                    if(null != m_sdcardDir) {
+                        File sdFile = new File(m_sdcardDir);
+                        String sdRoot = getExtSdCardFolder(sdFile);
+                        if(null != sdRoot)
+                            loadFolder(sdRoot);
+                    }
                 }
         };
 
@@ -546,7 +581,7 @@ class FileChooserCore {
 			// Verify if the item is a folder.
 			File file = source.getFile();
                         //Log.i("OpenCPN", "OnFileClickListener " + file);
-                        if(file.isDirectory()) {
+            if(file.isDirectory()) {
 				// Open the folder.
                                 String[] Files = file.list();
                                 if(Files != null){
@@ -556,15 +591,24 @@ class FileChooserCore {
                                         FileChooserCore.this.loadFolder(file);
                                 }
                                 else{
-                                    //Log.i("OpenCPN", "file.list NULL");
+                                    // Is this an SDCard?
+                                    String baseFolder = getExtSdCardFolder(file);
+                                    if(null != baseFolder){
+                                        FileChooserCore.this.currentFolder = new File(baseFolder);    //Environment.getExternalStorageDirectory();
+                                        // Reload the list of files.
+                                        FileChooserCore.this.loadFolder(FileChooserCore.this.currentFolder);
 
-                                    //  Probably a prohibited read.  Switch to a known good directory.
-                                    FileChooserCore.this.currentFolder = new File("/");    //Environment.getExternalStorageDirectory();
-                                    // Reload the list of files.
-                                    FileChooserCore.this.loadFolder(FileChooserCore.this.currentFolder);
+                                    }
+                                    else {
+                                        //  Probably a prohibited read.  Switch to a known good directory.
+                                        FileChooserCore.this.currentFolder = Environment.getExternalStorageDirectory();
+                                        // Reload the list of files.
+                                        FileChooserCore.this.loadFolder(FileChooserCore.this.currentFolder);
+                                    }
 
                                 }
 
+                updateSourceGUI(file);
 
 			} else {
 				// Notify the listeners.
@@ -966,7 +1010,7 @@ class FileChooserCore {
 						}
 					}
 				}
-					
+
 				// Set the name of the current folder.
 				String currentFolderName = this.showFullPathInTitle? this.currentFolder.getPath() : this.currentFolder.getName();
 				this.chooser.setCurrentFolderName(currentFolderName);
@@ -986,8 +1030,12 @@ class FileChooserCore {
 			
 			// Refresh default folder.
 			defaultFolder = this.currentFolder;
-		}			
-	}
+		}
+
+        updateSourceGUI(this.currentFolder);
+
+
+    }
 
         public void loadFolderA(File folder) {
 
@@ -1042,4 +1090,120 @@ class FileChooserCore {
 
                 }
         }
+
+    private void updateSourceGUI( File folder){
+        if(null == folder)
+            return;
+
+        // Update the GUI for SDCard, etc...
+        LinearLayout root = this.chooser.getRootLayout();
+
+        Button sdcardButton = (Button) root.findViewById(R.id.buttonSDCard);
+        Button deviceButton = (Button) root.findViewById(R.id.buttonDevice);
+        String SD = getExtSdCardFolder(folder);
+
+        if((null != m_sdcardDir) && (null != folder)){
+            if(null != SD){
+                sdcardButton.setAlpha((float)1.0);
+                deviceButton.setAlpha((float) 0.2);
+            }
+            else {
+                sdcardButton.setAlpha((float)0.2);
+                deviceButton.setAlpha((float) 1.0);
+            }
+
+        }
+/*
+            String[] sda = m_sdcardDir.split("/");
+            String[] target = folder.getAbsolutePath().split("/");
+
+            if( (sda.length >= 3 ) && (target.length >= 3)){
+                if ( (sda[1].equals(target[1])) && (sda[2].equals(target[2]))){
+                    sdcardButton.setAlpha((float)1.0);
+                    deviceButton.setAlpha((float) 0.2);
+                }
+                else {
+                    sdcardButton.setAlpha((float)0.2);
+                    deviceButton.setAlpha((float) 1.0);
+                }
+            }
+        }
+*/
+        else {
+            deviceButton.setAlpha((float) 1.0);
+        }
+
+    }
+
+    private void triggerStorageAccessFramework() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        FileChooserActivity act = (FileChooserActivity)chooser;
+        if(null != act)
+            act.startActivityForResult(intent, 43);
+    }
+
+
+    private boolean checkStoragePermissions(){
+        FileChooserActivity act = (FileChooserActivity)chooser;
+        if(null != act) {
+
+            List<UriPermission> list = act.getContentResolver().getPersistedUriPermissions();
+            for (int i = 0; i < list.size(); i++) {
+
+                String perm = list.get(i).getUri().toString();
+
+                //   if (list.get(i).getUri() == myUri && list.get(i).isWritePermission()) {
+             //       return true;
+
+
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get a list of external SD card paths. (Kitkat or higher.)
+     *
+     * @return A list of external SD card paths.
+     */
+    private String[] getExtSdCardPaths() {
+        List<String> paths = new ArrayList();
+
+
+        if( true /*null != dlg*/) {
+            for (File file : chooser.getContext().getExternalFilesDirs("external")) {
+                if (file != null && !file.equals(chooser.getContext().getExternalFilesDir("external"))) {
+                    int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                    if (index < 0) {
+                        //Log.w(Application.TAG, "Unexpected external file dir: " + file.getAbsolutePath());
+                    } else {
+                        String path = file.getAbsolutePath().substring(0, index);
+                        try {
+                            path = new File(path).getCanonicalPath();
+                        } catch (IOException e) {
+                            // Keep non-canonical path.
+                        }
+                        paths.add(path);
+                    }
+                }
+            }
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    public String getExtSdCardFolder(final File file) {
+        String[] extSdPaths = getExtSdCardPaths();
+        try {
+            for (int i = 0; i < extSdPaths.length; i++) {
+                if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
+                    return extSdPaths[i];
+                }
+            }
+        }
+        catch (IOException e) {
+            return null;
+        }
+        return null;
+    }
+
 }

@@ -20,7 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableLeft="@drawable/device"
-            android:text="Device" />
+            android:text="Device"
+            android:background="@color/background_material_light"
+            android:textColor="@color/background_material_dark" />
 
         <Button
             android:id="@+id/buttonSDCard"
@@ -28,7 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableLeft="@drawable/microsd"
-            android:text="SDCard" />
+            android:text="SDCard"
+            android:background="@color/background_material_light"
+            android:textColor="@color/material_grey_800" />
     </LinearLayout>
 
      <TextView

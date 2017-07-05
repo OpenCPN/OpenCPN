@@ -20,11 +20,23 @@
 package ar.com.daidalos.afiledialog;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+
+import android.support.v4.provider.DocumentFile;
+
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.LinearLayout;
 import ar.com.daidalos.afiledialog.R;
@@ -36,7 +48,8 @@ import android.widget.TextView;
 public class FileChooserActivity extends Activity implements FileChooser {
 	
 	// ----- Fields ----- //
-	
+
+    public String m_saf43CreateDir;
 	/**
 	 * The folder that the class opened by default. 
 	 */
@@ -176,10 +189,55 @@ public class FileChooserActivity extends Activity implements FileChooser {
         core.loadFolder(folderPath);
         this.startFolder = this.core.getCurrentFolder();
         
-        // Add a listener for when a file is selected.
+        // Add a listener for when a folder is created.
         core.addListener(new FileChooserCore.OnFileSelectedListener() {
 			public void onFileSelected(File folder, String name) {
-				// Pass the data through an intent.
+
+                final File newFolder = new File(folder.getPath() +  File.separator + name);
+
+                boolean success = true;
+                if (!newFolder.exists())
+                    success = newFolder.mkdirs();
+
+                if(!success) {
+
+                    //  Is this on an SDCard?
+                    String sdRoot = getExtSdCardFolder(folder);
+                    if (null != sdRoot) {
+
+
+                        // This will create the dir, if possible
+                        DocumentFile f = getDocumentFile(newFolder, true, true);
+                        if (null == f) {
+                            m_saf43CreateDir = newFolder.getAbsolutePath();
+                            startSAFDialog(43);
+                            return;
+                        }
+                        else{
+
+                            File current = core.getCurrentFolder();
+                            core.loadFolder(current);
+
+                             return;
+                        }
+                    } else {
+                        //showCreateErrorDialog(folder);
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+                // Pass the data through an intent.
 				Intent intent = new Intent();
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(OUTPUT_FILE_OBJECT, folder);
@@ -189,8 +247,35 @@ public class FileChooserActivity extends Activity implements FileChooser {
                 setResult(RESULT_OK, intent);
                 finish();				
 			}
+
 			public void onFileSelected(File file) {
-				// Pass the data through an intent.
+
+
+
+                //String m_dirSelected = file.getAbsolutePath();
+
+                ;
+
+                //  Is this on an SDCard?
+                if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                    String sdRoot = getExtSdCardFolder(file);
+                    if (null != sdRoot) {
+
+                        // Accessible?
+                        DocumentFile dir = getDocumentFile(file, true, false);
+                        if (null == dir) {
+                            startSAFDialog(44);
+                            return;
+                        }
+
+                        if (!dir.canWrite()) {
+                            startSAFDialog(44);
+                            return;
+                        }
+                    }
+                }
+
+                // Pass the data through an intent.
 				Intent intent = new Intent();
 				Bundle bundle = new Bundle();
 				bundle.putSerializable(OUTPUT_FILE_OBJECT, file);
@@ -215,8 +300,144 @@ public class FileChooserActivity extends Activity implements FileChooser {
    	        this.core.loadFolder(current.getParent());
    	    }
   	}
-    
-    // ----- FileChooser methods ----- //
+
+    private void startSAFDialog(final int code){
+        ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.AlertTheme1);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(ctw);
+
+        String msg = getString(R.string.sdcard_permission_help);
+        builder1.setMessage(msg);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivityForResult(intent, code);
+
+
+                    }
+                });
+
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+
+    /**
+     * Get a list of external SD card paths. (Kitkat or higher.)
+     *
+     * @return A list of external SD card paths.
+     */
+    private String[] getExtSdCardPaths() {
+        List<String> paths = new ArrayList();
+
+
+
+        for (File file : this.getExternalFilesDirs("external")) {
+            if (file != null && !file.equals(this.getExternalFilesDir("external"))) {
+                int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                if (index < 0) {
+                    //Log.w(Application.TAG, "Unexpected external file dir: " + file.getAbsolutePath());
+                } else {
+                    String path = file.getAbsolutePath().substring(0, index);
+                    try {
+                        path = new File(path).getCanonicalPath();
+                    } catch (IOException e) {
+                        // Keep non-canonical path.
+                    }
+                    paths.add(path);
+                }
+            }
+        }
+
+        return paths.toArray(new String[paths.size()]);
+    }
+
+
+    public String getExtSdCardFolder(final File file) {
+        String[] extSdPaths = getExtSdCardPaths();
+        try {
+        for (int i = 0; i < extSdPaths.length; i++) {
+        if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
+        return extSdPaths[i];
+        }
+        }
+        }
+        catch (IOException e) {
+        return null;
+        }
+        return null;
+        }
+
+    public DocumentFile getDocumentFile(final File file, final boolean isDirectory, boolean bCreate) {
+        String baseFolder = getExtSdCardFolder(file);
+
+        if (baseFolder == null) {
+            return null;
+        }
+
+        String relativePath = null;
+        try {
+            String fullPath = file.getCanonicalPath();
+            if(fullPath.length() > baseFolder.length())
+                relativePath = fullPath.substring(baseFolder.length() + 1);
+            else
+            relativePath = "";
+            }
+        catch (IOException e) {
+            return null;
+        }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String sUri = preferences.getString("SDURI", "");
+        if(sUri.isEmpty())
+            return null;
+
+        Uri ltreeUri = Uri.parse(sUri);
+
+        if (ltreeUri == null) {
+            return null;
+        }
+
+
+        // start with root of SD card and then parse through document tree.
+        DocumentFile document = DocumentFile.fromTreeUri(this, ltreeUri);
+
+        if(relativePath.isEmpty())
+            return document;
+
+        try {
+            String[] parts = relativePath.split("\\/");
+            for (int i = 0; i < parts.length; i++) {
+                DocumentFile nextDocument = document.findFile(parts[i]);
+
+                if (nextDocument == null) {
+                    if(!bCreate)
+                    return null;
+                    if ((i < parts.length - 1) || isDirectory) {
+                        nextDocument = document.createDirectory(parts[i]);
+                    } else {
+                        nextDocument = document.createFile("image", parts[i]);
+                    }
+                }
+                document = nextDocument;
+                }
+            }catch(Exception e){
+                int yyp = 0;
+            }
+
+        return document;
+        }
+
+
+
+// ----- FileChooser methods ----- //
     
 	public LinearLayout getRootLayout() {
 		View root = this.findViewById(R.id.rootLayout); 
@@ -238,4 +459,89 @@ public class FileChooserActivity extends Activity implements FileChooser {
 
 
 	}
+
+	@Override
+	public final void onActivityResult(final int requestCode, final int resultCode, final Intent resultData) {
+		if (requestCode == 43) {
+			Uri treeUri = null;
+			if (resultCode == Activity.RESULT_OK) {
+				// Get Uri from Storage Access Framework.
+				treeUri = resultData.getData();
+
+				String a = treeUri.toString();
+
+				// Persist URI in shared preference so that you can use it later.
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("SDURI", treeUri.toString());
+                editor.commit();
+
+
+                // Create the dir
+                if(!m_saf43CreateDir.isEmpty()) {
+                    File newDir = new File(m_saf43CreateDir);
+                    DocumentFile dir = getDocumentFile(newDir, true, true);
+                }
+
+				// Persist access permissions.
+//		final int takeFlags = resultData.getFlags();
+                final int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+//                getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
+
+                File current = this.core.getCurrentFolder();
+                this.core.loadFolder(current);
+
+                showPermisionGrantedDialog();
+
+			}
+		}else if (requestCode == 44) {
+            Uri treeUri = null;
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                treeUri = resultData.getData();
+
+
+                // Persist URI in shared preference so that you can use it later.
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("SDURI", treeUri.toString());
+                editor.commit();
+
+
+                getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                File current = this.core.getCurrentFolder();
+                this.core.loadFolder(current);
+
+                showPermisionGrantedDialog();
+
+            }
+        }
+
+    }
+
+    private void showPermisionGrantedDialog() {
+        ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.AlertTheme1);
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(ctw);
+
+        builder1.setMessage(R.string.permission_granted);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(R.string.daidalos_ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+
+    }
+
+
 }

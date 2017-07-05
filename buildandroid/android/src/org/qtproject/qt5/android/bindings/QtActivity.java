@@ -65,6 +65,7 @@ import javax.crypto.IllegalBlockSizeException;
 import java.security.InvalidKeyException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.NoSuchAlgorithmException;
+import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
 
@@ -232,6 +233,8 @@ import android.os.ResultReceiver;
 import org.opencpn.DownloadService;
 import org.opencpn.OCPNResultReceiver;
 import org.opencpn.OCPNResultReceiver.Receiver;
+import android.support.v4.provider.DocumentFile;
+import org.opencpn.UnzipService;
 
 import com.caverock.androidsvg.SVG;
 import android.graphics.Bitmap;
@@ -1959,16 +1962,59 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public String downloadFile( final String url, final String destination ){
 
         Log.i("OpenCPN", "downloadFile " + url + " to " + destination);
+
         m_downloadURL = url;
-
-
         m_downloadStatus = 1;       //STATUS_PENDING
         m_downloadTotal = 0;
+
+        Uri fURI = Uri.parse(destination);
+        String destPath = "";
+        try{
+            destPath = fURI.getPath();
+        }catch (Exception e) {
+        }
+
+        Log.i("OpenCPN", "downloadFile parsed destination: " + destPath);
+
+        // We validate write access to the destination directory
+        File dest = new File(destPath);
+        File destDir = dest.getParentFile();
+
+        DocumentFile dir = null;
+        boolean buseDocFile = false;
+
+        //  Is destination on an SDCard?
+        String sdRoot = getExtSdCardFolder(dest);
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+
+            if (null != sdRoot) {
+                Log.i("OpenCPN", "downloadFile destination on SDCard");
+                dir = getDocumentFile(destDir, true, false);
+
+                if (null == dir) {
+    //            startSAFDialog(44);
+                    Log.i("OpenCPN", "downloadFile Needs to startSAF44a");
+                    return "NOK";
+                }
+
+                if (!dir.canWrite()) {
+    //                startSAFDialog(44);
+                    Log.i("OpenCPN", "downloadFile Needs to startSAF44b");
+                    return "NOK";
+                }
+                buseDocFile = true;
+            }
+        }
+
+        Log.i("OpenCPN", "downloadFile writeable OK, starting service intent...");
+
 
         Intent intent = new Intent(this, DownloadService.class);
         intent.putExtra("url", url);
         intent.putExtra("file", destination);
         intent.putExtra("receiver", mReceiver);
+        intent.putExtra("useDocFile", buseDocFile);
+
         startService(intent);
 
         //Log.i("OpenCPN", "RET OK");
@@ -2025,6 +2071,37 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
             Log.i("OpenCPN", "DOWNLOAD_DONE " + m_downloadStatus + " " + m_downloadTotal + " " + m_downloadTotal + " " + m_downloadFilelength);
         }
 
+        if (resultCode == UnzipService.UNZIP_DONE) {
+            Log.i("OpenCPN", "UNZIP_DONE ");
+            m_unzipDone = true;
+        }
+
+
+    }
+
+    private boolean m_unzipDone;
+    public String unzipFile( final String source, final String destination, String nStrip, String bRemoveZip ){
+
+        Log.i("OpenCPN", "unzipFile " + source + " to " + destination);
+
+        Intent intent = new Intent(this, UnzipService.class);
+        intent.putExtra("sourceZip", source);
+        intent.putExtra("targetDir", destination);
+        intent.putExtra("receiver", mReceiver);
+        intent.putExtra("nStrip", Integer.parseInt(nStrip));
+        intent.putExtra("removeZip", Integer.parseInt(bRemoveZip));
+        m_unzipDone = false;
+
+        startService(intent);
+        return "OK;78";
+
+    }
+
+    public String getUnzipStatus(String dummy){
+        if(m_unzipDone)
+            return "UNZIPDONE";
+        else
+            return "UNZIPPING";
     }
 
 
@@ -2195,16 +2272,32 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
    {
        m_FileChooserDone = false;
 
-       boolean buseDialog = true;
+       boolean buseDialog = false;
        if(!buseDialog){
-            Intent intent = new Intent(this, FileChooserActivity.class);
-            intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
-            intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
+            //Intent intent = new Intent(this, FileChooserActivity.class);
+            //intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+            //intent.putExtra(FileChooserActivity.INPUT_FOLDER_MODE, true);
 
-            this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+            //this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+            //return "OK";
+
+
+            Log.i("OpenCPN", "DirChooserDialog start activity: " + initialDir);
+
+            Bundle b = new Bundle();
+            b.putString(FileChooserActivity.INPUT_START_FOLDER, initialDir);
+            b.putBoolean(FileChooserActivity.INPUT_FOLDER_MODE, true);
+            b.putBoolean(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
+
+
+            Intent intent = new Intent(this, FileChooserActivity.class);
+            intent.putExtras(b);
+            startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+            return "OK";
+
         }
 
-        //Log.i("DEBUGGER_TAG", "DirChooserDialog create and show " + initialDir);
+        //Log.i("OpenCPN", "DirChooserDialog create and show " + initialDir);
 
         Thread thread = new Thread() {
             @Override
@@ -3382,10 +3475,10 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         }
 
         if (requestCode == OCPN_AFILECHOOSER_REQUEST_CODE) {
-            //Log.i("DEBUGGER_TAG", "onqtActivityResultCa");
+            Log.i("OpenCPN", "onqtActivityResultCa");
             // Make sure the request was successful
             if (resultCode == Activity.RESULT_OK) {
-                //Log.i("DEBUGGER_TAG", "onqtActivityResultDa");
+                Log.i("OpenCPN", "onqtActivityResultDa");
                 boolean fileCreated = false;
                 String filePath = "";
 
@@ -3408,7 +3501,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 }
             }
             else if (resultCode == Activity.RESULT_CANCELED){
-                //Log.i("DEBUGGER_TAG", "onqtActivityResultEa");
+                Log.i("OpenCPN", "onqtActivityResultEa");
                 m_filechooserString = "cancel:";
             }
 
@@ -5335,6 +5428,139 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
              }
          }
      }
+
+
+
+     public String getExtSdCardFolder(final File file) {
+         String[] extSdPaths = getExtSdCardPaths();
+         try {
+             for (int i = 0; i < extSdPaths.length; i++) {
+                 if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
+                    return extSdPaths[i];
+                 }
+            }
+         }
+         catch (IOException e) {
+            return null;
+         }
+
+         return null;
+    }
+
+     public DocumentFile getDocumentFile(final File file, final boolean isDirectory, boolean bCreate) {
+         String baseFolder = getExtSdCardFolder(file);
+
+         if (baseFolder == null) {
+             return null;
+         }
+
+         String relativePath = null;
+         try {
+             String fullPath = file.getCanonicalPath();
+             if(fullPath.length() > baseFolder.length())
+                 relativePath = fullPath.substring(baseFolder.length() + 1);
+             else
+             relativePath = "";
+             }
+         catch (IOException e) {
+             return null;
+         }
+
+         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+         String sUri = preferences.getString("SDURI", "");
+         if(sUri.isEmpty())
+             return null;
+
+         Uri ltreeUri = Uri.parse(sUri);
+
+         if (ltreeUri == null) {
+             return null;
+         }
+
+
+         // start with root of SD card and then parse through document tree.
+         DocumentFile document = DocumentFile.fromTreeUri(this, ltreeUri);
+
+         if(relativePath.isEmpty())
+             return document;
+
+         try {
+             String[] parts = relativePath.split("\\/");
+             for (int i = 0; i < parts.length; i++) {
+                 DocumentFile nextDocument = document.findFile(parts[i]);
+
+                 if (nextDocument == null) {
+                     if(!bCreate)
+                     return null;
+                     if ((i < parts.length - 1) || isDirectory) {
+                         nextDocument = document.createDirectory(parts[i]);
+                     } else {
+                         nextDocument = document.createFile("image", parts[i]);
+                     }
+                 }
+                 document = nextDocument;
+                 }
+             }catch(Exception e){
+                 int yyp = 0;
+             }
+
+         return document;
+         }
+
+
+
+         private String SecureFileCopy( String inFile, String outFile){
+             Log.i("OpenCPN", "SecureFileCopy: " + inFile + " to: " + outFile);
+
+             try{
+                FileOutputStream outStream = null;
+                FileInputStream inStream;
+
+                //  Is destination on an SDCard?
+                if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                    File outFileObj = new File(outFile);
+                    String sdRoot = getExtSdCardFolder(outFileObj);
+                     if (null != sdRoot) {
+                         Log.i("OpenCPN", "SecureFileCopy destination on SDCard");
+                         DocumentFile targetDF = getDocumentFile(outFileObj, false, true);
+
+                         try{
+                            OutputStream os = getContentResolver().openOutputStream(targetDF.getUri());
+                            outStream = (FileOutputStream) os;
+                        }catch(Exception e){
+                            Log.i("OpenCPN", "SecureFileCopy ExceptionB");
+                        }
+
+                    }
+                    else{
+                        outStream = new FileOutputStream(outFile);
+                    }
+                }
+                else{
+                     outStream = new FileOutputStream(outFile);
+                }
+
+                inStream = new FileInputStream(inFile);
+
+                try{
+                     copyFile( inStream, outStream);
+                 }catch(Exception e){
+                     Log.i("OpenCPN", "SecureFileCopy ExceptionA");
+                 }
+
+
+                return "OK";
+
+            }catch(Exception e){
+                Log.i("OpenCPN", "SecureFileCopy Exception");
+                return "Exception";
+            }
+
+
+         }
+
+
+
 
 
 }

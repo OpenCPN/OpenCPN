@@ -43,7 +43,9 @@ SET(SRC_CHARTDLDR
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
-
+            src/androidSupport.cpp
+            src/androidSupport.h
+            
             src/unrar/rar.cpp
             src/unrar/strlist.cpp
             src/unrar/strfn.cpp

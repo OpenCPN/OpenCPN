@@ -1607,16 +1607,16 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString par
         return _T("jenv Error");
     }
     
-    wxCharBuffer p1b = parm2.ToUTF8();
+    wxCharBuffer p1b = parm1.ToUTF8();
     jstring p1 = (jenv)->NewStringUTF(p1b.data());
     
     wxCharBuffer p2b = parm2.ToUTF8();
     jstring p2 = (jenv)->NewStringUTF(p2b.data());
     
-    wxCharBuffer p3b = parm2.ToUTF8();
+    wxCharBuffer p3b = parm3.ToUTF8();
     jstring p3 = (jenv)->NewStringUTF(p3b.data());
     
-    wxCharBuffer p4b = parm2.ToUTF8();
+    wxCharBuffer p4b = parm4.ToUTF8();
     jstring p4 = (jenv)->NewStringUTF(p4b.data());
 
     //const char *ts = (jenv)->GetStringUTFChars(p2, NULL);
@@ -3208,6 +3208,39 @@ void cancelAndroidFileDownload( long dl_ID )
 }
 
 
+bool AndroidUnzip(wxString& zipFile, wxString& destDir, int nStrip, bool bRemoveZip)
+{
+    wxString ns;
+    ns.Printf(_T("%d"), nStrip);
+
+    wxString br;
+    br.Printf(_T("%d"), bRemoveZip);
+    
+    wxString stat = callActivityMethod_s4s( "unzipFile", zipFile, destDir, ns, br  );
+    
+    if(wxNOT_FOUND == stat.Find(_T("OK")))
+        return false;
+    
+    qDebug() << "unzip start";
+    
+    bool bDone = false;
+    while (!bDone){
+        wxMilliSleep(1000);
+        wxSafeYield(NULL, true);
+        
+        qDebug() << "unzip poll";
+        
+        wxString result = callActivityMethod_ss( "getUnzipStatus", _T("") );
+        if(wxNOT_FOUND != result.Find(_T("DONE")))
+            bDone = true;
+    }
+    qDebug() << "unzip done";
+    
+    return true;    
+    
+}
+
+    
 wxString getFontQtStylesheet(wxFont *font)
 {
     // wxString classes = _T("QLabel, QPushButton, QTreeWidget, QTreeWidgetItem, QCheckBox");
