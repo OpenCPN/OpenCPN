@@ -2835,11 +2835,14 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                         }
                         else{
+#ifdef USE_S57                            
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             if(Chs57){
                                 Chs57->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
                             }
-                            else{
+                            else
+#endif
+                            {
                                 ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                                 if(ChPI){
                                     ChPI->RenderRegionViewOnGLNoText( *m_pcontext, vp, rect_region, get_region );
@@ -3119,11 +3122,14 @@ void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_
                 if( !pqp->b_overlay ) {
                     if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                         
+#ifdef USE_S57
                         s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                         if(Chs57){
                             Chs57->RenderViewOnGLTextOnly( *m_pcontext, vp);
                         }
-                        else{
+                        else
+#endif
+                        {
                             ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                             if(ChPI){
                                 ChPI->RenderRegionViewOnGLTextOnly( *m_pcontext, vp, rect_region);
@@ -3876,6 +3882,7 @@ void glChartCanvas::Render()
         RenderCharts(gldc, screen_region);
 
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
+#ifdef USE_S57        
     if( VPoint.b_quilt ) {
         if(cc1->m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
 
@@ -3899,7 +3906,8 @@ void glChartCanvas::Render()
             }
         }
     }
-    
+#endif
+
     DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not

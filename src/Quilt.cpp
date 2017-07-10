@@ -1931,10 +1931,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         //    Maintain the present full quilt coverage region
         piqp->b_overlay = false;
+#ifdef USE_S57            
+        
         if(cte.GetChartFamily() == CHART_FAMILY_VECTOR){
             piqp->b_overlay = s57chart::IsCellOverlayType(cte.GetpFullPath());
         }
-                
+#endif                
         if(!piqp->b_overlay)    
             m_covered_region.Union( piqp->quilt_region );
     }
@@ -2330,11 +2332,15 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                                 b_chart_rendered = chart->RenderRegionViewOnDC( tmp_dc, vp, get_screen_region );
                             }
                             else{
+#ifdef USE_S57            
+                                
                                 s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                                 if(Chs57){
                                     b_chart_rendered = Chs57->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
                                 }
-                                else{
+                                else
+#endif
+                                {
                                     ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                                     if(ChPI){
                                         b_chart_rendered = ChPI->RenderRegionViewOnDCNoText( tmp_dc, vp, get_screen_region );
@@ -2658,10 +2664,14 @@ bool Quilt::DoRenderQuiltRegionViewOnDCTextOnly( wxMemoryDC& dc, ViewPort &vp, O
         while( chart ) {
                 QuiltPatch *pqp = GetCurrentPatch();
                 if( pqp->b_Valid  ) {
+#ifdef USE_S57            
+                    
                     s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                     if(Chs57)
                         Chs57->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );
-                    else{
+                    else
+#endif
+                        {
                         ChartPlugInWrapper *ChPI = dynamic_cast<ChartPlugInWrapper*>( chart );
                         if(ChPI){
                             ChPI->RenderRegionViewOnDCTextOnly( dc, vp, chart_region );

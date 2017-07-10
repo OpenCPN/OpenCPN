@@ -253,6 +253,7 @@ void iENCToolbar::SetDensityToolBitmap( int nDensity)
 
 void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
 {
+#ifdef USE_S57    
     //  Keep the Density tool in sync
     if(ps52plib){
         int nset = 1;
@@ -284,7 +285,8 @@ void iENCToolbar::StateTimerEvent( wxTimerEvent& event )
             }
         }
     }
-    
+#endif
+
     // Keep the Range annunciator updated
     if(cc1){
         double range = cc1->GetCanvasRangeMeters();

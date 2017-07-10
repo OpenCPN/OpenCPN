@@ -2682,7 +2682,9 @@ void SwitchInlandEcdisMode( bool Switch )
         g_toolbarConfig = _T ( ".....XXXX.X...XX.XXXXXXXXXXXX" );
         g_iDistanceFormat = 2; //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
+#ifdef USE_S57            
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
+#endif        
         g_bDrawAISSize = false;
         if (gFrame) gFrame->RequestNewToolbar(true);
     }
@@ -2697,7 +2699,9 @@ void SwitchInlandEcdisMode( bool Switch )
             pConfig->Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
             int read_int;
             pConfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
+#ifdef USE_S57            
             if ( ps52plib ) ps52plib->SetDisplayCategory((enum _DisCat) read_int );
+#endif            
             pConfig->SetPath( _T ( "/Settings/AIS" ) );
             pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
         }

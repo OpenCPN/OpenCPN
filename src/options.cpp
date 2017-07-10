@@ -5494,6 +5494,8 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
         ps57CtlListBox->Clear();
         marinersStdXref.clear();
 
+#ifdef USE_S57            
+        
         for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++) {
             OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(iPtr));
 
@@ -5548,7 +5550,9 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
 
                 ps57CtlListBox->Check(newpos, bviz);
         }
+#endif
     }
+
 
     //  Force the wxScrolledWindow to recalculate its scroll bars
     wxSize s = ps57CtlListBox->GetSize();
@@ -6666,25 +6670,11 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
+
     m_returnChanges = PARSE_ENC;
     Finish();
-/*
-    extern void ParseAllENC();
-#ifdef __WXOSX__
-    HideWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-        
-    ParseAllENC();
-#ifdef __WXOSX__
-    ShowWithEffect(wxSHOW_EFFECT_BLEND );
-#endif
-    
-    ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp, true);
-
-    cc1->EnablePaint(true);
-*/
 }
+
 
 #ifdef USE_LZMA
 #include <lzma.h>

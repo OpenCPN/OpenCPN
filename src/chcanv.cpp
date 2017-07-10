@@ -1676,9 +1676,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
             
         case 'N':
+#ifdef USE_S57            
             if( g_bInlandEcdis && ps52plib){
                 gFrame->SetENCDisplayCategory( (_DisCat)STANDARD );
             }
+#endif            
             break;
 
         case 'O':
@@ -8155,6 +8157,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         }
     }
 #endif
+
+#ifdef USE_S57            
+
     // Direct rendering model...
     if( VPoint.b_quilt ) {
         if(m_pQuilt->IsQuiltVector() && ps52plib && ps52plib->GetShowS57Text()){
@@ -8189,7 +8194,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             }
         }
     }
-    
+#endif    
     
 //    And finally, blit the scratch dc onto the physical dc
     wxRegionIterator upd_final( rgn_blit );

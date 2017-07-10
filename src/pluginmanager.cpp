@@ -1935,6 +1935,7 @@ void PlugInManager::SendConfigToAllPlugIns()
     v[_T("OpenCPN Version Date")] = VERSION_DATE;
     
     //  S52PLIB state
+#ifdef USE_S57    
     if(ps52plib){
         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
@@ -1942,6 +1943,7 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
     }
+#endif    
 
     // Some useful display metrics
     if(g_MainToolbar){

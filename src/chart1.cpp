@@ -1218,7 +1218,20 @@ static char *get_X11_property (Display *disp, Window win,
 }
 #endif
 
+class compress_target
+{
+public:
+    wxString chart_path;
+    double distance;
+};
+
+WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
+WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
+
+#include <wx/arrimpl.cpp> 
+
 static wxStopWatch init_sw;
+#ifdef USE_S57
 class ParseENCWorkerThread : public wxThread
 {
 public:
@@ -1273,17 +1286,6 @@ static int CompareInts(int n1, int n2)
     return (int)(d1 - d2);
 }
 
-class compress_target
-{
-public:
-    wxString chart_path;
-    double distance;
-};
-
-WX_DECLARE_OBJARRAY(compress_target, ArrayOfCompressTargets);
-WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
-
-#include <wx/arrimpl.cpp> 
 // end duplicated code
 
 void ParseAllENC()
@@ -1482,6 +1484,7 @@ void ParseAllENC()
         delete prog;
 }
 
+#endif
 
 bool MyApp::OnInit()
 {
@@ -2308,8 +2311,10 @@ extern ocpnGLOptions g_GLOptions;
     }
 #endif
 
+#ifdef USE_S57
     if(g_parse_all_enc )
         ParseAllENC();
+#endif    
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -5901,11 +5906,13 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     }
 #endif
 
+#ifdef USE_S57
    if(rr & PARSE_ENC){
         cc1->Disable();
         ParseAllENC();
         cc1->Enable();
     }
+#endif    
 
 
     if(g_config_display_size_mm > 0){

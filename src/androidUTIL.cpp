@@ -2575,7 +2575,8 @@ wxString BuildAndroidSettingsString( void )
         result += _T("prefb_lockwp:") + wxString(g_bWayPointPreventDragging == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_confirmdelete:") + wxString(g_bConfirmObjectDelete == 1 ? _T("1;") : _T("0;"));
         result += _T("prefb_expertmode:") + wxString(g_bUIexpert == 1 ? _T("1;") : _T("0;"));
-        
+
+#ifdef USE_S57        
         if(ps52plib){
             result += _T("prefb_showlightldesc:") + wxString(ps52plib->m_bShowLdisText == 1 ? _T("1;") : _T("0;"));
             result += _T("prefb_showimptext:") + wxString(ps52plib->m_bShowS57ImportantTextOnly == 1 ? _T("1;") : _T("0;"));
@@ -2583,6 +2584,7 @@ wxString BuildAndroidSettingsString( void )
             result += _T("prefb_showsound:") + wxString(ps52plib->m_bShowSoundg == 1 ? _T("1;") : _T("0;"));
             result += _T("prefb_showATONLabels:") + wxString(ps52plib->m_bShowAtonText == 1 ? _T("1;") : _T("0;"));
         }
+#endif        
     // Some other assorted values
         result += _T("prefs_navmode:") + wxString(g_bCourseUp == 0 ? _T("North Up;") : _T("Course Up;"));
         result += _T("prefs_chartInitDir:") + *pInit_Chart_Dir + _T(";");
@@ -2598,7 +2600,7 @@ wxString BuildAndroidSettingsString( void )
         s.Trim(false);
         result += _T("prefs_chartScaleFactor:") + s;
         
-        
+#ifdef USE_S57        
         if(ps52plib){
             wxString nset = _T("Base");
             switch( ps52plib->GetDisplayCategory() ){
@@ -2664,6 +2666,34 @@ wxString BuildAndroidSettingsString( void )
             //  On Android, the range is 0 -- 100
             //  So, convert
         }
+#else
+            result += _T("prefs_displaycategory:"); result += _T("Base;");
+            result += _T("prefs_vectorgraphicsstyle:");  result += _T("Paper Chart;");
+            result += _T("prefs_vectorboundarystyle:");  result += _T("Plain;");
+            result += _T("prefs_vectorchartcolors:");  result += _T("2;");
+            
+            // depth unit conversion factor
+            
+            float conv = 1;
+            int depthUnit = 0;
+            if ( depthUnit == 0 ) // feet
+                conv = 0.3048f; // international definiton of 1 foot is 0.3048 metres
+            else if ( depthUnit == 2 ) // fathoms
+                conv = 0.3048f * 6; // 1 fathom is 6 feet
+                
+            s.Printf( _T("%4.0f;"), 6.0);
+            s.Trim(false);
+            result += _T("prefs_shallowdepth:");   result += s;
+            
+            s.Printf( _T("%4.0f;"), 8.0 );
+            s.Trim(false);
+            result += _T("prefs_safetydepth:");   result += s;
+            
+            s.Printf( _T("%4.0f;"), 12.0 );
+            s.Trim(false);
+            result += _T("prefs_deepdepth:");   result += s;
+
+#endif            
         
         // Connections
         
