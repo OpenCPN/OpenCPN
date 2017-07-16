@@ -91,8 +91,8 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
                                       toPrintOut( _toPrintOut )
 {
     // Let's have at least some device units margin
-    marginX = 5;
-    marginY = 5;
+    marginX = 100;
+    marginY = 100;
 
     // Offset text from the edge of the cell (Needed on Linux)
     textOffsetX = 5;
@@ -100,8 +100,11 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     table.StartFillHeader();
     // setup widths for columns
+    
+    table << (const char *)wxString(_("Leg")).mb_str();
+    
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << (const char *)wxString(_("Name")).mb_str();
+        table << (const char *)wxString(_("To Waypoint")).mb_str();
     }
     if ( toPrintOut[ PRINT_WP_POSITION ] ) {
         table << (const char *)wxString(_("Position")).mb_str();
@@ -117,18 +120,21 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
     }
 
     table.StartFillWidths();
+    
+    table << 20;                // "Leg" column
+    
     // setup widths for columns
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << 23;
+        table << 40;
     }
     if ( toPrintOut[ PRINT_WP_POSITION ] ) {
         table << 40;
     }
     if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-        table << 30;
+        table << 40;
     }
     if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-        table << 38;
+        table << 80;
     }
     if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
         table << 100;
@@ -138,7 +144,16 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
         RoutePoint* point = myRoute->GetPoint( n );
+        RoutePoint* pointm1 = myRoute->GetPoint( n-1 );
 
+        wxString leg = _T("---");
+        if(n > 1)
+            leg.Printf( _T("%d"), n-1);
+        
+        string cell( leg.mb_str() );
+        
+        table << cell;
+        
         if ( toPrintOut[ PRINT_WP_NAME ] ) {
             string cell( point->GetName().mb_str() );
             table << cell;
@@ -149,14 +164,16 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-            wxString point_course;
-            point_course.Printf( _T( "%03.0f Deg" ), point->GetCourse() );
+            wxString point_course = "---";
+            if(pointm1)
+                point_course.Printf( _T( "%03.0f Deg" ), pointm1->GetCourse() );
             string   cell( point_course.mb_str() );
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-            wxString point_distance;
-            point_distance.Printf( _T( "%6.2f" + getUsrDistanceUnit() ), toUsrDistance( point->GetDistance() ) );
+            wxString point_distance = _T("---");
+            if(n > 1)
+                point_distance.Printf( _T( "%6.2f" + getUsrDistanceUnit() ), toUsrDistance( point->GetDistance() ) );
             string   cell( point_distance.mb_str() );
             table << cell;
         }
@@ -238,6 +255,10 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 
     int header_textOffsetX = 2;
     int header_textOffsetY = 2;
+    
+    dc->DrawText( myRoute->m_RouteNameString,  150, 20 );
+    
+
 
     int currentX = marginX;
     int currentY = marginY;
@@ -453,7 +474,7 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
 
     if ( NULL == g_printData ) {
         g_printData = new wxPrintData;
-        g_printData->SetOrientation( wxLANDSCAPE );
+        g_printData->SetOrientation( wxPORTRAIT );
         g_pageSetupData = new wxPageSetupDialogData;
     }
 
