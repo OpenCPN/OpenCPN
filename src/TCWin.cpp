@@ -401,6 +401,9 @@ void TCWin::OnPaint( wxPaintEvent& event )
     int w;
     float tcmax, tcmin;
 
+    if(m_graph_rect.x == 0)
+        return;
+    
     GetClientSize( &x, &y );
 //    qDebug() << "OnPaint" << x << y;
 
