@@ -2879,7 +2879,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     if( g_pRouteMan ) g_pRouteMan->SetColorScheme( cs );
 
     if( pMarkPropDialog ) pMarkPropDialog->SetColorScheme( cs );
-
+    
+    if( pRoutePropDialog ) pRoutePropDialog->SetColorScheme( cs );
+    
     //    For the AIS target query dialog, we must rebuild it to incorporate the style desired for the colorscheme selected
     if( g_pais_query_dialog_active ) {
         bool b_isshown = g_pais_query_dialog_active->IsShown();
