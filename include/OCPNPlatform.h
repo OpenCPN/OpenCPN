@@ -97,6 +97,7 @@ public:
     double getFontPointsperPixel( void );
     wxSize getDisplaySize();
     double GetDisplaySizeMM();
+    void SetDisplaySizeMM( double size );
     double GetDisplayDPmm();
     double GetToolbarScaleFactor( int GUIScaleFactor );
     double GetCompassScaleFactor( int GUIScaleFactor );
@@ -176,6 +177,8 @@ private:
     wxString    large_log_message;
     wxSize      m_displaySize;
     wxSize      m_displaySizeMM;
+    int         m_displaySizeMMOverride;
+    
     int         m_monitorWidth, m_monitorHeight;
     bool        m_bdisableWindowsDisplayEnum;
 };

@@ -261,7 +261,7 @@ OCPNPlatform::OCPNPlatform()
     m_displaySize = wxSize(0,0);
     m_displaySizeMM = wxSize(0,0);
     m_monitorWidth = m_monitorHeight = 0;
-    
+    m_displaySizeMMOverride = 0;
 }
 
 OCPNPlatform::~OCPNPlatform()
@@ -1558,6 +1558,9 @@ wxSize OCPNPlatform::getDisplaySize()
 
 double  OCPNPlatform::GetDisplaySizeMM()
 {
+    if(m_displaySizeMMOverride > 0)
+        return m_displaySizeMMOverride;
+    
     if(m_displaySizeMM.x < 1)
         m_displaySizeMM = wxGetDisplaySizeMM();
 
@@ -1591,6 +1594,12 @@ double  OCPNPlatform::GetDisplaySizeMM()
     
     return ret;
 }
+
+void OCPNPlatform::SetDisplaySizeMM( double sizeMM)
+{
+    m_displaySizeMMOverride = sizeMM;
+}
+
 
 double OCPNPlatform::GetDisplayDPmm()
 {

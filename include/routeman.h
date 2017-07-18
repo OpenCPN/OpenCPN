@@ -55,6 +55,8 @@ class RoutePointList;
 class markicon_bitmap_list_type;
 class markicon_key_list_type;
 class markicon_description_list_type;
+class MarkIcon;
+WX_DEFINE_SORTED_ARRAY(MarkIcon*, ArrayOfMarkIcon); 
 
 //----------------------------------------------------------------------------
 //   Routeman
@@ -167,6 +169,7 @@ public:
       WayPointman();
       ~WayPointman();
       wxBitmap *GetIconBitmap(const wxString& icon_key);
+      bool GetIconPrescaled( const wxString& icon_key );
       unsigned int GetIconTexture( const wxBitmap *pmb, int &glw, int &glh );
       int GetIconIndex(const wxBitmap *pbm);
       int GetXIconIndex(const wxBitmap *pbm);
@@ -193,7 +196,7 @@ public:
       bool RemoveRoutePoint(RoutePoint *prp);
       RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
-      void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
+      MarkIcon *ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
 private:
       void ProcessUserIcons( ocpnStyle::Style* style );
       RoutePointList    *m_pWayPointList;
@@ -201,7 +204,7 @@ private:
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change
       int               m_markicon_image_list_base_count;
-      wxArrayPtrVoid    *m_pIconArray;
+      ArrayOfMarkIcon    *m_pIconArray;
 
       int         m_nGUID;
       double      m_iconListScale;
