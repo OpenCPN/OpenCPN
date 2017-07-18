@@ -3376,6 +3376,13 @@ void MyFrame::SetGPSCompassScale()
 }
 
 
+void MyFrame::FastClose(){
+    
+    FrameTimer1.Stop();
+    quitflag++;                             // signal to the timer loop
+    FrameTimer1.Start(1);                    // real quick now...
+}
+
 // Intercept menu commands
 void MyFrame::OnExit( wxCommandEvent& event )
 {

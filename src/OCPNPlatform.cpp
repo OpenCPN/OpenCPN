@@ -308,7 +308,7 @@ catch_signals(int signo)
             break;
             
         case SIGTERM:
-            gFrame->Close();
+            gFrame->FastClose();
             break;
             
         default:
