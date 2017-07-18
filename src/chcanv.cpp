@@ -1596,6 +1596,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         if ( event.ControlDown() )
             key_char -= 64;
 
+        if (key_char >= '0' && key_char <= '9')
+            gFrame->SetGroupIndex( key_char - '0' );
+        else
+
         switch( key_char ) {
         case 'A':
             parent_frame->ToggleAnchor();
