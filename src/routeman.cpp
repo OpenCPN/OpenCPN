@@ -62,6 +62,16 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 
+//#include <wx/arrimpl.cpp> // this is a magic incantation which must be done!
+//WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
+//WX_DEFINE_OBJARRAY( ArrayOfMarkIcon); 
+
+
+#ifdef ocpnUSE_SVG
+#include "wxsvg/include/wxSVG/svg.h"
+#endif // ocpnUSE_SVG
+
+
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
 
@@ -110,6 +120,24 @@ WX_DEFINE_LIST(markicon_key_list_type);
 WX_DEFINE_LIST(markicon_description_list_type);
 
 
+wxBitmap LoadSVGIcon( const wxString filename, unsigned int width, unsigned int height )
+{
+#ifdef ocpnUSE_SVG
+    wxSVGDocument svgDoc;
+    if( svgDoc.Load(filename) )
+        return wxBitmap( svgDoc.Render( width, height, NULL, true, true ) );
+    else
+        return wxBitmap(width, height);
+#else
+        return wxBitmap(width, height);
+#endif // ocpnUSE_SVG
+}
+
+
+static int CompareMarkIcons( MarkIcon *mi1, MarkIcon *mi2 )
+{
+    return (mi1->icon_name.CmpNoCase( mi2->icon_name));
+}
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
@@ -1058,7 +1086,7 @@ WayPointman::WayPointman()
     pmarkicon_image_list = NULL;
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    m_pIconArray = new wxArrayPtrVoid();
+    m_pIconArray = new ArrayOfMarkIcon(CompareMarkIcons);
     ProcessIcons( style );
 
     m_nGUID = 0;
@@ -1162,6 +1190,14 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                double bm_size = 9.0 * g_Platform->GetDisplayDPmm() * g_ChartScaleFactorExp;
+                wxBitmap iconSVG = LoadSVGIcon( name, bm_size, bm_size );
+                MarkIcon * pmi = ProcessIcon( iconSVG, iconname, iconname );
+                if(pmi)
+                    pmi->preScaled = true;
+            }
+            
         }
     }
 }
@@ -1169,6 +1205,8 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
 
 void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 {
+    m_pIconArray->Clear();
+    
     ProcessIcon( style->GetIcon( _T("empty") ), _T("empty"), _T("Empty") );
     ProcessIcon( style->GetIcon( _T("airplane") ), _T("airplane"), _T("Airplane") );
     ProcessIcon( style->GetIcon( _T("anchorage") ), _T("anchorage"), _T("Anchorage") );
@@ -1221,9 +1259,9 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
     
 }
 
-void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
+MarkIcon *WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
 {
-    MarkIcon *pmi;
+    MarkIcon *pmi = 0;
 
     bool newIcon = true;
 
@@ -1239,13 +1277,17 @@ void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxStr
 
     if( newIcon ) {
         pmi = new MarkIcon;
-        m_pIconArray->Add( (void *) pmi );
+        pmi->icon_name = key;                   // Used for sorting
+        m_pIconArray->Add( pmi );
     }
 
     pmi->icon_name = key;
     pmi->icon_description = description;
     pmi->picon_bitmap = new wxBitmap( pimage );
     pmi->icon_texture = 0; /* invalidate */
+    pmi->preScaled = false;
+    
+    return pmi;
 }
 
 wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
@@ -1439,6 +1481,36 @@ wxBitmap *WayPointman::GetIconBitmap( const wxString& icon_key )
         pret = pmi->picon_bitmap;
 
     return pret;
+}
+
+bool WayPointman::GetIconPrescaled( const wxString& icon_key )
+{
+    MarkIcon *pmi = NULL;
+    unsigned int i;
+    
+    for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->icon_name.IsSameAs( icon_key ) )
+            break;
+    }
+    
+    if( i == m_pIconArray->GetCount() )              // key not found
+    {
+        // find and return bitmap for "circle"
+        for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
+            pmi = (MarkIcon *) m_pIconArray->Item( i );
+            //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+            //                break;
+        }
+    }
+    
+    if( i == m_pIconArray->GetCount() )              // "circle" not found
+        pmi = (MarkIcon *) m_pIconArray->Item( 0 );       // use item 0
+        
+    if( pmi )
+        return pmi->preScaled;
+    else
+        return false;
 }
 
 unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &glh )

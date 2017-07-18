@@ -34,6 +34,7 @@ public:
     wxBitmap *picon_bitmap;
     wxString icon_name;
     wxString icon_description;
+    bool preScaled;
 
     unsigned int icon_texture, tex_w, tex_h;
 };

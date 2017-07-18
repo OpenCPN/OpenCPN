@@ -196,7 +196,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
-
+    m_bPreScaled = false;
+    
     m_SelectNode = NULL;
     m_ManagerNode = NULL;
     m_IconScaleFactor = 1.0;
@@ -307,6 +308,7 @@ void RoutePoint::ReLoadIcon( void )
     }
         
     m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
+    m_bPreScaled = pWayPointMan->GetIconPrescaled( m_IconName );
 
 #ifdef ocpnUSE_GL
     m_wpBBox_view_scale_ppm = -1;
@@ -347,7 +349,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         pbm = m_pbmIcon;
 
     wxBitmap *pbms = NULL;
-    if( g_ChartScaleFactorExp > 1.0){
+    if( (g_ChartScaleFactorExp > 1.0) && !m_bPreScaled ){
         if(m_IconScaleFactor != g_ChartScaleFactorExp){
             wxImage scaled_image = pbm->ConvertToImage();
             int new_width = pbm->GetWidth() * g_ChartScaleFactorExp;
@@ -625,9 +627,9 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
         float scale = 1.0;
- //       if(g_bresponsive){
+        if(!m_bPreScaled){
             scale =  g_ChartScaleFactorExp;
-//        }
+        }
             
         float ws = r1.width * scale;
         float hs = r1.height * scale;
