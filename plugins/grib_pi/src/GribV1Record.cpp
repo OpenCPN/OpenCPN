@@ -547,6 +547,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         eof = true;
     }
     if (!ok) {
+        delete [] buf;
         return ok;
     }
 
