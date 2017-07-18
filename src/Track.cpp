@@ -959,12 +959,16 @@ void Track::DouglasPeuckerReducer( std::vector<TrackPoint*>& list,
 double Track::Length()
 {
     TrackPoint *l = NULL;
-    double total = 0;
+    double total = 0.0;
     for(size_t i = 0; i < TrackPoints.size(); i++) {
         TrackPoint *t = TrackPoints[i];
         if(l) {
-            double dd = DistGreatCircle( l->m_lat, l->m_lon, t->m_lat, t->m_lon );
-            total += dd;
+            const double offsetLat = 1e-6;
+            const double deltaLat = l->m_lat - t->m_lat;
+            if ( fabs( deltaLat ) > offsetLat )
+                total += DistGreatCircle( l->m_lat, l->m_lon, t->m_lat, t->m_lon );
+            else
+                total += DistGreatCircle( l->m_lat + copysign( offsetLat, deltaLat ), l->m_lon, t->m_lat, t->m_lon );
         }
         l = t;
     }
