@@ -557,13 +557,16 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 {
     wxString udwhaz03str;
     int      danger         = FALSE;
+    int	     expsou = 0;
     double   safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
     bool     b_promote = false;
     
-    if(depth_value == UNKNOWN)
-          danger = TRUE;
-
-    else if (depth_value <= safety_contour) {
+    if(depth_value == UNKNOWN) {
+          GetIntAttr(obj, "EXPSOU", expsou);
+          if (expsou != 1)
+              danger = TRUE;
+    }
+    if (danger == FALSE && (expsou == 1 || depth_value <= safety_contour)) {
         // that intersect this point/line/area for OBSTRN04
         // that intersect this point/area      for WRECKS02
 
@@ -602,13 +605,15 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
-//                     double drval2 = 0.0;
-//                     GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
-                    
-//                     if(depth_value < drval2)
-//                         b_promote = true;
-                    
-                    if(drval1 >= safety_contour)
+#if 0
+                    double drval2 = 0.0;
+                    GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
+
+                    if(expsou == 1 || depth_value < drval2 )
+                        b_promote = true;
+#endif
+
+                    if(drval1 >= safety_contour && expsou != 1)
                     {
                           danger = TRUE;
                           break;
@@ -628,6 +633,7 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 
               if((1 == watlev) || (2 == watlev))
               {
+                    // dry
 //                  udwhaz03str = _T(";OP(--D14050)");
               }
               else
@@ -1552,6 +1558,7 @@ static void *OBSTRN04 (void *param)
       double   depth_value = UNKNOWN;
       double   least_depth = UNKNOWN;
 
+
       wxString sndfrm02str;
       wxString *quapnt01str = NULL;
 
@@ -1573,13 +1580,15 @@ static void *OBSTRN04 (void *param)
                   GetIntAttr(obj, "CATOBS", catobs);
                   int watlev = 0;
                   GetIntAttr(obj, "WATLEV", watlev);
-
-                  if (6 == catobs)
+                  int expsou = 0;
+                  GetIntAttr(obj, "EXPSOU", expsou);
+                  if (expsou != 1) {
+                     if (6 == catobs)
                         depth_value = 0.01;
-                  else if (0 == watlev) // default
+                     else if (0 == watlev) // default
                         depth_value = -15.0;
-                  else
-                  {
+                     else
+                     {
                         switch (watlev){
                               case 5: depth_value =   0.0 ; break;
                               case 3: depth_value =   0.01; break;
@@ -1588,6 +1597,7 @@ static void *OBSTRN04 (void *param)
                               case 2:
                               default : depth_value = -15.0 ; break;
                         }
+                     }
                   }
             }
             else

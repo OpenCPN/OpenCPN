@@ -273,6 +273,7 @@ extern float g_ChartScaleFactorExp;
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
 extern bool g_bInlandEcdis;
+extern bool g_bSpaceDropMark;
 
 extern "C" bool CheckSerialAccess(void);
 

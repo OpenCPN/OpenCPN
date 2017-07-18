@@ -824,8 +824,10 @@ bool Routeman::DeleteRoute( Route *pRoute )
 
         if( GetpActiveRoute() == pRoute ) DeactivateRoute();
 
-        if( pRoute->m_bIsInLayer )
+        if (pRoute->m_bIsInLayer) {
+            ::wxEndBusyCursor();
             return false;
+        }
             
         pConfig->DeleteConfigRoute( pRoute );
 

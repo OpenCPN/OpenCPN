@@ -1469,6 +1469,10 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
 
             gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
 
+#ifdef __WXMSW__            
+            if (m_wpList)
+                m_wpList->SetFocus();
+#endif            
         }
     }
 }
@@ -1994,26 +1998,32 @@ bool RouteProp::UpdateProperties()
             // Course (bearing of next )
             if (_next_prp){
                 if( g_bShowMag ){
-                    double next_lat = prp->m_lat;
-                    double next_lon = prp->m_lon;
-                    if (_next_prp ){
-                        next_lat = _next_prp->m_lat;
-                        next_lon = _next_prp->m_lon;
+                    if ( arrival ) {
+                        double next_lat = prp->m_lat;
+                        double next_lon = prp->m_lon;
+                        if (_next_prp ){
+                            next_lat = _next_prp->m_lat;
+                            next_lon = _next_prp->m_lon;
+                        }
+
+                        double latAverage = (prp->m_lat + next_lat)/2;
+                        double lonAverage = (prp->m_lon + next_lon)/2;
+                        double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
+
+                        t.Printf( _T("%03.0f Deg. M"), varCourse );
+                        m_wpList->SetItem( item_line_index, cols[COURSE_MAGNETIC], t );
                     }
-
-                    double latAverage = (prp->m_lat + next_lat)/2;
-                    double lonAverage = (prp->m_lon + next_lon)/2;
-                    double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
-
-                    t.Printf( _T("%03.0f Deg. M"), varCourse );
+                    else
+                        m_wpList->SetItem( item_line_index, cols[COURSE_MAGNETIC], nullify );
                 }
-                else
-                    t.Printf( _T("%03.0f Deg. T"), course );
-                if( arrival )
-                    m_wpList->SetItem( item_line_index, cols[COURSE], t );
+                if ( g_bShowTrue ) {
+                    if ( arrival ) {
+                        t.Printf( _T("%03.0f Deg. T"), course );
+                        m_wpList->SetItem( item_line_index, cols[COURSE], t );
+                    } else
+                        m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
+                }
             }
-            else
-                m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
@@ -2770,19 +2780,10 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     RecalculateSize();
     
     // Connect Events
-    m_textLatitude->Connect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
-    m_textLongitude->Connect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
-
     m_textLatitude->Connect( wxEVT_CONTEXT_MENU,
             wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
     m_textLongitude->Connect( wxEVT_CONTEXT_MENU,
             wxCommandEventHandler( MarkInfoImpl::OnRightClick ), NULL, this );
-    m_textArrivalRadius->Connect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
-    m_textWaypointRangeRingsStep->Connect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnWaypointRangeRingsStepChange ), NULL, this );
 
     m_textDescription->Connect( wxEVT_COMMAND_TEXT_UPDATED,
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
@@ -2875,16 +2876,8 @@ void MarkInfoDef::OnWaypointRangeRingSelect( wxCommandEvent& event )
 MarkInfoDef::~MarkInfoDef()
 {
     // Disconnect Events
-    m_textLatitude->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
-    m_textLongitude->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnPositionCtlUpdated ), NULL, this );
     m_textDescription->Disconnect( wxEVT_COMMAND_TEXT_UPDATED,
             wxCommandEventHandler( MarkInfoDef::OnDescChangedBasic ), NULL, this );
-    m_textArrivalRadius->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnArrivalRadiusChange ), NULL, this );
-    m_textWaypointRangeRingsStep->Disconnect( wxEVT_COMMAND_TEXT_ENTER,
-            wxCommandEventHandler( MarkInfoDef::OnWaypointRangeRingsStepChange ), NULL, this );
     m_buttonExtDescription->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( MarkInfoDef::OnExtDescriptionClick ), NULL, this );
     this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
