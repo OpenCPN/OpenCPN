@@ -1998,26 +1998,32 @@ bool RouteProp::UpdateProperties()
             // Course (bearing of next )
             if (_next_prp){
                 if( g_bShowMag ){
-                    double next_lat = prp->m_lat;
-                    double next_lon = prp->m_lon;
-                    if (_next_prp ){
-                        next_lat = _next_prp->m_lat;
-                        next_lon = _next_prp->m_lon;
+                    if ( arrival ) {
+                        double next_lat = prp->m_lat;
+                        double next_lon = prp->m_lon;
+                        if (_next_prp ){
+                            next_lat = _next_prp->m_lat;
+                            next_lon = _next_prp->m_lon;
+                        }
+
+                        double latAverage = (prp->m_lat + next_lat)/2;
+                        double lonAverage = (prp->m_lon + next_lon)/2;
+                        double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
+
+                        t.Printf( _T("%03.0f Deg. M"), varCourse );
+                        m_wpList->SetItem( item_line_index, cols[COURSE_MAGNETIC], t );
                     }
-
-                    double latAverage = (prp->m_lat + next_lat)/2;
-                    double lonAverage = (prp->m_lon + next_lon)/2;
-                    double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
-
-                    t.Printf( _T("%03.0f Deg. M"), varCourse );
+                    else
+                        m_wpList->SetItem( item_line_index, cols[COURSE_MAGNETIC], nullify );
                 }
-                else
-                    t.Printf( _T("%03.0f Deg. T"), course );
-                if( arrival )
-                    m_wpList->SetItem( item_line_index, cols[COURSE], t );
+                if ( g_bShowTrue ) {
+                    if ( arrival ) {
+                        t.Printf( _T("%03.0f Deg. T"), course );
+                        m_wpList->SetItem( item_line_index, cols[COURSE], t );
+                    } else
+                        m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
+                }
             }
-            else
-                m_wpList->SetItem( item_line_index, cols[COURSE], nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, false );  // low precision for routes
