@@ -4698,8 +4698,6 @@ void MyFrame::ActivateMOB( void )
 
         temp_route->SetRouteArrivalRadius( -1.0 );                    // never arrives
 
-        temp_route->RebuildGUIDList();         // ensure the GUID list is intact and good
-
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
         g_pRouteMan->ActivateRoute( temp_route, pWP_MOB );
 
@@ -6369,11 +6367,15 @@ void MyFrame::DoStackDelta( int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d):  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );
     switch(m_iInitCount++) {
         case 0:
         {
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, false );
+                GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-1:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );
             
             if(g_bInlandEcdis){
                 double range = cc1->GetCanvasRangeMeters();
@@ -6392,6 +6394,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 else
                     cc1->SetCanvasRangeMeters(500.);
             }
+                GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-2:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );
             
             // Set persistent Fullscreen mode
             g_Platform->SetFullscreen(g_bFullscreen);
@@ -6399,13 +6403,16 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             // Load the waypoints.. both of these routines are very slow to execute which is why
             // they have been to defered until here
             pWayPointMan = new WayPointman();
-            
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-3:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );            
             // Reload the ownship icon from UserIcons, if present
             if(cc1->SetUserOwnship())
                 cc1->SetColorScheme(global_color_scheme);
-            
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-4:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );            
             pConfig->LoadNavObjects();
-
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-5:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );
             //    Re-enable anchor watches if set in config file
             if( !g_AW1GUID.IsEmpty() ) {
                 pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID( g_AW1GUID );
@@ -6423,8 +6430,11 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 wxString laymsg;
                 laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
                 wxLogMessage( laymsg );
-
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-6:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );
                 pConfig->LoadLayers(layerdir);
+    GetMemoryStatus( &g_mem_total, &g_mem_used );
+    wxLogMessage( _T("MemoryStatus(%d)-7:  mem_total: %d mb,  mem_used: %d mb"), m_iInitCount, g_mem_total / 1024, g_mem_used / 1024 );                
             }
 
             break;
@@ -6557,6 +6567,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             
             if(b_reloadForPlugins)
                 ChartsRefresh(g_restore_dbindex, cc1->GetVP(), false);
+
             break;
         }
     }   // switch
@@ -9766,8 +9777,6 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         pAISMOBRoute->m_bDeleteOnArrival = false;
 
         pAISMOBRoute->SetRouteArrivalRadius( -1.0 );                    // never arrives
-
-        pAISMOBRoute->RebuildGUIDList();         // ensure the GUID list is intact and good
 
         if( g_pRouteMan->GetpActiveRoute() )
             g_pRouteMan->DeactivateRoute();

@@ -257,19 +257,15 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
 TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
 {
-
     wxString TimeString;
-    TrackPoint *pWP = NULL;
-    
+
     double rlat = wpt_node.attribute( "lat" ).as_double();
     double rlon = wpt_node.attribute( "lon" ).as_double();
 
     for( pugi::xml_node child = wpt_node.first_child(); child != 0; child = child.next_sibling() ) {
         const char *pcn = child.name();
-        
         if( !strcmp( pcn, "time") ) 
             TimeString = wxString::FromUTF8( child.first_child().value() );
-
 
     //    OpenCPN Extensions....
         else
@@ -283,15 +279,7 @@ TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
     }   // for
 
     // Create waypoint
-
-    pWP = new TrackPoint( rlat, rlon );
-
-    if(TimeString.Len()) {
-        pWP->m_timestring = TimeString;
-        pWP->SetCreateTime(wxInvalidDateTime);          // cause deferred timestamp parsing
-    }
-
-    return ( pWP );
+    return new TrackPoint( rlat, rlon, TimeString );
 }
 
 Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
@@ -749,12 +737,8 @@ bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int flags )
  
     if(flags & OUT_TIME) {
         child = node.append_child("time");
-        if( pt->m_timestring.Len() )
-            child.append_child(pugi::node_pcdata).set_value(pt->m_timestring.mb_str());
-        else {
-            wxString t = pt->GetCreateTime().FormatISODate().Append(_T("T")).Append(pt->GetCreateTime().FormatISOTime()).Append(_T("Z"));
-            child.append_child(pugi::node_pcdata).set_value(t.mb_str());
-        }
+        if( pt->GetTimeString() )
+            child.append_child(pugi::node_pcdata).set_value(pt->GetTimeString());
     }
     
     return true;
@@ -986,8 +970,6 @@ void InsertRouteA( Route *pTentRoute )
     if( bAddroute ) {
             
         pRouteList->Append( pTentRoute );
-        pTentRoute->RebuildGUIDList();                  // ensure the GUID list is intact
-        
                  
                 //    Do the (deferred) calculation of BBox
                     pTentRoute->FinalizeForRendering();
@@ -1071,7 +1053,7 @@ void InsertTrack( Track *pTentTrack )
             TrackPoint *prp = pTentTrack->GetPoint(i);
             
             if( i ) pSelect->AddSelectableTrackSegment( prev_rlat, prev_rlon, prp->m_lat,
-                                                         prp->m_lon, prev_pConfPoint, prp, pTentTrack );
+                                                        prp->m_lon, prev_pConfPoint, prp, pTentTrack );
                     
             prev_rlat = prp->m_lat;
             prev_rlon = prp->m_lon;
@@ -1335,6 +1317,7 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
             if( !strcmp(object.name(), "trk") ) {
                 Track *pTrack = GPXLoadTrack1( object, b_full_viz, false, false, 0);
                 InsertTrack( pTrack );
+                //delete pTrack
             }
             else
                 if( !strcmp(object.name(), "rte") ) {

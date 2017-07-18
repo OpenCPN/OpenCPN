@@ -1262,7 +1262,6 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
          }
          }
          */
-        m_pSelectedRoute->RebuildGUIDList();          // ensure the GUID list is intact and good
         pConfig->UpdateRoute( m_pSelectedRoute );
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {

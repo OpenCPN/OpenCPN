@@ -120,27 +120,59 @@ private:
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( TrackList );
 
+TrackPoint::TrackPoint(double lat, double lon, wxString ts)
+    : m_lat(lat), m_lon(lon), m_timestring(NULL)
+{
+    SetCreateTime(ts);
+}
+
+TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
+    : m_lat(lat), m_lon(lon), m_timestring(NULL)
+{
+    SetCreateTime(dt);
+}
+
 // Copy Constructor
 TrackPoint::TrackPoint( TrackPoint* orig )
+    : m_lat(orig->m_lat), m_lon(orig->m_lon), m_timestring(NULL)
 {
-    m_lat = orig->m_lat;
-    m_lon = orig->m_lon;
-    m_CreateTimeX = orig->m_CreateTimeX;
+    SetCreateTime(orig->GetCreateTime());
     m_GPXTrkSegNo = 1;
+}
+
+TrackPoint::~TrackPoint()
+{
+    delete [] m_timestring;
 }
 
 wxDateTime TrackPoint::GetCreateTime()
 {
-    if(!m_CreateTimeX.IsValid()) {
-        if(m_timestring.Len())
-            ParseGPXDateTime( m_CreateTimeX, m_timestring );
+    wxDateTime CreateTimeX;
+    
+    if(m_timestring) {
+        wxString ts = m_timestring;
+        ParseGPXDateTime( CreateTimeX, ts );
     }
-    return m_CreateTimeX;
+    return CreateTimeX;
 }
 
 void TrackPoint::SetCreateTime( wxDateTime dt )
 {
-    m_CreateTimeX = dt;
+    wxString ts;
+    if(dt.IsValid())
+        ts = dt.FormatISODate().Append(_T("T")).Append(dt.FormatISOTime()).Append(_T("Z"));
+
+    SetCreateTime(ts);
+}
+
+void TrackPoint::SetCreateTime( wxString ts )
+{
+    delete [] m_timestring;
+    if(ts.Length()) {
+        m_timestring = new char[ts.Length()+1];
+        strcpy(m_timestring, ts.mb_str());
+    } else
+        m_timestring = NULL;
 }
 
 void TrackPoint::Draw(ocpnDC& dc )
@@ -799,7 +831,7 @@ void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
     Segments(pointlists, box, VP.view_scale_ppm);
 
 #if 0
-    if(n > 40000) {
+    if(GetnPoints() > 40000) {
         double t = sw.GetTime();
         double c = 0;
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -922,9 +954,8 @@ void Track::AddPointFinalized( TrackPoint *pNewPoint )
 
 TrackPoint* Track::AddNewPoint( vector2D point, wxDateTime time )
 {
-    TrackPoint *tPoint = new TrackPoint( point.lat, point.lon );
+    TrackPoint *tPoint = new TrackPoint( point.lat, point.lon, time );
     tPoint->m_GPXTrkSegNo = 1;
-    tPoint->SetCreateTime(time);
 
     AddPointFinalized( tPoint );
 
@@ -1098,7 +1129,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
         while( prpnodeX < TrackPoints.size() ) {
 
             TrackPoint *prpX = TrackPoints[prpnodeX];
-            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
+//            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
             xte = GetXTE( pWP_src, prpX, prp );
             if( isProminent || ( xte > g_TrackDeltaDistance ) ) {
 

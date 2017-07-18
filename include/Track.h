@@ -46,19 +46,22 @@ struct SubTrack
 class TrackPoint
 {
 public:
-      TrackPoint(double lat, double lon) : m_lat(lat), m_lon(lon) {}
+      TrackPoint(double lat, double lon, wxString ts="");
+      TrackPoint(double lat, double lon, wxDateTime dt);
       TrackPoint( TrackPoint* orig );
+      ~TrackPoint();
 
       wxDateTime GetCreateTime(void);
       void SetCreateTime( wxDateTime dt );
       void Draw(ocpnDC& dc );
+      const char *GetTimeString() { return m_timestring; }
       
 
       double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
-      wxString          m_timestring;
 private:
-      wxDateTime        m_CreateTimeX;
+      void SetCreateTime( wxString ts );
+      char             *m_timestring;
 };
 
 //----------------------------------------------------------------------------
