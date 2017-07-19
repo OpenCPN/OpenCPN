@@ -120,6 +120,12 @@ private:
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( TrackList );
 
+TrackPoint::TrackPoint(double lat, double lon)
+{
+    m_lat = lat;
+    m_lon = lon;
+}
+
 // Copy Constructor
 TrackPoint::TrackPoint( TrackPoint* orig )
 {
@@ -198,6 +204,7 @@ Track::Track()
 
     m_HyperlinkList = new HyperlinkList;
     m_HighlightedTrackPoint = -1;
+    m_bisTrack = true;
 }
 
 Track::~Track( void )

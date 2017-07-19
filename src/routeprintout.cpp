@@ -71,6 +71,7 @@ using namespace std;
 #include "routeprintout.h"
 #include "printtable.h"
 #include "wx28compat.h"
+#include "Track.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1
@@ -142,10 +143,21 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     table.StartFillData();
 
-    for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
-        RoutePoint* point = myRoute->GetPoint( n );
-        RoutePoint* pointm1 = myRoute->GetPoint( n-1 );
+    //  Unfortunately, Routes and Tracks count points differently....
+    int offset = 0;
+    if(myRoute->isTrack())
+        offset = -1;
 
+    for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
+        RoutePoint* point = myRoute->GetPoint( n + offset);
+        
+        RoutePoint* pointm1 = NULL;
+        if(((n-1) + offset) >= 0)
+            pointm1 = myRoute->GetPoint( (n-1) + offset );
+
+        if(NULL == point)
+            continue;
+        
         wxString leg = _T("---");
         if(n > 1)
             leg.Printf( _T("%d"), n-1);

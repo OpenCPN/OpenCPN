@@ -35,6 +35,8 @@
 #include <list>
 #include <deque>
 
+#include "Route.h"
+
 struct SubTrack
 {
     SubTrack() {}
@@ -43,43 +45,42 @@ struct SubTrack
     double            m_scale;
 };
 
-class TrackPoint
+class TrackPoint : public RoutePoint
 {
 public:
-      TrackPoint(double lat, double lon) : m_lat(lat), m_lon(lon) {}
+      TrackPoint(double lat, double lon);
       TrackPoint( TrackPoint* orig );
 
       wxDateTime GetCreateTime(void);
       void SetCreateTime( wxDateTime dt );
       void Draw(ocpnDC& dc );
+      wxString GetName(void){ return _T(""); }
       
-
-      double            m_lat, m_lon;
       int               m_GPXTrkSegNo;
-      wxString          m_timestring;
 private:
-      wxDateTime        m_CreateTimeX;
 };
 
 //----------------------------------------------------------------------------
 //    Track
 //----------------------------------------------------------------------------
 
-class Track
+class Track : public Route
 {
 public:
     Track();
     virtual ~Track();
 
     void Draw(ocpnDC& dc, ViewPort &VP, const LLBBox &box);
-    TrackPoint *GetPoint( int nWhichPoint );
     int GetnPoints(void){ return TrackPoints.size(); }
+    
+    
+    void SetVisible(bool visible = true) { m_bVisible = visible; }
+    TrackPoint *GetPoint( int nWhichPoint );
     TrackPoint *GetLastPoint();
     void AddPoint( TrackPoint *pNewPoint );
     void AddPointFinalized( TrackPoint *pNewPoint );
     TrackPoint* AddNewPoint( vector2D point, wxDateTime time );
     
-    void SetVisible(bool visible = true) { m_bVisible = visible; }
     void SetListed(bool listed = true) { m_bListed = listed; }
     virtual bool IsRunning() { return false; }
 

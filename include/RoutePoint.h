@@ -57,7 +57,7 @@ public:
       void SetVisible(bool viz = true){ m_bIsVisible = viz; }
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
-      wxString GetName(void){ return m_MarkName; }
+      virtual wxString GetName(void){ return m_MarkName; }
       wxString GetDescription(void) { return m_MarkDescription; }
 
       wxDateTime GetCreateTime(void);
@@ -162,8 +162,8 @@ public:
 
       wxString          m_timestring;
 
-private:
       wxDateTime        m_CreateTimeX;
+private:
 
       wxString          m_MarkName;
       wxBitmap          *m_pbmIcon;
