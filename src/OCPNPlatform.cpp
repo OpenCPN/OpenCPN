@@ -312,6 +312,7 @@ catch_signals(int signo)
             break;
             
         case SIGTERM:
+        case SIGHUP:
             gFrame->FastClose();
             break;
             
@@ -533,11 +534,14 @@ void OCPNPlatform::Initialize_1( void )
             
             //      Register my request for some signals
             sigaction(SIGUSR1, &sa_all, NULL);
-            
             sigaction(SIGUSR1, NULL, &sa_all_old);// inspect existing action for this signal
             
             sigaction(SIGTERM, &sa_all, NULL);
             sigaction(SIGTERM, NULL, &sa_all_old);
+            
+            sigaction(SIGHUP, &sa_all, NULL);
+            sigaction(SIGHUP, NULL, &sa_all_old);
+            
 #endif
 
 #ifdef __OCPN__ANDROID__

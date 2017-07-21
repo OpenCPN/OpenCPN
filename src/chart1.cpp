@@ -6745,7 +6745,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //      Listen for quitflag to be set, requesting application close
     if( quitflag ) {
-        wxLogMessage( _T("Got quitflag from SIGUSR1") );
+        wxLogMessage( _T("Got quitflag from SIGNAL") );
         FrameTimer1.Stop();
         Close();
         return;
