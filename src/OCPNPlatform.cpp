@@ -83,6 +83,10 @@
 #include "macutils.h"
 #endif
 
+#ifdef __WXGTK__
+#include <gdk/gdk.h>
+#endif
+
 DECLARE_APP(MyApp)
 
 void appendOSDirSlash( wxString* pString );
@@ -1565,6 +1569,12 @@ double  OCPNPlatform::GetDisplaySizeMM()
         m_displaySizeMM = wxGetDisplaySizeMM();
 
     double ret = m_displaySizeMM.GetWidth();
+    
+#ifdef __WXGTK__
+    GdkScreen *screen = gdk_screen_get_default();
+    ret = (double)gdk_screen_get_monitor_width_mm(screen, 0);
+#endif    
+    
     
 #ifdef __WXMSW__    
     int w,h;
