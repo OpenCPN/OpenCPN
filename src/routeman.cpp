@@ -1161,6 +1161,10 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp)
 
 void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
 {
+    wxString msg;
+    msg.Printf(_T("DPMM: %g   ScaleFactorExp: %g"), g_Platform->GetDisplayDPmm(), g_ChartScaleFactorExp);
+    wxLogMessage(msg);
+    
     wxString UserIconPath = g_Platform->GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
@@ -1193,7 +1197,8 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
                 }
             }
             if( fn.GetExt().Lower() == _T("svg") ) {
-                double bm_size = 16.0 * g_Platform->GetDisplayDPmm() * g_ChartScaleFactorExp;
+                //double bm_size = 16.0 * g_Platform->GetDisplayDPmm() * g_ChartScaleFactorExp;
+                double bm_size = 62 * g_ChartScaleFactorExp;
                 wxBitmap iconSVG = LoadSVGIcon( name, bm_size, bm_size );
                 MarkIcon * pmi = ProcessIcon( iconSVG, iconname, iconname );
                 if(pmi)
@@ -1209,6 +1214,9 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 {
     m_pIconArray->Clear();
     
+    ProcessDefaultIcons();
+    
+/*    
     ProcessIcon( style->GetIcon( _T("empty") ), _T("empty"), _T("Empty") );
     ProcessIcon( style->GetIcon( _T("airplane") ), _T("airplane"), _T("Airplane") );
     ProcessIcon( style->GetIcon( _T("anchorage") ), _T("anchorage"), _T("Anchorage") );
@@ -1253,13 +1261,85 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
     ProcessIcon( style->GetIcon( _T("xmgreen") ), _T("xmgreen"), _T("Green X") );
     ProcessIcon( style->GetIcon( _T("xmred") ), _T("xmred"), _T("Red X") );
     ProcessIcon( style->GetIcon( _T("activepoint") ), _T("activepoint"), _T("Active WP") );
-    
+  
+*/  
     // Load user defined icons.
     // Done after default icons are initialized,
     // so that user may substitute an icon by using the same name in the Usericons file.
     ProcessUserIcons( style );
     
 }
+
+void WayPointman::ProcessDefaultIcons()
+{
+    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/markicons/");
+    double bm_size = 62 * g_ChartScaleFactorExp;
+    MarkIcon *pmi = 0;
+    
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Airplane.svg"), bm_size, bm_size), _T("airplane"), _T("Airplane") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("1st-Anchorage.svg"), bm_size, bm_size ), _T("anchorage"), _T("Anchorage") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-Anchor2.svg"), bm_size, bm_size ), _T("anchor"), _T("Anchor") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Boarding-Location.svg"), bm_size, bm_size ), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Boundary.svg"), bm_size, bm_size ), _T("boundary"), _T("Boundary Mark") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Buoy-Type A.svg"), bm_size, bm_size ), _T("bouy1"), _T("Bouy Type A") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Buoy-Type B.svg"), bm_size, bm_size ), _T("bouy2"), _T("Bouy Type B") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Campfire.svg"), bm_size, bm_size ), _T("campfire"), _T("Campfire") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Camping.svg"), bm_size, bm_size ), _T("camping"), _T("Camping Spot") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Sea-Floor-Coral.svg"), bm_size, bm_size ), _T("coral"), _T("Coral") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Fish haven.svg"), bm_size, bm_size ), _T("fishhaven"), _T("Fish Haven") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Fish-Fishing-Spot.svg"), bm_size, bm_size ), _T("fishing"), _T("Fishing Spot") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Fish.svg"), bm_size, bm_size ), _T("fish"), _T("Fish") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Service-Food.svg"), bm_size, bm_size ), _T("food"), _T("Food") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Service-Fuel-Pump-Diesel & Petrol.svg"), bm_size, bm_size ), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Light - Green.svg"), bm_size, bm_size ), _T("greenlite"), _T("Green Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Sea-Floor-Sea-Weed.svg"), bm_size, bm_size ), _T("kelp"), _T("Kelp") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("1st-Man Overboard.svg"), bm_size, bm_size ), _T("mob"), _T("MOB") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Mooring - Buoy.svg"), bm_size, bm_size ), _T("mooring"), _T("Mooring Bouy") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Mooring - Bouy-Super.svg"), bm_size, bm_size ), _T("oilbouy"), _T("Oil Bouy") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Oil-Platform.svg"), bm_size, bm_size ), _T("platform"), _T("Platform") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Light - Red-Green.svg"), bm_size, bm_size ), _T("redgreenlite"), _T("Red/Green Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Marks - Light - Red.svg"), bm_size, bm_size ), _T("redlite"), _T("Red Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Rock exposed.svg"), bm_size, bm_size ), _T("rock1"), _T("Rock (exposed)") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Rock awash.svg"), bm_size, bm_size ), _T("rock2"), _T("Rock, (awash)") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Activity-Diving-Scuba-Flag.svg"), bm_size, bm_size ), _T("scuba"), _T("Scuba") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Sea-Obstruction - Shallow.svg"), bm_size, bm_size ), _T("shoal"), _T("Shoal") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Sea-Floor-Snag.svg"), bm_size, bm_size ), _T("snag"), _T("Snag") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-Square.svg"), bm_size, bm_size ), _T("square"), _T("Square") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-Triangle.svg"), bm_size, bm_size ), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-Diamond.svg"), bm_size, bm_size ), _T("diamond"), _T("Diamond") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-Circle.svg"), bm_size, bm_size ), _T("circle"), _T("Circle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Wreck1.svg"), bm_size, bm_size ), _T("wreck1"), _T("Wreck A") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Hazard-Wreck2.svg"), bm_size, bm_size ), _T("wreck2"), _T("Wreck B") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-X Blue.svg"), bm_size, bm_size ), _T("Xblue"), _T("Blue X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-X Green.svg"), bm_size, bm_size ), _T("Xgreen"), _T("Green X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("Symbol-X Red.svg"), bm_size, bm_size ), _T("Xred"), _T("Red X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessIcon( LoadSVGIcon(iconDir + _T("1st-Active waypoint.svg"), bm_size, bm_size ), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
+   
+    
+    // Get the rest
+    
+    wxArrayString FileList;
+        
+    int n_files = wxDir::GetAllFiles( iconDir, &FileList );
+        
+    for( int ifile = 0; ifile < n_files; ifile++ ) {
+        wxString name = FileList.Item( ifile );
+            
+        wxFileName fn( name );
+        wxString iconname = fn.GetName();
+        wxBitmap icon1;
+            
+        if( fn.GetExt().Lower() == _T("svg") ) {
+            wxBitmap iconSVG = LoadSVGIcon( name, bm_size, bm_size );
+            MarkIcon * pmi = ProcessIcon( iconSVG, iconname, iconname );
+            if(pmi)
+                pmi->preScaled = true;
+        }
+    }
+            
+}
+
+
 
 MarkIcon *WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
 {
@@ -1315,8 +1395,8 @@ wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
         // toh, 10.09.29
         // User defined icons won't be displayed in the list if they are larger than 32x32 pixels (why???)
         // Work-around: limit size
-        if( w > 32 ) w = 32;
-        if( h > 32 ) h = 32;
+//         if( w > 32 ) w = 32;
+//         if( h > 32 ) h = 32;
 
     }
 
@@ -1344,7 +1424,10 @@ wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
 
         wxImage icon_larger;
         if( h0 <= h && w0 <= w ) {
-            icon_larger = icon_image.Rescale(  w, h, wxIMAGE_QUALITY_HIGH  );
+            if(pmi->preScaled)
+                icon_larger = icon_image.Rescale(  w, h, wxIMAGE_QUALITY_HIGH  );
+            else
+                icon_larger = icon_image.Resize( wxSize( w, h ), wxPoint( h/2 -h0/2, w/2-w0/2 ) );
         } else {
             // rescale in one or two directions to avoid cropping, then resize to fit to cell
             int h1 = h;
@@ -1429,10 +1512,15 @@ wxBitmap *WayPointman::CreateDimBitmap( wxBitmap *pBitmap, double factor )
 
 void WayPointman::SetColorScheme( ColorScheme cs )
 {
+    ReloadAllIcons();
+}
+
+void WayPointman::ReloadAllIcons(  )
+{
     ProcessIcons( g_StyleManager->GetCurrentStyle() );
     
     //    Iterate on the RoutePoint list, requiring each to reload icon
-
+    
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();

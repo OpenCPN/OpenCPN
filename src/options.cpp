@@ -68,6 +68,7 @@ extern GLuint g_raster_format;
 #include "OCPN_Sound.h"
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
+#include "routeman.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
@@ -95,6 +96,7 @@ wxString GetOCPNKnownLanguage(const wxString lang_canonical);
 extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
+extern WayPointman *pWayPointMan;
 extern ChartCanvas* cc1;
 extern wxString g_PrivateDataDir;
 
@@ -6105,6 +6107,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ChartScaleFactorExp =
       g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
 
+  //  Only reload the icons if user has actually visted the UI page    
+  if(m_bVisitLang)    
+    pWayPointMan->ReloadAllIcons();
+  
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
 
   g_TalkerIdText = m_TalkerIdText->GetValue().MakeUpper();

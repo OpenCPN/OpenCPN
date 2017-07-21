@@ -5754,7 +5754,7 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
     //  So, applies to RoutePoint icons also
     if( rr & S52_CHANGED){
         //  Reload Icons
-        pWayPointMan->SetColorScheme( global_color_scheme );
+        pWayPointMan->ReloadAllIcons( );
     }
     
     pConfig->UpdateSettings();
@@ -7111,7 +7111,7 @@ double MyFrame::GetMag(double a, double lat, double lon)
         // In the case of rollover windows, the value is requested continuously, so will be correct very soon.
         wxDateTime now = wxDateTime::Now();
         SendJSON_WMM_Var_Request(lat, lon, now);
-        if ( abs(gQueryVar) < 360.0 )   // Don't use WMM variance if not updated yet
+        if ( fabs(gQueryVar) < 360.0 )   // Don't use WMM variance if not updated yet
             Variance = gQueryVar;
     }
     if((a - Variance ) > 360.)
