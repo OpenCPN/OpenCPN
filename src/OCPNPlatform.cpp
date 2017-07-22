@@ -578,7 +578,7 @@ void OCPNPlatform::OnExit_2( void ){
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
         // Uninstall Windows crash reporting
-    crUninstall();
+//    crUninstall();
 #endif
 #endif
     
