@@ -82,30 +82,30 @@ public class GPSServer extends Service implements LocationListener {
     private class MyListener implements GpsStatus.Listener {
         @Override
         public void onGpsStatusChanged(int event) {
-//            Log.i("DEBUGGER_TAG", "StatusListener Event");
+//            Log.i("OpenCPN", "StatusListener Event");
 
             if(null != locationManager){
-                mStatus = locationManager.getGpsStatus(mStatus);
+                mStatus = locationManager.getGpsStatus(null);
             }
 
 
             switch (event) {
                 case GpsStatus.GPS_EVENT_STARTED:
-                    Log.i("DEBUGGER_TAG", "GPS_EVENT_STARTED Event");
+//                    Log.i("OpenCPN", "GPS_EVENT_STARTED Event");
                     break;
 
                 case GpsStatus.GPS_EVENT_STOPPED:
-                    Log.i("DEBUGGER_TAG", "GPS_EVENT_STOPPED Event");
+//                    Log.i("OpenCPN", "GPS_EVENT_STOPPED Event");
                     isGPSFix = false;
                     break;
 
                 case GpsStatus.GPS_EVENT_FIRST_FIX:
-                    Log.i("DEBUGGER_TAG", "GPS_EVENT_FIRST_FIX Event");
+//                    Log.i("OpenCPN", "GPS_EVENT_FIRST_FIX Event");
                     isGPSFix = true;
                     break;
 
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-//                    Log.i("DEBUGGER_TAG", "GPS_EVENT_SATELLITE_STATUS Event");
+//                    Log.i("OpenCPN", "GPS_EVENT_SATELLITE_STATUS Event");
 
                       int nSatsUsed = 0;
                       boolean bSatsValid = true;
@@ -226,7 +226,7 @@ public class GPSServer extends Service implements LocationListener {
                         public void run() {
 
                             if(isGPSEnabled){
-//                                Log.i("OpenCPN", "Tick" + m_watchDog + " " + isGPSEnabled);
+//                                Log.i("OpenCPN", "Tick " + m_watchDog + " " + isGPSEnabled);
 
                                 m_tick++;
                                 m_watchDog++;
@@ -237,8 +237,8 @@ public class GPSServer extends Service implements LocationListener {
                                         if (mLastLocation != null) {
                                             latitude = mLastLocation.getLatitude();
                                             longitude = mLastLocation.getLongitude();
-                                            course = mLastLocation.getBearing();
-                                            speed = mLastLocation.getSpeed();
+                                            course = 0; //mLastLocation.getBearing();
+                                            speed = 0; //mLastLocation.getSpeed();
                                         }
 
 /*
@@ -261,7 +261,7 @@ public class GPSServer extends Service implements LocationListener {
 */
                                         if(null != mNativeLib){
                                             String s = createRMC();
-                                            //Log.i("OpenCPN", "ticker: " + s);
+//                                            Log.i("OpenCPN", "ticker: " + s);
                                             mNativeLib.processNMEA( s );
                                         }
 
@@ -286,11 +286,11 @@ public class GPSServer extends Service implements LocationListener {
             case GPS_PROVIDER_AVAILABLE:
             if(hasGPSDevice( mContext )){
                     ret_string = "YES";
-                    Log.i("DEBUGGER_TAG", "Provider yes");
+                    Log.i("OpenCPN", "Provider yes");
                 }
                 else{
                     ret_string = "NO";
-                    Log.i("DEBUGGER_TAG", "Provider no");
+                    Log.i("OpenCPN", "Provider no");
                 }
 
                 break;
