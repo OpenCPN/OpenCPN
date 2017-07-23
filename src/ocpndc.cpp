@@ -278,9 +278,14 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         float lrun = 0.;
         float xa = x1;
         float ya = y1;
-        float ldraw = t1 * dashes[0];
-        float lspace = t1 * dashes[1];
+        float ldraw = t1 * (unsigned char)dashes[0];
+        float lspace = t1 * (unsigned char)dashes[1];
 
+        if((ldraw < 0) || (lspace < 0)){
+            glEnd();
+            return;
+        }
+        
         while( lrun < lpix ) {
             //    Dash
             float xb = xa + ldraw * cosf( angle );
