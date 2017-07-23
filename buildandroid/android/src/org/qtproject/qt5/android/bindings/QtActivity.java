@@ -1482,25 +1482,41 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public String showBusyCircle(){
     //if(!m_fullScreen)
     {
+
+        mutex = new Semaphore(0);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
-//                 QtActivity.this.ringProgressDialog.show(QtActivity.this, "", "", true);
+                if(null == ringProgressDialog){
+                   //Log.i("OpenCPN", "ShowBusyBuild");
+                   ringProgressDialog = new ProgressDialog(QtActivity.this,R.style.MyTheme);
+                   ringProgressDialog.setCancelable(false);
+                   ringProgressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
 
-                 ringProgressDialog = new ProgressDialog(QtActivity.this,R.style.MyTheme);
-                 ringProgressDialog.setCancelable(false);
-                 ringProgressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
-
-                 Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
-                 ringProgressDialog.setIndeterminateDrawable(myIcon);
+                   Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
+                   ringProgressDialog.setIndeterminateDrawable(myIcon);
 
                  //  THIS IS IMPORTANT...Keeps the busy spinner from surfacing the hidden navigation buttons.
-                 ringProgressDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                   ringProgressDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-                 QtActivity.this.ringProgressDialog.show();
+                }
+
+                ringProgressDialog.show();
+
+                mutex.release();
+
          }});
      }
+
+     // One way to wait for the runnable to be done...
+       try {
+           mutex.acquire();            // Cannot get mutex until runnable above exits.
+       } catch (InterruptedException e) {
+           e.printStackTrace();
+       }
+
 
         String ret = "";
         return ret;
@@ -1508,8 +1524,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     public String hideBusyCircle(){
 
-        if(null == ringProgressDialog)
+        if(null == ringProgressDialog){
             return "";
+        }
 
         mutex = new Semaphore(0);
 
@@ -1522,6 +1539,13 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
                  mutex.release();
              }});
+
+       // One way to wait for the runnable to be done...
+         try {
+             mutex.acquire();            // Cannot get mutex until runnable above exits.
+         } catch (InterruptedException e) {
+             e.printStackTrace();
+         }
 
         String ret = "";
         return ret;
