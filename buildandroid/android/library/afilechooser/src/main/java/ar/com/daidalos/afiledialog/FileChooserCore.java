@@ -386,6 +386,7 @@ class FileChooserCore {
                                         // KitKat takes this path
                                         Log.e("OpenCPN", "Found SDK 19/20");
                                         if(externalStorageList.length > 1){
+                                            if(null != externalStorageList[1]){
                                                 // Force to use the second in the list
                                                 directory = externalStorageList[1].getAbsolutePath();
                                                 Log.e("OpenCPN", "Checking directory: " + directory);
@@ -396,7 +397,7 @@ class FileChooserCore {
                                                         Log.e("OpenCPN", "SD Card's directory: " + directory);
                                                         return directory;
                                                 }
-
+                                            }
                                         }
                                 }
                         }
