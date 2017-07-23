@@ -311,8 +311,10 @@ catch_signals(int signo)
             siglongjmp(env, 1);// jump back to the setjmp() point
             break;
             
-        case SIGTERM:
         case SIGHUP:
+            break;             // Do nothing...
+            
+        case SIGTERM:
             gFrame->FastClose();
             break;
             
