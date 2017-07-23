@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-27 23:11-0400\n"
-"PO-Revision-Date: 2017-06-29 09:34-0400\n"
+"PO-Revision-Date: 2017-07-23 11:39-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -4914,7 +4914,7 @@ msgstr "Mostrar a verdade"
 
 #: src/options.cpp:4156
 msgid "Show magnetic"
-msgstr "Apresentar magnético"
+msgstr "Mostrar magnético"
 
 #: src/options.cpp:4169
 msgid "Assumed magnetic variation"
@@ -5116,11 +5116,11 @@ msgstr "Habilitar escala interface gráfica"
 
 #: src/options.cpp:4695
 msgid "Enable route/AIS info block"
-msgstr "Apresentar bloco de informação rotas/AIS"
+msgstr "Habilitar o bloco de informações de rota/AIS"
 
 #: src/options.cpp:4699
 msgid "Use Inland ECDIS V2.3"
-msgstr "Usar sistema Inland ECDIS 2.3"
+msgstr "Usar Inland ECDIS 2.3"
 
 #: src/options.cpp:4718
 msgid "User Interface scale factor"
@@ -5339,9 +5339,9 @@ msgstr "Diversos"
 msgid "S57 Cell Update failed.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr "A actualização da célula S57 falhou.\n"
-"A informação Enc pode estar desactualizada ou incorreta.\n\n"
-"Verifique o ficheiro de log para detalhes."
+msgstr "Celula S57 falha na atualização. \n"
+"ENC características podem ser incompletas ou inexata.\n\n"
+"Check o arquivo de log para detalhes."
 
 #: src/Osenc.cpp:1135 src/Osenc.cpp:1238 src/s57chart.cpp:4654
 msgid "OpenCPN Create SENC Warning"
@@ -5351,9 +5351,9 @@ msgstr "OpenCPN criar  Aviso SENC"
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr "A actualização da célula S57 ficou incompleta.\n"
-"A informação Enc pode estar incompleta ou incorreta.\n\n"
-"Verifique o ficheiro de log para detalhes."
+msgstr "Célula S57 atualização incompleta. \n"
+"ENC características podem estar incompleta ou inexata. \n\n"
+"Check o arquivo de log para detalhes."
 
 #: src/Osenc.cpp:1545
 msgid "OpenCPN S57 SENC File Create..."

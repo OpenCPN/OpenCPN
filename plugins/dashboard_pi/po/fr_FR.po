@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-06-29 09:31-0400\n"
+"PO-Revision-Date: 2017-07-23 11:38-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -167,11 +167,11 @@ msgstr "Depuis votre bateau"
 
 #: src/dashboard_pi.cpp:187
 msgid "Pitch"
-msgstr "Pitch"
+msgstr "Tangage"
 
 #: src/dashboard_pi.cpp:189
 msgid "Heel"
-msgstr "Talon"
+msgstr "Angle de gite"
 
 #: src/dashboard_pi.cpp:378 src/dashboard_pi.cpp:493 src/dashboard_pi.cpp:1448
 #: src/dashboard_pi.cpp:1461 src/dashboard_pi.cpp:1646

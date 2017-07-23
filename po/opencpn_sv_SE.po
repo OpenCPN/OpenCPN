@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-27 23:11-0400\n"
-"PO-Revision-Date: 2017-06-29 09:35-0400\n"
+"PO-Revision-Date: 2017-07-23 11:39-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -2854,7 +2854,7 @@ msgstr "\n"
 
 #: src/chart1.cpp:844
 msgid "OpenCPN for Android"
-msgstr ""
+msgstr "OpenCPN för Android"
 
 #: src/chart1.cpp:860
 msgid "Welcome to OpenCPN"
@@ -2931,7 +2931,7 @@ msgstr "Förfluten tid : "
 
 #: src/chart1.cpp:2215
 msgid "Elapsed time:"
-msgstr ""
+msgstr "Förfluten tid:"
 
 #: src/chart1.cpp:2216
 msgid "Estimated time : "
@@ -2939,7 +2939,7 @@ msgstr "Beräknad tid :"
 
 #: src/chart1.cpp:2217
 msgid "Estimated time:"
-msgstr ""
+msgstr "Beräknad tid:"
 
 #: src/chart1.cpp:2218
 msgid "Remaining time : "
@@ -2947,7 +2947,7 @@ msgstr "Återstående tid :"
 
 #: src/chart1.cpp:2219
 msgid "Remaining time:"
-msgstr ""
+msgstr "Återstående tid:"
 
 #: src/chart1.cpp:2220 src/chart1.cpp:6126 src/chart1.cpp:6134
 msgid "OpenCPN Chart Update"
@@ -4586,7 +4586,7 @@ msgstr "Använd hårdvarugrafik (OpenGL)"
 
 #: src/options.cpp:2957
 msgid "OpenGL Options"
-msgstr ""
+msgstr "Alternativ för OpenGL"
 
 #: src/options.cpp:2966 src/options.cpp:3094
 msgid "Course-Up Update Period"
@@ -4915,7 +4915,7 @@ msgstr "Visa sann"
 
 #: src/options.cpp:4156
 msgid "Show magnetic"
-msgstr ""
+msgstr "Visa kompassriktning"
 
 #: src/options.cpp:4169
 msgid "Assumed magnetic variation"
@@ -5121,7 +5121,7 @@ msgstr ""
 
 #: src/options.cpp:4699
 msgid "Use Inland ECDIS V2.3"
-msgstr ""
+msgstr "Använd ECDIS för inre vattenvägar V2.3"
 
 #: src/options.cpp:4718
 msgid "User Interface scale factor"
@@ -5340,7 +5340,9 @@ msgstr "Övrigt"
 msgid "S57 Cell Update failed.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "S57 Celluppdatering är ofullständig. \n"
+"ENC-filen kan vara ofullständig eller felaktig. \n\n"
+"Kontrollera i loggfilen för detaljer."
 
 #: src/Osenc.cpp:1135 src/Osenc.cpp:1238 src/s57chart.cpp:4654
 msgid "OpenCPN Create SENC Warning"
@@ -5350,7 +5352,9 @@ msgstr "OpenCPN. Varning vid skapande av SENC"
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "S57 Celluppdatering är ofullständig. \n"
+"ENC-filen kan vara ofullständig eller felaktig. \n\n"
+"Kontrollera i loggfilen för detaljer."
 
 #: src/Osenc.cpp:1545
 msgid "OpenCPN S57 SENC File Create..."
