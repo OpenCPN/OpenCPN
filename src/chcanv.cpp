@@ -3624,16 +3624,20 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
             }
 
             //      COG Predictor
+            float dash_length = 10.0;
+#ifdef __OCPN__ANDROID__
+            dash_length = 6.0;
+#endif            
             wxDash dash_long[2];
-            dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * 6.0) / g_cog_predictor_width );  // Long dash , in mm <---------+
-            dash_long[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * 3.0) / g_cog_predictor_width );  // Short gap            |
+            dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * dash_length) / g_cog_predictor_width );  // Long dash , in mm <---------+
+            dash_long[1] = dash_long[0] / 2.0;                                                                   // Short gap 
             
             // On ultra-hi-res displays, do not allow the dashes to be greater than 250, since it is defined as (char)
-            if( (g_Platform->GetDisplayDPmm() * 6.0) > 250.){
+            if( dash_length > 250.){
                 dash_long[0] = 250. /g_cog_predictor_width;
                 dash_long[1] = dash_long[0] / 2;
             }
-                
+            
             float pw1 = g_cog_predictor_width;
             float pw2 = wxRound(wxMax(1, g_cog_predictor_width/(float)3.));
             
