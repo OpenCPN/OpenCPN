@@ -208,7 +208,7 @@ public class DownloadFile extends Activity {
         switch (id) {
             case DIALOG_DOWNLOAD_PROGRESS: //we set this to 0
                 mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("Downloading file…");
+                mProgressDialog.setMessage("@string/DOWNLOADING_FILE");
                 mProgressDialog.setIndeterminate(false);
                 mProgressDialog.setMax(100);
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

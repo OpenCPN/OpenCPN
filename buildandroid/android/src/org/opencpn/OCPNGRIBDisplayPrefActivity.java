@@ -253,17 +253,18 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
 
            // Make sure the request was successful
            if (resultCode == RESULT_OK) {
-               ShowTextDialog("GRIB file downloaded OK");
+               ShowTextDialog("@strings/ocpn_GRIB_download_dialog_OK");
            }
            else if(resultCode == DownloadFile.ERROR_NO_INTERNET){
-               ShowTextDialog("No Internet available\nPlease check your device's Mobile Data or WiFi settings.");
+               ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_INTERNET");
            }
            else if(resultCode == DownloadFile.ERROR_NO_CONNECTION){
-               ShowTextDialog("Connection Failed");
+               ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_CONNECTION");
            }
            else {
-               ShowTextDialog("Download Failed\n  Please check logs.");
+               ShowTextDialog("@string/ocpn_GRIB_download_dialog_DOWN_FAIL");
            }
+
        }
 
 

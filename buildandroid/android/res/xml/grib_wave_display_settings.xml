@@ -16,8 +16,8 @@
     <SwitchPreference
         android:key="grib_prefb_WavesDirectionArrowFixedSpacing"
         android:title="@string/ocpn_grib_wavedirarrowspace"
-        android:switchTextOff="Default"
-        android:switchTextOn="Custom"
+        android:switchTextOff="@string/DEFAULT"
+        android:switchTextOn="@string/CUSTOM"
         android:defaultValue="false"
         />
 
@@ -44,8 +44,8 @@
     <SwitchPreference
         android:key="grib_prefb_WavesNumbersFixedSpacing"
         android:title="@string/ocpn_grib_waveheightspace"
-        android:switchTextOff="Default"
-        android:switchTextOn="Custom"
+        android:switchTextOff="@string/DEFAULT"
+        android:switchTextOn="@string/CUSTOM"
         android:defaultValue="false"
         />
 

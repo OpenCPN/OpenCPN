@@ -17,8 +17,8 @@
     <SwitchPreference
         android:key="grib_prefb_AirTemperatureNumbersFixedSpacing"
         android:title="@string/ocpn_grib_airtempspace"
-        android:switchTextOff="Default"
-        android:switchTextOn="Custom"
+        android:switchTextOff="@string/DEFAULT"
+        android:switchTextOn="@string/CUSTOM"
         android:defaultValue="false"
         />
 
