@@ -1302,6 +1302,10 @@ void dashboard_pi::ShowPreferencesDialog( wxWindow* parent )
     
     dialog->RecalculateSize();
 
+#ifdef __OCPN__ANDROID__
+    dialog->GetHandle()->setStyleSheet( qtStyleSheet);
+#endif
+    
     wxWindow *ccwin = GetOCPNCanvasWindow();
     
     if( ccwin ){
@@ -1880,6 +1884,11 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pTextCtrlCaption = new wxTextCtrl( m_pPanelDashboard, wxID_ANY, _T(""), wxDefaultPosition,
                                          wxSize( 220, -1 ) );
     itemFlexGridSizer->Add( m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL, border_size );
+    
+#ifdef __OCPN__ANDROID__
+    itemStaticText01->Hide();
+    m_pTextCtrlCaption->Hide();
+#endif    
 
     wxStaticText* itemStaticText02 = new wxStaticText( m_pPanelDashboard, wxID_ANY,
             _("Orientation:"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -2239,8 +2248,8 @@ void DashboardPreferencesDialog::OnInstrumentAdd( wxCommandEvent& event )
     
     pdlg.CentreOnScreen();
 #endif
-    
-    if( pdlg.ShowModal() == wxID_OK ) {
+    pdlg.ShowModal();
+    if( pdlg.GetReturnCode() == wxID_OK ) {
         wxListItem item;
         getListItemForInstrument( item, pdlg.GetInstrumentAdded() );
         item.SetId( m_pListCtrlInstruments->GetItemCount() );
@@ -2355,7 +2364,7 @@ AddInstrumentDlg::AddInstrumentDlg( wxWindow *pparent, wxWindowID id ) :
     m_pListCtrlInstruments->InsertColumn( 0, _("Instruments") );
 
     wxFont *pF = OCPNGetFont(_T("Dialog"), 0);
-    SetFont( *pF );
+    m_pListCtrlInstruments->SetFont( *pF );
     
     #ifdef __OCPN__ANDROID__
     m_pListCtrlInstruments->GetHandle()->setStyleSheet( qtStyleSheet);
