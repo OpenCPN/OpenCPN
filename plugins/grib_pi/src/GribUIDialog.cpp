@@ -438,7 +438,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
 
     if( m_bGRIBActiveFile->IsOK() ) {
         wxFileName fn( m_bGRIBActiveFile->GetFileNames()[0] );
-        title = ( _T("File: ") );
+        title = ( _("File: ") );
         title.Append( fn.GetFullName() );
         if( rsa->GetCount() == 0 ) {                        //valid but empty file
             delete m_bGRIBActiveFile;
@@ -468,7 +468,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile)
     } else {
         delete m_bGRIBActiveFile;
         m_bGRIBActiveFile = NULL;
-        title = _T("No valid GRIB file");
+        title = _("No valid GRIB file");
     }
     pPlugIn->GetGRIBOverlayFactory()->SetMessage( title );
     SetTitle( title );
