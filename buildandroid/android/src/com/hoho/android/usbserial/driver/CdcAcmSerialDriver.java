@@ -195,8 +195,10 @@ public class CdcAcmSerialDriver implements UsbSerialDriver {
         }
 
         private int sendAcmControlMessage(int request, int value, byte[] buf) {
-            return mConnection.controlTransfer(
-                    USB_RT_ACM, request, value, 0, buf, buf != null ? buf.length : 0, 5000);
+            if(null != mConnection)
+                return mConnection.controlTransfer(USB_RT_ACM, request, value, 0, buf, buf != null ? buf.length : 0, 5000);
+            else
+                return 0;
         }
 
         @Override
