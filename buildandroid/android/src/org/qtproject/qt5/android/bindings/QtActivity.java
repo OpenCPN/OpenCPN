@@ -1508,13 +1508,17 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     public String hideBusyCircle(){
 
+        if(null == ringProgressDialog)
+            return "";
+
         mutex = new Semaphore(0);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
-                 ringProgressDialog.dismiss();
+                 if(null != ringProgressDialog)
+                    ringProgressDialog.dismiss();
 
                  mutex.release();
              }});
