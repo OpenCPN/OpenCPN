@@ -42,6 +42,7 @@
 #endif
 
 #include "instrument.h"
+extern int g_iUTCOffset;    // get offset from dashboard_pi.cpp
 
 class DashboardInstrument_Clock: public DashboardInstrument_Single
 {
@@ -53,6 +54,7 @@ public:
     wxSize GetSize( int orient, wxSize hint );
     void SetData(int, double, wxString);
     virtual void SetUtcTime(wxDateTime value);
+    wxString GetDisplayTime( wxDateTime UTCtime, bool bUTC=false );
 };
 
 class DashboardInstrument_Moon : public DashboardInstrument_Clock
@@ -95,5 +97,26 @@ private:
     void calculateSun( double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset );
 };
 
+class DashboardInstrument_LCL : public DashboardInstrument_Clock
+{
+public:
+    DashboardInstrument_LCL( wxWindow *parent, wxWindowID id, wxString title );
+
+    ~DashboardInstrument_LCL() {}
+
+    void SetUtcTime( wxDateTime value );
+};
+
+class DashboardInstrument_CPUClock : public DashboardInstrument_Clock
+{
+public:
+    DashboardInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title );
+
+    ~DashboardInstrument_CPUClock() {}
+
+    void SetData( int, double, wxString );
+
+    void SetUtcTime( wxDateTime value );
+};
 #endif // __CLOCK_H__
 

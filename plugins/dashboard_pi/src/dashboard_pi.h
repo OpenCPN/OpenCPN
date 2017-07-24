@@ -214,6 +214,7 @@ public:
       wxSpinCtrl                   *m_pSpinSpeedMax;
       wxSpinCtrl                   *m_pSpinCOGDamp;
       wxSpinCtrl                   *m_pSpinSOGDamp;
+      wxChoice                     *m_pChoiceUTCOffset;
       wxChoice                     *m_pChoiceSpeedUnit;
       wxChoice                     *m_pChoiceDepthUnit;
       wxChoice                     *m_pChoiceDistanceUnit;
