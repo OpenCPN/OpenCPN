@@ -298,6 +298,8 @@ int MyNewHandler( size_t size )
 //      SIGSEGV
 //      Some undefined segfault......
 
+int s_inhup;
+
 void
 catch_signals(int signo)
 {
@@ -312,10 +314,18 @@ catch_signals(int signo)
             break;
             
         case SIGHUP:
-            break;             // Do nothing...
+            if(!s_inhup){
+                s_inhup++;                  // incase SIGHUP is closely followed by SIGTERM
+                gFrame->FastClose();
+            }
+            break;             
             
         case SIGTERM:
-            gFrame->FastClose();
+            if(!s_inhup){
+                s_inhup++;                  // incase SIGHUP is closely followed by SIGTERM
+                gFrame->FastClose();
+            }
+                
             break;
             
         default:
