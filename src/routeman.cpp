@@ -92,6 +92,7 @@ extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
 
 extern ActiveTrack      *g_pActiveTrack;
+extern int              g_track_line_width;
 extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
@@ -1000,10 +1001,13 @@ void Routeman::SetColorScheme( ColorScheme cs )
     // Re-Create the pens and colors
     
     int scaled_line_width = g_route_line_width;
+    int track_scaled_line_width = g_track_line_width;
     if(g_btouch){
         double size_mult =  g_ChartScaleFactorExp * 1.5;
         double sline_width = wxRound(size_mult * scaled_line_width);
+        double tsline_width = wxRound( size_mult * track_scaled_line_width );
         scaled_line_width = wxMax( sline_width, 1);
+        track_scaled_line_width = wxMax( tsline_width, 1 );
     }
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
@@ -1019,7 +1023,7 @@ void Routeman::SetColorScheme( ColorScheme cs )
                                                          scaled_line_width, wxPENSTYLE_SOLID );
     m_pActiveRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
                                                        scaled_line_width, wxPENSTYLE_SOLID );
-    m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), scaled_line_width,
+    m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), track_scaled_line_width,
                                                  wxPENSTYLE_SOLID );
     
     m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxBRUSHSTYLE_SOLID );
