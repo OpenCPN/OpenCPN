@@ -87,7 +87,7 @@ enum {
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_GPSUTC, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
     ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH, ID_DBP_I_FOS,
-	ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL,
+	ID_DBP_M_COG, ID_DBP_I_PITCH, ID_DBP_I_HEEL, ID_DBP_D_AWA_TWA, ID_DBP_I_GPSLCL, ID_DBP_I_CPULCL, ID_DBP_I_SUNLCL,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -192,6 +192,8 @@ wxString getInstrumentCaption( unsigned int id )
             return _( "Local GPS Clock" );
         case ID_DBP_I_CPULCL:
             return _( "Local CPU Clock" );
+        case ID_DBP_I_SUNLCL:
+            return _( "Local Sunrise/Sunset" );
     }
     return _T("");
 }
@@ -225,6 +227,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_GPSLCL:
         case ID_DBP_I_CPULCL:
         case ID_DBP_I_SUN:
+        case ID_DBP_I_SUNLCL:
         case ID_DBP_I_VLW1:
         case ID_DBP_I_VLW2:
         case ID_DBP_I_FOS:
@@ -2538,13 +2541,18 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
 				instrument = new DashboardInstrument_Single(this, wxID_ANY,
 					getInstrumentCaption(id), OCPN_DBP_STC_HEEL, _T("%2.1f"));
                 break;
+             // any clock display with "LCL" in the format string is converted from UTC to local TZ
+            case ID_DBP_I_SUNLCL:
+                instrument = new DashboardInstrument_Sun( this, wxID_ANY,
+                    getInstrumentCaption( id ), _T( "%02i:%02i:%02i LCL" ) );
+                break;
             case ID_DBP_I_GPSLCL:
-                instrument = new DashboardInstrument_LCL( this, wxID_ANY,
-                    getInstrumentCaption( id ) );
+                instrument = new DashboardInstrument_Clock( this, wxID_ANY,
+                    getInstrumentCaption( id ), OCPN_DBP_STC_CLK, _T( "%02i:%02i:%02i LCL" ) );
                 break;
             case ID_DBP_I_CPULCL:
                 instrument = new DashboardInstrument_CPUClock( this, wxID_ANY,
-                    getInstrumentCaption( id ) );
+                    getInstrumentCaption( id ), _T( "%02i:%02i:%02i LCL" ) );
         }
         if( instrument ) {
             instrument->instrumentTypeId = id;

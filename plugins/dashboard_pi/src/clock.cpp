@@ -43,6 +43,11 @@
 DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, int cap_flag, wxString format ) :
       DashboardInstrument_Single( parent, id, title, cap_flag, format )
 {
+    // if format contains the string "LCL" then display time in local TZ
+    if ( format.Contains( _T( "LCL" ) ) )
+        setUTC( false );
+    else
+        setUTC( true );
 }
 
 wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
@@ -67,10 +72,10 @@ void DashboardInstrument_Clock::SetData( int, double, wxString )
 void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 {
     if (data.IsValid())
-        m_data = GetDisplayTime( data, true );  // always display UTC
+        m_data = GetDisplayTime( data );
 }
 
-wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime, bool bUTC )
+wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
 {
     wxString result( _T( "---" ) );
     if ( UTCtime.IsValid() ) {
@@ -91,18 +96,8 @@ wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime, bool bUT
     return result;
 }
 
-DashboardInstrument_LCL::DashboardInstrument_LCL( wxWindow *parent, wxWindowID id, wxString title ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK )
-{ }
-
-void DashboardInstrument_LCL::SetUtcTime( wxDateTime data )
-{
-    if ( data.IsValid() )
-        m_data = GetDisplayTime( data, false );
-}
-
-DashboardInstrument_CPUClock::DashboardInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK )
+DashboardInstrument_CPUClock::DashboardInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK, format )
 { }
 
 void DashboardInstrument_CPUClock::SetData( int, double, wxString )
@@ -278,8 +273,8 @@ wxDateTime convHrmn(double dhr) {
       return wxDateTime(hr, mn);
 };
 
-DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_CLK )
+DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_CLK, format )
 {
     m_lat = m_lon = 999.9;
     m_dt = wxDateTime::Now().ToUTC();
@@ -323,11 +318,11 @@ void DashboardInstrument_Sun::SetUtcTime( wxDateTime data )
         wxDateTime sunrise, sunset;
         calculateSun(m_lat, m_lon, sunrise, sunset);
         if (sunrise.GetYear() != 999)
-            m_sunrise = GetDisplayTime( sunrise, false );
+            m_sunrise = GetDisplayTime( sunrise );
         else
             m_sunrise = _T("---");
         if (sunset.GetYear() != 999)
-            m_sunset = GetDisplayTime( sunset, false );
+            m_sunset = GetDisplayTime( sunset );
         else
             m_sunset = _T("---");
     }
