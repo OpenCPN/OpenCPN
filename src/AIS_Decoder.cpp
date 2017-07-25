@@ -686,8 +686,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lat = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            //  hemisphere N or S
-        if( token.Mid( 1, 1 ).Contains( _T("S") ) ) gpsg_lat = 0. - gpsg_lat;
-
+        if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains( _T("s") ) == true )  gpsg_lat = 0. - gpsg_lat;
+            
         token = tkz.GetNextToken();            // longitude DDDMM.MMMM
         token.ToDouble( &gpsg_lon );
         gpsg_degs = (int) ( gpsg_lon / 100.0 );
@@ -695,8 +695,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lon = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            // hemisphere E or W
-        if( token.Mid( 1, 1 ).Contains( _T("W") ) ) gpsg_lon = 0. - gpsg_lon;
-
+        if( token.Mid( 0, 1 ).Contains( _T("W") ) == true || token.Mid( 0, 1 ).Contains( _T("w") ) == true ) gpsg_lon = 0. - gpsg_lon;
+            
         token = tkz.GetNextToken();            //    altitude AA.a
         //    token.toDouble(&gpsg_alt);
 
