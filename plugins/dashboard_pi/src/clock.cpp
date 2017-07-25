@@ -79,7 +79,7 @@ wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
 {
     wxString result( _T( "---" ) );
     if ( UTCtime.IsValid() ) {
-        if ( bUTC ) {
+        if ( getUTC() ) {
             result = UTCtime.FormatISOTime().Append( _T( " UTC" ) );
             return result;
         }
