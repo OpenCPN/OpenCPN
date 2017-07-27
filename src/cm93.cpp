@@ -6844,7 +6844,7 @@ CM93OffsetDialog::CM93OffsetDialog ( wxWindow *parent )
 
       m_OKButton = new wxButton ( this, wxID_ANY, _ ( "OK" ), wxDefaultPosition, wxDefaultSize, 0 );
       m_OKButton->Connect ( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler ( CM93OffsetDialog::OnOK ), NULL, this );
-      boxSizer02->Add ( m_OKButton, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+      boxSizer02->Add ( m_OKButton, 0, wxALL, 5 );
       m_OKButton->SetDefault();
 
       topSizer->Add ( boxSizer02, 0, wxEXPAND|wxALL, 2 );
