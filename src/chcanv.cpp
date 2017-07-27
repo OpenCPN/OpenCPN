@@ -1508,6 +1508,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
 
+    case WXK_PAUSE:                   // Drop MOB
+         parent_frame->ActivateMOB();
+         break;
+
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
     case WXK_PAGEUP:{
