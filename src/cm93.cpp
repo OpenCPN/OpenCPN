@@ -6855,7 +6855,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
             //    Re-opening will then refresh the M_COVRs in the cover set
             OCPNPlatform::ShowBusySpinner();
             m_pcompchart->CloseandReopenCurrentSubchart();
-            OCPNPlatform::ShowBusySpinner();
+            OCPNPlatform::HideBusySpinner();
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
