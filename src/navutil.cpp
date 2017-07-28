@@ -2190,15 +2190,17 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), m_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
 
-    SetPath( _T ( "/Settings/NMEADataSource" ) );
-    wxString connectionconfigs;
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
-    {
-        if (i > 0)
-            connectionconfigs.Append(_T("|"));
-        connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
+    if (g_pConnectionParams != NULL ) {
+        SetPath( _T( "/Settings/NMEADataSource" ) );
+        wxString connectionconfigs;
+        for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+        {
+            if (i > 0)
+                connectionconfigs.Append(_T("|"));
+            connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
+        }
+        Write ( _T ( "DataConnections" ), connectionconfigs );
     }
-    Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
     

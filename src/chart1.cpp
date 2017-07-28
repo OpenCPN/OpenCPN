@@ -3454,6 +3454,17 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     cc1->Refresh( true );
     cc1->Update();
+
+    //  Clear some global arrays, lists, and hash maps...
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item( i );
+        delete cp;
+    }
+    delete g_pConnectionParams;
+    g_pConnectionParams = NULL;
+
+
     wxYield();
 
     //   Save the saved Screen Brightness
@@ -3650,14 +3661,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     delete g_pMUX;
     g_pMUX = NULL;
     
-
-    //  Clear some global arrays, lists, and hash maps...
-    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-    {
-        ConnectionParams *cp = g_pConnectionParams->Item(i);
-        delete cp;
-    }
-    delete g_pConnectionParams;
 
     if(pLayerList){
         LayerList::iterator it;
