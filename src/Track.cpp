@@ -516,7 +516,7 @@ void ActiveTrack::AddPointNow( bool do_add_point )
 void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
 {
     wxPoint r(INVALID_COORD, INVALID_COORD);
-    if ( n < TrackPoints.size() )
+    if ( (size_t)n < TrackPoints.size() )
         cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
 
     std::list<wxPoint> &pointlist = pointlists.back();
