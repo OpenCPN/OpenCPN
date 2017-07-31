@@ -41,7 +41,7 @@ public:
       RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = GPX_EMPTY_STRING, bool bAddToList = true);
       RoutePoint( RoutePoint* orig );
       RoutePoint();
-      ~RoutePoint(void);
+      virtual ~RoutePoint(void);
       void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
       

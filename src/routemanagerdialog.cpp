@@ -1982,8 +1982,8 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
 
             wxListItem li;
             li.SetId( index );
-            li.SetImage( rp->IsVisible() ? pWayPointMan->GetIconIndex( rp->GetIconBitmap() )
-                                    : pWayPointMan->GetXIconIndex( rp->GetIconBitmap() ) );
+            li.SetImage( rp->IsVisible() ? pWayPointMan->GetIconImageListIndex( rp->GetIconBitmap() )
+                                    : pWayPointMan->GetXIconImageListIndex( rp->GetIconBitmap() ) );
             li.SetData( rp );
             li.SetText( _T("") );
             long idx = m_pWptListCtrl->InsertItem( li );
@@ -2053,8 +2053,8 @@ void RouteManagerDialog::UpdateWptListCtrlViz( )
             break;
         
         RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
-        int image = pRP->IsVisible() ? pWayPointMan->GetIconIndex( pRP->GetIconBitmap() )
-        : pWayPointMan->GetXIconIndex( pRP->GetIconBitmap() ) ;
+        int image = pRP->IsVisible() ? pWayPointMan->GetIconImageListIndex( pRP->GetIconBitmap() )
+        : pWayPointMan->GetXIconImageListIndex( pRP->GetIconBitmap() ) ;
                         
         m_pWptListCtrl->SetItemImage(item, image);
     }
@@ -2139,8 +2139,8 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
 
         wp->SetVisible( !wp->IsVisible() );
         m_pWptListCtrl->SetItemImage( clicked_index,
-                                      wp->IsVisible() ? pWayPointMan->GetIconIndex( wp->GetIconBitmap() )
-                                                      : pWayPointMan->GetXIconIndex( wp->GetIconBitmap() ) );
+                                      wp->IsVisible() ? pWayPointMan->GetIconImageListIndex( wp->GetIconBitmap() )
+                                                      : pWayPointMan->GetXIconImageListIndex( wp->GetIconBitmap() ) );
 
         pConfig->UpdateWayPoint( wp );
 

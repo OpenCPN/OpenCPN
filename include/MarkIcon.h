@@ -31,12 +31,16 @@
 class MarkIcon
 {
 public:
-    wxBitmap *picon_bitmap;
+    MarkIcon(){ m_blistImageOK = false; piconBitmap = NULL; icon_texture = 0; preScaled = false; listIndex = 0; } 
+    wxBitmap *piconBitmap;
     wxString icon_name;
     wxString icon_description;
     bool preScaled;
 
     unsigned int icon_texture, tex_w, tex_h;
+    wxImage iconImage;
+    bool m_blistImageOK;
+    int listIndex;
 };
 
 #endif

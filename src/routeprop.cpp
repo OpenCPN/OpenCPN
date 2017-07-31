@@ -3093,18 +3093,32 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         factor = wxMin(3.0, factor);            // not greater than 3
         factor = wxMax(1.0, factor);            // nor less than 1
         
+        wxImageList *icon_list = NULL;
+        
         //  A little optimization for "normal" situations, requiring no scaling
-        if(factor < 2.) factor = 1.;
+        if(factor < 2.){
+            factor = 1.;
             
-        wxImageList *icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
-
-        int target = 16;
-        if( fillCombo  && icon_list){
-            for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
-                wxString *ps = pWayPointMan->GetIconDescription( i );
-                wxBitmap bmp = icon_list->GetBitmap( i );
+            if( fillCombo ){
+                for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+                    wxString *ps = pWayPointMan->GetIconDescription( i );
+                    wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i);
+                    
+                    m_bcomboBoxIcon->Append( *ps, bmp );
+                }
+            }
                 
-                m_bcomboBoxIcon->Append( *ps, bmp );
+        }
+        else{
+            icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
+
+            if( fillCombo  && icon_list){
+                for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+                    wxString *ps = pWayPointMan->GetIconDescription( i );
+                    wxBitmap bmp = icon_list->GetBitmap( i );
+                
+                    m_bcomboBoxIcon->Append( *ps, bmp );
+                }
             }
         }
         
@@ -3117,10 +3131,10 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         //  not found, so add  it to the list, with a generic bitmap and using the name as description
         // n.b.  This should never happen...
-        if( icon_list && -1 == iconToSelect){
-            m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icon_list->GetBitmap( 0 ) );
-            iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
-        }
+         if( icon_list && -1 == iconToSelect){
+             m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icon_list->GetBitmap( 0 ) );
+             iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
+         }
         
         
         m_bcomboBoxIcon->Select( iconToSelect );
