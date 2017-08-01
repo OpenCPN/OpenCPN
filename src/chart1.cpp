@@ -3454,7 +3454,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     cc1->Refresh( true );
     cc1->Update();
-    wxYield();
+    
+    //  This yield is not necessary, since the Update() proceeds syncronously...
+    //wxYield();
 
     //   Save the saved Screen Brightness
     RestoreScreenBrightness();
