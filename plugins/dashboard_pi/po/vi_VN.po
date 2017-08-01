@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-02-23 09:23-0500\n"
+"PO-Revision-Date: 2017-06-10 12:06-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -19,11 +19,11 @@ msgstr ""
 #: src/clock.cpp:126 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
 #: src/wind_history.cpp:433
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: src/dashboard_pi.cpp:104
 msgid "Position"
-msgstr ""
+msgstr "Vị trí"
 
 #: src/dashboard_pi.cpp:106
 msgid "SOG"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:135 src/dashboard_pi.cpp:137
 msgid "Depth"
-msgstr ""
+msgstr "Độ sâu"
 
 #: src/dashboard_pi.cpp:139 src/dashboard_pi.cpp:141
 msgid "Barometric pressure"
@@ -87,11 +87,11 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:143
 msgid "Water Temp."
-msgstr ""
+msgstr "Nhiệt độ nước."
 
 #: src/dashboard_pi.cpp:145
 msgid "Air Temp."
-msgstr ""
+msgstr "Nhiệt độ không khí."
 
 #: src/dashboard_pi.cpp:147
 msgid "App. Wind Angle"
@@ -99,19 +99,19 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:149
 msgid "True Wind Angle"
-msgstr ""
+msgstr "Góc gió thực"
 
 #: src/dashboard_pi.cpp:151
 msgid "True Wind Direction"
-msgstr ""
+msgstr "Hướng gió thực"
 
 #: src/dashboard_pi.cpp:153
 msgid "True Wind Speed"
-msgstr ""
+msgstr "Vận tốc gió thực"
 
 #: src/dashboard_pi.cpp:155
 msgid "True Wind Dir. & Speed"
-msgstr ""
+msgstr "Hướng gió và vận tốc gió thực"
 
 #: src/dashboard_pi.cpp:157 src/dashboard_pi.cpp:159
 msgid "VMG"
@@ -127,27 +127,27 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:167
 msgid "GPS Status"
-msgstr ""
+msgstr "Trạng thái GPS"
 
 #: src/dashboard_pi.cpp:169
 msgid "Cursor"
-msgstr ""
+msgstr "Con trỏ"
 
 #: src/dashboard_pi.cpp:171
 msgid "Clock"
-msgstr ""
+msgstr "Đồng hồ"
 
 #: src/dashboard_pi.cpp:173
 msgid "Sunrise/Sunset"
-msgstr ""
+msgstr "Bình minh/Hoàng hôn"
 
 #: src/dashboard_pi.cpp:175
 msgid "Moon phase"
-msgstr ""
+msgstr "Kỳ trăng"
 
 #: src/dashboard_pi.cpp:177
 msgid "Wind history"
-msgstr ""
+msgstr "Lịch sử gió"
 
 #: src/dashboard_pi.cpp:179
 msgid "Barometric history"
@@ -155,7 +155,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:181
 msgid "Trip Log"
-msgstr ""
+msgstr "Nhật ký chuyến đi"
 
 #: src/dashboard_pi.cpp:183
 msgid "Sum Log"
@@ -167,7 +167,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:187
 msgid "Pitch"
-msgstr ""
+msgstr "Độ cao"
 
 #: src/dashboard_pi.cpp:189
 msgid "Heel"
@@ -177,7 +177,7 @@ msgstr ""
 #: src/dashboard_pi.cpp:1461 src/dashboard_pi.cpp:1646
 #: src/dashboard_pi.cpp:1685 src/dashboard_pi.cpp:1963
 msgid "Dashboard"
-msgstr ""
+msgstr "Bảng Điều khiển"
 
 #: src/dashboard_pi.cpp:498
 msgid "Dashboard PlugIn for OpenCPN"
@@ -190,36 +190,36 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1622
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "Tùy chỉnh Bảng điều khiển"
 
 #: src/dashboard_pi.cpp:1692
 msgid "show this dashboard"
-msgstr ""
+msgstr "hiển thị Bảng điều khiển"
 
 #: src/dashboard_pi.cpp:1698
 msgid "Caption:"
-msgstr ""
+msgstr "Chú thích:"
 
 #: src/dashboard_pi.cpp:1706
 msgid "Orientation:"
-msgstr ""
+msgstr "Chiều:"
 
 #: src/dashboard_pi.cpp:1710 src/dashboard_pi.cpp:2156
 msgid "Vertical"
-msgstr ""
+msgstr "Chiều dọc"
 
 #: src/dashboard_pi.cpp:1711 src/dashboard_pi.cpp:2158
 msgid "Horizontal"
-msgstr ""
+msgstr "Chiều ngang"
 
 #: src/dashboard_pi.cpp:1718 src/dashboard_pi.cpp:1726
 #: src/dashboard_pi.cpp:2082
 msgid "Instruments"
-msgstr ""
+msgstr "Dụng cụ"
 
 #: src/dashboard_pi.cpp:1734
 msgid "Add"
-msgstr ""
+msgstr "Thêm"
 
 #: src/dashboard_pi.cpp:1747
 msgid "Delete"
@@ -319,15 +319,15 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1837
 msgid "Inches"
-msgstr ""
+msgstr "Inch"
 
 #: src/dashboard_pi.cpp:1843
 msgid "Distance units:"
-msgstr ""
+msgstr "Đơn vị đo khoảng cách:"
 
 #: src/dashboard_pi.cpp:1846
 msgid "Nautical miles"
-msgstr ""
+msgstr "Hải lý"
 
 #: src/dashboard_pi.cpp:1846
 msgid "Statute miles"
@@ -335,55 +335,55 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1846
 msgid "Kilometers"
-msgstr ""
+msgstr "Kilômét"
 
 #: src/dashboard_pi.cpp:1852
 msgid "Wind speed units:"
-msgstr ""
+msgstr "Đơn vị đo vận tốc gió:"
 
 #: src/dashboard_pi.cpp:2065
 msgid "Add instrument"
-msgstr ""
+msgstr "Thêm công cụ"
 
 #: src/dashboard_pi.cpp:2071
 msgid "Select instrument to add:"
-msgstr ""
+msgstr "Chọn công cụ để thêm:"
 
 #: src/dashboard_pi.cpp:2165
 msgid "Preferences..."
-msgstr ""
+msgstr "Tùy chỉnh..."
 
 #: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
 msgid "NE"
-msgstr ""
+msgstr "Đông Bắc"
 
 #: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
 msgid "E"
-msgstr ""
+msgstr "Đông"
 
 #: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
 msgid "SE"
-msgstr ""
+msgstr "Đông Nam"
 
 #: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
 msgid "S"
-msgstr ""
+msgstr "Nam"
 
 #: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
 msgid "SW"
-msgstr ""
+msgstr "Tây Nam"
 
 #: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
 msgid "W"
-msgstr ""
+msgstr "Tây"
 
 #: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
 msgid "NW"
-msgstr ""
+msgstr "Tây Bắc"
 
 #: src/instrument.cpp:236
 msgid " true"
-msgstr ""
+msgstr " đúng"
 
 #: src/instrument.cpp:238
 msgid " mag"
@@ -400,11 +400,11 @@ msgstr ""
 
 #: src/wind_history.cpp:436
 msgid "NNE"
-msgstr ""
+msgstr "BẮC-ÐÔNG BẮC"
 
 #: src/wind_history.cpp:442
 msgid "ENE"
-msgstr ""
+msgstr "ÐÔNG-ÐÔNG BẮC"
 
 #: src/wind_history.cpp:448
 msgid "ESE"

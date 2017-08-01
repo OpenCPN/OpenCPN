@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-03-07 13:50-0500\n"
+"PO-Revision-Date: 2017-06-29 09:29-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Arabic\n"
 "Language: ar_SA\n"
@@ -19,11 +19,11 @@ msgstr ""
 #: src/clock.cpp:126 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
 #: src/wind_history.cpp:433
 msgid "N"
-msgstr ""
+msgstr "شمال"
 
 #: src/dashboard_pi.cpp:104
 msgid "Position"
-msgstr ""
+msgstr "الموقع"
 
 #: src/dashboard_pi.cpp:106
 msgid "SOG"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:108
 msgid "Speedometer"
-msgstr ""
+msgstr "عداد السرعة"
 
 #: src/dashboard_pi.cpp:110
 msgid "COG"
@@ -43,7 +43,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:114
 msgid "GPS Compass"
-msgstr ""
+msgstr "بوصلة تحديد المواقع"
 
 #: src/dashboard_pi.cpp:116
 msgid "True Compass"
@@ -95,7 +95,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:147
 msgid "App. Wind Angle"
-msgstr ""
+msgstr "زاوية الرياح التقريبية"
 
 #: src/dashboard_pi.cpp:149
 msgid "True Wind Angle"
@@ -111,7 +111,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:155
 msgid "True Wind Dir. & Speed"
-msgstr ""
+msgstr "السرعة و الاتجاه الحقيقي للرياح"
 
 #: src/dashboard_pi.cpp:157 src/dashboard_pi.cpp:159
 msgid "VMG"
@@ -123,39 +123,39 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:165
 msgid "GPS in View"
-msgstr ""
+msgstr "عرض نظام تحديد المواقع"
 
 #: src/dashboard_pi.cpp:167
 msgid "GPS Status"
-msgstr ""
+msgstr "حالة GPS"
 
 #: src/dashboard_pi.cpp:169
 msgid "Cursor"
-msgstr ""
+msgstr "مؤشر"
 
 #: src/dashboard_pi.cpp:171
 msgid "Clock"
-msgstr ""
+msgstr "الساعة"
 
 #: src/dashboard_pi.cpp:173
 msgid "Sunrise/Sunset"
-msgstr ""
+msgstr "شروق الشمس/غروب الشمس"
 
 #: src/dashboard_pi.cpp:175
 msgid "Moon phase"
-msgstr ""
+msgstr "اوجه القمر"
 
 #: src/dashboard_pi.cpp:177
 msgid "Wind history"
-msgstr ""
+msgstr "تاريخ الرياح"
 
 #: src/dashboard_pi.cpp:179
 msgid "Barometric history"
-msgstr ""
+msgstr "تاريخ الضغط"
 
 #: src/dashboard_pi.cpp:181
 msgid "Trip Log"
-msgstr ""
+msgstr "سجل الرحلة"
 
 #: src/dashboard_pi.cpp:183
 msgid "Sum Log"
@@ -177,7 +177,7 @@ msgstr ""
 #: src/dashboard_pi.cpp:1461 src/dashboard_pi.cpp:1646
 #: src/dashboard_pi.cpp:1685 src/dashboard_pi.cpp:1963
 msgid "Dashboard"
-msgstr ""
+msgstr "لوحة التحكم"
 
 #: src/dashboard_pi.cpp:498
 msgid "Dashboard PlugIn for OpenCPN"
@@ -190,11 +190,11 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1622
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "اعدادات لوحة المعلومات"
 
 #: src/dashboard_pi.cpp:1692
 msgid "show this dashboard"
-msgstr ""
+msgstr "عرض ضمن لوحة المعلومات"
 
 #: src/dashboard_pi.cpp:1698
 msgid "Caption:"
@@ -202,56 +202,56 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1706
 msgid "Orientation:"
-msgstr ""
+msgstr "التدوير:"
 
 #: src/dashboard_pi.cpp:1710 src/dashboard_pi.cpp:2156
 msgid "Vertical"
-msgstr ""
+msgstr "عمودي"
 
 #: src/dashboard_pi.cpp:1711 src/dashboard_pi.cpp:2158
 msgid "Horizontal"
-msgstr ""
+msgstr "أفقي"
 
 #: src/dashboard_pi.cpp:1718 src/dashboard_pi.cpp:1726
 #: src/dashboard_pi.cpp:2082
 msgid "Instruments"
-msgstr ""
+msgstr "أدوات"
 
 #: src/dashboard_pi.cpp:1734
 msgid "Add"
-msgstr ""
+msgstr "إضافة"
 
 #: src/dashboard_pi.cpp:1747
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: src/dashboard_pi.cpp:1753
 msgid "Up"
-msgstr ""
+msgstr "أعلى"
 
 #: src/dashboard_pi.cpp:1758
 msgid "Down"
-msgstr ""
+msgstr "أسفل"
 
 #: src/dashboard_pi.cpp:1768
 msgid "Appearance"
-msgstr ""
+msgstr "المظهر"
 
 #: src/dashboard_pi.cpp:1770
 msgid "Fonts"
-msgstr ""
+msgstr "الخطوط"
 
 #: src/dashboard_pi.cpp:1776
 msgid "Title:"
-msgstr ""
+msgstr "العنوان:"
 
 #: src/dashboard_pi.cpp:1782
 msgid "Data:"
-msgstr ""
+msgstr "البيانات:"
 
 #: src/dashboard_pi.cpp:1788
 msgid "Label:"
-msgstr ""
+msgstr "عنوان:"
 
 #: src/dashboard_pi.cpp:1794
 msgid "Small:"
@@ -283,7 +283,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "Kts"
-msgstr ""
+msgstr "عقدة"
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "mph"
@@ -291,11 +291,11 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "km/h"
-msgstr ""
+msgstr "كم/ساعة"
 
 #: src/dashboard_pi.cpp:1828 src/dashboard_pi.cpp:1855
 msgid "m/s"
-msgstr ""
+msgstr "متر/ثانية"
 
 #: src/dashboard_pi.cpp:1834
 msgid "Depth units:"
@@ -303,11 +303,11 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1837 src/dashboard_pi.cpp:1846
 msgid "Meters"
-msgstr ""
+msgstr "متر"
 
 #: src/dashboard_pi.cpp:1837
 msgid "Feet"
-msgstr ""
+msgstr "قدم"
 
 #: src/dashboard_pi.cpp:1837
 msgid "Fathoms"
@@ -315,19 +315,19 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1837
 msgid "Centimeters"
-msgstr ""
+msgstr "سنتيمتر"
 
 #: src/dashboard_pi.cpp:1837
 msgid "Inches"
-msgstr ""
+msgstr "بوصة"
 
 #: src/dashboard_pi.cpp:1843
 msgid "Distance units:"
-msgstr ""
+msgstr "وحدة المسافة:"
 
 #: src/dashboard_pi.cpp:1846
 msgid "Nautical miles"
-msgstr ""
+msgstr "ميل بحري"
 
 #: src/dashboard_pi.cpp:1846
 msgid "Statute miles"
@@ -335,11 +335,11 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:1846
 msgid "Kilometers"
-msgstr ""
+msgstr "كيلومتر"
 
 #: src/dashboard_pi.cpp:1852
 msgid "Wind speed units:"
-msgstr ""
+msgstr "وحدة سرعة الرياح:"
 
 #: src/dashboard_pi.cpp:2065
 msgid "Add instrument"
@@ -351,7 +351,7 @@ msgstr ""
 
 #: src/dashboard_pi.cpp:2165
 msgid "Preferences..."
-msgstr ""
+msgstr "الخصائص"
 
 #: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
 msgid "NE"

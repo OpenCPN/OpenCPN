@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-26 22:15-0500\n"
-"PO-Revision-Date: 2017-02-25 13:33-0500\n"
+"PO-Revision-Date: 2017-06-29 09:35-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -163,7 +163,7 @@ msgstr "Итоговый журнал"
 
 #: src/dashboard_pi.cpp:185
 msgid "From Ownship"
-msgstr "Пеленг и Дистанция от Судна"
+msgstr "Пеленг и Дистанция"
 
 #: src/dashboard_pi.cpp:187
 msgid "Pitch"
