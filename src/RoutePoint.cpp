@@ -288,6 +288,8 @@ void RoutePoint::CalculateNameExtents( void )
 
 void RoutePoint::ReLoadIcon( void )
 {
+    if(!pWayPointMan)
+        return;
     bool icon_exists = pWayPointMan->DoesIconExist(m_IconName);
     if( !icon_exists ){
         
