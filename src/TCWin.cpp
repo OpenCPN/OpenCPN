@@ -769,6 +769,8 @@ void TCWin::OnSize( wxSizeEvent& event )
     int y_graph = y * 32 / 100;
     int x_graph_w = x * 8 / 10;
     int y_graph_h = (y * .7)  - (7 * m_button_height / 2);
+    y_graph_h = wxMax( y_graph_h, 2);           // ensure minimum size is positive, at least.
+    
     m_graph_rect = wxRect(x_graph, y_graph, x_graph_w, y_graph_h);
     
     
