@@ -40,6 +40,9 @@
 **             PDS Template 4.15 (U.K. Met Office)
 **          14 Aug 2015:
 **             DRS Template 5.3 (complex packing and spatial differencing)
+**          17 Apr 2017:
+**             removed restriction that grid must be oriented north-to-south to
+**               unpack DRS template 5.3
 **
 ** Purpose: to provide a single C-routine for unpacking GRIB2 messages
 **
@@ -1003,10 +1006,6 @@ void unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 	break;
     case 3:
-	if (grib_msg->md.scan_mode != 0) {
-	  fprintf(stderr,"Unable to decode ddef3 for scan mode %d\n",grib_msg->md.scan_mode);
-	  exit(1);
-	}
 	(grib_msg->grids[grid_num]).gridpoints=(double *)malloc(grib_msg->md.ny*grib_msg->md.nx*sizeof(double));
 	if (grib_msg->md.complex_pack.num_groups > 0) {
 	  if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
