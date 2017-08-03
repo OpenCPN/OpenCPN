@@ -906,6 +906,7 @@ WX_DEFINE_OBJARRAY(ArrayOfChartClassDescriptor);
 
 ChartDatabase::ChartDatabase()
 {
+      bValid = false;
       m_ChartTableEntryDummy.Clear();
 
       UpdateChartClassDescriptorArray();
