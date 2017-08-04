@@ -5135,7 +5135,14 @@ void options::SetInitialSettings(void) {
 
   s.Printf(_T("%d"), g_nAutoHideToolbar);
   pToolbarHideSecs->SetValue(s);
-  
+
+  m_cbNMEADebug->SetValue(false);
+  if(NMEALogWindow::Get().GetTTYWindow()){
+      if(NMEALogWindow::Get().GetTTYWindow()-IsShown()){
+          m_cbNMEADebug->SetValue(true);
+      }
+  }
+      
   //  Serial ports
   
   delete m_pSerialArray;
@@ -5398,6 +5405,16 @@ void options::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
     NMEALogWindow::Get().DestroyWindow();
   } else {
     NMEALogWindow::Get().Create(pParent, 35);
+    
+    // Try to ensure that the log window is a least a little bit visible
+    wxRect logRect(NMEALogWindow::Get().GetPosX(), NMEALogWindow::Get().GetPosY(),
+                   NMEALogWindow::Get().GetSizeW(), NMEALogWindow::Get().GetSizeH());
+                   
+    if(GetRect().Contains(logRect)){
+        NMEALogWindow::Get().SetPos(GetRect().x/2, (GetRect().y + (GetRect().height - logRect.height)/2) );
+        NMEALogWindow::Get().Move();
+    }
+        
     Raise();
   }
 }
