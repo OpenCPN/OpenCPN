@@ -5138,7 +5138,7 @@ void options::SetInitialSettings(void) {
 
   m_cbNMEADebug->SetValue(false);
   if(NMEALogWindow::Get().GetTTYWindow()){
-      if(NMEALogWindow::Get().GetTTYWindow()-IsShown()){
+      if(NMEALogWindow::Get().GetTTYWindow()->IsShown()){
           m_cbNMEADebug->SetValue(true);
       }
   }
