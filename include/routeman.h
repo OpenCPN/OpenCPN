@@ -204,6 +204,8 @@ public:
 private:
       MarkIcon *ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description);
       MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString & key, const wxString & description);
+      wxRect CropImageOnAlpha(wxImage &image);
+      wxImage CreateDimImage( wxImage &image, double factor );
       
       void ProcessUserIcons( ocpnStyle::Style* style );
       RoutePointList    *m_pWayPointList;
@@ -220,6 +222,7 @@ private:
       SortedArrayOfMarkIcon    *m_pExtendedIconArray;
       
       int         m_bitmapSizeForList;
+      ColorScheme m_cs;
 };
 
 #endif
