@@ -735,12 +735,15 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         pow( (double) (r.y - r1.y), 2 ) );
         int pix_radius = (int) lpp;
 
+        extern wxColor GetDimColor(wxColor c);
+        wxColor ring_dim_color = GetDimColor(m_wxcWaypointRangeRingsColour);
+        
         double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
-        wxPen ppPen1( m_wxcWaypointRangeRingsColour, platform_pen_width );
+        wxPen ppPen1( ring_dim_color, platform_pen_width );
         wxBrush saveBrush = dc.GetBrush();
         wxPen savePen = dc.GetPen();
         dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( m_wxcWaypointRangeRingsColour, wxBRUSHSTYLE_TRANSPARENT ) );
+        dc.SetBrush( wxBrush( ring_dim_color, wxBRUSHSTYLE_TRANSPARENT ) );
         
         for( int i = 1; i <= m_iWaypointRangeRingsNumber; i++ )
             dc.StrokeCircle( r.x, r.y, i * pix_radius );
