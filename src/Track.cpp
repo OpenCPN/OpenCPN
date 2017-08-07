@@ -664,7 +664,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     else { // opengl version
         glColor3ub(col.Red(), col.Green(), col.Blue());
         glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
-
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_BLEND );
+        
         int size = 0;
         // convert from linked list to array, allocate array just once
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -691,6 +693,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         glDisableClientState(GL_VERTEX_ARRAY);
 
         delete [] points;
+        glDisable( GL_LINE_SMOOTH );
+        glDisable( GL_BLEND );
+        
     }
 #endif
 
