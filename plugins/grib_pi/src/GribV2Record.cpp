@@ -1404,11 +1404,11 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
           b_len_add_8 = false;
           b_haveReadGRIB = false;
     }
-    ok = readGribSection0_IS(file, b_haveReadGRIB );
+    ok = readGribSection0_IS(file, b_haveReadGRIB ); // Section 0: Indicator Section
     
     int n, len, sec_num;    
     if (ok) {
-        unpackIDS(grib_msg);
+        unpackIDS(grib_msg);  // Section 1: Identification Section
         int off;
         /* find out how many grids are in this message */
         off = grib_msg->offset;
@@ -1449,10 +1449,10 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
         getBits(grib_msg->buffer, &len, grib_msg->offset, 32);
         getBits(grib_msg->buffer, &sec_num, grib_msg->offset +4*8, 8);
         if (skip == false) switch (sec_num) {
-	case 2:
+	case 2: //  Section 2: Local Use Section
              ok = unpackLUS(grib_msg);
              break;
-	case 3:
+	case 3: //  Section 3: Grid Definition Section
 	     ok = unpackGDS(grib_msg);
 	     if (ok) {
 	         Ni = grib_msg->md.nx;
@@ -1499,7 +1499,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
                   }
 	     }
 	     break;
-	case 4:
+	case 4: //  Section 4: Product Definition Section 
 	     ok = unpackPDS(grib_msg);
 	     if (ok) {
 	         //printf("template %d 0 meteo\n", grib_msg->md.pds_templ_num);
@@ -1533,10 +1533,10 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	         
 	     }
 	     break;
-	case 5:
+	case 5: //  Section 5: Data Representation Section 
 	     ok = unpackDRS(grib_msg);
 	     break;
-	case 6:
+	case 6: //  Section 6: Bit-Map Section 
 	     ok = unpackBMS(grib_msg);
 	     if (ok) {
 	        if (grib_msg->md.bmssize != 0) {
@@ -1547,7 +1547,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
                 }
 	     }
 	     break;
-	case 7:
+	case 7:  // Section 7: Data Section
 	     ok = unpackDS(grib_msg,n);
 	     if (ok) {
 	         data = grib_msg->grids[n].gridpoints;
