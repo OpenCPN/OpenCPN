@@ -2038,7 +2038,10 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
         m_pWptListCtrl->EnsureVisible( m_lastWptItem );
     
-    m_pWptListCtrl->SetColumnWidth(0, 4 * m_charWidth);
+    int iwidth, iheight;
+    pWayPointMan->Getpmarkicon_image_list()->GetSize(0, iwidth, iheight);
+        
+    m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
     
     UpdateWptButtons();
 }
