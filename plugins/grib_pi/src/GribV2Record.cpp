@@ -771,7 +771,6 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
     long long miss_val,group_miss_val;
     int max_length;
   } groups;
-  int pad;
   float lastgp,D=pow(10.,grib_msg->md.D),E=pow(2.,grib_msg->md.E);
 
   off=grib_msg->offset+40;
@@ -820,9 +819,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	    getBits(grib_msg->buffer,&groups.ref_vals[n],off,grib_msg->md.pack_width);
 	    off+=grib_msg->md.pack_width;
 	  }
-	  if ( (pad=(off % 8)) > 0) {
-	    off+=8-pad;
-	  }
+	  off = (off + 7) & ~7; // byte boundary padding 
 
 	  groups.widths = new int[grib_msg->md.complex_pack.num_groups];
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
@@ -830,18 +827,14 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
             groups.widths[n] += grib_msg->md.complex_pack.width.ref;
 	    off+=grib_msg->md.complex_pack.width.pack_width;
 	  }
-	  if ( (pad=(off % 8)) > 0) {
-	    off+=8-pad;
-	  }
+	  off = (off + 7) & ~7;
 
 	  groups.lengths= new int[grib_msg->md.complex_pack.num_groups];
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	    getBits(grib_msg->buffer,&groups.lengths[n],off,grib_msg->md.complex_pack.length.pack_width);
 	    off+=grib_msg->md.complex_pack.length.pack_width;
 	  }
-	  if ( (pad=(off % 8)) > 0) {
-	    off+=8-pad;
-	  }
+	  off = (off + 7) & ~7;
 
 	  groups.max_length=0;
 	  for (n=0,l=grib_msg->md.complex_pack.num_groups-1; n < l; ++n) {
