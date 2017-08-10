@@ -803,7 +803,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  else {
 	    groups.miss_val=GRIB_MISSING_VALUE;
 	  }
-	  groups.first_vals=(int *)malloc(grib_msg->md.complex_pack.spatial_diff.order*sizeof(int));
+	  groups.first_vals= new int[grib_msg->md.complex_pack.spatial_diff.order];
 	  for (n=0; n < grib_msg->md.complex_pack.spatial_diff.order; ++n) {
 	    getBits(grib_msg->buffer,&groups.first_vals[n],off,grib_msg->md.complex_pack.spatial_diff.order_vals_width*8);
 	    off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
@@ -814,7 +814,8 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	    groups.omin=-groups.omin;
 	  }
 	  off+=grib_msg->md.complex_pack.spatial_diff.order_vals_width*8;
-	  groups.ref_vals=(int *)malloc(grib_msg->md.complex_pack.num_groups*sizeof(int));
+
+	  groups.ref_vals = new int[grib_msg->md.complex_pack.num_groups];
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	    getBits(grib_msg->buffer,&groups.ref_vals[n],off,grib_msg->md.pack_width);
 	    off+=grib_msg->md.pack_width;
@@ -822,7 +823,8 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  if ( (pad=(off % 8)) > 0) {
 	    off+=8-pad;
 	  }
-	  groups.widths=(int *)malloc(grib_msg->md.complex_pack.num_groups*sizeof(int));
+
+	  groups.widths = new int[grib_msg->md.complex_pack.num_groups];
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	    getBits(grib_msg->buffer,&groups.widths[n],off,grib_msg->md.complex_pack.width.pack_width);
             groups.widths[n] += grib_msg->md.complex_pack.width.ref;
@@ -831,7 +833,8 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  if ( (pad=(off % 8)) > 0) {
 	    off+=8-pad;
 	  }
-	  groups.lengths=(int *)malloc(grib_msg->md.complex_pack.num_groups*sizeof(int));
+
+	  groups.lengths= new int[grib_msg->md.complex_pack.num_groups];
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	    getBits(grib_msg->buffer,&groups.lengths[n],off,grib_msg->md.complex_pack.length.pack_width);
 	    off+=grib_msg->md.complex_pack.length.pack_width;
@@ -839,6 +842,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  if ( (pad=(off % 8)) > 0) {
 	    off+=8-pad;
 	  }
+
 	  groups.max_length=0;
 	  for (n=0,l=grib_msg->md.complex_pack.num_groups-1; n < l; ++n) {
 	    groups.lengths[n]=grib_msg->md.complex_pack.length.ref+groups.lengths[n]*grib_msg->md.complex_pack.length.incr;
@@ -925,12 +929,12 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	    }
 	  }
 	  if (grib_msg->md.complex_pack.spatial_diff.order > 0) {
-	    free(groups.first_vals);
+	    delete [] groups.first_vals;
 	  }
 	  if (grib_msg->md.complex_pack.num_groups > 0) {
-	    free(groups.ref_vals);
-	    free(groups.widths);
-	    free(groups.lengths);
+	    delete [] groups.ref_vals;
+	    delete [] groups.widths;
+	    delete [] groups.lengths;
 	  }
 	}
 	else {
