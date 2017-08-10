@@ -825,6 +825,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  groups.widths=(int *)malloc(grib_msg->md.complex_pack.num_groups*sizeof(int));
 	  for (n=0; n < grib_msg->md.complex_pack.num_groups; ++n) {
 	    getBits(grib_msg->buffer,&groups.widths[n],off,grib_msg->md.complex_pack.width.pack_width);
+            groups.widths[n] += grib_msg->md.complex_pack.width.ref;
 	    off+=grib_msg->md.complex_pack.width.pack_width;
 	  }
 	  if ( (pad=(off % 8)) > 0) {
