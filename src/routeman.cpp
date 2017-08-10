@@ -1480,7 +1480,6 @@ MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & ke
     }
     
     if( newIcon ) {
-        wxLogMessage( _T("add new"));
         pmi = new MarkIcon;
         pmi->icon_name = key;                   // Used for sorting
         m_pLegacyIconArray->Add( pmi );
