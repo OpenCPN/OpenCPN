@@ -6349,11 +6349,6 @@ void PlugInAISDrawGL( wxGLCanvas* glcanvas, const PlugIn_ViewPort &vp )
   AISDraw(dc, ocpn_vp, NULL);
 }
 
-wxColour PlugInGetFontColor(const wxString TextElement)
-{
-  return FontMgr::Get().GetFontColor(TextElement);
-}
-
 bool PlugInSetFontColor(const wxString TextElement, const wxColour color)
 {
   return FontMgr::Get().SetFontColor(TextElement, color);
