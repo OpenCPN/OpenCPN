@@ -765,18 +765,22 @@ static bool unpackDRS(GRIBMessage *grib_msg)
 static bool unpackBMS(GRIBMessage *grib_msg)
 {
   int ind,len,n,bit;
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
 
-/* bit map indicator */
-  getBits(grib_msg->buffer,&ind,grib_msg->offset+40,8);
+  ind = b[5]; /* bit map indicator */
   grib_msg->md.bmssize = 0;
   switch (ind) {
     case 0:
-	getBits(grib_msg->buffer,&len,grib_msg->offset,32);
-	grib_msg->md.bmssize = len -6;
-	len=(len-6)*8;
+	len = uint4(b);
+	if (len < 7)
+	    return false;
+        len -=6;
+	grib_msg->md.bmssize = len;
+	len *= 8;
 	grib_msg->md.bitmap = new unsigned char[len];
 	grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
-	memcpy (grib_msg->md.bms, grib_msg->buffer + (grib_msg->offset/8) + 6, grib_msg->md.bmssize);
+	memcpy (grib_msg->md.bms, b + 6, grib_msg->md.bmssize);
 	for (n=0; n < len; n++) {
 	  getBits(grib_msg->buffer, &bit, grib_msg->offset+48+n, 1);
 	  grib_msg->md.bitmap[n]=bit;
@@ -805,7 +809,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
   } groups;
   float lastgp,D=pow(10.,grib_msg->md.D),E=pow(2.,grib_msg->md.E);
 
-  off=grib_msg->offset+40;
+  off= grib_msg->offset+40;
   switch (grib_msg->md.drs_templ_num) {
     case 0:
 	(grib_msg->grids[grid_num]).gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
@@ -1433,13 +1437,13 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
         unpackIDS(grib_msg);  // Section 1: Identification Section
         int off;
         /* find out how many grids are in this message */
-        off = grib_msg->offset;
-        while (strncmp(&((char *)grib_msg->buffer)[off/8], "7777", 4) != 0) {
-            getBits(grib_msg->buffer, &len, off, 32);
-            getBits(grib_msg->buffer, &sec_num, off+32, 8);
+        off = grib_msg->offset /8;
+        while (strncmp(&((char *)grib_msg->buffer)[off], "7777", 4) != 0) {
+            len = uint4(grib_msg->buffer +off);
+            sec_num = grib_msg->buffer[off+4];
             if (sec_num == 7)
                 grib_msg->num_grids++;
-            off += len*8;
+            off += len;
         }
         if (grib_msg->num_grids != 1) {
             dataType = 255;
