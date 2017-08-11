@@ -447,9 +447,11 @@ static bool unpackGDS(GRIBMessage *grib_msg)
   return true;
 }
 
-static void unpack_stat_proc_time(GRIBMessage *grib_msg, unsigned const char *b)
+static void unpack_stat_proc(GRIBMessage *grib_msg, unsigned const char *b)
 {
   int hh,mm,ss;
+  size_t n, off;
+
   grib_msg->md.stat_proc.eyr = uint2(b);
   grib_msg->md.stat_proc.emo = b[2];
   grib_msg->md.stat_proc.edy = b[3];
@@ -457,12 +459,40 @@ static void unpack_stat_proc_time(GRIBMessage *grib_msg, unsigned const char *b)
   mm = b[5];
   ss = b[6];
   grib_msg->md.stat_proc.etime = hh*10000+mm*100+ss;
+
+  grib_msg->md.stat_proc.num_ranges = b[7];        /* number of time range specifications */
+  grib_msg->md.stat_proc.nmiss      = uint4(b +8); /* number of values missing from process */
+
+  if (grib_msg->md.stat_proc.proc_code != NULL) {
+      delete [] grib_msg->md.stat_proc.proc_code;
+      delete [] grib_msg->md.stat_proc.incr_type;
+      delete [] grib_msg->md.stat_proc.time_unit;
+      delete [] grib_msg->md.stat_proc.time_length;
+      delete [] grib_msg->md.stat_proc.incr_unit;
+      delete [] grib_msg->md.stat_proc.incr_length;
+      grib_msg->md.stat_proc.proc_code=NULL;
+  }
+  grib_msg->md.stat_proc.proc_code= new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.time_unit= new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.time_length= new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.incr_unit= new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
+  off=12;
+  for (n=0; n < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
+      grib_msg->md.stat_proc.proc_code[n]   = b[off];
+      grib_msg->md.stat_proc.incr_type[n]   = b[off +1];
+      grib_msg->md.stat_proc.time_unit[n]   = b[off +2];
+      grib_msg->md.stat_proc.time_length[n] = uint4(b + off +3);
+      grib_msg->md.stat_proc.incr_unit[n]   = b[off +7];
+      grib_msg->md.stat_proc.incr_length[n] = uint4(b +off +8);
+      off += 12;
+  }
 }
 
 static bool unpackPDS(GRIBMessage *grib_msg)
 {
   int num_coords,factor;
-  size_t n,off;
   size_t ofs = grib_msg->offset/8;
   unsigned char *b = grib_msg->buffer +ofs;
 
@@ -506,38 +536,10 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	    grib_msg->md.ens_type    = b[34];
 	    grib_msg->md.perturb_num = b[35];
 	    grib_msg->md.nfcst_in_ensemble = b[36];
+
 	    switch (grib_msg->md.pds_templ_num) {
 		case 11:
-		  unpack_stat_proc_time(grib_msg, b +37);
-
-		  grib_msg->md.stat_proc.num_ranges = b[44];        /* number of time range specifications */
-		  grib_msg->md.stat_proc.nmiss      = uint4(b +45); /* number of values missing from process */
-
-		  if (grib_msg->md.stat_proc.proc_code != NULL) {
-		    delete [] grib_msg->md.stat_proc.proc_code;
-		    delete [] grib_msg->md.stat_proc.incr_type;
-		    delete [] grib_msg->md.stat_proc.time_unit;
-		    delete [] grib_msg->md.stat_proc.time_length;
-		    delete [] grib_msg->md.stat_proc.incr_unit;
-		    delete [] grib_msg->md.stat_proc.incr_length;
-		    grib_msg->md.stat_proc.proc_code=NULL;
-		  }
-		  grib_msg->md.stat_proc.proc_code= new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.time_unit= new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.time_length= new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_unit= new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
-		  off=392;
-		  for (n=0; n < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.proc_code[n],grib_msg->offset+off,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_type[n],grib_msg->offset+off+8,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_unit[n],grib_msg->offset+off+16,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_length[n],grib_msg->offset+off+24,32);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_unit[n],grib_msg->offset+off+56,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_length[n],grib_msg->offset+off+64,32);
-		    off+=96;
-		  }
+		  unpack_stat_proc(grib_msg, b +37);
 		  break;
 	    }
 	    break;
@@ -548,70 +550,12 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 
 	    switch (grib_msg->md.pds_templ_num) {
 		case 12:
-		  unpack_stat_proc_time(grib_msg, b +36);
-
-		  grib_msg->md.stat_proc.num_ranges = b[43];        /* number of time range specifications */
-		  grib_msg->md.stat_proc.nmiss      = uint4(b +44); /* number of values missing from process */
-
-		  if (grib_msg->md.stat_proc.proc_code != 0) {
-		    delete [] grib_msg->md.stat_proc.proc_code;
-		    delete [] grib_msg->md.stat_proc.incr_type;
-		    delete [] grib_msg->md.stat_proc.time_unit;
-		    delete [] grib_msg->md.stat_proc.time_length;
-		    delete [] grib_msg->md.stat_proc.incr_unit;
-		    delete [] grib_msg->md.stat_proc.incr_length;
-		    grib_msg->md.stat_proc.proc_code=NULL;
-		  }
-		  grib_msg->md.stat_proc.proc_code = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.time_unit = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.time_length = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_unit = new int[grib_msg->md.stat_proc.num_ranges];
-		  grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
-		  off=384;
-		  for (n=0; n < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.proc_code[n],grib_msg->offset+off,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_type[n],grib_msg->offset+off+8,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_unit[n],grib_msg->offset+off+16,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_length[n],grib_msg->offset+off+24,32);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_unit[n],grib_msg->offset+off+56,8);
-		    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_length[n],grib_msg->offset+off+64,32);
-		    off+=96;
-		  }
+		  unpack_stat_proc(grib_msg, b +36);
 		  break;
 	    }
 	    break;
 	  case 8:
-            unpack_stat_proc_time(grib_msg, b +34);
-
-	    grib_msg->md.stat_proc.num_ranges = b[41];      /* number of time range specifications */
-	    grib_msg->md.stat_proc.nmiss      = uint4(b +42); /* number of values missing from process */
-
-	    if (grib_msg->md.stat_proc.proc_code != NULL) {
-		delete [] grib_msg->md.stat_proc.proc_code;
-		delete [] grib_msg->md.stat_proc.incr_type;
-		delete [] grib_msg->md.stat_proc.time_unit;
-		delete [] grib_msg->md.stat_proc.time_length;
-		delete [] grib_msg->md.stat_proc.incr_unit;
-		delete [] grib_msg->md.stat_proc.incr_length;
-		grib_msg->md.stat_proc.proc_code=NULL;
-	    }
-            grib_msg->md.stat_proc.proc_code = new int[grib_msg->md.stat_proc.num_ranges];
-            grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
-            grib_msg->md.stat_proc.time_unit = new int[grib_msg->md.stat_proc.num_ranges];
-            grib_msg->md.stat_proc.time_length = new int[grib_msg->md.stat_proc.num_ranges];
-            grib_msg->md.stat_proc.incr_unit = new int[grib_msg->md.stat_proc.num_ranges];
-            grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
-	    off=368;
-	    for (n=0; n  < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.proc_code[n],grib_msg->offset+off,8);
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_type[n],grib_msg->offset+off+8,8);
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_unit[n],grib_msg->offset+off+16,8);
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.time_length[n],grib_msg->offset+off+24,32);
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_unit[n],grib_msg->offset+off+56,8);
-		getBits(grib_msg->buffer,&grib_msg->md.stat_proc.incr_length[n],grib_msg->offset+off+64,32);
-		off+=96;
-	    }
+            unpack_stat_proc(grib_msg, b +34);
 	    break;
 	  case 15:
 	    grib_msg->md.spatial_proc.stat_proc  = b[34];
