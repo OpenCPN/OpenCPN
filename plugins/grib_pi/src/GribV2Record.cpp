@@ -302,7 +302,7 @@ static int int4(unsigned const char *p) {
     return i;
 }
 
-static float ieee2flt(unsigned char *ieee) {
+static float ieee2flt(unsigned const char *ieee) {
     double fmant;
     int exp;
 
@@ -618,15 +618,18 @@ static bool unpackDRS(GRIBMessage *grib_msg)
 	    fprintf(stderr,"Unable to decode missing value substitutes for original value type %d\n",grib_msg->md.orig_val_type);
 	    return false;
 	  }
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.num_groups,grib_msg->offset+248,32);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.width.ref,grib_msg->offset+280,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.width.pack_width,grib_msg->offset+288,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.length.ref,grib_msg->offset+296,32);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.length.incr,grib_msg->offset+328,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.length.last,grib_msg->offset+336,32);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.length.pack_width,grib_msg->offset+368,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.spatial_diff.order,grib_msg->offset+376,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.spatial_diff.order_vals_width,grib_msg->offset+384,8);
+	  grib_msg->md.complex_pack.num_groups = uint4(b +31);
+
+	  grib_msg->md.complex_pack.width.ref        = b[35];
+	  grib_msg->md.complex_pack.width.pack_width = b[36];
+
+	  grib_msg->md.complex_pack.length.ref        = uint4(b +37);
+	  grib_msg->md.complex_pack.length.incr       = b[41];
+	  grib_msg->md.complex_pack.length.last       = uint4(b +42);
+	  grib_msg->md.complex_pack.length.pack_width = b[46];
+
+	  grib_msg->md.complex_pack.spatial_diff.order = b[47];
+	  grib_msg->md.complex_pack.spatial_diff.order_vals_width = b[48];
 	}
 	break;
     default:
