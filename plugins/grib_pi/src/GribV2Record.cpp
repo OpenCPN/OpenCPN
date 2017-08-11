@@ -302,7 +302,7 @@ static int int4(unsigned const char *p) {
     return i;
 }
 
-float ieee2flt(unsigned char *ieee) {
+static float ieee2flt(unsigned char *ieee) {
     double fmant;
     int exp;
 
@@ -371,135 +371,74 @@ static bool unpackLUS(GRIBMessage *grib_msg)
 static bool unpackGDS(GRIBMessage *grib_msg)
 {
   int src,num_in_list;
-  int sign,value;
+  int value;
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
 
-/* source of grid definition */
-  getBits(grib_msg->buffer,&src,grib_msg->offset+40,8);
+  src = b[5]; /* source of grid definition */
   if (src != 0) {
     fprintf(stderr,"Don't recognize predetermined grid definitions");
     return false;
   }
-/* quasi-regular grid indication */
-  getBits(grib_msg->buffer,&num_in_list,grib_msg->offset+80,8);
+
+  num_in_list = b[10];  /* quasi-regular grid indication */
   if (num_in_list > 0) {
     fprintf(stderr,"Unable to unpack quasi-regular grids");
     return false;
   }
-/* grid definition template number */
-  getBits(grib_msg->buffer,&grib_msg->md.gds_templ_num,grib_msg->offset+96,16);
+
+  /* grid definition template number */
+  grib_msg->md.gds_templ_num = uint2(b +12);
   switch (grib_msg->md.gds_templ_num) {
-/* Latitude/longitude grid */
-    case 0:
+    case 0:  /* Latitude/longitude grid */
     case 40:
-/* shape of the earth */
-	getBits(grib_msg->buffer,&grib_msg->md.earth_shape,grib_msg->offset+112,8);
-/* number of latitudes */
-	getBits(grib_msg->buffer,&grib_msg->md.nx,grib_msg->offset+240,32);
-/* number of longitudes */
-	getBits(grib_msg->buffer,&grib_msg->md.ny,grib_msg->offset+272,32);
-/* latitude of first gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+368,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+369,31);
-	grib_msg->md.slat=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.slat=-grib_msg->md.slat;
-/* longitude of first gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+400,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+401,31);
-	grib_msg->md.slon=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.slon=-grib_msg->md.slon;
-/* resolution and component flags */
-	getBits(grib_msg->buffer,&grib_msg->md.rescomp,grib_msg->offset+432,8);
-/* latitude of last gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+440,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+441,31);
-	grib_msg->md.lats.elat=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.lats.elat=-grib_msg->md.lats.elat;
-/* longitude of last gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+472,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+473,31);
-	grib_msg->md.lons.elon=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.lons.elon=-grib_msg->md.lons.elon;
-/* longitude increment */
-	getBits(grib_msg->buffer,&value,grib_msg->offset+504,32);
-	grib_msg->md.xinc.loinc=value/1000000.;
-/* latitude increment */
-	getBits(grib_msg->buffer,&value,grib_msg->offset+536,32);
+        grib_msg->md.earth_shape = b[14];         /* shape of the earth */
+        grib_msg->md.nx          = uint4(b +30);  /* number of latitudes */
+        grib_msg->md.ny          = uint4(b +34);  /* number of longitudes */
+
+	grib_msg->md.slat = int4(b +46)/1000000.; /* latitude of first gridpoint */
+	grib_msg->md.slon = int4(b +50)/1000000.; /* longitude of first gridpoint */
+
+	grib_msg->md.rescomp = b[54];             /* resolution and component flags */
+
+	grib_msg->md.lats.elat = int4(b +55)/1000000.; /* latitude of last gridpoint */
+	grib_msg->md.lons.elon = int4(b +59)/1000000.; /* longitude of last gridpoint */
+
+
+	grib_msg->md.xinc.loinc = uint4(b +63)/1000000.; /* longitude increment */
+
+	value = uint4(b +67); /* XXX latitude increment */
 	if (grib_msg->md.gds_templ_num == 0)
 	  grib_msg->md.yinc.lainc=value/1000000.;
-/* scanning mode flag */
-	getBits(grib_msg->buffer,&grib_msg->md.scan_mode,grib_msg->offset+568,8);
+
+	grib_msg->md.scan_mode = b[71]; /* scanning mode flag */
 	break;
-/* Lambert conformal grid */
-    case 30:
-	getBits(grib_msg->buffer,&grib_msg->md.earth_shape,grib_msg->offset+112,8);
-/* number of points along a parallel */
-	getBits(grib_msg->buffer,&grib_msg->md.nx,grib_msg->offset+240,32);
-/* number of points along a meridian */
-	getBits(grib_msg->buffer,&grib_msg->md.ny,grib_msg->offset+272,32);
-/* latitude of first gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+304,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+305,31);
-	grib_msg->md.slat=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.slat=-grib_msg->md.slat;
-/* longitude of first gridpoint */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+336,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+337,31);
-	grib_msg->md.slon=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.slon=-grib_msg->md.slon;
-/* resolution and component flags */
-	getBits(grib_msg->buffer,&grib_msg->md.rescomp,grib_msg->offset+368,8);
-/* LaD */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+376,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+377,31);
-	grib_msg->md.lats.lad=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.lats.lad=-grib_msg->md.lats.lad;
-/* LoV */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+408,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+409,31);
-	grib_msg->md.lons.lov=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.lons.lov=-grib_msg->md.lons.lov;
-/* x-direction increment */
-	getBits(grib_msg->buffer,&value,grib_msg->offset+440,32);
-	grib_msg->md.xinc.dxinc=value/1000.;
-/* y-direction increment */
-	getBits(grib_msg->buffer,&value,grib_msg->offset+472,32);
-	grib_msg->md.yinc.dyinc=value/1000.;
-/* projection center flag */
-	getBits(grib_msg->buffer,&grib_msg->md.proj_flag,grib_msg->offset+504,8);
-/* scanning mode flag */
-	getBits(grib_msg->buffer,&grib_msg->md.scan_mode,grib_msg->offset+512,8);
-/* latin1 */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+520,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+521,31);
-	grib_msg->md.latin1=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.latin1=-grib_msg->md.latin1;
-/* latin2 */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+552,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+553,31);
-	grib_msg->md.latin2=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.latin2=-grib_msg->md.latin2;
-/* latitude of southern pole of projection */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+584,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+585,31);
-	grib_msg->md.splat=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.splat=-grib_msg->md.splat;
-/* longitude of southern pole of projection */
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+616,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+617,31);
-	grib_msg->md.splon=value/1000000.;
-	if (sign == 1)
-	  grib_msg->md.splon=-grib_msg->md.splon;
+
+    case 30: /* Lambert conformal grid */
+	grib_msg->md.earth_shape = b[14];
+
+	grib_msg->md.nx = uint4(b +30); /* number of points along a parallel */
+	grib_msg->md.ny = uint4(b +34); /* number of points along a meridian */
+
+	grib_msg->md.slat = int4(b + 38)/1000000.; /* latitude of first gridpoint */
+	grib_msg->md.slon = int4(b + 42)/1000000.; /* longitude of first gridpoint */
+
+	grib_msg->md.rescomp = b[46]; /* resolution and component flags */
+
+	grib_msg->md.lats.lad = int4(b +47)/1000000.; /* LaD */
+	grib_msg->md.lons.lov = int4(b +51)/1000000.; /* LoV */
+
+	grib_msg->md.xinc.dxinc = int4(b +55)/1000.; /* x-direction increment */
+	grib_msg->md.yinc.dyinc = int4(b +59)/1000.; /* y-direction increment */
+
+	grib_msg->md.proj_flag = b[63]; /* projection center flag */
+        grib_msg->md.scan_mode = b[64]; /* scanning mode flag */
+
+	grib_msg->md.latin1 = int4(b +65)/1000000.; /* latin1 */
+	grib_msg->md.latin2 = int4(b +69)/1000000.; /* latin2 */
+
+	grib_msg->md.splat = int4(b +73)/1000000.; /* latitude of southern pole of projection */
+	grib_msg->md.splon = int4(b +77)/1000000.; /* longitude of southern pole of projection */
 	break;
     default:
 	fprintf(stderr,"Grid template %d is not understood\n",grib_msg->md.gds_templ_num);
@@ -508,20 +447,32 @@ static bool unpackGDS(GRIBMessage *grib_msg)
   return true;
 }
 
+static void unpack_stat_proc_time(GRIBMessage *grib_msg, unsigned const char *b)
+{
+  int hh,mm,ss;
+  grib_msg->md.stat_proc.eyr = uint2(b);
+  grib_msg->md.stat_proc.emo = b[2];
+  grib_msg->md.stat_proc.edy = b[3];
+  hh = b[4];
+  mm = b[5];
+  ss = b[6];
+  grib_msg->md.stat_proc.etime = hh*10000+mm*100+ss;
+}
+
 static bool unpackPDS(GRIBMessage *grib_msg)
 {
-  int num_coords,factor,sign,value;
-  int hh,mm,ss;
+  int num_coords,factor;
   size_t n,off;
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
 
-/* indication of hybrid coordinate system */
-  getBits(grib_msg->buffer,&num_coords,grib_msg->offset+40,16);
+  num_coords = uint2(b +5);/* indication of hybrid coordinate system */
   if (num_coords > 0) {
     fprintf(stderr,"Unable to decode hybrid coordinates");
     return false;
   }
-/* product definition template number */
-  getBits(grib_msg->buffer,&grib_msg->md.pds_templ_num,grib_msg->offset+56,16);
+
+  grib_msg->md.pds_templ_num = uint2(b +7); /* product definition template number */
   grib_msg->md.stat_proc.num_ranges=0;
   switch (grib_msg->md.pds_templ_num) {
     case 0:
@@ -534,53 +485,34 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	grib_msg->md.ens_type=-1;
 	grib_msg->md.derived_fcst_code=-1;
 	grib_msg->md.spatial_proc.type=-1;
-/* parameter category */
-	getBits(grib_msg->buffer,&grib_msg->md.param_cat,grib_msg->offset +72,8);
-/* parameter number */
-	getBits(grib_msg->buffer,&grib_msg->md.param_num,grib_msg->offset +(8 *10),8);
-/* generating process */
-	getBits(grib_msg->buffer,&grib_msg->md.gen_proc,grib_msg->offset +88,8);
-/* time range indicator*/
-	getBits(grib_msg->buffer,&grib_msg->md.time_unit,grib_msg->offset +136,8);
-/* forecast time */
-	getBits(grib_msg->buffer,&grib_msg->md.fcst_time,grib_msg->offset+144,32);
-/* type of first level */
-	getBits(grib_msg->buffer,&grib_msg->md.lvl1_type,grib_msg->offset+176,8);
-/* value of first level */
-	getBits(grib_msg->buffer,&factor,grib_msg->offset+184,8);
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+192,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+193,31);
-	if (sign == 1)
-	  value=-value;
-	grib_msg->md.lvl1=(double)value/pow(10.,(double)factor);
-/* type of second level */
-	getBits(grib_msg->buffer,&grib_msg->md.lvl2_type,grib_msg->offset+224,8);
-/* value of second level */
-	getBits(grib_msg->buffer,&factor,grib_msg->offset+232,8);
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+240,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+241,31);
-	if (sign == 1)
-	  value=-value;
-	grib_msg->md.lvl2=(double)value/pow(10.,(double)factor);
+	grib_msg->md.param_cat = b[9];         /* parameter category */
+	grib_msg->md.param_num = b[10];        /* parameter number */
+	grib_msg->md.gen_proc  = b[11];        /* generating process */
+
+	grib_msg->md.time_unit = b[17];        /* time range indicator*/
+	grib_msg->md.fcst_time = uint4(b +18); /* forecast time */
+
+	grib_msg->md.lvl1_type = b[22];        /* type of first level */
+	factor = b[23];			       /* value of first level */
+	grib_msg->md.lvl1 = int4(b +24)/pow(10.,(double)factor);
+
+	grib_msg->md.lvl2_type = b[28];        /* type of second level */
+	factor = b[29];                        /* value of second level */
+	grib_msg->md.lvl2 = int4(b +30)/pow(10.,(double)factor);
+
 	switch (grib_msg->md.pds_templ_num) {
 	  case 1:
 	  case 11:
-	    getBits(grib_msg->buffer,&grib_msg->md.ens_type,grib_msg->offset+272,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.perturb_num,grib_msg->offset+280,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.nfcst_in_ensemble,grib_msg->offset+288,8);
+	    grib_msg->md.ens_type    = b[34];
+	    grib_msg->md.perturb_num = b[35];
+	    grib_msg->md.nfcst_in_ensemble = b[36];
 	    switch (grib_msg->md.pds_templ_num) {
 		case 11:
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.eyr,grib_msg->offset+296,16);
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.emo,grib_msg->offset+312,8);
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.edy,grib_msg->offset+320,8);
-		  getBits(grib_msg->buffer,&hh,grib_msg->offset+328,8);
-		  getBits(grib_msg->buffer,&mm,grib_msg->offset+336,8);
-		  getBits(grib_msg->buffer,&ss,grib_msg->offset+344,8);
-		  grib_msg->md.stat_proc.etime=hh*10000+mm*100+ss;
-/* number of time range specifications */
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.num_ranges,grib_msg->offset+352,8);
-/* number of values missing from process */
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.nmiss,grib_msg->offset+360,32);
+		  unpack_stat_proc_time(grib_msg, b +37);
+
+		  grib_msg->md.stat_proc.num_ranges = b[44];        /* number of time range specifications */
+		  grib_msg->md.stat_proc.nmiss      = uint4(b +45); /* number of values missing from process */
+
 		  if (grib_msg->md.stat_proc.proc_code != NULL) {
 		    delete [] grib_msg->md.stat_proc.proc_code;
 		    delete [] grib_msg->md.stat_proc.incr_type;
@@ -611,21 +543,16 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	    break;
 	  case 2:
 	  case 12:
-	    getBits(grib_msg->buffer,&grib_msg->md.derived_fcst_code,grib_msg->offset+272,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.nfcst_in_ensemble,grib_msg->offset+280,8);
+	    grib_msg->md.derived_fcst_code = b[34];
+	    grib_msg->md.nfcst_in_ensemble = b[35];
+
 	    switch (grib_msg->md.pds_templ_num) {
 		case 12:
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.eyr,grib_msg->offset+288,16);
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.emo,grib_msg->offset+304,8);
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.edy,grib_msg->offset+312,8);
-		  getBits(grib_msg->buffer,&hh,grib_msg->offset+320,8);
-		  getBits(grib_msg->buffer,&mm,grib_msg->offset+328,8);
-		  getBits(grib_msg->buffer,&ss,grib_msg->offset+336,8);
-		  grib_msg->md.stat_proc.etime=hh*10000+mm*100+ss;
-/* number of time range specifications */
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.num_ranges,grib_msg->offset+344,8);
-/* number of values missing from process */
-		  getBits(grib_msg->buffer,&grib_msg->md.stat_proc.nmiss,grib_msg->offset+352,32);
+		  unpack_stat_proc_time(grib_msg, b +36);
+
+		  grib_msg->md.stat_proc.num_ranges = b[43];        /* number of time range specifications */
+		  grib_msg->md.stat_proc.nmiss      = uint4(b +44); /* number of values missing from process */
+
 		  if (grib_msg->md.stat_proc.proc_code != 0) {
 		    delete [] grib_msg->md.stat_proc.proc_code;
 		    delete [] grib_msg->md.stat_proc.incr_type;
@@ -655,17 +582,11 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	    }
 	    break;
 	  case 8:
-	    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.eyr,grib_msg->offset+272,16);
-	    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.emo,grib_msg->offset+288,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.edy,grib_msg->offset+296,8);
-	    getBits(grib_msg->buffer,&hh,grib_msg->offset+304,8);
-	    getBits(grib_msg->buffer,&mm,grib_msg->offset+312,8);
-	    getBits(grib_msg->buffer,&ss,grib_msg->offset+320,8);
-	    grib_msg->md.stat_proc.etime=hh*10000+mm*100+ss;
-/* number of time range specifications */
-	    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.num_ranges,grib_msg->offset+328,8);
-/* number of values missing from process */
-	    getBits(grib_msg->buffer,&grib_msg->md.stat_proc.nmiss,grib_msg->offset+336,32);
+            unpack_stat_proc_time(grib_msg, b +34);
+
+	    grib_msg->md.stat_proc.num_ranges = b[41];      /* number of time range specifications */
+	    grib_msg->md.stat_proc.nmiss      = uint4(b +42); /* number of values missing from process */
+
 	    if (grib_msg->md.stat_proc.proc_code != NULL) {
 		delete [] grib_msg->md.stat_proc.proc_code;
 		delete [] grib_msg->md.stat_proc.incr_type;
@@ -693,9 +614,9 @@ static bool unpackPDS(GRIBMessage *grib_msg)
 	    }
 	    break;
 	  case 15:
-	    getBits(grib_msg->buffer,&grib_msg->md.spatial_proc.stat_proc,grib_msg->offset+272,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.spatial_proc.type,grib_msg->offset+280,8);
-	    getBits(grib_msg->buffer,&grib_msg->md.spatial_proc.num_points,grib_msg->offset+288,8);
+	    grib_msg->md.spatial_proc.stat_proc  = b[34];
+	    grib_msg->md.spatial_proc.type       = b[35];
+	    grib_msg->md.spatial_proc.num_points = b[36];
 	    break;
 	}
 	break;
