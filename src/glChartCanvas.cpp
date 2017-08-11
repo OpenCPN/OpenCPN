@@ -1176,6 +1176,9 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
 
     ViewPort cvp = vp;
     LLBBox bbox = region.GetBox();
+    
+    if(!bbox.GetValid())
+        return vp;
 
     /* region.GetBox() will always try to give coordinates from -180 to 180 but in
        the case where the viewport crosses the IDL, we actually want the clipped viewport
