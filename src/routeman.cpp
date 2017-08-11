@@ -1247,6 +1247,7 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
     }
     
     m_bitmapSizeForList = wxMax(w,h);
+    m_bitmapSizeForList = wxMin(100, m_bitmapSizeForList);
     
     
 }
@@ -1828,7 +1829,7 @@ wxBitmap WayPointman::GetIconBitmapForList( int index )
                 else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
                 
                 icon_larger = pmi->iconImage.Rescale( w1, h1 );
-                icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( 0, 0 ) );
+                icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2 ) );
             }
             
             pret = wxBitmap(icon_larger);
@@ -1916,7 +1917,7 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
             else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
             
             icon_larger =  pmi->iconImage.Rescale( w1, h1 );
-            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( 0, 0 ) );
+            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2  ) );
         }
         
         int index = pmarkicon_image_list->Add( wxBitmap(icon_larger));
@@ -1991,7 +1992,7 @@ int WayPointman::GetXIconImageListIndex( const wxBitmap *pbm )
             else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
             
             icon_larger =  pmi->iconImage.Rescale( w1, h1 );
-            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( 0, 0 ) );
+            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2  ) );
         }
         
         int index = pmarkicon_image_list->Add( wxBitmap(icon_larger) );
