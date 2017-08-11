@@ -302,6 +302,21 @@ static int int4(unsigned const char *p) {
     return i;
 }
 
+float ieee2flt(unsigned char *ieee) {
+    double fmant;
+    int exp;
+
+    if ((ieee[0] & 127) == 0 && ieee[1] == 0 && ieee[2] == 0 && ieee[3] == 0)
+        return (float) 0.0;
+
+    exp = ((ieee[0] & 127) << 1) + (ieee[1] >> 7);
+    fmant = (double) ((int) ieee[3] + (int) (ieee[2] << 8) + (int) ((ieee[1] | 128) << 16));
+    if (ieee[0] & 128) 
+        fmant = -fmant;
+
+    return (float) (ldexp(fmant, (int) (exp - 128 - 22)));
+}
+
 static inline void getBits(unsigned const char *buf, int *loc, size_t first, size_t nbBits)
 {
     if (nbBits == 0) {
@@ -698,11 +713,11 @@ static bool unpackDRS(GRIBMessage *grib_msg)
     float dum;
     int idum;
   } u;
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
 
-/* number of packed values */
-  getBits(grib_msg->buffer,&grib_msg->md.num_packed,grib_msg->offset+40,32);
-/* data representation template number */
-  getBits(grib_msg->buffer,&grib_msg->md.drs_templ_num,grib_msg->offset+72,16);
+  grib_msg->md.num_packed = uint4(b +5);    /* number of packed values */
+  grib_msg->md.drs_templ_num = uint2(b +9); /* data representation template number */
   switch (grib_msg->md.drs_templ_num) {
     case 0:
     case 3:
@@ -711,23 +726,17 @@ static bool unpackDRS(GRIBMessage *grib_msg)
     case 40000:
 #endif
    /* cf http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf p. 36*/
-	getBits(grib_msg->buffer,(int *)&grib_msg->md.R,grib_msg->offset+88,32);
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+120,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+121,15);
-	if (sign == 1)
-	  value=-value;
-	grib_msg->md.E=value;
-	getBits(grib_msg->buffer,&sign,grib_msg->offset+136,1);
-	getBits(grib_msg->buffer,&value,grib_msg->offset+137,15);
-	if (sign == 1)
-	  value=-value;
-	grib_msg->md.D=value;
-	grib_msg->md.R/=pow(10.,grib_msg->md.D);
-	getBits(grib_msg->buffer,&grib_msg->md.pack_width,grib_msg->offset+152,8);
-	getBits(grib_msg->buffer,&grib_msg->md.orig_val_type,grib_msg->offset+160,8);
+	grib_msg->md.R = ieee2flt(b+ 11);
+	grib_msg->md.E = int2(b +15);
+	grib_msg->md.D = int2(b +17);
+	grib_msg->md.R /= pow(10.,grib_msg->md.D);
+
+	grib_msg->md.pack_width = b[19];
+	grib_msg->md.orig_val_type = b[20];
+
 	if (grib_msg->md.drs_templ_num == 3) {
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.split_method,grib_msg->offset+168,8);
-	  getBits(grib_msg->buffer,&grib_msg->md.complex_pack.miss_val_mgmt,grib_msg->offset+176,8);
+	  grib_msg->md.complex_pack.split_method = b[21];
+	  grib_msg->md.complex_pack.miss_val_mgmt = b[22];
 	  if (grib_msg->md.orig_val_type == 0) {
 	    getBits(grib_msg->buffer,&u.idum,grib_msg->offset+184,32);
 	    grib_msg->md.complex_pack.primary_miss_sub=u.dum;
