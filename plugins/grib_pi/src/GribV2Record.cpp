@@ -326,37 +326,26 @@ static void unpackIDS(GRIBMessage *grib_msg)
 {
   int length;
   int hh,mm,ss;
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
 
-/* length of the IDS */
-  getBits(grib_msg->buffer,&length,grib_msg->offset,32);
-/* center ID */
-  getBits(grib_msg->buffer,&grib_msg->center_id,grib_msg->offset + 5*8,16);
-/* sub-center ID */
-  getBits(grib_msg->buffer,&grib_msg->sub_center_id,grib_msg->offset +7*8,16);
-/* table version */
-  getBits(grib_msg->buffer,&grib_msg->table_ver,grib_msg->offset+72,8);
-/* local table version */
-  getBits(grib_msg->buffer,&grib_msg->local_table_ver,grib_msg->offset+80,8);
-/* significance of reference time */
-  getBits(grib_msg->buffer,&grib_msg->ref_time_type,grib_msg->offset+88,8);
-/* year */
-  getBits(grib_msg->buffer,&grib_msg->yr,grib_msg->offset+96,16);
-/* month */
-  getBits(grib_msg->buffer,&grib_msg->mo,grib_msg->offset+112,8);
-/* day */
-  getBits(grib_msg->buffer,&grib_msg->dy,grib_msg->offset+120,8);
-/* hours */
-  getBits(grib_msg->buffer,&hh,grib_msg->offset+128,8);
-/* minutes */
-  getBits(grib_msg->buffer,&mm,grib_msg->offset+136,8);
-/* seconds */
-  getBits(grib_msg->buffer,&ss,grib_msg->offset+144,8);
+  length = uint4(b);   /* length of the IDS */
+
+  grib_msg->center_id       = uint2(b +5); /* center ID */
+  grib_msg->sub_center_id   = uint2(b +7); /* sub-center ID */
+  grib_msg->table_ver       = b[9];        /* table version */
+  grib_msg->local_table_ver = b[10];       /* local table version */
+  grib_msg->ref_time_type   = b[11];       /* significance of reference time */
+  grib_msg->yr              = uint2(b+12); /* year */
+  grib_msg->mo              = b[14];       /* month */
+  grib_msg->dy              = b[15];       /* day */
+  hh                        = b[16];       /* hours */
+  mm                        = b[17];       /* minutes */
+  ss                        = b[18];       /* seconds */
   grib_msg->time=hh*10000+mm*100+ss;
-/* production status */
-  getBits(grib_msg->buffer,&grib_msg->prod_status,grib_msg->offset+152,8);
-/* type of data */
-  getBits(grib_msg->buffer,&grib_msg->data_type,grib_msg->offset+160,8);
-  grib_msg->offset+=length*8;
+  grib_msg->prod_status = b[19];  /* production status */
+  grib_msg->data_type   = b[20]; /* type of data */
+  grib_msg->offset += length*8;
 }
 
 static bool unpackLUS(GRIBMessage *grib_msg)
