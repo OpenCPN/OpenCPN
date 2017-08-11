@@ -259,7 +259,50 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 }
 #endif
 
-static inline void getBits(unsigned char *buf, int *loc, size_t first, size_t nbBits)
+static unsigned int uint2(unsigned char const *p) {
+    return (p[0] << 8) + p[1];
+}
+
+static unsigned int uint4(unsigned const char *p) {
+    return ((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+}
+
+#if 0
+static int int1(unsigned const char *p) {
+    int i;
+    if (*p & 0x80) {
+        i = -(*p & 0x7f);
+    }
+    else {
+        i = (int) *p;
+    }
+    return i;
+}
+#endif
+
+static int int2(unsigned const char *p) {
+    int i;
+    if ((p[0] & 0x80)) {
+        i = -(((p[0] & 0x7f) << 8) + p[1]);
+    }
+    else {
+        i = (p[0] << 8) + p[1];
+    }
+    return i;
+}
+
+static int int4(unsigned const char *p) {
+    int i;
+    if ((p[0] & 0x80)) {
+        i = -(((p[0] & 0x7f) << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+    }
+    else {
+        i = (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
+    }
+    return i;
+}
+
+static inline void getBits(unsigned const char *buf, int *loc, size_t first, size_t nbBits)
 {
     if (nbBits == 0) {
         // x >> 32 is undefined behavior, on x86 it returns x
