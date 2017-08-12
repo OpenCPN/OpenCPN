@@ -371,7 +371,6 @@ static bool unpackLUS(GRIBMessage *grib_msg)
 static bool unpackGDS(GRIBMessage *grib_msg)
 {
   int src,num_in_list;
-  int value;
   size_t ofs = grib_msg->offset/8;
   unsigned char *b = grib_msg->buffer +ofs;
 
@@ -387,11 +386,11 @@ static bool unpackGDS(GRIBMessage *grib_msg)
     return false;
   }
 
-  /* grid definition template number */
+  /* grid definition template number Table 3.1 */
   grib_msg->md.gds_templ_num = uint2(b +12);
   switch (grib_msg->md.gds_templ_num) {
-    case 0:  /* Latitude/longitude grid */
-    case 40:
+    case 0:   /* Latitude/Longitude Also called Equidistant Cylindrical or Plate Caree */
+    case 40:  /* Gaussian Latitude/Longitude  */
         grib_msg->md.earth_shape = b[14];         /* shape of the earth */
         grib_msg->md.nx          = uint4(b +30);  /* number of latitudes */
         grib_msg->md.ny          = uint4(b +34);  /* number of longitudes */
@@ -407,9 +406,8 @@ static bool unpackGDS(GRIBMessage *grib_msg)
 
 	grib_msg->md.xinc.loinc = uint4(b +63)/1000000.; /* longitude increment */
 
-	value = uint4(b +67); /* XXX latitude increment */
 	if (grib_msg->md.gds_templ_num == 0)
-	  grib_msg->md.yinc.lainc=value/1000000.;
+	  grib_msg->md.yinc.lainc = uint4(b +67)/1000000.; /* latitude increment */
 
 	grib_msg->md.scan_mode = b[71]; /* scanning mode flag */
 	break;
@@ -571,23 +569,20 @@ static bool unpackPDS(GRIBMessage *grib_msg)
   return true;
 }
 
+//  Section 5: Data Representation Section 
 static bool unpackDRS(GRIBMessage *grib_msg)
 {
-  int sign,value;
-  union {
-    float dum;
-    int idum;
-  } u;
   size_t ofs = grib_msg->offset/8;
   unsigned char *b = grib_msg->buffer +ofs;
 
   grib_msg->md.num_packed = uint4(b +5);    /* number of packed values */
   grib_msg->md.drs_templ_num = uint2(b +9); /* data representation template number */
-  switch (grib_msg->md.drs_templ_num) {
-    case 0:
-    case 3:
+
+  switch (grib_msg->md.drs_templ_num) { // Table 5.0
+    case 0:        // Grid Point Data - Simple Packing 
+    case 3:        // Grid Point Data - Complex Packing and Spatial Differencing
 #ifdef JASPER
-    case 40:
+    case 40:       // Grid Point Data - JPEG2000 Compression
     case 40000:
 #endif
    /* cf http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf p. 36*/
@@ -602,17 +597,13 @@ static bool unpackDRS(GRIBMessage *grib_msg)
 	if (grib_msg->md.drs_templ_num == 3) {
 	  grib_msg->md.complex_pack.split_method = b[21];
 	  grib_msg->md.complex_pack.miss_val_mgmt = b[22];
-	  if (grib_msg->md.orig_val_type == 0) {
-	    getBits(grib_msg->buffer,&u.idum,grib_msg->offset+184,32);
-	    grib_msg->md.complex_pack.primary_miss_sub=u.dum;
-	    getBits(grib_msg->buffer,&u.idum,grib_msg->offset+216,32);
-	    grib_msg->md.complex_pack.secondary_miss_sub=u.dum;
+	  if (grib_msg->md.orig_val_type == 0) { // Table 5.1
+	    grib_msg->md.complex_pack.primary_miss_sub   = ieee2flt(b+ 23);
+	    grib_msg->md.complex_pack.secondary_miss_sub = ieee2flt(b+ 27);
 	  }
 	  else if (grib_msg->md.orig_val_type == 1) {
-	    getBits(grib_msg->buffer,&u.idum,grib_msg->offset+184,32);
-	    grib_msg->md.complex_pack.primary_miss_sub=u.idum;
-	    getBits(grib_msg->buffer,&u.idum,grib_msg->offset+216,32);
-	    grib_msg->md.complex_pack.secondary_miss_sub=u.idum;
+	    grib_msg->md.complex_pack.primary_miss_sub   = uint4(b +23);
+	    grib_msg->md.complex_pack.secondary_miss_sub = uint4(b +27);
 	  }
 	  else {
 	    fprintf(stderr,"Unable to decode missing value substitutes for original value type %d\n",grib_msg->md.orig_val_type);
@@ -639,6 +630,7 @@ static bool unpackDRS(GRIBMessage *grib_msg)
   return true;
 }
 
+//  Section 6: Bit-Map Section 
 static bool unpackBMS(GRIBMessage *grib_msg)
 {
   int ind,len,n,bit;
@@ -675,6 +667,7 @@ static bool unpackBMS(GRIBMessage *grib_msg)
   return true;
 }
 
+// Section 7: Data Section
 static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 {
   int off,n,pval,m,l;
@@ -689,7 +682,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
   off= grib_msg->offset+40;
   switch (grib_msg->md.drs_templ_num) {
     case 0:
-	(grib_msg->grids[grid_num]).gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
+	grib_msg->grids[grid_num].gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
 	for (n=0; n < grib_msg->md.ny*grib_msg->md.nx; n++) {
 	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[n] == 1) {
 	    getBits(grib_msg->buffer,&pval,off,grib_msg->md.pack_width);
@@ -701,7 +694,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 	break;
     case 3:
-	(grib_msg->grids[grid_num]).gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
+	grib_msg->grids[grid_num].gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
 	if (grib_msg->md.complex_pack.num_groups > 0) {
 	  if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
 	    groups.miss_val=pow(2.,grib_msg->md.pack_width)-1;
@@ -846,9 +839,11 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
     case 40000:
         int len, *jvals, cnt;
 	getBits(grib_msg->buffer,&len,grib_msg->offset,32);
+	if (len < 5)
+	    return false;
 	len=len-5;
-	jvals=(int *)malloc(grib_msg->md.ny*grib_msg->md.nx*sizeof(int));
-	(grib_msg->grids[grid_num]).gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
+	jvals= new int [ grib_msg->md.ny*grib_msg->md.nx ];
+	grib_msg->grids[grid_num].gridpoints = new double[grib_msg->md.ny *grib_msg->md.nx];
 	if (len > 0)
 	  dec_jpeg2000((char *)&grib_msg->buffer[grib_msg->offset/8+5],len,jvals);
 	cnt=0;
@@ -861,7 +856,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  else
 	    grib_msg->grids[grid_num].gridpoints[n]=GRIB_MISSING_VALUE;
 	}
-	free(jvals);
+	delete [] jvals;
 	break;
 #endif
   }
@@ -1529,8 +1524,8 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   {
     return false;
   }
-  getBits(temp,&grib_msg->disc,48,8);
-  getBits(temp,&grib_msg->ed_num,56,8);
+  grib_msg->disc = temp[6];
+  grib_msg->ed_num = temp[7];
   
   //  Bail out early if this is not GRIB2
   if(grib_msg->ed_num != 2)
