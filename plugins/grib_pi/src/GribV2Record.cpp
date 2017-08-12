@@ -44,15 +44,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const double GRIB_MISSING_VALUE = GRIB_NOTDEF;
 
+class GRIBStatproc {
+public:
+    int proc_code;
+    int incr_type;
+    int time_unit;
+    int time_length;
+    int incr_unit;
+    int incr_length;
+};
+
 class GRIBMetadata {
 public:
   GRIBMetadata() : bitmap(0), bms(0) {
-    stat_proc.proc_code = 0;
-    stat_proc.incr_type = 0; 
-    stat_proc.time_unit = 0; 
-    stat_proc.time_length = 0;
-    stat_proc.incr_unit = 0;
-    stat_proc.incr_length = 0;
+    stat_proc.t = 0;
     lvl1_type = 0;
     lvl2_type = 0;
     lvl1 = 0.;
@@ -60,12 +65,7 @@ public:
   };
 
   ~GRIBMetadata() {
-    delete [] stat_proc.proc_code;
-    delete [] stat_proc.incr_type;
-    delete [] stat_proc.time_unit;
-    delete [] stat_proc.time_length;
-    delete [] stat_proc.incr_unit;
-    delete [] stat_proc.incr_length;
+    delete [] stat_proc.t;
     delete [] bitmap;
     delete [] bms;
   };
@@ -99,7 +99,7 @@ public:
   struct {
     int eyr,emo,edy,etime;
     int num_ranges, nmiss;
-    int *proc_code,*incr_type,*time_unit,*time_length,*incr_unit,*incr_length;
+    GRIBStatproc *t;
   } stat_proc;
   struct {
     int stat_proc,type,num_points;
@@ -266,19 +266,6 @@ static unsigned int uint2(unsigned char const *p) {
 static unsigned int uint4(unsigned const char *p) {
     return ((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
 }
-
-#if 0
-static int int1(unsigned const char *p) {
-    int i;
-    if (*p & 0x80) {
-        i = -(*p & 0x7f);
-    }
-    else {
-        i = (int) *p;
-    }
-    return i;
-}
-#endif
 
 static int int2(unsigned const char *p) {
     int i;
@@ -461,29 +448,18 @@ static void unpack_stat_proc(GRIBMessage *grib_msg, unsigned const char *b)
   grib_msg->md.stat_proc.num_ranges = b[7];        /* number of time range specifications */
   grib_msg->md.stat_proc.nmiss      = uint4(b +8); /* number of values missing from process */
 
-  if (grib_msg->md.stat_proc.proc_code != NULL) {
-      delete [] grib_msg->md.stat_proc.proc_code;
-      delete [] grib_msg->md.stat_proc.incr_type;
-      delete [] grib_msg->md.stat_proc.time_unit;
-      delete [] grib_msg->md.stat_proc.time_length;
-      delete [] grib_msg->md.stat_proc.incr_unit;
-      delete [] grib_msg->md.stat_proc.incr_length;
-      grib_msg->md.stat_proc.proc_code=NULL;
+  if (grib_msg->md.stat_proc.t != 0) {
+      delete [] grib_msg->md.stat_proc.t;
   }
-  grib_msg->md.stat_proc.proc_code= new int[grib_msg->md.stat_proc.num_ranges];
-  grib_msg->md.stat_proc.incr_type = new int[grib_msg->md.stat_proc.num_ranges];
-  grib_msg->md.stat_proc.time_unit= new int[grib_msg->md.stat_proc.num_ranges];
-  grib_msg->md.stat_proc.time_length= new int[grib_msg->md.stat_proc.num_ranges];
-  grib_msg->md.stat_proc.incr_unit= new int[grib_msg->md.stat_proc.num_ranges];
-  grib_msg->md.stat_proc.incr_length= new int[grib_msg->md.stat_proc.num_ranges];
+  grib_msg->md.stat_proc.t= new GRIBStatproc[grib_msg->md.stat_proc.num_ranges];
   off=12;
   for (n=0; n < (size_t)grib_msg->md.stat_proc.num_ranges; n++) {
-      grib_msg->md.stat_proc.proc_code[n]   = b[off];
-      grib_msg->md.stat_proc.incr_type[n]   = b[off +1];
-      grib_msg->md.stat_proc.time_unit[n]   = b[off +2];
-      grib_msg->md.stat_proc.time_length[n] = uint4(b + off +3);
-      grib_msg->md.stat_proc.incr_unit[n]   = b[off +7];
-      grib_msg->md.stat_proc.incr_length[n] = uint4(b +off +8);
+      grib_msg->md.stat_proc.t[n].proc_code   = b[off];
+      grib_msg->md.stat_proc.t[n].incr_type   = b[off +1];
+      grib_msg->md.stat_proc.t[n].time_unit   = b[off +2];
+      grib_msg->md.stat_proc.t[n].time_length = uint4(b + off +3);
+      grib_msg->md.stat_proc.t[n].incr_unit   = b[off +7];
+      grib_msg->md.stat_proc.t[n].incr_length = uint4(b +off +8);
       off += 12;
   }
 }
@@ -974,7 +950,7 @@ static int mapStatisticalEndTime(GRIBMessage *grid)
     case 0:
 	return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
     case 1:
-         return grid->md.fcst_time +grid->md.stat_proc.time_length[0];
+         return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length;
 	 // return (grid->md.stat_proc.etime/10000- grid->time/10000);
     case 2:
 	return (grid->md.stat_proc.edy -grid->dy);
@@ -1006,10 +982,10 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 	if (grid->md.stat_proc.num_ranges > 1) {
 	  if (center == 7 && grid->md.stat_proc.num_ranges == 2) {
 /* NCEP CFSR monthly grids */
-	    *p2=grid->md.stat_proc.incr_length[0];
-	    *p1=*p2 -grid->md.stat_proc.time_length[1];
-	    *n_avg=grid->md.stat_proc.time_length[0];
-	    switch (grid->md.stat_proc.proc_code[0]) {
+	    *p2=grid->md.stat_proc.t[0].incr_length;
+	    *p1=*p2 -grid->md.stat_proc.t[1].time_length;
+	    *n_avg=grid->md.stat_proc.t[0].time_length;
+	    switch (grid->md.stat_proc.t[0].proc_code) {
 		case 193:
 		  *t_range=113;
 		  break;
@@ -1056,7 +1032,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		  *t_range=140;
 		  break;
 		default:
-		  fprintf(stderr,"Unable to map NCEP statistical process code %d to GRIB1\n",grid->md.stat_proc.proc_code[0]);
+		  fprintf(stderr,"Unable to map NCEP statistical process code %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
 		  return false;
 	    }
 	  }
@@ -1066,11 +1042,11 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 	  }
 	}
 	else {
-	  switch (grid->md.stat_proc.proc_code[0]) {
+	  switch (grid->md.stat_proc.t[0].proc_code) {
 	    case 0:
 	    case 1:
 	    case 4:
-		switch (grid->md.stat_proc.proc_code[0]) {
+		switch (grid->md.stat_proc.t[0].proc_code) {
 		  case 0: /* average */
 		    *t_range=3;
 		    break;
@@ -1083,7 +1059,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		}
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
-		if (grid->md.stat_proc.incr_length[0] == 0)
+		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
 		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
@@ -1096,7 +1072,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		*t_range=2;
 		*p1=grid->md.fcst_time;
 		*p2=mapStatisticalEndTime(grid);
-		if (grid->md.stat_proc.incr_length[0] == 0)
+		if (grid->md.stat_proc.t[0].incr_length == 0)
 		  *n_avg=0;
 		else {
 		  fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
@@ -1105,7 +1081,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		break;
 	    default:
 // patch for NCEP grids
-		if (grid->md.stat_proc.proc_code[0] == 255 && center == 7) {
+		if (grid->md.stat_proc.t[0].proc_code == 255 && center == 7) {
  		  if (grid->disc == 0) {
 		    if (grid->md.param_cat == 0) {
 			switch (grid->md.param_num) {
@@ -1114,7 +1090,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 			    *t_range=2;
 			    *p1=grid->md.fcst_time;
 			    *p2=mapStatisticalEndTime(grid);
-			    if (grid->md.stat_proc.incr_length[0] == 0)
+			    if (grid->md.stat_proc.t[0].incr_length == 0)
 				*n_avg=0;
 			    else {
 				fprintf(stderr,"Unable to map discrete processing to GRIB1\n");
@@ -1126,7 +1102,7 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 		  }
 		}
 		else {
-		  fprintf(stderr,"Unable to map statistical process %d to GRIB1\n",grid->md.stat_proc.proc_code[0]);
+		  fprintf(stderr,"Unable to map statistical process %d to GRIB1\n",grid->md.stat_proc.t[0].proc_code);
 		  return false;
 		}
 	  }
