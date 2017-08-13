@@ -420,7 +420,12 @@ void grib_pi::OnToolbarToolCallback(int id)
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {
             if( m_pGribCtrlBar->m_bGRIBActiveFile->IsOK() ) {
                 ArrayOfGribRecordSets *rsa = m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
-                if(rsa->GetCount() > 1) SetCanvasContextMenuItemViz( m_MenuItem, true);
+                if(rsa->GetCount() > 1) {
+                    SetCanvasContextMenuItemViz( m_MenuItem, true);
+                }
+                if(rsa->GetCount() >= 1) { // XXX Should be only on Show
+                    SendTimelineMessage(m_pGribCtrlBar->TimelineTime());
+                }
             }
         }
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
