@@ -18,6 +18,7 @@ SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "2")
 
 #SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_MACOSX_RPATH "ON")
 
 # Definitions
 add_definitions (

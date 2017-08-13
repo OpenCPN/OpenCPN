@@ -22,11 +22,6 @@
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module
-IF (COMMAND cmake_policy)
-    CMAKE_POLICY(SET CMP0003 OLD)
-    CMAKE_POLICY(SET CMP0005 OLD)
-    CMAKE_POLICY(SET CMP0011 OLD)
-ENDIF (COMMAND cmake_policy)
 
 PROJECT(dashboard_pi)
 
@@ -36,6 +31,7 @@ MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 
 #SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_MACOSX_RPATH "ON")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 
