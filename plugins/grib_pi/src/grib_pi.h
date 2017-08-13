@@ -144,6 +144,7 @@ private:
       // preference data
       bool              m_bGRIBUseHiDef;
       bool              m_bGRIBUseGradualColors;
+      bool		m_bDrawBarbedArrowHead;
       int              m_bTimeZone;
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
