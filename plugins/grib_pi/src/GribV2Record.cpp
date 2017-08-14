@@ -1337,16 +1337,16 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	         Lo2 = grib_msg->md.lons.elon;
 	         Di = grib_msg->md.xinc.loinc;
 	         Dj = grib_msg->md.yinc.lainc;
-                 if (Lo1>=0 && Lo1<=180 && Lo2<0)
-                     Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
-	                     
-	         while ( Lo1> Lo2   &&  Di >0) {   // horizontal size > 360 °
-	             Lo1 -= 360.0;
-                 }
                  scanFlags = grib_msg->md.scan_mode;
                  isScanIpositive = (scanFlags&0x80) ==0;
                  isScanJpositive = (scanFlags&0x40) !=0;
                  isAdjacentI     = (scanFlags&0x20) ==0;
+                 if (Lo1>=0 && Lo1<=180 && Lo2<0)
+                     Lo2 += 360.0;    // cross the 180 deg meridien,beetwen alaska and russia
+	                     
+	         if (isScanIpositive) while ( Lo1> Lo2 ) {   // horizontal size > 360 °
+	             Lo1 -= 360.0;
+                 }
                  if (Lo2 > Lo1) {
                      lonMin = Lo1;
                      lonMax = Lo2;
@@ -1437,8 +1437,10 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 
     //ok = false;
 if (false) {
+//if (true) {
 printf("==== GV2 %d\n", ok);
 printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1,Lo2,La1,La2);
+printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", grib_msg->md.slon, grib_msg->md.lons.elon, grib_msg->md.slat, grib_msg->md.lats.elat);
 printf("Ni=%d Nj=%d\n", Ni,Nj);
 printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di,Dj);
 printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",isScanIpositive,isScanJpositive,isAdjacentI );
