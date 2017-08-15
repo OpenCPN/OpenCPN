@@ -102,6 +102,12 @@ void GribReader::storeRecordInMap(GribRecord *rec)
 }
 
 //---------------------------------------------------------------------------------
+static bool RecordIsWind(GribRecord *rec)
+{
+  return rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY ||
+         rec->getDataType()==GRB_WIND_DIR || rec->getDataType()==GRB_WIND_SPEED;
+}
+
 void GribReader::readAllGribRecords()
 {
     //--------------------------------------------------------
@@ -236,14 +242,11 @@ void GribReader::readAllGribRecords()
 */
 
                         if (//-----------------------------------------
-                            (rec->getDataType()==GRB_PRESSURE
-                            && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
+                            (rec->getDataType()==GRB_PRESSURE && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
 
-                            || ( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-                            && rec->getLevelType()==LV_ABOV_GND
-                            && rec->getLevelValue()==10)
+                            || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
 
-                            || (( rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)//wind at x hpa
+                            || ( RecordIsWind(rec) //wind at x hpa
 							&& rec->getLevelType()==LV_ISOBARIC
                             && (   rec->getLevelValue()==850
 								|| rec->getLevelValue()==700
@@ -257,8 +260,7 @@ void GribReader::readAllGribRecords()
                             && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
                             storeRecordInMap(rec);
 
-                        else if( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-                                  && rec->getLevelType()==LV_GND_SURF)
+                        else if( RecordIsWind(rec) && rec->getLevelType()==LV_GND_SURF)
                               storeRecordInMap(rec);
 
                         else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at 2m
@@ -404,101 +406,6 @@ void  GribReader::copyMissingWaveRecords (int dataType, int levelType, int level
 		}
 	}
 }
-
-#if 0
-bool GribReader::get_gribY(GribRecord *&ret, int dataType, int levelType, int levelValue, time_t date)
-{
-    switch (dataType) {
-    case GRB_WIND_VX:
-        ret = getGribRecord( GRB_WIND_VY, levelType, levelValue, date );
-        if (ret == 0 || ret->isOk() == false)
-            return false;
-        break;
-    case GRB_UOGRD:
-        ret = getGribRecord( GRB_VOGRD, levelType, levelValue, date );
-        if (ret == 0 || ret->isOk() == false)
-            return false;
-        break;
-    }
-    return true;
-}
-
-void  GribReader::InterpolateMissingRecords (int dataType, int levelType, int levelValue)
-{
-	std::set<time_t>  setdates = getListDates();
-	std::set<time_t>::iterator itd, itd2;
-    GribRecord *REC1 = 0;
-    GribRecord *REC1Y = 0;
-    time_t date1;
-    itd=setdates.begin();
-	while (itd!=setdates.end())
-	{
-		time_t date = *itd;
-		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
-		if ( rec && rec->isOk() ) {
-		    REC1 = 0;
-		    if (get_gribY(REC1Y, dataType, levelType, levelValue, date) == true)
-		    {
-    		    // there's a valid record or no need for one
-	    	    REC1  = rec;
-		        date1 = date;
-		        itd ++;
-		        continue;
-            }
-		}
-		else if (REC1 == 0 || REC1->isOk() == false)
-		{
-		    // no record but no first record
-		    itd++;
-		    continue;
-        }
-        // the record is empty
-		itd2 = itd;
-        time_t date2 = *itd2;
-        itd2 ++;	// next date
-        int cnt = 2;
-		while (itd2 != setdates.end()) {
-			GribRecord *rec2 = getGribRecord( dataType, levelType, levelValue, *itd2 );
-			GribRecord *rec2y;
-			if (rec2 && rec2->isOk() ) {
-		        if (get_gribY(rec2y, dataType, levelType, levelValue, *itd2) == true)
-		        {
-		            double interp = 1./(double)cnt;
-		            double j = 1.;
-		            for (; itd != itd2; itd++)
-		            {
-    		            GribRecord *r2y = 0, *ret;
-	    	            switch (dataType) { 
-		                case GRB_WIND_VX:
-		                case GRB_UOGRD:
-		                    ret = GribRecord::Interpolated2DRecord(r2y, *REC1, *REC1Y, *rec2, *rec2y, interp*j);
-		                    break;
-                        default:
-                            ret = GribRecord::InterpolatedRecord(*REC1, *rec2, interp*j);
-                            break;
-                        }
-                        if (ret) {
-					        ret->setRecordCurrentDate (*itd);
-					        storeRecordInMap (ret);
-					        if (r2y) {
-					            r2y->setRecordCurrentDate (*itd);
-					            storeRecordInMap (r2y);
-                            }
-                        }
-                        j += 1.;
-
-                    }
-					break;
-                }
-			}
-			cnt++;
-			itd2 ++;	// next date
-		}
-		if (itd2 == setdates.end())
-		    break;
-	}
-}
-#endif
 
 void  GribReader::computeAccumulationRecords (int dataType, int levelType, int levelValue)
 {

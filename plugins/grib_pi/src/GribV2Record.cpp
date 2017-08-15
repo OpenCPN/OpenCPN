@@ -843,10 +843,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 {
     zuchar ret = 255;
     // printf("search %d %d %d\n", productDiscipline, dataCat,  dataNum);
-    switch (productDiscipline) {
-    case 0:
+    switch (productDiscipline) { // TABLE 4.2
+    case 0:      // Meteorological products
         switch (dataCat) {
-        case 0:
+        case 0:  // Temperature
             switch (dataNum) {
             case 0: ret = GRB_TEMP; break; // DATA_TO_GRBV2[DATA_TEMP] = grb2DataType(0,0,0);
             case 2: ret= GRB_TPOT; break;  // DATA_TO_GRBV2[DATA_TEMP_POT] = grb2DataType(0,0,2);
@@ -855,7 +855,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 6: ret = GRB_DEWPOINT; break; //DATA_TO_GRBV2[DATA_DEWPOINT] = grb2DataType(0,0,6);
             }
             break;
-        case 1: // dataCat
+        case 1: // dataCat Moisture
             switch (dataNum) {
             case 0: ret = GRB_HUMID_SPEC; break; //DATA_TO_GRBV2[DATA_HUMID_SPEC] = grb2DataType(0,1,0);
             case 1: ret = GRB_HUMID_REL; break; // DATA_TO_GRBV2[DATA_HUMID_REL] = grb2DataType(0,1,1);
@@ -867,8 +867,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 195: ret = GRB_SNOW_CATEG; break; //DATA_TO_GRBV2[DATA_SNOW_CATEG] = grb2DataType(0,1,195);
             }
             break;
-        case 2: // dataCat
+        case 2: // dataCat  Momentum 
             switch (dataNum) {
+            case 0: ret = GRB_WIND_DIR; break;
+            case 1: ret = GRB_WIND_SPEED; break;
             case 2: ret = GRB_WIND_VX; break; // DATA_TO_GRBV2[DATA_WIND_VX] = grb2DataType(0,2,2);
             case 3: ret = GRB_WIND_VY; break; // DATA_TO_GRBV2[DATA_WIND_VY] = grb2DataType(0,2,3);
             case 22: ret = GRB_WIND_GUST; break; // 
@@ -894,7 +896,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             break;
         }
         break;
-    case 10: // productDiscipline
+    case 10: // productDiscipline Oceanographic products 
         switch (dataCat) {
         // waves
         case 0:
@@ -921,13 +923,17 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             }
             break;
 
-        case 1:
+        case 1: // Currents 
             switch (dataNum) {
+            #if 0
+                case 0: ret = GRB_CUR_DIR; break;
+                case 1: ret = GRB_CUR_SPEED; break;
+            #endif
                 case 2: ret = GRB_UOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
                 case 3: ret = GRB_VOGRD; break; // DATA_TO_GRBV2[DATA_CURRENT_VY] = grb2DataType(10,1,3);
             }
             break;
-         case 3:
+         case 3: // Surface Properties
             switch (dataNum) {
                 case 0: ret = GRB_WTMP; break; // DATA_TO_GRBV2[DATA_CURRENT_VX] = grb2DataType(10,1,2);
             }
