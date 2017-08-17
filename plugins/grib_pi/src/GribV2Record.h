@@ -42,6 +42,10 @@ class GribV2Record : public GribRecord
 
         ~GribV2Record();
 
+        // return a new record for next data set
+        GribV2Record *GribV2NextDataSet(ZUFILE* file, int id_);
+        bool hasMoreDataSet() { return false;};
+
     private:
         zuint  periodSeconds(zuchar unit, zuint P1, zuchar P2, zuchar range);
         class  GRIBMessage *grib_msg;

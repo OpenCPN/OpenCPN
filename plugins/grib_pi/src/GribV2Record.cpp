@@ -139,9 +139,8 @@ public:
 
 class  GRIBMessage {
 public:
-  GRIBMessage() : buffer(0), grids(0) {};
+  GRIBMessage() : buffer(0) {};
   ~GRIBMessage() { 
-      delete [] grids; 
       delete [] buffer;
   };
   unsigned char *buffer;
@@ -152,7 +151,7 @@ public:
   int prod_status,data_type;
   GRIBMetadata md;
   size_t num_grids;
-  GRIB2Grid *grids;
+  GRIB2Grid grids;
 };
 
 
@@ -669,7 +668,7 @@ static bool unpackBMS(GRIBMessage *grib_msg)
 }
 
 // Section 7: Data Section
-static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
+static bool unpackDS(GRIBMessage *grib_msg)
 {
   int off,pval, l;
   unsigned int n, m;
@@ -687,15 +686,15 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
   off= grib_msg->offset+40;
   switch (grib_msg->md.drs_templ_num) {
     case 0:
-	grib_msg->grids[grid_num].gridpoints= new double[grib_msg->md.ny *grib_msg->md.nx];
+	grib_msg->grids.gridpoints = new double[grib_msg->md.ny *grib_msg->md.nx];
 	for (l=0; l < grib_msg->md.ny*grib_msg->md.nx; l++) {
 	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
 	    getBits(grib_msg->buffer,&pval,off,grib_msg->md.pack_width);
-	    grib_msg->grids[grid_num].gridpoints[l]=grib_msg->md.R+pval*E/D;
+	    grib_msg->grids.gridpoints[l]=grib_msg->md.R+pval*E/D;
 	    off+=grib_msg->md.pack_width;
 	  }
 	  else
-	    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+	    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 	}
 	break;
     case 3:
@@ -714,10 +713,10 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 	// fall through
     case 2:
-	grib_msg->grids[grid_num].gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
+	grib_msg->grids.gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
 	if (grib_msg->md.complex_pack.num_groups == 0) {
 	  for (l = 0; l < grib_msg->md.ny*grib_msg->md.nx; ++l) {
- 	    grib_msg->grids[grid_num].gridpoints[l] = GRIB_MISSING_VALUE;
+ 	    grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
 	  }
 	  break;
 	}
@@ -773,16 +772,16 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 		}
 		for (int i = 0; i < groups.lengths[n]; ) {
 		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
-                    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
                   }
                   else {
                     getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
                     off+=groups.widths[n];
 		      if (pval == groups.group_miss_val) {
-                         grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                         grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 		      }
 		      else {
-		          grib_msg->grids[grid_num].gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
+		          grib_msg->grids.gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
                     }
                     ++i;
 		  }
@@ -792,14 +791,14 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  else { // constant group XXX bitmap?
             for (int i=0; i < groups.lengths[n]; ) {
 		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
-		    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+		    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 		  }
 		  else {
 		    if (groups.ref_vals[n] == groups.miss_val) {
-                      grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                      grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
                     }
                     else {
-		        grib_msg->grids[grid_num].gridpoints[l]=groups.ref_vals[n]+groups.omin;
+		        grib_msg->grids.gridpoints[l]=groups.ref_vals[n]+groups.omin;
                     }
 		    ++i;
 		  }
@@ -809,7 +808,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 
 	for (; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
-	  grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+	  grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 	}
 
 	if (grib_msg->md.drs_templ_num == 3) {
@@ -817,10 +816,10 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
       	      for (n=grib_msg->md.complex_pack.spatial_diff.order-1; n > 0; --n) {
   	         lastgp=groups.first_vals[n]-groups.first_vals[n-1];
   	         for (l=0,m=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
-  	            if (grib_msg->grids[grid_num].gridpoints[l] != GRIB_MISSING_VALUE) {
+  	            if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
                        if (m >= grib_msg->md.complex_pack.spatial_diff.order) {
-                          grib_msg->grids[grid_num].gridpoints[l]+=lastgp;
-                          lastgp=grib_msg->grids[grid_num].gridpoints[l];
+                          grib_msg->grids.gridpoints[l]+=lastgp;
+                          lastgp=grib_msg->grids.gridpoints[l];
                        }
                        ++m;
                     }
@@ -828,14 +827,14 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
               }
   	   }
   	   for (l=0,m=0,lastgp=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
-  	     if (grib_msg->grids[grid_num].gridpoints[l] != GRIB_MISSING_VALUE) {
+  	     if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
   	   	if (m < grib_msg->md.complex_pack.spatial_diff.order) {
-  	   	  grib_msg->grids[grid_num].gridpoints[l]=grib_msg->md.R+groups.first_vals[m]*E/D;
+  	   	  grib_msg->grids.gridpoints[l]=grib_msg->md.R+groups.first_vals[m]*E/D;
   	   	  lastgp=grib_msg->md.R*D/E+groups.first_vals[m];
   	   	}
   	   	else {
-  	   	  lastgp+=grib_msg->grids[grid_num].gridpoints[l];
-  	   	  grib_msg->grids[grid_num].gridpoints[l]=lastgp*E/D;
+  	   	  lastgp+=grib_msg->grids.gridpoints[l];
+  	   	  grib_msg->grids.gridpoints[l]=lastgp*E/D;
   	   	}
   	   	++m;
   	     }
@@ -845,8 +844,8 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
            }
 	}
 	else for (l=0; l < grib_msg->md.nx*grib_msg->md.ny; ++l) {
-  	   if (grib_msg->grids[grid_num].gridpoints[l] != GRIB_MISSING_VALUE) {
-                grib_msg->grids[grid_num].gridpoints[l]= grib_msg->md.R+grib_msg->grids[grid_num].gridpoints[l]*E/D;
+  	   if (grib_msg->grids.gridpoints[l] != GRIB_MISSING_VALUE) {
+                grib_msg->grids.gridpoints[l]= grib_msg->md.R+grib_msg->grids.gridpoints[l]*E/D;
            }
 	}
 	delete [] groups.ref_vals;
@@ -864,7 +863,7 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	len=len-5;
 	npoints = grib_msg->md.ny*grib_msg->md.nx;
 	jvals= new int[npoints];
-	(grib_msg->grids[grid_num]).gridpoints= new double[npoints];
+	grib_msg->grids.gridpoints= new double[npoints];
 	if (len > 0)
 	  dec_jpeg2000((char *)&grib_msg->buffer[grib_msg->offset/8+5],len,jvals);
 	cnt=0;
@@ -872,10 +871,10 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	  if (grib_msg->md.bitmap == NULL || grib_msg->md.bitmap[l] == 1) {
 	    if (len == 0)
 		jvals[cnt]=0;
-	    grib_msg->grids[grid_num].gridpoints[l]=grib_msg->md.R+jvals[cnt++]*E/D;
+	    grib_msg->grids.gridpoints[l]=grib_msg->md.R+jvals[cnt++]*E/D;
 	  }
 	  else
-	    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+	    grib_msg->grids.gridpoints[l]=GRIB_MISSING_VALUE;
 	}
 	delete [] jvals;
 	break;
@@ -1367,7 +1366,6 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     idGrid   = 0; // FIXME data1[6];
     productDiscipline = grib_msg->disc;
 
-    grib_msg->grids = new GRIB2Grid [grib_msg->num_grids];
     n = 0;
     bool skip = false;
     while (strncmp(&((char *)grib_msg->buffer)[grib_msg->offset/8],"7777",4) != 0) {
@@ -1473,10 +1471,10 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     }
 	     break;
 	case 7:  // Section 7: Data Section
-	     ok = unpackDS(grib_msg,n);
+	     ok = unpackDS(grib_msg);
 	     if (ok) {
-	         data = grib_msg->grids[n].gridpoints;
-	         grib_msg->grids[n].gridpoints = 0;
+	         data = grib_msg->grids.gridpoints;
+	         grib_msg->grids.gridpoints = 0;
 	     }
 	     n++;
 	     break;
@@ -1536,16 +1534,6 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
   if (grib_msg->buffer != NULL) {
     delete [] grib_msg->buffer;
     grib_msg->buffer=NULL;
-  }
-  else {
-    grib_msg->grids=NULL;
-  }
-  if (grib_msg->grids != NULL) {
-    for (n = 0; n < grib_msg->num_grids; n++) {
-	delete grib_msg->grids[n].gridpoints;
-    }
-    delete [] grib_msg->grids;
-    grib_msg->grids=NULL;
   }
   grib_msg->num_grids = 0;
 
