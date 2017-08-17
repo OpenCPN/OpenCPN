@@ -1286,96 +1286,30 @@ void  GribV2Record::translateDataType()
     // this->print();
 }
 
-GribV2Record::GribV2Record(ZUFILE* file, int id_)
+// -------------------------------------
+void GribV2Record::readDataSet(ZUFILE* file)
 {
-    id = id_;
-    seekStart = zu_tell(file);           // moved to section 0 read
+    bool skip = false;
+    bool DS = false;
+    int len, sec_num;
+
     data    = NULL;
     BMSbits = NULL;
     hasBMS = false;
-    eof     = false;
     knownData = false;
     IsDuplicated = false;
-    long start = seekStart;
-    
-    grib_msg = new GRIBMessage();
 
-    //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
-    char strgrib[5];
-    if (zu_read(file, strgrib, 4) != 4)
-    {
-            ok = false;
-            eof = true;
-            return;
-    }
-
-    bool b_haveReadGRIB = false;         // already read the "GRIB" of section 0 ??
-
-    if (strncmp(strgrib, "GRIB", 4) != 0)
-            b_len_add_8 = true;
-    else
-    {
-            b_len_add_8 = false;
-            b_haveReadGRIB = true;
-    }
-
-    // Another special case, where zero padding is used between records.
-    if((strgrib[0] == 0) &&
-        (strgrib[1] == 0) &&
-        (strgrib[2] == 0) &&
-        (strgrib[3] == 0))
-    {
-          b_len_add_8 = false;
-          b_haveReadGRIB = false;
-    }
-    ok = readGribSection0_IS(file, b_haveReadGRIB ); // Section 0: Indicator Section
-    
-    int n, len, sec_num;    
-    if (ok) {
-        unpackIDS(grib_msg);  // Section 1: Identification Section
-        int off;
-        /* find out how many grids are in this message */
-        off = grib_msg->offset /8;
-        while (strncmp(&((char *)grib_msg->buffer)[off], "7777", 4) != 0) {
-            len = uint4(grib_msg->buffer +off);
-            sec_num = grib_msg->buffer[off+4];
-            if (sec_num == 7)
-                grib_msg->num_grids++;
-            off += len;
-        }
-        if (grib_msg->num_grids != 1) {
-            dataType = 255;
-            return;
-        }
-    }
-    else {
-        // seek back if V1
-        zu_seek(file, start, SEEK_SET);
-        return;
-    }   
-    refyear  = grib_msg->yr;
-    refmonth = grib_msg->mo;
-    refday   = grib_msg->dy;
-    refhour  = grib_msg->time /10000;
-    refminute = (grib_msg->time/100) % 100;
-    refDate = makeDate(refyear,refmonth,refday,refhour,refminute,0);
-    sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear,refmonth,refday,refhour,refminute);
-
-    idCenter = grib_msg->center_id;
-    idModel  = grib_msg->table_ver;
-    idGrid   = 0; // FIXME data1[6];
-    productDiscipline = grib_msg->disc;
-
-    n = 0;
-    bool skip = false;
     while (strncmp(&((char *)grib_msg->buffer)[grib_msg->offset/8],"7777",4) != 0) {
+        DS = false;
         getBits(grib_msg->buffer, &len, grib_msg->offset, 32);
         getBits(grib_msg->buffer, &sec_num, grib_msg->offset +4*8, 8);
-        if (skip == false) switch (sec_num) {
+        switch (sec_num) {
 	case 2: //  Section 2: Local Use Section
+	     if (skip == true)  break;
              ok = unpackLUS(grib_msg);
              break;
 	case 3: //  Section 3: Grid Definition Section
+	     if (skip == true)  break;
 	     ok = unpackGDS(grib_msg);
 	     if (ok) {
 	         Ni = grib_msg->md.nx;
@@ -1423,9 +1357,10 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     }
 	     break;
 	case 4: //  Section 4: Product Definition Section 
+	     if (skip == true)  break;
 	     ok = unpackPDS(grib_msg);
 	     if (ok) {
-	         //printf("template %d 0 meteo\n", grib_msg->md.pds_templ_num);
+	         // printf("template %d 0 meteo data cat %d data num %d\n", grib_msg->md.pds_templ_num, grib_msg->md.param_cat, grib_msg->md.param_num);
 	         productTemplate = grib_msg->md.pds_templ_num;
 	         dataCat = grib_msg->md.param_cat;
                  dataNum = grib_msg->md.param_num;
@@ -1457,9 +1392,11 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     }
 	     break;
 	case 5: //  Section 5: Data Representation Section 
+	     if (skip == true)  break;
 	     ok = unpackDRS(grib_msg);
 	     break;
 	case 6: //  Section 6: Bit-Map Section 
+	     if (skip == true)  break;
 	     ok = unpackBMS(grib_msg);
 	     if (ok) {
 	        if (grib_msg->md.bmssize != 0) {
@@ -1471,19 +1408,22 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 	     }
 	     break;
 	case 7:  // Section 7: Data Section
-	     ok = unpackDS(grib_msg);
-	     if (ok) {
-	         data = grib_msg->grids.gridpoints;
-	         grib_msg->grids.gridpoints = 0;
+	     if (skip == false) {
+    	         ok = unpackDS(grib_msg);
+    	         if (ok) {
+	             data = grib_msg->grids.gridpoints;
+	             grib_msg->grids.gridpoints = 0;
+                 }
 	     }
-	     n++;
+	     if (grib_msg->num_grids != 1)
+    	         DS = true;
 	     break;
         }
         grib_msg->offset += len*8;
-        if (ok == false)
+        if (ok == false || DS == true )
             break;
     }
-
+    
     //ok = false;
 if (false) {
 //if (true) {
@@ -1502,8 +1442,106 @@ printf("hasBMS=%d\n", hasBMS);
 		setDataType(dataType);
         }
     }
-    delete grib_msg;
-    grib_msg = 0;
+    if (!ok || !DS || strncmp(&((char *)grib_msg->buffer)[grib_msg->offset/8],"7777",4) == 0) {
+        delete grib_msg;
+        grib_msg = 0;
+    }
+}
+
+// -----------------
+GribV2Record::GribV2Record(ZUFILE* file, int id_)
+{
+    id = id_;
+    seekStart = zu_tell(file);           // moved to section 0 read
+    data    = NULL;
+    BMSsize = 0;
+    BMSbits = NULL;
+    hasBMS = false;
+    eof     = false;
+    knownData = false;
+    IsDuplicated = false;
+    long start = seekStart;
+
+    grib_msg = new GRIBMessage();
+
+    //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
+    char strgrib[5];
+    if (zu_read(file, strgrib, 4) != 4)
+    {
+            ok = false;
+            eof = true;
+            return;
+    }
+
+    bool b_haveReadGRIB = false;         // already read the "GRIB" of section 0 ??
+
+    if (strncmp(strgrib, "GRIB", 4) != 0)
+            b_len_add_8 = true;
+    else
+    {
+            b_len_add_8 = false;
+            b_haveReadGRIB = true;
+    }
+
+    // Another special case, where zero padding is used between records.
+    if((strgrib[0] == 0) &&
+        (strgrib[1] == 0) &&
+        (strgrib[2] == 0) &&
+        (strgrib[3] == 0))
+    {
+          b_len_add_8 = false;
+          b_haveReadGRIB = false;
+    }
+    ok = readGribSection0_IS(file, b_haveReadGRIB ); // Section 0: Indicator Section
+    
+    int len, sec_num;    
+    if (ok) {
+        unpackIDS(grib_msg);  // Section 1: Identification Section
+        int off;
+        /* find out how many grids are in this message */
+        off = grib_msg->offset /8;
+        while (strncmp(&((char *)grib_msg->buffer)[off], "7777", 4) != 0) {
+            len = uint4(grib_msg->buffer +off);
+            sec_num = grib_msg->buffer[off+4];
+            if (sec_num == 7)
+                grib_msg->num_grids++;
+            off += len;
+        }
+    }
+    else {
+        // seek back if V1
+        zu_seek(file, start, SEEK_SET);
+        return;
+    }   
+    refyear  = grib_msg->yr;
+    refmonth = grib_msg->mo;
+    refday   = grib_msg->dy;
+    refhour  = grib_msg->time /10000;
+    refminute = (grib_msg->time/100) % 100;
+    refDate = makeDate(refyear,refmonth,refday,refhour,refminute,0);
+    sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear,refmonth,refday,refhour,refminute);
+    idCenter = grib_msg->center_id;
+    idModel  = grib_msg->table_ver;
+    idGrid   = 0; // FIXME data1[6];
+    productDiscipline = grib_msg->disc;
+    readDataSet(file);
+}
+
+// ---------------------------------------
+bool GribV2Record::hasMoreDataSet()
+{
+    return grib_msg && grib_msg->num_grids != 1?true:false;
+}
+
+// ---------------------------------------
+GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
+{
+    GribV2Record *rec1 = new GribV2Record(*this);
+    // new records take ownership
+    this->grib_msg = 0;
+    rec1->id = id_;
+    rec1->readDataSet(file);
+    return rec1;
 }
 
 //-------------------------------------------------------------------------------

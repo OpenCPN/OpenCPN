@@ -138,7 +138,12 @@ void GribReader::readAllGribRecords()
         }
         else {
             is_v2 = false;
-            rec = new GribV2Record(file, id);
+            if (rec && dynamic_cast<GribV2Record *>(rec)->hasMoreDataSet())  {
+                rec = dynamic_cast<GribV2Record *>(rec)->GribV2NextDataSet(file, id);
+            }
+            else {
+                rec = new GribV2Record(file, id);
+            }
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV1Record(file, id);
@@ -155,14 +160,16 @@ void GribReader::readAllGribRecords()
 
         if (!rec->isDataKnown())
         {
-            delete rec;
+            if (!is_v2 || !dynamic_cast<GribV2Record *>(rec)->hasMoreDataSet()) {
+                delete rec;
+                rec = 0;
+            }
             continue;
         }
         ok = true;   // au moins 1 record ok
 
         if (firstdate== -1)
 	    firstdate = rec->getRecordCurrentDate();
-
 
         if ((rec->getDataType()==GRB_PRESSURE && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
                     || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
@@ -250,7 +257,10 @@ void GribReader::readAllGribRecords()
                        rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
                 );
 #endif
-            delete rec;
+            if (!is_v2 || !dynamic_cast<GribV2Record *>(rec)->hasMoreDataSet()) {
+                delete rec;
+                rec = 0;
+            }
         }
     } while (!b_EOF);
 }
