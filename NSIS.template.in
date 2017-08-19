@@ -3,6 +3,7 @@ NSIS Installer script for OpenCPN (Windows)
 NSIS version 2.46
 Written by Gunther Pilz (Netsurfer) netsurfer@opencpn.de
 -------------------------------------------------------------------------------------------------------
+
 CMake variables
 	CPACK_PACKAGE_NAME "OpenCPN"
 	CPACK_NSIS_PACKAGE_NAME_LC "opencpn"
@@ -32,6 +33,10 @@ CMake variables
 ----------------------------------------------------------------------------------------------------------*/
 ;# Set compression
 	SetCompressor /FINAL lzma
+!ifdef NSIS_PACKEDVERSION
+    Unicode true
+!endif
+
 
 ;--------------------------------
 ;# You must define these values
@@ -702,8 +707,9 @@ CMake variables
 Section "-Topmost Section" SecTopmost ;# this needs to be always the first section to be executed!
 	SetShellVarContext all
 	SetOutPath $INSTDIR
-        LogSet on
-
+!ifndef NSIS_PACKEDVERSION
+    LogSet on
+!endif
 	${If} $INSTALL_TYPE == 1
 	${OrIf} $INSTALL_TYPE == 2
 	${OrIf} $INSTALL_TYPE == 3
@@ -851,7 +857,7 @@ Section "-Install Section" SecInstall
 		CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 		Sleep 250
 	${EndIf}
-	AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
+	AccessControl::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 
 	;# Save the log file
 	StrCpy $0 "$INSTDIR\install.log"
@@ -2654,12 +2660,12 @@ Function Check_Config_Exists
 		${If} ${FileExists} "$USERS_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 			CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 			Sleep 250
-			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
+			AccessControl::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 			CopyFiles /SILENT "$USERS_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*" "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 		${ElseIf} ${FileExists} "$ADMIN_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*"
 			CreateDirectory "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 			Sleep 250
-			AccessControlW::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
+			AccessControl::GrantOnFile "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@" "(BU)" "GenericRead + GenericExecute + GenericWrite + Delete + FullAccess"
 			CopyFiles /SILENT "$ADMIN_APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@\*.*" "$APPDATA\@CPACK_NSIS_PACKAGE_NAME_LC@"
 		${EndIf}
 
@@ -3344,8 +3350,10 @@ FunctionEnd
 
 ;!define LVM_GETITEMCOUNT 0x1004 ;# ANSI
 ;!define LVM_GETITEMTEXT 0x102D ;# ANSI
-!define LVM_GETITEMCOUNT 0x1004
-!define LVM_GETITEMTEXT 0x1073
+!ifndef LVM_GETITEMCOUNT
+  !define LVM_GETITEMCOUNT 0x1004
+  !define LVM_GETITEMTEXT 0x1073
+!endif
 
 Function DumpLog
   Exch $5
