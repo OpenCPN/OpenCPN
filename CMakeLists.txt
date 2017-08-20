@@ -32,7 +32,7 @@
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 IF (COMMAND cmake_policy)
-	#  CMAKE_POLICY(SET CMP0002 OLD)
+  CMAKE_POLICY(SET CMP0043 NEW)
 ENDIF (COMMAND cmake_policy)
 
 PROJECT(OpenCPN)
