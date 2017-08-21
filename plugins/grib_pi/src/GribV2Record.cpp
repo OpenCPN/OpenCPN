@@ -500,7 +500,7 @@ static bool unpackPDS(GRIBMessage *grib_msg)
     case 0:
     case 1:
     case 2:
-    case 8:
+    case 8:   // Average, accumulation, extreme values
     case 11:
     case 12:
     case 15:
@@ -904,6 +904,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
             case 0: ret = GRB_HUMID_SPEC; break; //DATA_TO_GRBV2[DATA_HUMID_SPEC] = grb2DataType(0,1,0);
             case 1: ret = GRB_HUMID_REL; break; // DATA_TO_GRBV2[DATA_HUMID_REL] = grb2DataType(0,1,1);
             case 7: ret= GRB_PRECIP_RATE; break; // DATA_TO_GRBV2[DATA_PRECIP_RATE] = grb2DataType(0,1,7);
+            case 49:							 // Total Water Precipitation (Meteo France Arome 0.01
             case 52:                             // Total precipitation rate kg m–2 s–1
             case 8: ret = GRB_PRECIP_TOT; break; // DATA_TO_GRBV2[DATA_PRECIP_TOT] = grb2DataType(0,1,8);
             case 11: ret = GRB_SNOW_DEPTH; break; // DATA_TO_GRBV2[DATA_SNOW_DEPTH] = grb2DataType(0,1,11);
@@ -1243,6 +1244,15 @@ void  GribV2Record::translateDataType()
 			levelValue = 0;
 		}
 	}
+    else if (idCenter==84 && idModel <= 5 && idGrid==0)
+    {
+        // XXX Météo France AROME-01 is 
+		if ( getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0)
+		{
+			levelType  = LV_MSL;
+		}
+    }
+	
 	//------------------------
 	// Unknown center
 	//------------------------
