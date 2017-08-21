@@ -71,7 +71,17 @@ public:
   };
 
   int gds_templ_num;
+
   int earth_shape;
+  unsigned char earth_sphere_scale_factor; // Scale factor of radius of spherical Earth
+  int earth_sphere_scale_value;            // Scale value of radius of spherical Earth
+
+  unsigned char earth_major_scale_factor; // Scale factor of major axis of oblate spheroid Earth
+  int earth_major_scale_value;            // Scaled value of major axis of oblate spheroid Earth
+
+  unsigned char earth_minor_scale_factor; // Scale factor of minor axis of oblate spheroid Earth
+  int earth_minor_scale_value;            // Scaled value of minor axis of oblate spheroid Earth
+
   int nx,ny;
   double slat,slon,latin1,latin2,splat,splon;
   double latD;
@@ -355,6 +365,24 @@ static bool unpackLUS(GRIBMessage *grib_msg)
     return true;
 }
 
+static void parse_earth(GRIBMessage *grib_msg)
+{
+  size_t ofs = grib_msg->offset/8;
+  unsigned char *b = grib_msg->buffer +ofs;
+
+  grib_msg->md.earth_shape = b[14];         // shape of the earth
+
+  grib_msg->md.earth_sphere_scale_factor = b[15];        // Scale factor of radius of spherical Earth
+  grib_msg->md.earth_sphere_scale_value  = uint4(b +16); // Scale value of radius of spherical Earth
+
+  grib_msg->md.earth_major_scale_factor = b[20];         // Scale factor of major axis of oblate spheroid Earth
+  grib_msg->md.earth_major_scale_value  = uint4(b +21);  // Scaled value of major axis of oblate spheroid Earth
+
+  grib_msg->md.earth_minor_scale_factor = b[25];         // Scale factor of minor axis of oblate spheroid Earth
+  grib_msg->md.earth_minor_scale_value = uint4(b +26);   // Scaled value of minor axis of oblate spheroid Earth
+
+}
+
 static bool unpackGDS(GRIBMessage *grib_msg)
 {
   int src,num_in_list;
@@ -378,7 +406,8 @@ static bool unpackGDS(GRIBMessage *grib_msg)
   switch (grib_msg->md.gds_templ_num) {
     case 0:   /* Latitude/Longitude Also called Equidistant Cylindrical or Plate Caree */
     case 40:  /* Gaussian Latitude/Longitude  */
-        grib_msg->md.earth_shape = b[14];         /* shape of the earth */
+        parse_earth(grib_msg);
+
         grib_msg->md.nx          = uint4(b +30);  /* number of latitudes */
         grib_msg->md.ny          = uint4(b +34);  /* number of longitudes */
 
@@ -398,7 +427,8 @@ static bool unpackGDS(GRIBMessage *grib_msg)
 	grib_msg->md.scan_mode = b[71]; /* scanning mode flag */
 	break;
     case 10: /* Mercator */
-        grib_msg->md.earth_shape = b[14];       /* shape of the earth */
+        parse_earth(grib_msg);
+
 	grib_msg->md.nx = uint4(b +30); 	/* number of points along a parallel */
 	grib_msg->md.ny = uint4(b +34); 	/* number of points along a meridian */
 
@@ -418,7 +448,7 @@ static bool unpackGDS(GRIBMessage *grib_msg)
 	grib_msg->md.yinc.lainc = uint4(b +68)/1000.; /* latitude increment */
         break;
     case 30: /* Lambert conformal grid */
-	grib_msg->md.earth_shape = b[14];
+        parse_earth(grib_msg);
 
 	grib_msg->md.nx = uint4(b +30); /* number of points along a parallel */
 	grib_msg->md.ny = uint4(b +34); /* number of points along a meridian */
