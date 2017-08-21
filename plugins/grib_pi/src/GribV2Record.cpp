@@ -512,6 +512,7 @@ static void unpack_stat_proc(GRIBMessage *grib_msg, unsigned const char *b)
   }
 }
 
+// Section 4: Product Definition Section 
 static bool unpackPDS(GRIBMessage *grib_msg)
 {
   int num_coords,factor;
@@ -1027,13 +1028,13 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 
 static int mapStatisticalEndTime(GRIBMessage *grid)
 {
-  switch (grid->md.time_unit) {
-    case 0:
-	return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
-    case 1:
+  switch (grid->md.time_unit) { // table 4.4
+    case 0:  // minute
+	// return (grid->md.stat_proc.etime/100 % 100)-(grid->time/100 % 100);
+    case 1:  // hour
          return grid->md.fcst_time +grid->md.stat_proc.t[0].time_length;
 	 // return (grid->md.stat_proc.etime/10000- grid->time/10000);
-    case 2:
+    case 2:  // Day
 	return (grid->md.stat_proc.edy -grid->dy);
     case 3:
 	return (grid->md.stat_proc.emo -grid->mo);
@@ -1694,7 +1695,7 @@ bool GribV2Record::readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB) {
 //==============================================================
 // Fonctions utiles
 //==============================================================
-zuint GribV2Record::periodSeconds(zuchar unit,zuint P1,zuchar P2,zuchar range) {
+zuint GribV2Record::periodSeconds(zuchar unit,zuint P1,zuint P2,zuchar range) {
     zuint res, dur;
 
     switch (unit) {
@@ -1724,17 +1725,21 @@ zuint GribV2Record::periodSeconds(zuchar unit,zuint P1,zuchar P2,zuchar range) {
     }
     grib_debug("id=%d: PDS unit %d (time range) b21=%d %d P1=%d P2=%d\n",id,unit, range,res,P1,P2);
     dur = 0;
+
     switch (range) {
         case 0:
             dur = (zuint)P1; break;
         case 1:
             dur = 0; break;
+
         case 2:
-        case 3:
+        case 3: // Average  (reference time + P1 to reference time + P2)
             // dur = ((zuint)P1+(zuint)P2)/2; break;     // TODO
             dur = (zuint)P2; break;
-         case 4:
+
+         case 4: // Accumulation  (reference time + P1 to reference time + P2)
             dur = (zuint)P2; break;
+
         case 10:
             dur = ((zuint)P1<<8) + (zuint)P2; break;
         default:

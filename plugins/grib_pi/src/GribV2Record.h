@@ -47,7 +47,7 @@ class GribV2Record : public GribRecord
         bool hasMoreDataSet();
 
     private:
-        zuint  periodSeconds(zuchar unit, zuint P1, zuchar P2, zuchar range);
+        zuint  periodSeconds(zuchar unit, zuint P1, zuint P2, zuchar range);
         void   readDataSet(ZUFILE* file);
         class  GRIBMessage *grib_msg;
 
