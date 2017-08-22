@@ -1831,21 +1831,30 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         break;
 
                     }
+                    if(idx == -1) {
+                        // XXX bug ?
+                        break;
+                    }
 
+                    bool skip = false;
 
-                    if(idx != -1) {
-                        bool skip = false;
-                        if (polarWind && m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
-                            // we favor UV other DIR/SPEED
-                            GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                    if (m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]) {
+                        // already one
+                        GribRecord *oRec = m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx];
+                        if (polarWind) {
+                            // we favor UV over DIR/SPEED
                             if (oRec->getDataType() == GRB_WIND_VY || oRec->getDataType() == GRB_WIND_VX)
                                 skip = true;
                         }
-                        if (!skip) {
-                            m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
-                            if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
-                            if(mdx != -1 && m_GribIdxArray.Index(mdx) == wxNOT_FOUND ) m_GribIdxArray.Add(mdx, 1);
+                        // favor average aka timeRange == 3 (HRRR subhourly subsets have both 3 and 0 records for winds)
+                        if (!skip && (oRec->getTimeRange() == 3)) {
+                            skip = true;
                         }
+                    }
+                    if (!skip) {
+                        m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
+                        if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
+                        if(mdx != -1 && m_GribIdxArray.Index(mdx) == wxNOT_FOUND ) m_GribIdxArray.Add(mdx, 1);
                     }
                     break;
                 }
