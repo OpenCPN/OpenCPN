@@ -54,7 +54,6 @@ GribReader::~GribReader()
     if (file != NULL) 
     {
         zu_close(file);
-        free(file);
         file = NULL;
     }
 }
@@ -746,7 +745,6 @@ void GribReader::openFile(const wxString fname)
     if (file != NULL) 
     {
         zu_close(file);
-        free(file);
         file = NULL;
     }
 }
