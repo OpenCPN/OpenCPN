@@ -669,15 +669,16 @@ static bool unpackBMS(GRIBMessage *grib_msg)
   unsigned char *b = grib_msg->buffer +ofs;
 
   ind = b[5]; /* bit map indicator */
-  grib_msg->md.bmssize = 0;
   switch (ind) {
-    case 0:
+    case 0: // A bit map applies to this product and is specified in this section.
 	len = uint4(b);
 	if (len < 7)
 	    return false;
         len -=6;
 	grib_msg->md.bmssize = len;
 	len *= 8;
+        delete [] grib_msg->md.bitmap;
+        delete [] grib_msg->md.bms;
 	grib_msg->md.bitmap = new unsigned char[len];
 	grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
 	memcpy (grib_msg->md.bms, b + 6, grib_msg->md.bmssize);
@@ -686,10 +687,14 @@ static bool unpackBMS(GRIBMessage *grib_msg)
 	  grib_msg->md.bitmap[n]=bit;
 	}
 	break;
-    case 254:
+    case 254: // A bit map previously defined in the same GRIB2 message applies to this product.
 	break;
-    case 255:
+    case 255:  // A bit map does not apply to this product.
+        delete [] grib_msg->md.bitmap;
 	grib_msg->md.bitmap=NULL;
+        delete [] grib_msg->md.bms;
+	grib_msg->md.bms=NULL;
+	grib_msg->md.bmssize = 0;
 	break;
     default:
 	fprintf(stderr,"This code is not currently set up to deal with predefined bit-maps\n");
@@ -1443,8 +1448,8 @@ void GribV2Record::readDataSet(ZUFILE* file)
 	        if (grib_msg->md.bmssize != 0) {
 	             hasBMS = true;
 	             BMSsize = grib_msg->md.bmssize;
-	             BMSbits = grib_msg->md.bms; 
-	             grib_msg->md.bms = 0; 
+	             BMSbits = new zuchar[grib_msg->md.bmssize];
+	             memcpy (BMSbits, grib_msg->md.bms, grib_msg->md.bmssize);
                 }
 	     }
 	     break;
@@ -1578,6 +1583,9 @@ bool GribV2Record::hasMoreDataSet()
 GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE* file, int id_)
 {
     GribV2Record *rec1 = new GribV2Record(*this);
+    // XXX should have a shallow copy constructor 
+    delete [] rec1->data;
+    delete [] rec1->BMSbits;
     // new records take ownership
     this->grib_msg = 0;
     rec1->id = id_;
