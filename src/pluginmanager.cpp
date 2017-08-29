@@ -818,7 +818,7 @@ bool ReadModuleInfoFromELF( const wxString& file, const ModuleInfo::DependencySe
         b_libelf_usable = true;
     }
 
-    int file_handle = 0;
+    int file_handle;
     Elf *elf_handle = NULL;
     GElf_Ehdr elf_file_header;
     Elf_Scn *elf_section_handle = NULL;
