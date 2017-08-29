@@ -2354,7 +2354,8 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
                         if( !get_region.Empty() ) {
 #ifdef USE_S57
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
-                            Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
+                            if (Chs57)
+                                Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_screen_region );
 #endif
                             OCPNRegionIterator upd( get_screen_region );
                             while( upd.HaveRects() ) {
