@@ -5457,7 +5457,9 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
       ViewPort vp = VPoint;
 
       bool render_return = false;
-      if ( m_pcm93chart_current )
+      if ( m_pcm93chart_current == 0)
+            return render_return;
+
       {
             m_pcm93chart_current->SetVPParms ( vp );
 
@@ -5850,7 +5852,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 //      CALLGRIND_STOP_INSTRUMENTATION
 
       //    Render the cm93 cell's M_COVR outlines if called for
-      if ( m_cell_index_special_outline )
+      if ( m_cell_index_special_outline && m_pcm93chart_current)
       {
             covr_set *pcover = m_pcm93chart_current->GetCoverSet();
 
