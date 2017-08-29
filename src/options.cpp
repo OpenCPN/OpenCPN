@@ -5222,13 +5222,10 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
                 
                 ps57CtlListBox->Check(newpos, bviz);
         }
+        //  Force the wxScrolledWindow to recalculate its scroll bars
+        wxSize s = ps57CtlListBox->GetSize();
+        ps57CtlListBox->SetSize(s.x, s.y-1);
     }
-
-    //  Force the wxScrolledWindow to recalculate its scroll bars
-    wxSize s = ps57CtlListBox->GetSize();
-    ps57CtlListBox->SetSize(s.x, s.y-1);
-    
-
 }
 
 void options::SetInitialVectorSettings(void)
