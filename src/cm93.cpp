@@ -1080,7 +1080,7 @@ static int   read_and_decode_bytes ( FILE *stream, void *p, int nbytes )
             return 1;
 
       //    read into callers buffer
-      if ( !fread ( p, nbytes, 1, stream ) )
+      if ( fread ( p, nbytes, 1, stream ) != 1)
             return 0;
 
       //    decode inplace
@@ -1103,7 +1103,7 @@ static int read_and_decode_double ( FILE *stream, double *p )
 {
       double t;
       //    read into temp buffer
-      if ( !fread ( &t, sizeof ( double ), 1, stream ) )
+      if ( fread ( &t, sizeof ( double ), 1, stream ) != 1)
             return 0;
 
       //    decode inplace
@@ -1129,7 +1129,7 @@ static int read_and_decode_int ( FILE *stream, int *p )
 {
       int t;
       //    read into temp buffer
-      if ( !fread ( &t, sizeof ( int ), 1, stream ) )
+      if ( fread ( &t, sizeof ( int ), 1, stream ) != 1)
             return 0;
 
       //    decode inplace
@@ -1155,7 +1155,7 @@ static int read_and_decode_ushort ( FILE *stream, unsigned short *p )
 {
       unsigned short t;
       //    read into temp buffer
-      if ( !fread ( &t, sizeof ( unsigned short ), 1, stream ) )
+      if ( fread ( &t, sizeof ( unsigned short ), 1, stream ) != 1)
             return 0;
 
       //    decode inplace
