@@ -10588,7 +10588,7 @@ int paternFilter (const struct dirent * dir) {
   fd = open(devname, O_RDWR|O_NDELAY|O_NOCTTY);
 
   // device name is pointing to a real device
-  if(fd > 0) {
+  if(fd >= 0) {
     close (fd);
     return 1;
   }
