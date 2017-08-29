@@ -929,7 +929,7 @@ SuccessEpilogue:
 FailureEpilogue:
     if( elf_handle != NULL )
         elf_end( elf_handle );
-    if( file_handle != 0 )
+    if( file_handle >= 0 )
         close( file_handle );
     return false;
 }
