@@ -691,13 +691,9 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase *chart)
 {
     ChartBaseBSB *pChartBSB = dynamic_cast<ChartBaseBSB*>( chart );
-    ChartPlugInWrapper *cpw = NULL;
-    if(chart->GetChartType() == CHART_TYPE_PLUGIN){
-        cpw = dynamic_cast<ChartPlugInWrapper*> ( chart );
-        if( !cpw) return;
-    }
-    else if( !pChartBSB ) return;
-    
+    if( !pChartBSB ) 
+      return;
+
     // detect changing north/south polar
     if(vp.m_projection_type == PROJECTION_POLAR) {
         bool north = vp.clat > 0;
@@ -740,10 +736,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
         // split more near poles
         if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
             Extent e;
-            if(cpw)
-                cpw->GetChartExtent(&e);
-            else
-                pChartBSB->GetChartExtent(&e);
+            pChartBSB->GetChartExtent(&e);
             xsplits = xsplits * wxMax(fabsf(e.NLAT), fabsf(e.SLAT)) / 90;
         }
         
@@ -764,10 +757,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
 
     ViewPort nvp;
     if(use_norm_vp) {
-        if(cpw)
-            cpw->chartpix_to_latlong(m_size_X/2, m_size_Y/2, &m_clat, &m_clon);
-        else
-            pChartBSB->chartpix_to_latlong(m_size_X/2, m_size_Y/2, &m_clat, &m_clon);
+        pChartBSB->chartpix_to_latlong(m_size_X/2, m_size_Y/2, &m_clat, &m_clon);
         nvp = glChartCanvas::NormalizedViewPort(vp, m_clat, m_clon);
     }
 
@@ -789,10 +779,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
             int y[4] = {rect.y+rect.height, rect.y, rect.y, rect.y+rect.height};
 
             for(int k=0; k<4; k++) {
-                if(cpw)
-                    cpw->chartpix_to_latlong(x[k], y[k], &lat, &lon);
-                else
-                    pChartBSB->chartpix_to_latlong(x[k], y[k], &lat, &lon);
+                pChartBSB->chartpix_to_latlong(x[k], y[k], &lat, &lon);
                 ll[2*k+0] = lon, ll[2*k+1] = lat;
             }
 
@@ -842,10 +829,7 @@ void glTexFactory::PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase 
                     double xc[4] = {x1, x1, x2, x2}, yc[4] = {y2, y1, y1, y2};
                     double lat[4], lon[4];
                     for(int k=0; k<4; k++){
-                        if(cpw)
-                            cpw->chartpix_to_latlong(xc[k], yc[k], lat+k, lon+k);
-                        else
-                            pChartBSB->chartpix_to_latlong(xc[k], yc[k], lat+k, lon+k);
+                        pChartBSB->chartpix_to_latlong(xc[k], yc[k], lat+k, lon+k);
                     }
 
                     double u[4] = {u1, u1, u2, u2}, v[4] = {v2, v1, v1, v2};
