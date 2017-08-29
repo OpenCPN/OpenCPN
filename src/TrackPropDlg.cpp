@@ -1646,15 +1646,10 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
         slat = gLat;
         slon = gLon;
     }
-    else if( prev_point )
+    else
     {
         slat = prev_point->m_lat;
         slon = prev_point->m_lon;
-    }
-    else
-    {
-        slat = gLat;
-        slon = gLon;
     }
 
     switch( column )
