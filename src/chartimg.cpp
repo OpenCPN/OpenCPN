@@ -1090,6 +1090,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                   msg += _T(" which is unsupported.  Disabling chart ");
                                   msg += m_FullPath;
                                   wxLogMessage(msg);
+                                  free(pPlyTable);
 
                                   return INIT_FAIL_REMOVE;
                               }
