@@ -4060,7 +4060,7 @@ void CalcGridSpacing( float view_scale_ppm, float& MajorSpacing, float&MinorSpac
     };
 
     unsigned int tabi;
-    for( tabi = 0; tabi < (sizeof lltab) / (sizeof *lltab); tabi++ )
+    for( tabi = 0; tabi < ((sizeof lltab) / (sizeof *lltab)) -1; tabi++ )
         if( view_scale_ppm < lltab[tabi][0] )
             break;
     MajorSpacing = lltab[tabi][1]; // major latitude distance
