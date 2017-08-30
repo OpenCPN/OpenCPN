@@ -1638,7 +1638,7 @@ void WayPointman::ReloadAllIcons(  )
 {
     ProcessIcons( g_StyleManager->GetCurrentStyle() );
  
-    for( int i = 0; i < m_pIconArray->GetCount(); i++ ) {
+    for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
         MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
         wxImage dim_image;
         if(m_cs == GLOBAL_COLOR_SCHEME_DUSK){
