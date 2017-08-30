@@ -1537,7 +1537,7 @@ bool NavObjectChanges::ApplyChanges(void)
                         if( !pExisting )
                             ::InsertTrack( pTrack, true );
                     }
-                
+
                     else
                         delete pTrack;
                 }
@@ -1576,31 +1576,27 @@ bool NavObjectChanges::ApplyChanges(void)
                 if( !strcmp(object.name(), "tkpt") && pWayPointMan) {
                     TrackPoint *pWp = ::GPXLoadTrackPoint1( object );
                     
-                    if(pWp ) {
 //                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
                         
-                        pugi::xml_node xchild = object.child("extensions");
-                        pugi::xml_node child = xchild.child("opencpn:action");
+                    pugi::xml_node xchild = object.child("extensions");
+                    pugi::xml_node child = xchild.child("opencpn:action");
 
-                        pugi::xml_node guid_child = xchild.child("opencpn:track_GUID");
-                        wxString track_GUID(guid_child.first_child().value(), wxConvUTF8);
+                    pugi::xml_node guid_child = xchild.child("opencpn:track_GUID");
+                    wxString track_GUID(guid_child.first_child().value(), wxConvUTF8);
 
-                        Track *pExistingTrack = TrackExists( track_GUID );
+                    Track *pExistingTrack = TrackExists( track_GUID );
                         
-                        if(!strcmp(child.first_child().value(), "add") ){
-                            if( pExistingTrack ) {
-                                pExistingTrack->AddPoint( pWp );
-                                pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
-                            }                                
-                        }                    
-                        
-                        else
-                            delete pWp;
+                    if(!strcmp(child.first_child().value(), "add") ){
+                        if( pExistingTrack ) {
+                            pExistingTrack->AddPoint( pWp );
+                            pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
+                        }
                     }
-        }
-    
+                    else
+                        delete pWp;
+                }
+
         object = object.next_sibling();
-                
     }
     // Check to make sure we haven't loaded tracks with less than 2 points
     wxTrackListNode *node1 = pTrackList->GetFirst();
