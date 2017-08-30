@@ -1755,6 +1755,13 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
 
     if(!pmi->icon_texture) {
         /* make rgba texture */       
+        wxImage image = pbm->ConvertToImage();
+        unsigned char *d = image.GetData();
+        if (d == 0) {
+            // don't create a texture with junk
+            return 0;
+        }
+
         glGenTextures(1, &pmi->icon_texture);
         glBindTexture(GL_TEXTURE_2D, pmi->icon_texture);
                 
@@ -1763,21 +1770,18 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
         
         
-        wxImage image = pbm->ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
         
         pmi->tex_w = NextPow2(w);
         pmi->tex_h = NextPow2(h);
         
-        unsigned char *d = image.GetData();
         unsigned char *a = image.GetAlpha();
             
         unsigned char mr, mg, mb;
         image.GetOrFindMaskColour( &mr, &mg, &mb );
     
         unsigned char *e = new unsigned char[4 * w * h];
-        if(d){
-            for( int y = 0; y < h; y++ )
+        for( int y = 0; y < h; y++ ) {
                 for( int x = 0; x < w; x++ ) {
                     unsigned char r, g, b;
                     int off = ( y * image.GetWidth() + x );
