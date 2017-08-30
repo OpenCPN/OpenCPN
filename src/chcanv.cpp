@@ -7792,7 +7792,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //  Blit pan acceleration
     if( VPoint.b_quilt )          // quilted
     {
-        if( m_pQuilt && !m_pQuilt->IsComposed() ) return;
+        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
+            return;  // not ready
 
         bool busy = false;
         if( cc1->m_pQuilt->IsQuiltVector() &&
