@@ -1889,8 +1889,9 @@ wxString *WayPointman::GetIconKey( int index )
 int WayPointman::GetIconIndex( const wxBitmap *pbm )
 {
     unsigned int ret = 0;
-    MarkIcon *pmi = NULL;
-    
+    MarkIcon *pmi;
+
+    wxASSERT(m_pIconArray->GetCount() >= 1);
     for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
         pmi = (MarkIcon *) m_pIconArray->Item( i );
         if( pmi->piconBitmap == pbm ){
@@ -1905,16 +1906,10 @@ int WayPointman::GetIconIndex( const wxBitmap *pbm )
 
 int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
 {
-    unsigned int i;
-    MarkIcon *pmi = NULL;
+    MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( GetIconIndex (pbm) );
 
-    for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
-        pmi = (MarkIcon *) m_pIconArray->Item( i );
-        if( pmi->piconBitmap == pbm ) break;
-    }
-    
     // Build a "list - sized" image
-    if(pmi && pmarkicon_image_list && !pmi->m_blistImageOK){
+    if(pmarkicon_image_list && !pmi->m_blistImageOK){
         int h0 = pmi->iconImage.GetHeight();
         int w0 = pmi->iconImage.GetWidth();
         int h = m_bitmapSizeForList;
