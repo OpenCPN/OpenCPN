@@ -1982,76 +1982,7 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
 
 int WayPointman::GetXIconImageListIndex( const wxBitmap *pbm )
 {
-    unsigned int i;
-    MarkIcon *pmi = NULL;
-    
-    for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
-        pmi = (MarkIcon *) m_pIconArray->Item( i );
-        if( pmi->piconBitmap == pbm ) break;
-    }
-
-    // Build a "list - sized" image
-    if(pmi && pmarkicon_image_list && !pmi->m_blistImageOK){
-        int h0 = pmi->iconImage.GetHeight();
-        int w0 = pmi->iconImage.GetWidth();
-        int h = m_bitmapSizeForList;
-        int w = m_bitmapSizeForList;
-        
-        wxImage icon_larger;
-        if( h0 <= h && w0 <= w ) {
-           icon_larger =  pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
-        } else {
-            // rescale in one or two directions to avoid cropping, then resize to fit to cell
-            int h1 = h;
-            int w1 = w;
-            if( h0 > h ) w1 = wxRound( (double) w0 * ( (double) h / (double) h0 ) );
-            
-            else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
-            
-            icon_larger =  pmi->iconImage.Rescale( w1, h1 );
-            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2  ) );
-        }
-        
-        int index = pmarkicon_image_list->Add( wxBitmap(icon_larger) );
-        
-        // Create and replace "x-ed out" icon,
-        // Being careful to preserve (some) transparency
-        
-        icon_larger.ConvertAlphaToMask( 128 );
-        
-        unsigned char r,g,b;
-        icon_larger.GetOrFindMaskColour(&r, &g, &b);
-        wxColour unused_color(r,g,b);
-        
-        wxBitmap bmp0( icon_larger );
-        
-        wxBitmap bmp(w, h, -1 );
-        wxMemoryDC mdc( bmp );
-        mdc.SetBackground( wxBrush( unused_color) );
-        mdc.Clear();
-        mdc.DrawBitmap( bmp0, 0, 0 );
-        int xm = bmp.GetWidth() / 2;
-        int ym = bmp.GetHeight() / 2;
-        int dp = xm / 2;
-        int width = wxMax(xm / 10, 2);
-        wxPen red(GetGlobalColor(_T( "URED" )), width );
-        mdc.SetPen( red );
-        mdc.DrawLine( xm-dp, ym-dp, xm+dp, ym+dp );
-        mdc.DrawLine( xm-dp, ym+dp, xm+dp, ym-dp );
-        mdc.SelectObject( wxNullBitmap );
-        
-        wxMask *pmask = new wxMask(bmp, unused_color);
-        bmp.SetMask( pmask );
-        
-        pmarkicon_image_list->Add( bmp );
-        
-        pmi->m_blistImageOK = true;
-        pmi->listIndex = index;
-        
-    }
-    
-    return pmi->listIndex+1;        // index of "X-ed out" icon in the image list
-    
+    return GetIconImageListIndex( pbm ) +1; // index of "X-ed out" icon in the image list
 }
 
 //  Create the unique identifier
