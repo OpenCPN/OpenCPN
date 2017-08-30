@@ -771,6 +771,8 @@ bool ChartDB::CopyStack(ChartStack *pa, ChartStack *pb)
 wxString ChartDB::GetFullPath(ChartStack *ps, int stackindex)
 {
       int dbIndex = ps->GetDBIndex(stackindex);
+      wxASSERT( dbIndex >= 0 );
+
       return wxString(GetChartTableEntry(dbIndex).GetpFullPath(),  wxConvUTF8);
 }
 
@@ -780,7 +782,10 @@ wxString ChartDB::GetFullPath(ChartStack *ps, int stackindex)
 
 int ChartDB::GetCSPlyPoint(ChartStack *ps, int stackindex, int plyindex, float *lat, float *lon)
 {
-      const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(stackindex));
+      int dbIndex = ps->GetDBIndex(stackindex);
+      wxASSERT( dbIndex >= 0 );
+
+      const ChartTableEntry &entry = GetChartTableEntry( dbIndex );
       if(entry.GetnPlyEntries())
       {
             float *fp = entry.GetpPlyTable();
@@ -801,7 +806,10 @@ int ChartDB::GetCSPlyPoint(ChartStack *ps, int stackindex, int plyindex, float *
 //-------------------------------------------------------------------
 int ChartDB::GetStackChartScale(ChartStack *ps, int stackindex, char *buf, int nbuf)
 {
-      const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(stackindex));
+      int dbindex = ps->GetDBIndex(stackindex);
+      wxASSERT(dbindex >= 0);
+
+      const ChartTableEntry &entry = GetChartTableEntry( dbindex );
       int sc = entry.GetScale();
       if(buf)
             sprintf(buf, "%d", sc);
@@ -816,7 +824,10 @@ int ChartDB::GetStackEntry(ChartStack *ps, wxString fp)
 {
       for(int i=0 ; i<ps->nEntry ; i++)
       {
-            const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(i));
+            int dbindex = ps->GetDBIndex( i );
+            wxASSERT(dbindex >= 0);
+
+            const ChartTableEntry &entry = GetChartTableEntry( dbindex );
             if(fp.IsSameAs( wxString(entry.GetpFullPath(),  wxConvUTF8)) )
                   return i;
       }
@@ -829,18 +840,22 @@ int ChartDB::GetStackEntry(ChartStack *ps, wxString fp)
 //-------------------------------------------------------------------
 ChartTypeEnum ChartDB::GetCSChartType(ChartStack *ps, int stackindex)
 {
-      if((IsValid()) && (stackindex >= 0) && (stackindex < GetChartTableEntries()))
-            return (ChartTypeEnum)GetChartTableEntry(ps->GetDBIndex(stackindex)).GetChartType();
-      else
-            return CHART_TYPE_UNKNOWN;
+      if ( IsValid() ) {
+         int dbindex = ps->GetDBIndex(stackindex);
+         if (dbindex >= 0)
+            return (ChartTypeEnum)GetChartTableEntry(dbindex).GetChartType();
+      }
+      return CHART_TYPE_UNKNOWN;
 }
 
 
 ChartFamilyEnum ChartDB::GetCSChartFamily(ChartStack *ps, int stackindex)
 {
-      if((IsValid()) && (stackindex < GetChartTableEntries()))
+      if( IsValid() )
       {
-            const ChartTableEntry &entry = GetChartTableEntry(ps->GetDBIndex(stackindex));
+         int dbindex = ps->GetDBIndex(stackindex);
+         if (dbindex >= 0) {
+            const ChartTableEntry &entry = GetChartTableEntry( dbindex );
 
             ChartTypeEnum type = (ChartTypeEnum)entry.GetChartType();
             switch(type)
@@ -853,9 +868,9 @@ ChartFamilyEnum ChartDB::GetCSChartFamily(ChartStack *ps, int stackindex)
                   case  CHART_TYPE_DUMMY:        return CHART_FAMILY_RASTER;
                   default:                       return CHART_FAMILY_UNKNOWN;
             }
+         }
       }
-      else
-            return CHART_FAMILY_UNKNOWN;
+      return CHART_FAMILY_UNKNOWN;
 }
 
 
