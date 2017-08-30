@@ -1776,7 +1776,7 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
         image.GetOrFindMaskColour( &mr, &mg, &mb );
     
         unsigned char *e = new unsigned char[4 * w * h];
-        if(d && e){
+        if(d){
             for( int y = 0; y < h; y++ )
                 for( int x = 0; x < w; x++ ) {
                     unsigned char r, g, b;
