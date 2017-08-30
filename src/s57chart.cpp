@@ -4675,7 +4675,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
                     DDFModule *dupdate = new DDFModule;
                     dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
                     bstat = !( dupdate->Create( cp_ufile.mb_str() ) == 0 );
-                    dupdate->Close();
+                    delete dupdate;
 
                     if( !bstat ) {
                         wxString msg( _T("   Error creating dummy update file: ") );
