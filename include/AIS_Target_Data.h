@@ -78,7 +78,7 @@ public:
     double                    Euro_Length;            // Extensions for European Inland AIS
     double                    Euro_Beam;
     double                    Euro_Draft;
-    char                      Euro_VIN[8];
+    char                      Euro_VIN[9];	      // includes terminator
     int                       UN_shiptype;
     bool                      b_isEuroInland;
     bool                      b_blue_paddle;
