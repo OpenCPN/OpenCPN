@@ -4659,24 +4659,14 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 
             ls = ls->next;
         }
-    }
+
+        //  Allocate some storage for converted points
+        wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
     
-    
-    //  Allocate some storage for converted points
-    wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
-    
-    
-    if( rzRules->obj->m_ls_list_legacy )
-    {
-        float *ppt;
-        
-        VE_Element *pedge;
-        
-        
         PI_connector_segment *pcs;
         
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
-        PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
+        ls = rzRules->obj->m_ls_list_legacy;
         
         while(ls){
                 if( ls->priority == priority_current  ) {  
