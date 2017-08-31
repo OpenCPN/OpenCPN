@@ -934,10 +934,10 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 
                 Descriptor.pointCount = pPayload->point_count;
                 Descriptor.pointTable = &pPayload->payLoad;
-                
-                obj->SetMultipointGeometry( &Descriptor, m_ref_lat, m_ref_lon);
-                
-                
+
+                if (obj)
+                    obj->SetMultipointGeometry( &Descriptor, m_ref_lat, m_ref_lon);
+
                 break;
             }
                 
