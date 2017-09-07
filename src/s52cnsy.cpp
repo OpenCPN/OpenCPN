@@ -2643,7 +2643,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         
         if (depth_value < 10.0) {
             // can be above water (negative)
-            int fraction = (int)ABS((depth_value - leading_digit)*10);
+            int fraction = (int)ABS((fabs(depth_value) - leading_digit)*10);
             
             
             snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
