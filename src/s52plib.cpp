@@ -3548,6 +3548,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     {
         glColor3ub( c->R, c->G, c->B );
         
+        glDisable( GL_LINE_SMOOTH );
+        
         //    Set drawing width
         if( w > 1 ) {
             GLint parms[2];
@@ -3571,10 +3573,13 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             else
                 glDisable( GL_LINE_STIPPLE );
 #endif
+        
+#ifndef __OCPN__ANDROID__            
             if(w >= 2){    
                 glEnable( GL_LINE_SMOOTH );
                 glEnable( GL_BLEND );
             }
+#endif            
     }
 #endif
     
@@ -3752,6 +3757,8 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else // OpenGL mode
     {
         glColor3ub( c->R, c->G, c->B );
+
+        glDisable( GL_LINE_SMOOTH );
         
         //    Set drawing width
         if( w > 1 ) {
@@ -3776,10 +3783,13 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         else
             glDisable( GL_LINE_STIPPLE );
 #endif
+
+#ifndef __OCPN__ANDROID__            
         if(w >= 2){    
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
         }
+#endif        
     }
 #endif
 
