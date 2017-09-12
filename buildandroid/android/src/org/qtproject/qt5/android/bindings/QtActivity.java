@@ -1485,31 +1485,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public String showBusyCircle(){
     //if(!m_fullScreen)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-//                 QtActivity.this.ringProgressDialog.show(QtActivity.this, "", "", true);
-
-                 ringProgressDialog = new ProgressDialog(QtActivity.this,R.style.MyTheme);
-                 ringProgressDialog.setCancelable(false);
-                 ringProgressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
-
-                 Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
-                 ringProgressDialog.setIndeterminateDrawable(myIcon);
-
-                 //  THIS IS IMPORTANT...Keeps the busy spinner from surfacing the hidden navigation buttons.
-                 ringProgressDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-                 QtActivity.this.ringProgressDialog.show();
-         }});
-     }
-
-        String ret = "";
-        return ret;
-    }
-
-    public String hideBusyCircle(){
 
         mutex = new Semaphore(0);
 
@@ -1517,10 +1492,63 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
             @Override
             public void run() {
 
-                 ringProgressDialog.dismiss();
+                if(null == ringProgressDialog){
+                   //Log.i("OpenCPN", "ShowBusyBuild");
+                   ringProgressDialog = new ProgressDialog(QtActivity.this,R.style.MyTheme);
+                   ringProgressDialog.setCancelable(false);
+                   ringProgressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+
+                   Drawable myIcon = getResources().getDrawable( R.drawable.progressbar_custom );
+                   ringProgressDialog.setIndeterminateDrawable(myIcon);
+
+                 //  THIS IS IMPORTANT...Keeps the busy spinner from surfacing the hidden navigation buttons.
+                   ringProgressDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                }
+
+                ringProgressDialog.show();
+
+                mutex.release();
+
+         }});
+     }
+
+     // One way to wait for the runnable to be done...
+       try {
+           mutex.acquire();            // Cannot get mutex until runnable above exits.
+       } catch (InterruptedException e) {
+           e.printStackTrace();
+       }
+
+
+        String ret = "";
+        return ret;
+    }
+
+    public String hideBusyCircle(){
+
+        if(null == ringProgressDialog){
+            return "";
+        }
+
+        mutex = new Semaphore(0);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                 if(null != ringProgressDialog)
+                    ringProgressDialog.dismiss();
 
                  mutex.release();
              }});
+
+       // One way to wait for the runnable to be done...
+         try {
+             mutex.acquire();            // Cannot get mutex until runnable above exits.
+         } catch (InterruptedException e) {
+             e.printStackTrace();
+         }
 
         String ret = "";
         return ret;

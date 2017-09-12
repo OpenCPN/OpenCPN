@@ -333,22 +333,22 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                ShowTextDialog("GRIB file downloaded OK");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_OK");
             }
             else if(resultCode == downloadGFSCombine.ERROR_NO_INTERNET){
-                ShowTextDialog("No Internet available\nPlease check your device's Mobile Data or WiFi settings.");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_INTERNET");
             }
             else if(resultCode == downloadGFSCombine.ERROR_NO_CONNECTION){
-                ShowTextDialog("Connection Failed");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_CONNECTION");
             }
             else if(resultCode == downloadGFSCombine.WARNING_PARTIAL){
-                ShowTextDialog("Warning:  Partial GRIB download\nGRIB elements successfully downloaded are still valid.");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_DOWN_FAIL");
             }
             else if(resultCode == downloadGFSCombine.ERROR_NO_RESOLVE){
-                ShowTextDialog("Connection Failed\nUnable to resolve host address.");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_DOWN_FAIL");
             }
             else {
-                ShowTextDialog("Download Failed\n  Please check logs.");
+                ShowTextDialog("@string/ocpn_GRIB_download_dialog_DOWN_FAIL");
             }
         }
 

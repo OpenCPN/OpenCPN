@@ -1,9 +1,18 @@
 <resources>
 
+    <string name="DOWNLOADING_FILE">Downloading file…</string>
+    <string name="DEFAULT">Default</string>
+    <string name="CUSTOM">Custom</string>
+
     <string name="ocpn_GRIB_activity_Display">GRIB Display Settings</string>
     <string name="ocpn_GRIB_activity_Choose">Choose local GRIB file</string>
     <string name="ocpn_GRIB_activity_Request">Request new GRIB file download</string>
     <string name="ocpn_GRIB_download_dialog_Request">Request GRIB Download...</string>
+    <string name="ocpn_GRIB_download_dialog_OK">GRIB file downloaded OK</string>
+    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">No Internet available\n Please check your device Mobile Data or WiFi settings.</string>
+    <string name="ocpn_GRIB_download_dialog_NO_CONNECTION">Connection Failed</string>
+    <string name="ocpn_GRIB_download_dialog_DOWN_FAIL">Download Failed\n Please check logs.</string>
+
 
     <string name="ocpn_action_follow">Auto-Follow Boat</string>
     <string name="ocpn_action_mob">Mark Man Overboard</string>

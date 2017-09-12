@@ -17,8 +17,8 @@
     <SwitchPreference
         android:key="grib_prefb_WindGustNumbersFixedSpacing"
         android:title="@string/ocpn_grib_windgustspace"
-        android:switchTextOff="Default"
-        android:switchTextOn="Custom"
+        android:switchTextOff="@string/DEFAULT"
+        android:switchTextOn="@string/CUSTOM"
         android:defaultValue="false"
         />
 
@@ -54,8 +54,8 @@
         android:entryValues="@array/GRIBOverlayColorsVal" />
 
     <org.opencpn.opencpn.SeekBarPreference
-        android:key="@string/ocpn_grib_overlaytrans"
-        android:title="Overlay Transparency"
+        android:key="grib_prefs_OverlayTransparency"
+        android:title="@string/ocpn_grib_overlaytrans"
         android:defaultValue="60"
         android:max="100"
         />

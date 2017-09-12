@@ -4946,7 +4946,7 @@ void MyFrame::ToggleCourseUp( void )
 
     if( g_bCourseUp ) {
         //    Stuff the COGAvg table in case COGUp is selected
-        double stuff = NAN;
+        double stuff = 0;
         if( !wxIsNaN(gCog) ) stuff = gCog;
 
         if( g_COGAvgSec > 0) {
@@ -8217,31 +8217,33 @@ bool MyFrame::DoChartUpdate( void )
 
         // on lookahead mode, adjust the vp center point
         if( g_bLookAhead ) {
-            double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
+            if(!wxIsNaN(g_COGAvg) && !wxIsNaN(gSog)){
+                double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
 
-            double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
-            double pixel_deltax = fabs( sin( angle * PI / 180. ) ) * cc1->GetCanvasWidth() / 4;
+                double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
+                double pixel_deltax = fabs( sin( angle * PI / 180. ) ) * cc1->GetCanvasWidth() / 4;
 
-            double pixel_delta_tent = sqrt(
+                double pixel_delta_tent = sqrt(
                     ( pixel_deltay * pixel_deltay ) + ( pixel_deltax * pixel_deltax ) );
 
-            double pixel_delta = 0;
+                double pixel_delta = 0;
 
             //    The idea here is to cancel the effect of LookAhead for slow gSog, to avoid
             //    jumping of the vp center point during slow maneuvering, or at anchor....
-            if( !wxIsNaN(gSog) ) {
-                if( gSog < 1.0 ) pixel_delta = 0.;
-                else
-                    if( gSog >= 3.0 ) pixel_delta = pixel_delta_tent;
+                if( !wxIsNaN(gSog) ) {
+                    if( gSog < 1.0 ) pixel_delta = 0.;
                     else
-                        pixel_delta = pixel_delta_tent * ( gSog - 1.0 ) / 2.0;
+                        if( gSog >= 3.0 ) pixel_delta = pixel_delta_tent;
+                        else
+                            pixel_delta = pixel_delta_tent * ( gSog - 1.0 ) / 2.0;
+                }
+
+                double meters_to_shift = cos( gLat * PI / 180. ) * pixel_delta / cc1->GetVPScale();
+
+                double dir_to_shift = g_COGAvg;
+
+                ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
             }
-
-            double meters_to_shift = cos( gLat * PI / 180. ) * pixel_delta / cc1->GetVPScale();
-
-            double dir_to_shift = g_COGAvg;
-
-            ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
         }
 
     } else {

@@ -37,6 +37,14 @@ public class OCPNPluginInstallerActivity extends Activity {
             if (Intent.ACTION_SEND.equals(action) && type != null) {
                 if ("text/plain".equals(type)) {
                     Log.i("OpenCPN", "OCPNPluginInstallerActivity Got text/plain");
+
+                    // Check the URI
+                    Uri uri = (Uri) getIntent().getExtras().get(Intent.EXTRA_STREAM);
+                    if(null == uri){
+                        Log.i("OpenCPN", "OCPNPluginInstallerActivity ERROR: Got null file uri.");
+                        finish();
+                    }
+
                     handleSendText(intent); // Handle uri being sent
                 }
             }
