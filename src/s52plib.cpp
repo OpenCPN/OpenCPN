@@ -2426,6 +2426,23 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         HPGL->SetTargetOpenGl();
         HPGL->Render( str, col, r, pivot, origin, xscale, render_angle, true );
 
+        //  Update the object Bounding box
+        //  so that subsequent drawing operations will redraw the item fully
+
+        int r_width = prule->pos.symb.bnbox_w.SYHL;
+        r_width = (int) ( r_width / fsf );
+        int r_height = prule->pos.symb.bnbox_h.SYVL;
+        r_height = (int) ( r_height / fsf );
+        int maxDim = wxMax(r_height, r_width);
+        
+        double latmin, lonmin, latmax, lonmax;
+        GetPixPointSingleNoRotate( r.x - maxDim, r.y + maxDim, &latmin, &lonmin, vp );
+        GetPixPointSingleNoRotate( r.x + maxDim, r.y - maxDim, &latmax,  &lonmax, vp );
+        LLBBox symbox;
+        symbox.Set( latmin, lonmin, latmax, lonmax );
+        
+        rzRules->obj->BBObj.Expand( symbox );
+        
     } else {
 
 #if (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
