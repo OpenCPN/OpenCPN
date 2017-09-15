@@ -7686,15 +7686,37 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     
                     // bind VBO in order to use
                     (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
+                    GLenum err = glGetError();
+                    if(err){
+                        wxString msg;
+                        msg.Printf(_T("VBO Error A: %d"), err);
+                        wxLogMessage(msg);
+                        return 0;
+                    }
                     
                     // upload data to VBO
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
                     (s_glBufferData)(GL_ARRAY_BUFFER,
                                     ppg_vbo->single_buffer_size, ppg_vbo->single_buffer, GL_STATIC_DRAW);
+                    err = glGetError();
+                    if(err){
+                        wxString msg;
+                        msg.Printf(_T("VBO Error B: %d"), err);
+                        wxLogMessage(msg);
+                        return 0;
+                    }
                     
                 }
                 else {
                     (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
+                    GLenum err = glGetError();
+                    if(err){
+                        wxString msg;
+                        msg.Printf(_T("VBO Error C: %d"), err);
+                        wxLogMessage(msg);
+                        return 0;
+                    }
+                    
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
                 }                    
              }
