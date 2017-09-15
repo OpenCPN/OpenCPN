@@ -9129,7 +9129,7 @@ void RenderFromHPGL::SetPen()
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
     //    glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+    //    glEnable( GL_POLYGON_SMOOTH );
         
         glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
         int line_width = wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7);
