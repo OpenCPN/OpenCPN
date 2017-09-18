@@ -73,7 +73,7 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_112(ppimgr)
+    :opencpn_plugin_115(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
