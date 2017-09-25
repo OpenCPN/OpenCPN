@@ -1939,22 +1939,27 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
-            int yp = y - ptext->rendered_char_height;
+            int yp = y; // - ptext->rendered_char_height;
             int xp = x;
-                
+            
+            int xadjust = 0;
+            int yadjust = 0;
+            
+            yadjust += - ptext->rendered_char_height;
+
             //  Add in the offsets, specified in units of nominal font height
-            yp += ptext->yoffs * ( ptext->rendered_char_height );
+            yadjust += ptext->yoffs * ( ptext->rendered_char_height );
             //  X offset specified in units of average char width
-            xp += ptext->xoffs * ptext->avgCharWidth;
+            xadjust += ptext->xoffs * ptext->avgCharWidth;
             
             
             // adjust for text justification
             switch ( ptext->hjust){
                 case '1':               // centered
-                    xp -= w/2;
+                    xadjust -= w/2;
                     break;
                 case '2':               // right
-                     xp -= w;
+                     xadjust -= w;
                      break;
                 case '3':               // left (default)
                 default:
@@ -1963,16 +1968,28 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             
             switch ( ptext->vjust){
                 case '3':               // top
-                    yp += h;
+                    yadjust += h;
                     break;
                 case '2':               // centered
-                     yp += h/2;
+                     yadjust += h/2;
                      break;
                 case '1':               // bottom (default)
                 default:
                     break;
             }
             
+            if(fabs(vp->rotation) > 0.01){
+                float c = cosf(-vp->rotation );
+                float s = sinf(-vp->rotation );
+                float x = xadjust;
+                float y = yadjust;
+                xadjust =  x*c - y*s;
+                yadjust =  x*s + y*c;
+                
+            }
+
+            xp += xadjust;
+            yp += yadjust;
             
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
@@ -2011,7 +2028,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             }
         }
             
-    #endif
+#endif
         } else {                // Not OpenGL
             wxFont oldfont = pdc->GetFont(); // save current font
 
@@ -2035,22 +2052,25 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
-            int yp = y - ( h - descent );
-            int xp = x;
+            int yadjust = 0;
+            int xadjust = 0;
+            
+            yadjust =  - ( h - descent );
+            
 
             //  Add in the offsets, specified in units of nominal font height
-            yp += ptext->yoffs * ( h - descent );
+            yadjust += ptext->yoffs * ( h - descent );
             
             //  X offset specified in units of average char width
-            xp += ptext->xoffs * ptext->avgCharWidth;
+            xadjust += ptext->xoffs * ptext->avgCharWidth;
 
             // adjust for text justification
             switch ( ptext->hjust){
                 case '1':               // centered
-                    xp -= w/2;
+                    xadjust -= w/2;
                     break;
                 case '2':               // right
-                     xp -= w;
+                     xadjust -= w;
                      break;
                 case '3':               // left (default)
                 default:
@@ -2059,16 +2079,33 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             switch ( ptext->vjust){
                 case '3':               // top
-                    yp += h;
+                    yadjust += h;
                     break;
                 case '2':               // centered
-                     yp += h/2;
+                     yadjust += h/2;
                      break;
                 case '1':               // bottom (default)
                 default:
                     break;
             }
             
+            int xp = x;
+            int yp = y;
+
+            if(fabs(vp->rotation) > 0.01){
+                float cx = vp->pix_width/2.;
+                float cy = vp->pix_height/2.;
+                float c = cosf(vp->rotation );
+                float s = sinf(vp->rotation );
+                float x = xp -cx;
+                float y = yp -cy;
+                xp =  x*c - y*s +cx + vp->rv_rect.x;
+                yp =  x*s + y*c +cy + vp->rv_rect.y;
+ 
+            }
+
+            xp+= xadjust;
+            yp+= yadjust;
             
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
@@ -6088,8 +6125,8 @@ int s52plib::DoRenderObjectTextOnly( wxDC *pdcin, ObjRazRules *rzRules, ViewPort
 //    if(strncmp(rzRules->obj->FeatureName, "RDOCAL", 6))
 //        return 0;
 
-//    if(rzRules->obj->Index != 636)
-//        return 0;
+//    if(rzRules->obj->Index == 2766)
+//        int yyp = 4;
     
     if( !ObjectRenderCheckRules( rzRules, vp, true ) )
         return 0;

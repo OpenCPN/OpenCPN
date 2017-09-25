@@ -2719,34 +2719,41 @@ bool s57chart::RenderRegionViewOnDCTextOnly( wxMemoryDC& dc, const ViewPort& VPo
 
     SetVPParms( VPoint );
 
-    ViewPort temp_vp = VPoint;
-    double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
-    
-    //    Decompose the region into rectangles,
-    OCPNRegionIterator upd( Region ); // get the requested rect list
-    while( upd.HaveRects() ) {
-        wxRect rect = upd.GetRect();
+    //  If the viewport is rotated, there will only be one rectangle in the region
+    //  so we can take a shortcut...
+    if(fabs(VPoint.rotation) > .01){
+        DCRenderText( dc, VPoint );
+    }
+    else{
+        ViewPort temp_vp = VPoint;
+        double temp_lon_left, temp_lat_bot, temp_lon_right, temp_lat_top;
         
-        wxPoint p;
-        p.x = rect.x;
-        p.y = rect.y;
+        //    Decompose the region into rectangles,
+        OCPNRegionIterator upd( Region ); // get the requested rect list
+        while( upd.HaveRects() ) {
+            wxRect rect = upd.GetRect();
+            
+            wxPoint p;
+            p.x = rect.x;
+            p.y = rect.y;
+            
+            temp_vp.GetLLFromPix( p, &temp_lat_top, &temp_lon_left);
+            
+            p.x += rect.width;
+            p.y += rect.height;
+            temp_vp.GetLLFromPix( p, &temp_lat_bot, &temp_lon_right);
         
-        temp_vp.GetLLFromPix( p, &temp_lat_top, &temp_lon_left);
+            if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
+                    temp_lon_right += 360.;
         
-        p.x += rect.width;
-        p.y += rect.height;
-        temp_vp.GetLLFromPix( p, &temp_lat_bot, &temp_lon_right);
-    
-        if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
-                temp_lon_right += 360.;
-    
-    
-        temp_vp.GetBBox().Set(temp_lat_bot, temp_lon_left, temp_lat_top, temp_lon_right);
+        
+            temp_vp.GetBBox().Set(temp_lat_bot, temp_lon_left, temp_lat_top, temp_lon_right);
 
-        wxDCClipper clip(dc, rect);
-        DCRenderText( dc, temp_vp );
-        
-        upd.NextRect();
+            wxDCClipper clip(dc, rect);
+            DCRenderText( dc, temp_vp );
+            
+            upd.NextRect();
+        }
     }
     
     return true;
