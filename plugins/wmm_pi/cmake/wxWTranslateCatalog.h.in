@@ -1,11 +1,13 @@
-/***************************************************************************
+/******************************************************************************
+ * $Id: wmm_pi.h,v 1.0 2015/01/28 01:54:37 jongough Exp $
  *
  * Project:  OpenCPN
- * Purpose:  NMEA0183 Support Classes
- * Author:   Samuel R. Blackburn, David S. Register
+ * Purpose:  Redefine _() macro to allow usage of catalog
+ * Author:   Jon Gough
  *
  ***************************************************************************
- *   Copyright (C) 2010 by Samuel R. Blackburn, David S Register           *
+ *   Copyright (C) 2010 by David S. Register   *
+ *   $EMAIL$   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,55 +24,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
- *
- *   S Blackburn's original source license:                                *
- *         "You can use it any way you like."                              *
- *   More recent (2010) license statement:                                 *
- *         "It is BSD license, do with it what you will"                   *
  */
+#ifndef _ODCATTRANS_H_
+#define _ODCATTRANS_H_
 
+#ifndef WXINTL_NO_GETTEXT_MACRO
+#ifdef _
+#undef _
+#endif // _
+#if wxCHECK_VERSION(3,0,0)
+    #define _(s) wxGetTranslation((s), wxS("opencpn-${PROJECT_NAME}"))
+#else // wxCHECK_VERSION(3,0,0)
+    #define _(s) wxGetTranslation(wxT(s), wxT("opencpn-${PROJECT_NAME}"))
+#endif // wxCHECK_VERSION(3,0,0)
+#endif // WXINTL_NO_GETTEXT_MACRO
 
-#if ! defined( GLL_CLASS_HEADER )
-#define GLL_CLASS_HEADER
-
-/*
-** Author: Samuel R. Blackburn
-** CI$: 76300,326
-** Internet: sammy@sed.csc.com
-**
-** You can use it any way you like.
-*/
-
-class GLL : public RESPONSE
-{
-
-   public:
-
-      GLL();
-     ~GLL();
-
-      /*
-      ** Data
-      */
-
-      wxString          UTCTime;
-      NMEA0183_BOOLEAN IsDataValid;
-      LATLONG          Position;
-
-      /*
-      ** Methods
-      */
-
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual const wxString& PlainEnglish( void );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const GLL& operator = ( const GLL& source );
-};
-
-#endif // GLL_CLASS_HEADER
+#endif

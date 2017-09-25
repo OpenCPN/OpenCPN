@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -76,6 +76,7 @@ class SENTENCE
       virtual NORTHSOUTH NorthOrSouth( int field_number ) const;
       virtual REFERENCE Reference( int field_number ) const;
       virtual TRANSDUCER_TYPE TransducerType( int field_number ) const;
+      virtual SENTENCE& Add ( double value, int precision); // Added to allow precision to be changed
 
       /*
       ** Operators

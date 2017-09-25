@@ -124,7 +124,7 @@ wmm_pi::wmm_pi(void *ppimgr)
 
 int wmm_pi::Init(void)
 {
-    AddLocaleCatalog( _T("opencpn-wmm_pi") );
+    AddLocaleCatalog( PLUGIN_CATALOG_NAME );
 
     // Set some default private member parameters
     m_wmm_dialog_x = 0;
