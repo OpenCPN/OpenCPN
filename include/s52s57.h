@@ -505,9 +505,6 @@ public:
       float      *pPoint;
 };
 
-WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
-WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
-
 typedef std::vector<VE_Element *> VE_ElementVector;
 typedef std::vector<VC_Element *> VC_ElementVector;
 
