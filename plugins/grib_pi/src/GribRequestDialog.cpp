@@ -1003,6 +1003,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_rButtonYes->SetLabel(_("Continue..."));
     m_rButton->Layout();
     SetRequestDialogSize();
-
+    delete message;
     ::wxEndBusyCursor();
 }
