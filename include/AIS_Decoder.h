@@ -54,7 +54,7 @@ public:
     wxString    m_ShipName;
 };
 
-WX_DECLARE_OBJARRAY(MMSIProperties *,      ArrayOfMMSIProperties);
+WX_DEFINE_ARRAY_PTR(MMSIProperties *, ArrayOfMMSIProperties);
 
 class AIS_Decoder : public wxEvtHandler
 {
