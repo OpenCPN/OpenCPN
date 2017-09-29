@@ -22704,50 +22704,6 @@
 			<display-cat>Standard</display-cat>
 			<comment>26250</comment>
 		</lookup>
-		<lookup id="2198" RCID="30378" name="LIGHTS">
-			<type>Point</type>
-			<disp-prio>Hazards</disp-prio>
-			<radar-prio>On Top</radar-prio>
-			<table-name>Paper</table-name>
-			<attrib-code index="0">CATLIT1,18</attrib-code>
-			<attrib-code index="1">COLOUR3</attrib-code>
-			<instruction>SY(LIGHTS11,ORIENT)</instruction>
-			<display-cat>Standard</display-cat>
-			<comment>27070</comment>
-		</lookup>
-		<lookup id="2199" RCID="30379" name="LIGHTS">
-			<type>Point</type>
-			<disp-prio>Hazards</disp-prio>
-			<radar-prio>On Top</radar-prio>
-			<table-name>Paper</table-name>
-			<attrib-code index="0">CATLIT1,18</attrib-code>
-			<attrib-code index="1">COLOUR4</attrib-code>
-			<instruction>SY(LIGHTS12,ORIENT)</instruction>
-			<display-cat>Standard</display-cat>
-			<comment>27070</comment>
-		</lookup>
-		<lookup id="2200" RCID="30380" name="LIGHTS">
-			<type>Point</type>
-			<disp-prio>Hazards</disp-prio>
-			<radar-prio>On Top</radar-prio>
-			<table-name>Paper</table-name>
-			<attrib-code index="0">CATLIT1,18</attrib-code>
-			<attrib-code index="1">COLOUR6</attrib-code>
-			<instruction>SY(LIGHTS13,ORIENT)</instruction>
-			<display-cat>Standard</display-cat>
-			<comment>27070</comment>
-		</lookup>
-		<lookup id="2201" RCID="30381" name="LIGHTS">
-			<type>Point</type>
-			<disp-prio>Hazards</disp-prio>
-			<radar-prio>On Top</radar-prio>
-			<table-name>Paper</table-name>
-			<attrib-code index="0">CATLIT1</attrib-code>
-			<attrib-code index="1">COLOUR1</attrib-code>
-			<instruction>SY(LIGHTS13,ORIENT)</instruction>
-			<display-cat>Standard</display-cat>
-			<comment>27070</comment>
-		</lookup>
 		<lookup id="2202" RCID="30382" name="LIGHTS">
 			<type>Point</type>
 			<disp-prio>Hazards</disp-prio>

@@ -808,7 +808,11 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ClientSzX" ), &g_lastClientRectw, 0 );
     Read( _T ( "ClientSzY" ), &g_lastClientRecth, 0 );
     
-
+    Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
+    g_nDepthUnitDisplay = read_int;
+    
     //    AIS
     wxString s;
     SetPath( _T ( "/Settings/AIS" ) );
@@ -2090,6 +2094,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ClientSzX" ), g_lastClientRectw );
     Write( _T ( "ClientSzY" ), g_lastClientRecth );
     
+    Write( _T ( "S52_DEPTH_UNIT_SHOW" ), g_nDepthUnitDisplay );
     
 
     //    AIS

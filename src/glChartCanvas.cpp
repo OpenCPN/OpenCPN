@@ -214,6 +214,9 @@ PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
+typedef void (APIENTRYP PFNGLGETBUFFERPARAMETERIV) (GLenum target, GLenum value, GLint *data);
+PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
+
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
@@ -376,6 +379,9 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+
+        s_glGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIV)
+            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
             
     }
 
