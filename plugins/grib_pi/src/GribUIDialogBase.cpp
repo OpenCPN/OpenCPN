@@ -2010,12 +2010,9 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 
 	m_pGribTable = new CustomGrid( this, wxID_ANY, wxDefaultPosition, wxSize( -1,50 ), 0, _T(" ") );
 
-<<<<<<< HEAD
-=======
 	// Cell Defaults
 	m_pGribTable->SetDefaultCellFont( wxFont( wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_pGribTable->SetDefaultCellAlignment( wxALIGN_CENTRE, wxALIGN_TOP );
->>>>>>> Correct numerous wx alignment traps.
 	fgSizer20->Add( m_pGribTable, 0, wxALL|wxEXPAND, 5 );
 
 

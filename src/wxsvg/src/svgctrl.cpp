@@ -100,11 +100,7 @@ void wxSVGCtrlBase::OnPaint(wxPaintEvent& event) {
 #ifdef __WXMSW__
 	int w = GetClientSize().GetWidth();
 	int h = GetClientSize().GetHeight();
-<<<<<<< HEAD
 	dc.SetPen(*wxTRANSPARENT_PEN);
-=======
-	dc.SetPen(wxPen(wxColour(), 0, wxPENSTYLE_TRANSPARENT));
->>>>>>> Correct numerous wx alignment traps.
 	dc.DrawRectangle(m_buffer.GetWidth(), 0, w - m_buffer.GetWidth(), h);
 	dc.DrawRectangle(0, m_buffer.GetHeight(), m_buffer.GetWidth(), h - m_buffer.GetHeight());
 #endif
