@@ -842,6 +842,7 @@ void ViewPort::SetBoxes( void )
     case PROJECTION_STEREOGRAPHIC:
     case PROJECTION_GNOMONIC:
         hourglass = true;
+        // fall through
     case PROJECTION_POLYCONIC:
     case PROJECTION_POLAR:
     case PROJECTION_ORTHOGRAPHIC:
