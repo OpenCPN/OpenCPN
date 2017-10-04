@@ -502,6 +502,7 @@ wxString GRIBTable::GetTimeRowsStrings( wxDateTime date_time, int time_zone, int
             case 1:
                 return t.Format( _T(" %a-%d-%b-%Y  "), wxDateTime::Local);
             }
+            break;
         case 1:
             switch( type ){
             case 0:
@@ -509,7 +510,7 @@ wxString GRIBTable::GetTimeRowsStrings( wxDateTime date_time, int time_zone, int
             case 1:
                 return t.Format( _T(" %a-%d-%b-%Y  "), wxDateTime::UTC );
             }
-        default:
-            return wxEmptyString;
+            break;
     }
+    return wxEmptyString;
 }
