@@ -1240,6 +1240,7 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
 
 void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
 {
+    
     //  We need to walk the virtual list to fill in the courses and distances
     for ( int n = 0; n < m_pTrack->GetnPoints(); n++ ) {
         TrackPoint  *this_point = m_pTrack->GetPoint(n);
@@ -1272,8 +1273,8 @@ void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
     }
     
         
-    RoutePrintSelection dlg( this, m_pTrack );
-    dlg.ShowModal();
+//    RoutePrintSelection dlg( this, m_pTrack );
+//    dlg.ShowModal();
 }
 
 void TrackPropDlg::OnTrackPropRightClick( wxListEvent &event )

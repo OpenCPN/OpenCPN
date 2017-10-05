@@ -145,9 +145,6 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
 
     //  Unfortunately, Routes and Tracks count points differently....
     int offset = 0;
-    if(myRoute->isTrack())
-        offset = -1;
-
     for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
         RoutePoint* point = myRoute->GetPoint( n + offset);
         
