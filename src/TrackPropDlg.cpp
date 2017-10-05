@@ -27,7 +27,7 @@
 #include "georef.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
-#include "routeprintout.h"
+#include "trackprintout.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
@@ -1239,42 +1239,9 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
 }
 
 void TrackPropDlg::OnPrintBtnClick( wxCommandEvent& event )
-{
-    
-    //  We need to walk the virtual list to fill in the courses and distances
-    for ( int n = 0; n < m_pTrack->GetnPoints(); n++ ) {
-        TrackPoint  *this_point = m_pTrack->GetPoint(n);
-        TrackPoint  *prev_point = n > 0 ? m_pTrack->GetPoint(n-1) : NULL;
-        
-        double gt_brg, gt_leg_dist;
-        double slat, slon;
-        if( n == 0 )
-        {
-            slat = gLat;
-            slon = gLon;
-        }
-        else  if( prev_point )
-        {
-            slat = prev_point->m_lat;
-            slon = prev_point->m_lon;
-        }
-         else
-         {
-             slat = gLat;
-             slon = gLon;
-         }
-        
-        DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
-        if(prev_point){
-            this_point->m_routeprop_distance = gt_leg_dist;
-            prev_point->m_routeprop_course = gt_brg;
-        }
-        
-    }
-    
-        
-//    RoutePrintSelection dlg( this, m_pTrack );
-//    dlg.ShowModal();
+{        
+    TrackPrintSelection dlg( this, m_pTrack, m_lcPoints );
+    dlg.ShowModal();
 }
 
 void TrackPropDlg::OnTrackPropRightClick( wxListEvent &event )
@@ -1703,13 +1670,11 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
 
             ret.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( gt_leg_dist ) );
-            this_point->m_routeprop_distance = gt_leg_dist;
             break;
 
         case 2:
             DistanceBearingMercator( this_point->m_lat, this_point->m_lon, slat, slon, &gt_brg, &gt_leg_dist );
             ret.Printf( _T("%03.0f \u00B0T"), gt_brg );
-            this_point->m_routeprop_course = gt_brg;
             break;
 
         case 3:

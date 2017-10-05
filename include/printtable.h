@@ -89,9 +89,9 @@ public:
     Table();
     ~Table();
 
-    Table& operator<<( const string& );
     Table& operator<<( const int& );
     Table& operator<<( const double& );
+    Table& operator<<( const wxString& );
 
     vector< vector < wxString > > & GetData()
     {

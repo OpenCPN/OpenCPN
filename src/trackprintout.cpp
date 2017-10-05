@@ -2,10 +2,10 @@
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Route printout
- * Author:   Pavel Saviankou
+ * Author:   Pavel Saviankou, Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2012 by David S. Register                               *
+ *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,9 +31,6 @@ using namespace std;
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
-#ifdef __WXMSW__
-//#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
-#endif
 
 #include "wx/print.h"
 #include "wx/printdlg.h"
@@ -48,12 +45,7 @@ using namespace std;
 #include <wx/colour.h>
 
 
-#if wxCHECK_VERSION( 2, 9, 0 )
 #include <wx/dialog.h>
-#else
-//  #include "scrollingdialog.h"
-#endif
-
 #include "dychart.h"
 
 #ifdef __WXMSW__
@@ -63,32 +55,23 @@ using namespace std;
 #include <psapi.h>
 #endif
 
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
-#endif
-
-#include "routeprintout.h"
+#include "trackprintout.h"
 #include "printtable.h"
-#include "wx28compat.h"
 #include "Track.h"
 
-#define PRINT_WP_NAME 0
-#define PRINT_WP_POSITION 1
-#define PRINT_WP_COURSE 2
-#define PRINT_WP_DISTANCE 3
-#define PRINT_WP_DESCRIPTION 4
+enum {PRINT_POSITION, PRINT_DISTANCE, PRINT_BEARING, PRINT_TIME, PRINT_SPEED};
 
 // Global print data, to remember settings during the session
 extern wxPrintData*     g_printData;
 // Global page setup data
 extern wxPageSetupData* g_pageSetupData;
 
-MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
-                                  Route*            route,
+MyTrackPrintout::MyTrackPrintout( std::vector<bool> _toPrintOut,
+                                  Track*            track,
+                                  OCPNTrackListCtrl *lcPoints,
                                   const wxString   &title
                                   ) : MyPrintout( title ),
-                                      myRoute( route ),
+                                      myTrack( track ),
                                       toPrintOut( _toPrintOut )
 {
     // Let's have at least some device units margin
@@ -102,95 +85,62 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
     table.StartFillHeader();
     // setup widths for columns
     
-    table << _("Leg");
+    table << (const char *)wxString(_("Leg")).mb_str();
     
-    if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << _("To Waypoint");
+    if ( toPrintOut[ PRINT_POSITION ] ) {
+        table << (const char *)wxString(_("Position")).mb_str();
     }
-    if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-        table << _("Position");
+    if ( toPrintOut[ PRINT_DISTANCE ] ) {
+        table << (const char *)wxString(_("Distance")).mb_str();
     }
-    if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-        table << _("Course");
+    if ( toPrintOut[ PRINT_BEARING ] ) {
+        table << (const char *)wxString(_("Course")).mb_str();
     }
-    if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-        table << _("Distance");
+    if ( toPrintOut[ PRINT_TIME ] ) {
+        table << (const char *)wxString(_("Time")).mb_str();
     }
-    if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-        table << _("Description");
+    if ( toPrintOut[ PRINT_SPEED ] ) {
+        table << (const char *)wxString(_("Speed")).mb_str();
     }
 
     table.StartFillWidths();
     
     table << 20;                // "Leg" column
-    
     // setup widths for columns
-    if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << 40;
-    }
-    if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-        table << 40;
-    }
-    if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-        table << 40;
-    }
-    if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
+    if ( toPrintOut[ PRINT_POSITION ] )
         table << 80;
-    }
-    if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-        table << 100;
-    }
+    if ( toPrintOut[ PRINT_DISTANCE ] )
+        table << 40;
+    if ( toPrintOut[ PRINT_BEARING ] )
+        table << 40;
+    if ( toPrintOut[ PRINT_TIME ] )
+        table << 60;
+    if ( toPrintOut[ PRINT_SPEED ] )
+        table << 40;
 
     table.StartFillData();
-
-    for ( int n = 1; n <= myRoute->GetnPoints(); n++ ) {
-        RoutePoint* point = myRoute->GetPoint( n );
+    for ( int n = 0; n <= myTrack->GetnPoints(); n++ ) {
+        table << lcPoints->OnGetItemText(n, 0); // leg
         
-        RoutePoint* pointm1 = NULL;
-        if(((n-1)) >= 0)
-            pointm1 = myRoute->GetPoint( n-1 );
-
-        if(NULL == point)
-            continue;
-        
-        wxString leg = _T("---");
-        if(n > 1)
-            leg.Printf( _T("%d"), n-1);
-        
-        string cell( leg.mb_str() );
-        
-        table << cell;
-        
-        if ( toPrintOut[ PRINT_WP_NAME ] ) {
-            string cell( point->GetName().mb_str() );
-            table << cell;
+        if ( toPrintOut[ PRINT_POSITION ] ) {
+            // lat + lon
+            wxString pos = lcPoints->OnGetItemText(n, 3) + _T(" ") + lcPoints->OnGetItemText(n, 4);
+            table << pos;
         }
-        if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-            wxString point_position = toSDMM( 1, point->m_lat, false ) + _T( "\n" ) + toSDMM( 2, point->m_lon, false );
-            string   cell( point_position.mb_str() );
-            table << cell;
-        }
-        if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-            wxString point_course = "---";
-            if(pointm1)
-                point_course.Printf( _T( "%03.0f Deg" ), pointm1->GetCourse() );
-            table << point_course;
-        }
-        if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-            wxString point_distance = _T("---");
-            if(n > 1)
-                point_distance.Printf( _T( "%6.2f" + getUsrDistanceUnit() ), toUsrDistance( point->GetDistance() ) );
-            table << point_distance;
-        }
-        if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-            table << point->GetDescription();
-        }
+        if ( toPrintOut[ PRINT_BEARING ] )
+            table << lcPoints->OnGetItemText(n, 2); // bearing
+        if ( toPrintOut[ PRINT_DISTANCE ] )
+            table << lcPoints->OnGetItemText(n, 1); // distance
+        if ( toPrintOut[ PRINT_TIME ] )
+            table << lcPoints->OnGetItemText(n, 5); // distance
+        if ( toPrintOut[ PRINT_SPEED ] )
+            table << lcPoints->OnGetItemText(n, 6); // distance
         table << "\n";
     }
 }
 
 
-void MyRoutePrintout::GetPageInfo( int* minPage, int* maxPage, int* selPageFrom, int* selPageTo )
+void MyTrackPrintout::GetPageInfo( int* minPage, int* maxPage, int* selPageFrom, int* selPageTo )
 {
     *minPage     = 1;
     *maxPage     = numberOfPages;
@@ -199,12 +149,12 @@ void MyRoutePrintout::GetPageInfo( int* minPage, int* maxPage, int* selPageFrom,
 }
 
 
-void MyRoutePrintout::OnPreparePrinting()
+void MyTrackPrintout::OnPreparePrinting()
 {
     pageToPrint = 1;
     wxDC*  dc = GetDC();
-    wxFont routePrintFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-    dc->SetFont( routePrintFont );
+    wxFont trackPrintFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    dc->SetFont( trackPrintFont );
 
     // Get the size of the DC in pixels
     int w, h;
@@ -232,7 +182,7 @@ void MyRoutePrintout::OnPreparePrinting()
 }
 
 
-bool MyRoutePrintout::OnPrintPage( int page )
+bool MyTrackPrintout::OnPrintPage( int page )
 {
     wxDC* dc = GetDC();
     if( dc ) {
@@ -248,22 +198,20 @@ bool MyRoutePrintout::OnPrintPage( int page )
 
 }
 
-void MyRoutePrintout::DrawPage( wxDC* dc )
+void MyTrackPrintout::DrawPage( wxDC* dc )
 {
 
 
-    wxFont routePrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
-    dc->SetFont( routePrintFont_bold );
+    wxFont trackPrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    dc->SetFont( trackPrintFont_bold );
     wxBrush brush( wxColour(255,255,255),  wxBRUSHSTYLE_TRANSPARENT );
     dc->SetBrush( brush );
 
     int header_textOffsetX = 2;
     int header_textOffsetY = 2;
     
-    dc->DrawText( myRoute->m_RouteNameString,  150, 20 );
+    dc->DrawText( myTrack->m_TrackNameString,  150, 20 );
     
-
-
     int currentX = marginX;
     int currentY = marginY;
     vector< PrintCell >& header_content = table.GetHeader();
@@ -274,8 +222,8 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
         currentX += cell.GetWidth();
     }
 
-    wxFont  routePrintFont_normal( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-    dc->SetFont( routePrintFont_normal );
+    wxFont  trackPrintFont_normal( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    dc->SetFont( trackPrintFont_normal );
 
     vector< vector < PrintCell > > & cells = table.GetContent();
     currentY = marginY + table.GetHeaderHeight();
@@ -299,40 +247,28 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 }
 
 
-// ---------- RoutePrintSelection dialof implementation
+// ---------- TrackPrintSelection dialof implementation
 
-/*!
- * RoutePrintSelection type definition
- */
-
-IMPLEMENT_DYNAMIC_CLASS( RoutePrintSelection, wxDialog )
-/*!
- * RouteProp event table definition
- */
-
-BEGIN_EVENT_TABLE( RoutePrintSelection, wxDialog )
-EVT_BUTTON( ID_ROUTEPRINT_SELECTION_CANCEL, RoutePrintSelection::OnRoutepropCancelClick )
-EVT_BUTTON( ID_ROUTEPRINT_SELECTION_OK, RoutePrintSelection::OnRoutepropOkClick )
+IMPLEMENT_DYNAMIC_CLASS( TrackPrintSelection, wxDialog )
+BEGIN_EVENT_TABLE( TrackPrintSelection, wxDialog )
+EVT_BUTTON( ID_TRACKPRINT_SELECTION_CANCEL, TrackPrintSelection::OnTrackpropCancelClick )
+EVT_BUTTON( ID_TRACKPRINT_SELECTION_OK, TrackPrintSelection::OnTrackpropOkClick )
 END_EVENT_TABLE()
-
-/*!
- * RouteProp constructors
- */
-
-RoutePrintSelection::RoutePrintSelection()
+TrackPrintSelection::TrackPrintSelection()
 {
 }
 
-
-RoutePrintSelection::RoutePrintSelection( wxWindow*       parent,
-                                          Route*          _route,
+TrackPrintSelection::TrackPrintSelection( wxWindow*       parent,
+                                          Track*          _track,
+                                          OCPNTrackListCtrl *lcPoints,
                                           wxWindowID      id,
                                           const wxString& caption,
                                           const wxPoint&  pos,
                                           const wxSize&   size,
                                           long            style )
 {
-    route = _route;
+    track = _track;
+    m_lcPoints = lcPoints;
 
     long wstyle = style;
 
@@ -341,16 +277,16 @@ RoutePrintSelection::RoutePrintSelection( wxWindow*       parent,
 }
 
 
-RoutePrintSelection::~RoutePrintSelection()
+TrackPrintSelection::~TrackPrintSelection()
 {
 }
 
 
 /*!
- * RouteProp creator
+ * TrackProp creator
  */
 
-bool RoutePrintSelection::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
+bool TrackPrintSelection::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
                              const wxPoint& pos, const wxSize& size, long style )
 {
     SetExtraStyle( GetExtraStyle() | wxWS_EX_BLOCK_EVENTS );
@@ -359,7 +295,7 @@ bool RoutePrintSelection::Create( wxWindow* parent, wxWindowID id, const wxStrin
     style |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( parent, id, _("Print Route Selection"), pos, size, style );
+    wxDialog::Create( parent, id, _("Print Track Selection"), pos, size, style );
 
     CreateControls();
 
@@ -368,68 +304,65 @@ bool RoutePrintSelection::Create( wxWindow* parent, wxWindowID id, const wxStrin
 
 
 /*!
- * Control creation for RouteProp
+ * Control creation for TrackProp
  */
 
-void RoutePrintSelection::CreateControls()
+void TrackPrintSelection::CreateControls()
 {
-    RoutePrintSelection* itemDialog1 = this;
-
+    TrackPrintSelection* itemDialog1 = this;
     wxStaticBox*         itemStaticBoxSizer3Static = new wxStaticBox( itemDialog1, wxID_ANY,
                                                                       _( "Elements to print..." ) );
-
     wxStaticBoxSizer* itemBoxSizer1 = new wxStaticBoxSizer( itemStaticBoxSizer3Static,  wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer1 );
 
     wxFlexGridSizer* fgSizer2;
     fgSizer2 = new wxFlexGridSizer( 5, 2, 0, 0 );
 
-    m_checkBoxWPName = new wxCheckBox( itemDialog1, wxID_ANY, _( "Name" ),
-                                       wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
-    m_checkBoxWPName->SetValue( true );
-    fgSizer2->Add( m_checkBoxWPName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-
-    wxStaticText* label1 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Waypoint name." ), wxDefaultPosition, wxDefaultSize );
-    fgSizer2->Add( label1, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-
-    m_checkBoxWPPosition = new wxCheckBox( itemDialog1, wxID_ANY, _( "Position" ),
-                                           wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
-    m_checkBoxWPPosition->SetValue( true );
-    fgSizer2->Add( m_checkBoxWPPosition, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    m_checkBoxPosition = new wxCheckBox( itemDialog1, wxID_ANY, _( "Position" ),
+                                         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
+    m_checkBoxPosition->SetValue( true );
+    fgSizer2->Add( m_checkBoxPosition, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     wxStaticText* label2 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Waypoint position." ), wxDefaultPosition, wxDefaultSize );
     fgSizer2->Add( label2, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
-    m_checkBoxWPCourse = new wxCheckBox( itemDialog1, wxID_ANY, _( "Course" ),
-                                         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
-    m_checkBoxWPCourse->SetValue( true );
-    fgSizer2->Add( m_checkBoxWPCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    m_checkBoxCourse = new wxCheckBox( itemDialog1, wxID_ANY, _( "Course" ),
+                                       wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
+    m_checkBoxCourse->SetValue( true );
+    fgSizer2->Add( m_checkBoxCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     wxStaticText* label3 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show course from each Waypoint to the next one. " ), wxDefaultPosition, wxDefaultSize );
     fgSizer2->Add( label3, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
-    m_checkBoxWPDistanceToNext = new wxCheckBox( itemDialog1, wxID_ANY, _( "Distance" ),
-                                                 wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
-    m_checkBoxWPDistanceToNext->SetValue( true );
-    fgSizer2->Add( m_checkBoxWPDistanceToNext, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    m_checkBoxDistance = new wxCheckBox( itemDialog1, wxID_ANY, _( "Distance" ),
+                                         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
+    m_checkBoxDistance->SetValue( true );
+    fgSizer2->Add( m_checkBoxDistance, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     wxStaticText* label4 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Distance from each Waypoint to the next one." ), wxDefaultPosition, wxDefaultSize );
     fgSizer2->Add( label4, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
-    m_checkBoxWPDescription = new wxCheckBox( itemDialog1, wxID_ANY, _( "Description" ),
-                                              wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
-    m_checkBoxWPDescription->SetValue( true );
-    fgSizer2->Add( m_checkBoxWPDescription, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    wxStaticText* label5 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Waypoint description." ), wxDefaultPosition, wxDefaultSize );
+    m_checkBoxTime = new wxCheckBox( itemDialog1, wxID_ANY, _( "Time" ),
+                                     wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
+    m_checkBoxTime->SetValue( true );
+    fgSizer2->Add( m_checkBoxTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText* label5 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Time." ), wxDefaultPosition, wxDefaultSize );
     fgSizer2->Add( label5, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+
+    m_checkBoxSpeed = new wxCheckBox( itemDialog1, wxID_ANY, _( "Speed" ),
+                                      wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
+    m_checkBoxSpeed->SetValue( true );
+    fgSizer2->Add( m_checkBoxSpeed, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText* label6 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Speed." ), wxDefaultPosition, wxDefaultSize );
+    fgSizer2->Add( label6, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     itemBoxSizer1->Add( fgSizer2, 5, wxEXPAND, 5 );
 
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer1->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
 
-    m_CancelButton = new wxButton( itemDialog1, ID_ROUTEPRINT_SELECTION_CANCEL, _( "Cancel" ), wxDefaultPosition,
+    m_CancelButton = new wxButton( itemDialog1, ID_TRACKPRINT_SELECTION_CANCEL, _( "Cancel" ), wxDefaultPosition,
                                    wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_OKButton = new wxButton( itemDialog1, ID_ROUTEPRINT_SELECTION_OK, _( "OK" ), wxDefaultPosition,
+    m_OKButton = new wxButton( itemDialog1, ID_TRACKPRINT_SELECTION_OK, _( "OK" ), wxDefaultPosition,
                                wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_OKButton->SetDefault();
@@ -438,7 +371,7 @@ void RoutePrintSelection::CreateControls()
 }
 
 
-void RoutePrintSelection::SetColorScheme( ColorScheme cs )
+void TrackPrintSelection::SetColorScheme( ColorScheme cs )
 {
     DimeControl( this );
 }
@@ -448,33 +381,34 @@ void RoutePrintSelection::SetColorScheme( ColorScheme cs )
  * Should we show tooltips?
  */
 
-bool RoutePrintSelection::ShowToolTips()
+bool TrackPrintSelection::ShowToolTips()
 {
     return TRUE;
 }
 
 
-void RoutePrintSelection::SetDialogTitle(const wxString & title)
+void TrackPrintSelection::SetDialogTitle(const wxString & title)
 {
     SetTitle( title );
 }
 
 
-void RoutePrintSelection::OnRoutepropCancelClick( wxCommandEvent& event )
+void TrackPrintSelection::OnTrackpropCancelClick( wxCommandEvent& event )
 {
     Close(); //Hide();
     event.Skip();
 }
 
 
-void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
+void TrackPrintSelection::OnTrackpropOkClick( wxCommandEvent& event )
 {
     std::vector<bool> toPrintOut;
-    toPrintOut.push_back( m_checkBoxWPName->GetValue() );
-    toPrintOut.push_back( m_checkBoxWPPosition->GetValue() );
-    toPrintOut.push_back( m_checkBoxWPCourse->GetValue() );
-    toPrintOut.push_back( m_checkBoxWPDistanceToNext->GetValue() );
-    toPrintOut.push_back( m_checkBoxWPDescription->GetValue() );
+    toPrintOut.push_back( m_checkBoxPosition->GetValue() );
+    toPrintOut.push_back( m_checkBoxCourse->GetValue() );
+    toPrintOut.push_back( m_checkBoxDistance->GetValue() );
+    toPrintOut.push_back( m_checkBoxTime->GetValue() );
+    toPrintOut.push_back( m_checkBoxSpeed->GetValue() );
+
 
     if ( NULL == g_printData ) {
         g_printData = new wxPrintData;
@@ -482,13 +416,13 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
         g_pageSetupData = new wxPageSetupDialogData;
     }
 
-    MyRoutePrintout*  myrouteprintout1 = new MyRoutePrintout( toPrintOut, route,  _( "Route Print" ) );
+    MyTrackPrintout*  mytrackprintout1 = new MyTrackPrintout( toPrintOut, track, m_lcPoints, _( "Track Print" ) );
 
     wxPrintDialogData printDialogData( *g_printData );
     printDialogData.EnablePageNumbers( true );
 
     wxPrinter printer( &printDialogData );
-    if ( !printer.Print( this, myrouteprintout1, true ) ) {
+    if ( !printer.Print( this, mytrackprintout1, true ) ) {
         if ( wxPrinter::GetLastError() == wxPRINTER_ERROR ) {
             OCPNMessageBox(
                 NULL,

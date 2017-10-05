@@ -1005,6 +1005,7 @@ SET(HDRS
 		include/routemanagerdialog.h
 		include/routeprop.h
 		include/routeprintout.h
+		include/trackprintout.h
 		include/PositionParser.h
 		include/printtable.h
 		include/piano.h
@@ -1100,6 +1101,7 @@ SET(SRCS
 		src/routemanagerdialog.cpp
 		src/routeprop.cpp
 		src/routeprintout.cpp
+		src/trackprintout.cpp
 		src/PositionParser.cpp
 		src/printtable.cpp
 		src/piano.cpp
