@@ -279,6 +279,7 @@ wxPrintData               *g_printData = (wxPrintData*) NULL ;
 // Global page setup data
 wxPageSetupData*          g_pageSetupData = (wxPageSetupData*) NULL;
 
+bool                      g_bShowISODGR;
 bool                      g_bShowOutlines;
 bool                      g_bShowDepthUnits;
 bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed

@@ -54,6 +54,8 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfSortedDoubles);
 
 extern s52plib  *ps52plib;
 
+extern bool g_bShowISODGR;
+
 wxString *CSQUAPNT01(S57Obj *obj);
 wxString *CSQUALIN01(S57Obj *obj);
 
@@ -638,8 +640,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
               }
               else
               {
+		if(g_bShowISODGR==TRUE)
+		  {
                     udwhaz03str = _T(";SY(ISODGR51)");     //_T(";OP(8OD14010);SY(ISODGR51)");
 //                  S57_setAtt(geo, "SCAMIN", "INFINITE");
+		  }
               }
 
               //  Move this object to DisplayBase category
