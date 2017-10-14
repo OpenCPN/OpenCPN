@@ -6981,6 +6981,7 @@ void pupHandler_PasteWaypoint() {
 
     int pasteBuffer = kml.ParsePasteBuffer();
     RoutePoint* pasted = kml.GetParsedRoutePoint();
+    if( ! pasted ) return;
 
     int nearby_sel_rad_pix = 8;
     double nearby_radius_meters = nearby_sel_rad_pix / cc1->GetCanvasTrueScale();
