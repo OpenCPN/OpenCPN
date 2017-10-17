@@ -3936,7 +3936,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
 
     //  "Mag Heading" checkbox
     pCBTrueShow =
-        new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show true"));
+        new wxCheckBox(panelUnits, ID_TRUESHOWCHECKBOX, _("Show true"));
     unitsSizer->Add(pCBTrueShow, 0, wxALL, group_item_spacing);
     pCBMagShow =
         new wxCheckBox(panelUnits, ID_MAGSHOWCHECKBOX, _("Show magnetic bearings and headings"));
