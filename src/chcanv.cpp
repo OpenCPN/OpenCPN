@@ -2659,6 +2659,10 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
 
 void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 {
+    // possible on startup
+    if( !ChartData )
+        return;
+
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
 
@@ -2725,7 +2729,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         if( !VPoint.b_quilt ) {             // not quilted
             pc = Current_Ch;
 
-            if( ChartData && pc ) {
+            if( pc ) {
                 //      If Current_Ch is not on the screen, unbound the zoomout
                 LLBBox viewbox = VPoint.GetBBox();
 //                wxBoundingBox chart_box;
@@ -2837,6 +2841,9 @@ void ChartCanvas::ClearbFollow( void )
 
 bool ChartCanvas::PanCanvas( double dx, double dy )
 {
+    if( !ChartData )
+        return false;
+
     extendedSectorLegs.clear();
 
     double clat = VPoint.clat, clon = VPoint.clon;
@@ -2955,6 +2962,7 @@ int ChartCanvas::AdjustQuiltRefChart( void )
 {
     int ret = -1;
     if(m_pQuilt){
+        wxASSERT(ChartData);
         ChartBase *pc = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
@@ -3024,6 +3032,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     delete pCurrentStack;
     pCurrentStack = NULL;
     pCurrentStack = new ChartStack;
+    wxASSERT(ChartData);
     ChartData->BuildChartStack( pCurrentStack, VPoint.clat, VPoint.clon );
 
     if( m_pQuilt ) {
