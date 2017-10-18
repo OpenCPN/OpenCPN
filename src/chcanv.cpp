@@ -8952,21 +8952,28 @@ void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
     }
 }
 
+extern wxDateTime gTimeSource;
 
 void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 {
+    wxDateTime this_now = gTimeSource;
+    bool cur_time = !gTimeSource.IsValid();
+    if (cur_time)
+        this_now = wxDateTime::Now();
+    time_t t_this_now = this_now.GetTicks();
+
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxPENSTYLE_SOLID );
-    wxPen *pyelo_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "YELO1" ) ), 1,
+    wxPen *pyelo_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( cur_time?_T ( "YELO1" ): _T ( "YELO2" )), 1,
                        wxPENSTYLE_SOLID );
-    wxPen *pblue_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "BLUE2" ) ), 1,
+    wxPen *pblue_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( cur_time?_T ( "BLUE2" ):_T ( "BLUE3" ) ), 1,
                        wxPENSTYLE_SOLID );
 
     wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "GREEN1" ) ),
                             wxBRUSHSTYLE_SOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-    wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxBRUSHSTYLE_SOLID );
-    wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "BLUE2" ):_T ( "BLUE3" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "YELO1" ): _T ( "YELO2" ) ), wxBRUSHSTYLE_SOLID );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
@@ -8996,8 +9003,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     int bmw = bm.GetWidth();
     int bmh = bm.GetHeight();
 
-    wxDateTime this_now = wxDateTime::Now();
-    time_t t_this_now = this_now.GetTicks();
 
     {
 
@@ -9218,15 +9223,16 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     double lat_last = 0.;
     // arrow size for Raz Blanchard : 12 knots north
     double marge = 0.2;
+    bool cur_time = !gTimeSource.IsValid();
 
     double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
     bDrawCurrentValues =  true_scale_display < g_Show_Target_Name_Scale;
 
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxPENSTYLE_SOLID );
-    wxPen *porange_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFO" ) ), 1,
+    wxPen *porange_pen = wxThePenList->FindOrCreatePen( GetGlobalColor(cur_time? _T ( "UINFO" ):_T ( "UINFB" ) ), 1,
                          wxPENSTYLE_SOLID );
-    wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UINFO" ) ),
+    wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "UINFO" ): _T ( "UINFB" ) ),
                              wxBRUSHSTYLE_SOLID );
     wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBDR" ) ),
                            wxBRUSHSTYLE_SOLID );
@@ -9237,8 +9243,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     
-    int now = time( NULL );
-
     {
 
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -9271,8 +9275,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     d[3].x = r.x - dd;
                     d[3].y = r.y;
 
-                    if( ptcmgr->GetTideOrCurrent15( now, i, tcvalue, dir, bnew_val ) ) {
-		      pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
+                    if( ptcmgr->GetTideOrCurrent15( 0 /* not used*/, i, tcvalue, dir, bnew_val ) ) {
+		        pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );

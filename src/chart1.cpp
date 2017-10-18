@@ -8786,6 +8786,8 @@ void MyFrame::DoPrint( void )
     #endif
 }
 
+wxDateTime gTimeSource;
+
 void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 {
     wxString message_ID = event.GetID();
@@ -8846,7 +8848,18 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
         gQueryVar = decl_val;
     }
     
-
+    if(message_ID == _T("GRIB_TIMELINE"))
+    {
+        wxJSONReader r;
+        wxJSONValue v;
+        r.Parse(message_JSONText, &v);
+        if (v[_T("Day")].AsInt() == -1)
+            gTimeSource = wxInvalidDateTime;
+        else
+            gTimeSource.Set (v[_T("Day")].AsInt(), (wxDateTime::Month)v[_T("Month")].AsInt(), 
+                    v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(), v[_T("Minute")].AsInt(), 
+                    v[_T("Second")].AsInt());
+    }
     if(message_ID == _T("OCPN_TRACK_REQUEST"))
     {
         wxJSONValue  root;
