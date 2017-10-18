@@ -1022,8 +1022,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         break;
     case 10: // productDiscipline
         switch (dataCat) {
-        // waves
-        case 0:
+        case 0:         // waves
 #if 0        
             switch (dataNum) {
             case 3: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
@@ -1041,9 +1040,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 #endif
 
             switch (dataNum) {
-                case 3: ret= GRB_HTSGW; break;
-                case 5: ret= GRB_WVHGT; break;
-                case 4: ret= GRB_WVDIR; break;
+                case 3: ret= GRB_HTSGW; break; // Significant Height of Combined Wind Waves and Swell
+                case 4: ret= GRB_WVDIR; break; // Direction of Wind Waves
+                case 5: ret= GRB_WVHGT; break; // Significant Height of Wind Waves
+                case 6: ret= GRB_WVPER; break; // Mean Period of Wind Waves
             }
             break;
 
