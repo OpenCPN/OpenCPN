@@ -8142,6 +8142,14 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                         chart_all_text_region.Subtract(chart_bar_rect);
                 }
                 
+                if(g_Compass && g_Compass->IsShown()){
+                    wxRect compassRect = g_Compass->GetRect();
+                    if(chart_all_text_region.Contains(compassRect) != wxOutRegion) {
+                        chart_all_text_region.Subtract(compassRect);
+                    }
+                }
+                
+                
                 mscratch_dc.DestroyClippingRegion();
                 
                 m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( mscratch_dc, svp, chart_all_text_region );
