@@ -1575,7 +1575,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 }
 
 // ---------------------------------------
-bool GribV2Record::hasMoreDataSet()
+bool GribV2Record::hasMoreDataSet() const
 {
     return grib_msg && grib_msg->num_grids != 1?true:false;
 }
