@@ -1318,6 +1318,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                               char date_string[40];
                               char date_buf[10];
+                              date_string[0] = 0;
+                              date_buf[0] = 0;
                               sscanf(&buffer[i], "%s\r\n", date_string);
                               wxString date_wxstr(date_string,  wxConvUTF8);
 
