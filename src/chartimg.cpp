@@ -3727,6 +3727,7 @@ wxImage *ChartBaseBSB::GetImage()
 
 bool ChartBaseBSB::GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type )
 {
+      assert(pPixCache != 0);
 //      PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
 //    Get and Rescale the data directly into the temporary PixelCache data buffer
