@@ -6,6 +6,9 @@
  
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+IF (COMMAND cmake_policy)
+  CMAKE_POLICY(SET CMP0043 NEW)
+ENDIF (COMMAND cmake_policy)
 
 PROJECT(wmm_pi)
 
@@ -18,6 +21,7 @@ SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "1")
 
 #SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_MACOSX_RPATH "ON")
 
 INCLUDE("cmake/PluginConfigure.cmake")
 
