@@ -93,12 +93,12 @@ class DashboardInstrument_WindDirHistory: public DashboardInstrument
         int m_currSec,m_lastSec,m_SpdCntperSec,m_DirCntperSec;
         double m_cntSpd,m_cntDir,m_avgSpd,m_avgDir;
 
-        void Draw(wxGCDC* dc);
-        void DrawBackground(wxGCDC* dc);
-        void DrawForeground(wxGCDC* dc);
+        void Draw(myDC* dc);
+        void DrawBackground(myDC* dc);
+        void DrawForeground(myDC* dc);
         void SetMinMaxWindScale();
-        void DrawWindDirScale(wxGCDC* dc);
-        void DrawWindSpeedScale(wxGCDC* dc);
+        void DrawWindDirScale(myDC* dc);
+        void DrawWindSpeedScale(myDC* dc);
         wxString GetWindDirStr(wxString WindDir);
 };
 

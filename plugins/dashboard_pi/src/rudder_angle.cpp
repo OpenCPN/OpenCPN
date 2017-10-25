@@ -89,7 +89,7 @@ void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit
       else return;
 }
 
-void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
+void DashboardInstrument_RudderAngle::DrawFrame(myDC* dc)
 {
       // We don't need the upper part
       // Move center up
@@ -119,7 +119,7 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
       dc->DrawLine(x1, y1, x2, y2);
 }
 
-void DashboardInstrument_RudderAngle::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_RudderAngle::DrawBackground(myDC* dc)
 {
       wxCoord x = m_cx - (m_radius * 0.3);
       wxCoord y = m_cy - (m_radius * 0.5);

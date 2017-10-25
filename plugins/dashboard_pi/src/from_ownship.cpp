@@ -47,7 +47,7 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *ppare
     s_lon = 99999999;
 }
 
-void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc)
+void DashboardInstrument_FromOwnship::Draw(myDC* dc)
 {
     wxColour cl;
 

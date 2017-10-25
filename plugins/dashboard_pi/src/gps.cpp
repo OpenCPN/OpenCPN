@@ -93,14 +93,14 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
       }
 }
 
-void DashboardInstrument_GPS::Draw(wxGCDC* dc)
+void DashboardInstrument_GPS::Draw(myDC* dc)
 {
       DrawFrame(dc);
       DrawBackground(dc);
       DrawForeground(dc);
 }
 
-void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
+void DashboardInstrument_GPS::DrawFrame(myDC* dc)
 {
       wxSize size = GetClientSize();
       wxColour cb;
@@ -177,7 +177,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
       dc->DrawLine(3, 130, size.x-3, 130);
 }
 
-void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_GPS::DrawBackground(myDC* dc)
 {
       // Draw SatID
 
@@ -208,7 +208,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 
 }
 
-void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
+void DashboardInstrument_GPS::DrawForeground( myDC* dc )
 {
     wxColour cl;
     GetGlobalColor( _T("DASHL"), &cl );

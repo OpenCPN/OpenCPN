@@ -87,13 +87,13 @@ void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
       }
 }
 
-void DashboardInstrument_Depth::Draw(wxGCDC* dc)
+void DashboardInstrument_Depth::Draw(myDC* dc)
 {
       DrawBackground(dc);
       DrawForeground(dc);
 }
 
-void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_Depth::DrawBackground(myDC* dc)
 {
       wxSize size = GetClientSize();
       wxColour cl;
@@ -145,7 +145,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc)
       dc->DrawText(label, size.x-width-1, size.y-height);
 }
 
-void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_Depth::DrawForeground(myDC* dc)
 {
       wxSize size = GetClientSize();
       wxColour cl;

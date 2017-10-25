@@ -138,7 +138,7 @@ void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
     }
 }
 
-void DashboardInstrument_Moon::Draw(wxGCDC* dc)
+void DashboardInstrument_Moon::Draw(myDC* dc)
 {
     if ( m_phase == -1 || m_hemisphere == _T("") ) return;
 
@@ -296,7 +296,7 @@ wxSize DashboardInstrument_Sun::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Sun::Draw(wxGCDC* dc)
+void DashboardInstrument_Sun::Draw(myDC* dc)
 {
       wxColour cl;
 

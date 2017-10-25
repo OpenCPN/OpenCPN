@@ -70,7 +70,7 @@ public:
 
     wxSize GetSize( int orient, wxSize hint );
     void SetData( int, double, wxString );
-    void Draw(wxGCDC* dc);
+    void Draw(myDC* dc);
     void SetUtcTime(wxDateTime value);
 
 private:
@@ -88,7 +88,7 @@ public:
     ~DashboardInstrument_Sun(){}
 
     wxSize GetSize( int orient, wxSize hint );
-    void Draw(wxGCDC* dc);
+    void Draw(myDC* dc);
     void SetData( int st, double data, wxString unit );
     void SetUtcTime( wxDateTime value );
 

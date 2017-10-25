@@ -133,7 +133,7 @@ void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit
   }
 
 
-void DashboardInstrument_BaroHistory::Draw(wxGCDC* dc)
+void DashboardInstrument_BaroHistory::Draw(myDC* dc)
 {
    m_WindowRect = GetClientRect();
    m_DrawAreaRect=GetClientRect();
@@ -148,7 +148,7 @@ void DashboardInstrument_BaroHistory::Draw(wxGCDC* dc)
 //*********************************************************************************
 // draw pressure scale
 //*********************************************************************************
-void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc)
+void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(myDC* dc)
 {
   wxString label1,label2,label3,label4,label5;
   wxColour cl;
@@ -215,7 +215,7 @@ void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc)
 //*********************************************************************************
 //draw background
 //*********************************************************************************
-void DashboardInstrument_BaroHistory::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_BaroHistory::DrawBackground(myDC* dc)
 {
   wxString label,label1,label2,label3,label4,label5;
   wxColour cl;
@@ -249,7 +249,7 @@ void DashboardInstrument_BaroHistory::DrawBackground(wxGCDC* dc)
 //*********************************************************************************
 //draw foreground
 //*********************************************************************************
-void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_BaroHistory::DrawForeground(myDC* dc)
 {
   wxColour col;
   double ratioH;

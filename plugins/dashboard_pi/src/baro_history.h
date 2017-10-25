@@ -95,12 +95,12 @@ class DashboardInstrument_BaroHistory: public DashboardInstrument
             int m_currSec,m_lastSec,m_SpdCntperSec;
             double m_cntSpd,m_cntDir,m_avgSpd,m_avgDir;
 
-            void Draw(wxGCDC* dc);
-            void DrawBackground(wxGCDC* dc);
-            void DrawForeground(wxGCDC* dc);
+            void Draw(myDC* dc);
+            void DrawBackground(myDC* dc);
+            void DrawForeground(myDC* dc);
             void SetMinMaxWindScale();
 
-   void DrawWindSpeedScale(wxGCDC* dc);
+   void DrawWindSpeedScale(myDC* dc);
    //wxString GetWindDirStr(wxString WindDir);
 };
 

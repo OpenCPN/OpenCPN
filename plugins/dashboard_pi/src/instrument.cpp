@@ -107,7 +107,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
         return;
     }
 
-#if wxUSE_GRAPHICS_CONTEXT
+#if !defined(__WXGTK__) && (wxUSE_GRAPHICS_CONTEXT == 1)
     wxGCDC dc( pdc );
 #else
     wxDC &dc( pdc );
@@ -193,7 +193,7 @@ wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Single::Draw(wxGCDC* dc)
+void DashboardInstrument_Single::Draw(myDC* dc)
 {
       wxColour cl;
 #ifdef __WXMSW__
@@ -287,7 +287,7 @@ wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )
       }
 }
 
-void DashboardInstrument_Position::Draw(wxGCDC* dc)
+void DashboardInstrument_Position::Draw(myDC* dc)
 {
       wxColour cl;
 

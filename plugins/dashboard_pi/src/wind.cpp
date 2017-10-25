@@ -53,7 +53,7 @@ DashboardInstrument_Wind::DashboardInstrument_Wind( wxWindow *parent, wxWindowID
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
 }
 
-void DashboardInstrument_Wind::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_Wind::DrawBackground(myDC* dc)
 {
     DrawBoat( dc, m_cx, m_cy, m_radius );
 }
@@ -66,7 +66,7 @@ DashboardInstrument_WindCompass::DashboardInstrument_WindCompass( wxWindow *pare
       SetOptionLabel(45, DIAL_LABEL_HORIZONTAL, wxArrayString(8, labels));
 }
 
-void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_WindCompass::DrawBackground(myDC* dc)
 {
       DrawCompassRose(dc, m_cx, m_cy, m_radius * 0.85, m_AngleStart, false);
 }
@@ -83,7 +83,7 @@ DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *
       SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
 }
 
-void DashboardInstrument_TrueWindAngle::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_TrueWindAngle::DrawBackground(myDC* dc)
 {
     DrawBoat( dc, m_cx, m_cy, m_radius );
 }
@@ -101,7 +101,7 @@ DashboardInstrument_Dial(parent, id, title, cap_flag, 0, 360, 0, 360)
 	SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
 }
 
-void DashboardInstrument_AppTrueWindAngle::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_AppTrueWindAngle::DrawBackground(myDC* dc)
 {
 	DrawBoat(dc, m_cx, m_cy, m_radius);
 }
@@ -130,7 +130,7 @@ void DashboardInstrument_AppTrueWindAngle::SetData(int st, double data, wxString
 	}
 	Refresh();
 }
-void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc)
+void DashboardInstrument_AppTrueWindAngle::Draw(myDC* bdc)
 {
 	wxColour c1;
 	GetGlobalColor(_T("DASHB"), &c1);
@@ -158,7 +158,7 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc)
 	DrawData(bdc, m_ExtraValueTrue, m_ExtraValueTrueUnit, m_ExtraValueFormat, m_ExtraValueOption2);
 	DrawForeground(bdc);
 }
-void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_AppTrueWindAngle::DrawForeground(myDC* dc)
 {
 	wxPoint points[4];
 	double data;
@@ -245,7 +245,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 	points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
 	dc->DrawPolygon(4, points, 0, 0);
 }
-void DashboardInstrument_AppTrueWindAngle::DrawData(wxGCDC* dc, double value,
+void DashboardInstrument_AppTrueWindAngle::DrawData(myDC* dc, double value,
 	wxString unit, wxString format, DialPositionOption position)
 {
 	if (position == DIAL_POSITION_NONE)

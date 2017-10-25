@@ -191,7 +191,7 @@ void DashboardInstrument_WindDirHistory::SetData(int st, double data, wxString u
   }
 }
 
-void DashboardInstrument_WindDirHistory::Draw(wxGCDC* dc)
+void DashboardInstrument_WindDirHistory::Draw(myDC* dc)
 {
    m_WindowRect = GetClientRect();
    m_DrawAreaRect=GetClientRect();
@@ -246,7 +246,7 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale()
 //*********************************************************************************
 // wind direction legend
 //*********************************************************************************
-void  DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc)
+void  DashboardInstrument_WindDirHistory::DrawWindDirScale(myDC* dc)
 {
   wxString label1,label2,label3,label4,label5;
   wxColour cl;
@@ -314,7 +314,7 @@ void  DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc)
 //*********************************************************************************
 // draw wind speed scale
 //*********************************************************************************
-void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
+void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(myDC* dc)
 {
   wxString label1,label2,label3,label4,label5;
   wxColour cl;
@@ -394,7 +394,7 @@ void  DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc)
 //*********************************************************************************
 //draw background
 //*********************************************************************************
-void DashboardInstrument_WindDirHistory::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_WindDirHistory::DrawBackground(myDC* dc)
 {
   wxString label,label1,label2,label3,label4,label5;
   wxColour cl;
@@ -483,7 +483,7 @@ wxString DashboardInstrument_WindDirHistory::GetWindDirStr(wxString WindDir)
 //*********************************************************************************
 //draw foreground
 //*********************************************************************************
-void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_WindDirHistory::DrawForeground(myDC* dc)
 {
   wxColour col;
   double ratioH;

@@ -108,7 +108,7 @@ void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
       }
 }
 
-void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
+void DashboardInstrument_Dial::Draw(myDC* bdc)
 {
     wxColour c1;
     GetGlobalColor(_T("DASHB"), &c1);
@@ -135,7 +135,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     DrawForeground(bdc);
 }
 
-void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
+void DashboardInstrument_Dial::DrawFrame( myDC* dc )
 {
     wxSize size = GetClientSize();
     wxColour cl;
@@ -197,7 +197,7 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     }
 }
 
-void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
+void DashboardInstrument_Dial::DrawMarkers(myDC* dc)
 {
     if( m_MarkerOption == DIAL_MARKER_NONE ) return;
 
@@ -246,7 +246,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     }
 }
 
-void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc)
+void DashboardInstrument_Dial::DrawLabels(myDC* dc)
 {
       if (m_LabelOption == DIAL_LABEL_NONE)
             return;
@@ -341,13 +341,13 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc)
 
 }
 
-void DashboardInstrument_Dial::DrawBackground(wxGCDC* dc)
+void DashboardInstrument_Dial::DrawBackground(myDC* dc)
 {
       // Nothing to do here right now, will be overwritten
       // by child classes if required
 }
 
-void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
+void DashboardInstrument_Dial::DrawData(myDC* dc, double value,
             wxString unit, wxString format, DialPositionOption position)
 {
       if (position == DIAL_POSITION_NONE)
@@ -463,7 +463,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
       }
 }
 
-void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
+void DashboardInstrument_Dial::DrawForeground(myDC* dc)
 {
       // The default foreground is the arrow used in most dials
       wxColour cl;
@@ -517,7 +517,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
 }
 
 /* Shared functions */
-void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, bool showlabels)
+void DrawCompassRose(myDC* dc, int cx, int cy, int radius, int startangle, bool showlabels)
 {
       wxPoint pt, points[3];
       wxString Value;
@@ -584,7 +584,7 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle, boo
       }
 }
 
-void DrawBoat( wxGCDC* dc, int cx, int cy, int radius )
+void DrawBoat( myDC* dc, int cx, int cy, int radius )
 {
     // Now draw the boat
     wxColour cl;

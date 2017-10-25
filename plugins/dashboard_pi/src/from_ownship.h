@@ -65,7 +65,7 @@ protected:
     int               m_cap_flag4;
     int               m_DataHeight;
 
-    void Draw(wxGCDC* dc);
+    void Draw(myDC* dc);
 };
 
 #endif
