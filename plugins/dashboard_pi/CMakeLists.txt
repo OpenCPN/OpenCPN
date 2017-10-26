@@ -23,7 +23,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0043 NEW)
+  if (POLICY CMP0043)
+    CMAKE_POLICY(SET CMP0043 NEW)
+  endif (POLICY CMP0043)
 ENDIF (COMMAND cmake_policy)
 
 PROJECT(dashboard_pi)
