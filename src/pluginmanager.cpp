@@ -400,7 +400,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             
         if(m_benable_blackdialog && !b_compat)
         {
-            wxLogMessage(wxString::Format(_T("    %s: %s")), _T("Incompatible plugin detected"), file_name.c_str());
+            wxLogMessage(wxString::Format(_T("    %s: %s"), _T("Incompatible plugin detected"), file_name.c_str()));
             OCPNMessageBox( NULL, wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()), wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
         }
             
