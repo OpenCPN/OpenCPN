@@ -57,6 +57,12 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
+    m_created = false;
+    xSpot = 0;
+    ySpot = 0;
+
+    m_pTCRolloverWin = NULL;
+
     long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
@@ -69,7 +75,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_x = x;
     m_y = y;
     
-    m_created = false;
     RecalculateSize();
      
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
@@ -94,7 +99,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         SetTitle( wxString( _( "Current" ) ) );
     }
 
-    m_pTCRolloverWin = NULL;
 
 
     int sx, sy;
@@ -837,6 +841,9 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         SetCursor( *pParent->pCursorCross );
         if( NULL == m_pTCRolloverWin ) {
             m_pTCRolloverWin = new RolloverWin( this, -1, false );
+            // doesn't really work, mouse positions are relative to rollover window
+            // not this window.
+            // effect: hide rollover window if mouse on rollover
             m_pTCRolloverWin->SetMousePropogation( 1 );
             m_pTCRolloverWin->Hide();
         }
@@ -910,7 +917,6 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
 
     if( m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover ) {
         m_pTCRolloverWin->Hide();
-        m_pTCRolloverWin = NULL;
     }
 
 }
