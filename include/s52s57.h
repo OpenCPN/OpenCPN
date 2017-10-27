@@ -237,6 +237,10 @@ public:
     bool        bnat;           // frmtd is National text, UTF-8 encoded
     bool        bspecial_char;  // frmtd has special ASCII characters, i.e. > 127
     int         avgCharWidth;
+    int         texobj;
+    int         text_width;
+    int         text_height;
+    
 };
 
 

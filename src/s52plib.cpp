@@ -1696,12 +1696,12 @@ static void rotate(wxRect *r, ViewPort const &vp)
 bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
                           S57Obj *pobj, bool bCheckOverlap, ViewPort *vp )
 {
-#ifdef DrawText
-#undef DrawText
-#define FIXIT
-#endif
+    #ifdef DrawText
+    #undef DrawText
+    #define FIXIT
+    #endif
     bool bdraw = true;
-
+    
     wxFont *scaled_font = ptext->pFont;
     wxCoord w_scaled = 0;
     wxCoord h_scaled = 0;
@@ -1715,19 +1715,19 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
         scale_factor = 1.0;
     
     //  Place an upper bound on the scaled text size
-    scale_factor = wxMin(scale_factor, 4);
-    
-    if( !pdc ) // OpenGL
+        scale_factor = wxMin(scale_factor, 4);
+        
+        if( !pdc ) // OpenGL
     {
 #ifdef ocpnUSE_GL
-
+        
         bool b_force_no_texture = false;
         if(scale_factor > 1.){
             b_force_no_texture = true;
-  
+            
             int old_size = ptext->pFont->GetPointSize();
             int new_size = old_size * scale_factor;
-            scaled_font = FontMgr::Get().FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
+            scaled_font = wxTheFontList->FindOrCreateFont( new_size, ptext->pFont->GetFamily(),
                                                            ptext->pFont->GetStyle(), ptext->pFont->GetWeight(), false,
                                                            ptext->pFont->GetFaceName() );
             wxScreenDC sdc;
@@ -1736,100 +1736,133 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             
             // Has font size changed?  If so, clear the cached bitmap, and rebuild it
             if( (h_scaled - descent) != ptext->rendered_char_height){
-                free(ptext->m_pRGBA);
-                ptext->m_pRGBA = NULL;
+                glDeleteTextures(1, (GLuint *)&ptext->texobj);
+                ptext->texobj = 0;
             }
-                
+            
             ptext->rendered_char_height = h_scaled - descent;
-                
+            
         }
         // We render string with "special" characters the old, hard way, since we don't necessarily have the glyphs in our font, 
         // or if we do we would need a hashmap to cache and extract them
         // And we also do this if the text is to be scaled up artificially.
         if( (ptext->bspecial_char) || b_force_no_texture) {       
-            if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
+            if( !ptext->texobj ) // is texture ready?
             {
                 wxScreenDC sdc;
-
+                
                 if(scale_factor <= 1.){
                     sdc.GetTextExtent( ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead, scaled_font ); // measure the text
                     ptext->rendered_char_height = h_scaled - descent;
                 }
                 
-                wxMemoryDC mdc;
-                wxBitmap bmp( w_scaled, h_scaled );
-                mdc.SelectObject( bmp );
-                mdc.SetFont( *( scaled_font ) );
+                ptext->text_width = w_scaled;
+                ptext->text_height = h_scaled;
                 
-                if( mdc.IsOk() ) {
-                    //  Render the text as white on black, so that underlying anti-aliasing of
-                    //  wxDC text rendering can be extracted and converted to alpha-channel values.
-                    
-                    mdc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
-                    mdc.SetBackgroundMode( wxTRANSPARENT );
-                    
-                    mdc.SetTextForeground( wxColour( 255, 255, 255 ) );
-                    
-                    mdc.Clear();
-                    
-                    mdc.DrawText( ptext->frmtd, 0, 0 );
-                    
-                    wxImage image = bmp.ConvertToImage();
-                    int ws = image.GetWidth(), hs = image.GetHeight();
-                    
-                    ptext->RGBA_width = ws;
-                    ptext->RGBA_height = hs;
-                    ptext->m_pRGBA = (unsigned char *) malloc( 4 * ws * hs );
-                    
-                    unsigned char *d = image.GetData();
-                    unsigned char *pdest = ptext->m_pRGBA;
-                    S52color *ccolor = ptext->pcol;
-                    
-                    if(d){
-                        for( int y = 0; y < hs; y++ )
-                            for( int x = 0; x < ws; x++ ) {
-                                unsigned char r, g, b;
-                                int off = ( y * ws + x );
-                                r = d[off * 3 + 0];
-                                g = d[off * 3 + 1];
-                                b = d[off * 3 + 2];
-                                
-                                pdest[off * 4 + 0] = ccolor->R;
-                                pdest[off * 4 + 1] = ccolor->G;
-                                pdest[off * 4 + 2] = ccolor->B;
-                                
-                                int alpha = ( r + g + b ) / 3;
-                                pdest[off * 4 + 3] = (unsigned char) ( alpha & 0xff );
-                            }
-                    }
-                    
-                    mdc.SelectObject( wxNullBitmap );
-                } // mdc OK
-                
-            } // Building m_RGBA
+                /* make power of 2 */
+                int tex_w, tex_h;
+                for(tex_w = 1; tex_w < ptext->text_width; tex_w *= 2);
+                for(tex_h = 1; tex_h < ptext->text_height; tex_h *= 2);
+           
+           wxMemoryDC mdc;
+           wxBitmap bmp( tex_w, tex_h );
+           mdc.SelectObject( bmp );
+           mdc.SetFont( *( scaled_font ) );
+           
+           if( mdc.IsOk() ) {
+               //  Render the text as white on black, so that underlying anti-aliasing of
+               //  wxDC text rendering can be extracted and converted to alpha-channel values.
+               
+               mdc.SetBackground( wxBrush( wxColour( 0, 0, 0 ) ) );
+               mdc.SetBackgroundMode( wxTRANSPARENT );
+               
+               mdc.SetTextForeground( wxColour( 255, 255, 255 ) );
+               
+               mdc.Clear();
+               
+               mdc.DrawText( ptext->frmtd, 0, 0 );
+               mdc.SelectObject( wxNullBitmap );
+               
+               wxImage image = bmp.ConvertToImage();
+               int ws = image.GetWidth(), hs = image.GetHeight();
+               
+               ptext->RGBA_width = ws;
+               ptext->RGBA_height = hs;
+               unsigned char *pRGBA = (unsigned char *) malloc( 4 * ws * hs );
+               
+               unsigned char *d = image.GetData();
+               unsigned char *pdest = pRGBA;
+               S52color *ccolor = ptext->pcol;
+               
+               if(d){
+                   for( int y = 0; y < hs; y++ )
+                       for( int x = 0; x < ws; x++ ) {
+                           unsigned char r, g, b;
+                           int off = ( y * ws + x );
+                           
+                           r = d[off * 3 + 0];
+                           g = d[off * 3 + 1];
+                           b = d[off * 3 + 2];
+                           
+                           pdest[off * 4 + 0] = ccolor->R;
+                           pdest[off * 4 + 1] = ccolor->G;
+                           pdest[off * 4 + 2] = ccolor->B;
+                           
+                           int alpha = ( r + g + b ) / 3;
+                           pdest[off * 4 + 3] = (unsigned char) ( alpha & 0xff );
+                       }
+               }
+               
+               
+               int draw_width = ptext->RGBA_width;
+               int draw_height = ptext->RGBA_height;
+               
+               glEnable( GL_TEXTURE_2D );
+               
+               GLuint texobj;
+               glGenTextures( 1, &texobj );
+               
+               glBindTexture( GL_TEXTURE_2D, texobj );
+               
+               glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+               glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+               glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST/*GL_LINEAR*/ );
+               glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+               
+               glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, draw_width, draw_height, 0,
+                             GL_RGBA, GL_UNSIGNED_BYTE, pRGBA );
+               
+               free( pRGBA );
+               
+               ptext->texobj = texobj;
+               
+           } // mdc OK
+            } // Building texobj
             
-            //    Render the bitmap
-            if( ptext->m_pRGBA ) {
+            //    Render the texture
+            if( ptext->texobj ) {
                 //  Adjust the y position to account for the convention that S52 text is drawn
                 //  with the lower left corner at the specified point, instead of the wx convention
                 //  using upper right corner
-                int yp = y - ( ptext->rendered_char_height );
-                int xp = x;
+                int yadjust = 0;
+                int xadjust = 0;
+                
+                yadjust =  -ptext->rendered_char_height;
+                
                 
                 //  Add in the offsets, specified in units of nominal font height
-                yp += ptext->yoffs * ( ptext->rendered_char_height );
+                yadjust += ptext->yoffs * ( ptext->rendered_char_height );
                 //  X offset specified in units of average char width
-                xp += ptext->xoffs * ptext->avgCharWidth;
-
+                xadjust += ptext->xoffs * ptext->avgCharWidth;
                 
                 // adjust for text justification
                 int w = ptext->avgCharWidth * ptext->frmtd.Length();
                 switch ( ptext->hjust){
                     case '1':               // centered
-                    xp -= w/2;
+                    xadjust -= w/2;
                     break;
                     case '2':               // right
-                     xp -= w;
+                     xadjust -= w;
                      break;
                     case '3':               // left (default)
                     default:
@@ -1838,20 +1871,39 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 
                 switch ( ptext->vjust){
                     case '3':               // top
-                    yp += ptext->rendered_char_height;
+                    yadjust += ptext->rendered_char_height;
                     break;
                     case '2':               // centered
-                     yp += ptext->rendered_char_height/2;
+                     yadjust += ptext->rendered_char_height/2;
                      break;
                     case '1':               // bottom (default)
                     default:
                         break;
                 }
                 
+                if(fabs(vp->rotation) > 0.01){
+                    float c = cosf(-vp->rotation );
+                    float s = sinf(-vp->rotation );
+                    float x = xadjust;
+                    float y = yadjust;
+                    xadjust =  x*c - y*s;
+                    yadjust =  x*s + y*c;
+                    
+                }
+                
+                int xp = x;
+                int yp = y;
+                
+                xp+= xadjust;
+                yp+= yadjust;
+                
+                
+                
+                
                 pRectDrawn->SetX( xp );
                 pRectDrawn->SetY( yp );
-                pRectDrawn->SetWidth( ptext->RGBA_width );
-                pRectDrawn->SetHeight( ptext->RGBA_height );
+                pRectDrawn->SetWidth( ptext->text_width );
+                pRectDrawn->SetHeight( ptext->text_height );
                 
                 if( bCheckOverlap ) {
                     if( CheckTextRectList( *pRectDrawn, ptext ) )
@@ -1859,56 +1911,58 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 }
                 
                 if( bdraw ) {
-                    int x_offset = 0;
-                    int y_offset = 0;
-                    int draw_width = ptext->RGBA_width;
-                    int draw_height = ptext->RGBA_height;
                     
-                    //  glDrawPixels fails if the origin of the pixel array is clipped by the matrix model
-                    //  So, we adjust the pixel array offsets to compensate.
-                    //  Sadly, the same logic does not work for rotated matrices, so we have to let them clip.
-                    //  TODO...do manual matrix operation to determine adjusted pixel array offsets for rotated case
-                    if( fabs( vp->rotation ) < 0.01 ) {
+                    int draw_width = ptext->text_width;
+                    int draw_height = ptext->text_height;
+                    
+                    extern GLenum       g_texture_rectangle_format;
+                    
+                    glEnable( GL_BLEND );
+                    glEnable( GL_TEXTURE_2D );
+                    
+                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+                    
+                    glBindTexture( GL_TEXTURE_2D, ptext->texobj );
+                    
+                    glPushMatrix();
+                    glTranslatef(xp, yp, 0);
+                    
+                    /* undo previous rotation to make text level */
+                    glRotatef(vp->rotation*180/PI, 0, 0, -1);
+                    
+                    
+                    float tx1 = 0, tx2 = draw_width;
+                    float ty1 = 0, ty2 = draw_height;
+                    
+                    if(g_texture_rectangle_format == GL_TEXTURE_2D) {
                         
-                        if( xp < 0 ) {
-                            x_offset = -xp;
-                            draw_width += xp;
-                        }
-                        if( yp < 0 ) {
-                            y_offset = -yp;
-                            draw_height += yp;
-                        }
+                        tx1 /= ptext->RGBA_width, tx2 /= ptext->RGBA_width;
+                        ty1 /= ptext->RGBA_height, ty2 /= ptext->RGBA_height;
                     }
                     
-                    if( ( draw_width > 0 ) && ( draw_height > 0 ) ) {
-                        glColor4f( 1, 1, 1, 1 );
-                        
-                        glEnable( GL_BLEND );
-                        glPixelZoom( 1, -1 );
-                        
-                        glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
-                        
-                        glPixelStorei( GL_UNPACK_ROW_LENGTH, ptext->RGBA_width );
-                        
-                        glRasterPos2i( xp + x_offset + 1, yp + y_offset + 1 );
-                        
-                        glPixelStorei( GL_UNPACK_SKIP_PIXELS, x_offset );
-                        glPixelStorei( GL_UNPACK_SKIP_ROWS, y_offset );
-                        
-                        glDrawPixels( draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, ptext->m_pRGBA );
-                        glPixelZoom( 1, 1 );
-                        
-                        glPopClientAttrib();
-
-                        glDisable( GL_BLEND );
-                    }
+                    
+                    glBegin( GL_QUADS );
+                    
+                    glTexCoord2f( tx1, ty1 );  glVertex2i( 0, 0 );
+                    glTexCoord2f( tx2, ty1 );  glVertex2i( draw_width, 0 );
+                    glTexCoord2f( tx2, ty2 );  glVertex2i( draw_width, draw_height );
+                    glTexCoord2f( tx1, ty2 );  glVertex2i( 0, draw_height );
+                    
+                    glEnd();
+                    
+                    glPopMatrix();
+                    
+                    glDisable( g_texture_rectangle_format );
+                    glDisable( GL_BLEND );
+                    
+                    
                 } // bdraw
                 
             }
-        
-        bdraw = true;
+            
+            bdraw = true;
         }
-
+        
         else {                                          // render using cached texture glyphs
             // rebuild font if needed
             TexFont *f_cache = 0;
@@ -1928,30 +1982,28 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             }
             if (f_cache == 0) {
                 s_txf[i].key = ptext->pFont;
-                f_cache = &s_txf[i].cache;                
+                f_cache = &s_txf[i].cache;
                 f_cache->Build(*ptext->pFont);
             }
-
+            
             int w, h;
             f_cache->GetTextExtent(ptext->frmtd, &w, &h);
-                
+            
             ptext->rendered_char_height = h;
+            
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
-            int yp = y; // - ptext->rendered_char_height;
-            int xp = x;
-            
-            int xadjust = 0;
             int yadjust = 0;
+            int xadjust = 0;
             
-            yadjust += - ptext->rendered_char_height;
-
+            yadjust =  -ptext->rendered_char_height;
+            
+            
             //  Add in the offsets, specified in units of nominal font height
             yadjust += ptext->yoffs * ( ptext->rendered_char_height );
             //  X offset specified in units of average char width
             xadjust += ptext->xoffs * ptext->avgCharWidth;
-            
             
             // adjust for text justification
             switch ( ptext->hjust){
@@ -1987,57 +2039,62 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 yadjust =  x*s + y*c;
                 
             }
-
-            xp += xadjust;
-            yp += yadjust;
+            
+            int xp = x;
+            int yp = y;
+            
+            xp+= xadjust;
+            yp+= yadjust;
             
             pRectDrawn->SetX( xp );
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
             pRectDrawn->SetHeight( h );
-
+            
             if( bCheckOverlap ) {
                 if(fabs( vp->rotation ) > .01){
                     rotate(pRectDrawn, *vp );
                 }
                 if( CheckTextRectList( *pRectDrawn, ptext ) ) bdraw = false;
             }
-
+            
             if( bdraw ) {
-                wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
+                wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
+                
+                // If the user has not changed the color from BLACK, then use the color specified in the S52 LUP
                 if( wcolor == *wxBLACK )
                     glColor3ub( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
                 else
                     glColor3ub( wcolor.Red(), wcolor.Green(), wcolor.Blue() );
-
+                
                 glEnable( GL_BLEND );
                 glEnable( GL_TEXTURE_2D );
                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-
+                
                 glPushMatrix();
                 glTranslatef(xp, yp, 0);
-
+                
                 /* undo previous rotation to make text level */
                 glRotatef(vp->rotation*180/PI, 0, 0, -1);
-
+                
                 f_cache->RenderString(ptext->frmtd);
                 glPopMatrix();
-    
+                
                 glDisable( GL_TEXTURE_2D );
                 glDisable( GL_BLEND );
             }
         }
-            
-#endif
-        } else {                // Not OpenGL
+        
+        #endif
+    } else {                // Not OpenGL
             wxFont oldfont = pdc->GetFont(); // save current font
-
+            
             
             if(scale_factor > 1){
                 wxFont *pf = ptext->pFont;
                 int old_size = pf->GetPointSize();
                 int new_size = old_size * scale_factor;
-                wxFont *scaled_font = FontMgr::Get().FindOrCreateFont( new_size, pf->GetFamily(),
+                wxFont *scaled_font = wxTheFontList->FindOrCreateFont( new_size, pf->GetFamily(),
                                                                        pf->GetStyle(), pf->GetWeight(), false,
                                                                        pf->GetFaceName() );
                 pdc->SetFont( *scaled_font);
@@ -2045,10 +2102,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             else{
                 pdc->SetFont( *( ptext->pFont ) );
             }
-
+            
             wxCoord w, h, descent, exlead;
             pdc->GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
-
+            
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
@@ -2057,13 +2114,12 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             
             yadjust =  - ( h - descent );
             
-
             //  Add in the offsets, specified in units of nominal font height
             yadjust += ptext->yoffs * ( h - descent );
             
             //  X offset specified in units of average char width
             xadjust += ptext->xoffs * ptext->avgCharWidth;
-
+            
             // adjust for text justification
             switch ( ptext->hjust){
                 case '1':               // centered
@@ -2076,7 +2132,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 default:
                     break;
             }
-
+            
             switch ( ptext->vjust){
                 case '3':               // top
                     yadjust += h;
@@ -2091,7 +2147,8 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             
             int xp = x;
             int yp = y;
-
+            
+            
             if(fabs(vp->rotation) > 0.01){
                 float cx = vp->pix_width/2.;
                 float cy = vp->pix_height/2.;
@@ -2101,9 +2158,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 float y = yp -cy;
                 xp =  x*c - y*s +cx + vp->rv_rect.x;
                 yp =  x*s + y*c +cy + vp->rv_rect.y;
- 
+                
             }
-
+            
             xp+= xadjust;
             yp+= yadjust;
             
@@ -2111,33 +2168,37 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
             pRectDrawn->SetY( yp );
             pRectDrawn->SetWidth( w );
             pRectDrawn->SetHeight( h );
-
+            
             if( bCheckOverlap ) {
                 if( CheckTextRectList( *pRectDrawn, ptext ) )
                     bdraw = false;
             }
-
+            
             if( bdraw ) {
-                wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
+                wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
+                
+                // If the user has not changed the color from BLACK, then use the color specified in the S52 LUP
                 if( wcolor == *wxBLACK )
                     wcolor = wxColour( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
                 pdc->SetTextForeground( wcolor );
-
+                
                 pdc->DrawText( ptext->frmtd, xp, yp );
             }
-
+            
             pdc->SetFont( oldfont ); // restore last font
-
-        }
-        return bdraw;
+            
+    }
+    return bdraw;
     
-
-#ifdef FIXIT
-#undef FIXIT
-#define DrawText DrawTextA
-#endif
-
+    
+    #ifdef FIXIT
+    #undef FIXIT
+    #define DrawText DrawTextA
+    #endif
+    
 }
+
+
 
 //    Return true if test_rect overlaps any rect in the current text rectangle list, except itself
 bool s52plib::CheckTextRectList( const wxRect &test_rect, S52_TextC *ptext )
