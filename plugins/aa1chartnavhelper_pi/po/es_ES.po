@@ -1,0 +1,119 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-23 23:52-0400\n"
+"PO-Revision-Date: 2017-08-04 22:32-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
+#
+msgid ""
+"\n"
+"Created/Assembled by Andras A. - Chart Nav Helper, This plugin adds a compass "
+"rose and rulers on the viewed map -- \n"
+"It is based on code from The World Magnetic Model Plugin which was written by "
+"Pavel Kalian and extended by Sean D'Epagnier, and some other OpenCPN code "
+"segments from various parts of the code base.\n"
+"\n"
+"This plugin uses the WMM plugin to get informatin about variation at the "
+"center of the compas rose.  \n"
+"It has a configuratio dialog where the year at wich the variaton is expected "
+"to be calculated can be set\n"
+"The variation can be set to a fixed value (unfortunately the user provided "
+"variation value was not accessable by this plugin)\n"
+"\n"
+"NOTES: The intent for building this plugin was to help the training and "
+"practice of navigation skills at USPS.\n"
+"(The compas rose can be moved by the mouse by dragging it at the center of "
+"the compass rose.) "
+msgstr ""
+#
+msgid "About"
+msgstr "Acerca de"
+#
+msgid "Cancel"
+msgstr "Cancelar"
+#
+msgid "Chart Info"
+msgstr ""
+#
+msgid "Chart Nav Helper"
+msgstr ""
+#
+#, fuzzy
+msgid "Chart Nav Helper PlugIn for OpenCPN"
+msgstr "Plugin Modelo de Magnetismo Mundial para OpenCPN"
+#
+msgid ""
+"Chart Nav Helper PlugIn for OpenCPN\n"
+"adds to the screen (and printouts) traditional navigation chart features \n"
+"like a compass rose and rulers at the side of the map.\n"
+"using these features a printed map can be used as a manual navigation helper "
+"tool\n"
+"\n"
+"NOTES: The intent for building this plugin was to help the training and "
+"practice \n"
+"of navigation skills at USPS.\n"
+"(The compas rose can be moved by the mouse by dragging it at the center of "
+"the compass rose.) "
+msgstr ""
+#
+msgid "Chart Nav Helper Plugin"
+msgstr ""
+#
+msgid "Chart Nav Helper Preferences"
+msgstr ""
+#
+msgid "Chart Nav Helper Setting"
+msgstr ""
+#
+msgid "Chart Nav Helper Settings"
+msgstr ""
+#
+msgid "E"
+msgstr ""
+#
+msgid "N"
+msgstr ""
+#
+msgid "NE"
+msgstr ""
+#
+msgid "NW"
+msgstr ""
+#
+msgid "S"
+msgstr ""
+#
+msgid "SE"
+msgstr ""
+#
+msgid "SW"
+msgstr ""
+#
+msgid "Save"
+msgstr "Guardar"
+#
+msgid "Settings..."
+msgstr "Configuración..."
+#
+msgid "Show data in toolbar icon"
+msgstr "Mostrar datos en Barra de Iconos"
+#
+msgid "Show toolbar icon"
+msgstr "Mostrar icono en la barra"
+#
+msgid "W"
+msgstr ""
+#
+msgid "Window transparency"
+msgstr "Transparencia de la ventana"
