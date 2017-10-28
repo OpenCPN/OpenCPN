@@ -3209,47 +3209,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     line_segment_element *ls_list = rzRules->obj->m_ls_list;
     
-    //  This visibility test does not work well for accelerated panning situations.
-    //  The bbox BBView will be very small (maybe 1 or two pixels on panning), and
-    //  so exclude longer stright line segments as are typical in TSS definitions
-    //  Best to assume that the object render check is accurate, and let the GL engine sort it out viz a viz the clip region.
-/*
-     while( ls_list){
-        
-        if( (ls_list->priority == priority_current) )   
-        {
-            //  Check visibility of the segment
-            if( (ls_list->ls_type == TYPE_EE) || (ls_list->ls_type == TYPE_EE_REV) ){
-                if((BBView.GetMinLat() < ls_list->pedge->edgeBBox.GetMaxLat() && BBView.GetMaxLat() > ls_list->pedge->edgeBBox.GetMinLat()) &&
-                    ((BBView.GetMinLon() <= ls_list->pedge->edgeBBox.GetMaxLon() && BBView.GetMaxLon() >= ls_list->pedge->edgeBBox.GetMinLon()) ||
-                    (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pedge->edgeBBox.GetMinLon()) ||
-                    (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pedge->edgeBBox.GetMaxLon()))) {
-                    // render the segment
-                        if(ls_list->pedge->nCount > 1){
-                            bdraw++;
-                            break;
-                        }
-                    }
-                    
-            }
-            else{
-                if((BBView.GetMinLat() < ls_list->pcs->cs_lat_avg && BBView.GetMaxLat() > ls_list->pcs->cs_lat_avg) &&
-                    ((BBView.GetMinLon() <= ls_list->pcs->cs_lon_avg && BBView.GetMaxLon() >= ls_list->pcs->cs_lon_avg) ||
-                    (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->pcs->cs_lon_avg) ||
-                    (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->pcs->cs_lon_avg))) {
-                // render the segment
-                    bdraw++;
-                    break;
-                }
-            }
-        }
-        
-        ls_list = ls_list->next;
-    }
-    
-    if(!bdraw)
-        return 0;
-*/        
     char *str = (char*) rules->INSTstr;
     S52color *c = getColor( str + 7 ); // Colour
     int w = atoi( str + 5 ); // Width
@@ -3278,36 +3237,20 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         lineWidth =  wxMax(g_GLMinCartographicLineWidth, target_w_mm * GetPPMM());
     }
 
+    glDisable( GL_LINE_SMOOTH );
+    glDisable( GL_BLEND );
+    
+#ifdef __OCPN__ANDROID__
+    lineWidth = wxMin(lineWidth, parms[1]);
     glLineWidth(lineWidth);
     
-#ifndef ocpnUSE_GLES // linestipple is emulated poorly
-    if( !strncmp( str, "DASH", 4 ) ) {
-        glLineStipple( 1, 0x3F3F );
-        glEnable( GL_LINE_STIPPLE );
+#else    
+    glLineWidth(lineWidth);
+    if(lineWidth > 4.0){
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_BLEND );
     }
-    else if( !strncmp( str, "DOTT", 4 ) ) {
-        glLineStipple( 1, 0x3333 );
-        glEnable( GL_LINE_STIPPLE );
-    }
-    else
-        glDisable( GL_LINE_STIPPLE );
 #endif
-
-    if(lineWidth > 2){
-         glEnable( GL_LINE_SMOOTH );
-         glEnable( GL_BLEND );
-    }
-
-///
-    if( w > 1 ) {
-        GLint parms[2];
-        glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
-        if( w > parms[1] )
-            glLineWidth( wxMax(g_GLMinCartographicLineWidth, parms[1]) );
-        else
-            glLineWidth( wxMax(g_GLMinCartographicLineWidth, w) );
-    } else
-        glLineWidth( wxMax(g_GLMinCartographicLineWidth, 1) );
     
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
     if( !strncmp( str, "DASH", 4 ) ) {
@@ -3321,12 +3264,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else
         glDisable( GL_LINE_STIPPLE );
 #endif    
-
-    if(w >= 2){
-         glEnable( GL_LINE_SMOOTH );
-         glEnable( GL_BLEND );
-    }
-///        
+        
     glPushMatrix();
     
     // Set up the OpenGL transform matrix for this object
@@ -3424,186 +3362,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
     
-#if 0
-// Line Simple Style, OpenGL
-int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
-{
-    
-    // for now don't use vbo model in non-mercator
-    if(vp->m_projection_type != PROJECTION_MERCATOR)
-        return RenderLS(rzRules, rules, vp);
-
-    if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
-        return RenderLS(rzRules, rules, vp);
-
-    double scale_factor = vp->ref_scale/vp->chart_scale;
-    if(scale_factor > 10.0)
-        return RenderLS(rzRules, rules, vp);
-    
-    bool b_useVBO = false;
-    float *vertex_buffer = 0;
-    
-    if(rzRules->obj->auxParm2 > 0){
-        b_useVBO = true;
-    }
-    else{
-        if( rzRules->obj->m_chart_context->chart ){
-            vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer(); 
-        }
-        else {
-            vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer; 
-        }
-        
-        
-        if(!vertex_buffer)
-            return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
-    }
-
-    
-#ifdef ocpnUSE_GL
-
-    LLBBox BBView = vp->GetBBox();
-
-    //  Allow a little slop in calculating whether a segment
-    //  is within the requested Viewport
-    double margin = BBView.GetLonRange() * .05;
-    BBView.EnLarge( margin );
-
-    //  Try to determine if the feature needs to be drawn in the most efficient way
-    //  We need to look at priority and visibility of each segment
-    int bdraw = 0;
-    
-    //  Get the current display priority
-    //  Default comes from the LUP, unless overridden
-    int priority_current = rzRules->LUP->DPRI - '0';
-    if(rzRules->obj->m_DPRI >= 0)
-        priority_current = rzRules->obj->m_DPRI;
-    
-    line_segment_element *ls_list = rzRules->obj->m_ls_list;
-    while( ls_list){
-        
-        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
-        {
-            //  Check visibility of the segment
-            if((BBView.GetMinLat() < ls_list->lat_max && BBView.GetMaxLat() > ls_list->lat_min) &&
-               ((BBView.GetMinLon() <= ls_list->lon_max && BBView.GetMaxLon() >= ls_list->lon_min) ||
-                (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 > ls_list->lon_min) ||
-                (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 < ls_list->lon_max))) {
-                // render the segment
-                bdraw++;
-                break;
-            }
-        }
-        
-        ls_list = ls_list->next;
-    }
-    
-    if(!bdraw)
-        return 0;
-        
-    char *str = (char*) rules->INSTstr;
-    S52color *c = getColor( str + 7 ); // Colour
-    int w = atoi( str + 5 ); // Width
-    
-    glColor3ub( c->R, c->G, c->B );
-    
-    //    Set drawing width
-    if( w > 1 ) {
-        GLint parms[2];
-        glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
-        if( w > parms[1] )
-            glLineWidth( wxMax(g_GLMinCartographicLineWidth, parms[1]) );
-        else
-            glLineWidth( wxMax(g_GLMinCartographicLineWidth, w) );
-    } else
-        glLineWidth( wxMax(g_GLMinCartographicLineWidth, 1) );
-    
-#ifndef ocpnUSE_GLES // linestipple is emulated poorly
-    if( !strncmp( str, "DASH", 4 ) ) {
-        glLineStipple( 1, 0x3F3F );
-        glEnable( GL_LINE_STIPPLE );
-    }
-    else if( !strncmp( str, "DOTT", 4 ) ) {
-        glLineStipple( 1, 0x3333 );
-        glEnable( GL_LINE_STIPPLE );
-    }
-    else
-        glDisable( GL_LINE_STIPPLE );
-#endif    
- 
-    glPushMatrix();
-    
-    // Set up the OpenGL transform matrix for this object
-    //  Transform from Simple Mercator (relative to chart reference point) to screen coordinates.
-    
-    //  First, the VP transform
-    glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
-    glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
-    glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
-    
-    //  Next, the per-object transform
-    
-    //      We may need to translate object coordinates by 360 degrees to conform.
-    if( BBView.GetMaxLon() > 180. ) {
-        if(rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
-            glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
-    } else
-    if( (BBView.GetMinLon() <= -180. && rzRules->obj->BBObj.GetMaxLon() > BBView.GetMinLon() + 360.) ||
-        (BBView.GetMinLon() <= 0. && rzRules->obj->BBObj.GetMaxLon() > 180))
-        glTranslatef( -mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0 );
-  
-    if( rzRules->obj->m_chart_context->chart ){
-        glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
-        glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
-    }
-    
-    //   Has line segment PBO been allocated for this chart?
-    if(b_useVBO){
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
-    }
-
-    
-    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-
-  
-    // from above ls_list is the first drawable segment
-    while( ls_list){
-        
-        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
-        {
-            //  Check visibility of the segment
-            if((BBView.GetMinLat() <= ls_list->lat_max && BBView.GetMaxLat() >= ls_list->lat_min) &&
-               ((BBView.GetMinLon() <= ls_list->lon_max && BBView.GetMaxLon() >= ls_list->lon_min) ||
-                (BBView.GetMaxLon() >=  180 && BBView.GetMaxLon() - 360 >= ls_list->lon_min) ||
-                (BBView.GetMinLon() <= -180 && BBView.GetMinLon() + 360 <= ls_list->lon_max))) {
-                // render the segment
-                
-                if(b_useVBO){
-                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (GLvoid *)(ls_list->vbo_offset));
-                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
-                }
-                else{
-                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (unsigned char *)vertex_buffer + ls_list->vbo_offset);
-                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
-                }
-            }
-        }
-        ls_list = ls_list->next;
-    }
-    
-    if(b_useVBO)
-        (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
-    
-    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-
-    glPopMatrix();
-
-    glDisable( GL_LINE_STIPPLE );
-#endif                  // OpenGL
-    
-    return 1;
-}
-#endif
 
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
@@ -7916,6 +7674,120 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
 
+void SetGLClipRect(const ViewPort &vp, const wxRect &rect)
+{
+    bool b_clear = false;
+    bool s_b_useStencil = glChartCanvas::s_b_useStencil;
+    
+    #if 0
+    /* for some reason this causes an occasional bug in depth mode, I cannot
+     *       seem to solve it yet, so for now: */
+    if(s_b_useStencil && s_b_useScissorTest) {
+        wxRect vp_rect(0, 0, vp.pix_width, vp.pix_height);
+        if(rect != vp_rect) {
+            glEnable(GL_SCISSOR_TEST);
+            glScissor(rect.x, cc1->m_canvas_height-rect.height-rect.y, rect.width, rect.height);
+}
+
+if(b_clear) {
+    glBegin(GL_QUADS);
+    glVertex2i( rect.x, rect.y );
+    glVertex2i( rect.x + rect.width, rect.y );
+    glVertex2i( rect.x + rect.width, rect.y + rect.height );
+    glVertex2i( rect.x, rect.y + rect.height );
+    glEnd();
+}
+
+/* the code in s52plib depends on the depth buffer being
+ *           initialized to this value, this code should go there instead and
+ *           only a flag set here. */
+if(!s_b_useStencil) {
+    glClearDepth( 0.25 );
+    glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
+    glClear( GL_DEPTH_BUFFER_BIT );
+    glDepthMask( GL_FALSE );
+    glClearDepth( 1 ); // set back to default of 1
+    glDepthFunc( GL_GREATER );                          // Set the test value
+}
+return;
+}
+#endif
+// slower way if there is no scissor support
+    if(!b_clear)
+        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
+    
+    if( s_b_useStencil ) {
+        //    Create a stencil buffer for clipping to the region
+        glEnable( GL_STENCIL_TEST );
+        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
+        glClear( GL_STENCIL_BUFFER_BIT );
+        
+        //    We are going to write "1" into the stencil buffer wherever the region is valid
+        glStencilFunc( GL_ALWAYS, 1, 1 );
+        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
+    } else              //  Use depth buffer for clipping
+    {
+        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
+        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
+        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
+        
+        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
+        
+        //    Decompose the region into rectangles, and draw as quads
+        //    With z = 1
+        // dep buffer clear = 1
+        // 1 makes 0 in dep buffer, works
+        // 0 make .5 in depth buffer
+        // -1 makes 1 in dep buffer
+        
+        //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
+        //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
+        //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
+        glTranslatef( 0, 0, .5 );
+    }
+    
+    glBegin(GL_QUADS);
+    glVertex2i( rect.x, rect.y );
+    glVertex2i( rect.x + rect.width, rect.y );
+    glVertex2i( rect.x + rect.width, rect.y + rect.height );
+    glVertex2i( rect.x, rect.y + rect.height );
+    glEnd();
+    
+    if( s_b_useStencil ) {
+        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+        glStencilFunc( GL_EQUAL, 1, 1 );
+        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+    } else {
+        glDepthFunc( GL_GREATER );                          // Set the test value
+        glDepthMask( GL_FALSE );                            // disable depth buffer
+        glTranslatef( 0, 0, -.5 ); // reset translation
+    }
+    
+    if(!b_clear)
+        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
+}
+
+void RotateToViewPort(const ViewPort &vp)
+{
+    bool g_bskew_comp = true;
+    
+    float angle = vp.rotation;
+    if(g_bskew_comp)
+        angle -= vp.skew;
+    
+    if( fabs( angle ) > 0.0001 )
+    {
+        //    Rotations occur around 0,0, so translate to rotate around screen center
+        float xt = vp.pix_width / 2.0, yt = vp.pix_height / 2.0;
+        
+        glTranslatef( xt, yt, 0 );
+        glRotatef( angle * 180. / PI, 0, 0, 1 );
+        glTranslatef( -xt, -yt, 0 );
+    }
+}
+
+
+
 int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
 #ifdef ocpnUSE_GL
@@ -8191,7 +8063,8 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
          else {
              // restore clipping region
              glPopMatrix();
-             glChartCanvas::SetClipRect( *vp, m_last_clip_rect);
+             SetGLClipRect( *vp, m_last_clip_rect);
+             
              glPushMatrix();
              glChartCanvas::RotateToViewPort(*vp);
          }
