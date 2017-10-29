@@ -45,7 +45,6 @@
 #include "ocpn_plugin.h"
 
 #include "Aa1ChartNavHelperUIDialog.h"
-//#include "AA1_COF.h"
 
 #include "jsonreader.h"
 #include "jsonwriter.h"
@@ -164,9 +163,6 @@ private:
 
     void          getVariationForLatLon(double lat, double lon, double& magVar, double& magVarYdelta);
     //byAA10172017.
-    void          SendVariationAt(double lat, double lon, int year, int month, int day);
-    void          SendBoatVariation();
-    void          SendCursorVariation();
 
 //    wxFont        *pFontSmall;
 //    double        m_scale;
@@ -210,7 +206,6 @@ public:
 //byAA10152017: ..similar as in dial.h/cpp
 double rad2deg(double angle);
 double deg2rad(double angle);
-void DrawPolarCompassRose(wxDC* dc, int cx, int cy, int radius, int startangle, bool showlabels);
 //byAA10152017.
 
 #endif //__AA1CHARTNAVHELPERPI_H__
