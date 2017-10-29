@@ -289,7 +289,6 @@ private:
     int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
-    int RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     
     void UpdateOBJLArray( S57Obj *obj );
