@@ -109,6 +109,8 @@ public:
     void SetPPMM( float ppmm );
     float GetPPMM() { return canvas_pix_per_mm; }
 
+    void SetOCPNVersion(int major, int minor, int patch);
+    
     double GetRVScaleFactor() { return m_rv_scale_factor; }
     
     LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
@@ -251,11 +253,17 @@ public:
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
 
     wxRect m_last_clip_rect;
+    int m_myConfig;
+    
+    double lastLightLat;
+    double lastLightLon;
     
 private:
     int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
     bool S52_flush_Plib();
-
+    
+    void PLIB_LoadS57Config();
+    
     bool PreloadOBJLFromCSV(const wxString &csv_file);
 
     int DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
@@ -388,6 +396,11 @@ private:
     DisCat m_nDisplayCategory;
     ArrayOfNoshow m_noshow_array;
     ArrayOfNoshow m_saved_noshow;
+    
+    int m_coreVersionMajor;
+    int m_coreVersionMinor;
+    int m_coreVersionPatch;
+    
 };
 
 

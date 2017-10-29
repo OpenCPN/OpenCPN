@@ -292,7 +292,14 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     GenerateStateHash();
 
     HPGL = new RenderFromHPGL( this );
-
+    
+    //  Set defaults for OCPN version, may be overridden later
+    m_coreVersionMajor = 4;
+    m_coreVersionMinor = 6;
+    m_coreVersionPatch = 0;
+    
+    m_myConfig = PI_GetPLIBStateHash();
+    
 }
 
 s52plib::~s52plib()
@@ -318,6 +325,13 @@ s52plib::~s52plib()
     ChartSymbols::DeleteGlobals();
 
     delete HPGL;
+}
+
+void s52plib::SetOCPNVersion(int major, int minor, int patch)
+{
+    m_coreVersionMajor = major;
+    m_coreVersionMinor = minor;
+    m_coreVersionPatch = patch;
 }
 
 void s52plib::SetPPMM( float ppmm )
@@ -8904,11 +8918,209 @@ void s52plib::ClearNoshow(void)
     m_noshow_array.Clear();
 }
 
+void s52plib::PLIB_LoadS57Config()
+{
+    //    Get a pointer to the opencpn configuration object
+    wxFileConfig *pconfig = GetOCPNConfigObject();
+    
+    int read_int;
+    double dval;
+    
+    pconfig->SetPath( _T ( "/Settings" ) );
+    //pconfig->Read( _T ( "DebugS57" ), &g_PIbDebugS57, 0 );         // Show LUP and Feature info in object query
+    
+    pconfig->SetPath( _T ( "/Settings/GlobalState" ) );
+    
+    pconfig->Read( _T ( "bShowS57Text" ), &read_int, 0 );
+    SetShowS57Text( !( read_int == 0 ) );
+    
+    pconfig->Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
+    SetShowS57ImportantTextOnly( !( read_int == 0 ) );
+    
+    pconfig->Read( _T ( "bShowLightDescription" ), &read_int, 0 );
+    SetShowLdisText( !( read_int == 0 ) );
+    
+    pconfig->Read( _T ( "bExtendLightSectors" ), &read_int, 0 );
+    SetExtendLightSectors( !( read_int == 0 ) );
+    
+    pconfig->Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
+    SetDisplayCategory((enum _DisCat) read_int );
+    
+    pconfig->Read( _T ( "nSymbolStyle" ), &read_int, (enum _LUPname) PAPER_CHART );
+    m_nSymbolStyle = (LUPname) read_int;
+    
+    pconfig->Read( _T ( "nBoundaryStyle" ), &read_int, PLAIN_BOUNDARIES );
+    m_nBoundaryStyle = (LUPname) read_int;
+    
+    pconfig->Read( _T ( "bShowSoundg" ), &read_int, 1 );
+    m_bShowSoundg = !( read_int == 0 );
+    
+    pconfig->Read( _T ( "bShowMeta" ), &read_int, 0 );
+    m_bShowMeta = !( read_int == 0 );
+    
+    pconfig->Read( _T ( "bUseSCAMIN" ), &read_int, 1 );
+    m_bUseSCAMIN = !( read_int == 0 );
+    
+    pconfig->Read( _T ( "bShowAtonText" ), &read_int, 1 );
+    m_bShowAtonText = !( read_int == 0 );
+    
+    pconfig->Read( _T ( "bDeClutterText" ), &read_int, 0 );
+    m_bDeClutterText = !( read_int == 0 );
+    
+    pconfig->Read( _T ( "bShowNationalText" ), &read_int, 0 );
+    m_bShowNationalTexts = !( read_int == 0 );
+    
+    if( pconfig->Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+        S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
+        S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
+    }
+    
+    if( pconfig->Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+        S52_MAR_SHALLOW_CONTOUR, dval );
+    
+    if( pconfig->Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+        S52_MAR_DEEP_CONTOUR, dval );
+    
+    if( pconfig->Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
+        S52_MAR_TWO_SHADES, dval );
+    
+    UpdateMarinerParams();
+    
+    pconfig->SetPath( _T ( "/Settings/GlobalState" ) );
+    pconfig->Read( _T ( "S52_DEPTH_UNIT_SHOW" ), &read_int, 1 );   // default is metres
+    read_int = wxMax(read_int, 0);                      // qualify value
+    read_int = wxMin(read_int, 2);
+    m_nDepthUnitDisplay = read_int;
+    
+    //    S57 Object Class Visibility
+    
+    OBJLElement *pOLE;
+    
+    pconfig->SetPath( _T ( "/Settings/ObjectFilter" ) );
+    
+    int iOBJMax = pconfig->GetNumberOfEntries();
+    if( iOBJMax ) {
+        
+        wxString str;
+        long val;
+        long dummy;
+        
+        wxString sObj;
+        
+        bool bCont = pconfig->GetFirstEntry( str, dummy );
+        while( bCont ) {
+            pconfig->Read( str, &val );              // Get an Object Viz
+            
+            bool bNeedNew = true;
+            
+            if( str.StartsWith( _T ( "viz" ), &sObj ) ) {
+                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+                    pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+                    if( !strncmp( pOLE->OBJLName, sObj.mb_str(), 6 ) ) {
+                        pOLE->nViz = val;
+                        bNeedNew = false;
+                        break;
+                    }
+                }
+                
+                if( bNeedNew ) {
+                    pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
+                    strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
+                    pOLE->nViz = 1;
+                    
+                    pOBJLArray->Add( (void *) pOLE );
+                }
+            }
+            bCont = pconfig->GetNextEntry( str, dummy );
+        }
+    }
+}
+
+
+
+
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
     m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
+    
+    // Has the core S52PLIB configuration changed?
+    //  If it has, reload from global preferences file, and other dynamic status information.
+    //  This additional step is only necessary for Plugin chart rendering, as core directly sets
+    //  options and updates State Hash as needed.
+    
+    int core_config = PI_GetPLIBStateHash();
+    if(core_config != m_myConfig){
+        
+        g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
+        
+        //  If a modern (> OCPN 4.4) version of the core is active,
+        //  we may rely upon having been updated on S52PLIB state by means of PlugIn messaging scheme.
+        if( (m_coreVersionMajor >= 4) && (m_coreVersionMinor >= 5) ){
+            
+            // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
+            bool bTextOn = m_bShowS57Text;
+            bool bSoundingsOn = m_bShowSoundg;
+            enum _DisCat old = m_nDisplayCategory;
+            
+            PLIB_LoadS57Config();
+            
+            //  And then reset the temp values that were overwritten by config load
+            m_bShowS57Text = bTextOn;
+            m_bShowSoundg = bSoundingsOn;
+            m_nDisplayCategory = old;
+            
+            OBJLElement *pOLE = NULL;
+            
+            // Detect and manage "LIGHTS" toggle
+            bool bshow_lights = !m_lightsOff;
+            if(!bshow_lights)                     // On, going off
+                AddObjNoshow("LIGHTS");
+            else{                                   // Off, going on
+                if(pOLE)
+                    pOLE->nViz = 1;
+                RemoveObjNoshow("LIGHTS");
+            }
+            
+            // Handle Anchor area toggle
+            bool bAnchor = m_anchorOn;
+            
+            const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
+            unsigned int num = sizeof(categories) / sizeof(categories[0]);
+            
+            if(!bAnchor){
+                for( unsigned int c = 0; c < num; c++ ) {
+                    ps52plib->AddObjNoshow(categories[c]);
+                }
+            }
+            else{
+                for( unsigned int c = 0; c < num; c++ ) {
+                    ps52plib->RemoveObjNoshow(categories[c]);
+                }
+                
+                unsigned int cnt = 0;
+                for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                    OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                    for( unsigned int c = 0; c < num; c++ ) {
+                        if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                            pOLE->nViz = 1;         // force on
+                            cnt++;
+                            break;
+                        }
+                    }
+                    if( cnt == num ) break;
+                }
+            }
+        }
+        
+        m_myConfig = PI_GetPLIBStateHash();
+    }
+    
+    // Reset the LIGHTS declutter machine
+    lastLightLat = 0;
+    lastLightLon = 0;
+    
 }
 
 void s52plib::ClearTextList( void )
