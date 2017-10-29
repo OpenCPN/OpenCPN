@@ -4951,10 +4951,6 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return RenderCARC_VBO(rzRules, rules, vp);
 }
     
-    
-
-
-
 int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     char *str = (char*) rules->INSTstr;
@@ -5029,6 +5025,72 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     int bm_orgy;
 
     Rule *prule = rules->razRule;
+
+    float scale_factor = 1.0;
+    
+    // The dimensions of the light are presented here as pixels on-screen.
+    // We must scale the rendered size based on the device pixel density
+    // Let us declare that the width of the arc should be no less than X mm
+    float wx = 1.0;
+    
+    float pd_scale = 1.0;
+    float nominal_arc_width_pix = wxMax(1.0, floor(GetPPMM() * wx));             // { wx } mm nominal, but not less than 1 pixel
+    pd_scale = nominal_arc_width_pix / arc_width;
+    
+    //scale_factor *= pd_scale;
+    //qDebug() << GetPPMM() << arc_width << nominal_arc_width_pix << pd_scale;
+    
+    
+    // Adjust size
+    //  Some plain lights have no SCAMIN attribute.
+    //  This causes display congestion at small viewing scales, since the objects are rendered at fixed pixel dimensions from the LUP rules.
+    //  As a correction, the idea is to not allow the rendered symbol to be larger than "X" meters on the chart.
+    //   and scale it down when rendered if necessary.
+
+    float xscale = 1.0;
+    if(rzRules->obj->Scamin > 10000000){                        // huge (unset) SCAMIN)
+        float radius_meters_target = 200;
+
+         float radius_meters = ( radius * canvas_pix_per_mm ) / vp->view_scale_ppm;
+
+        xscale = radius_meters_target / radius_meters;
+        xscale = wxMin(xscale, 1.0);
+        xscale = wxMax(.4, xscale);
+
+        radius *= xscale;
+        sector_radius *= xscale;
+    }
+
+    ///scale_factor *= xscale;
+    
+    carc_hash += _T(".");
+    wxString xs;
+    xs.Printf( _T("%5g"), xscale );
+    carc_hash += xs;
+
+    if(m_pdc){          // DC rendering
+        if(fabs(prule->parm7 - xscale) > .00001){
+            if(prule->pixelPtr){
+                switch( prule->parm0 ){
+                    case ID_wxBitmap: {
+                        wxBitmap *pbm = (wxBitmap *) ( prule->pixelPtr );
+                        delete pbm;
+                        break;
+                    }
+                    case ID_RGBA: {
+                        unsigned char *p = (unsigned char *) ( prule->pixelPtr );
+                        free( p );
+                        break;
+                    }
+                    case ID_EMPTY:
+                    default:
+                        break;
+                }
+
+                prule->parm0 = ID_EMPTY;
+                prule->pixelPtr = NULL;
+            }
+        }
 
     //Instantiate the symbol if necessary
     if( ( rules->razRule->pixelPtr == NULL ) || ( rules->razRule->parm1 != m_colortable_index ) ) {
@@ -5130,13 +5192,10 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         wxBitmap *sbm = NULL;
 
-        //    Do not need to actually render the symbol for OpenGL mode
-        //    We just need the extents calculated above...
-        if( m_pdc ) {
             //    Draw the outer border
             wxColour color = getwxColour( outline_color );
 
-            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width, wxPENSTYLE_SOLID );
+                wxPen *pthispen = wxThePenList->FindOrCreatePen( color, outline_width * scale_factor, wxPENSTYLE_SOLID );
             mdc.SetPen( *pthispen );
             wxBrush *pthisbrush = wxTheBrushList->FindOrCreateBrush( color, wxBRUSHSTYLE_TRANSPARENT );
             mdc.SetBrush( *pthisbrush );
@@ -5148,7 +5207,7 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                 if( !colorb.IsOk() ) colorb = getwxColour( _T("CHMGD") );
 
-                pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width, wxPENSTYLE_SOLID );
+                    pthispen = wxThePenList->FindOrCreatePen( colorb, arc_width * scale_factor, wxPENSTYLE_SOLID );
                 mdc.SetPen( *pthispen );
 
                 mdc.DrawEllipticArc( width / 2 - rad, height / 2 - rad, rad * 2, rad * 2, sb, se );
@@ -5161,8 +5220,6 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             sbm = new wxBitmap(
                 bm.GetSubBitmap( wxRect( width/2 + bm_orgx, height/2 + bm_orgy, bm_width, bm_height ) ) );
 
-//                  delete pbm;
-
             //      Make the mask
             wxMask *pmask = new wxMask( *sbm, m_unused_wxColor );
 
@@ -5172,9 +5229,6 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             // delete any old private data
             ClearRulesCache( rules->razRule );
             
-             
-        }
-
         //      Save the bitmap ptr and aux parms in the rule
         prule->pixelPtr = sbm;
         prule->parm0 = ID_wxBitmap;
@@ -5183,12 +5237,13 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         prule->parm3 = bm_orgy;
         prule->parm5 = bm_width;
         prule->parm6 = bm_height;
+            prule->parm7 = xscale;
     } // instantiation
+    }
 
 #ifdef ocpnUSE_GL
     CARC_Buffer buffer;
 
-    float scale_factor = 1.0;
     
     // Light arcs are specified in terms of absolute dimensions on screen, and should not be scaled.
 //     if(g_bresponsive){
@@ -5198,8 +5253,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     if( !m_pdc ) // opengl
     {
         //    Is there not already an generated vbo the CARC_hashmap for this object?
+        rad = (int) ( radius * canvas_pix_per_mm );
         if( m_CARC_hashmap.find( carc_hash ) == m_CARC_hashmap.end() ) {
-            int rad = (int) ( radius * canvas_pix_per_mm );
             
             if( sectr1 > sectr2 ) sectr2 += 360;
     
@@ -5239,12 +5294,15 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if( sector_radius > 0 ) {
                 int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
         
-                wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
+                //wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
+                wxColour c; GetGlobalColor( _T ( "CHBLK" ), &c);
+
                 buffer.color[2][0] = c.Red();
                 buffer.color[2][1] = c.Green();
                 buffer.color[2][2] = c.Blue();
                 buffer.color[2][3] = c.Alpha();
-                buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.7) * scale_factor;
+                //buffer.line_width[2] = wxMax(g_GLMinSymbolLineWidth, (float)0.5) * scale_factor;
+                buffer.line_width[2] = wxMax(1.0, floor(GetPPMM() * 0.2));             //0.4 mm nominal, but not less than 1 pixel
         
                 float a = ( sectr1 - 90 ) * PI / 180.;
                 buffer.data[s++] = 0;
@@ -5262,17 +5320,24 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             m_CARC_hashmap[carc_hash] = buffer;
 
-        //      Save the vbo and OpenGL specific parameters in the rule
-//            prule->pixelPtr = (void *) 1;
-//            prule->parm0 = ID_GLIST;
-//            prule->parm7 = m_CARC_hashmap[carc_hash];
         } else
             buffer = m_CARC_hashmap[carc_hash];
+        
+        int border_fluff = 4; // by how much should the blit bitmap be "fluffed"
+        bm_width = rad * 2 + ( border_fluff * 2 );
+        bm_height = rad * 2 + ( border_fluff * 2 );
+        bm_orgx = -bm_width / 2;
+        bm_orgy = -bm_height / 2;
+        
+        prule->parm2 = bm_orgx;
+        prule->parm3 = bm_orgy;
+        prule->parm5 = bm_width;
+        prule->parm6 = bm_height;
+        prule->parm7 = xscale;
+        
     } // instantiation
 #endif
 
-    int b_width = prule->parm5;
-    int b_height = prule->parm6;
 
     //  Render arcs at object's x/y
     wxPoint r;
@@ -5303,6 +5368,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glLineWidth(buffer.line_width[1]);
         glDrawArrays(GL_LINE_STRIP, 0, buffer.steps);
 
+        //qDebug() << buffer.line_width[0] << buffer.line_width[1] << buffer.line_width[2];
+        
         if(buffer.line_width[2]) {
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
             glLineStipple( 1, 0x3F3F );
@@ -5343,6 +5410,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glPopMatrix();
 #endif        
     } else {
+        int b_width = prule->parm5;
+        int b_height = prule->parm6;
+        
         //      Get the bitmap into a memory dc
         wxMemoryDC mdc;
         mdc.SelectObject( (wxBitmap &) ( *( (wxBitmap *) ( rules->razRule->pixelPtr ) ) ) );
@@ -5369,7 +5439,9 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
              //      Undocumented "feature":  Pen must be fully specified <<<BEFORE>>> setting into DC
              pdc->SetPen ( *pthispen );
              */
-            wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
+            //wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
+            wxColour c; GetGlobalColor( _T ( "CHBLK" ), &c);
+
             float a = ( sectr1 - 90 ) * PI / 180;
             int x = r.x + (int) ( leg_len * cosf( a ) );
             int y = r.y + (int) ( leg_len * sinf( a ) );
@@ -5396,14 +5468,15 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     double latmin, lonmin, latmax, lonmax;
 
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2, r.y + rules->razRule->parm3 + b_height, &latmin, &lonmin, vp );
-    GetPixPointSingleNoRotate( r.x + rules->razRule->parm2 + b_width, r.y + rules->razRule->parm3, &latmax, &lonmax, vp );
+    GetPixPointSingleNoRotate( r.x + prule->parm2,                r.y + prule->parm3 + prule->parm6, &latmin, &lonmin, vp );
+    GetPixPointSingleNoRotate( r.x + prule->parm2 + prule->parm5, r.y + prule->parm3,                &latmax, &lonmax, vp );
     LLBBox symbox;
     symbox.Set( latmin, lonmin, latmax, lonmax );
     rzRules->obj->BBObj.Expand( symbox );
 
     return 1;
 }
+    
 
 
 int s52plib::RenderCARC_DisplayList( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
