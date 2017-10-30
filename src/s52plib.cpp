@@ -51,6 +51,7 @@
 #include "ocpndc.h"
 #include "wx28compat.h"
 #include "ocpn_plugin.h"
+#include "cpl_csv.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -122,6 +123,109 @@ S52_TextC::~S52_TextC()
     if(texobj){
         glDeleteTextures(1, (GLuint *)(&this->texobj) );
     }
+}
+
+//      In GDAL-1.2.0, CSVGetField is not exported.......
+//      So, make my own simplified copy
+/************************************************************************/
+/*                           MyCSVGetField()                            */
+/*                                                                      */
+/************************************************************************/
+
+const char *MyPLIBCSVGetField( const char * pszFilename, const char * pszKeyFieldName,
+                           const char * pszKeyFieldValue, CSVCompareCriteria eCriteria, const char * pszTargetField )
+
+{
+    char **papszRecord;
+    int iTargetField;
+    
+    /* -------------------------------------------------------------------- */
+    /*      Find the correct record.                                        */
+    /* -------------------------------------------------------------------- */
+    papszRecord = CSVScanFileByName( pszFilename, pszKeyFieldName, pszKeyFieldValue, eCriteria );
+    
+    if( papszRecord == NULL ) return "";
+    
+    /* -------------------------------------------------------------------- */
+    /*      Figure out which field we want out of this.                     */
+    /* -------------------------------------------------------------------- */
+    iTargetField = CSVGetFileFieldId( pszFilename, pszTargetField );
+    if( iTargetField < 0 ) return "";
+    
+    if( iTargetField >= CSLCount( papszRecord ) ) return "";
+    
+    return ( papszRecord[iTargetField] );
+}
+
+wxString GetS57AttributeDecode( wxString& att, int ival )
+{
+    wxString ret_val = _T("");
+    
+    wxString s57data_dir = *GetpSharedDataLocation();
+    s57data_dir += _T("s57data");
+    
+    if( !s57data_dir.Len() )
+        return ret_val;
+
+//  Get the attribute code from the acronym
+    const char *att_code;
+    
+    wxString file = s57data_dir;
+    file.Append( _T("/s57attributes.csv") );
+    
+    if( !wxFileName::FileExists( file ) ) {
+        wxString msg( _T("   Could not open ") );
+        msg.Append( file );
+        wxLogMessage( msg );
+        
+        return ret_val;
+    }
+    
+    att_code = MyPLIBCSVGetField( file.mb_str(), "Acronym",                  // match field
+                              att.mb_str(),               // match value
+                              CC_ExactString, "Code" );             // return field
+    
+    // Now, get a nice description from s57expectedinput.csv
+    //  This will have to be a 2-d search, using ID field and Code field
+    
+    // Ingest, and get a pointer to the ingested table for "Expected Input" file
+    wxString ei_file = s57data_dir;
+    ei_file.Append( _T("/s57expectedinput.csv") );
+    
+    if( !wxFileName::FileExists( ei_file ) ) {
+        wxString msg( _T("   Could not open ") );
+        msg.Append( ei_file );
+        wxLogMessage( msg );
+        
+        return ret_val;
+    }
+    
+    CSVTable *psTable = CSVAccess( ei_file.mb_str() );
+    CSVIngest( ei_file.mb_str() );
+    
+    char **papszFields = NULL;
+    int bSelected = FALSE;
+    
+    /* -------------------------------------------------------------------- */
+    /*      Scan from in-core lines.                                        */
+    /* -------------------------------------------------------------------- */
+    int iline = 0;
+    while( !bSelected && iline + 1 < psTable->nLineCount ) {
+        iline++;
+        papszFields = CSVSplitLine( psTable->papszLines[iline] );
+        
+        if( !strcmp( papszFields[0], att_code ) ) {
+            if( atoi( papszFields[1] ) == ival ) {
+                ret_val = wxString( papszFields[2], wxConvUTF8 );
+                bSelected = TRUE;
+            }
+        }
+        
+        CSLDestroy( papszFields );
+    }
+    
+    return ret_val;
+    
 }
 
 
@@ -1523,7 +1627,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
                     if( !ps52plib->m_natsur_hash[i].IsEmpty() )            // entry available?
                         nat = ps52plib->m_natsur_hash[i];
                     else {
-                        nat = s57chart::GetAttributeDecode( natsur_att, (int)i );
+                        nat = GetS57AttributeDecode( natsur_att, (int)i );
                         ps52plib->m_natsur_hash[i] = nat;            // cache the entry
                     }
                         
@@ -2274,6 +2378,17 @@ bool s52plib::TextRenderCheck( ObjRazRules *rzRules )
             return false;
     }
 
+    // Declutter LIGHTS descriptions
+    if( ( rzRules->obj->bIsAton ) && ( !strncmp( rzRules->obj->FeatureName, "LIGHTS", 6 ) ) ){
+        if( lastLightLat == rzRules->obj->m_lat && lastLightLon == rzRules->obj->m_lon ){
+            return false;       // only render text for the first object at this lat/lon
+        }
+        else{
+            lastLightLat = rzRules->obj->m_lat;
+            lastLightLon = rzRules->obj->m_lon;
+        }
+    }
+    
     //    An optimization for CM93 charts.
     //    Don't show the text associated with some objects, since CM93 database includes _texto objects aplenty
     if( rzRules->obj->m_chart_context->chart ) {
