@@ -1708,6 +1708,19 @@ S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd )
         text = new S52_TextC;
         str = _parseTEXT( rzRules, text, str );
         if( NULL != text ) text->frmtd = wxString( buf, wxConvUTF8 );
+        
+        //  We check to see if the formatted text has any "special" characters
+        wxCharBuffer buf = text->frmtd.ToUTF8();
+        
+        unsigned int n = text->frmtd.Length();
+        for(unsigned int i=0 ; i < n ; ++i){
+            unsigned char c =buf.data()[i];
+            if(c > 127){
+                text->bspecial_char = true;
+                break;
+            }
+        }
+        
     }
 
     return text;
