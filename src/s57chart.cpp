@@ -5708,7 +5708,7 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
 
         while( pTP ) {
 //  Coarse test
-            if( pTP->box.Contains( lat, lon ) ) {
+            if( pTP->tri_box.Contains( lat, lon ) ) {
 
                 if(ppg->data_type == DATA_TYPE_DOUBLE) {
                     double *p_vertex = pTP->p_vertex;

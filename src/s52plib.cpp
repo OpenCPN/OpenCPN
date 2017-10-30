@@ -7146,7 +7146,7 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
                 box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
             }                
             else
-                box = p_tp->box;
+                box = p_tp->tri_box;
 
             if(!BBView.IntersectOut(box)) {
                 //      Get and convert the points
@@ -7448,7 +7448,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
             }                
             else
-                box = p_tp->box;
+                box = p_tp->tri_box;
             
             if(!BBView.IntersectOut(box)) {
                 if(b_useVBO) {
@@ -7710,7 +7710,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 box.Set(p_ltp->miny, p_ltp->minx, p_ltp->maxy, p_ltp->maxx);
             }                
             else
-                box = p_tp->box;
+                box = p_tp->tri_box;
             
             if(!BBView.IntersectOut(box)) {
                 //      Get and convert the points
@@ -7938,7 +7938,7 @@ void s52plib::RenderPolytessGL(ObjRazRules *rzRules, ViewPort *vp, double z_clip
     
     TriPrim *p_tp = ppg->tri_prim_head;
     while( p_tp ) {
-        if(!BBView.IntersectOut( p_tp->box)) {
+        if(!BBView.IntersectOut( p_tp->tri_box)) {
             //      Get and convert the points
             
             wxPoint *pr = ptp;

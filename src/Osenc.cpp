@@ -2323,10 +2323,10 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
 //         fwrite (&pTP->maxyt , sizeof(double), 1, fpOut);
 
         double minlat, minlon, maxlat, maxlon;
-        minlat = pTP->box.GetMinLat();
-        minlon = pTP->box.GetMinLon();
-        maxlat = pTP->box.GetMaxLat();
-        maxlon = pTP->box.GetMaxLon();
+        minlat = pTP->tri_box.GetMinLat();
+        minlon = pTP->tri_box.GetMinLon();
+        maxlat = pTP->tri_box.GetMaxLat();
+        maxlon = pTP->tri_box.GetMaxLon();
         
 
         if(!stream->Write(&minlon, sizeof(double)).IsOk())
@@ -3194,7 +3194,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
         maxyt = *pbb;
         #endif
         
-        tp->box.Set(minyt, minxt, maxyt, maxxt);
+        tp->tri_box.Set(minyt, minxt, maxyt, maxxt);
         
         pPayloadRun += 4 * sizeof(double);
         
