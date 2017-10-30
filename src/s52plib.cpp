@@ -4414,8 +4414,10 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     else
         if( rzRules->obj->pPolyTessGeo ) {
-            if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
+                if(rzRules->obj->pPolyTessGeo->m_pxgeom)
+                    rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            }
 
             PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             float *ppolygeo = pptg->pgroup_geom;
@@ -6975,8 +6977,10 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
     }
 
     if( obj->pPolyTessGeo ) {
-        if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-        rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
+            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
+                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        }
 
         wxPoint *pp3 = (wxPoint *) malloc( 3 * sizeof(wxPoint) );
         wxPoint *ptp = (wxPoint *) malloc(
@@ -7159,8 +7163,10 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
         
         // perform deferred tesselation
-        if( !rzRules->obj->pPolyTessGeo->IsOk() ) 
-            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        if( !rzRules->obj->pPolyTessGeo->IsOk() ){
+            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
+                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        }
 
         //  Get the vertex data
         PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
@@ -7499,14 +7505,12 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     LLBBox BBView = vp->GetBBox();
 
-    //  Allow a little slop in calculating whether a triangle
-    //  is within the requested Viewport
-    double margin = BBView.GetLonRange() * .05;
-
     wxPoint *ptp;
     if( rzRules->obj->pPolyTessGeo ) {
-        if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
-            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
+            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
+                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+        }
 
         ptp = (wxPoint *) malloc(
                 ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof(wxPoint) );

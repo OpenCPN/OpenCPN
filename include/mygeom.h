@@ -232,6 +232,8 @@ class PolyTessGeo
         
         void SetPPGHead( PolyTriGroup *head){ m_ppg_head = head; }
 
+        Extended_Geometry     *m_pxgeom;
+        
     private:
         int BuildTessGL(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
@@ -243,7 +245,6 @@ class PolyTessGeo
 
         bool            m_bOK;
 
-        Extended_Geometry     *m_pxgeom;
 
         double         xmin, xmax, ymin, ymax;
         PolyTriGroup    *m_ppg_head;                  // head of a PolyTriGroup chain
