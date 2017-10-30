@@ -107,6 +107,24 @@ WX_DEFINE_LIST( TextObjList );
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfNoshow);
 
+//  S52_TextC Implementation
+S52_TextC::S52_TextC()
+{ 
+    pcol = NULL;
+    pFont = NULL;
+    texobj = 0;
+    bnat = false;
+    bspecial_char = false;
+}
+
+S52_TextC::~S52_TextC()
+{
+    if(texobj){
+        glDeleteTextures(1, (GLuint *)(&this->texobj) );
+    }
+}
+
+
 //-----------------------------------------------------------------------------
 //      Comparison Function for LUPArray sorting
 //      Note Global Scope
