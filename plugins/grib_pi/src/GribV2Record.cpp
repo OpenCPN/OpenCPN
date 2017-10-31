@@ -1557,7 +1557,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     }
     else {
         // seek back if V1
-        zu_seek(file, start, SEEK_SET);
+        (void)zu_seek(file, start, SEEK_SET);
         return;
     }   
     refyear  = grib_msg->yr;
