@@ -1636,6 +1636,9 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
       return false;
   
   getBits(temp,&grib_msg->total_len,96,32);
+  // too small or overflow
+  if ( grib_msg->total_len < 16 || grib_msg->total_len > (INT_MAX - 4))
+      return false;
 
   grib_msg->md.nx = grib_msg->md.ny = 0;
   grib_msg->buffer = new unsigned char[grib_msg->total_len+4];
