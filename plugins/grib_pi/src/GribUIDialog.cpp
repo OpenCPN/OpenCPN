@@ -294,8 +294,8 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
            wxString key;
            long dummy;
            for( int i = 0; i < iFileMax; i++ ) {
-               pConf->GetFirstEntry( key, dummy );
-               pConf->DeleteEntry( key, false );
+               if (pConf->GetFirstEntry( key, dummy ))
+                   pConf->DeleteEntry( key, false );
            }
         }
 
