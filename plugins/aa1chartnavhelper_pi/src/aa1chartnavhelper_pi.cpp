@@ -164,7 +164,7 @@ int aa1chartnavhelper_pi::Init(void)
     /* Memory allocation */
 
     int ret_flag =  (WANTS_OVERLAY_CALLBACK |
-    //WANTS_OPENGL_OVERLAY_CALLBACK |
+    WANTS_OPENGL_OVERLAY_CALLBACK |
     WANTS_CURSOR_LATLON     |
     WANTS_TOOLBAR_CALLBACK  |
     WANTS_NMEA_EVENTS       |
@@ -370,8 +370,16 @@ double deg2rad(double angle)
     return angle/180.0*M_PI;
 }
 
+/**This method is not used at this version. It is drawing a Compuss Star with N, NE, E, ... direction pointers only
+   we do not have the OpenGL version of this method, that may come later if this Compass Rose/Star code will remain in the code.
+ */
 void aa1chartnavhelper_pi::DrawCompassRose(wxDC* dc, int cx, int cy, int radius, int startangle, bool showlabels)
 {
+    if (dc == NULL)
+    {
+        //at thsi veriosn this compass rose is not beeing used... we do not yet have an OpenGL implementation for this.
+    }
+
     wxPoint pt, points[3];
     wxString Value;
     int width, height;
@@ -441,7 +449,7 @@ void aa1chartnavhelper_pi::DrawCompassRose(wxDC* dc, int cx, int cy, int radius,
     
     dc->SetPen(*pen);
     dc->SetTextForeground(cl);
-    dc->SetBrush(wxNullBrush);
+    dc->SetBrush(*wxTRANSPARENT_BRUSH);
     dc->DrawCircle(cx, cy, radius);
 }
 
@@ -449,29 +457,296 @@ const int SMALL_TICK_LEN = 4;
 const int MED_TICK_LEN = 6;
 const int BIG_TICK_LEN = 10;
 
+// utility method to hide differences between OpenGL and DC drawing
+void mySetPen(wxDC* dc, wxPen* pen)
+{
+    if (dc)
+    {
+        dc->SetPen(*pen);
+    }
+    else
+    {
+        glLineWidth(pen->GetWidth());
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void mySetTextForground(wxDC* dc, wxColour& cl)
+{
+    if (dc)
+    {
+        dc->SetTextForeground(cl);
+    }
+    else
+    {
+        glColor4ub(cl.Red(), cl.Green(), cl.Blue(), cl.Alpha());
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void mySetFont(wxDC* dc, wxFont& aFont, TexFont& aTexFont)
+{
+    if (dc)
+    {
+        dc->SetFont(aFont);
+    }
+    else
+    {
+        aTexFont.Build(aFont);
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void mySetBrush(wxDC* dc, const wxBrush& b2)
+{
+    if (dc)
+    {
+        dc->SetBrush(b2);
+    }
+    else
+    {
+        //???
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void myDrawLine(wxDC* dc, wxPoint& pt_tick_s, wxPoint& pt_tick_e)
+{
+    if(dc)
+        dc->DrawLine(pt_tick_s.x, pt_tick_s.y, pt_tick_e.x, pt_tick_e.y);
+    else {
+        
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+
+        glBegin(GL_LINES);
+        glVertex2i(pt_tick_s.x, pt_tick_s.y);
+        glVertex2i(pt_tick_e.x, pt_tick_e.y);
+        glEnd();
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void myDrawLine(wxDC* dc, int x1, int y1, int x2, int y2)
+{
+    wxPoint p_s = wxPoint(x1, y1);
+    wxPoint p_e = wxPoint(x2, y2);
+    myDrawLine(dc, p_s, p_e);
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void myDrawCircle(wxDC* dc, int cx, int cy, int radius)
+{
+    if(dc)
+    {
+        dc->DrawCircle(cx, cy, radius);
+    }
+    else
+    {
+        int num_segments = 360;
+        glBegin(GL_LINE_LOOP);
+        for(int ii = 0; ii < num_segments; ii++)
+        {
+            float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);//get the current angle
+            
+            float x = radius * cosf(theta);//calculate the x component
+            float y = radius * sinf(theta);//calculate the y component
+            
+            glVertex2f(x + cx, y + cy);//output vertex
+        }
+        glEnd();
+    }
+    
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+void myDrawText(wxDC* dc, const wxString& text, int cx, int cy, bool centered, wxFont& aFont, TexFont& aTexFont)
+{
+    if(dc) {
+        int w=0;
+        int h=0;
+        if (centered)
+        {
+            dc->GetTextExtent( text, &w, &h);
+        }
+        dc->DrawText(text, cx - w/2, cy - h/2);
+    } else {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        int w = 0;
+        int h = 0;
+        if (centered)
+        {
+            aTexFont.GetTextExtent( text, &w, &h);
+        }
+        
+        glEnable(GL_TEXTURE_2D);
+        aTexFont.RenderString(text, cx - w/2, cy - h/2);
+        glDisable(GL_TEXTURE_2D);
+        
+        glDisable(GL_BLEND);
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+/**this is a sompler text trawing rutine, to abstract the text drawing details of the DC and OpenGL
+   this routine is used when writing the numbers around the compass rose, AND this routin is also used by the
+   DC drawing od the text on the compass rose.
+ */
+void myDrawTextAtAngleRelToCenter(wxDC* dc,
+                                   const wxString& text,
+                                   int cx, int cy, double VarDispPosFacotr,
+                                   int l_angle, int radius, int startangle, double magVar,
+                                   wxFont& aFont, TexFont& aTexFont)
+{
+    wxPoint pt;
+    int width, height;
+    if(dc)
+    {
+        dc->GetTextExtent(text, &width, &height, 0, 0, &aFont);
+        double x = width/2;
+        long double anglefortext = l_angle + startangle - rad2deg(asin((x/(radius*VarDispPosFacotr))));
+        pt.x = cx + (radius * VarDispPosFacotr) * cos(deg2rad(anglefortext + magVar));
+        pt.y = cy + (radius * VarDispPosFacotr) * sin(deg2rad(anglefortext + magVar));
+        dc->DrawRotatedText(text, pt.x, pt.y, -90 - l_angle - startangle - magVar);
+    }
+    else
+    {
+        glPushMatrix();
+
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        
+        aTexFont.GetTextExtent( text, &width, &height);
+
+        double x = width/2;
+        long double anglefortext = l_angle + startangle - rad2deg(asin((x/(radius*VarDispPosFacotr))));
+        pt.x = cx + (radius * VarDispPosFacotr) * cos(deg2rad(anglefortext + magVar));
+        pt.y = cy + (radius * VarDispPosFacotr) * sin(deg2rad(anglefortext + magVar));
+
+        glTranslatef(pt.x /*- x*/, pt.y /*- height/2*/, 0);
+        glRotated(anglefortext + magVar + 90, 0.0, 0.0, 1.0);
+
+        glEnable(GL_TEXTURE_2D);
+        //aTexFont.RenderString(msg, r.x - w/2, r.y - h/2);
+        aTexFont.RenderString(text, 0, 0);//pt.x - x, pt.y - height/2);
+        glDisable(GL_TEXTURE_2D);
+        
+        glDisable(GL_BLEND);
+        
+        glPopMatrix();
+    }
+}
+
+// utility method to hide differences between OpenGL and DC drawing
+/** this is a method which .. with difficulty .. draws the text on the compass rose
+ there are 3-lines of text, the last line is a static text "MAGNETIC"
+ The difference between the DC and OpenGL drawing of the texts is that in DC drowing the "MAGNETIC" word is
+ drawn upside down, while in OpenGL mode it is drawn right side up... this remains a signature of the map.
+ In printed maps will be possible to tell what rendering was used nased on this minor clue.
+ 
+ This method uses the simpler text drawung methoud for the DC drawing but it uses a different implementation
+ for the OpenGL case.
+ */
+void drawInfoText(wxDC* dc,
+                  int cx, int cy,
+                  int l_angle, int lr_angle, int radius, int startangle, double magVar,
+                  wxFont& aFont, TexFont& aTexFont,
+                  const wxString& line1, const wxString& line2, const wxString& line3)
+{
+    if(dc)
+    {
+         if ((lr_angle == 0) || (lr_angle == 360) )
+         {
+             {
+                 double VarDispPosFacotr = 9.0/10.0;
+                 myDrawTextAtAngleRelToCenter(dc, line1, cx, cy, VarDispPosFacotr,
+                 l_angle, radius, startangle, magVar,
+                 aFont, aTexFont);
+             }
+             {
+                 double VarDispPosFacotr = 9.0/10.0;
+                 myDrawTextAtAngleRelToCenter(dc, line2, cx, cy, VarDispPosFacotr,
+                 l_angle, radius, startangle, magVar,
+                 aFont, aTexFont);
+             }
+         }
+         if (lr_angle == 180)
+         {
+             {
+                 double VarDispPosFacotr = 0.8;
+                 myDrawTextAtAngleRelToCenter(dc, line3, cx, cy, VarDispPosFacotr,
+                 l_angle, radius, startangle, magVar,
+                 aFont, aTexFont);
+             }
+         }
+    }
+    else
+    {
+        if ((lr_angle == 0) || (lr_angle == 360) )
+        {
+            int width1, height1;
+            int width2, height2;
+            int width3, height3;
+
+            glPushMatrix();
+            
+            glEnable( GL_BLEND );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            
+            aTexFont.GetTextExtent( line1, &width1, &height1);
+            aTexFont.GetTextExtent( line2, &width2, &height2);
+            aTexFont.GetTextExtent( line3, &width3, &height3);
+
+            double line1_y_delta = -radius +25;
+            double line2_y_delta = line1_y_delta + height1 + 5;
+            double line3_y_delta = -line1_y_delta -25;
+
+            glTranslatef(cx, cy, 0);
+
+            glRotated(-1 * (-90 - l_angle - startangle - magVar), 0.0, 0.0, 1.0);
+            
+            glEnable(GL_TEXTURE_2D);
+            
+            aTexFont.RenderString(line1, -width1/2 , line1_y_delta);
+            aTexFont.RenderString(line2, -width2/2 , line2_y_delta);
+            aTexFont.RenderString(line3, -width3/2 , line3_y_delta);
+
+            glDisable(GL_TEXTURE_2D);
+            
+            glDisable(GL_BLEND);
+            
+            glPopMatrix();
+        }
+    }
+}
+
+/** this is the drawing method for the compus rose.. it is actually called twice to draw two circles with tick marks
+ the first is the True copuss rose, the second is the MAcnetic one which is rotated by the Mag variations.
+ */
 void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int radius, int startangle, bool showlabels,
                           double magVar, double magVarYdelta, bool markAt90)
 {
     wxPoint pt, pt_tick_s, pt_tick_e;
     wxString Value;
-    int width, height;
+    //int width, height;
     int tick_len = SMALL_TICK_LEN;
     
+    TexFont aTexFont;
     wxFont aFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-    dc->SetFont(aFont);
+    mySetFont(dc, aFont, aTexFont);
     
     wxColour cl;
     wxPen* pen;
     GetGlobalColor(_T("UINFM"), &cl);
     pen = wxThePenList->FindOrCreatePen( cl, 1, wxPENSTYLE_SOLID );
-    //wxBrush* b2 = wxTheBrushList->FindOrCreateBrush( cl );
-    
-    //GetGlobalColor(_T("DASH1"), &cl);
-    //wxBrush* b1 = wxTheBrushList->FindOrCreateBrush( cl );
-    
-    dc->SetPen(*pen);
-    dc->SetTextForeground(cl);
-    dc->SetBrush(wxNullBrush);
+
+    mySetPen(dc, pen);
+    mySetTextForground(dc, cl);
+    mySetBrush(dc, *wxTRANSPARENT_BRUSH);
     
     for(int l_angle = - ANGLE_OFFSET;
         l_angle < 360 - ANGLE_OFFSET; l_angle+=1)
@@ -513,54 +788,37 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
                 extra_tick_s = 0;
                 extra_tick_e = 10;
             }
-            if ((lr_angle == 0) || (lr_angle == 360) )
+            if ((lr_angle == 0) || (lr_angle == 360) || (lr_angle == 180) )
             {
-                {
-                    Value = wxString::Format("as of %d/1/1", m_year_for_MagVar);
-                    dc->GetTextExtent(Value, &width, &height, 0, 0, &aFont);
-                    double x = width/2;
-                    double VarDispPosFacotr = 9.0/10.0;
-                    long double anglefortext = l_angle + startangle - rad2deg(asin((x/(radius*VarDispPosFacotr))));
-                    pt.x = cx + (radius * VarDispPosFacotr) * cos(deg2rad(anglefortext + magVar));
-                    pt.y = cy + (radius * VarDispPosFacotr) * sin(deg2rad(anglefortext + magVar));
-                    dc->DrawRotatedText(Value, pt.x, pt.y, -90 - l_angle - startangle - magVar);
-                }
-                {
-                    wxString marVarS = AngleToText(magVar);
-                    Value = wxString::Format("Var: %s AnualChg: %.2f",marVarS,magVarYdelta);
-                    dc->GetTextExtent(Value, &width, &height, 0, 0, &aFont);
-                    double x = width/2;
-                    double VarDispPosFacotr = 9.0/10.0;
-                    long double anglefortext = l_angle + startangle - rad2deg(asin((x/(radius*VarDispPosFacotr))));
-                    pt.x = cx + (radius * VarDispPosFacotr) * cos(deg2rad(anglefortext + magVar));
-                    pt.y = cy + (radius * VarDispPosFacotr) * sin(deg2rad(anglefortext + magVar));
-                    dc->DrawRotatedText(Value, pt.x, pt.y, -90 - l_angle - startangle - magVar);
-                }
-            }
-            if (lr_angle == 180)
-            {
-                {
-                    Value = wxString::Format("MAGNETIC");
-                    dc->GetTextExtent(Value, &width, &height, 0, 0, &aFont);
-                    double x = width/2;
-                    double VarDispPosFacotr = 0.8;
-                    long double anglefortext = l_angle + startangle - rad2deg(asin((x/(radius*VarDispPosFacotr))));
-                    pt.x = cx + (radius * VarDispPosFacotr) * cos(deg2rad(anglefortext + magVar));
-                    pt.y = cy + (radius * VarDispPosFacotr) * sin(deg2rad(anglefortext + magVar));
-                    dc->DrawRotatedText(Value, pt.x, pt.y, -90 - l_angle - startangle - magVar);
-                }
+                wxString line1 = wxString::Format("as of %d/1/1", m_year_for_MagVar);
+                wxString marVarS = AngleToText(magVar);
+                wxString line2 = wxString::Format("Var: %s AnualChg: %.2f",marVarS,magVarYdelta);
+                wxString line3 = wxString::Format("MAGNETIC");
+                
+                drawInfoText(dc, cx, cy,
+                             l_angle, lr_angle, radius, startangle, magVar,
+                             aFont, aTexFont,
+                             line1, line2, line3);
             }
         }
         
         if (showlabels_i)
         {
+            double VarDispPosFacotr = 1.0;
             Value = wxString::Format("%d",lr_angle);
+            
+            myDrawTextAtAngleRelToCenter(dc, Value, cx, cy, VarDispPosFacotr,
+                                         l_angle, radius, startangle, magVar,
+                                         aFont, aTexFont);
+            
+            /*
             dc->GetTextExtent(Value, &width, &height, 0, 0, &aFont);
             double x = width/2;
             long double anglefortext = l_angle + startangle - rad2deg(asin((x/radius)));
             pt.x = cx + radius * cos(deg2rad(anglefortext + magVar));
             pt.y = cy + radius * sin(deg2rad(anglefortext + magVar));
             dc->DrawRotatedText(Value, pt.x, pt.y, -90 - l_angle - startangle - magVar);
+            */
         }
         
         //draw ticks
@@ -571,8 +829,8 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
         pt_tick_e.x = cx + (radius + tick_len + extra_tick_e) * cos(deg2rad(anglefortick + magVar));
         pt_tick_e.y = cy + (radius + tick_len + extra_tick_e) * sin(deg2rad(anglefortick + magVar));
         
-        dc->SetBrush(wxNullBrush);
-        dc->DrawLine(pt_tick_s, pt_tick_e);
+        mySetBrush(dc, *wxTRANSPARENT_BRUSH);
+        myDrawLine(dc, pt_tick_s, pt_tick_e);
     }
     //draw center cross
     if (markAt90)
@@ -586,8 +844,8 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
         pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(angleforcross + magVar));
         pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(angleforcross + magVar));
         
-        dc->SetBrush(wxNullBrush);
-        dc->DrawLine(pt_tick_s, pt_tick_e);
+        mySetBrush(dc, *wxTRANSPARENT_BRUSH);
+        myDrawLine(dc, pt_tick_s, pt_tick_e);
 
         angleforcross = 90;
         pt_tick_s.x = cx + (cross_len) * cos(deg2rad(angleforcross + magVar));
@@ -596,8 +854,8 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
         pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(angleforcross + magVar));
         pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(angleforcross + magVar));
         
-        dc->SetBrush(wxNullBrush);
-        dc->DrawLine(pt_tick_s, pt_tick_e);
+        mySetBrush(dc, *wxTRANSPARENT_BRUSH);
+        myDrawLine(dc, pt_tick_s, pt_tick_e);
 
         //extra lines
         int small_radius = radius/2;
@@ -620,17 +878,23 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
             pt_tick_e.x = cx + (l_large_radius) * cos(deg2rad(l_angleforextraline + magVar));
             pt_tick_e.y = cy + (l_large_radius) * sin(deg2rad(l_angleforextraline + magVar));
         
-            dc->SetBrush(wxNullBrush);
-            dc->DrawLine(pt_tick_s, pt_tick_e);
+            mySetBrush(dc, *wxTRANSPARENT_BRUSH);
+            myDrawLine(dc, pt_tick_s, pt_tick_e);
         }
     }
     
-    dc->DrawCircle(cx, cy, radius);
+    mySetBrush(dc, *wxTRANSPARENT_BRUSH);
+    myDrawCircle(dc, cx, cy, radius);
 }
 
 void aa1chartnavhelper_pi::getCompassRoseCenter(wxDC *dc, PlugIn_ViewPort *vp, int& cx, int& cy)
 {
-
+    if(dc) {
+        // DC drawing
+    } else {
+        // OpenGL drawing
+    }
+    
     if ((m_preffered_compass_rose_cx != 0) && (m_preffered_compass_rose_cy != 0))
     {
     	if (m_moving_with_mouse_click || m_moving_with_mouse_click_just_finihed_moving)
@@ -822,7 +1086,8 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
 {
     //if ( fabs( vp->rotation ) < 1e-5 )
     //    return;
-    
+    TexFont aTexFont;
+
     double nlat, elon, slat, wlon;
     float lat, lon;
     float dlat, dlon;
@@ -833,13 +1098,12 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     GetGlobalColor(_T("DASHR"), &cl);
 
     wxPen GridPen( cl, 1, wxPENSTYLE_SOLID );
-    dc->SetPen( GridPen );
-    dc->SetTextForeground(cl);
-    dc->SetTextForeground(cl);
-    dc->SetBrush(wxNullBrush);
+    mySetPen(dc, &GridPen);
+    mySetTextForground(dc, cl);
+    mySetBrush(dc, *wxTRANSPARENT_BRUSH);
     
     wxFont aFont( 8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-    dc->SetFont(aFont);
+    mySetFont(dc, aFont, aTexFont);
     
     wxPoint minC, maxC;
     GetCanvasPixLL(vp, &maxC, vp->lat_max, vp->lon_max);
@@ -868,9 +1132,10 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
         wxString st = CalcGridText( lat, gridlatMajor, true ); // get text for grid line
         GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
         //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-        dc->DrawLine( 0, r.y, RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
-        dc->DrawLine( w, r.y, w - RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
-        dc->DrawText( st, 0, r.y ); // draw text
+        myDrawLine(dc, 0, r.y, RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
+        myDrawLine(dc, w, r.y, w - RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
+        //dc->DrawText( st, 0, r.y ); // draw text
+        myDrawText(dc, st, 0, r.y, false, aFont, aTexFont);
         lat = lat + gridlatMajor;
         
         if( fabs( lat - wxRound( lat ) ) < 1e-5 ) lat = wxRound( lat );
@@ -886,9 +1151,10 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
         wxString st = CalcGridText( lat, gridlatMinor, true ); // get text for grid line
         GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
         //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-        dc->DrawLine( 0, r.y, RULER_WIDTH_SMALL, r.y );
-        dc->DrawLine( w - RULER_WIDTH_SMALL, r.y, w, r.y );
-        dc->DrawText( st, 0, r.y ); // draw text
+        myDrawLine(dc, 0, r.y, RULER_WIDTH_SMALL, r.y );
+        myDrawLine(dc, w - RULER_WIDTH_SMALL, r.y, w, r.y );
+        //dc->DrawText( st, 0, r.y ); // draw text
+        myDrawText(dc, st, 0, r.y, false, aFont, aTexFont);
         lat = lat + gridlatMinor;
         
         minor_count++;
@@ -911,8 +1177,8 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
             wxPoint r;
             GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
             //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-            dc->DrawLine( 0, r.y, RULER_WIDTH_MICRO, r.y );
-            dc->DrawLine( w - RULER_WIDTH_MICRO, r.y, w, r.y );
+            myDrawLine(dc, 0, r.y, RULER_WIDTH_MICRO, r.y );
+            myDrawLine(dc, w - RULER_WIDTH_MICRO, r.y, w, r.y );
             lat = lat + gridlatMicro;
         }
     }
@@ -930,9 +1196,11 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
         GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
         //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
         r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-        dc->DrawLine( r.x, 0, r.x, 0 -1*(- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2));
-        dc->DrawLine( r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2, r.x, h - RULER_DELTA_FROM_BOTTOM );
-        dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
+        myDrawLine(dc, r.x, 0, r.x, 0 -1*(- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2));
+        myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2, r.x, h - RULER_DELTA_FROM_BOTTOM );
+        //dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
+        myDrawText(dc, st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
+
         lon = lon + gridlonMajor;
         if( lon > 180.0 ) {
             lon = lon - 360.0;
@@ -951,9 +1219,11 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
         GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
         //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
         r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-        dc->DrawLine( r.x, 0, r.x, RULER_WIDTH_SMALL);
-        dc->DrawLine( r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL, r.x, h - RULER_DELTA_FROM_BOTTOM );
-        dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
+        myDrawLine(dc, r.x, 0, r.x, RULER_WIDTH_SMALL);
+        myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL, r.x, h - RULER_DELTA_FROM_BOTTOM );
+        //dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
+        myDrawText(dc, st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
+
         lon = lon + gridlonMinor;
         if( lon > 180.0 ) {
             lon = lon - 360.0;
@@ -970,8 +1240,8 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
             GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
             //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
             r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-            dc->DrawLine( r.x, 0, r.x, RULER_WIDTH_MICRO);
-            dc->DrawLine( r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_MICRO, r.x, h - RULER_DELTA_FROM_BOTTOM );
+            myDrawLine(dc, r.x, 0, r.x, RULER_WIDTH_MICRO);
+            myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_MICRO, r.x, h - RULER_DELTA_FROM_BOTTOM );
             lon = lon + gridlonMicro;
             if( lon > 180.0 ) {
                 lon = lon - 360.0;
@@ -988,7 +1258,23 @@ bool aa1chartnavhelper_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
     RenderOverlayBoth(&dc, vp);
     return true;
 }
-
+bool aa1chartnavhelper_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
+{
+    //return true;
+    
+    glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT );
+    
+    glEnable( GL_LINE_SMOOTH );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    
+    RenderOverlayBoth(0, vp);
+    
+    glPopAttrib();
+    
+    return true;
+}
 void aa1chartnavhelper_pi::SetCursorLatLon(double lat, double lon)
 {
 }

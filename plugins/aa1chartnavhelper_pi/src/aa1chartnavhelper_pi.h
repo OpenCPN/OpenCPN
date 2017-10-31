@@ -48,6 +48,7 @@
 
 #include "jsonreader.h"
 #include "jsonwriter.h"
+#include "TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -82,7 +83,8 @@ public:
 
     void RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp);
     bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-
+    bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+    
     //byAA10152017:
     bool plotPaperChartComponents(wxDC *dc, PlugIn_ViewPort *vp);
     
@@ -167,6 +169,7 @@ private:
 //    wxFont        *pFontSmall;
 //    double        m_scale;
       wxString      m_shareLocn;
+    
 };
 
 class Aa1ChartNavHelperUIDialog : public Aa1ChartNavHelperUIDialogBase
