@@ -120,6 +120,12 @@ private:
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( TrackList );
 
+TrackPoint::TrackPoint(double lat, double lon)
+{
+    m_lat = lat;
+    m_lon = lon;
+}
+
 // Copy Constructor
 TrackPoint::TrackPoint( TrackPoint* orig )
 {
@@ -198,6 +204,7 @@ Track::Track()
 
     m_HyperlinkList = new HyperlinkList;
     m_HighlightedTrackPoint = -1;
+    m_bisTrack = true;
 }
 
 Track::~Track( void )
@@ -508,8 +515,9 @@ void ActiveTrack::AddPointNow( bool do_add_point )
 
 void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
 {
-    wxPoint r;
-    cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
+    wxPoint r(INVALID_COORD, INVALID_COORD);
+    if ( (size_t)n < TrackPoints.size() )
+        cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
 
     std::list<wxPoint> &pointlist = pointlists.back();
     if(r.x == INVALID_COORD) {
@@ -656,7 +664,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     else { // opengl version
         glColor3ub(col.Red(), col.Green(), col.Blue());
         glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
-
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_BLEND );
+        
         int size = 0;
         // convert from linked list to array, allocate array just once
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -683,6 +693,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         glDisableClientState(GL_VERTEX_ARRAY);
 
         delete [] points;
+        glDisable( GL_LINE_SMOOTH );
+        glDisable( GL_BLEND );
+        
     }
 #endif
 
@@ -959,12 +972,16 @@ void Track::DouglasPeuckerReducer( std::vector<TrackPoint*>& list,
 double Track::Length()
 {
     TrackPoint *l = NULL;
-    double total = 0;
+    double total = 0.0;
     for(size_t i = 0; i < TrackPoints.size(); i++) {
         TrackPoint *t = TrackPoints[i];
         if(l) {
-            double dd = DistGreatCircle( l->m_lat, l->m_lon, t->m_lat, t->m_lon );
-            total += dd;
+            const double offsetLat = 1e-6;
+            const double deltaLat = l->m_lat - t->m_lat;
+            if ( fabs( deltaLat ) > offsetLat )
+                total += DistGreatCircle( l->m_lat, l->m_lon, t->m_lat, t->m_lon );
+            else
+                total += DistGreatCircle( l->m_lat + copysign( offsetLat, deltaLat ), l->m_lon, t->m_lat, t->m_lon );
         }
         l = t;
     }

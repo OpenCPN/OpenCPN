@@ -62,6 +62,16 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 
+//#include <wx/arrimpl.cpp> // this is a magic incantation which must be done!
+//WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
+//WX_DEFINE_OBJARRAY( ArrayOfMarkIcon); 
+
+
+#ifdef ocpnUSE_SVG
+#include "wxsvg/include/wxSVG/svg.h"
+#endif // ocpnUSE_SVG
+
+
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
 
@@ -82,6 +92,7 @@ extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
 
 extern ActiveTrack      *g_pActiveTrack;
+extern int              g_track_line_width;
 extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
@@ -110,6 +121,26 @@ WX_DEFINE_LIST(markicon_key_list_type);
 WX_DEFINE_LIST(markicon_description_list_type);
 
 
+wxImage LoadSVGIcon( wxString filename, int width, int height )
+{
+#ifdef ocpnUSE_SVG
+    wxSVGDocument svgDoc;
+    if( svgDoc.Load(filename) )
+        return  svgDoc.Render( width, height, NULL, true, true ) ;
+    else{
+        wxLogMessage(filename);
+        return wxImage(32, 32);
+    }
+#else
+        return wxImage(32, 32);
+#endif // ocpnUSE_SVG
+}
+
+
+static int CompareMarkIcons( MarkIcon *mi1, MarkIcon *mi2 )
+{
+    return (mi1->icon_name.CmpNoCase( mi2->icon_name));
+}
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
@@ -796,8 +827,10 @@ bool Routeman::DeleteRoute( Route *pRoute )
 
         if( GetpActiveRoute() == pRoute ) DeactivateRoute();
 
-        if( pRoute->m_bIsInLayer )
+        if (pRoute->m_bIsInLayer) {
+            ::wxEndBusyCursor();
             return false;
+        }
             
         pConfig->DeleteConfigRoute( pRoute );
 
@@ -970,10 +1003,13 @@ void Routeman::SetColorScheme( ColorScheme cs )
     // Re-Create the pens and colors
     
     int scaled_line_width = g_route_line_width;
+    int track_scaled_line_width = g_track_line_width;
     if(g_btouch){
         double size_mult =  g_ChartScaleFactorExp * 1.5;
         double sline_width = wxRound(size_mult * scaled_line_width);
+        double tsline_width = wxRound( size_mult * track_scaled_line_width );
         scaled_line_width = wxMax( sline_width, 1);
+        track_scaled_line_width = wxMax( tsline_width, 1 );
     }
 
     m_pActiveRoutePointPen = wxThePenList->FindOrCreatePen( wxColour( 0, 0, 255 ),
@@ -989,7 +1025,7 @@ void Routeman::SetColorScheme( ColorScheme cs )
                                                          scaled_line_width, wxPENSTYLE_SOLID );
     m_pActiveRoutePen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("UARTE") ),
                                                        scaled_line_width, wxPENSTYLE_SOLID );
-    m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), scaled_line_width,
+    m_pTrackPen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T("CHMGD") ), track_scaled_line_width,
                                                  wxPENSTYLE_SOLID );
     
     m_pRouteBrush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T("UINFB") ), wxBRUSHSTYLE_SOLID );
@@ -1058,9 +1094,12 @@ WayPointman::WayPointman()
     pmarkicon_image_list = NULL;
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    m_pIconArray = new wxArrayPtrVoid();
-    ProcessIcons( style );
-
+    m_pIconArray = new ArrayOfMarkIcon;
+    m_pLegacyIconArray = NULL;
+    m_pExtendedIconArray = NULL;
+    
+    m_cs = (ColorScheme)-1;
+    
     m_nGUID = 0;
     m_iconListScale = -999.0;
 }
@@ -1090,7 +1129,7 @@ WayPointman::~WayPointman()
 
     for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
         MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
-        delete pmi->picon_bitmap;
+        delete pmi->piconBitmap;
         delete pmi;
     }
 
@@ -1131,6 +1170,10 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp)
 
 void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
 {
+    wxString msg;
+    msg.Printf(_T("DPMM: %g   ScaleFactorExp: %g"), g_Platform->GetDisplayDPmm(), g_ChartScaleFactorExp);
+    wxLogMessage(msg);
+    
     wxString UserIconPath = g_Platform->GetPrivateDataDir();
     wxChar sep = wxFileName::GetPathSeparator();
     if( UserIconPath.Last() != sep ) UserIconPath.Append( sep );
@@ -1162,6 +1205,15 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
                     ProcessIcon( icon1, iconname, iconname );
                 }
             }
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                //double bm_size = 16.0 * g_Platform->GetDisplayDPmm() * g_ChartScaleFactorExp;
+                double bm_size = 62 * g_ChartScaleFactorExp;
+                wxBitmap iconSVG = LoadSVGIcon( name, bm_size, bm_size );
+                MarkIcon * pmi = ProcessIcon( iconSVG, iconname, iconname );
+                if(pmi)
+                    pmi->preScaled = true;
+            }
+            
         }
     }
 }
@@ -1169,61 +1221,172 @@ void WayPointman::ProcessUserIcons( ocpnStyle::Style* style )
 
 void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 {
-    ProcessIcon( style->GetIcon( _T("empty") ), _T("empty"), _T("Empty") );
-    ProcessIcon( style->GetIcon( _T("airplane") ), _T("airplane"), _T("Airplane") );
-    ProcessIcon( style->GetIcon( _T("anchorage") ), _T("anchorage"), _T("Anchorage") );
-    ProcessIcon( style->GetIcon( _T("anchor") ), _T("anchor"), _T("Anchor") );
-    ProcessIcon( style->GetIcon( _T("boarding") ), _T("boarding"), _T("Boarding Location") );
-    ProcessIcon( style->GetIcon( _T("boundary") ), _T("boundary"), _T("Boundary Mark") );
-    ProcessIcon( style->GetIcon( _T("bouy1") ), _T("bouy1"), _T("Bouy Type A") );
-    ProcessIcon( style->GetIcon( _T("bouy2") ), _T("bouy2"), _T("Bouy Type B") );
-    ProcessIcon( style->GetIcon( _T("campfire") ), _T("campfire"), _T("Campfire") );
-    ProcessIcon( style->GetIcon( _T("camping") ), _T("camping"), _T("Camping Spot") );
-    ProcessIcon( style->GetIcon( _T("coral") ), _T("coral"), _T("Coral") );
-    ProcessIcon( style->GetIcon( _T("fishhaven") ), _T("fishhaven"), _T("Fish Haven") );
-    ProcessIcon( style->GetIcon( _T("fishing") ), _T("fishing"), _T("Fishing Spot") );
-    ProcessIcon( style->GetIcon( _T("fish") ), _T("fish"), _T("Fish") );
-    ProcessIcon( style->GetIcon( _T("float") ), _T("float"), _T("Float") );
-    ProcessIcon( style->GetIcon( _T("food") ), _T("food"), _T("Food") );
-    ProcessIcon( style->GetIcon( _T("fuel") ), _T("fuel"), _T("Fuel") );
-    ProcessIcon( style->GetIcon( _T("greenlite") ), _T("greenlite"), _T("Green Light") );
-    ProcessIcon( style->GetIcon( _T("kelp") ), _T("kelp"), _T("Kelp") );
-    ProcessIcon( style->GetIcon( _T("light") ), _T("light1"), _T("Light Type A") );
-    ProcessIcon( style->GetIcon( _T("light1") ), _T("light"), _T("Light Type B") );
-    ProcessIcon( style->GetIcon( _T("litevessel") ), _T("litevessel"), _T("Light Vessel") );
-    ProcessIcon( style->GetIcon( _T("mob") ), _T("mob"), _T("MOB") );
-    ProcessIcon( style->GetIcon( _T("mooring") ), _T("mooring"), _T("Mooring Bouy") );
-    ProcessIcon( style->GetIcon( _T("oilbouy") ), _T("oilbouy"), _T("Oil Bouy") );
-    ProcessIcon( style->GetIcon( _T("platform") ), _T("platform"), _T("Platform") );
-    ProcessIcon( style->GetIcon( _T("redgreenlite") ), _T("redgreenlite"), _T("Red/Green Light") );
-    ProcessIcon( style->GetIcon( _T("redlite") ), _T("redlite"), _T("Red Light") );
-    ProcessIcon( style->GetIcon( _T("rock1") ), _T("rock1"), _T("Rock (exposed)") );
-    ProcessIcon( style->GetIcon( _T("rock2") ), _T("rock2"), _T("Rock, (awash)") );
-    ProcessIcon( style->GetIcon( _T("sand") ), _T("sand"), _T("Sand") );
-    ProcessIcon( style->GetIcon( _T("scuba") ), _T("scuba"), _T("Scuba") );
-    ProcessIcon( style->GetIcon( _T("shoal") ), _T("shoal"), _T("Shoal") );
-    ProcessIcon( style->GetIcon( _T("snag") ), _T("snag"), _T("Snag") );
-    ProcessIcon( style->GetIcon( _T("square") ), _T("square"), _T("Square") );
-    ProcessIcon( style->GetIcon( _T("triangle") ), _T("triangle"), _T("Triangle") );
-    ProcessIcon( style->GetIcon( _T("diamond") ), _T("diamond"), _T("Diamond") );
-    ProcessIcon( style->GetIcon( _T("circle") ), _T("circle"), _T("Circle") );
-    ProcessIcon( style->GetIcon( _T("wreck1") ), _T("wreck1"), _T("Wreck A") );
-    ProcessIcon( style->GetIcon( _T("wreck2") ), _T("wreck2"), _T("Wreck B") );
-    ProcessIcon( style->GetIcon( _T("xmblue") ), _T("xmblue"), _T("Blue X") );
-    ProcessIcon( style->GetIcon( _T("xmgreen") ), _T("xmgreen"), _T("Green X") );
-    ProcessIcon( style->GetIcon( _T("xmred") ), _T("xmred"), _T("Red X") );
-    ProcessIcon( style->GetIcon( _T("activepoint") ), _T("activepoint"), _T("Active WP") );
+    m_pIconArray->Clear();
+    
+    ProcessDefaultIcons();
     
     // Load user defined icons.
     // Done after default icons are initialized,
     // so that user may substitute an icon by using the same name in the Usericons file.
     ProcessUserIcons( style );
     
+    if( NULL != pmarkicon_image_list ) {
+        pmarkicon_image_list->RemoveAll();
+        delete pmarkicon_image_list;
+        pmarkicon_image_list = NULL;
+    }
+    
+    // First find the largest bitmap size, to use as the base size for lists of icons
+    int w = 0;
+    int h = 0;
+    
+    for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
+        w = wxMax(w, pmi->iconImage.GetWidth());
+        h = wxMax(h, pmi->iconImage.GetHeight());
+    }
+    
+    m_bitmapSizeForList = wxMax(w,h);
+    m_bitmapSizeForList = wxMin(100, m_bitmapSizeForList);
+    
+    
 }
 
-void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
+void WayPointman::ProcessDefaultIcons()
 {
-    MarkIcon *pmi;
+    wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/markicons/");
+    MarkIcon *pmi = 0;
+    
+    // Add the legacy icons to their own sorted array
+    if(m_pLegacyIconArray)
+        m_pLegacyIconArray->Clear();
+    else
+        m_pLegacyIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
+    
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Empty.svg"), _T("empty"), _T("Empty") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Airplane.svg"), _T("airplane"), _T("Airplane") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Anchorage.svg"), _T("anchorage"), _T("Anchorage") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Anchor2.svg"), _T("anchor"), _T("Anchor") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boarding-Location.svg"), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boundary.svg"), _T("boundary"), _T("Boundary Mark") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeA.svg"), _T("bouy1"), _T("Bouy Type A") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeB.svg"), _T("bouy2"), _T("Bouy Type B") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Campfire.svg"), _T("campfire"), _T("Campfire") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Camping.svg"), _T("camping"), _T("Camping Spot") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Sea-Floor-Coral.svg"), _T("coral"), _T("Coral") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Fishing.svg"), _T("fishhaven"), _T("Fish Haven") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Fishing.svg"), _T("fishing"), _T("Fishing Spot") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Fishing.svg"), _T("fish"), _T("Fish") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Mooring-Buoy.svg"), _T("float"), _T("Float") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Service-Food.svg"), _T("food"), _T("Food") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Service-Fuel-Pump-Diesel&Petrol.svg"), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Green.svg"), _T("greenlite"), _T("Green Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Sea-Floor-Sea-Weed.svg"), _T("kelp"), _T("Kelp") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-TypeA.svg"), _T("light"), _T("Light Type A") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-TypeB.svg"), _T("light1"), _T("Light Type B") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Vessel.svg"), _T("litevessel"), _T("litevessel") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Man-Overboard.svg"), _T("mob"), _T("MOB") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Mooring-Buoy.svg"), _T("mooring"), _T("Mooring Bouy") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Mooring-Buoy-Super.svg"), _T("oilbouy"), _T("Oil Bouy") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Oil-Platform.svg"), _T("platform"), _T("Platform") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Red-Green.svg"), _T("redgreenlite"), _T("Red/Green Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Red.svg"), _T("redlite"), _T("Red Light") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Rock-Exposed.svg"), _T("rock1"), _T("Rock (exposed)") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Rock-Awash.svg"), _T("rock2"), _T("Rock, (awash)") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Sandbar.svg"), _T("sand"), _T("Sand") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Activity-Diving-Scuba-Flag.svg"), _T("scuba"), _T("Scuba") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Sandbar.svg"), _T("shoal"), _T("Shoal") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Snag.svg"), _T("snag"), _T("Snag") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Square.svg"), _T("square"), _T("Square") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Triangle.svg"), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Diamond.svg"), _T("diamond"), _T("Diamond") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Circle.svg"), _T("circle"), _T("Circle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Wreck1.svg"), _T("wreck1"), _T("Wreck A") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Wreck2.svg"), _T("wreck2"), _T("Wreck B") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Blue.svg"), _T("xmblue"), _T("Blue X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Green.svg"), _T("xmgreen"), _T("Green X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Red.svg"), _T("xmred"), _T("Red X") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Active-Waypoint.svg"), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
+   
+   
+    
+    
+    // Add the extended icons to their own sorted array
+    if(m_pExtendedIconArray)
+        m_pExtendedIconArray->Clear();
+    else
+        m_pExtendedIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
+    
+
+    wxArrayString FileList;
+    double bm_size = -1;
+     
+    int n_files = wxDir::GetAllFiles( iconDir, &FileList );
+    
+    // If the scale factor is not unity, measure the first icon in the list
+    //  So that we may apply the scale factor exactly to all
+    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
+        
+        for( int ifile = 0; ifile < n_files; ifile++ ) {
+            wxString name = FileList.Item( ifile );
+        
+            wxFileName fn( name );
+        
+            if( fn.GetExt().Lower() == _T("svg") ) {
+                wxBitmap bmt = LoadSVGIcon(name, -1, -1 );
+                bm_size = bmt.GetWidth() * g_ChartScaleFactorExp;
+                break;
+            }
+        }
+    }
+
+    
+    for( int ifile = 0; ifile < n_files; ifile++ ) {
+        wxString name = FileList.Item( ifile );
+            
+        wxFileName fn( name );
+        wxString iconname = fn.GetName();
+        wxBitmap icon1;
+            
+        if( fn.GetExt().Lower() == _T("svg") ) {
+            wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
+            MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
+            if(pmi)
+                pmi->preScaled = true;
+        }
+    }
+
+
+    // Walk the two sorted lists, adding icons to the un-sorted master list
+
+    for( unsigned int i = 0; i < m_pLegacyIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pLegacyIconArray->Item( i );
+        m_pIconArray->Add( pmi );
+    }
+
+    for( unsigned int i = 0; i < m_pExtendedIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pExtendedIconArray->Item( i );
+        
+        //  Do not add any icons from the extended array if they have already been used as legacy substitutes
+        bool noAdd = false;
+        for( unsigned int j = 0; j < m_pLegacyIconArray->GetCount(); j++ ) {
+            MarkIcon *pmiLegacy = (MarkIcon *) m_pLegacyIconArray->Item( j );
+            if(pmiLegacy->icon_name.IsSameAs(pmi->icon_name)){
+                noAdd = true;
+                break;
+            }
+        }
+        if(!noAdd)
+            m_pIconArray->Add( pmi );
+        
+    }
+}
+
+
+
+MarkIcon *WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
+{
+    MarkIcon *pmi = 0;
 
     bool newIcon = true;
 
@@ -1232,22 +1395,166 @@ void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxStr
         pmi = (MarkIcon *) m_pIconArray->Item( i );
         if( pmi->icon_name.IsSameAs( key ) ) {
             newIcon = false;
-            delete pmi->picon_bitmap;
+            delete pmi->piconBitmap;
             break;
         }
     }
 
     if( newIcon ) {
         pmi = new MarkIcon;
-        m_pIconArray->Add( (void *) pmi );
+        pmi->icon_name = key;                   // Used for sorting
+        m_pIconArray->Add( pmi );
     }
 
+    wxBitmap *pbm = new wxBitmap( pimage );
     pmi->icon_name = key;
     pmi->icon_description = description;
-    pmi->picon_bitmap = new wxBitmap( pimage );
+    pmi->piconBitmap = NULL;
     pmi->icon_texture = 0; /* invalidate */
+    pmi->preScaled = false;
+    pmi->iconImage = pbm->ConvertToImage();
+    pmi->m_blistImageOK = false;
+    delete pbm;
+    
+    return pmi;
 }
 
+MarkIcon *WayPointman::ProcessExtendedIcon(wxImage &image, const wxString & key, const wxString & description)
+{
+    MarkIcon *pmi = 0;
+    
+    bool newIcon = true;
+    
+    // avoid adding duplicates
+    for( unsigned int i = 0; i < m_pExtendedIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pExtendedIconArray->Item( i );
+        if( pmi->icon_name.IsSameAs( key ) ) {
+            newIcon = false;
+            delete pmi->piconBitmap;
+            break;
+        }
+    }
+    
+    if( newIcon ) {
+        pmi = new MarkIcon;
+        pmi->icon_name = key;                   // Used for sorting
+        m_pExtendedIconArray->Add( pmi );
+    }
+
+    wxRect rClip = CropImageOnAlpha(image);
+    wxImage imageClip = image.GetSubImage(rClip);
+    
+    pmi->icon_name = key;
+    pmi->icon_description = description;
+    pmi->piconBitmap = NULL;
+    pmi->icon_texture = 0; /* invalidate */
+    pmi->preScaled = false;
+    pmi->iconImage = imageClip;
+    pmi->m_blistImageOK = false;
+    
+    return pmi;
+}
+
+MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description)
+{
+    double bm_size = -1.0;
+    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
+        wxImage img = LoadSVGIcon(fileName, -1, -1 );
+        bm_size = img.GetWidth() * g_ChartScaleFactorExp;
+    }
+        
+    wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size );
+    wxRect rClip = CropImageOnAlpha(image);
+    wxImage imageClip = image.GetSubImage(rClip);
+    
+    MarkIcon *pmi = 0;
+    
+    bool newIcon = true;
+    
+    // avoid adding duplicates
+    for( unsigned int i = 0; i < m_pLegacyIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pLegacyIconArray->Item( i );
+        if( pmi->icon_name.IsSameAs( key ) ) {
+            newIcon = false;
+            delete pmi->piconBitmap;
+            break;
+        }
+    }
+    
+    if( newIcon ) {
+        pmi = new MarkIcon;
+        pmi->icon_name = key;                   // Used for sorting
+        m_pLegacyIconArray->Add( pmi );
+    }
+    
+    pmi->icon_name = key;
+    pmi->icon_description = description;
+    pmi->piconBitmap = NULL;
+    pmi->icon_texture = 0; /* invalidate */
+    pmi->preScaled = false;
+    pmi->iconImage = imageClip;
+    pmi->m_blistImageOK = false;
+    
+    return pmi;
+}
+
+wxRect WayPointman::CropImageOnAlpha(wxImage &image)
+{
+    wxRect rv = wxRect(0,0, image.GetWidth(), image.GetHeight());
+    if(!image.HasAlpha())
+        return rv;
+    
+    unsigned char *pAlpha = image.GetAlpha();
+    
+    int leftCrop = image.GetWidth();
+    int topCrop = image.GetHeight();
+    int rightCrop = image.GetWidth();
+    int bottomCrop = image.GetHeight();
+    
+    // Horizontal
+    for(int i=0 ; i < image.GetHeight() ; i++){
+        int lineStartIndex = i*image.GetWidth();
+        
+        int j = 0;
+        while((j < image.GetWidth()) && (pAlpha[lineStartIndex+j] == 0) )
+            j++;
+        leftCrop = wxMin(leftCrop, j);
+        
+        int k = image.GetWidth() - 1;
+        while( k && (pAlpha[lineStartIndex+k] == 0) )
+            k--;
+        rightCrop = wxMin(rightCrop, image.GetWidth() - k - 2);
+    }
+ 
+    // Vertical
+    for(int i=0 ; i < image.GetWidth() ; i++){
+        int columnStartIndex = i;
+        
+        int j = 0;
+        while((j < image.GetHeight()) && (pAlpha[columnStartIndex+ (j * image.GetWidth())] == 0) )
+            j++;
+        topCrop = wxMin(topCrop, j);
+        
+        int k = image.GetHeight() - 1;
+        while( k && (pAlpha[columnStartIndex+(k * image.GetWidth())] == 0) )
+            k--;
+        bottomCrop = wxMin(bottomCrop, image.GetHeight() - k - 2);
+    }
+ 
+    int xcrop = wxMin(rightCrop, leftCrop);
+    int ycrop = wxMin(topCrop, bottomCrop);
+    int crop = wxMin(xcrop, ycrop);
+    
+    rv.x = wxMax(crop, 0);
+    rv.width = wxMax(1, image.GetWidth() - (2 * crop));
+    rv.width = wxMin(rv.width, image.GetWidth());
+    rv.y = rv.x;
+    rv.height = rv.width;
+    
+    return rv;
+        
+}
+    
 wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
 {
     // Cached version available?
@@ -1257,25 +1564,8 @@ wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
     
     //  Create the scaled list
     
-    // First find the largest bitmap size
-    int w = 0;
-    int h = 0;
-
-    MarkIcon *pmi;
-
-    for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
-        pmi = (MarkIcon *) m_pIconArray->Item( i );
-        w = wxMax(w, pmi->picon_bitmap->GetWidth());
-        h = wxMax(h, pmi->picon_bitmap->GetHeight());
-
-        // toh, 10.09.29
-        // User defined icons won't be displayed in the list if they are larger than 32x32 pixels (why???)
-        // Work-around: limit size
-        if( w > 32 ) w = 32;
-        if( h > 32 ) h = 32;
-
-    }
-
+    int w = m_bitmapSizeForList;
+    int h = m_bitmapSizeForList;
     w *= scale;
     h *= scale;
     
@@ -1287,73 +1577,6 @@ wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
     }
     pmarkicon_image_list = new wxImageList( w, h );
 
-    // Add the icons
-    for( unsigned int ii = 0; ii < m_pIconArray->GetCount(); ii++ ) {
-        pmi = (MarkIcon *) m_pIconArray->Item( ii );
-        wxImage icon_image = pmi->picon_bitmap->ConvertToImage();
-
-        // toh, 10.09.29
-        // After limiting size user defined icons will be cut off
-        // Work-around: rescale in one or both directions
-        int h0 = icon_image.GetHeight();
-        int w0 = icon_image.GetWidth();
-
-        wxImage icon_larger;
-        if( h0 <= h && w0 <= w ) {
-            icon_larger = icon_image.Rescale(  w, h, wxIMAGE_QUALITY_HIGH  );
-        } else {
-            // rescale in one or two directions to avoid cropping, then resize to fit to cell
-            int h1 = h;
-            int w1 = w;
-            if( h0 > h ) w1 = wxRound( (double) w0 * ( (double) h / (double) h0 ) );
-
-            else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
-
-            icon_larger = icon_image.Rescale( w1, h1 );
-            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( 0, 0 ) );
-        }
-
-        pmarkicon_image_list->Add( icon_larger );
-    }
-    
-    m_markicon_image_list_base_count = pmarkicon_image_list->GetImageCount(); 
-
-    // Create and add "x-ed out" icons,
-    // Being careful to preserve (some) transparency
-    for( unsigned int ii = 0; ii < m_pIconArray->GetCount(); ii++ ) {
-
-        wxImage img = pmarkicon_image_list->GetBitmap( ii ).ConvertToImage() ;
-        img.ConvertAlphaToMask( 128 );
-
-        unsigned char r,g,b;
-        img.GetOrFindMaskColour(&r, &g, &b);
-        wxColour unused_color(r,g,b);
-
-        wxBitmap bmp0( img );
-    
-        wxBitmap bmp(w, h, -1 );
-        wxMemoryDC mdc( bmp );
-        mdc.SetBackground( wxBrush( unused_color) );
-        mdc.Clear();
-        mdc.DrawBitmap( bmp0, 0, 0 );
-        wxPen red(GetGlobalColor(_T( "URED" )), 2 );
-        mdc.SetPen( red );
-        int xm = bmp.GetWidth();
-        int ym = bmp.GetHeight();
-        mdc.DrawLine( 2, 2, xm-2, ym-2 );
-        mdc.DrawLine( xm-2, 2, 2, ym-2 );
-        mdc.SelectObject( wxNullBitmap );
-        
-        wxMask *pmask = new wxMask(bmp, unused_color);
-        bmp.SetMask( pmask );
-
-        wxImage imgu = bmp.ConvertToImage();
-//         if(scale > 1)
-//             imgu.Rescale(imgu.GetWidth() * scale, imgu.GetHeight() * scale, wxIMAGE_QUALITY_HIGH);
-        
-        pmarkicon_image_list->Add( imgu );
-    }
-        
     m_iconListScale = scale;
         
     return pmarkicon_image_list;
@@ -1383,12 +1606,54 @@ wxBitmap *WayPointman::CreateDimBitmap( wxBitmap *pBitmap, double factor )
 
 }
 
+wxImage WayPointman::CreateDimImage( wxImage &image, double factor )
+{
+    int sx = image.GetWidth();
+    int sy = image.GetHeight();
+    
+    wxImage new_img( image );
+    
+    for( int i = 0; i < sx; i++ ) {
+        for( int j = 0; j < sy; j++ ) {
+            if( !image.IsTransparent( i, j ) ) {
+                new_img.SetRGB( i, j, (unsigned char) ( image.GetRed( i, j ) * factor ),
+                                (unsigned char) ( image.GetGreen( i, j ) * factor ),
+                                (unsigned char) ( image.GetBlue( i, j ) * factor ) );
+            }
+        }
+    }
+    
+    
+    return wxImage(new_img);
+    
+}
+
 void WayPointman::SetColorScheme( ColorScheme cs )
 {
+    m_cs = cs;
+    ReloadAllIcons();
+}
+
+void WayPointman::ReloadAllIcons(  )
+{
     ProcessIcons( g_StyleManager->GetCurrentStyle() );
+ 
+    for( int i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
+        wxImage dim_image;
+        if(m_cs == GLOBAL_COLOR_SCHEME_DUSK){
+            dim_image = CreateDimImage(pmi->iconImage, .50);
+            pmi->iconImage = dim_image;
+        }
+        else if(m_cs == GLOBAL_COLOR_SCHEME_NIGHT){
+            dim_image = CreateDimImage(pmi->iconImage, .20);
+            pmi->iconImage = dim_image;
+        }
+        
+    }
     
     //    Iterate on the RoutePoint list, requiring each to reload icon
-
+    
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();
@@ -1435,10 +1700,45 @@ wxBitmap *WayPointman::GetIconBitmap( const wxString& icon_key )
     if( i == m_pIconArray->GetCount() )              // "circle" not found
         pmi = (MarkIcon *) m_pIconArray->Item( 0 );       // use item 0
 
-    if( pmi )
-        pret = pmi->picon_bitmap;
-
+    if( pmi ){
+        if(pmi->piconBitmap)
+            pret = pmi->piconBitmap;
+        else{
+            pmi->piconBitmap = new wxBitmap(pmi->iconImage);
+            pret = pmi->piconBitmap;
+        }
+    }
     return pret;
+}
+
+bool WayPointman::GetIconPrescaled( const wxString& icon_key )
+{
+    MarkIcon *pmi = NULL;
+    unsigned int i;
+    
+    for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->icon_name.IsSameAs( icon_key ) )
+            break;
+    }
+    
+    if( i == m_pIconArray->GetCount() )              // key not found
+    {
+        // find and return bitmap for "circle"
+        for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
+            pmi = (MarkIcon *) m_pIconArray->Item( i );
+            //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+            //                break;
+        }
+    }
+    
+    if( i == m_pIconArray->GetCount() )              // "circle" not found
+        pmi = (MarkIcon *) m_pIconArray->Item( 0 );       // use item 0
+        
+    if( pmi )
+        return pmi->preScaled;
+    else
+        return false;
 }
 
 unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &glh )
@@ -1503,16 +1803,52 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
 #endif
 }
 
-wxBitmap *WayPointman::GetIconBitmap( int index )
-{
-    wxBitmap *pret = NULL;
 
+wxBitmap WayPointman::GetIconBitmapForList( int index )
+{
+    wxBitmap pret;
+    MarkIcon *pmi;
+    
     if( index >= 0 ) {
-        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( index );
-        pret = pmi->picon_bitmap;
+        pmi = (MarkIcon *) m_pIconArray->Item( index );
+        // Scale the icon to "list size" if necessary
+        if(pmi->iconImage.GetWidth() != m_bitmapSizeForList){
+            int w = m_bitmapSizeForList;
+            int h = m_bitmapSizeForList;
+            int w0 = pmi->iconImage.GetWidth();
+            int h0 = pmi->iconImage.GetHeight();
+            
+            wxImage icon_larger;
+            if( h0 <= h && w0 <= w ) {
+                 icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
+            } else {
+                // rescale in one or two directions to avoid cropping, then resize to fit to cell
+                int h1 = h;
+                int w1 = w;
+                if( h0 > h ) w1 = wxRound( (double) w0 * ( (double) h / (double) h0 ) );
+                
+                else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
+                
+                icon_larger = pmi->iconImage.Rescale( w1, h1 );
+                icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2 ) );
+            }
+            
+            pret = wxBitmap(icon_larger);
+            
+        }
+        else
+            pret = wxBitmap(pmi->iconImage);
+        
+        
     }
+    
+    
     return pret;
 }
+
+
+
+
 
 wxString *WayPointman::GetIconDescription( int index )
 {
@@ -1538,27 +1874,167 @@ wxString *WayPointman::GetIconKey( int index )
 
 int WayPointman::GetIconIndex( const wxBitmap *pbm )
 {
+    unsigned int ret = 0;
+    MarkIcon *pmi = NULL;
+    
+    for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->piconBitmap == pbm ){
+            ret = i;
+            break;
+        }
+    }
+    
+    return ret;
+}
+    
+
+int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
+{
     unsigned int i;
+    MarkIcon *pmi = NULL;
 
     for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
-        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
-        if( pmi->picon_bitmap == pbm ) break;
+        pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->piconBitmap == pbm ) break;
+    }
+    
+    // Build a "list - sized" image
+    if(pmi && pmarkicon_image_list && !pmi->m_blistImageOK){
+        int h0 = pmi->iconImage.GetHeight();
+        int w0 = pmi->iconImage.GetWidth();
+        int h = m_bitmapSizeForList;
+        int w = m_bitmapSizeForList;
+        
+        wxImage icon_larger;
+        if( h0 <= h && w0 <= w ) {
+            icon_larger =  pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
+        } else {
+            // rescale in one or two directions to avoid cropping, then resize to fit to cell
+            int h1 = h;
+            int w1 = w;
+            if( h0 > h ) w1 = wxRound( (double) w0 * ( (double) h / (double) h0 ) );
+            
+            else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
+            
+            icon_larger =  pmi->iconImage.Rescale( w1, h1 );
+            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2  ) );
+        }
+        
+        int index = pmarkicon_image_list->Add( wxBitmap(icon_larger));
+        
+        // Create and replace "x-ed out" icon,
+        // Being careful to preserve (some) transparency
+            
+        icon_larger.ConvertAlphaToMask( 128 );
+            
+        unsigned char r,g,b;
+        icon_larger.GetOrFindMaskColour(&r, &g, &b);
+        wxColour unused_color(r,g,b);
+            
+        wxBitmap bmp0( icon_larger );
+            
+        wxBitmap bmp(w, h, -1 );
+        wxMemoryDC mdc( bmp );
+        mdc.SetBackground( wxBrush( unused_color) );
+        mdc.Clear();
+        mdc.DrawBitmap( bmp0, 0, 0 );
+        int xm = bmp.GetWidth() / 2;
+        int ym = bmp.GetHeight() / 2;
+        int dp = xm / 2;
+        int width = wxMax(xm / 10, 2);
+        wxPen red(GetGlobalColor(_T( "URED" )), width );
+        mdc.SetPen( red );
+        mdc.DrawLine( xm-dp, ym-dp, xm+dp, ym+dp );
+        mdc.DrawLine( xm-dp, ym+dp, xm+dp, ym-dp );
+        mdc.SelectObject( wxNullBitmap );
+            
+        wxMask *pmask = new wxMask(bmp, unused_color);
+        bmp.SetMask( pmask );
+        
+        pmarkicon_image_list->Add( bmp );
+        
+        pmi->m_blistImageOK = true;
+        pmi->listIndex = index;
+        
     }
 
-    return i;                                           // index of base icon in the image list
+    return pmi->listIndex;     
 
 }
 
-int WayPointman::GetXIconIndex( const wxBitmap *pbm )
+
+int WayPointman::GetXIconImageListIndex( const wxBitmap *pbm )
 {
     unsigned int i;
+    MarkIcon *pmi = NULL;
     
     for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
-        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
-        if( pmi->picon_bitmap == pbm ) break;
+        pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->piconBitmap == pbm ) break;
+    }
+
+    // Build a "list - sized" image
+    if(pmi && pmarkicon_image_list && !pmi->m_blistImageOK){
+        int h0 = pmi->iconImage.GetHeight();
+        int w0 = pmi->iconImage.GetWidth();
+        int h = m_bitmapSizeForList;
+        int w = m_bitmapSizeForList;
+        
+        wxImage icon_larger;
+        if( h0 <= h && w0 <= w ) {
+           icon_larger =  pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
+        } else {
+            // rescale in one or two directions to avoid cropping, then resize to fit to cell
+            int h1 = h;
+            int w1 = w;
+            if( h0 > h ) w1 = wxRound( (double) w0 * ( (double) h / (double) h0 ) );
+            
+            else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
+            
+            icon_larger =  pmi->iconImage.Rescale( w1, h1 );
+            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2  ) );
+        }
+        
+        int index = pmarkicon_image_list->Add( wxBitmap(icon_larger) );
+        
+        // Create and replace "x-ed out" icon,
+        // Being careful to preserve (some) transparency
+        
+        icon_larger.ConvertAlphaToMask( 128 );
+        
+        unsigned char r,g,b;
+        icon_larger.GetOrFindMaskColour(&r, &g, &b);
+        wxColour unused_color(r,g,b);
+        
+        wxBitmap bmp0( icon_larger );
+        
+        wxBitmap bmp(w, h, -1 );
+        wxMemoryDC mdc( bmp );
+        mdc.SetBackground( wxBrush( unused_color) );
+        mdc.Clear();
+        mdc.DrawBitmap( bmp0, 0, 0 );
+        int xm = bmp.GetWidth() / 2;
+        int ym = bmp.GetHeight() / 2;
+        int dp = xm / 2;
+        int width = wxMax(xm / 10, 2);
+        wxPen red(GetGlobalColor(_T( "URED" )), width );
+        mdc.SetPen( red );
+        mdc.DrawLine( xm-dp, ym-dp, xm+dp, ym+dp );
+        mdc.DrawLine( xm-dp, ym+dp, xm+dp, ym-dp );
+        mdc.SelectObject( wxNullBitmap );
+        
+        wxMask *pmask = new wxMask(bmp, unused_color);
+        bmp.SetMask( pmask );
+        
+        pmarkicon_image_list->Add( bmp );
+        
+        pmi->m_blistImageOK = true;
+        pmi->listIndex = index;
+        
     }
     
-    return i + m_markicon_image_list_base_count;        // index of "X-ed out" icon in the image list
+    return pmi->listIndex+1;        // index of "X-ed out" icon in the image list
     
 }
 

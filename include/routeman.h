@@ -55,6 +55,9 @@ class RoutePointList;
 class markicon_bitmap_list_type;
 class markicon_key_list_type;
 class markicon_description_list_type;
+class MarkIcon;
+WX_DEFINE_SORTED_ARRAY(MarkIcon*, SortedArrayOfMarkIcon); 
+WX_DEFINE_ARRAY(MarkIcon*, ArrayOfMarkIcon); 
 
 //----------------------------------------------------------------------------
 //   Routeman
@@ -167,9 +170,11 @@ public:
       WayPointman();
       ~WayPointman();
       wxBitmap *GetIconBitmap(const wxString& icon_key);
+      bool GetIconPrescaled( const wxString& icon_key );
       unsigned int GetIconTexture( const wxBitmap *pmb, int &glw, int &glh );
       int GetIconIndex(const wxBitmap *pbm);
-      int GetXIconIndex(const wxBitmap *pbm);
+      int GetIconImageListIndex(const wxBitmap *pbm);
+      int GetXIconImageListIndex(const wxBitmap *pbm);
       int GetNumIcons(void){ return m_pIconArray->Count(); }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
@@ -181,9 +186,11 @@ public:
       void DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset = true);
       void ClearRoutePointFonts(void);
       void ProcessIcons( ocpnStyle::Style* style );
+      void ProcessDefaultIcons();
+      void ReloadAllIcons();
       
       bool DoesIconExist(const wxString & icon_key) const;
-      wxBitmap *GetIconBitmap(int index);
+      wxBitmap GetIconBitmapForList(int index);
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);
 
@@ -193,18 +200,29 @@ public:
       bool RemoveRoutePoint(RoutePoint *prp);
       RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
-      void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
+      MarkIcon *ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
 private:
+      MarkIcon *ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description);
+      MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString & key, const wxString & description);
+      wxRect CropImageOnAlpha(wxImage &image);
+      wxImage CreateDimImage( wxImage &image, double factor );
+      
       void ProcessUserIcons( ocpnStyle::Style* style );
       RoutePointList    *m_pWayPointList;
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change
       int               m_markicon_image_list_base_count;
-      wxArrayPtrVoid    *m_pIconArray;
+      ArrayOfMarkIcon    *m_pIconArray;
 
       int         m_nGUID;
       double      m_iconListScale;
+      
+      SortedArrayOfMarkIcon    *m_pLegacyIconArray;
+      SortedArrayOfMarkIcon    *m_pExtendedIconArray;
+      
+      int         m_bitmapSizeForList;
+      ColorScheme m_cs;
 };
 
 #endif

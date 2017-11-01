@@ -887,14 +887,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
     
     //  Establish some graphic element line widths dependent on the platform display resolution
-    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.5));             //0.4 mm nominal, but not less than 1 pixel
 
     float width_interceptbar_base = 3 * nominal_line_width_pix;
     float width_interceptbar_top = 1.5 * nominal_line_width_pix;
     float intercept_bar_circle_diameter = 4 * nominal_line_width_pix;
     float width_interceptline = 2 * nominal_line_width_pix;
     float width_cogpredictor_base = 3 * nominal_line_width_pix;
-    float width_cogpredictor_line = 1 * nominal_line_width_pix;
+    float width_cogpredictor_line = 1.5 * nominal_line_width_pix;
     float width_target_outline = 1 * nominal_line_width_pix;
     
     

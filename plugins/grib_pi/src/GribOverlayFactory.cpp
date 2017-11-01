@@ -38,6 +38,10 @@
 #include "GribUIDialog.h"
 #include "GribOverlayFactory.h"
 
+#ifdef __WXGTK__
+#include <gdk/gdk.h>
+#endif
+
 extern int m_Altitude;
 
 enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
@@ -233,7 +237,12 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     
 #endif    
     if(wxGetDisplaySize().x > 0){
+#ifdef __WXGTK__
+        GdkScreen *screen = gdk_screen_get_default();
+        m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) / wxGetDisplaySize().x;
+#else
         m_pixelMM = (double)wxGetDisplaySizeMM().x / wxGetDisplaySize().x;
+#endif
         m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
     }
     else

@@ -95,8 +95,11 @@ void RolloverWin::SetBitmap( int rollover )
     
     mdc.SetBackground( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
     mdc.Clear();
-    
-    int usegl = g_bopengl && g_texture_rectangle_format;
+#ifdef ocpnUSE_GL
+    bool usegl = g_bopengl && g_texture_rectangle_format;
+#else
+    bool usegl = false;
+#endif
     if(!usegl) {
         if(m_bmaincanvas){
             wxDC* cdc = new wxScreenDC();

@@ -82,6 +82,7 @@ grib_pi::grib_pi(void *ppimgr)
       m_pLastTimelineSet = NULL;
       m_bShowGrib = false;
       g_pi = this;
+      m_GUIScaleFactor = -1.;
 }
 
 grib_pi::~grib_pi(void)
@@ -502,8 +503,8 @@ void grib_pi::OnToolbarToolCallback(int id)
     if(m_bShowGrib) {
         if( starting ) {
             SetDialogFont( m_pGribCtrlBar );
-			m_GUIScaleFactor = scale_factor;
-			m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
+            m_GUIScaleFactor = scale_factor;
+            m_pGribCtrlBar->SetScaledBitmap( m_GUIScaleFactor );
             m_pGribCtrlBar->SetDialogsStyleSizePosition( true );
             
 #ifdef __OCPN__ANDROID__            
@@ -517,17 +518,22 @@ void grib_pi::OnToolbarToolCallback(int id)
             
             m_pGribCtrlBar->Refresh();
         } else {
-			MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
+            MoveDialog(m_pGribCtrlBar, GetCtrlBarXY());
             if( m_DialogStyle >> 1 == SEPARATED ) {
-				MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
+                MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
                 m_pGribCtrlBar->GetCDataDialog()->Show( m_pGribCtrlBar->m_CDataIsShown );
-                }
+            }
         }
         m_pGribCtrlBar->Show();
         if( m_pGribCtrlBar->m_bGRIBActiveFile ) {
             if( m_pGribCtrlBar->m_bGRIBActiveFile->IsOK() ) {
                 ArrayOfGribRecordSets *rsa = m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
-                if(rsa->GetCount() > 1) SetCanvasContextMenuItemViz( m_MenuItem, true);
+                if(rsa->GetCount() > 1) {
+                    SetCanvasContextMenuItemViz( m_MenuItem, true);
+                }
+                if(rsa->GetCount() >= 1) { // XXX Should be only on Show
+                    SendTimelineMessage(m_pGribCtrlBar->TimelineTime());
+                }
             }
         }
         // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle updated
@@ -640,6 +646,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     }
     if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
+        // local time
         SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime() : wxDateTime::Now());
     }
     if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
@@ -777,13 +784,22 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
         return;
 
     wxJSONValue v;
-    v[_T("Day")] = time.GetDay();
-    v[_T("Month")] = time.GetMonth();
-    v[_T("Year")] = time.GetYear();
-    v[_T("Hour")] = time.GetHour();
-    v[_T("Minute")] = time.GetMinute();
-    v[_T("Second")] = time.GetSecond();
-
+    if (time.IsValid()) {
+        v[_T("Day")] = time.GetDay();
+        v[_T("Month")] = time.GetMonth();
+        v[_T("Year")] = time.GetYear();
+        v[_T("Hour")] = time.GetHour();
+        v[_T("Minute")] = time.GetMinute();
+        v[_T("Second")] = time.GetSecond();
+    }
+    else {
+        v[_T("Day")] = -1;
+        v[_T("Month")] = -1;
+        v[_T("Year")] = -1;
+        v[_T("Hour")] = -1;
+        v[_T("Minute")] = -1;
+        v[_T("Second")] = -1;
+    }
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);

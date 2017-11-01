@@ -1064,7 +1064,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                     bp_set = true;
                               }
 
-                              if(stru.Matches(_T("*POLYCONIC*")))
+                              if(stru.Matches(_T("*CONIC*")))
                               {
                                     m_projection = PROJECTION_POLYCONIC;
                                     bp_set = true;

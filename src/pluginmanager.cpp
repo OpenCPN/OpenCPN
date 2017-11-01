@@ -128,6 +128,7 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern int              g_chart_zoom_modifier;
 extern int              g_chart_zoom_modifier_vector;
 extern double           g_display_size_mm;
+extern bool             g_bopengl;
 
 unsigned int      gs_plib_flags;
 
@@ -419,7 +420,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
             
         if(m_benable_blackdialog && !b_compat)
         {
-            wxLogMessage(wxString::Format(_T("    %s: %s")), _T("Incompatible plugin detected"), file_name.c_str());
+            wxLogMessage(wxString::Format(_T("    %s: %s"), _T("Incompatible plugin detected"), file_name.c_str()));
             OCPNMessageBox( NULL, wxString::Format(_("The plugin %s is not compatible with this version of OpenCPN, please get an updated version."), plugin_file.c_str()), wxString(_("OpenCPN Info")), wxICON_INFORMATION | wxOK, 10 );
         }
             
@@ -504,6 +505,12 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
 
     // Tell all the PlugIns about the current OCPN configuration
     SendConfigToAllPlugIns();
+    
+    // Inform Plugins of OpenGL configuration, if enabled
+    if(g_bopengl){
+        if(cc1->GetglCanvas())
+            cc1->GetglCanvas()->SendJSONConfigMessage();
+    }
     
     //  And then reload all catalogs.
     ReloadLocale();
@@ -6432,11 +6439,6 @@ void PlugInAISDrawGL( wxGLCanvas* glcanvas, const PlugIn_ViewPort &vp )
   ocpnDC dc(*glcanvas);
 
   AISDraw(dc, ocpn_vp, NULL);
-}
-
-wxColour PlugInGetFontColor(const wxString TextElement)
-{
-  return FontMgr::Get().GetFontColor(TextElement);
 }
 
 bool PlugInSetFontColor(const wxString TextElement, const wxColour color)

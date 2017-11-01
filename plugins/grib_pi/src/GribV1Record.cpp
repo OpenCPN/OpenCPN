@@ -268,6 +268,13 @@ GribV1Record::~GribV1Record()
 //----------------------------------------------
 static zuint readPackedBits(zuchar *buf, zuint first, zuint nbBits)
 {
+#if 0
+    // should test when loading nbBitsInPack?
+    if (nbBits == 0 || nbBits > 31) {
+        // x >> 32 is undefined behavior, on x86 it returns x
+        return 0;
+    }
+#endif    
     zuint oct = first / 8;
     zuint bit = first % 8;
 
@@ -547,6 +554,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         eof = true;
     }
     if (!ok) {
+        delete [] buf;
         return ok;
     }
 

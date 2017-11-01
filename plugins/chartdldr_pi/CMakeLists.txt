@@ -6,6 +6,11 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+IF (COMMAND cmake_policy)
+  if (POLICY CMP0043)
+    CMAKE_POLICY(SET CMP0043 NEW)
+  endif (POLICY CMP0043)
+ENDIF (COMMAND cmake_policy)
 
 PROJECT(chartdldr_pi)
 
@@ -18,6 +23,7 @@ SET(VERSION_MAJOR "1")
 SET(VERSION_MINOR "2")
 
 #SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_MACOSX_RPATH "ON")
 
 # Definitions
 add_definitions (
@@ -43,8 +49,6 @@ SET(SRC_CHARTDLDR
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
-            src/androidSupport.cpp
-            src/androidSupport.h
             
             src/unrar/rar.cpp
             src/unrar/strlist.cpp
@@ -97,6 +101,10 @@ SET(SRC_CHARTDLDR
         )
 
 
+IF(QT_ANDROID)
+           SET(SRC_CHARTDLDR ${SRC_CHARTDLDR}  src/androidSupport.h)
+           SET(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+ENDIF(QT_ANDROID)
 
 
 IF(UNIX)

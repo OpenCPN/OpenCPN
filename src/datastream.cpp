@@ -782,7 +782,8 @@ bool DataStream::SendSentence( const wxString &sentence )
                                 } else {
                                     wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
                                     tcp_socket->Close();
-                                    m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+                                    if(!m_socket_timer.IsRunning())
+                                        m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
                                     m_socketread_watchdog_timer.Stop();
                                 }
                                 ret = false;

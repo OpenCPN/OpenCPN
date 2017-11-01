@@ -329,7 +329,11 @@ OGRGeometryH OGRBuildPolygonFromEdges( OGRGeometryH hLines,
                               poRing->getZ(0));
         }
 
-        poPolygon->addRingDirectly( poRing );
+        //  Encoded line string may be a 2 point line, with identical coordinates.
+        //  Clearly unuseable as a contour, so discard it.
+        if(poRing->getNumPoints() >= 3)
+            poPolygon->addRingDirectly( poRing );
+        
     } /* next ring */
 
 /* -------------------------------------------------------------------- */

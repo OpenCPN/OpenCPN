@@ -217,6 +217,9 @@ PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
+typedef void (APIENTRYP PFNGLGETBUFFERPARAMETERIV) (GLenum target, GLenum value, GLint *data);
+PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
+
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
@@ -245,6 +248,8 @@ int panx, pany;
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
+bool glChartCanvas::s_b_useFBO;
+
 //static int s_nquickbind;
 
 
@@ -391,6 +396,9 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glBufferData", extensions[i]);
         s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
             ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+
+        s_glGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIV)
+            ocpnGetProcAddress( "glGetBufferParameteriv", extensions[i]);
             
     }
 
@@ -1142,8 +1150,30 @@ void glChartCanvas::SetupOpenGL()
     g_mipmap_max_level = 4;
 #endif
     
+    
+    s_b_useFBO = m_b_BuiltFBO;
+    
+    //  Inform the S52 PLIB of options determined
+    if(ps52plib)
+        ps52plib->SetGLOptions(s_b_useStencil, s_b_useStencilAP, s_b_useScissorTest,  s_b_useFBO, g_b_EnableVBO, g_texture_rectangle_format);
+       
+    SendJSONConfigMessage();    
 }
 
+void glChartCanvas::SendJSONConfigMessage()
+{
+    if(g_pi_manager){
+        wxJSONValue v;
+        v[_T("useStencil")] =  s_b_useStencil;
+        v[_T("useStencilAP")] =  s_b_useStencilAP;
+        v[_T("useScissorTest")] =  s_b_useScissorTest;
+        v[_T("useFBO")] =  s_b_useFBO;
+        v[_T("useVBO")] =  g_b_EnableVBO;
+        v[_T("TextureRectangleFormat")] =  g_texture_rectangle_format;
+        wxString msg_id( _T("OCPN_OPENGL_CONFIG") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    }
+}
 void glChartCanvas::SetupCompression()
 {
     int dim = g_GLOptions.m_iTextureDimension;
@@ -1352,6 +1382,9 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
 
     ViewPort cvp = vp;
     LLBBox bbox = region.GetBox();
+    
+    if(!bbox.GetValid())
+        return vp;
 
     /* region.GetBox() will always try to give coordinates from -180 to 180 but in
        the case where the viewport crosses the IDL, we actually want the clipped viewport

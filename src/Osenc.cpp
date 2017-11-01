@@ -2322,10 +2322,10 @@ bool Osenc::CreateLineFeatureGeometryRecord200( S57Reader *poReader, OGRFeature 
 //         fwrite (&pTP->maxyt , sizeof(double), 1, fpOut);
 
         double minlat, minlon, maxlat, maxlon;
-        minlat = pTP->box.GetMinLat();
-        minlon = pTP->box.GetMinLon();
-        maxlat = pTP->box.GetMaxLat();
-        maxlon = pTP->box.GetMaxLon();
+        minlat = pTP->tri_box.GetMinLat();
+        minlon = pTP->tri_box.GetMinLon();
+        maxlat = pTP->tri_box.GetMaxLat();
+        maxlon = pTP->tri_box.GetMaxLon();
         
 
         if(!stream->Write(&minlon, sizeof(double)).IsOk())
@@ -2759,8 +2759,8 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
 //     if(!strncmp(pFeature->GetDefnRef()->GetName(), "BOYLAT", 6))
 //         int yyp = 4;
     
-//     if(pFeature->GetFID() == 6919)
-//         int yyp = 4;
+     if(pFeature->GetFID() == 290)
+         int yyp = 4;
     
     int payloadLength = 0;
     void *payloadBuffer = NULL;
@@ -2773,32 +2773,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                 //const char *pType = OGRFieldDefn::GetFieldTypeName( poFDefn->GetType() );
                 const char *pAttrName = poFDefn->GetNameRef();
                 const char *pAttrVal = pFeature->GetFieldAsString( iField );
-                
-                //TODO Debugging
-//                 if(!strncmp(pAttrName, "CATLIT", 6))
-//                     int yyp = 2;
-       
-                wxString wxAttrValue;
-                
-                if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
-                    (0 == strncmp("NINFOM",pAttrName, 6) ) ||
-                    (0 == strncmp("NPLDST",pAttrName, 6) ) ||
-                    (0 == strncmp("NTXTDS",pAttrName, 6) ) )
-                {
-                    if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
-                            wxMBConvUTF16 conv;
-                            wxString att_conv(pAttrVal, conv);
-                            att_conv.RemoveLast();      // Remove the \037 that terminates UTF-16 strings in S57
-                            att_conv.Replace(_T("\n"), _T("|") );  //Replace  <new line> with special break character
-                            wxAttrValue = att_conv;
-                            wxLogMessage(wxAttrValue);
-                    }
-                    else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
-                            wxCSConv conv(_T("iso8859-1") );
-                            wxString att_conv(pAttrVal, conv);
-                            wxAttrValue = att_conv;
-                    }
-                }
                 
                 //  Use the OCPN Registrar Manager to map attribute acronym to an identifier.
                 //  The mapping is defined by the file {csv_dir}/s57attributes.csv
@@ -2901,10 +2875,41 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                     
                     case 4:             // Ascii String
                     {
-                        
                         valueType = OGRvalueType;
                         const char *pAttrVal = pFeature->GetFieldAsString( iField );
-                        unsigned int stringPayloadLength = strlen(pAttrVal);
+                        
+                        wxString wxAttrValue;
+                        
+                        if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
+                            (0 == strncmp("NINFOM",pAttrName, 6) ) ||
+                            (0 == strncmp("NPLDST",pAttrName, 6) ) ||
+                            (0 == strncmp("NTXTDS",pAttrName, 6) ) )
+                            {
+                                if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
+                                    wxMBConvUTF16 conv;
+                                    wxString att_conv(pAttrVal, conv);
+                                    att_conv.RemoveLast();      // Remove the \037 that terminates UTF-16 strings in S57
+                                    att_conv.Replace(_T("\n"), _T("|") );  //Replace  <new line> with special break character
+                                    wxAttrValue = att_conv;
+                                    wxLogMessage(wxAttrValue);
+                                    }
+                                 else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
+                                    wxCSConv conv(_T("iso8859-1") );
+                                    wxString att_conv(pAttrVal, conv);
+                                    wxAttrValue = att_conv;
+                                }
+                            }
+                         else{   
+                            if( poReader->GetAall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding for "General Text"
+                                wxCSConv conv(_T("iso8859-1") );
+                                wxString att_conv(pAttrVal, conv);
+                                wxAttrValue = att_conv;
+                                }
+                            else
+                                wxAttrValue = wxString(pAttrVal);  // ENC must be using Lex level 0 (ASCII) encoding for "General Text"
+                        }
+                         
+                        unsigned int stringPayloadLength = 0;
                         
                         wxCharBuffer buffer;
                         if(wxAttrValue.Length()){               // need to explicitely encode as UTF8
@@ -3188,7 +3193,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
         maxyt = *pbb;
         #endif
         
-        tp->box.Set(minyt, minxt, maxyt, maxxt);
+        tp->tri_box.Set(minyt, minxt, maxyt, maxxt);
         
         pPayloadRun += 4 * sizeof(double);
         

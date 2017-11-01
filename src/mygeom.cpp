@@ -342,7 +342,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
             
             double abox[4];
             memcpy(&abox[0], pbb, 4 * sizeof(double));
-            tp->box.Set(abox[2], abox[0], abox[3], abox[1]);
+            tp->tri_box.Set(abox[2], abox[0], abox[3], abox[1]);
             
             m_buf_ptr += 4 * sizeof(double);
 
@@ -453,8 +453,8 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
         
 
         //  Write out the object bounding box as lat/lon
-        double data[4] = {pTP->box.GetMinLon(), pTP->box.GetMaxLon(),
-                          pTP->box.GetMinLat(), pTP->box.GetMaxLat()};
+        double data[4] = {pTP->tri_box.GetMinLon(), pTP->tri_box.GetMaxLon(),
+            pTP->tri_box.GetMinLat(), pTP->tri_box.GetMaxLat()};
         ostream2->Write(data, 4*sizeof(double));
 
         pTP = pTP->p_next;
@@ -1567,7 +1567,7 @@ void __CALL_CONVENTION endCallback(void)
                 }
             }
 
-            pTPG->box.Set(symin, sxmin, symax, sxmax);
+            pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
 
             //  Transcribe this geometry to TriPrim, converting to SM if called for
 

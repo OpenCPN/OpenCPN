@@ -261,6 +261,12 @@ int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 
 static inline void getBits(unsigned char *buf, int *loc, size_t first, size_t nbBits)
 {
+    if (nbBits == 0) {
+        // x >> 32 is undefined behavior, on x86 it returns x
+        *loc = 0;
+        return;
+    }
+
     zuint oct = first / 8;
     zuint bit = first % 8;
 
@@ -738,7 +744,7 @@ static bool unpackBMS(GRIBMessage *grib_msg)
 	len=(len-6)*8;
 	grib_msg->md.bitmap = new unsigned char[len];
 	grib_msg->md.bms = new zuchar[grib_msg->md.bmssize];
-	memcpy (grib_msg->md.bms, grib_msg->buffer +grib_msg->offset + 6, grib_msg->md.bmssize);
+	memcpy (grib_msg->md.bms, grib_msg->buffer + (grib_msg->offset/8) + 6, grib_msg->md.bmssize);
 	for (n=0; n < len; n++) {
 	  getBits(grib_msg->buffer, &bit, grib_msg->offset+48+n, 1);
 	  grib_msg->md.bitmap[n]=bit;
@@ -783,10 +789,12 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 	}
 	break;
     case 3:
+#if 0
 	if (grib_msg->md.scan_mode != 0) {
 	  fprintf(stderr,"Unable to decode ddef3 for scan mode %d\n",grib_msg->md.scan_mode);
 	  return false; // XXX exit(1);
 	}
+#endif
 	(grib_msg->grids[grid_num]).gridpoints=new double[grib_msg->md.ny*grib_msg->md.nx];
 	if (grib_msg->md.complex_pack.num_groups > 0) {
 	  if (grib_msg->md.complex_pack.miss_val_mgmt > 0) {
@@ -851,26 +859,36 @@ static bool unpackDS(GRIBMessage *grib_msg,int grid_num)
 		  groups.group_miss_val=GRIB_MISSING_VALUE;
 		}
 		for (m=0; m < groups.lengths[n]; ) {
-		  if ((grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) || pval == groups.group_miss_val) {
-		    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
-		  }
-		  else {
-		    getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
-		    off+=groups.widths[n];
-		    grib_msg->grids[grid_num].gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
-		    ++m;
+		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
+                      grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                  }
+                  else {
+                      getBits(grib_msg->buffer,&pval,off,groups.widths[n]);
+                      off+=groups.widths[n];
+		      if (pval == groups.group_miss_val) {
+                           grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+		      }
+		      else {
+		          grib_msg->grids[grid_num].gridpoints[l]=pval+groups.ref_vals[n]+groups.omin;
+                      }
+                      ++m;
 		  }
 		  ++l;
 		}
 	    }
 	    else {
-// constant group
+// constant group XXX bitmap?
 		for (m=0; m < groups.lengths[n]; ) {
-		  if ((grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) || groups.ref_vals[n] == groups.miss_val) {
+		  if (grib_msg->md.bitmap != NULL && grib_msg->md.bitmap[l] == 0) {
 		    grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
 		  }
 		  else {
-		    grib_msg->grids[grid_num].gridpoints[l]=groups.ref_vals[n]+groups.omin;
+		    if (groups.ref_vals[n] == groups.miss_val) {
+                        grib_msg->grids[grid_num].gridpoints[l]=GRIB_MISSING_VALUE;
+                    }
+                    else {
+		        grib_msg->grids[grid_num].gridpoints[l]=groups.ref_vals[n]+groups.omin;
+                    }
 		    ++m;
 		  }
 		  ++l;
@@ -1004,8 +1022,7 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
         break;
     case 10: // productDiscipline
         switch (dataCat) {
-        // waves
-        case 0:
+        case 0:         // waves
 #if 0        
             switch (dataNum) {
             case 3: ret= GRB_WVHGT; break; //DATA_TO_GRBV2[DATA_WAVES_SIG_HGT_COMB] = grb2DataType(10,0,3);
@@ -1023,9 +1040,10 @@ static zuchar GRBV2_TO_DATA(int productDiscipline, int dataCat, int dataNum)
 #endif
 
             switch (dataNum) {
-                case 3: ret= GRB_HTSGW; break;
-                case 5: ret= GRB_WVHGT; break;
-                case 4: ret= GRB_WVDIR; break;
+                case 3: ret= GRB_HTSGW; break; // Significant Height of Combined Wind Waves and Swell
+                case 4: ret= GRB_WVDIR; break; // Direction of Wind Waves
+                case 5: ret= GRB_WVHGT; break; // Significant Height of Wind Waves
+                case 6: ret= GRB_WVPER; break; // Mean Period of Wind Waves
             }
             break;
 
@@ -1402,7 +1420,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
             off += len*8;
         }
         if (grib_msg->num_grids != 1) {
-            ok = false;
+            dataType = 255;
             return;
         }
     }

@@ -43,6 +43,11 @@
 DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, int cap_flag, wxString format ) :
       DashboardInstrument_Single( parent, id, title, cap_flag, format )
 {
+    // if format contains the string "LCL" then display time in local TZ
+    if ( format.Contains( _T( "LCL" ) ) )
+        setUTC( false );
+    else
+        setUTC( true );
 }
 
 wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
@@ -67,9 +72,42 @@ void DashboardInstrument_Clock::SetData( int, double, wxString )
 void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 {
     if (data.IsValid())
-    {
-        m_data = data.FormatISOTime().Append(_T(" UTC"));
+        m_data = GetDisplayTime( data );
+}
+
+wxString DashboardInstrument_Clock::GetDisplayTime( wxDateTime UTCtime )
+{
+    wxString result( _T( "---" ) );
+    if ( UTCtime.IsValid() ) {
+        if ( getUTC() ) {
+            result = UTCtime.FormatISOTime().Append( _T( " UTC" ) );
+            return result;
+        }
+        wxDateTime displayTime;
+        if ( g_iUTCOffset != 0 ) {
+            wxTimeSpan offset( 0, g_iUTCOffset * 30, 0 );
+            displayTime = UTCtime.Add( offset );
+        }
+        else {
+            displayTime = UTCtime.FromTimezone( wxDateTime::UTC );
+        }
+        result = displayTime.FormatISOTime().Append( _T( " LCL" ) );
     }
+    return result;
+}
+
+DashboardInstrument_CPUClock::DashboardInstrument_CPUClock( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT | OCPN_DBP_STC_LON | OCPN_DBP_STC_CLK, format )
+{ }
+
+void DashboardInstrument_CPUClock::SetData( int, double, wxString )
+{
+    // Nothing to do here but we want to override the default
+}
+
+void DashboardInstrument_CPUClock::SetUtcTime( wxDateTime data )
+{
+    m_data = wxDateTime::Now().FormatISOTime().Append( _T( " CPU" ) );
 }
 
 DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :
@@ -235,8 +273,8 @@ wxDateTime convHrmn(double dhr) {
       return wxDateTime(hr, mn);
 };
 
-DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title ) :
-    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_CLK )
+DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title, wxString format ) :
+    DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_CLK, format )
 {
     m_lat = m_lon = 999.9;
     m_dt = wxDateTime::Now().ToUTC();
@@ -272,19 +310,25 @@ void DashboardInstrument_Sun::Draw(wxGCDC* dc)
 
 void DashboardInstrument_Sun::SetUtcTime( wxDateTime data )
 {
-    if (data.IsValid())
-    {
+    if ( data.IsValid() )
         m_dt = data;
+
+    if ( ( m_lat != 999.9 ) && ( m_lon != 999.9 ) )
+    {
         wxDateTime sunrise, sunset;
         calculateSun(m_lat, m_lon, sunrise, sunset);
         if (sunrise.GetYear() != 999)
-            m_sunrise = sunrise.FormatISOTime().Append(_T(" UTC"));
+            m_sunrise = GetDisplayTime( sunrise );
         else
             m_sunrise = _T("---");
         if (sunset.GetYear() != 999)
-            m_sunset = sunset.FormatISOTime().Append(_T(" UTC"));
+            m_sunset = GetDisplayTime( sunset );
         else
             m_sunset = _T("---");
+    }
+    else {
+        m_sunrise = _T( "---" );
+        m_sunset = _T( "---" );
     }
 }
 
@@ -298,21 +342,6 @@ void DashboardInstrument_Sun::SetData( int st, double data, wxString unit )
       {
             m_lon = data;
       }
-      else return;
-
-      if (m_lat == 999.9 || m_lon == 999.9)
-            return;
-
-      wxDateTime sunset, sunrise;
-      calculateSun(m_lat, m_lon, sunrise, sunset);
-      if (sunrise.GetYear() != 999)
-            m_sunrise = sunrise.FormatISOTime().Append(_T(" UTC"));
-      else
-            m_sunrise = _T("---");
-      if (sunset.GetYear() != 999)
-            m_sunset = sunset.FormatISOTime().Append(_T(" UTC"));
-      else
-            m_sunset = _T("---");
 }
 
 void DashboardInstrument_Sun::calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset){

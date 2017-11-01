@@ -947,9 +947,12 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         if( pRoute->m_style != wxPENSTYLE_INVALID )
             child.append_attribute("style") = pRoute->m_style;
     }
-    
+
+    pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:RouteExtension");
+    child = gpxx_ext.append_child("gpxx:IsAutoNamed");
+    child.append_child(pugi::node_pcdata).set_value("false");
+
     if( pRoute->m_Colour != wxEmptyString ) {
-        pugi::xml_node gpxx_ext = child_ext.append_child("gpxx:RouteExtension");
         child = gpxx_ext.append_child("gpxx:DisplayColor");
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_Colour.mb_str());
     }

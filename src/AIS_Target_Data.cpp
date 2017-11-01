@@ -354,9 +354,10 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             << rowStartH << _T("<b>") << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
             << ClassStr << rowEnd << _T("</table></td></tr>");
 
-    if((Class != AIS_SART ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) 
+    if ((Class != AIS_SART) && (Class != AIS_DSC))
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
-             << rowStart << _("Flag") << rowEnd << _T("</font></td></tr>")
+             << rowStart << ((Class == AIS_BASE || Class == AIS_ATON) ? _("Nation") : _("Flag")) 
+             << rowEnd << _T("</font></td></tr>")
              << rowStartH << _T("<b>")<< GetCountryCode(true) << rowEnd << _T("</table></td></tr>");
     
     html << vertSpacer;
@@ -918,16 +919,22 @@ void AIS_Target_Data::ToggleShowTrack(void)
 }
 
 
-//Get country name and code according to ISO 3166-2 2014-01 (www.itu.int/online/mms/glad/cga_mids.sh?lng=E)
-
+//Get country name and code according to ITU 2017-01 (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
 wxString AIS_Target_Data::GetCountryCode( bool b_CntryLongStr )  //false = Short country code, true = Full country name
 {
-  int mmsi_start = MMSI / 1000000;
-  if (mmsi_start == 111) mmsi_start = (MMSI - 111000000)/1000 ; //SAR Aircraft start with 111 and has a MID.
+  int nMID = MMSI / 1000000;
+  //SAR Aircraft start with 111 and has a MID at pos 4,5,6
+  if (111 == nMID) nMID = (MMSI - 111000000) / 1000;
+  //Base station start with 00 and has a MID at pos 4,5,6
+  if (Class == AIS_BASE) nMID = MMSI / 10000;
+  //AtoN start with 99 and has a MID at pos 3,4,5
+  if (99 == MMSI / 10000000) nMID = (MMSI - 990000000) / 10000;
+  //Check if a proper MID
+  if (nMID < 201 || nMID > 775) return wxEmptyString;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)
-
-  switch(mmsi_start) {
+  
+  switch (nMID) {
     case 201: return b_CntryLongStr ? _("Albania") : _T("AL") ;
     case 202: return b_CntryLongStr ? _("Andorra") : _T("AD") ;
     case 203: return b_CntryLongStr ? _("Austria") : _T("AT") ;

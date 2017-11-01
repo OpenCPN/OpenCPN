@@ -788,6 +788,7 @@ void Piano::onTimerEvent(wxTimerEvent &event)
         case DEFERRED_KEY_CLICK_DOWN:
             break;
         case DEFERRED_KEY_CLICK_UP:
+            ShowBusy( false );
             if(m_hover_last >= 0){              // turn it off, and return
                 gFrame->HandlePianoRollover( -1, -1 );
                 ResetRollover();

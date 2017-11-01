@@ -659,6 +659,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                         MenuAppend1( menuRoute, ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                     }
                     MenuAppend1( menuRoute, ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+                    MenuAppend1( menuRoute, ID_DEF_ZERO_XTE, _( "Zero XTE" ) );
                 }
                 else {
                     MenuAppend1( menuRoute, ID_RT_MENU_ACTIVATE, _( "Activate" ) );
@@ -674,6 +675,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                         MenuAppend1( menuRoute, ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                     }
                     MenuAppend1( menuRoute, ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+                    MenuAppend1( menuRoute, ID_DEF_ZERO_XTE, _( "Zero XTE" ) );
                 }
                 else {
                     MenuAppend1( menuRoute, ID_RT_MENU_ACTIVATE, _( "Activate" ) );

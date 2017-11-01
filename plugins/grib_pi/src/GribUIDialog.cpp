@@ -986,6 +986,8 @@ void GRIBUICtrlBar::OnClose( wxCloseEvent& event )
             m_ZoneSelMode = START_SELECTION;
             //SetRequestBitmap( m_ZoneSelMode );
         }
+    pPlugIn->SendTimelineMessage(wxInvalidDateTime );
+
     pPlugIn->OnGribCtrlBarClose();
 }
 

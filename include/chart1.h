@@ -499,6 +499,8 @@ class MyFrame: public wxFrame
     wxSize              m_defer_size;
     wxSize              m_newsize;
     
+    void FastClose();
+    
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);

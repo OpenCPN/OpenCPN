@@ -6,6 +6,15 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
+#<<<<<<< HEAD
+#=======
+# This should be 2.8.0 to have FindGTK2 module
+IF (COMMAND cmake_policy)
+  if (POLICY CMP0043)
+    CMAKE_POLICY(SET CMP0043 NEW)
+  endif (POLICY CMP0043)
+ENDIF (COMMAND cmake_policy)
+#>>>>>>> plib
 
 PROJECT(grib_pi)
 
@@ -20,6 +29,7 @@ SET(VERSION_MINOR "2")
 #=======
 #SET(CMAKE_BUILD_TYPE Debug)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
+SET(CMAKE_MACOSX_RPATH "ON")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 

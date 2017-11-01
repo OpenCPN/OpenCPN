@@ -212,8 +212,8 @@ typedef struct _Cond{
 class S52_TextC
 {
 public:
-      S52_TextC(){ pcol = NULL, pFont = NULL, m_pRGBA = NULL, bnat = false, bspecial_char = false; }
-      ~S52_TextC(){ free(m_pRGBA); }
+      S52_TextC();
+      ~S52_TextC();
 
     wxString   frmtd;       // formated text string
     char       hjust;
@@ -229,7 +229,6 @@ public:
     int        dis;         // display
     wxFont     *pFont;
     int        rul_seq_creator;  // sequence number of the Rule creating this object
-    unsigned char *m_pRGBA;
     int           RGBA_width;
     int           RGBA_height;
     int           rendered_char_height;
@@ -237,6 +236,10 @@ public:
     bool        bnat;           // frmtd is National text, UTF-8 encoded
     bool        bspecial_char;  // frmtd has special ASCII characters, i.e. > 127
     int         avgCharWidth;
+    int         texobj;
+    int         text_width;
+    int         text_height;
+    
 };
 
 

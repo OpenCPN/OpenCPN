@@ -282,7 +282,6 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         float lspace = t1 * (unsigned char)dashes[1];
 
         if((ldraw < 0) || (lspace < 0)){
-            qDebug() << "DrawGLThickLine bail dashes" << dashes[0] << dashes[1];
             glEnd();
             return;
         }
