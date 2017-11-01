@@ -2962,15 +2962,16 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 Image.SetMaskColour( m_unused_wxColor.Red(), m_unused_wxColor.Green(),
                                      m_unused_wxColor.Blue() );
                 unsigned char mr, mg, mb;
-                if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a )
+                if( !a && !Image.GetOrFindMaskColour( &mr, &mg, &mb ) )
                     printf( "trying to use mask to draw a bitmap without alpha or mask\n" );
                 
                 unsigned char *e = (unsigned char *) malloc( w * h * 4 );
+                // XXX FIXME a or e ?
                 if( d && a){
                     for( int y = 0; y < h; y++ ) {
                         for( int x = 0; x < w; x++ ) {
                             unsigned char r, g, b;
-                            int off = ( y * Image.GetWidth() + x );
+                            int off = ( y * w + x );
                             r = d[off * 3 + 0];
                             g = d[off * 3 + 1];
                             b = d[off * 3 + 2];
