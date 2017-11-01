@@ -130,7 +130,13 @@ public:
     wxString GetPLIBColorScheme( void ) { return m_ColorScheme; }
 
     void SetGLRendererString(const wxString &renderer);
-
+    void SetGLOptions(bool b_useStencil,
+                      bool b_useStencilAP,
+                      bool b_useScissors,
+                      bool b_useFBO,
+                      bool b_useVBO,
+                      int  nTextureFormat);
+    
     bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
     bool ObjectRenderCheckRules( ObjRazRules *rzRules, ViewPort *vp, bool check_noshow = false );
     bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
@@ -334,7 +340,15 @@ private:
 
     LUPrec *FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex, unsigned int count,
                               S57Obj *pObj, bool bStrict );
-        
+    
+    void SetGLClipRect(const ViewPort &vp, const wxRect &rect);
+    
+    char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz );
+    S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd );
+    char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 );
+    S52_TextC *S52_PL_parseTE( ObjRazRules *rzRules, Rules *rules, char *cmd );
+    
+    
     Rules *StringToRules( const wxString& str_in );
     void GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules );
 
@@ -399,6 +413,14 @@ private:
     int m_coreVersionMajor;
     int m_coreVersionMinor;
     int m_coreVersionPatch;
+
+    // GL Options, set by core depending on hardware capability
+    bool m_useStencil;
+    bool m_useStencilAP;
+    bool m_useScissors;
+    bool m_useFBO;
+    bool m_useVBO;
+    int  m_TextureFormat;
     
 };
 

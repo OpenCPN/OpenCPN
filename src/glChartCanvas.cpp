@@ -233,6 +233,8 @@ int g_uncompressed_tile_size;
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
 bool glChartCanvas::s_b_useStencilAP;
+bool glChartCanvas::s_b_useFBO;
+
 //static int s_nquickbind;
 
 
@@ -971,9 +973,31 @@ void glChartCanvas::SetupOpenGL()
         for(int dim=tex_dim; dim>0; dim/=2)
             max_level++;
         g_mipmap_max_level = max_level - 1;
-    }   
+    } 
+    
+    s_b_useFBO = m_b_BuiltFBO;
+    
+    //  Inform the S52 PLIB of options determined
+    if(ps52plib)
+        ps52plib->SetGLOptions(s_b_useStencil, s_b_useStencilAP, s_b_useScissorTest,  s_b_useFBO, g_b_EnableVBO, g_texture_rectangle_format);
+       
+    SendJSONConfigMessage();    
 }
 
+void glChartCanvas::SendJSONConfigMessage()
+{
+    if(g_pi_manager){
+        wxJSONValue v;
+        v[_T("useStencil")] =  s_b_useStencil;
+        v[_T("useStencilAP")] =  s_b_useStencilAP;
+        v[_T("useScissorTest")] =  s_b_useScissorTest;
+        v[_T("useFBO")] =  s_b_useFBO;
+        v[_T("useVBO")] =  g_b_EnableVBO;
+        v[_T("TextureRectangleFormat")] =  g_texture_rectangle_format;
+        wxString msg_id( _T("OCPN_OPENGL_CONFIG") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    }
+}
 void glChartCanvas::SetupCompression()
 {
     int dim = g_GLOptions.m_iTextureDimension;

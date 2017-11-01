@@ -1172,6 +1172,22 @@ void LoadS57()
         
         if(cc1)
             ps52plib->SetPPMM( cc1->GetPixPerMM() );
+ 
+#ifdef ocpnUSE_GL
+            
+        // Setup PLIB OpenGL options, if enabled
+        extern bool g_b_EnableVBO;    
+        extern GLenum  g_texture_rectangle_format;
+        if(g_bopengl )   
+            ps52plib->SetGLOptions(glChartCanvas::s_b_useStencil,
+                                   glChartCanvas::s_b_useStencilAP,
+                                   glChartCanvas::s_b_useScissorTest,
+                                   glChartCanvas::s_b_useFBO,
+                                   g_b_EnableVBO,
+                                   g_texture_rectangle_format);
+#endif
+            
+            
     } else {
         wxLogMessage( _T("   S52PLIB Initialization failed, disabling Vector charts.") );
         delete ps52plib;
@@ -6524,7 +6540,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 bFirstAuto = true;
                 b_reloadForPlugins = true;
             }
-                
+            
             break;
         }
 
