@@ -1,9 +1,13 @@
 clone_folder: c:\project\opencpn
 shallow_clone: true
+image:
+- Visual Studio 2015
 
-platform: x64
+platform: 
+# - x64
+- Win32
+
 configuration: Release
-deploy: OFF
 test: OFF
 
 install:
@@ -35,11 +39,30 @@ before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - cmake -T v120_xp ..
   - ps: Start-FileDownload http://downloads.sourceforge.net/project/opencpnplugins/opencpn_packaging_data/OpenCPN_buildwin.7z
-  - cmd: 7z x OpenCPN_buildwin.7z -oc:\project\opencpn
+  - cmd: 7z x -y OpenCPN_buildwin.7z -oc:\project\opencpn
+  - cmake -T v120_xp ..
 
 build_script:
-  - cmake --build . --config debug
-  - cmake --build . --config release
+  # - cmake --build . --config debug
+  - cmake --build . --target opencpn --config release
+  - cmake --build . --target package --config release
   # --target package doesn't work because of nsis not correctly installed
+
+artifacts:
+  - path: 'build\*.exe'
+    name: installer
+
+  - path: 'build\Release\opencpn.lib'
+    name: lib
+
+deploy:
+  description: 'release created by AppVeyor CI'
+  provider: GitHub
+  auth_token: '%GitHub_auth_token%'
+  artifact: installer,lib
+  draft: true
+  prerelease: true
+  on:
+    appveyor_repo_tag: true # deploy on tag push only
+    configuration: Release  # Debug contains non-redist MS DLLs
