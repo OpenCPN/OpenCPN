@@ -111,6 +111,10 @@ extern "C" {
 #define	JAS_ONES(n) \
   ((1 << (n)) - 1)
 
+#if defined( _MSC_VER ) && !defined( __cplusplus )
+# define inline __inline
+#endif // defined( _MSC_VER ) && !defined( __cplusplus )
+
 inline static int jas_safe_size_mul(size_t x, size_t y, size_t *result)
 {
         /* Check if overflow would occur */
