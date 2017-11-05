@@ -377,11 +377,11 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
     for (int i=0; i<num_csts; i++)
     {
         if(EOF == fscanf (fp, "%s", linrec))
-            return TC_HARM_FILE_CORRUPT;
+            goto error;
         for (int b=0; b<num_epochs; b++)
         {
             if(EOF == fscanf (fp, "%lf", &(m_cst_epochs[i][b])))
-                return TC_HARM_FILE_CORRUPT;
+                goto error;
             m_cst_epochs[i][b] *= M_PI / 180.0;
         }
     }
@@ -389,7 +389,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
     /* Sanity check */
     if(EOF == fscanf (fp, "%s", linrec))
-        return TC_HARM_FILE_CORRUPT;
+        goto error;
     skipnl (fp);
 
     /* Load node factor table */
@@ -409,6 +409,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
     fclose(fp);
 
     return TC_NO_ERROR;
+
+error:
+    fclose(fp);
+    return TC_HARM_FILE_CORRUPT;
 }
 
 
