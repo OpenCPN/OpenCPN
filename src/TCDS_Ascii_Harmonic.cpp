@@ -457,7 +457,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
     //    Find and load appropriate constituents
     FILE *fp;
     char linrec[linelen];
+
     fp = fopen (m_harmfile_name.mb_str(), "r");
+    if (fp == 0)
+        return TC_MASTER_HARMONICS_NOT_FOUND;
 
     while (read_next_line (fp, linrec, 1))
     {
@@ -540,10 +543,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
             psd->amplitude[a] = loca;
             psd->epoch[a] = loce * M_PI / 180.;
         }
-        fclose (fp);
 
         break;
     }
+    fclose (fp);
 
     if(!psd) {
         m_last_reference_not_found = wxString(pIDX->IDX_reference_name, wxConvUTF8);
