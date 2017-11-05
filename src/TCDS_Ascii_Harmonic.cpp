@@ -350,7 +350,11 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
         return TC_FILE_NOT_FOUND;
 
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_csts);
+
+    if (1 != sscanf (linrec, "%d", &num_csts))
+        goto error;
+    if (num_csts <= 0 || num_csts > 1000000) // 100 % arbitrary roughly twice the harmonic lines number
+        goto error;
 
     m_cst_speeds = (double *) malloc (num_csts * sizeof (double));
     m_work_buffer = (double *) malloc (num_csts * sizeof (double));
@@ -368,7 +372,10 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
     /* Load epoch table */
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_epochs);
+    if (1 != sscanf (linrec, "%d", &num_epochs))
+        goto error;
+    if (num_epochs <= 0 || num_epochs > 1000000)
+        goto error;
 
     m_cst_epochs = (double **) malloc (num_csts * sizeof (double *));
     for (int i=0; i<num_csts; i++)
@@ -376,11 +383,11 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
     for (int i=0; i<num_csts; i++)
     {
-        if(EOF == fscanf (fp, "%s", linrec))
+        if(1 != fscanf (fp, "%s", linrec))
             goto error;
         for (int b=0; b<num_epochs; b++)
         {
-            if(EOF == fscanf (fp, "%lf", &(m_cst_epochs[i][b])))
+            if(1 != fscanf (fp, "%lf", &(m_cst_epochs[i][b])))
                 goto error;
             m_cst_epochs[i][b] *= M_PI / 180.0;
         }
@@ -388,13 +395,16 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_fi
 
 
     /* Sanity check */
-    if(EOF == fscanf (fp, "%s", linrec))
+    if(1 != fscanf (fp, "%s", linrec))
         goto error;
     skipnl (fp);
 
     /* Load node factor table */
     read_next_line (fp, linrec, 0);
-    sscanf (linrec, "%d", &num_nodes);
+    if(1 != sscanf (linrec, "%d", &num_nodes))
+        goto error;
+    if (num_nodes <= 0 || num_nodes > 1000000)
+        goto error;
 
     m_cst_nodes = (double **) malloc (num_csts * sizeof (double *));
     for (int a=0; a<num_csts; a++)
