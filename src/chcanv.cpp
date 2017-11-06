@@ -3290,14 +3290,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 if( candidate_stack_index >= pCurrentStack->nEntry ) {
                     candidate_stack_index = pCurrentStack->nEntry - 1;
                     while( candidate_stack_index >= 0 ) {
-                        const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(
-                                pCurrentStack->GetDBIndex( candidate_stack_index ) );
-                        int candidate_scale = cte_candidate.GetScale();
-                        int candidate_type = cte_candidate.GetChartType();
+                        int idx = pCurrentStack->GetDBIndex( candidate_stack_index );
+                        if ( idx >= 0) {
+                            const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(idx);
+                            int candidate_scale = cte_candidate.GetScale();
+                            int candidate_type = cte_candidate.GetChartType();
 
-                        if( ( candidate_scale <= target_scale )
-                                && ( candidate_type == target_type ) ) break;
-
+                            if( ( candidate_scale <= target_scale ) && ( candidate_type == target_type ) ) 
+                                break;
+                        }
                         candidate_stack_index--;
                     }
                 }

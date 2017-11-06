@@ -1102,6 +1102,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
     //    Building the quilt candidate array
     for( int ics = 0; ics < n_charts; ics++ ) {
         int i = pCurrentStack->GetDBIndex( ics );
+        if (i < 0)
+            continue;
         m_extended_stack_array.Add( i );
 
         //  If the reference chart is cm93, we need not add any charts to the candidate array from the vp center.

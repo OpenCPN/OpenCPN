@@ -1423,6 +1423,8 @@ void ParseAllENC()
             wxString filename = ct_array.Item(j).chart_path;
             double distance = ct_array.Item(j).distance;
             int index = ChartData->FinddbIndex(filename);
+            if (index < 0) 
+                continue;
             const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
             Extent ext;
             ext.NLAT = cte.GetLatMax();
@@ -8036,6 +8038,8 @@ void MyFrame::selectChartDisplay( int type, int family)
             int stack_index = -1;
             for(int i = 0; i < pCurrentStack->nEntry ; i++){
                 int check_dbIndex = pCurrentStack->GetDBIndex( i );
+                if (check_dbIndex < 0)
+                    continue;
                 const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
                 if(type == cte.GetChartType()){
                     stack_index = i;
