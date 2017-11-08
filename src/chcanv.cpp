@@ -1508,6 +1508,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
     }
 
+    case WXK_PAUSE:                   // Drop MOB
+         parent_frame->ActivateMOB();
+         break;
+
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
     case WXK_PAGEUP:{
@@ -2659,6 +2663,10 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
 
 void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 {
+    // possible on startup
+    if( !ChartData )
+        return;
+
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
 
@@ -2725,7 +2733,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
         if( !VPoint.b_quilt ) {             // not quilted
             pc = Current_Ch;
 
-            if( ChartData && pc ) {
+            if( pc ) {
                 //      If Current_Ch is not on the screen, unbound the zoomout
                 LLBBox viewbox = VPoint.GetBBox();
 //                wxBoundingBox chart_box;
@@ -2837,6 +2845,9 @@ void ChartCanvas::ClearbFollow( void )
 
 bool ChartCanvas::PanCanvas( double dx, double dy )
 {
+    if( !ChartData )
+        return false;
+
     extendedSectorLegs.clear();
 
     double clat = VPoint.clat, clon = VPoint.clon;
@@ -2955,6 +2966,7 @@ int ChartCanvas::AdjustQuiltRefChart( void )
 {
     int ret = -1;
     if(m_pQuilt){
+        wxASSERT(ChartData);
         ChartBase *pc = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
         if( pc ) {
             double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
@@ -3024,6 +3036,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     delete pCurrentStack;
     pCurrentStack = NULL;
     pCurrentStack = new ChartStack;
+    wxASSERT(ChartData);
     ChartData->BuildChartStack( pCurrentStack, VPoint.clat, VPoint.clon );
 
     if( m_pQuilt ) {
@@ -8133,6 +8146,14 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                         chart_all_text_region.Subtract(chart_bar_rect);
                 }
                 
+                if(g_Compass && g_Compass->IsShown()){
+                    wxRect compassRect = g_Compass->GetRect();
+                    if(chart_all_text_region.Contains(compassRect) != wxOutRegion) {
+                        chart_all_text_region.Subtract(compassRect);
+                    }
+                }
+                
+                
                 mscratch_dc.DestroyClippingRegion();
                 
                 m_pQuilt->RenderQuiltRegionViewOnDCTextOnly( mscratch_dc, svp, chart_all_text_region );
@@ -8349,8 +8370,9 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
     //      This handles the case when the chart is moving in auto-follow mode, but no user mouse input is made.
     //      The timer handler may Hide() the popup if the chart moved enough
     //      n.b.  We use slightly longer oneshot value to allow this method's Refresh() to complete before
-    //      ptentially getting another Refresh() in the popup timer handler.
-    if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
+    //      potentially getting another Refresh() in the popup timer handler.
+    if( !m_RolloverPopupTimer.IsRunning() &&
+        ((m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive())))
         m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT );
 
 #ifdef ocpnUSE_GL
@@ -8931,21 +8953,28 @@ void ChartCanvas::RebuildTideSelectList( LLBBox& BBox )
     }
 }
 
+extern wxDateTime gTimeSource;
 
 void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 {
+    wxDateTime this_now = gTimeSource;
+    bool cur_time = !gTimeSource.IsValid();
+    if (cur_time)
+        this_now = wxDateTime::Now();
+    time_t t_this_now = this_now.GetTicks();
+
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxPENSTYLE_SOLID );
-    wxPen *pyelo_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "YELO1" ) ), 1,
+    wxPen *pyelo_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( cur_time?_T ( "YELO1" ): _T ( "YELO2" )), 1,
                        wxPENSTYLE_SOLID );
-    wxPen *pblue_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "BLUE2" ) ), 1,
+    wxPen *pblue_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( cur_time?_T ( "BLUE2" ):_T ( "BLUE3" ) ), 1,
                        wxPENSTYLE_SOLID );
 
     wxBrush *pgreen_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "GREEN1" ) ),
                             wxBRUSHSTYLE_SOLID );
 //        wxBrush *pblack_brush = wxTheBrushList->FindOrCreateBrush ( GetGlobalColor ( _T ( "UINFD" ) ), wxSOLID );
-    wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "BLUE2" ) ), wxBRUSHSTYLE_SOLID );
-    wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pblue_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "BLUE2" ):_T ( "BLUE3" ) ), wxBRUSHSTYLE_SOLID );
+    wxBrush *pyelo_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "YELO1" ): _T ( "YELO2" ) ), wxBRUSHSTYLE_SOLID );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon") );
     dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
@@ -8975,8 +9004,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     int bmw = bm.GetWidth();
     int bmh = bm.GetHeight();
 
-    wxDateTime this_now = wxDateTime::Now();
-    time_t t_this_now = this_now.GetTicks();
 
     {
 
@@ -9197,15 +9224,16 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
     double lat_last = 0.;
     // arrow size for Raz Blanchard : 12 knots north
     double marge = 0.2;
+    bool cur_time = !gTimeSource.IsValid();
 
     double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
     bDrawCurrentValues =  true_scale_display < g_Show_Target_Name_Scale;
 
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxPENSTYLE_SOLID );
-    wxPen *porange_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFO" ) ), 1,
+    wxPen *porange_pen = wxThePenList->FindOrCreatePen( GetGlobalColor(cur_time? _T ( "UINFO" ):_T ( "UINFB" ) ), 1,
                          wxPENSTYLE_SOLID );
-    wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UINFO" ) ),
+    wxBrush *porange_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor(cur_time? _T ( "UINFO" ): _T ( "UINFB" ) ),
                              wxBRUSHSTYLE_SOLID );
     wxBrush *pgray_brush = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "UIBDR" ) ),
                            wxBRUSHSTYLE_SOLID );
@@ -9216,8 +9244,6 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
 
     pTCFont = FontMgr::Get().GetFont( _("CurrentValue") );
     
-    int now = time( NULL );
-
     {
 
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -9250,8 +9276,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox )
                     d[3].x = r.x - dd;
                     d[3].y = r.y;
 
-                    if( ptcmgr->GetTideOrCurrent15( now, i, tcvalue, dir, bnew_val ) ) {
-		      pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
+                    if( ptcmgr->GetTideOrCurrent15( 0 /* not used*/, i, tcvalue, dir, bnew_val ) ) {
+		        pblack_pen->SetWidth( wxMax(1, (int) (current_draw_scaler + 0.5)) );
                         dc.SetPen( *pblack_pen );
                         dc.SetBrush( *porange_brush );
                         dc.DrawPolygon( 4, d );
