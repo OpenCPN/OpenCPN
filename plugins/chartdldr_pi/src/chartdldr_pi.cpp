@@ -48,11 +48,13 @@
 #include <memory>
 #include <wx/regex.h>
 #include "unrar/rar.hpp"
+#include <curl/multi.h>
 
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
 
 #include <fstream>
+#include <thread>
 
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
@@ -962,6 +964,36 @@ void ChartDldrPanelImpl::OnDownloadCharts( wxCommandEvent& event )
     DownloadCharts();
 }
 
+struct DownloadState {
+  CURL* CURLHandle = 0;
+  bool cancelled = false;
+  bool update_label = false;
+  double dltotal = 0;
+  double dlnow = 0;
+  double prevtime = 0.0;
+};
+
+int xferinfo(DownloadState* DLState, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
+    DLState->dltotal = dltotal;
+    DLState->dlnow = dlnow;
+
+    double currtime = 0;
+    curl_easy_getinfo(DLState->CURLHandle, CURLINFO_TOTAL_TIME, &currtime);
+    if (currtime - DLState->prevtime > 0.1) {
+        DLState->update_label = true;
+        DLState->prevtime = currtime;
+    }
+
+    if (DLState->cancelled)
+        return 1;
+    return 0;
+}
+
+wxString FormatBytes(double bytes)
+{
+    return wxString::Format( _T("%.1fMB"), bytes / 1024 / 1024 );
+}
+
 void ChartDldrPanelImpl::DownloadCharts()
 {
     if(!m_bconnected){
@@ -989,86 +1021,147 @@ void ChartDldrPanelImpl::DownloadCharts()
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
     DownloadIsCancel = true;
+
+    CURLM *CURLMultiHandle = curl_multi_init();
+    CURL* CURLHandle = curl_easy_init();
+    curl_multi_setopt(CURLMultiHandle, CURLMOPT_PIPELINING, CURLPIPE_HTTP1 | CURLPIPE_MULTIPLEX);
+
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
-        //Prepare download queues
-        if( m_clCharts->IsChecked(i) )
+        if( !m_clCharts->IsChecked(i) )
+            continue;
+
+        m_totalsize = _("Unknown");
+        m_transferredsize = _T("0");
+        downloading++;
+
+        if ( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
         {
-            m_bTransferComplete = false;
-            m_bTransferSuccess = true;
-            m_totalsize = _("Unknown");
-            m_transferredsize = _T("0");
-            downloading++;
-            if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
-            {
-                if( wxYES ==
-                        wxMessageBox(
+            if( wxYES ==
+                   wxMessageBox(
                                 wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
 After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
                 {
                     wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
                 }
+
+            continue;
+        }
+
+        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
+        if( url.IsReference() )
+        {
+            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            this->Enable();
+            return;
+        }
+
+        //construct local file path
+        wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
+        wxFileName fn;
+        fn.SetFullName(file);
+        fn.SetPath(cs->GetDir());
+        wxString path = fn.GetFullPath();
+        if( wxFileExists( path ) )
+            wxRemoveFile( path );
+        wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+
+        wxString file_path = fn.GetFullPath();
+        FILE* target = fopen(file_path.c_str(), "w");
+
+        curl_easy_setopt(CURLHandle, CURLOPT_WRITEDATA, target);
+        curl_easy_setopt(CURLHandle, CURLOPT_URL, static_cast<const char*>(url.BuildURI()));
+
+        DownloadState DLState;
+        DLState.CURLHandle = CURLHandle;
+
+        // Setup progress callbacks.
+        curl_easy_setopt(CURLHandle, CURLOPT_NOPROGRESS, 0L);
+        curl_easy_setopt(CURLHandle, CURLOPT_XFERINFODATA, &DLState);
+        curl_easy_setopt(CURLHandle, CURLOPT_XFERINFOFUNCTION, &xferinfo);
+
+        curl_multi_add_handle(CURLMultiHandle, CURLHandle);
+
+        int running_handles = -1;
+        bool repeats = false;
+
+        do
+        {
+            DLState.cancelled = cancelled;
+            CURLMcode mc = curl_multi_perform(CURLMultiHandle, &running_handles);
+
+            // CURL updates DLState via a callback, allowing us to update
+            // the progress label.
+            if (DLState.update_label)
+            {
+                m_transferredsize = FormatBytes(DLState.dlnow);
+                if (DLState.dltotal != 0)
+                    m_totalsize = FormatBytes(DLState.dltotal);
+
+                m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                    downloading, to_download, failed_downloads,
+                    m_transferredsize.c_str(), m_totalsize.c_str() ) );
+
+                DLState.update_label = false;
+            }
+
+
+            wxYield();
+
+            // Wait for the next CURL update
+            int numfds = 0;
+            if (mc == CURLM_OK)
+                mc = curl_multi_wait(CURLMultiHandle, NULL, 0, 100, &numfds);
+
+            // If CURL cant' help us wait, use defaults as given in the
+            // CURL examples.
+            if (!numfds)
+            {
+                if (repeats)
+                    wxMilliSleep(100);
+                repeats = true;
             }
             else
-            {
-                //download queue
-                wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
-                if( url.IsReference() )
-                {
-                    wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
-                    this->Enable();
-                    return;
-                }
-                //construct local file path
-                wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
-                wxFileName fn;
-                fn.SetFullName(file);
-                fn.SetPath(cs->GetDir());
-                wxString path = fn.GetFullPath();
-                if( wxFileExists( path ) )
-                    wxRemoveFile( path );
-                wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+                repeats = false;
+        } while (running_handles > 0);
 
-                //  Ready to start download
-#ifdef __OCPN__ANDROID__
-                wxString file_path = _T("file://") + fn.GetFullPath();
-#else
-                wxString file_path = fn.GetFullPath();
-#endif
-                
-                long handle;
-                OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
+        // Drain the message queue to determine if the download succeeded.
+        bool success = true;
+        struct CURLMsg *message = 0;
+        do
+        {
+            int message_count = 0;
+            message = curl_multi_info_read(CURLMultiHandle, &message_count);
 
-                while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
-                {
-                    m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                                 downloading, to_download, failed_downloads,
-                                                                 m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                    wxMilliSleep(1000);
-                    wxYield();
-//                    if( !IsShownOnScreen() )
-//                        cancelled = true;
-                }
-                
-                if(cancelled){
-                    OCPN_cancelDownloadFileBackground( handle );
-                }
-                    
-                if( m_bTransferSuccess && !cancelled )
-                {
-                    wxFileName myfn(path);
-                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
-                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
-                } else {
-                    if( wxFileExists( path ) )
-                        wxRemoveFile( path );
-                    failed_downloads++;
-                }
-            }
+            if (message && message->msg == CURLMSG_DONE &&
+                message->data.result != CURLE_OK)
+              success = false;
+        } while (message);
+
+        // Close out the file and de-register the download.
+        fclose(target);
+        curl_multi_remove_handle(CURLMultiHandle, CURLHandle);
+
+        if (success && !cancelled)
+        {
+            wxFileName myfn(path);
+            pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
+            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
         }
-        if( cancelled )
-            break;
+        else
+        {
+            if( wxFileExists( path ) )
+                wxRemoveFile( path );
+            failed_downloads++;
+        }
+
+        if (cancelled)
+          break;
     }
+
+    curl_multi_cleanup(CURLMultiHandle);
+    curl_easy_cleanup(CURLHandle);
+
     DisableForDownload( true );
 #ifdef __OCPN__ANDROID__
     m_bDnldCharts->SetLabel( _("Download\n selected charts") );
@@ -1833,37 +1926,4 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl( const wxString Url, bool catalog_xml
         re.Compile( _T("^https?\\://[a-zA-Z0-9\\./_-]*$") ); //TODO: wxRegEx sucks a bit, this RE is way too naive
     return re.Matches(Url);
 }
-
-wxString FormatBytes(double bytes)
-{
-    return wxString::Format( _T("%.1fMB"), bytes / 1024 / 1024 );
-}
-
-void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev)
-{
-//    wxString msg;
-//    msg.Printf(_T("onDLEvent  %d %d"),ev.getDLEventCondition(), ev.getDLEventStatus()); 
-//    wxLogMessage(msg);
-    
-    switch(ev.getDLEventCondition()){
-        case OCPN_DL_EVENT_TYPE_END:
-            m_bTransferComplete = true;
-            m_bTransferSuccess = (ev.getDLEventStatus() == OCPN_DL_NO_ERROR) ? true : false;
-            break;
-            
-        case OCPN_DL_EVENT_TYPE_PROGRESS:
-            m_totalsize = FormatBytes( ev.getTotal() );
-            m_transferredsize = FormatBytes( ev.getTransferred() );
-                    
-            break;
-        default:
-            break;
-    }
-}
-
-
-
-
-
-
 
