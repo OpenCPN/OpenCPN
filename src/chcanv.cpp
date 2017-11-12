@@ -3563,115 +3563,138 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
                                       wxPoint lPredPoint, bool b_render_hdt,
                                       wxPoint lShipMidPoint)
 {
+    // Develop a uniform length for course predictor line dash length, based on physical display size
+    // Use this reference length to size all other graphics elements
+    float ref_dim = m_display_size_mm / 24;
+    ref_dim = wxMin(ref_dim, 12);
+    ref_dim = wxMax(ref_dim, 6);
+    
+    wxColour cPred = PredColor();
+    
+    //  Establish some graphic element line widths dependent on the platform display resolution
+    //double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2));             //0.5 mm nominal, but not less than 1 pixel
+    double nominal_line_width_pix = wxMax(1.0, floor(m_pix_per_mm / 2));             //0.5 mm nominal, but not less than 1 pixel
+    
+    
+    // If the calculated value is greater than the config file spec value, then use it.
+    if(nominal_line_width_pix > g_cog_predictor_width)
+        g_cog_predictor_width = nominal_line_width_pix;
+    
     // draw course over ground if they are longer than the ship
-    if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
-        if( lpp >= img_height / 2 ) {
-            const double png_pred_icon_scale_factor = .4;
-            wxPoint icon[4];
-
-            for( int i = 0; i < 4; i++ ) {
-                int j = i * 2;
-                double pxa = (double) ( s_png_pred_icon[j] );
-                double pya = (double) ( s_png_pred_icon[j + 1] );
-
-                pya *= png_pred_icon_scale_factor;
-                pxa *= png_pred_icon_scale_factor;
-
-                double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
-                double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
-
-                icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
-                icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
-            }
-
-            //      COG Predictor
-            float dash_length = 10.0;
-#ifdef __OCPN__ANDROID__
-            dash_length = 6.0;
-#endif            
-            wxDash dash_long[2];
-            dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * dash_length) / g_cog_predictor_width );  // Long dash , in mm <---------+
-            dash_long[1] = dash_long[0] / 2.0;                                                                   // Short gap 
-            
-            // On ultra-hi-res displays, do not allow the dashes to be greater than 250, since it is defined as (char)
-            if( dash_length > 250.){
-                dash_long[0] = 250. /g_cog_predictor_width;
-                dash_long[1] = dash_long[0] / 2;
-            }
+        if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+            if( lpp >= img_height / 2 ) {
+                double nominal_icon_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 4)));             // not less than 4 pixel
+                double png_pred_icon_scale_factor = nominal_icon_size_pixels / 20;                                   // icon is 20 unit square
                 
-            float pw1 = g_cog_predictor_width;
-            float pw2 = wxRound(wxMax(1, g_cog_predictor_width/(float)3.));
-            
-            wxPen ppPen2( PredColor(), pw1, wxPENSTYLE_USER_DASH );
-            ppPen2.SetDashes( 2, dash_long );
-            dc.SetPen( ppPen2 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-
-            wxDash dash_long3[2];
-            dash_long3[0] = pw1 / pw2 * dash_long[0];
-            dash_long3[1] = pw1 / pw2 * dash_long[1];
-            
-            if( g_cog_predictor_width > 1 ) {
-                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), pw2, wxPENSTYLE_USER_DASH );
-                ppPen3.SetDashes( 2, dash_long3 );
-                dc.SetPen( ppPen3 );
+                if(g_ChartScaleFactorExp > 1.0)
+                    png_pred_icon_scale_factor *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
                 
+                wxPoint icon[4];
+                
+                for( int i = 0; i < 4; i++ ) {
+                    int j = i * 2;
+                    double pxa = (double) ( s_png_pred_icon[j] );
+                    double pya = (double) ( s_png_pred_icon[j + 1] );
+                    
+                    pya *= png_pred_icon_scale_factor;
+                    pxa *= png_pred_icon_scale_factor;
+                    
+                    double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
+                    double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
+                    
+                    icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
+                    icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+                }
+                
+                //      COG Predictor
+                float dash_length = ref_dim;
+                
+                wxDash dash_long[2];
+                dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * dash_length) / g_cog_predictor_width );  // Long dash , in mm <---------+
+                dash_long[1] = dash_long[0] / 2.0;                                                                   // Short gap 
+                
+                wxPen ppPen2( cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH );
+                ppPen2.SetDashes( 2, dash_long );
+                dc.SetPen( ppPen2 );
                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                
+                
+                if( g_cog_predictor_width > 1 ) {
+                    float line_width = g_cog_predictor_width/3.;
+                    
+                    wxDash dash_long3[2];
+                    dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
+                    dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
+                    
+                    wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, line_width), wxPENSTYLE_USER_DASH );
+                ppPen3.SetDashes( 2, dash_long3 );
+                dc.SetPen( ppPen3 );
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                               lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                }
+                
+                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), g_cog_predictor_width/2, wxPENSTYLE_SOLID );
+                dc.SetPen( ppPen1 );
+                dc.SetBrush( wxBrush( cPred ) ); 
+                
+                dc.StrokePolygon( 4, icon );
             }
-            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
-            dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( PredColor() ) ); //*wxWHITE_BRUSH);
-
-            dc.StrokePolygon( 4, icon );
         }
-    }
-
-    //      HDT Predictor
-    if( b_render_hdt ) {
-        wxDash dash_short[2];
-        dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
-        dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
-
-        wxPen ppPen2( PredColor(), 2, wxPENSTYLE_USER_DASH );
-        ppPen2.SetDashes( 2, dash_short );
-
-        dc.SetPen( ppPen2 );
-        dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                       lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
-
-        wxPen ppPen1( PredColor(), 2, wxPENSTYLE_SOLID );
-        dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
-
-        dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, 4 );
-    }
-
-    // Draw radar rings if activated
-    if( g_iNavAidRadarRingsNumberVisible ) {
-        double factor = 1.00;
-        if( g_pNavAidRadarRingsStepUnits == 1 )          // nautical miles
+        
+        //      HDT Predictor
+        if( b_render_hdt ) {
+             float hdt_dash_length = ref_dim * 0.4;
+            
+            float hdt_width = g_cog_predictor_width * 0.66;
+            wxDash dash_short[2];
+            dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length) / hdt_width );  // Short dash , in mm <---------+
+            dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length * 0.9 ) / hdt_width );  // Short gap            |
+            
+            wxPen ppPen2( cPred, hdt_width, wxPENSTYLE_USER_DASH );
+            ppPen2.SetDashes( 2, dash_short );
+            
+            dc.SetPen( ppPen2 );
+            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                           lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
+            
+            wxPen ppPen1( cPred, g_cog_predictor_width/3, wxPENSTYLE_SOLID );
+            dc.SetPen( ppPen1 );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
+            
+            double nominal_circle_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 5.0)));    // not less than 4 pixel
+            
+            // Scale the circle to ChartScaleFactor, slightly softened....
+            if(g_ChartScaleFactorExp > 1.0)
+                nominal_circle_size_pixels *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            
+            dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, nominal_circle_size_pixels/2 );
+        }
+        
+        // Draw radar rings if activated
+        if( g_iNavAidRadarRingsNumberVisible ) {
+            double factor = 1.00;
+            if( g_pNavAidRadarRingsStepUnits == 1 )          // nautical miles
             factor = 1 / 1.852;
-
-        factor *= g_fNavAidRadarRingsStep;
-
-        double tlat, tlon;
-        wxPoint r;
-        ll_gc_ll( gLat, gLon, 0, factor, &tlat, &tlon );
-        GetCanvasPointPix( tlat, tlon, &r );
-
-        double lpp = sqrt( pow( (double) (lGPSPoint.x - r.x), 2) +
-                           pow( (double) (lGPSPoint.y - r.y), 2 ) );
-        int pix_radius = (int) lpp;
-
-        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
-        dc.SetPen( ppPen1 );
-        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
-
-        for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
-            dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, i * pix_radius );
-    }
+            
+            factor *= g_fNavAidRadarRingsStep;
+            
+            double tlat, tlon;
+            wxPoint r;
+            ll_gc_ll( gLat, gLon, 0, factor, &tlat, &tlon );
+            GetCanvasPointPix( tlat, tlon, &r );
+            
+            double lpp = sqrt( pow( (double) (lGPSPoint.x - r.x), 2) +
+            pow( (double) (lGPSPoint.y - r.y), 2 ) );
+            int pix_radius = (int) lpp;
+            
+            wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), g_cog_predictor_width );
+            dc.SetPen( ppPen1 );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
+            
+            for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
+                dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, i * pix_radius );
+        }
 }
 
 void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
