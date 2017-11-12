@@ -164,6 +164,7 @@ public:
       
       void CancelMouseRoute();
       void SetDisplaySizeMM( double size );
+      double GetDisplaySizeMM(){ return m_display_size_mm; }
       
       bool SetVPScale(double sc, bool b_refresh = true);
       bool SetVPProjection(int projection);
@@ -225,6 +226,7 @@ public:
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
+      ViewPort *GetpVP(){ return &VPoint; }
       void SetVP(ViewPort &);
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
