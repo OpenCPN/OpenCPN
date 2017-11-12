@@ -3707,13 +3707,14 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         
         //      HDT Predictor
         if( b_render_hdt ) {
-            float hdt_dash_length = ref_dim * 0.4;
+             float hdt_dash_length = ref_dim * 0.4;
             
+            float hdt_width = g_cog_predictor_width * 0.66;
             wxDash dash_short[2];
-            dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length) / g_cog_predictor_width );  // Short dash , in mm <---------+
-            dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length * 0.9 ) / g_cog_predictor_width );  // Short gap            |
+            dash_short[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length) / hdt_width );  // Short dash , in mm <---------+
+            dash_short[1] = (int) ( floor(g_Platform->GetDisplayDPmm() * hdt_dash_length * 0.9 ) / hdt_width );  // Short gap            |
             
-            wxPen ppPen2( cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH );
+            wxPen ppPen2( cPred, hdt_width, wxPENSTYLE_USER_DASH );
             ppPen2.SetDashes( 2, dash_short );
             
             dc.SetPen( ppPen2 );
@@ -3724,13 +3725,12 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
             dc.SetPen( ppPen1 );
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
             
-            double nominal_circle_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 4.0)));    // not less than 4 pixel
+            double nominal_circle_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 5.0)));    // not less than 4 pixel
             
             // Scale the circle to ChartScaleFactor, slightly softened....
             if(g_ChartScaleFactorExp > 1.0)
                 nominal_circle_size_pixels *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
             
-            qDebug() << "circle" << nominal_circle_size_pixels;
             dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, nominal_circle_size_pixels/2 );
         }
         
