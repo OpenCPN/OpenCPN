@@ -894,7 +894,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     
     float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_target_size_mm));             // nominal size, but not less than 4 pixel
     float pix_factor = nominal_icon_size_pixels / 30.0;          // generic A/B icons are 30 units in size
-   
+    
     scale_factor *= pix_factor;
     
     float user_scale_factor = g_ChartScaleFactorExp;
