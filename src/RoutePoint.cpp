@@ -36,6 +36,7 @@
 #include "georef.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "glChartCanvas.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -626,7 +627,6 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
-        glColor3f(1, 1, 1);
         
         int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
         
@@ -640,6 +640,23 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         float xs = r.x - ws/2.;
         float ys = r.y - hs/2.;
         float u = (float)w/glw, v = (float)h/glh;
+ 
+#ifdef USE_ANDROID_GLES2        
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#else        
+
+        glColor3f(1, 1, 1);
         
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
@@ -648,17 +665,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
-//         glBegin(GL_QUADS);
-//         glTexCoord2f(0, 0); glVertex2f(x, y);
-//         glTexCoord2f(u, 0); glVertex2f(x+w, y);
-//         glTexCoord2f(u, v); glVertex2f(x+w, y+h);
-//         glTexCoord2f(0, v); glVertex2f(x, y+h);
-//         glEnd();
+#endif
 
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
     }
-
+#if 0
     if( m_bShowName && m_pMarkFont ) {
         int w = m_NameExtents.x, h = m_NameExtents.y;
         if(!m_iTextTexture && w && h) {
@@ -719,6 +731,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
             glDisable(GL_TEXTURE_2D);
         }
     }
+#endif
     
     // Draw waypoint radar rings if activated
     if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {

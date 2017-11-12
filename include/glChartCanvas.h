@@ -43,6 +43,7 @@ class glTexFactory;
 #define GESTURE_EVENT_TIMER 78334
 #define ZOOM_TIMER 78335
 #define GESTURE_FINISH_TIMER 78336
+#define TEX_FADE_TIMER 78337
 
 class ocpnGLOptions
 {
@@ -78,6 +79,9 @@ public:
     static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);
+    void RenderTextures(float *coords, float *uvCoords, int nVertex, ViewPort *vp);
+    static void RenderSingleTexture(float *coords, float *uvCoords,ViewPort *vp, float dx, float dy, float angle);
+    void RenderColorRect(wxRect r, wxColor &color);
     
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
@@ -149,12 +153,15 @@ protected:
     bool buildFBOSize(int fboSize);
     void SetupOpenGL();
     
+    void configureShaders( ViewPort &vp);
+    
 //    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region);
     void RenderNoDTA(ViewPort &vp, const LLRegion &region);
     void RenderNoDTA(ViewPort &vp, ChartBase *chart);
     void RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view);
 
+    void RenderOverlayObjects(ocpnDC &dc, const OCPNRegion &rect_region);
     void DrawFloatingOverlayObjects( ocpnDC &dc );
     void DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp);
 
@@ -166,6 +173,13 @@ protected:
     void DrawGLCurrentsInBBox(ocpnDC& dc, LLBBox& BBox);
     
     void ZoomProject(float offset_x, float offset_y, float swidth, float sheight);
+    
+    void RenderScene();
+    void RendertoTexture(GLint tex);
+    
+    void fboFade(GLint tex0, GLint tex1);
+    void onFadeTimerEvent(wxTimerEvent &event);
+    bool m_inFade;
     
     wxGLContext       *m_pcontext;
 
@@ -239,6 +253,8 @@ protected:
     bool        m_bpinchGuard;
     wxPoint     m_pinchStart;
     double      m_pinchlat, m_pinchlon;
+    
+    wxTimer     m_fadeTimer;
     
     OCPNRegion  m_canvasregion;
     TexFont     m_gridfont;

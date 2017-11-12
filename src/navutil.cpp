@@ -4160,7 +4160,20 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         dc.CalcBoundingBox( x + size_x, y + size_y );
     } else {
 #ifdef ocpnUSE_GL
-        /* opengl version */
+#ifdef USE_ANDROID_GLES2
+        glEnable( GL_BLEND );
+
+        float radMod = wxMax(radius, 2.0);
+        wxColour c(color.Red(), color.Green(), color.Blue(), transparency);
+        dc.SetBrush(wxBrush(c));
+        dc.SetPen(wxPen(c, 1));
+        dc.DrawRoundedRectangle( x, y, size_x, size_y, radMod );
+        
+        glDisable( GL_BLEND );
+        
+    
+#else
+    /* opengl version */
         glEnable( GL_BLEND );
 
         if(radius > 1.0f){
@@ -4178,6 +4191,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
             glEnd();
         }
         glDisable( GL_BLEND );
+#endif        
 #endif
     }
 }

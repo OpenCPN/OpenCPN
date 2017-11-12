@@ -536,6 +536,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 //        Log.i("OpenCPN", inFile + " " + outFile);
 
+        int rwidth = width;
+        int rheight = height;
+
         // Read an SVG file
         File file = new File( inFile);
         SVG svg = null;
@@ -561,8 +564,17 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
             //  Inkscape SVG Documents must be saved in "optimized SVG" format, with viewbox enabled....
             // https://code.google.com/archive/p/androidsvg/wikis/FAQ.wiki#My_SVG_won%27t_scale_to_fit_the_canvas_or_my_ImageView
             try{
-                svg.setDocumentWidth(width);
-                svg.setDocumentHeight(height);
+
+                if((width < 0) || (height < 0)){
+                    rwidth = Math.round(svg.getDocumentWidth());
+                    rheight = Math.round(svg.getDocumentHeight());
+                    //String report = String.valueOf( rwidth ) + "  " + String.valueOf( rheight );
+                    //Log.i("OpenCPN", "buildSVGIcon document size:" + report);
+
+                }
+
+                svg.setDocumentWidth(rwidth);
+                svg.setDocumentHeight(rheight);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -571,7 +583,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         // Create a canvas to draw onto
             if (svg.getDocumentWidth() != -1) {
-                Bitmap  newBM = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Bitmap  newBM = Bitmap.createBitmap(rwidth, rheight, Bitmap.Config.ARGB_8888);
                 Canvas  bmcanvas = new Canvas(newBM);
 
            // Clear background to white

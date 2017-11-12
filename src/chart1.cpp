@@ -3778,8 +3778,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     gFrame = NULL;
 
 #ifdef __OCPN__ANDROID__
+#ifndef USE_ANDROID_GLES2
     qDebug() << "Calling OnExit()";
     wxTheApp->OnExit();
+#endif
 #endif
 
 }
@@ -3974,6 +3976,7 @@ void MyFrame::ODoSetSize( void )
         m_pStatusBar->SetFont( *pstat_font );
 #ifdef __OCPN__ANDROID__
         min_height = ( pstat_font->GetPointSize() * getAndroidDisplayDensity() ) + 10;
+        min_height = (min_height>>1) * 2;       // force even number, makes GLCanvas happier...
         m_pStatusBar->SetMinHeight( min_height );
 //        qDebug() <<"StatusBar min height:" << min_height << "StatusBar font points:" << pstat_font->GetPointSize();
 #endif

@@ -361,7 +361,16 @@ IF(QT_ANDROID)
     ADD_DEFINITIONS(-DUSE_GLU_TESS)
     #add_subdirectory(src/glu)
 
+    SET(USE_GLES2 ON )
+
 ENDIF(QT_ANDROID)
+
+IF(USE_GLES2)
+    MESSAGE (STATUS "Using GLESv2 for Android")
+    ADD_DEFINITIONS(-DUSE_ANDROID_GLES2)
+    ADD_DEFINITIONS(-DUSE_GLSL)
+ENDIF(USE_GLES2)
+
 
 
 IF ((NOT OPENGLES_FOUND) AND (NOT QT_ANDROID))
@@ -639,7 +648,7 @@ ENDIF(OCPN_USE_CURL)
 OPTION(OCPN_USE_SVG "Use SVG graphics" ON)
 
 IF(QT_ANDROID)
-    SET( OCPN_USE_SVG OFF)
+#    SET( OCPN_USE_SVG OFF)
 ENDIF(QT_ANDROID)
 
 IF(OCPN_USE_SVG)
@@ -1176,6 +1185,11 @@ IF(QT_ANDROID)
     SET(HDRS ${HDRS} include/androidUTIL.h)
     SET(SRCS ${SRCS} src/androidUTIL.cpp)
 ENDIF(QT_ANDROID)
+
+IF(USE_GLES2)
+    SET(HDRS ${HDRS} include/shaders.h)
+    SET(SRCS ${SRCS} src/shaders.cpp)
+ENDIF(USE_GLES2)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")

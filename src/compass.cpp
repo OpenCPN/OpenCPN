@@ -34,6 +34,7 @@
 #include "styles.h"
 
 #include "dychart.h"
+#include "glChartCanvas.h"
 
 
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -83,17 +84,37 @@ void ocpnCompass::Paint( ocpnDC& dc )
     if(m_shown && m_StatBmp.IsOk()){
 # if defined(ocpnUSE_GLES) || defined(ocpnUSE_GL)  // GLES does not do ocpnDC::DrawBitmap(), so use texture
         if(g_bopengl && texobj){
+
             glBindTexture( GL_TEXTURE_2D, texobj );
             glEnable( GL_TEXTURE_2D );
             
-            glBegin( GL_QUADS );
+#ifdef USE_ANDROID_GLES2
+            float coords[8];
+            float uv[8];
             
-            glTexCoord2f( 0, 0 );  glVertex2i( m_rect.x, m_rect.y );
-            glTexCoord2f( 1, 0 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y );
-            glTexCoord2f( 1, 1 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y + m_rect.height );
-            glTexCoord2f( 0, 1 );  glVertex2i( m_rect.x, m_rect.y + m_rect.height );
+            //normal uv
+            uv[0] = 0; uv[1] = 0; uv[2] = 1; uv[3] = 0;
+            uv[4] = 1; uv[5] = 1; uv[6] = 0; uv[7] = 1;
             
-            glEnd();
+            // pixels
+            coords[0] = m_rect.x; coords[1] = m_rect.y; coords[2] = m_rect.x + m_rect.width; coords[3] = m_rect.y;
+            coords[4] = m_rect.x + m_rect.width; coords[5] = m_rect.y + m_rect.height; coords[6] = m_rect.x; coords[7] = m_rect.y + m_rect.height;
+            
+            
+            cc1->GetglCanvas()->RenderTextures(coords, uv, 4, cc1->GetpVP());
+#else            
+            
+           
+             glBegin( GL_QUADS );
+             
+             glTexCoord2f( 0, 0 );  glVertex2i( m_rect.x, m_rect.y );
+             glTexCoord2f( 1, 0 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y );
+             glTexCoord2f( 1, 1 );  glVertex2i( m_rect.x + m_rect.width, m_rect.y + m_rect.height );
+             glTexCoord2f( 0, 1 );  glVertex2i( m_rect.x, m_rect.y + m_rect.height );
+//             
+//             glEnd();
+#endif
+            
             glDisable( GL_TEXTURE_2D );
             
         }

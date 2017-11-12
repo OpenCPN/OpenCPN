@@ -1992,7 +1992,7 @@ float OCPNPlatform::getChartScaleFactorExp( float scale_linear )
 #else
     // the idea here is to amplify the scale factor for higher density displays, in a measured way....
     factor =  exp( scale_linear * (0.693 / 5.0) );
-    factor *= getAndroidDisplayDensity();
+//    factor *= getAndroidDisplayDensity();
 #endif
     
     factor = wxMax(factor, .5);

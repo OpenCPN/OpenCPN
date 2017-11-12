@@ -71,6 +71,9 @@
 #include "wxsvg/include/wxSVG/svg.h"
 #endif // ocpnUSE_SVG
 
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#endif
 
 extern OCPNPlatform     *g_Platform;
 extern ConsoleCanvas    *console;
@@ -124,6 +127,8 @@ WX_DEFINE_LIST(markicon_description_list_type);
 wxImage LoadSVGIcon( wxString filename, int width, int height )
 {
 #ifdef ocpnUSE_SVG
+
+#ifndef USE_ANDROID_GLES2
     wxSVGDocument svgDoc;
     if( svgDoc.Load(filename) )
         return  svgDoc.Render( width, height, NULL, true, true ) ;
@@ -131,6 +136,15 @@ wxImage LoadSVGIcon( wxString filename, int width, int height )
         wxLogMessage(filename);
         return wxImage(32, 32);
     }
+#else
+    wxBitmap bmp = loadAndroidSVG( filename, width, height );
+    if(bmp.IsOk())
+        return bmp.ConvertToImage();
+    else
+        return wxImage(32, 32);
+    
+#endif
+
 #else
         return wxImage(32, 32);
 #endif // ocpnUSE_SVG
@@ -1457,11 +1471,15 @@ MarkIcon *WayPointman::ProcessExtendedIcon(wxImage &image, const wxString & key,
 
 MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & key, const wxString & description)
 {
-    double bm_size = -1.0;
-    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
-        wxImage img = LoadSVGIcon(fileName, -1, -1 );
-        bm_size = img.GetWidth() * g_ChartScaleFactorExp;
-    }
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a "diamond" symbol about 4 mm square
+    
+    float nominal_legacy_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
+    float pix_factor = nominal_legacy_icon_size_pixels / 68.0;          // legacy icons are 68 units in size
+
+    wxImage img = LoadSVGIcon(fileName, -1, -1 );
+    double bm_size = img.GetWidth() * pix_factor * g_ChartScaleFactorExp;
         
     wxImage image = LoadSVGIcon(fileName, (int)bm_size, (int)bm_size );
     wxRect rClip = CropImageOnAlpha(image);

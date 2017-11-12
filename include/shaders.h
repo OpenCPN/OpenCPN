@@ -1,11 +1,9 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenGL text rendering
- * Author:   Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2014 Sean D'Epagnier                                    *
+ *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,61 +21,23 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef __TEXFONT_H__
-#define __TEXFONT_H__
+#ifndef __SHADERS_H__
+#define __SHADERS_H__
 
-/* support ascii plus degree symbol for now pack font in a single texture 16x8 */
-#define DEGREE_GLYPH 127
-#define MIN_GLYPH 32
-#define MAX_GLYPH 128
+#include "wx/wxprec.h"
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
 
-#define NUM_GLYPHS (MAX_GLYPH - MIN_GLYPH)
+#include "../glshim/include/GLES/gl2.h"
 
-#define COLS_GLYPHS 16
-#define ROWS_GLYPHS ((NUM_GLYPHS / COLS_GLYPHS)+1)
-
-#ifndef DECL_EXP
-#ifdef __WXMSW__
-#  define DECL_EXP     __declspec(dllexport)
-#else
-#  define DECL_EXP
-#endif
-#endif
-
-struct TexGlyphInfo {
-    int x, y, width, height;
-    float advance;
-};
-
-class DECL_EXP TexFont {
-public:
-    TexFont();
-    ~TexFont();
+    extern GLint color_tri_shader_program;
+    extern GLint texture_2D_shader_program;
+    extern GLint fade_texture_2D_shader_program;
+    extern GLint circle_filled_shader_program;
+    extern GLint FBO_texture_2D_shader_program;
     
-    void Build( wxFont &font, bool blur = false );
-    void Delete();
 
-    void GetTextExtent( const wxString &string, int *width, int *height);
-    void RenderString( const char *string, int x=0, int y=0 );
-    void RenderString( const wxString &string, int x=0, int y=0 );
-    bool IsBuilt(){ return m_built; }
+bool loadShaders();
 
-private:
-    void GetTextExtent( const char *string, int *width, int *height);
-    void RenderGlyph( int c );
-
-    wxFont m_font;
-    bool m_blur;
-
-    TexGlyphInfo tgi[MAX_GLYPH];
-
-    unsigned  int texobj;
-    int tex_w, tex_h;
-    int m_maxglyphw;
-    int m_maxglyphh;
-    bool m_built;
-    
-    float m_dx;
-    float m_dy;
-};
-#endif  //guard
+#endif

@@ -56,9 +56,56 @@
 #define __CALL_CONVENTION
 #endif
 
+#ifdef USE_ANDROID_GLES2
+#include "../glshim/include/GLES/gl2.h"
+#include "linmath.h"
+#endif
+
 //typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
 extern wxString *pWorldMapLocation;
+
+#ifdef USE_ANDROID_GLES2
+static const GLchar* vertex_shader_source =
+    "attribute vec2 position;\n"
+    "uniform mat4 MVMatrix;\n"
+    "uniform vec4 color;\n"
+    "varying vec4 fragColor;\n"
+    "void main() {\n"
+    "   fragColor = color;\n"
+    "   gl_Position = MVMatrix * vec4(position, 0.0, 1.0);\n"
+    "}\n";
+
+    static const GLchar* fragment_shader_source =
+    "precision lowp float;\n"
+    "varying vec4 fragColor;\n"
+    "void main() {\n"
+    "   gl_FragColor = fragColor;\n"
+    "}\n";
+
+static const GLfloat vertices2[] = {
+    0.0f,  0.5f, 
+    0.5f, -0.5f, 
+    -0.5f, -0.5f, 
+};
+
+static const GLfloat vertices3[] = {
+    0.0f,  0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+};
+
+
+enum Consts {INFOLOG_LEN = 512};
+GLchar infoLog[INFOLOG_LEN];
+GLint fragment_shader;
+GLint shader_program;
+GLint success;
+GLint vertex_shader;
+#endif
+
+
+
 
 //-------------------------------------------------------------------------
 
@@ -429,6 +476,111 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
         g_pv.clear();
     }
 
+
+#ifdef USE_ANDROID_GLES2
+
+    // Are the shaders ready?
+    if(!vertex_shader){
+        /* Vertex shader */
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+        glCompileShader(vertex_shader);
+        glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(vertex_shader, INFOLOG_LEN, NULL, infoLog);
+            printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+        }
+    }
+    
+    if(!fragment_shader){
+        /* Fragment shader */
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+        glCompileShader(fragment_shader);
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+        if (!success) {
+            glGetShaderInfoLog(fragment_shader, INFOLOG_LEN, NULL, infoLog);
+            printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+        }
+    }
+    
+    if(!shader_program){
+        /* Link shaders */
+        shader_program = glCreateProgram();
+        glAttachShader(shader_program, vertex_shader);
+        glAttachShader(shader_program, fragment_shader);
+        glLinkProgram(shader_program);
+        glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(shader_program, INFOLOG_LEN, NULL, infoLog);
+            printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+        }
+    }
+    
+    
+    GLuint vbo = 0;
+ 
+    //  Build the shader viewport transform matrix
+    mat4x4 m, mvp;
+    mat4x4_identity(m);
+    mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width, 2.0 / (float)vp.pix_height, 1.0);
+    mat4x4_translate_in_place(mvp, -vp.pix_width/2, vp.pix_height/2, 0);
+    
+    
+    if(glChartCanvas::HasNormalizedViewPort(vp)) {
+        GLint pos = glGetAttribLocation(shader_program, "position");
+        glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), *pv);
+        glEnableVertexAttribArray(pos);
+        
+//FIXME        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform); 
+        
+        glUseProgram(shader_program);
+        glDrawArrays(GL_TRIANGLES, 0, *pvc);
+        
+    }
+    else{
+        float *pvt = new float[ 2 * (*pvc)];
+        for(int i=0 ; i < *pvc ; i++){
+            float_2Dpt *pc = *pv + i;
+            wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
+            pvt[i*2] = q.m_x;
+            pvt[(i*2) + 1] = q.m_y;
+        }
+        
+        glUseProgram(shader_program);
+        
+        GLint pos = glGetAttribLocation(shader_program, "position");
+        glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), pvt);
+        glEnableVertexAttribArray(pos);
+ 
+        
+//         mat4x4 m, mvp;
+//         mat4x4_identity(m);
+//         mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width, -2.0 / (float)vp.pix_height, 1.0);
+//         mat4x4_translate_in_place(mvp, (float)-vp.pix_width/2, (float)-vp.pix_height/2, 0);
+//        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)mvp); 
+
+        GLint matloc = glGetUniformLocation(shader_program,"MVMatrix");
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)vp.vp_transform); 
+
+        float colorv[4];
+        colorv[0] = color.Red() / float(256);
+        colorv[1] = color.Green() / float(256);
+        colorv[2] = color.Blue() / float(256);
+        colorv[3] = 1.0;
+        
+        GLint colloc = glGetUniformLocation(shader_program,"color");
+        glUniform4fv(colloc, 1, colorv);
+        
+        //qDebug() << "colortri" << matloc << colloc;
+        
+        glDrawArrays(GL_TRIANGLES, 0, *pvc);
+        delete [] pvt;
+        glDeleteBuffers(1, &vbo);
+        
+    }
+    
+#else
     glColor3ub(color.Red(), color.Green(), color.Blue());
 
     if(glChartCanvas::HasNormalizedViewPort(vp)) {
@@ -448,6 +600,8 @@ void GshhsPolyCell::DrawPolygonFilledGL( contour_list * p, float_2Dpt **pv, int 
 
         delete [] pvt;
     }
+#endif
+    
 }
 #endif          //#ifdef ocpnUSE_GL
 
@@ -459,6 +613,7 @@ void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor 
 {
 #ifdef ocpnUSE_GL        
     if(!pnt.GetDC()) { // opengl
+#ifndef USE_ANDROID_GLES2
 #define NORM_FACTOR 4096.0
         if(dx && (vp.m_projection_type == PROJECTION_MERCATOR ||
                   vp.m_projection_type == PROJECTION_EQUIRECTANGULAR)) {
@@ -466,15 +621,18 @@ void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor 
             glPushMatrix();
             glTranslated(dx > 0 ? ts : -ts, 0, 0);
         }
-
+#endif
         DRAW_POLY_FILLED_GL( 1, landColor );
         DRAW_POLY_FILLED_GL( 2, seaColor );
         DRAW_POLY_FILLED_GL( 3, landColor );
         DRAW_POLY_FILLED_GL( 4, seaColor );
         DRAW_POLY_FILLED_GL( 5, landColor );
 
+#ifndef USE_ANDROID_GLES2        
         if(dx)
             glPopMatrix();
+#endif        
+        
     } else
 #endif
     {

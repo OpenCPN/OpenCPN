@@ -424,13 +424,14 @@ void Piano::DrawGL(int off)
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
     glEnable(GL_TEXTURE_2D);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
-    glVertexPointer(2, GL_FLOAT, 0, coords);
-    glDrawArrays(GL_QUADS, 0, vc/2);
+    cc1->GetglCanvas()->RenderTextures(coords, texcoords, vc/2, cc1->GetpVP());
+    
+//    glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
+//    glVertexPointer(2, GL_FLOAT, 0, coords);
+//    glDrawArrays(GL_QUADS, 0, vc/2);
 
+#if 0    
     // draw the bitmaps
     vc = tc = 0;
     for( int i = 0; i < nKeys; i++ ) {
@@ -491,6 +492,7 @@ void Piano::DrawGL(int off)
     glVertexPointer(2, GL_FLOAT, 0, coords);
     glDrawArrays(GL_QUADS, 0, vc/2);
 
+#endif    
     glDisable(GL_BLEND);
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);

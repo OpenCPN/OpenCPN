@@ -50,6 +50,9 @@
 
 #include "dychart.h"
 
+#ifdef USE_ANDROID_GLES2
+#include <GL/gl_private.h>
+#endif
 
 #ifdef __WXMSW__
 #include <windows.h>
@@ -1701,6 +1704,8 @@ PolyTriGroup::PolyTriGroup()
     single_buffer = NULL;
     single_buffer_size = 0;
     data_type = DATA_TYPE_DOUBLE;
+    sfactor = 1.0;
+    soffset = 0.0;
     
 
 }

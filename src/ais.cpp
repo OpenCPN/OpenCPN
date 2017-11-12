@@ -882,20 +882,37 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     //    Target is lost due to position report time-out, but still in Target List
     if( td->b_lost ) return;
     
-    float scale_factor = g_ChartScaleFactorExp;
+    float scale_factor = 1.0;
+    
+    //  Set the onscreen size of the symbol
+    //  Compensate for various display resolutions
+    //  Develop empirically, making a "diamond ATON" symbol about 4 mm square
+    
+    float nominal_target_size_mm = cc1->GetDisplaySizeMM() / 60.0;
+    nominal_target_size_mm = wxMin(nominal_target_size_mm, 10.0);
+    nominal_target_size_mm = wxMax(nominal_target_size_mm, 6.0);
+    
+    float nominal_icon_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * nominal_target_size_mm));             // nominal size, but not less than 4 pixel
+    float pix_factor = nominal_icon_size_pixels / 30.0;          // generic A/B icons are 30 units in size
+    
+    scale_factor *= pix_factor;
+    
+    float user_scale_factor = g_ChartScaleFactorExp;
     if( g_ChartScaleFactorExp > 1.0 )
-        scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+        
+    scale_factor *= user_scale_factor;
     
     //  Establish some graphic element line widths dependent on the platform display resolution
-    double nominal_line_width_pix = wxMax(1.0, floor(g_Platform->GetDisplayDPmm() / 2.5));             //0.4 mm nominal, but not less than 1 pixel
-
+    double nominal_line_width_pix = wxMax(1.5, floor(g_Platform->GetDisplayDPmm() / 5));             //0.2 mm nominal, but not less than 1.5 pixel
+    
     float width_interceptbar_base = 3 * nominal_line_width_pix;
     float width_interceptbar_top = 1.5 * nominal_line_width_pix;
     float intercept_bar_circle_diameter = 4 * nominal_line_width_pix;
     float width_interceptline = 2 * nominal_line_width_pix;
     float width_cogpredictor_base = 3 * nominal_line_width_pix;
     float width_cogpredictor_line = 1.5 * nominal_line_width_pix;
-    float width_target_outline = 1 * nominal_line_width_pix;
+    float width_target_outline = 1.2 * nominal_line_width_pix;
     
     
     //      Skip anchored/moored (interpreted as low speed) targets if requested
@@ -1353,7 +1370,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                             dc.StrokeCircle( PredPoint.x, PredPoint.y, 2 );
                     } else {
 #ifdef ocpnUSE_GL
-                        
+
+#ifndef USE_ANDROID_GLES2
                         glPushMatrix();
                         glTranslated(pixx1, pixy1, 0);
                         glScalef(scale_factor, scale_factor, scale_factor);
@@ -1382,6 +1400,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                             glVertex2i(points[i], points[i+1]);
                         glEnd();
                         glPopMatrix();
+#else
+                        double nominal_circle_size_pixels = wxMax(14.0, floor(g_Platform->GetDisplayDPmm() * 1));             //1.0 mm nominal diameter, but not less than 4 pixel
+                        dc.SetBrush( target_brush );
+                        dc.StrokeCircle( PredPoint.x, PredPoint.y, nominal_circle_size_pixels/2 );
+                        
+#endif                        
 #endif                    
                     }
             }
@@ -1504,6 +1528,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
         } else {
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
             wxColour c = target_brush.GetColour();
             glColor3ub(c.Red(), c.Green(), c.Blue());
                         
@@ -1526,7 +1551,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
              }
             
             glEnd();
+#else
+            dc.SetPen( target_outline_pen );
+            dc.DrawPolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
+#endif            
             
+            // Draw target outline, if not already done
             // Depending on platform  (wx) capabilities, draw the nicest lines possible
 #if wxUSE_GRAPHICS_CONTEXT
             glPopMatrix();
@@ -1536,6 +1566,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             dc.StrokePolygon( nPoints, iconPoints, TargetPoint.x, TargetPoint.y, scale_factor );
 #else            
             glLineWidth(width_target_outline);
+#ifndef USE_ANDROID_GLES2            
             glColor3ub(UBLCK.Red(), UBLCK.Green(), UBLCK.Blue());
             
             glBegin(GL_LINE_LOOP);
@@ -1543,6 +1574,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                 glVertex2i(iconPoints[i].x, iconPoints[i].y);
             glEnd();
             glPopMatrix();
+            
+#endif            
             
 #endif            
             
@@ -1732,43 +1765,48 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     }
 
     if( (!b_noshow && td->b_show_track) || b_forceshow ) {
-        wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
-        if(dc.GetDC()) {
-            dc.SetPen( wxPen( c, 2 ) );
-        } else {
-#ifdef ocpnUSE_GL
-            glLineWidth(2);
-            glColor3ub(c.Red(), c.Green(), c.Blue());
-            glBegin(GL_LINE_STRIP);
-#endif
-        }
-
+        
         //  create vector of x-y points
         int TrackLength = td->m_ptrack->GetCount();
+        int TrackPointCount;
+        wxPoint *TrackPoints;
         if (TrackLength > 1) {
-            int TrackPointCount;
-            wxPoint *TrackPoints = new wxPoint[TrackLength];
+            TrackPoints = new wxPoint[TrackLength];
             wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
             for (TrackPointCount = 0; node && (TrackPointCount < TrackLength); TrackPointCount++) {
                 AISTargetTrackPoint *ptrack_point = node->GetData();
                 GetCanvasPointPix(vp, cp, ptrack_point->m_lat, ptrack_point->m_lon, &TrackPoints[TrackPointCount]);
                 node = node->GetNext();
             }
-            TrackLength = TrackPointCount;
-            if ( dc.GetDC() && (TrackLength > 1) )
-                dc.StrokeLines(TrackPointCount, TrackPoints);
-#ifdef ocpnUSE_GL
-            else
-                for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
-                    glVertex2i(TrackPoints[TrackPointCount].x, TrackPoints[TrackPointCount].y);
-#endif
-            delete[] TrackPoints;
         }
-
+        
+        wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
+        dc.SetPen( wxPen( c, 2 ) );
+        
 #ifdef ocpnUSE_GL
-        if(!dc.GetDC())
-            glEnd();
+#ifndef USE_ANDROID_GLES2
+        glLineWidth(2);
+        glColor3ub(c.Red(), c.Green(), c.Blue());
+        glBegin(GL_LINE_STRIP);
+        
+        for (TrackPointCount = 0; TrackPointCount < TrackLength; TrackPointCount++)
+            glVertex2i(TrackPoints[TrackPointCount].x, TrackPoints[TrackPointCount].y);
+        
+        glEnd();
+#else
+        if ( TrackLength > 1 )
+            dc.DrawLines(TrackPointCount, TrackPoints);
+#endif        
+        
+#else
+        if ( dc.GetDC() && (TrackLength > 1) )
+            dc.StrokeLines(TrackPointCount, TrackPoints);
+            
 #endif
+        
+        if (TrackLength > 1)
+            delete[] TrackPoints;
+            
     }           // Draw tracks
 }
 
