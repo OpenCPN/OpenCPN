@@ -239,7 +239,6 @@ extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
-extern wxColour         g_colourTrackColour;
 extern int              gps_watchdog_timeout_ticks;
 
 extern int              g_nCacheLimit;
