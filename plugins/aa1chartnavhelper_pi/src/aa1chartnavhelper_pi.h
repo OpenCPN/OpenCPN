@@ -152,7 +152,7 @@ private:
                               double magVar, double magVarYdelta, bool markAt90);
     
     void DrawRulers(wxDC *dc, PlugIn_ViewPort *vp);
- 
+
     bool          m_config_default_ShowCompass;
     int           m_year_for_MagVar;
     bool          m_receved_from_wmm__request_sent; //to allow handling of my requested response only (woks because of the synchronous execution of messaging)

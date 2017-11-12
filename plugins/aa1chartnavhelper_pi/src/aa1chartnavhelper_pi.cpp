@@ -838,21 +838,21 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
         int cross_len = 10;
         
         long double angleforcross = 0;
-        pt_tick_s.x = cx + (cross_len) * cos(deg2rad(angleforcross + magVar));
-        pt_tick_s.y = cy + (cross_len) * sin(deg2rad(angleforcross + magVar));
+        pt_tick_s.x = cx + (cross_len) * cos(deg2rad(startangle+angleforcross + magVar));
+        pt_tick_s.y = cy + (cross_len) * sin(deg2rad(startangle+angleforcross + magVar));
         
-        pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(angleforcross + magVar));
-        pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(angleforcross + magVar));
+        pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(startangle+angleforcross + magVar));
+        pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(startangle+angleforcross + magVar));
         
         mySetBrush(dc, *wxTRANSPARENT_BRUSH);
         myDrawLine(dc, pt_tick_s, pt_tick_e);
 
         angleforcross = 90;
-        pt_tick_s.x = cx + (cross_len) * cos(deg2rad(angleforcross + magVar));
-        pt_tick_s.y = cy + (cross_len) * sin(deg2rad(angleforcross + magVar));
+        pt_tick_s.x = cx + (cross_len) * cos(deg2rad(startangle+angleforcross + magVar));
+        pt_tick_s.y = cy + (cross_len) * sin(deg2rad(startangle+angleforcross + magVar));
         
-        pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(angleforcross + magVar));
-        pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(angleforcross + magVar));
+        pt_tick_e.x = cx + (-cross_len) * cos(deg2rad(startangle+angleforcross + magVar));
+        pt_tick_e.y = cy + (-cross_len) * sin(deg2rad(startangle+angleforcross + magVar));
         
         mySetBrush(dc, *wxTRANSPARENT_BRUSH);
         myDrawLine(dc, pt_tick_s, pt_tick_e);
@@ -866,8 +866,8 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
              l_angleforextraline +=90)
         {
             int lr_angleforextraline = l_angleforextraline + ANGLE_OFFSET;
-            pt_tick_s.x = cx + (small_radius) * cos(deg2rad(l_angleforextraline + magVar));
-            pt_tick_s.y = cy + (small_radius) * sin(deg2rad(l_angleforextraline + magVar));
+            pt_tick_s.x = cx + (small_radius) * cos(deg2rad(startangle+l_angleforextraline + magVar));
+            pt_tick_s.y = cy + (small_radius) * sin(deg2rad(startangle+l_angleforextraline + magVar));
             
             int l_large_radius = large_radius;
             if ((lr_angleforextraline == 0) || (lr_angleforextraline == 180))
@@ -875,8 +875,8 @@ void aa1chartnavhelper_pi::DrawCompassRoseTicks(wxDC* dc, int cx, int cy, int ra
                 l_large_radius = small_radius + radius/8;
             }
             
-            pt_tick_e.x = cx + (l_large_radius) * cos(deg2rad(l_angleforextraline + magVar));
-            pt_tick_e.y = cy + (l_large_radius) * sin(deg2rad(l_angleforextraline + magVar));
+            pt_tick_e.x = cx + (l_large_radius) * cos(deg2rad(startangle+l_angleforextraline + magVar));
+            pt_tick_e.y = cy + (l_large_radius) * sin(deg2rad(startangle+l_angleforextraline + magVar));
         
             mySetBrush(dc, *wxTRANSPARENT_BRUSH);
             myDrawLine(dc, pt_tick_s, pt_tick_e);
@@ -943,7 +943,7 @@ bool aa1chartnavhelper_pi::plotPaperChartComponents(wxDC *dc, PlugIn_ViewPort *v
     int cx, cy;
     getCompassRoseCenter(dc, vp, cx, cy);
     
-    double angle = - vp->rotation;
+    double angle = rad2deg(vp->rotation);
     
     //get variation at the center of the rose ... TODO: get rid of hardcoded year: 2017/1/1
     double magVar;
@@ -964,7 +964,7 @@ bool aa1chartnavhelper_pi::plotPaperChartComponents(wxDC *dc, PlugIn_ViewPort *v
     
     //draw the rulers
     DrawRulers(dc, vp);
-    
+
     return true;
 }
 
@@ -1071,6 +1071,109 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
     return ret;
 }
 
+
+void GetCanvasPixPoint(PlugIn_ViewPort *vp, double x, double y, double &lat, double &lon )
+{
+    GetCanvasLLPix(vp, wxPoint( x, y ), &lat, &lon );
+}
+
+int mySign(int f)
+{
+    int retval = 0;
+    if (f>0.0) {retval = 1;}
+    else {
+        if (f<0.0) {retval = -1;}
+    }
+    return retval;
+}
+/** this algo will find iteratively the lon_or_lat which if used by lat_or_lon will result in a pixel point of x or y coordinate of: look_for_i
+ */
+float FindCanvasPixLL_for_i(wxDC *dc, PlugIn_ViewPort *vp, wxPoint *pp, int look_for_i, bool lat_T_or_lon_F, double lat_or_lon, double bound1, double bound2)
+{
+    bool found_i=true;
+    float lon_or_lat_for_0x = ( bound1 + bound2 ) / 2;
+    int count = 100;
+    float step_size = ( bound1 + bound2 ) / 4;
+    if (step_size == 0)
+    {
+        step_size = 1;
+    }
+    int prev_i = look_for_i; //initial look_for_i is OK, because if the x=0 is found the loop will stop
+
+    //AA1ChartNavHelperLogMessage1(wxString::Format("start search for look_for_i=%d: lat_or_lon=%lf  bound1=%lf, bound2=%lf, lon_or_lat_for_0x=%f, step=%f",
+    //                                              look_for_i, lat_or_lon, bound1, bound2, lon_or_lat_for_0x, step_size));
+
+    while (found_i)
+    {
+        int cur_i;
+        if (lat_T_or_lon_F)
+        {
+            GetCanvasPixLL(vp, pp, lat_or_lon, lon_or_lat_for_0x);
+            cur_i = pp->x;
+        }
+        else
+        {
+            GetCanvasPixLL(vp, pp, lon_or_lat_for_0x, lat_or_lon);
+            cur_i = pp->y;
+            
+        }
+        
+        //AA1ChartNavHelperLogMessage1(wxString::Format("search for look_for_i=%d: cur_i=%d, prev_i=%d, step=%f, lon_or_lat_for_0x=%f",
+        //                                              look_for_i, cur_i, prev_i, step_size, lon_or_lat_for_0x));
+
+
+        if (cur_i != look_for_i)
+        {
+            if (prev_i != look_for_i)
+            {   //start the search
+                if (mySign(cur_i - look_for_i) != mySign(prev_i - look_for_i)) //center the search around look_for_i
+                {
+                    //we crossed zero shring step and change direction
+                    step_size = -step_size/2.0;
+                }
+                else
+                {
+                    if (cur_i > look_for_i) //center the search around look_for_i
+                    {
+                        if (prev_i < cur_i)
+                        {
+                            //we are searching the wrong direction
+                            step_size = -step_size;
+                        }
+                        // else //we are searching the tight direction
+                    }
+                    else //cur_i < 0
+                    {
+                        if (prev_i > cur_i)
+                        {
+                            //we are searching the wrong direction
+                            step_size = -step_size;
+                        }
+                        // else //we are searching the tight direction
+                    }
+                }
+            }
+                        
+            //change lat_or_lon to try to fid x=0
+            lon_or_lat_for_0x = lon_or_lat_for_0x + step_size;
+            count--;
+            prev_i = cur_i;
+        }
+        else
+        {
+            //found it!
+            found_i = false;
+        }
+        
+        if ((count <= 0) || (step_size == 0))
+        {
+            //give up the search.
+            found_i = false;
+        }
+    }
+    
+    return lon_or_lat_for_0x;
+}
 /* @ChartCanvas::GridDraw *****************************************
  **
  ** Draws major and minor Lat/Lon Grid on the chart
@@ -1087,16 +1190,18 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     //if ( fabs( vp->rotation ) < 1e-5 )
     //    return;
     TexFont aTexFont;
-
+    
     double nlat, elon, slat, wlon;
+    float min_lat, max_lat;
+    float min_lon, max_lon;
     float lat, lon;
     float dlat, dlon;
     float gridlatMajor, gridlatMinor, gridlatMicro, gridlonMajor, gridlonMinor, gridlonMicro;
     wxCoord w, h;
-
+    
     wxColour cl;
     GetGlobalColor(_T("DASHR"), &cl);
-
+    
     wxPen GridPen( cl, 1, wxPENSTYLE_SOLID );
     mySetPen(dc, &GridPen);
     mySetTextForground(dc, cl);
@@ -1104,57 +1209,108 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     
     wxFont aFont( 8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     mySetFont(dc, aFont, aTexFont);
-    
-    wxPoint minC, maxC;
-    GetCanvasPixLL(vp, &maxC, vp->lat_max, vp->lon_max);
-    GetCanvasPixLL(vp, &minC, vp->lat_min, vp->lon_min);
-    
-    w = (maxC.x - minC.x);
-    h = (minC.y - maxC.y);
-    
+
+    if (dc)
+    {
+        dc->GetSize(&w, &h);
+    }
+    else
+    {
+        w = vp->pix_width;  //m_canvas_width;
+        h = vp->pix_height; //m_canvas_height;
+    }
+
     GetCanvasLLPix(vp, wxPoint(0, 0), &nlat, &wlon ); // get lat/lon of upper left point of the window
     GetCanvasLLPix(vp, wxPoint(w, h), &slat, &elon ); // get lat/lon of lower right point of the window
-    dlat = nlat - slat; // calculate how many degrees of latitude are shown in the window
-    dlon = elon - wlon; // calculate how many degrees of longitude are shown in the window
+    min_lat = MIN(slat,nlat);
+    max_lat = MAX(slat,nlat);
+    min_lon = MIN(wlon,elon);
+    max_lon = MAX(wlon,elon);
+
+    //the (0,0)'s (lat,lon) is not actually correct... lets try our search method to find a better (lat, lon)
+    bool correct_lat_scale = true;
+    if (correct_lat_scale)
+    {
+        wxPoint r_not_used;
+        float min_lon = MIN(wlon, elon);
+        float latX1 = FindCanvasPixLL_for_i(dc, vp, &r_not_used, 0, false, min_lon, min_lat, max_lat);
+        float latX2 = FindCanvasPixLL_for_i(dc, vp, &r_not_used, h, false, min_lon, min_lat, max_lat);
+        min_lat = MIN(latX1,latX2);
+        max_lat = MAX(latX1,latX2);
+    }
+    bool correct_lon_scale = true;
+    if (correct_lon_scale)
+    {
+        wxPoint r_not_used;
+        float min_lat = MIN(slat,nlat);
+        float lonX1 = FindCanvasPixLL_for_i(dc, vp, &r_not_used, 0, true, min_lat, slat, nlat);
+        float lonX2 = FindCanvasPixLL_for_i(dc, vp, &r_not_used, w, true, min_lat, slat, nlat);
+        min_lon = MIN(lonX1,lonX2);
+        max_lon = MAX(lonX1,lonX2);
+    }
+    
+    //dlat = nlat - slat; // calculate how many degrees of latitude are shown in the window
+    dlon = max_lon - min_lon;/*elon - wlon*/; // calculate how many degrees of longitude are shown in the window
     if( dlon < 0.0 ) // concider datum border at 180 degrees longitude
     {
         dlon = dlon + 360.0;
     }
+    //check if we are upside down
+    bool is_north_up = true;
+    if (nlat < slat)
+    {
+        is_north_up = false;
+    }
+    float ll_factor = 1.0;
+    if (!is_north_up)
+    {
+        //ll_factor = -1.0;
+    }
+    //AA1ChartNavHelperLogMessage1(wxString::Format("CORNERS: nlat=%f  wlon=%f  slat=%f  elon=%f  is_north_up=%d  min_lat=%f  max_lat=%f",
+    //                                              nlat, wlon, slat, elon, is_north_up, min_lat, max_lat));
+    //AA1ChartNavHelperLogMessage1(wxString::Format("SIZE: h=%d  w=%d", h, w));
+
     // calculate distance between latitude grid lines
     CalcGridSpacing( vp->view_scale_ppm, gridlatMajor, gridlatMinor, gridlatMicro );
     
     // calculate position of first major latitude grid line
-    lat = ceil( slat / gridlatMajor ) * gridlatMajor;
+    lat = ceil( min_lat / gridlatMajor ) * gridlatMajor;
     
     // Draw Major latitude grid lines and text
-    while( lat < nlat ) {
-        wxPoint r;
+    while( lat < max_lat ) {
+        wxPoint r1, r1b;
+        wxPoint r2, r2b;
         wxString st = CalcGridText( lat, gridlatMajor, true ); // get text for grid line
-        GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
+        FindCanvasPixLL_for_i(dc, vp, &r1, 0, true, lat, elon, wlon);
+        FindCanvasPixLL_for_i(dc, vp, &r1b, RULER_WIDTH_SMALL*2, true, lat, elon, wlon);
+        FindCanvasPixLL_for_i(dc, vp, &r2, w, true, lat, elon, wlon);
+        FindCanvasPixLL_for_i(dc, vp, &r2b, w - RULER_WIDTH_SMALL*2, true, lat, elon, wlon);
         //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-        myDrawLine(dc, 0, r.y, RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
-        myDrawLine(dc, w, r.y, w - RULER_WIDTH_SMALL*2, r.y);                             // draw grid line
+        myDrawLine(dc, 0, r1.y, RULER_WIDTH_SMALL*2, r1b.y);                             // draw grid line
+        myDrawLine(dc, w, r2.y, w - RULER_WIDTH_SMALL*2, r2b.y);                             // draw grid line
         //dc->DrawText( st, 0, r.y ); // draw text
-        myDrawText(dc, st, 0, r.y, false, aFont, aTexFont);
+        myDrawText(dc, st, 0, r1.y, false, aFont, aTexFont);
         lat = lat + gridlatMajor;
         
         if( fabs( lat - wxRound( lat ) ) < 1e-5 ) lat = wxRound( lat );
     }
     
     // calculate position of first minor latitude grid line
-    lat = ceil( slat / gridlatMinor ) * gridlatMinor;
+    lat = ceil( min_lat / gridlatMinor ) * gridlatMinor;
     int minor_count = 0;
     
     // Draw minor latitude grid lines
-    while( lat < nlat ) {
-        wxPoint r;
+    while( lat < max_lat ) {
+        wxPoint r1;
+        wxPoint r2;
         wxString st = CalcGridText( lat, gridlatMinor, true ); // get text for grid line
-        GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
+        FindCanvasPixLL_for_i(dc, vp, &r1, 0, true, lat, elon, wlon);
+        FindCanvasPixLL_for_i(dc, vp, &r2, w, true, lat, elon, wlon);
         //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-        myDrawLine(dc, 0, r.y, RULER_WIDTH_SMALL, r.y );
-        myDrawLine(dc, w - RULER_WIDTH_SMALL, r.y, w, r.y );
+        myDrawLine(dc, 0, r1.y, RULER_WIDTH_SMALL, r1.y );
+        myDrawLine(dc, w - RULER_WIDTH_SMALL, r2.y, w, r2.y );
         //dc->DrawText( st, 0, r.y ); // draw text
-        myDrawText(dc, st, 0, r.y, false, aFont, aTexFont);
+        myDrawText(dc, st, 0, r1.y, false, aFont, aTexFont);
         lat = lat + gridlatMinor;
         
         minor_count++;
@@ -1170,15 +1326,17 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     if (draw_micro)
     {
         // calculate position of first minor latitude grid line
-        lat = ceil( slat / gridlatMicro ) * gridlatMicro;
+        lat = ceil( min_lat / gridlatMicro ) * gridlatMicro;
         
         // Draw minor latitude grid lines
-        while( lat < nlat ) {
-            wxPoint r;
-            GetCanvasPixLL(vp, &r, lat, ( elon + wlon ) / 2);
+        while( lat < max_lat ) {
+            wxPoint r1;
+            wxPoint r2;
+            FindCanvasPixLL_for_i(dc, vp, &r1, 0, true, lat, elon, wlon);
+            FindCanvasPixLL_for_i(dc, vp, &r2, w, true, lat, elon, wlon);
             //GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-            myDrawLine(dc, 0, r.y, RULER_WIDTH_MICRO, r.y );
-            myDrawLine(dc, w - RULER_WIDTH_MICRO, r.y, w, r.y );
+            myDrawLine(dc, 0, r1.y, RULER_WIDTH_MICRO, r1.y );
+            myDrawLine(dc, w - RULER_WIDTH_MICRO, r2.y, w, r2.y );
             lat = lat + gridlatMicro;
         }
     }
@@ -1187,21 +1345,23 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     CalcGridSpacing( vp->view_scale_ppm, gridlonMajor, gridlonMinor, gridlonMicro );
     
     // calculate position of first major latitude grid line
-    lon = ceil( wlon / gridlonMajor ) * gridlonMajor;
+    lon = ceil( /*wlon*/min_lon / gridlonMajor ) * gridlonMajor;
     
     // draw major longitude grid lines
     for( int i = 0, itermax = (int) ( dlon / gridlonMajor ); i <= itermax; i++ ) {
-        wxPoint r;
+        wxPoint r1,r1b;
+        wxPoint r2,r2b;
         wxString st = CalcGridText( lon, gridlonMajor, false );
-        GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
-        //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
-        r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-        myDrawLine(dc, r.x, 0, r.x, 0 -1*(- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2));
-        myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2, r.x, h - RULER_DELTA_FROM_BOTTOM );
-        //dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
-        myDrawText(dc, st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
-
-        lon = lon + gridlonMajor;
+        FindCanvasPixLL_for_i(dc, vp, &r1, 0, false, lon, nlat, slat);
+        FindCanvasPixLL_for_i(dc, vp, &r1b, 0-1*(- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2), false, lon, nlat, slat);
+        FindCanvasPixLL_for_i(dc, vp, &r2, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*4, false, lon, nlat, slat);
+        FindCanvasPixLL_for_i(dc, vp, &r2b, h - RULER_DELTA_FROM_BOTTOM, false, lon, nlat, slat);
+        //r1.y = r1.y - RULER_DELTA_FROM_BOTTOM;
+        myDrawLine(dc, r1.x, 0, r1b.x, 0 -1*(- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*2));
+        myDrawLine(dc, r2.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL*4, r2b.x, h - RULER_DELTA_FROM_BOTTOM );
+        myDrawText(dc, st, r2.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
+        
+        lon = lon + ll_factor * gridlonMajor;
         if( lon > 180.0 ) {
             lon = lon - 360.0;
         }
@@ -1211,47 +1371,46 @@ void aa1chartnavhelper_pi::DrawRulers(wxDC *dc, PlugIn_ViewPort *vp)
     }
     
     // calculate position of first minor longitude grid line
-    lon = ceil( wlon / gridlonMinor ) * gridlonMinor;
+    lon = ceil( /*wlon*/min_lon / gridlonMinor ) * gridlonMinor;
     // draw minor longitude grid lines
     for( int i = 0, itermax = (int) ( dlon / gridlonMinor ); i <= itermax; i++ ) {
-        wxPoint r;
+        wxPoint r1;
+        wxPoint r2;
         wxString st = CalcGridText( lon, gridlonMinor, false );
-        GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
-        //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
-        r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-        myDrawLine(dc, r.x, 0, r.x, RULER_WIDTH_SMALL);
-        myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL, r.x, h - RULER_DELTA_FROM_BOTTOM );
-        //dc->DrawText( st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT);
-        myDrawText(dc, st, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
-
-        lon = lon + gridlonMinor;
+        FindCanvasPixLL_for_i(dc, vp, &r1, 0, false, lon, nlat, slat);
+        FindCanvasPixLL_for_i(dc, vp, &r2, h- RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL, false, lon, nlat, slat);
+        r1.y = r1.y - RULER_DELTA_FROM_BOTTOM;
+        myDrawLine(dc, r1.x, 0, r1.x, RULER_WIDTH_SMALL);
+        myDrawLine(dc, r2.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_SMALL, r2.x, h - RULER_DELTA_FROM_BOTTOM );
+        myDrawText(dc, st, r2.x, h - RULER_DELTA_FROM_BOTTOM - RULER_LEBEL_HIGHT, false, aFont, aTexFont);
+        
+        lon = lon + ll_factor * gridlonMinor;
         if( lon > 180.0 ) {
             lon = lon - 360.0;
         }
     }
-
+    
     if (draw_micro)
     {
         // calculate position of first minor longitude grid line
-        lon = ceil( wlon / gridlonMicro ) * gridlonMicro;
+        lon = ceil( /*wlon*/min_lon / gridlonMicro ) * gridlonMicro;
         // draw minor longitude grid lines
         for( int i = 0, itermax = (int) ( dlon / gridlonMicro ); i <= itermax; i++ ) {
-            wxPoint r;
-            GetCanvasPixLL(vp, &r,( nlat + slat ) / 2, lon);
-            //GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
-            r.y = r.y - RULER_DELTA_FROM_BOTTOM;
-            myDrawLine(dc, r.x, 0, r.x, RULER_WIDTH_MICRO);
-            myDrawLine(dc, r.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_MICRO, r.x, h - RULER_DELTA_FROM_BOTTOM );
-            lon = lon + gridlonMicro;
+            wxPoint r1;
+            wxPoint r2;
+            FindCanvasPixLL_for_i(dc, vp, &r1, 0, false, lon, nlat, slat);
+            FindCanvasPixLL_for_i(dc, vp, &r2, h, false, lon, nlat, slat);
+            r1.y = r1.y - RULER_DELTA_FROM_BOTTOM;
+            myDrawLine(dc, r1.x, 0, r1.x, RULER_WIDTH_MICRO);
+            myDrawLine(dc, r2.x, h - RULER_DELTA_FROM_BOTTOM - RULER_WIDTH_MICRO, r2.x, h - RULER_DELTA_FROM_BOTTOM );
+            lon = lon + ll_factor * gridlonMicro;
             if( lon > 180.0 ) {
                 lon = lon - 360.0;
             }
         }
     }
-
+    
 }
-
-//byAA10152017.
 
 bool aa1chartnavhelper_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
