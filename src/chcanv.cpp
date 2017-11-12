@@ -1335,11 +1335,6 @@ void ChartCanvas::SetVP(ViewPort &vp)
     VPoint = vp;
 }
 
-ViewPort *ChartCanvas::GetpVP()
-{
-    return &VPoint;
-}
-
 void ChartCanvas::OnKeyChar( wxKeyEvent &event )
 {
     if(g_pi_manager)

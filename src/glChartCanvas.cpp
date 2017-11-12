@@ -2327,6 +2327,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
             scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
         }
+
+        // Set the size of the little circle showing the GPS reference position
+        // Set a default early, adjust later based on render type
+        float gps_circle_radius = 3.0;
         
 #ifndef USE_ANDROID_GLES2        
         glPushMatrix();
@@ -2335,6 +2339,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float deg = 180/PI * ( icon_rad - PI/2 );
         glRotatef(deg, 0, 0, 1);
         glScalef(scale_factor_x, scale_factor_y, 1);
+        
 #endif
         
          
@@ -2345,13 +2350,20 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, ownship_tex);
             glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-            float nominal_ownship_size_pixels = wxMax(20.0, floor(g_Platform->GetDisplayDPmm() * 7.0));             //7.0 mm nominal length, but not less than 20 pixel
+            
+            float nominal_ownship_size_mm = cc1->m_display_size_mm / 44.0;
+            nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
+            nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
+            
+            float nominal_ownship_size_pixels = wxMax(20.0, cc1->GetPixPerMM() * nominal_ownship_size_mm);             // nominal length, but not less than 20 pixel
             float h = nominal_ownship_size_pixels * scale_factor_y;
             float w = nominal_ownship_size_pixels * scale_factor_x * ownship_size.x / ownship_size.y ;
             float glw = ownship_tex_size.x, glh = ownship_tex_size.y;
             float u = ownship_size.x/glw, v = ownship_size.y/glh;
-            
+
+            // tweak GPS reference point indicator size
+            gps_circle_radius = w / 5;
+
             
 #ifdef USE_ANDROID_GLES2            
             float coords[8];
@@ -2496,36 +2508,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         img_height = ownShipLength * scale_factor_y;
         
         //      Reference point, where the GPS antenna is
-        int circle_rad = 3;
-        if( cc1->m_pos_image_user ) circle_rad = 1;
-               
+        if( cc1->m_pos_image_user ) gps_circle_radius = 1;
+ 
         float cx = lGPSPoint.x, cy = lGPSPoint.y;
-        wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 2, wxPENSTYLE_SOLID );
+        wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
         dc.SetPen( ppPen1 );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UWHIT" ) ) ) );
 
-        dc.StrokeCircle(cx, cy, circle_rad);
+        dc.StrokeCircle(cx, cy, gps_circle_radius);
 
-#if 0
-        // store circle coordinates at compile time
-        const int v = 12;
-        float circle[4*v];
-        for( int i=0; i<2*v; i+=2) {
-            float a = i * (float)PI / v;
-            float s = sinf( a ), c = cosf( a );
-            circle[i+0] = cx + (circle_rad+1) * s;
-            circle[i+1] = cy + (circle_rad+1) * c;
-            circle[i+2*v] = cx + circle_rad * s;
-            circle[i+2*v+1] = cy + circle_rad * c;
-        }
-
-        glVertexPointer(2, GL_FLOAT, 2*sizeof(float), circle);
-
-        glColor4ub(0, 0, 0, 255);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, v);
-        glColor4ub(255, 255, 255, 255);
-        glDrawArrays(GL_TRIANGLE_FAN, v, v);
-#endif
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);
