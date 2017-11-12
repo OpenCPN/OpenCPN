@@ -570,6 +570,7 @@ int                       g_track_rotate_time_type;
 bool                      g_bHighliteTracks;
 int                       g_route_line_width;
 int                       g_track_line_width;
+wxColour                  g_colourTrackLineColour;
 wxString                  g_default_wp_icon;
 
 ActiveTrack              *g_pActiveTrack;
