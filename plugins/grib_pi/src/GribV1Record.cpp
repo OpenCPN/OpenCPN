@@ -574,12 +574,19 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     if (isAdjacentI) {
         for (j=0; j<Nj; j++) {
             for (i=0; i<Ni; i++) {
+#if 0
+                // XXX
+                // not need because we do it in XY after recomputing Di and Dj?
                 if (!hasDiDj && !isScanJpositive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
                     ind = j*Ni+i;
                 }
+#else
+                ind = j*Ni+i;
+#endif
+
                 if (hasValue(i,j)) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     data[ind] = (refValue + x*scaleFactorEpow2)/decimalFactorD;
@@ -595,12 +602,17 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     else {
         for (i=0; i<Ni; i++) {
             for (j=0; j<Nj; j++) {
+#if 0
                 if (!hasDiDj && !isScanJpositive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
                     ind = j*Ni+i;
                 }
+#else
+                ind = j*Ni+i;
+#endif
+
                 if (hasValue(i,j)) {
                     x = readPackedBits(buf, startbit, nbBitsInPack);
                     startbit += nbBitsInPack;
