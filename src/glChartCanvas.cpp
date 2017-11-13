@@ -2524,34 +2524,24 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 {
     ViewPort &vp = cc1->GetVP();
 
-    //  Draw any active or selected routes now
-    extern Routeman                  *g_pRouteMan;
-    extern Track                     *g_pActiveTrack;
-    Route *active_route = g_pRouteMan->GetpActiveRoute();
-
-//    if( active_route ) active_route->DrawGL( vp, region );
-//    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
-//    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
-
     GridDraw( );
 
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( vp );
-//        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( NULL, vp );
+        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( NULL, vp );
     }
 
-    // all functions called with cc1-> are still slow because they go through ocpndc
     AISDrawAreaNotices( dc, cc1->GetVP(), cc1 );
 
-//    cc1->DrawAnchorWatchPoints( dc );
+    cc1->DrawAnchorWatchPoints( dc );
     AISDraw( dc, cc1->GetVP(), cc1 );
     ShipDraw( dc );
-//    cc1->AlertDraw( dc );
+    cc1->AlertDraw( dc );
 
     cc1->RenderRouteLegs( dc );
-//    cc1->ScaleBarDraw( dc );
+    cc1->ScaleBarDraw( dc );
 #ifdef USE_S57
-//    s57_DrawExtendedLightSectors( dc, cc1->VPoint, cc1->extendedSectorLegs );
+    s57_DrawExtendedLightSectors( dc, cc1->VPoint, cc1->extendedSectorLegs );
 #endif
 }
 
