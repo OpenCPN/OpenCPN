@@ -1785,18 +1785,11 @@ void glChartCanvas::GridDraw( )
     float startlon = ceil( wlon / gridlonMajor ) * gridlonMajor;
     float curved_step = wxMin(sqrt(5e-3 / vp.view_scale_ppm), 3);
 
+    ocpnDC gldc( *this );
+    wxPen *pen = wxThePenList->FindOrCreatePen( GridColor, g_GLMinSymbolLineWidth, wxPENSTYLE_SOLID );
+    gldc.SetPen( *pen );
+    
     // Draw Major latitude grid lines and text
-#ifndef __OCPN__ANDROID__
-    glEnable( GL_BLEND );
-    glEnable( GL_LINE_SMOOTH );
-#endif
-    
-    glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
-
-    glLineWidth( g_GLMinSymbolLineWidth );
-    
-    // First draw the grid then tphe text
-    glBegin(GL_LINES);
 
     // calculate position of first major latitude grid line
     float lon_step = elon - wlon;
@@ -1810,8 +1803,7 @@ void glChartCanvas::GridDraw( )
         for(lon = wlon; lon < elon+lon_step/2; lon += lon_step) {
             cc1->GetDoubleCanvasPointPix( lat, lon, &r );
             if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
-                glVertex2d(s.m_x, s.m_y);
-                glVertex2d(r.m_x, r.m_y);
+                gldc.DrawLine( s.m_x, s.m_y, r.m_x, r.m_y, true );
             }
             s = r;
         }
@@ -1823,10 +1815,9 @@ void glChartCanvas::GridDraw( )
         
             wxPoint r;
             cc1->GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
-            glVertex2i(0, r.y);
-            glVertex2i(10, r.y);
-            glVertex2i(w - 10, r.y);
-            glVertex2i(w, r.y);
+            gldc.DrawLine( 0, r.y, 10, r.y, true );
+            gldc.DrawLine( w - 10, r.y, w, r.y, true );
+            
             lat = lat + gridlatMinor;
         }
     }
@@ -1843,9 +1834,7 @@ void glChartCanvas::GridDraw( )
             cc1->GetDoubleCanvasPointPix( lat, lon, &r );
 
             if(!wxIsNaN(s.m_x) && !wxIsNaN(r.m_x)) {
-                glVertex2d(s.m_x, s.m_y);
-                glVertex2d(r.m_x, r.m_y);
-                
+                gldc.DrawLine( s.m_x, s.m_y, r.m_x, r.m_y, true );
             }
             s = r;
         }
@@ -1856,20 +1845,15 @@ void glChartCanvas::GridDraw( )
         for(lon = ceil( wlon / gridlonMinor ) * gridlonMinor; lon < elon; lon += gridlonMinor) {
             wxPoint r;
             cc1->GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
-            glVertex2i(r.x, 0);
-            glVertex2i(r.x, 10);
-            glVertex2i(r.x, h-10);
-            glVertex2i(r.x, h);
+            gldc.DrawLine( r.x, 0, r.x, 10, true );
+            gldc.DrawLine( r.x, h-10, r.x, h, true );
         }
     }
 
-    glEnd();
-
-    glDisable( GL_LINE_SMOOTH );
-    glEnable( GL_BLEND );
     
     // draw text labels
     glEnable(GL_TEXTURE_2D);
+    glEnable( GL_BLEND );
     for(lat = startlat; lat < nlat; lat += gridlatMajor) {
         if( fabs( lat - wxRound( lat ) ) < 1e-5 )
             lat = wxRound( lat );
@@ -1994,6 +1978,7 @@ void glChartCanvas::GridDraw( )
 
     glDisable( GL_BLEND );
 }
+
 
 void glChartCanvas::DrawEmboss( emboss_data *emboss  )
 {
