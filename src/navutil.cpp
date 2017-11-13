@@ -398,6 +398,10 @@ extern int              g_iENCToolbarPosY;
 
 extern bool             g_bSpaceDropMark;
 
+extern bool             g_bShowTide;
+extern bool             g_bShowCurrent;
+
+
 extern wxString         g_uiStyle;
 
 int                     g_nCPUCount;
@@ -567,6 +571,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "AutoHideToolbarSecs" ), &g_nAutoHideToolbar, 0 );
     
     Read( _T ( "UseSimplifiedScalebar" ), &g_bsimplifiedScalebar, 0 );
+    Read( _T ( "ShowTide" ), &g_bShowTide, 0 );
+    Read( _T ( "ShowCurrent" ), &g_bShowCurrent, 0 );
     
     int size_mm;
     Read( _T ( "DisplaySizeMM" ), &size_mm, -1 );
@@ -1964,6 +1970,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
 
     if( cc1 ) Write( _T ( "ChartQuiltingInitial" ), cc1->GetQuiltMode() );
+
+    if( cc1 ) Write( _T ( "ShowTide" ), cc1->GetbShowTide() );
+    if( cc1 ) Write( _T ( "ShowCurrent" ), cc1->GetbShowCurrent() );
 
     Write( _T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
     Write( _T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
