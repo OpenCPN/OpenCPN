@@ -53,6 +53,16 @@ void  GribV1Record::translateDataType()
         }
                                                                                 
 	}
+	//------------------------
+	// EMCF masquaraded as NOAA ?
+	//------------------------
+	else if ( idCenter==7 && idModel==64 && idGrid==4)
+	{
+        dataCenterModel = NOAA_GFS;
+        if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
+            multiplyAllData( 3600.0 );
+        }
+    }
     //------------------------
 	//DNMI-NEurope.grb
 	//------------------------
