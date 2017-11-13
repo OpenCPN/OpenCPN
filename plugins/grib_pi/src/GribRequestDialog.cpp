@@ -515,6 +515,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
     } else {
 
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
     TexFont m_TexFontlabel;
     m_TexFontlabel.Build(*font);
 
@@ -564,6 +565,7 @@ bool GribRequestSetting::DoRenderZoneOverlay()
    glDisable(GL_TEXTURE_2D);
 
    glDisable( GL_BLEND );
+#endif
 
 #endif
     }

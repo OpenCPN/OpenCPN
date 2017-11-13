@@ -35,6 +35,11 @@
 #include "GL/gl.h"
 #endif
 
+#ifdef USE_ANDROID_GLES2
+#include "/home/dsr/Projects/opencpn/src/glshim/include/GLES/gl2.h"
+#endif
+
+#include "pi_ocpndc.h"
 
 #include "TexFont.h"
 
@@ -92,7 +97,7 @@ struct ParticleMap {
 public:
     ParticleMap(int settings)
     : m_Setting(settings), history_size(0), array_size(0),
-      color_array(NULL), vertex_array(NULL) 
+      color_array(NULL), vertex_array(NULL) , color_float_array(NULL)
     {
        // XXX should be done in default PlugIn_ViewPort CTOR
         last_viewport.bValid = false;
@@ -101,6 +106,7 @@ public:
     ~ParticleMap() {
         delete [] color_array;
         delete [] vertex_array;
+        delete [] color_float_array;
     }
 
     std::vector<Particle> m_Particles;
@@ -113,6 +119,7 @@ public:
     unsigned int array_size;
     unsigned char *color_array;
     float *vertex_array;
+    float *color_float_array;
 
     PlugIn_ViewPort last_viewport;
 };
@@ -175,6 +182,8 @@ public:
 
     wxSize  m_ParentSize;
 
+    pi_ocpnDC *m_oDC;
+    
 private:
     void InitColorsTable( );
 

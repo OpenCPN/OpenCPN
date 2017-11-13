@@ -6,16 +6,13 @@
 
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
-#<<<<<<< HEAD
-#=======
 # This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
   if (POLICY CMP0043)
     CMAKE_POLICY(SET CMP0043 NEW)
   endif (POLICY CMP0043)
 ENDIF (COMMAND cmake_policy)
-#>>>>>>> plib
-
+ 
 PROJECT(grib_pi)
 
 SET(PACKAGE_NAME grib_pi)
@@ -97,8 +94,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-            src/TexFont.h
-            src/TexFont.cpp
+            src/pi_TexFont.h
+            src/pi_TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/icons.cpp
@@ -108,7 +105,9 @@ SET(SRC_GRIB
             src/GribV2Record.cpp
             src/zuFile.cpp
             src/IsoLine.cpp
-
+            src/pi_ocpndc.cpp
+            src/pi_shaders.cpp
+            
             ../../src/wxJSON/jsonval.cpp
             ../../src/wxJSON/jsonreader.cpp
             ../../src/wxJSON/jsonwriter.cpp
@@ -205,7 +204,6 @@ ENDIF(QT_ANDROID)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
-#<<<<<<< HEAD
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
 
@@ -213,8 +211,11 @@ IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lz" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv1_CM" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv2" )
+    
 ENDIF(QT_ANDROID)
-#=======
+
 IF(WIN32)
   IF(MSVC)
     SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")

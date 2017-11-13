@@ -58,6 +58,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 extern int   m_DialogStyle;
 
 grib_pi *g_pi;
+bool g_bpause;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -107,6 +108,8 @@ int grib_pi::Init(void)
 
       ::wxDisplaySize(&m_display_width, &m_display_height);
 
+      g_bpause = false;
+      
       m_DialogStyleChanged = false;
 
       //    Get a pointer to the opencpn configuration object
@@ -683,6 +686,12 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     
     if(message_id == _T("GRIB_APPLY_JSON_CONFIG"))
     {
+#ifdef __OCPN__ANDROID__        
+        // Coming back from Android settings activity...
+        qDebug() << "message GRIB_APPLY_JSON_CONFIG";
+        g_bpause = false;
+#endif        
+        
         wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
         
         if(m_pGribCtrlBar){

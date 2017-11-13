@@ -416,6 +416,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
           dc->SetPen(ppISO);
       } else { /* opengl */
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
           if(m_pixelMM > 0.2){        // pixel size large enough to render well
           //      Enable anti-aliased lines, at best quality
             glEnable( GL_LINE_SMOOTH );
@@ -431,6 +432,11 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
           glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
                      255/*isoLineColor.Alpha()*/);
           glBegin( GL_LINES );
+#else
+          wxPen ppISO ( isoLineColor, 2 );
+          pof->m_oDC->SetPen(ppISO);
+          
+#endif          
 #endif          
       }
 
@@ -468,8 +474,15 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
                       dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
             } else { /* opengl */
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
                 glVertex2d(ab.x, ab.y);
                 glVertex2d(cd.x, cd.y);
+#else
+                
+                pof->m_oDC->DrawLine(ab.x, ab.y, cd.x, cd.y);
+                
+#endif
+                
 #endif                
             }
         }
@@ -593,8 +606,10 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
       delete pgc;
 #endif
 
+#ifndef USE_ANDROID_GLES2
       if(!dc) /* opengl */
           glEnd();
+#endif      
 }
 
 //---------------------------------------------------------------
@@ -678,6 +693,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                 wxPoint cd;
                 GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
 
+#ifndef USE_ANDROID_GLES2    
                 int w, h;
                 texfont.GetTextExtent(label, &w, &h);
 
@@ -715,6 +731,42 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
                       texfont.RenderString(label, xd, yd);
                       glDisable(GL_TEXTURE_2D);
                 }
+#else
+               
+                #ifdef __WXQT__
+                wxFont font = GetOCPNGUIScaledFont_PlugIn(_T("Dialog"));
+                #else
+                wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+                #endif
+
+                
+                pof->m_oDC->SetFont(font);
+                int w, h;
+                pof->m_oDC->GetTextExtent(label, &w, &h);
+
+                int label_offsetx = 6, label_offsety = 1;
+                int xd = (ab.x + cd.x-(w+label_offsetx * 2))/2;
+                int yd = (ab.y + cd.y - h)/2;
+                int x = xd - label_offsetx, y = yd - label_offsety;
+                w += 2*label_offsetx, h += 2*label_offsety;
+
+                wxRect r(x,y, w,h);
+                r.Inflate(w);
+                if (!prev.Intersects(r)) 
+                {
+                    pof->m_oDC->SetPen( wxPen( wxColour(0,0,0), 1 ) );
+                    pof->m_oDC->SetBrush( wxBrush( color ) );
+                    pof->m_oDC->DrawRoundedRectangle( x, y, w, h, 0);
+
+                    /* draw bounding rectangle */
+                    pof->m_oDC->DrawLine(x,   y,   x+w, y);
+                    pof->m_oDC->DrawLine(x+w, y,   x+w, y+h);
+                    pof->m_oDC->DrawLine(x+w, y+h, x,   y+h);
+                    pof->m_oDC->DrawLine(x  , y+h, x,   y);
+                    
+                    pof->m_oDC->DrawText(label, xd, yd);
+                }
+#endif
             }
         }
     }

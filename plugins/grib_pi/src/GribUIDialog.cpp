@@ -53,6 +53,8 @@
 #include "qdebug.h"
 #endif
 
+extern bool g_bpause;
+
 //general variables
 double  m_cursor_lat, m_cursor_lon;
 int     m_Altitude;
@@ -1160,6 +1162,9 @@ void GRIBUICtrlBar::OnCompositeDialog( wxCommandEvent& event )
 
 
 #ifdef __OCPN__ANDROID__
+    qDebug() << "Calling doGRIBActivity";
+    g_bpause = true;
+    
     wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
     wxLogMessage(ret);
 #endif
