@@ -417,6 +417,9 @@ class MyFrame: public wxFrame
     void UpdateControlBar(void);
     void RemoveChartFromQuilt(int dbIndex);
 
+    void ShowTides(bool bShow);
+    void ShowCurrents(bool bShow);
+
     void SubmergeToolbar(void);
     void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
     void SurfaceToolbar(void);
