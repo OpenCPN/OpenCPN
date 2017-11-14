@@ -622,7 +622,6 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -655,6 +654,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
         
 #else        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
         glColor3f(1, 1, 1);
         

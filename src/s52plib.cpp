@@ -2156,8 +2156,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 #else
                     glEnable( GL_BLEND );
                     glEnable( GL_TEXTURE_2D );
-                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-                    
+
                     
                     /* undo previous rotation to make text level */
                     //glRotatef(vp->rotation*180/PI, 0, 0, -1);
@@ -2310,7 +2309,6 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 #else
                 glEnable( GL_BLEND );
                 glEnable( GL_TEXTURE_2D );
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
 
                 /* undo previous rotation to make text level */
@@ -3186,7 +3184,6 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     {
 #ifdef ocpnUSE_GL
         glEnable( GL_BLEND );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
         if(texture) {
             extern GLenum       g_texture_rectangle_format;
@@ -3201,6 +3198,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
 
 #ifndef USE_ANDROID_GLES2
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
             if(g_texture_rectangle_format == GL_TEXTURE_2D) {
                 wxSize size = ChartSymbols::GLTextureSize();
 
@@ -3232,7 +3230,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
                 // Normalize the sybmol texture coordinates against the next higher POT size
                 wxSize size = ChartSymbols::GLTextureSize();
-#if 1
+#if 0
                                 int i=1;
                                 while(i < size.x) i <<= 1;
                                 int rb_x = i;
@@ -3634,6 +3632,9 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
         glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
     }
+
+    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+
 #endif
 
     //   Has line segment PBO been allocated for this chart?
@@ -3642,7 +3643,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     }
 
 
-    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
 #ifdef USE_ANDROID_GLES2
     glUseProgram(S52color_tri_shader_program);
@@ -3785,9 +3785,9 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
      if(b_useVBO)
          (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
 
-    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
 
 #ifndef USE_ANDROID_GLES2
+    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
     glPopMatrix();
 #else
     mat4x4 IM;
@@ -5492,7 +5492,9 @@ next_seg_dc:
     else // opengl
     {
         //    Set up the color
+#ifndef USE_ANDROID_GLES2
         glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
+#endif
 
         // Adjust line width up a bit, to improve render quality for GL_BLEND/GL_LINE_SMOOTH
         float awidth = wxMax(g_GLMinCartographicLineWidth, (float)width * 0.7);
@@ -8423,7 +8425,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     }
 
                     // upload data to VBO
+#ifndef USE_ANDROID_GLES2
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+#endif
                     (s_glBufferData)(GL_ARRAY_BUFFER,
                                     ppg_vbo->single_buffer_size, ppg_vbo->single_buffer, GL_STATIC_DRAW);
                     err = glGetError();
@@ -8445,7 +8449,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                         return 0;
                     }
 
+#ifndef USE_ANDROID_GLES2
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+#endif
                 }
              }
         }
@@ -8457,8 +8463,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         TriPrim *p_tp = ppg->tri_prim_head;
         GLintptr vbo_offset = 0;
 
+#ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-
+#endif
         //      Set up the stride sizes for the array
         int array_data_size = sizeof(float);
         GLint array_gl_type = GL_FLOAT;
@@ -8600,9 +8607,9 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if(b_useVBO)
             (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
 
-        glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
 
 #ifndef USE_ANDROID_GLES2
+        glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
         if(b_transform)
             glPopMatrix();
 #else
@@ -8723,6 +8730,7 @@ return;
 
 void RotateToViewPort(const ViewPort &vp)
 {
+#ifndef USE_ANDROID_GLES2
     bool g_bskew_comp = true;
 
     float angle = vp.rotation;
@@ -8738,6 +8746,8 @@ void RotateToViewPort(const ViewPort &vp)
         glRotatef( angle * 180. / PI, 0, 0, 1 );
         glTranslatef( -xt, -yt, 0 );
     }
+#endif
+
 }
 
 
@@ -9256,13 +9266,17 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
                         (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
 
                         // upload data to VBO
+#ifndef USE_ANDROID_GLES2
                         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+#endif
                         (s_glBufferData)(GL_ARRAY_BUFFER, ppg_vbo->single_buffer_size, ppg_vbo->single_buffer, GL_STATIC_DRAW);
 
                     }
                     else {
                         (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
+#ifndef USE_ANDROID_GLES2
                         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+#endif
                     }
                 }
         }
@@ -9274,8 +9288,9 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
             TriPrim *p_tp = ppg->tri_prim_head;
             GLintptr vbo_offset = 0;
 
+#ifndef USE_ANDROID_GLES2
             glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-
+#endif
             //      Set up the stride sizes for the array
             int array_data_size = sizeof(float);
             GLint array_gl_type = GL_FLOAT;
@@ -9403,8 +9418,9 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
             if(b_useVBO)
                 (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
 
+#ifndef USE_ANDROID_GLES2
             glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-
+#endif
             //  Restore the transform matrix to identity
             mat4x4 IM;
             mat4x4_identity(IM);
@@ -10869,10 +10885,14 @@ void RenderFromHPGL::SetPen()
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
+
+#ifndef USE_ANDROID_GLES2
+    glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
+#endif
+
     //    glEnable( GL_LINE_SMOOTH );
         glEnable( GL_POLYGON_SMOOTH );
 
-        glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
         int line_width = wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7);
         glLineWidth( line_width );
 

@@ -660,7 +660,8 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             delete [] points;
         }
     }
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
     else { // opengl version
         glColor3ub(col.Red(), col.Green(), col.Blue());
         glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
@@ -698,7 +699,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         
     }
 #endif
-
+#endif
     if(m_HighlightedTrackPoint >= 0)
         TrackPoints[m_HighlightedTrackPoint]->Draw(dc);
 }

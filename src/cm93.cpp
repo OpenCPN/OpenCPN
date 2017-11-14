@@ -5967,18 +5967,20 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           glEnable( GL_BLEND );
           glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
           
-          glColor3ub(col.Red(), col.Green(), col.Blue());
+
           glLineWidth( g_GLMinSymbolLineWidth );
           glDisable( GL_LINE_STIPPLE );
           dc.SetGLStipple();
           
           if(g_b_EnableVBO)
               s_glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+
+#ifndef USE_ANDROID_GLES2
           glEnableClientState(GL_VERTEX_ARRAY);
 
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
-
+#endif
           if(glChartCanvas::HasNormalizedViewPort(vp)) {
               glChartCanvas::MultMatrixViewPort(vp);
               nvp = glChartCanvas::NormalizedViewPort(vp);
@@ -6065,10 +6067,14 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                       if( secondpass ) {
 #define NORM_FACTOR 4096.0                                              
                           double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+#ifndef USE_ANDROID_GLES2
+                          glColor3ub(col.Red(), col.Green(), col.Blue());
                           glPushMatrix();
                           glTranslated(vp.clon < 0 ? -ts : ts, 0, 0);
                           RenderCellOutlinesOnGL(nvp, mcd); 
                           glPopMatrix();
+
+#endif
                       }
                       bdrawn = true;
                   } else
@@ -6084,9 +6090,11 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       
 #ifdef ocpnUSE_GL        
       if(g_bopengl) {
+#ifndef USE_ANDROID_GLES2
           glPopMatrix();
 
           glDisableClientState(GL_VERTEX_ARRAY);
+#endif
           glDisable( GL_LINE_STIPPLE );
           glDisable( GL_LINE_SMOOTH );
           glDisable( GL_BLEND );
@@ -6226,6 +6234,8 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
         mcd->gl_screen_projection_type = vp.m_projection_type;
     }
 
+#ifndef USE_ANDROID_GLES2
+
 #if 1 // Push array (faster)
     glVertexPointer(2, GL_FLOAT, 2*sizeof(float), mcd->gl_screen_vertices);
     glDrawArrays(GL_LINES, 0, mcd->m_ngl_vertices);
@@ -6234,6 +6244,7 @@ void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
     for(int i=0; i<mcd->m_ngl_vertices; i++)
         glVertex2f(mcd->gl_screen_vertices[i].y, mcd->gl_screen_vertices[i].x);
     glEnd();
+#endif
 #endif
 #endif
 }

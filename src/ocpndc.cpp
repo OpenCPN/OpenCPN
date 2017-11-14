@@ -1796,12 +1796,12 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                 glEnable( GL_BLEND );
                 glEnable( GL_TEXTURE_2D );
                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
 #ifndef USE_ANDROID_GLES2                
                 glPushMatrix();
                 glTranslatef(x, y, 0);
                 
+                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
                 glColor3ub( m_textforegroundcolour.Red(), m_textforegroundcolour.Green(),
                             m_textforegroundcolour.Blue() );
                 
@@ -1971,7 +1971,9 @@ bool ocpnDC::ConfigurePen()
     wxColour c = m_pen.GetColour();
     int width = m_pen.GetWidth();
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
+#endif
     glLineWidth( wxMax(g_GLMinSymbolLineWidth, width) );
 #endif    
     return true;
@@ -1983,7 +1985,9 @@ bool ocpnDC::ConfigureBrush()
         return false;
 #ifdef ocpnUSE_GL
     wxColour c = m_brush.GetColour();
+#ifndef USE_ANDROID_GLES2
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
+#endif
 #endif    
     return true;
 }

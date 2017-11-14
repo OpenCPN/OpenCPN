@@ -348,6 +348,7 @@ ENDIF()
 #  without trying to locate them on the host build system.
 IF(QT_ANDROID)
     MESSAGE (STATUS "Using GLESv1 for Android")
+    MESSAGE (STATUS "NDK_Base:  ${NDK_Base}")
     ADD_DEFINITIONS(-DocpnUSE_GLES)
     ADD_DEFINITIONS(-DocpnUSE_GL)
     ADD_DEFINITIONS(-DARMHF)

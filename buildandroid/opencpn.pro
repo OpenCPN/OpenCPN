@@ -51,7 +51,7 @@ LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxjpeg-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwxpng-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_qtu_gl-3.1-arm-linux-androideabi.a
 LIBS += $${wxQt_Base}/$${wxQt_Build}/lib/libwx_baseu_net-3.1-arm-linux-androideabi.a
-LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
+#LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGL.a
 
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLU.a
 #LIBS += $${OCPN_Base}/$${OCPN_Build}/lib/libGLUES.a

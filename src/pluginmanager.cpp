@@ -4641,8 +4641,11 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
 
 #ifdef USE_S57
                     ps52plib->m_last_clip_rect = upd.GetRect();
-#endif                    
+#endif
+
+#ifndef USE_ANDROID_GLES2
                     glPushMatrix(); //    Adjust for rotation
+#endif
                     glChartCanvas::RotateToViewPort(VPoint);
 
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
@@ -4651,7 +4654,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
                     else if(ppicb_gl)
                         ppicb_gl->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                     glPopMatrix();
+#endif
                     glChartCanvas::DisableClipRegion();
                     
                     
@@ -4682,7 +4687,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
         if(!Region.Empty() && ppicb_x)
         {
             
+#ifndef USE_ANDROID_GLES2
             glPushMatrix(); //    Adjust for rotation
+#endif
             
             // Start with a clean slate
             glChartCanvas::SetClipRect(VPoint, VPoint.rv_rect, false);
@@ -4695,7 +4702,9 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
             
             ppicb_x->RenderRegionViewOnGLNoText( glc, pivp, *r, glChartCanvas::s_b_useStencil);
 
+#ifndef USE_ANDROID_GLES2
             glPopMatrix();
+#endif
             delete r;
             
         }
@@ -4716,13 +4725,17 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLNoText(const wxGLContext &glc, cons
  #ifdef USE_S57
                     ps52plib->m_last_clip_rect = upd.GetRect();
  #endif                    
+#ifndef USE_ANDROID_GLES2
                     glPushMatrix(); //    Adjust for rotation
+#endif
                     glChartCanvas::RotateToViewPort(VPoint);
                     
                     PlugIn_ViewPort pivp = CreatePlugInViewport( cvp );
                     ppicb->RenderRegionViewOnGL( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                     glPopMatrix();
+#endif
                     glChartCanvas::DisableClipRegion();
                     
                     
@@ -4751,14 +4764,17 @@ bool ChartPlugInWrapper::RenderRegionViewOnGLTextOnly( const wxGLContext &glc, c
             wxRegion *r = Region.GetNew_wxRegion();
             for(OCPNRegionIterator upd ( Region ); upd.HaveRects(); upd.NextRect()) {
                 
+#ifndef USE_ANDROID_GLES2
                 glPushMatrix(); //    Adjust for rotation
+#endif
                 glChartCanvas::RotateToViewPort(VPoint);
                     
                 PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint );
                 ppicb_x->RenderRegionViewOnGLTextOnly( glc, pivp, *r, glChartCanvas::s_b_useStencil);
                     
+#ifndef USE_ANDROID_GLES2
                 glPopMatrix();
-                    
+#endif
                     
             } //for
             delete r;

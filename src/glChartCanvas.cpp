@@ -116,6 +116,8 @@ extern "C" void glOrthof(float left,  float right,  float bottom,  float top,  f
 
 #ifdef USE_ANDROID_GLES2
 #include "../glshim/include/GLES/gl2.h"
+//#include "/home/dsr/Projects/android-ndk/android-ndk-r10d/platforms/android-13/arch-arm/usr/include/GLES2/gl2.h"
+//#include "GLES2/gl2.h"
 #include "linmath.h"
 #include "shaders.h"
 #endif
@@ -1387,6 +1389,8 @@ bool glChartCanvas::HasNormalizedViewPort(const ViewPort &vp)
 #define NORM_FACTOR 4096.0
 void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
 {
+#ifndef USE_ANDROID_GLES2
+
     wxPoint2DDouble point;
 
     switch(vp.m_projection_type) {
@@ -1413,6 +1417,7 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
 
     if (rotation)
         glRotatef(rotation*180/PI, 0, 0, 1);
+#endif
 }
 
 ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float lon)
@@ -1600,6 +1605,8 @@ static void GetLatLonCurveDist(const ViewPort &vp, float &lat_dist, float &lon_d
 
 void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 {
+#ifndef USE_ANDROID_GLES2
+
     if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_PLUGIN &&
         !ChartData->IsChartAvailable( dbIndex ) )
         return;
@@ -1719,6 +1726,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
     glDisable( GL_LINE_SMOOTH );
 //    glDisable( GL_BLEND );
+#endif
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
@@ -2021,7 +2029,6 @@ void glChartCanvas::DrawEmboss( emboss_data *emboss  )
     glBindTexture( GL_TEXTURE_2D, emboss->gltexind );
     
     glEnable( GL_BLEND );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     
     int x = emboss->x, y = emboss->y;
 
@@ -2030,6 +2037,7 @@ void glChartCanvas::DrawEmboss( emboss_data *emboss  )
 
 #ifndef USE_ANDROID_GLES2
 
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     const float factor = 200;
     glColor4f( 1, 1, 1, factor / 256 );
 
@@ -2167,7 +2175,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_POLYGON_SMOOTH );
-    glEnableClientState(GL_VERTEX_ARRAY);
     
     int img_height;
 
@@ -2175,6 +2182,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     {
 
 #if 0
+        glEnableClientState(GL_VERTEX_ARRAY);
         float scale =  g_ChartScaleFactorExp;
         
         const int v = 12;
@@ -2303,8 +2311,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         glEnable(GL_BLEND);
 
-        glEnableClientState(GL_VERTEX_ARRAY);
-
         int x = lShipMidPoint.x, y = lShipMidPoint.y;
 
         // Scale the generic icon to ChartScaleFactor, slightly softened....
@@ -2334,7 +2340,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glEnable(GL_BLEND);
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, ownship_tex);
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
             
             float nominal_ownship_size_mm = cc1->m_display_size_mm / 44.0;
             nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
@@ -2364,6 +2369,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
             RenderSingleTexture(coords, uv, cc1->GetpVP(), x, y, icon_rad - PI/2);
 #else            
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
             glColor4ub(255, 255, 255, 255);
             
              glBegin(GL_QUADS);
@@ -2489,6 +2495,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
 #ifndef USE_ANDROID_GLES2
         glPopMatrix();
+        glDisableClientState(GL_VERTEX_ARRAY);
 #endif
         img_height = ownShipLength * scale_factor_y;
         
@@ -2504,7 +2511,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     }
 
-    glDisableClientState(GL_VERTEX_ARRAY);
     glDisable( GL_LINE_SMOOTH );
     glDisable( GL_POLYGON_SMOOTH );
     glDisable(GL_BLEND);
@@ -2626,6 +2632,8 @@ void glChartCanvas::DrawCloseMessage(wxString msg)
 
 void glChartCanvas::RotateToViewPort(const ViewPort &vp)
 {
+#ifndef USE_ANDROID_GLES2
+
     float angle = vp.rotation;
 
     if( fabs( angle ) > 0.0001 )
@@ -2637,6 +2645,7 @@ void glChartCanvas::RotateToViewPort(const ViewPort &vp)
         glRotatef( angle * 180. / PI, 0, 0, 1 );
         glTranslatef( -xt, -yt, 0 );
     }
+#endif
 }
 
 static std::list<double*> combine_work_data;
@@ -2889,7 +2898,10 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
         //    We are going to write "1" into the stencil buffer wherever the region is valid
         glStencilFunc( GL_ALWAYS, 1, 1 );
         glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-    } else              //  Use depth buffer for clipping
+    }
+#ifndef USE_ANDROID_GLES2
+
+    else              //  Use depth buffer for clipping
     {
         glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
         glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
@@ -2909,6 +2921,7 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
             //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
         glTranslatef( 0, 0, .5 );
     }
+#endif
 
     DrawRegion(vp, region);
 
@@ -2916,12 +2929,14 @@ void glChartCanvas::SetClipRegion(ViewPort &vp, const LLRegion &region)
         //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
         glStencilFunc( GL_EQUAL, 1, 1 );
         glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-    } else {
+    }
+#ifndef USE_ANDROID_GLES2
+    else {
         glDepthFunc( GL_GREATER );                          // Set the test value
         glDepthMask( GL_FALSE );                            // disable depth buffer
         glTranslatef( 0, 0, -.5 ); // reset translation
     }
-
+#endif
     glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
 }
 
@@ -3084,6 +3099,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     /* setup opengl parameters */
     glEnable( GL_TEXTURE_2D );
+#ifndef USE_ANDROID_GLES2
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -3095,6 +3111,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
         pTexFact->GetCenter(lat, lon);
         MultMatrixViewPort(vp, lat, lon);
     }
+#endif
 
     LLBBox box = region.GetBox();
     int numtiles;
@@ -3109,10 +3126,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
                 pTexFact->DeleteTexture( tile->rect );
         } else {
             bool texture = pTexFact->PrepareTexture( base_level, tile->rect, global_color_scheme );
-            if(!texture) { // failed to load, draw red
-                glDisable(GL_TEXTURE_2D);
-                glColor3f(1, 0, 0);
-            }
 
             float *coords;
             if(use_norm_vp)
@@ -3130,6 +3143,11 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 #ifdef USE_ANDROID_GLES2
             RenderTextures(coords, tile->m_texcoords, 4, cc1->GetpVP());
 #else            
+            if(!texture) { // failed to load, draw red
+                glDisable(GL_TEXTURE_2D);
+                glColor3f(1, 0, 0);
+            }
+
             glTexCoordPointer(2, GL_FLOAT, 2*sizeof(GLfloat), tile->m_texcoords);
             glVertexPointer(2, GL_FLOAT, 2*sizeof(GLfloat), coords);
             glDrawArrays(GL_QUADS, 0, tile->m_ncoords);
@@ -3144,11 +3162,13 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     glDisable(GL_TEXTURE_2D);
 
+#ifndef USE_ANDROID_GLES2
     if(use_norm_vp)
         glPopMatrix();
 
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 }
 
 void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_region )
@@ -3282,7 +3302,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
             break;
         }
 
+#ifndef USE_ANDROID_GLES2
         glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+#endif
 
         DrawRegion(vp, hiregion);
 
@@ -3290,6 +3312,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     }
     cc1->m_pQuilt->SetRenderedVP( vp );
 
+#if 0
     if(m_bfogit) {
         double scale_factor = vp.ref_scale/vp.chart_scale;
         float fog = ((scale_factor - g_overzoom_emphasis_base) * 255.) / 20.;
@@ -3469,7 +3492,9 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
             }
 #endif                
         }
+
     }
+#endif
 }
 
 void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_region )
@@ -3704,12 +3729,14 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
 /* render world chart, but only in this rectangle */
 void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, bool &world_view)
 {
-    // set gl color to water
     wxColour water = cc1->pWorldBackgroundChart->water;
-    glColor3ub(water.Red(), water.Green(), water.Blue());
 
     // clear background
     if(!world_view) {
+#ifndef USE_ANDROID_GLES2
+        // set gl color to water
+        glColor3ub(water.Red(), water.Green(), water.Blue());
+
         if(vp.m_projection_type == PROJECTION_ORTHOGRAPHIC) {
             // for this projection, if zoomed out far enough that the earth does
             // not fill the viewport we need to first clear the screen black and
@@ -3750,6 +3777,7 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
 
             world_view = true;
         }
+#endif
 
         if(!world_view) {
             int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
@@ -3895,7 +3923,8 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
         }
         
         // Texture is ready
-        
+#ifndef USE_ANDROID_GLES2
+
         glBindTexture( GL_TEXTURE_2D, m_tideTex);
         glEnable( GL_TEXTURE_2D );
         glEnable(GL_BLEND);
@@ -3933,7 +3962,7 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
                 }
             } // type 'T"
         }       //loop
-            
+#endif
             
         glDisable( GL_TEXTURE_2D );
         glDisable(GL_BLEND);
@@ -4026,13 +4055,15 @@ void glChartCanvas::Render()
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
     glViewport( 0, 0, (GLint) w, (GLint) h );
+#ifndef USE_ANDROID_GLES2
+
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
 
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
+#endif
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0xff );
@@ -4275,7 +4306,7 @@ void glChartCanvas::Render()
                     // using the old framebuffer
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
                     glEnable( g_texture_rectangle_format );
-                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+//                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                                 
                     //    Render the reuseable portion of the cached texture
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
@@ -4472,7 +4503,6 @@ void glChartCanvas::Render()
     if(useFBO) {
         // Render the cached texture as quad to screen
         glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         glEnable( g_texture_rectangle_format );
 
         float tx, ty, tx0, ty0, divx, divy;
@@ -4492,6 +4522,7 @@ void glChartCanvas::Render()
         ty =  (m_fbo_offsety + m_fbo_sheight)/divy;
 
 #ifndef USE_ANDROID_GLES2        
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         glBegin( GL_QUADS );
         glTexCoord2f( tx0, ty );  glVertex2f( 0,  0 );
         glTexCoord2f( tx,  ty );  glVertex2f( sx, 0 );
@@ -4686,13 +4717,15 @@ void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region
     GetClientSize( &w, &h );
     
     glViewport( 0, 0, (GLint) m_cache_tex_x, (GLint) m_cache_tex_y );
+#ifndef USE_ANDROID_GLES2
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
     
     glOrtho( 0, m_cache_tex_x, m_cache_tex_y, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    
+#endif
+
     wxRect rtex( 0, 0, m_cache_tex_x,  m_cache_tex_y );
     ViewPort cvp = cc1->GetVP().BuildExpandedVP( m_cache_tex_x,  m_cache_tex_y );
     bool worldview = false;
@@ -4700,18 +4733,21 @@ void glChartCanvas::RenderCanvasBackingChart( ocpnDC dc, OCPNRegion valid_region
     
     //  Reset matrices
     glViewport( 0, 0, (GLint) w, (GLint) h );
+#ifndef USE_ANDROID_GLES2
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
     
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    
+#endif
 }
 
 
 void glChartCanvas::FastPan(int dx, int dy)
 {
+#ifndef USE_ANDROID_GLES2
+
     int sx = GetSize().x;
     int sy = GetSize().y;
     
@@ -4862,6 +4898,7 @@ void glChartCanvas::FastPan(int dx, int dy)
     SwapBuffers();
     
     m_canvasregion.Union(tx0, ty0, sx, sy);
+#endif
 }
 
 #if 0
@@ -5065,13 +5102,14 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, fl
     GetClientSize( &w, &h );
     
     glViewport( 0, 0, (GLint) w, (GLint) h );
+#if 0
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
     
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    
+#endif
     
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
@@ -5091,7 +5129,7 @@ void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth, fl
     // Render the cached texture as quad to screen
     glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
     glEnable( g_texture_rectangle_format );
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+//    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
     
     
     float uv[8];
@@ -6308,13 +6346,14 @@ void glChartCanvas::RenderScene()
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
     glViewport( 0, 0, (GLint) w, (GLint) h );
+#if 0
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
 
     glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
+#endif
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0xff );
@@ -6444,7 +6483,7 @@ void glChartCanvas::RenderScene()
                     // using the old framebuffer
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
                     glEnable( g_texture_rectangle_format );
-                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+//                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                                 
                     //    Render the reuseable portion of the cached texture
                                 
@@ -6671,20 +6710,20 @@ void glChartCanvas::RenderScene()
                         }
                         
 #ifdef USE_ANDROID_GLES2
-                        glPushMatrix();
+//                        glPushMatrix();
                         
-                        glOrtho( m_fbo_offsetx, (GLint) sx, (GLint) sy, m_fbo_offsety, -1, 1 );
-                        glMatrixMode(GL_MODELVIEW);
-                        glLoadIdentity();
+//                        glOrtho( m_fbo_offsetx, (GLint) sx, (GLint) sy, m_fbo_offsety, -1, 1 );
+//                        glMatrixMode(GL_MODELVIEW);
+//                        glLoadIdentity();
                         
                         RenderCharts(gldc, screen_region);
                         RenderOverlayObjects(gldc, screen_region);
                         
-                        glPopMatrix();
+//                        glPopMatrix();
 
-                        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
-                        glMatrixMode(GL_MODELVIEW);
-                        glLoadIdentity();
+//                        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
+//                        glMatrixMode(GL_MODELVIEW);
+//                        glLoadIdentity();
 #else
                         glPushMatrix();
                         
@@ -6745,7 +6784,7 @@ void glChartCanvas::RenderScene()
         
         // Render the cached texture as quad to screen
         glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+//        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         glEnable( g_texture_rectangle_format );
 
         float tx, ty, tx0, ty0, divx, divy;

@@ -2436,10 +2436,14 @@ void s57chart::BuildLineVBO( void )
         (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
 
         // upload data to VBO
+#ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+#endif
         (s_glBufferData)(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
 
+#ifndef USE_ANDROID_GLES2
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+#endif
         (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
 
         //  Loop and populate all the objects
@@ -2501,15 +2505,18 @@ bool s57chart::RenderViewOnGLTextOnly( const wxGLContext &glc, const ViewPort& V
     if( !ps52plib ) return false;
     
     SetVPParms( VPoint );
-    
+
+#ifndef USE_ANDROID_GLES2
     glPushMatrix(); //    Adjust for rotation
+#endif
     glChartCanvas::RotateToViewPort(VPoint);
            
     glChartCanvas::DisableClipRegion();
     DoRenderOnGLText( glc, VPoint );
             
+#ifndef USE_ANDROID_GLES2
     glPopMatrix();
-    
+#endif
     
 #endif
     return true;
@@ -2614,7 +2621,9 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             }
 
 //            ps52plib->m_last_clip_rect = upd.GetRect();
+#ifndef USE_ANDROID_GLES2
             glPushMatrix(); //    Adjust for rotation
+#endif
             glChartCanvas::RotateToViewPort(VPoint);
             
             wxRect r = upd.GetRect();
@@ -2624,7 +2633,9 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             DoRenderOnGL( glc, cvp );
             //qDebug() << "End DoRender" << sw.GetTime();
             
+#ifndef USE_ANDROID_GLES2
             glPopMatrix();
+#endif
             glChartCanvas::DisableClipRegion();
         }
     }

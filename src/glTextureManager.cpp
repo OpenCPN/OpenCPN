@@ -257,7 +257,8 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
 {
     if( !s_glGetCompressedTexImage )
         return false;
-    
+#ifndef USE_ANDROID_GLES2
+
     GLuint comp_tex;
     if(!inplace) {
         glGenTextures(1, &comp_tex);
@@ -291,6 +292,9 @@ bool CompressUsingGPU(const unsigned char *data, int dim, int size,
         glDeleteTextures(1, &comp_tex);
     
     return true;
+#else
+    return false;
+#endif
 }
 
 static 

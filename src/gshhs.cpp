@@ -951,16 +951,19 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
                     if(allCells[clon][clat])
                         allCells[clon][clat]->ClearPolyV();
         }
+#ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);
-        
+
         // use a viewport that allows the vertexes to be reused over many frames
         if(glChartCanvas::HasNormalizedViewPort(vp)) {
             glPushMatrix();
             glChartCanvas::MultMatrixViewPort(vp);
             nvp = glChartCanvas::NormalizedViewPort(vp);
         }
+#endif
     }
 #endif
+
     for( clon = clonmin; clon < clonmax; clon++ ) {
         clonx = clon;
         while( clonx < 0 )
@@ -1005,11 +1008,13 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
     }
 
 #ifdef ocpnUSE_GL
+#ifndef USE_ANDROID_GLES2
     if(!pnt.GetDC()) { // opengl
         if(glChartCanvas::HasNormalizedViewPort(vp))
             glPopMatrix();
         glDisableClientState(GL_VERTEX_ARRAY);
     }
+#endif
 #endif
 }
 

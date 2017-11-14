@@ -754,7 +754,7 @@ bool glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     ptd->m_colorscheme = color_scheme;
     
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
+    //glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ); // why?
     
     if(!BuildTexture(ptd, base_level, rect))
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
