@@ -403,6 +403,9 @@ void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_
         GLint matloc = glGetUniformLocation(color_tri_shader_program,"TransformMatrix");
         glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)I); 
         
+        matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
+        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)cc1->GetpVP()->vp_transform); 
+        
         wxColor c = pen.GetColour();    
         float colorv[4];
         colorv[0] = c.Red() / float(256);
@@ -537,7 +540,6 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                 glLineWidth( pen_width );
         }
 
-        
 #ifdef USE_ANDROID_GLES2
         if( b_draw_thick )
             DrawGLThickLine( x1, y1, x2, y2, m_pen, b_hiqual );
