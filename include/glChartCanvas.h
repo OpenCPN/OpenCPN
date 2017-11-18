@@ -184,7 +184,7 @@ protected:
     
     wxGLContext       *m_pcontext;
 
-    ocpnDC            gldc;
+    ocpnDC            m_gldc;
     
     int max_texture_dimension;
 
