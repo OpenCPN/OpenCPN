@@ -31,6 +31,7 @@
 #include "LLRegion.h"
 #include "viewport.h"
 #include "TexFont.h"
+#include "ocpndc.h"
 
  #define FORMAT_BITS           GL_RGB
 
@@ -183,6 +184,8 @@ protected:
     
     wxGLContext       *m_pcontext;
 
+    ocpnDC            gldc;
+    
     int max_texture_dimension;
 
     bool m_bsetup;

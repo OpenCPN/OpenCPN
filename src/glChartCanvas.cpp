@@ -502,6 +502,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_currentTex = 0;
     m_inFade = false;
 
+    m_gldc.SetGLCanvas( this );
+    
     
 #ifdef __OCPN__ANDROID__    
     //  Create/connect a dynamic event handler slot for gesture and some timer events
@@ -4047,7 +4049,6 @@ void glChartCanvas::Render()
 
 
     ViewPort VPoint = cc1->VPoint;
-    ocpnDC gldc( *this );
 
     int w, h;
     GetClientSize( &w, &h );
@@ -4184,7 +4185,7 @@ void glChartCanvas::Render()
                     else if (dx < 0)
                         update_region.Union(wxRect( 0, 0, -dx, VPoint.pix_height ));
 
-                    RenderCharts(gldc, update_region);
+                    RenderCharts(m_gldc, update_region);
 
                     // using the old framebuffer
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
@@ -4261,7 +4262,7 @@ void glChartCanvas::Render()
                         m_fbo_swidth = sx;
                         m_fbo_sheight = sy;
                         wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
-                        RenderCharts(gldc, screen_region);
+                        RenderCharts(m_gldc, screen_region);
                     }
                     
 //                } 
@@ -4428,10 +4429,10 @@ void glChartCanvas::Render()
                         
                         
                      // Render the new content
-                     RenderCharts(gldc, update_region);
+                        RenderCharts(m_gldc, update_region);
                      qDebug() << "RenderTime3" << sw.GetTime();
                      
-                     RenderOverlayObjects(gldc, screen_region);
+                     RenderOverlayObjects(m_gldc, screen_region);
                     
                      qDebug() << "RenderTime4" << sw.GetTime();
                      
@@ -4454,8 +4455,8 @@ void glChartCanvas::Render()
                 m_fbo_sheight = sy;
             glClearColor(0.f, 0.f, 0.5f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-                RenderCharts(gldc, screen_region);
-                RenderOverlayObjects(gldc, screen_region);
+            RenderCharts(m_gldc, screen_region);
+            RenderOverlayObjects(m_gldc, screen_region);
 //                         wxRect r(0,0,300, 400);
 //                         wxColour ca(200,0,0);
 //                         RenderColorRect(r, ca);
@@ -4559,7 +4560,7 @@ void glChartCanvas::Render()
             cc1->m_pQuilt->SetRenderedVP( VPoint );
         
     } else          // useFBO
-        RenderCharts(gldc, screen_region);
+        RenderCharts(m_gldc, screen_region);
 
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
 #ifdef USE_S57        
@@ -4592,7 +4593,7 @@ void glChartCanvas::Render()
         
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
-    DrawFloatingOverlayObjects( gldc );
+    DrawFloatingOverlayObjects( m_gldc );
 
 #ifndef USE_ANDROID_GLES2    
     // from this point on don't use perspective
@@ -4607,13 +4608,13 @@ void glChartCanvas::Render()
 #endif
 
     DrawEmboss(cc1->EmbossDepthScale() );
-    DrawEmboss(cc1->EmbossOverzoomIndicator( gldc ) );
+    DrawEmboss(cc1->EmbossOverzoomIndicator( m_gldc ) );
 
     if( cc1->m_pRouteRolloverWin )
-        cc1->m_pRouteRolloverWin->Draw(gldc);
+        cc1->m_pRouteRolloverWin->Draw(m_gldc);
 
     if( cc1->m_pAISRolloverWin )
-        cc1->m_pAISRolloverWin->Draw(gldc);
+        cc1->m_pAISRolloverWin->Draw(m_gldc);
 
     //  On some platforms, the opengl context window is always on top of any standard DC windows,
     //  so we need to draw the Chart Info Window and the Thumbnail as overlayed bmps.
@@ -4647,7 +4648,7 @@ void glChartCanvas::Render()
             }
             dc.SelectObject(wxNullBitmap);
             
-            gldc.DrawBitmap( bmp, x, y, false);
+            m_gldc.DrawBitmap( bmp, x, y, false);
         }
     }
 
@@ -4655,24 +4656,24 @@ void glChartCanvas::Render()
         int thumbx, thumby;
         pthumbwin->GetPosition( &thumbx, &thumby );
         if( pthumbwin->GetBitmap().IsOk())
-            gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
+            m_gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
     
     if(g_MainToolbar && g_MainToolbar->m_pRecoverwin ){
         int recoverx, recovery;
         g_MainToolbar->m_pRecoverwin->GetPosition( &recoverx, &recovery );
         if( g_MainToolbar->m_pRecoverwin->GetBitmap().IsOk())
-            gldc.DrawBitmap( g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
+            m_gldc.DrawBitmap( g_MainToolbar->m_pRecoverwin->GetBitmap(), recoverx, recovery, true);
     }
     
     
 #endif
     // render the chart bar
     if(g_bShowChartBar)
-        DrawChartBar(gldc);
+        DrawChartBar(m_gldc);
 
     if (g_Compass)
-        g_Compass->Paint(gldc);
+        g_Compass->Paint(m_gldc);
         
     //quiting?
     if( g_bquiting )

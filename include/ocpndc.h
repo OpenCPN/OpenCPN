@@ -70,6 +70,7 @@ public:
 
      ~ocpnDC();
 
+     void SetGLCanvas(wxGLCanvas *canvas){ glcanvas = canvas; }
      void SetBackground( const wxBrush &brush );
      void SetPen( const wxPen &pen);
      void SetBrush( const wxBrush &brush);
