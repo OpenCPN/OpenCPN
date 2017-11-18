@@ -3084,61 +3084,31 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         
         // Integrate all of the rebuilt hyperlink controls
         bSizerLinks->Layout();
-        
+
+        // Fill the icon selector combo box
         m_bcomboBoxIcon->Clear();
         //      Iterate on the Icon Descriptions, filling in the combo control
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
         
-        double factor = (0.7 * (double)GetCharHeight()) / (double)16.0;   // Because I know what the base icon size is....
-        factor = wxMin(3.0, factor);            // not greater than 3
-        factor = wxMax(1.0, factor);            // nor less than 1
-        
-        wxImageList *icon_list = NULL;
-        
-        //  A little optimization for "normal" situations, requiring no scaling
-        if(factor < 2.){
-            factor = 1.;
-            
-            if( fillCombo ){
-                for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
-                    wxString *ps = pWayPointMan->GetIconDescription( i );
-                    wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i);
+        if( fillCombo ){
+            for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
+                wxString *ps = pWayPointMan->GetIconDescription( i );
+                wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i);
                     
-                    m_bcomboBoxIcon->Append( *ps, bmp );
-                }
-            }
-                
-        }
-        else{
-            icon_list = pWayPointMan->Getpmarkicon_image_list( factor );
-
-            if( fillCombo  && icon_list){
-                for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
-                    wxString *ps = pWayPointMan->GetIconDescription( i );
-                    wxBitmap bmp = icon_list->GetBitmap( i );
-                
-                    m_bcomboBoxIcon->Append( *ps, bmp );
-                }
+                m_bcomboBoxIcon->Append( *ps, bmp );
             }
         }
-        
+                
         // find the correct item in the combo box
         int iconToSelect = -1;
         for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
-            if( *pWayPointMan->GetIconKey( i ) == m_pRoutePoint->GetIconName() )
+            if( *pWayPointMan->GetIconKey( i ) == m_pRoutePoint->GetIconName() ){
                 iconToSelect = i;
+                m_bcomboBoxIcon->Select( iconToSelect );
+                break;
+            }
         }
-
-        //  not found, so add  it to the list, with a generic bitmap and using the name as description
-        // n.b.  This should never happen...
-         if( icon_list && -1 == iconToSelect){
-             m_bcomboBoxIcon->Append( m_pRoutePoint->GetIconName(), icon_list->GetBitmap( 0 ) );
-             iconToSelect = m_bcomboBoxIcon->GetCount() - 1;
-         }
         
-        
-        m_bcomboBoxIcon->Select( iconToSelect );
-        icon_list = NULL;
     }
 
     #ifdef __OCPN__ANDROID__
