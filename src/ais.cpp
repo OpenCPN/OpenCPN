@@ -1748,7 +1748,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         }
         
         wxColour c = GetGlobalColor( _T ( "CHMGD" ) );
-        dc.SetPen( wxPen( c, 2 ) );
+        dc.SetPen( wxPen( c,   2 * nominal_line_width_pix ) );
         
 #ifdef ocpnUSE_GL
 #ifndef USE_ANDROID_GLES2
