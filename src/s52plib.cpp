@@ -47,7 +47,6 @@
 #include "TexFont.h"
 #include "ocpn_plugin.h"
 #include "cpl_csv.h"
-#include "FontMgr.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>
@@ -2285,7 +2284,7 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             if( bdraw ) {
 #ifndef USE_ANDROID_GLES2
-                wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
+                wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
                 if( wcolor == *wxBLACK )
                     glColor3ub( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
                 else
@@ -2434,7 +2433,6 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
     #endif
 
 }
-
 
 
 //    Return true if test_rect overlaps any rect in the current text rectangle list, except itself
@@ -3438,6 +3436,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
     return true;
 }
+
+
 
 // SYmbol
 int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
@@ -5811,6 +5811,8 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
 #ifdef USE_ANDROID_GLES2
 
+    glDisable( GL_SCISSOR_TEST );
+
     char *str = (char*) rules->INSTstr;
     //    extract the parameters from the string
     //    And creating a unique string hash as we go
@@ -5880,6 +5882,30 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     //  radius scaled to display
     float rad =  radius * canvas_pix_per_mm ;
+    float arcw = arc_width * canvas_pix_per_mm;
+    float sec_rad = sector_radius * canvas_pix_per_mm;
+    
+    // Adjust size
+    //  Some plain lights have no SCAMIN attribute.
+    //  This causes display congestion at small viewing scales, since the objects are rendered at fixed pixel dimensions from the LUP rules.
+    //  As a correction, the idea is to not allow the rendered symbol to be larger than "X" meters on the chart.
+    //   and scale it down when rendered if necessary.
+    
+    float xscale = 1.0;
+    if(1/*rzRules->obj->Scamin > 10000000*/){                        // huge (unset) SCAMIN)
+        float radius_meters_target = 200;
+        
+        float radius_meters = ( radius * canvas_pix_per_mm ) / vp->view_scale_ppm;
+        
+        xscale = radius_meters_target / radius_meters;
+        xscale = wxMin(xscale, 1.0);
+        xscale = wxMax(.4, xscale);
+        
+        rad *= xscale;
+        arcw *= xscale;
+        arcw =wxMin(arcw, rad/10);
+        sec_rad *= xscale;
+    }
 
     //      Enable anti-aliased lines, at best quality
     glEnable( GL_BLEND );
@@ -5950,7 +5976,7 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     //  Ring width
     GLint ringWidthloc = glGetUniformLocation(S52ring_shader_program,"ring_width");
-    glUniform1f(ringWidthloc, arc_width * canvas_pix_per_mm);
+    glUniform1f(ringWidthloc, arcw);
 
     //  Visible sectors, rotated to vp orientation
     float sr1 = sectr1 + (vp->rotation * 180 / PI);
@@ -6001,7 +6027,7 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     //    Draw the sector legs directly on the target DC
     if( sector_radius > 0 ) {
-        int leg_len = (int) ( sector_radius * canvas_pix_per_mm );
+        int leg_len = (int) ( sec_rad );
 
         wxDash dash1[2];
         dash1[0] = (int) ( 3.6 * canvas_pix_per_mm / 3 ); //8// Long dash  <---------+
@@ -6038,6 +6064,8 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     symbox.Set( latmin, lonmin, latmax, lonmax );
     rzRules->obj->BBObj.Expand( symbox );
 
+    glEnable( GL_SCISSOR_TEST );
+    
 #endif
 
     return 1;
@@ -10615,7 +10643,7 @@ bool s52plib::GetPointPixSingle( ObjRazRules *rzRules, float north, float east, 
             r->y = roundint((vp->pix_height/2) - ((north - rzRules->sm_transform_parms->northing_vp_center) * vp->view_scale_ppm));
         } else {
               double lat, lon;
-              fromSM(east - rzRules->sm_transform_parms->easting_vp_center,
+              fromSM_Plugin(east - rzRules->sm_transform_parms->easting_vp_center,
                      north - rzRules->sm_transform_parms->northing_vp_center,
                      vp->clat, vp->clon, &lat, &lon);
 
@@ -12223,18 +12251,19 @@ bool loadS52Shaders()
 
 void PrepareS52ShaderUniforms(ViewPort *vp)
 {
-    mat4x4 I;
-    mat4x4_identity(I);
-
+    mat4x4 m;
+    float    vp_transform[16];
+    mat4x4_identity(m);
+    mat4x4_scale_aniso((float (*)[4])vp_transform, m, 2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height, 1.0);
     //Rotate
-    mat4x4 Q,R;
-    mat4x4_dup(R, (float (*)[4])vp->vp_transform);
-
-    mat4x4_translate_in_place(R, vp->pix_width / 2.0, vp->pix_height / 2.0, 0);
-    mat4x4_rotate_Z(Q, R, vp->rotation);
+    mat4x4 Q;
+    mat4x4_rotate_Z(Q, (float (*)[4])vp_transform, vp->rotation);
     mat4x4_translate_in_place(Q, -vp->pix_width / 2.0, -vp->pix_height / 2.0, 0);
     
 
+    mat4x4 I;
+    mat4x4_identity(I);
+    
     glUseProgram(S52color_tri_shader_program);
     GLint matloc = glGetUniformLocation(S52color_tri_shader_program,"MVMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q);
