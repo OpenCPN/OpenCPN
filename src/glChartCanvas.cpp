@@ -1605,9 +1605,8 @@ static void GetLatLonCurveDist(const ViewPort &vp, float &lat_dist, float &lon_d
     }
 }
 
-void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
+void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
 {
-#ifndef USE_ANDROID_GLES2
 
     if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_PLUGIN &&
         !ChartData->IsChartAvailable( dbIndex ) )
@@ -1642,6 +1641,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     else
         color = GetGlobalColor( _T ( "UINFR" ) );
 
+#ifndef USE_ANDROID_GLES2    
 //    glEnable( GL_BLEND );
     glEnable( GL_LINE_SMOOTH );
 
@@ -1728,7 +1728,195 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
     glDisable( GL_LINE_SMOOTH );
 //    glDisable( GL_BLEND );
+    
+#else
+#if 0    
+    double nominal_line_width_pix = wxMax(2.0, floor(cc1->GetPixPerMM() / 3));             
+    
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    else
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    
+    float lat_dist, lon_dist;
+    GetLatLonCurveDist(vp, lat_dist, lon_dist);
+
+    std::vector<int> points_vector;
+    
+    //        Are there any aux ply entries?
+    int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
+    int j=0;
+    do {
+        if(nAuxPlyEntries)
+            nPly = ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, 0, 0 );
+        else
+            nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
+        
+        bool begin = false, sml_valid = false;
+        double sml[2];
+        float lastplylat = 0.0;
+        float lastplylon = 0.0;
+        for( int i = 0; i < nPly+1; i++ ) {
+            if(nAuxPlyEntries)
+                ChartData->GetDBAuxPlyPoint( dbIndex, i%nPly, j, &plylat, &plylon );
+            else
+                ChartData->GetDBPlyPoint( dbIndex, i%nPly, &plylat, &plylon );
+            
+            plylon += lon_bias;
+            
+            if(lastplylon - plylon > 180)
+                lastplylon -= 360;
+            else if(lastplylon - plylon < -180)
+                lastplylon += 360;
+            
+            int splits;
+            if(i==0)
+                splits = 1;
+            else {
+                int lat_splits = floor(fabs(plylat-lastplylat) / lat_dist);
+                int lon_splits = floor(fabs(plylon-lastplylon) / lon_dist);
+                splits = wxMax(lat_splits, lon_splits) + 1;
+            }
+            
+            double smj[2];
+            if(splits != 1) {
+                // must perform border interpolation in mercator space as this is what the charts use
+                toSM(plylat, plylon, 0, 0, smj+0, smj+1);
+                if(!sml_valid)
+                    toSM(lastplylat, lastplylon, 0, 0, sml+0, sml+1);
+            }
+            
+            for(double c=0; c<splits; c++) {
+                double lat, lon;
+                if(c == splits - 1)
+                    lat = plylat, lon = plylon;
+                else {
+                    double d = (double)(c+1) / splits;
+                    fromSM(d*smj[0] + (1-d)*sml[0], d*smj[1] + (1-d)*sml[1], 0, 0, &lat, &lon);
+                }
+                
+                wxPoint2DDouble s;
+                cc1->GetDoubleCanvasPointPix( lat, lon, &s );
+                
+                if(!wxIsNaN(s.m_x)) {
+                    if(!begin) {
+                        begin = true;
+                    }
+                    points_vector.push_back(s.m_x);
+                    points_vector.push_back(s.m_y);
+                } else if(begin) {
+                    begin = false;
+                }
+            }
+            if((sml_valid = splits != 1))
+                memcpy(sml, smj, sizeof smj);
+            lastplylat = plylat, lastplylon = plylon;
+        }
+        
+        
+    } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
+
+    std::vector <int>::iterator it = points_vector.begin();
+    dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+    
+    
 #endif
+    
+    double nominal_line_width_pix = wxMax(2.0, floor(cc1->GetPixPerMM() / 4));             
+    
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    else
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
+    
+    
+    std::vector<int> points_vector;
+    
+    float plylat1, plylon1;
+    int pixx, pixy, pixx1, pixy1;
+    
+    //        Are there any aux ply entries?
+    int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex );
+    if( 0 == nAuxPlyEntries )                 // There are no aux Ply Point entries
+    {
+        wxPoint r, r1;
+        
+        ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
+        
+        int nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
+        
+        for( int i = 0; i < nPly - 1; i++ ) {
+            ChartData->GetDBPlyPoint( dbIndex, i + 1, &plylat1, &plylon1 );
+            plylon1 += lon_bias;
+            
+            cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+            pixx1 = r1.x;
+            pixy1 = r1.y;
+            
+            points_vector.push_back(pixx1);
+            points_vector.push_back(pixy1);
+        }
+        
+        ChartData->GetDBPlyPoint( dbIndex, 0, &plylat1, &plylon1 );
+        plylon1 += lon_bias;
+        
+        cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+        pixx1 = r1.x;
+        pixy1 = r1.y;
+        
+        points_vector.push_back(pixx1);
+        points_vector.push_back(pixy1);
+        
+    }
+    
+    else                              // Use Aux PlyPoints
+    {
+        wxPoint r, r1;
+        
+        int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex );
+        for( int j = 0; j < nAuxPlyEntries; j++ ) {
+            
+            int nAuxPly = ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, &plylat, &plylon );
+            
+            for( int i = 0; i < nAuxPly - 1; i++ ) {
+                ChartData->GetDBAuxPlyPoint( dbIndex, i + 1, j, &plylat1, &plylon1 );
+                
+                cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+                pixx1 = r1.x;
+                pixy1 = r1.y;
+                
+                points_vector.push_back(pixx1);
+                points_vector.push_back(pixy1);
+            }
+            
+            ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, &plylat1, &plylon1 );
+            cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+            pixx1 = r1.x;
+            pixy1 = r1.y;
+
+            points_vector.push_back(pixx1);
+            points_vector.push_back(pixy1);
+            
+        }
+    }
+    
+    if(points_vector.size()){
+        qDebug() << "Point count" << points_vector.size() / 2;
+        std::vector <int>::iterator it = points_vector.begin();
+        dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+    }
+    
+    
+#endif    
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
@@ -2183,7 +2371,34 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
     {
 
-#if 0
+#ifdef USE_ANDROID_GLES2
+        double nominal_line_width_pix = wxMax(1.0, floor(cc1->GetPixPerMM() / 2));             //0.5 mm nominal, but not less than 1 pixel
+
+        wxPen ppPen1( GetGlobalColor( _T ( "YELO1" ) ), nominal_line_width_pix , wxPENSTYLE_SOLID );
+        dc.SetPen( ppPen1 );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
+     
+        float scale_factor = 1.0;
+        // Scale the generic icon to ChartScaleFactor, slightly softened....
+        if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 ))
+            scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            
+        float nominal_ownship_size_mm = cc1->m_display_size_mm / 44.0;
+        nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
+        nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
+        
+        float nominal_ownship_size_pixels = wxMax(20.0, cc1->GetPixPerMM() * nominal_ownship_size_mm);             // nominal length, but not less than 20 pixel
+        float v = (nominal_ownship_size_pixels * scale_factor) / 3;
+        
+        // start with cross
+        dc.DrawLine( (-v * 1.2) + lShipMidPoint.x, lShipMidPoint.y, (v * 1.2) + lShipMidPoint.x, lShipMidPoint.y);
+        dc.DrawLine( lShipMidPoint.x, (-v * 1.2) + lShipMidPoint.y, lShipMidPoint.x, (v * 1.2) + lShipMidPoint.y);
+     
+        //  Two circles
+        dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, v );
+        dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, 0.6 * v );
+        
+#else
         glEnableClientState(GL_VERTEX_ARRAY);
         float scale =  g_ChartScaleFactorExp;
         
@@ -3183,8 +3398,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         
     //  Check the first, smallest scale chart
     if(chart) {
-//            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-//            chart = NULL;
+            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+            chart = NULL;
     }
 
     LLRegion region = vp.GetLLRegion(rect_region);
@@ -3198,12 +3413,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         
         //  However, it is safer do this test on all charts, letting the factor g_ChartNotRenderScaleFactor ultimately determine whether to render
 //        if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
-        {
-                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                    chart = cc1->m_pQuilt->GetNextChart();
-                    continue;
-                }
-        }
+         {
+                 if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+                     chart = cc1->m_pQuilt->GetNextChart();
+                     continue;
+                 }
+         }
 
         QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
         if( pqp->b_Valid ) {
@@ -3620,16 +3835,32 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         chart_region = vp.b_quilt ? cc1->m_pQuilt->GetFullQuiltRegion() : Current_Ch->GetValidRegion();
 
     bool world_view = false;
-    for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-        wxRect rect = upd.GetRect();
-        LLRegion background_region = vp.GetLLRegion(rect);
-        //    Remove the valid chart area to find the region NOT covered by the charts
-        background_region.Subtract(chart_region);
-
-        if(!background_region.Empty()) {
-            ViewPort cvp = ClippedViewport(vp, background_region);
-            RenderWorldChart(dc, cvp, rect, world_view);
+    
+    // Optimization
+    //  Check the quilt
+    //  If no charts are to be rendered, we may simply draw the world chart on the entire target region.
+    bool b_render = true;
+    if(vp.b_quilt){
+        ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
+    
+    //  Check the first, smallest scale chart
+        if(chart) {
+            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+                b_render = false;
         }
+    }
+    
+    for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
+            wxRect rect = upd.GetRect();
+            LLRegion background_region = vp.GetLLRegion(rect);
+        //    Remove the valid chart area to find the region NOT covered by the charts
+            if(b_render)
+                background_region.Subtract(chart_region);
+
+            if(!background_region.Empty()) {
+                ViewPort cvp = ClippedViewport(vp, background_region);
+                RenderWorldChart(dc, cvp, rect, world_view);
+            }
     }
 
     if(vp.b_quilt)
@@ -3645,11 +3876,6 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         } 
     }
         
-//      for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
-//          LLRegion region = vp.GetLLRegion(upd.GetRect()); // could cache this from above
-//          ViewPort cvp = ClippedViewport(vp, region);
-//          DrawGroundedOverlayObjects(dc, cvp);
-//      }
 }
 
 void glChartCanvas::RenderOverlayObjects(ocpnDC &dc, const OCPNRegion &rect_region)
@@ -4160,6 +4386,10 @@ void glChartCanvas::Render()
                 accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
             }
 
+            //  On very small scale, make sure that world chart renders fully
+            if(VPoint.view_scale_ppm < 0.003)
+                accelerated_pan = false;
+            
             // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2            
             if(accelerated_pan) {
@@ -6449,7 +6679,7 @@ void glChartCanvas::RenderScene()
                 //qDebug() << "accpan result: " << accelerated_pan << dx << dy << b_whole_pixel;
             }
 
-            //accelerated_pan = false;
+            accelerated_pan = false;
             
             // do we allow accelerated panning?  can we perform it here?
             if(accelerated_pan && !g_GLOptions.m_bUseCanvasPanning) {

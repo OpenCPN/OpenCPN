@@ -130,7 +130,7 @@ public:
     void DrawStaticRoutesTracksAndWaypoints( ViewPort &vp );
     
     void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
-    void RenderChartOutline( int dbIndex, ViewPort &VP );
+    void RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &VP );
 
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
