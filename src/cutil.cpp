@@ -462,6 +462,40 @@ void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayIn
     }
 }
 
+void DouglasPeuckerM(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
+{
+    // Find the point with the maximum distance
+    double dmax = 0;
+    int index = 0;
+    double lmax = 0;
+    
+    vector2D va(PointList[2*fp] - PointList[2*lp],
+                PointList[2*fp+1] - PointList[2*lp+1]);
+    
+    double da = va.x*va.x + va.y*va.y;
+    for(int i = fp+1 ; i < lp ; ++i) {
+        vector2D vb(PointList[2*i] - PointList[2*fp],
+                    PointList[2*i + 1] - PointList[2*fp+1]);
+        
+        vector2D vn;
+        double l = vGetLengthOfNormal( &vb, &va, &vn );
+        if(l > lmax){
+            index = i;
+            lmax = l;
+        }
+    }
+    // If max distance is greater than epsilon, recursively simplify
+    if(lmax > epsilon){
+        keep->Add(index);
+        
+        // Recursive call
+        DouglasPeuckerM(PointList, fp, index, epsilon, keep);
+        DouglasPeuckerM(PointList, index, lp, epsilon, keep);
+        
+    }
+}
+
+
 //      CRC calculation for a byte buffer
 
 static unsigned int crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
