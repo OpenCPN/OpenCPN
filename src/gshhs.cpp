@@ -555,6 +555,7 @@ GshhsPolyReader::GshhsPolyReader( int quality )
         }
     }
     currentQuality = -1;
+    polyHeader.version = -1;
     InitializeLoadQuality( quality );
 }
 
