@@ -5811,7 +5811,7 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
 #ifdef USE_ANDROID_GLES2
 
-    glDisable( GL_SCISSOR_TEST );
+//    glDisable( GL_SCISSOR_TEST );
 
     char *str = (char*) rules->INSTstr;
     //    extract the parameters from the string
@@ -6024,7 +6024,6 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     GLint matlocf = glGetUniformLocation(S52ring_shader_program,"TransformMatrix");
     glUniformMatrix4fv( matlocf, 1, GL_FALSE, (const GLfloat*)IM);
 
-
     //    Draw the sector legs directly on the target DC
     if( sector_radius > 0 ) {
         int leg_len = (int) ( sec_rad );
@@ -6050,7 +6049,6 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         y = point.y + (int) ( leg_len * sinf( a ) );
         DrawDashLine(thispen, point.x, point.y, x, y, vp);
     }
-
     glDisable( GL_BLEND );
 
     //  Update the object Bounding box,
@@ -6064,7 +6062,7 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     symbox.Set( latmin, lonmin, latmax, lonmax );
     rzRules->obj->BBObj.Expand( symbox );
 
-    glEnable( GL_SCISSOR_TEST );
+//    glEnable( GL_SCISSOR_TEST );
     
 #endif
 
