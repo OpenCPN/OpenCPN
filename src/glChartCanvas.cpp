@@ -1730,103 +1730,6 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
 //    glDisable( GL_BLEND );
     
 #else
-#if 0    
-    double nominal_line_width_pix = wxMax(2.0, floor(cc1->GetPixPerMM() / 3));             
-    
-    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
-    
-    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
-    
-    else
-        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
-    
-    
-    float lat_dist, lon_dist;
-    GetLatLonCurveDist(vp, lat_dist, lon_dist);
-
-    std::vector<int> points_vector;
-    
-    //        Are there any aux ply entries?
-    int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
-    int j=0;
-    do {
-        if(nAuxPlyEntries)
-            nPly = ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, 0, 0 );
-        else
-            nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
-        
-        bool begin = false, sml_valid = false;
-        double sml[2];
-        float lastplylat = 0.0;
-        float lastplylon = 0.0;
-        for( int i = 0; i < nPly+1; i++ ) {
-            if(nAuxPlyEntries)
-                ChartData->GetDBAuxPlyPoint( dbIndex, i%nPly, j, &plylat, &plylon );
-            else
-                ChartData->GetDBPlyPoint( dbIndex, i%nPly, &plylat, &plylon );
-            
-            plylon += lon_bias;
-            
-            if(lastplylon - plylon > 180)
-                lastplylon -= 360;
-            else if(lastplylon - plylon < -180)
-                lastplylon += 360;
-            
-            int splits;
-            if(i==0)
-                splits = 1;
-            else {
-                int lat_splits = floor(fabs(plylat-lastplylat) / lat_dist);
-                int lon_splits = floor(fabs(plylon-lastplylon) / lon_dist);
-                splits = wxMax(lat_splits, lon_splits) + 1;
-            }
-            
-            double smj[2];
-            if(splits != 1) {
-                // must perform border interpolation in mercator space as this is what the charts use
-                toSM(plylat, plylon, 0, 0, smj+0, smj+1);
-                if(!sml_valid)
-                    toSM(lastplylat, lastplylon, 0, 0, sml+0, sml+1);
-            }
-            
-            for(double c=0; c<splits; c++) {
-                double lat, lon;
-                if(c == splits - 1)
-                    lat = plylat, lon = plylon;
-                else {
-                    double d = (double)(c+1) / splits;
-                    fromSM(d*smj[0] + (1-d)*sml[0], d*smj[1] + (1-d)*sml[1], 0, 0, &lat, &lon);
-                }
-                
-                wxPoint2DDouble s;
-                cc1->GetDoubleCanvasPointPix( lat, lon, &s );
-                
-                if(!wxIsNaN(s.m_x)) {
-                    if(!begin) {
-                        begin = true;
-                    }
-                    points_vector.push_back(s.m_x);
-                    points_vector.push_back(s.m_y);
-                } else if(begin) {
-                    begin = false;
-                }
-            }
-            if((sml_valid = splits != 1))
-                memcpy(sml, smj, sizeof smj);
-            lastplylat = plylat, lastplylon = plylon;
-        }
-        
-        
-    } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
-
-    std::vector <int>::iterator it = points_vector.begin();
-    dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
-    
-    
-#endif
-    
     double nominal_line_width_pix = wxMax(2.0, floor(cc1->GetPixPerMM() / 4));             
     
     if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
@@ -1839,7 +1742,6 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), nominal_line_width_pix, wxPENSTYLE_SOLID ) );
     
     
-    std::vector<int> points_vector;
     
     float plylat1, plylon1;
     int pixx, pixy, pixx1, pixy1;
@@ -1849,14 +1751,17 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
     if( 0 == nAuxPlyEntries )                 // There are no aux Ply Point entries
     {
         wxPoint r, r1;
+        std::vector<int> points_vector;
+
+        std::vector<float> vec = ChartData->GetReducedPlyPoints(dbIndex);
+        int nPly = vec.size()/2;
         
-        ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
+        if(nPly == 0)
+            return;
         
-        int nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
-        
-        for( int i = 0; i < nPly - 1; i++ ) {
-            ChartData->GetDBPlyPoint( dbIndex, i + 1, &plylat1, &plylon1 );
-            plylon1 += lon_bias;
+        for( int i = 0; i < nPly; i++ ) {
+            plylon1 = vec[i *2];
+            plylat1 = vec[i*2 + 1];
             
             cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
             pixx1 = r1.x;
@@ -1869,27 +1774,36 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
         ChartData->GetDBPlyPoint( dbIndex, 0, &plylat1, &plylon1 );
         plylon1 += lon_bias;
         
-        cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+        cc1->GetCanvasPointPix( vec[1], vec[0], &r1 );
         pixx1 = r1.x;
         pixy1 = r1.y;
         
         points_vector.push_back(pixx1);
         points_vector.push_back(pixy1);
-        
+      
+        if(points_vector.size()){
+            std::vector <int>::iterator it = points_vector.begin();
+            dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+        }
     }
     
     else                              // Use Aux PlyPoints
     {
         wxPoint r, r1;
+        std::vector<int> points_vector;
         
-        int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex );
         for( int j = 0; j < nAuxPlyEntries; j++ ) {
             
-            int nAuxPly = ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, &plylat, &plylon );
+            std::vector<float> vec = ChartData->GetReducedAuxPlyPoints(dbIndex, j);
+            int nAuxPly = vec.size()/2;
             
-            for( int i = 0; i < nAuxPly - 1; i++ ) {
-                ChartData->GetDBAuxPlyPoint( dbIndex, i + 1, j, &plylat1, &plylon1 );
-                
+            if(nAuxPly == 0)
+                continue;
+            
+            for( int i = 0; i < nAuxPly; i++ ) {
+                plylon1 = vec[i *2];
+                plylat1 = vec[i*2 + 1];
+            
                 cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
                 pixx1 = r1.x;
                 pixy1 = r1.y;
@@ -1898,23 +1812,19 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
                 points_vector.push_back(pixy1);
             }
             
-            ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, &plylat1, &plylon1 );
-            cc1->GetCanvasPointPix( plylat1, plylon1, &r1 );
+            cc1->GetCanvasPointPix( vec[1], vec[0], &r1 );
             pixx1 = r1.x;
             pixy1 = r1.y;
 
             points_vector.push_back(pixx1);
             points_vector.push_back(pixy1);
             
+            if(points_vector.size()){
+                std::vector <int>::iterator it = points_vector.begin();
+                dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
+            }
         }
     }
-    
-    if(points_vector.size()){
-        qDebug() << "Point count" << points_vector.size() / 2;
-        std::vector <int>::iterator it = points_vector.begin();
-        dc.DrawLines( points_vector.size() / 2, (wxPoint *)&(*it), 0, 0, true);
-    }
-    
     
 #endif    
 }

@@ -7351,13 +7351,11 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 {
 #ifdef ocpnUSE_GL
-#ifndef USE_ANDROID_GLES2               // ocpnDC is fast enough on GLES2
     if(g_bopengl) {
         /* opengl version specially optimized */
-        m_glcc->RenderChartOutline(dbIndex, vp);
+        m_glcc->RenderChartOutline(dc, dbIndex, vp);
         return;
     }
-#endif    
 #endif
 
     if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_PLUGIN ){
