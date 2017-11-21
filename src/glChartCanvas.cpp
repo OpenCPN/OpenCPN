@@ -4061,11 +4061,11 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
         }
         
         // Texture is ready
-#ifndef USE_ANDROID_GLES2
-
         glBindTexture( GL_TEXTURE_2D, m_tideTex);
         glEnable( GL_TEXTURE_2D );
         glEnable(GL_BLEND);
+        
+#ifndef USE_ANDROID_GLES2
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
         
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
@@ -4100,6 +4100,44 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
                 }
             } // type 'T"
         }       //loop
+#else
+        for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
+            const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+    
+            char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
+            if( ( type == 't' ) || ( type == 'T' ) )  // only Tides
+            {
+                double lon = pIDX->IDX_lon;
+                double lat = pIDX->IDX_lat;
+                
+                if( BBox.Contains( lat,  lon ) ) {
+                    wxPoint r;
+                    cc1->GetCanvasPointPix( lat, lon, &r );
+                    
+                    float xp = r.x;
+                    float yp = r.y;
+                    
+                    double scale = 1.0;
+                    scale *= getAndroidDisplayDensity();
+                    double width2 = scale * m_tideTexWidth/2;
+                    double height2 = scale * m_tideTexHeight/2;
+                    
+                    float coords[8];
+                    float uv[8];
+                    
+                    //normal uv
+                    uv[0] = 0; uv[1] = 0; uv[2] = 0; uv[3] = 1;
+                    uv[4] = 1; uv[5] = 1; uv[6] = 1; uv[7] = 0;
+                    
+                    coords[0] = xp - width2; coords[1] = yp - height2; coords[2] = xp - width2; coords[3] = yp + height2;
+                    coords[4] = xp + width2; coords[5] = yp + height2; coords[6] = xp + width2; coords[7] = yp - height2;
+                    
+                    RenderTextures(coords, uv, 4, cc1->GetpVP());
+                }
+            } // type 'T"
+        }       //loop
+
+
 #endif
             
         glDisable( GL_TEXTURE_2D );
@@ -4370,42 +4408,15 @@ void glChartCanvas::Render()
                                                 g_texture_rectangle_format,
                                                 m_cache_tex[m_cache_page], 0 );
                     
-#if 0
-                    if(g_GLOptions.m_bUseCanvasPanning) {
-                        bool b_reset = false;
-                        if( (m_fbo_offsetx < 50) ||
-                            ((m_cache_tex_x - (m_fbo_offsetx + sx)) < 50) ||
-                            (m_fbo_offsety < 50) ||
-                            ((m_cache_tex_y - (m_fbo_offsety + sy)) < 50))
-                            b_reset = true;
-    
-                        if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
-                            b_reset = true;
-                        if(!m_cache_vp.IsValid())
-                            b_reset = true;
-                        
- #endif                        
-
-//                         glPushMatrix();
-//                         
-//                         glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-// 
-//                         RenderCharts(gldc, screen_region);
-//                         
-//                         glPopMatrix();
-// 
-//                         glViewport( 0, 0, (GLint) sx, (GLint) sy );
-//                     }
- //                   else{
                         m_fbo_offsetx = 0;
                         m_fbo_offsety = 0;
                         m_fbo_swidth = sx;
                         m_fbo_sheight = sy;
                         wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
                         RenderCharts(m_gldc, screen_region);
-                    }
+                }
                     
-//                } 
+ 
                 
 #else   // GLES2
             if(accelerated_pan) {
@@ -4447,14 +4458,11 @@ void glChartCanvas::Render()
                     // using the old framebuffer
                     glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
                     glEnable( g_texture_rectangle_format );
-//                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
                                 
                     //    Render the reuseable portion of the cached texture
                     // Render the cached texture as quad to FBO(m_blit_tex) with offsets
                     float x1, x2, y1, y2;
 
-                    //int ow = VPoint.pix_width - abs( dx );
-                    //int oh = VPoint.pix_height - abs( dy );
                     if( dx > 0 )
                         x1 = dx,  x2 = 0;
                     else
@@ -4467,14 +4475,12 @@ void glChartCanvas::Render()
 
                     // normalize to texture coordinates range from 0 to 1
                     float tx1, tx2, ty1, ty2;
-                    //float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
                     
 
                     float xcor = 0;
                     float ycor = 0;
                     
                     tx1 = 0; tx2 = sx/(float)m_cache_tex_x; ty1 = 0 ; ty2 = sy/(float)m_cache_tex_y;    
-                    //tx1 = xcor/(float)m_cache_tex_x; tx2 = (sx-xcor)/(float)m_cache_tex_x; ty1 = 0 ; ty2 = sy/(float)m_cache_tex_y;    
                     
                     float coords[8];
                     float uv[8];
@@ -4485,8 +4491,6 @@ void glChartCanvas::Render()
                         
 
                     
-                    //coords[0] = -dx + xcor; coords[1] = dy+ycor; coords[2] = -dx - xcor + sx; coords[3] = dy+ycor;
-                    //coords[4] = -dx + -xcor + sx; coords[5] = dy+ycor + sy; coords[6] = -dx + xcor; coords[7] = dy+sy+ycor;
                     coords[0] = -dx; coords[1] = dy; coords[2] = -dx + sx; coords[3] = dy;
                     coords[4] = -dx + sx; coords[5] = dy + sy; coords[6] = -dx; coords[7] = dy+sy;
                     
@@ -4593,13 +4597,12 @@ void glChartCanvas::Render()
                 m_fbo_offsety = 0;
                 m_fbo_swidth = sx;
                 m_fbo_sheight = sy;
-            glClearColor(0.f, 0.f, 0.5f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            RenderCharts(m_gldc, screen_region);
-            RenderOverlayObjects(m_gldc, screen_region);
-//                         wxRect r(0,0,300, 400);
-//                         wxColour ca(200,0,0);
-//                         RenderColorRect(r, ca);
+
+                glClearColor(0.f, 0.f, 0.5f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+            
+                RenderCharts(m_gldc, screen_region);
+                RenderOverlayObjects(m_gldc, screen_region);
                         
                 m_cache_page = !m_cache_page; /* page flip */
                         
