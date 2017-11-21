@@ -9114,7 +9114,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
     int bmw = bm.GetWidth();
     int bmh = bm.GetHeight();
 
-
+    dc.SetFont( *plabelFont );
+    
     {
 
         double lon_last = 0.;
@@ -9141,11 +9142,6 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                     }
 //draw "extended" icons
                     else {
-//set rectangle size and position (max text lengh)
-                        int wx, hx;
-                        dc.SetFont( *plabelFont );
-                        dc.GetTextExtent( _T("99.9ft "), &wx, &hx );
-                        
                         //  scale the icons a little bit "softer" than the general scale factor
                         double scale =  exp( g_ChartScaleFactor * 0.0953101798043 ); //ln(1.1)
 #ifdef __OCPN__ANDROID__
