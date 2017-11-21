@@ -943,6 +943,8 @@ std::vector<float> ChartTableEntry::GetReducedPlyPoints()
         index_keep.Clear();
         index_keep.Add(0);
         index_keep.Add(nPoints-1);
+        index_keep.Add(1);
+        index_keep.Add(nPoints-2);
 
                 
         DouglasPeuckerM(ppsm, 1, nPoints-2, LOD_meters , &index_keep);
@@ -1027,6 +1029,8 @@ std::vector<float> ChartTableEntry::GetReducedAuxPlyPoints( int iTable)
         index_keep.Clear();
         index_keep.Add(0);
         index_keep.Add(nPoints-1);
+        index_keep.Add(1);
+        index_keep.Add(nPoints-2);
                 
         DouglasPeuckerM(ppsm, 1, nPoints - 2, LOD_meters, &index_keep);
                 
