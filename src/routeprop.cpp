@@ -345,6 +345,7 @@ public:
     
     int Append(const wxString& item, wxBitmap bmp);
     void Clear( void );
+    void DismissPopup();
     
 private:
     int         itemHeight;
@@ -365,6 +366,11 @@ OCPNIconCombo::OCPNIconCombo (wxWindow* parent, wxWindowID id, const wxString& v
 
 OCPNIconCombo::~OCPNIconCombo ()
 {
+}
+
+void OCPNIconCombo::DismissPopup()
+{
+    GetVListBoxComboPopup()->Dismiss();
 }
 
 void OCPNIconCombo::OnDrawItem( wxDC& dc,
@@ -2971,7 +2977,8 @@ MarkInfoImpl::MarkInfoImpl( wxWindow* parent, wxWindowID id, const wxString& tit
 
 MarkInfoImpl::~MarkInfoImpl()
 {
-    m_bcomboBoxIcon->Clear();
+    m_bcomboBoxIcon->DismissPopup();
+    
     m_bcomboBoxIcon->Destroy();
     m_pLinkProp->Destroy();
     instanceFlag = false;
@@ -3487,7 +3494,8 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
 //    SetClientSize(m_defaultClientSize);
     
     #ifdef __OCPN__ANDROID__
-    androidEnableBackButton( true );
+        m_bcomboBoxIcon->DismissPopup();
+        androidEnableBackButton( true );
     #endif
     
     event.Skip();
@@ -3531,6 +3539,8 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
 //    SetClientSize(m_defaultClientSize);
 
     #ifdef __OCPN__ANDROID__
+    m_bcomboBoxIcon->DismissPopup();
+    
     androidEnableBackButton( true );
     #endif
     
