@@ -4425,7 +4425,7 @@ void glChartCanvas::Render()
                 
 #else   // GLES2
             if(accelerated_pan) {
-                qDebug() << "AccPan";
+                //qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
 
@@ -4574,16 +4574,16 @@ void glChartCanvas::Render()
                         
                         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                         
-                        qDebug() << "RenderTime2" << sw.GetTime();
+                        //qDebug() << "RenderTime2" << sw.GetTime();
                         
                         
                      // Render the new content
                         RenderCharts(m_gldc, update_region);
-                     qDebug() << "RenderTime3" << sw.GetTime();
+                     //qDebug() << "RenderTime3" << sw.GetTime();
                      
                      RenderOverlayObjects(m_gldc, screen_region);
                     
-                     qDebug() << "RenderTime4" << sw.GetTime();
+                     //qDebug() << "RenderTime4" << sw.GetTime();
                      
                      glDisable( g_texture_rectangle_format );
                 }
@@ -4693,8 +4693,8 @@ void glChartCanvas::Render()
         if(!m_inFade){
             RenderTextures(coords, uv, 4, cc1->GetpVP());
         }
-        else
-            qDebug() << "skip for inFade";
+        //else
+            //qDebug() << "skip for inFade";
         
 #endif
         
@@ -5682,9 +5682,9 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 
                     OCPNStopWatch sw;
                     cc1->PanCanvas( dx, -dy );
-                    qDebug() << "PanCanvasTime" << sw.GetTime();
+                    //qDebug() << "PanCanvasTime" << sw.GetTime();
 
-                    qDebug() << "panUpdate" << dx << dy;
+                    //qDebug() << "panUpdate" << dx << dy;
                 }
                 else{
                     qDebug() << "fastpan" << dx << dy;
@@ -5804,7 +5804,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                 }
             }
             else{
-                qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
+//                qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
                 if( 1 || ((total_zoom_val > 1) && !first_zout)){           // Zoom in
                     wxPoint pinchPoint = event.GetCenterPoint();
 
@@ -5847,7 +5847,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             break;
 
         case GestureFinished:{
-            qDebug() << "finish totalzoom" << total_zoom_val << projected_scale;
+//            qDebug() << "finish totalzoom" << total_zoom_val << projected_scale;
 
             float cc_x =  m_fbo_offsetx + (m_fbo_swidth/2);
             float cc_y =  m_fbo_offsety + (m_fbo_sheight/2);
@@ -5873,7 +5873,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             }
 
             if(zoomTimer.IsRunning()){
-                qDebug() << "Final zoom";
+//                qDebug() << "Final zoom";
                 m_zoomFinal = true;
                 m_zoomFinalZoom = tzoom;
                 m_zoomFinaldx = dx;
@@ -5983,13 +5983,13 @@ unsigned int s_cachepage;
 void glChartCanvas::onFadeTimerEvent(wxTimerEvent &event)
 {
 #ifdef USE_ANDROID_GLES2    
-    if(m_cache_page != s_cachepage)
-        qDebug() << "CACHE PAGE lost";
+//     if(m_cache_page != s_cachepage)
+//         qDebug() << "CACHE PAGE lost";
     
     if(m_fadeFactor < 0.2)
         m_fadeFactor = 0;
     
-    qDebug() << "fade" << m_fadeFactor << m_cache_page << n_fade;
+//    qDebug() << "fade" << m_fadeFactor << m_cache_page << n_fade;
 
     SetCurrent(*m_pcontext);
     
@@ -6272,7 +6272,7 @@ void glChartCanvas::onFadeTimerEvent(wxTimerEvent &event)
         m_fadeTimer.Start(5, wxTIMER_ONE_SHOT);
     }
     else{
-        qDebug() << "fade DONE";
+        //qDebug() << "fade DONE";
         m_inFade = false;
         g_Piano->DrawGL(cc1->m_canvas_height - g_Piano->GetHeight());
         
