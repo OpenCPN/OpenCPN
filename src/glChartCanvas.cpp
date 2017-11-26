@@ -2376,44 +2376,50 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
             wxImage image;
+            wxImage *pimage;
             if(cc1->m_pos_image_user) {
                 switch (draw_color) {
-                    case SHIP_INVALID: image = *cc1->m_pos_image_user_grey; break;
-                    case SHIP_NORMAL: image = *cc1->m_pos_image_user; break;
-                    case SHIP_LOWACCURACY: image = *cc1->m_pos_image_user_yellow; break;
+                    case SHIP_INVALID: pimage = cc1->m_pos_image_user_grey; break;
+                    case SHIP_NORMAL: pimage = cc1->m_pos_image_user; break;
+                    case SHIP_LOWACCURACY: pimage = cc1->m_pos_image_user_yellow; break;
                 }
             }
             else {
                 switch (draw_color) {
-                    case SHIP_INVALID: image = *cc1->m_pos_image_grey; break;
-                    case SHIP_NORMAL: image = *cc1->m_pos_image_red; break;
-                    case SHIP_LOWACCURACY: image = *cc1->m_pos_image_yellow; break;
+                    case SHIP_INVALID: pimage = cc1->m_pos_image_grey; break;
+                    case SHIP_NORMAL: pimage = cc1->m_pos_image_red; break;
+                    case SHIP_LOWACCURACY: pimage = cc1->m_pos_image_yellow; break;
                 }
             }
+            
+            if(pimage)
+                image = *pimage;
+            
+            if(image.IsOk()){
+                int w = image.GetWidth(), h = image.GetHeight();
+                int glw = NextPow2(w), glh = NextPow2(h);
+                ownship_size = wxSize(w, h);
+                ownship_tex_size = wxSize(glw, glh);
                 
-            int w = image.GetWidth(), h = image.GetHeight();
-            int glw = NextPow2(w), glh = NextPow2(h);
-            ownship_size = wxSize(w, h);
-            ownship_tex_size = wxSize(glw, glh);
-            
-            unsigned char *d = image.GetData();
-            unsigned char *a = image.GetAlpha();
-            unsigned char *e = new unsigned char[4 * w * h];
-            
-            if(d && e && a){
-                for( int p = 0; p < w*h; p++ ) {
-                    e[4*p+0] = d[3*p+0];
-                    e[4*p+1] = d[3*p+1];
-                    e[4*p+2] = d[3*p+2];
-                    e[4*p+3] = a[p];
+                unsigned char *d = image.GetData();
+                unsigned char *a = image.GetAlpha();
+                unsigned char *e = new unsigned char[4 * w * h];
+                
+                if(d && e && a){
+                    for( int p = 0; p < w*h; p++ ) {
+                        e[4*p+0] = d[3*p+0];
+                        e[4*p+1] = d[3*p+1];
+                        e[4*p+2] = d[3*p+2];
+                        e[4*p+3] = a[p];
+                    }
                 }
-            }
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                         glw, glh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                            glw, glh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                            w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
-            delete [] e;
+                glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                                w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
+                delete [] e;
+            }
         }
 
 
