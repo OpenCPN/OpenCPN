@@ -679,7 +679,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
     }
-#if 0
+
     if( m_bShowName && m_pMarkFont ) {
         int w = m_NameExtents.x, h = m_NameExtents.y;
         if(!m_iTextTexture && w && h) {
@@ -725,10 +725,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
         
-            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
             
             int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
             float u = (float)w/m_iTextTextureWidth, v = (float)h/m_iTextTextureHeight;
+#ifndef USE_ANDROID_GLES2            
+            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
+            
             glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(x, y);
             glTexCoord2f(u, 0); glVertex2f(x+w, y);
@@ -736,11 +738,25 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
 
+#else
+            float coords[8];
+            float uv[8];
+            //normal uv
+            uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+            uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+            
+            // pixels
+            coords[0] = x; coords[1] = y; coords[2] = x+w; coords[3] = y;
+            coords[4] = x+w; coords[5] = y+h; coords[6] = x, coords[7] = y+h;
+            
+            glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+            
+#endif            
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
+            
         }
     }
-#endif
     
     // Draw waypoint radar rings if activated
     if( m_iWaypointRangeRingsNumber && m_bShowWaypointRangeRings ) {
