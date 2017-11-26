@@ -325,7 +325,6 @@ WX_DECLARE_OBJARRAY(wxBitmap,      ArrayOfBitmaps);
 #include <wx/arrimpl.cpp> 
 WX_DEFINE_OBJARRAY(ArrayOfBitmaps);
 
-
 class  OCPNIconCombo : public wxOwnerDrawnComboBox
 {
 public:
@@ -407,6 +406,11 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
     {
         dc.DrawText( GetVListBoxComboPopup()->GetString(item), rect.x + 2 + offset_x, (rect.height-dc.GetCharHeight())/2 + rect.y );
     }
+    
+#ifdef __OCPN__ANDROID__
+    androidEnableBackButtonCheck( false );
+#endif
+    
 }
 
 wxCoord OCPNIconCombo::OnMeasureItem( size_t item ) const
