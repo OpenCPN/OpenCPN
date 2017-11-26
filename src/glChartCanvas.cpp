@@ -1791,9 +1791,10 @@ void glChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort &vp )
     else                              // Use Aux PlyPoints
     {
         wxPoint r, r1;
-        std::vector<int> points_vector;
         
         for( int j = 0; j < nAuxPlyEntries; j++ ) {
+
+            std::vector<int> points_vector;
             
             std::vector<float> vec = ChartData->GetReducedAuxPlyPoints(dbIndex, j);
             int nAuxPly = vec.size()/2;
