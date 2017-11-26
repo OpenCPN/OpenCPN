@@ -128,6 +128,7 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
 #endif
 
+extern MyFrame *gFrame;
 extern ChartCanvas *cc1;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
@@ -3973,7 +3974,8 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, ViewPort &vp, wxRect &rect, boo
    grounded as opposed to the floating overlay objects. */
 void glChartCanvas::DrawGroundedOverlayObjects(ocpnDC &dc, ViewPort &vp)
 {
-    cc1->RenderAllChartOutlines( dc, vp );
+    if(ChartData)
+        cc1->RenderAllChartOutlines( dc, vp );
 
     DrawStaticRoutesTracksAndWaypoints( vp );
 
@@ -4176,14 +4178,12 @@ int refChartIndex;
 int n_render;
 void glChartCanvas::Render()
 {
-    if( !m_bsetup ||
-        ( cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed() ) ||
-        ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
+    if( !m_bsetup || ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
-            SwapBuffers();
+        SwapBuffers();
 #endif
-            return;
-        }
+        return;
+    }
 
     OCPNStopWatch sw;
         
@@ -4198,7 +4198,12 @@ void glChartCanvas::Render()
        // Do any setup required...
     loadShaders();
     configureShaders( cc1->VPoint);
-        
+    
+    if(cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed()){
+        cc1->m_pQuilt->Compose(cc1->VPoint);
+        gFrame->UpdateControlBar();
+    }
+    
     s_tess_vertex_idx = 0;
     quiltHash = cc1->m_pQuilt->GetXStackHash();
     refChartIndex = cc1->m_pQuilt->GetRefChartdbIndex();

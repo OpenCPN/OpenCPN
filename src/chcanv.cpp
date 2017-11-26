@@ -3385,7 +3385,18 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 //                unsigned long hash1 = m_pQuilt->GetXStackHash();
  
 //                wxStopWatch sw;
-                m_pQuilt->Compose( VPoint );
+                
+#ifdef __OCPN__ANDROID__
+                if( last_vp.view_scale_ppm != scale_ppm ){
+                    m_pQuilt->Compose( VPoint );
+                }
+                else{
+                    m_pQuilt->Invalidate();
+                }
+#endif
+
+                
+                //m_pQuilt->Compose( VPoint );
 //                printf("comp time %ld\n", sw.Time());
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
