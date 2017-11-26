@@ -1649,9 +1649,13 @@ void WayPointman::ReloadAllIcons(  )
             dim_image = CreateDimImage(pmi->iconImage, .20);
             pmi->iconImage = dim_image;
         }
-        
     }
     
+    ReloadRoutepointIcons();
+}
+
+void WayPointman::ReloadRoutepointIcons()
+{
     //    Iterate on the RoutePoint list, requiring each to reload icon
     
     wxRoutePointListNode *node = m_pWayPointList->GetFirst();
@@ -1704,8 +1708,10 @@ wxBitmap *WayPointman::GetIconBitmap( const wxString& icon_key )
         if(pmi->piconBitmap)
             pret = pmi->piconBitmap;
         else{
-            pmi->piconBitmap = new wxBitmap(pmi->iconImage);
-            pret = pmi->piconBitmap;
+            if(pmi->iconImage.IsOk()){
+                pmi->piconBitmap = new wxBitmap(pmi->iconImage);
+                pret = pmi->piconBitmap;
+            }
         }
     }
     return pret;
