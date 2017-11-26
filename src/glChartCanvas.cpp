@@ -4199,10 +4199,12 @@ void glChartCanvas::Render()
        // Do any setup required...
     loadShaders();
     configureShaders( cc1->VPoint);
-    
+
+    bool recompose = false;
     if(cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed()){
         cc1->m_pQuilt->Compose(cc1->VPoint);
         gFrame->UpdateControlBar();
+        recompose = true;
     }
     
     s_tess_vertex_idx = 0;
@@ -4293,11 +4295,14 @@ void glChartCanvas::Render()
                && m_cache_vp.clon == VPoint.clon
                && m_cache_vp.IsValid()
                && m_cache_vp.pix_height == VPoint.pix_height
-               && m_cache_current_ch == Current_Ch ) {
+               && m_cache_current_ch == Current_Ch ){
             b_newview = false;
         }
 
-        if( b_newview ) {
+         if(recompose)
+            b_newview = true;
+        
+         if( b_newview ) {
 
             bool busy = false;
             if(VPoint.b_quilt && cc1->m_pQuilt->IsQuiltVector() &&
@@ -4426,7 +4431,6 @@ void glChartCanvas::Render()
                 
 #else   // GLES2
             if(accelerated_pan) {
-                //qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
 
@@ -4694,8 +4698,8 @@ void glChartCanvas::Render()
         if(!m_inFade){
             RenderTextures(coords, uv, 4, cc1->GetpVP());
         }
-        //else
-            //qDebug() << "skip for inFade";
+        else
+            qDebug() << "skip FBO update for inFade";
         
 #endif
         
@@ -5990,7 +5994,7 @@ void glChartCanvas::onFadeTimerEvent(wxTimerEvent &event)
     if(m_fadeFactor < 0.2)
         m_fadeFactor = 0;
     
-//    qDebug() << "fade" << m_fadeFactor << m_cache_page << n_fade;
+    //qDebug() << "fade" << m_fadeFactor << m_cache_page << n_fade;
 
     SetCurrent(*m_pcontext);
     
@@ -6496,14 +6500,7 @@ void glChartCanvas::RenderScene()
     OCPNRegion screen_region(wxRect(0, 0, VPoint.pix_width, VPoint.pix_height));
 
     glViewport( 0, 0, (GLint) w, (GLint) h );
-#if 0
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity();
 
-    glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-#endif
     if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0xff );
@@ -6511,6 +6508,9 @@ void glChartCanvas::RenderScene()
         glDisable( GL_STENCIL_TEST );
     }
 
+    // Make sure we have a valid quilt composition
+    cc1->m_pQuilt->Compose(cc1->VPoint);
+    
     // set opengl settings that don't normally change
     // this should be able to go in SetupOpenGL, but it's
     // safer here incase a plugin mangles these
@@ -6518,488 +6518,26 @@ void glChartCanvas::RenderScene()
     glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    //  If we plan to post process the display, don't use accelerated panning
-    double scale_factor = VPoint.ref_scale/VPoint.chart_scale;
-    
-    m_bfogit = m_benableFog && g_fog_overzoom && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-    bool scale_it  =  m_benableVScale && g_oz_vector_scale && (scale_factor > g_overzoom_emphasis_base) && VPoint.b_quilt;
-    
-    bool bpost_hilite = !cc1->m_pQuilt->GetHiliteRegion( ).Empty();
-    bool useFBO = false;
- 
-    // Try to use the framebuffer object's cache of the last frame
-    // to accelerate drawing this frame (if overlapping)
-    if(m_b_BuiltFBO && !m_bfogit && !scale_it && !bpost_hilite
-       //&& VPoint.tilt == 0 // disabling fbo in tilt mode gives better quality but slower
-        ) {
-        //  Is this viewpoint the same as the previously painted one?
-        bool b_newview = true;
 
-        // If the view is the same we do no updates, 
-        // cached texture to the framebuffer
-        if(    m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm
-               && m_cache_vp.rotation == VPoint.rotation
-               && m_cache_vp.clat == VPoint.clat
-               && m_cache_vp.clon == VPoint.clon
-               && m_cache_vp.IsValid()
-               && m_cache_vp.pix_height == VPoint.pix_height
-               && m_cache_current_ch == Current_Ch ) {
-            b_newview = false;
-        }
 
-        bool busy = false;
-        if( b_newview ) {
+   // enable rendering to texture in framebuffer object
+   ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
-            if(VPoint.b_quilt && cc1->m_pQuilt->IsQuiltVector() &&
-                ( m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm || m_cache_vp.rotation != VPoint.rotation))
-            {
-                    OCPNPlatform::ShowBusySpinner();
-                    busy = true;
-            }
-            
-            // enable rendering to texture in framebuffer object
-            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
-
-            int dx, dy;
-            bool accelerated_pan = false;
-            
-            //qDebug() << "test AccPan" << g_GLOptions.m_bUseAcceleratedPanning << m_cache_vp.IsValid();
-            
-            if( g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
-                && ( VPoint.m_projection_type == PROJECTION_MERCATOR
-                || VPoint.m_projection_type == PROJECTION_EQUIRECTANGULAR )
-                && m_cache_vp.pix_height == VPoint.pix_height )
-            {
-                //qDebug() << "Try AccPan" << sx << sy;
-                
-                wxPoint2DDouble c_old = VPoint.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
-                wxPoint2DDouble c_new = m_cache_vp.GetDoublePixFromLL( VPoint.clat, VPoint.clon );
-
-//                printf("diff: %f %f\n", c_new.m_y - c_old.m_y, c_new.m_x - c_old.m_x);
-                dy = wxRound(c_new.m_y - c_old.m_y);
-                dx = wxRound(c_new.m_x - c_old.m_x);
-
-                //   The math below using the previous frame's texture does not really
-                //   work for sub-pixel pans.
-                //   TODO is to rethink this.
-                //   Meanwhile, require the accelerated pans to be whole pixel multiples only.
-                //   This is not as bad as it sounds.  Keyboard and mouse pans are whole_pixel moves.
-                //   However, autofollow at large scale is certainly not.
-                
-                double deltax = c_new.m_x - c_old.m_x;
-                double deltay = c_new.m_y - c_old.m_y;
-                
-                bool b_whole_pixel = true;
-                if( ( fabs( deltax - dx ) > 1e-2 ) || ( fabs( deltay - dy ) > 1e-2 ) )
-                    b_whole_pixel = false;
-                    
-                accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
-                                  //&& sx == m_cache_tex_x && sy == m_cache_tex_y;
-                //qDebug() << "accpan result: " << accelerated_pan << dx << dy << b_whole_pixel;
-            }
-
-            accelerated_pan = false;
-            
-            // do we allow accelerated panning?  can we perform it here?
-            if(accelerated_pan && !g_GLOptions.m_bUseCanvasPanning) {
-                //qDebug() << "AccPan";
-                if((dx != 0) || (dy != 0)){   // Anything to do?
-                    m_cache_page = !m_cache_page; /* page flip */
-
-                    /* perform accelerated pan rendering to the new framebuffer */
-                    ( s_glFramebufferTexture2D )
-                        ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                        g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
-
-                    //calculate the new regions to render
-                    // add an extra pixel avoid coorindate rounding issues
-                    OCPNRegion update_region;
-
-                    if( dy > 0 && dy < VPoint.pix_height)
-                        update_region.Union(wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ));
-                    else if(dy < 0)
-                        update_region.Union(wxRect( 0, 0, VPoint.pix_width, -dy ));
-                            
-                    if( dx > 0 && dx < VPoint.pix_width )
-                        update_region.Union(wxRect( VPoint.pix_width - dx, 0, dx, VPoint.pix_height ));
-                    else if (dx < 0)
-                        update_region.Union(wxRect( 0, 0, -dx, VPoint.pix_height ));
-
-              glClearColor(0.f, 0.f, 0.f, 1.0f);
-              glClear(GL_COLOR_BUFFER_BIT);
-                    
-              ///                    RenderCharts(gldc, update_region, cc1->VPoint);
-
-                    // using the old framebuffer
-                    glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
-                    glEnable( g_texture_rectangle_format );
-//                    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-                                
-                    //    Render the reuseable portion of the cached texture
-                                
-                    // Render the cached texture as quad to FBO(m_blit_tex) with offsets
-                    int x1, x2, y1, y2;
-
-                    int ow = VPoint.pix_width - abs( dx );
-                    int oh = VPoint.pix_height - abs( dy );
-                    if( dx > 0 )
-                        x1 = dx,  x2 = 0;
-                    else
-                        x1 = 0,   x2 = -dx;
-                            
-                    if( dy > 0 )
-                        y1 = dy,  y2 = 0;
-                    else
-                        y1 = 0,   y2 = -dy;
-
-#if 0                    
-                    // normalize to texture coordinates range from 0 to 1
-                    float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
-                    if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
-                        tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
-                        //tx1 /= 4096, tx2 /= 4096, ty1 /= 4096, ty2 /= 4096;
-                    
-
-                    float coords[8];
-                    float uv[8];
-                        
-                       //normal uv
-                    uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
-                    uv[4] = tx2; uv[5] = ty2; uv[6] = tx1; uv[7] = ty2;
-                        
-                        // pixels
-                    coords[0] = x2; coords[1] = y2; coords[2] = x2 + ow; coords[3] = y2;
-                    coords[4] = x2 + ow; coords[5] = y2 + oh; coords[6] = x2; coords[7] = y2 + oh;
-
-#else
-                    // normalize to texture coordinates range from 0 to 1
-                    float tx1 = x1, tx2 = x1 + ow, ty1 = sy - y1, ty2 = sy - (y1 + oh);
- //                 if( GL_TEXTURE_RECTANGLE_ARB != g_texture_rectangle_format )
- //                       tx1 /= sx, tx2 /= sx, ty1 /= sy, ty2 /= sy;
-                    //tx1 /= 4096, tx2 /= 4096, ty1 /= 4096, ty2 /= 4096;
-                        
-                    tx1 = 0; tx2 = sx/(float)4096; ty1 = 0 ; ty2 = sy/(float)4096;    
-                        
-                    float coords[8];
-                    float uv[8];
-                        
-                        //normal uv
-                    uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
-                    uv[4] = tx2; uv[5] = ty2; uv[6] = tx1; uv[7] = ty2;
-                        
-                        // pixels
-                    //coords[0] = dx; coords[1] = dy; coords[2] = dx + sx; coords[3] = dy;
-                    //coords[4] = dx+sx; coords[5] = dy+sy; coords[6] = dx; coords[7] = dy+sy;
-
-                    float ycor = 0;
-                    
-                    coords[0] = -dx; coords[1] = dy+ycor; coords[2] = -dx + sx; coords[3] = dy+ycor;
-                    coords[4] = -dx + sx; coords[5] = dy+ycor + sy; coords[6] = - dx; coords[7] = dy+sy+ycor;
-                    
-#endif
-                    
-                        //qDebug() << coords[0] << coords[1] << coords[2] << coords[3];
-                        //qDebug() << coords[4] << coords[5] << coords[6] << coords[7];
-                        //qDebug() << uv[0] << uv[1] << uv[2] << uv[3];
-                        //qDebug() << uv[4] << uv[5] << uv[6] << uv[7];
-
-///                        
-   //                     RenderTexture(coords, uv, cc1->GetpVP());
-                        
-                        //build_texture_shaders();
-                        glUseProgram( FBO_texture_2D_shader_program );
-                        
-                        // Get pointers to the attributes in the program.
-                        GLint mPosAttrib = glGetAttribLocation( FBO_texture_2D_shader_program, "aPos" );
-                        GLint mUvAttrib  = glGetAttribLocation( FBO_texture_2D_shader_program, "aUV" );
-                        
-                        // Set up the texture sampler to texture unit 0
-                        GLint texUni = glGetUniformLocation( FBO_texture_2D_shader_program, "uTex" );
-                        glUniform1i( texUni, 0 );
-                        
-                        // Disable VBO's (vertex buffer objects) for attributes.
-                        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-                        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-                        
-                        // Set the attribute mPosAttrib with the vertices in the screen coordinates...
-                        glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
-                        // ... and enable it.
-                        glEnableVertexAttribArray( mPosAttrib );
-                        
-                        // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-                        glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
-                        // ... and enable it.
-                        glEnableVertexAttribArray( mUvAttrib );
-                        
-                        
-                        GLint matloc = glGetUniformLocation(FBO_texture_2D_shader_program,"MVMatrix");
-                        
-                        mat4x4 m, mvp;
-                        
-                        mat4x4_identity(m);
-                        //mat4x4_scale_aniso(mvp, m, 12.0 / 4096/*2.0 / sx*/, (-4.0 / sy) , 1.0);
-                        //mat4x4_translate_in_place(mvp, 0/*-4096/2*/, (-sy/1.35) , 0);
-                        mat4x4_scale_aniso(mvp, m, 2.0 / sx, 2.0 / sy , 1.0);
-                        mat4x4_translate_in_place(mvp, -sx/2, -sy/2 , 0);
-                        
-                        glUniformMatrix4fv( matloc, 1, GL_FALSE, (const float *)mvp); 
-                        
-                        // Select the active texture unit.
-                        glActiveTexture( GL_TEXTURE0 );
-                        
-                        // Bind our texture to the texturing target.
-                        //glBindTexture( GL_TEXTURE_2D, tex );
-                        glBindTexture( g_texture_rectangle_format, m_cache_tex[!m_cache_page] );
-                        
-                        // Perform the actual drawing.
-                        
-                        // For some reason, glDrawElements is busted on Android
-                        // So we do this a hard ugly way, drawing two triangles...
-                        #if 0
-                        GLubyte indices1[] = {0,1,3,2}; 
-                        glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices1);
-                        #else
-//                         glDrawArrays(GL_TRIANGLES, 0, 3);
-//                         float co1[6];
-//                         co1[0] = coords[0];
-//                         co1[1] = coords[1];
-//                         co1[2] = coords[4];
-//                         co1[3] = coords[5];
-//                         co1[4] = coords[6];
-//                         co1[5] = coords[7];
-//                         
-//                         float tco1[6];
-//                         tco1[0] = uv[0];
-//                         tco1[1] = uv[1];
-//                         tco1[2] = uv[4];
-//                         tco1[3] = uv[5];
-//                         tco1[4] = uv[6];
-//                         tco1[5] = uv[7];
-//                         
-//                         glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
-//                         glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-//                         
-//                         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-                            float co1[8];
-                            co1[0] = coords[0];
-                            co1[1] = coords[1];
-                            co1[2] = coords[2];
-                            co1[3] = coords[3];
-                            co1[4] = coords[6];
-                            co1[5] = coords[7];
-                            co1[6] = coords[4];
-                            co1[7] = coords[5];
-    
-                            float tco1[8];
-                            tco1[0] = uv[0];
-                            tco1[1] = uv[1];
-                            tco1[2] = uv[2];
-                            tco1[3] = uv[3];
-                            tco1[4] = uv[6];
-                            tco1[5] = uv[7];
-                            tco1[6] = uv[4];
-                            tco1[7] = uv[5];
-    
-                            glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
-                            glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
-    
-                            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-                        
-                        #endif
-                        
-                        RenderCharts(gldc, update_region);
-                        
-                        
-///                        
-//                     glBegin( GL_QUADS );
-//                     glTexCoord2f( tx1, ty1 );  glVertex2f( x2, y2 );
-//                     glTexCoord2f( tx2, ty1 );  glVertex2f( x2 + ow, y2 );
-//                     glTexCoord2f( tx2, ty2 );  glVertex2f( x2 + ow, y2 + oh );
-//                     glTexCoord2f( tx1, ty2 );  glVertex2f( x2, y2 + oh );
-//                     glEnd();
-
-                    //   Done with cached texture "blit"
-                    glDisable( g_texture_rectangle_format );
-                }
-
-                } else { // must redraw the entire screen
-                //qDebug() << "Fullpage";
-                
-                    ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+   ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
                                                 m_cache_tex[m_cache_page], 0 );
                     
-                    if(g_GLOptions.m_bUseCanvasPanning) {
-                        bool b_reset = false;
-                        if( (m_fbo_offsetx < 50) ||
-                            ((m_cache_tex_x - (m_fbo_offsetx + sx)) < 50) ||
-                            (m_fbo_offsety < 50) ||
-                            ((m_cache_tex_y - (m_fbo_offsety + sy)) < 50))
-                            b_reset = true;
-    
-                        if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
-                            b_reset = true;
-                        if(!m_cache_vp.IsValid())
-                            b_reset = true;
+    m_fbo_offsetx = 0;
+    m_fbo_offsety = 0;
+    m_fbo_swidth = sx;
+    m_fbo_sheight = sy;
+    RenderCharts(gldc, screen_region);
+    RenderOverlayObjects(gldc, screen_region);
                         
-                        if( b_reset ){
-                            m_fbo_offsetx = (m_cache_tex_x - GetSize().x)/2;
-                            m_fbo_offsety = (m_cache_tex_y - GetSize().y)/2;
-                            m_fbo_swidth = sx;
-                            m_fbo_sheight = sy;
- 
-                            cc1->GetCanvasPixPoint( -m_fbo_offsetx, -m_fbo_offsety, m_fbo_lat, m_fbo_lon );  // lat/lon of fbo origin
-                            
-                            m_canvasregion = OCPNRegion( m_fbo_offsetx, m_fbo_offsety, sx, sy );
-                            
-//                             if(m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm )
-//                                 OCPNPlatform::ShowBusySpinner();
-                            
-//                            RenderCanvasBackingChart(gldc, m_canvasregion);
-                        }
-                        
-#ifdef USE_ANDROID_GLES2
-//                        glPushMatrix();
-                        
-//                        glOrtho( m_fbo_offsetx, (GLint) sx, (GLint) sy, m_fbo_offsety, -1, 1 );
-//                        glMatrixMode(GL_MODELVIEW);
-//                        glLoadIdentity();
-                        
-                        RenderCharts(gldc, screen_region);
-                        RenderOverlayObjects(gldc, screen_region);
-                        
-//                        glPopMatrix();
-
-//                        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
-//                        glMatrixMode(GL_MODELVIEW);
-//                        glLoadIdentity();
-#else
-                        glPushMatrix();
-                        
-                        glViewport( m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy );
-
-                        RenderCharts(gldc, screen_region);
-                        
-                        glPopMatrix();
-
-                        glViewport( 0, 0, (GLint) sx, (GLint) sy );
-#endif                        
-                    }
-                    else{
-                        m_fbo_offsetx = 0;
-                        m_fbo_offsety = 0;
-                        m_fbo_swidth = sx;
-                        m_fbo_sheight = sy;
-//                        wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
-                        RenderCharts(gldc, screen_region);
-                        RenderOverlayObjects(gldc, screen_region);
-                        
-                    }
-                    
-                } 
-            // Disable Render to FBO
-            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
-
-            if(busy)
-                OCPNPlatform::HideBusySpinner();
-        
-        } // newview
-
-        useFBO = true;
-    }
-
-#ifndef __OCPN__ANDROID__    
-    if(VPoint.tilt) {
-        glMatrixMode (GL_PROJECTION);
-        glLoadIdentity();
-
-        gluPerspective(2*180/PI*atan2((double)h, (double)w), (GLfloat) w/(GLfloat) h, 1, w);
-        
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glScalef(1, -1, 1);
-        glTranslatef(-w/2, -h/2, -w/2);
-        glRotated(VPoint.tilt*180/PI, 1, 0, 0);
-
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        glGetDoublev(GL_PROJECTION_MATRIX, projmatrix);
-        glGetDoublev(GL_MODELVIEW_MATRIX, mvmatrix);
-    }
-#endif
-
-    if(useFBO) {
-        //qDebug() << "AccRender";
-        
-        // Render the cached texture as quad to screen
-        glBindTexture( g_texture_rectangle_format, m_cache_tex[m_cache_page]);
-//        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-        glEnable( g_texture_rectangle_format );
-
-        float tx, ty, tx0, ty0, divx, divy;
-        
-        //  Normalize, or not?
-        if( GL_TEXTURE_RECTANGLE_ARB == g_texture_rectangle_format ){
-            divx = divy = 1.0f;
-         }
-        else{
-            divx = m_cache_tex_x;
-            divy = m_cache_tex_y;
-        }
-
-        float coords[8];
-        float uv[8];
-        
-        tx0 = m_fbo_offsetx/divx;
-        ty0 = m_fbo_offsety/divy;
-        tx =  (m_fbo_offsetx + m_fbo_swidth)/divx;
-        ty =  (m_fbo_offsety + m_fbo_sheight)/divy;
-        
-        //normal uv
-        uv[0] = tx0; uv[1] = ty; uv[2] = tx; uv[3] = ty;
-        uv[4] = tx; uv[5] = ty0; uv[6] = tx0; uv[7] = ty0;
-
-        // pixels
-        coords[0] = 0; coords[1] = 0; coords[2] = sx; coords[3] = 0;
-        coords[4] = sx; coords[5] = sy; coords[6] = 0; coords[7] = sy;
-        
-        if(!m_inFade){
-            RenderTextures(coords, uv, 4, cc1->GetpVP());
-        }
-        else
-            qDebug() << "skip for inFade";
-        
-        
-//         glBegin( GL_QUADS );
-//         glTexCoord2f( tx0, ty );  glVertex2f( 0,  0 );
-//         glTexCoord2f( tx,  ty );  glVertex2f( sx, 0 );
-//         glTexCoord2f( tx,  ty0 ); glVertex2f( sx, sy );
-//         glTexCoord2f( tx0, ty0 ); glVertex2f( 0,  sy );
-//         glEnd();
-
-        glDisable( g_texture_rectangle_format );
-
-        m_cache_vp = VPoint;
-        m_cache_current_ch = Current_Ch;
-
-        if(VPoint.b_quilt)
-            cc1->m_pQuilt->SetRenderedVP( VPoint );
-        
-    } else {         // useFBO
-#ifdef USE_ANDROID_GLES2
+    // Disable Render to FBO
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
 
 
-    // render
-        glClearColor(0.f, 0.f, 0.f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        RenderCharts(gldc, screen_region);
-
-#else        
-        RenderCharts(gldc, screen_region);
-#endif        
-    }        
 
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
 #ifdef USE_S57        
@@ -7035,26 +6573,8 @@ void glChartCanvas::RenderScene()
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
     DrawFloatingOverlayObjects( gldc );
-
     
-    // from this point on don't use perspective
-    if(VPoint.tilt) {
-        glMatrixMode (GL_PROJECTION);
-        glLoadIdentity();
 
-        glOrtho( 0, (GLint) w, (GLint) h, 0, -1, 1 );
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-    }
-
-    DrawEmboss(cc1->EmbossDepthScale() );
-    DrawEmboss(cc1->EmbossOverzoomIndicator( gldc ) );
-
-    if( cc1->m_pRouteRolloverWin )
-        cc1->m_pRouteRolloverWin->Draw(gldc);
-
-    if( cc1->m_pAISRolloverWin )
-        cc1->m_pAISRolloverWin->Draw(gldc);
 #endif
         
 #endif
