@@ -188,6 +188,7 @@ public:
       void ProcessIcons( ocpnStyle::Style* style );
       void ProcessDefaultIcons();
       void ReloadAllIcons();
+      void ReloadRoutepointIcons();
       
       bool DoesIconExist(const wxString & icon_key) const;
       wxBitmap GetIconBitmapForList(int index);

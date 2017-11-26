@@ -292,6 +292,8 @@ void RoutePoint::ReLoadIcon( void )
     if(!pWayPointMan)
         return;
     bool icon_exists = pWayPointMan->DoesIconExist(m_IconName);
+    
+    wxString iconUse = m_IconName;
     if( !icon_exists ){
         
         //  Try all lower case as a favor in the case where imported waypoints use mixed case names
@@ -299,19 +301,26 @@ void RoutePoint::ReLoadIcon( void )
         if(pWayPointMan->DoesIconExist(tentative_icon)){
             // if found, convert point's icon name permanently.
             m_IconName = tentative_icon;
+            iconUse = m_IconName;
         }
         //      Icon name is not in the standard or user lists, so add to the list a generic placeholder
         else{
-            ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-            if(style){
-                wxBitmap bmp = style->GetIcon( _T("circle") );
-                pWayPointMan->ProcessIcon( bmp, m_IconName, m_IconName );
+            if(!pWayPointMan->DoesIconExist(_T("tempsub"))){
+            
+                ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+                if(style){
+                    wxBitmap bmp = style->GetIcon( _T("circle") );
+                    if(bmp.IsOk())
+                        pWayPointMan->ProcessIcon( bmp, _T("tempsub"), _T("tempsub") );
+                }
             }
+            iconUse = _T("tempsub");
+            
         }
     }
         
-    m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
-    m_bPreScaled = pWayPointMan->GetIconPrescaled( m_IconName );
+    m_pbmIcon = pWayPointMan->GetIconBitmap( iconUse );
+    m_bPreScaled = pWayPointMan->GetIconPrescaled( iconUse );
 
 #ifdef ocpnUSE_GL
     m_wpBBox_view_scale_ppm = -1;

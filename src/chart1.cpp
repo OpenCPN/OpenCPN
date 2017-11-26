@@ -6646,6 +6646,12 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             g_pi_manager->LoadAllPlugIns( g_Platform->GetPluginDir(), true, false );
 
             RequestNewToolbar();
+            
+            // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
+            // Reload all icons, to be sure.
+            if(pWayPointMan)
+                pWayPointMan->ReloadRoutepointIcons();
+            
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, false );
 
