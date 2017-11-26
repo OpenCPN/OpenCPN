@@ -317,7 +317,7 @@ wxString        g_deviceInfo;
 
 int             s_androidMemTotal;
 int             s_androidMemUsed;
-
+bool            g_backEnabled;
 
 extern int ShowNavWarning();
 extern bool     g_btrackContinuous;
@@ -1920,6 +1920,13 @@ void androidSetChartTypeMaskSel( int mask, wxString &indicator)
 void androidEnableBackButton(bool benable)
 {
     callActivityMethod_is("setBackButtonState", benable?1:0);
+    g_backEnabled = benable;
+}
+
+void androidEnableBackButtonCheck(bool benable)
+{
+    if(g_backEnabled != benable)
+        androidEnableBackButton(benable);
 }
 
 
