@@ -60,6 +60,23 @@ extern bool g_bopengl;
 
 #define GetChartTableEntry(i) GetChartTable()[i]
 
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
+class OCPNStopWatch
+{
+public:
+    OCPNStopWatch() { Reset(); }
+    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+    
+    double GetTime() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+    
+private:
+    timespec tp;
+};
+#endif
 
 static int CompareScales( int *i1, int *i2 )
 {
@@ -124,13 +141,45 @@ const LLRegion &QuiltCandidate::GetCandidateRegion()
 
         }
     } else {
-        int n_ply_entries = cte.GetnPlyEntries();
-        float *pfp = cte.GetpPlyTable();
-
-        if( n_ply_entries >= 3 ) // could happen with old database and some charts, e.g. SHOM 2381.kap
-            candidate_region = LLRegion( n_ply_entries, pfp );
+//         int n_ply_entries = cte.GetnPlyEntries();
+//         float *pfp = cte.GetpPlyTable();
+// 
+//         
+//         if( n_ply_entries >= 3 ) // could happen with old database and some charts, e.g. SHOM 2381.kap
+//             candidate_region = LLRegion( n_ply_entries, pfp );
+//         else
+//             candidate_region = world_region;
+        
+        std::vector<float> vec = ChartData->GetReducedPlyPoints(dbIndex);
+        
+        std::vector<float> vecr;
+        for(int i =0 ; i < vec.size()/2;  i++){
+            float a = vec[i*2+1];
+            vecr.push_back(a);
+            a = vec[i*2];
+            vecr.push_back(a);
+        }
+            
+        std::vector <float>::iterator it = vecr.begin();
+            
+        if( vecr.size()/2 >= 3 ){ // could happen with old database and some charts, e.g. SHOM 2381.kap
+            
+            candidate_region = LLRegion( vecr.size() / 2, (float *)&(*it) );
+        }
         else
             candidate_region = world_region;
+        
+//         qDebug() << "Start";
+//         float *pfp = cte.GetpPlyTable();
+//         for(int i =0 ; i < cte.GetnPlyEntries();  i++){
+//             qDebug() << i << pfp[i * 2] << pfp[i*2 + 1];
+//         }
+// 
+//         float *vp = (float *)&(*it);
+//         for(int i =0 ; i < vecr.size() / 2;  i++){
+//             qDebug() << i << vp[i * 2] << vp[i*2 + 1];
+//         }
+        
     }
 
     //  Remove the NoCovr regions
@@ -171,12 +220,13 @@ const LLRegion &QuiltCandidate::GetCandidateRegion()
 
 LLRegion &QuiltCandidate::GetReducedCandidateRegion(double factor)
 {
-    if(factor != last_factor) {
-        reduced_candidate_region = GetCandidateRegion();
-        reduced_candidate_region.Reduce(factor);
-        last_factor = factor;
-    }
+//     if(factor != last_factor) {
+//         reduced_candidate_region = GetCandidateRegion();
+//         reduced_candidate_region.Reduce(factor);
+//         last_factor = factor;
+//     }
 
+    reduced_candidate_region = GetCandidateRegion();
     return reduced_candidate_region;
 }
 
@@ -1449,7 +1499,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
     if( m_bbusy )
         return false;
-
+    OCPNStopWatch sw;
+    //qDebug() << "Compose start" << sw.GetTime();
+    
     // XXX call before setting m_bbusy for wxASSERT in UnlockQuilt
     UnlockQuilt();
     m_bbusy = true;
@@ -1550,6 +1602,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 #endif
 
+//qDebug() << "Compose A" << sw.GetTime();
+
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
@@ -1568,6 +1622,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
+//    qDebug() << "Compose B" << sw.GetTime();
+    
     // Quilted regions can be simplified to reduce the cost of region operations, in this case
     // allow a maximum error of 8 pixels (the rendered display is much better, this is only for composing the quilt)
     const double z = 111274.96299695622; ////WGS84_semimajor_axis_meters * mercator_k0 * DEGREE;
@@ -1658,6 +1714,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
+//    qDebug() << "Compose C" << sw.GetTime();
+    
     //  For S57 quilts, walk the list again to identify overlay cells found previously,
     //  and make sure they are always included and not eclipsed
     if( b_has_overlays && (CHART_TYPE_S57 == m_reference_type) ) {
@@ -1709,7 +1767,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-
+//    qDebug() << "Compose D" << sw.GetTime();
+    
 
     //    Walk the candidate list again, marking "eclipsed" charts
     //    which at this point are the ones with b_include == false .AND. whose scale is strictly smaller than the ref scale
@@ -1774,6 +1833,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
+//    qDebug() << "Compose E" << sw.GetTime();
+    
     if( !b_vis && m_pcandidate_array->GetCount() ) {
         int add_scale = 0;
 
@@ -1804,6 +1865,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
+//    qDebug() << "Compose F" << sw.GetTime();
+    
     //    Finally, build a list of "patches" for the quilt.
     //    Smallest scale first, as this will be the natural drawing order
 
@@ -1836,6 +1899,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
     //    From here on out, the PatchList is usable...
 
+//    qDebug() << "Compose G" << sw.GetTime();
+    
 #ifdef QUILT_TYPE_1
     if(!m_bquiltanyproj) {
         //    Establish the quilt projection type
@@ -1870,7 +1935,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     //    Generate the final render regions for the patches, one by one
-
+//    qDebug() << "Compose H" << sw.GetTime();
+    
     m_covered_region.Clear();
 #if 1 // this does the same as before with a lot less operations if there are many charts
     
@@ -1900,7 +1966,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
             }
         }
     }
-        
+//    qDebug() << "Compose H1" << sw.GetTime();
+    
      //  Proceeding from largest scale to smallest....           
     
     for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
@@ -1923,8 +1990,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
         if(!b_has_overlays && m_PatchList.GetCount() < 25)
             piqp->ActiveRegion.Subtract(m_covered_region);
 
+//        qDebug() << "Compose H1a" << sw.GetTime();
+        
         piqp->ActiveRegion.Intersect(cvp_region);
-
+//        qDebug() << "Compose H1b" << sw.GetTime();
+        
         //    Could happen that a larger scale chart covers completely a smaller scale chart
         if( piqp->ActiveRegion.Empty() && (piqp->dbIndex != m_refchart_dbIndex))
             piqp->b_eclipsed = true;
@@ -1939,7 +2009,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
 #endif                
         if(!piqp->b_overlay)    
             m_covered_region.Union( piqp->quilt_region );
+//        qDebug() << "Compose H1c" << sw.GetTime();
+        
     }
+//    qDebug() << "Compose I" << sw.GetTime();
+    
 #else
     // this is the old algorithm does the same thing in n^2/2 operations instead of 2*n-1
     for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
@@ -2018,6 +2092,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Restore temporary VP Rotation
     //  vp_local.SetRotationAngle( saved_vp_rotation );
 
+//    qDebug() << "Compose J" << sw.GetTime();
+    
     //    Walk the list again, removing any entries marked as eclipsed....
     unsigned int il = 0;
     while( il < m_PatchList.GetCount() ) {
@@ -2215,6 +2291,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
+//    qDebug() << "Compose End" << sw.GetTime();
+    
     m_bcomposed = true;
 
     m_vp_quilt = vp_in;                 // save the corresponding ViewPort locally
