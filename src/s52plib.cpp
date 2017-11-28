@@ -9115,9 +9115,6 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
     int textureWidth = ppatt_spec->width;    //ppatt_spec->w_pot;
     int textureHeight = ppatt_spec->height;  //ppatt_spec->h_pot;
 
-    textureWidth = ppatt_spec->w_pot;
-    textureHeight = ppatt_spec->h_pot;
-
     wxPoint pr;
     GetPointPixSingle(rzRules, rzRules->obj->m_lat, rzRules->obj->m_lat, &pr, vp );
     float xOff = pr.x;
@@ -9354,10 +9351,14 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
 
             GLint texWidth  = glGetUniformLocation( program, "texWidth" );
             GLint texHeight  = glGetUniformLocation( program, "texHeight" );
-
             glUniform1f(texWidth, textureWidth);
             glUniform1f(texHeight, textureHeight);
 
+            GLint texPOTWidth  = glGetUniformLocation( program, "texPOTWidth" );
+            GLint texPOTHeight  = glGetUniformLocation( program, "texPOTHeight" );
+            glUniform1f(texPOTWidth, ppatt_spec->w_pot);
+            glUniform1f(texPOTHeight, ppatt_spec->h_pot);
+            
             GLint xo  = glGetUniformLocation( program, "xOff" );
             GLint yo  = glGetUniformLocation( program, "yOff" );
 
@@ -11938,8 +11939,6 @@ static const GLchar* S52AP_vertex_shader_source =
     "uniform mat4 TransformMatrix;\n"
     "void main() {\n"
     "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "   //varCoord = aUV.st;\n"
-    "   //varCoord = aUV;\n"
     "}\n";
 
 static const GLchar* S52AP_fragment_shader_source =
@@ -11947,17 +11946,19 @@ static const GLchar* S52AP_fragment_shader_source =
     "uniform sampler2D uTex;\n"
     "uniform float texWidth;\n"
     "uniform float texHeight;\n"
+    "uniform float texPOTWidth;\n"
+    "uniform float texPOTHeight;\n"
     "uniform float staggerFactor;\n"
     "uniform vec4 color;\n"
     "uniform float xOff;\n"
     "uniform float yOff;\n"
     "void main() {\n"
-    "   float x = mod((gl_FragCoord.x - xOff),texWidth) / texWidth;\n"
-    "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texHeight;\n"
+    "   float x = mod((gl_FragCoord.x - xOff),texWidth) / texPOTWidth;\n"
+    "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texPOTHeight;\n"
     "   float yp = floor((gl_FragCoord.y + yOff) / texHeight);\n"
     "   float fstagger = 0.0;\n"
     "   if(mod(yp, 2.0) < 0.1) fstagger = staggerFactor;\n"
-    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, 1.0 - y));\n"
+    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, (texHeight / texPOTHeight) - y));\n"
     "}\n";
 
 
