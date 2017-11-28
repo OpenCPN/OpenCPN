@@ -200,6 +200,8 @@ extern bool             g_running;
 
 ocpnGLOptions g_GLOptions;
 
+wxColor                 s_regionColor;
+
 //    For VBO(s)
 bool         g_b_EnableVBO;
 
@@ -2845,10 +2847,11 @@ void endCallbackD_GLSL()
     GLint matloc = glGetUniformLocation(color_tri_shader_program,"MVMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)s_tessVP.vp_transform); 
     
+    // Use color stored in static variable.
     float colorv[4];
-    colorv[0] = 1.0; //color.Red() / float(256);
-    colorv[1] = 0.0; //color.Green() / float(256);
-    colorv[2] = 0.0; //color.Blue() / float(256);
+    colorv[0] = s_regionColor.Red() / float(256);
+    colorv[1] = s_regionColor.Green() / float(256);
+    colorv[2] = s_regionColor.Blue() / float(256);
     colorv[3] = 1.0;
     
     GLint colloc = glGetUniformLocation(color_tri_shader_program,"color");
@@ -3439,6 +3442,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
 
 #ifndef USE_ANDROID_GLES2
         glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
+#else
+        s_regionColor = wxColor(204, 102, 102, hitrans * 256);
 #endif
 
         DrawRegion(vp, hiregion);
@@ -3810,15 +3815,18 @@ void glChartCanvas::RenderOverlayObjects(ocpnDC &dc, const OCPNRegion &rect_regi
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
 {
-#ifndef USE_ANDROID_GLES2    
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+#ifndef USE_ANDROID_GLES2    
     if( color.IsOk() )
         glColor3ub( color.Red(), color.Green(), color.Blue() );
     else
         glColor3ub( 163, 180, 183 );
-
+#else
+    // Store the color for tesselator callback pickup.
+    s_regionColor = color;
+#endif
+    
     DrawRegion(vp, region);
-#endif    
 }
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
