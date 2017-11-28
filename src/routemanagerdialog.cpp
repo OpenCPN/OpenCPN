@@ -2071,7 +2071,13 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
         m_pWptListCtrl->EnsureVisible( m_lastWptItem );
     
     int iwidth, iheight;
-    pWayPointMan->Getpmarkicon_image_list()->GetSize(0, iwidth, iheight);
+    wxImageList *list = pWayPointMan->Getpmarkicon_image_list();
+    if(list->GetImageCount()){
+        list->GetSize(0, iwidth, iheight);
+        m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
+    }
+    else
+        iwidth = 10;
         
     m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
     
