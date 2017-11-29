@@ -436,6 +436,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_useVBO = false;
     m_TextureFormat = -1;
 
+    m_display_size_mm = 300;
 }
 
 s52plib::~s52plib()
@@ -502,6 +503,11 @@ void s52plib::SetPPMM( float ppmm )
 
     m_rv_scale_factor = 2.0 * (1600. / (810 * ppmm));
 
+}
+
+void s52plib::SetDisplaySize( float size )
+{
+    m_display_size_mm = size;
 }
 
 //      Various static helper methods
@@ -2942,8 +2948,8 @@ wxImage s52plib::RuleXBMToImage( Rule *prule )
 bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
                                   float rot_angle )
 {
-    if( !strncmp(rzRules->obj->FeatureName, "BOYSPP", 6 ))
-        int yyp = 3;
+//     if( !strncmp(rzRules->obj->FeatureName, "BOYSPP", 6 ))
+//         int yyp = 3;
         
     double scale_factor = 1.0;
 
@@ -2952,9 +2958,25 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
-    //  Develop empirically, making a buoy about 6 mm tall
-    double ppmm = GetPPMM();
-    double pix_factor = GetPPMM() / 4.0;
+    //  Develop empirically, making a buoy about 4 mm tall
+    double boyHeight = 14. / GetPPMM();           // from raster symbol definitions, boylat is 14 pix high
+    
+    double targetHeight = 4.0;
+    
+    // But we want to scale the size for smaller displays
+    double displaySize = m_display_size_mm;
+    displaySize = wxMax(displaySize, 100);
+    
+    targetHeight = wxMin(targetHeight, displaySize / 33);
+    
+    double pix_factor = targetHeight / boyHeight;
+    
+    
+    
+    qDebug() << "scaleing" << m_display_size_mm << targetHeight << GetPPMM() << boyHeight << pix_factor;
+    
+    //double ppmm = GetPPMM();
+    //double pix_factor = GetPPMM() / 4.0;
     scale_factor *= pix_factor;
     
     if(g_oz_vector_scale && vp->b_quilt){
@@ -3252,12 +3274,6 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             //normal uv
             uv[0] = tx1; uv[1] = ty1; uv[2] = tx2; uv[3] = ty1;
             uv[6] = tx2; uv[7] = ty2; uv[4] = tx1; uv[5] = ty2;
-
-                    //  Set the onscreen size of the symbol
-                    //  Compensate for various display resolutions
-                    //  Develop empirically, making a buoy about 6 mm tall
-            double ppmm = GetPPMM();
-            double pix_factor = GetPPMM() / 7.0;
 
             w *= scale_factor;
             h *= scale_factor;
@@ -9210,6 +9226,7 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
                 if( 1 ) {
 
                     if(rzRules->obj->auxParm0 <= 0) {
+#if 0                        
                         if(ppg_vbo->data_type != DATA_TYPE_SHORT){
                             // We convert the vertex data from FLOAT to GL_SHORT to make the VBO smaller, but still keeping enough precision
                             //  This requires a scale factor to reduce the range from existing  data to +/- 32K
@@ -9276,7 +9293,7 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
                             ppg_vbo->data_type = DATA_TYPE_SHORT;
 
                         }
-
+#endif
 
 
                         GLuint vboId;
@@ -9743,20 +9760,28 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
 
     if( b_pot ) {
         int xp = sizex;
-        int a = 0;
-        while( xp ) {
-            xp = xp >> 1;
-            a++;
+        if(((xp != 0) && !(xp & (xp - 1))))     // detect POT
+            patt_spec->w_pot = sizex;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            patt_spec->w_pot = 1 << a;
         }
-        patt_spec->w_pot = 1 << a;
 
         xp = sizey;
-        a = 0;
-        while( xp ) {
-            xp = xp >> 1;
-            a++;
+        if(((xp != 0) && !(xp & (xp - 1))))
+            patt_spec->h_pot = sizey;
+        else{
+            int a = 0;
+            while( xp ) {
+                xp = xp >> 1;
+                a++;
+            }
+            patt_spec->h_pot = 1 << a;
         }
-        patt_spec->h_pot = 1 << a;
 
     } else {
         patt_spec->w_pot = sizex;

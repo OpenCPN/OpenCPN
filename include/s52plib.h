@@ -109,6 +109,8 @@ public:
     void SetPPMM( float ppmm );
     float GetPPMM() { return canvas_pix_per_mm; }
 
+    void SetDisplaySize( float size );
+    
     void SetOCPNVersion(int major, int minor, int patch);
     
     double GetRVScaleFactor() { return m_rv_scale_factor; }
@@ -375,6 +377,7 @@ private:
 
     float canvas_pix_per_mm; // Set by parent, used to scale symbols/lines/patterns
     double m_rv_scale_factor;
+    float m_display_size_mm;
     
     S52color m_unused_color;
     wxColor m_unused_wxColor;
