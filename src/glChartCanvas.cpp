@@ -4313,8 +4313,10 @@ void glChartCanvas::Render()
             b_newview = false;
         }
 
-         if(recompose)
+#ifdef USE_ANDROID_GLES2
+        if(recompose)
             b_newview = true;
+#endif        
         
          if( b_newview ) {
 

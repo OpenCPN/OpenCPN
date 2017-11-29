@@ -5953,12 +5953,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       if ( m_cmscale >= 7 )
           return false;
 
+      wxColour col;
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
       bool secondpass = false;
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
-          wxColour col = pen.GetColour();
+          col = pen.GetColour();
           
 #ifndef __WXQT__               // Some QT platforms (Android) have trouble with GL_LINE_SMOOTH
           glEnable( GL_LINE_SMOOTH );
