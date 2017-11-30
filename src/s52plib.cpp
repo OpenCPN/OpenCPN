@@ -8556,7 +8556,26 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         I[1][1] *= rzRules->obj->y_rate;
 
         // Translate
-        I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - rzRules->obj->x_origin) * vp->view_scale_ppm ;
+        float x_origin = rzRules->obj->x_origin;
+        
+        if(rzRules->obj->m_chart_context->chart) {          // not a PlugIn Chart
+                if( ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93 )
+                    || ( (int)rzRules->obj->m_chart_context->chart->GetChartType() == (int)PI_CHART_TYPE_CM93COMP ) )
+                {
+                    //      We may need to translate object coordinates by 360 degrees to conform.
+                    if( BBView.GetMaxLon() >= 180. ) {
+                        if(rzRules->obj->BBObj.GetMinLon() < BBView.GetMaxLon() - 360.)
+                            x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                    }
+                    else
+                        if( (BBView.GetMinLon() <= -180. && rzRules->obj->BBObj.GetMaxLon() > BBView.GetMinLon() + 360.)
+                            || (rzRules->obj->BBObj.GetMaxLon() > 180 && BBView.GetMinLon() + 360 < rzRules->obj->BBObj.GetMaxLon() )
+                        )
+                            x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
+                }
+        }
+        
+        I[3][0] = -(rzRules->sm_transform_parms->easting_vp_center - x_origin) * vp->view_scale_ppm ;
         I[3][1] = -(rzRules->sm_transform_parms->northing_vp_center - rzRules->obj->y_origin) * -vp->view_scale_ppm ;
 
         // Scale
