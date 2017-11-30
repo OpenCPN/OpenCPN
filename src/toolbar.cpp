@@ -2470,10 +2470,13 @@ void ocpnToolBarSimple::OnRightClick( int id, long WXUNUSED(x), long WXUNUSED(y)
     ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
     if(parent){
         if(parent->m_FloatingToolbarConfigMenu){
+            
+            cc1->EnablePaint(false);
             ToolbarChoicesDialog *dlg = new ToolbarChoicesDialog(NULL, GetParent(), -1, _T("OpenCPN"), wxDefaultPosition, wxSize(100,100));
             int rc = dlg->ShowModal();
             delete dlg;
-    
+            cc1->EnablePaint(true);
+            
             if(rc == wxID_OK){
                 wxCommandEvent event( wxEVT_COMMAND_TOOL_RCLICKED, id );
                 event.SetEventObject( this );
