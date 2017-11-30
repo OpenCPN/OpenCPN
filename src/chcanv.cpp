@@ -1027,10 +1027,8 @@ void ChartCanvas::SetDisplaySizeMM( double size )
     current_draw_scaler = m_pix_per_mm * 0.254 * g_current_arrow_scale / 100.0;
     
 #ifdef USE_S57
-    if( ps52plib ){
+    if( ps52plib )
         ps52plib->SetPPMM( m_pix_per_mm );
-        ps52plib->SetDisplaySize( size );
-    }
 #endif
     
      wxString msg;

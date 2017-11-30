@@ -1178,10 +1178,8 @@ void LoadS57()
         pConfig->LoadS57Config();
         ps52plib->SetPLIBColorScheme( global_color_scheme );
         
-        if(cc1){
+        if(cc1)
             ps52plib->SetPPMM( cc1->GetPixPerMM() );
-            ps52plib->SetDisplaySize(g_Platform->GetDisplaySizeMM());
-        }
  
 #ifdef ocpnUSE_GL
             

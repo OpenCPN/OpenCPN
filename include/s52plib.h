@@ -109,8 +109,6 @@ public:
     void SetPPMM( float ppmm );
     float GetPPMM() { return canvas_pix_per_mm; }
 
-    void SetDisplaySize( float size );
-    
     void SetOCPNVersion(int major, int minor, int patch);
     
     double GetRVScaleFactor() { return m_rv_scale_factor; }

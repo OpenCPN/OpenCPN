@@ -502,13 +502,16 @@ void s52plib::SetPPMM( float ppmm )
     // and a raster BOYLAT is 16 pix.
 
     m_rv_scale_factor = 2.0 * (1600. / (810 * ppmm));
+    
+    // Estimate the display size
+    
+    int ww, hh;
+    ::wxDisplaySize( &ww, &hh);
+    m_display_size_mm = wxMax(ww, hh) / GetPPMM();        // accurate enough for internal use
+    
 
 }
 
-void s52plib::SetDisplaySize( float size )
-{
-    m_display_size_mm = size;
-}
 
 //      Various static helper methods
 
@@ -2959,24 +2962,32 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     //  Set the onscreen size of the symbol
     //  Compensate for various display resolutions
     //  Develop empirically, making a buoy about 4 mm tall
-    double boyHeight = 14. / GetPPMM();           // from raster symbol definitions, boylat is 14 pix high
+    double boyHeight = 21. / GetPPMM();           // from raster symbol definitions, boylat is xx pix high
     
-    double targetHeight = 4.0;
+    double targetHeight0 = 4.0;  
     
     // But we want to scale the size for smaller displays
     double displaySize = m_display_size_mm;
     displaySize = wxMax(displaySize, 100);
     
-    targetHeight = wxMin(targetHeight, displaySize / 33);
+    float targetHeight = wxMin(targetHeight0, displaySize / 30);
     
     double pix_factor = targetHeight / boyHeight;
     
     
     
-    qDebug() << "scaleing" << m_display_size_mm << targetHeight << GetPPMM() << boyHeight << pix_factor;
+    //qDebug() << "scaleing" << m_display_size_mm  << targetHeight0 << targetHeight << GetPPMM() << boyHeight << pix_factor;
     
-    //double ppmm = GetPPMM();
-    //double pix_factor = GetPPMM() / 4.0;
+    // for Hubert, and my moto 
+    //scaleing 93.98 93 4 3.33333 12.7312 1.64949 2.02082
+    
+    // My nvidia tab
+    //scaleing 144.78 144 4 4 12.6667 1.65789 2.4127
+    
+    // judgement: all OK
+    
+    
+    
     scale_factor *= pix_factor;
     
     if(g_oz_vector_scale && vp->b_quilt){
