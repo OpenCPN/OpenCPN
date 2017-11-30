@@ -564,7 +564,7 @@ void glChartCanvas::OnActivate( wxActivateEvent& event )
 
 void glChartCanvas::OnSize( wxSizeEvent& event )
 {
-#ifdef __OCPN__ANDROID__    
+#ifdef __OCPN__ANDROID__ 
      if(!g_running){
          wxLogMessage(_T("Got OnSize event while NOT running"));
          event.Skip();
@@ -3318,10 +3318,13 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
         
     //  Check the first, smallest scale chart
-    if(chart) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-            chart = NULL;
-    }
+    // This kicks in at very small scale (ZOOM OUT)
+     if(chart) {
+         if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ){
+             chart = NULL;
+             qDebug() << "NoRender1";
+         }
+     }
 
     LLRegion region = vp.GetLLRegion(rect_region);
 
@@ -3335,10 +3338,10 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         //  However, it is safer do this test on all charts, letting the factor g_ChartNotRenderScaleFactor ultimately determine whether to render
 //        if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
          {
-                 if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                     chart = cc1->m_pQuilt->GetNextChart();
-                     continue;
-                 }
+//                  if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+//                      chart = cc1->m_pQuilt->GetNextChart();
+//                      continue;
+//                  }
          }
 
         QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
@@ -3765,12 +3768,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
     bool b_render = true;
     if(vp.b_quilt){
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
-    
+
+     //  Kicks in at very small scale, ZOOM OUT   
     //  Check the first, smallest scale chart
-        if(chart) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
-                b_render = false;
-        }
+         if(chart) {
+              if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+                  b_render = false;
+         }
     }
     
     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
@@ -3786,17 +3790,19 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
             }
     }
 
-    if(vp.b_quilt)
-        RenderQuiltViewGL( vp, rect_region );
-    else {
-        LLRegion region = vp.GetLLRegion(rect_region);
-        if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-            RenderRasterChartRegionGL( Current_Ch, vp, region );
-        else if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-            chart_region.Intersect(region);
-            RenderNoDTA(vp, chart_region);
-            Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
-        } 
+    if(b_render){
+        if(vp.b_quilt)
+            RenderQuiltViewGL( vp, rect_region );
+        else {
+            LLRegion region = vp.GetLLRegion(rect_region);
+            if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
+                RenderRasterChartRegionGL( Current_Ch, vp, region );
+            else if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                chart_region.Intersect(region);
+                RenderNoDTA(vp, chart_region);
+                Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
+            } 
+        }
     }
         
 }
@@ -4193,13 +4199,14 @@ int refChartIndex;
 int n_render;
 void glChartCanvas::Render()
 {
-    if( !m_bsetup || ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
+    if( !m_bsetup || ( !cc1->VPoint.b_quilt && !Current_Ch ) || !ChartData) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
         SwapBuffers();
 #endif
         return;
     }
 
+    
     OCPNStopWatch sw;
         
 #ifdef USE_ANDROID_GLES2
@@ -4361,9 +4368,6 @@ void glChartCanvas::Render()
                 accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
             }
 
-            //  On very small scale, make sure that world chart renders fully
-            if(VPoint.view_scale_ppm < 0.003)
-                accelerated_pan = false;
             
             // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2            
@@ -4447,6 +4451,7 @@ void glChartCanvas::Render()
                 
 #else   // GLES2
             if(accelerated_pan) {
+                //qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
 
@@ -4612,8 +4617,7 @@ void glChartCanvas::Render()
             } // accelerated pan
                 
             else { // must redraw the entire screen
-                    //qDebug() << "Fullpage";
-                
+//                qDebug() << "Fullpage";
                 
                 ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
@@ -4629,7 +4633,9 @@ void glChartCanvas::Render()
             
                 RenderCharts(m_gldc, screen_region);
                 RenderOverlayObjects(m_gldc, screen_region);
-                        
+
+                //qDebug() << "RenderTimeFULL" << sw.GetTime();
+                
                 m_cache_page = !m_cache_page; /* page flip */
                         
                     
@@ -5703,9 +5709,9 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 
                     OCPNStopWatch sw;
                     cc1->PanCanvas( dx, -dy );
-                    //qDebug() << "PanCanvasTime" << sw.GetTime();
+                    qDebug() << "PanCanvasTime" << sw.GetTime();
 
-                    //qDebug() << "panUpdate" << dx << dy;
+                    qDebug() << "panUpdate" << dx << dy;
                 }
                 else{
                     qDebug() << "fastpan" << dx << dy;
