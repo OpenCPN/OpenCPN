@@ -2260,6 +2260,9 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
       double ur_lon = box.GetMaxLon();
       double ur_lat = box.GetMaxLat();
 
+      // CLip upper latitude to avoid trying to fetch non-existent cells above N80.
+      ur_lat = wxMin(ur_lat, 79.99999);
+
       //    Adjust to always positive for easier cell calculations
       if ( ll_lon < 0 )
       {
