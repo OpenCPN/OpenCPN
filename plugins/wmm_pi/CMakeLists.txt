@@ -40,8 +40,13 @@ SET(SRC_WMM
 	    src/WmmUIDialog.h
 	    src/WmmUIDialog.cpp
 	    src/WMM_COF.h
-            src/TexFont.cpp
-            src/TexFont.h
+            src/pi_TexFont.cpp
+            src/pi_TexFont.h
+            src/pi_ocpndc.cpp
+            src/pi_shaders.cpp
+            src/pi_ocpndc.h
+            src/pi_shaders.h
+
 	)
 
 IF(WIN32)
@@ -63,6 +68,9 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 IF (QT_ANDROID )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OCPN_Core_LIBRARIES} )
     TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lgnustl_shared")
+#    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv1_CM" )
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} "-lGLESv2" )
+
 ENDIF(QT_ANDROID)
 
 INCLUDE("cmake/PluginInstall.cmake")

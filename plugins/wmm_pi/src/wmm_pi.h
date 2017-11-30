@@ -43,6 +43,7 @@
 #define     MY_API_VERSION_MINOR    8
 
 #include "ocpn_plugin.h"
+#include "pi_ocpndc.h"
 
 #include "WMMHeader.h"
 #include "WMM_SubLibrary.c"
@@ -106,7 +107,7 @@ public:
     void SetCursorLatLon(double lat, double lon);
     void SetPositionFix(PlugIn_Position_Fix &pfix);
 
-    void RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp);
+    void RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp);
     bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
     bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
     void RecomputePlot();
@@ -144,6 +145,8 @@ public:
 
     wxWindow       *m_parent_window;
     WmmUIDialog    *m_pWmmDialog;
+    
+    pi_ocpnDC *m_oDC;
     
 private:
     wxFileConfig     *m_pconfig;

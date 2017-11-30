@@ -241,7 +241,8 @@ int wmm_pi::Init(void)
     }
 
     m_pWmmDialog = NULL;
-
+    m_oDC = NULL;
+    
     return ret_flag;
 }
 
@@ -271,6 +272,10 @@ bool wmm_pi::DeInit(void)
     }*/
     
     delete pFontSmall;
+    
+    if(m_oDC)
+        delete m_oDC;
+    
     return true;
 }
 
@@ -439,7 +444,7 @@ void wmm_pi::OnToolbarToolCallback(int id)
     
 }
 
-void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
+void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp)
 {
     if(!m_bShowPlot)
       return;
@@ -451,23 +456,46 @@ void wmm_pi::RenderOverlayBoth(wxDC *dc, PlugIn_ViewPort *vp)
 
 bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
-    RenderOverlayBoth(&dc, vp);
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(&dc);
+    
+    RenderOverlayBoth(m_oDC, vp);
+    
     return true;
 }
 
 bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
+    if(!m_bShowPlot)
+        return true;
+    
+    if(!m_oDC)
+        m_oDC = new pi_ocpnDC();
+    
+    m_oDC->SetVP(vp);
+    m_oDC->SetDC(NULL);
+    
+#ifndef USE_ANDROID_GLES2    
     glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT | GL_HINT_BIT );
     
     glEnable( GL_LINE_SMOOTH );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+#endif
+    
+    RenderOverlayBoth(m_oDC, vp);
 
-    RenderOverlayBoth(0, vp);
-
+#ifndef USE_ANDROID_GLES2
     glPopAttrib();
-
+#endif
+    
     return true;
 }
 

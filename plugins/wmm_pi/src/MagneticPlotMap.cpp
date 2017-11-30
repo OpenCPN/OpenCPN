@@ -34,6 +34,7 @@
 #include <wx/progdlg.h>
 
 #include "ocpn_plugin.h"
+#include "pi_ocpndc.h"
 
 #ifndef __OCPN__ANDROID__
 #include <GL/gl.h>
@@ -392,7 +393,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
 }
 
 /* draw a line segment in opengl from lat/lon and viewport */
-void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double lat2, double lon2)
+void DrawLineSeg(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double lat2, double lon2)
 {
     /* avoid lines which cross over the view port the long way */
     if(lon1+180 < VP.clon && lon2+180 > VP.clon)
@@ -408,6 +409,8 @@ void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double
     GetCanvasPixLL(&VP, &r1, lat1, lon1);
     GetCanvasPixLL(&VP, &r2, lat2, lon2);
 
+    dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
+#if 0    
     if(dc)
         dc->DrawLine(r1.x, r1.y, r2.x, r2.y);
     else {
@@ -416,6 +419,7 @@ void DrawLineSeg(wxDC *dc, PlugIn_ViewPort &VP, double lat1, double lon1, double
         glVertex2i(r2.x, r2.y);
         glEnd();
     }
+#endif    
 }
 
 /* reset the map and clear all the data so it can be reused */
@@ -427,7 +431,7 @@ void MagneticPlotMap::ClearMap()
 }
 
 /* draw text of the value of a contour at a given location */
-void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon)
+void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon)
 {
     wxPoint r;
 
@@ -444,6 +448,10 @@ void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour,
     wxString msg;
     msg.Printf(_T("%.0f"), contour);
 
+    int w, h;
+    dc->GetTextExtent( msg, &w, &h);
+    dc->DrawText(msg, r.x - w/2, r.y - h/2);
+#if 0    
     if(dc) {
         int w, h;
         dc->GetTextExtent( msg, &w, &h);
@@ -461,16 +469,21 @@ void MagneticPlotMap::DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour,
 
         glDisable(GL_BLEND);
     }
+#endif    
 }
 
 /* plot to dc, or opengl is dc is NULL */
-void MagneticPlotMap::Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color)
+void MagneticPlotMap::Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color)
 {
     if(!m_bEnabled)
         return;
 
     wxFont font( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
 
+    dc->SetPen(wxPen(color, 3));
+    dc->SetTextForeground(color);
+    dc->SetFont( font );
+#if 0    
     if(dc) {
         dc->SetPen(wxPen(color, 3));
         dc->SetTextForeground(color);
@@ -480,7 +493,7 @@ void MagneticPlotMap::Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color)
         glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
         m_TexFont.Build( font );
     }
-
+#endif
     int startlatind = floor((vp->lat_min+MAX_LAT)/ZONE_SIZE);
     if(startlatind < 0) startlatind = 0;
 

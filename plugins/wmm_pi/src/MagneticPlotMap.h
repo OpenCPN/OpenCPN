@@ -91,10 +91,10 @@ public:
     void PlotRegion(std::list<PlotLineSeg*> &region,
                     double lat1, double lon1, double lat2, double lon2);
     bool Recompute(wxDateTime date);
-    void Plot(wxDC *dc, PlugIn_ViewPort *vp, wxColour color);
+    void Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color);
 
     void ClearMap();
-    void DrawContour(wxDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon);
+    void DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP, double contour, double lat, double lon);
 
     MagneticPlotType m_type;
     bool m_bEnabled;
