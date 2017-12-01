@@ -88,6 +88,9 @@ extern GLuint g_raster_format;
 #include "androidUTIL.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include <QtWidgets/QScroller>
+#endif
 
 #include "OCPNPlatform.h"
 
@@ -281,6 +284,17 @@ extern bool g_bInlandEcdis;
 extern bool g_bSpaceDropMark;
 
 extern "C" bool CheckSerialAccess(void);
+
+#ifdef __OCPN__ANDROID__
+void prepareSlider(wxSlider *slider)
+{
+    slider->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    slider->GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
+    slider->GetHandle()->grabGesture(Qt::PanGesture);
+    slider->GetHandle()->grabGesture(Qt::SwipeGesture);
+}
+#endif
+
 
 // sort callback for Connections list  Sort by priority.
 #if wxCHECK_VERSION(2, 9, 0)
@@ -2997,7 +3011,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                   wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
     #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    prepareSlider(m_pSlider_Zoom);
     #endif
     
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
@@ -3007,7 +3021,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                          wxSize(slider_width, slider_height), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
     #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
+    prepareSlider( m_pSlider_Zoom_Vector );
     #endif
     
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
@@ -3125,7 +3139,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    prepareSlider( m_pSlider_Zoom );
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_Zoom, inputFlags);
@@ -3135,7 +3149,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
         wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
 #ifdef __OCPN__ANDROID__
-    m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
+    prepareSlider( m_pSlider_Zoom_Vector );
 #endif
     
     itemBoxSizerUI->Add(m_pSlider_Zoom_Vector, inputFlags);
@@ -3428,7 +3442,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                        border_size);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    prepareSlider( m_pSlider_CM93_Zoom );
 #endif
 
 #endif
@@ -3659,7 +3673,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
                        border_size);
 
 #ifdef __OCPN__ANDROID__
-    m_pSlider_CM93_Zoom->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    prepareSlider( m_pSlider_CM93_Zoom );
 #endif
 
 #endif
@@ -4725,7 +4739,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_GUI_Factor->Show();
 
 #ifdef __WXQT__
-  m_pSlider_GUI_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+  prepareSlider( m_pSlider_GUI_Factor);
 #endif
 
   m_pSlider_Chart_Factor = new wxSlider( itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
@@ -4738,12 +4752,13 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   m_pSlider_Chart_Factor->Show();
 
 #ifdef __WXQT__
-  m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+  prepareSlider(m_pSlider_Chart_Factor);
 #endif
 
   miscOptions->AddSpacer(20);
 }
-
+      
+   
 void options::CreateListbookIcons()
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
