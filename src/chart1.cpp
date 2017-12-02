@@ -4184,12 +4184,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_SCALE_IN:
         case ID_STKDN:
             DoStackDelta( -1 );
+            
             DoChartUpdate();
             break;
 
         case ID_MENU_ZOOM_IN:
         case ID_ZOOMIN: {
             cc1->ZoomCanvas( 2.0, false );
+            //cc1->PanCanvas(100 , 0);
             DoChartUpdate();
             break;
         }
@@ -4197,6 +4199,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_MENU_ZOOM_OUT:
         case ID_ZOOMOUT: {
             cc1->ZoomCanvas( 0.5, false );
+            //cc1->PanCanvas(-100 , 0);
             DoChartUpdate();
             break;
         }
@@ -5645,10 +5648,10 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
             if( pc ) {
                 
                 double max_ref_scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
-                
+                //  Using the same factors as are used in quilt composition, we find that
                 //  The scale is too small, leading to excessive underzoom.
                 //  Adjust the viewpoint scale to a nominal value
-                if((cc1->GetCanvasScaleFactor() / scale ) > max_ref_scale){
+                if((cc1->GetCanvasScaleFactor() / scale ) > max_ref_scale * 64){
                     double new_scale = (cc1->GetCanvasScaleFactor() / max_ref_scale) * 2.0;
                     cc1->SetViewPoint( lat, lon, new_scale, 0, cc1->GetVPRotation() );
                 }
