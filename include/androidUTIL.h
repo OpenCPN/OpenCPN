@@ -147,6 +147,7 @@ QString getListBookStyleSheet();
 QString getScrollBarsStyleSheet();
 void setChoiceStyleSheet( wxChoice *win, int refDim);
 void setMenuStyleSheet( wxMenu *win, const wxFont& font);
+QString prepareAndroidSliderStyleSheet(int sliderWidth);
 
 //      SVG Support
 wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned int height );

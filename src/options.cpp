@@ -288,7 +288,7 @@ extern "C" bool CheckSerialAccess(void);
 #ifdef __OCPN__ANDROID__
 void prepareSlider(wxSlider *slider)
 {
-    slider->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
+    slider->GetHandle()->setStyleSheet(prepareAndroidSliderStyleSheet(slider->GetSize().x));
     slider->GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
     slider->GetHandle()->grabGesture(Qt::PanGesture);
     slider->GetHandle()->grabGesture(Qt::SwipeGesture);
@@ -2998,7 +2998,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     // Chart Zoom Scale Weighting
     
-    int slider_width = sz.x * 3 / 4;
+    int slider_width = sz.x / 2;
     int slider_height = dpmm * 6.0;
     
     wxStaticText* zoomTextHead =  new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Zoom/Scale Weighting"));
@@ -3134,9 +3134,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     
     
     // Chart Zoom Scale Weighting
+    wxSize sz = g_Platform->getDisplaySize();
+    
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(sz.x / 2, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
 
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom );
@@ -3146,7 +3148,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(sz.x / 2, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
     
 #ifdef __OCPN__ANDROID__
     prepareSlider( m_pSlider_Zoom_Vector );
@@ -3660,7 +3662,8 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     optionsColumn->Add(0, border_size * 4);
 
 #ifdef USE_S57
-    int slider_width = wxMax(m_fontHeight * 4, 150);
+    wxSize sz = g_Platform->getDisplaySize();
+    int slider_width = wxMax(m_fontHeight * 4, sz.x / 2);
 
     optionsColumn->Add(
         new wxStaticText(ps57Ctl, wxID_ANY, _("CM93 Detail Level")),
@@ -4723,7 +4726,8 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   
   miscOptions->AddSpacer(10);
   
-  int slider_width = wxMax(m_fontHeight * 4, 300);
+  wxSize sz = g_Platform->getDisplaySize();
+  int slider_width = wxMax(m_fontHeight * 4, sz.x / 2);
   
   int slider_height = 50;
   if(g_btouch)
