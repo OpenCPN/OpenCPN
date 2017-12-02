@@ -70,7 +70,7 @@ enum ZoneSelection { AUTO_SELECTION, SAVED_SELECTION, START_SELECTION, DRAW_SELE
 class GribTimelineRecordSet : public GribRecordSet
 {
 public:
-    GribTimelineRecordSet();
+    GribTimelineRecordSet(unsigned int cnt);
 //    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
     ~GribTimelineRecordSet();
 
@@ -217,11 +217,18 @@ public:
         return m_pRefDateTime;
     }
 
+    const unsigned int GetCounter( )
+    {
+        return m_counter;
+    }
+
     WX_DEFINE_ARRAY_INT(int, GribIdxArray);
     GribIdxArray m_GribIdxArray;
 
 private:
+    static unsigned int ID;
 
+    const unsigned int m_counter;
     bool m_bOK;
     wxString m_last_message;
     wxArrayString m_FileNames;

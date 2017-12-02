@@ -110,7 +110,7 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
    as a possible optimization, write this function to also
    take latitude longitude boundaries so the resulting record can be
    a subset of the input, but also would need to be recomputed when panning the screen */
-GribTimelineRecordSet::GribTimelineRecordSet()
+GribTimelineRecordSet::GribTimelineRecordSet(unsigned int cnt): GribRecordSet(cnt)
 {
     for(int i=0; i<Idx_COUNT; i++)
         m_IsobarArray[i] = NULL;
@@ -1245,7 +1245,7 @@ GribTimelineRecordSet* GRIBUICtrlBar::GetTimeLineRecordSet(wxDateTime time)
     if(rsa->GetCount() == 0)
         return NULL;
 
-    GribTimelineRecordSet *set = new GribTimelineRecordSet;
+    GribTimelineRecordSet *set = new GribTimelineRecordSet(m_bGRIBActiveFile->GetCounter());
     for(int i=0; i<Idx_COUNT; i++) {
         GribRecordSet *GRS1 = NULL, *GRS2 = NULL;
         GribRecord *GR1 = NULL, *GR2 = NULL;
@@ -1640,13 +1640,13 @@ void GRIBUICtrlBar::SetFactoryOptions()
 //----------------------------------------------------------------------------------------------------------
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
+unsigned int GRIBFile::ID = 0;
 
-GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile )
+GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec, bool newestFile ): m_counter(++ID)
 {
     m_bOK = false;           // Assume ok until proven otherwise
     m_pGribReader = NULL;
     m_last_message = wxEmptyString;
-
     for (unsigned int i = 0; i < file_names.GetCount(); i++) {
         wxString file_name = file_names[i];
         if( ::wxFileExists( file_name ) )
@@ -1658,7 +1658,6 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
         return;
     }
     //    Use the zyGrib support classes, as (slightly) modified locally....
-
     m_pGribReader = new GribReader();
 
     //    Read and ingest the entire GRIB file.......
@@ -1702,7 +1701,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
     std::set<time_t>::iterator iter;
     std::set<time_t> date_list = m_pGribReader->getListDates();
     for( iter = date_list.begin(); iter != date_list.end(); iter++ ) {
-        GribRecordSet *t = new GribRecordSet();
+        GribRecordSet *t = new GribRecordSet(m_counter);
         time_t reftime = *iter;
         t->m_Reference_Time = reftime;
         m_GribRecordSetArray.Add( t );
