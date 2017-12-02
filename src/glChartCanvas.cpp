@@ -3322,7 +3322,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
      if(chart) {
          if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ){
              chart = NULL;
-             qDebug() << "NoRender1";
+             //qDebug() << "NoRender1";
          }
      }
 
@@ -3786,6 +3786,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 
             if(!background_region.Empty()) {
                 ViewPort cvp = ClippedViewport(vp, background_region);
+                SetClipRegion(vp, background_region);
                 RenderWorldChart(dc, cvp, rect, world_view);
             }
     }
@@ -4228,6 +4229,14 @@ void glChartCanvas::Render()
         recompose = true;
     }
     
+    //  Check to see if the Compose() call forced a SENC build.
+    //  If so, zoom the canvas just slightly to force a deferred redraw of the full screen.
+    if(sw.GetTime() > 2000){       // two seconds is long enough to detect SENC build.
+        cc1->ZoomCanvas( 1.0001, false );
+    }
+        
+    //qDebug() << "RenderTime1" << sw.GetTime();
+        
     s_tess_vertex_idx = 0;
     quiltHash = cc1->m_pQuilt->GetXStackHash();
     refChartIndex = cc1->m_pQuilt->GetRefChartdbIndex();
@@ -4368,7 +4377,6 @@ void glChartCanvas::Render()
                 accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
             }
 
-            
             // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2            
             if(accelerated_pan) {
@@ -4617,7 +4625,7 @@ void glChartCanvas::Render()
             } // accelerated pan
                 
             else { // must redraw the entire screen
-//                qDebug() << "Fullpage";
+                //qDebug() << "Fullpage";
                 
                 ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
@@ -5709,12 +5717,12 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
 
                     OCPNStopWatch sw;
                     cc1->PanCanvas( dx, -dy );
-                    qDebug() << "PanCanvasTime" << sw.GetTime();
+                    //qDebug() << "PanCanvasTime" << sw.GetTime();
 
-                    qDebug() << "panUpdate" << dx << dy;
+                    //qDebug() << "panUpdate" << dx << dy;
                 }
                 else{
-                    qDebug() << "fastpan" << dx << dy;
+                    //qDebug() << "fastpan" << dx << dy;
                     FastPan( dx, dy );
                 }
                 
@@ -5731,7 +5739,7 @@ void glChartCanvas::OnEvtPanGesture( wxQT_PanGestureEvent &event)
             
         case GestureFinished:
             if(g_GLOptions.m_bUseCanvasPanning){
-                qDebug() << "panfinish";
+                //qDebug() << "panfinish";
                 if(m_binPan){
                     cc1->PanCanvas( -panx, pany );
                 }
