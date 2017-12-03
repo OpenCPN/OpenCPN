@@ -309,6 +309,8 @@ extern bool              g_benable_rotate;
 extern bool              g_bRollover;
 
 extern bool              g_bSpaceDropMark;
+extern int               g_chart_zoom_modifier;
+extern int               g_chart_zoom_modifier_vector;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1276,9 +1278,44 @@ bool ChartCanvas::IsChartQuiltableRef( int db_index )
 
 bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
 {
-    double chartMaxScale = chart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
-    return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
+    ChartFamilyEnum family = chart->GetChartFamily();
+
+    double zoom_mod = (double)g_chart_zoom_modifier;
+    if(family == CHART_FAMILY_VECTOR)
+        zoom_mod = (double)g_chart_zoom_modifier_vector;
+
+    double modf = zoom_mod/5.;  // -1->1
+    double user_mod = pow(8., modf);
+    user_mod = wxMax(user_mod, .2);
+    user_mod = wxMin(user_mod, 8.0);
+    
+    int type_mod = 1;
+    // Apply zoom scale modifier according to chart family.
+    switch(family){
+        case CHART_FAMILY_RASTER:{
+            type_mod = 1;
+            break;
+        }
+        
+        case CHART_FAMILY_VECTOR:{
+            user_mod = wxMin(user_mod, 2.0);
+            type_mod = 4;
+            break;
+        }
+        
+        default:{
+            user_mod = wxMin(user_mod, 2.0);
+            type_mod = 2;
+            break;
+        }
+    }
+
+    return (chart->GetNativeScale() * type_mod * user_mod) > vp.chart_scale;
+    
+    //double chartMaxScale = chart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
+    //return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
+
 
 void ChartCanvas::StartMeasureRoute()
 {
@@ -3281,8 +3318,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             bool renderable = true;
             ChartBase* referenceChart = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
             if( referenceChart ) {
-                double chartMaxScale = referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
-                renderable = chartMaxScale * 64 >= VPoint.chart_scale;
+                if( ! IsChartLargeEnoughToRender( referenceChart, VPoint ) )
+                    renderable = false;
+                //double chartMaxScale = referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
+                //renderable = chartMaxScale * 64 >= VPoint.chart_scale;
             }
             if( !renderable )
                 b_needNewRef = true;
@@ -3307,13 +3346,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     int candidate_scale = cte_candidate.GetScale();
                     int candidate_type = cte_candidate.GetChartType();
 
-                    if( ( candidate_scale >= target_scale ) && ( candidate_type == target_type ) ){
+                    if( ( candidate_scale > target_scale ) && ( candidate_type == target_type ) ){
                         bool renderable = true;
                         ChartBase* tentative_referenceChart = ChartData->OpenChartFromDB( pCurrentStack->GetDBIndex( candidate_stack_index ),
                                                                                 FULL_INIT );
                         if( tentative_referenceChart ) {
-                            double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
-                            renderable = chartMaxScale*1.5 > VPoint.chart_scale;
+                            renderable = IsChartLargeEnoughToRender( tentative_referenceChart, VPoint );
+                            
+//                            double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
+//                            renderable = chartMaxScale*1.5 > VPoint.chart_scale;
                         }
                         
                         if(renderable)
