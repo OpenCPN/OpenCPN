@@ -1104,14 +1104,12 @@ void glChartCanvas::SetupOpenGL()
     m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
-#ifdef __OCPN__ANDROID__
-///    m_b_useFBOStencil = false;
-#endif
-    
+#ifndef USE_ANDROID_GLES2
     //  On Intel Graphics platforms, don't use stencil buffer at all
     if( bad_stencil_code)    
         s_b_useStencil = false;
-    
+#endif
+        
     g_GLOptions.m_bUseCanvasPanning = false;
 
         
@@ -1166,6 +1164,10 @@ void glChartCanvas::SetupOpenGL()
     //  If stencil seems to be a problem, force use of depth buffer clipping for Area Patterns
     s_b_useStencilAP = s_b_useStencil & !bad_stencil_code;
 
+#ifdef USE_ANDROID_GLES2
+    s_b_useStencilAP = s_b_useStencil;                  // required for GLES2 platform
+#endif    
+    
     if( m_b_BuiltFBO ) {
         wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
 
