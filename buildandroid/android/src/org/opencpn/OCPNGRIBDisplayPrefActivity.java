@@ -253,16 +253,16 @@ public class OCPNGRIBDisplayPrefActivity extends PreferenceActivity
 
            // Make sure the request was successful
            if (resultCode == RESULT_OK) {
-               ShowTextDialog("@strings/ocpn_GRIB_download_dialog_OK");
+               ShowTextDialog(getResources().getString(R.string.ocpn_GRIB_download_dialog_OK));
            }
            else if(resultCode == DownloadFile.ERROR_NO_INTERNET){
-               ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_INTERNET");
+               ShowTextDialog(getResources().getString(R.string.ocpn_GRIB_download_dialog_NO_INTERNET));
            }
            else if(resultCode == DownloadFile.ERROR_NO_CONNECTION){
-               ShowTextDialog("@string/ocpn_GRIB_download_dialog_NO_CONNECTION");
+               ShowTextDialog(getResources().getString(R.string.ocpn_GRIB_download_dialog_NO_CONNECTION));
            }
            else {
-               ShowTextDialog("@string/ocpn_GRIB_download_dialog_DOWN_FAIL");
+               ShowTextDialog(getResources().getString(R.string.ocpn_GRIB_download_dialog_DOWN_FAIL));
            }
 
        }

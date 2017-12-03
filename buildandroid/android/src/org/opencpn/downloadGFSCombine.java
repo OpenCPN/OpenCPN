@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.ConnectivityManager;
 
+import org.opencpn.opencpn.R;
+
 public class downloadGFSCombine extends Activity {
 
     //initialize our progress dialog/bar
@@ -336,7 +338,7 @@ public class downloadGFSCombine extends Activity {
         switch (id) {
             case DIALOG_DOWNLOAD_PROGRESS: //we set this to 0
                 mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("@string/DOWNLOADING_FILE");
+                mProgressDialog.setMessage(getResources().getString(R.string.DOWNLOADING_FILE));
                 mProgressDialog.setIndeterminate(false);
                 mProgressDialog.setMax(100);
                 mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
