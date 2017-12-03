@@ -101,6 +101,24 @@ WX_DEFINE_OBJARRAY ( Array_Of_M_COVR_Desc );
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( List_Of_M_COVR_Desc );
 
+#if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
+class OCPNStopWatch
+{
+public:
+    OCPNStopWatch() { Reset(); }
+    void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
+    
+    double GetTime() {
+        timespec tp_end;
+        clock_gettime(CLOCK_REALTIME, &tp_end);
+        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
+    }
+    
+private:
+    timespec tp;
+};
+#endif
+
 
 void appendOSDirSep ( wxString* pString )
 {
@@ -2259,6 +2277,9 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
 
       double ur_lon = box.GetMaxLon();
       double ur_lat = box.GetMaxLat();
+      
+      // CLip upper latitude to avoid trying to fetch non-existent cells.
+      ur_lat = wxMin(ur_lat, 79.99999);
 
       //    Adjust to always positive for easier cell calculations
       if ( ll_lon < 0 )
@@ -5376,20 +5397,22 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 //      g_bDebugCM93 = true;
 
 //      CALLGRIND_START_INSTRUMENTATION
+//        OCPNStopWatch sw;
 
       ViewPort vp = VPoint;
 
       bool render_return = false;
       if ( m_pcm93chart_current )
       {
-            m_pcm93chart_current->SetVPParms ( vp );
-
+            // This will be done later, in s57chart base class render method
+            ///m_pcm93chart_current->SetVPParms ( vp );
+            
             //    Check the current chart scale to see if it covers the requested region totally
             if ( VPoint.b_quilt )
             {
                   LLRegion vpr_empty = Region;
                   LLRegion chart_region = GetValidRegion();
-
+                  
                   // old method which draws the regions from large to small scale, then finishes with the largest
                   // scale.  This is broken on systems with broken clipping regions
                   
@@ -5450,7 +5473,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                   //  Render the on-top Reference region/scale
                   render_return |= m_pcm93chart_current->RenderRegionViewOnGL( glc, vp, RectRegion, Region );
-
+                  
                   m_Name = m_pcm93chart_current->GetName();
 
             }
