@@ -77,6 +77,7 @@ wxArrayPtrVoid pi_gTesselatorVertices;
 #ifdef USE_ANDROID_GLES2
 extern GLint pi_color_tri_shader_program;
 extern GLint pi_circle_filled_shader_program;
+extern GLint texture_2D_shader_program;
 #endif
 
 //----------------------------------------------------------------------------
@@ -1931,10 +1932,11 @@ void pi_ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             glEnable(GL_BLEND);
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
+            float u = (float)w/TextureWidth, v = (float)h/TextureHeight;
+            
 #ifndef USE_ANDROID_GLES2            
             glColor3ub(0,0,0);
             
-            float u = (float)w/TextureWidth, v = (float)h/TextureHeight;
             glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(x, y);
             glTexCoord2f(u, 0); glVertex2f(x+w, y);
@@ -1942,6 +1944,92 @@ void pi_ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             glTexCoord2f(0, v); glVertex2f(x, y+h);
             glEnd();
 #else
+            float uv[8];
+            float coords[8];
+            
+            //normal uv
+            uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+            uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+            
+            // pixels
+            coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
+            coords[4] = w; coords[5] = h; coords[6] = 0; coords[7] = h;
+            
+            glUseProgram( texture_2D_shader_program );
+            
+            // Get pointers to the attributes in the program.
+            GLint mPosAttrib = glGetAttribLocation( texture_2D_shader_program, "aPos" );
+            GLint mUvAttrib  = glGetAttribLocation( texture_2D_shader_program, "aUV" );
+            
+            // Set up the texture sampler to texture unit 0
+            GLint texUni = glGetUniformLocation( texture_2D_shader_program, "uTex" );
+            glUniform1i( texUni, 0 );
+            
+            // Disable VBO's (vertex buffer objects) for attributes.
+            glBindBuffer( GL_ARRAY_BUFFER, 0 );
+            glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+            
+            // Set the attribute mPosAttrib with the vertices in the screen coordinates...
+            glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
+            // ... and enable it.
+            glEnableVertexAttribArray( mPosAttrib );
+            
+            // Set the attribute mUvAttrib with the vertices in the GL coordinates...
+            glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
+            // ... and enable it.
+            glEnableVertexAttribArray( mUvAttrib );
+            
+            // Rotate 
+            float angle = 0;
+            mat4x4 I, Q;
+            mat4x4_identity(I);
+            mat4x4_rotate_Z(Q, I, angle);
+            
+            // Translate
+            Q[3][0] = x;
+            Q[3][1] = y;
+            
+            GLint matloc = glGetUniformLocation(texture_2D_shader_program,"TransformMatrix");
+            glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
+            
+            // Select the active texture unit.
+            glActiveTexture( GL_TEXTURE0 );
+            
+            
+            // For some reason, glDrawElements is busted on Android
+            // So we do this a hard ugly way, drawing two triangles...
+            #if 0
+            GLushort indices1[] = {0,1,3,2}; 
+            glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, indices1);
+            #else
+            
+            float co1[8];
+            co1[0] = coords[0];
+            co1[1] = coords[1];
+            co1[2] = coords[2];
+            co1[3] = coords[3];
+            co1[4] = coords[6];
+            co1[5] = coords[7];
+            co1[6] = coords[4];
+            co1[7] = coords[5];
+            
+            float tco1[8];
+            tco1[0] = uv[0];
+            tco1[1] = uv[1];
+            tco1[2] = uv[2];
+            tco1[3] = uv[3];
+            tco1[4] = uv[6];
+            tco1[5] = uv[7];
+            tco1[6] = uv[4];
+            tco1[7] = uv[5];
+            
+            glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, co1 );
+            glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
+            
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            
+            #endif
+            
 #endif            
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
