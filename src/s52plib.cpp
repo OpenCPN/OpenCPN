@@ -9506,6 +9506,8 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
 
 
 #endif
+        glDisable( GL_TEXTURE_2D );
+
         return 1;
 }
 
@@ -12008,12 +12010,13 @@ static const GLchar* S52AP_fragment_shader_source =
     "uniform float xOff;\n"
     "uniform float yOff;\n"
     "void main() {\n"
-    "   float x = mod((gl_FragCoord.x - xOff),texWidth) / texPOTWidth;\n"
-    "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texPOTHeight;\n"
     "   float yp = floor((gl_FragCoord.y + yOff) / texHeight);\n"
     "   float fstagger = 0.0;\n"
     "   if(mod(yp, 2.0) < 0.1) fstagger = staggerFactor;\n"
-    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, (texHeight / texPOTHeight) - y));\n"
+    "   float xStag = xOff + (fstagger * texWidth);\n"
+    "   float x = mod((gl_FragCoord.x - xStag),texWidth) / texPOTWidth;\n"
+    "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texPOTHeight;\n"
+     "   gl_FragColor = texture2D(uTex, vec2(x, (texHeight / texPOTHeight) - y));\n"
     "}\n";
 
 
