@@ -127,8 +127,11 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
 
         nrows = 2;
 
-        m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
-        GribRecord **RecordArray = m_pTimeset->m_GribRecordPtrArray;
+        GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
+        if (pTimeset == 0)
+            continue;
+
+        GribRecord **RecordArray = pTimeset->m_GribRecordPtrArray;
 
         //create and polulate wind data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND &&
@@ -207,7 +210,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
                 m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
                 nrows++;
         }
-
+        delete pTimeset;
         m_pGribTable->AutoSizeColumn(i, false);
 
     }
