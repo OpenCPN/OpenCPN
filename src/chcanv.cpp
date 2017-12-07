@@ -2861,9 +2861,10 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             SetVPScale( new_scale );
         
     }
+     else
+         m_pQuilt->Invalidate();
     
     m_bzooming = false;
-    
 }
 
 void ChartCanvas::RotateCanvas( double dir )
@@ -3434,10 +3435,11 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 else{
                     m_pQuilt->Invalidate();
                 }
+#else                
+                m_pQuilt->Compose( VPoint );
 #endif
 
                 
-                //m_pQuilt->Compose( VPoint );
 //                printf("comp time %ld\n", sw.Time());
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
