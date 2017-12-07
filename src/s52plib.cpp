@@ -57,6 +57,10 @@
 #include "linmath.h"
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
 extern float g_GLMinCartographicLineWidth;
 extern float g_GLMinSymbolLineWidth;
 extern double  g_overzoom_emphasis_base;
@@ -9033,6 +9037,9 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+            
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ppatt_spec->w_pot, ppatt_spec->h_pot, 0,
                           GL_RGBA, GL_UNSIGNED_BYTE, ppatt_spec->pix_buff );
         }
@@ -9148,6 +9155,9 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+        
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ppatt_spec->w_pot, ppatt_spec->h_pot, 0,
                       GL_RGBA, GL_UNSIGNED_BYTE, ppatt_spec->pix_buff );
     }
@@ -9409,8 +9419,12 @@ int s52plib::RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp
             GLint xo  = glGetUniformLocation( program, "xOff" );
             GLint yo  = glGetUniformLocation( program, "yOff" );
 
-            glUniform1f(xo, xOff);
-            glUniform1f(yo, yOff);
+            glUniform1f(xo, fmod(xOff, ppatt_spec->w_pot));
+            glUniform1f(yo, fmod(yOff, ppatt_spec->h_pot));
+
+            GLint yom  = glGetUniformLocation( program, "yOffM" );
+            glUniform1f(yom, yOff);
+            
 
             if(ppatt_spec->b_stagger){
                 GLint staggerFact  = glGetUniformLocation( program, "staggerFactor" );
@@ -9724,6 +9738,46 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
         int width = (int) dwidth + 1;
         int height = (int) dheight + 1;
 
+         
+        float render_scale = 1.0;
+#ifdef sUSE_ANDROID_GLES2
+        int width_pot = width;
+        int height_pot = height;
+        if( b_pot ) {
+            int xp = width;
+            if(((xp != 0) && !(xp & (xp - 1))))     // detect POT
+                width_pot = xp;
+            else{
+                int a = 0;
+                while( xp ) {
+                    xp = xp >> 1;
+                    a++;
+                }
+                width_pot = 1 << a;
+            }
+            
+            xp = height;
+            if(((xp != 0) && !(xp & (xp - 1))))
+                height_pot = xp;
+            else{
+                int a = 0;
+                while( xp ) {
+                    xp = xp >> 1;
+                    a++;
+                }
+                height_pot = 1 << a;
+            }
+        }
+
+        // adjust scaler
+        render_scale = (float) height_pot / (float) height;
+        qDebug() << "first" << width << width_pot << height << height_pot << render_scale;
+        
+        width = width_pot;
+        height = height_pot;
+#endif        
+        
+        
         //      Instantiate the vector pattern to a wxBitmap
         wxMemoryDC mdc;
 
@@ -9766,7 +9820,12 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
                             (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
 
                 HPGL->SetTargetDC( &mdc );
-                HPGL->Render( str, col, r0, pivot, origin, 1.0, 0, false);
+                HPGL->Render( str, col, r0, pivot, origin, 1.0 /*render_scale*/, 0, false);
+
+//                 mdc.SetPen( wxPen( wxColor(0, 0, 250), 1, wxPENSTYLE_SOLID ) );
+//                 mdc.SetBrush(*wxTRANSPARENT_BRUSH);
+//                 mdc.DrawRectangle(0,0, width-1, height-1);
+                
             } else {
                 pbm = new wxBitmap( 2, 2 );       // substitute small, blank pattern
                 mdc.SelectObject( *pbm );
@@ -9787,6 +9846,8 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
     int sizey = Image.GetHeight();
     int sizex = Image.GetWidth();
 
+    //qDebug() << "second" << sizex << sizey ;
+    
     render_canvas_parms *patt_spec = new render_canvas_parms;
     patt_spec->OGL_tex_name = 0;
 
@@ -9828,7 +9889,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
     patt_spec->pix_buff = (unsigned char *) malloc( patt_spec->h_pot * patt_spec->pb_pitch );
 
     // Preset background
-    memset( patt_spec->pix_buff, 0, sizey * patt_spec->pb_pitch );
+    memset( patt_spec->pix_buff, 0, patt_spec->h_pot * patt_spec->pb_pitch );
     patt_spec->width = sizex;
     patt_spec->height = sizey;
     patt_spec->x = 0;
@@ -9885,7 +9946,11 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
 
         if( pd0 && ps0 ){
             for( int iy = 0; iy < sizey; iy++ ) {
+#ifdef __OCPN__ANDROID__
+                pd = pd0 + ( (sizey - iy - 1) * patt_spec->pb_pitch );
+#else
                 pd = pd0 + ( iy * patt_spec->pb_pitch );
+#endif                
                 ps = ps0 + ( iy * sizex * 3 );
                 for( int ix = 0; ix < sizex; ix++ ) {
                     if( ix < sizex ) {
@@ -11998,6 +12063,7 @@ static const GLchar* S52AP_vertex_shader_source =
     "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
     "}\n";
 
+#if 0
 static const GLchar* S52AP_fragment_shader_source =
     "precision highp float;\n"
     "uniform sampler2D uTex;\n"
@@ -12012,13 +12078,35 @@ static const GLchar* S52AP_fragment_shader_source =
     "void main() {\n"
     "   float yp = floor((gl_FragCoord.y + yOff) / texHeight);\n"
     "   float fstagger = 0.0;\n"
-    "   if(mod(yp, 2.0) < 0.1) fstagger = staggerFactor;\n"
+    "   //if(mod(yp, 2.0) < 0.1) fstagger = staggerFactor;\n"
     "   float xStag = xOff + (fstagger * texWidth);\n"
     "   float x = mod((gl_FragCoord.x - xStag),texWidth) / texPOTWidth;\n"
     "   float y = mod((gl_FragCoord.y + yOff),texHeight) / texPOTHeight;\n"
      "   gl_FragColor = texture2D(uTex, vec2(x, (texHeight / texPOTHeight) - y));\n"
     "}\n";
+#else
 
+static const GLchar* S52AP_fragment_shader_source =
+    "precision highp float;\n"
+    "uniform sampler2D uTex;\n"
+    "uniform float texWidth;\n"
+    "uniform float texHeight;\n"
+    "uniform float texPOTWidth;\n"
+    "uniform float texPOTHeight;\n"
+    "uniform float staggerFactor;\n"
+    "uniform vec4 color;\n"
+    "uniform float xOff;\n"
+    "uniform float yOff;\n"
+    "uniform float yOffM;\n"
+    "void main() {\n"
+    "   float yp = floor((gl_FragCoord.y + yOffM ) / texPOTHeight);\n"
+    "   float fstagger = 0.0;\n"
+    "   if(mod(yp, 2.0) < 0.1) fstagger = 0.5;\n"
+    "   float x = (gl_FragCoord.x - xOff) / texPOTWidth;\n"
+    "   float y = (gl_FragCoord.y + yOff) / texPOTHeight;\n"
+    "   gl_FragColor = texture2D(uTex, vec2(x + fstagger, y));\n"
+    "}\n";
+#endif
 
     GLint S52color_tri_fragment_shader;
     GLint S52color_tri_vertex_shader;
