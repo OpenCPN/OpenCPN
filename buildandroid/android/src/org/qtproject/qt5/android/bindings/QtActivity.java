@@ -247,6 +247,8 @@ import android.content.res.AssetManager;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.opencpn.opencpn.ColorPickerDialog;
+
 public class QtActivity extends FragmentActivity implements ActionBar.OnNavigationListener, Receiver
 {
     private final static int MINISTRO_INSTALL_REQUEST_CODE = 0xf3ee; // request code used to know when Ministro instalation is finished
@@ -398,6 +400,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private String m_BTStat;
     private Boolean m_FileChooserDone = false;
     private String m_filechooserString;
+
+    private Boolean m_ColorDialogDone = false;
+    private String m_ColorDialogString;
 
     private String m_downloadRet = "";
 
@@ -2307,6 +2312,86 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         return "OK";
    }
+
+   public String doColorPickerDialog( final int initialColor)
+   {
+       m_ColorDialogDone = false;
+
+
+        Log.i("OpenCPN", "ColorPicker create and show " + initialColor);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+
+        // Block this thread for 20 msec.
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                }
+
+// After sleep finishes blocking, create a Runnable to run on the UI Thread.
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final ColorPickerDialog dialog = new ColorPickerDialog(m_activity, initialColor){
+
+                            @Override
+                            public void onOK(int selectedColor)
+                            {
+                                String strI = String.valueOf(selectedColor);
+                                Log.i("DEBUGGER_TAG", "Activity on OK button Color: " + strI);
+                                m_ColorDialogString = "color:" + strI;
+                                m_ColorDialogDone = true;
+
+                              // do something
+                            }
+
+                            @Override
+                            public void onCancel()
+                            {
+                                Log.i("DEBUGGER_TAG", "Activity on Cancel Color: ");
+                                m_ColorDialogString = "cancel:";
+                                m_ColorDialogDone = true;
+                              // do something
+                            }
+                        };
+
+
+
+//                        dialog.setTitle( Title );
+
+
+                        dialog.show();
+
+                        Log.i("DEBUGGER_TAG", "ColorPickerDialog Back from show");
+
+                    }
+                });
+            }
+        };
+
+        // Don't forget to start the thread.
+        thread.start();
+
+        Log.i("DEBUGGER_TAG", "ColorPickerDialog Returning");
+
+       return "OK";
+  }
+
+  public String isColorPickerDialogFinished()
+  {
+      Log.i("DEBUGGER_TAG", "poll");
+
+      if(m_ColorDialogDone){
+          Log.i("DEBUGGER_TAG", "done");
+           return m_ColorDialogString;
+      }
+      else{
+          return "no";
+      }
+  }
+
 
    public String DirChooserDialog(final String initialDir, final String Title, final int addFile, final int spare)
    {

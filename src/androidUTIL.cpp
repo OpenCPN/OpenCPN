@@ -328,6 +328,7 @@ extern bool     g_btrackContinuous;
 #define ACTION_NONE                     -1
 #define ACTION_RESIZE_PERSISTENTS       1
 #define ACTION_FILECHOOSER_END          3
+#define ACTION_COLORDIALOG_END          4
 
 class androidUtilHandler : public wxEvtHandler
 {
@@ -542,6 +543,56 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                             m_stringResult = _T("cancel:");
                         }
                         else if( !strncmp(ret_string, "file:", 5) ){
+                            m_done = true;
+                            m_stringResult = wxString(ret_string, wxConvUTF8);
+                        } 
+                    }
+                }
+                
+                
+                break;
+            }
+
+        case ACTION_COLORDIALOG_END:            //  Handle polling of android Dialog
+            {
+                //qDebug() << "colorpicker poll";
+                //  Get a reference to the running FileChooser
+                QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                                       "activity", "()Landroid/app/Activity;");
+                
+                if ( !activity.isValid() ){
+                    //qDebug() << "onTimerEvent : Activity is not valid";
+                    return;
+                }
+                
+                //  Call the method which tracks the completion of the Intent.
+                QAndroidJniObject data = activity.callObjectMethod("isColorPickerDialogFinished", "()Ljava/lang/String;");
+                
+                jstring s = data.object<jstring>();
+                
+                JNIEnv* jenv;
+                
+                //  Need a Java environment to decode the resulting string
+                if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+                    //qDebug() << "GetEnv failed.";
+                }
+                else {
+                    
+                    // The string coming back will be one of:
+                    //  "no"   ......Dialog not done yet.
+                    //  "cancel:"   .. user cancelled Dialog.
+                    //  "color: ".
+                    if(!s){
+                        qDebug() << "isColorPickerDialogFinished returned null";
+                    }
+                    else if( (jenv)->GetStringLength( s )){
+                        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+                        //qDebug() << "isColorPickerDialogFinished returned " << ret_string;
+                        if( !strncmp(ret_string, "cancel:", 7) ){
+                            m_done = true;
+                            m_stringResult = _T("cancel:");
+                        }
+                        else if( !strncmp(ret_string, "color:", 6) ){
                             m_done = true;
                             m_stringResult = wxString(ret_string, wxConvUTF8);
                         } 
@@ -1671,9 +1722,12 @@ wxString callActivityMethod_s2s2i(const char *method, wxString parm1, wxString p
         return _T("jenv Error");
     }
     
-    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
-    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
+    wxCharBuffer p1b = parm1.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
 
+    wxCharBuffer p2b = parm2.ToUTF8();
+    jstring p2 = (jenv)->NewStringUTF(p2b.data());
+    
     //qDebug() << "Calling method_s2s2i" << " (" << method << ")";
     //qDebug() << parm3 << parm4;
     
@@ -2190,12 +2244,25 @@ void androidConfirmSizeCorrection()
         
 void androidForceFullRepaint()
 {
+    
         wxLogMessage(_T("androidForceFullRepaint"));
         wxSize targetSize = getAndroidDisplayDimensions();
         wxSize tempSize = targetSize;
         tempSize.y--;
         gFrame->SetSize(tempSize);
-        gFrame->SetSize(targetSize);
+//        gFrame->SetSize(targetSize);
+       
+        GetAndroidDisplaySize();
+        
+        wxSize new_size = getAndroidDisplayDimensions();
+        config_size = new_size;
+        
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+        evt.SetId( ID_CMD_TRIGGER_RESIZE );
+        if(gFrame && gFrame->GetEventHandler()){
+            gFrame->GetEventHandler()->AddPendingEvent(evt);
+        }
+        
 }       
 
 void androidShowBusyIcon()
@@ -3828,6 +3895,57 @@ wxBitmap loadAndroidSVG( const wxString filename, unsigned int width, unsigned i
 void androidTestCPP()
 {
     callActivityMethod_vs("callFromCpp");
+}
+
+unsigned int androidColorPicker( unsigned int initialColor)
+{
+    if(g_androidUtilHandler){
+        g_androidUtilHandler->m_eventTimer.Stop();
+        g_androidUtilHandler->m_done = false;
+        
+        wxString val = callActivityMethod_is("doColorPickerDialog", initialColor);
+    
+   
+        if(val == _T("OK") ){
+            //qDebug() << "ResultOK, starting spin loop";
+            g_androidUtilHandler->m_action = ACTION_COLORDIALOG_END;
+            g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
+            
+            //  Spin, waiting for result
+            while(!g_androidUtilHandler->m_done){
+                wxMilliSleep(50);
+                wxSafeYield(NULL, true);
+            }
+            
+            //qDebug() << "out of spin loop";
+            g_androidUtilHandler->m_action = ACTION_NONE;
+            g_androidUtilHandler->m_eventTimer.Stop();
+            
+            
+            wxString tresult = g_androidUtilHandler->GetStringResult();
+            
+            if( tresult.StartsWith(_T("cancel:")) ){
+                //qDebug() << "Cancel1";
+                return initialColor;
+            }
+            else if( tresult.StartsWith(_T("color:")) ){
+                wxString color = tresult.AfterFirst(':');
+                long a;
+                color.ToLong(&a);
+                unsigned int b = a;
+                
+                //char cc[30];
+                //sprintf(cc, "%0X", b);
+                //qDebug() << "OK " << cc;
+                
+                return b;
+            }
+        }
+        else{
+            qDebug() << "Result NOT OK";
+        }
+    }
+    return 0;
 }
 
 

@@ -7128,10 +7128,47 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
   wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
   wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
 
+#ifdef __OCPN__ANDROID__
+  unsigned int cco = 0;
+  cco |= 0xff;  cco  = cco << 8;
+  cco |= init_color.Red(); cco = cco << 8; 
+  cco |= init_color.Green(); cco = cco << 8; 
+  cco |= init_color.Blue();  
+  unsigned int cc = androidColorPicker( cco);
+
+//   char ccp[30];
+//   sprintf(ccp, "%0X", cc);
+//   qDebug() << "Options cc " << ccp;
+  
+  wxColor cn;
+  unsigned char blue = (unsigned char) cc % 256;
+//   sprintf(ccp, "%0X", blue);
+//   qDebug() << "Options blue " << ccp;
+  
+  unsigned char green = (unsigned char) (cc >> 8) % 256;;
+//   sprintf(ccp, "%0X", green);
+//   qDebug() << "Options green " << ccp;
+
+  unsigned char red = (unsigned char) (cc >> 16) % 256;
+//   sprintf(ccp, "%0X", red);
+//   qDebug() << "Options red " << ccp;
+  
+  cn.Set(red, green, blue);
+  
+//  qDebug() << "Color set" << red << green << blue;
+  FontMgr::Get().SetFont(sel_text_element, pif, cn);
+  
+  pParent->UpdateAllFonts();
+  m_bfontChanged = true;
+  
+  
+#else  
+  wxScrolledWindow *sw = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(400, 400));
+  
   wxColourData init_colour_data;
   init_colour_data.SetColour(init_color);
 
-  wxColourDialog dg(this, &init_colour_data);
+  wxColourDialog dg(sw, &init_colour_data);
 
   int retval = dg.ShowModal();
   if (wxID_CANCEL != retval) {
@@ -7144,6 +7181,8 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     m_bfontChanged = true;
   }
 
+  sw->Destroy();
+#endif  
   event.Skip();
 }
 #endif

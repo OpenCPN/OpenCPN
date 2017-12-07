@@ -138,6 +138,8 @@ bool androidShowDisclaimer( wxString title, wxString msg );
 void androidLaunchBrowser( wxString URL );
 bool androidCheckOnline();
 
+unsigned int androidColorPicker( unsigned int initialColor);
+
 wxArrayString androidTraverseDir( wxString dir, wxString filespec);
 void androidEnableOptionsMenu( bool bEnable );
 
