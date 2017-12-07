@@ -2539,7 +2539,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     SetVPParms( VPoint );
 
     ps52plib->PrepareForRender((ViewPort *)&VPoint);
-
+    
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
         UpdateLUPs( this );                               // and update the LUPs
@@ -2558,7 +2558,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
     BuildLineVBO();
     SetLinePriorities();
-
+    
     //        Clear the text declutter list
     ps52plib->ClearTextList();
 
@@ -2575,12 +2575,15 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             //  cm93 vpoint crossing Greenwich, panning east, was rendering areas incorrectly.
             ViewPort cvp = glChartCanvas::ClippedViewport(VPoint, chart_region);
 
+            
             if(CHART_TYPE_CM93 == GetChartType()){
                 // for now I will revert to the faster rectangle clipping now that rendering order is resolved
-                glChartCanvas::SetClipRegion(cvp, chart_region);
-//                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                //glChartCanvas::SetClipRegion(cvp, chart_region);
+                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
             }
-            else{
+            
+            else
+            {
 #ifdef OPT_USE_ANDROID_GLES2
 
                 // GLES2 will be faster if we setup and use a smaller viewport for each rectangle render.
@@ -2613,8 +2616,11 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                 mat4x4_dup((float (*)[4])vp->vp_transform, Q);
 
 #else
-                glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                //glChartCanvas::SetClipRect(cvp, upd.GetRect(), false);
+                glChartCanvas::SetClipRegion(cvp, chart_region);
+                
                 ps52plib->m_last_clip_rect = upd.GetRect();
+                
                 
 #endif                
                 
@@ -2659,6 +2665,7 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
     ObjRazRules *crnt;
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
+#if 1    
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) 
@@ -2674,7 +2681,7 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
         }
     }
 
-    
+#else    
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( PI_GetPLIBBoundaryStyle() == SYMBOLIZED_BOUNDARIES ) 
@@ -2692,15 +2699,14 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
                     if(!crnt->obj->pPolyTessGeo->IsOk() ){ 
                         if(ps52plib->ObjectRenderCheckRules( crnt, &tvp, true )){
                             if(!crnt->obj->pPolyTessGeo->m_pxgeom)
-                                int yyp = 4;
-                                //crnt->obj->pPolyTessGeo->m_pxgeom = buildExtendedGeom( crnt->obj );
+                                crnt->obj->pPolyTessGeo->m_pxgeom = buildExtendedGeom( crnt->obj );
                         }
                     }
                     ps52plib->RenderAreaToGL( glc, crnt, &tvp );
                 }
     }
-    
-    //qDebug() << "Done areas" << sw.GetTime();
+#endif    
+//qDebug() << "Done areas" << sw.GetTime();
     
     //    Render the lines and points
     for( i = 0; i < PRIO_NUM; ++i ) {
@@ -2727,7 +2733,7 @@ bool s57chart::DoRenderOnGL( const wxGLContext &glc, const ViewPort& VPoint )
         }
     }
  
-    //qDebug() << "Done Lines" << sw.GetTime();
+ //qDebug() << "Done Lines" << sw.GetTime();
  
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nSymbolStyle == SIMPLIFIED ) 
