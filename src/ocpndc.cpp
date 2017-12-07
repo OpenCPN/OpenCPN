@@ -1793,6 +1793,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
         
             m_texfont.Build( m_font );      // make sure the font is ready
             m_texfont.GetTextExtent(text, &w, &h);
+            m_texfont.SetColor(m_textforegroundcolour);
             
             if( w && h ) {
                 

@@ -36,11 +36,16 @@
  #include <GL/glu.h>
 #endif
 
+#ifdef USE_ANDROID_GLES2    
+#include "qdebug.h"
+#endif
+
 TexFont::TexFont( )
 {
     texobj = 0;
     m_blur = false;
     m_built = false;
+    m_color = wxColor(0,0,0);
 }
 
 TexFont::~TexFont( )
@@ -258,16 +263,14 @@ void TexFont::RenderGlyph( int c )
     coords[0] = 0; coords[1] = 0; coords[2] = w; coords[3] = 0;
     coords[4] = w; coords[5] = h; coords[6] = 0; coords[7] = h;
     
-    //glChartCanvas::RenderSingleTexture(coords, uv, cc1->GetpVP(), m_dx, m_dy, 0);
-    
-    glUseProgram( texture_2D_shader_program );
+    glUseProgram( texture_2DA_shader_program );
     
     // Get pointers to the attributes in the program.
-    GLint mPosAttrib = glGetAttribLocation( texture_2D_shader_program, "aPos" );
-    GLint mUvAttrib  = glGetAttribLocation( texture_2D_shader_program, "aUV" );
+    GLint mPosAttrib = glGetAttribLocation( texture_2DA_shader_program, "aPos" );
+    GLint mUvAttrib  = glGetAttribLocation( texture_2DA_shader_program, "aUV" );
     
     // Set up the texture sampler to texture unit 0
-    GLint texUni = glGetUniformLocation( texture_2D_shader_program, "uTex" );
+    GLint texUni = glGetUniformLocation( texture_2DA_shader_program, "uTex" );
     glUniform1i( texUni, 0 );
     
     // Disable VBO's (vertex buffer objects) for attributes.
@@ -283,6 +286,15 @@ void TexFont::RenderGlyph( int c )
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
     // ... and enable it.
     glEnableVertexAttribArray( mUvAttrib );
+ 
+    float colorv[4];
+    colorv[0] = m_color.Red() / float(256);
+    colorv[1] = m_color.Green() / float(256);
+    colorv[2] = m_color.Blue() / float(256);
+    colorv[3] = 0;
+    
+    GLint colloc = glGetUniformLocation(texture_2DA_shader_program,"color");
+    glUniform4fv(colloc, 1, colorv);
     
     // Rotate 
     float angle = 0;
@@ -298,12 +310,11 @@ void TexFont::RenderGlyph( int c )
     //mat4x4 X;
     //mat4x4_mul(X, (float (*)[4])vp->vp_transform, Q);
     
-    GLint matloc = glGetUniformLocation(texture_2D_shader_program,"TransformMatrix");
+    GLint matloc = glGetUniformLocation(texture_2DA_shader_program,"TransformMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
     
     // Select the active texture unit.
     glActiveTexture( GL_TEXTURE0 );
-    
     
     // For some reason, glDrawElements is busted on Android
     // So we do this a hard ugly way, drawing two triangles...
