@@ -36,6 +36,7 @@
     extern GLint fade_texture_2D_shader_program;
     extern GLint circle_filled_shader_program;
     extern GLint FBO_texture_2D_shader_program;
+    extern GLint texture_2DA_shader_program;
     
 
 bool loadShaders();
