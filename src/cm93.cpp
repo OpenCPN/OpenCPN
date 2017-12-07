@@ -2170,7 +2170,6 @@ bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 void cm93chart::SetVPParms ( const ViewPort &vpt )
 {
       //    Save a copy for later reference
-
       m_vp_current = vpt;
 
 
@@ -2199,10 +2198,8 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             printf ( "cm93chart::SetVPParms   ll_lon: %g  ll_lat: %g   ur_lon: %g   ur_lat:  %g  m_dval: %g\n", ll_lon, ll_lat, ur_lon, ur_lat, m_dval );
       }
 
-
       //    Create an array of CellIndexes covering the current viewport
       ArrayOfInts vpcells = GetVPCellArray ( vpt );
-
       //    Check the member array to see if all these viewport cells have been loaded
       bool bcell_is_in;
       bool recalc_depth = false;
@@ -2222,8 +2219,10 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+#ifndef __OCPN__ANDROID__
                 OCPNPlatform::ShowBusySpinner();
-                  int cell_index = vpcells.Item ( i );
+#endif
+                int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
@@ -2242,7 +2241,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                   //    Load any subcells in sequence
                   //    On successful load, add it to the member list and process the cell
-                  while ( loadcell_in_sequence ( cell_index, loadcell_key ) )
+                  while ( 0 /*loadcell_in_sequence ( cell_index, loadcell_key )*/ )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
@@ -2256,7 +2255,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                         loadcell_key++;
                   }
+#ifndef __OCPN__ANDROID__
                 OCPNPlatform::HideBusySpinner();
+#endif                
             }
       }
       
@@ -4459,7 +4460,7 @@ int cm93chart::loadcell_in_sequence ( int cellindex, char subcell )
       return rv;
 }
 
-
+#if 0
 
 int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 {
@@ -4602,6 +4603,438 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       return 1;
 }
+#endif
+
+#if 0
+int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
+{
+
+      //    Create the file name
+
+      int ilat = cellindex / 10000;
+      int ilon = cellindex % 10000;
+
+
+      if ( g_bDebugCM93 )
+      {
+            double dlat = m_dval / 3.;
+            double dlon = m_dval / 3.;
+            double lat, lon;
+            Get_CM93_Cell_Origin ( cellindex, GetNativeScale(), &lat, &lon );
+            printf ( "\n   Attempting loadcell %d scale %lc, sub_char %lc at lat: %g/%g lon:%g/%g\n", cellindex, wxChar ( m_scalechar[0] ), sub_char, lat, lat + dlat, lon, lon+dlon );
+      }
+
+      int jlat = ( int ) ( ( ( ilat - 30 ) / m_dval ) * m_dval ) + 30;     // normalize
+      int jlon = ( int ) ( ( ilon / m_dval ) * m_dval );
+
+      int ilatroot = ( ( ( ilat - 30 ) / 60 ) * 60 ) + 30;
+      int ilonroot = ( ilon / 60 ) * 60;
+
+      wxString file;
+      file.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+      file += m_scalechar;
+
+
+      
+      wxString fileroot;
+      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+      fileroot += m_scalechar;
+      fileroot += _T ( "/" );
+      fileroot.Prepend ( m_prefix );
+
+      file[0] = sub_char;
+      file.Prepend ( fileroot );
+
+      if ( g_bDebugCM93 )
+      {
+            char sfile[200];
+            strncpy ( sfile, file.mb_str(), 199 );
+            sfile[199] = 0;
+            printf ( "    filename: %s\n", sfile );
+      }
+
+      bool bfound = false;
+      wxString compfile;
+      if(m_noFindArray.Index(file) == wxNOT_FOUND){
+        if ( ::wxFileExists ( file ) ) {
+            bfound = true;;
+        }
+        else{
+            m_noFindArray.Add(file);
+        }
+      }
+      
+      if(!bfound){                     // try compressed version
+            if(m_noFindArray.Index(file + _T(".xz")) == wxNOT_FOUND){
+                if(::wxFileExists ( file+_T(".xz"))){
+                    compfile = file + _T(".xz");
+                }
+                else{
+                    m_noFindArray.Add(file + _T(".xz"));
+                }
+            }
+      }
+
+      // Try again with alternate scale character
+      if(!bfound && !compfile.Length()){
+             //    Try with alternate case of m_scalechar
+            wxString new_scalechar = m_scalechar.Lower();
+
+            wxString file1;
+            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+            file1 += new_scalechar;
+
+            file1[0] = sub_char;
+
+            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+            fileroot += new_scalechar;
+            fileroot += _T ( "/" );
+            fileroot.Prepend ( m_prefix );
+
+            file1.Prepend ( fileroot );
+         
+            if(m_noFindArray.Index(file1) == wxNOT_FOUND){
+                if ( ::wxFileExists ( file ) ) {
+                    bfound = true;
+                    file = file1;                       // found the file as lowercase, substitute the name
+                }
+                else{
+                    m_noFindArray.Add(file1);
+                }
+            }
+            
+            if(!bfound){                     // try compressed version
+                if(m_noFindArray.Index(file1 + _T(".xz")) == wxNOT_FOUND){
+                    if(::wxFileExists ( file1+_T(".xz"))){
+                        compfile = file1 + _T(".xz");
+                    }
+                    else{
+                        m_noFindArray.Add(file1 + _T(".xz"));
+                    }
+                }
+            }
+      }
+
+      
+                    
+                
+#if 0           
+          
+      if ( !::wxFileExists ( file ) ) {
+          if(::wxFileExists ( file+_T(".xz")))
+              compfile = file + _T(".xz");
+          else {
+          
+            //    Try with alternate case of m_scalechar
+            wxString new_scalechar = m_scalechar.Lower();
+
+            wxString file1;
+            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+            file1 += new_scalechar;
+
+            file1[0] = sub_char;
+
+            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+            fileroot += new_scalechar;
+            fileroot += _T ( "/" );
+            fileroot.Prepend ( m_prefix );
+
+            file1.Prepend ( fileroot );
+
+            if ( g_bDebugCM93 )
+            {
+                  char sfile[200];
+                  strncpy ( sfile, file1.mb_str(), 199 );
+                  sfile[199] = 0;
+                  printf ( "    alternate filename: %s\n", sfile );
+            }
+
+            if ( !::wxFileExists ( file1 ) ) {
+                if(::wxFileExists ( file1+_T(".xz")))
+                    compfile = file1 + _T(".xz");
+                else {
+
+                  //    This is not really an error if the sub_char is not '0'.  It just means there are no more subcells....
+                  if ( g_bDebugCM93 )
+                  {
+                        if ( sub_char == '0' )
+                              printf ( "   Tried to load non-existent CM93 cell\n" );
+                        else
+                              printf ( "   No sub_cells of scale(%lc) found\n", sub_char );
+                  }
+
+                  return 0;
+                }
+            }
+            file = file1;                       // found the file as lowercase, substitute the name
+          }
+      }
+#endif
+      if(!bfound && !compfile.Length())
+          return 0;
+      
+      //    File is known to exist
+
+      wxString msg ( _T ( "Loading CM93 cell " ) );
+      msg += file;
+      wxLogMessage ( msg );
+      
+      //    Set the member variable to be the actual file name for use in single chart mode info display
+      m_LastFileName = file;
+
+      // Decompress if needed
+      if(compfile.Length()) {
+          file = wxFileName::CreateTempFileName(wxFileName(compfile).GetFullName());
+          if(!DecompressXZFile(compfile, file)) {
+              wxRemoveFile(file);
+              return 0;
+          }
+      }
+
+      if ( g_bDebugCM93 )
+      {
+            char str[256];
+            strncpy ( str, msg.mb_str(), 255 );
+            str[255] = 0;
+            printf ( "   %s\n", str );
+      }
+
+      //    Ingest it
+      if ( !Ingest_CM93_Cell ( ( const char * ) file.mb_str(), &m_CIB ) )
+      {
+            wxString msg ( _T ( "   cm93chart  Error ingesting " ) );
+            msg.Append ( file );
+            wxLogMessage ( msg );
+
+            if(compfile.Length())
+                wxRemoveFile(file);
+            return 0;
+      }
+
+      if(compfile.Length())
+          wxRemoveFile(file);
+
+      return 1;
+}
+#endif
+
+int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
+{
+
+      //    Create the file name
+
+      int ilat = cellindex / 10000;
+      int ilon = cellindex % 10000;
+
+
+      if ( g_bDebugCM93 )
+      {
+            double dlat = m_dval / 3.;
+            double dlon = m_dval / 3.;
+            double lat, lon;
+            Get_CM93_Cell_Origin ( cellindex, GetNativeScale(), &lat, &lon );
+            printf ( "\n   Attempting loadcell %d scale %lc, sub_char %lc at lat: %g/%g lon:%g/%g\n", cellindex, wxChar ( m_scalechar[0] ), sub_char, lat, lat + dlat, lon, lon+dlon );
+      }
+
+      int jlat = ( int ) ( ( ( ilat - 30 ) / m_dval ) * m_dval ) + 30;     // normalize
+      int jlon = ( int ) ( ( ilon / m_dval ) * m_dval );
+
+      int ilatroot = ( ( ( ilat - 30 ) / 60 ) * 60 ) + 30;
+      int ilonroot = ( ilon / 60 ) * 60;
+
+      wxString file;
+      file.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+      file += m_scalechar;
+
+
+      
+      wxString fileroot;
+      fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+      fileroot += m_scalechar;
+      fileroot += _T ( "/" );
+      wxString key = fileroot;
+      key += sub_char;
+      fileroot.Prepend ( m_prefix );
+
+      file[0] = sub_char;
+      file.Prepend ( fileroot );
+
+      if ( g_bDebugCM93 )
+      {
+            char sfile[200];
+            strncpy ( sfile, file.mb_str(), 199 );
+            sfile[199] = 0;
+            printf ( "    filename: %s\n", sfile );
+      }
+
+      bool bfound = false;
+      wxString compfile;
+      if(m_noFindArray.Index(key) == wxNOT_FOUND){
+        if ( ::wxFileExists ( file ) ) {
+            bfound = true;;
+        }
+        else{
+            m_noFindArray.Add(key);
+        }
+      }
+      
+      if(!bfound){                     // try compressed version
+            if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
+                if(::wxFileExists ( file+_T(".xz"))){
+                    compfile = file + _T(".xz");
+                }
+                else{
+                    m_noFindArray.Add(key + _T(".xz"));
+                }
+            }
+      }
+
+      // Try again with alternate scale character
+      if(!bfound && !compfile.Length()){
+             //    Try with alternate case of m_scalechar
+            wxString new_scalechar = m_scalechar.Lower();
+
+            wxString file1;
+            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+            file1 += new_scalechar;
+
+            file1[0] = sub_char;
+
+            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+            fileroot += new_scalechar;
+            fileroot += _T ( "/" );
+            wxString key1 = fileroot;
+            key1 += file1;
+
+            fileroot.Prepend ( m_prefix );
+
+            file1.Prepend ( fileroot );
+         
+            if(m_noFindArray.Index(key1) == wxNOT_FOUND){
+                if ( ::wxFileExists ( file ) ) {
+                    bfound = true;
+                    file = file1;                       // found the file as lowercase, substitute the name
+                }
+                else{
+                    m_noFindArray.Add(key1);
+                }
+            }
+            
+            if(!bfound){                     // try compressed version
+                if(m_noFindArray.Index(key1 + _T(".xz")) == wxNOT_FOUND){
+                    if(::wxFileExists ( file1+_T(".xz"))){
+                        compfile = file1 + _T(".xz");
+                    }
+                    else{
+                        m_noFindArray.Add(key1 + _T(".xz"));
+                    }
+                }
+            }
+      }
+
+      
+                    
+                
+#if 0           
+          
+      if ( !::wxFileExists ( file ) ) {
+          if(::wxFileExists ( file+_T(".xz")))
+              compfile = file + _T(".xz");
+          else {
+          
+            //    Try with alternate case of m_scalechar
+            wxString new_scalechar = m_scalechar.Lower();
+
+            wxString file1;
+            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+            file1 += new_scalechar;
+
+            file1[0] = sub_char;
+
+            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+            fileroot += new_scalechar;
+            fileroot += _T ( "/" );
+            fileroot.Prepend ( m_prefix );
+
+            file1.Prepend ( fileroot );
+
+            if ( g_bDebugCM93 )
+            {
+                  char sfile[200];
+                  strncpy ( sfile, file1.mb_str(), 199 );
+                  sfile[199] = 0;
+                  printf ( "    alternate filename: %s\n", sfile );
+            }
+
+            if ( !::wxFileExists ( file1 ) ) {
+                if(::wxFileExists ( file1+_T(".xz")))
+                    compfile = file1 + _T(".xz");
+                else {
+
+                  //    This is not really an error if the sub_char is not '0'.  It just means there are no more subcells....
+                  if ( g_bDebugCM93 )
+                  {
+                        if ( sub_char == '0' )
+                              printf ( "   Tried to load non-existent CM93 cell\n" );
+                        else
+                              printf ( "   No sub_cells of scale(%lc) found\n", sub_char );
+                  }
+
+                  return 0;
+                }
+            }
+            file = file1;                       // found the file as lowercase, substitute the name
+          }
+      }
+#endif
+      if(!bfound && !compfile.Length())
+          return 0;
+      
+      //    File is known to exist
+
+      wxString msg ( _T ( "Loading CM93 cell " ) );
+      msg += file;
+      wxLogMessage ( msg );
+      
+      //    Set the member variable to be the actual file name for use in single chart mode info display
+      m_LastFileName = file;
+
+      // Decompress if needed
+      if(compfile.Length()) {
+          file = wxFileName::CreateTempFileName(wxFileName(compfile).GetFullName());
+          if(!DecompressXZFile(compfile, file)) {
+              wxRemoveFile(file);
+              return 0;
+          }
+      }
+
+      if ( g_bDebugCM93 )
+      {
+            char str[256];
+            strncpy ( str, msg.mb_str(), 255 );
+            str[255] = 0;
+            printf ( "   %s\n", str );
+      }
+
+      //    Ingest it
+      if ( !Ingest_CM93_Cell ( ( const char * ) file.mb_str(), &m_CIB ) )
+      {
+            wxString msg ( _T ( "   cm93chart  Error ingesting " ) );
+            msg.Append ( file );
+            wxLogMessage ( msg );
+
+            if(compfile.Length())
+                wxRemoveFile(file);
+            return 0;
+      }
+
+      if(compfile.Length())
+          wxRemoveFile(file);
+
+      return 1;
+}
+
+
 
 void cm93chart::SetUserOffsets ( int cell_index, int object_id, int subcell, int xoff, int yoff )
 {
@@ -4972,7 +5405,7 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
       m_vpt = vpt;                              // save a copy
 
       int cmscale = GetCMScaleFromVP ( vpt );         // First order calculation of cmscale
-      m_cmscale = PrepareChartScale ( vpt, cmscale );
+      m_cmscale = PrepareChartScale ( vpt, cmscale, false );
 
       //    Continuoesly update the composite chart edition date to the latest cell decoded
       if ( m_pcm93chart_array[cmscale] )
@@ -4984,6 +5417,8 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
 
 int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
 {
+    OCPNStopWatch sw;
+    
 
       if ( g_bDebugCM93 )
             printf ( "\non SetVPParms, cmscale:%d, %c\n", cmscale, ( char ) ( 'A' + cmscale -1 ) );
@@ -5383,11 +5818,13 @@ bool cm93compchart::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort&
                                          const OCPNRegion &RectRegion, const LLRegion &Region)
 {
       SetVPParms ( VPoint );
-
+      
       if ( g_pCM93OffsetDialog && g_pCM93OffsetDialog->IsShown() )
             g_pCM93OffsetDialog->UpdateMCOVRList ( VPoint );
       
-      return DoRenderRegionViewOnGL ( glc, VPoint, RectRegion, Region );
+      DoRenderRegionViewOnGL ( glc, VPoint, RectRegion, Region );
+      
+      return true;
 
 }
 
