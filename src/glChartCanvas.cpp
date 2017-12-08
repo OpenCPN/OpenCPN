@@ -2854,7 +2854,7 @@ void endCallbackD_GLSL()
     colorv[0] = s_regionColor.Red() / float(256);
     colorv[1] = s_regionColor.Green() / float(256);
     colorv[2] = s_regionColor.Blue() / float(256);
-    colorv[3] = 1.0;
+    colorv[3] = s_regionColor.Alpha() / float(256);
     
     GLint colloc = glGetUniformLocation(color_tri_shader_program,"color");
     glUniform4fv(colloc, 1, colorv);
@@ -3328,6 +3328,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
          }
      }
 
+    OCPNStopWatch qsw;
+     
     LLRegion region = vp.GetLLRegion(rect_region);
 
     LLRegion rendered_region;
@@ -3363,8 +3365,11 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             b_rendered = true;
                         }
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+                        ////qDebug() << "QTime1" << qsw.GetTime();
+                        
                         RenderNoDTA(vp, get_region);
-
+                        //qDebug() << "QTime2" << qsw.GetTime();
+                        
                         if(chart->GetChartType() == CHART_TYPE_CM93COMP){
                             chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                         }
@@ -3385,6 +3390,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                                     chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
                             }
                         }
+                        //qDebug() << "QTime3" << qsw.GetTime();
+                        
                      }
                 }
             }
@@ -3712,7 +3719,8 @@ void glChartCanvas::RenderQuiltViewGLText( ViewPort &vp, const OCPNRegion &rect_
 void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 {
     ViewPort &vp = cc1->VPoint;
-
+    OCPNStopWatch rsw;
+    
 #ifdef USE_S57
     
     // Only for cm93 (not quilted), SetVPParms can change the valid region of the chart
@@ -3779,6 +3787,8 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
          }
     }
     
+    //qDebug() << "RCTime1" << rsw.GetTime();
+    
     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
             wxRect rect = upd.GetRect();
             LLRegion background_region = vp.GetLLRegion(rect);
@@ -3787,12 +3797,13 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
                 background_region.Subtract(chart_region);
 
             if(!background_region.Empty()) {
-                ViewPort cvp = ClippedViewport(vp, background_region);
-                SetClipRegion(vp, background_region);
-                RenderWorldChart(dc, cvp, rect, world_view);
+                 ViewPort cvp = ClippedViewport(vp, background_region);
+                 SetClipRegion(vp, background_region);
+                 RenderWorldChart(dc, cvp, rect, world_view);
             }
     }
 
+    //qDebug() << "RCTime2" << rsw.GetTime();
     if(b_render){
         if(vp.b_quilt)
             RenderQuiltViewGL( vp, rect_region );
@@ -3807,7 +3818,9 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
             } 
         }
     }
-        
+
+    //qDebug() << "RCTime31" << rsw.GetTime();
+    
 }
 
 void glChartCanvas::RenderOverlayObjects(ocpnDC &dc, const OCPNRegion &rect_region)
@@ -4199,6 +4212,7 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
 unsigned long quiltHash;
 int refChartIndex;
 
+
 int n_render;
 void glChartCanvas::Render()
 {
@@ -4209,7 +4223,6 @@ void glChartCanvas::Render()
         return;
     }
 
-    
     OCPNStopWatch sw;
         
 #ifdef USE_ANDROID_GLES2
@@ -4233,11 +4246,11 @@ void glChartCanvas::Render()
     
     //  Check to see if the Compose() call forced a SENC build.
     //  If so, zoom the canvas just slightly to force a deferred redraw of the full screen.
-    if(sw.GetTime() > 2000){       // two seconds is long enough to detect SENC build.
+    if(sw.GetTime() > 4000){       //  long enough to detect SENC build.
         cc1->ZoomCanvas( 1.0001, false );
     }
         
-    //qDebug() << "RenderTime1" << sw.GetTime();
+        //qDebug() << "RenderTime1" << sw.GetTime();
         
     s_tess_vertex_idx = 0;
     quiltHash = cc1->m_pQuilt->GetXStackHash();
@@ -4318,7 +4331,8 @@ void glChartCanvas::Render()
         ) {
         //  Is this viewpoint the same as the previously painted one?
         bool b_newview = true;
-
+        bool b_full = false;
+        
         // If the view is the same we do no updates, 
         // cached texture to the framebuffer
         if(    m_cache_vp.view_scale_ppm == VPoint.view_scale_ppm
@@ -4334,6 +4348,11 @@ void glChartCanvas::Render()
 #ifdef USE_ANDROID_GLES2
         if(recompose)
             b_newview = true;
+        
+        if(m_bforcefull){
+            b_newview = true;
+            b_full = true;
+        }
 #endif        
         
          if( b_newview ) {
@@ -4460,6 +4479,12 @@ void glChartCanvas::Render()
  
                 
 #else   // GLES2
+            if(VPoint.chart_scale < 2000)
+                b_full = true;
+            
+            if(b_full)
+                accelerated_pan = false;
+            
             if(accelerated_pan) {
                 //qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
@@ -4471,12 +4496,15 @@ void glChartCanvas::Render()
                         g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
 
                     //calculate the new regions to render
-                    // add extra pixels to avoid coordindate rounding issues
+                    // add extra pixels to avoid coordindate rounding issues at large scale
                     OCPNRegion update_region;
-
                    
                     int fluff = 0;
-                    
+
+                    // Avoid rendering artifacts caused by Multi Sampling (MSAA)
+                    if(VPoint.chart_scale < 10000)
+                        fluff = 8;
+                        
                     if( dy > 0 && dy < VPoint.pix_height)
                         update_region.Union(wxRect( 0, VPoint.pix_height - (dy + fluff), VPoint.pix_width, dy+fluff ));
                     else if(dy < 0)
@@ -4487,7 +4515,9 @@ void glChartCanvas::Render()
                     else if (dx < 0)
                         update_region.Union(wxRect( 0, 0, -dx + fluff, VPoint.pix_height ));
 
-                    glClearColor(1.0f, 0.0f, 0.f, 1.0f);
+                    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+                    glClearColor( color.Red() / 256., color.Green() / 256. , color.Blue()/ 256. , 1.0 );
+                    //glClearColor(1.0f, 0.0f, 0.f, 1.0f);
                     glClear(GL_COLOR_BUFFER_BIT);
                     
                     // Render the new content
@@ -4615,7 +4645,7 @@ void glChartCanvas::Render()
                         
                      // Render the new content
                         RenderCharts(m_gldc, update_region);
-                     //qDebug() << "RenderTime3" << sw.GetTime();
+                        //qDebug() << "RenderTime3" << sw.GetTime();
                      
                      RenderOverlayObjects(m_gldc, screen_region);
                     
@@ -4638,7 +4668,10 @@ void glChartCanvas::Render()
                 m_fbo_swidth = sx;
                 m_fbo_sheight = sy;
 
-                glClearColor(0.f, 0.f, 0.5f, 1.0f);
+                //glClearColor(0.f, 0.f, 0.5f, 1.0f);
+                wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+                glClearColor( color.Red() / 256., color.Green() / 256. , color.Blue()/ 256. ,1.0 );
+                
                 glClear(GL_COLOR_BUFFER_BIT);
             
                 RenderCharts(m_gldc, screen_region);
@@ -4890,6 +4923,8 @@ void glChartCanvas::Render()
     g_glTextureManager->FactoryCrunch(0.6);
     
     cc1->PaintCleanup();
+    
+    m_bforcefull = false;
     
     n_render++;
 }
@@ -5804,7 +5839,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
     }
 
 
-    float min_zoom_scale = 3e8;
+    float min_zoom_scale = 2e8;
 
     switch(event.GetState()){
         case GestureStarted:
@@ -5841,7 +5876,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                 }
             }
             else{
-//                qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
+                //qDebug() << "update totalzoom" << total_zoom_val << projected_scale;
                 if( 1 || ((total_zoom_val > 1) && !first_zout)){           // Zoom in
                     wxPoint pinchPoint = event.GetCenterPoint();
 
@@ -5849,7 +5884,7 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
                     float dy = pinchPoint.y - m_lpinchPoint.y;
 
                     if(!m_inFade){
-                        if(projected_scale > max_zoom_scale)
+                        if( (projected_scale > max_zoom_scale) && ( projected_scale < min_zoom_scale))
                             FastZoom(zoom_val, m_pinchStart.x, m_pinchStart.y, -dx / total_zoom_val, dy / total_zoom_val);
                     }
                     else
@@ -5918,15 +5953,25 @@ void glChartCanvas::OnEvtPinchGesture( wxQT_PinchGestureEvent &event)
             }
 
             else{
-                qDebug() << "Final pinchA";
-
-                //if(g_GLOptions.m_bUseCanvasPanning)
-                {
-                    qDebug() << "Final pinchB";
+                double final_projected_scale = cc1->GetVP().chart_scale / tzoom;
+                //qDebug() << "Final pinchB" << tzoom << final_projected_scale;
+                    
+                if( final_projected_scale < min_zoom_scale){
+                    //qDebug() << "zoomit";
                     cc1->ZoomCanvas( tzoom, false );
                     cc1->PanCanvas( dx, dy );
+                    cc1->m_pQuilt->Invalidate();
+                    m_bforcefull = true;
+                    
                 }
-
+                else{
+                    double new_scale = cc1->GetCanvasScaleFactor() / min_zoom_scale;
+                    //qDebug() << "clampit";
+                    cc1->SetVPScale( new_scale ); 
+                    cc1->m_pQuilt->Invalidate();
+                    m_bforcefull = true;
+                }
+                            
                 androidSetFollowTool(false);
             }
 
@@ -6004,6 +6049,12 @@ void glChartCanvas::configureShaders( ViewPort &vp)
     matloc = glGetUniformLocation(circle_filled_shader_program,"MVMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)pvp->vp_transform); 
     transloc = glGetUniformLocation(circle_filled_shader_program,"TransformMatrix");
+    glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I); 
+
+    glUseProgram(texture_2DA_shader_program);
+    matloc = glGetUniformLocation(texture_2DA_shader_program,"MVMatrix");
+    glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)pvp->vp_transform); 
+    transloc = glGetUniformLocation(texture_2DA_shader_program,"TransformMatrix");
     glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I); 
     
     
@@ -6104,7 +6155,10 @@ void glChartCanvas::onFadeTimerEvent(wxTimerEvent &event)
     
     glEnable(GL_BLEND);
     
-    glClearColor(0.f, 0.f, 0.f, 1.0f);
+    //glClearColor(0.f, 0.f, 0.f, 1.0f);
+    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+    glClearColor( color.Red() / 256., color.Green() / 256. , color.Blue()/ 256. , 1.0);
+    
     glClear(GL_COLOR_BUFFER_BIT);
     
     
