@@ -484,9 +484,12 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         String gfsFilterPl = "";
         String namePrefix ="";
 
+        String baseUrl = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_";
+        String dname = "gfs";
+
         if(model.equals("GFS25")){
             gfsFilterPl = "0p25.pl?";
-            gfsFilter = "z.pgrb2full.0p25.";
+            gfsFilter = "z.pgrb2.0p25.";
             namePrefix = "gfs_025_OCPN_";
         }
         else if(model.equals("GFS50")){
@@ -514,8 +517,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         editor.apply();
 
 
-        String URL_GETGFS = "http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_" + gfsFilterPl;
-        String DIR = "%2Fgfs." + startTime;
+        String URL_GETGFS = baseUrl + gfsFilterPl;
         String fileSaveName = "gribs/";
 
         //http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl?file=gfs.t18z.pgrb2full.0p50.f003&dir=%2Fgfs.2016031418&......
@@ -530,7 +532,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         // in a loop, get the files
         for(int x=0 ; x < loop_count ; x++){
             String time = String.format("f%03d", t);
-            String fileName = "file=gfs.t" + T0 + gfsFilter + time;
+            String fileName = "file=" + dname + ".t" + T0 + gfsFilter + time;
 
 
             boolean blev10m = false;
@@ -613,7 +615,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
                 + "&rightlon=" + String.format("%d", lon_max)
                 + "&toplat=" + String.format("%d", lat_max)
                 + "&bottomlat=" + String.format("%d", lat_min)
-                + "&dir=" + DIR;
+                + "&dir=%2F" + dname + "." + startTime;
 
             Log.i("OpenCPN", "URL_FETCH: " + URL_FETCH);
 

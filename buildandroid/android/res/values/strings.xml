@@ -276,6 +276,7 @@
     <string name="ocpn_grib_windspeedoverlaycolor">Wind Speed Overlay Colors</string>
 
     <!--  Grib Arrays   -->
+    <string name="ocpn_grib_model_array_item_gfs25">GFS 0.25\u00B0 NOAA/NECP</string>
     <string name="ocpn_grib_model_array_item_gfs5">GFS 0.50\u00B0 NOAA/NECP</string>
     <string name="ocpn_grib_model_array_item_gfs1">GFS 1.0\u00B0 NOAA/NECP</string>
     <string name="ocpn_grib_model_array_item_rtofs">RTOFS (Atlantic) NOAA/NECP</string>
