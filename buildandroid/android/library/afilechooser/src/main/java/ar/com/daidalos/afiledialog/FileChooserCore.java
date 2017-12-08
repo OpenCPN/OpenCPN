@@ -1175,7 +1175,7 @@ class FileChooserCore {
         List<String> paths = new ArrayList();
 
 
-        if( true /*null != dlg*/) {
+        if( android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {        // KITKAT = 19/20
             for (File file : chooser.getContext().getExternalFilesDirs("external")) {
                 if (file != null && !file.equals(chooser.getContext().getExternalFilesDir("external"))) {
                     int index = file.getAbsolutePath().lastIndexOf("/Android/data");
