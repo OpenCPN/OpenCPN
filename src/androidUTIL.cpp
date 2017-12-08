@@ -2724,15 +2724,15 @@ wxString BuildAndroidSettingsString( void )
                 else if ( depthUnit == 2 ) // fathoms
                 conv = 0.3048f * 6; // 1 fathom is 6 feet
                 
-            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
+            s.Printf( _T("%4.2f;"), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) / conv );
             s.Trim(false);
             result += _T("prefs_shallowdepth:") + s;
             
-            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
+            s.Printf( _T("%4.2f;"), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) / conv );
             s.Trim(false);
             result += _T("prefs_safetydepth:") + s;
             
-            s.Printf( _T("%4.0f;"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
+            s.Printf( _T("%4.2f;"), S52_getMarinerParam( S52_MAR_DEEP_CONTOUR ) / conv );
             s.Trim(false);
             result += _T("prefs_deepdepth:") + s;
     
@@ -2977,7 +2977,7 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                     double old_dval = S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR );
                     double dval;
                     if(val.ToDouble(&dval)){
-                        if(fabs(dval - old_dval) > .1){
+                        if(fabs(dval - old_dval) > .001){
                             S52_setMarinerParam( S52_MAR_SHALLOW_CONTOUR, dval * conv );
                             rr |= S52_CHANGED;
                         }
@@ -2988,7 +2988,7 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                     double old_dval = S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR );
                     double dval;
                     if(val.ToDouble(&dval)){
-                        if(fabs(dval - old_dval) > .1){
+                        if(fabs(dval - old_dval) > .001){
                             S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval * conv );
                             rr |= S52_CHANGED;
                         }
@@ -2999,7 +2999,7 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
                     double old_dval = S52_getMarinerParam( S52_MAR_DEEP_CONTOUR );
                     double dval;
                     if(val.ToDouble(&dval)){
-                        if(fabs(dval - old_dval) > .1){
+                        if(fabs(dval - old_dval) > .001){
                             S52_setMarinerParam( S52_MAR_DEEP_CONTOUR, dval * conv );
                             rr |= S52_CHANGED;
                         }
