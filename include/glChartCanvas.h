@@ -234,7 +234,7 @@ protected:
     bool        m_zoomFinal;
     double      m_zoomFinalZoom;
     int         m_zoomFinaldx, m_zoomFinaldy;
-    
+    bool        m_bforcefull;
     
     
     wxTimer     zoomTimer;

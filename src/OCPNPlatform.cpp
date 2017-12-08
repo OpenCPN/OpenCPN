@@ -952,7 +952,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     g_bUIexpert = true;         
     
     g_bShowStatusBar = true;
-    g_cm93_zoom_factor = -5;
+    g_cm93_zoom_factor = 0;
     g_oz_vector_scale = false;
     g_fog_overzoom = false;
     
@@ -963,7 +963,7 @@ void OCPNPlatform::SetDefaultOptions( void )
     
     //  Suppress most tools, especially those that appear in the Basic menus.
     //  Of course, they may be re-enabled by experts...
-    g_toolbarConfig = _T("......X........X..XXXXXXXXXXX");
+    g_toolbarConfig = _T("......X........XX.XXXXXXXXXXX");
     g_bPermanentMOBIcon = false;
     
     wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");          // 17 parms

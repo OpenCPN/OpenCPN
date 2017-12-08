@@ -5658,6 +5658,9 @@ void options::SetInitialVectorSettings(void)
             p24Color->SetSelection(0);
         else
             p24Color->SetSelection(1);
+        
+        UpdateOptionsUnits();  // sets depth values using the user's unit preference
+        
     }
 #endif
 }
