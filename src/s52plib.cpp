@@ -2322,7 +2322,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 glEnable( GL_BLEND );
                 glEnable( GL_TEXTURE_2D );
 
-
+                wxColour wcolor = GetFontColour_PlugIn(_("ChartTexts"));
+                f_cache->SetColor( wcolor );
+                
                 /* undo previous rotation to make text level */
                 //glRotatef(vp->rotation*180/PI, 0, 0, -1);
 
