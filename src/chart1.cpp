@@ -5093,16 +5093,21 @@ bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 #ifdef USE_S57
     OBJLElement *pOLE = NULL;
     if( ps52plib ) {
-        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
-            pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
-                oldstate = pOLE->nViz != 0;
-                break;
+        if(ps52plib->GetDisplayCategory() == MARINERS_STANDARD){
+            for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+                pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+                if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                    oldstate = pOLE->nViz != 0;
+                    break;
+                }
+                pOLE = NULL;
             }
-	    pOLE = NULL;
+            oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
         }
+        else
+            oldstate = !ps52plib->IsObjNoshow("LIGHTS");
+        
 
-        oldstate &= !ps52plib->IsObjNoshow("LIGHTS");
 
         if( doToggle ){
             if(oldstate){                            // On, going off
