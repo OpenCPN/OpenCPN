@@ -1285,9 +1285,9 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
         zoom_mod = (double)g_chart_zoom_modifier_vector;
 
     double modf = zoom_mod/5.;  // -1->1
-    double user_mod = pow(8., modf);
+    double user_mod = pow(16., modf);
     user_mod = wxMax(user_mod, .2);
-    user_mod = wxMin(user_mod, 8.0);
+    user_mod = wxMin(user_mod, 16.0);
     
     int type_mod = 1;
     // Apply zoom scale modifier according to chart family.
@@ -1298,7 +1298,6 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
         }
         
         case CHART_FAMILY_VECTOR:{
-            user_mod = wxMin(user_mod, 2.0);
             type_mod = 4;
             break;
         }
@@ -4797,9 +4796,9 @@ void ChartCanvas::HideChartInfoWindow( void )
         m_pCIWin->Hide();
         m_pCIWin->Destroy();
         m_pCIWin = NULL;
-
+ 
 #ifdef __OCPN__ANDROID__        
-        androidForceFullRepaint();
+        //androidForceFullRepaint();
 #endif        
             
     }

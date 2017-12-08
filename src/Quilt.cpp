@@ -845,9 +845,9 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
         zoom_mod = (double)g_chart_zoom_modifier_vector;
         
      double modf = zoom_mod/5.;  // -1->1
-     double mod = pow(8., modf);
+     double mod = pow(16., modf);
      mod = wxMax(mod, .2);
-     mod = wxMin(mod, 8.0);
+     mod = wxMin(mod, 16.0);
 
     // Apply zoom scale modifier according to chart family.
     switch(family){
@@ -856,7 +856,6 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
         }
 
         case CHART_FAMILY_VECTOR:{
-            mod = wxMin(mod, 2.0);
             return scale * 4 * mod;
         }
 
@@ -937,6 +936,8 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // So make sure any adjusted min_scale is not more than twice the already established value
     if(index_array.GetCount() > 1){
         for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
+            int scale_min_this = min_scale.Item(i);
+            int scale_max_next = max_scale.Item(i+1);
             int min_scale_test = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
             min_scale_test = wxMin(min_scale_test, min_scale.Item(i) * 2 );
             min_scale.Item(i) = min_scale_test;
