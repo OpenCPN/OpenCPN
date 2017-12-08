@@ -26,8 +26,9 @@
 
 #include <wx/window.h>
 #include <wx/stattext.h>
+#include "chart1.h"             // for ColorScheme
 
-class ChInfoWin: public wxWindow
+class ChInfoWin: public wxDialog
 {
 public:
     ChInfoWin( wxWindow *parent );
