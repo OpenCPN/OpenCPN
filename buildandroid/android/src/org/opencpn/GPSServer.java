@@ -84,9 +84,9 @@ public class GPSServer extends Service implements LocationListener {
         public void onGpsStatusChanged(int event) {
 //            Log.i("OpenCPN", "StatusListener Event");
 
-            if(null != locationManager){
-                mStatus = locationManager.getGpsStatus(null);
-            }
+//            if(null != locationManager){
+//                mStatus = locationManager.getGpsStatus(null);
+//            }
 
 
             switch (event) {
@@ -103,6 +103,14 @@ public class GPSServer extends Service implements LocationListener {
 //                    Log.i("OpenCPN", "GPS_EVENT_FIRST_FIX Event");
                     isGPSFix = true;
                     break;
+
+/*
+            // Removed this test as not necessary...
+            // But, if desired, could probably be re-engaged if
+            //  we move the locationManager.getGpsStatus(null) call (see line 87) to inside this case.
+            //  It seems that getGPSStatus(null) may crash if there has not been a satellite status update,
+            //  so should not be called until one is sure that has happened, evidenced by this case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+
 
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
 //                    Log.i("OpenCPN", "GPS_EVENT_SATELLITE_STATUS Event");
@@ -135,6 +143,7 @@ public class GPSServer extends Service implements LocationListener {
                         isGPSFix = false;
 
                     break;
+*/
             }
         }
     }
