@@ -9202,10 +9202,8 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 #endif                        
                         scale = wxMax(1.0, scale);      // no minimization allowed
                         
-                        int w = r.x - 6;
-                        int h = r.y - 22;
-                        int rect_height = 45 * scale;
-                        int rect_width = 12 * scale;
+                        int w = r.x;
+                        int h = r.y;
                         
                         {
                             {
@@ -9259,9 +9257,9 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
 				    int width = (int) (12 * tide_draw_scaler + 0.5);
 				    int height = (int) (45 * tide_draw_scaler + 0.5);
 				    int linew = wxMax(1, (int) (tide_draw_scaler));
-
-				    //std::cerr << "tide icon w=" << width << ", h=" << height;
-				    //std::cerr << ", linew=" << linew << ", scale=" << tide_draw_scaler << std::endl;
+                                   w = r.x - width / 2;
+                                   h = r.y - height / 2;
+                                    
 
                                     //process tide state  ( %height and flow sens )
                                     float ts = 1 - ( ( nowlev - ltleve ) / ( htleve - ltleve ) );
@@ -9279,9 +9277,12 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox )
                                     //draw blue rectangle as water height, smaller in width than yellow rectangle
                                     dc.SetPen( *pblue_pen );
                                     dc.SetBrush( *pblue_brush );
-                                    dc.DrawRectangle( (w + 2*linew), h + ht_y, 
-						      (width - (4*linew)), height - ht_y );
+                                    dc.DrawRectangle( (w + 2*linew), h + ht_y, (width - (4*linew)), height - ht_y );
 
+                                    // Testing select zone
+//                                     dc.SetBrush(*wxTRANSPARENT_BRUSH);
+//                                     dc.DrawCircle(r.x, r.y, pSelectTC->pixelRadius);
+                                    
                                     //draw sens arrows (ensure they are not "under-drawn" by top line of blue rectangle )
                                     int hl;
                                     wxPoint arrow[3];
