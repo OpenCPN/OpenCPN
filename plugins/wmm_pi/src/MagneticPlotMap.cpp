@@ -359,7 +359,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date)
 
   wxGenericProgressDialog *progressdialog = new wxGenericProgressDialog(
       _("Building Magnetic Map"),
-      m_type==DECLINATION?_("Declination"):
+      m_type==DECLINATION?_("Variation"):
       m_type==INCLINATION?_("Inclination"):_("Field Strength"), 180, NULL,
       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT);
 
