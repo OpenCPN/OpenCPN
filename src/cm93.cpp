@@ -2241,7 +2241,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
                   //    Load any subcells in sequence
                   //    On successful load, add it to the member list and process the cell
-                  while ( 0 /*loadcell_in_sequence ( cell_index, loadcell_key )*/ )
+                  while ( loadcell_in_sequence ( cell_index, loadcell_key ) )
                   {
                         ProcessVectorEdges();
                         CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
