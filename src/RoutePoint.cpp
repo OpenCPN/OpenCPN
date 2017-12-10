@@ -951,7 +951,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         wxPen ppPen1( dh_color, 3 * platform_pen_width );
         dc.SetPen( ppPen1 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
- 
+        
         dh_color = GetGlobalColor( _T ( "YELO1" ) );
         wxPen ppPen2( dh_color, platform_pen_width );
         dc.SetPen( ppPen2 );
@@ -962,22 +962,24 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
+        
+        int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
+        
+        float scale =  g_ChartScaleFactorExp;
+        
+        float ws = w * scale;
+        float hs = h * scale;
+        float xs = x - ws/2.;
+        float ys = y - hs/2.;
+        float u = (float)w/m_dragIconTextureWidth, v = (float)h/m_dragIconTextureWidth;
+        
+#ifndef USE_ANDROID_GLES2        
         glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
         glColor3f(1, 1, 1);
-        
-        int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
-        
-        float scale =  g_ChartScaleFactorExp;
-            
-        float ws = w * scale;
-        float hs = h * scale;
-        float xs = x - ws/2.;
-        float ys = y - hs/2.;
-        float u = (float)w/m_dragIconTextureWidth, v = (float)h/m_dragIconTextureWidth;
         
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(xs, ys);
@@ -986,11 +988,25 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         glTexCoord2f(0, v); glVertex2f(xs, ys+hs);
         glEnd();
         
+#else
+        float coords[8];
+        float uv[8];
+        //normal uv
+        uv[0] = 0; uv[1] = 0; uv[2] = u; uv[3] = 0;
+        uv[4] = u; uv[5] = v; uv[6] = 0; uv[7] = v;
+        
+        // pixels
+        coords[0] = xs; coords[1] = ys; coords[2] = xs+ws; coords[3] = ys;
+        coords[4] = xs+ws; coords[5] = ys+hs; coords[6] = xs, coords[7] = ys+hs;
+        
+        glChartCanvas::RenderSingleTexture(coords, uv, &vp, 0, 0, 0);
+        
+#endif
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
-
+        
     }
- 
+    
  
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
     
