@@ -48,11 +48,12 @@ ChInfoWin::ChInfoWin( wxWindow *parent )
 {
     
     long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
-    #ifdef __WXOSX__
+#ifdef __WXOSX__
     style |= wxSTAY_ON_TOP;
-    #endif
-    
+#endif
+
     wxDialog::Create( parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
+
     
     
     int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;

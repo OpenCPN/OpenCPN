@@ -403,7 +403,6 @@ class cm93chart : public s57chart
 
             LLRegion            m_region;
             wxArrayString       m_noFindArray;
-            
 };
 
 //----------------------------------------------------------------------------

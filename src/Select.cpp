@@ -612,6 +612,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
+                case SELTYPE_DRAGHANDLE:    
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
                         ret_list.Append( pFindSel );

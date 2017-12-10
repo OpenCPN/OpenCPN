@@ -28,6 +28,8 @@
 #include <wx/stattext.h>
 #include "chart1.h"             // for ColorScheme
 
+#include "chart1.h"
+
 class ChInfoWin: public wxDialog
 {
 public:

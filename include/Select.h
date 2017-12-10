@@ -36,6 +36,7 @@
 #define SELTYPE_AISTARGET            0x0040
 #define SELTYPE_MARKPOINT            0x0080
 #define SELTYPE_TRACKSEGMENT         0x0100
+#define SELTYPE_DRAGHANDLE           0x0200
 
 class TrackPoint;
 class Track;
