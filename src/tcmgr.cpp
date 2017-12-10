@@ -950,6 +950,19 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
             return;
     }
 
+    // Is the cache data reasonably fresh?
+    if( (t - pIDX->recent_highlow_calc_time) < 60){
+        if(w_t){
+            tcvalue = pIDX->recent_high_level;
+            tctime = pIDX->recent_high_time;
+        }else{
+            tcvalue = pIDX->recent_low_level;
+            tctime = pIDX->recent_low_time;
+        }
+        return;
+    }
+
+
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
     int yott = yearoftimet( t );
     happy_new_year (pIDX, yott);
@@ -977,6 +990,18 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     }
     tcvalue = newval;
     tctime = ttt + sch_step_2 ;
+    
+    // Cache the data
+    pIDX->recent_highlow_calc_time = t;
+    if(w_t){
+        pIDX->recent_high_level = newval;
+        pIDX->recent_high_time = tctime;
+    }
+    else{
+        pIDX->recent_low_level = newval;
+        pIDX->recent_low_time = tctime;
+    }
+        
 
 }
 
