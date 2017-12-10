@@ -1278,10 +1278,12 @@ void WayPointman::ProcessDefaultIcons()
         m_pLegacyIconArray = new SortedArrayOfMarkIcon(CompareMarkIcons);
     
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Empty.svg"), _T("empty"), _T("Empty") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Triangle.svg"), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("1st-Active-Waypoint.svg"), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boarding-Location.svg"), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Airplane.svg"), _T("airplane"), _T("Airplane") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("1st-Anchorage.svg"), _T("anchorage"), _T("Anchorage") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Anchor2.svg"), _T("anchor"), _T("Anchor") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boarding-Location.svg"), _T("boarding"), _T("Boarding Location") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Boundary.svg"), _T("boundary"), _T("Boundary Mark") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeA.svg"), _T("bouy1"), _T("Bouy Type A") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Buoy-TypeB.svg"), _T("bouy2"), _T("Bouy Type B") ); if(pmi)pmi->preScaled = true;
@@ -1293,7 +1295,7 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Activity-Fishing.svg"), _T("fish"), _T("Fish") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Mooring-Buoy.svg"), _T("float"), _T("Float") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Service-Food.svg"), _T("food"), _T("Food") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("Service-Fuel-Pump-Diesel&Petrol.svg"), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
+    pmi = ProcessLegacyIcon( iconDir + _T("Service-Fuel-Pump-Diesel+Petrol.svg"), _T("fuel"), _T("Fuel") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-Green.svg"), _T("greenlite"), _T("Green Light") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Sea-Floor-Sea-Weed.svg"), _T("kelp"), _T("Kelp") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Marks-Light-TypeA.svg"), _T("light"), _T("Light Type A") ); if(pmi)pmi->preScaled = true;
@@ -1312,7 +1314,6 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Sandbar.svg"), _T("shoal"), _T("Shoal") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Snag.svg"), _T("snag"), _T("Snag") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Square.svg"), _T("square"), _T("Square") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Triangle.svg"), _T("triangle"), _T("Triangle") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("1st-Diamond.svg"), _T("diamond"), _T("Diamond") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-Circle.svg"), _T("circle"), _T("Circle") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Hazard-Wreck1.svg"), _T("wreck1"), _T("Wreck A") ); if(pmi)pmi->preScaled = true;
@@ -1320,7 +1321,6 @@ void WayPointman::ProcessDefaultIcons()
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Blue.svg"), _T("xmblue"), _T("Blue X") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Green.svg"), _T("xmgreen"), _T("Green X") ); if(pmi)pmi->preScaled = true;
     pmi = ProcessLegacyIcon( iconDir + _T("Symbol-X-Small-Red.svg"), _T("xmred"), _T("Red X") ); if(pmi)pmi->preScaled = true;
-    pmi = ProcessLegacyIcon( iconDir + _T("1st-Active-Waypoint.svg"), _T("activepoint"), _T("Active WP") ); if(pmi)pmi->preScaled = true;
    
    
     
@@ -1337,23 +1337,9 @@ void WayPointman::ProcessDefaultIcons()
      
     int n_files = wxDir::GetAllFiles( iconDir, &FileList );
     
-    // If the scale factor is not unity, measure the first icon in the list
-    //  So that we may apply the scale factor exactly to all
-    if( fabs(g_ChartScaleFactorExp - 1.0) > 0.1){
-        
-        for( int ifile = 0; ifile < n_files; ifile++ ) {
-            wxString name = FileList.Item( ifile );
-        
-            wxFileName fn( name );
-        
-            if( fn.GetExt().Lower() == _T("svg") ) {
-                wxBitmap bmt = LoadSVGIcon(name, -1, -1 );
-                bm_size = bmt.GetWidth() * g_ChartScaleFactorExp;
-                break;
-            }
-        }
-    }
-
+    float target_size_pixels = wxMax(4.0, floor(g_Platform->GetDisplayDPmm() * 12.0));             // nominal size, but not less than 4 pixel
+    bm_size = target_size_pixels;  
+    bm_size *= g_ChartScaleFactorExp;
     
     for( int ifile = 0; ifile < n_files; ifile++ ) {
         wxString name = FileList.Item( ifile );
@@ -1361,7 +1347,6 @@ void WayPointman::ProcessDefaultIcons()
         wxFileName fn( name );
         wxString iconname = fn.GetName();
         wxBitmap icon1;
-            
         if( fn.GetExt().Lower() == _T("svg") ) {
             wxImage iconSVG = LoadSVGIcon( name, (int)bm_size, (int)bm_size );
             MarkIcon * pmi = ProcessExtendedIcon( iconSVG, iconname, iconname );
@@ -1656,7 +1641,7 @@ void WayPointman::ReloadAllIcons(  )
 {
     ProcessIcons( g_StyleManager->GetCurrentStyle() );
  
-    for( int i = 0; i < m_pIconArray->GetCount(); i++ ) {
+    for( unsigned int i = 0; i < m_pIconArray->GetCount(); i++ ) {
         MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
         wxImage dim_image;
         if(m_cs == GLOBAL_COLOR_SCHEME_DUSK){
