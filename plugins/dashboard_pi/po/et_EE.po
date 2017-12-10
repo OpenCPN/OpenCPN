@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:41-0400\n"
-"PO-Revision-Date: 2017-08-04 22:35-0400\n"
+"PO-Revision-Date: 2017-12-08 15:24-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -135,7 +135,7 @@ msgstr "Kursor"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
-msgstr ""
+msgstr "GPS-kell"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
@@ -175,15 +175,15 @@ msgstr "Kreen"
 
 #: src/dashboard_pi.cpp:192
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Kohalik GPS-kell"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Kohalik CPU-kell"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr ""
+msgstr "Kohalik päikesetõus/-loojang"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -288,7 +288,7 @@ msgstr "COG summutamise tegur:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Kohalik UTC-ajavahe:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"

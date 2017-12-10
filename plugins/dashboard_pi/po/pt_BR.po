@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:41-0400\n"
-"PO-Revision-Date: 2017-08-04 22:35-0400\n"
+"PO-Revision-Date: 2017-12-08 15:25-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -135,7 +135,7 @@ msgstr "Cursor"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
-msgstr ""
+msgstr "Relógio GPS"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
@@ -175,15 +175,15 @@ msgstr "Salto"
 
 #: src/dashboard_pi.cpp:192
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Relógio local GPS"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Relógio local CPU"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr ""
+msgstr "Nascer/Pôr do sol Local"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -288,7 +288,7 @@ msgstr "COG Fator de amortecimento:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Deslocamento da hora local da UTC:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"

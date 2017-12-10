@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:52-0400\n"
-"PO-Revision-Date: 2017-08-04 22:35-0400\n"
+"PO-Revision-Date: 2017-11-26 13:50-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -23,15 +23,16 @@ msgstr "Start en forespørsel"
 #: src/GribUIDialog.cpp:379
 msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
+msgstr "Tegn forespurt område\n"
+"eller klikk her for å avbryte"
 
 #: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:852
 msgid "Valid Area and Continue"
-msgstr ""
+msgstr "Gyldig område og fortsett"
 
 #: src/GribUIDialog.cpp:425
 msgid "File: "
-msgstr ""
+msgstr "Fil: "
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -43,7 +44,7 @@ msgstr " inneholder ingen gyldige data!"
 
 #: src/GribUIDialog.cpp:455
 msgid "No valid GRIB file"
-msgstr ""
+msgstr "Ingen gyldig GRIB-fil"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:841
 msgid "Hide data at cursor"
@@ -91,7 +92,7 @@ msgstr "Innstillinger"
 
 #: src/GribUIDialog.cpp:852
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "Tegn forespurt område eller klikk her for å avbryte"
 
 #: src/GribUIDialog.cpp:903
 msgid "Close"
@@ -103,7 +104,7 @@ msgstr "Velg en GRIB fil"
 
 #: src/GribUIDialog.cpp:1682
 msgid " files don't exist!"
-msgstr ""
+msgstr " filene eksisterer ikke!"
 
 #: src/GribUIDialog.cpp:1704
 msgid " can't be read!"
@@ -957,7 +958,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Du har bedt om en værmelding for mer enn 8 dager fremover.\n"
+"Dette kommer i konflikt med bølgedata som vil bli fjernet fra din forespørsel.\n"
+"Ikke glem at de første 8 dagene vil oppløsningen kun bli 2.5\\u00B0x2.5\\u00B0\n"
+"og et tidsintervall på 12 timer."
 
 #: src/GribRequestDialog.cpp:837
 msgid "Max"
@@ -979,7 +983,7 @@ msgstr "Feil! Maks b.grad er lavere enn Min. b.grad eller Maks l.grad er lavere 
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "For stort område! Hver side må være mindre enn 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"

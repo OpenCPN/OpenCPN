@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:52-0400\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"PO-Revision-Date: 2017-09-16 06:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -32,7 +32,7 @@ msgstr "Επικύρωση περιοχής και να συνέχεια"
 
 #: src/GribUIDialog.cpp:425
 msgid "File: "
-msgstr ""
+msgstr "Αρχείο: "
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -44,7 +44,7 @@ msgstr " δεν περιέχει έγκυρα δεδομένα!"
 
 #: src/GribUIDialog.cpp:455
 msgid "No valid GRIB file"
-msgstr ""
+msgstr "Μη έγκυρο αρχείο GRIB"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:841
 msgid "Hide data at cursor"

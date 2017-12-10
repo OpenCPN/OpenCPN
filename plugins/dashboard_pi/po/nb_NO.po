@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:41-0400\n"
-"PO-Revision-Date: 2017-08-04 22:35-0400\n"
+"PO-Revision-Date: 2017-11-26 13:50-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -135,7 +135,7 @@ msgstr "Kursor"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
-msgstr ""
+msgstr "GPS klokke"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
@@ -175,15 +175,15 @@ msgstr "Helling"
 
 #: src/dashboard_pi.cpp:192
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Lokal GPS klokke"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Lokal CPU klokke"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr ""
+msgstr "Lokal sol opp/ned"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -280,15 +280,15 @@ msgstr "Speedometer maks verdi:"
 
 #: src/dashboard_pi.cpp:1827
 msgid "Speed Over Ground Damping Factor:"
-msgstr ""
+msgstr "Fart over grunn dempefaktor:"
 
 #: src/dashboard_pi.cpp:1833
 msgid "COG Damping Factor:"
-msgstr ""
+msgstr "COG dempefaktor:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Lokal tidsforskyvning fra UTC:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"

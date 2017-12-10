@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:52-0400\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"PO-Revision-Date: 2017-11-26 13:50-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:425
 msgid "File: "
-msgstr ""
+msgstr "ファイル: "
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -43,7 +43,7 @@ msgstr " 有効なデータが含まれていない!"
 
 #: src/GribUIDialog.cpp:455
 msgid "No valid GRIB file"
-msgstr ""
+msgstr "有効なGRIBファイルがありません。"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:841
 msgid "Hide data at cursor"
@@ -103,7 +103,7 @@ msgstr "GRIB ファイルを選択します。"
 
 #: src/GribUIDialog.cpp:1682
 msgid " files don't exist!"
-msgstr ""
+msgstr " ファイルが存在しません!"
 
 #: src/GribUIDialog.cpp:1704
 msgid " can't be read!"
@@ -981,7 +981,7 @@ msgstr "エラー! 最大緯度が最小緯度より小さい、または最大�
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "領域が広すぎます! それぞれの側は、180\\u00B0未満にする必要があります!"
 
 #: src/GribRequestDialog.cpp:951
 msgid "Too small area for this resolution!"

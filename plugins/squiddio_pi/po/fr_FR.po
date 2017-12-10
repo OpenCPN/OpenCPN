@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-01 12:44-0600\n"
-"PO-Revision-Date: 2017-07-23 11:38-0400\n"
+"PO-Revision-Date: 2017-12-08 15:24-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -203,7 +203,7 @@ msgstr "Marqueur de l'AIS"
 
 #: src/squiddioPrefsDialogBase.cpp:69
 msgid "Share logs with friends"
-msgstr "Partager les logs avec vos amis"
+msgstr "Partager les logs avec des amis"
 
 #: src/squiddioPrefsDialogBase.cpp:76
 msgid "Send"
@@ -227,7 +227,7 @@ msgstr "Une fois par heure"
 
 #: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
 msgid "Twice an hour"
-msgstr "Deux fois par jour"
+msgstr "Deux fois par heure"
 
 #: src/squiddioPrefsDialogBase.cpp:80 src/squiddioPrefsDialogBase.cpp:92
 msgid "Once a minute"

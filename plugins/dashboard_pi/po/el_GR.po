@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:41-0400\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"PO-Revision-Date: 2017-09-16 06:22-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -135,7 +135,7 @@ msgstr "Κέρσορας"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
-msgstr ""
+msgstr "Ρολόι GPS"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
@@ -175,15 +175,15 @@ msgstr "Γέρσιμο"
 
 #: src/dashboard_pi.cpp:192
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Τοπική ώρα GPS"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Τοπική ώρα CPU"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr ""
+msgstr "Τοπική ώρα ανατολής/δύσης ήλιου"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -288,7 +288,7 @@ msgstr "Συντελεστής απόσβεσης COG:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Διαφορά τοπικής ώρας από UTC:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"

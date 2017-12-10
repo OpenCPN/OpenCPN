@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-08-04 09:41-0400\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"PO-Revision-Date: 2017-11-26 13:49-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -19,7 +19,7 @@ msgstr ""
 #: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
 #: src/wind_history.cpp:433
 msgid "N"
-msgstr "P"
+msgstr "N"
 
 #: src/dashboard_pi.cpp:105
 msgid "Position"
@@ -135,7 +135,7 @@ msgstr "Kohdistin"
 
 #: src/dashboard_pi.cpp:172
 msgid "GPS Clock"
-msgstr ""
+msgstr "GPS kello"
 
 #: src/dashboard_pi.cpp:174
 msgid "Sunrise/Sunset"
@@ -175,15 +175,15 @@ msgstr "Kallistus"
 
 #: src/dashboard_pi.cpp:192
 msgid "Local GPS Clock"
-msgstr ""
+msgstr "Paikallinen GPS-kello"
 
 #: src/dashboard_pi.cpp:194
 msgid "Local CPU Clock"
-msgstr ""
+msgstr "Paikallinen CPU kello"
 
 #: src/dashboard_pi.cpp:196
 msgid "Local Sunrise/Sunset"
-msgstr ""
+msgstr "Paikallinen auringonnousu-ja lasku"
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
 #: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
@@ -288,7 +288,7 @@ msgstr "COG vaimennuskerroin:"
 
 #: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
-msgstr ""
+msgstr "Paikallisen ajan UTC-ajan poikkeaman:"
 
 #: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"
