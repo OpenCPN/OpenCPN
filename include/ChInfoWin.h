@@ -27,7 +27,9 @@
 #include <wx/window.h>
 #include <wx/stattext.h>
 
-class ChInfoWin: public wxWindow
+#include "chart1.h"
+
+class ChInfoWin: public wxDialog
 {
 public:
     ChInfoWin( wxWindow *parent );

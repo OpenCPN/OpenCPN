@@ -44,9 +44,18 @@ BEGIN_EVENT_TABLE(ChInfoWin, wxWindow)
 END_EVENT_TABLE()
 
 // Define a constructor
-ChInfoWin::ChInfoWin( wxWindow *parent ) :
-    wxWindow( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNO_BORDER )
+ChInfoWin::ChInfoWin( wxWindow *parent )
 {
+    
+    long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
+#ifdef __WXOSX__
+    style |= wxSTAY_ON_TOP;
+#endif
+
+    wxDialog::Create( parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
+
+    
+    
     int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
     m_pInfoTextCtl = new wxStaticText( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize,
                                        ststyle );
