@@ -867,7 +867,7 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "nSymbolStyle" ), (int)(_LUPname)PAPER_CHART );
         pConfig->Write( _T ( "nBoundaryStyle" ), (int)(_LUPname)PLAIN_BOUNDARIES );
         
-        pConfig->Write( _T ( "bShowSoundg" ), false );
+        pConfig->Write( _T ( "bShowSoundg" ), true );
         pConfig->Write( _T ( "bShowMeta" ), false );
         pConfig->Write( _T ( "bUseSCAMIN" ), true );
         pConfig->Write( _T ( "bShowAtonText" ), false );
@@ -883,7 +883,6 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
 
         pConfig->Write( _T ( "ZoomDetailFactorVector" ), 3 );
-        
      }
     
     
