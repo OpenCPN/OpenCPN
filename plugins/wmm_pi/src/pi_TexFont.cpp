@@ -22,7 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
 #include <wx/wx.h>
 // #include <GL/gl.h>
 // #include <GL/glu.h>
@@ -54,7 +53,6 @@ TexFont::~TexFont( )
 
 void TexFont::Build( wxFont &font, bool blur )
 {
-    qDebug() << "pi_Texfont build";
     /* avoid rebuilding if the parameters are the same */
     if(font == m_font && blur == m_blur)
         return;
@@ -336,7 +334,6 @@ void TexFont::RenderGlyph( int c )
     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, tco1 );
     
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
     
     
     
