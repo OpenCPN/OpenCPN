@@ -4472,11 +4472,13 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       file += m_scalechar;
 
 
-
+      
       wxString fileroot;
       fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
       fileroot += m_scalechar;
       fileroot += _T ( "/" );
+      wxString key = fileroot;
+      key += sub_char;
       fileroot.Prepend ( m_prefix );
 
       file[0] = sub_char;
@@ -4490,7 +4492,76 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             printf ( "    filename: %s\n", sfile );
       }
 
+      bool bfound = false;
       wxString compfile;
+      if(m_noFindArray.Index(key) == wxNOT_FOUND){
+        if ( ::wxFileExists ( file ) ) {
+            bfound = true;;
+        }
+        else{
+            m_noFindArray.Add(key);
+        }
+      }
+      
+      if(!bfound){                     // try compressed version
+            if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
+                if(::wxFileExists ( file+_T(".xz"))){
+                    compfile = file + _T(".xz");
+                }
+                else{
+                    m_noFindArray.Add(key + _T(".xz"));
+                }
+            }
+      }
+
+      // Try again with alternate scale character
+      if(!bfound && !compfile.Length()){
+             //    Try with alternate case of m_scalechar
+            wxString new_scalechar = m_scalechar.Lower();
+
+            wxString file1;
+            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
+            file1 += new_scalechar;
+
+            file1[0] = sub_char;
+
+            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
+            fileroot += new_scalechar;
+            fileroot += _T ( "/" );
+            wxString key1 = fileroot;
+            key1 += file1;
+
+            fileroot.Prepend ( m_prefix );
+
+            file1.Prepend ( fileroot );
+         
+            if(m_noFindArray.Index(key1) == wxNOT_FOUND){
+                if ( ::wxFileExists ( file ) ) {
+                    bfound = true;
+                    file = file1;                       // found the file as lowercase, substitute the name
+                }
+                else{
+                    m_noFindArray.Add(key1);
+                }
+            }
+            
+            if(!bfound){                     // try compressed version
+                if(m_noFindArray.Index(key1 + _T(".xz")) == wxNOT_FOUND){
+                    if(::wxFileExists ( file1+_T(".xz"))){
+                        compfile = file1 + _T(".xz");
+                    }
+                    else{
+                        m_noFindArray.Add(key1 + _T(".xz"));
+                    }
+                }
+            }
+      }
+
+      
+                    
+                
+#if 0           
+          
       if ( !::wxFileExists ( file ) ) {
           if(::wxFileExists ( file+_T(".xz")))
               compfile = file + _T(".xz");
@@ -4540,7 +4611,10 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             file = file1;                       // found the file as lowercase, substitute the name
           }
       }
-
+#endif
+      if(!bfound && !compfile.Length())
+          return 0;
+      
       //    File is known to exist
 
       wxString msg ( _T ( "Loading CM93 cell " ) );

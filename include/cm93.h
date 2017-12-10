@@ -402,6 +402,7 @@ class cm93chart : public s57chart
             wxString          m_LastFileName;
 
             LLRegion            m_region;
+            wxArrayString       m_noFindArray;
 };
 
 //----------------------------------------------------------------------------
