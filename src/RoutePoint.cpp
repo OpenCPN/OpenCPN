@@ -115,6 +115,8 @@ RoutePoint::RoutePoint()
 #endif
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
+
 }
 
 // Copy Constructor
@@ -166,6 +168,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
 
     
 }
@@ -244,6 +247,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     
     m_bDrawDragHandle = false;
     m_dragIconTexture = 0;
+    m_draggingOffsetx = m_draggingOffsety = 0;
 
 }
 
@@ -320,12 +324,9 @@ void RoutePoint::EnableDragHandle(bool bEnable)
         if(!m_dragIcon.IsOk()){    
             // Get the icon
             // What size?
-            int bm_size = 32;
-            if(m_pbmIcon && m_pbmIcon->IsOk())
-                bm_size = m_pbmIcon->GetWidth() * 2;
+            int bm_size = g_Platform->GetDisplayDPmm() * 9;     //9 mm nominal
         
-            // Where from
-
+            // What icon?
             wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
             
             wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("DragHandle.svg"), bm_size, bm_size );
@@ -385,9 +386,9 @@ void RoutePoint::EnableDragHandle(bool bEnable)
 #endif
 
             // set the drawing metrics
-            if(m_pbmIcon->IsOk()){
-                m_drag_line_length_man = m_pbmIcon->GetWidth() * 2;
-                m_drag_icon_offset = m_pbmIcon->GetWidth() * 2;
+            if(iconSVG.IsOk()){
+                m_drag_line_length_man = iconSVG.GetWidth() * 2;
+                m_drag_icon_offset = iconSVG.GetWidth() * 2;
             }
             else{
                 m_drag_line_length_man = 64;
