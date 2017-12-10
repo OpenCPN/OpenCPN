@@ -393,6 +393,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pAISRolloverWin = NULL;
     m_bedge_pan = false;
     m_disable_edge_pan = false;
+    m_dragoffsetSet = false;
     
     m_pCIWin = NULL;
 
@@ -5809,6 +5810,11 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     }
                     node = node->GetNext();
                 }
+                
+                if(!m_dragoffsetSet){
+                    m_pRoutePointEditTarget->PresetDragOffset(mouse_x, mouse_y);
+                    m_dragoffsetSet = true;
+                }
             }
             
         }
@@ -5862,7 +5868,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
 
                                                                            // update the point itself
                                                     if( g_btouch ) {
-                                                        m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
+                                                        //m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
+                                                        m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, mouse_x, mouse_y);
                                                         // update the Drag Handle entry in the pSelect list
                                                         pSelect->ModifySelectablePoint( new_cursor_lat, new_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
                                                         m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
@@ -5955,7 +5962,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         
                         // update the point itself
                         if( g_btouch ) {
-                            m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, m_cursor_lat, m_cursor_lon);
+//                            m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, m_cursor_lat, m_cursor_lon);
+                            m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, mouse_x, mouse_y);
                             // update the Drag Handle entry in the pSelect list
                             pSelect->ModifySelectablePoint( m_cursor_lat, m_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
                             m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
@@ -6006,7 +6014,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
     if( event.LeftUp() ) {
         bool b_startedit_route = false;
         bool b_startedit_mark = false;
-        
+        m_dragoffsetSet = false;
+
         if(g_btouch) {
             m_bChartDragging = false;
             m_bIsInRadius = false;

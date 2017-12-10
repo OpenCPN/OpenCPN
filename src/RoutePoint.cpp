@@ -296,6 +296,22 @@ void RoutePoint::SetPointFromDraghandlePoint(ViewPort &vp, double lat, double lo
     m_lon = tlon;
 }
 
+void RoutePoint::SetPointFromDraghandlePoint(ViewPort &vp, int x, int y)
+{
+    double tlat, tlon;
+    cc1->GetCanvasPixPoint(x - m_drag_icon_offset - m_draggingOffsetx, y - m_drag_icon_offset - m_draggingOffsety, tlat, tlon);
+    m_lat = tlat;
+    m_lon = tlon;
+}
+
+void RoutePoint::PresetDragOffset( int x, int y)
+{
+    wxPoint r;
+    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    
+    m_draggingOffsetx = x - (r.x + m_drag_icon_offset);
+    m_draggingOffsety = y - (r.y + m_drag_icon_offset);
+}
 
 void RoutePoint::EnableDragHandle(bool bEnable)
 {
@@ -370,8 +386,8 @@ void RoutePoint::EnableDragHandle(bool bEnable)
 
             // set the drawing metrics
             if(m_pbmIcon->IsOk()){
-                m_drag_line_length_man = m_pbmIcon->GetWidth() * 3;
-                m_drag_icon_offset = m_pbmIcon->GetWidth() * 3;
+                m_drag_line_length_man = m_pbmIcon->GetWidth() * 2;
+                m_drag_icon_offset = m_pbmIcon->GetWidth() * 2;
             }
             else{
                 m_drag_line_length_man = 64;

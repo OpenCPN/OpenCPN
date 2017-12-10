@@ -100,7 +100,9 @@ public:
       bool IsDragHandleEnabled(){ return m_bDrawDragHandle; }
       wxPoint2DDouble GetDragHandlePoint( ViewPort &vp);
       void SetPointFromDraghandlePoint(ViewPort &vp, double lat, double lon);
-
+      void SetPointFromDraghandlePoint(ViewPort &vp, int x, int y);
+      void PresetDragOffset( int x, int y);
+      
       double            m_lat, m_lon;
       double             m_seg_len;              // length in NMI to this point
                                                 // undefined for starting point
@@ -183,6 +185,7 @@ private:
       wxBitmap          m_dragIcon;
       int               m_drag_line_length_man, m_drag_icon_offset;
       double            m_dragHandleLat, m_dragHandleLon;
+      int               m_draggingOffsetx, m_draggingOffsety;
  
 #ifdef ocpnUSE_GL
       unsigned int      m_dragIconTexture;

@@ -651,7 +651,8 @@ private:
       bool        m_disable_edge_pan;
       wxFont      *m_pgridFont;
       
-      
+      bool        m_dragoffsetSet;
+
 DECLARE_EVENT_TABLE()
 };
 
