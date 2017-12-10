@@ -5784,8 +5784,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
         if( g_btouch ) {
             if( m_pRoutePointEditTarget && !m_bIsInRadius ) {
                 SelectItem *pFind = NULL;
-                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
-                                                                         +                                 SELTYPE_ROUTEPOINT );
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon, SELTYPE_ROUTEPOINT );
                 wxSelectableItemListNode *node = SelList.GetFirst();
                 while( node ) {
                     pFind = node->GetData();
@@ -5795,6 +5794,23 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     node = node->GetNext();
                 }
             }
+            
+            // Check for use of dragHandle
+            if(m_pRoutePointEditTarget && m_pRoutePointEditTarget->IsDragHandleEnabled()){
+                SelectItem *pFind = NULL;
+                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon, SELTYPE_DRAGHANDLE );
+                wxSelectableItemListNode *node = SelList.GetFirst();
+                while( node ) {
+                    pFind = node->GetData();
+                    RoutePoint *frp = (RoutePoint *) pFind->m_pData1;
+                    if( m_pRoutePointEditTarget == frp ){
+                        m_bIsInRadius = true;
+                        break;
+                    }
+                    node = node->GetNext();
+                }
+            }
+            
         }
         
         
@@ -5837,21 +5853,29 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                                             }
                                                         }
                                                     }
-                                                    
-                                                    m_pRoutePointEditTarget->m_lat = m_cursor_lat;     // update the RoutePoint entry
-                                                    m_pRoutePointEditTarget->m_lon = m_cursor_lon;
-                                                    m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
-                                                    m_pFoundPoint->m_slon = m_cursor_lon;
-                                                    
-                                                    if( CheckEdgePan( x, y, true, 5, 2 ) ) {
-                                                        double new_cursor_lat, new_cursor_lon;
+
+                                                    double new_cursor_lat = m_cursor_lat;
+                                                    double new_cursor_lon = m_cursor_lon;
+
+                                                    if( CheckEdgePan( x, y, true, 5, 2 ) )
                                                         GetCanvasPixPoint( x, y, new_cursor_lat, new_cursor_lon );
-                                                        m_pRoutePointEditTarget->m_lat = new_cursor_lat;  // update the RoutePoint entry
+
+                                                                           // update the point itself
+                                                    if( g_btouch ) {
+                                                        m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, new_cursor_lat, new_cursor_lon);
+                                                        // update the Drag Handle entry in the pSelect list
+                                                        pSelect->ModifySelectablePoint( new_cursor_lat, new_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
+                                                        m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
+                                                        m_pFoundPoint->m_slon = m_pRoutePointEditTarget->m_lon;
+                                                    }
+                                                    else{
+                                                        m_pRoutePointEditTarget->m_lat = new_cursor_lat;    // update the RoutePoint entry
                                                         m_pRoutePointEditTarget->m_lon = new_cursor_lon;
-                                                        m_pFoundPoint->m_slat = new_cursor_lat;           // update the SelectList entry
+                                                        m_pFoundPoint->m_slat = new_cursor_lat;             // update the SelectList entry
                                                         m_pFoundPoint->m_slon = new_cursor_lon;
                                                     }
-                                                    
+   
+                                                   
                                                     //    Update the MarkProperties Dialog, if currently shown
                                                     if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
                                                         if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties( true );
@@ -5929,10 +5953,20 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                 pre_rect.Inflate( (int) ( lppmax - ( pre_rect.width / 2 ) ), (int) ( lppmax - ( pre_rect.height / 2 ) ) );
                         }
                         
-                        m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
-                        m_pRoutePointEditTarget->m_lon = m_cursor_lon;
-                        m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
-                        m_pFoundPoint->m_slon = m_cursor_lon;
+                        // update the point itself
+                        if( g_btouch ) {
+                            m_pRoutePointEditTarget->SetPointFromDraghandlePoint(VPoint, m_cursor_lat, m_cursor_lon);
+                            // update the Drag Handle entry in the pSelect list
+                            pSelect->ModifySelectablePoint( m_cursor_lat, m_cursor_lon, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE );
+                            m_pFoundPoint->m_slat = m_pRoutePointEditTarget->m_lat;             // update the SelectList entry
+                            m_pFoundPoint->m_slon = m_pRoutePointEditTarget->m_lon;
+                        }
+                        else{
+                            m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
+                            m_pRoutePointEditTarget->m_lon = m_cursor_lon;
+                            m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
+                            m_pFoundPoint->m_slon = m_cursor_lon;
+                        }
                         
                         
                             
@@ -6218,19 +6252,28 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                         if( m_lastRoutePointEditTarget) {
                             m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                             m_lastRoutePointEditTarget->m_bPtIsSelected = false;
+                            m_lastRoutePointEditTarget->EnableDragHandle( false );
+                            pSelect->DeleteSelectablePoint( m_lastRoutePointEditTarget, SELTYPE_DRAGHANDLE );
+
                         }
                     }
                     
                     if( m_pRoutePointEditTarget) {
                         m_pRoutePointEditTarget->m_bIsBeingEdited = true;
                         m_pRoutePointEditTarget->m_bPtIsSelected = true;
+                        m_pRoutePointEditTarget->EnableDragHandle( true );
+                        wxPoint2DDouble dragHandlePoint = m_pRoutePointEditTarget->GetDragHandlePoint(VPoint);
+                        pSelect->AddSelectablePoint(dragHandlePoint.m_y, dragHandlePoint.m_x, m_pRoutePointEditTarget, SELTYPE_DRAGHANDLE);
+
                     }
                 }
                 else {                  // Deselect everything
                     if( m_lastRoutePointEditTarget) {
                         m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                         m_lastRoutePointEditTarget->m_bPtIsSelected = false;
-
+                        m_lastRoutePointEditTarget->EnableDragHandle( false );
+                        pSelect->DeleteSelectablePoint( m_lastRoutePointEditTarget, SELTYPE_DRAGHANDLE );
+ 
                         //  Clear any routes being edited, probably orphans
                         wxArrayPtrVoid *lastEditRouteArray = g_pRouteMan->GetRouteArrayContaining( m_lastRoutePointEditTarget );
                         if( lastEditRouteArray ) {
