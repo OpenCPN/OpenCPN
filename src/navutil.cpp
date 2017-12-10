@@ -968,7 +968,7 @@ int MyConfig::LoadMyConfig()
     
     if ( g_bInlandEcdis ) global_color_scheme = GLOBAL_COLOR_SCHEME_DUSK; //startup in duskmode if inlandEcdis
     else{
-        Read( _T ( "nColorScheme" ), &read_int, 0 );
+        Read( _T ( "nColorScheme" ), &read_int, 1 );
         global_color_scheme = (ColorScheme) read_int;
     }
     SetPath( _T ( "/Settings/NMEADataSource" ) );

@@ -883,8 +883,9 @@ void OCPNPlatform::SetDefaultOptions( void )
         pConfig->Write( _T ( "S52_DEPTH_UNIT_SHOW" ), 1 );
 
         pConfig->Write( _T ( "ZoomDetailFactorVector" ), 3 );
-     }
-    
+        
+        pConfig->Write( _T ( "nColorScheme" ), 1 );     // higher contrast on NOAA RNCs
+    }    
     
 #ifdef __WXMSW__
     //  Enable some default PlugIns, and their default options
