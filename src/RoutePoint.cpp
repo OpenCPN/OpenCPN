@@ -387,8 +387,8 @@ void RoutePoint::EnableDragHandle(bool bEnable)
 
             // set the drawing metrics
             if(iconSVG.IsOk()){
-                m_drag_line_length_man = iconSVG.GetWidth() * 2;
-                m_drag_icon_offset = iconSVG.GetWidth() * 2;
+                m_drag_line_length_man = bm_size;
+                m_drag_icon_offset = bm_size;
             }
             else{
                 m_drag_line_length_man = 64;
@@ -942,7 +942,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         
         int x = r.x + m_drag_icon_offset, y = r.y + m_drag_icon_offset, w = m_dragIcon.GetWidth(), h = m_dragIcon.GetHeight();
         
-        float scale =  g_ChartScaleFactorExp;
+        float scale =  1.0;
             
         float ws = w * scale;
         float hs = h * scale;
