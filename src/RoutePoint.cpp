@@ -947,12 +947,12 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         //  A line, southeast, scaled to the size of the icon
         double platform_pen_width = wxRound(wxMax(1.0, g_Platform->GetDisplayDPmm() / 2));             // 0.5 mm nominal, but not less than 1 pixel
         
-        wxColor dh_color = wxColor(0,0,0);
+        wxColor dh_color = GetGlobalColor( _T ( "YELO1" ) );
         wxPen ppPen1( dh_color, 3 * platform_pen_width );
         dc.SetPen( ppPen1 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
         
-        dh_color = GetGlobalColor( _T ( "YELO1" ) );
+        dh_color = wxColor(0,0,0);
         wxPen ppPen2( dh_color, platform_pen_width );
         dc.SetPen( ppPen2 );
         dc.DrawLine(r.x + hilitebox.width/4, r.y + hilitebox.height/4, r.x + m_drag_line_length_man, r.y + m_drag_line_length_man);
