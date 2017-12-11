@@ -108,6 +108,7 @@ ui_deployment.files += $$PWD/../src/bitmaps/toolicons_traditional.png
 ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman.png
 ui_deployment.files += $$PWD/../src/bitmaps/toolicons_journeyman_flat.png
 ui_deployment.files += $$PWD/../data/svg/traditional/settings.svg
+ui_deployment.files += $$PWD/../src/bitmaps/DragHandle.svg
 ui_deployment.path = /assets/files/uidata
 INSTALLS += ui_deployment
 
