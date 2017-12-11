@@ -1607,9 +1607,11 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
         return _T("jenv Error");
     }
     
-    jstring p1 = (jenv)->NewStringUTF(parm1.c_str());
-    jstring p2 = (jenv)->NewStringUTF(parm2.c_str());
+    wxCharBuffer p1b = parm1.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
     
+    wxCharBuffer p2b = parm2.ToUTF8();
+    jstring p2 = (jenv)->NewStringUTF(p2b.data());
     
     //  Call the desired method
     //qDebug() << "Calling method_s2s" << " (" << method << ")";
@@ -1803,8 +1805,9 @@ bool androidShowDisclaimer( wxString title, wxString msg )
         return false;
     
     
-    jstring p1 = (jenv)->NewStringUTF(title.c_str());
- 
+    wxCharBuffer p1b = title.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
+    
     // Convert for wxString-UTF8  to jstring-UTF16
     wxWCharBuffer b = msg.wc_str();
     jstring p2 = (jenv)->NewString( (jchar *)b.data(), msg.Len() * 2);

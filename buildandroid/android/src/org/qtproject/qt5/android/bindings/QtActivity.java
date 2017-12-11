@@ -711,8 +711,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
           wv.getSettings().setLoadWithOverviewMode(true);
           wv.getSettings().setUseWideViewPort(true);
           wv.getSettings().setMinimumFontSize(50);
-          wv.loadData(htmlString, "text/html", "utf-8");
-
+          //wv.loadData(htmlString, "text/html", "utf-8");
+          wv.loadData(htmlString, "text/html; charset=UTF-8", null);
 
 
           AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_LIGHT);
