@@ -6075,7 +6075,7 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
 }
 
 void options::OnApplyClick(wxCommandEvent& event) {
-  ::wxBeginBusyCursor();
+  //::wxBeginBusyCursor();
 
   StopBTScan();
 
@@ -6465,9 +6465,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_ChartScaleFactorExp =
       g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
 
+    
+   // Not required here, the reload is done by caller afterward if required    
   //  Only reload the icons if user has actually visted the UI page    
-  if(m_bVisitLang)    
-    pWayPointMan->ReloadAllIcons();
+  //if(m_bVisitLang)    
+  //  pWayPointMan->ReloadAllIcons();
   
   g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
 
@@ -6646,7 +6648,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     cc1->ReloadVP();
   }
 
-  ::wxEndBusyCursor();
+  //::wxEndBusyCursor();
 }
 
 void options::OnXidOkClick(wxCommandEvent& event) {
