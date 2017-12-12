@@ -1572,9 +1572,15 @@ bool dashboard_pi::LoadConfig( void )
                 }
             } else {
                 // This is the default instrument list
+#ifndef __OCPN__ANDROID__    
                 ar.Add( ID_DBP_I_POS );
                 ar.Add( ID_DBP_D_COG );
                 ar.Add( ID_DBP_D_GPS );
+#else
+                ar.Add( ID_DBP_I_POS );
+                ar.Add( ID_DBP_D_COG );
+                ar.Add( ID_DBP_I_SOG );
+#endif                
             }
 
             DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
