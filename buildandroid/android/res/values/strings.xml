@@ -1,5 +1,8 @@
 <resources>
 
+    <string name="ocpn_CANCEL">Cancel</string>
+    <string name="ocpn_CHOOSE_ITEM_COLOR">Choose OpenCPN item color</string>
+
     <string name="DOWNLOADING_FILE">Downloading file…</string>
     <string name="DEFAULT">Default</string>
     <string name="CUSTOM">Custom</string>

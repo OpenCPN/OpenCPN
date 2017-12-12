@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
 
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
 
 
         <TextView
             android:id="@+id/sliderText"
+            android:gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Choose OpenCPN item color" />
+            android:text="@string/ocpn_CHOOSE_ITEM_COLOR" />
 
 
        <com.larswerkman.lobsterpicker.LobsterPicker
             android:id="@+id/lobsterpicker"
-            android:layout_centerHorizontal="true"
-            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Space
@@ -38,7 +36,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/ocpn_CANCEL"
             android:id="@+id/buttonColorCancel" />
 
 
