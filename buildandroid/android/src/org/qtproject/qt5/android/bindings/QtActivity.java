@@ -4615,6 +4615,11 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        if(keyCode==KeyEvent.KEYCODE_MENU){
+            Log.i("OpenCPN", "Menu up");
+            return false;
+        }
+
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
@@ -4648,6 +4653,11 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+        if(keyCode==KeyEvent.KEYCODE_MENU){
+            Log.i("OpenCPN", "Menu up");
+            return false;
+        }
+
                 if(keyCode==KeyEvent.KEYCODE_BACK){
                     //Log.i("OpenCPN", "TLWCount " + nativeLib.getTLWCount());
 
@@ -5227,6 +5237,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     @Override
     public void onBackPressed() {
+        Log.i("OpenCPN", "Back Press");
+
       if (this.lastBackPressTime < System.currentTimeMillis() - 3000) {
         toast = Toast.makeText(this, "Press back again to close OpenCPN", 3000);
         toast.show();
@@ -5270,6 +5282,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event)
     {
+        Log.i("OpenCPN", "Long press");
+
         if (QtApplication.m_delegateObject != null  && QtApplication.onKeyLongPress != null)
             return (Boolean) QtApplication.invokeDelegateMethod(QtApplication.onKeyLongPress, keyCode, event);
         else
