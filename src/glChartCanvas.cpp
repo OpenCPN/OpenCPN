@@ -659,7 +659,12 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
         }
     }
 
-    cc1->MouseEventProcessObjects( event );
+    if(m_binPan && event.RightDown()){
+        qDebug() << "Skip right on pan";
+        return;
+    }
+    else
+        cc1->MouseEventProcessObjects( event );
     
 
 #endif    
