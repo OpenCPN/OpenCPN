@@ -230,6 +230,12 @@ public class OCPNGRIBActivity extends Activity
 
            }
        }
+       else if( requestCode == 2) {         // Download
+           if( resultCode == OCPNGRIBDownloadPrefActivity.RESULT_DOWNLOAD_OK ){
+               finish();
+           }
+       }
+
    }
 
    @Override

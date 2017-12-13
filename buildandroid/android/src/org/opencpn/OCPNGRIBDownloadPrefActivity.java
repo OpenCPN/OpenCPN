@@ -104,6 +104,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.text.format.Time;
 import ar.com.daidalos.afiledialog.*;
+import android.os.Message;
+import android.os.Handler;
 
 import static java.util.TimeZone.getTimeZone;
 
@@ -121,6 +123,9 @@ import android.widget.TextView;
 
 public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
+    public final static int MESSAGE_DOWNLOADGRIB_OK = 21;
+    public final static int RESULT_DOWNLOAD_OK = RESULT_FIRST_USER + 1;
+
     //public OnDownloadButtonSelectedListener mListener;
     public SharedPreferences.OnSharedPreferenceChangeListener m_listener;
 
@@ -137,6 +142,9 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
     public JSONObject  m_grib_PrefsJSON;
 
+    public taskHandler m_taskHandler;
+
+    private boolean m_downloadOK;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -173,6 +181,7 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         }
 
 
+        m_downloadOK = false;
 
         //  Set up inital values of "Summaries" fields
 
@@ -222,12 +231,8 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         }
 
 
-
-
-
-
-
-
+        //  Set up a handler to catch messages from async tasks
+            m_taskHandler = new taskHandler();
 
           // Set up a listener for key changes
 
@@ -296,6 +301,25 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
 
 
 
+    }
+
+    public class taskHandler extends Handler {
+    @Override
+            public void handleMessage(Message msg) {
+
+                switch (msg.what) {
+                    case OCPNGRIBDownloadPrefActivity.MESSAGE_DOWNLOADGRIB_OK:
+                    Log.i("OpenCPN", "DownloadPrefActivity Download OK message");
+
+                    m_downloadOK = true;
+                    finish();       // On OK download, pop back immediately.
+                    break;
+
+
+                    default:
+                        break;
+                }
+            }
     }
 
 
@@ -387,7 +411,11 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         b.putString("GRIB_JSON", json);
         Intent i = new Intent();
         i.putExtras(b);
-        setResult(RESULT_OK, i);
+        if(m_downloadOK)
+            setResult(OCPNGRIBDownloadPrefActivity.RESULT_DOWNLOAD_OK, i);
+        else
+            setResult(RESULT_OK, i);
+
 
         super.finish();
     }
@@ -1277,9 +1305,12 @@ public class OCPNGRIBDownloadPrefActivity extends PreferenceActivity {
         builder1.setNeutralButton("OK",
         new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-            dialog.cancel();
-//            if(!m_licenseOK)
-//                finish();
+
+                Log.i("OpenCPN", "ShowTextDialog Button OK");
+                Message message = Message.obtain (m_taskHandler, OCPNGRIBDownloadPrefActivity.MESSAGE_DOWNLOADGRIB_OK);
+                message.sendToTarget();
+
+                dialog.cancel();
             }
         });
    /*
