@@ -462,7 +462,7 @@ bool pi_loadShaders()
     }
 #endif
 
-    qDebug() << "pi_loadShaders: " << ret_val;
+    //qDebug() << "pi_loadShaders: " << ret_val;
     return ret_val;
 }
 
@@ -485,7 +485,7 @@ void configureShaders(float width, float height)
     GLint transloc = glGetUniformLocation(pi_color_tri_shader_program,"TransformMatrix");
     glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I); 
 
-    qDebug() << pi_color_tri_shader_program << transloc;
+    //qDebug() << pi_color_tri_shader_program << transloc;
     
     glUseProgram(pi_circle_filled_shader_program);
     matloc = glGetUniformLocation(pi_circle_filled_shader_program,"MVMatrix");
@@ -493,7 +493,7 @@ void configureShaders(float width, float height)
     transloc = glGetUniformLocation(pi_circle_filled_shader_program,"TransformMatrix");
     glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I); 
 
-    qDebug() << pi_circle_filled_shader_program << transloc;
+    //qDebug() << pi_circle_filled_shader_program << transloc;
 
     glUseProgram(pi_texture_2D_shader_program);
     matloc = glGetUniformLocation(pi_texture_2D_shader_program,"MVMatrix");
@@ -501,7 +501,7 @@ void configureShaders(float width, float height)
     transloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
     glUniformMatrix4fv( transloc, 1, GL_FALSE, (const GLfloat*)I); 
     
-    qDebug() << pi_texture_2D_shader_program << transloc;
+    //qDebug() << pi_texture_2D_shader_program << transloc;
 
     glUseProgram(pi_colorv_tri_shader_program);
     matloc = glGetUniformLocation(pi_colorv_tri_shader_program,"MVMatrix");

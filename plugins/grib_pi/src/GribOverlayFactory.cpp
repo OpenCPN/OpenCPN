@@ -446,7 +446,7 @@ bool GRIBOverlayFactory::RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_View
         return false;
     
     sw.Reset();
-    qDebug() << "RenderGLGribOverlay" << sw.GetTime();
+    //qDebug() << "RenderGLGribOverlay" << sw.GetTime();
     
     if(!m_oDC)
         m_oDC = new pi_ocpnDC();
@@ -459,7 +459,7 @@ bool GRIBOverlayFactory::RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_View
    
     bool rv = DoRenderGribOverlay( vp );
 
-    qDebug() << "RenderGLGribOverlayDone" << sw.GetTime();
+    //qDebug() << "RenderGLGribOverlayDone" << sw.GetTime();
     
     
     return rv;
@@ -518,7 +518,7 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &pol
 
 bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 {
-    qDebug() << "DoRenderGribOverlay" << sw.GetTime();
+    //qDebug() << "DoRenderGribOverlay" << sw.GetTime();
     
     if( !m_pGribTimelineRecordSet ) {
         DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
@@ -548,7 +548,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
 
     for(int overlay = 1; overlay >= 0; overlay--) {
-        qDebug() << "DoRenderGribOverlayA" << sw.GetTime();
+        //qDebug() << "DoRenderGribOverlayA" << sw.GetTime();
         
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
@@ -602,7 +602,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 	m_Message_Hiden.Append( m_Message );
     DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
         
-    qDebug() << "DoRenderGribOverlayEnd" << sw.GetTime();
+    //qDebug() << "DoRenderGribOverlayEnd" << sw.GetTime();
         
     return true;
 }
@@ -1048,7 +1048,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings, wxColour back_
 void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
                                                  PlugIn_ViewPort *vp )
 {
-    qDebug() << "RenderGribBarbedArrows" << sw.GetTime();
+    //qDebug() << "RenderGribBarbedArrows" << sw.GetTime();
     
     if(!m_Settings.Settings[settings].m_bBarbedArrows)
         return;
@@ -1171,7 +1171,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     if( !m_pdc )
         glDisableClientState(GL_VERTEX_ARRAY);
 #endif
-    qDebug() << "RenderGribBarbedArrowsEnd" << sw.GetTime();
+    //qDebug() << "RenderGribBarbedArrowsEnd" << sw.GetTime();
         
 }
 
@@ -2178,12 +2178,12 @@ void GRIBOverlayFactory::OnParticleTimer( wxTimerEvent & event )
 
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
 {
-    qDebug() << "DrawMessageWindow" << sw.GetTime();
+    //qDebug() << "DrawMessageWindow" << sw.GetTime();
     
     if(msg.empty())
         return;
 
-    qDebug() << "DrawMessageWindowA" << sw.GetTime();
+    //qDebug() << "DrawMessageWindowA" << sw.GetTime();
     
     if(m_pdc) {
         wxDC &dc = *m_pdc;
@@ -2423,7 +2423,7 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
 
     glPopMatrix();
 #else
-    qDebug() << "DrawGLTexture";
+    //qDebug() << "DrawGLTexture";
     
     glEnable(texture_format);
     glBindTexture(texture_format, texture);
@@ -2494,7 +2494,7 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     GLint matloc = glGetUniformLocation(pi_texture_2D_shader_program,"TransformMatrix");
     glUniformMatrix4fv( matloc, 1, GL_FALSE, (const GLfloat*)Q); 
     
-    qDebug() << "Texture vars" << pi_texture_2D_shader_program << mPosAttrib << mUvAttrib << texUni << matloc;
+    //qDebug() << "Texture vars" << pi_texture_2D_shader_program << mPosAttrib << mUvAttrib << texUni << matloc;
     
     // Select the active texture unit.
     glActiveTexture( GL_TEXTURE0 );
