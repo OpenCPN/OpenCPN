@@ -32293,7 +32293,7 @@
 			</vector>
 			<description>dredged area</description>
 			<color-ref>DCHGRD</color-ref>
-			<HPGL>SPD;SW1;PU1500,1300;PD;PU1700,1500;PD;</HPGL>
+			<HPGL>SPD;SW2;PU1500,1300;PD;PU1700,1500;PD;</HPGL>
 		</pattern>
 
 		<pattern RCID="3416">

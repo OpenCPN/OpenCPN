@@ -11031,7 +11031,10 @@ void RenderFromHPGL::SetPen()
 {
 
     if( renderToDC ) {
-        pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxPENSTYLE_SOLID );
+        float nominal_line_width_pix = wxMax(1.0, floor(plib->GetPPMM() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+        int pen_width_mod =  floor( penWidth * nominal_line_width_pix);
+        
+        pen = wxThePenList->FindOrCreatePen( penColor, pen_width_mod, wxPENSTYLE_SOLID );
         brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetDC->SetPen( *pen );
         targetDC->SetBrush( *brush );
