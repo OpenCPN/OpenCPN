@@ -4251,7 +4251,7 @@ void glChartCanvas::Render()
     
     //  Check to see if the Compose() call forced a SENC build.
     //  If so, zoom the canvas just slightly to force a deferred redraw of the full screen.
-    if(sw.GetTime() > 4000){       //  long enough to detect SENC build.
+    if(sw.GetTime() > 2000){       //  long enough to detect SENC build.
         cc1->ZoomCanvas( 1.0001, false );
     }
         
