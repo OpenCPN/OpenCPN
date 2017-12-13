@@ -8857,7 +8857,7 @@ void ChartCanvas::SetOverzoomFont()
     if( style->embossFont == wxEmptyString ){
         wxFont *dFont = FontMgr::Get().GetFont( _("Dialog"), 0 );
         font = *dFont;
-        font.SetPointSize(40);
+        font.SetPointSize(dFont->GetPointSize() * 3 / 2);
         font.SetWeight(wxFONTWEIGHT_BOLD);
     }
     else
