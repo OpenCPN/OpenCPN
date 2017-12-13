@@ -621,8 +621,6 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     if( g_bHighliteTracks ) {
         double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
         radius = radius_meters * VP.view_scale_ppm;
-        if(radius < 1.0)
-            radius = 0;
     }
 
     if(dc.GetDC() || radius) {
@@ -640,7 +638,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             }
 
             int hilite_width = radius;
-            if( hilite_width ) {
+            if( hilite_width >= 1.0 ) {
                 wxPen psave = dc.GetPen();
 
                 dc.StrokeLines( i, points );
