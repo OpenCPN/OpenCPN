@@ -516,7 +516,20 @@ void grib_pi::OnToolbarToolCallback(int id)
             qDebug() << "7wide" << sz_nominal.x << GetOCPNGUIToolScaleFactor_PlugIn();
             
             wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+            int target_size1 = wxMin(csz.x, sz_nominal.x);
             m_pGribCtrlBar->SetSize(wxMin(csz.x, sz_nominal.x), -1);
+            
+            // It also should be large enough to contain the text, plus two buttons. plus fluff
+            wxString test_string(_T(" 13-Dec-2017 18:00 UTC "));
+            wxScreenDC dc;
+            int w;
+            dc.GetTextExtent(test_string, &w, NULL, NULL, NULL, OCPNGetFont(_("Dialog"), 10));
+            int target_size2 = wxMin(csz.x, w + GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 3);
+            
+            qDebug() << "GRIB BAR" << target_size1 << target_size2;
+
+            m_pGribCtrlBar->SetSize(wxMax(target_size1, target_size2), -1);
+            
 #endif
             
             m_pGribCtrlBar->Refresh();
