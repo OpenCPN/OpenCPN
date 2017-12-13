@@ -1580,6 +1580,7 @@ bool dashboard_pi::LoadConfig( void )
                 ar.Add( ID_DBP_I_POS );
                 ar.Add( ID_DBP_D_COG );
                 ar.Add( ID_DBP_I_SOG );
+                 
 #endif                
             }
 
@@ -3208,10 +3209,17 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             }
         }
     }
+
+    //  In the absense of any other hints, build the default instrument sizes by taking the 
+    //  calculated with of the first (and succeeding) instruments as hints for the next.
+    //  So, best in default loads to start with an instrument that accurately calculates its minimum width.
+    //  e.g. DashboardInstrument_Position
     
+    wxSize Hint = wxSize(DefaultWidth, DefaultWidth);
     for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
         DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
-        inst->SetMinSize( inst->GetSize( itemBoxSizer->GetOrientation(), GetClientSize() ) );
+        inst->SetMinSize( inst->GetSize( itemBoxSizer->GetOrientation(), Hint ) );
+        Hint = inst->GetMinSize();
     }
     
     Fit();
