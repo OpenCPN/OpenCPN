@@ -8699,7 +8699,10 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
     if(m_pEM_OverZoom){
         m_pEM_OverZoom->x = 0;
-        m_pEM_OverZoom->y = 40;
+        if(g_MainToolbar)
+            m_pEM_OverZoom->y = g_MainToolbar->GetSize().y;
+        else    
+            m_pEM_OverZoom->y = 40;
     }
     return m_pEM_OverZoom;
 }
