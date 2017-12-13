@@ -1880,10 +1880,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     // but ownship and pred point are both off
 
     LLBBox box;
-    box.SetFromSegment(gLon, gLat, pred_lon, pred_lat);
+    box.SetFromSegment(gLat, gLon, pred_lat, pred_lon);
     if( !cc1->GetVP().GetBBox().IntersectOut( box ) )
         drawit++;
-    box.SetFromSegment(gLon, gLat, hdg_pred_lon, hdg_pred_lat);
+    box.SetFromSegment(gLat, gLon, hdg_pred_lat, hdg_pred_lon);
     if( !cc1->GetVP().GetBBox().IntersectOut(box))
         drawit++;
     
