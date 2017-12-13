@@ -1390,7 +1390,7 @@ void MyConfig::LoadS57Config()
     double dval;
     SetPath( _T ( "/Settings/GlobalState" ) );
 
-    Read( _T ( "bShowS57Text" ), &read_int, 0 );
+    Read( _T ( "bShowS57Text" ), &read_int, 1 );
     ps52plib->SetShowS57Text( !( read_int == 0 ) );
 
     Read( _T ( "bShowS57ImportantTextOnly" ), &read_int, 0 );
@@ -1429,15 +1429,15 @@ void MyConfig::LoadS57Config()
     Read( _T ( "bShowNationalText" ), &read_int, 0 );
     ps52plib->m_bShowNationalTexts = !( read_int == 0 );
 
-    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
+    if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 3.0 ) ) {
         S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
         S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
     }
 
-    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 3.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_SHALLOW_CONTOUR" ), &dval, 2.0 ) ) S52_setMarinerParam(
         S52_MAR_SHALLOW_CONTOUR, dval );
 
-    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 10.0 ) ) S52_setMarinerParam(
+    if( Read( _T ( "S52_MAR_DEEP_CONTOUR" ), &dval, 6.0 ) ) S52_setMarinerParam(
         S52_MAR_DEEP_CONTOUR, dval );
 
     if( Read( _T ( "S52_MAR_TWO_SHADES" ), &dval, 0.0 ) ) S52_setMarinerParam(
