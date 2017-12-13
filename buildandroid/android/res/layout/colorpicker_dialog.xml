@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true">
 
 
-
-
-        <TextView
-            android:id="@+id/sliderText"
-            android:gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/ocpn_CHOOSE_ITEM_COLOR" />
 
 
        <com.larswerkman.lobsterpicker.LobsterPicker
             android:id="@+id/lobsterpicker"
-            android:layout_centerInParent="true"
+            android:paddingTop="200dp"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Space
+            android:id="@+id/space2"
             android:layout_width="20px"
             android:layout_height="20px"
             android:layout_below="@+id/lobsterpicker"
@@ -31,14 +28,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OK"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/space2"
             android:id="@+id/buttonSelectColorOK" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:text="@string/ocpn_CANCEL"
+            android:layout_below="@+id/buttonSelectColorOK"
             android:id="@+id/buttonColorCancel" />
 
 
 
-</LinearLayout>
+</RelativeLayout>

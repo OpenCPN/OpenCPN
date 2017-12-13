@@ -74,12 +74,13 @@ public abstract class ColorPickerDialog extends Dialog  {
             this.setContentView(R.layout.colorpicker_dialog);
 
                 // Maximize the dialog.
+/*
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(this.getWindow().getAttributes());
             lp.width = WindowManager.LayoutParams.FILL_PARENT;
             lp.height = WindowManager.LayoutParams.FILL_PARENT;
             this.getWindow().setAttributes(lp);
-
+*/
             View v = getLayoutInflater().inflate(R.layout.colorpicker_dialog, null);
 
             mvlp = (LobsterPicker) v.findViewById(R.id.lobsterpicker);
@@ -121,6 +122,7 @@ public abstract class ColorPickerDialog extends Dialog  {
 
             this.setContentView(v);
 
+            setTitle(R.string.ocpn_CHOOSE_ITEM_COLOR);
         }
 
         public abstract void onOK( int selectedColor);
