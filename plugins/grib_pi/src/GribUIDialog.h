@@ -48,6 +48,10 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
+#ifdef __OCPN__ANDROID__
+#include <wx/qt/private/wxQtGesture.h>
+#endif
+
 class GRIBUICtrlBar;
 class GRIBUICData;
 class GRIBFile;
@@ -114,7 +118,13 @@ public:
     void SetScaledBitmap( double factor );
     wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
     void OpenFileFromJSON( wxString json);
-        
+ 
+#ifdef __OCPN__ANDROID__
+    void OnEvtPanGesture( wxQT_PanGestureEvent &event);
+#endif    
+    
+    bool m_binPan;
+    
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 

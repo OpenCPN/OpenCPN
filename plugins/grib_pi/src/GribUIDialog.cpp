@@ -277,6 +277,22 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString& ti
     Fit();
     SetMinSize( GetBestSize() );
 
+#ifdef __OCPN__ANDROID__ 
+    Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
+    Connect( wxEVT_LEFT_UP, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
+    Connect( wxEVT_MOTION, wxMouseEventHandler( GRIBUICtrlBar::OnMouseEvent ) );
+    
+    GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
+    GetHandle()->grabGesture(Qt::PinchGesture);
+    GetHandle()->grabGesture(Qt::PanGesture);
+    
+    Connect( wxEVT_QT_PANGESTURE,
+             (wxObjectEventFunction) (wxEventFunction) &GRIBUICtrlBar::OnEvtPanGesture, NULL, this );
+    
+    m_binPan = false;
+    
+#endif
+    
 }
 
 GRIBUICtrlBar::~GRIBUICtrlBar()
@@ -716,9 +732,24 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     SetMinSize( GetBestSize() );
  
 #ifdef __OCPN__ANDROID__
+//    wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
+//    wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
+//    SetSize(wxMin(csz.x, sz_nominal.x), -1);
+    
     wxSize sz_nominal(GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 7, -1);
     wxSize csz = GetOCPNCanvasWindow()->GetClientSize();
-    SetSize(wxMin(csz.x, sz_nominal.x), -1);
+    int target_size1 = wxMin(csz.x, sz_nominal.x);
+    //SetSize(wxMin(csz.x, sz_nominal.x), -1);
+    
+    // It also should be large enough to contain the text, plus two buttons. plus fluff
+    wxString test_string(_T(" 13-Dec-2017 18:00 UTC "));
+    wxScreenDC dc;
+    int w;
+    dc.GetTextExtent(test_string, &w, NULL, NULL, NULL, OCPNGetFont(_("Dialog"), 10));
+    int target_size2 = wxMin(csz.x, w + GetOCPNGUIToolScaleFactor_PlugIn() * 32 * 3);
+    
+    SetSize(wxMax(target_size1, target_size2), -1);
+    
 #else
     SetSize( GetBestSize() );
 #endif    
@@ -836,8 +867,49 @@ void GRIBUICtrlBar::MenuAppend( wxMenu *menu, int id, wxString label, wxItemKind
 
 }
 
+
+wxPoint g_startPos;
+wxPoint g_startMouse;
+wxPoint g_mouse_pos_screen;
+
+void GRIBUICtrlBar::OnEvtPanGesture( wxQT_PanGestureEvent &event)
+{
+    switch(event.GetState()){
+        case GestureStarted:
+            //qDebug() << "Pan start";
+            g_startPos = GetPosition();
+            g_startMouse = g_mouse_pos_screen;
+            
+            m_binPan = true;
+            break;
+            
+            
+        case GestureFinished:
+            //qDebug() << "Pan finish";
+            
+            m_binPan = false;
+            
+            break;
+            
+        case GestureCanceled:
+            m_binPan = false; 
+            break;
+            
+        default:
+            break;
+    }
+    
+    
+}
+
 void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
 {
+    g_mouse_pos_screen = ClientToScreen( event.GetPosition() );
+    
+    if(event.Dragging()){
+        Move(g_startPos.x + (g_mouse_pos_screen.x - g_startMouse.x), g_startPos.y + (g_mouse_pos_screen.y - g_startMouse.y));
+    }
+        
     if( event.RightDown() ) {
         //populate menu
         wxMenu* xmenu = new wxMenu();
