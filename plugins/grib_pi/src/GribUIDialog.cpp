@@ -907,7 +907,14 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     g_mouse_pos_screen = ClientToScreen( event.GetPosition() );
     
     if(event.Dragging()){
-        Move(g_startPos.x + (g_mouse_pos_screen.x - g_startMouse.x), g_startPos.y + (g_mouse_pos_screen.y - g_startMouse.y));
+        int x = wxMax(0, g_startPos.x + (g_mouse_pos_screen.x - g_startMouse.x));       // Not off screen
+        int y = wxMax(0, g_startPos.y + (g_mouse_pos_screen.y - g_startMouse.y));
+        int xmax = ::wxGetDisplaySize().x - GetSize().x;
+        x = wxMin(x, xmax);
+        int ymax = ::wxGetDisplaySize().y - (GetSize().y * 2);          // Some fluff at the bottom
+        y = wxMin(y, ymax);
+        
+        Move(x, y);
     }
         
     if( event.RightDown() ) {
