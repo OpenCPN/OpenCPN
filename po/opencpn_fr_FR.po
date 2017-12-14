@@ -878,7 +878,7 @@ msgid "Bearing (M)"
 msgstr "Relèvement (M)"
 #
 msgid "Bearings"
-msgstr "Relèvements"
+msgstr "Montrer"
 #
 msgid "Belarus"
 msgstr "Bélarus"
@@ -1754,7 +1754,7 @@ msgid "Enable Transparent Toolbar"
 msgstr "Barre d'icônes : Permettre la transparence"
 #
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Permettre : Info par survol de cible"
 #
 msgid "End Route"
 msgstr "Fin de la route"
@@ -3889,9 +3889,8 @@ msgstr "Afficher les avis de la zone (à partir des données AIS)"
 msgid "Show course from each Waypoint to the next one. "
 msgstr "Montrer le COG d'un waypoint au suivant. "
 #
-#, fuzzy
 msgid "Show magnetic"
-msgstr "Montrer la trace de cette cible"
+msgstr "Direction magnétique"
 #
 msgid "Show magnetic bearings and headings."
 msgstr "Montrer les relèvements et les directions magnétiques."
@@ -3916,7 +3915,7 @@ msgid "Show target tracks, length (min)"
 msgstr "Afficher les traces, longueur (en minute )"
 #
 msgid "Show true"
-msgstr "Montrer Vrai M"
+msgstr "Direction vraie"
 #
 msgid "Show true bearings and headings"
 msgstr "Montrer les relèvements et les directions vrais"

@@ -1744,7 +1744,7 @@ msgid "Enable Transparent Toolbar"
 msgstr "Transparente Symbolleiste "
 #
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Infos für Route/AIS einschalten"
 #
 msgid "End Route"
 msgstr "Routenerstellung beenden"

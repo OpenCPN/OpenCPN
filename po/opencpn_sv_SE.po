@@ -1739,7 +1739,7 @@ msgid "Enable Transparent Toolbar"
 msgstr "Aktivera transparent verktygslist"
 #
 msgid "Enable route/AIS info block"
-msgstr ""
+msgstr "Visa inforuta för AIS och rutter"
 #
 msgid "End Route"
 msgstr "Avsluta rutt"
