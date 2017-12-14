@@ -4484,7 +4484,7 @@ void glChartCanvas::Render()
  
                 
 #else   // GLES2
-            if(VPoint.chart_scale < 2000)
+            if(VPoint.chart_scale < 5000)
                 b_full = true;
             
             if(b_full)
