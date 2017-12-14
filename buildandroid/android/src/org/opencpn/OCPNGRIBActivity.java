@@ -227,7 +227,7 @@ public class OCPNGRIBActivity extends Activity
                SharedPreferences.Editor editor = preferences.edit();
                editor.putString("GRIB_dest_file", filePath);
                editor.apply();
-
+               finish();
            }
        }
        else if( requestCode == 2) {         // Download
