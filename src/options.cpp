@@ -5158,8 +5158,10 @@ void options::CreateControls(void) {
   m_pageShips = CreatePanel(_("Ships"));
   CreatePanel_Ownship(m_pageShips, border_size, group_item_spacing);
   CreatePanel_AIS(m_pageShips, border_size, group_item_spacing);
+#ifndef __OCPN__ANDROID__
   CreatePanel_MMSI(m_pageShips, border_size, group_item_spacing);
-
+#endif
+  
   m_pageUI = CreatePanel(_("User Interface"));
   CreatePanel_UI(m_pageUI, border_size, group_item_spacing);
 
