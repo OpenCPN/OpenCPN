@@ -3850,9 +3850,8 @@ msgstr "Mostrar áreas de mensajes (de mensajes binarios AIS)"
 msgid "Show course from each Waypoint to the next one. "
 msgstr "Mostrar rumbo desde cada Waypoint hasta el siguiente."
 #
-#, fuzzy
 msgid "Show magnetic"
-msgstr "Mostrar Derrota del Blanco"
+msgstr "Mostrar Magnético"
 #
 msgid "Show magnetic bearings and headings."
 msgstr "Muestra demoras y rumbos magnéticos."

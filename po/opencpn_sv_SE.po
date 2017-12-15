@@ -3846,9 +3846,8 @@ msgstr "Visa områdesupplysningar (från AIS datameddelanden)"
 msgid "Show course from each Waypoint to the next one. "
 msgstr "Visa kurs från varje waypoint till nästa."
 #
-#, fuzzy
 msgid "Show magnetic"
-msgstr "Visa målspår"
+msgstr "Visa magnetiskt"
 #
 msgid "Show magnetic bearings and headings."
 msgstr "Visa magnetiskt bäring och kurs."

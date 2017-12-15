@@ -3194,7 +3194,7 @@ msgid "Polyconic"
 msgstr "Polyconique"
 #
 msgid "Port"
-msgstr "Babord"
+msgstr "Type"
 #
 msgid "Port Hand"
 msgstr "Babord"

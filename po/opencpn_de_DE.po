@@ -3856,9 +3856,8 @@ msgstr "Zeige Gebietsnachrichten (von AIS Binär-Nachrichten)"
 msgid "Show course from each Waypoint to the next one. "
 msgstr "Zeige Kurs von jedem Wegpunkt zum nächsten."
 #
-#, fuzzy
 msgid "Show magnetic"
-msgstr "Zeige Ziel Track"
+msgstr "Magnetisch anzeigen"
 #
 msgid "Show magnetic bearings and headings."
 msgstr "Zeige magn. Peilungen und Kurse."
