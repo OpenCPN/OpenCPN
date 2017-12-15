@@ -878,8 +878,8 @@ void GRIBUICtrlBar::OnEvtPanGesture( wxQT_PanGestureEvent &event)
         case GestureStarted:
             //qDebug() << "Pan start";
             g_startPos = GetPosition();
-            g_startMouse = g_mouse_pos_screen;
-            
+            g_startMouse = event.GetCursorPos(); //g_mouse_pos_screen;
+            //qDebug() << "Pan start" << g_startPos.x << g_startPos.y << g_startMouse.x << g_startMouse.y;
             m_binPan = true;
             break;
             
@@ -909,6 +909,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
     if(event.Dragging()){
         int x = wxMax(0, g_startPos.x + (g_mouse_pos_screen.x - g_startMouse.x));       // Not off screen
         int y = wxMax(0, g_startPos.y + (g_mouse_pos_screen.y - g_startMouse.y));
+        //qDebug() << g_startPos.x << g_startPos.y << g_mouse_pos_screen.x << g_mouse_pos_screen.y << x << y;
         int xmax = ::wxGetDisplaySize().x - GetSize().x;
         x = wxMin(x, xmax);
         int ymax = ::wxGetDisplaySize().y - (GetSize().y * 2);          // Some fluff at the bottom
