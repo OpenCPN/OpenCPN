@@ -916,6 +916,7 @@ void GRIBUICtrlBar::OnMouseEvent( wxMouseEvent& event )
         y = wxMin(y, ymax);
         
         Move(x, y);
+        return;         // Do not process any other mouse event types if dragging.
     }
         
     if( event.RightDown() ) {
