@@ -227,9 +227,9 @@ extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
-extern CM93DSlide       *pCM93DetailSlider;
-extern bool             g_bShowCM93DetailSlider;
-extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
+extern PopUpDSlide       *pPopupDetailSlider;
+extern bool             g_bShowDetailSlider;
+extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern int              g_cm93_zoom_factor;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
@@ -1613,31 +1613,48 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleColorScheme();
             break;
 
-        case 'D': {
-#ifdef USE_S57
-                int x,y;
-                event.GetPosition( &x, &y );
-                bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
-                if( VPoint.b_quilt ) {
-                    ChartBase *pChartTest = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) );
-                    if( pChartTest ) {
-                        if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
-                        if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
+        case 'D':
+        {
+            int x,y;
+            event.GetPosition( &x, &y );
+            ChartTypeEnum ChartType = CHART_TYPE_UNKNOWN;
+            ChartFamilyEnum ChartFam = CHART_FAMILY_UNKNOWN;
+                // First find out what kind of chart is being used
+            if( !pPopupDetailSlider ) {
+                if( VPoint.b_quilt ) 
+                    {
+                        if (m_pQuilt) 
+                        { 
+                            if (m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y )) ) // = null if no chart loaded for this point
+                            {
+                                ChartType = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartType();
+                                ChartFam = m_pQuilt->GetChartAtPix( VPoint, wxPoint( x, y ) )->GetChartFamily();
+                            }
+                        }                        
+                    }
+                else
+                    {
+                        if (Current_Ch){
+                            ChartType = Current_Ch->GetChartType();
+                            ChartFam =  Current_Ch->GetChartFamily();                            
+                        }                        
+                    }
+                    //If a charttype is found show the popupslider
+                if ( (ChartType != CHART_TYPE_UNKNOWN) || (ChartFam != CHART_FAMILY_UNKNOWN) )
+                    {
+                        pPopupDetailSlider = new PopUpDSlide( this, -1, ChartType, ChartFam,
+                            wxPoint( g_detailslider_dialog_x, g_detailslider_dialog_y ),
+                            wxDefaultSize, wxSIMPLE_BORDER, _("") );
+                        if (pPopupDetailSlider) pPopupDetailSlider->ShowModal();
                     }
                 }
-
-                if( cm93IsAvailable ) {
-                    if( !pCM93DetailSlider ) {
-                        pCM93DetailSlider = new CM93DSlide( this, -1, 0,
-                                -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
-                                wxPoint( g_cm93detail_dialog_x, g_cm93detail_dialog_y ),
-                                wxDefaultSize, wxSIMPLE_BORDER, _("CM93 Detail Level") );
-                    }
-                    pCM93DetailSlider->Show( !pCM93DetailSlider->IsShown() );
-                }
-#endif                
-                break;
-            }
+            else //( !pPopupDetailSlider ) close popupslider
+            {
+                if (pPopupDetailSlider) pPopupDetailSlider->Close();
+                pPopupDetailSlider = NULL;
+            }             
+            break;
+        }
 
        case 'L':
             parent_frame->ToggleLights();

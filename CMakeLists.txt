@@ -966,7 +966,7 @@ SET(HDRS
 		include/AISTargetAlertDialog.h
 		include/AIS_Decoder.h
 		include/AIS_Target_Data.h
-		include/CM93DSlide.h
+		include/DetailSlider.h
 		include/GoToPositionDialog.h
 		include/RolloverWin.h
 		include/S57QueryDialog.h
@@ -1065,7 +1065,7 @@ SET(SRCS
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
 		src/GoToPositionDialog.cpp
-		src/CM93DSlide.cpp
+		src/DetailSlider.cpp
 		src/RolloverWin.cpp
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp

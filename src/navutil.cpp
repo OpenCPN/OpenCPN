@@ -257,8 +257,8 @@ extern s52plib          *ps52plib;
 
 extern int              g_cm93_zoom_factor;
 extern bool             g_b_legacy_input_filter_behaviour;
-extern bool             g_bShowCM93DetailSlider;
-extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
+extern bool             g_bShowDetailSlider;
+extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 extern bool             g_bUseGreenShip;
 
@@ -691,14 +691,14 @@ int MyConfig::LoadMyConfig()
     g_cm93_zoom_factor = wxMin(g_cm93_zoom_factor,CM93_ZOOM_FACTOR_MAX_RANGE);
     g_cm93_zoom_factor = wxMax(g_cm93_zoom_factor,(-CM93_ZOOM_FACTOR_MAX_RANGE));
 
-    g_cm93detail_dialog_x = Read( _T ( "CM93DetailZoomPosX" ), 200L );
-    g_cm93detail_dialog_y = Read( _T ( "CM93DetailZoomPosY" ), 200L );
-    if( ( g_cm93detail_dialog_x < 0 ) || ( g_cm93detail_dialog_x > display_width ) ) g_cm93detail_dialog_x =
+    g_detailslider_dialog_x = Read( _T ( "CM93DetailZoomPosX" ), 200L );
+    g_detailslider_dialog_y = Read( _T ( "CM93DetailZoomPosY" ), 200L );
+    if( ( g_detailslider_dialog_x < 0 ) || ( g_detailslider_dialog_x > display_width ) ) g_detailslider_dialog_x =
             5;
-    if( ( g_cm93detail_dialog_y < 0 ) || ( g_cm93detail_dialog_y > display_height ) ) g_cm93detail_dialog_y =
+    if( ( g_detailslider_dialog_y < 0 ) || ( g_detailslider_dialog_y > display_height ) ) g_detailslider_dialog_y =
             5;
 
-    Read( _T ( "ShowCM93DetailSlider" ), &g_bShowCM93DetailSlider, 0 );
+    Read( _T ( "ShowCM93DetailSlider" ), &g_bShowDetailSlider, 0 );
 
     Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels, 2 );
 
@@ -1909,9 +1909,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
 
     Write( _T ( "CM93DetailFactor" ), g_cm93_zoom_factor );
-    Write( _T ( "CM93DetailZoomPosX" ), g_cm93detail_dialog_x );
-    Write( _T ( "CM93DetailZoomPosY" ), g_cm93detail_dialog_y );
-    Write( _T ( "ShowCM93DetailSlider" ), g_bShowCM93DetailSlider );
+    Write( _T ( "CM93DetailZoomPosX" ), g_detailslider_dialog_x );
+    Write( _T ( "CM93DetailZoomPosY" ), g_detailslider_dialog_y );
+    Write( _T ( "ShowCM93DetailSlider" ), g_bShowDetailSlider );
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
