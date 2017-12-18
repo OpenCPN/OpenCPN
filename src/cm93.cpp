@@ -75,9 +75,9 @@ extern s52plib          *ps52plib;
 extern MyConfig         *pConfig;
 extern bool             g_bDebugCM93;
 extern int              g_cm93_zoom_factor;
-extern CM93DSlide       *pCM93DetailSlider;
-extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
-extern bool             g_bShowCM93DetailSlider;
+extern PopUpDSlide       *pPopupDetailSlider;
+extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
+extern bool             g_bShowDetailSlider;
 extern wxString         g_PrivateDataDir;
 
 // Flav add for CM93Offset manual setup
@@ -4927,29 +4927,29 @@ InitReturn cm93compchart::Init ( const wxString& name, ChartInitFlag flags )
 
 void cm93compchart::Activate ( void )
 {
-      if ( g_bShowCM93DetailSlider )
-      {
-            if ( !pCM93DetailSlider )
-            {
-                  pCM93DetailSlider = new CM93DSlide ( gFrame, -1 , 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
-                                                       wxPoint ( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize,
-                                                                   wxSIMPLE_BORDER , _T ( "cm93 Detail" ) );
-            }
-
-            //    Here is an ugly piece of code which prevents the slider from taking the keyboard focus
-            //    Only seems to work for Windows.....
-            pCM93DetailSlider->Disable();
-            pCM93DetailSlider->Show();
-            pCM93DetailSlider->Enable();
-      }
+//       if ( g_bShowCM93DetailSlider )
+//       {
+//             if ( !pPopupDetailSlider )
+//             {
+//                   pPopupDetailSlider = new PopUpDSlide ( gFrame, -1 , 0, -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
+//                                                        wxPoint ( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize,
+//                                                                    wxSIMPLE_BORDER , _T ( "cm93 Detail" ) );
+//             }
+// 
+//             //    Here is an ugly piece of code which prevents the slider from taking the keyboard focus
+//             //    Only seems to work for Windows.....
+//             pPopupDetailSlider->Disable();
+//             pPopupDetailSlider->Show();
+//             pPopupDetailSlider->Enable();
+//       }
 }
 
 void cm93compchart::Deactivate ( void )
 {
-      if ( pCM93DetailSlider )
+      if ( pPopupDetailSlider )
       {
-            pCM93DetailSlider-> Destroy();
-            pCM93DetailSlider = NULL;
+            pPopupDetailSlider-> Destroy();
+            pPopupDetailSlider = NULL;
       }
 }
 

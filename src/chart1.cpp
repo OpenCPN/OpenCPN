@@ -583,9 +583,9 @@ int                       g_nTrackPrecision;
 int                       g_total_NMEAerror_messages;
 
 int                       g_cm93_zoom_factor;
-CM93DSlide                *pCM93DetailSlider;
-bool                      g_bShowCM93DetailSlider;
-int                       g_cm93detail_dialog_x, g_cm93detail_dialog_y;
+PopUpDSlide                *pPopupDetailSlider;
+bool                      g_bShowDetailSlider;
+int                       g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 bool                      g_bUseGreenShip;
 

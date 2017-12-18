@@ -22,22 +22,23 @@
  ***************************************************************************
  */
 
-#ifndef __CM93DSLIDE_H__
-#define __CM93DSLIDE_H__
+#ifndef __DETAILSLIDE_H__
+#define __DETAILSLIDE_H__
 
 #include <wx/dialog.h>
+#include "chcanv.h"
 
-class CM93DSlide: public wxDialog
+class PopUpDSlide: public wxDialog
 {
 public:
-    CM93DSlide( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
+    PopUpDSlide( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartType, ChartFamilyEnum ChartF,
             const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
             long style = 0, const wxString& title = _T("") );
 
-    ~CM93DSlide( void );
+    ~PopUpDSlide( void );
 
     void Init( void );
-    bool Create( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
+    bool Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartType, ChartFamilyEnum ChartF,
             const wxPoint& pos, const wxSize& size, long style, const wxString& title );
 
     void OnCancelClick( wxCommandEvent& event );
@@ -46,10 +47,14 @@ public:
     void OnChangeValue( wxScrollEvent& event );
     void OnClose( wxCloseEvent& event );
 
-    wxSlider *m_pCM93DetailSlider;
+    wxSlider *m_p_DetailSlider;
     wxWindow *m_pparent;
+private:
+    
+    ChartTypeEnum ChartType;
+    ChartFamilyEnum ChartFam;
 
 DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif //__DETAILSLIDE_H__
