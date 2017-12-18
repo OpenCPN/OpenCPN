@@ -98,8 +98,7 @@ public:
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
-      bool isTrack(){ return m_bisTrack; }
-      
+
       int         m_ConfigRouteNum;
       bool        m_bRtIsSelected;
       bool        m_bRtIsActive;
@@ -131,7 +130,6 @@ public:
       wxString    m_Colour;
       bool        m_btemp;
       int         m_hiliteWidth;
-      bool        m_bisTrack;
       
 private:
       LLBBox     RBBox;

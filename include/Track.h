@@ -45,7 +45,7 @@ struct SubTrack
     double            m_scale;
 };
 
-class TrackPoint : public RoutePoint
+class TrackPoint
 {
 public:
       TrackPoint(double lat, double lon);
@@ -57,14 +57,16 @@ public:
       wxString GetName(void){ return _T(""); }
       
       int               m_GPXTrkSegNo;
-private:
+      double            m_lat, m_lon;
+      wxString          m_timestring;
+      wxDateTime        m_CreateTimeX;
 };
 
 //----------------------------------------------------------------------------
 //    Track
 //----------------------------------------------------------------------------
 
-class Track : public Route
+class Track
 {
 public:
     Track();
