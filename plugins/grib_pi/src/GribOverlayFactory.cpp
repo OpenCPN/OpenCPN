@@ -271,13 +271,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     int pointerLength = windArrowSize / 3;
 
     // the barbed arrows
-    for(i=1; i<14; i++) {
-        LineBuffer &arrow = m_WindArrowCache[i];
-
-        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
-        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
-        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
-    }
 
     int featherPosition = windArrowSize / 6;
     
@@ -332,6 +325,14 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     // > 90 ktn
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition, lgrande );
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition*3, lgrande );
+
+    for(i=1; i<14; i++) {
+        LineBuffer &arrow = m_WindArrowCache[i];
+
+        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
+        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
+        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
+    }
 
     for(i=0; i<14; i++)
         m_WindArrowCache[i].Finalize();
@@ -2135,10 +2136,10 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
 
     ang += rotate_angle;
 
-    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south);
+    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south, m_bDrawBarbedArrowHead);
 }
 
-void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south)
+void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south, bool head)
 {
     // transform vertexes by angle
     float six = sinf( ang ), cox = cosf( ang ), siy, coy;
@@ -2148,16 +2149,18 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
         siy = six, coy = cox;
 
     float vertexes[40];
-
-    wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)buffer.count*4);
-    for(int i=0; i < 2*buffer.count; i++) {
+    int count = buffer.count;
+    if (!head)
+        count -= 2;
+    wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)count*4);
+    for(int i=0; i < 2*count; i++) {
         float *k = buffer.lines + 2*i;
         vertexes[2*i+0] = k[0]*cox + k[1]*siy + x;
         vertexes[2*i+1] = k[0]*six - k[1]*coy + y;
     }
 
     if( m_pdc ) {
-        for(int i=0; i < buffer.count; i++) {
+        for(int i=0; i < count; i++) {
             float *l = vertexes + 4*i;
 #if wxUSE_GRAPHICS_CONTEXT
             if( m_hiDefGraphics && m_gdc )
@@ -2169,7 +2172,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
     } else {                       // OpenGL mode
 #ifdef ocpnUSE_GL
         glVertexPointer(2, GL_FLOAT, 2*sizeof(float), vertexes);
-        glDrawArrays(GL_LINES, 0, 2*buffer.count);
+        glDrawArrays(GL_LINES, 0, 2*count);
 #endif
     }
 }

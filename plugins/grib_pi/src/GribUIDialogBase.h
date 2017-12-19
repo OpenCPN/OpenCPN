@@ -332,6 +332,7 @@ class GribPreferencesDialogBase : public wxDialog
 	public:
 		wxCheckBox* m_cbUseHiDef;
 		wxCheckBox* m_cbUseGradualColors;
+		wxCheckBox* m_cbDrawBarbedArrowHead;
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
 		wxRadioBox* m_rbLoadOptions;

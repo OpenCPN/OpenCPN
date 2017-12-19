@@ -1397,6 +1397,8 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	m_cbCopyMissingWaveRecord = new wxCheckBox( this, wxID_ANY, _("Copy Missing Wave Records"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer46->Add( m_cbCopyMissingWaveRecord, 0, wxALL, 5 );
 
+	m_cbDrawBarbedArrowHead = new wxCheckBox( this, wxID_ANY, _("Draw Barbed Arrows Head"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer46->Add( m_cbDrawBarbedArrowHead, 0, wxALL, 5 );
 
 	sbSizer9->Add( fgSizer46, 1, wxEXPAND, 5 );
 
