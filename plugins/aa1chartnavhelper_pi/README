@@ -1,0 +1,5 @@
+This is a plugin which adds traditional paper chart navigation helper elements to the OpenCPN display screens and mainly to the printed OpenCPS screens.
+
+A use case for this plugin: First plan the route and draw the route using other OpenCPN plugins and tools. After a route is planned, the areas of the chart around the route should be printed while the chart navigation helper (this plugin) is enabled and the navigation helper elements are displayed. Now, in case the electronic navigation system on your boat fails, the printed OpenCPS screens could be used to help you to locate yourself. (To ease the location without electronic navigation you should mark your position time to time on the paper maps. There are various techniques to make this marking process easy and quick.)
+
+The other intent of this plugin is to help the education of manual charting and navigation.

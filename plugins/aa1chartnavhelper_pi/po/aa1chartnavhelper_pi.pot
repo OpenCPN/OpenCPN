@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: aa1chartnavhelper_pi 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-28 12:20-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/aa1chartnavhelper_pi.cpp:90
+msgid ""
+"\n"
+"Created(/Assembled) by Andras A. - Chart Nav Helper, \n"
+"This plugin adds a compass rose and rulers on the viewed map - \n"
+"The compass rose and ruler will appear on the printed maps also, and by this "
+"it \n"
+"will make the printed maps useful in manual navigation -\n"
+"\n"
+"It is based on code from The World Magnetic Model Plugin which was written by "
+"Pavel Kalian and extended by Sean D'Epagnier, and some other OpenCPN code "
+"segments from various parts of the code base.\n"
+"\n"
+"This plugin uses the WMM plugin to get information about variation at the "
+"center of the compass rose.  \n"
+"It has a configuration dialog where the year at which the variation is "
+"expected to be calculated can be set.\n"
+"The variation can be set to a fixed value (unfortunately the user provided "
+"variation value was not accessible by this plugin)\n"
+"\n"
+"NOTES: The intent for building this plugin was to help the training and "
+"practice of navigation skills at USPS.\n"
+"(The compass rose can be moved by the mouse by dragging it at the center of "
+"the compass rose) "
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:103
+msgid "Chart Nav Helper Plugin"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:180 src/aa1chartnavhelper_pi.cpp:239
+#: src/Aa1ChartNavHelperUIDialog.h:55
+msgid "Chart Nav Helper"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:245
+msgid "Chart Nav Helper PlugIn for OpenCPN"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:250
+msgid ""
+"Chart Nav Helper PlugIn for OpenCPN\n"
+"adds to the screen (and printouts) traditional navigation chart features \n"
+"like a compass rose and rulers at the side of the map.\n"
+"Using these features a printed map can help in manual navigation.\n"
+"\n"
+"NOTES: The intent for building this plugin was to help the training and "
+"practice \n"
+"of navigation and piloting skills at USPS.\n"
+"\n"
+"USAGE: The compass rose can be moved to a convenient location by using the "
+"mouse to dragging the compass rose.\n"
+"The Compass rose can be grabbed at/around the center of the compass rose."
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "N"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "NE"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "E"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "SE"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "S"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "SW"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "W"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:378
+msgid "NW"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.cpp:1241 src/Aa1ChartNavHelperUIDialog.h:78
+msgid "Chart Nav Helper Preferences"
+msgstr ""
+
+#: src/aa1chartnavhelper_pi.h:203
+msgid "Chart Nav Helper Settings"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:37
+msgid "Chart Info"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:43
+msgid "Settings..."
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:83
+msgid "Show toolbar icon"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:86
+msgid "Show data in toolbar icon"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:90
+msgid "Window transparency"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:160
+msgid "About"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:163
+msgid "Save"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.cpp:166
+msgid "Cancel"
+msgstr ""
+
+#: src/Aa1ChartNavHelperUIDialog.h:112
+msgid "Chart Nav Helper Setting"
+msgstr ""
