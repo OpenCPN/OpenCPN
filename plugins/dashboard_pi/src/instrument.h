@@ -44,7 +44,7 @@
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
-#define DefaultWidth 150
+#define MinWidth 30
 
 extern wxFont *g_pFontTitle;
 extern wxFont *g_pFontData;
@@ -97,27 +97,29 @@ enum
 class DashboardInstrument : public wxControl
 {
 public:
-      DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag);
+    DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag, bool canExpand);
       ~DashboardInstrument(){}
 
       int GetCapacity();
       void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
-      virtual wxSize GetSize( int orient, wxSize hint ) = 0;
       void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
       void SetDrawSoloInPane(bool value);
       void MouseEvent( wxMouseEvent &event );
+
+      bool CanExpand() { return m_canExpand; }
       
       int               instrumentTypeId;
 
 protected:
-      int               m_cap_flag;
       int               m_TitleHeight;
       wxString          m_title;
+      int               m_cap_flag;
 
       virtual void Draw(wxGCDC* dc) = 0;
 private:
     bool m_drawSoloInPane;
+    bool m_canExpand;
 };
 
 class DashboardInstrument_Single : public DashboardInstrument
@@ -126,7 +128,6 @@ public:
       DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
       ~DashboardInstrument_Single(){}
 
-      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -143,7 +144,6 @@ public:
       DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
-      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
