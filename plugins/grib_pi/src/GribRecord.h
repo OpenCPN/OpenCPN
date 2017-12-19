@@ -47,8 +47,14 @@ Elément de base d'un fichier GRIB
 #define GRB_TMAX           15   /* K      */
 #define GRB_TMIN           16   /* K      */
 #define GRB_DEWPOINT       17   /* K      */
-#define GRB_WIND_VX        33   /* m/s    */
-#define GRB_WIND_VY        34   /* m/s    */
+
+#define GRB_WIND_DIR       31 	/* Deg. Wind Direction */
+#define GRB_WIND_SPEED     32 	/* m/s  Wind Speed     */
+#define GRB_WIND_VX        33   /* m/s U  */
+#define GRB_WIND_VY        34   /* m/s V  */
+
+#define GRB_CUR_DIR        47 	/* Deg. Direction of current  */
+#define GRB_CUR_SPEED      48 	/* m/s Speed of current       */
 #define GRB_UOGRD          49   /*"u-component of current", "m/s" */
 #define GRB_VOGRD          50   /*"v-component of current", "m/s" */
 
@@ -75,7 +81,7 @@ Elément de base d'un fichier GRIB
 #define GRB_CRAIN         140   /* "Categorical rain", "yes=1;no=0" */
 #define GRB_FRZRAIN_CATEG 141   /* 1=yes 0=no */
 #define GRB_SNOW_CATEG    143   /* 1=yes 0=no */
-#define GRB_CAPE 		  157   /* J/kg   */
+#define GRB_CAPE 	  157   /* J/kg   */
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
 #define GRB_WIND_GUST     180   /* m/s "wind gust */
@@ -142,6 +148,8 @@ class GribRecord
                                                 const GribRecord &rec2x, const GribRecord &rec2y, double d);
 
         static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
+
+        static void Polar2UV(GribRecord *pDIR, GribRecord *pSPEED);
 
         void   multiplyAllData(double k);
         void Substract(const GribRecord &rec, bool positive=true);
