@@ -294,8 +294,8 @@ GRIBUICtrlBar::~GRIBUICtrlBar()
            wxString key;
            long dummy;
            for( int i = 0; i < iFileMax; i++ ) {
-               pConf->GetFirstEntry( key, dummy );
-               pConf->DeleteEntry( key, false );
+               if (pConf->GetFirstEntry( key, dummy ))
+                   pConf->DeleteEntry( key, false );
            }
         }
 
@@ -1761,6 +1761,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                     switch(pRec->getDataType()) {
                     case GRB_WIND_DIR:
                         polarWind = true;
+                        // fall through
                     case GRB_WIND_VX:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
@@ -1774,6 +1775,7 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
                         break;
                     case GRB_WIND_SPEED:
                         polarWind = true;
+                        // fall through
                     case GRB_WIND_VY:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){

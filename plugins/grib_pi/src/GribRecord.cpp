@@ -126,7 +126,7 @@ bool GribRecord::GetInterpolatedParameters
     double jiters = rec2.Dj / rec1.Dj;
     if(jiters < 1) {
         jiters = 1/jiters;
-        jm1 = 1, jm2 = iiters;
+        jm1 = 1, jm2 = jiters;
     } else
         jm1 = jiters, jm2 = 1;
 

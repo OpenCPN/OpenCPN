@@ -509,6 +509,7 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
         case GribOverlaySettings::AIR_TEMPERATURE:
         case GribOverlaySettings::SEA_TEMPERATURE:
             MenuAppend( menu, ISO_LINE, _("Display Isotherms"), id );
+            // fall through
         case GribOverlaySettings::CLOUD:
         case GribOverlaySettings::PRECIPITATION:
             MenuAppend( menu, OVERLAY, _("OverlayMap"), id );

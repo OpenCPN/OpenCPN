@@ -166,7 +166,7 @@ public:
 
 
 #ifdef JASPER
-int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
+static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 /*$$$  SUBPROGRAM DOCUMENTATION BLOCK
 *                .      .    .                                       .
 * SUBPROGRAM:    dec_jpeg2000      Decodes JPEG2000 code stream
@@ -1211,13 +1211,14 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2, zuchar *t_rang
 void  GribV2Record::translateDataType()
 {
     this->knownData = true;
+    dataCenterModel = OTHER_DATA_CENTER;
     //------------------------
     // NOAA GFS
     //------------------------
     if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
         multiplyAllData( 3600.0 );
     }
-    else if (   idCenter==7 && idModel==2 )		// NOAA
+    if ( idCenter==7 && idModel==2 )		// NOAA
     {
         dataCenterModel = NOAA_GFS;
         // altitude level (entire atmosphere vs entire atmosphere considered as 1 level)
@@ -1286,7 +1287,7 @@ void  GribV2Record::translateDataType()
 		if ( getDataType()==GRB_PRESSURE && getLevelType()==LV_GND_SURF && getLevelValue()==0)
 		{
 			levelType  = LV_MSL;
-		}
+		} // missing enum for dataCenterModel
     }
 	
 	//------------------------
@@ -1556,7 +1557,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
     }
     else {
         // seek back if V1
-        zu_seek(file, start, SEEK_SET);
+        (void)zu_seek(file, start, SEEK_SET);
         return;
     }   
     refyear  = grib_msg->yr;
@@ -1574,7 +1575,7 @@ GribV2Record::GribV2Record(ZUFILE* file, int id_)
 }
 
 // ---------------------------------------
-bool GribV2Record::hasMoreDataSet()
+bool GribV2Record::hasMoreDataSet() const
 {
     return grib_msg && grib_msg->num_grids != 1?true:false;
 }
@@ -1636,6 +1637,9 @@ static bool unpackIS(ZUFILE* fp, GRIBMessage *grib_msg)
       return false;
   
   getBits(temp,&grib_msg->total_len,96,32);
+  // too small or overflow
+  if ( grib_msg->total_len < 16 || grib_msg->total_len > (INT_MAX - 4))
+      return false;
 
   grib_msg->md.nx = grib_msg->md.ny = 0;
   grib_msg->buffer = new unsigned char[grib_msg->total_len+4];

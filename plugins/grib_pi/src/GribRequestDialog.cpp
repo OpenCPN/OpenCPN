@@ -844,6 +844,10 @@ wxString GribRequestSetting::WriteMail()
 
 int GribRequestSetting::EstimateFileSize( double *size )
 {
+    if (!size)
+        return 0; // Wrong parameter
+    *size = 0.;
+
     //too small zone ? ( mini 2 * resolutions )
     double reso,time,inter;
     m_pResolution->GetStringSelection().ToDouble(&reso);
@@ -923,7 +927,7 @@ int GribRequestSetting::EstimateFileSize( double *size )
     }
 
 
-    if(size) *size = estime / (1024.*1024.);
+    *size = estime / (1024.*1024.);
 
     return 0;
 }
@@ -1003,6 +1007,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_rButtonYes->SetLabel(_("Continue..."));
     m_rButton->Layout();
     SetRequestDialogSize();
-
+    delete message;
     ::wxEndBusyCursor();
 }
