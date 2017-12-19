@@ -646,7 +646,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
                 dc.StrokeLines( i, points );
 
-                wxColour hilt( g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue(), 128 );
+                extern wxColor GetDimColor(wxColor c);
+                wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
+                wxColour hilt( trackLine_dim_colour.Red(), trackLine_dim_colour.Green(), trackLine_dim_colour.Blue(), 128 );
 
                 wxPen HiPen( hilt, hilite_width, wxPENSTYLE_SOLID );
                 dc.SetPen( HiPen );
