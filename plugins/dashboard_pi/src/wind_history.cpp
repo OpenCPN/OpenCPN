@@ -47,7 +47,7 @@
 //************************************************************************************************************************
 
 DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD | OCPN_DBP_STC_TWS)
+    DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD | OCPN_DBP_STC_TWS, true)
 {     SetDrawSoloInPane(true);
       m_MaxWindDir = -1;
       m_WindDir = -1;
@@ -77,19 +77,11 @@ DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory( wxWindow
       m_WindowRect=GetClientRect();
       m_DrawAreaRect=GetClientRect();
       m_DrawAreaRect.SetHeight(m_WindowRect.height-m_TopLineHeight-m_TitleHeight);
-}
 
-wxSize DashboardInstrument_WindDirHistory::GetSize( int orient, wxSize hint )
-{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( orient == wxHORIZONTAL ) {
-        return wxSize( DefaultWidth, wxMax(m_TitleHeight+140, hint.y) );
-      }
-      else {
-        return wxSize( wxMax(hint.x, DefaultWidth), wxMax(m_TitleHeight+140, hint.y) );
-      }
+      SetMinSize( wxSize(MinWidth, m_TitleHeight+40));
 }
 void DashboardInstrument_WindDirHistory::SetData(int st, double data, wxString unit)
 {

@@ -57,8 +57,6 @@ class DashboardInstrument_BaroHistory: public DashboardInstrument
             ~DashboardInstrument_BaroHistory(void){}
 
             void SetData(int, double, wxString);
-   wxSize GetSize( int orient, wxSize hint );
-
 
       private:
     int m_soloInPane ;

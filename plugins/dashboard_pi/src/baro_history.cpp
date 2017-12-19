@@ -47,11 +47,8 @@
 //************************************************************************************************************************
 
 DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory( wxWindow *parent, wxWindowID id, wxString title) :
-      DashboardInstrument(parent, id, title, OCPN_DBP_STC_MDA)
+    DashboardInstrument(parent, id, title, OCPN_DBP_STC_MDA, true)
 {     SetDrawSoloInPane(true);
-
-
-
       m_MaxPress = 0;
       m_MinPress =(double)1200;
       m_TotalMaxPress = 0;
@@ -74,20 +71,13 @@ DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory( wxWindow *pare
       m_WindowRect=GetClientRect();
       m_DrawAreaRect=GetClientRect();
       m_DrawAreaRect.SetHeight(m_WindowRect.height-m_TopLineHeight-m_TitleHeight);
-}
 
-wxSize DashboardInstrument_BaroHistory::GetSize( int orient, wxSize hint )
-{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( orient == wxHORIZONTAL ) {
-        return wxSize( DefaultWidth, wxMax(m_TitleHeight+140, hint.y) );
-      }
-      else {
-        return wxSize( wxMax(hint.x, DefaultWidth), wxMax(m_TitleHeight+140, hint.y) );
-      }
+      SetMinSize( wxSize(MinWidth, m_TitleHeight+40) );
 }
+
 void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit)
 {
     if (st == OCPN_DBP_STC_MDA) {
