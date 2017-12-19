@@ -331,9 +331,7 @@ IF (ARCH MATCHES "arm*" AND (NOT QT_ANDROID) )
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     add_subdirectory(src/glshim)
 
-    add_subdirectory(src/glu)
-
-    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm" "dri2" )
+    SET(OPENGL_LIBRARIES "GL_static" "EGL" "X11" "drm"  )
   ENDIF()
 ENDIF()
 
@@ -351,8 +349,6 @@ IF(QT_ANDROID)
 
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
     add_subdirectory(src/glshim)
-
-    add_subdirectory(src/glu)
 
 ENDIF(QT_ANDROID)
 
@@ -385,6 +381,7 @@ IF(OPENGL_FOUND)
         ENDIF()
     ENDFOREACH (_currentLibFile )
 
+    SET( OPENGL_LIBRARIES ${REVISED_OPENGL_LIBRARIES})
     MESSAGE (STATUS "    Revised GL Lib: " ${OPENGL_LIBRARIES})
 
 ELSE(OPENGL_FOUND)
@@ -395,7 +392,7 @@ ENDIF()
 
 MESSAGE (STATUS "    Adding local GLU" )
 add_subdirectory(src/glu)
-SET( OPENGL_LIBRARIES "GLU_static" ${REVISED_OPENGL_LIBRARIES}) 
+SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES}) 
 
 IF(NOT QT_ANDROID)
 # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -1450,7 +1447,7 @@ IF (OPENGL_FOUND)
         ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
       ELSE ()
-#        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
+        set_source_files_properties(src/mipmap/mipmap_neon.c PROPERTIES COMPILE_FLAGS "-mfpu=neon")
       ENDIF ()
   ELSE (NOT MSVC)
         # try to use sse on x86 based systems

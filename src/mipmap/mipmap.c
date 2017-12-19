@@ -157,7 +157,7 @@ void MipMap_ResolveRoutines()
 
 #endif
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON) || defined(__ARM_NEON_FP)
     MipMap_24 = MipMap_24_neon;
     MipMap_32 = MipMap_32_neon;
 #endif
