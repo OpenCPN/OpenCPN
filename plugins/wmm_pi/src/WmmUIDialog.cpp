@@ -326,7 +326,7 @@ WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase( wxWindow* parent, wxWindow
 	wxGridSizer* gSizer2;
 	gSizer2 = new wxGridSizer( 0, 3, 0, 0 );
 	
-	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Declination"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbDeclination = new wxCheckBox( this, wxID_ANY, _("Variation"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_cbDeclination->SetValue(true); 
 	gSizer2->Add( m_cbDeclination, 0, wxALL, 5 );
 	
