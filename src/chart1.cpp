@@ -5984,6 +5984,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     FrameTimer1.Stop();                  // stop other asynchronous activity
 
+    double old_scale = cc1->GetVPScale();
     cc1->InvalidateQuilt();
     cc1->SetQuiltRefChart( -1 );
 
@@ -6035,6 +6036,13 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     //    Validate the correct single chart, or set the quilt mode as appropriate
     SetupQuiltMode();
+    if( !cc1->GetQuiltMode() && Current_Ch == 0) {
+        // use a dummy like in DoChartUpdate
+        if (NULL == pDummyChart ) 
+            pDummyChart = new ChartDummy;
+        Current_Ch = pDummyChart;
+        cc1->SetVPScale( old_scale );
+    }
 
     cc1->ReloadVP();
 
@@ -8260,8 +8268,8 @@ bool MyFrame::DoChartUpdate( void )
                     cc1->GetVPRotation() );
 
         }
-
-        bNewView |= cc1->SetViewPoint( vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation() );
+        // else
+            bNewView |= cc1->SetViewPoint( vpLat, vpLon, cc1->GetVPScale(), 0, cc1->GetVPRotation() );
 
         goto update_finish;
 
