@@ -85,9 +85,9 @@ void WmmPlotSettingsDialog::About( wxCommandEvent& event )
     wxString msg0(
         _("\n\
 World Magnetic Model Plotting allows users to cross reference the\
- magnetic declination values printed on many raster charts.\n\n\
-Declination is the angle between true and magnetic north.\n\
-Inclination is the vertical angle of the magnetic field.\n\
+ magnetic variation values printed on many raster charts.\n\n\
+Variation is the angle between true and magnetic north.\n\
+Inclination or dip, is the vertical angle of the magnetic field.\n\
 \t(+- 90 at the magnetic poles)\n\
 Field Strength is the magnetic field in nano tesla from\n\
 \t20000 to 66000\n\n\

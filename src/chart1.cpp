@@ -1518,7 +1518,7 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-#if defined(__WXGTK__) && defined(__arm__) && defined(ocpnUSE_GLES)
+#if defined(__WXGTK__)  && defined(ocpnUSE_GLES) && defined(__ARM_ARCH)
     // There is a race condition between cairo which is used for text rendering
     // by gtk and EGL which without the below code causes a bus error and the
     // program aborts before startup
