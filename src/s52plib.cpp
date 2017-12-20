@@ -6423,6 +6423,8 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
 
     int lclip = pb_spec->lclip;
     int rclip = pb_spec->rclip;
+    if (y1 == y2 )
+        return 0;
 
     //              Clip the triangle
     if( cw ) {
