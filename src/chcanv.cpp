@@ -3573,18 +3573,60 @@ void ChartCanvas::ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint )
     dc.DrawLine( lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x, lShipMidPoint.y + 12 );
 }
 
-void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
-                                      wxPoint GPSOffsetPixels,
-                                      wxPoint lGPSPoint, wxPoint lHeadPoint,
-                                      float img_height, float cog_rad,
-                                      wxPoint lPredPoint, bool b_render_hdt,
-                                      wxPoint lShipMidPoint)
+void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
+                                      wxPoint GPSOffsetPixels, wxPoint lGPSPoint)
 {
+    //    Calculate ownship Position Predictor
+    wxPoint lPredPoint, lHeadPoint;
+
+    float pCog = wxIsNaN(gCog) ? 0 : gCog;
+    float pSog = wxIsNaN(gSog) ? 0 : gSog;
+
+    double pred_lat, pred_lon;
+    ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+    GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
+    
+    // test to catch the case where COG/HDG line crosses the screen
+    LLBBox box;
+
+//    Should we draw the Head vector?
+//    Compare the points lHeadPoint and lPredPoint
+//    If they differ by more than n pixels, and the head vector is valid, then render the head vector
+
+
+    float ndelta_pix = 10.;
+    double hdg_pred_lat, hdg_pred_lon;
+    bool b_render_hdt = false;
+    if( !wxIsNaN( gHdt ) ) {
+        //    Calculate ownship Heading pointer as a predictor
+        ll_gc_ll( gLat, gLon, gHdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
+                  &hdg_pred_lon );
+        GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
+        float dist = sqrtf( powf(  (float) (lHeadPoint.x - lPredPoint.x), 2) +
+                            powf(  (float) (lHeadPoint.y - lPredPoint.y), 2) );
+        if( dist > ndelta_pix /*&& !wxIsNaN(gSog)*/ ) {
+            box.SetFromSegment(gLat, gLon, hdg_pred_lat, hdg_pred_lon);
+            if( !GetVP().GetBBox().IntersectOut(box))
+                b_render_hdt = true;
+        }
+    }
+
     // draw course over ground if they are longer than the ship
-    if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
-        if( lpp >= img_height / 2 ) {
+    wxPoint lShipMidPoint;
+    lShipMidPoint.x = lGPSPoint.x + GPSOffsetPixels.x;
+    lShipMidPoint.y = lGPSPoint.y + GPSOffsetPixels.y;
+    float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
+                       powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
+
+    if(lpp >= img_height / 2) {
+        box.SetFromSegment(gLat, gLon, pred_lat, pred_lon);
+        if( !GetVP().GetBBox().IntersectOut(box) && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
             const double png_pred_icon_scale_factor = .4;
             wxPoint icon[4];
+
+            float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
+                                    (float) ( lPredPoint.x - lShipMidPoint.x ) );
+            cog_rad += (float)PI;
 
             for( int i = 0; i < 4; i++ ) {
                 int j = i * 2;
@@ -3759,40 +3801,14 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 {
     if( !GetVP().IsValid() ) return;
 
-    int drawit = 0;
-    wxPoint lGPSPoint, lShipMidPoint, lPredPoint, lHeadPoint, GPSOffsetPixels(0,0);
-
-//    Is ship in Vpoint?
-
-    if( GetVP().GetBBox().Contains( gLat, gLon ) ) drawit++;                             // yep
-
-//    Calculate ownship Position Predictor
-
-    double pred_lat, pred_lon;
+    wxPoint lGPSPoint, lShipMidPoint, GPSOffsetPixels(0,0);
 
     //  COG/SOG may be undefined in NMEA data stream
-    float pCog = gCog;
-    if( wxIsNaN(pCog) )
-        pCog = 0.0;
-    float pSog = gSog;
-    if( wxIsNaN(pSog) )
-        pSog = 0.0;
-
-    ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+    float pCog = wxIsNaN(gCog) ? 0 : gCog;
+    float pSog = wxIsNaN(gSog) ? 0 : gSog;
 
     GetCanvasPointPix( gLat, gLon, &lGPSPoint );
     lShipMidPoint = lGPSPoint;
-    GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
-
-    float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
-                            (float) ( lPredPoint.x - lShipMidPoint.x ) );
-    cog_rad += (float)PI;
-
-    float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
-                       powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
-
-//    Is predicted point in the VPoint?
-    if( GetVP().GetBBox().Contains( pred_lat, pred_lon ) ) drawit++;                     // yep
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
@@ -3808,217 +3824,173 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     ll_gc_ll( gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat, &osd_head_lon );
 
-    GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
     GetCanvasPointPix( osd_head_lat, osd_head_lon, &osd_head_point );
 
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += (float)PI;
-    double rotate = GetVP().rotation;
 
-    if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + rotate;
-
-//    Calculate ownship Heading pointer as a predictor
-    double hdg_pred_lat, hdg_pred_lon;
-
-    ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
-              &hdg_pred_lon );
-
-    GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
-    GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
-
-    //    Is head predicted point in the VPoint?
-    if( GetVP().GetBBox().Contains( hdg_pred_lat, hdg_pred_lon ) ) drawit++;                     // yep
-
-//    Should we draw the Head vector?
-//    Compare the points lHeadPoint and lPredPoint
-//    If they differ by more than n pixels, and the head vector is valid, then render the head vector
-
-    float ndelta_pix = 10.;
-    bool b_render_hdt = false;
-    if( !wxIsNaN( gHdt ) ) {
-        float dist = sqrtf( powf(  (float) (lHeadPoint.x - lPredPoint.x), 2) +
-                            powf(  (float) (lHeadPoint.y - lPredPoint.y), 2) );
-        if( dist > ndelta_pix && !wxIsNaN(gSog) )
-            b_render_hdt = true;
-    }
+    if (pSog < 0.2) icon_rad = ((icon_hdt + 90.) * PI / 180) + GetVP().rotation;
 
 //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
 //    and is just barely outside the viewport        ....
     wxBoundingBox bb_screen( 0, 0, GetVP().pix_width, GetVP().pix_height );
-    if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) drawit++;
 
-    // And two more tests to catch the case where COG/HDG line crosses the screen,
-    // but ownship and pred point are both off
+    // TODO: fix to include actual size of boat that will be rendered
+    int img_height = 0;
+    if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) {
+        if( GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
+        {
+            ShipDrawLargeScale(dc, lShipMidPoint);
+            img_height = 20;
+        } else {
 
-    LLBBox box;
-    box.SetFromSegment(gLon, gLat, pred_lon, pred_lat);
-    if( !GetVP().GetBBox().IntersectOut(box))
-        drawit++;
-    box.SetFromSegment(gLon, gLat, hdg_pred_lon, hdg_pred_lat);
-    if( !GetVP().GetBBox().IntersectOut(box))
-        drawit++;
-    
-//    Do the draw if either the ship or prediction is within the current VPoint
-    if( !drawit )
-        return;
+            wxImage pos_image;
 
-    int img_height;
-
-    if( GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
-    {
-        ShipDrawLargeScale(dc, lShipMidPoint);
-        img_height = 20;
-    } else {
-
-        wxImage pos_image;
-
-        //      Substitute user ownship image if found
-        if( m_pos_image_user )
-            pos_image = m_pos_image_user->Copy();
-        else if( SHIP_NORMAL == m_ownship_state )
-            pos_image = m_pos_image_red->Copy();
-        if( SHIP_LOWACCURACY == m_ownship_state )
-            pos_image = m_pos_image_yellow->Copy();
-        else if( SHIP_NORMAL != m_ownship_state )
-            pos_image = m_pos_image_grey->Copy();
+            //      Substitute user ownship image if found
+            if( m_pos_image_user )
+                pos_image = m_pos_image_user->Copy();
+            else if( SHIP_NORMAL == m_ownship_state )
+                pos_image = m_pos_image_red->Copy();
+            if( SHIP_LOWACCURACY == m_ownship_state )
+                pos_image = m_pos_image_yellow->Copy();
+            else if( SHIP_NORMAL != m_ownship_state )
+                pos_image = m_pos_image_grey->Copy();
 
 
             //      Substitute user ownship image if found
-        if( m_pos_image_user ) {
-            pos_image = m_pos_image_user->Copy();
+            if( m_pos_image_user ) {
+                pos_image = m_pos_image_user->Copy();
                 
-            if( SHIP_LOWACCURACY == m_ownship_state ) 
-                pos_image = m_pos_image_user_yellow->Copy();
-            else if( SHIP_NORMAL != m_ownship_state )
-                pos_image = m_pos_image_user_grey->Copy();
-        }
-
-        img_height = pos_image.GetHeight();
-
-        if( g_n_ownship_beam_meters > 0.0 &&
-            g_n_ownship_length_meters > 0.0 &&
-            g_OwnShipIconType > 0 ) // use large ship
-        {
-            int ownShipWidth = 22; // Default values from s_ownship_icon
-            int ownShipLength= 84;
-            if( g_OwnShipIconType == 1 ) {
-                ownShipWidth = pos_image.GetWidth();
-                ownShipLength= pos_image.GetHeight();
+                if( SHIP_LOWACCURACY == m_ownship_state ) 
+                    pos_image = m_pos_image_user_yellow->Copy();
+                else if( SHIP_NORMAL != m_ownship_state )
+                    pos_image = m_pos_image_user_grey->Copy();
             }
 
-            float scale_factor_x, scale_factor_y;
-            ComputeShipScaleFactor
-                (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
-                 GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
+            img_height = pos_image.GetHeight();
 
-            if( g_OwnShipIconType == 1 ) { // Scaled bitmap
-                pos_image.Rescale( ownShipWidth * scale_factor_x, ownShipLength * scale_factor_y,
-                                   wxIMAGE_QUALITY_HIGH );
+            if( g_n_ownship_beam_meters > 0.0 &&
+                g_n_ownship_length_meters > 0.0 &&
+                g_OwnShipIconType > 0 ) // use large ship
+            {
+                int ownShipWidth = 22; // Default values from s_ownship_icon
+                int ownShipLength= 84;
+                if( g_OwnShipIconType == 1 ) {
+                    ownShipWidth = pos_image.GetWidth();
+                    ownShipLength= pos_image.GetHeight();
+                }
+                
+                float scale_factor_x, scale_factor_y;
+                ComputeShipScaleFactor
+                    (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
+                     GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
+
+                if( g_OwnShipIconType == 1 ) { // Scaled bitmap
+                    pos_image.Rescale( ownShipWidth * scale_factor_x, ownShipLength * scale_factor_y,
+                                       wxIMAGE_QUALITY_HIGH );
+                    wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
+                    wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
+                    
+                    // Simple sharpening algorithm.....
+                    for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
+                        for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
+                            if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
+
+                    wxBitmap os_bm( rot_image );
+
+                    int w = os_bm.GetWidth();
+                    int h = os_bm.GetHeight();
+                    img_height = h;
+
+                    dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
+                    
+                    // Maintain dirty box,, missing in __WXMSW__ library
+                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
+                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
+                }
+
+                else if( g_OwnShipIconType == 2 ) { // Scaled Vector
+                    wxPoint ownship_icon[10];
+
+                    for( int i = 0; i < 10; i++ ) {
+                        int j = i * 2;
+                        float pxa = (float) ( s_ownship_icon[j] );
+                        float pya = (float) ( s_ownship_icon[j + 1] );
+                        pya *= scale_factor_y;
+                        pxa *= scale_factor_x;
+
+                        float px = ( pxa * sinf( icon_rad ) ) + ( pya * cosf( icon_rad ) );
+                        float py = ( pya * sinf( icon_rad ) ) - ( pxa * cosf( icon_rad ) );
+
+                        ownship_icon[i].x = (int) ( px ) + lShipMidPoint.x;
+                        ownship_icon[i].y = (int) ( py ) + lShipMidPoint.y;
+                    }
+
+                    wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
+                    dc.SetPen( ppPen1 );
+                    dc.SetBrush( wxBrush( ShipColor() ) );
+                    
+                    dc.StrokePolygon( 6, &ownship_icon[0], 0, 0 );
+                    
+                    //     draw reference point (midships) cross
+                    dc.StrokeLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
+                                   ownship_icon[7].y );
+                    dc.StrokeLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
+                                   ownship_icon[9].y );
+                }
+
+                img_height = ownShipLength * scale_factor_y;
+
+                //      Reference point, where the GPS antenna is
+                int circle_rad = 3;
+                if( m_pos_image_user ) circle_rad = 1;
+                
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
+                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
+                dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, circle_rad );
+            }
+            else { // Fixed bitmap icon.
+                /* non opengl, or suboptimal opengl via ocpndc: */
                 wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
                 wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
-
+                
                 // Simple sharpening algorithm.....
                 for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
                     for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
                         if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
-
+                
                 wxBitmap os_bm( rot_image );
-
+                
+                if(g_ChartScaleFactorExp > 1){
+                    wxImage scaled_image = os_bm.ConvertToImage();
+                    double factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+                    os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * factor,
+                                                        scaled_image.GetHeight() * factor,
+                                                        wxIMAGE_QUALITY_HIGH));
+                }
                 int w = os_bm.GetWidth();
                 int h = os_bm.GetHeight();
                 img_height = h;
-
+                
                 dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
-
+                
+                //      Reference point, where the GPS antenna is
+                int circle_rad = 3;
+                if( m_pos_image_user ) circle_rad = 1;
+                
+                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
+                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
+                dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, circle_rad );
+                
                 // Maintain dirty box,, missing in __WXMSW__ library
                 dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
                 dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
             }
+        }        // ownship draw
+    }
 
-            else if( g_OwnShipIconType == 2 ) { // Scaled Vector
-                wxPoint ownship_icon[10];
-
-                for( int i = 0; i < 10; i++ ) {
-                    int j = i * 2;
-                    float pxa = (float) ( s_ownship_icon[j] );
-                    float pya = (float) ( s_ownship_icon[j + 1] );
-                    pya *= scale_factor_y;
-                    pxa *= scale_factor_x;
-
-                    float px = ( pxa * sinf( icon_rad ) ) + ( pya * cosf( icon_rad ) );
-                    float py = ( pya * sinf( icon_rad ) ) - ( pxa * cosf( icon_rad ) );
-
-                    ownship_icon[i].x = (int) ( px ) + lShipMidPoint.x;
-                    ownship_icon[i].y = (int) ( py ) + lShipMidPoint.y;
-                }
-
-                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
-                dc.SetPen( ppPen1 );
-                dc.SetBrush( wxBrush( ShipColor() ) );
-
-                dc.StrokePolygon( 6, &ownship_icon[0], 0, 0 );
-
-                //     draw reference point (midships) cross
-                dc.StrokeLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
-                               ownship_icon[7].y );
-                dc.StrokeLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
-                               ownship_icon[9].y );
-            }
-
-            img_height = ownShipLength * scale_factor_y;
-
-            //      Reference point, where the GPS antenna is
-            int circle_rad = 3;
-            if( m_pos_image_user ) circle_rad = 1;
-
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-            dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, circle_rad );
-        }
-        else { // Fixed bitmap icon.
-            /* non opengl, or suboptimal opengl via ocpndc: */
-            wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
-            wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
-
-            // Simple sharpening algorithm.....
-            for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
-                for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
-                    if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
-
-            wxBitmap os_bm( rot_image );
-            
-            if(g_ChartScaleFactorExp > 1){
-                wxImage scaled_image = os_bm.ConvertToImage();
-                double factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
-                os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * factor,
-                                                scaled_image.GetHeight() * factor,
-                                                wxIMAGE_QUALITY_HIGH));
-            }
-            int w = os_bm.GetWidth();
-            int h = os_bm.GetHeight();
-            img_height = h;
-
-            dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
-
-            //      Reference point, where the GPS antenna is
-            int circle_rad = 3;
-            if( m_pos_image_user ) circle_rad = 1;
-
-            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-            dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, circle_rad );
-
-            // Maintain dirty box,, missing in __WXMSW__ library
-            dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
-            dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
-        }
-    }        // ownship draw
-
-    ShipIndicatorsDraw(dc, lpp,  GPSOffsetPixels,
-                        lGPSPoint,  lHeadPoint,
-                       img_height, cog_rad,
-                       lPredPoint,  b_render_hdt, lShipMidPoint);
+    ShipIndicatorsDraw(dc, img_height, GPSOffsetPixels, lGPSPoint);
 }
 
 /* @ChartCanvas::CalcGridSpacing

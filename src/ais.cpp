@@ -945,7 +945,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
         drawit++;                     // yep
     else {
         LLBBox box;
-        box.SetFromSegment(td->Lon, td->Lat, pred_lon, pred_lat);
+        box.SetFromSegment(td->Lat, td->Lon, pred_lat, pred_lon);
     // And one more test to catch the case where target COG line crosses the screen,
     // but the target itself and its pred point are both off-screen
         if( !vp.GetBBox().IntersectOut(box))
