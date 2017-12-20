@@ -91,7 +91,6 @@ class DashboardInstrument_Dial: public DashboardInstrument
 
             ~DashboardInstrument_Dial(void){}
 
-            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString);
             void SetOptionMarker(double step, DialMarkerOption option, int offset) { m_MarkerStep = step; m_MarkerOption = option; m_MarkerOffset = offset; }
             void SetOptionLabel(double step, DialLabelOption option, wxArrayString labels=wxArrayString()) { m_LabelStep = step; m_LabelOption = option; m_LabelArray = labels; }

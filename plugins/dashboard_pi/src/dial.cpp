@@ -55,7 +55,7 @@ double deg2rad(double angle)
 }
 
 DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID id, wxString title, int cap_flag,
-                  int s_angle, int r_angle, int s_value, int e_value) : DashboardInstrument(parent, id, title, cap_flag)
+                                                    int s_angle, int r_angle, int s_value, int e_value) : DashboardInstrument(parent, id, title, cap_flag, true)
 {
       m_AngleStart = s_angle;
       m_AngleRange = r_angle;
@@ -76,20 +76,11 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       m_LabelStep = 1;
       m_MarkerOffset = 1;
       m_LabelOption = DIAL_LABEL_HORIZONTAL;
-}
 
-wxSize DashboardInstrument_Dial::GetSize( int orient, wxSize hint )
-{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      if( orient == wxHORIZONTAL ) {
-          w = wxMax(hint.y, DefaultWidth+m_TitleHeight);
-          return wxSize( w-m_TitleHeight, w );
-      } else {
-          w = wxMax(hint.x, DefaultWidth);
-          return wxSize( w, m_TitleHeight+w );
-      }
+      SetMinSize(wxSize(MinWidth, m_TitleHeight+40));
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
@@ -123,8 +114,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     bdc->GetTextExtent( _T("000"), &width, &height, 0, 0, g_pFontLabel );
     m_cy = m_TitleHeight + 2;
     m_cy += availableHeight / 2;
-    m_radius = availableHeight / 2;
-
+    m_radius = wxMin(m_cx, availableHeight / 2);
 
     DrawLabels(bdc);
     DrawFrame(bdc);
@@ -143,7 +133,7 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     dc->SetTextForeground( cl );
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
     
-    int penwidth = 1 + size.x / 100;
+    int penwidth = 1 + wxMin(size.x, size.y) / 100;
     wxPen pen( cl, penwidth, wxPENSTYLE_SOLID );
     
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {

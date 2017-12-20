@@ -531,6 +531,12 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     return true;
 }
 
+// isClearSky checks that there is no rain or clouds at all.
+static inline bool isClearSky(int settings, double v) {
+    return ((settings == GribOverlaySettings::PRECIPITATION) ||
+            (settings == GribOverlaySettings::CLOUD)) && v < 0.01;
+}
+
 #ifdef ocpnUSE_GL
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
@@ -591,27 +597,17 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
             double lat, lon;
             GetCanvasLLPix( &uvp, p, &lat, &lon );
             double v = pGR->getInterpolatedValue(lon, lat);
-            unsigned char r, g, b, a;
+            // set full transparency if not defined or no rain or no clouds at all
+            unsigned char r = 255, g = 255, b = 255, a = 0;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
-                //set full transparency if no rain or no clouds at all
-                if (( settings == GribOverlaySettings::PRECIPITATION || settings == GribOverlaySettings::CLOUD ) && v < 0.01) 
-                {
-                    r = g = b = 255;
-                    a = 0;
-                }
-                else {
+                if (!isClearSky(settings, v))  {
                     a = m_Settings.m_iOverlayTransparency;
                     wxColour c = GetGraphicColor(settings, v);
                     r = c.Red();
                     g = c.Green();
                     b = c.Blue();
                 }
-            } else {
-                r = 255;
-                g = 255;
-                b = 255;
-                a = 0;
             }
 
             int doff = 4*(jpix*width + ipix);
@@ -692,8 +688,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 wxColour c = GetGraphicColor(settings, v);
 
                 //set full transparency if no rain or no clouds at all
-                unsigned char a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 :
-                            m_Settings.m_iOverlayTransparency;
+                unsigned char a = isClearSky(settings, v) ? 0 : m_Settings.m_iOverlayTransparency;
 
                 unsigned char r = c.Red();
                 unsigned char g = c.Green();
@@ -2078,6 +2073,10 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
@@ -2092,6 +2091,10 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, arrowWidth );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
