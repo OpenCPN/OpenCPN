@@ -4053,7 +4053,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                                 _("Show magnetic bearings and headings."));
     bearingsSizer->Add(pCBMagShow, 0, wxALL, group_item_spacing);
 
-    bearingsSizer->Add(new wxStaticText(panelUnits, wxID_ANY, _T("")), labelFlags);
+    bearingsSizer->AddSpacer(10);
     
     
     //  Mag Heading user variation
