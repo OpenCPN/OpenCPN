@@ -9024,16 +9024,15 @@ void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
     //        2.. Remove any list elements that are off screen after applied offset
 
     TextObjList::Node *node = m_textObjList.GetFirst();
+    TextObjList::Node *next;
     while( node ) {
+        next = node->GetNext();
         wxRect *pcurrent = &( node->GetData()->rText );
         pcurrent->Offset( dx, dy );
-
         if( !pcurrent->Intersects( rScreen ) ) {
             m_textObjList.DeleteNode( node );
-
-            node = m_textObjList.GetFirst();
-        } else
-            node = node->GetNext();
+        }
+        node = next;
     }
 }
 
