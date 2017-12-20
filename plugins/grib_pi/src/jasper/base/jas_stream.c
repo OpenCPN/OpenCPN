@@ -212,7 +212,7 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
 	if (buf) {
 		obj->buf_ = (unsigned char *) buf;
 	} else {
-		obj->buf_ = jas_malloc(obj->bufsize_ * sizeof(char));
+		obj->buf_ = jas_malloc(obj->bufsize_);
 		obj->myalloc_ = 1;
 	}
 	if (!obj->buf_) {
@@ -361,18 +361,13 @@ jas_stream_t *jas_stream_tmpfile()
 	}
 	obj->fd = -1;
 	obj->flags = 0;
-	obj->pathname[0] = '\0';
 	stream->obj_ = obj;
 
 	/* Choose a file name. */
-	if (!tmpnam(obj->pathname)) {
-    jas_stream_destroy(stream);
-		return 0;
-  }
+	snprintf(obj->pathname, L_tmpnam, "%s/tmp.XXXXXXXXXX", P_tmpdir);
 
 	/* Open the underlying file. */
-	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
-	  JAS_STREAM_PERMS)) < 0) {
+	if ((obj->fd = mkstemp(obj->pathname)) < 0) {
 		jas_stream_destroy(stream);
 		return 0;
 	}
@@ -384,8 +379,8 @@ jas_stream_t *jas_stream_tmpfile()
 	For example, under Microsoft Windows the unlink operation will fail,
 	since the file is open. */
 	if (unlink(obj->pathname)) {
-		/* We will try unlinking the file again after it is closed. */
-		obj->flags |= JAS_STREAM_FILEOBJ_DELONCLOSE;
+		jas_stream_destroy(stream);
+		return 0;
 	}
 
 	/* Use full buffering. */
@@ -994,8 +989,9 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
 {
 	unsigned char *buf;
 
-	assert(m->buf_);
-	if (!(buf = jas_realloc(m->buf_, bufsize * sizeof(unsigned char)))) {
+	//assert(m->buf_);
+	assert(bufsize >= 0);
+	if (!(buf = jas_realloc(m->buf_, bufsize)) && bufsize) {
 		return -1;
 	}
 	m->buf_ = buf;
