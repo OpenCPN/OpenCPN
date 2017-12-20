@@ -64,9 +64,13 @@ public:
 
     const LLRegion &GetCandidateRegion();
     LLRegion &GetReducedCandidateRegion(double factor);
+    void SetScale(int scale);
+    bool Scale_eq( int b ) const { return abs ( ChartScale - b) <= rounding; }
+    bool Scale_ge( int b ) const { return  Scale_eq( b ) || ChartScale > b; }
     
     int dbIndex;
     int ChartScale;
+    int rounding;
     bool b_include;
     bool b_eclipsed;
     bool b_locked;
