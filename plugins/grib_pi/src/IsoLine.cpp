@@ -171,19 +171,12 @@ double      round_msvc (double x)
 IsoLine::IsoLine(double val, double coeff, double offset, const GribRecord *rec_)
 {
     if(wxGetDisplaySize().x > 0){
-
-#ifdef __WXGTK__
-        GdkScreen *screen = gdk_screen_get_default();
-        m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) / wxGetDisplaySize().x;
-#else
-        m_pixelMM = (double)wxGetDisplaySizeMM().x / wxGetDisplaySize().x;
-#endif
-        
+        m_pixelMM = PlugInGetDisplaySizeMM() / wxGetDisplaySize().x;
         m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
     }
     else
         m_pixelMM = 0.27;               // semi-standard number...
-    
+
     value = val/coeff-offset;
 
     rec = rec_;

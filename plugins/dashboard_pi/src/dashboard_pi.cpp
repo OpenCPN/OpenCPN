@@ -1570,8 +1570,8 @@ void dashboard_pi::ApplyConfig( void )
         } else if( !cont->m_pDashboardWindow ) {
             // A new dashboard is created
             cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
-                    m_pauimgr, this, orient, cont );
-            cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
+                    m_pauimgr, this, cont );
+            cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList, orient );
             bool vertical = orient == wxVERTICAL;
             wxSize sz = cont->m_pDashboardWindow->GetMinSize();
 // Mac has a little trouble with initial Layout() sizing...
@@ -1590,14 +1590,9 @@ void dashboard_pi::ApplyConfig( void )
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
-            if( !cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList ) ) {
-                cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
-                wxSize sz = cont->m_pDashboardWindow->GetMinSize();
-                pane.MinSize( sz ).BestSize( sz ).FloatingSize( sz );
-            }
-            if( cont->m_pDashboardWindow->GetSizerOrientation() != orient ) {
+            if(cont->m_pDashboardWindow->GetSizerOrientation() != orient ||
+               !cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList ))
                 cont->m_pDashboardWindow->ChangePaneOrientation( orient, false );
-            }
         }
     }
     m_pauimgr->Update();
@@ -1900,6 +1895,9 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
         m_pListCtrlDashboards->InsertItem( i, 0 );
         // Using data to store m_Config index for managing deletes
         m_pListCtrlDashboards->SetItemData( i, i );
+
+        if(m_Config[i]->m_pDashboardWindow == parent)
+            m_pListCtrlDashboards->SetItemState(i, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
     }
     m_pListCtrlDashboards->SetColumnWidth( 0, wxLIST_AUTOSIZE );
 
@@ -2146,7 +2144,7 @@ unsigned int AddInstrumentDlg::GetInstrumentAdded()
 
 // wxWS_EX_VALIDATE_RECURSIVELY required to push events to parents
 DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr,
-        dashboard_pi* plugin, int orient, DashboardWindowContainer* mycont ) :
+        dashboard_pi* plugin, DashboardWindowContainer* mycont ) :
         wxWindow( pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE,
                 _T("Dashboard") )
 {
@@ -2154,10 +2152,8 @@ DashboardWindow::DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager
     m_plugin = plugin;
     m_Container = mycont;
 
-//wx2.9      itemBoxSizer = new wxWrapSizer( orient );
-    itemBoxSizer = new wxBoxSizer( orient );
-    SetSizer( itemBoxSizer );
-    Connect( wxEVT_SIZE, wxSizeEventHandler( DashboardWindow::OnSize ), NULL, this );
+    itemSizer = NULL;
+
     Connect( wxEVT_CONTEXT_MENU, wxContextMenuEventHandler( DashboardWindow::OnContextMenu ), NULL,
             this );
     Connect( wxEVT_COMMAND_MENU_SELECTED,
@@ -2171,26 +2167,26 @@ DashboardWindow::~DashboardWindow()
         delete pdic;
     }
 }
-
+#if 0
 void DashboardWindow::OnSize( wxSizeEvent& event )
 {
     event.Skip();
     for( unsigned int i=0; i<m_ArrayOfInstrument.size(); i++ ) {
         DashboardInstrument* inst = m_ArrayOfInstrument.Item(i)->m_pInstrument;
-        inst->SetMinSize( inst->GetSize( itemBoxSizer->GetOrientation(), GetClientSize() ) );
+        inst->SetMinSize( inst->GetSize( itemSizer->GetOrientation(), GetClientSize() ) );
     }
     Layout();
     Refresh();
 }
-
+#endif
 void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 {
     wxMenu* contextMenu = new wxMenu();
 
     wxMenuItem* btnVertical = contextMenu->AppendRadioItem( ID_DASH_VERTICAL, _("Vertical") );
-    btnVertical->Check( itemBoxSizer->GetOrientation() == wxVERTICAL );
+    btnVertical->Check( GetSizerOrientation() == wxVERTICAL );
     wxMenuItem* btnHorizontal = contextMenu->AppendRadioItem( ID_DASH_HORIZONTAL, _("Horizontal") );
-    btnHorizontal->Check( itemBoxSizer->GetOrientation() == wxHORIZONTAL );
+    btnHorizontal->Check( GetSizerOrientation() == wxHORIZONTAL );
     contextMenu->AppendSeparator();
 
     m_plugin->PopulateContextMenu( contextMenu );
@@ -2242,6 +2238,7 @@ void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
 
 void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
 {
+    wxPoint p = m_pauimgr->GetPane( this ).floating_pos;
     m_pauimgr->DetachPane( this );
     SetSizerOrientation( orient );
     bool vertical = orient == wxVERTICAL;
@@ -2252,27 +2249,19 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
     m_pauimgr->AddPane( this, wxAuiPaneInfo().Name( m_Container->m_sName ).Caption(
         m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
         !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(
-        sz ).FloatingSize( sz ).FloatingPosition( 100, 100 ).Float().Show( m_Container->m_bIsVisible ) );
+            sz ).FloatingSize( sz ).FloatingPosition( p ).Float().Show( m_Container->m_bIsVisible ) );
     if ( updateAUImgr ) m_pauimgr->Update();
 }
 
 void DashboardWindow::SetSizerOrientation( int orient )
 {
-    itemBoxSizer->SetOrientation( orient );
-    /* We must reset all MinSize to ensure we start with new default */
-    wxWindowListNode* node = GetChildren().GetFirst();
-    while(node) {
-        node->GetData()->SetMinSize( wxDefaultSize );
-        node = node->GetNext();
-    }
-    SetMinSize( wxDefaultSize );
-    Fit();
-    SetMinSize( itemBoxSizer->GetMinSize() );
+    
+    SetInstrumentList( m_Container->m_aInstrumentList, orient );
 }
 
 int DashboardWindow::GetSizerOrientation()
 {
-    return itemBoxSizer->GetOrientation();
+    return itemSizer->GetRows() == 1 ? wxHORIZONTAL : wxVERTICAL;
 }
 
 bool isArrayIntEqual( const wxArrayInt& l1, const wxArrayOfInstrument &l2 )
@@ -2290,7 +2279,7 @@ bool DashboardWindow::isInstrumentListEqual( const wxArrayInt& list )
     return isArrayIntEqual( list, m_ArrayOfInstrument );
 }
 
-void DashboardWindow::SetInstrumentList( wxArrayInt list )
+void DashboardWindow::SetInstrumentList( wxArrayInt list, int orient )
 {
     /* options
      ID_DBP_D_SOG: config max value, show STW optional
@@ -2305,7 +2294,16 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
 
      */
     m_ArrayOfInstrument.Clear();
-    itemBoxSizer->Clear( true );
+    if(itemSizer)
+        itemSizer->Clear(true);
+
+    itemSizer = new wxFlexGridSizer( orient==wxHORIZONTAL, orient==wxVERTICAL, 0, 5);
+    itemSizer->SetFlexibleDirection(wxBOTH);
+    if(orient==wxHORIZONTAL)
+        itemSizer->AddGrowableRow(0);
+    else
+        itemSizer->AddGrowableCol(0);
+
     for( size_t i = 0; i < list.GetCount(); i++ ) {
         int id = list.Item( i );
         DashboardInstrument *instrument = NULL;
@@ -2558,16 +2556,20 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             instrument->instrumentTypeId = id;
             m_ArrayOfInstrument.Add(
                     new DashboardInstrumentContainer( id, instrument,
-                            instrument->GetCapacity() ) );
-            itemBoxSizer->Add( instrument, 0, wxEXPAND, 0 );
-            if( itemBoxSizer->GetOrientation() == wxHORIZONTAL ) {
-                itemBoxSizer->AddSpacer( 5 );
+                                                      instrument->GetCapacity() ) );
+            itemSizer->Add( instrument, 0, wxEXPAND, 0 );
+            if(instrument->CanExpand()) {
+                if(GetSizerOrientation() == wxVERTICAL)
+                    itemSizer->AddGrowableRow(i);
+                else
+                    itemSizer->AddGrowableCol(i);
             }
         }
     }
+    SetSizer( itemSizer );
     Fit();
     Layout();
-    SetMinSize( itemBoxSizer->GetMinSize() );
+    SetMinSize( itemSizer->GetMinSize() );
 }
 
 void DashboardWindow::SendSentenceToAllInstruments( int st, double value, wxString unit )

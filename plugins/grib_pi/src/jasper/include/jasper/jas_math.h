@@ -79,6 +79,7 @@
 #include	<assert.h>
 #include	<stdio.h>
 #include	<string.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,6 +110,19 @@ extern "C" {
   set to one. */
 #define	JAS_ONES(n) \
   ((1 << (n)) - 1)
+
+inline static int jas_safe_size_mul(size_t x, size_t y, size_t *result)
+{
+        /* Check if overflow would occur */
+        if (x && y > SIZE_MAX / x) {
+                /* Overflow would occur. */
+                return 0;
+        }
+        if (result) {
+                *result = x * y;
+        }
+        return 1;
+}
 
 #ifdef __cplusplus
 }

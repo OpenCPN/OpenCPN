@@ -57,6 +57,12 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
+    m_created = false;
+    xSpot = 0;
+    ySpot = 0;
+
+    m_pTCRolloverWin = NULL;
+
     long wstyle = wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER ;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
@@ -69,7 +75,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     m_x = x;
     m_y = y;
     
-    m_created = false;
     RecalculateSize();
      
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "" ) ), m_position ,
@@ -94,7 +99,6 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
         SetTitle( wxString( _( "Current" ) ) );
     }
 
-    m_pTCRolloverWin = NULL;
 
 
     int sx, sy;
@@ -459,12 +463,13 @@ void TCWin::OnPaint( wxPaintEvent& event )
         dc.SetBrush( *pltgray );
         dc.DrawRectangle( m_graph_rect.x, m_graph_rect.y, m_graph_rect.width, m_graph_rect.height );
 
-        int hour_delta = 1;
         
         //  On some platforms, we cannot draw rotated text.
         //  So, reduce the complexity of horizontal axis time labels
 #ifndef __WXMSW__
-        hour_delta = 4;
+        const int hour_delta = 4;
+#else
+        const int hour_delta = 1;
 #endif        
         
         
@@ -503,7 +508,7 @@ void TCWin::OnPaint( wxPaintEvent& event )
 
         time_t t_now = this_now.GetTicks();       // now, in ticks
 
-        float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600 );
+        float t_ratio = m_graph_rect.width * ( t_now - m_t_graphday_00_at_station ) / ( 25 * 3600.0f );
 
         //must eliminate line outside the graph (in that case put it outside the window)
         int xnow = ( t_ratio < 0 || t_ratio > m_graph_rect.width ) ? -1 : m_graph_rect.x + (int) t_ratio;
@@ -836,6 +841,9 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         SetCursor( *pParent->pCursorCross );
         if( NULL == m_pTCRolloverWin ) {
             m_pTCRolloverWin = new RolloverWin( this, -1, false );
+            // doesn't really work, mouse positions are relative to rollover window
+            // not this window.
+            // effect: hide rollover window if mouse on rollover
             m_pTCRolloverWin->SetMousePropogation( 1 );
             m_pTCRolloverWin->Hide();
         }
@@ -880,9 +888,9 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         // x value is clear...
         //  Find the point in the window that is used for the curev rendering, rounding as necessary
         
-        int idx;
+        int idx = 1; // in case m_graph_rect.width is weird ie ppx never > curs_x
         for( int i = 0; i < 26; i++ ) {
-            float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25 );
+            float ppx = m_graph_rect.x + ( ( i ) * m_graph_rect.width / 25.f );
             if(ppx > curs_x){
                 idx = i;
                 break;
@@ -909,7 +917,6 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
 
     if( m_pTCRolloverWin && m_pTCRolloverWin->IsShown() && !ShowRollover ) {
         m_pTCRolloverWin->Hide();
-        m_pTCRolloverWin = NULL;
     }
 
 }

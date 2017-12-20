@@ -126,7 +126,7 @@ bool GribRecord::GetInterpolatedParameters
     double jiters = rec2.Dj / rec1.Dj;
     if(jiters < 1) {
         jiters = 1/jiters;
-        jm1 = 1, jm2 = iiters;
+        jm1 = 1, jm2 = jiters;
     } else
         jm1 = jiters, jm2 = 1;
 
@@ -339,6 +339,23 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
     }
 
     return rec;
+}
+
+void GribRecord::Polar2UV(GribRecord *pDIR, GribRecord *pSPEED)
+{
+    if (pDIR->data && pSPEED->data && pDIR->Ni == pSPEED->Ni && pDIR->Nj == pSPEED->Nj) {
+        int size = pDIR->Ni*pDIR->Nj;
+        for (int i=0; i<size; i++) {
+            if(pDIR->data[i] != GRIB_NOTDEF && pSPEED->data[i] != GRIB_NOTDEF) {
+                double dir = pDIR->data[i];
+                double speed = pSPEED->data[i];
+                pDIR->data[i] = -speed * sin ( dir *M_PI/180.);
+                pSPEED->data[i] = -speed * cos ( dir *M_PI/180.);
+            }
+        }
+        pDIR->dataType = GRB_WIND_VX;
+        pSPEED->dataType = GRB_WIND_VY;
+    }
 }
 
 void GribRecord::Substract(const GribRecord &rec, bool pos)

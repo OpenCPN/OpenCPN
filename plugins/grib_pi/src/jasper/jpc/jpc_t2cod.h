@@ -129,10 +129,10 @@ typedef struct {
 	jpc_pirlvl_t *pirlvls;
 
 	/* The horizontal sampling period. */
-	int hsamp;
+	uint_fast32_t hsamp;
 
 	/* The vertical sampling period. */
-	int vsamp;
+	uint_fast32_t vsamp;
 
 } jpc_picomp_t;
 
@@ -171,32 +171,32 @@ typedef struct {
 	int lyrno;
 
 	/* The x-coordinate of the current position. */
-	int x;
+	uint_fast32_t x;
 
 	/* The y-coordinate of the current position. */
-	int y;
+	uint_fast32_t y;
 
 	/* The horizontal step size. */
-	int xstep;
+	uint_fast32_t xstep;
 
 	/* The vertical step size. */
-	int ystep;
+	uint_fast32_t ystep;
 
 	/* The x-coordinate of the top-left corner of the tile on the reference
 	  grid. */
-	int xstart;
+	uint_fast32_t xstart;
 
 	/* The y-coordinate of the top-left corner of the tile on the reference
 	  grid. */
-	int ystart;
+	uint_fast32_t ystart;
 
 	/* The x-coordinate of the bottom-right corner of the tile on the
 	  reference grid (plus one). */
-	int xend;
+	uint_fast32_t xend;
 
 	/* The y-coordinate of the bottom-right corner of the tile on the
 	  reference grid (plus one). */
-	int yend;
+	uint_fast32_t yend;
 
 	/* The current progression change. */
 	jpc_pchg_t *pchg;

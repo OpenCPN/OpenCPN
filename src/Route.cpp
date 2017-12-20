@@ -85,7 +85,6 @@ Route::Route()
     
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
     m_TimeDisplayFormat = RTE_TIME_DISP_PC;
-    m_bisTrack = false;
 }
 
 Route::~Route()

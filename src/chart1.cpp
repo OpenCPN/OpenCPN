@@ -581,9 +581,9 @@ int                       g_nTrackPrecision;
 int                       g_total_NMEAerror_messages;
 
 int                       g_cm93_zoom_factor;
-CM93DSlide                *pCM93DetailSlider;
-bool                      g_bShowCM93DetailSlider;
-int                       g_cm93detail_dialog_x, g_cm93detail_dialog_y;
+PopUpDSlide                *pPopupDetailSlider;
+bool                      g_bShowDetailSlider;
+int                       g_detailslider_dialog_x, g_detailslider_dialog_y;
 
 bool                      g_bUseGreenShip;
 
@@ -1500,7 +1500,7 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-#if defined(__WXGTK__) && defined(__arm__) && defined(ocpnUSE_GLES)
+#if defined(__WXGTK__)  && defined(ocpnUSE_GLES) && defined(__ARM_ARCH)
     // There is a race condition between cairo which is used for text rendering
     // by gtk and EGL which without the below code causes a bus error and the
     // program aborts before startup
@@ -5526,7 +5526,10 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
     }
 */
     if( !cc1->GetQuiltMode() ) {
-        cc1->SetViewPoint( lat, lon, scale, Current_Ch->GetChartSkew() * PI / 180., cc1->GetVPRotation() );
+        double skew = 0;
+        if(Current_Ch)
+            skew = Current_Ch->GetChartSkew() * PI / 180.;
+        cc1->SetViewPoint( lat, lon, scale, skew, cc1->GetVPRotation() );
     } else {
         cc1->SetViewPoint( lat, lon, scale, 0, cc1->GetVPRotation() );
     }

@@ -238,16 +238,11 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
 #endif    
 
     if(wxGetDisplaySize().x > 0){
-#ifdef __WXGTK__
-        GdkScreen *screen = gdk_screen_get_default();
-        m_pixelMM = (double)gdk_screen_get_monitor_width_mm(screen, 0) / wxGetDisplaySize().x;
-#else
-        m_pixelMM = (double)wxGetDisplaySizeMM().x / wxGetDisplaySize().x;
-#endif
-        m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
+         m_pixelMM = PlugInGetDisplaySizeMM() / wxGetDisplaySize().x;
+         m_pixelMM = wxMax(.02, m_pixelMM);          // protect against bad data
     }
     else
-        m_pixelMM = 0.27;               // semi-standard number...
+          m_pixelMM = 0.27;               // semi-standard number...
 
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
@@ -276,13 +271,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     int pointerLength = windArrowSize / 3;
 
     // the barbed arrows
-    for(i=1; i<14; i++) {
-        LineBuffer &arrow = m_WindArrowCache[i];
-
-        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
-        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
-        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
-    }
 
     int featherPosition = windArrowSize / 6;
     
@@ -337,6 +325,14 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUICtrlBar &dlg )
     // > 90 ktn
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition, lgrande );
     m_WindArrowCache[13].pushTriangle( b1 - featherPosition*3, lgrande );
+
+    for(i=1; i<14; i++) {
+        LineBuffer &arrow = m_WindArrowCache[i];
+
+        arrow.pushLine( dec, 0, dec + windArrowSize, 0 );   // hampe
+        arrow.pushLine( dec, 0, dec + pointerLength, pointerLength/2 );    // flèche
+        arrow.pushLine( dec, 0, dec + pointerLength, -(pointerLength/2) );   // flèche
+    }
 
     for(i=0; i<14; i++)
         m_WindArrowCache[i].Finalize();
@@ -535,6 +531,12 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     return true;
 }
 
+// isClearSky checks that there is no rain or clouds at all.
+static inline bool isClearSky(int settings, double v) {
+    return ((settings == GribOverlaySettings::PRECIPITATION) ||
+            (settings == GribOverlaySettings::CLOUD)) && v < 0.01;
+}
+
 #ifdef ocpnUSE_GL
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
@@ -595,27 +597,17 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
             double lat, lon;
             GetCanvasLLPix( &uvp, p, &lat, &lon );
             double v = pGR->getInterpolatedValue(lon, lat);
-            unsigned char r, g, b, a;
+            // set full transparency if not defined or no rain or no clouds at all
+            unsigned char r = 255, g = 255, b = 255, a = 0;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
-                //set full transparency if no rain or no clouds at all
-                if (( settings == GribOverlaySettings::PRECIPITATION || settings == GribOverlaySettings::CLOUD ) && v < 0.01) 
-                {
-                    r = g = b = 255;
-                    a = 0;
-                }
-                else {
+                if (!isClearSky(settings, v))  {
                     a = m_Settings.m_iOverlayTransparency;
                     wxColour c = GetGraphicColor(settings, v);
                     r = c.Red();
                     g = c.Green();
                     b = c.Blue();
                 }
-            } else {
-                r = 255;
-                g = 255;
-                b = 255;
-                a = 0;
             }
 
             int doff = 4*(jpix*width + ipix);
@@ -696,8 +688,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 wxColour c = GetGraphicColor(settings, v);
 
                 //set full transparency if no rain or no clouds at all
-                unsigned char a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 :
-                            m_Settings.m_iOverlayTransparency;
+                unsigned char a = isClearSky(settings, v) ? 0 : m_Settings.m_iOverlayTransparency;
 
                 unsigned char r = c.Red();
                 unsigned char g = c.Green();
@@ -2082,6 +2073,10 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, 2 );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
@@ -2096,6 +2091,10 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
         wxPen pen( arrowColor, arrowWidth );
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
+#if wxUSE_GRAPHICS_CONTEXT
+		if (m_hiDefGraphics && m_gdc)
+			m_gdc->SetPen(pen);
+#endif
     } else {
         glColor3ub(arrowColor.Red(), arrowColor.Green(), arrowColor.Blue());
         glLineWidth(arrowWidth);
@@ -2140,10 +2139,10 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
 
     ang += rotate_angle;
 
-    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south);
+    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south, m_bDrawBarbedArrowHead);
 }
 
-void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south)
+void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south, bool head)
 {
     // transform vertexes by angle
     float six = sinf( ang ), cox = cosf( ang ), siy, coy;
@@ -2153,16 +2152,18 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
         siy = six, coy = cox;
 
     float vertexes[40];
-
-    wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)buffer.count*4);
-    for(int i=0; i < 2*buffer.count; i++) {
+    int count = buffer.count;
+    if (!head)
+        count -= 2;
+    wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)count*4);
+    for(int i=0; i < 2*count; i++) {
         float *k = buffer.lines + 2*i;
         vertexes[2*i+0] = k[0]*cox + k[1]*siy + x;
         vertexes[2*i+1] = k[0]*six - k[1]*coy + y;
     }
 
     if( m_pdc ) {
-        for(int i=0; i < buffer.count; i++) {
+        for(int i=0; i < count; i++) {
             float *l = vertexes + 4*i;
 #if wxUSE_GRAPHICS_CONTEXT
             if( m_hiDefGraphics && m_gdc )
@@ -2174,7 +2175,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
     } else {                       // OpenGL mode
 #ifdef ocpnUSE_GL
         glVertexPointer(2, GL_FLOAT, 2*sizeof(float), vertexes);
-        glDrawArrays(GL_LINES, 0, 2*buffer.count);
+        glDrawArrays(GL_LINES, 0, 2*count);
 #endif
     }
 }

@@ -5,6 +5,11 @@
  * All rights reserved.
  */
 
+/*
+ * Modified by Andrey Kiselev <dron@remotesensing.org> to handle UUID
+ * box properly.
+ */
+
 /* __START_OF_JASPER_LICENSE__
  * 
  * JasPer License Version 2.0
@@ -130,6 +135,9 @@ static void jp2_pclr_destroy(jp2_box_t *box);
 static int jp2_pclr_getdata(jp2_box_t *box, jas_stream_t *in);
 static int jp2_pclr_putdata(jp2_box_t *box, jas_stream_t *out);
 static void jp2_pclr_dumpdata(jp2_box_t *box, FILE *out);
+static void jp2_uuid_destroy(jp2_box_t *box);
+static int jp2_uuid_getdata(jp2_box_t *box, jas_stream_t *in);
+static int jp2_uuid_putdata(jp2_box_t *box, jas_stream_t *out);
 
 /******************************************************************************\
 * Local data.
@@ -167,7 +175,7 @@ jp2_boxinfo_t jp2_boxinfos[] = {
 	{JP2_BOX_XML, "XML", 0,
 	  {0, 0, 0, 0, 0}},
 	{JP2_BOX_UUID, "UUID", 0,
-	  {0, 0, 0, 0, 0}},
+	  {0, jp2_uuid_destroy, jp2_uuid_getdata, jp2_uuid_putdata, 0}},
 	{JP2_BOX_UINF, "UINF", JP2_BOX_SUPER,
 	  {0, 0, 0, 0, 0}},
 	{JP2_BOX_ULST, "ULST", 0,
@@ -375,7 +383,7 @@ static int jp2_bpcc_getdata(jp2_box_t *box, jas_stream_t *in)
 	jp2_bpcc_t *bpcc = &box->data.bpcc;
 	unsigned int i;
 	bpcc->numcmpts = box->datalen;
-	if (!(bpcc->bpcs = jas_malloc(bpcc->numcmpts * sizeof(uint_fast8_t)))) {
+	if (!(bpcc->bpcs = jas_alloc2(bpcc->numcmpts, sizeof(uint_fast8_t)))) {
 		return -1;
 	}
 	for (i = 0; i < bpcc->numcmpts; ++i) {
@@ -419,7 +427,7 @@ static int jp2_colr_getdata(jp2_box_t *box, jas_stream_t *in)
 		break;
 	case JP2_COLR_ICC:
 		colr->iccplen = box->datalen - 3;
-		if (!(colr->iccp = jas_malloc(colr->iccplen * sizeof(uint_fast8_t)))) {
+		if (!(colr->iccp = jas_alloc2(colr->iccplen, sizeof(uint_fast8_t)))) {
 			return -1;
 		}
 		if (jas_stream_read(in, colr->iccp, colr->iccplen) != colr->iccplen) {
@@ -457,7 +465,7 @@ static int jp2_cdef_getdata(jp2_box_t *box, jas_stream_t *in)
 	if (jp2_getuint16(in, &cdef->numchans)) {
 		return -1;
 	}
-	if (!(cdef->ents = jas_malloc(cdef->numchans * sizeof(jp2_cdefchan_t)))) {
+	if (!(cdef->ents = jas_alloc2(cdef->numchans, sizeof(jp2_cdefchan_t)))) {
 		return -1;
 	}
 	for (channo = 0; channo < cdef->numchans; ++channo) {
@@ -770,7 +778,7 @@ static int jp2_cmap_getdata(jp2_box_t *box, jas_stream_t *in)
 	unsigned int i;
 
 	cmap->numchans = (box->datalen) / 4;
-	if (!(cmap->ents = jas_malloc(cmap->numchans * sizeof(jp2_cmapent_t)))) {
+	if (!(cmap->ents = jas_alloc2(cmap->numchans, sizeof(jp2_cmapent_t)))) {
 		return -1;
 	}
 	for (i = 0; i < cmap->numchans; ++i) {
@@ -832,10 +840,10 @@ static int jp2_pclr_getdata(jp2_box_t *box, jas_stream_t *in)
 		return -1;
 	}
 	lutsize = pclr->numlutents * pclr->numchans;
-	if (!(pclr->lutdata = jas_malloc(lutsize * sizeof(int_fast32_t)))) {
+	if (!(pclr->lutdata = jas_alloc2(lutsize, sizeof(int_fast32_t)))) {
 		return -1;
 	}
-	if (!(pclr->bpc = jas_malloc(pclr->numchans * sizeof(uint_fast8_t)))) {
+	if (!(pclr->bpc = jas_alloc2(pclr->numchans, sizeof(uint_fast8_t)))) {
 		return -1;
 	}
 	for (i = 0; i < pclr->numchans; ++i) {
@@ -878,6 +886,56 @@ static void jp2_pclr_dumpdata(jp2_box_t *box, FILE *out)
 			fprintf(out, "LUT[%d][%d]=%" PRIdFAST32 "\n", i, j, pclr->lutdata[i * pclr->numchans + j]);
 		}
 	}
+}
+
+static void jp2_uuid_destroy(jp2_box_t *box)
+{
+	jp2_uuid_t *uuid = &box->data.uuid;
+	if (uuid->data)
+	{
+	    jas_free(uuid->data);
+	    uuid->data = NULL;
+	}
+}
+
+static int jp2_uuid_getdata(jp2_box_t *box, jas_stream_t *in)
+{
+	jp2_uuid_t *uuid = &box->data.uuid;
+	int i;
+	
+	for (i = 0; i < 16; i++)
+	{
+	    if (jp2_getuint8(in, &uuid->uuid[i]))
+		return -1;
+	}
+	
+	uuid->datalen = box->datalen - 16;
+	uuid->data = jas_malloc(uuid->datalen * sizeof(uint_fast8_t));
+	for (i = 0; i < uuid->datalen; i++)
+	{
+	    if (jp2_getuint8(in, &uuid->data[i]))
+		return -1;
+	}
+	return 0;
+}
+
+static int jp2_uuid_putdata(jp2_box_t *box, jas_stream_t *out)
+{
+	jp2_uuid_t *uuid = &box->data.uuid;
+	int i;
+	
+	for (i = 0; i < 16; i++)
+	{
+	    if (jp2_putuint8(out, uuid->uuid[i]))
+		return -1;
+	}
+	
+	for (i = 0; i < uuid->datalen; i++)
+	{
+	    if (jp2_putuint8(out, uuid->data[i]))
+		return -1;
+	}
+	return 0;
 }
 
 static int jp2_getint(jas_stream_t *in, int s, int n, int_fast32_t *val)

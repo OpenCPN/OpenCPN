@@ -50,7 +50,6 @@ public:
     ~DashboardInstrument_FromOwnship(){}
 
     void SetData(int st, double data, wxString unit);
-    wxSize GetSize( int orient, wxSize hint );
       
 protected:
     wxString          m_data1;

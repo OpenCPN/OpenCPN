@@ -125,6 +125,7 @@ TrackPoint::TrackPoint(double lat, double lon)
 {
     m_lat = lat;
     m_lon = lon;
+    m_CreateTimeX = wxDateTime::Now();
 }
 
 // Copy Constructor
@@ -205,7 +206,6 @@ Track::Track()
 
     m_HyperlinkList = new HyperlinkList;
     m_HighlightedTrackPoint = -1;
-    m_bisTrack = true;
 }
 
 Track::~Track( void )

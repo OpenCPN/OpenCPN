@@ -73,7 +73,7 @@ extern int   m_DialogStyle;
 //---------------------------------------------------------------------------------------------------------
 
 grib_pi::grib_pi(void *ppimgr)
-    :opencpn_plugin_112(ppimgr)
+    :opencpn_plugin_115(ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
@@ -252,6 +252,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
     Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
+    Pref->m_cbDrawBarbedArrowHead->SetValue(m_bDrawBarbedArrowHead);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
@@ -262,8 +263,10 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
+         m_bDrawBarbedArrowHead = Pref->m_cbDrawBarbedArrowHead->GetValue();
+
           if( m_pGRIBOverlayFactory )
-              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
 
          int updatelevel = 0;
 
@@ -390,7 +393,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribCtrlBar );
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
         m_pGRIBOverlayFactory->SetParentSize( m_display_width, m_display_height);
-        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors, m_bDrawBarbedArrowHead );
 
         m_pGribCtrlBar->OpenFile( m_bLoadLastOpenFile == 0 );
 
@@ -599,7 +602,8 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0 );
     pConf->Read ( _T("OpenFileOption" ), &m_bStartOptions, 1 );
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
-    pConf->Read ( _T( "GRIBUseGradualColors" ),     &m_bGRIBUseGradualColors, 0 );
+    pConf->Read ( _T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0 );
+    pConf->Read ( _T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1 );
 
     pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
@@ -636,6 +640,7 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
+    pConf->Write ( _T( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead );
 
     pConf->Write ( _T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x );
     pConf->Write ( _T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y );

@@ -51,7 +51,6 @@ public:
 
     ~DashboardInstrument_Clock(void){}
 
-    wxSize GetSize( int orient, wxSize hint );
     void SetData(int, double, wxString);
     virtual void SetUtcTime(wxDateTime value);
     wxString GetDisplayTime( wxDateTime UTCtime );
@@ -68,7 +67,6 @@ public:
     DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title);
     ~DashboardInstrument_Moon(){}
 
-    wxSize GetSize( int orient, wxSize hint );
     void SetData( int, double, wxString );
     void Draw(wxGCDC* dc);
     void SetUtcTime(wxDateTime value);
@@ -87,7 +85,6 @@ public:
 
     ~DashboardInstrument_Sun(){}
 
-    wxSize GetSize( int orient, wxSize hint );
     void Draw(wxGCDC* dc);
     void SetData( int st, double data, wxString unit );
     void SetUtcTime( wxDateTime value );

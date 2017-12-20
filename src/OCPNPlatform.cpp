@@ -1588,7 +1588,9 @@ double  OCPNPlatform::GetDisplaySizeMM()
     
 #ifdef __WXGTK__
     GdkScreen *screen = gdk_screen_get_default();
-    ret = (double)gdk_screen_get_monitor_width_mm(screen, 0);
+    double gdk_monitor_mm = gdk_screen_get_monitor_width_mm(screen, 0);
+    if(gdk_monitor_mm > 0) // if gdk detects a valid screen width (returns -1 on raspberry pi)
+        ret = gdk_monitor_mm;
 #endif    
     
     

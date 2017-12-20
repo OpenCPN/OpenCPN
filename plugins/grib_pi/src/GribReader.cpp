@@ -54,7 +54,6 @@ GribReader::~GribReader()
     if (file != NULL) 
     {
         zu_close(file);
-        free(file);
         file = NULL;
     }
 }
@@ -102,13 +101,20 @@ void GribReader::storeRecordInMap(GribRecord *rec)
 }
 
 //---------------------------------------------------------------------------------
+static bool RecordIsWind(GribRecord *rec)
+{
+  return rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY ||
+         rec->getDataType()==GRB_WIND_DIR || rec->getDataType()==GRB_WIND_SPEED;
+}
+
 void GribReader::readAllGribRecords()
 {
     //--------------------------------------------------------
     // Lecture de l'ensemble des GribRecord du fichier
     // et stockage dans les listes appropriées.
     //--------------------------------------------------------
-    GribRecord *rec;
+    GribRecord *rec = 0;
+    GribRecord *prevDataSet = 0;
     int id = 0;
     time_t firstdate = -1;
     bool b_EOF;
@@ -131,8 +137,16 @@ void GribReader::readAllGribRecords()
             }
         }
         else {
-            is_v2 = false;
-            rec = new GribV2Record(file, id);
+            GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
+            if (rec2 && rec2->hasMoreDataSet())  {
+                rec = static_cast<GribV2Record *>(rec)->GribV2NextDataSet(file, id);
+                if (prevDataSet != 0) {
+                    delete prevDataSet;
+                }
+            }
+            else {
+                rec = new GribV2Record(file, id);
+            }
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV1Record(file, id);
@@ -143,202 +157,125 @@ void GribReader::readAllGribRecords()
         if (rec->isOk() == false)
         {
             delete rec;
-            rec = NULL;
+            break;
         }
-        else
+        b_EOF = rec->isEof();
+
+        prevDataSet = 0;
+        if (!rec->isDataKnown())
         {
-              b_EOF = rec->isEof();
-
-        	if (!rec->isDataKnown())
-        	{
-        	    delete rec;
-        	}
-        	else
-        	{
-				ok = true;   // au moins 1 record ok
-
-				if (firstdate== -1)
-					firstdate = rec->getRecordCurrentDate();
-
-/*
-				if (//-----------------------------------------
-						(rec->getDataType()==GRB_PRESSURE
-							&& rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| ( (rec->getDataType()==GRB_TMIN || rec->getDataType()==GRB_TMAX)
-							&& rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_TEMP
-							&& rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2)
-					|| (rec->getDataType()==GRB_TEMP
-							&& rec->getLevelType()==LV_ISOBARIC
-							&& (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-					//-----------------------------------------
-					|| ( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-							&& rec->getLevelType()==LV_ABOV_GND
-							&& rec->getLevelValue()==10)
-					|| ( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-							&& rec->getLevelType()==LV_ISOBARIC
-							&& (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_HUMID_SPEC
-							&& rec->getLevelType()==LV_ISOBARIC
-							&& (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_GEOPOT_HGT
-							&& rec->getLevelType()==LV_ISOTHERM0 && rec->getLevelValue()==0)
-					|| (rec->getDataType()==GRB_GEOPOT_HGT
-							&& rec->getLevelType()==LV_ISOBARIC
-							&& (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_PRECIP_TOT
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_PRECIP_RATE
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_SNOW_DEPTH
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_SNOW_CATEG
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_FRZRAIN_CATEG
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_CLOUD_TOT
-							&& rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_HUMID_REL
-							&& rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_TPOT
-							&& rec->getLevelType()==LV_SIGMA && rec->getLevelValue()==9950)
-					//-----------------------------------------
-					|| (rec->getDataType()==GRB_CAPE
-							&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-
-				)
-
-
-*/
-
-                        if (//-----------------------------------------
-                            (rec->getDataType()==GRB_PRESSURE
-                            && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
-
-                            || ( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-                            && rec->getLevelType()==LV_ABOV_GND
-                            && rec->getLevelValue()==10)
-
-                            || (( rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)//wind at x hpa
-							&& rec->getLevelType()==LV_ISOBARIC
-                            && (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-                            )//----------------------------------------
-
-                            storeRecordInMap(rec);
-
-                        else if( (rec->getDataType()==GRB_WIND_GUST
-                            && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
-                            storeRecordInMap(rec);
-
-                        else if( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
-                                  && rec->getLevelType()==LV_GND_SURF)
-                              storeRecordInMap(rec);
-
-                        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at 2m
-                            && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2 )
-                            storeRecordInMap(rec);
-
-                        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at x hpa
-                            && rec->getLevelType()==LV_ISOBARIC
-                            && (   rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300 ) )
-                            storeRecordInMap(rec);
-
-                        else if(rec->getDataType()==GRB_PRECIP_TOT               //total rainfall
-                            && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0 )
-                            storeRecordInMap(rec);
-
-                        else if (rec->getDataType()==GRB_PRECIP_RATE
-				&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
-                            storeRecordInMap(rec);
-
-                        else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
-                            && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
-                            storeRecordInMap(rec);
-
-                        else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
-                              storeRecordInMap(rec);
-
-                        else if( rec->getDataType() == GRB_WVPER )               // Waves period
-                              storeRecordInMap(rec);
-
-                        else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
-                              storeRecordInMap(rec);
-
-                        else if( rec->getDataType() == GRB_WVHGT )               // Wave Height
-                              storeRecordInMap(rec);
-                        
-                        else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
-                              storeRecordInMap(rec);
-
-                        else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
-                              storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
-
-                        else if( (rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD))          // rtofs model sea current current
-                              storeRecordInMap(rec);
-
-                        else if(rec->getDataType() == GRB_CAPE && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) //Potential energy
-                            storeRecordInMap(rec);
-
-                        else if( (rec->getDataType()==GRB_GEOPOT_HGT                                       //geopotentiel geight at x hpa
-							&& rec->getLevelType()==LV_ISOBARIC)
-                            && (rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300) )
-                            storeRecordInMap(rec);
-
-                        else if( (rec->getDataType()==GRB_HUMID_REL                          //relative humidity at x hpa
-                            && rec->getLevelType()==LV_ISOBARIC)
-                            && (rec->getLevelValue()==850
-								|| rec->getLevelValue()==700
-								|| rec->getLevelValue()==500
-								|| rec->getLevelValue()==300) )
-                            storeRecordInMap(rec);
-
-                        else
-                        {
-#if 1
-                              fprintf(stderr,
-                                      "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
-                                      rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
-                              rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
-                              );
-#endif
-                              delete rec;
-                        }
-                  }
+            GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
+            if ( rec2 == 0 || rec2->hasMoreDataSet()) {
+                delete rec;
+                rec = 0;
+            }
+            else if (is_v2) {
+                // must delete it in the next iteration
+                prevDataSet = rec;
+            }
+            continue;
         }
-    } while (rec != NULL &&  !b_EOF);
+        ok = true;   // au moins 1 record ok
+
+        if (firstdate== -1)
+	    firstdate = rec->getRecordCurrentDate();
+
+        if ((rec->getDataType()==GRB_PRESSURE && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
+                    || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
+                    || ( RecordIsWind(rec) && rec->getLevelType()==LV_ISOBARIC //wind at x hpa
+                    && (  rec->getLevelValue()==850
+			|| rec->getLevelValue()==700
+			|| rec->getLevelValue()==500
+			|| rec->getLevelValue()==300 ) ) )
+            storeRecordInMap(rec);
+
+        else if( (rec->getDataType()==GRB_WIND_GUST
+                    && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
+            storeRecordInMap(rec);
+
+        else if( RecordIsWind(rec) && rec->getLevelType()==LV_GND_SURF)
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at 2m
+                    && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2 )
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at x hpa
+                    && rec->getLevelType()==LV_ISOBARIC
+                    && ( rec->getLevelValue()==850
+			|| rec->getLevelValue()==700
+			|| rec->getLevelValue()==500
+			|| rec->getLevelValue()==300 ) )
+            storeRecordInMap(rec);
+
+        else if(rec->getDataType()==GRB_PRECIP_TOT               //total rainfall
+                    && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0 )
+            storeRecordInMap(rec);
+
+        else if (rec->getDataType()==GRB_PRECIP_RATE
+			&& rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0)
+            storeRecordInMap(rec);
+
+        else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+                    && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType() == GRB_WVPER )               // Waves period
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
+            storeRecordInMap(rec);
+
+        else if( rec->getDataType() == GRB_WVHGT )               // Wave Height
+            storeRecordInMap(rec);
+                
+        else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
+            storeRecordInMap(rec);
+
+        else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
+            storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
+
+        else if( (rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD))          // rtofs model sea current current
+            storeRecordInMap(rec);
+
+        else if(rec->getDataType() == GRB_CAPE && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) //Potential energy
+            storeRecordInMap(rec);
+
+        else if( (rec->getDataType()==GRB_GEOPOT_HGT && rec->getLevelType()==LV_ISOBARIC) //geopotentiel geight at x hpa
+                    && (rec->getLevelValue()==850 
+			|| rec->getLevelValue()==700
+			|| rec->getLevelValue()==500
+			|| rec->getLevelValue()==300) )
+            storeRecordInMap(rec);
+
+        else if( (rec->getDataType()==GRB_HUMID_REL && rec->getLevelType()==LV_ISOBARIC) //relative humidity at x hpa
+                    && (rec->getLevelValue()==850
+			|| rec->getLevelValue()==700
+			|| rec->getLevelValue()==500
+			|| rec->getLevelValue()==300) )
+            storeRecordInMap(rec);
+
+        else {
+            GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
+#if 0
+            fprintf(stderr,
+                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
+                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
+                       rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
+                );
+#endif
+            if ( rec2 == 0 || !rec2->hasMoreDataSet()) {
+                delete rec;
+                rec = 0;
+            }
+            else if (is_v2) {
+                prevDataSet = rec;
+            }
+        }
+    } while (!b_EOF);
 }
 
 
@@ -404,101 +341,6 @@ void  GribReader::copyMissingWaveRecords (int dataType, int levelType, int level
 		}
 	}
 }
-
-#if 0
-bool GribReader::get_gribY(GribRecord *&ret, int dataType, int levelType, int levelValue, time_t date)
-{
-    switch (dataType) {
-    case GRB_WIND_VX:
-        ret = getGribRecord( GRB_WIND_VY, levelType, levelValue, date );
-        if (ret == 0 || ret->isOk() == false)
-            return false;
-        break;
-    case GRB_UOGRD:
-        ret = getGribRecord( GRB_VOGRD, levelType, levelValue, date );
-        if (ret == 0 || ret->isOk() == false)
-            return false;
-        break;
-    }
-    return true;
-}
-
-void  GribReader::InterpolateMissingRecords (int dataType, int levelType, int levelValue)
-{
-	std::set<time_t>  setdates = getListDates();
-	std::set<time_t>::iterator itd, itd2;
-    GribRecord *REC1 = 0;
-    GribRecord *REC1Y = 0;
-    time_t date1;
-    itd=setdates.begin();
-	while (itd!=setdates.end())
-	{
-		time_t date = *itd;
-		GribRecord *rec = getGribRecord( dataType, levelType, levelValue, date );
-		if ( rec && rec->isOk() ) {
-		    REC1 = 0;
-		    if (get_gribY(REC1Y, dataType, levelType, levelValue, date) == true)
-		    {
-    		    // there's a valid record or no need for one
-	    	    REC1  = rec;
-		        date1 = date;
-		        itd ++;
-		        continue;
-            }
-		}
-		else if (REC1 == 0 || REC1->isOk() == false)
-		{
-		    // no record but no first record
-		    itd++;
-		    continue;
-        }
-        // the record is empty
-		itd2 = itd;
-        time_t date2 = *itd2;
-        itd2 ++;	// next date
-        int cnt = 2;
-		while (itd2 != setdates.end()) {
-			GribRecord *rec2 = getGribRecord( dataType, levelType, levelValue, *itd2 );
-			GribRecord *rec2y;
-			if (rec2 && rec2->isOk() ) {
-		        if (get_gribY(rec2y, dataType, levelType, levelValue, *itd2) == true)
-		        {
-		            double interp = 1./(double)cnt;
-		            double j = 1.;
-		            for (; itd != itd2; itd++)
-		            {
-    		            GribRecord *r2y = 0, *ret;
-	    	            switch (dataType) { 
-		                case GRB_WIND_VX:
-		                case GRB_UOGRD:
-		                    ret = GribRecord::Interpolated2DRecord(r2y, *REC1, *REC1Y, *rec2, *rec2y, interp*j);
-		                    break;
-                        default:
-                            ret = GribRecord::InterpolatedRecord(*REC1, *rec2, interp*j);
-                            break;
-                        }
-                        if (ret) {
-					        ret->setRecordCurrentDate (*itd);
-					        storeRecordInMap (ret);
-					        if (r2y) {
-					            r2y->setRecordCurrentDate (*itd);
-					            storeRecordInMap (r2y);
-                            }
-                        }
-                        j += 1.;
-
-                    }
-					break;
-                }
-			}
-			cnt++;
-			itd2 ++;	// next date
-		}
-		if (itd2 == setdates.end())
-		    break;
-	}
-}
-#endif
 
 void  GribReader::computeAccumulationRecords (int dataType, int levelType, int levelValue)
 {
@@ -917,7 +759,6 @@ void GribReader::openFile(const wxString fname)
     if (file != NULL) 
     {
         zu_close(file);
-        free(file);
         file = NULL;
     }
 }
