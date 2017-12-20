@@ -91,7 +91,7 @@ int AIS_Bitstring::GetInt(int sp, int len, bool signed_flag)
 int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 {
     //char temp_str[85];
-    char *temp_str = new char[max_len + 1];
+    char *temp_str = dest;
 
     char acc = 0;
     int s0p = sp-1;                          // to zero base
@@ -124,12 +124,6 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 
     temp_str[k] = 0;
 
-    int copy_len = wxMin((int)strlen(temp_str), max_len);
-    strncpy(dest, temp_str, copy_len);
-    dest[k] = 0;
-
-    delete [] temp_str;
-
-    return copy_len;
+    return k;
 }
 
