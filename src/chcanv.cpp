@@ -8786,16 +8786,18 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     int val;
     int index;
-    pmap = (int *) calloc( imgs.GetWidth() * imgs.GetHeight() * sizeof(int), 1 );
+    const int w = imgs.GetWidth();
+    const int h = imgs.GetHeight();
+    pmap = (int *) calloc( w *  h * sizeof(int), 1 );
     //  Create emboss map by differentiating the emboss image
     //  and storing integer results in pmap
     //  n.b. since the image is B/W, it is sufficient to check
     //  one channel (i.e. red) only
-    for( int y = 1; y < imgs.GetHeight() - 1; y++ ) {
-        for( int x = 1; x < imgs.GetWidth() - 1; x++ ) {
+    for( int y = 1; y < h - 1; y++ ) {
+        for( int x = 1; x < w - 1; x++ ) {
             val = img.GetRed( x + 1, y + 1 ) - img.GetRed( x - 1, y - 1 );  // range +/- 256
             val = (int) ( val * val_factor );
-            index = ( y * imgs.GetWidth() ) + x;
+            index = ( y * w ) + x;
             pmap[index] = val;
 
         }
@@ -8803,8 +8805,8 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     emboss_data *pret = new emboss_data;
     pret->pmap = pmap;
-    pret->width = imgs.GetWidth();
-    pret->height = imgs.GetHeight();
+    pret->width = w;
+    pret->height = h;
 
     return pret;
 }

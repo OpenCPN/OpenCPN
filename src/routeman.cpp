@@ -1500,45 +1500,48 @@ MarkIcon *WayPointman::ProcessLegacyIcon( wxString fileName, const wxString & ke
 
 wxRect WayPointman::CropImageOnAlpha(wxImage &image)
 {
-    wxRect rv = wxRect(0,0, image.GetWidth(), image.GetHeight());
+    const int w = image.GetWidth();
+    const int h = image.GetHeight();
+
+    wxRect rv = wxRect(0,0, w, h);
     if(!image.HasAlpha())
         return rv;
     
     unsigned char *pAlpha = image.GetAlpha();
     
-    int leftCrop = image.GetWidth();
-    int topCrop = image.GetHeight();
-    int rightCrop = image.GetWidth();
-    int bottomCrop = image.GetHeight();
+    int leftCrop = w;
+    int topCrop = h;
+    int rightCrop = w;
+    int bottomCrop = h;
     
     // Horizontal
-    for(int i=0 ; i < image.GetHeight() ; i++){
-        int lineStartIndex = i*image.GetWidth();
+    for(int i=0 ; i < h ; i++){
+        int lineStartIndex = i *w;
         
         int j = 0;
-        while((j < image.GetWidth()) && (pAlpha[lineStartIndex+j] == 0) )
+        while((j < w) && (pAlpha[lineStartIndex+j] == 0) )
             j++;
         leftCrop = wxMin(leftCrop, j);
         
-        int k = image.GetWidth() - 1;
+        int k = w - 1;
         while( k && (pAlpha[lineStartIndex+k] == 0) )
             k--;
         rightCrop = wxMin(rightCrop, image.GetWidth() - k - 2);
     }
  
     // Vertical
-    for(int i=0 ; i < image.GetWidth() ; i++){
+    for(int i=0 ; i < w ; i++){
         int columnStartIndex = i;
         
         int j = 0;
-        while((j < image.GetHeight()) && (pAlpha[columnStartIndex+ (j * image.GetWidth())] == 0) )
+        while((j < h) && (pAlpha[columnStartIndex+ (j * w)] == 0) )
             j++;
         topCrop = wxMin(topCrop, j);
         
-        int k = image.GetHeight() - 1;
-        while( k && (pAlpha[columnStartIndex+(k * image.GetWidth())] == 0) )
+        int k = h - 1;
+        while( k && (pAlpha[columnStartIndex+(k * w)] == 0) )
             k--;
-        bottomCrop = wxMin(bottomCrop, image.GetHeight() - k - 2);
+        bottomCrop = wxMin(bottomCrop, h - k - 2);
     }
  
     int xcrop = wxMin(rightCrop, leftCrop);
@@ -1546,8 +1549,8 @@ wxRect WayPointman::CropImageOnAlpha(wxImage &image)
     int crop = wxMin(xcrop, ycrop);
     
     rv.x = wxMax(crop, 0);
-    rv.width = wxMax(1, image.GetWidth() - (2 * crop));
-    rv.width = wxMin(rv.width, image.GetWidth());
+    rv.width = wxMax(1, w - (2 * crop));
+    rv.width = wxMin(rv.width, w);
     rv.y = rv.x;
     rv.height = rv.width;
     
