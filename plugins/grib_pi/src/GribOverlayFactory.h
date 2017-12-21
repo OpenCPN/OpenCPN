@@ -165,8 +165,7 @@ public:
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
-    void GetGraphicColor(int settings, double val, unsigned char &r, unsigned char &g, unsigned char &b);
-    wxColour GetGraphicColor(int settings, double val);
+    wxColour GetGraphicColor(int config, double val);
 
     wxSize  m_ParentSize;
 
@@ -202,7 +201,6 @@ private:
 #ifdef ocpnUSE_GL
     void texcoord(double u, double v, GribRecord *pGR);
     void DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp );
-    void GetCalibratedGraphicColor(int settings, double val_in, unsigned char *data);
     bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR );
 #endif
     wxImage CreateGribImage( int config, GribRecord *pGR, PlugIn_ViewPort *vp,
