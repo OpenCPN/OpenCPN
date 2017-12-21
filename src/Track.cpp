@@ -98,6 +98,7 @@ extern bool             g_bHighliteTracks;
 extern double           g_TrackDeltaDistance;
 extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
+extern wxColour         g_colourTrackLineColour;
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
@@ -645,8 +646,9 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
                 dc.StrokeLines( i, points );
 
-                wxColour y = GetGlobalColor( _T ( "YELO1" ) );
-                wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
+                extern wxColor GetDimColor(wxColor c);
+                wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
+                wxColour hilt( trackLine_dim_colour.Red(), trackLine_dim_colour.Green(), trackLine_dim_colour.Blue(), 128 );
 
                 wxPen HiPen( hilt, hilite_width, wxPENSTYLE_SOLID );
                 dc.SetPen( HiPen );
