@@ -343,6 +343,10 @@ jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
 
 jas_stream_t *jas_stream_tmpfile()
 {
+#if defined( _MSC_VER )
+	// XXX FIXME snprintf and mkstemp on window
+	return 0;
+#else
 	jas_stream_t *stream;
 	jas_stream_fileobj_t *obj;
 
@@ -389,6 +393,7 @@ jas_stream_t *jas_stream_tmpfile()
 	stream->ops_ = &jas_stream_fileops;
 
 	return stream;
+#endif
 }
 
 jas_stream_t *jas_stream_fdopen(int fd, const char *mode)
