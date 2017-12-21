@@ -521,17 +521,19 @@ static inline bool isClearSky(int settings, double v) {
 void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in, unsigned char *data)
 {
     unsigned char r, g, b, a;
-    a = m_Settings.m_iOverlayTransparency;
-
     if( val_in != GRIB_NOTDEF ) {
         val_in = m_Settings.CalibrateValue(settings, val_in);
         //set full transparency if no rain or no clouds at all
         // TODO: make map support this
         if (( settings == GribOverlaySettings::PRECIPITATION ||
               settings == GribOverlaySettings::CLOUD ) && val_in < 0.01) 
+        {
+            r = g = b = 255;
             a = 0;
-
-        GetGraphicColor(settings, val_in, r, g, b);
+        } else {
+            a = m_Settings.m_iOverlayTransparency;
+            GetGraphicColor(settings, val_in, r, g, b);
+        }
     } else
         r = 255, g = 255, b = 255, a = 0;
 
@@ -596,44 +598,32 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                     int y = j * samples + ys + 1;
                     double yd = (double)ys/samples;
                     double v0, v1;
-                    double a0 = 1, a1 = 1;
-                    if(v10 == GRIB_NOTDEF) {
+                    if(v10 == GRIB_NOTDEF || yd == 1)
                         v0 = v00;
-                        if(v00 == GRIB_NOTDEF)
-                            a0 = 0;
-                        else
-                            a0 = 1-yd;
-                    } else if(v00 == GRIB_NOTDEF)
-                        v0 = v10, a0 = yd;
+                    else if(v00 == GRIB_NOTDEF && yd != 1)
+                        v0 = v10;
                     else
                         v0 = (1-yd)*v00 + yd*v10;
-                    if(v11 == GRIB_NOTDEF) {
+                    if(v11 == GRIB_NOTDEF || yd == 1)
                         v1 = v01;
-                        if(v01 == GRIB_NOTDEF)
-                            a1 = 0;
-                        else
-                            a1 = 1-yd;
-                    } else if(v01 == GRIB_NOTDEF)
-                        v1 = v11, a1 = yd;
+                    else if(v00 == GRIB_NOTDEF && yd != 1)
+                        v1 = v11;
                     else
                         v1 = (1-yd)*v01 + yd*v11;
 
                     for( int xs = 0; xs<samples; xs++) {
                         int x = i * samples + xs + !repeat;
                         double xd = (double)xs/samples;
-                        double v, a;
-                        if(v1 == GRIB_NOTDEF)
-                            v = v0, a = (1-xd)*a0;
-                        else if(v0 == GRIB_NOTDEF)
-                            v = v1, a = xd*a1;
-                        else {
+                        double v;
+                        if(v1 == GRIB_NOTDEF || xd == 1)
+                            v = v0;
+                        else if(v0 == GRIB_NOTDEF && xd != 1)
+                            v = v1;
+                        else
                             v = (1-xd)*v0 + xd*v1;
-                            a = (1-xd)*a0 + xd*a1;
-                        }
 
                         int doff = 4*(y*tw + x);
                         GetCalibratedGraphicColor(settings, v, data + doff);
-                        data[doff+3] *= a;
 
                         if(i == pGR->getNi()-1)
                             break;
