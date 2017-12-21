@@ -1044,7 +1044,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                     m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
                                                                  downloading, to_download, failed_downloads,
                                                                  m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                    wxMilliSleep(1000);
+                    wxMilliSleep(30);
                     wxYield();
 //                    if( !IsShownOnScreen() )
 //                        cancelled = true;
