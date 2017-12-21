@@ -28,6 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     copyright ?
 */
+
+#define __STDC_LIMIT_MACROS 
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
