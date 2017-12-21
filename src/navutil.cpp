@@ -340,6 +340,7 @@ extern int              g_ais_cog_predictor_width;
 
 extern int              g_route_line_width;
 extern int              g_track_line_width;
+extern wxColour         g_colourTrackLineColour;
 extern wxString         g_default_wp_icon;
 
 extern ChartGroupArray  *g_pGroupArray;
@@ -1341,6 +1342,11 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
+    g_colourTrackLineColour = wxColour( 243, 229, 47 );
+    wxString l_wxsTrackLineColour;
+    Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour );
+    g_colourTrackLineColour.Set( l_wxsTrackLineColour );
+
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "TideRectangleScale" ), &g_tide_rectangle_scale, 100 );
     Read( _T ( "TideCurrentWindowScale" ), &g_tcwin_scale, 100 );
@@ -2288,6 +2294,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
+    Write( _T ( "TrackLineColour" ), g_colourTrackLineColour.GetAsString( wxC2S_HTML_SYNTAX ) );
     Write( _T ( "CurrentArrowScale" ), g_current_arrow_scale );
     Write( _T ( "TideRectangleScale" ), g_tide_rectangle_scale );
     Write( _T ( "TideCurrentWindowScale" ), g_tcwin_scale );
