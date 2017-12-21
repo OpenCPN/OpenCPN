@@ -3641,33 +3641,9 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
     if(lpp >= img_height / 2) {
         box.SetFromSegment(gLat, gLon, pred_lat, pred_lon);
         if( !GetVP().GetBBox().IntersectOut(box) && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
-            double png_pred_icon_scale_factor = .4;
-            wxPoint icon[4];
-
-            float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
-                                    (float) ( lPredPoint.x - lShipMidPoint.x ) );
-            cog_rad += (float)PI;
-
-            for( int i = 0; i < 4; i++ ) {
-                int j = i * 2;
-                double pxa = (double) ( s_png_pred_icon[j] );
-                double pya = (double) ( s_png_pred_icon[j + 1] );
-
-                pya *= png_pred_icon_scale_factor;
-                pxa *= png_pred_icon_scale_factor;
-
-                double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
-                double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
-
-                icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
-                icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
-            }
-
+            
             //      COG Predictor
             float dash_length = ref_dim;
-#ifdef __OCPN__ANDROID__
-            dash_length = 6.0;
-#endif            
             wxDash dash_long[2];
             dash_long[0] = (int) ( floor(g_Platform->GetDisplayDPmm() * dash_length) / g_cog_predictor_width );  // Long dash , in mm <---------+
             dash_long[1] = dash_long[0] / 2.0;                                                                   // Short gap 
@@ -3678,53 +3654,61 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
                 dash_long[1] = dash_long[0] / 2;
             }
                 
-                if(g_ChartScaleFactorExp > 1.0)
-                    png_pred_icon_scale_factor *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
-                
-                for( int i = 0; i < 4; i++ ) {
-                    int j = i * 2;
-                    double pxa = (double) ( s_png_pred_icon[j] );
-                    double pya = (double) ( s_png_pred_icon[j + 1] );
-                    
-                    pya *= png_pred_icon_scale_factor;
-                    pxa *= png_pred_icon_scale_factor;
-                    
-                    double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
-                    double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
-                    
-                    icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
-                    icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
-                }
-                
-                
-                wxPen ppPen2( cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH );
-                ppPen2.SetDashes( 2, dash_long );
-                dc.SetPen( ppPen2 );
-                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+            wxPen ppPen2( cPred, g_cog_predictor_width, wxPENSTYLE_USER_DASH );
+            ppPen2.SetDashes( 2, dash_long );
+            dc.SetPen( ppPen2 );
+            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
                 
-                
-                if( g_cog_predictor_width > 1 ) {
-                    float line_width = g_cog_predictor_width/3.;
+            if( g_cog_predictor_width > 1 ) {
+                float line_width = g_cog_predictor_width/3.;
                     
-                    wxDash dash_long3[2];
-                    dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
-                    dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
+                 wxDash dash_long3[2];
+                 dash_long3[0] = g_cog_predictor_width / line_width * dash_long[0];
+                 dash_long3[1] = g_cog_predictor_width / line_width * dash_long[1];
                     
-                    wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, line_width), wxPENSTYLE_USER_DASH );
-                ppPen3.SetDashes( 2, dash_long3 );
-                dc.SetPen( ppPen3 );
-                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                 wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), wxMax(1, line_width), wxPENSTYLE_USER_DASH );
+                 ppPen3.SetDashes( 2, dash_long3 );
+                 dc.SetPen( ppPen3 );
+                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-                }
-                
-                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), g_cog_predictor_width/2, wxPENSTYLE_SOLID );
-                dc.SetPen( ppPen1 );
-                dc.SetBrush( wxBrush( cPred ) ); 
-                
-                dc.StrokePolygon( 4, icon );
             }
+                
+                
+                // Prepare COG predictor endpoint icon
+            double png_pred_icon_scale_factor = .4;
+            if(g_ChartScaleFactorExp > 1.0)
+                png_pred_icon_scale_factor *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+                
+            wxPoint icon[4];
+                
+            float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
+                                    (float) ( lPredPoint.x - lShipMidPoint.x ) );
+            cog_rad += (float)PI;
+                
+            for( int i = 0; i < 4; i++ ) {
+                int j = i * 2;
+                double pxa = (double) ( s_png_pred_icon[j] );
+                double pya = (double) ( s_png_pred_icon[j + 1] );
+                   
+                pya *= png_pred_icon_scale_factor;
+                pxa *= png_pred_icon_scale_factor;
+                    
+                double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
+                double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
+                    
+                icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
+                icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+            }
+                
+                // Render COG endpoint icon
+            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), g_cog_predictor_width/2, wxPENSTYLE_SOLID );
+            dc.SetPen( ppPen1 );
+            dc.SetBrush( wxBrush( cPred ) ); 
+                
+            dc.StrokePolygon( 4, icon );
         }
+    }
         
         //      HDT Predictor
         if( b_render_hdt ) {
