@@ -518,22 +518,67 @@ static inline bool isClearSky(int settings, double v) {
 }
 
 #ifdef ocpnUSE_GL
-bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR)
+bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
+                                              PlugIn_ViewPort *vp, int grib_pixel_size )
 {
-    bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
+    const double scalef = 0.00005;
+    PlugIn_ViewPort uvp = *vp;
+    uvp.rotation = uvp.skew = 0;
+    uvp.view_scale_ppm = scalef;
+    double tp_scale = scalef;
+    wxPoint porg;
+    wxPoint pmin;
+    wxPoint pmax;
+    int width;
+    int height;
 
-    // create the texture to the size of the grib data plus a transparent border
-    int tw = pGR->getNi()+2*!repeat, th = pGR->getNj()+2;
+    int maxx = wxMin(1024, pGR->getNi() );
+    int maxy = wxMin(1024, pGR->getNj() );
+    int maxt = wxMax(maxx, maxy);
+    maxt = wxMax(256, maxt);
+    // find the biggest texture
+    do {
+        GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
+        GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+        GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+        width = abs( pmax.x - pmin.x );
+        height = abs( pmax.y - pmin.y );
+#if 0        
+        if (settings != GribOverlaySettings::CURRENT && settings != GribOverlaySettings::WAVE)
+            break;
+#endif
+        if(width == 0 || height == 0)
+            return false;
+        if( width > maxt || height > maxt ) {
+            if (tp_scale == scalef)
+                break;
+            tp_scale /= 2.0;
+            uvp.view_scale_ppm = tp_scale;
+            GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
+            GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+            GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+            width = abs( pmax.x - pmin.x );
+            height = abs( pmax.y - pmin.y );
+            break;
+        }
+        tp_scale *= 2.0;
+        uvp.view_scale_ppm = tp_scale;
+        
+    } while (1);
     
     //    Dont try to create enormous GRIB textures
-    if( tw > 2048 || th > 2048 )
+    if( width > 1024 || height > 1024 )
         return false;
 
-    unsigned char *data = new unsigned char[tw*th*4];
-    memset(data, 0, tw*th*4); // ensure transparent
-    for( int y = 0; y < pGR->getNj(); y++ ) {
-        for( int x = 0; x < pGR->getNi(); x++ ) {
-            double v = pGR->getValue(x, y);
+    unsigned char *data = new unsigned char[width*height*4];
+    for( int ipix = 0; ipix < width; ipix++ ) {
+        for( int jpix = 0; jpix < height; jpix++ ) {
+            wxPoint p;
+            p.x = grib_pixel_size*ipix + porg.x;
+            p.y = grib_pixel_size*jpix + porg.y;
+            double lat, lon;
+            GetCanvasLLPix( &uvp, p, &lat, &lon );
+            double v = pGR->getInterpolatedValue(lon, lat);
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
@@ -557,7 +602,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                 a = 0;
             }
 
-            int doff = 4*((y+1)*tw + x+!repeat);
+            int doff = 4*(jpix*width + ipix);
             /* for some reason r g b values are inverted, but not alpha,
                this fixes it, but I would like to find the actual cause */
             data[doff + 0] = 255-r;
@@ -571,7 +616,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glGenTextures(1, &texture);
     glBindTexture(texture_format, texture);
 
-    glTexParameteri( texture_format, GL_TEXTURE_WRAP_S, repeat ? GL_REPEAT : GL_CLAMP_TO_EDGE );
+    glTexParameteri( texture_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     glTexParameteri( texture_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
     glTexParameteri( texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -581,9 +626,9 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
     glPixelStorei( GL_UNPACK_SKIP_PIXELS, 0 );
     glPixelStorei( GL_UNPACK_SKIP_ROWS, 0 );
-    glPixelStorei( GL_UNPACK_ROW_LENGTH, tw );
+    glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 
-    glTexImage2D(texture_format, 0, GL_RGBA, tw, th,
+    glTexImage2D(texture_format, 0, GL_RGBA, width, height,
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
@@ -591,6 +636,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     delete [] data;
 
     pGO->m_iTexture = texture;
+    pGO->m_width = width;
+    pGO->m_height = height;
+
+    pGO->m_dwidth = (pmax.x - pmin.x) / uvp.view_scale_ppm * grib_pixel_size;
+    pGO->m_dheight = (pmin.y - pmax.y) / uvp.view_scale_ppm * grib_pixel_size;
 
     return true;
 }
@@ -1389,10 +1439,11 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 m_Message_Hiden.Append(_("Overlays not supported by this graphics hardware (Disable OpenGL)"));
             else {
                 if( !pGO->m_iTexture )
-                    CreateGribGLTexture( pGO, settings, pGRA );
+                    CreateGribGLTexture( pGO, settings, pGRA, vp, 1 );
 
                 if( pGO->m_iTexture )
-                    DrawGLTexture( pGO, pGRA, vp );
+                    DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
+                               porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
                 else
                     m_Message_Hiden.IsEmpty()?
                         m_Message_Hiden.Append(_("Overlays too wide and can't be displayed:"))
@@ -2133,19 +2184,12 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 }
 
 #ifdef ocpnUSE_GL
-void GRIBOverlayFactory::texcoord(double u, double v, GribRecord *pGR)
-{
-    if(texture_format != GL_TEXTURE_2D) {
-        u *= pGR->getNi();
-        v *= pGR->getNj();
-    }
-    glTexCoord2d(u, v);
-}
-
-void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp )
+void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
+                                        int xd, int yd, double dwidth, double dheight,
+                                        PlugIn_ViewPort *vp )
 {
     glEnable(texture_format);
-    glBindTexture(texture_format, pGO->m_iTexture);
+    glBindTexture(texture_format, texture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2154,90 +2198,36 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
 
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
 
-    double lat_min = pGR->getLatMin(), lon_min = pGR->getLonMin();
+    //    Adjust for rotation
+    glPushMatrix();
+    if( fabs( vp->rotation ) > 0.01 ) {
 
-    bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
+        //    Rotations occur around 0,0, so calculate a post-rotate translation factor
+        double angle = vp->rotation;
 
-    // how to break screen up, because projections may not be linear
-    // smaller values offer more precision but become irrelevant
-    // at lower zoom levels and near poles, use smaller tiles
-
-    // This formula is generally "good enough" but is not optimal,
-    // certainly not for all projections, and may result in
-    // more tiles than actually needed in some cases
-
-    double pw = vp->view_scale_ppm * 3e6/(pow(2, fabs(vp->clat)/25));
-    if(pw < 20) // minimum 20 pixel to avoid too many tiles
-        pw = 20;
-
-    int xsquares = ceil(vp->pix_width/pw), ysquares = ceil(vp->pix_height/pw);
-
-    // optimization for non-rotated mercator, since longitude is linear
-    if(vp->rotation == 0 && vp->m_projection_type == PI_PROJECTION_MERCATOR)
-        xsquares = 1;
-
-    // It is possible to have only 1 square when the viewport covers more than
-    // 180 longitudes but there is more logic needed.  This is simpler.
-    if(vp->lon_max - vp->lon_min >= 180) {
-        xsquares = wxMax(xsquares, 2);
-        ysquares = wxMax(ysquares, 2);
+        glTranslatef( xd, yd, 0 );
+        glRotatef( angle * 180. / PI, 0, 0, 1 );
+        glTranslatef( -xd, -yd, 0 );
     }
+
+    double x = xd, y = yd;
+
+    double w = dwidth * vp->view_scale_ppm;
+    double h = dheight * vp->view_scale_ppm;
+
+    if(texture_format == GL_TEXTURE_2D)
+        width = height = 1;
 
     glBegin(GL_QUADS);
-    double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
-    int i = 0, j = 0;
-    double lva[2][xsquares+1][2];
-    int tw = pGR->getNi()+2*!repeat, th = pGR->getNj()+2;
-    
-    for(double y = 0; y < vp->pix_height+ys/2; y += ys) {
-        i = 0;
-        for(double x = 0; x < vp->pix_width+xs/2; x += xs) {
-            double lat, lon;
-            wxPoint p(x, y);
-            GetCanvasLLPix(vp, p, &lat, &lon);
-
-            if(vp->clon - lon > 180)
-                lon += 360;
-            else if(lon - vp->clon > 180)
-                lon -= 360;
-
-            lva[j][i][0] = ((lon - lon_min) / pGR->getDi() - repeat + 1.5) / tw;
-            lva[j][i][1] = ((lat - lat_min) / fabs(pGR->getDj()) + 1.5) / th;
-            if(pGR->getDj() < 0)
-                lva[j][i][1] = 1 - lva[j][i][1];
-
-            if(x > 0 && y > 0) {
-                double u0 = lva[!j][i-1][0], v0 = lva[!j][i-1][1];
-                double u1 = lva[!j][i  ][0], v1 = lva[!j][i  ][1];
-                double u2 = lva[ j][i  ][0], v2 = lva[ j][i  ][1];
-                double u3 = lva[ j][i-1][0], v3 = lva[ j][i-1][1];
-
-                if(repeat) { /* ensure all 4 texcoords are in the same phase */
-                    if(u1 - u0 > .5) u1--; else if(u0 - u1 > .5) u1++;
-                    if(u2 - u0 > .5) u2--; else if(u0 - u2 > .5) u2++;
-                    if(u3 - u0 > .5) u3--; else if(u0 - u3 > .5) u3++;
-                }
-
-                if((repeat ||
-                    ((u0 >= 0 || u1 >= 0 || u2 >= 0 || u3 >= 0) && // optimzations
-                     (u0 <= 1 || u1 <= 1 || u2 <= 1 || u3 <= 1))) &&
-                   (v0 >= 0 || v1 >= 0 || v2 >= 0 || v3 >= 0) &&
-                   (v0 <= 1 || v1 <= 1 || v2 <= 1 || v3 <= 1)) {
-                    texcoord(u0, v0, pGR), glVertex2f(x-xs, y-ys);
-                    texcoord(u1, v1, pGR), glVertex2f(x   , y-ys);
-                    texcoord(u2, v2, pGR), glVertex2f(x   , y);
-                    texcoord(u3, v3, pGR), glVertex2f(x-xs, y);
-                }
-            }
-
-            i++;
-        }
-        j = !j;
-    }
+    glTexCoord2i(0, 0),          glVertex2i(x, y);
+    glTexCoord2i(width, 0),      glVertex2i(x+w, y);
+    glTexCoord2i(width, height), glVertex2i(x+w, y+h);
+    glTexCoord2i(0, height),     glVertex2i(x, y+h);
     glEnd();
 
     glDisable(GL_BLEND);
     glDisable(texture_format);
 
+    glPopMatrix();
 }
 #endif
