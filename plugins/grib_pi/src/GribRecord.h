@@ -30,7 +30,7 @@ Elément de base d'un fichier GRIB
 #define DEBUG_INFO    false
 #define DEBUG_ERROR   true
 #define grib_debug(format, ...)  {if(DEBUG_INFO)  {fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
-#define erreur(format, ...) {if(DEBUG_ERROR) {fprintf(stderr,"ERROR: ");fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
+#define erreur(format, ...) {if(DEBUG_ERROR) {fprintf(stderr,"Grib ERROR: ");fprintf(stderr,format,__VA_ARGS__);fprintf(stderr,"\n");}}
 
 #define zuint  unsigned int
 #define zuchar unsigned char
