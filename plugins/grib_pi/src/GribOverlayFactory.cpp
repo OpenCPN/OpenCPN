@@ -522,10 +522,6 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
 {
     bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
 
-    // texture rectangle doesn't repeat correctly
-    if( repeat && texture_format != GL_TEXTURE_2D )
-        return false;
-
     // create the texture to the size of the grib data plus a transparent border
     int tw = pGR->getNi()+2*!repeat, th = pGR->getNj()+2;
     
@@ -2140,8 +2136,8 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
 void GRIBOverlayFactory::texcoord(double u, double v, GribRecord *pGR)
 {
     if(texture_format != GL_TEXTURE_2D) {
-        u *= pGR->getNi() + 2;
-        v *= pGR->getNj() + 2;
+        u *= pGR->getNi();
+        v *= pGR->getNj();
     }
     glTexCoord2d(u, v);
 }
