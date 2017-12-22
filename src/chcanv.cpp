@@ -3114,7 +3114,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
     //  Any sensible change?
     if (VPoint.IsValid()) {
-        if( ( fabs( VPoint.view_scale_ppm - scale_ppm ) < 1e-5 )
+        if( ( fabs( VPoint.view_scale_ppm - scale_ppm )/ scale_ppm < 1e-5 )
             && ( fabs( VPoint.skew - skew ) < 1e-9 )
             && ( fabs( VPoint.rotation - rotation ) < 1e-9 )
             && ( fabs( VPoint.clat - lat ) < 1e-9 )
