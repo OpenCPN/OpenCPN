@@ -123,10 +123,6 @@ WX_DEFINE_LIST(ListOfS57Obj);                // Implement a list of S57 Objects
 
 WX_DEFINE_LIST(ListOfObjRazRules);   // Implement a list ofObjRazRules
 
-//    Arrays to temporarily hold SENC geometry
-WX_DEFINE_OBJARRAY(ArrayOfVE_Elements);
-WX_DEFINE_OBJARRAY(ArrayOfVC_Elements);
-
 #define S57_THUMB_SIZE  200
 
 static int              s_bInS57;         // Exclusion flag to prvent recursion in this class init call.
@@ -4675,7 +4671,7 @@ int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString 
                     DDFModule *dupdate = new DDFModule;
                     dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
                     bstat = !( dupdate->Create( cp_ufile.mb_str() ) == 0 );
-                    dupdate->Close();
+                    delete dupdate;
 
                     if( !bstat ) {
                         wxString msg( _T("   Error creating dummy update file: ") );

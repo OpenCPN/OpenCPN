@@ -2157,10 +2157,10 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
         SetBackgroundColour( wxColour(0,0,0) );
         
-        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxSIMPLE_BORDER) || wxNO_BORDER);
+        SetWindowStyleFlag( (GetWindowStyleFlag() & !wxSIMPLE_BORDER) | wxNO_BORDER);
     }
     else{
-        SetWindowStyleFlag( (GetWindowStyleFlag() && !wxNO_BORDER) || wxSIMPLE_BORDER);
+        SetWindowStyleFlag( (GetWindowStyleFlag() & !wxNO_BORDER) | wxSIMPLE_BORDER);
         SetBackgroundColour( wxNullColour );
     }
         
@@ -3290,14 +3290,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 if( candidate_stack_index >= pCurrentStack->nEntry ) {
                     candidate_stack_index = pCurrentStack->nEntry - 1;
                     while( candidate_stack_index >= 0 ) {
-                        const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(
-                                pCurrentStack->GetDBIndex( candidate_stack_index ) );
-                        int candidate_scale = cte_candidate.GetScale();
-                        int candidate_type = cte_candidate.GetChartType();
+                        int idx = pCurrentStack->GetDBIndex( candidate_stack_index );
+                        if ( idx >= 0) {
+                            const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(idx);
+                            int candidate_scale = cte_candidate.GetScale();
+                            int candidate_type = cte_candidate.GetChartType();
 
-                        if( ( candidate_scale <= target_scale )
-                                && ( candidate_type == target_type ) ) break;
-
+                            if( ( candidate_scale <= target_scale ) && ( candidate_type == target_type ) ) 
+                                break;
+                        }
                         candidate_stack_index--;
                     }
                 }
@@ -4060,7 +4061,7 @@ void CalcGridSpacing( float view_scale_ppm, float& MajorSpacing, float&MinorSpac
     };
 
     unsigned int tabi;
-    for( tabi = 0; tabi < (sizeof lltab) / (sizeof *lltab); tabi++ )
+    for( tabi = 0; tabi < ((sizeof lltab) / (sizeof *lltab)) -1; tabi++ )
         if( view_scale_ppm < lltab[tabi][0] )
             break;
     MajorSpacing = lltab[tabi][1]; // major latitude distance
@@ -6981,6 +6982,7 @@ void pupHandler_PasteWaypoint() {
 
     int pasteBuffer = kml.ParsePasteBuffer();
     RoutePoint* pasted = kml.GetParsedRoutePoint();
+    if( ! pasted ) return;
 
     int nearby_sel_rad_pix = 8;
     double nearby_radius_meters = nearby_sel_rad_pix / cc1->GetCanvasTrueScale();
@@ -7792,7 +7794,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //  Blit pan acceleration
     if( VPoint.b_quilt )          // quilted
     {
-        if( m_pQuilt && !m_pQuilt->IsComposed() ) return;
+        if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
+            return;  // not ready
 
         bool busy = false;
         if( cc1->m_pQuilt->IsQuiltVector() &&

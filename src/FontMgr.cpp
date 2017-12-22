@@ -466,7 +466,7 @@ void OCPNwxFontList::FreeAll( void )
     }
 }
 
-wxString FontCandidates[] = {
+static wxString FontCandidates[] = {
     _T("AISTargetAlert"), 
     _T("AISTargetQuery"),
     _T("StatusBar"),
@@ -495,14 +495,12 @@ void FontMgr::ScrubList( )
     
     //  Build the composite candidate array
     wxArrayString candidateArray;
-    bool done = false;
     unsigned int i = 0;
     
     // The fixed, static list
-    while( ! done ){
+    while( true ){
         wxString candidate = FontCandidates[i];
         if(candidate == _T("END_OF_LIST") ) {
-            done = true;
             break;
         }
         
@@ -583,12 +581,10 @@ void FontMgr::ScrubList( )
     }
  
     //  And finally, for good measure, make sure that everything in the candidate array has a valid entry in the list
-    done = false;
     i = 0;
-    while( ! done ){
+    while( true ){
         wxString candidate = FontCandidates[i];
         if(candidate == _T("END_OF_LIST") ) {
-            done = true;
             break;
         }
 

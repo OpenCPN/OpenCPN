@@ -365,9 +365,10 @@ void GpxRootElement::SetMetadata(GpxMetadataElement *metadata)
 
 void GpxRootElement::RemoveMetadata()
 {
-      if(my_metadata)
-            RemoveChild(my_metadata);
-      delete my_metadata;
+      if(!my_metadata)
+            return;
+      if (!RemoveChild(my_metadata))
+            return;
       my_metadata = NULL;
 }
 
@@ -390,9 +391,10 @@ void GpxRootElement::SetExtensions(GpxExtensionsElement *extensions)
 
 void GpxRootElement::RemoveExtensions()
 {
-      if(my_extensions)
-            RemoveChild(my_extensions);
-      delete my_extensions;
+      if(!my_extensions)
+            return;
+      if (!RemoveChild(my_extensions))
+            return;
       my_extensions = NULL;
 }
 

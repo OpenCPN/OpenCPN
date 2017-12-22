@@ -3231,14 +3231,15 @@ void glChartCanvas::DrawGLTidesInBBox(ocpnDC& dc, LLBBox& BBox)
             unsigned char *a = image.GetAlpha();
                 
             unsigned char mr, mg, mb;
-            image.GetOrFindMaskColour( &mr, &mg, &mb );
+            if (!a)
+                image.GetOrFindMaskColour( &mr, &mg, &mb );
                 
             unsigned char *e = new unsigned char[4 * w * h];
             if(e && d){
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
                         unsigned char r, g, b;
-                        int off = ( y * image.GetWidth() + x );
+                        int off = ( y * w + x );
                         r = d[off * 3 + 0];
                         g = d[off * 3 + 1];
                         b = d[off * 3 + 2];

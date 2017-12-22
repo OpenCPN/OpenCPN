@@ -284,7 +284,7 @@ void DataStream::Open(void)
                 m_sock->Notify(TRUE);
                 m_sock->SetTimeout(1);              // Short timeout
 
-                wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                wxSocketClient* tcp_socket = static_cast<wxSocketClient*>(m_sock);
                 tcp_socket->Connect(m_addr, FALSE);
                 m_brx_connect_event = false;
             
@@ -492,7 +492,6 @@ void DataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
             if(tcp_socket) {
                 tcp_socket->Close();
             }
-
             m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
             m_socketread_watchdog_timer.Stop();
         }
@@ -790,7 +789,8 @@ bool DataStream::SendSentence( const wxString &sentence )
                                     m_sock= 0;
                                 } else {
                                     wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                                    tcp_socket->Close();
+                                    if (tcp_socket)
+                                        tcp_socket->Close();
                                     if(!m_socket_timer.IsRunning())
                                         m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
                                     m_socketread_watchdog_timer.Stop();
@@ -804,7 +804,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                         break;
                     case UDP:
                         udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
-                        if( udp_socket->IsOk() ) {
+                        if(udp_socket && udp_socket->IsOk() ) {
                             udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
                             if( udp_socket->Error())
                                 ret = false;

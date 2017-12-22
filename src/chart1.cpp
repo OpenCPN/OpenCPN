@@ -315,11 +315,12 @@ bool                      g_bConfirmObjectDelete;
 // Set default color scheme
 ColorScheme               global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
-int                       Usercolortable_index;
-wxArrayPtrVoid            *UserColorTableArray;
-wxArrayPtrVoid            *UserColourHashTableArray;
+static int                Usercolortable_index;
 
-wxColorHashMap            *pcurrent_user_color_hash;
+static wxArrayPtrVoid     *UserColorTableArray;
+static wxArrayPtrVoid     *UserColourHashTableArray;
+
+static wxColorHashMap     *pcurrent_user_color_hash;
 
 int                       gps_watchdog_timeout_ticks;
 int                       sat_watchdog_timeout_ticks;
@@ -748,9 +749,11 @@ static const long long lNaN = 0xfff8000000000000;
 
 //    Some static helpers
 void appendOSDirSlash( wxString* pString );
-void InitializeUserColors( void );
-void DeInitializeUserColors( void );
-void SetSystemColors( ColorScheme cs );
+
+static void InitializeUserColors( void );
+static void DeInitializeUserColors( void );
+static void SetSystemColors( ColorScheme cs );
+
 extern "C" bool CheckSerialAccess( void );
 
 
@@ -1275,7 +1278,7 @@ static double chart_dist(int index)
     float  clat;
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
     // if the chart contains ownship position set the distance to 0
-    if (cte.GetBBox().Contains(gLon, gLat))
+    if (cte.GetBBox().Contains(gLat, gLon))
         d = 0.;
     else {
         // find the nearest edge 
@@ -1420,6 +1423,8 @@ void ParseAllENC()
             wxString filename = ct_array.Item(j).chart_path;
             double distance = ct_array.Item(j).distance;
             int index = ChartData->FinddbIndex(filename);
+            if (index < 0) 
+                continue;
             const ChartTableEntry &cte = ChartData->GetChartTableEntry(index);
             Extent ext;
             ext.NLAT = cte.GetLatMax();
@@ -8033,6 +8038,8 @@ void MyFrame::selectChartDisplay( int type, int family)
             int stack_index = -1;
             for(int i = 0; i < pCurrentStack->nEntry ; i++){
                 int check_dbIndex = pCurrentStack->GetDBIndex( i );
+                if (check_dbIndex < 0)
+                    continue;
                 const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
                 if(type == cte.GetChartType()){
                     stack_index = i;
@@ -10588,7 +10595,7 @@ int paternFilter (const struct dirent * dir) {
   fd = open(devname, O_RDWR|O_NDELAY|O_NOCTTY);
 
   // device name is pointing to a real device
-  if(fd > 0) {
+  if(fd >= 0) {
     close (fd);
     return 1;
   }
@@ -11199,7 +11206,8 @@ wxColour GetGlobalColor(wxString colorName)
         ret_color.Set( 128, 128, 128 );  // Simple Grey
         wxLogMessage(_T("Warning: Color not found ") + colorName);
         // Avoid duplicate warnings:
-        ( *pcurrent_user_color_hash )[colorName] = ret_color;
+        if (pcurrent_user_color_hash)
+            ( *pcurrent_user_color_hash )[colorName] = ret_color;
     }
 
     return ret_color;
@@ -11359,7 +11367,7 @@ int get_static_line( char *d, const char **p, int index, int n )
     return strlen( d );
 }
 
-void InitializeUserColors( void )
+static void InitializeUserColors( void )
 {
     const char **p = usercolors;
     char buf[80];
@@ -11449,7 +11457,7 @@ void InitializeUserColors( void )
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item( 0 );
 }
 
-void DeInitializeUserColors( void )
+static void DeInitializeUserColors( void )
 {
     unsigned int i;
     for( i = 0; i < UserColorTableArray->GetCount(); i++ ) {

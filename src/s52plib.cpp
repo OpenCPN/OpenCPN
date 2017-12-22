@@ -2962,15 +2962,16 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 Image.SetMaskColour( m_unused_wxColor.Red(), m_unused_wxColor.Green(),
                                      m_unused_wxColor.Blue() );
                 unsigned char mr, mg, mb;
-                if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a )
+                if( !a && !Image.GetOrFindMaskColour( &mr, &mg, &mb ) )
                     printf( "trying to use mask to draw a bitmap without alpha or mask\n" );
                 
                 unsigned char *e = (unsigned char *) malloc( w * h * 4 );
+                // XXX FIXME a or e ?
                 if( d && a){
                     for( int y = 0; y < h; y++ ) {
                         for( int x = 0; x < w; x++ ) {
                             unsigned char r, g, b;
-                            int off = ( y * Image.GetWidth() + x );
+                            int off = ( y * w + x );
                             r = d[off * 3 + 0];
                             g = d[off * 3 + 1];
                             b = d[off * 3 + 2];
@@ -4659,24 +4660,14 @@ int s52plib::RenderLCPlugIn( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 
             ls = ls->next;
         }
-    }
+
+        //  Allocate some storage for converted points
+        wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
     
-    
-    //  Allocate some storage for converted points
-    wxPoint *ptp = (wxPoint *) malloc( ( nls_max + 2 ) * sizeof(wxPoint) ); // + 2 allows for end nodes
-    
-    
-    if( rzRules->obj->m_ls_list_legacy )
-    {
-        float *ppt;
-        
-        VE_Element *pedge;
-        
-        
         PI_connector_segment *pcs;
         
         unsigned char *vbo_point = (unsigned char *)rzRules->obj->m_chart_context->vertex_buffer;
-        PI_line_segment_element *ls = rzRules->obj->m_ls_list_legacy;
+        ls = rzRules->obj->m_ls_list_legacy;
         
         while(ls){
                 if( ls->priority == priority_current  ) {  
@@ -7345,7 +7336,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                                 free(p_tp->p_vertex);
                                 p_tp->p_vertex = (double *)p_run;
                                 
-                                p_run += p_tp->nVert * 2 * sizeof(float);
+                                p_run += p_tp->nVert * 2;
                                 
                                 p_tp = p_tp->p_next; // pick up the next in chain
                             }

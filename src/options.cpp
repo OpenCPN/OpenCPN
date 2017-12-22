@@ -647,8 +647,11 @@ void MMSIListCtrl::OnListItemActivated(wxListEvent& event) {
 
   if (pd->ShowModal() == wxID_OK) {
     g_MMSI_Props_Array.RemoveAt(event.GetIndex());
+    delete props;
     g_MMSI_Props_Array.Insert(props_new, event.GetIndex());
   }
+  else
+    delete props_new;
 
   pd->Destroy();
 }
@@ -678,24 +681,32 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
 }
 
 void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
-  MMSIProperties* props = g_MMSI_Props_Array.Item(m_context_item);
-  if (!props) return;
-  MMSIProperties* props_new = new MMSIProperties(*props);
-  MMSIEditDialog* pd;
+  int context_item = m_context_item;
+  MMSIProperties* props = g_MMSI_Props_Array.Item(context_item);
+
+  if (!props) 
+      return;
 
   switch (event.GetId()) {
-    case ID_DEF_MENU_MMSI_EDIT:
-      pd =
-          new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
+    case ID_DEF_MENU_MMSI_EDIT: {
+      MMSIProperties* props_new = new MMSIProperties(*props);
+      MMSIEditDialog* pd = new MMSIEditDialog(props_new, m_parent, -1, _("Edit MMSI Properties"),
                              wxDefaultPosition, wxSize(200, 200));
+
       if (pd->ShowModal() == wxID_OK) {
-        g_MMSI_Props_Array.RemoveAt(m_context_item);
-        g_MMSI_Props_Array.Insert(props_new, m_context_item);
+        g_MMSI_Props_Array.RemoveAt(context_item);
+        delete props;
+        g_MMSI_Props_Array.Insert(props_new, context_item);
+      }
+      else {
+        delete props_new;
       }
       pd->Destroy();
       break;
+    }
     case ID_DEF_MENU_MMSI_DELETE:
-      g_MMSI_Props_Array.RemoveAt(m_context_item);
+      g_MMSI_Props_Array.RemoveAt(context_item);
+      delete props;
       break;
   }
 }
@@ -815,7 +826,10 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
       new MMSIEditDialog(props, m_parent, -1, _("Add MMSI Properties"),
                          wxDefaultPosition, wxSize(200, 200));
 
-  if (pd->ShowModal() == wxID_OK) g_MMSI_Props_Array.Add(props);
+  if (pd->ShowModal() == wxID_OK) 
+    g_MMSI_Props_Array.Add(props);
+  else
+    delete props;
 
   pd->Destroy();
 
@@ -5222,13 +5236,10 @@ void options::resetMarStdList(bool bsetConfig, bool bsetStd)
                 
                 ps57CtlListBox->Check(newpos, bviz);
         }
+        //  Force the wxScrolledWindow to recalculate its scroll bars
+        wxSize s = ps57CtlListBox->GetSize();
+        ps57CtlListBox->SetSize(s.x, s.y-1);
     }
-
-    //  Force the wxScrolledWindow to recalculate its scroll bars
-    wxSize s = ps57CtlListBox->GetSize();
-    ps57CtlListBox->SetSize(s.x, s.y-1);
-    
-
 }
 
 void options::SetInitialVectorSettings(void)

@@ -59,7 +59,6 @@ using namespace std;
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY( float*, MyFloatPtrArray );
-WX_DEFINE_OBJARRAY( SENCFloatPtrArray );
 
 #ifndef __WXMSW__
 sigjmp_buf env_osenc_ogrf;                    // the context saved by sigsetjmp();

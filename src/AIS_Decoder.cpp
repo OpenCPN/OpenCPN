@@ -2534,10 +2534,6 @@ AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI( int mmsi )
 
 
 
-#include <wx/arrimpl.cpp>
-
-WX_DEFINE_OBJARRAY(ArrayOfMMSIProperties);
-
 ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 
