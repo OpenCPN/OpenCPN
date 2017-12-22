@@ -1228,5 +1228,10 @@ extern DECL_EXP bool PlugInSetFontColor(const wxString TextElement, const wxColo
 // API 1.15
 extern DECL_EXP double PlugInGetDisplaySizeMM();
 
+// 
+extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family, 
+                    wxFontStyle style, wxFontWeight weight, bool underline = false,
+                    const wxString &facename = wxEmptyString,
+                    wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
 
 #endif //_PLUGIN_H_
