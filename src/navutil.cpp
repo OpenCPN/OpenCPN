@@ -859,7 +859,7 @@ int MyConfig::LoadMyConfig()
     if( Read( _T ( "TargetTracksMinutes" ), &s ) ) {
         s.ToDouble( &g_AISShowTracks_Mins );
         g_AISShowTracks_Mins = wxMax(1.0, g_AISShowTracks_Mins);
-        g_AISShowTracks_Mins = wxMin(60.0, g_AISShowTracks_Mins);
+        g_AISShowTracks_Mins = wxMin(300.0, g_AISShowTracks_Mins);
     } else
         g_AISShowTracks_Mins = 20;
 
