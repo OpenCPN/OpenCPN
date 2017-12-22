@@ -2,6 +2,17 @@
 <ChartCatalog>
   <sections>
     <section>
+      <name>GSHHG basemap</name>
+      <catalogs>
+        <catalog>
+          <name>All</name>
+          <type>GSHHG</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/GSHHG_Catalog.xml</location>
+          <dir>{USERDATA}/GSHHG</dir>
+        </catalog>
+      </catalogs>
+    </section>
+    <section>
       <name>USA - NOAA &amp; Inland charts</name>
       <sections>
         <section>
