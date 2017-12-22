@@ -860,7 +860,11 @@ IF(UNIX)
     FIND_PACKAGE(ZLIB REQUIRED)
     FIND_PACKAGE(X11)
     INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
-    FIND_PACKAGE(TinyXML)
+    IF(NOT APPLE)
+      #TinyXML from Homebrew is not good enough for our GpxDocument needs
+      #We should probably replace it with pugixml completely anyway...
+      FIND_PACKAGE(TinyXML)
+    ENDIF(NOT APPLE)
   ENDIF(NOT QT_ANDROID)
 ENDIF(UNIX)
 
@@ -2274,9 +2278,14 @@ IF(APPLE)
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
 
+#INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")  
+
   SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
   SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
-
   SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libchartdldr_pi.dylib")
   SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libwmm_pi.dylib")
 
