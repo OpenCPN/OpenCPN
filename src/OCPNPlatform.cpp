@@ -1128,8 +1128,11 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         m_PrivateDataDir = std_path.GetUserDataDir();       // should be ~/.opencpn
 #endif
         
-        if( g_bportable )
+        if( g_bportable ){
             m_PrivateDataDir = GetHomeDir();
+            if(m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
+                m_PrivateDataDir.RemoveLast();
+        }
         
 #ifdef __OCPN__ANDROID__
         m_PrivateDataDir = androidGetPrivateDir();
