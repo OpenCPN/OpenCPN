@@ -47,7 +47,12 @@
 #include <wx/wfstream.h>
 #include <memory>
 #include <wx/regex.h>
-#include "unrar/rar.hpp"
+#ifdef DLDR_USE_LIBARCHIVE
+  #include <archive.h>
+  #include <archive_entry.h>
+#else
+  #include "unrar/rar.hpp"
+#endif
 
 #include <wx/arrimpl.cpp>
     WX_DEFINE_OBJARRAY(wxArrayOfDateTime);
@@ -1289,6 +1294,24 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
             wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
         return ret;
     }
+#ifdef DLDR_USE_LIBARCHIVE
+    else if( aFile.Lower().EndsWith(_T("rar")) ||
+            aFile.Lower().EndsWith(_T("tar")) ||
+            aFile.Lower().EndsWith(_T("gz")) ||
+            aFile.Lower().EndsWith(_T("bz2")) ||
+            aFile.Lower().EndsWith(_T("lzma")) ||
+            aFile.Lower().EndsWith(_T("7z")) ||
+            aFile.Lower().EndsWith(_T("xz"))
+            )
+    {
+        bool ret = ExtractLibArchiveFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+        if( ret )
+            wxRemoveFile(aFile);
+        else
+            wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
+        return ret;
+    }
+#else
     else if( aFile.Lower().EndsWith(_T("rar")) ) //Rar compressed
     {
         bool ret = ExtractRarFiles( aFile, aTargetDir, aStripPath, aMTime, false);
@@ -1298,6 +1321,7 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
             wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
         return ret;
     }
+#endif
     else //Uncompressed
     {
         wxFileName fn(aFile);
@@ -1322,6 +1346,107 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
     return true;
 }
 
+#ifdef DLDR_USE_LIBARCHIVE
+static int copy_data(struct archive *ar, struct archive *aw)
+{
+    int r;
+    const void *buff;
+    size_t size;
+    la_int64_t offset;
+
+    for (;;) {
+        r = archive_read_data_block(ar, &buff, &size, &offset);
+        if (r == ARCHIVE_EOF)
+            return (ARCHIVE_OK);
+         if (r < ARCHIVE_OK)
+            return (r);
+        r = archive_write_data_block(aw, buff, size, offset);
+        if (r < ARCHIVE_OK) {
+            //fprintf(stderr, "%s\n", archive_error_string(aw));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(aw))); 
+            return (r);
+        }
+    }
+}
+
+bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveArchive)
+{
+    struct archive *a;
+    struct archive *ext;
+    struct archive_entry *entry;
+    int flags;
+    int r;
+
+    /* Select which attributes we want to restore. */
+    flags = ARCHIVE_EXTRACT_TIME;
+    /*
+    flags |= ARCHIVE_EXTRACT_PERM;
+    flags |= ARCHIVE_EXTRACT_ACL;
+    flags |= ARCHIVE_EXTRACT_FFLAGS;
+    */
+
+    a = archive_read_new();
+    archive_read_support_format_all(a);
+    archive_read_support_filter_all(a);
+    archive_read_support_compression_all(a);
+    ext = archive_write_disk_new();
+    archive_write_disk_set_options(ext, flags);
+    archive_write_disk_set_standard_lookup(ext);
+    if ((r = archive_read_open_filename(a, aArchiveFile.c_str(), 10240)))
+        return false;
+    for (;;) {
+        r = archive_read_next_header(a, &entry);
+        if (r == ARCHIVE_EOF)
+            break;
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(a));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(a)));
+        if (r < ARCHIVE_WARN)
+            return false;
+        if (aStripPath) {
+            const char* currentFile = archive_entry_pathname(entry);
+            std::string fullOutputPath = currentFile;
+            size_t sep = fullOutputPath.find_last_of("\\/");
+            if (sep != std::string::npos)
+                fullOutputPath = fullOutputPath.substr(sep + 1, fullOutputPath.size() - sep - 1);
+            archive_entry_set_pathname(entry, fullOutputPath.c_str());
+        }
+        if (aTargetDir != wxEmptyString) {
+            const char* currentFile = archive_entry_pathname(entry);
+            const std::string fullOutputPath = aTargetDir.ToStdString() + wxString(wxFileName::GetPathSeparator()).ToStdString() + currentFile;
+            archive_entry_set_pathname(entry, fullOutputPath.c_str());
+        }
+        r = archive_write_header(ext, entry);
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(ext));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+        else if (archive_entry_size(entry) > 0) {
+            r = copy_data(a, ext);
+            if (r < ARCHIVE_OK)
+                //fprintf(stderr, "%s\n", archive_error_string(ext));
+                wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+            if (r < ARCHIVE_WARN)
+                return false;
+        }
+        r = archive_write_finish_entry(ext);
+        if (r < ARCHIVE_OK)
+            //fprintf(stderr, "%s\n", archive_error_string(ext));
+            wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s", archive_error_string(ext)));
+        if (r < ARCHIVE_WARN)
+            return false;
+    }
+    archive_read_close(a);
+    archive_read_free(a);
+    archive_write_close(ext);
+    archive_write_free(ext);
+
+    if( aRemoveArchive )
+        wxRemoveFile(aArchiveFile);
+
+    return true;
+}
+#else
+
 bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
 {
     wxString cmd;
@@ -1343,7 +1468,9 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
     strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
     target[1023] = 0;
 
+#ifndef DLDR_USE_LIBARCHIVE
     char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
+#endif
 #ifdef _UNIX
     // XXX is setlocale need?
     setlocale(LC_ALL,"");
@@ -1450,6 +1577,7 @@ bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aT
 
     return true;
 }
+#endif
 
 bool chartdldr_pi::ExtractZipFiles( const wxString& aZipFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveZip )
 {

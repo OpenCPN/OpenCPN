@@ -5,7 +5,7 @@
       <name>GSHHG basemap</name>
       <catalogs>
         <catalog>
-          <name>All</name>
+          <name>All GSHHG basemaps</name>
           <type>GSHHG</type>
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/GSHHG_Catalog.xml</location>
           <dir>{USERDATA}/GSHHG</dir>

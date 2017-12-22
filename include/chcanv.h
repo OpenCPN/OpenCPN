@@ -47,6 +47,7 @@
 #include "timers.h"
 #include "emboss_data.h"
 #include "S57Sector.h"
+#include "gshhs.h"
 
 class wxGLContext;
 class GSHHSChart;
@@ -235,6 +236,7 @@ public:
       bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
       
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
+      void ResetWorldBackgroundChart() { pWorldBackgroundChart->Reset(); }
 
       void  SetbTCUpdate(bool f){ m_bTCupdate = f;}
       bool  GetbTCUpdate(){ return m_bTCupdate;}

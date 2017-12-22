@@ -58,7 +58,7 @@
 
 //typedef void (APIENTRY * PFNGLBINDBUFFERPROC) (GLenum target, GLuint buffer);
 
-extern wxString *pWorldMapLocation;
+extern wxString gWorldMapLocation;
 
 //-------------------------------------------------------------------------
 
@@ -92,18 +92,23 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
 
+void GSHHSChart::Reset() {
+    if( reader )
+        delete reader;
+    reader = NULL;
+}
 
 void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp )
 {
     if( ! reader ) {
         reader = new GshhsReader( );
-        if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 220 ) {
+        if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 240 ) {
             wxLogMessage( _T("GSHHS World chart files have wrong version. Found %d, expected 210-220."),
                     reader->GetPolyVersion() );
         } else {
             wxLogMessage(
                     _T("Background world map loaded from GSHHS datafiles found in: ") +
-                    *pWorldMapLocation );
+                    gWorldMapLocation );
         }
     }
 
@@ -1011,7 +1016,7 @@ GshhsReader::GshhsReader( )
 
     if( maxQualityAvailable < 0 ) {
         wxString msg( _T("Unable to initialize background world map. No GSHHS datafiles found in ") );
-        msg += *pWorldMapLocation;
+        msg += gWorldMapLocation;
         wxLogMessage( msg );
     }
 
@@ -1098,21 +1103,21 @@ wxString GshhsReader::getNameExtension( int quality )
 wxString GshhsReader::getFileName_Land( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("poly-%c-1.dat"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("poly-%c-1.dat"), ext.GetChar(0) );
     return fname;
 }
 
 wxString GshhsReader::getFileName_boundaries( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("wdb_borders_%c.b"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("wdb_borders_%c.b"), ext.GetChar(0) );
     return fname;
 }
 
 wxString GshhsReader::getFileName_rivers( int quality )
 {
     wxString ext = GshhsReader::getNameExtension( quality );
-    wxString fname = *pWorldMapLocation + wxString::Format( _T("wdb_rivers_%c.b"), ext.GetChar(0) );
+    wxString fname = gWorldMapLocation + wxString::Format( _T("wdb_rivers_%c.b"), ext.GetChar(0) );
     return fname;
 }
 
@@ -1120,8 +1125,8 @@ wxString GshhsReader::getFileName_rivers( int quality )
 bool GshhsReader::gshhsFilesExists( int quality )
 {
     if( ! wxFile::Access( GshhsReader::getFileName_Land( quality ), wxFile::read ) ) return false;
-    if( ! wxFile::Access( GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return false;
-    if( ! wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read ) ) return false;
+    //Borders disabled anyway since the perf optimizations if( ! wxFile::Access( GshhsReader::getFileName_boundaries( quality ), wxFile::read ) ) return false;
+    //Rivers disabled anyway since the perf optimizations if( ! wxFile::Access( GshhsReader::getFileName_rivers( quality ), wxFile::read ) ) return false;
 
     return true;
 }
