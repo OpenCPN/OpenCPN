@@ -19,3 +19,4 @@ buildwin/vc/
 buildwin/wxWidgets/
 buildwin/zlib1.dll
 src/opencpn.rc
+.DS_Store
