@@ -2562,7 +2562,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
 
   wxFlexGridSizer* pTrackGrid =
-      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+      new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
   pTrackGrid->AddGrowableCol(1);
   trackSizer->Add(pTrackGrid, 0, wxALL | wxEXPAND, border_size);
 
