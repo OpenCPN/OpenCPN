@@ -653,6 +653,12 @@ private:
 DECLARE_EVENT_TABLE()
 };
 
+// CUSTOMIZATION - FORMAT MINUTES
+
+wxString minutesToHoursDays(float timeInMinutes);
+
+// END OF CUSTOMIZATION - FORMAT MINUTES
+
 /*!
  * Compatibility
  */
