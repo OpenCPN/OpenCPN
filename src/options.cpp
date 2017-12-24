@@ -192,6 +192,7 @@ extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
+extern wxColour g_colourTrackLineColour;
 
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
@@ -2564,6 +2565,15 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   pTrackGrid->AddGrowableCol(1);
   trackSizer->Add(pTrackGrid, 0, wxALL | wxEXPAND, border_size);
+
+  wxStaticText* trackColourText = 
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Track Highlight Colour"));
+  pTrackGrid->Add(trackColourText, 1, wxALL, 1);
+  m_colourTrackLineColour = new wxColourPickerCtrl(
+      itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
+  pTrackGrid->Add(m_colourTrackLineColour, 0,
+                         wxALIGN_RIGHT | wxALL, 1);
 
   wxStaticText* tpText =
       new wxStaticText(itemPanelShip, wxID_STATIC, _("Tracking Precision"));
@@ -5037,6 +5047,7 @@ void options::SetInitialSettings(void) {
   pTrackRotateUTC->SetValue(g_track_rotate_time_type == TIME_TYPE_UTC);
   pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
+  m_colourTrackLineColour->SetColour(g_colourTrackLineColour);
 
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
@@ -6044,6 +6055,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
+  g_colourTrackLineColour =
+      m_colourTrackLineColour->GetColour();
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
