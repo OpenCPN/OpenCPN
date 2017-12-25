@@ -168,6 +168,9 @@ extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 
+extern bool g_own_ship_sog_cog_calc;
+extern int g_own_ship_sog_cog_calc_damp_sec;
+
 extern bool g_bPreserveScaleOnX;
 extern bool g_bPlayShipsBells;
 extern int g_iSoundDeviceIndex;
@@ -2663,6 +2666,27 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
 
+  //  Calculate values
+  wxStaticBox* ownshipcalcText = new wxStaticBox(itemPanelShip, wxID_ANY, _("Calculate values"));
+  wxStaticBoxSizer* ownshipcalcSizer = new wxStaticBoxSizer(ownshipcalcText, wxVERTICAL);
+  ownShip->Add(ownshipcalcSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+  wxFlexGridSizer* dispOwnShipCalcOptionsGrid = new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
+  ownshipcalcSizer->Add(dispOwnShipCalcOptionsGrid, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+  dispOwnShipCalcOptionsGrid->AddGrowableCol(1);
+
+  pSogCogFromLLCheckBox = new wxCheckBox(itemPanelShip, ID_SOGCOGFROMLLCHECKBOX, _("Calculate SOG and COG from position changes"));
+  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLCheckBox, 1, wxALL, 5);
+  dispOwnShipCalcOptionsGrid->AddSpacer(0);
+
+  wxStaticText* SogCogFromLLDampIntText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Min seconds between updates"));
+  dispOwnShipCalcOptionsGrid->Add(SogCogFromLLDampIntText, 1, wxEXPAND | wxALL, group_item_spacing);
+  
+  pSogCogFromLLDampInterval = new wxSpinCtrl(itemPanelShip, ID_SOGCOGDAMPINTTEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 0 );
+
+  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
+
   DimeControl(itemPanelShip);
 }
 
@@ -5018,6 +5042,9 @@ void options::SetInitialSettings(void) {
   pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
   pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
 
+  pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
+  pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
+
   pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
 
   pPreserveScale->SetValue(g_bPreserveScaleOnX);
@@ -6030,6 +6057,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_colourWaypointRangeRingsColour =
       m_colourWaypointRangeRingsColour->GetColour();
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
+  g_own_ship_sog_cog_calc = pSogCogFromLLCheckBox->GetValue();
+  g_own_ship_sog_cog_calc_damp_sec = pSogCogFromLLDampInterval->GetValue();
+
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
   g_bPreserveScaleOnX = pPreserveScale->GetValue();
