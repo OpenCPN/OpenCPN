@@ -2557,23 +2557,27 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
     
+  wxFlexGridSizer* hTrackGrid =
+      new wxFlexGridSizer(1, 3, group_item_spacing, group_item_spacing);
+  hTrackGrid->AddGrowableCol(1);
+  trackSizer->Add(hTrackGrid, 0, wxALL | wxEXPAND, border_size);
+
   pTrackHighlite =
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
-  trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
+  hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, border_size);
+  wxStaticText* trackColourText =
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+  hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
+  m_colourTrackLineColour = new wxColourPickerCtrl(
+      itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
+  hTrackGrid->Add(m_colourTrackLineColour, 1,
+                         wxALIGN_RIGHT, border_size);
 
   wxFlexGridSizer* pTrackGrid =
-      new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
   pTrackGrid->AddGrowableCol(1);
   trackSizer->Add(pTrackGrid, 0, wxALL | wxEXPAND, border_size);
-
-  wxStaticText* trackColourText = 
-      new wxStaticText( itemPanelShip, wxID_STATIC, _("Track Highlight Colour"));
-  pTrackGrid->Add(trackColourText, 1, wxALL, 1);
-  m_colourTrackLineColour = new wxColourPickerCtrl(
-      itemPanelShip, wxID_ANY, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
-      wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
-  pTrackGrid->Add(m_colourTrackLineColour, 0,
-                         wxALIGN_RIGHT | wxALL, 1);
 
   wxStaticText* tpText =
       new wxStaticText(itemPanelShip, wxID_STATIC, _("Tracking Precision"));
