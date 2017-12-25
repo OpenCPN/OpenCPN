@@ -147,6 +147,7 @@ extern bool             g_fog_overzoom;
 extern double           g_overzoom_emphasis_base;
 extern bool             g_oz_vector_scale;
 
+extern bool             g_bShowISODGR;
 extern bool             g_bShowOutlines;
 extern bool             g_bShowActiveRouteHighway;
 extern bool             g_bShowRouteTotal;
@@ -729,6 +730,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ShowLayers" ), &g_bShowLayers, 1 );
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
+    Read( _T ( "ShowISODGR" ), &g_bShowISODGR, 1 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
     Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
@@ -1903,6 +1905,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "PermanentMOBIcon" ), g_bPermanentMOBIcon );
     Write( _T ( "ShowLayers" ), g_bShowLayers );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
+    Write( _T ( "ShowISODGR" ), g_bShowISODGR );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "ShowActiveRouteTotal" ), g_bShowRouteTotal );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );

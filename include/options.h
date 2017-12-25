@@ -180,7 +180,8 @@ enum {
   ID_TRACKROTATECOMPUTER,
   ID_SETSTDLIST,
   ID_VECZOOM,
-  ID_INLANDECDISBOX
+  ID_INLANDECDISBOX,
+  ID_ISODGR
 };
 
 /* Define an int bit field for dialog return value
@@ -435,7 +436,7 @@ class options : private Uncopyable,
   wxCheckBox *pCheck_SOUNDG, *pCheck_META, *pCheck_SHOWIMPTEXT;
   wxCheckBox *pCheck_SCAMIN, *pCheck_ATONTEXT, *pCheck_LDISTEXT;
   wxCheckBox *pCheck_XLSECTTEXT, *pCheck_DECLTEXT, *pCheck_NATIONALTEXT;
-  wxCheckBox *pSEnableCM93Offset;
+  wxCheckBox *pSEnableCM93Offset, *pCheck_ISODGR;
   wxTextCtrl *m_ShallowCtl, *m_SafetyCtl, *m_DeepCtl;
   wxStaticText *m_depthUnitsShal, *m_depthUnitsSafe, *m_depthUnitsDeep;
   wxSlider *m_pSlider_CM93_Zoom;

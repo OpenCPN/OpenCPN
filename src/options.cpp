@@ -103,6 +103,7 @@ extern wxString g_PrivateDataDir;
 extern bool g_bSoftwareGL;
 extern bool g_bShowFPS;
 
+extern bool g_bShowISODGR;
 extern bool g_bShowOutlines;
 extern bool g_bShowChartBar;
 extern bool g_bShowDepthUnits;
@@ -3142,6 +3143,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_META->SetValue(FALSE);
     miscSizer->Add(pCheck_META, verticleInputFlags);
 
+    // ECDIS portrays wrecks, rocks and other obstructions with the
+    // "isolated danger" symbol if they are shoaler than the safety depth.
+    pCheck_ISODGR = new wxCheckBox(ps57Ctl, ID_ISODGR,
+                                 _("Isolated Danger Above Safety Contour"));
+    pCheck_ISODGR->SetValue(FALSE);
+    miscSizer->Add(pCheck_ISODGR, verticleInputFlags);
+    
     optionsColumn->Add(new wxStaticText(ps57Ctl, wxID_ANY, _("Buoys/Lights")),
                        groupLabelFlags);
 
@@ -3353,6 +3361,13 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     pCheck_META->SetValue(FALSE);
     miscSizer->Add(pCheck_META, inputFlags);
 
+    // ECDIS portrays wrecks, rocks and other obstructions with the
+    // "isolated danger" symbol if they are shoaler than the safety depth.
+    pCheck_ISODGR = new wxCheckBox(ps57Ctl, ID_ISODGR,
+                                 _("Isolated Danger Above Safety Contour"));
+    pCheck_ISODGR->SetValue(FALSE);
+    miscSizer->Add(pCheck_ISODGR, inputFlags);
+    
     wxBoxSizer* lightSizer = new wxBoxSizer(wxVERTICAL);
     optionsColumn->Add(lightSizer, groupInputFlags);
 
@@ -5286,6 +5301,7 @@ void options::SetInitialVectorSettings(void)
         //  Other Display Filters
         pCheck_SOUNDG->SetValue(ps52plib->m_bShowSoundg);
         pCheck_META->SetValue(ps52plib->m_bShowMeta);
+	pCheck_ISODGR->SetValue(g_bShowISODGR);
         pCheck_SHOWIMPTEXT->SetValue(ps52plib->m_bShowS57ImportantTextOnly);
         pCheck_SCAMIN->SetValue(ps52plib->m_bUseSCAMIN);
         pCheck_ATONTEXT->SetValue(ps52plib->m_bShowAtonText);
@@ -6195,6 +6211,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
     ps52plib->m_bShowSoundg = pCheck_SOUNDG->GetValue();
     ps52plib->m_bShowMeta = pCheck_META->GetValue();
+    g_bShowISODGR = pCheck_ISODGR->GetValue();
     ps52plib->m_bShowS57ImportantTextOnly = pCheck_SHOWIMPTEXT->GetValue();
     ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
     ps52plib->m_bShowAtonText = pCheck_ATONTEXT->GetValue();
