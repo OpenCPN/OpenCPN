@@ -240,6 +240,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     double La1, Lo1, La2, Lo2, Di, Dj;
     int im1, jm1, im2, jm2;
     int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
+
+    rety = 0;
     if(!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2, Di, Dj,
                                   im1, jm1, im2, jm2,
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
@@ -251,9 +253,13 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
        rec2x.Di != rec2y.Di ||rec2x.Dj != rec2y.Dj ||
        rec1x.Ni != rec1y.Ni ||rec1x.Nj != rec1y.Nj ||
        rec2x.Ni != rec2y.Ni ||rec2x.Nj != rec2y.Nj)
+    {
         // could also make sure lat and lon min/max are the same...
-        return NULL;
+        // copy first 
+        rety = new GribRecord(rec1y);
 
+        return new GribRecord(rec1x);
+    }
     // recopie les champs de bits
     int size = Ni*Nj;
     double *datax = new double[size], *datay = new double[size];
