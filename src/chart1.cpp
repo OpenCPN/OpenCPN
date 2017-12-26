@@ -9190,9 +9190,9 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
 static void UpdatePositionCalculatedSogCog()                                                                         
 {
     wxDateTime now = wxDateTime::Now();
-    if( last_own_ship_sog_cog_calc_ts != wxInvalidDateTime) {
+    if( last_own_ship_sog_cog_calc_ts.IsValid() ) {
         wxLongLong time_diff = now.Subtract(last_own_ship_sog_cog_calc_ts).GetMilliseconds();
-        if( time_diff * 1000 >= g_own_ship_sog_cog_calc_damp_sec ) {
+        if( time_diff / 1000 >= g_own_ship_sog_cog_calc_damp_sec ) {
             double brg, dist;
             DistanceBearingMercator( gLat, gLon, last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon, &brg, &dist );
             gCog = brg;
