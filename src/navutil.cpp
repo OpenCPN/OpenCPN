@@ -251,6 +251,9 @@ extern bool             g_bDebugS57;
 extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
 
+extern bool             g_own_ship_sog_cog_calc;
+extern int              g_own_ship_sog_cog_calc_damp_sec;
+
 #ifdef USE_S57
 extern s52plib          *ps52plib;
 #endif
@@ -750,6 +753,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
     Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
+    Read( _T ( "OwnShipSogCogCalc" ), &g_own_ship_sog_cog_calc, false );
+    Read( _T ( "OwnShipSogCogCalcDampSec"), &g_own_ship_sog_cog_calc_damp_sec, 1 );
     g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
 
     g_n_arrival_circle_radius = .050;           // default
@@ -1966,6 +1971,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x );
     Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y );
     Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
+    Write( _T ( "OwnShipSogCogCalc" ), g_own_ship_sog_cog_calc );
+    Write( _T ( "OwnShipSogCogCalcDampSec"), g_own_ship_sog_cog_calc_damp_sec );
 
     wxString racr;
  //   racr.Printf( _T ( "%g" ), g_n_arrival_circle_radius );

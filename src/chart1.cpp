@@ -391,6 +391,11 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 double                    g_ownship_predictor_minutes;
 double                    g_ownship_HDTpredictor_miles;
 
+bool                      g_own_ship_sog_cog_calc;
+int                       g_own_ship_sog_cog_calc_damp_sec;
+wxDateTime                last_own_ship_sog_cog_calc_ts;
+double                    last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon;
+
 int                       g_current_arrow_scale;
 int                       g_tide_rectangle_scale;
 
@@ -1523,6 +1528,8 @@ void ParseAllENC()
 bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
+
+    last_own_ship_sog_cog_calc_ts = wxInvalidDateTime;
 
 #if defined(__WXGTK__)  && defined(ocpnUSE_GLES) && defined(__ARM_ARCH)
     // There is a race condition between cairo which is used for text rendering
@@ -9180,6 +9187,27 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     return bret;
 }
 
+static void UpdatePositionCalculatedSogCog()                                                                         
+{
+    wxDateTime now = wxDateTime::Now();
+    if( last_own_ship_sog_cog_calc_ts != wxInvalidDateTime) {
+        wxLongLong time_diff = now.Subtract(last_own_ship_sog_cog_calc_ts).GetMilliseconds();
+        if( time_diff * 1000 >= g_own_ship_sog_cog_calc_damp_sec ) {
+            double brg, dist;
+            DistanceBearingMercator( gLat, gLon, last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon, &brg, &dist );
+            gCog = brg;
+            gSog = dist / (time_diff.ToDouble() / 3600000.);
+            last_own_ship_sog_cog_calc_lat = gLat;
+            last_own_ship_sog_cog_calc_lon = gLon;
+            last_own_ship_sog_cog_calc_ts = now;
+        }
+    } else {
+        last_own_ship_sog_cog_calc_lat = gLat;
+        last_own_ship_sog_cog_calc_lon = gLon;
+        last_own_ship_sog_cog_calc_ts = now;
+    }
+}
+
 static bool ParsePosition(const LATLONG &Position)
 {
     bool ll_valid = true;
@@ -9208,6 +9236,10 @@ static bool ParsePosition(const LATLONG &Position)
     }
     else
         ll_valid = false;
+
+    if( ll_valid && g_own_ship_sog_cog_calc ) {
+        UpdatePositionCalculatedSogCog();
+    }
 
     return ll_valid;
 }
@@ -9281,7 +9313,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     // but also my gps occasionally outputs RMC
                     // messages with valid lat and lon but
                     // 0.0 for speed and course which messes up the filter
-                    if(m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
+                    if(!g_own_ship_sog_cog_calc && m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
                         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
                         cog_sog_valid = true;
@@ -9337,11 +9369,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
             case VTG:
                 // should we allow either Sog or Cog but not both to be valid?
-                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
+                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
                     gSog = m_NMEA0183.Vtg.SpeedKnots;
-                if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
-                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
+                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
                     !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                     cog_sog_valid = true;
@@ -9405,9 +9437,13 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gLat = gpd.kLat;
             if( !wxIsNaN(gpd.kLon) )
                 gLon = gpd.kLon;
-            
-            gCog = gpd.kCog;
-            gSog = gpd.kSog;
+
+            if( !g_own_ship_sog_cog_calc ) {
+                gCog = gpd.kCog;
+                gSog = gpd.kSog;
+            } else {
+                UpdatePositionCalculatedSogCog();
+            }
             cog_sog_valid = true;
 
             if( !wxIsNaN(gpd.kHdt) )
@@ -9666,7 +9702,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
 
 void MyFrame::FilterCogSog( void )
 {            
-    if( g_bfilter_cogsog ) {
+    if( g_bfilter_cogsog && !g_own_ship_sog_cog_calc ) {
         //    Simple averaging filter for COG
         double cog_last = gCog;       // most recent reported value
 
