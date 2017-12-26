@@ -130,6 +130,9 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 
 extern bool g_bDisplayGrid;
 
+// LIVE ETA OPTION
+extern bool g_bShowLiveETA;
+
 //    AIS Global configuration
 extern bool g_bCPAMax;
 extern double g_CPAMax_NM;
@@ -3781,7 +3784,30 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     pSDepthUnits = new wxCheckBox(pDisplayPanel, ID_SHOWDEPTHUNITSBOX1,
                                   _("Show Depth Units"));
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
+      
+    // CUSTOMIZATION - LIVE ETA OPTION
+      
+    // Spacer
+    generalSizer->Add(0, border_size * 4);
+    generalSizer->Add(0, border_size * 4);
+    
+    // New menu status bar
+    generalSizer->Add(
+        new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
+        groupLabelFlags
+    );
+    wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
+    generalSizer->Add(boxDispStatusBar, groupInputFlags);
+      
+    // Add option for live ETA
+    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA"));
+    boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
+    
+    // END OF CUSTOMIZATION - LIVE ETA OPTION
+      
+      
   } else {
+      
     wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
     pDisplayPanel->SetSizer(wrapperSizer);
 
@@ -4964,6 +4990,9 @@ void options::SetInitialSettings(void) {
   pMagVar->Enable(!b_haveWMM);
   
   pSDisplayGrid->SetValue(g_bDisplayGrid);
+    
+  // LIVE ETA OPTION
+  pSLiveETA->SetValue(g_bShowLiveETA);
 
   pCBCourseUp->SetValue(g_bCourseUp);
   pCBNorthUp->SetValue(!g_bCourseUp);
@@ -5973,6 +6002,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   // End of Connections page
   g_bShowOutlines = pCDOOutlines->GetValue();
   g_bDisplayGrid = pSDisplayGrid->GetValue();
+    
+  // LIVE ETA OPTION
+  g_bShowLiveETA = pSLiveETA->GetValue();
 
   bool temp_bquilting = pCDOQuilting->GetValue();
   if (!g_bQuiltEnable && temp_bquilting)

@@ -324,6 +324,10 @@ extern double           g_display_size_mm;
 extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
+// CUSTOMIZATION - OPTION LIVE ETA
+bool g_bShowLiveETA;
+// END OF CUSTOMIZATION - OPTION LIVE ETA
+
 
 
 // "Curtain" mode parameters
@@ -2521,7 +2525,7 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     
     s << FormatDistanceAdaptive( dist );
     
-    // CUSTOMIZATION - LIVE ETA
+    // CUSTOMIZATION - LIVE ETA OPTION
     // -------------------------------------------------------
     // Calculate an "live" ETA based on route starting from the current
     // position of the boat and goes to the cursor of the mouse.
@@ -2529,43 +2533,48 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     // of the boat to give an estimation of the route (in particular if GPS
     // is off).
     
-    float realTimeETA;
-    float boatSpeed;
-    float boatSpeedDefault = 6.0;
-    
-    // Calculate Estimate Time to Arrival (ETA) in minutes
-    // Check before is value not closed to zero (it will make an very big number...)
-    if (!wxIsNaN(gSog))
+    // Display only if option "live ETA" is selected in Settings > Display > General.
+    if (g_bShowLiveETA)
     {
-        boatSpeed = gSog;
-        if (boatSpeed < 0.5)
+    
+        float realTimeETA;
+        float boatSpeed;
+        float boatSpeedDefault = 6.0;
+        
+        // Calculate Estimate Time to Arrival (ETA) in minutes
+        // Check before is value not closed to zero (it will make an very big number...)
+        if (!wxIsNaN(gSog))
         {
-            realTimeETA = 0;
+            boatSpeed = gSog;
+            if (boatSpeed < 0.5)
+            {
+                realTimeETA = 0;
+            }
+            else
+            {
+                realTimeETA = dist / boatSpeed * 60;
+            }
         }
         else
         {
-            realTimeETA = dist / boatSpeed * 60;
+            realTimeETA = 0;
         }
+        
+        // Add space after distance display
+        s << " ";
+        // Display ETA
+        s << minutesToHoursDays(realTimeETA);
+        
+        // In any case, display also an ETA with default speed at 6knts
+        
+        s << " [@";
+        s << wxString::Format(_T("%d"), (int)boatSpeedDefault);
+        s << "kn: ";
+        s << minutesToHoursDays(dist/boatSpeedDefault*60);
+        s << "]";
+    
     }
-    else
-    {
-        realTimeETA = 0;
-    }
-    
-    // Add space after distance display
-    s << " ";
-    // Display ETA
-    s << minutesToHoursDays(realTimeETA);
-    
-    // In any case, display also an ETA with default speed at 6knts
-    
-    s << " [@";
-    s << wxString::Format(_T("%d"), (int)boatSpeedDefault);
-    s << "kn: ";
-    s << minutesToHoursDays(dist/boatSpeedDefault*60);
-    s << "]";
-    
-    // END OF CUSTOMIZATION - LIVE ETA
+    // END OF - LIVE ETA OPTION
     
     if(STAT_FIELD_CURSOR_BRGRNG >= 0)
         parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );

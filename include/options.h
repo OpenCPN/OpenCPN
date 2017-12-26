@@ -180,7 +180,9 @@ enum {
   ID_TRACKROTATECOMPUTER,
   ID_SETSTDLIST,
   ID_VECZOOM,
-  ID_INLANDECDISBOX
+  ID_INLANDECDISBOX,
+  // LIVE ETA OPTION
+  ID_CHECK_LIVEETA
 };
 
 /* Define an int bit field for dialog return value
@@ -351,6 +353,8 @@ class options : private Uncopyable,
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
   wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor;
   wxSlider *m_pSlider_Zoom_Vector;
+  // LIVE ETA OPTION
+  wxCheckBox *pSLiveETA;
   
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;

@@ -172,6 +172,9 @@ extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
 
+// LIVE ETA OPTION
+extern bool             g_bShowLiveETA;
+
 //    AIS Global configuration
 extern bool             g_bCPAMax;
 extern double           g_CPAMax_NM;
@@ -734,6 +737,9 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
     Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
+    
+    // LIVE ETA OPTION
+    Read( _T ( "LiveETA" ), &g_bShowLiveETA, 0 );
     
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
       
@@ -2051,6 +2057,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
     Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
+    
+    // LIVE ETA OPTION
+    Write( _T( "LiveETA" ), g_bShowLiveETA);
     
 //    S57 Object Filter Settings
 
