@@ -36,7 +36,6 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
-#include <../../../../pavuk-0.9.35/src/tr.h>
 
 static AIS_Decoder *s_p_sort_decoder;
 
