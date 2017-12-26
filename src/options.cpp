@@ -6042,6 +6042,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
     g_fWaypointRangeRingsStep = temp_dbl;
   g_iWaypointRangeRingsStepUnits =
       m_itemWaypointRangeRingsUnits->GetSelection();
+   g_colourWaypointRangeRingsColour =
+       wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_colourWaypointRangeRingsColour =
       m_colourWaypointRangeRingsColour->GetColour();
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
@@ -6061,6 +6063,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_colourTrackLineColour =
       m_colourTrackLineColour->GetColour();
+  g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
