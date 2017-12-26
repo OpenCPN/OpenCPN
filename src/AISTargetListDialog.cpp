@@ -310,16 +310,43 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     UpdateButtons();
 
     if( m_pAuiManager ) {
-        wxAuiPaneInfo pane =
+        wxAuiPaneInfo paneproto =
                 wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).Float().FloatingPosition( 50, 50 )
                 .FloatingSize(400, 200).BestSize(700, GetCharHeight() * 10);
-        m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
-
+                
+ 
         //      Force and/or override any perspective information that is not applicable
-        pane.Name( _T("AISTargetList") );
-        pane.DestroyOnClose( true );
-        pane.TopDockable( false ).BottomDockable( true ).LeftDockable( false ).RightDockable( false );
-        pane.Show( true );
+        paneproto.Caption( wxGetTranslation( _("AIS target list") ) );
+        paneproto.Name( _T("AISTargetList") );
+        paneproto.DestroyOnClose( true );
+        paneproto.TopDockable( false ).BottomDockable( true ).LeftDockable( false ).RightDockable( false );
+        paneproto.Show( true );
+
+        m_pAuiManager->AddPane( this, paneproto );
+
+        wxAuiPaneInfo &pane = m_pAuiManager->GetPane(_T("AISTargetList"));
+        
+        if(g_AisTargetList_perspective.IsEmpty()){
+            RecalculateSize();
+        }
+        else{
+            m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
+            m_pAuiManager->Update();
+        }
+
+        pane = m_pAuiManager->GetPane(_T("AISTargetList"));     // Refresh the reference
+        
+        //  Some special setup for touch screens
+        if(g_btouch){
+            pane.Float();
+            pane.Dockable( false );
+            
+            wxSize screen_size = ::wxGetDisplaySize();
+            pane.FloatingSize(screen_size.x * 6/10, screen_size.y * 8/10);
+            pane.FloatingPosition(screen_size.x * 2/10, screen_size.y * 1/10);
+            m_pAuiManager->Update();
+        }
+        
         
         bool b_reset_pos = false;
         if( (pane.floating_size.x != -1) && (pane.floating_size.y != -1)){
@@ -351,8 +378,10 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
 #endif
 
-            if( b_reset_pos )
+            if( b_reset_pos ){
                 pane.FloatingPosition( 50, 50 );
+                m_pAuiManager->Update();
+            }
         }
 
         //    If the list got accidentally dropped on top of the chart bar, move it away....
@@ -360,23 +389,10 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             pane.Float();
             pane.Row( 1 );
             pane.Position( 0 );
-
-        }
-        pane.Caption( wxGetTranslation( _("AIS target list") ) );
-        pane.Show();
-        
-        //  Some special setup for touch screens
-        if(g_btouch){
-            pane.Float();
-            pane.Dockable( false );
-            
-            wxSize screen_size = ::wxGetDisplaySize();
-            pane.FloatingSize(screen_size.x * 6/10, screen_size.y * 8/10);
-            pane.FloatingPosition(screen_size.x * 2/10, screen_size.y * 1/10);
+            m_pAuiManager->Update();
         }
         
-        
-        m_pAuiManager->AddPane( this, pane );
+        pane.Show( true );
         m_pAuiManager->Update();
 
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
@@ -384,6 +400,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         
         m_pAuiManager->Connect( wxEVT_AUI_PANE_CLOSE,
                 wxAuiManagerEventHandler( AISTargetListDialog::OnPaneClose ), NULL, this );
+        
     }
     else {
         //  Make an estimate of the default dialog size
@@ -394,7 +411,6 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         SetSize( esize );    
     }
     
-    RecalculateSize();
 }
 
 AISTargetListDialog::~AISTargetListDialog()
@@ -406,7 +422,6 @@ AISTargetListDialog::~AISTargetListDialog()
 
 void AISTargetListDialog::RecalculateSize()
 {
-    if(g_bresponsive){
         //  Make an estimate of the dialog size
         
         wxSize esize;
@@ -435,7 +450,6 @@ void AISTargetListDialog::RecalculateSize()
             m_pAuiManager->Update();
         }
         
-    }
     
 }
 

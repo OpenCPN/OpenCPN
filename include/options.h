@@ -180,7 +180,9 @@ enum {
   ID_TRACKROTATECOMPUTER,
   ID_SETSTDLIST,
   ID_VECZOOM,
-  ID_INLANDECDISBOX
+  ID_INLANDECDISBOX,
+  ID_SOGCOGFROMLLCHECKBOX,
+  ID_SOGCOGDAMPINTTEXTCTRL
 };
 
 /* Define an int bit field for dialog return value
@@ -499,8 +501,11 @@ class options : private Uncopyable,
   wxFlexGridSizer *radarGrid, *waypointradarGrid;
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
+  wxColourPickerCtrl *m_colourTrackLineColour;;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
+  wxCheckBox *pSogCogFromLLCheckBox;
+  wxSpinCtrl *pSogCogFromLLDampInterval;
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
