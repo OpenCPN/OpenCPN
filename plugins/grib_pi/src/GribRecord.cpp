@@ -240,6 +240,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     double La1, Lo1, La2, Lo2, Di, Dj;
     int im1, jm1, im2, jm2;
     int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
+
+    rety = 0;
     if(!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2, Di, Dj,
                                   im1, jm1, im2, jm2,
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
