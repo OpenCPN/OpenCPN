@@ -384,8 +384,12 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
     }
-
+    
     if(i<n_ext){
+        wxString msg;
+        msg.Printf(_T("Using extension set: %d : {%s}"), i, extensions[i]);
+        wxLogMessage(msg);
+        
         s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
         s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
