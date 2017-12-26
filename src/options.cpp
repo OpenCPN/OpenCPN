@@ -192,6 +192,7 @@ extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
+extern wxColour g_colourTrackLineColour;
 
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
@@ -2556,9 +2557,22 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
     
+  wxFlexGridSizer* hTrackGrid =
+      new wxFlexGridSizer(1, 3, group_item_spacing, group_item_spacing);
+  hTrackGrid->AddGrowableCol(1);
+  trackSizer->Add(hTrackGrid, 0, wxALL | wxEXPAND, border_size);
+
   pTrackHighlite =
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
-  trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
+  hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, border_size);
+  wxStaticText* trackColourText =
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+  hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
+  m_colourTrackLineColour = new wxColourPickerCtrl(
+      itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
+  hTrackGrid->Add(m_colourTrackLineColour, 1,
+                         wxALIGN_RIGHT, border_size);
 
   wxFlexGridSizer* pTrackGrid =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
@@ -5037,6 +5051,7 @@ void options::SetInitialSettings(void) {
   pTrackRotateUTC->SetValue(g_track_rotate_time_type == TIME_TYPE_UTC);
   pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
+  m_colourTrackLineColour->SetColour(g_colourTrackLineColour);
 
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
@@ -6029,6 +6044,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
       m_itemWaypointRangeRingsUnits->GetSelection();
   g_colourWaypointRangeRingsColour =
       m_colourWaypointRangeRingsColour->GetColour();
+   g_colourWaypointRangeRingsColour =
+       wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
@@ -6044,6 +6061,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
+  g_colourTrackLineColour =
+      m_colourTrackLineColour->GetColour();
+  g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
