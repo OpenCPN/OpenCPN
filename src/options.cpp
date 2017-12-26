@@ -6042,10 +6042,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
     g_fWaypointRangeRingsStep = temp_dbl;
   g_iWaypointRangeRingsStepUnits =
       m_itemWaypointRangeRingsUnits->GetSelection();
-   g_colourWaypointRangeRingsColour =
-       wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_colourWaypointRangeRingsColour =
       m_colourWaypointRangeRingsColour->GetColour();
+   g_colourWaypointRangeRingsColour =
+       wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
