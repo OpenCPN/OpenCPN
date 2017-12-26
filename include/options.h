@@ -512,6 +512,7 @@ class options : private Uncopyable,
 #endif  
   wxRadioButton *pTrackRotateComputerTime, *pTrackRotateUTC, *pTrackRotateLMT;
   wxColourPickerCtrl *m_colourWaypointRangeRingsColour;
+  wxColourPickerCtrl *m_colourTrackLineColour;
   wxSpinCtrl *pSoundDeviceIndex;
   wxArrayPtrVoid OBJLBoxArray;
   wxString m_init_chart_dir;
