@@ -129,6 +129,8 @@ extern int              g_chart_zoom_modifier_vector;
 extern double           g_display_size_mm;
 extern bool             g_bopengl;
 
+extern ChartGroupArray  *g_pGroupArray;
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -2685,7 +2687,12 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             delete ChartData;
             ChartData = new ChartDB();
             ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
-
+            
+            // Update group contents
+            if(g_pGroupArray)
+                ChartData->ApplyGroupArray(g_pGroupArray);
+            
+            
             if(g_boptionsactive){
                 g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
             }

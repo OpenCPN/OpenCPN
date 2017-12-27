@@ -172,6 +172,9 @@ extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
 
+extern bool g_own_ship_sog_cog_calc;
+extern int g_own_ship_sog_cog_calc_damp_sec;
+
 extern bool g_bPreserveScaleOnX;
 extern bool g_bPlayShipsBells;
 extern int g_iSoundDeviceIndex;
@@ -196,6 +199,7 @@ extern double g_TrackIntervalSeconds;
 extern double g_TrackDeltaDistance;
 extern double g_TrackDeltaDistance;
 extern int g_nTrackPrecision;
+extern wxColour g_colourTrackLineColour;
 
 extern int g_iSDMMFormat;
 extern int g_iDistanceFormat;
@@ -2560,9 +2564,22 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   trackSizer->Add(trackSizer1, 1, wxEXPAND | wxALL, border_size);
     
+  wxFlexGridSizer* hTrackGrid =
+      new wxFlexGridSizer(1, 3, group_item_spacing, group_item_spacing);
+  hTrackGrid->AddGrowableCol(1);
+  trackSizer->Add(hTrackGrid, 0, wxALL | wxEXPAND, border_size);
+
   pTrackHighlite =
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
-  trackSizer->Add(pTrackHighlite, 1, wxALL, border_size);
+  hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, border_size);
+  wxStaticText* trackColourText =
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+  hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
+  m_colourTrackLineColour = new wxColourPickerCtrl(
+      itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
+      wxDefaultValidator, _T( "ID_COLOURTRACKCOLOUR" ));
+  hTrackGrid->Add(m_colourTrackLineColour, 1,
+                         wxALIGN_RIGHT, border_size);
 
   wxFlexGridSizer* pTrackGrid =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
@@ -2666,6 +2683,27 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       wxDefaultValidator, _T( "ID_COLOURWAYPOINTRANGERINGSCOLOUR" ));
   waypointradarGrid->Add(m_colourWaypointRangeRingsColour, 0,
                          wxALIGN_RIGHT | wxALL, 1);
+
+  //  Calculate values
+  wxStaticBox* ownshipcalcText = new wxStaticBox(itemPanelShip, wxID_ANY, _("Calculate values"));
+  wxStaticBoxSizer* ownshipcalcSizer = new wxStaticBoxSizer(ownshipcalcText, wxVERTICAL);
+  ownShip->Add(ownshipcalcSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+  wxFlexGridSizer* dispOwnShipCalcOptionsGrid = new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
+  ownshipcalcSizer->Add(dispOwnShipCalcOptionsGrid, 0, wxTOP | wxALL | wxEXPAND, border_size);
+
+  dispOwnShipCalcOptionsGrid->AddGrowableCol(1);
+
+  pSogCogFromLLCheckBox = new wxCheckBox(itemPanelShip, ID_SOGCOGFROMLLCHECKBOX, _("Calculate SOG and COG from position changes"));
+  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLCheckBox, 1, wxALL, 5);
+  dispOwnShipCalcOptionsGrid->AddSpacer(0);
+
+  wxStaticText* SogCogFromLLDampIntText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Min seconds between updates"));
+  dispOwnShipCalcOptionsGrid->Add(SogCogFromLLDampIntText, 1, wxEXPAND | wxALL, group_item_spacing);
+  
+  pSogCogFromLLDampInterval = new wxSpinCtrl(itemPanelShip, ID_SOGCOGDAMPINTTEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 0 );
+
+  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0, wxALIGN_RIGHT | wxALL, group_item_spacing);
 
   DimeControl(itemPanelShip);
 }
@@ -5076,6 +5114,9 @@ void options::SetInitialSettings(void) {
   pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
   pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
 
+  pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
+  pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
+
   pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
 
   pPreserveScale->SetValue(g_bPreserveScaleOnX);
@@ -5095,6 +5136,7 @@ void options::SetInitialSettings(void) {
   pTrackRotateUTC->SetValue(g_track_rotate_time_type == TIME_TYPE_UTC);
   pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
+  m_colourTrackLineColour->SetColour(g_colourTrackLineColour);
 
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
@@ -6091,7 +6133,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
       m_itemWaypointRangeRingsUnits->GetSelection();
   g_colourWaypointRangeRingsColour =
       m_colourWaypointRangeRingsColour->GetColour();
+   g_colourWaypointRangeRingsColour =
+       wxColour(g_colourWaypointRangeRingsColour.Red(), g_colourWaypointRangeRingsColour.Green(), g_colourWaypointRangeRingsColour.Blue());
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
+  g_own_ship_sog_cog_calc = pSogCogFromLLCheckBox->GetValue();
+  g_own_ship_sog_cog_calc_damp_sec = pSogCogFromLLDampInterval->GetValue();
+
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 
   g_bPreserveScaleOnX = pPreserveScale->GetValue();
@@ -6106,6 +6153,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
+  g_colourTrackLineColour =
+      m_colourTrackLineColour->GetColour();
+  g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
