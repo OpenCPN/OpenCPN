@@ -174,6 +174,7 @@ extern wxArrayString    *pMessageOnceArray;
 
 // LIVE ETA OPTION
 extern bool             g_bShowLiveETA;
+extern long             g_defaultBoatSpeed;
 
 //    AIS Global configuration
 extern bool             g_bCPAMax;
@@ -740,6 +741,7 @@ int MyConfig::LoadMyConfig()
     
     // LIVE ETA OPTION
     Read( _T ( "LiveETA" ), &g_bShowLiveETA, 0 );
+    Read( _T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed, 0 );
     
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
       
@@ -2060,6 +2062,7 @@ void MyConfig::UpdateSettings()
     
     // LIVE ETA OPTION
     Write( _T( "LiveETA" ), g_bShowLiveETA);
+    Write( _T( "DefaultBoatSpeed" ), g_defaultBoatSpeed);
     
 //    S57 Object Filter Settings
 

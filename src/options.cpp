@@ -131,7 +131,8 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool g_bDisplayGrid;
 
 // LIVE ETA OPTION
-extern bool g_bShowLiveETA;
+extern bool     g_bShowLiveETA;
+extern long     g_defaultBoatSpeed;
 
 //    AIS Global configuration
 extern bool g_bCPAMax;
@@ -3786,24 +3787,39 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
       
     // CUSTOMIZATION - LIVE ETA OPTION
+    // -------------------------------
+    // Add a checkbox to activate live ETA option in status bar, and
+    // Add a text field to set default boat speed (for calculation when
+    // no GPS or when the boat is at the harbor).
       
     // Spacer
     generalSizer->Add(0, border_size * 4);
     generalSizer->Add(0, border_size * 4);
     
     // New menu status bar
-    generalSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
-        groupLabelFlags
-    );
+    generalSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
+                      groupLabelFlags);
     wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
       
     // Add option for live ETA
     pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
+      
+    // Add text input for default boat speed
+    // (for calculation, in case GPS speed is null)
+    wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
+    boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
+    defaultBoatSpeedSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed")),
+                               groupLabelFlags);
+    pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
+                                        wxSize(50, -1), wxTE_RIGHT);
+    //pSDefaultBoatSpeed->Enable(g_bShowLiveETA);
+    defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL, group_item_spacing);
     
+    // --------------------------------------
     // END OF CUSTOMIZATION - LIVE ETA OPTION
+    
       
       
   } else {
@@ -4992,7 +5008,20 @@ void options::SetInitialSettings(void) {
   pSDisplayGrid->SetValue(g_bDisplayGrid);
     
   // LIVE ETA OPTION
+    
+  // Checkbox
   pSLiveETA->SetValue(g_bShowLiveETA);
+    
+  // Defaut boat speed text input field
+  wxString stringDefaultBoatSpeed;
+  if (!g_defaultBoatSpeed)
+  {
+      g_defaultBoatSpeed = 6;
+  }
+  stringDefaultBoatSpeed.Printf(_T("%d"), g_defaultBoatSpeed);
+  pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
+    
+  // END LIVE ETA OPTION
 
   pCBCourseUp->SetValue(g_bCourseUp);
   pCBNorthUp->SetValue(!g_bCourseUp);
@@ -6005,6 +6034,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     
   // LIVE ETA OPTION
   g_bShowLiveETA = pSLiveETA->GetValue();
+  pSDefaultBoatSpeed->GetValue().ToLong(&g_defaultBoatSpeed);;
 
   bool temp_bquilting = pCDOQuilting->GetValue();
   if (!g_bQuiltEnable && temp_bquilting)

@@ -324,9 +324,9 @@ extern double           g_display_size_mm;
 extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
-// CUSTOMIZATION - OPTION LIVE ETA
-bool g_bShowLiveETA;
-// END OF CUSTOMIZATION - OPTION LIVE ETA
+// LIVE ETA OPTION
+bool                    g_bShowLiveETA;
+long                    g_defaultBoatSpeed;
 
 
 
@@ -2539,7 +2539,7 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     
         float realTimeETA;
         float boatSpeed;
-        float boatSpeedDefault = 6.0;
+        float boatSpeedDefault = g_defaultBoatSpeed;
         
         // Calculate Estimate Time to Arrival (ETA) in minutes
         // Check before is value not closed to zero (it will make an very big number...)

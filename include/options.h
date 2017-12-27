@@ -182,7 +182,8 @@ enum {
   ID_VECZOOM,
   ID_INLANDECDISBOX,
   // LIVE ETA OPTION
-  ID_CHECK_LIVEETA
+  ID_CHECK_LIVEETA,
+  ID_DEFAULT_BOAT_SPEED
 };
 
 /* Define an int bit field for dialog return value
@@ -355,6 +356,7 @@ class options : private Uncopyable,
   wxSlider *m_pSlider_Zoom_Vector;
   // LIVE ETA OPTION
   wxCheckBox *pSLiveETA;
+  wxTextCtrl *pSDefaultBoatSpeed;
   
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
   int k_tides;
