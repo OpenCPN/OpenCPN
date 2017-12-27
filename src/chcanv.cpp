@@ -2597,7 +2597,7 @@ wxString minutesToHoursDays(float timeInMinutes)
     // Less than 60min, keep time in minutes
     else if (timeInMinutes < 60 && timeInMinutes != 0)
     {
-        s << wxString::Format(_T("%2.0f"), timeInMinutes );
+        s << wxString::Format(_T("%d"), (int)timeInMinutes);
         s << "min";
     }
     
