@@ -1352,7 +1352,7 @@ static int copy_data(struct archive *ar, struct archive *aw)
     int r;
     const void *buff;
     size_t size;
-    la_int64_t offset;
+    __LA_INT64_T offset;
 
     for (;;) {
         r = archive_read_data_block(ar, &buff, &size, &offset);
