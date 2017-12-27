@@ -132,7 +132,8 @@ extern bool g_bDisplayGrid;
 
 // LIVE ETA OPTION
 extern bool     g_bShowLiveETA;
-extern long     g_defaultBoatSpeed;
+extern double   g_defaultBoatSpeed;
+extern double   g_defaultBoatSpeedUserUnit;
 
 //    AIS Global configuration
 extern bool g_bCPAMax;
@@ -3848,7 +3849,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     // (for calculation, in case GPS speed is null)
     wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-    defaultBoatSpeedSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed (knots)")),
+    defaultBoatSpeedSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
                                groupLabelFlags);
     pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
                                         wxSize(50, -1), wxTE_RIGHT);
@@ -5050,14 +5051,16 @@ void options::SetInitialSettings(void) {
   pSLiveETA->SetValue(g_bShowLiveETA);
     
   // Defaut boat speed text input field
+  // Speed always in knots, and converted to user speed unit
   wxString stringDefaultBoatSpeed;
-  if (!g_defaultBoatSpeed)
+  if (!g_defaultBoatSpeed || !g_defaultBoatSpeedUserUnit)
   {
-      g_defaultBoatSpeed = 6;
+      g_defaultBoatSpeed = 6.0;
+      g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
   }
-  stringDefaultBoatSpeed.Printf(_T("%d"), g_defaultBoatSpeed);
+  stringDefaultBoatSpeed.Printf(_T("%d"), (int)g_defaultBoatSpeedUserUnit);
   pSDefaultBoatSpeed->SetValue(stringDefaultBoatSpeed);
-    
+  
   // END LIVE ETA OPTION
 
   pCBCourseUp->SetValue(g_bCourseUp);
@@ -6073,10 +6076,6 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bShowOutlines = pCDOOutlines->GetValue();
   g_bDisplayGrid = pSDisplayGrid->GetValue();
     
-  // LIVE ETA OPTION
-  g_bShowLiveETA = pSLiveETA->GetValue();
-  pSDefaultBoatSpeed->GetValue().ToLong(&g_defaultBoatSpeed);;
-
   bool temp_bquilting = pCDOQuilting->GetValue();
   if (!g_bQuiltEnable && temp_bquilting)
     cc1->ReloadVP(); /* compose the quilt */
@@ -6148,6 +6147,11 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_iSDMMFormat = pSDMMFormat->GetSelection();
   g_iDistanceFormat = pDistanceFormat->GetSelection();
   g_iSpeedFormat = pSpeedFormat->GetSelection();
+    
+  // LIVE ETA OPTION
+  g_bShowLiveETA = pSLiveETA->GetValue();
+  pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
+  g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();

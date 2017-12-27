@@ -326,7 +326,8 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
 // LIVE ETA OPTION
 bool                    g_bShowLiveETA;
-long                    g_defaultBoatSpeed;
+double                  g_defaultBoatSpeed;
+double                  g_defaultBoatSpeedUserUnit;
 
 
 
@@ -2568,8 +2569,9 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
         // In any case, display also an ETA with default speed at 6knts
         
         s << " [@";
-        s << wxString::Format(_T("%d"), (int)boatSpeedDefault);
-        s << "kn: ";
+        s << wxString::Format(_T("%d"), (int)toUsrSpeed(boatSpeedDefault, -1));
+        s << wxString::Format(_T("%s"), getUsrSpeedUnit(-1));
+        s << " ";
         s << minutesToHoursDays(dist/boatSpeedDefault*60);
         s << "]";
     
