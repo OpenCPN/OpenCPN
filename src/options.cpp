@@ -3841,7 +3841,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
       
     // Add option for live ETA
-    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA"));
+    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA, _("Live ETA at Cursor"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
       
     // Add text input for default boat speed
