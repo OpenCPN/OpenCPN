@@ -2397,7 +2397,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
    {
        m_FileChooserDone = false;
 
-       boolean buseDialog = false;
+       boolean buseDialog = (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP);        //false;
        if(!buseDialog){
             //Intent intent = new Intent(this, FileChooserActivity.class);
             //intent.putExtra(FileChooserActivity.INPUT_START_FOLDER, initialDir);
@@ -2422,7 +2422,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         }
 
-        //Log.i("OpenCPN", "DirChooserDialog create and show " + initialDir);
+        Log.i("OpenCPN", "DirChooserDialog create and show " + initialDir);
 
         Thread thread = new Thread() {
             @Override
@@ -2486,8 +2486,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
                         dialog.show();
-
-                        //Log.i("DEBUGGER_TAG", "DirChooserDialog Back from show");
 
                     }
                 });
