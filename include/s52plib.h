@@ -179,6 +179,9 @@ public:
     
     void SetAnchorOn(bool val){ m_anchorOn = val; }
     bool GetAnchorOn();
+
+    void SetQualityOfDataOn(bool val){ m_qualityOfDataOn = val; }
+    bool GetQualityOfDataOn();
     
     int GetMajorVersion( void ) { return m_VersionMajor; }
     int GetMinorVersion( void ) { return m_VersionMinor; }
@@ -393,7 +396,8 @@ private:
 
     bool m_lightsOff;
     bool m_anchorOn;
-    
+    bool m_qualityOfDataOn;
+
     long m_state_hash;
 
     bool m_txf_ready;
