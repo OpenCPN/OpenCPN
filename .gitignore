@@ -18,4 +18,8 @@ buildwin/ocpn_gltest1.exe
 buildwin/vc/
 buildwin/wxWidgets/
 buildwin/zlib1.dll
+buildwin/include/
+buildwin/lzma.lib
+buildwin/liblzma.dll
+buildwin/archive.*
 src/opencpn.rc

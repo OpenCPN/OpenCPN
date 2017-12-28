@@ -25,16 +25,6 @@ SET(VERSION_MINOR "2")
 #SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_MACOSX_RPATH "ON")
 
-# Definitions
-add_definitions (
--D_FILE_OFFSET_BITS=64
--D_LARGEFILE_SOURCE
--DLIBUNRAR_BUILD
--DRARDLL
--DUNRAR
--DSILENT
-)
-
 INCLUDE("cmake/PluginConfigure.cmake")
 
 SET(SRC_CHARTDLDR
@@ -49,7 +39,8 @@ SET(SRC_CHARTDLDR
             src/base64.h
             src/chartcatalog.cpp
             src/chartcatalog.h
-
+)
+SET(SRC_UNRAR
             src/unrar/rar.cpp
             src/unrar/strlist.cpp
             src/unrar/strfn.cpp
@@ -100,20 +91,44 @@ SET(SRC_CHARTDLDR
             src/unrar/qopen.cpp
         )
 
-
-
-
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
  INCLUDE("cmake/FindTinyXML.cmake")
  FIND_PACKAGE(TinyXML QUIET)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
-INCLUDE_DIRECTORIES(src/unrar/)
+IF(APPLE)
+  #Homebrew does not link libarchive to /usr/local by default to avoid conflict with the system-wide one (which in turn does not provide includes...)
+  #We do not want the systemwide vrsion as it is too old and misses support for many archive formats
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive")
+  LIST(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/libarchive/lib")
+ENDIF(APPLE)
+IF(WIN32)
+  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin/include")
+  LIST(APPEND CMAKE_PREFIX_PATH "../../buildwin")
+ENDIF(WIN32)
+FIND_PACKAGE(LibArchive)
+IF(LibArchive_FOUND)
+  message(STATUS "Chartdldr_pi going to use LibArchive...")
+  INCLUDE_DIRECTORIES(${LibArchive_INCLUDE_DIRS})
+  #Unset the unrar sources as we will not need them
+  UNSET(SRC_UNRAR)
+  ADD_DEFINITIONS(-DDLDR_USE_LIBARCHIVE)
+ELSE(LibArchive_FOUND)
+  INCLUDE_DIRECTORIES(src/unrar/)
+  add_definitions (
+    -D_FILE_OFFSET_BITS=64
+    -D_LARGEFILE_SOURCE
+    -DLIBUNRAR_BUILD
+    -DRARDLL
+    -DUNRAR
+    -DSILENT
+  )
+ENDIF(LibArchive_FOUND)
 
 IF(TINYXML_FOUND)
  message (STATUS "Chartdldr_pi building with system tinyxml")
  INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIR})
- ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR})
+ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR} ${SRC_UNRAR})
  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES})
 ELSE(TINYXML_FOUND)
  message (STATUS "Chartdldr_pi building with embedded tinyxml")
@@ -123,9 +138,13 @@ ELSE(TINYXML_FOUND)
             src/tinyxml/tinyxmlparser.cpp
             src/tinyxml/tinyxmlerror.cpp
  )
- ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR} ${SRC_LTINYXML})
+ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_CHARTDLDR} ${SRC_LTINYXML} ${SRC_UNRAR})
 ENDIF(TINYXML_FOUND)
 ADD_DEFINITIONS(-DTIXML_USE_STL)
+
+IF(LibArchive_FOUND)
+  TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${LibArchive_LIBRARIES})  
+ENDIF(LibArchive_FOUND)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
