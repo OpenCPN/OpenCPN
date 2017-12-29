@@ -290,6 +290,7 @@ public:
     ~GSHHSChart();
     void SetColorScheme( ColorScheme scheme );
     void RenderViewOnDC( ocpnDC& dc, ViewPort& VPoint );
+    void Reset();
 
     wxColor land;
     wxColor water;
