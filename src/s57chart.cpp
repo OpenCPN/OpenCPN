@@ -95,6 +95,14 @@ extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 extern PFNGLBUFFERDATAPROC                 s_glBufferData;
 extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+
+#ifndef USE_ANDROID_GLES2
+#define glGenBuffers (s_glGenBuffers);
+#define glBindBuffer (s_glBindBuffer);
+#define glBufferData (s_glBufferData);
+#define glDeleteBuffers (s_glDeleteBuffers);
+#endif
+
 #endif
 
 
@@ -1363,7 +1371,7 @@ s57chart::~s57chart()
 
 #ifdef ocpnUSE_GL
     if(s_glDeleteBuffers && (m_LineVBO_name > 0))
-        s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+        glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
     free (m_this_chart_context);    
 
@@ -2430,22 +2438,22 @@ void s57chart::BuildLineVBO( void )
 
         //      Create the VBO
         GLuint vboId;
-        (s_glGenBuffers)(1, &vboId);
-
+        glGenBuffers(1, &vboId);
+        
          // bind VBO in order to use
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
-
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        
         // upload data to VBO
 #ifndef USE_ANDROID_GLES2
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 #endif
-        (s_glBufferData)(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
-
+        glBufferData(GL_ARRAY_BUFFER, m_vbo_byte_length, m_line_vertex_buffer, GL_STATIC_DRAW);
+        
 #ifndef USE_ANDROID_GLES2
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
 #endif
-        (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
-
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        
         //  Loop and populate all the objects
         for( int i = 0; i < PRIO_NUM; ++i ) {
             for( int j = 0; j < LUPNAME_NUM; j++ ) {

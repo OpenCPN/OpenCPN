@@ -555,7 +555,7 @@ void glChartCanvas::FlushFBO( void )
 {
     if(m_bsetup){
         wxLogMessage(_T("BuildFBO 2"));
-        
+
         BuildFBO();
     }
 }
@@ -597,7 +597,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
         SetSize( cc1->GetSize() );
         if( m_bsetup ){
             wxLogMessage(_T("BuildFBO 3"));
-            
+
             BuildFBO();
         }
     }
@@ -679,34 +679,11 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
 #define GL_MAX_RENDERBUFFER_SIZE          0x84E8
 #endif
 
+#ifndef USE_ANDROID_GLES2
 bool glChartCanvas::buildFBOSize(int fboSize)
 {
     bool retVal = true;
 
-#if 0    
-    //  In CanvasPanning mode, we will build square POT textures for the FBO backing store
-    //  We will make them as large as possible...
-    if(1/*g_GLOptions.m_bUseCanvasPanning*/){
-        wxString msg;
-        msg.Printf( _T("OpenGL-> Trying Framebuffer size: %d"), fboSize );
-        wxLogMessage(msg);
-        
-        int rb_x = GetSize().x;
-        int rb_y = GetSize().y;
-        int i=1;
-        while(i < rb_x) i <<= 1;
-        rb_x = i;
-        
-        i=1;
-        while(i < rb_y) i <<= 1;
-        rb_y = i;
-        
-        m_cache_tex_x = wxMax(rb_x, rb_y);
-        m_cache_tex_y = wxMax(rb_x, rb_y);
-        m_cache_tex_x = wxMax(fboSize, m_cache_tex_x);
-        m_cache_tex_y = wxMax(fboSize, m_cache_tex_y);
-    } else {            
-#endif
 
 #ifdef __OCPN__ANDROID__
     // We use the smallest possible (POT) FBO
@@ -799,12 +776,33 @@ bool glChartCanvas::buildFBOSize(int fboSize)
 #if 1        
         ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
                                      m_cache_tex_x, m_cache_tex_y );
+
+        int err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glRenderbufferStorage error:  %08X"), err );
+            wxLogMessage(msg);
+        }
         
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                          GL_RENDERBUFFER_EXT, m_renderbuffer );
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glFramebufferRenderbuffer depth error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+        
         
         ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                                          GL_RENDERBUFFER_EXT, m_renderbuffer );
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glFramebufferRenderbuffer stencil error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+        
 #else
         ( s_glRenderbufferStorage )( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,
                                      m_cache_tex_x, m_cache_tex_y );
@@ -850,14 +848,19 @@ bool glChartCanvas::buildFBOSize(int fboSize)
     
     }
     
+    glBindTexture(GL_TEXTURE_2D,0);
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+    
         // Check framebuffer completeness at the end of initialization.
     ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
         
     ( s_glFramebufferTexture2D )
         ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
           g_texture_rectangle_format, m_cache_tex[0], 0 );
-        
+    
     GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
+    
+    
     ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
         
     if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
@@ -869,8 +872,145 @@ bool glChartCanvas::buildFBOSize(int fboSize)
     
     return retVal;
 }
+#endif    
+
+#ifdef USE_ANDROID_GLES2
+bool glChartCanvas::buildFBOSize(int fboSize)
+{
+    bool retVal = true;
+
+
+    // We use the smallest possible (POT) FBO
+    int rb_x = GetSize().x;
+    int rb_y = GetSize().y;
+    int i=1;
+    while(i < rb_x) i <<= 1;
+    rb_x = i;
+
+    i=1;
+    while(i < rb_y) i <<= 1;
+    rb_y = i;
+
+    m_cache_tex_x = wxMax(rb_x, rb_y);
+    m_cache_tex_y = wxMax(rb_x, rb_y);
+
+    qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
+
+
+    int err = GL_NO_ERROR;
+    GLint params;
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE,&params);
+    
+    err = glGetError();
+    if(err == GL_INVALID_ENUM){
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE,&params);
+        err = glGetError();
+            
+    }
+     
+    if(err == GL_NO_ERROR){
+        if( fboSize > params ){
+            wxLogMessage(_T("    OpenGL-> Requested Framebuffer size exceeds GL_MAX_RENDERBUFFER_SIZE") );
+            return false;
+        }
+    }
+        
+        
+    
+   
+    
+     glGenFramebuffers ( 1, &m_fb0 );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer GenFramebuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
+
+    glGenRenderbuffers( 1, &m_renderbuffer );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer GenRenderbuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
+
+    
+    glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
+    err = glGetError();
+    if(err){
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> Framebuffer BindFramebuffers error:  %08X"), err );
+        wxLogMessage(msg);
+        retVal = false;
+    }
+    
+    // initialize color textures
+    glGenTextures( 2, m_cache_tex );
+    for(int i=0; i<2; i++) {
+        glBindTexture( g_texture_rectangle_format, m_cache_tex[i] );
+        glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexImage2D( g_texture_rectangle_format, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        
+    }
+
+    glBindRenderbuffer( GL_RENDERBUFFER, m_renderbuffer );
+    
+        // initialize composite depth/stencil renderbuffer
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES,  m_cache_tex_x, m_cache_tex_y );
+
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glRenderbufferStorage error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+        
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_renderbuffer );
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glFramebufferRenderbuffer depth error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+        
+        
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_renderbuffer );
+        err = glGetError();
+        if(err){
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> glFramebufferRenderbuffer stencil error:  %08X"), err );
+            wxLogMessage(msg);
+        }
+        
+    
+    glBindTexture(GL_TEXTURE_2D,0);
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    
+        // Check framebuffer completeness at the end of initialization.
+    glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
+        
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,  g_texture_rectangle_format, m_cache_tex[0], 0 );
+    
+    GLenum fb_status = glCheckFramebufferStatus( GL_FRAMEBUFFER_EXT );
     
     
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+        
+    if( fb_status != GL_FRAMEBUFFER_COMPLETE) {
+        wxString msg;
+        msg.Printf( _T("    OpenGL-> buildFBOSize->Framebuffer Incomplete:  %08X %08X"), fb_status );
+        wxLogMessage( msg );
+        retVal = false;
+    }
+    
+    return retVal;
+}
+#endif
+
 void glChartCanvas::BuildFBO( )
 {
     
@@ -884,6 +1024,7 @@ void glChartCanvas::BuildFBO( )
     if( m_b_DisableFBO)
         return;
 
+    
     int initialSize = 2048;
     
 #ifdef __OCPN__ANDROID__
@@ -896,11 +1037,14 @@ void glChartCanvas::BuildFBO( )
 #endif    
     
     if(!buildFBOSize(initialSize)){
+        
         glDeleteTextures( 2, m_cache_tex );
         ( s_glDeleteFramebuffers )( 1, &m_fb0 );
         ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
         
         if(!buildFBOSize(1024)){
+            wxLogMessage(_T("BuildFBO C"));
+            
             m_b_DisableFBO = true;
             wxLogMessage( _T("OpenGL-> FBO Framebuffer unavailable") );
             m_b_BuiltFBO = false;
@@ -1051,12 +1195,8 @@ void glChartCanvas::SetupOpenGL()
  
 #ifdef __OCPN__ANDROID__
             g_texture_rectangle_format = GL_TEXTURE_2D;
-//        m_b_DisableFBO = false;
 #endif
         
-//    if(b_timeGL)
-//        m_b_DisableFBO = true;
-    
     GetglEntryPoints();
     
     //  ATI cards do not do glGenerateMipmap very well, or at all.
@@ -1094,11 +1234,8 @@ void glChartCanvas::SetupOpenGL()
     }
 #endif
 
-#ifdef __OCPN__ANDROID__
     ///g_b_EnableVBO = false;
-#endif
 
-///    g_b_EnableVBO = false;
     
     if(g_b_EnableVBO)
         wxLogMessage( _T("OpenGL-> Using Vertexbuffer Objects") );
@@ -1130,7 +1267,8 @@ void glChartCanvas::SetupOpenGL()
     
     
     
-#if 1   /* this test sometimes fails when the fbo still works */
+#ifndef __OCPN__ANDROID__
+         /* this test sometimes fails when the fbo still works */
         //  But we need to be ultra-conservative here, so run all the tests we can think of
     
     
@@ -1155,6 +1293,7 @@ void glChartCanvas::SetupOpenGL()
           g_texture_rectangle_format, m_cache_tex[0], 0 );
         
         GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
+        
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
         
         if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
@@ -1164,6 +1303,7 @@ void glChartCanvas::SetupOpenGL()
             m_b_DisableFBO = true;
             BuildFBO();
         }
+            
     }
 #endif
 
@@ -4375,9 +4515,12 @@ void glChartCanvas::Render()
             }
             
             // enable rendering to texture in framebuffer object
-            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
-
-            float dx, dy;
+            //( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+            glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
+            
+            float dx = 0;
+            float dy = 0;
+            
             bool accelerated_pan = false;
             if( g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
                 && ( VPoint.m_projection_type == PROJECTION_MERCATOR
@@ -4407,8 +4550,12 @@ void glChartCanvas::Render()
                 accelerated_pan = b_whole_pixel && abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
             }
 
+            
             // do we allow accelerated panning?  can we perform it here?
 #ifndef USE_ANDROID_GLES2            
+            // enable rendering to texture in framebuffer object
+            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+
             if(accelerated_pan) {
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
@@ -4472,22 +4619,27 @@ void glChartCanvas::Render()
                     glDisable( g_texture_rectangle_format );
                 }
 
-                } else { // must redraw the entire screen
-                    ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+            } else { // must redraw the entire screen
+                ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                 g_texture_rectangle_format,
                                                 m_cache_tex[m_cache_page], 0 );
                     
-                        m_fbo_offsetx = 0;
-                        m_fbo_offsety = 0;
-                        m_fbo_swidth = sx;
-                        m_fbo_sheight = sy;
-                        wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
-                        RenderCharts(m_gldc, screen_region);
-                }
+                    m_fbo_offsetx = 0;
+                    m_fbo_offsety = 0;
+                    m_fbo_swidth = sx;
+                    m_fbo_sheight = sy;
+                    wxRect rect(m_fbo_offsetx, m_fbo_offsety, (GLint) sx, (GLint) sy);
+                    RenderCharts(m_gldc, screen_region);
+            }
                     
- 
+            // Disable Render to FBO
+            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+                    
                 
 #else   // GLES2
+        // enable rendering to texture in framebuffer object
+        glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
+
             if(VPoint.chart_scale < 5000)
                 b_full = true;
             
@@ -4495,15 +4647,13 @@ void glChartCanvas::Render()
                 accelerated_pan = false;
             
             if(accelerated_pan) {
-                //qDebug() << "AccPan";
+//                qDebug() << "AccPan";
                 if((dx != 0) || (dy != 0)){   // Anything to do?
                     m_cache_page = !m_cache_page; /* page flip */
 
                     /* perform accelerated pan rendering to the current target texture */
-                    ( s_glFramebufferTexture2D )
-                        ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                        g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
-
+                    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
+                    
                     //calculate the new regions to render
                     // add extra pixels to avoid coordindate rounding issues at large scale
                     OCPNRegion update_region;
@@ -4667,10 +4817,7 @@ void glChartCanvas::Render()
                 
             else { // must redraw the entire screen
                 //qDebug() << "Fullpage";
-                
-                ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                                                g_texture_rectangle_format,
-                                                m_cache_tex[!m_cache_page], 0 );
+                glFramebufferTexture2D( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, g_texture_rectangle_format, m_cache_tex[!m_cache_page], 0 );
                     
                 m_fbo_offsetx = 0;
                 m_fbo_offsety = 0;
@@ -4692,14 +4839,15 @@ void glChartCanvas::Render()
                         
                     
             } // full page render
-             
+
+            // Disable Render to FBO
+            glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+            
 #endif  //gles2 for accpan
 
                 
                 
-            // Disable Render to FBO
-            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
-
+            
             if(busy)
                 OCPNPlatform::HideBusySpinner();
         
@@ -4787,7 +4935,10 @@ void glChartCanvas::Render()
             cc1->m_pQuilt->SetRenderedVP( VPoint );
         
     } else          // useFBO
+    {
+        //qDebug() << "RenderCharts No FBO";
         RenderCharts(m_gldc, screen_region);
+    }
 
     //  Render the decluttered Text overlay for quilted vector charts, except for CM93 Composite
 #ifdef USE_S57        
@@ -6616,11 +6767,9 @@ void glChartCanvas::RenderScene()
 
 
    // enable rendering to texture in framebuffer object
-   ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+   glBindFramebuffer( GL_FRAMEBUFFER_EXT, m_fb0 );
 
-   ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-                                                g_texture_rectangle_format,
-                                                m_cache_tex[m_cache_page], 0 );
+   glFramebufferTexture2D( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, g_texture_rectangle_format, m_cache_tex[m_cache_page], 0 );
                     
     m_fbo_offsetx = 0;
     m_fbo_offsety = 0;
@@ -6630,7 +6779,7 @@ void glChartCanvas::RenderScene()
     RenderOverlayObjects(gldc, screen_region);
                         
     // Disable Render to FBO
-    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 
 
@@ -6661,16 +6810,6 @@ void glChartCanvas::RenderScene()
     }
 #endif
 
-#ifndef USE_ANDROID_GLES2
-
-    DrawDynamicRoutesTracksAndWaypoints( VPoint );
-        
-    // Now draw all the objects which normally move around and are not
-    // cached from the previous frame
-    DrawFloatingOverlayObjects( gldc );
-    
-
-#endif
         
 #endif
         
