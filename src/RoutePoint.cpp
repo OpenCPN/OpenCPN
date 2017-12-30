@@ -414,6 +414,10 @@ void RoutePoint::SetCreateTime( wxDateTime dt )
 
 void RoutePoint::SetName(const wxString & name)
 {
+#ifdef ocpnUSE_GL
+    glDeleteTextures(1,&m_iTextTexture);
+    m_iTextTexture = 0;
+#endif    
     m_MarkName = name;
     CalculateNameExtents();
 }
