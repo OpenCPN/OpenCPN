@@ -1106,6 +1106,7 @@ void Route::RenameRoutePoints( void )
             wxString name;
             name.Printf( _T ( "%03d" ), i );
             prp->SetName( name );
+            prp->m_pMarkFont = NULL;
         }
 
         node = node->GetNext();
