@@ -1,5 +1,13 @@
 <resources>
+    <string name="toast_crash">OpenCPN Crash</string>
+    <string name="crash_toast_text">Ooooops ! OpenCPN crashed, but a report is being prepared to send to my developer to help fix the issue !</string>
 
+    <string name="crash_dialog_title">OpenCPN has crashed</string>
+    <string name="crash_dialog_text">An unexpected error occurred forcing the
+        application to stop. Please help us fix this by sending us error data.
+        All you have to do is click OK, and choose your email client to mail the resulting report.</string>
+    <string name="crash_dialog_comment_prompt">You might add your comments about the problem below:</string>
+    <string name="crash_dialog_ok_toast">Thank you !</string>
     <string name="ocpn_CANCEL">Cancel</string>
     <string name="ocpn_CHOOSE_ITEM_COLOR">Choose OpenCPN item color</string>
 

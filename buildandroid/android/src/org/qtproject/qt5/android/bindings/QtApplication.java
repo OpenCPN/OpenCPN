@@ -33,6 +33,27 @@ import java.util.HashMap;
 import android.util.Log;
 
 import android.app.Application;
+import android.content.Context;
+
+import org.acra.*;
+import org.acra.annotation.*;
+
+import org.opencpn.opencpn.R;
+
+@ReportsCrashes(
+mode = ReportingInteractionMode.DIALOG,
+formKey="",
+mailTo = "bdbcat@yahoo.com",
+resToastText = R.string.crash_toast_text, // optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
+resDialogText = R.string.crash_dialog_text,
+resDialogIcon = android.R.drawable.ic_dialog_info, //optional. default is a warning sign
+resDialogTitle = R.string.crash_dialog_title, // optional. default is your application name
+resDialogCommentPrompt = R.string.crash_dialog_comment_prompt, // optional. When defined, adds a user text field input with this text resource as a label
+resDialogOkToast = R.string.toast_crash // optional. displays a Toast message when the user accepts to send a report.
+
+    )
+
+
 
 public class QtApplication extends Application
 {
@@ -55,6 +76,15 @@ public class QtApplication extends Application
     public static Method onKeyShortcut = null;
     public static Method dispatchGenericMotionEvent = null;
     public static Method onGenericMotionEvent = null;
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        // The following line triggers the initialization of ACRA
+        ACRA.init(this);
+    }
 
     public static void setQtActivityDelegate(Object listener)
     {
