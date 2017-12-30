@@ -9104,6 +9104,27 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
         }
     }
+    else if(message_ID == _T("OCPN_ACTIVE_ROUTELEG_REQUEST"))
+    {
+        wxJSONValue v;
+        v[0][_T("error")] = true;
+        if( g_pRouteMan->GetpActiveRoute() )
+        {
+            if( g_pRouteMan->m_bDataValid )
+            {
+                v[0][_T("error")] = false;
+                v[0][_T("range")] = g_pRouteMan->GetCurrentRngToActivePoint();
+                v[0][_T("bearing")] = g_pRouteMan->GetCurrentBrgToActivePoint();
+                v[0][_T("XTE")] = g_pRouteMan->GetCurrentXTEToActivePoint();
+                v[0][_T("active_route_GUID")] = g_pRouteMan->GetpActiveRoute()->m_RouteNameString;
+                v[0][_T("active_waypoint_lat")] = g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLatitude();
+                v[0][_T("active_waypoint_lon")] = g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLongitude();
+            }
+        }
+        wxString msg_id( _T("OCPN_ACTIVE_ROUTELEG_RESPONSE") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    }
+
 }
 
 void MyFrame::OnEvtTHREADMSG( OCPN_ThreadMessageEvent & event )
