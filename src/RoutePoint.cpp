@@ -701,11 +701,13 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
 
     wxRect r3 = r1;
+    bool brebuild_text = false;
     if( m_bShowName ) {
         if( !m_pMarkFont ) {
             m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
             m_FontColor = FontMgr::Get().GetFontColor( _( "Marks" ) );
             CalculateNameExtents();
+            brebuild_text = true;
         }
 
         if( m_pMarkFont ) {
@@ -824,7 +826,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
 
     if( m_bShowName && m_pMarkFont ) {
         int w = m_NameExtents.x, h = m_NameExtents.y;
-        if(!m_iTextTexture && w && h) {
+        if((!m_iTextTexture || brebuild_text) && w && h) {
             wxBitmap tbm(w, h); /* render text on dc */
             wxMemoryDC dc;
             dc.SelectObject( tbm );               
@@ -845,7 +847,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
             }
             
             /* create texture for rendered text */
-            glGenTextures(1, &m_iTextTexture);
+            if(!m_iTextTexture)
+                glGenTextures(1, &m_iTextTexture);
             glBindTexture(GL_TEXTURE_2D, m_iTextTexture);
             
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
