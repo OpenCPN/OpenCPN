@@ -324,6 +324,11 @@ extern double           g_display_size_mm;
 extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
 
+// LIVE ETA OPTION
+bool                    g_bShowLiveETA;
+double                  g_defaultBoatSpeed;
+double                  g_defaultBoatSpeedUserUnit;
+
 
 
 // "Curtain" mode parameters
@@ -2625,9 +2630,138 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     
     s << FormatDistanceAdaptive( dist );
     
+    // CUSTOMIZATION - LIVE ETA OPTION
+    // -------------------------------------------------------
+    // Calculate an "live" ETA based on route starting from the current
+    // position of the boat and goes to the cursor of the mouse.
+    // In any case, an standard ETA will be calculated with a default speed
+    // of the boat to give an estimation of the route (in particular if GPS
+    // is off).
+    
+    // Display only if option "live ETA" is selected in Settings > Display > General.
+    if (g_bShowLiveETA)
+    {
+    
+        float realTimeETA;
+        float boatSpeed;
+        float boatSpeedDefault = g_defaultBoatSpeed;
+        
+        // Calculate Estimate Time to Arrival (ETA) in minutes
+        // Check before is value not closed to zero (it will make an very big number...)
+        if (!wxIsNaN(gSog))
+        {
+            boatSpeed = gSog;
+            if (boatSpeed < 0.5)
+            {
+                realTimeETA = 0;
+            }
+            else
+            {
+                realTimeETA = dist / boatSpeed * 60;
+            }
+        }
+        else
+        {
+            realTimeETA = 0;
+        }
+        
+        // Add space after distance display
+        s << " ";
+        // Display ETA
+        s << minutesToHoursDays(realTimeETA);
+        
+        // In any case, display also an ETA with default speed at 6knts
+        
+        s << " [@";
+        s << wxString::Format(_T("%d"), (int)toUsrSpeed(boatSpeedDefault, -1));
+        s << wxString::Format(_T("%s"), getUsrSpeedUnit(-1));
+        s << " ";
+        s << minutesToHoursDays(dist/boatSpeedDefault*60);
+        s << "]";
+    
+    }
+    // END OF - LIVE ETA OPTION
+    
     if(STAT_FIELD_CURSOR_BRGRNG >= 0)
         parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
+
+// CUSTOMIZATION - FORMAT MINUTES
+// -------------------------------------------------------
+// New function to format minutes into a more readable format:
+//  * Hours + minutes, or
+//  * Days + hours.
+wxString minutesToHoursDays(float timeInMinutes)
+{
+    wxString s;
+    
+    if (timeInMinutes == 0)
+    {
+        s << "--min";
+    }
+    
+    // Less than 60min, keep time in minutes
+    else if (timeInMinutes < 60 && timeInMinutes != 0)
+    {
+        s << wxString::Format(_T("%d"), (int)timeInMinutes);
+        s << "min";
+    }
+    
+    // Between 1h and less than 24h, display time in hours, minutes
+    else if (timeInMinutes >= 60 && timeInMinutes < 24 * 60)
+    {
+        
+        int hours;
+        int min;
+        hours = (int)timeInMinutes / 60;
+        min = (int)timeInMinutes % 60;
+        
+        if (min == 0)
+        {
+            s << wxString::Format(_T("%d"), hours );
+            s << "h";
+        }
+        else
+        {
+            s << wxString::Format(_T("%d"), hours );
+            s << "h";
+            s << wxString::Format(_T("%d"), min );
+            s << "min";
+        }
+        
+    }
+    
+    // More than 24h, display time in days, hours
+    else if (timeInMinutes > 24 * 60)
+    {
+        
+        int days;
+        int hours;
+        days = (int)(timeInMinutes / 60) / 24;
+        hours = (int)(timeInMinutes / 60) % 24;
+        
+        if (hours == 0)
+        {
+            s << wxString::Format(_T("%d"), days );
+            s << "d";
+        }
+        else
+        {
+            s << wxString::Format(_T("%d"), days );
+            s << "d";
+            s << wxString::Format(_T("%d"), hours );
+            s << "h";
+        }
+        
+    }
+    
+    return s;
+}
+
+// END OF CUSTOMIZATION - FORMAT MINUTES
+// Thanks open source code ;-)
+// -------------------------------------------------------
+
 
 void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
 {

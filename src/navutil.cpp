@@ -173,6 +173,11 @@ extern wxRect           g_blink_rect;
 
 extern wxArrayString    *pMessageOnceArray;
 
+// LIVE ETA OPTION
+extern bool             g_bShowLiveETA;
+extern double           g_defaultBoatSpeed;
+extern double           g_defaultBoatSpeedUserUnit;
+
 //    AIS Global configuration
 extern bool             g_bCPAMax;
 extern double           g_CPAMax_NM;
@@ -738,12 +743,17 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "ShowActiveRouteTotal" ), &g_bShowRouteTotal, 0 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
     Read( _T ( "ShowChartBar" ), &g_bShowChartBar, 1 );
-    
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
       
     Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
+    // LIVE ETA OPTION
+    Read( _T ( "LiveETA" ), &g_bShowLiveETA, 0 );
+    Read( _T ( "DefaultBoatSpeed" ), &g_defaultBoatSpeed, 6.0 );
+    // Calculate user selected speed unit
+    g_defaultBoatSpeedUserUnit = toUsrSpeed(g_defaultBoatSpeed, -1);
+    
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
     Read( _T ( "OwnshipHDTPredictorMiles" ), &g_ownship_HDTpredictor_miles, 1 );
@@ -2060,6 +2070,10 @@ void MyConfig::UpdateSettings()
     Write( _T ( "KeepNavobjBackups" ), g_navobjbackups );
     Write( _T ( "LegacyInputCOMPortFilterBehaviour" ), g_b_legacy_input_filter_behaviour );
     Write( _T( "AdvanceRouteWaypointOnArrivalOnly" ), g_bAdvanceRouteWaypointOnArrivalOnly);
+    
+    // LIVE ETA OPTION
+    Write( _T( "LiveETA" ), g_bShowLiveETA);
+    Write( _T( "DefaultBoatSpeed" ), g_defaultBoatSpeed);
     
 //    S57 Object Filter Settings
 
