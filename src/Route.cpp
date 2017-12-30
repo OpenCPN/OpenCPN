@@ -1032,7 +1032,7 @@ void Route::Reverse( bool bRenamePoints )
 
     int ncount = pRoutePointList->GetCount();
     for( int i = 0; i < ncount; i++ )
-        RoutePointGUIDList.Add( GetPoint(ncount - 1 - i)->m_GUID );
+        RoutePointGUIDList.Add( GetPoint(ncount - i)->m_GUID );
 
     pRoutePointList->DeleteContents( false );
     pRoutePointList->Clear();
