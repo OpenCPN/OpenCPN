@@ -167,6 +167,7 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern bool g_bWayPointPreventDragging;
+extern wxColour g_colourOwnshipRangeRingsColour;
 
 extern bool g_own_ship_sog_cog_calc;
 extern int g_own_ship_sog_cog_calc_damp_sec;
@@ -2506,7 +2507,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   rrSelect->Add(pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT | wxALL,
                 group_item_spacing);
 
-  radarGrid = new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
+  radarGrid = new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
   radarGrid->AddGrowableCol(1);
   dispOptions->Add(radarGrid, 0, wxLEFT | wxEXPAND, 30);
 
@@ -2529,6 +2530,13 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                    m_pShipIconType->GetSize(), 2, pDistUnitsStrings);
   radarGrid->Add(m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size);
 
+  wxStaticText* colourText = new wxStaticText(itemPanelShip, wxID_STATIC, _("Range Ring Colour"));
+  radarGrid->Add(colourText, 1, wxEXPAND | wxALL, group_item_spacing);
+
+  m_colourOwnshipRangeRingColour = new wxColourPickerCtrl( itemPanelShip, wxID_STATIC, *wxRED,
+                  wxDefaultPosition, wxDefaultSize, 0,  wxDefaultValidator, _T( "ID_COLOUROSRANGECOLOUR" ));
+  radarGrid->Add(m_colourOwnshipRangeRingColour, 1,  wxALIGN_RIGHT, border_size);
+  
   //  Tracks
   wxStaticBox* trackText =
       new wxStaticBox(itemPanelShip, wxID_ANY, _("Tracks"));
@@ -5043,6 +5051,8 @@ void options::SetInitialSettings(void) {
   buf.Printf(_T("%.3f"), g_fNavAidRadarRingsStep);
   pNavAidRadarRingsStep->SetValue(buf);
   m_itemRadarRingsUnits->SetSelection(g_pNavAidRadarRingsStepUnits);
+  m_colourOwnshipRangeRingColour->SetColour(g_colourOwnshipRangeRingsColour);
+  
   OnRadarringSelect(eDummy);
 
   if (g_iWaypointRangeRingsNumber > 10) g_iWaypointRangeRingsNumber = 10;
@@ -5079,7 +5089,7 @@ void options::SetInitialSettings(void) {
   pTrackRotateComputerTime->SetValue(g_track_rotate_time_type == TIME_TYPE_COMPUTER);
   pTrackHighlite->SetValue(g_bHighliteTracks);
   m_colourTrackLineColour->SetColour(g_colourTrackLineColour);
-
+  
   pTrackPrecision->SetSelection(g_nTrackPrecision);
 
   //    AIS Parameters
@@ -6091,9 +6101,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
-  g_colourTrackLineColour =
-      m_colourTrackLineColour->GetColour();
-  g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
+  g_colourTrackLineColour =  m_colourTrackLineColour->GetColour();
+  //g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
@@ -6116,6 +6125,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
 
   g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
+  g_colourOwnshipRangeRingsColour =  m_colourOwnshipRangeRingColour->GetColour();
+  
   // AIS Parameters
   //   CPA Box
   g_bCPAMax = m_pCheck_CPA_Max->GetValue();

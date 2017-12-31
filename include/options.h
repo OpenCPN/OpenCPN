@@ -500,6 +500,7 @@ class options : private Uncopyable,
   wxBoxSizer *itemBoxSizerPanelPlugins;
   wxFlexGridSizer *radarGrid, *waypointradarGrid;
   wxChoice *pNavAidRadarRingsNumberVisible, *pWaypointRangeRingsNumber;
+  wxColourPickerCtrl *m_colourOwnshipRangeRingColour;
   wxChoice *m_itemRadarRingsUnits, *m_itemWaypointRangeRingsUnits;
   wxColourPickerCtrl *m_colourTrackLineColour;;
   wxChoice *pTrackPrecision;

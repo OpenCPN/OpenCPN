@@ -235,6 +235,7 @@ extern int              g_iWaypointRangeRingsStepUnits;
 extern wxColour         g_colourWaypointRangeRingsColour;
 extern bool             g_bWayPointPreventDragging;
 extern bool             g_bConfirmObjectDelete;
+extern wxColour         g_colourOwnshipRangeRingsColour;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
@@ -1301,6 +1302,11 @@ int MyConfig::LoadMyConfig()
     g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
+    g_colourOwnshipRangeRingsColour = *wxRED;
+    wxString l_wxsOwnshipRangeRingsColour;
+    Read( _T ( "RadarRingsColour" ), &l_wxsOwnshipRangeRingsColour );
+    if(l_wxsOwnshipRangeRingsColour.Length()) g_colourOwnshipRangeRingsColour.Set( l_wxsOwnshipRangeRingsColour );
+    
     // Waypoint Radar rings
     g_iWaypointRangeRingsNumber = 0;
     Read( _T ( "WaypointRangeRingsNumber" ), &val );
@@ -2293,7 +2299,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
-
+    Write( _T ( "RadarRingsColour" ), g_colourOwnshipRangeRingsColour.GetAsString( wxC2S_HTML_SYNTAX ) );
+    
     // Waypoint Radar rings
     Write( _T ( "WaypointRangeRingsNumber" ), g_iWaypointRangeRingsNumber );
     Write( _T ( "WaypointRangeRingsStep" ), g_fWaypointRangeRingsStep );

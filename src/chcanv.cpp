@@ -323,7 +323,7 @@ extern double           g_display_size_mm;
 
 extern bool             g_bshowToolbar;
 extern ocpnFloatingToolbarDialog *g_MainToolbar;
-
+extern wxColour         g_colourOwnshipRangeRingsColour;
 
 
 // "Curtain" mode parameters
@@ -3861,9 +3861,13 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             pow( (double) (lGPSPoint.y - r.y), 2 ) );
             int pix_radius = (int) lpp;
             
-            wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), g_cog_predictor_width );
+            extern wxColor GetDimColor(wxColor c);
+            wxColor rangeringcolour = GetDimColor(g_colourOwnshipRangeRingsColour);
+            
+            wxPen ppPen1( rangeringcolour, g_cog_predictor_width );
+            
             dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxBRUSHSTYLE_TRANSPARENT ) );
+            dc.SetBrush( wxBrush( rangeringcolour, wxBRUSHSTYLE_TRANSPARENT ) );
             
             for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
                 dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, i * pix_radius );
