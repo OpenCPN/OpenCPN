@@ -2517,6 +2517,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
                     s << FormatDistanceAdaptive( dist );
 
+                    double segmentSpeed = toUsrSpeed( dist / ( (segShow_point_b->GetCreateTime() - segShow_point_a->GetCreateTime()).GetSeconds().ToDouble() / 3600.) );
+                    s << wxString::Format( _T("  %.1f "), (float)segmentSpeed ) << getUsrSpeedUnit();
+
                     m_pTrackRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
