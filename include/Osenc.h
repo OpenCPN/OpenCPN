@@ -545,6 +545,8 @@ private:
     wxString            m_sdate000;
     
     wxString            m_edtn000;
+    int                 m_UPDN;
+    
     int                 m_nGeoRecords;
     int                 m_last_applied_update;
     wxString            m_LastUpdateDate;

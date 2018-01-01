@@ -1037,7 +1037,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     int available_updates = ValidateAndCountUpdates( FullPath000, working_dir, LastUpdateDate, true );
     m_LastUpdateDate = LastUpdateDate;          // tentative, adjusted later on failure of update
     
-    if(m_bVerbose && ( available_updates > 0 ) ){
+    if(m_bVerbose && ( available_updates > m_UPDN ) ){
         wxString msg1;
         msg1.Printf( _T("Preparing to apply ENC updates, target final update is %3d."), available_updates );
         wxLogMessage( msg1 );
@@ -1061,28 +1061,42 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     bool b_current_debug = g_bGDAL_Debug;
     g_bGDAL_Debug = m_bVerbose;
     
-    if(poS57DS->Open( m_tmpup_array.Item( 0 ).mb_str(), TRUE, NULL))
+    // Form the .000 filename
+    wxString s0_file = working_dir;
+    if( s0_file.Last() != wxFileName::GetPathSeparator() )
+        s0_file.Append( wxFileName::GetPathSeparator() );
+    wxFileName f000(FullPath000);
+    
+    s0_file.Append( f000.GetFullName() );
+
+    if(poS57DS->Open( s0_file.mb_str(), TRUE, NULL))
         return 1;
 
     //      Get a pointer to the reader
     S57Reader *poReader = poS57DS->GetModule( 0 );
      
-    m_last_applied_update = 0;
+    m_last_applied_update = m_UPDN;
+    wxString last_successful_update_file;
+
     // Apply the updates...
-    for(int i_up = 1 ; i_up < available_updates + 1 ; i_up++){
+    for(unsigned int i_up = 0 ; i_up < m_tmpup_array.GetCount() ; i_up++){
+        wxFileName fn(m_tmpup_array.Item( i_up ));
+        wxString ext = fn.GetExt();
+        long n_upd;
+        ext.ToLong(&n_upd);
+        
         DDFModule oUpdateModule;
         if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
-            m_last_applied_update = i_up - 1;
             break;
         }
-        int upResult = poReader->ApplyUpdates( &oUpdateModule, i_up );
+        int upResult = poReader->ApplyUpdates( &oUpdateModule, n_upd );
         if(upResult){
-            m_last_applied_update = i_up - 1;
             break;
         }
-        m_last_applied_update = i_up;
+        m_last_applied_update = n_upd;
+        last_successful_update_file = m_tmpup_array.Item( i_up );
     }
-        
+
     
     //  Check for bad/broken update chain....
     //  It is a "warning" condition if an update fails.
@@ -1095,44 +1109,51 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     
     if(m_last_applied_update != available_updates){
         
-        //  Get the update date from the last good update module
-        bool bSuccess;
-        DDFModule oUpdateModule;
-        wxString LastGoodUpdateDate;
-        wxDateTime now = wxDateTime::Now();
-        LastGoodUpdateDate = now.Format( _T("%Y%m%d") );
-        
-        bSuccess = !( oUpdateModule.Open( m_tmpup_array.Item( m_last_applied_update ).mb_str(), TRUE ) == 0 );
-        
-        if( bSuccess ) {
-            //      Get publish/update date
-            oUpdateModule.Rewind();
-            DDFRecord *pr = oUpdateModule.ReadRecord();                     // Record 0
+        if(last_successful_update_file.Length()){
+            //  Get the update date from the last good update module
+            bool bSuccess;
+            DDFModule oUpdateModule;
+            wxString LastGoodUpdateDate;
+            wxDateTime now = wxDateTime::Now();
+            LastGoodUpdateDate = now.Format( _T("%Y%m%d") );
             
-            int nSuccess;
-            char *u = NULL;
+            bSuccess = !( oUpdateModule.Open( m_tmpup_array.Item( m_last_applied_update ).mb_str(), TRUE ) == 0 );
             
-            if( pr ) u = (char *) ( pr->GetStringSubfield( "DSID", 0, "ISDT", 0, &nSuccess ) );
-            
-            if( u ) {
-                if( strlen( u ) ) {
-                    LastGoodUpdateDate = wxString( u, wxConvUTF8 );
+            if( bSuccess ) {
+                //      Get publish/update date
+                oUpdateModule.Rewind();
+                DDFRecord *pr = oUpdateModule.ReadRecord();                     // Record 0
+                
+                int nSuccess;
+                char *u = NULL;
+                
+                if( pr ) u = (char *) ( pr->GetStringSubfield( "DSID", 0, "ISDT", 0, &nSuccess ) );
+                
+                if( u ) {
+                    if( strlen( u ) ) {
+                        LastGoodUpdateDate = wxString( u, wxConvUTF8 );
+                    }
                 }
+                m_LastUpdateDate = LastGoodUpdateDate;
             }
-            m_LastUpdateDate = LastGoodUpdateDate;
+            
+            // Inform the user
+            wxString msg( _T("WARNING---ENC Update failed.  Last valid update file is:"));
+            msg +=  m_tmpup_array.Item( m_last_applied_update ).mb_str();
+            wxLogMessage(msg);
+            wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+            
+            
+            if( 1 /*!chain_broken_mssage_shown*/ ){
+                OCPNMessageBox(NULL, 
+                    _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
+                    _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+            }
         }
-        
-        // Inform the user
-        wxString msg( _T("WARNING---ENC Update failed.  Last valid update file is:"));
-        msg +=  m_tmpup_array.Item( m_last_applied_update ).mb_str();
-        wxLogMessage(msg);
-        wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
-        
-        
-        if( 1 /*!chain_broken_mssage_shown*/ ){
-            OCPNMessageBox(NULL, 
-                _("S57 Cell Update failed.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+        else{            // no updates applied.
+                OCPNMessageBox(NULL, 
+                               _("S57 Cell Update failed.\nNo updates could be applied.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
+                               _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
         }
     }
     
@@ -1149,6 +1170,8 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     poReader->SetOptions( papszReaderOptions );
     CSLDestroy( papszReaderOptions );
     
+    wxRemoveFile(s0_file);
+    
     return 0;
 }
 
@@ -1157,16 +1180,19 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                                        wxString &LastUpdateDate, bool b_copyfiles )
 {
     
-    int retval = 0;
+    int retval = m_UPDN;
     
     //       wxString DirName000 = file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     //       wxDir dir(DirName000);
     wxArrayString *UpFiles = new wxArrayString;
-    retval = s57chart::GetUpdateFileArray( file000, UpFiles, m_date000, m_edtn000);
+    int upmax = s57chart::GetUpdateFileArray( file000, UpFiles, m_date000, m_edtn000);
     
     if( UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
         //      to perform all the updates. 
+        
+        //      The update file extensions should start with one greater than the DSID:UPDN value.
+        //      This will accomodate the  "re-issue" policy exercised by some HOs.
         
         //  It is to be considered a WARNING if the update chain is broken,
         //  With appropriate user dialog and logfile messages
@@ -1185,8 +1211,23 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                 ::wxRemoveFile(files_to_erase[i]);
             }
             
+
+            //      Copy the 000 file to the SENC directory
+            wxString cp0_ufile = CopyDir;
+            if( cp0_ufile.Last() != wxFileName::GetPathSeparator() )
+                cp0_ufile.Append( wxFileName::GetPathSeparator() );
+            cp0_ufile.Append( file000.GetFullName() );
+            bool cpok0 = wxCopyFile( file000.GetFullPath(), cp0_ufile );
+            if( !cpok0 ) {
+                wxString msg( _T("   Cannot copy temporary working ENC file ") );
+                msg.Append( file000.GetFullPath() );
+                msg.Append( _T(" to ") );
+                msg.Append( cp0_ufile );
+                wxLogMessage( msg );
+            }
             
-            for( int iff = 0; iff < retval + 1; iff++ ) {
+            // Now copy the updates
+            for( int iff = m_UPDN + 1; iff < upmax + 1; iff++ ) {
                 wxFileName ufile( file000 );
                 wxString sext;
                 sext.Printf( _T("%03d"), iff );
@@ -1249,9 +1290,10 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
         //      Extract the date field from the last of the update files
         //      which is by definition a valid, present update file....
         
+        
         wxFileName lastfile( file000 );
         wxString last_sext;
-        last_sext.Printf( _T("%03d"), retval );
+        last_sext.Printf( _T("%03d"), upmax );
         lastfile.SetExt( last_sext );
         
         bool bSuccess;
@@ -1281,6 +1323,9 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
     }
     
     delete UpFiles;
+    
+    if(upmax > retval)
+        retval = upmax;
     return retval;
 }
 
@@ -1332,6 +1377,21 @@ bool Osenc::GetBaseFileAttr( const wxString &FullPath000 )
     }
     
     //m_SE = m_edtn000;
+
+    //    Fetch the UPDN(Updates Applied) field
+    u = (char *) ( pr->GetStringSubfield( "DSID", 0, "UPDN", 0 ) );
+    if( u ){
+        long updn = 0;
+        wxString tmp_updn = wxString( u, wxConvUTF8 );
+        if(tmp_updn.ToLong(&updn))
+            m_UPDN = updn;
+        
+    }
+    else {
+        errorMessage =  _T("GetBaseFileAttr:  DDFRecord 0 does not contain DSID:UPDN ");
+        
+        m_UPDN = 0;                // backstop
+    }
     
     //      Fetch the Native Scale by reading more records until DSPM is found
     m_native_scale = 0;
@@ -1346,6 +1406,9 @@ bool Osenc::GetBaseFileAttr( const wxString &FullPath000 )
         
         m_native_scale = 1000;                // backstop
     }
+
+    if(m_UPDN) 
+        int yyp =4;
     
     return true;
 }
