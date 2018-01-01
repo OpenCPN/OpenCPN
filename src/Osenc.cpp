@@ -1406,9 +1406,6 @@ bool Osenc::GetBaseFileAttr( const wxString &FullPath000 )
         m_native_scale = 1000;                // backstop
     }
 
-    if(m_UPDN) 
-        int yyp =4;
-    
     return true;
 }
 
