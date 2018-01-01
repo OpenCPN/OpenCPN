@@ -1331,11 +1331,13 @@ int GshhsReader::selectBestQuality( ViewPort &vp )
 {
     int bestQuality = 0;
 
-         if(vp.chart_scale <   500000) bestQuality = 4;
-    else if(vp.chart_scale <  2000000) bestQuality = 3;
-    else if(vp.chart_scale <  8000000) bestQuality = 2;
-    else if(vp.chart_scale < 20000000) bestQuality = 1;
-    else bestQuality = 0;
+         if(vp.chart_scale <   500000 && qualityAvailable[4]) bestQuality = 4;
+    else if(vp.chart_scale <  2000000 && qualityAvailable[3]) bestQuality = 3;
+    else if(vp.chart_scale <  8000000 && qualityAvailable[2]) bestQuality = 2;
+    else if(vp.chart_scale < 20000000 && qualityAvailable[1]) bestQuality = 1;
+    else if(qualityAvailable[0]) bestQuality = 0;
+    else while( !qualityAvailable[bestQuality] && bestQuality <= 4 ) //Find the worst quality actually available and use that (normally we would use crude, but it is missing)
+             bestQuality++;
 
     while( !qualityAvailable[bestQuality] ) {
         bestQuality--;

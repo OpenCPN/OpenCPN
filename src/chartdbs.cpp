@@ -1578,8 +1578,8 @@ bool ChartDatabase::Update(ArrayOfCDI& dir_array, bool bForce, wxGenericProgress
             ChartDirInfo dir_info = dir_array.Item(j);
 
             wxString dir_magic;
-            if(wxFileExists(dir_info.fullpath + wxFileName::GetPathSeparator() + "poly-c-1.dat")) {
-            //If crude polygons exist in the directory, set it as the one to use for GSHHG
+            if( !wxDir::FindFirst(dir_info.fullpath, "poly-*-1.dat").empty() ) {
+            //If some polygons exist in the directory, set it as the one to use for GSHHG
             //TODO: We should probably compare the version and maybe resolutions available with what is currently used...
                 gWorldMapLocation = dir_info.fullpath + wxFileName::GetPathSeparator();
             }
