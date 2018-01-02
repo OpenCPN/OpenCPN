@@ -148,15 +148,15 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	wxStaticBoxSizer* sbSizerChartDir;
 	sbSizerChartDir = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Chart Directory") ), wxVERTICAL );
 
-        wxBoxSizer *dirbox = new wxBoxSizer(wxHORIZONTAL);
-        sbSizerChartDir->Add(dirbox);
+    wxBoxSizer *dirbox = new wxBoxSizer(wxHORIZONTAL);
+    sbSizerChartDir->Add(dirbox);
 
-        m_tcChartDirectory = new wxTextCtrl(this, wxID_ANY,_T(""), wxDefaultPosition,
+    m_tcChartDirectory = new wxTextCtrl(this, wxID_ANY,_T(""), wxDefaultPosition,
                                             wxSize(200, -1));
-        dirbox->Add( m_tcChartDirectory, 3, wxALL|wxEXPAND, 5 );
+    dirbox->Add( m_tcChartDirectory, 3, wxALL|wxEXPAND, 5 );
 
-        m_buttonChartDirectory = new wxButton(this, wxID_ANY,_("Select a folder"));
-        dirbox->Add( m_buttonChartDirectory, 1, wxALL|wxEXPAND, 5 );
+    m_buttonChartDirectory = new wxButton(this, wxID_ANY,_("Select a folder"));
+    dirbox->Add( m_buttonChartDirectory, 1, wxALL|wxEXPAND, 5 );
 
 
 	bSizerMain->Add( sbSizerChartDir, 0, wxALL|wxEXPAND, 5 );
@@ -173,6 +173,7 @@ AddSourceDlg::AddSourceDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 
 	this->Layout();
 
+    m_sourceswin = NULL;
 
 	// Connect Events
 	m_treeCtrlPredefSrcs->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( AddSourceDlg::OnSourceSelected ), NULL, this );

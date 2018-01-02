@@ -118,7 +118,7 @@ class ChartDldrPanel : public wxPanel
 
 		ChartDldrPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL );
 		~ChartDldrPanel();
-        ChartDldrPanel() { }
+        //ChartDldrPanel() { }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

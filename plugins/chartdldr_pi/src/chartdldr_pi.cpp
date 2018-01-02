@@ -1128,6 +1128,8 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     DownloadIsCancel = false;
     failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
+    m_bTransferComplete = true;
+    m_bTransferSuccess = true;
     
     Connect(wxEVT_DOWNLOAD_EVENT, (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
     m_bconnected = true;
