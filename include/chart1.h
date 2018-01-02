@@ -173,6 +173,7 @@ enum
     ID_MENU_ENC_LIGHTS,
     ID_MENU_ENC_SOUNDINGS,
     ID_MENU_ENC_ANCHOR,
+    ID_MENU_ENC_DATA_QUALITY,
 
     ID_MENU_SHOW_TIDES,
     ID_MENU_SHOW_CURRENTS,
@@ -383,6 +384,7 @@ class MyFrame: public wxFrame
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
+    void ToggleDataQuality();
     void TogglebFollow(void);
     void ToggleFullScreen();
     void ToggleChartBar();

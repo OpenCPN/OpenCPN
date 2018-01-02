@@ -4242,6 +4242,10 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             ToggleAnchor();
             break;
         }
+        case ID_MENU_ENC_DATA_QUALITY: {
+            ToggleDataQuality();
+            break;
+        }
 #endif
 
         case ID_MENU_AIS_TARGETS: {
@@ -5107,7 +5111,7 @@ void MyFrame::ToggleAnchor( void )
 {
 #ifdef USE_S57
     if( ps52plib ) {
-        int old_vis =  0;
+        int old_vis;
 
         const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
         unsigned int num = sizeof(categories) / sizeof(categories[0]);
@@ -5150,6 +5154,42 @@ void MyFrame::ToggleAnchor( void )
         cc1->ReloadVP();
 
     }
+#endif
+}
+
+void MyFrame::ToggleDataQuality( )
+{
+#ifdef USE_S57
+    if( ps52plib == 0) 
+        return;
+
+    int old_vis;
+
+    old_vis = ps52plib->GetQualityOfDataOn();
+    if(old_vis){                            // On, going off
+        ps52plib->SetQualityOfDataOn(false);
+        ps52plib->AddObjNoshow("M_QUAL");
+    }
+    else{                                   // Off, going on
+        ps52plib->SetQualityOfDataOn(true);
+        ps52plib->RemoveObjNoshow("M_QUAL");
+
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
+                pOLE->nViz = 1;         // force on
+                break;
+            }
+        }
+    }
+
+    SetMenubarItemState( ID_MENU_ENC_DATA_QUALITY, !old_vis );
+
+    if(g_pi_manager)
+        g_pi_manager->SendConfigToAllPlugIns();
+
+    ps52plib->GenerateStateHash();
+    cc1->ReloadVP();
 #endif
 }
 
@@ -5373,12 +5413,14 @@ void MyFrame::RegisterGlobalMenuItems()
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
+    view_menu->AppendCheckItem( ID_MENU_ENC_DATA_QUALITY, _menuText(_("Show ENC Data Quality"), _T("U")) );
 #else
     view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("Alt-T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("Alt-L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("Alt-S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
-    #endif
+    view_menu->AppendCheckItem( ID_MENU_ENC_DATA_QUALITY, _menuText(_("Show ENC Data Quality"), _T("Alt-U")) );
+#endif
 #endif
     view_menu->AppendSeparator();
     view_menu->AppendCheckItem( ID_MENU_SHOW_TIDES, _("Show Tides") );
@@ -5485,10 +5527,13 @@ void MyFrame::UpdateGlobalMenuItems()
         if((nset == MARINERS_STANDARD) || (nset == OTHER) ){
             m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( !ps52plib->IsObjNoshow("SBDARE") );
             m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, true);
+            m_pMenuBar->FindItem( ID_MENU_ENC_DATA_QUALITY )->Check( !ps52plib->IsObjNoshow("M_QUAL")  );
+            m_pMenuBar->Enable( ID_MENU_ENC_DATA_QUALITY, true);
         }
         else{
             m_pMenuBar->FindItem( ID_MENU_ENC_ANCHOR )->Check( false );
             m_pMenuBar->Enable( ID_MENU_ENC_ANCHOR, false);
+            m_pMenuBar->Enable( ID_MENU_ENC_DATA_QUALITY, false);
         }            
             
     }
