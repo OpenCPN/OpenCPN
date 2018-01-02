@@ -3024,6 +3024,42 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
             }
         }
     }
+    if( wkbPoint == pGeo->getGeometryType() ) {
+        OGRPoint *pp = (OGRPoint *) pGeo;
+        int nqual = pp->getnQual();
+        if( 10 != nqual )                    // only add attribute if nQual is not "precisely known"
+        {
+            int attributeID = m_pRegistrarMan->getAttributeID("QUAPOS");
+            int valueType = 0;
+            if( -1 != attributeID){
+                if(payloadBufferLength < 4){
+                    payloadBuffer = realloc(payloadBuffer, 4);
+                    payloadBufferLength = 4;
+                }
+                        
+                memcpy(payloadBuffer, &nqual, sizeof(int) );
+                payloadLength = sizeof(int);
+                // Build the record
+                int recordLength = sizeof( OSENC_Attribute_Record_Base ) + payloadLength;
+                
+                //  Get a reference to the class persistent buffer
+                unsigned char *pBuffer = getBuffer( recordLength );
+                    
+                OSENC_Attribute_Record *pRecord = (OSENC_Attribute_Record *)pBuffer;
+                memset(pRecord, 0, sizeof(OSENC_Attribute_Record));
+                pRecord->record_type = FEATURE_ATTRIBUTE_RECORD;
+                pRecord->record_length = recordLength;
+                pRecord->attribute_type = attributeID;
+                pRecord->attribute_value_type = valueType;
+                memcpy( &pRecord->payload, payloadBuffer, payloadLength );
+                    
+                // Write the record out....
+                size_t targetCount = recordLength;
+                if(!stream->Write(pBuffer, targetCount).IsOk())
+                        return false;
+            }
+        }
+    }
 
     free( payloadBuffer );
     
