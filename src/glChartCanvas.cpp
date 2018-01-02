@@ -3470,12 +3470,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
         
     //  Check the first, smallest scale chart
     // This kicks in at very small scale (ZOOM OUT)
-     if(chart) {
-         if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ){
-             chart = NULL;
-             //qDebug() << "NoRender1";
-         }
-     }
+//     if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
+//          if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ){
+//              chart = NULL;
+//              //qDebug() << "NoRender1";
+//          }
+//      }
 
     OCPNStopWatch qsw;
      
@@ -3484,19 +3484,15 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
     LLRegion rendered_region;
     while( chart ) {
             
-        //  This test does not need to be done for raster charts, since
-        //  we can assume that texture binding is acceptably fast regardless of the render region,
-        //  and that the quilt zoom methods choose a reasonable reference chart.
-        
-        //  However, it is safer do this test on all charts, letting the factor g_ChartNotRenderScaleFactor ultimately determine whether to render
-//        if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
-         {
-//                  if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-//                      chart = cc1->m_pQuilt->GetNextChart();
-//                      continue;
-//                  }
-         }
 
+         if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+             if(vp.chart_scale > 5e7){
+                 chart = cc1->m_pQuilt->GetNextChart();
+                 continue;
+             }
+         }
+                
+         
         QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
         if( pqp->b_Valid ) {
             LLRegion get_region = pqp->ActiveRegion;
@@ -3930,11 +3926,20 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
 
      //  Kicks in at very small scale, ZOOM OUT   
     //  Check the first, smallest scale chart
-         if(chart) {
+     // Except, cm93 is presumed always renderable at small enough scale
+        if(chart && (chart->GetChartType() != CHART_TYPE_CM93COMP)){
               if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
                   b_render = false;
          }
+         
+          if(chart && (chart->GetChartType() == CHART_TYPE_CM93COMP)){
+              if(vp.chart_scale > 5e7){
+                  b_render = false;
+              }
+          }
+         
     }
+    
     
     //qDebug() << "RCTime1" << rsw.GetTime();
     
@@ -4641,6 +4646,9 @@ void glChartCanvas::Render()
         glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
 
             if(VPoint.chart_scale < 5000)
+                b_full = true;
+ 
+            if(VPoint.chart_scale > 5e7)
                 b_full = true;
             
             if(b_full)

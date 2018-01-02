@@ -1310,10 +1310,14 @@ bool ChartCanvas::IsChartLargeEnoughToRender( ChartBase* chart, ViewPort& vp )
         }
     }
 
-    return (chart->GetNativeScale() * type_mod * user_mod) > vp.chart_scale;
+    if(chart->GetChartType() == CHART_TYPE_CM93COMP){
+        double chartMaxScale = chart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
+        double chart_scale = m_canvas_scale_factor / ( vp.view_scale_ppm );
+        return ( chartMaxScale > chart_scale );
+    }
+    else
+        return (chart->GetNativeScale() * type_mod * user_mod) > vp.chart_scale;
     
-    //double chartMaxScale = chart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
-    //return ( chartMaxScale*g_ChartNotRenderScaleFactor > vp.chart_scale );
 }
 
 
