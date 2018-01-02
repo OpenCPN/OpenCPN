@@ -2626,7 +2626,10 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     
     if(STAT_FIELD_CURSOR_LL >= 0)
         parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
-    
+
+    if( STAT_FIELD_CURSOR_BRGRNG < 0 )
+        return;
+
     double brg, dist;
     wxString s;
     DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
@@ -2689,8 +2692,7 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     }
     // END OF - LIVE ETA OPTION
     
-    if(STAT_FIELD_CURSOR_BRGRNG >= 0)
-        parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
+    parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
 
 // CUSTOMIZATION - FORMAT MINUTES

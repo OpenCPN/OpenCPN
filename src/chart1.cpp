@@ -3892,7 +3892,7 @@ void MyFrame::ODoSetSize( void )
                 //  Otherwise, just split the frame client width into equal spaces
 
                 if(m_StatusBarFieldCount > 2){
-                    int widths[] = { -6, -5, -5, -4, -3 };
+                    int widths[] = { -6, -5, -5, -6, -4 };
                     m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
                 }
                 else if(m_StatusBarFieldCount == 2){
