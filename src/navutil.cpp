@@ -791,7 +791,7 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "VisibleLayers" ), &g_VisibleLayers );
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
 
-    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 0 );
+    Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 1 );
 
     g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
