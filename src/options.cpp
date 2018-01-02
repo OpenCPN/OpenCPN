@@ -2878,7 +2878,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     //  Course Up display update period
     wrapperSizer->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                       _("Course-Up Update Period")),
+                                       _("Chart Rotation Averaging Time")),
                       inputFlags);
 
     wxBoxSizer* pCOGUPFilterRow = new wxBoxSizer(wxHORIZONTAL);
@@ -2994,7 +2994,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     //  Course Up display update period
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
-                                         _("Course-Up Update Period")),
+                                         _("Chart Rotation Averaging Time")),
                         labelFlags);
     wxBoxSizer* pCOGUPFilterRow = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(pCOGUPFilterRow, 0, wxALL | wxEXPAND,
