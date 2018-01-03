@@ -2435,9 +2435,9 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->ShowCurrents( g_bShowCurrent );
  
     // Start delayed initialization chain after 100 milliseconds
-    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
+//    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
-    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
+//    wxLogMessage( wxString::Format(_T("OpenCPN Initialized in %ld ms."), init_sw.Time() ) );
 
     OCPNPlatform::Initialize_3( );
     
@@ -6541,6 +6541,8 @@ void MyFrame::DoStackDelta( int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
+    qDebug() << "OnInitTimer: " << m_iInitCount;
+    
     switch(m_iInitCount++) {
         case 0:
         {

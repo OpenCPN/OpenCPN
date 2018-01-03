@@ -1164,13 +1164,18 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
-//        qDebug() << "invokeMenuItem" << item;
+        wxString msg1;
+        msg1.Printf(_T("invokeMenuItem: %d"), item);
+        wxLogMessage(msg1);
         
         // If in Route Create, disable all other menu items
         if( gFrame && (gFrame->nRoute_State > 1 ) && (OCPN_ACTION_ROUTE != item) ) {
+            wxLogMessage(_T("invokeMenuItem A"));
             return 72;
         }
-            
+
+        wxLogMessage(_T("invokeMenuItem B"));
+        
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
         
         switch(item){
@@ -1191,6 +1196,7 @@ extern "C"{
                 
             case OCPN_ACTION_SETTINGS_BASIC:
                 evt.SetId( ID_MENU_SETTINGS_BASIC );
+                wxLogMessage(_T("invokeMenuItem OCPN_ACTION_SETTINGS_BASIC"));
                 gFrame->GetEventHandler()->AddPendingEvent(evt);
                 break;
                 
@@ -3241,10 +3247,11 @@ int androidApplySettingsString( wxString settings, ArrayOfCDI *pACDI)
 
 bool DoAndroidPreferences( void )
 {
-    //qDebug() << "Start AndroidPreferences";
+    wxLogMessage(_T("Start DoAndroidPreferences"));
     
     wxString settings = BuildAndroidSettingsString();
 
+    wxLogMessage(_T("Call InvokeJNIPreferences"));
     InvokeJNIPreferences(settings);
 
     return true;
