@@ -229,7 +229,7 @@ bool                      bDrawCurrentValues;
 
 wxString                  ChartListFileName;
 wxString                  AISTargetNameFileName;
-wxString                  gWorldMapLocation;
+wxString                  gWorldMapLocation, gDefaultWorldMapLocation;
 wxString                  *pInit_Chart_Dir;
 wxString                  g_csv_locn;
 wxString                  g_SENCPrefix;
@@ -1954,10 +1954,11 @@ bool MyApp::OnInit()
     }
 
 //      Establish the GSHHS Dataset location
+    gDefaultWorldMapLocation = "gshhs";
+    gDefaultWorldMapLocation.Prepend( g_Platform->GetSharedDataDir() );
+    gDefaultWorldMapLocation.Append( wxFileName::GetPathSeparator() );
     if( gWorldMapLocation == wxEmptyString ) {
-        gWorldMapLocation = "gshhs";
-        gWorldMapLocation.Prepend( g_Platform->GetSharedDataDir() );
-        gWorldMapLocation.Append( wxFileName::GetPathSeparator() );
+        gWorldMapLocation = gDefaultWorldMapLocation;
     }
 
     //  Check the global Tide/Current data source array
@@ -6155,10 +6156,15 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
     wxLogMessage( _T("   ") );
     wxLogMessage( _T("Starting chart database Update...") );
     wxString gshhg_chart_loc = gWorldMapLocation;
+    gWorldMapLocation = wxEmptyString;
     ChartData->Update( DirArray, b_force, pprog );
     ChartData->SaveBinary(ChartListFileName);
     wxLogMessage( _T("Finished chart database Update") );
     wxLogMessage( _T("   ") );
+    if( gWorldMapLocation.empty() ) { //Last resort. User might have deleted all GSHHG data, but we still might have the default dataset distributed with OpenCPN or from the package repository...
+       gWorldMapLocation = gDefaultWorldMapLocation;
+       gshhg_chart_loc = wxEmptyString;
+    }
 
     if( cc1 && gWorldMapLocation != gshhg_chart_loc )
     {
