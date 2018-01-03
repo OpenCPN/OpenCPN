@@ -4500,7 +4500,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
             dist = 1.0;
             count = 10;
             pen1 = wxPen( GetGlobalColor( _T ( "SCLBR" ) ), 3, wxPENSTYLE_SOLID );
-            pen2 = wxPen( GetGlobalColor( _T ( "CHDRD" ) ), 3, wxPENSTYLE_SOLID );
+            pen2 = wxPen( GetGlobalColor( _T ( "CHGRD" ) ), 3, wxPENSTYLE_SOLID );
         }
 
         GetCanvasPixPoint( x_origin, y_origin, blat, blon );
