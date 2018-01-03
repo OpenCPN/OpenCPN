@@ -11,34 +11,27 @@
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(wxSVGPointListBase);
 
-wxString wxSVGPointList::GetValueAsString() const
-{
-  wxString value;
-  for (int i=0; i<(int)GetCount(); i++)
-    value += (i==0 ? wxT("") : wxT(" ")) + 
-      wxString::Format(wxT("%g,%g"), Item(i).GetX(), Item(i).GetY());
-  return value;
+wxString wxSVGPointList::GetValueAsString() const {
+	wxString value;
+	for (int i = 0; i < (int) GetCount(); i++) {
+		if (i > 0) {
+			value += wxT(" ");
+		}
+		value += wxString::Format(wxT("%g,%g"), Item(i).GetX(), Item(i).GetY());
+	}
+	return value;
 }
 
-void wxSVGPointList::SetValueAsString(const wxString& value)
-{
-  int num = 0;
-  double numbers[2];
-  wxStringTokenizer tkz(value, wxT(", \t"));
-  while (tkz.HasMoreTokens()) 
-  { 
-    wxString token = tkz.GetNextToken(); 
-    if (token.length() && token.ToDouble(&numbers[num]))
-    {
-      num++;
-      if (num == 2)
-      {
-        wxSVGPoint point;
-        point.SetX(numbers[0]);
-        point.SetY(numbers[1]);
-        Add(point);
-        num = 0;
-      }
-    }
-  }
+void wxSVGPointList::SetValueAsString(const wxString& value) {
+	Clear();
+	double x, y;
+	wxStringTokenizer tkz(value, wxT(" \t\r\n"));
+	while (tkz.HasMoreTokens()) {
+		wxString token = tkz.GetNextToken().Strip(wxString::both);
+		if (token.length() && token.Find(wxT(',')) > 0
+				&& token.BeforeFirst(wxT(',')).ToDouble(&x)
+				&& token.AfterFirst(wxT(',')).ToDouble(&y)) {
+			Add(wxSVGPoint(x, y));
+		}
+	}
 }

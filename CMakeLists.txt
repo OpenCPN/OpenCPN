@@ -783,6 +783,7 @@ IF(OCPN_USE_SVG)
       src/wxsvg/src/Elements_GetAttributes.cpp
       src/wxsvg/src/Elements_HasAttribute.cpp
       src/wxsvg/src/Elements_SetAttribute.cpp
+      src/wxsvg/src/ExifHandler.cpp
       src/wxsvg/src/GetSVGDocument.cpp
       src/wxsvg/src/NodeList.cpp
       src/wxsvg/src/SVGAngle.cpp

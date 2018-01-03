@@ -3,7 +3,7 @@
 // Purpose:     Cairo canvas path
 // Author:      Alex Thuering
 // Created:     2005/05/12
-// RCS-ID:      $Id: SVGCanvasPathCairo.cpp,v 1.14 2014/11/23 11:36:16 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvasPathCairo.cpp,v 1.15 2016/07/27 08:54:21 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -35,15 +35,16 @@ cairo_path_t* wxSVGCanvasPathCairo::GetPath() {
 	return cairo_copy_path(m_cr);
 }
 
-wxSVGRect wxSVGCanvasPathCairo::GetBBox(const wxSVGMatrix& matrix) {
-	if (&matrix) {
+wxSVGRect wxSVGCanvasPathCairo::GetBBox(const wxSVGMatrix* matrix) {
+	if (matrix) {
 		cairo_matrix_t m;
-		cairo_matrix_init(&m, matrix.GetA(), matrix.GetB(), matrix.GetC(), matrix.GetD(), matrix.GetE(), matrix.GetF());
+		cairo_matrix_init(&m, matrix->GetA(), matrix->GetB(), matrix->GetC(), matrix->GetD(),
+				matrix->GetE(), matrix->GetF());
 		cairo_set_matrix(m_cr, &m);
 	}
 	double x1, y1, x2, y2;
 	cairo_fill_extents(m_cr, &x1, &y1, &x2, &y2);
-	if (&matrix) {
+	if (matrix) {
 		cairo_matrix_t mat;
 		cairo_matrix_init(&mat, 1, 0, 0, 1, 0, 0);
 		cairo_set_matrix(m_cr, &mat);
@@ -51,10 +52,11 @@ wxSVGRect wxSVGCanvasPathCairo::GetBBox(const wxSVGMatrix& matrix) {
 	return wxSVGRect(x1, y1, x2 - x1, y2 - y1);
 }
 
-wxSVGRect wxSVGCanvasPathCairo::GetResultBBox(const wxCSSStyleDeclaration& style, const wxSVGMatrix& matrix) {
-	if (&matrix) {
+wxSVGRect wxSVGCanvasPathCairo::GetResultBBox(const wxCSSStyleDeclaration& style, const wxSVGMatrix* matrix) {
+	if (matrix) {
 		cairo_matrix_t m;
-		cairo_matrix_init(&m, matrix.GetA(), matrix.GetB(), matrix.GetC(), matrix.GetD(), matrix.GetE(), matrix.GetF());
+		cairo_matrix_init(&m, matrix->GetA(), matrix->GetB(), matrix->GetC(), matrix->GetD(),
+				matrix->GetE(), matrix->GetF());
 		cairo_set_matrix(m_cr, &m);
 	}
 	ApplyStrokeStyle(m_cr, style);
@@ -63,7 +65,7 @@ wxSVGRect wxSVGCanvasPathCairo::GetResultBBox(const wxCSSStyleDeclaration& style
 		cairo_stroke_extents(m_cr, &x1, &y1, &x2, &y2);
 	else
 		cairo_fill_extents(m_cr, &x1, &y1, &x2, &y2);
-	if (&matrix) {
+	if (matrix) {
 		cairo_matrix_t mat;
 		cairo_matrix_init(&mat, 1, 0, 0, 1, 0, 0);
 		cairo_set_matrix(m_cr, &mat);

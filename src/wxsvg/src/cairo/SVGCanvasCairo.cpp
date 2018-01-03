@@ -3,7 +3,7 @@
 // Purpose:     Cairo render
 // Author:      Alex Thuering
 // Created:     2005/05/12
-// RCS-ID:      $Id: SVGCanvasCairo.cpp,v 1.33 2015/09/19 17:18:23 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvasCairo.cpp,v 1.34 2016/07/27 08:54:21 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 //////////////////////////////////////////////////////////////////////////////
@@ -457,7 +457,8 @@ void wxSVGCanvasCairo::DrawCanvasPath(wxSVGCanvasPathCairo& canvasPath, wxSVGMat
 			int dx = int(floor(stdX * 3 * sqrt(2 * M_PI) / 4 + 0.5));
 			int dy = int(floor(stdY * 3 * sqrt(2 * M_PI) / 4 + 0.5));
 			
-			wxSVGRect rect = canvasPath.GetResultBBox(style, matrix.Inverse());
+			wxSVGMatrix invMatrix = matrix.Inverse();
+			wxSVGRect rect = canvasPath.GetResultBBox(style, &invMatrix);
 			rect.SetX(rect.GetX() - 2*dx);
 			rect.SetY(rect.GetY() - 2*dy);
 			rect.SetWidth(rect.GetWidth() + 4*dx);
