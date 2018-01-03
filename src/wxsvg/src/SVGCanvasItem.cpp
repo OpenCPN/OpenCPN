@@ -11,7 +11,9 @@
 #include <wx/tokenzr.h>
 #include "SVGCanvasItem.h"
 #include "SVGCanvas.h"
+#ifdef wxsvgUSE_EXIF
 #include "ExifHandler.h"
+#endif
 #include <math.h>
 #include <wx/log.h>
 #include <wx/progdlg.h>
@@ -1440,7 +1442,9 @@ void wxSVGCanvasImage::Init(wxSVGImageElement& element, const wxCSSStyleDeclarat
 #ifdef USE_LIBAV
 		bool log = wxLog::EnableLogging(false);
 		m_image.LoadFile(filename);
+#ifdef wxsvgUSE_EXIF
 		ExifHandler::rotateImage(filename, m_image);
+#endif
 		wxLog::EnableLogging(log);
 		if (!m_image.Ok()) {
 			wxFfmpegMediaDecoder decoder;
@@ -1479,7 +1483,9 @@ void wxSVGCanvasImage::Init(wxSVGImageElement& element, const wxCSSStyleDeclarat
 			}
 		}
 #else
+#ifdef wxsvgUSE_EXIF
 		ExifHandler::rotateImage(filename, m_image);
+#endif
 		m_image.LoadFile(filename);
 #endif
 	}
