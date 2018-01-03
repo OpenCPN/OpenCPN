@@ -989,5 +989,16 @@
         </catalog>
       </catalogs>
     </section>
+    <section>
+      <name>US Pilot Charts</name>
+      <catalogs>
+        <catalog>
+          <name>All Pilot Charts</name>
+          <type>RNC</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/PILOT_Catalog.xml</location>
+          <dir>{USERDATA}/PILOT_CHARTS</dir>
+        </catalog>
+      </catalogs>
+    </section>
   </sections>
 </ChartCatalog>

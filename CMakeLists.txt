@@ -49,6 +49,32 @@ ENDIF(APPLE)
 
 OPTION(OCPN_USE_LIBCPP "Use C++11 and libc++ instead of libstdc++ on macOS" OFF)
 
+if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+  set(ENABLE_CLANG_TIDY OFF CACHE BOOL "Add clang-tidy automatically to builds")
+  if (ENABLE_CLANG_TIDY)
+    find_program (CLANG_TIDY_EXE NAMES "clang-tidy" PATHS /usr/local/opt/llvm/bin )
+    if (CLANG_TIDY_EXE)
+      message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+      #For more, see http://clang.llvm.org/extra/clang-tidy/
+      #set(CLANG_TIDY_CHECKS "-*,modernize-*")
+      set(CLANG_TIDY_CHECKS "-*,performance-*")
+      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-checks=${CLANG_TIDY_CHECKS};-header-filter='${CMAKE_SOURCE_DIR}/*'"
+        CACHE STRING "" FORCE)
+    else()
+      message(AUTHOR_WARNING "clang-tidy not found!")
+      set(CMAKE_CXX_CLANG_TIDY "" CACHE STRING "" FORCE) # delete it
+    endif()
+  endif()
+endif()
+
+if ( CMAKE_VERSION VERSION_GREATER 3.9 )
+  set(ENABLE_CPPCHECK OFF CACHE BOOL "Add cppcheck automatically to builds")
+  if (ENABLE_CPPCHECK)
+      find_program (CPPCHECK_EXECUTABLE NAMES "cppcheck" )
+      set(CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE})
+  endif()
+endif()
+
 INCLUDE( ${CMAKE_SOURCE_DIR}/VERSION.cmake )
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" )
 IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
