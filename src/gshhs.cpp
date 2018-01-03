@@ -1356,13 +1356,15 @@ int GshhsReader::selectBestQuality( ViewPort &vp )
 static GshhsReader *reader = NULL;
 void gshhsCrossesLandInit()
 {
-    reader = new GshhsReader();
-
+    if( ! reader ) {
+        reader = new GshhsReader();
+    }
     /* load best possible quality for crossing tests */
     int bestQuality = 4;
     while( !reader->qualityAvailable[bestQuality] && bestQuality > 0)
         bestQuality--;
     reader->LoadQuality(bestQuality);
+    wxLogMessage("GSHHG: Loaded quality %d for land crossing detection.", bestQuality);
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
