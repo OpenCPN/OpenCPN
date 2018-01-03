@@ -14,13 +14,12 @@
 #include <wx/dynarray.h>
 WX_DECLARE_OBJARRAY(wxString, wxSVGStringListBase);
 
-class wxSVGStringList: public wxSVGStringListBase
-{
-  public:
-    wxSVGStringList() {}
-    
-    wxString GetValueAsString() const;
-    void SetValueAsString(const wxString& value, wxChar delimiter = wxT(','));
+class wxSVGStringList: public wxSVGStringListBase {
+public:
+	wxSVGStringList() {}
+
+	wxString GetValueAsString(wxChar delimiter = wxT(',')) const;
+	void SetValueAsString(const wxString& value, wxChar delimiter = wxT(','));
 };
 
 #endif // WX_SVG_STRING_LIST_H

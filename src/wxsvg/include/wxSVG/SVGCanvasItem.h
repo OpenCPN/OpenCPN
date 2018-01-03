@@ -3,7 +3,7 @@
 // Purpose:     Canvas items
 // Author:      Alex Thuering
 // Created:     2005/05/09
-// RCS-ID:      $Id: SVGCanvasItem.h,v 1.28 2016/01/09 23:31:15 ntalex Exp $
+// RCS-ID:      $Id: SVGCanvasItem.h,v 1.29 2016/07/27 08:54:21 ntalex Exp $
 // Copyright:   (c) 2005 Alex Thuering
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
@@ -44,9 +44,9 @@ class wxSVGCanvasItem {
 	wxSVGCanvasItemType GetType() { return m_type; }
 	
     /** returns the bounding box of the item */
-    virtual wxSVGRect GetBBox(const wxSVGMatrix& matrix = *(wxSVGMatrix*)NULL) { return wxSVGRect(); }
+    virtual wxSVGRect GetBBox(const wxSVGMatrix* matrix = NULL) { return wxSVGRect(); }
     virtual wxSVGRect GetResultBBox(const wxCSSStyleDeclaration& style,
-      const wxSVGMatrix& matrix = *(wxSVGMatrix*)NULL) { return GetBBox(); }
+      const wxSVGMatrix* matrix = NULL) { return GetBBox(matrix); }
 	
   protected:
 	wxSVGCanvasItemType m_type;
@@ -114,8 +114,8 @@ struct wxSVGCanvasTextChunk {
   wxSVGCanvasTextCharList chars;
   wxCSSStyleDeclaration style;
   wxSVGMatrix matrix;
-  wxSVGRect GetBBox(const wxSVGMatrix& matrix);
-  wxSVGRect GetBBox() { return GetBBox(*(wxSVGMatrix*)NULL); }
+  wxSVGRect GetBBox(const wxSVGMatrix* matrix);
+  wxSVGRect GetBBox() { return GetBBox(NULL); }
 };
 
 WX_DECLARE_OBJARRAY(wxSVGCanvasTextChunk, wxSVGCanvasTextChunkList);
@@ -128,7 +128,7 @@ class wxSVGCanvasText: public wxSVGCanvasItem
 	virtual ~wxSVGCanvasText();
 	
 	virtual void Init(wxSVGTextElement& element, const wxCSSStyleDeclaration& style, wxSVGMatrix* matrix);
-    virtual wxSVGRect GetBBox(const wxSVGMatrix& matrix = *(wxSVGMatrix*)NULL);
+    virtual wxSVGRect GetBBox(const wxSVGMatrix* matrix = NULL);
 	virtual long GetNumberOfChars();
     virtual double GetComputedTextLength();
     virtual double GetSubStringLength(unsigned long charnum, unsigned long nchars);

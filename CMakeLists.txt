@@ -738,6 +738,7 @@ IF(OCPN_USE_SVG)
       #set(VIDEO_FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} ${SWSCALE_LIBRARIES})
 
        FIND_PACKAGE(EXPAT REQUIRED)
+       INCLUDE(FindEXIF.cmake)
     ELSE(NOT WIN32)
       #On Windows, we have our own expat
       SET(EXPAT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/buildwin/expat-2.1.0/include)
@@ -771,6 +772,7 @@ IF(OCPN_USE_SVG)
         ${CAIRO_EXTRA_LIBRARIES}
 #        ${FFMPEG_LIBRARIES}
         ${EXPAT_LIBRARIES}
+        ${EXIF_LIBRARIES}
         ${GTK_LIBRARIES}
       )
     ENDIF(WIN32)
@@ -844,6 +846,12 @@ IF(OCPN_USE_SVG)
       src/wxsvg/src/svgxml/svgxml.cpp
       src/wxsvg/src/svgxml/svgxmlhelpr.cpp
     )
+    if(EXIF_FOUND)
+        SET(SRC_WXSVG ${SRC_WXSVG}
+            src/wxsvg/src/ExifHandler.cpp
+        )
+        ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
+    endif()
     ADD_LIBRARY(WXSVG ${SRC_WXSVG})
     TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVG)

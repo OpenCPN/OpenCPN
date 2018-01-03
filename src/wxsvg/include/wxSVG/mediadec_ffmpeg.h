@@ -3,7 +3,7 @@
 // Purpose:     FFMPEG Media Decoder
 // Author:      Alex Thuering
 // Created:     21.07.2007
-// RCS-ID:      $Id: mediadec_ffmpeg.h,v 1.8 2015/09/21 13:23:51 ntalex Exp $
+// RCS-ID:      $Id: mediadec_ffmpeg.h,v 1.9 2016/05/03 19:44:46 ntalex Exp $
 // Copyright:   (c) Alex Thuering
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
@@ -13,6 +13,10 @@
 
 #include <wx/string.h>
 #include <wx/image.h>
+#include <vector>
+#include <map>
+using namespace std;
+
 struct AVFormatContext;
 struct AVCodecContext;
 struct AVFrame;
@@ -60,6 +64,12 @@ public:
 	wxString GetFormatName();
 	/** Returns time base for video codec (tbc). */
 	float GetCodecTimeBase();
+	/** Returns list of chapters */
+	vector<double> GetChapters();
+	/** Returns file metadata */
+	map<wxString, wxString> GetMetadata();
+	/** Returns stream metadata */
+	map<wxString, wxString> GetMetadata(unsigned int streamIndex);
 	
 private:
 	AVFormatContext* m_formatCtx;
