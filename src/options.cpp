@@ -6167,7 +6167,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
 
   g_colourTrackLineColour =  m_colourTrackLineColour->GetColour();
-  //g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
+  g_colourTrackLineColour =  wxColour(g_colourTrackLineColour.Red(), g_colourTrackLineColour.Green(), g_colourTrackLineColour.Blue());
   g_nTrackPrecision = pTrackPrecision->GetSelection();
 
   g_bTrackDaily = pTrackDaily->GetValue();
@@ -6191,6 +6191,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bEnableZoomToCursor = pEnableZoomToCursor->GetValue();
 
   g_colourOwnshipRangeRingsColour =  m_colourOwnshipRangeRingColour->GetColour();
+  g_colourOwnshipRangeRingsColour =  wxColour(g_colourOwnshipRangeRingsColour.Red(), g_colourOwnshipRangeRingsColour.Green(), g_colourOwnshipRangeRingsColour.Blue());
   
   // AIS Parameters
   //   CPA Box
