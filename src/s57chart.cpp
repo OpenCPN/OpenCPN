@@ -3420,7 +3420,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     //      Full initialization from here
 
     if( !m_bbase_file_attr_known ) {
-        if( !GetBaseFileAttr( name ) )
+        if( !GetBaseFileAttr( m_TempFilePath ) )
             ret_value = INIT_FAIL_REMOVE;
         else
             m_bbase_file_attr_known = true;
