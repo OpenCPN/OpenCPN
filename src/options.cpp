@@ -1011,7 +1011,6 @@ void options::Init(void) {
   k_vectorcharts = 0;
   k_plugins = 0;
   k_tides = 0;
-  smallFont = 0;
   m_pConfig = NULL;
   
   activeSizer = NULL;
