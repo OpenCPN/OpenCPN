@@ -67,6 +67,8 @@ private:
       bool m_shown;
 #ifdef ocpnUSE_GL
       unsigned int texobj;
+      int m_tex_w, m_tex_h;
+      int m_image_width, m_image_height;
 #endif
       
 };
