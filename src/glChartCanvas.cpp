@@ -228,6 +228,12 @@ PFNGLBINDBUFFERPROC                 s_glBindBuffer;
 PFNGLBUFFERDATAPROC                 s_glBufferData;
 PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 
+#ifndef USE_ANDROID_GLES2
+#define glDeleteFramebuffers (s_glDeleteFramebuffers);
+#define glDeleteRenderbuffers (s_glDeleteRenderbuffers);
+#endif
+
+
 typedef void (APIENTRYP PFNGLGETBUFFERPARAMETERIV) (GLenum target, GLenum value, GLint *data);
 PFNGLGETBUFFERPARAMETERIV s_glGetBufferParameteriv;
 
@@ -1016,8 +1022,8 @@ void glChartCanvas::BuildFBO( )
     
     if( m_b_BuiltFBO ) {
         glDeleteTextures( 2, m_cache_tex );
-        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
-        ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
+        glDeleteFramebuffers( 1, &m_fb0 );
+        glDeleteRenderbuffers( 1, &m_renderbuffer );
         m_b_BuiltFBO = false;
     }
 
@@ -1039,8 +1045,8 @@ void glChartCanvas::BuildFBO( )
     if(!buildFBOSize(initialSize)){
         
         glDeleteTextures( 2, m_cache_tex );
-        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
-        ( s_glDeleteRenderbuffers )( 1, &m_renderbuffer );
+        glDeleteFramebuffers( 1, &m_fb0 );
+        glDeleteRenderbuffers( 1, &m_renderbuffer );
         
         if(!buildFBOSize(1024)){
             wxLogMessage(_T("BuildFBO C"));
