@@ -743,11 +743,11 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
       this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
       wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
           wxBORDER_SUNKEN | wxLC_VIRTUAL);
-  wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
+  //wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  imglist->Add(style->GetIcon(_T( "sort_asc" )));
-  imglist->Add(style->GetIcon(_T( "sort_desc" )));
+  //imglist->Add(style->GetIcon(_T( "sort_asc" )));
+  //imglist->Add(style->GetIcon(_T( "sort_desc" )));
 
   // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
@@ -947,8 +947,6 @@ options::~options(void) {
   delete m_pSerialArray;
   delete m_pGroupArray;
   delete m_topImgList;
-  delete smallFont;
-  
 }
 
 // with AIS it's called very often
@@ -1013,7 +1011,6 @@ void options::Init(void) {
   k_vectorcharts = 0;
   k_plugins = 0;
   k_tides = 0;
-  smallFont = 0;
   m_pConfig = NULL;
   
   activeSizer = NULL;
@@ -2636,9 +2633,9 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxStaticBoxSizer(waypointText, wxVERTICAL);
   ownShip->Add(waypointSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
 
-  wxFlexGridSizer* dispWaypointOptionsGrid =
-      new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
-  dispWaypointOptionsGrid->AddGrowableCol(1);
+  //wxFlexGridSizer* dispWaypointOptionsGrid =
+  //    new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
+  //dispWaypointOptionsGrid->AddGrowableCol(1);
 
   wxFlexGridSizer* waypointrrSelect =
       new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
@@ -3046,11 +3043,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                          _("With a lower value, the same zoom level shows a less detailed chart.\n\
 With a higher value, the same zoom level shows a more detailed chart."));
 
-    smallFont = new wxFont(*dialogFont);  // we can't use Smaller() because
-                                          // wx2.8 doesn't support it
-    smallFont->SetPointSize((smallFont->GetPointSize() / 1.2) +
+    smallFont = *dialogFont;  // we can't use Smaller() because
+                              // wx2.8 doesn't support it
+    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +
                             0.5);  // + 0.5 to round instead of truncate
-    zoomText->SetFont(*smallFont);
+    zoomText->SetFont(smallFont);
     itemBoxSizerUI->Add(zoomText, 0, wxALL | wxEXPAND, group_item_spacing);
 
     // spacer
@@ -4178,9 +4175,9 @@ void options::CreatePanel_Units(size_t parent, int border_size,
     bearingsSizer->AddSpacer(10);
     
     wxStaticText *varText = new wxStaticText(panelUnits, wxID_ANY, _(" To set the magnetic variation manually,\n you must disable the WMM plugin."));
-    smallFont = new wxFont(*dialogFont);  
-    smallFont->SetPointSize((smallFont->GetPointSize() / 1.2) +  0.5);  // + 0.5 to round instead of truncate
-    varText->SetFont(*smallFont);
+    smallFont = *dialogFont;
+    smallFont.SetPointSize((smallFont.GetPointSize() / 1.2) +  0.5);  // + 0.5 to round instead of truncate
+    varText->SetFont(smallFont);
     
     bearingsSizer->Add(varText);
     

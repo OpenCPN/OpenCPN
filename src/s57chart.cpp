@@ -3353,7 +3353,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
         m_TempFilePath = wxFileName::GetTempDir() + wxFileName::GetPathSeparator() +
             wxFileName(name).GetName();
 
-        if(!DecompressXZFile(name, m_TempFilePath)) {
+        if(!wxFileExists(m_TempFilePath) && !DecompressXZFile(name, m_TempFilePath)) {
             wxRemoveFile(m_TempFilePath);
             return INIT_FAIL_REMOVE;
         }
@@ -3420,7 +3420,7 @@ InitReturn s57chart::Init( const wxString& name, ChartInitFlag flags )
     //      Full initialization from here
 
     if( !m_bbase_file_attr_known ) {
-        if( !GetBaseFileAttr( name ) )
+        if( !GetBaseFileAttr( m_TempFilePath ) )
             ret_value = INIT_FAIL_REMOVE;
         else
             m_bbase_file_attr_known = true;
@@ -3503,7 +3503,7 @@ InitReturn s57chart::FindOrCreateSenc( const wxString& name, bool b_progress )
         m_TempFilePath = wxFileName::GetTempDir() + wxFileName::GetPathSeparator() +
         wxFileName(name).GetName();
         
-        if(!DecompressXZFile(name, m_TempFilePath)) {
+        if(!wxFileExists(m_TempFilePath) && !DecompressXZFile(name, m_TempFilePath)) {
             wxRemoveFile(m_TempFilePath);
             return INIT_FAIL_REMOVE;
         }

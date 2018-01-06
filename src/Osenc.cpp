@@ -1645,9 +1645,9 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
                 sobj.Append( wxString::Format( _T("  %d/%d       "), iObj, nProg ) );
                 
                 bcont = m_ProgDialog->Update( iObj, sobj );
-#ifdef __WXMSW__            
+#if defined(__WXMSW__) || defined(__WXOSX__)
                 wxSafeYield();
-#endif                
+#endif
             }
 #endif
 

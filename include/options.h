@@ -591,7 +591,8 @@ class options : private Uncopyable,
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
 
   wxNotebookPage *m_groupsPage;
-  wxFont *smallFont, *dialogFont;
+  wxFont smallFont;
+  wxFont *dialogFont;
   wxSize m_small_button_size;
   wxTimer m_BTScanTimer;
   wxArrayString m_BTscan_results;
