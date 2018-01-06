@@ -2031,7 +2031,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 glEnd();
                 
                 glDisable(GL_TEXTURE_2D);
-            } else if( g_OwnShipIconType = 1 ) { // Scaled Bitmap
+            } else if( g_OwnShipIconType == 1 ) { // Scaled Bitmap
 
                 glEnable(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, ownship_tex);
