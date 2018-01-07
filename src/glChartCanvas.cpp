@@ -1965,14 +1965,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             int ownShipLength= 84;
             lShipMidPoint = lGPSPoint;
 
-            if( g_n_ownship_beam_meters > 0.0 &&
-                g_n_ownship_length_meters > 0.0 &&
-                g_OwnShipIconType == 1 )
-            {            
-                ownShipWidth = ownship_size.x;
-                ownShipLength= ownship_size.y;
-            }
-
             /* scaled ship? */
             if( g_OwnShipIconType != 0 )
                 cc1->ComputeShipScaleFactor
@@ -2037,19 +2029,17 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 glBindTexture(GL_TEXTURE_2D, ownship_tex);
                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
             
-                float nominal_ownship_size_mm = cc1->m_display_size_mm / 44.0;
-                nominal_ownship_size_mm = wxMin(nominal_ownship_size_mm, 15.0);
-                nominal_ownship_size_mm = wxMax(nominal_ownship_size_mm, 7.0);
-            
-                float nominal_ownship_size_pixels = wxMax(20.0, cc1->GetPixPerMM() * nominal_ownship_size_mm);             // nominal length, but not less than 20 pixel
-                float h = nominal_ownship_size_pixels * scale_factor_y;
-                float w = nominal_ownship_size_pixels * scale_factor_x * ownship_size.x / ownship_size.y ;
-                float glw = ownship_tex_size.x, glh = ownship_tex_size.y;
-                float u = ownship_size.x/glw, v = ownship_size.y/glh;
+                float nominal_ownship_size_pixels_y = 84; 
+                float nominal_ownship_size_pixels_x = 22; 
+                
+                float h = nominal_ownship_size_pixels_y * scale_factor_y;
+                float w = nominal_ownship_size_pixels_x * scale_factor_x;
+                
+                float u = (float)ownship_size.x/ownship_tex_size.x, v = (float)ownship_size.y/ownship_tex_size.y;
 
             // tweak GPS reference point indicator size
                 gps_circle_radius = w / 5;
-
+                
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0), glVertex2f(-w/2, -h/2);
                 glTexCoord2f(u, 0), glVertex2f(+w/2, -h/2);
@@ -2065,14 +2055,16 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                                                         0, 42, 0, -42       };
 
                 glVertexPointer(2, GL_INT, 2*sizeof(GLint), s_ownship_icon);
+ 
+                glScalef(scale_factor_x, scale_factor_y, 1);
                 glDrawArrays(GL_POLYGON, 0, 6);
 
-                glScalef(scale_factor_x, scale_factor_y, 1);
                 glColor4ub(0, 0, 0, 255);
                 glLineWidth(1);
 
                 glDrawArrays(GL_LINE_LOOP, 0, 6);
                 glDrawArrays(GL_LINES, 6, 4);
+                
             }
             glPopMatrix();
 
