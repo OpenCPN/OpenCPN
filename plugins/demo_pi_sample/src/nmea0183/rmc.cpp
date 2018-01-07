@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -128,23 +128,28 @@ bool RMC::Parse( const SENTENCE& sentence )
        }
    }
 
-/*
-   if ( check == Unknown0183 )
-   {
-       SetErrorMessage( _T("Missing Checksum") );
-      return( FALSE );
+   //   Is this a 2.3 message?
+   bool bext_valid = true;
+   wxString checksum_in_sentence = sentence.Field( 12 );
+   if(!checksum_in_sentence.StartsWith(_T("*"))) {
+       if(checksum_in_sentence == _T("N") ) 
+            bext_valid = false;
    }
-*/
+       
 
    UTCTime                    = sentence.Field( 1 );
+   
    IsDataValid                = sentence.Boolean( 2 );
+   if( !bext_valid )
+       IsDataValid = NFalse;
+       
    Position.Parse( 3, 4, 5, 6, sentence );
    SpeedOverGroundKnots       = sentence.Double( 7 );
    TrackMadeGoodDegreesTrue   = sentence.Double( 8 );
    Date                       = sentence.Field( 9 );
    MagneticVariation          = sentence.Double( 10 );
    MagneticVariationDirection = sentence.EastOrWest( 11 );
-
+   
    return( TRUE );
 }
 
@@ -164,8 +169,14 @@ bool RMC::Write( SENTENCE& sentence )
    sentence += SpeedOverGroundKnots;
    sentence += TrackMadeGoodDegreesTrue;
    sentence += Date;
-   sentence += MagneticVariation;
-   sentence += MagneticVariationDirection;
+
+   if(MagneticVariation > 360.)
+         sentence += _T(",,");
+   else
+   {
+         sentence += MagneticVariation;
+         sentence += MagneticVariationDirection;
+   }
 
    sentence.Finish();
 

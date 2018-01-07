@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  *
  *   S Blackburn's original source license:                                *
@@ -63,11 +63,15 @@ class RTE : public RESPONSE
       wxArrayString Waypoints;
       int message_number;
       int total_number_of_messages;
-
+      int m_skip_checksum;
+      char m_complete_char;
+      
       virtual void Empty( void );
       virtual bool Parse( const SENTENCE& sentence );
       virtual bool Write( SENTENCE& sentence );
       virtual bool AddWaypoint(const wxString& name);
+      
+      
 };
 
 #endif // RTE_CLASS_HEADER

@@ -4,6 +4,24 @@
 ## License:     GPLv3+
 ##---------------------------------------------------------------------------
 
+MESSAGE(STATUS "Starting POTFILE generation")
+
+SET(POTFILE ${CMAKE_CURRENT_SOURCE_DIR}/po/POTFILES.in)
+FILE(REMOVE ${POTFILE}.test)
+FOREACH(POTLINE IN ITEMS ${SRCS})
+    FILE(APPEND ${POTFILE}.test "${POTLINE}\n")
+ENDFOREACH(POTLINE)
+FOREACH(POTLINE IN ITEMS ${HDRS})
+    FILE(APPEND ${POTFILE}.test "${POTLINE}\n")
+ENDFOREACH(POTLINE)
+# convert crlf to lf for consistency and make copy_if_different work correctly
+configure_file(${POTFILE}.test ${POTFILE}.test NEWLINE_STYLE UNIX)
+EXECUTE_PROCESS(
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${POTFILE}.test ${POTFILE}
+    OUTPUT_QUIET
+    ERROR_QUIET
+)
+
 FIND_PROGRAM(GETTEXT_XGETTEXT_EXECUTABLE xgettext)
 string(REPLACE "_pi" "" I18N_NAME ${PACKAGE_NAME})
 IF (GETTEXT_XGETTEXT_EXECUTABLE)

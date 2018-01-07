@@ -18,10 +18,15 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #configure_file(cmake/version.h.in ${PROJECT_SOURCE_DIR}/src/version.h)
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
+FILE(REMOVE ${PROJECT_SOURCE_DIR}/include/version.h)
+FILE(REMOVE ${PROJECT_SOURCE_DIR}/include/wxWTranslateCatalog.h)
+MESSAGE(STATUS "SKIP_VERSION_CONFIG: ${SKIP_VERSION_CONFIG}")
 IF(NOT SKIP_VERSION_CONFIG)
-    configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
-    configure_file(cmake/wxWTranslateCatalog.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/wxWTranslateCatalog.h)
-    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+    SET(BUILD_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+    MESSAGE(STATUS "translate directory: ${BUILD_INCLUDE_PATH}")
+    configure_file(cmake/version.h.in ${BUILD_INCLUDE_PATH}/include/version.h)
+    configure_file(cmake/wxWTranslateCatalog.h.in ${BUILD_INCLUDE_PATH}/include/wxWTranslateCatalog.h)
+    INCLUDE_DIRECTORIES(${BUILD_INCLUDE_PATH}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
@@ -30,6 +35,8 @@ SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+    get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
+    MESSAGE(STATUS "INCLUDE_DIRECTORIES: ${inc_dirs}")
 
 # SET(PROFILING 1)
 

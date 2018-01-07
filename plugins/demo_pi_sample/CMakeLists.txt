@@ -22,19 +22,30 @@
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module
-IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0003 OLD)
-  CMAKE_POLICY(SET CMP0005 OLD)
-  CMAKE_POLICY(SET CMP0011 OLD)
-ENDIF (COMMAND cmake_policy)
 
 PROJECT(demo_pi)
 
 SET(PACKAGE_NAME demo_pi)
-SET(PLUGIN_SOURCE_DIR ..)
+SET(VERBOSE_NAME demo)
+SET(TITLE_NAME demo)
+SET(CPACK_PACKAGE_CONTARCT "Pavel Kalian")
+
 MESSAGE (STATUS "*** Building ${PACKAGE_NAME} ***")
 
-#SET(CMAKE_BUILD_TYPE Debug)
+SET(VERSION_MAJOR "1")
+SET(VERSION_MINOR "0")
+SET(VERSION_PATCH "3")
+SET(VERSION_DATE "07/01/2018")
+
+IF( NOT CMAKE_BUILD_TYPE )
+  SET( CMAKE_BUILD_TYPE Release CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+       FORCE )
+ENDIF( NOT CMAKE_BUILD_TYPE )
+
+MESSAGE (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+INCLUDE("cmake/PluginConfigure.cmake")
 
 IF (PREFIX)
 	SET(CMAKE_INSTALL_PREFIX ${PREFIX})
@@ -83,64 +94,51 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 
 SET(SRC_DEMO
-                demo_pi.h
- 		demo_pi.cpp
+        src/demo_pi.h
+ 		src/demo_pi.cpp
  	)
 
 SET(SRC_NMEA0183
-		nmea0183/LatLong.hpp
-		nmea0183/latlong.cpp
-		nmea0183/long.cpp
-		nmea0183/nmea0183.cpp
-		nmea0183/nmea0183.hpp
-		nmea0183/Response.hpp
-		nmea0183/response.cpp
-		nmea0183/RMB.hpp
-		nmea0183/rmb.cpp
-		nmea0183/Sentence.hpp
-		nmea0183/sentence.cpp
-		nmea0183/talkerid.cpp
-		nmea0183/RMC.HPP
-		nmea0183/rmc.cpp
-		nmea0183/hexvalue.cpp
-		nmea0183/lat.cpp
-		nmea0183/expid.cpp
-		nmea0183/wpl.hpp
-		nmea0183/wpl.cpp
-		nmea0183/rte.hpp
-		nmea0183/rte.cpp
-		nmea0183/hdt.hpp
-		nmea0183/hdt.cpp
-		nmea0183/hdg.hpp
-		nmea0183/hdg.cpp
-		nmea0183/hdm.hpp
-		nmea0183/hdm.cpp
-		nmea0183/gll.hpp
-		nmea0183/gll.cpp
-		nmea0183/vtg.hpp
-		nmea0183/vtg.cpp
-		nmea0183/gga.hpp
-		nmea0183/gga.cpp
-		nmea0183/gsv.hpp
-		nmea0183/gsv.cpp
+		src/nmea0183/LatLong.hpp
+		src/nmea0183/latlong.cpp
+		src/nmea0183/long.cpp
+		src/nmea0183/nmea0183.cpp
+		src/nmea0183/nmea0183.hpp
+		src/nmea0183/Response.hpp
+		src/nmea0183/response.cpp
+		src/nmea0183/RMB.hpp
+		src/nmea0183/rmb.cpp
+		src/nmea0183/Sentence.hpp
+		src/nmea0183/sentence.cpp
+		src/nmea0183/talkerid.cpp
+		src/nmea0183/RMC.HPP
+		src/nmea0183/rmc.cpp
+		src/nmea0183/hexvalue.cpp
+		src/nmea0183/lat.cpp
+		src/nmea0183/expid.cpp
+		src/nmea0183/wpl.hpp
+		src/nmea0183/wpl.cpp
+		src/nmea0183/rte.hpp
+		src/nmea0183/rte.cpp
+		src/nmea0183/hdt.hpp
+		src/nmea0183/hdt.cpp
+		src/nmea0183/hdg.hpp
+		src/nmea0183/hdg.cpp
+		src/nmea0183/hdm.hpp
+		src/nmea0183/hdm.cpp
+		src/nmea0183/gll.hpp
+		src/nmea0183/gll.cpp
+		src/nmea0183/vtg.hpp
+		src/nmea0183/vtg.cpp
+		src/nmea0183/gga.hpp
+		src/nmea0183/gga.cpp
+		src/nmea0183/gsv.hpp
+		src/nmea0183/gsv.cpp
 	)
 INCLUDE_DIRECTORIES(nmea0183)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DEMO} ${SRC_NMEA0183} )
 
-IF(WIN32)
-  SET(OPENCPN_IMPORT_LIB "../../../${CMAKE_CFG_INTDIR}/${PARENT}")
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
-  ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
-ENDIF(WIN32)
-
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
-
-IF(UNIX)
-INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${PREFIX_PARENTDATA}/plugins)
-ENDIF(UNIX)
-
-IF(WIN32)
-INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
-ENDIF(WIN32)
- 	  	 
+INCLUDE("cmake/PluginInstall.cmake")
+INCLUDE("cmake/PluginLocalization.cmake")
+INCLUDE("cmake/PluginPackage.cmake")
