@@ -90,11 +90,11 @@ MyTrackPrintout::MyTrackPrintout( std::vector<bool> _toPrintOut,
     if ( toPrintOut[ PRINT_POSITION ] ) {
         table << (const char *)wxString(_("Position")).mb_str();
     }
-    if ( toPrintOut[ PRINT_DISTANCE ] ) {
-        table << (const char *)wxString(_("Distance")).mb_str();
-    }
     if ( toPrintOut[ PRINT_BEARING ] ) {
         table << (const char *)wxString(_("Course")).mb_str();
+    }
+    if ( toPrintOut[ PRINT_DISTANCE ] ) {
+        table << (const char *)wxString(_("Distance")).mb_str();
     }
     if ( toPrintOut[ PRINT_TIME ] ) {
         table << (const char *)wxString(_("Time")).mb_str();
@@ -109,9 +109,9 @@ MyTrackPrintout::MyTrackPrintout( std::vector<bool> _toPrintOut,
     // setup widths for columns
     if ( toPrintOut[ PRINT_POSITION ] )
         table << 80;
-    if ( toPrintOut[ PRINT_DISTANCE ] )
-        table << 40;
     if ( toPrintOut[ PRINT_BEARING ] )
+        table << 40;
+    if ( toPrintOut[ PRINT_DISTANCE ] )
         table << 40;
     if ( toPrintOut[ PRINT_TIME ] )
         table << 60;
@@ -132,9 +132,9 @@ MyTrackPrintout::MyTrackPrintout( std::vector<bool> _toPrintOut,
         if ( toPrintOut[ PRINT_DISTANCE ] )
             table << lcPoints->OnGetItemText(n, 1); // distance
         if ( toPrintOut[ PRINT_TIME ] )
-            table << lcPoints->OnGetItemText(n, 5); // distance
+            table << lcPoints->OnGetItemText(n, 5); // time
         if ( toPrintOut[ PRINT_SPEED ] )
-            table << lcPoints->OnGetItemText(n, 6); // distance
+            table << lcPoints->OnGetItemText(n, 6); // speed
         table << "\n";
     }
 }
