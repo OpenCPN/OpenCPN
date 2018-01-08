@@ -4981,6 +4981,13 @@ void glChartCanvas::Render()
     }
 #endif
 
+    wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxPENSTYLE_SOLID );
+    m_gldc.SetPen( ppPen1 );
+    m_gldc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
+    
+    m_gldc.DrawCircle( 200, 200, 64 );
+    
+    
     DrawDynamicRoutesTracksAndWaypoints( VPoint );
         
     // Now draw all the objects which normally move around and are not
