@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-04 09:41-0400\n"
+"POT-Creation-Date: 2018-01-09 10:12-0500\n"
 "PO-Revision-Date: 2017-08-04 22:32-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Arabic\n"
@@ -10,444 +10,334 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ar\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
-
-#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
-#: src/wind_history.cpp:433
-msgid "N"
-msgstr "شمال"
-
-#: src/dashboard_pi.cpp:105
-msgid "Position"
-msgstr "الموقع"
-
-#: src/dashboard_pi.cpp:107
-msgid "SOG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:109
-msgid "Speedometer"
-msgstr "عداد السرعة"
-
-#: src/dashboard_pi.cpp:111
-msgid "COG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:113
-msgid "Mag COG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:115
-msgid "GPS Compass"
-msgstr "بوصلة تحديد المواقع"
-
-#: src/dashboard_pi.cpp:117
-msgid "True Compass"
-msgstr ""
-
-#: src/dashboard_pi.cpp:119
-msgid "STW"
-msgstr ""
-
-#: src/dashboard_pi.cpp:121
-msgid "True HDG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:123
-msgid "Mag HDG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:126
-msgid "App. Wind Angle & Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:128
-msgid "App & True Wind Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
-msgid "App. Wind Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:134
-msgid "True Wind Angle & Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
-msgid "Depth"
-msgstr ""
-
-#: src/dashboard_pi.cpp:140 src/dashboard_pi.cpp:142
-msgid "Barometric pressure"
-msgstr ""
-
-#: src/dashboard_pi.cpp:144
-msgid "Water Temp."
-msgstr ""
-
-#: src/dashboard_pi.cpp:146
-msgid "Air Temp."
-msgstr ""
-
-#: src/dashboard_pi.cpp:148
-msgid "App. Wind Angle"
-msgstr "زاوية الرياح التقريبية"
-
-#: src/dashboard_pi.cpp:150
-msgid "True Wind Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:152
-msgid "True Wind Direction"
-msgstr ""
-
-#: src/dashboard_pi.cpp:154
-msgid "True Wind Speed"
-msgstr ""
-
-#: src/dashboard_pi.cpp:156
-msgid "True Wind Dir. & Speed"
-msgstr "السرعة و الاتجاه الحقيقي للرياح"
-
-#: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
-msgid "VMG"
-msgstr ""
-
-#: src/dashboard_pi.cpp:162 src/dashboard_pi.cpp:164
-msgid "Rudder Angle"
-msgstr ""
-
-#: src/dashboard_pi.cpp:166
-msgid "GPS in View"
-msgstr "عرض نظام تحديد المواقع"
-
-#: src/dashboard_pi.cpp:168
-msgid "GPS Status"
-msgstr "حالة GPS"
-
-#: src/dashboard_pi.cpp:170
-msgid "Cursor"
-msgstr "مؤشر"
-
-#: src/dashboard_pi.cpp:172
-msgid "GPS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:174
-msgid "Sunrise/Sunset"
-msgstr "شروق الشمس/غروب الشمس"
-
-#: src/dashboard_pi.cpp:176
-msgid "Moon phase"
-msgstr "اوجه القمر"
-
-#: src/dashboard_pi.cpp:178
-msgid "Wind history"
-msgstr "تاريخ الرياح"
-
-#: src/dashboard_pi.cpp:180
-msgid "Barometric history"
-msgstr "تاريخ الضغط"
-
-#: src/dashboard_pi.cpp:182
-msgid "Trip Log"
-msgstr "سجل الرحلة"
-
-#: src/dashboard_pi.cpp:184
-msgid "Sum Log"
-msgstr ""
-
-#: src/dashboard_pi.cpp:186
-msgid "From Ownship"
-msgstr ""
-
-#: src/dashboard_pi.cpp:188
-msgid "Pitch"
-msgstr ""
-
-#: src/dashboard_pi.cpp:190
-msgid "Heel"
-msgstr ""
-
-#: src/dashboard_pi.cpp:192
-msgid "Local GPS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:194
-msgid "Local CPU Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:196
-msgid "Local Sunrise/Sunset"
-msgstr ""
-
-#: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
-#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
-#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
-msgid "Dashboard"
-msgstr "لوحة التحكم"
-
-#: src/dashboard_pi.cpp:508
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
-
-#: src/dashboard_pi.cpp:513
-msgid "Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-
-#: src/dashboard_pi.cpp:1635
-msgid "Dashboard preferences"
-msgstr "اعدادات لوحة المعلومات"
-
-#: src/dashboard_pi.cpp:1705
-msgid "show this dashboard"
-msgstr "عرض ضمن لوحة المعلومات"
-
-#: src/dashboard_pi.cpp:1711
-msgid "Caption:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1719
-msgid "Orientation:"
-msgstr "التدوير:"
-
-#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
-msgid "Vertical"
-msgstr "عمودي"
-
-#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
-msgid "Horizontal"
-msgstr "أفقي"
-
-#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
-#: src/dashboard_pi.cpp:2116
-msgid "Instruments"
-msgstr "أدوات"
-
-#: src/dashboard_pi.cpp:1747
-msgid "Add"
-msgstr "إضافة"
-
-#: src/dashboard_pi.cpp:1760
-msgid "Delete"
-msgstr "حذف"
-
-#: src/dashboard_pi.cpp:1766
-msgid "Up"
-msgstr "أعلى"
-
-#: src/dashboard_pi.cpp:1771
-msgid "Down"
-msgstr "أسفل"
-
-#: src/dashboard_pi.cpp:1781
-msgid "Appearance"
-msgstr "المظهر"
-
-#: src/dashboard_pi.cpp:1783
-msgid "Fonts"
-msgstr "الخطوط"
-
-#: src/dashboard_pi.cpp:1789
-msgid "Title:"
-msgstr "العنوان:"
-
-#: src/dashboard_pi.cpp:1795
-msgid "Data:"
-msgstr "البيانات:"
-
-#: src/dashboard_pi.cpp:1801
-msgid "Label:"
-msgstr "عنوان:"
-
-#: src/dashboard_pi.cpp:1807
-msgid "Small:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1815
-msgid "Units, Ranges, Formats"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1821
-msgid "Speedometer max value:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1827
-msgid "Speed Over Ground Damping Factor:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1833
-msgid "COG Damping Factor:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1839
-msgid "Local Time Offset From UTC:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1858
-msgid "Boat speed units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
-msgid "Honor OpenCPN settings"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "Kts"
-msgstr "عقدة"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "mph"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "km/h"
-msgstr "كم/ساعة"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "m/s"
-msgstr "متر/ثانية"
-
-#: src/dashboard_pi.cpp:1867
-msgid "Depth units:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
-msgid "Meters"
-msgstr "متر"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Feet"
-msgstr "قدم"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Fathoms"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1870
-msgid "Centimeters"
-msgstr "سنتيمتر"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Inches"
-msgstr "بوصة"
-
-#: src/dashboard_pi.cpp:1876
-msgid "Distance units:"
-msgstr "وحدة المسافة:"
-
-#: src/dashboard_pi.cpp:1879
-msgid "Nautical miles"
-msgstr "ميل بحري"
-
-#: src/dashboard_pi.cpp:1879
-msgid "Statute miles"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1879
-msgid "Kilometers"
-msgstr "كيلومتر"
-
-#: src/dashboard_pi.cpp:1885
-msgid "Wind speed units:"
-msgstr "وحدة سرعة الرياح:"
-
-#: src/dashboard_pi.cpp:2099
-msgid "Add instrument"
-msgstr ""
-
-#: src/dashboard_pi.cpp:2105
-msgid "Select instrument to add:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:2199
-msgid "Preferences..."
-msgstr "الخصائص"
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
-msgid "NE"
-msgstr ""
-
-#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
-msgid "E"
-msgstr ""
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
-msgid "SE"
-msgstr ""
-
-#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
-msgid "S"
-msgstr ""
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
-msgid "SW"
-msgstr ""
-
-#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
-msgid "W"
-msgstr ""
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
-msgid "NW"
-msgstr ""
-
-#: src/instrument.cpp:236
-msgid " true"
-msgstr ""
-
-#: src/instrument.cpp:238
+#
 msgid " mag"
 msgstr ""
-
-#: src/wind_history.cpp:56 src/wind_history.cpp:107
+#
+msgid " true"
+msgstr ""
+#
 msgid "--"
 msgstr ""
-
-#: src/wind_history.cpp:331
+#
 #, c-format
 msgid "--- %s"
 msgstr ""
-
-#: src/wind_history.cpp:436
-msgid "NNE"
+#
+msgid "Add"
+msgstr "إضافة"
+#
+msgid "Add instrument"
 msgstr ""
-
-#: src/wind_history.cpp:442
+#
+msgid "Air Temp."
+msgstr ""
+#
+msgid "App & True Wind Angle"
+msgstr ""
+#
+msgid "App. Wind Angle"
+msgstr "زاوية الرياح التقريبية"
+#
+msgid "App. Wind Angle & Speed"
+msgstr ""
+#
+msgid "App. Wind Speed"
+msgstr ""
+#
+msgid "Appearance"
+msgstr "المظهر"
+#
+msgid "Barometric history"
+msgstr "تاريخ الضغط"
+#
+msgid "Barometric pressure"
+msgstr ""
+#
+msgid "Boat speed units:"
+msgstr ""
+#
+msgid "COG"
+msgstr ""
+#
+msgid "COG Damping Factor:"
+msgstr ""
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Centimeters"
+msgstr "سنتيمتر"
+#
+msgid "Cursor"
+msgstr "مؤشر"
+#
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr ""
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+#
+msgid "Dashboard preferences"
+msgstr "اعدادات لوحة المعلومات"
+#
+msgid "Data:"
+msgstr "البيانات:"
+#
+msgid "Delete"
+msgstr "حذف"
+#
+msgid "Depth"
+msgstr ""
+#
+msgid "Depth units:"
+msgstr ""
+#
+msgid "Distance units:"
+msgstr "وحدة المسافة:"
+#
+msgid "Down"
+msgstr "أسفل"
+#
+msgid "E"
+msgstr ""
+#
 msgid "ENE"
 msgstr ""
-
-#: src/wind_history.cpp:448
+#
 msgid "ESE"
 msgstr ""
-
-#: src/wind_history.cpp:454
-msgid "SSE"
+#
+msgid "Fathoms"
 msgstr ""
-
-#: src/wind_history.cpp:460
-msgid "SSW"
+#
+msgid "Feet"
+msgstr "قدم"
+#
+msgid "Fonts"
+msgstr "الخطوط"
+#
+msgid "From Ownship"
 msgstr ""
-
-#: src/wind_history.cpp:466
-msgid "WSW"
+#
+msgid "GPS Clock"
 msgstr ""
-
-#: src/wind_history.cpp:472
-msgid "WNW"
+#
+msgid "GPS Compass"
+msgstr "بوصلة تحديد المواقع"
+#
+msgid "GPS Status"
+msgstr "حالة GPS"
+#
+msgid "GPS in View"
+msgstr "عرض نظام تحديد المواقع"
+#
+msgid "Heel"
 msgstr ""
-
-#: src/wind_history.cpp:478
-msgid "NNW"
+#
+msgid "Honor OpenCPN settings"
 msgstr ""
-
-#: src/wind_history.cpp:575
+#
+msgid "Horizontal"
+msgstr "أفقي"
+#
+msgid "Inches"
+msgstr "بوصة"
+#
+msgid "Instruments"
+msgstr "أدوات"
+#
+msgid "Kilometers"
+msgstr "كيلومتر"
+#
+msgid "Kts"
+msgstr "عقدة"
+#
+msgid "Label:"
+msgstr "عنوان:"
+#
+msgid "Local CPU Clock"
+msgstr ""
+#
+msgid "Local GPS Clock"
+msgstr ""
+#
+msgid "Local Sunrise/Sunset"
+msgstr ""
+#
+msgid "Local Time Offset From UTC:"
+msgstr ""
+#
+msgid "Mag COG"
+msgstr ""
+#
+msgid "Mag HDG"
+msgstr ""
+#
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr ""
-
+#
+msgid "Meters"
+msgstr "متر"
+#
+msgid "Moon phase"
+msgstr "اوجه القمر"
+#
+msgid "N"
+msgstr "شمال"
+#
+msgid "NE"
+msgstr ""
+#
+msgid "NNE"
+msgstr ""
+#
+msgid "NNW"
+msgstr ""
+#
+msgid "NW"
+msgstr ""
+#
+msgid "Nautical miles"
+msgstr "ميل بحري"
+#
+msgid "Orientation:"
+msgstr "التدوير:"
+#
+msgid "Pitch"
+msgstr ""
+#
+msgid "Position"
+msgstr "الموقع"
+#
+msgid "Preferences..."
+msgstr "الخصائص"
+#
+msgid "Rudder Angle"
+msgstr ""
+#
+msgid "S"
+msgstr ""
+#
+msgid "SE"
+msgstr ""
+#
+msgid "SOG"
+msgstr ""
+#
+msgid "SSE"
+msgstr ""
+#
+msgid "SSW"
+msgstr ""
+#
+msgid "STW"
+msgstr ""
+#
+msgid "SW"
+msgstr ""
+#
+msgid "Select instrument to add:"
+msgstr ""
+#
+msgid "Small:"
+msgstr ""
+#
+msgid "Speed Over Ground Damping Factor:"
+msgstr ""
+#
+msgid "Speedometer"
+msgstr "عداد السرعة"
+#
+msgid "Speedometer max value:"
+msgstr ""
+#
+msgid "Statute miles"
+msgstr ""
+#
+msgid "Sum Log"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
+msgstr "شروق الشمس/غروب الشمس"
+#
+msgid "Title:"
+msgstr "العنوان:"
+#
+msgid "Trip Log"
+msgstr "سجل الرحلة"
+#
+msgid "True Compass"
+msgstr ""
+#
+msgid "True HDG"
+msgstr ""
+#
+msgid "True Wind Angle"
+msgstr ""
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr "السرعة و الاتجاه الحقيقي للرياح"
+#
+msgid "True Wind Direction"
+msgstr ""
+#
+msgid "True Wind Speed"
+msgstr ""
+#
+msgid "Units, Ranges, Formats"
+msgstr ""
+#
+msgid "Up"
+msgstr "أعلى"
+#
+msgid "VMG"
+msgstr ""
+#
+msgid "Vertical"
+msgstr "عمودي"
+#
+msgid "W"
+msgstr ""
+#
+msgid "WNW"
+msgstr ""
+#
+msgid "WSW"
+msgstr ""
+#
+msgid "Water Temp."
+msgstr ""
+#
+msgid "Wind history"
+msgstr "تاريخ الرياح"
+#
+msgid "Wind speed units:"
+msgstr "وحدة سرعة الرياح:"
+#
+msgid "km/h"
+msgstr "كم/ساعة"
+#
+msgid "m/s"
+msgstr "متر/ثانية"
+#
+msgid "mph"
+msgstr ""
+#
+msgid "show this dashboard"
+msgstr "عرض ضمن لوحة المعلومات"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-04 09:41-0400\n"
+"POT-Creation-Date: 2018-01-09 10:12-0500\n"
 "PO-Revision-Date: 2017-08-04 22:35-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
@@ -15,440 +15,330 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: et\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
-
-#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
-#: src/wind_history.cpp:433
-msgid "N"
-msgstr "N"
-
-#: src/dashboard_pi.cpp:105
-msgid "Position"
-msgstr "Asukoht"
-
-#: src/dashboard_pi.cpp:107
-msgid "SOG"
-msgstr "SOG"
-
-#: src/dashboard_pi.cpp:109
-msgid "Speedometer"
-msgstr "Spidomeeter"
-
-#: src/dashboard_pi.cpp:111
-msgid "COG"
-msgstr "COG"
-
-#: src/dashboard_pi.cpp:113
-msgid "Mag COG"
-msgstr "Magn. COG"
-
-#: src/dashboard_pi.cpp:115
-msgid "GPS Compass"
-msgstr "GPS-kompass"
-
-#: src/dashboard_pi.cpp:117
-msgid "True Compass"
-msgstr "Tõeline kompass"
-
-#: src/dashboard_pi.cpp:119
-msgid "STW"
-msgstr "STW"
-
-#: src/dashboard_pi.cpp:121
-msgid "True HDG"
-msgstr "Tõeline HDG"
-
-#: src/dashboard_pi.cpp:123
-msgid "Mag HDG"
-msgstr "Magn. HDG"
-
-#: src/dashboard_pi.cpp:126
-msgid "App. Wind Angle & Speed"
-msgstr "Näiv tuule nurk ja kiirus"
-
-#: src/dashboard_pi.cpp:128
-msgid "App & True Wind Angle"
-msgstr "Näiva % tegeliku tuule nurk"
-
-#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
-msgid "App. Wind Speed"
-msgstr "Näiv tuule kiirus"
-
-#: src/dashboard_pi.cpp:134
-msgid "True Wind Angle & Speed"
-msgstr "Tõeline tuule nurk ja kiirus"
-
-#: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
-msgid "Depth"
-msgstr "Sügavus"
-
-#: src/dashboard_pi.cpp:140 src/dashboard_pi.cpp:142
-msgid "Barometric pressure"
-msgstr "Õhurõhk"
-
-#: src/dashboard_pi.cpp:144
-msgid "Water Temp."
-msgstr "Vee temp."
-
-#: src/dashboard_pi.cpp:146
-msgid "Air Temp."
-msgstr "Õhu temp."
-
-#: src/dashboard_pi.cpp:148
-msgid "App. Wind Angle"
-msgstr "Näiv tuule nurk"
-
-#: src/dashboard_pi.cpp:150
-msgid "True Wind Angle"
-msgstr "Tõeline tuule nurk"
-
-#: src/dashboard_pi.cpp:152
-msgid "True Wind Direction"
-msgstr "Tõeline tuule suund"
-
-#: src/dashboard_pi.cpp:154
-msgid "True Wind Speed"
-msgstr "Tõeline tuule kiirus"
-
-#: src/dashboard_pi.cpp:156
-msgid "True Wind Dir. & Speed"
-msgstr "Tõeline tuule suund ja kiirus"
-
-#: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
-msgid "VMG"
-msgstr "VMG"
-
-#: src/dashboard_pi.cpp:162 src/dashboard_pi.cpp:164
-msgid "Rudder Angle"
-msgstr "Roolinurk"
-
-#: src/dashboard_pi.cpp:166
-msgid "GPS in View"
-msgstr "Nähtavad satelliidid"
-
-#: src/dashboard_pi.cpp:168
-msgid "GPS Status"
-msgstr "GPS olek"
-
-#: src/dashboard_pi.cpp:170
-msgid "Cursor"
-msgstr "Kursor"
-
-#: src/dashboard_pi.cpp:172
-msgid "GPS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:174
-msgid "Sunrise/Sunset"
-msgstr "Päikesetõus/-loojang"
-
-#: src/dashboard_pi.cpp:176
-msgid "Moon phase"
-msgstr "Kuufaas"
-
-#: src/dashboard_pi.cpp:178
-msgid "Wind history"
-msgstr "Tuule logi"
-
-#: src/dashboard_pi.cpp:180
-msgid "Barometric history"
-msgstr "Õhurõhu logi"
-
-#: src/dashboard_pi.cpp:182
-msgid "Trip Log"
-msgstr "Reisi logi"
-
-#: src/dashboard_pi.cpp:184
-msgid "Sum Log"
-msgstr "Kogu logi"
-
-#: src/dashboard_pi.cpp:186
-msgid "From Ownship"
-msgstr "Omalt laevalt"
-
-#: src/dashboard_pi.cpp:188
-msgid "Pitch"
-msgstr "Pikiõõtsumine"
-
-#: src/dashboard_pi.cpp:190
-msgid "Heel"
-msgstr "Kreen"
-
-#: src/dashboard_pi.cpp:192
-msgid "Local GPS Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:194
-msgid "Local CPU Clock"
-msgstr ""
-
-#: src/dashboard_pi.cpp:196
-msgid "Local Sunrise/Sunset"
-msgstr ""
-
-#: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
-#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
-#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
-msgid "Dashboard"
-msgstr "Näidikupaneel"
-
-#: src/dashboard_pi.cpp:508
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Näidikupaneeli plugin OpenCPN'le"
-
-#: src/dashboard_pi.cpp:513
-msgid "Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr "Näidikupaneeli plugin OpenCPN'le\n"
-"Võimaldab navigatsiooniseadme kuvamise NMEA-allikast"
-
-#: src/dashboard_pi.cpp:1635
-msgid "Dashboard preferences"
-msgstr "Näidikupaneeli eelistused"
-
-#: src/dashboard_pi.cpp:1705
-msgid "show this dashboard"
-msgstr "kuva seda näidikupaneeli"
-
-#: src/dashboard_pi.cpp:1711
-msgid "Caption:"
-msgstr "Pealdis:"
-
-#: src/dashboard_pi.cpp:1719
-msgid "Orientation:"
-msgstr "Orientatsioon:"
-
-#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
-msgid "Vertical"
-msgstr "püstine"
-
-#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
-msgid "Horizontal"
-msgstr "rõhtne"
-
-#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
-#: src/dashboard_pi.cpp:2116
-msgid "Instruments"
-msgstr "Seadmed"
-
-#: src/dashboard_pi.cpp:1747
-msgid "Add"
-msgstr "Lisa"
-
-#: src/dashboard_pi.cpp:1760
-msgid "Delete"
-msgstr "Kustuta"
-
-#: src/dashboard_pi.cpp:1766
-msgid "Up"
-msgstr "Üles"
-
-#: src/dashboard_pi.cpp:1771
-msgid "Down"
-msgstr "Alla"
-
-#: src/dashboard_pi.cpp:1781
-msgid "Appearance"
-msgstr "Välimus"
-
-#: src/dashboard_pi.cpp:1783
-msgid "Fonts"
-msgstr "Kirjamärgid"
-
-#: src/dashboard_pi.cpp:1789
-msgid "Title:"
-msgstr "tiitel:"
-
-#: src/dashboard_pi.cpp:1795
-msgid "Data:"
-msgstr "andmed:"
-
-#: src/dashboard_pi.cpp:1801
-msgid "Label:"
-msgstr "silt:"
-
-#: src/dashboard_pi.cpp:1807
-msgid "Small:"
-msgstr "Väike:"
-
-#: src/dashboard_pi.cpp:1815
-msgid "Units, Ranges, Formats"
-msgstr "Ühikud, ulatused, formaadid"
-
-#: src/dashboard_pi.cpp:1821
-msgid "Speedometer max value:"
-msgstr "spidomeetri max väärtus:"
-
-#: src/dashboard_pi.cpp:1827
-msgid "Speed Over Ground Damping Factor:"
-msgstr "Kiiruse põhja suhtes summutamise tegur:"
-
-#: src/dashboard_pi.cpp:1833
-msgid "COG Damping Factor:"
-msgstr "COG summutamise tegur:"
-
-#: src/dashboard_pi.cpp:1839
-msgid "Local Time Offset From UTC:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1858
-msgid "Boat speed units:"
-msgstr "kaatri kiiruse ühikud:"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
-msgid "Honor OpenCPN settings"
-msgstr "austa OpenCPN väärtusi"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "Kts"
-msgstr "sõlmed"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "mph"
-msgstr "mp/h"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "km/h"
-msgstr "km/h"
-
-#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
-msgid "m/s"
-msgstr "m/s"
-
-#: src/dashboard_pi.cpp:1867
-msgid "Depth units:"
-msgstr "sügavuse ühikud:"
-
-#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
-msgid "Meters"
-msgstr "meetrid"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Feet"
-msgstr "Jalad"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Fathoms"
-msgstr "süllad"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Centimeters"
-msgstr "sentimeetrid"
-
-#: src/dashboard_pi.cpp:1870
-msgid "Inches"
-msgstr "Tollid"
-
-#: src/dashboard_pi.cpp:1876
-msgid "Distance units:"
-msgstr "vahemaa ühikud:"
-
-#: src/dashboard_pi.cpp:1879
-msgid "Nautical miles"
-msgstr "meremiilid"
-
-#: src/dashboard_pi.cpp:1879
-msgid "Statute miles"
-msgstr "maamiilid"
-
-#: src/dashboard_pi.cpp:1879
-msgid "Kilometers"
-msgstr "kilomeetrid"
-
-#: src/dashboard_pi.cpp:1885
-msgid "Wind speed units:"
-msgstr "tuulekiiruse ühikud:"
-
-#: src/dashboard_pi.cpp:2099
-msgid "Add instrument"
-msgstr "Lisa seade"
-
-#: src/dashboard_pi.cpp:2105
-msgid "Select instrument to add:"
-msgstr "Vali seade lisamiseks:"
-
-#: src/dashboard_pi.cpp:2199
-msgid "Preferences..."
-msgstr "Eelistused..."
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
-msgid "NE"
-msgstr "NE"
-
-#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
-msgid "E"
-msgstr "E"
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
-msgid "SE"
-msgstr "SE"
-
-#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
-msgid "S"
-msgstr "S"
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
-msgid "SW"
-msgstr "SW"
-
-#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
-msgid "W"
-msgstr "W"
-
-#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
-msgid "NW"
-msgstr "NW"
-
-#: src/instrument.cpp:236
-msgid " true"
-msgstr "tõel."
-
-#: src/instrument.cpp:238
+#
 msgid " mag"
 msgstr "magn."
-
-#: src/wind_history.cpp:56 src/wind_history.cpp:107
+#
+msgid " true"
+msgstr "tõel."
+#
 msgid "--"
 msgstr "--"
-
-#: src/wind_history.cpp:331
+#
 #, c-format
 msgid "--- %s"
 msgstr "---%s"
-
-#: src/wind_history.cpp:436
-msgid "NNE"
-msgstr "NNE"
-
-#: src/wind_history.cpp:442
+#
+msgid "Add"
+msgstr "Lisa"
+#
+msgid "Add instrument"
+msgstr "Lisa seade"
+#
+msgid "Air Temp."
+msgstr "Õhu temp."
+#
+msgid "App & True Wind Angle"
+msgstr "Näiva % tegeliku tuule nurk"
+#
+msgid "App. Wind Angle"
+msgstr "Näiv tuule nurk"
+#
+msgid "App. Wind Angle & Speed"
+msgstr "Näiv tuule nurk ja kiirus"
+#
+msgid "App. Wind Speed"
+msgstr "Näiv tuule kiirus"
+#
+msgid "Appearance"
+msgstr "Välimus"
+#
+msgid "Barometric history"
+msgstr "Õhurõhu logi"
+#
+msgid "Barometric pressure"
+msgstr "Õhurõhk"
+#
+msgid "Boat speed units:"
+msgstr "kaatri kiiruse ühikud:"
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "COG Damping Factor:"
+msgstr "COG summutamise tegur:"
+#
+msgid "Caption:"
+msgstr "Pealdis:"
+#
+msgid "Centimeters"
+msgstr "sentimeetrid"
+#
+msgid "Cursor"
+msgstr "Kursor"
+#
+msgid "Dashboard"
+msgstr "Näidikupaneel"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Näidikupaneeli plugin OpenCPN'le"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Näidikupaneeli plugin OpenCPN'le\n"
+"Võimaldab navigatsiooniseadme kuvamise NMEA-allikast"
+#
+msgid "Dashboard preferences"
+msgstr "Näidikupaneeli eelistused"
+#
+msgid "Data:"
+msgstr "andmed:"
+#
+msgid "Delete"
+msgstr "Kustuta"
+#
+msgid "Depth"
+msgstr "Sügavus"
+#
+msgid "Depth units:"
+msgstr "sügavuse ühikud:"
+#
+msgid "Distance units:"
+msgstr "vahemaa ühikud:"
+#
+msgid "Down"
+msgstr "Alla"
+#
+msgid "E"
+msgstr "E"
+#
 msgid "ENE"
 msgstr "ENE"
-
-#: src/wind_history.cpp:448
+#
 msgid "ESE"
 msgstr "ESE"
-
-#: src/wind_history.cpp:454
-msgid "SSE"
-msgstr "SSE"
-
-#: src/wind_history.cpp:460
-msgid "SSW"
-msgstr "SSW"
-
-#: src/wind_history.cpp:466
-msgid "WSW"
-msgstr "WSW"
-
-#: src/wind_history.cpp:472
-msgid "WNW"
-msgstr "WNW"
-
-#: src/wind_history.cpp:478
-msgid "NNW"
-msgstr "NNW"
-
-#: src/wind_history.cpp:575
+#
+msgid "Fathoms"
+msgstr "süllad"
+#
+msgid "Feet"
+msgstr "Jalad"
+#
+msgid "Fonts"
+msgstr "Kirjamärgid"
+#
+msgid "From Ownship"
+msgstr "Omalt laevalt"
+#
+msgid "GPS Clock"
+msgstr ""
+#
+msgid "GPS Compass"
+msgstr "GPS-kompass"
+#
+msgid "GPS Status"
+msgstr "GPS olek"
+#
+msgid "GPS in View"
+msgstr "Nähtavad satelliidid"
+#
+msgid "Heel"
+msgstr "Kreen"
+#
+msgid "Honor OpenCPN settings"
+msgstr "austa OpenCPN väärtusi"
+#
+msgid "Horizontal"
+msgstr "rõhtne"
+#
+msgid "Inches"
+msgstr "Tollid"
+#
+msgid "Instruments"
+msgstr "Seadmed"
+#
+msgid "Kilometers"
+msgstr "kilomeetrid"
+#
+msgid "Kts"
+msgstr "sõlmed"
+#
+msgid "Label:"
+msgstr "silt:"
+#
+msgid "Local CPU Clock"
+msgstr ""
+#
+msgid "Local GPS Clock"
+msgstr ""
+#
+msgid "Local Sunrise/Sunset"
+msgstr ""
+#
+msgid "Local Time Offset From UTC:"
+msgstr ""
+#
+msgid "Mag COG"
+msgstr "Magn. COG"
+#
+msgid "Mag HDG"
+msgstr "Magn. HDG"
+#
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Max %.1f %s alates %02d:%02d Üldine %.1f %s"
-
+#
+msgid "Meters"
+msgstr "meetrid"
+#
+msgid "Moon phase"
+msgstr "Kuufaas"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NE"
+#
+msgid "NNE"
+msgstr "NNE"
+#
+msgid "NNW"
+msgstr "NNW"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Nautical miles"
+msgstr "meremiilid"
+#
+msgid "Orientation:"
+msgstr "Orientatsioon:"
+#
+msgid "Pitch"
+msgstr "Pikiõõtsumine"
+#
+msgid "Position"
+msgstr "Asukoht"
+#
+msgid "Preferences..."
+msgstr "Eelistused..."
+#
+msgid "Rudder Angle"
+msgstr "Roolinurk"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SE"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "SSE"
+msgstr "SSE"
+#
+msgid "SSW"
+msgstr "SSW"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
+msgid "Select instrument to add:"
+msgstr "Vali seade lisamiseks:"
+#
+msgid "Small:"
+msgstr "Väike:"
+#
+msgid "Speed Over Ground Damping Factor:"
+msgstr "Kiiruse põhja suhtes summutamise tegur:"
+#
+msgid "Speedometer"
+msgstr "Spidomeeter"
+#
+msgid "Speedometer max value:"
+msgstr "spidomeetri max väärtus:"
+#
+msgid "Statute miles"
+msgstr "maamiilid"
+#
+msgid "Sum Log"
+msgstr "Kogu logi"
+#
+msgid "Sunrise/Sunset"
+msgstr "Päikesetõus/-loojang"
+#
+msgid "Title:"
+msgstr "tiitel:"
+#
+msgid "Trip Log"
+msgstr "Reisi logi"
+#
+msgid "True Compass"
+msgstr "Tõeline kompass"
+#
+msgid "True HDG"
+msgstr "Tõeline HDG"
+#
+msgid "True Wind Angle"
+msgstr "Tõeline tuule nurk"
+#
+msgid "True Wind Angle & Speed"
+msgstr "Tõeline tuule nurk ja kiirus"
+#
+msgid "True Wind Dir. & Speed"
+msgstr "Tõeline tuule suund ja kiirus"
+#
+msgid "True Wind Direction"
+msgstr "Tõeline tuule suund"
+#
+msgid "True Wind Speed"
+msgstr "Tõeline tuule kiirus"
+#
+msgid "Units, Ranges, Formats"
+msgstr "Ühikud, ulatused, formaadid"
+#
+msgid "Up"
+msgstr "Üles"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "püstine"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "WNW"
+msgstr "WNW"
+#
+msgid "WSW"
+msgstr "WSW"
+#
+msgid "Water Temp."
+msgstr "Vee temp."
+#
+msgid "Wind history"
+msgstr "Tuule logi"
+#
+msgid "Wind speed units:"
+msgstr "tuulekiiruse ühikud:"
+#
+msgid "km/h"
+msgstr "km/h"
+#
+msgid "m/s"
+msgstr "m/s"
+#
+msgid "mph"
+msgstr "mp/h"
+#
+msgid "show this dashboard"
+msgstr "kuva seda näidikupaneeli"
