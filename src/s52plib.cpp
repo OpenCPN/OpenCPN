@@ -11979,7 +11979,7 @@ static const GLchar* S52circle_filled_fragment_shader_source =
     //  Ring shader
 
 static const GLchar* S52ring_vertex_shader_source =
-    "precision lowp float;\n"
+    "precision highp float;\n"
     "attribute vec2 aPos;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
@@ -11988,7 +11988,7 @@ static const GLchar* S52ring_vertex_shader_source =
     "}\n";
 
 static const GLchar* S52ring_fragment_shader_source =
-    "precision lowp float;\n"
+    "precision highp float;\n"
     "uniform float border_width;\n"
     "uniform float circle_radius;\n"
     "uniform float ring_width;\n"
