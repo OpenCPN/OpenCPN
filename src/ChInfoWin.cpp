@@ -108,7 +108,8 @@ void ChInfoWin::SetBitmap()
     m_pInfoTextCtl->SetSize( 1, 1, m_size.x - 2, m_size.y - 2 );
     m_pInfoTextCtl->SetLabel( m_string );
 
-    SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
+    wxPoint top_position = GetParent()->ClientToScreen( m_position);
+    SetSize( top_position.x, top_position.y, m_size.x, m_size.y );
 }
 
 void ChInfoWin::FitToChars( int char_width, int char_height )
