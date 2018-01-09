@@ -29,6 +29,8 @@
 #include "ChInfoWin.h"
 #include "chart1.h"
 #include "OCPNPlatform.h"
+#include "FontMgr.h"
+
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -54,7 +56,8 @@ ChInfoWin::ChInfoWin( wxWindow *parent )
 
     wxDialog::Create( parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, style );
 
-    
+    wxFont *dFont = FontMgr::Get().GetFont( _("Dialog") );
+    SetFont(*dFont);
     
     int ststyle = wxALIGN_LEFT | wxST_NO_AUTORESIZE;
     m_pInfoTextCtl = new wxStaticText( this, -1, _T ( "" ), wxDefaultPosition, wxDefaultSize,
@@ -116,11 +119,8 @@ void ChInfoWin::FitToChars( int char_width, int char_height )
 {
     wxSize size;
 
-    int adjust = 1;
-#ifdef __WXOSX__
-    adjust = 2;
-#endif
-    
+    int adjust = 2;
+   
 #ifdef __OCPN__ANDROID__
     adjust = 4;
 #endif
