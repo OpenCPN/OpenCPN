@@ -14,8 +14,10 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ***")
 #  Do the version.h configuration into the build output directory,
 #  thereby allowing building from a read-only source tree.
 IF(NOT SKIP_VERSION_CONFIG)
-    configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include/version.h)
-    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/include)
+    SET(BUILD_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY})
+    configure_file(cmake/version.h.in ${BUILD_INCLUDE_PATH}/include/version.h)
+    configure_file(cmake/wxWTranslateCatalog.h.in ${BUILD_INCLUDE_PATH}/include/wxWTranslateCatalog.h)
+    INCLUDE_DIRECTORIES(${BUILD_INCLUDE_PATH}/include)
 ENDIF(NOT SKIP_VERSION_CONFIG)
 
 SET(PACKAGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )

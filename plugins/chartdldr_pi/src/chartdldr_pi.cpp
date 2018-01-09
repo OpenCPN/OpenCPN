@@ -34,6 +34,7 @@
 #endif //precompiled headers
 
 #include "chartdldr_pi.h"
+#include "wxWTranslateCatalog.h"
 #include <wx/stdpaths.h>
 #include <wx/url.h>
 #include <wx/progdlg.h>
@@ -156,7 +157,7 @@ chartdldr_pi::chartdldr_pi( void *ppimgr ) : opencpn_plugin_113( ppimgr )
 
 int chartdldr_pi::Init( void )
 {
-    AddLocaleCatalog( _T("opencpn-chartdldr_pi") );
+    AddLocaleCatalog( PLUGIN_CATALOG_NAME );
 
     //    Get a pointer to the opencpn display canvas, to use as a parent for the POI Manager dialog
     m_parent_window = GetOCPNCanvasWindow();
