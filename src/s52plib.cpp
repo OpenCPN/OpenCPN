@@ -11949,7 +11949,7 @@ static const GLchar* S52texture_2D_fragment_shader_source =
     //  Circle shader
 
 static const GLchar* S52circle_filled_vertex_shader_source =
-    "precision lowp float;\n"
+    "precision highp float;\n"
     "attribute vec2 aPos;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
@@ -11958,7 +11958,7 @@ static const GLchar* S52circle_filled_vertex_shader_source =
     "}\n";
 
 static const GLchar* S52circle_filled_fragment_shader_source =
-    "precision lowp float;\n"
+    "precision highp float;\n"
     "uniform float border_width;\n"
     "uniform float circle_radius;\n"
     "uniform vec4 circle_color;\n"
