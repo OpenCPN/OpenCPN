@@ -95,9 +95,9 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
-    wxBufferedPaintDC pdc( this );
+    wxAutoBufferedPaintDC pdc( this );
     if( !pdc.IsOk() ) {
-        wxLogMessage( _T("DashboardInstrument::OnPaint() fatal: wxBufferedPaintDC.IsOk() false.") );
+        wxLogMessage( _T("DashboardInstrument::OnPaint() fatal: wxAutoBufferedPaintDC.IsOk() false.") );
         return;
     }
 
