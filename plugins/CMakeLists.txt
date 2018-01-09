@@ -34,7 +34,19 @@ FILE(GLOB PLUGINS *_pi)
 
 FOREACH(PLUGIN ${PLUGINS})
      add_subdirectory (${PLUGIN})
+     MESSAGE(STATUS "*** Added plugin: ${PLUGIN}")
 ENDFOREACH(PLUGIN)
+
+OPTION(OCPN_BUILD_SAMPLE "Build sample plugin" OFF)
+
+IF(OCPN_BUILD_SAMPLE)
+    FILE(GLOB PLUGINS_SAMPLE *_pi_sample)
+
+    FOREACH(PLUGIN ${PLUGINS_SAMPLE})
+        add_subdirectory (${PLUGIN})
+     MESSAGE(STATUS "*** Added sample plugin: ${PLUGIN}")
+    ENDFOREACH(PLUGIN)
+ENDIF(OCPN_BUILD_SAMPLE)
 
 # Allow chaining of any PlugIn package dependencies upstream to the global package
 # PlugIns may then individually, as required, include the following:
