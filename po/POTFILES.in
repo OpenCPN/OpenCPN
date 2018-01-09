@@ -17,7 +17,6 @@ include/chartimg.h
 include/chartsymbols.h
 include/chcanv.h
 include/ChInfoWin.h
-include/CM93DSlide.h
 include/cm93.h
 include/compass.h
 include/concanv.h
@@ -136,7 +135,6 @@ src/chartsymbols.cpp
 src/chcanv.cpp
 src/ChInfoWin.cpp
 src/cm93.cpp
-src/CM93DSlide.cpp
 src/compass.cpp
 src/compasswin.cpp
 src/concanv.cpp
