@@ -5948,9 +5948,6 @@ int s52plib::RenderCARC_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         arcw =wxMin(arcw, rad/10);
         sec_rad *= xscale;
     }
-    qDebug() << "Rad" << rad << NextPow2(rad);
-    rad = NextPow2(rad);
-    
     //      Enable anti-aliased lines, at best quality
     glEnable( GL_BLEND );
 
