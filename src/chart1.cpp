@@ -7661,7 +7661,7 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
     } else {
         ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
 
-        if( ( pCurrentStack->nEntry > 1 ) || ( piano_chart_index_array.GetCount() > 1 ) ) {
+        if( ( pCurrentStack->nEntry > 1 ) || ( piano_chart_index_array.GetCount() >= 1 ) ) {
             cc1->ShowChartInfoWindow( key_location.x, selected_dbIndex );
             cc1->SetQuiltChartHiLiteIndex( selected_dbIndex );
 
