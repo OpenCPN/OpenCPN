@@ -256,11 +256,12 @@ class FileChooserCore {
 	 */
 	public FileChooserCore(FileChooser fileChooser) {
 
+                this.chooser = fileChooser;
+
                 m_sdcardDir = isRemovableSDCardAvailable();
                 Log.e("OpenCPN", "FileChooserCore::m_sdcardDir: " + m_sdcardDir);
 
 		// Initialize attributes.
-		this.chooser = fileChooser;
 		this.listeners = new LinkedList<OnFileSelectedListener>();
 		this.filter = null;
 		this.showOnlySelectable = false;
@@ -420,14 +421,21 @@ class FileChooserCore {
 
 
                 // Pre 19 (KitKat), or other problem...
-                Log.e("OpenCPN", "Found SDK less than 19");
+                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT)        // KITKAT = 19/20
+                    Log.e("OpenCPN", "Found SDK less than 19");
 
+
+                Log.e("OpenCPN", "Checking for default SDCard access");
                 final String FLAG = "mnt";
 
                 String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
-                // Split this line, and take only the first element
-                final String[] items = SECONDARY_STORAGE.split(":");
-                SECONDARY_STORAGE = items[0];
+                // If multi entry, split this line, and take only the first element
+                if(SECONDARY_STORAGE != null){
+                    if((SECONDARY_STORAGE.length() != 0) && SECONDARY_STORAGE.contains(":")){
+                        String[] items = SECONDARY_STORAGE.split(":");
+                        SECONDARY_STORAGE = items[0];
+                    }
+                }
 
                 final String EXTERNAL_STORAGE_DOCOMO = System.getenv("EXTERNAL_STORAGE_DOCOMO");
                 final String EXTERNAL_SDCARD_STORAGE = System.getenv("EXTERNAL_SDCARD_STORAGE");
