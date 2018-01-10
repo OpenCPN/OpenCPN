@@ -113,14 +113,19 @@ void ChInfoWin::SetBitmap()
 
     wxPoint top_position = GetParent()->ClientToScreen( m_position);
     SetSize( top_position.x, top_position.y, m_size.x, m_size.y );
+    SetClientSize( m_size.x, m_size.y );
 }
 
 void ChInfoWin::FitToChars( int char_width, int char_height )
 {
     wxSize size;
 
-    int adjust = 2;
-   
+    int adjust = 1;
+
+#ifdef __WXOSX__
+    adjust = 2;
+#endif
+
 #ifdef __OCPN__ANDROID__
     adjust = 4;
 #endif
