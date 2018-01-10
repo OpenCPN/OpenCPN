@@ -2029,9 +2029,10 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         boolean buseDocFile = false;
 
         //  Is destination on an SDCard?
-        String sdRoot = getExtSdCardFolder(dest);
+        String sdRoot = "";
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
 
+            sdRoot = getExtSdCardFolder(dest);
             if (null != sdRoot) {
                 Log.i("OpenCPN", "downloadFile destination on SDCard");
                 dir = getDocumentFile(destDir, true, false);

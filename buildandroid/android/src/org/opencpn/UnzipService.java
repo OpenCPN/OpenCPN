@@ -66,8 +66,8 @@ public class UnzipService extends IntentService {
             //  Is zip file on an SDCard?
 
             File zipFile = new File(fileSource);
-            String sdRoot = getExtSdCardFolder(zipFile);
             if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                String sdRoot = getExtSdCardFolder(zipFile);
 
                 if (null != sdRoot) {
                    DocumentFile zipDocument = getDocumentFile(zipFile, false, false);
@@ -231,8 +231,8 @@ public class UnzipService extends IntentService {
                 //  Is this on an SDCard?
                 boolean bisSD = false;
                 File targetFile = new File(_targetLocation);
-                String sdRoot = getExtSdCardFolder(targetFile);
                 if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                    String sdRoot = getExtSdCardFolder(targetFile);
 
                     if (null != sdRoot) {
                        installDocument = DocumentFile.fromTreeUri(this, ltreeUri);

@@ -255,6 +255,10 @@ class FileChooserCore {
 	 * @param fileChooser The graphical file chooser.
 	 */
 	public FileChooserCore(FileChooser fileChooser) {
+
+                m_sdcardDir = isRemovableSDCardAvailable();
+                Log.e("OpenCPN", "FileChooserCore::m_sdcardDir: " + m_sdcardDir);
+
 		// Initialize attributes.
 		this.chooser = fileChooser;
 		this.listeners = new LinkedList<OnFileSelectedListener>();
@@ -283,12 +287,14 @@ class FileChooserCore {
                 Button sdcardButton = (Button) root.findViewById(R.id.buttonSDCard);
                 sdcardButton.setOnClickListener(sdcardButtonClickListener);
 
-                m_sdcardDir = isRemovableSDCardAvailable();
-
                 if(null == m_sdcardDir){
                     sdcardButton.setVisibility( View.INVISIBLE);
-                    //deviceButton.setVisibility( View.INVISIBLE);
                 }
+                else{
+                 sdcardButton.setEnabled(true);
+                 sdcardButton.setVisibility( View.VISIBLE);
+                }
+
 
 	}
 
@@ -417,7 +423,12 @@ class FileChooserCore {
                 Log.e("OpenCPN", "Found SDK less than 19");
 
                 final String FLAG = "mnt";
-                final String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
+
+                String SECONDARY_STORAGE = System.getenv("SECONDARY_STORAGE");
+                // Split this line, and take only the first element
+                final String[] items = SECONDARY_STORAGE.split(":");
+                SECONDARY_STORAGE = items[0];
+
                 final String EXTERNAL_STORAGE_DOCOMO = System.getenv("EXTERNAL_STORAGE_DOCOMO");
                 final String EXTERNAL_SDCARD_STORAGE = System.getenv("EXTERNAL_SDCARD_STORAGE");
                 final String EXTERNAL_SD_STORAGE = System.getenv("EXTERNAL_SD_STORAGE");
@@ -560,7 +571,7 @@ class FileChooserCore {
          */
         private View.OnClickListener deviceButtonClickListener = new View.OnClickListener() {
                 public void onClick(View v) {
-                    loadFolder("/storage/emulated/0");
+                    loadFolder(Environment.getExternalStorageDirectory());
                 }
         };
 
@@ -1193,15 +1204,27 @@ class FileChooserCore {
                 }
             }
         }
+        else{
+            if(null != m_sdcardDir)
+                paths.add(m_sdcardDir);
+        }
+
         return paths.toArray(new String[paths.size()]);
     }
 
     public String getExtSdCardFolder(final File file) {
         String[] extSdPaths = getExtSdCardPaths();
+
         try {
+            String file_path = file.getCanonicalPath();
+            if(file_path.length() == 0)
+                return null;
+
             for (int i = 0; i < extSdPaths.length; i++) {
-                if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
-                    return extSdPaths[i];
+                if(extSdPaths[i].length() != 0){
+                    if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
+                        return extSdPaths[i];
+                    }
                 }
             }
         }
