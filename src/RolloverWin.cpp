@@ -153,6 +153,9 @@ void RolloverWin::SetBitmap( int rollover )
             glBindTexture( g_texture_rectangle_format, m_texture );
             glTexParameterf( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+            
         } else
             glBindTexture( g_texture_rectangle_format, m_texture );
         
