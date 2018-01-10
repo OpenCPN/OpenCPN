@@ -806,7 +806,11 @@ void TCWin::OnSize( wxSizeEvent& event )
     }
     m_ptextctrl->SetSize(texc_size);
     
-    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));                            
+#ifdef __WXOSX__
+    OK_button->Move( wxPoint( x - (4 * m_tsy + 10), y - (m_tsy + 10) ));
+#else
+    OK_button->Move( wxPoint( x - (3 * m_tsy + 10), y - (m_tsy + 10) ));
+#endif
     PR_button->Move( wxPoint( 10, y - (m_tsy + 10) ) );
  
     int bsx, bsy, bpx, bpy;
