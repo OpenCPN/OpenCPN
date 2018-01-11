@@ -44,7 +44,7 @@
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
-#define MinWidth 30
+#define MinWidth 100
 
 extern wxFont *g_pFontTitle;
 extern wxFont *g_pFontData;
