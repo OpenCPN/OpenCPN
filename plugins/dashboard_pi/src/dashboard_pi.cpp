@@ -2238,7 +2238,8 @@ void DashboardWindow::SetColorScheme( PI_ColorScheme cs )
 
 void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
 {
-    wxPoint p = m_pauimgr->GetPane( this ).floating_pos;
+    wxPoint pf = m_pauimgr->GetPane( this ).floating_pos;
+    bool bFloat = m_pauimgr->GetPane( this ).IsFloating();
     m_pauimgr->DetachPane( this );
     SetSizerOrientation( orient );
     bool vertical = orient == wxVERTICAL;
@@ -2246,10 +2247,19 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
     wxSize sz = GetMinSize();
     // We must change Name to reset AUI perpective
     m_Container->m_sName = GetUUID();
-    m_pauimgr->AddPane( this, wxAuiPaneInfo().Name( m_Container->m_sName ).Caption(
-        m_Container->m_sCaption ).CaptionVisible( true ).TopDockable( !vertical ).BottomDockable(
-        !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize( sz ).BestSize(
-            sz ).FloatingSize( sz ).FloatingPosition( p ).Float().Show( m_Container->m_bIsVisible ) );
+    
+    wxAuiPaneInfo p = wxAuiPaneInfo().Name( m_Container->m_sName ).Caption( m_Container->m_sCaption ).CaptionVisible( true ).
+        TopDockable(!vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).
+        MinSize(sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( pf ).Float().
+        Show( m_Container->m_bIsVisible ).Gripper(false) ;
+    
+    if(bFloat)
+        p.Float();
+    else
+        p.Dock();
+            
+    m_pauimgr->AddPane( this, p);
+
     if ( updateAUImgr ) m_pauimgr->Update();
 }
 
