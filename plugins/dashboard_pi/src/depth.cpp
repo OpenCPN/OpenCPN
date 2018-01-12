@@ -152,7 +152,8 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->SetBrush(brush);
       dc->SetPen(*wxTRANSPARENT_PEN);
 
-      double ratioH = 100.0 / m_MaxDepth; // 140-40=100
+      //double ratioH = 100.0 / m_MaxDepth; // 140-40=100
+      double ratioH = 75.0 / m_MaxDepth; // 140-40=100
       double ratioW = double(size.x-6) / (DEPTH_RECORD_COUNT-1);
       wxPoint points[DEPTH_RECORD_COUNT+2];
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
