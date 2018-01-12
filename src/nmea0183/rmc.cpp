@@ -104,35 +104,28 @@ bool RMC::Parse( const SENTENCE& sentence )
    ** First we check the checksum...
    */
 
-   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( 12 );
+   int nFields = sentence.GetNumberOfDataFields( );
+   
+   NMEA0183_BOOLEAN check = sentence.IsChecksumBad( nFields + 1 );
 
    if ( check == NTrue )
    {
    /*
-   ** This may be an NMEA Version 2.3 sentence, with "Mode" field
+   ** This may be an NMEA Version 3+ sentence, with added fields
    */
-       wxString checksum_in_sentence = sentence.Field( 12 );
+        wxString checksum_in_sentence = sentence.Field( nFields + 1 );
        if(checksum_in_sentence.StartsWith(_T("*")))       // Field is a valid erroneous checksum
        {
          SetErrorMessage( _T("Invalid Checksum") );
          return( FALSE );
        }
-       else
-       {
-         check = sentence.IsChecksumBad( 13 );
-         if( check == NTrue)
-         {
-            SetErrorMessage( _T("Invalid Checksum") );
-            return( FALSE );
-         }
-       }
    }
 
-   //   Is this a 2.3 message?
+   //   Is this at least a 2.3 message?
    bool bext_valid = true;
-   wxString checksum_in_sentence = sentence.Field( 12 );
+   wxString checksum_in_sentence = sentence.Field( nFields );
    if(!checksum_in_sentence.StartsWith(_T("*"))) {
-       if(checksum_in_sentence == _T("N") ) 
+       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S"))) 
             bext_valid = false;
    }
        
