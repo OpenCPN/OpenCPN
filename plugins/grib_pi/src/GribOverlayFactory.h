@@ -192,11 +192,11 @@ private:
     wxString GetRefString( GribRecord *rec, int map );
     void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
-    void drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
-    void drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx );
+    void drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx, double scale );
+    void drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx, double scale );
     void drawWindArrowWithBarbs( int settings, int x, int y, double vkn, double ang,
                                  bool south, wxColour arrowColor, double rotate_angle );
-    void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south=false, bool head=true);
+    void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, double scale, bool south=false, bool head=true);
 
     void DrawNumbers( wxPoint p, double value, int settings, wxColour back_color );
     void FillGrid(GribRecord *pGR);

@@ -1269,6 +1269,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
         for( int i = 0; i < m_ParentSize.GetWidth(); i+= (space + arrowSize) ) {
             for( int j = 0; j < m_ParentSize.GetHeight(); j+= (space + arrowSize) ) {
                 double lat, lon, sh, dir;
+                double scale = 1.0;
                 GetCanvasLLPix( vp, wxPoint( i, j ), &lat, &lon );
 
                 if(polar) {  // wave arrows
@@ -1277,20 +1278,21 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                     if( dir == GRIB_NOTDEF || sh == GRIB_NOTDEF ) continue;
 
-                } else 	     // current arrows
+                } else {	     // current arrows
                     if( !GribRecord::getInterpolatedValues(sh, dir, pGRX, pGRY, lon, lat) )
                         continue;
+                    scale = wxMax(1.0, sh);             // Size depends on magnitude.
+                }
 
                 dir = (dir - 90) * M_PI / 180.;
 
                 //draw arrows
                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
-                    drawSingleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx );
+                    drawSingleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx, scale );
                 else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
-                    drawDoubleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx );
+                    drawDoubleArrow( i, j, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx, scale );
                 else
-                    drawSingleArrow( i, j, dir + vp->rotation, colour,
-                                     wxMax( 1, wxMin( 8, (int)(sh+0.5) ) ), arrowSizeIdx );
+                    drawSingleArrow( i, j, dir + vp->rotation, colour, wxMax( 1, wxMin( 8, (int)(sh+0.5) ) ), arrowSizeIdx, scale );
             }
         }
 
@@ -1338,6 +1340,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                     if( PointInLLBox( vp, lon, lat ) ) {
                         double sh, dir, wdh;
+                        double scale = 1.0;
                         if(polar) {														//wave arrows
                             dir = pGRY->getValue( i, j );
                             sh = pGRX->getValue( i, j );
@@ -1350,18 +1353,18 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                                 continue;
 
                             wdh = (8/2.5*sh)+0.5;
+                            scale = wxMax(1.0, sh);             // Size depends on magnitude.
                         }
 
                         dir = (dir - 90) * M_PI / 180.;
-
+                        
                         //draw arrows
                         if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
-                            drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx );
+                            drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx, scale );
                         else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
-                            drawDoubleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx );
+                            drawDoubleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSizeIdx, scale );
                         else
-                            drawSingleArrow( p.x, p.y, dir + vp->rotation, colour,
-                                             wxMax( 1, wxMin( 8, (int)wdh ) ), arrowSizeIdx );
+                            drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, wxMax( 1, wxMin( 8, (int)wdh ) ), arrowSizeIdx, scale );
                     }
                 }
             }
@@ -2070,7 +2073,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
     }
 }
 
-void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx )
+void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx, double scale )
 {
     if( m_pdc ) {
         wxPen pen( arrowColor, 2 );
@@ -2085,10 +2088,10 @@ void GRIBOverlayFactory::drawDoubleArrow( int x, int y, double ang, wxColour arr
         glLineWidth(arrowWidth);
     }
 
-    drawLineBuffer(m_DoubleArrow[arrowSizeIdx], x, y, ang);
+    drawLineBuffer(m_DoubleArrow[arrowSizeIdx], x, y, ang, scale);
 }
 
-void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx )
+void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arrowColor, int arrowWidth, int arrowSizeIdx, double scale )
 {
     if( m_pdc ) {
         wxPen pen( arrowColor, arrowWidth );
@@ -2103,7 +2106,7 @@ void GRIBOverlayFactory::drawSingleArrow( int x, int y, double ang, wxColour arr
         glLineWidth(arrowWidth);
     }
 
-    drawLineBuffer(m_SingleArrow[arrowSizeIdx], x, y, ang);
+    drawLineBuffer(m_SingleArrow[arrowSizeIdx], x, y, ang, scale);
 }
 
 void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, double vkn, double ang, bool south,
@@ -2145,7 +2148,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
     drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south, m_bDrawBarbedArrowHead);
 }
 
-void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, bool south, bool head)
+void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, double scale,bool south, bool head)
 {
     // transform vertexes by angle
     float six = sinf( ang ), cox = cosf( ang ), siy, coy;
@@ -2161,8 +2164,8 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double
     wxASSERT(sizeof vertexes / sizeof *vertexes >= (unsigned)count*4);
     for(int i=0; i < 2*count; i++) {
         float *k = buffer.lines + 2*i;
-        vertexes[2*i+0] = k[0]*cox + k[1]*siy + x;
-        vertexes[2*i+1] = k[0]*six - k[1]*coy + y;
+        vertexes[2*i+0] = k[0]*cox*scale + k[1]*siy*scale + x;
+        vertexes[2*i+1] = k[0]*six*scale - k[1]*coy*scale + y;
     }
 
     if( m_pdc ) {
