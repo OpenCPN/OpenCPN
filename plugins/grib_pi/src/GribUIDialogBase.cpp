@@ -936,7 +936,11 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_ctParticles->Wrap( -1 );
 	fgSizer15->Add( m_ctParticles, 0, wxALL, 5 );
 
+#if defined(__WXOSX__) && !wxCHECK_VERSION(3, 1, 0)
+    m_sParticleDensity = new wxSlider( m_scSetDataPanel, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_BOTTOM|wxSL_HORIZONTAL );
+#else
 	m_sParticleDensity = new wxSlider( m_scSetDataPanel, wxID_ANY, 5, 1, 10, wxDefaultPosition, wxDefaultSize, wxSL_BOTTOM|wxSL_HORIZONTAL|wxSL_LABELS );
+#endif
 	fgSizer15->Add( m_sParticleDensity, 0, wxALL|wxEXPAND, 5 );
 
 
