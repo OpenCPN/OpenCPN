@@ -51,8 +51,11 @@
 #ifdef DLDR_USE_LIBARCHIVE
   #include <archive.h>
   #include <archive_entry.h>
+  #ifdef CHARTDLDR_RAR_UNARR
+    #include "unarr.h"
+  #endif
 #else
-  #include "unrar/rar.hpp"
+  #include "unarr.h"
 #endif
 
 #include <wx/arrimpl.cpp>
@@ -1298,8 +1301,20 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
         return ret;
     }
 #ifdef DLDR_USE_LIBARCHIVE
-    else if( aFile.Lower().EndsWith(_T("rar")) ||
-            aFile.Lower().EndsWith(_T("tar")) ||
+    else if( aFile.Lower().EndsWith(_T("rar")) )
+    {
+#ifdef CHARTDLDR_RAR_UNARR
+          bool ret = ExtractUnarrFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+#else
+          bool ret = ExtractLibArchiveFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+#endif
+          if( ret )
+              wxRemoveFile(aFile);
+          else
+              wxLogError(_T("chartdldr_pi: Unable to extract: ") + aFile );
+          return ret;
+    }
+    else if( aFile.Lower().EndsWith(_T("tar")) ||
             aFile.Lower().EndsWith(_T("gz")) ||
             aFile.Lower().EndsWith(_T("bz2")) ||
             aFile.Lower().EndsWith(_T("lzma")) ||
@@ -1315,9 +1330,20 @@ bool chartdldr_pi::ProcessFile( const wxString& aFile, const wxString& aTargetDi
         return ret;
     }
 #else
-    else if( aFile.Lower().EndsWith(_T("rar")) ) //Rar compressed
+    else if( aFile.Lower().EndsWith(_T("rar"))
+               || aFile.Lower().EndsWith(_T("tar"))
+#ifdef HAVE_BZIP2
+             || aFile.Lower().EndsWith(_T("bz2"))
+#endif
+#ifdef HAVE_ZLIB
+             || aFile.Lower().EndsWith(_T("gz"))
+#endif
+#ifdef HAVE_7Z
+             || aFile.Lower().EndsWith(_T("7z")) //TODO: Could it actually extract more formats the LZMA SDK supports?
+#endif
+    )
     {
-        bool ret = ExtractRarFiles( aFile, aTargetDir, aStripPath, aMTime, false);
+        bool ret = ExtractUnarrFiles( aFile, aTargetDir, aStripPath, aMTime, false);
         if( ret )
             wxRemoveFile(aFile);
         else
@@ -1448,137 +1474,108 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString& aArchiveFile, const wx
 
     return true;
 }
-#else
+#endif
 
-bool chartdldr_pi::ExtractRarFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
+#if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
+ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext)
 {
-    wxString cmd;
-    if( aStripPath )
-        cmd = _T("e");
-    else
-        cmd = _T("x");
-    int argc = 5;
+    ar_archive *ar = ar_open_rar_archive(stream);
+    if (!ar)
+        ar = ar_open_zip_archive(stream, fileext && (strcmp(fileext, ".xps") == 0 || strcmp(fileext, ".epub") == 0));
+    if (!ar)
+        ar = ar_open_7z_archive(stream);
+    if (!ar)
+        ar = ar_open_tar_archive(stream);
+    return ar;
+}
 
-    char command[2];
-    strncpy(command, (const char*)cmd.mb_str(wxConvUTF8), 1);
-    command[1] = 0;
+bool chartdldr_pi::ExtractUnarrFiles( const wxString& aRarFile, const wxString& aTargetDir, bool aStripPath, wxDateTime aMTime, bool aRemoveRar )
+{
+    ar_stream *stream = NULL;
+    ar_archive *ar = NULL;
+    int entry_count = 1;
+    int entry_skips = 0;
+    int error_step = 1;
+    bool ret = true;
 
-    char file[1024];
-    strncpy(file, (const char*)aRarFile.mb_str(wxConvUTF8), 1023);
-    file[1023] = 0;
-
-    char target[1024];
-    strncpy(target, (const char*)aTargetDir.mb_str(wxConvUTF8), 1023);
-    target[1023] = 0;
-
-#ifndef DLDR_USE_LIBARCHIVE
-    char *argv[] = {const_cast<char *>("unrar"), command, const_cast<char *>("-y"), file, target};
-#endif
-#ifdef _UNIX
-    // XXX is setlocale need?
-    setlocale(LC_ALL,"");
-#endif
-
-    InitConsole();
-    ErrHandler.SetSignalHandlers(true);
-
-#ifdef SFX_MODULE
-    wchar ModuleName[NM];
-#ifdef _WIN_ALL
-    GetModuleFileName(NULL,ModuleName,ASIZE(ModuleName));
-#else
-    CharToWide(argv[0],ModuleName,ASIZE(ModuleName));
-#endif
-#endif
-
-#ifdef _WIN_ALL
-    SetErrorMode(SEM_NOALIGNMENTFAULTEXCEPT|SEM_FAILCRITICALERRORS|SEM_NOOPENFILEERRORBOX);
-
-#endif
-
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-    // Must be initialized, normal initialization can be skipped in case of
-    // exception.
-    bool ShutdownOnClose=false;
-#endif
-
-    try
-    {
-        CommandData *Cmd=new CommandData;
-#ifdef SFX_MODULE
-        wcscpy(Cmd->Command,L"X");
-        char *Switch=argc>1 ? argv[1]:NULL;
-        if (Switch!=NULL && Cmd->IsSwitch(Switch[0]))
+    stream = ar_open_file(aRarFile.c_str());
+    if( !stream ) {
+        wxLogError(_T("Can not open file '")+aRarFile+_T("'."));
+        ar_close_archive(ar);
+        ar_close(stream);
+        return false;
+    }
+    ar = ar_open_any_archive(stream, strrchr(aRarFile.c_str(), '.'));
+    if( !ar ) {
+          wxLogError(_T("Can not open archive '")+aRarFile+_T("'."));
+          ar_close_archive(ar);
+          ar_close(stream);
+          return false;
+    }
+    while (ar_parse_entry(ar)) {
+        size_t size = ar_entry_get_size(ar);
+        wxString name = ar_entry_get_name(ar);
+        if( aStripPath )
         {
-            int UpperCmd=etoupper(Switch[1]);
-            switch(UpperCmd)
+            wxFileName fn(name);
+            /* We can completly replace the entry path */
+            //fn.SetPath(aTargetDir);
+            //name = fn.GetFullPath();
+            /* Or only remove the first dir (eg. ENC_ROOT) */
+            if (fn.GetDirCount() > 0)
             {
-                case 'T':
-                case 'V':
-                    Cmd->Command[0]=UpperCmd;
-                    break;
-                case '?':
-                    Cmd->OutHelp(RARX_SUCCESS);
+                fn.RemoveDir(0);
+                name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
+            }
+            else
+            {
+                name = aTargetDir + wxFileName::GetPathSeparator() + name;
+            }
+        }
+        wxFileName fn(name);
+        if( !fn.DirExists() )
+        {
+            if( !wxFileName::Mkdir(fn.GetPath()) )
+            {
+                wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
+                ret = false;
                 break;
             }
         }
-        Cmd->AddArcName(ModuleName);
-        Cmd->ParseDone();
-#else // !SFX_MODULE
-        Cmd->ParseCommandLine(true,argc,argv);
-        if (!Cmd->ConfigDisabled)
+        wxFileOutputStream file(name);
+        if( !file )
         {
-            Cmd->ReadConfig();
-            Cmd->ParseEnvVar();
+            wxLogError(_T("Can not create file '")+name+_T("'."));
+            ret = false;
+            break;
         }
-        Cmd->ParseCommandLine(false,argc,argv);
-#endif
-
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-        ShutdownOnClose=Cmd->Shutdown;
-#endif
-
-        uiInit(Cmd->Sound);
-        InitConsoleOptions(Cmd->MsgStream);
-        InitLogOptions(Cmd->LogName,Cmd->ErrlogCharset);
-        ErrHandler.SetSilent(Cmd->AllYes || Cmd->MsgStream==MSG_NULL);
-        ErrHandler.SetShutdown(Cmd->Shutdown);
-
-        Cmd->OutTitle();
-        Cmd->ProcessCommand();
-        delete Cmd;
+        while (size > 0) {
+            unsigned char buffer[1024];
+            size_t count = size < sizeof(buffer) ? size : sizeof(buffer);
+            if (!ar_entry_uncompress(ar, buffer, count))
+                break;
+            file.Write(buffer, count);
+            size -= count;
+        }
+        file.Close();
+        fn.SetTimes(&aMTime, &aMTime, &aMTime);
+        if (size > 0) {
+            wxLogError("Warning: Failed to uncompress... skipping");
+            entry_skips++;
+            ret = false;
+        }
     }
-    catch (RAR_EXIT ErrCode)
-    {
-        ErrHandler.SetErrorCode(ErrCode);
+    if( !ar_at_eof(ar) ) {
+        wxLogError("Error: Failed to parse entry %d!", entry_count);
+        ret = false;
     }
-    catch (std::bad_alloc&)
-    {
-        ErrHandler.MemoryErrorMsg();
-        ErrHandler.SetErrorCode(RARX_MEMORY);
-    }
-    catch (...)
-    {
-        ErrHandler.SetErrorCode(RARX_FATAL);
-    }
-
-#if defined(_WIN_ALL) && !defined(SFX_MODULE) && !defined(SHELL_EXT)
-    if (ShutdownOnClose)
-        Shutdown();
-#endif
-    ErrHandler.MainExit=true;
-    //return ErrHandler.GetErrorCode();
+    ar_close_archive(ar);
+    ar_close(stream);
 
     if( aRemoveRar )
-        wxRemoveFile(aRarFile);
+          wxRemoveFile(aRarFile);
 
-#ifdef _UNIX
-    // reset LC_NUMERIC locale, some locales use a comma for decimal point
-    // and it corrupts navobj.xml file
-    setlocale(LC_NUMERIC, "C");
-#endif
-
-    return true;
+    return ret;
 }
 #endif
 
