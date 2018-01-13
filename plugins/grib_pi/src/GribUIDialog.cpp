@@ -1919,13 +1919,18 @@ GRIBFile::~GRIBFile()
 //               GRIB Cursor Data Ctrl & Display implementation
 //---------------------------------------------------------------------------------------
 GRIBUICData::GRIBUICData( GRIBUICtrlBar &parent )
-		: GRIBUICDataBase( &parent), m_gpparent(parent)
+#ifdef __WXOSX__
+    : GRIBUICDataBase( &parent, CURSOR_DATA, _("GRIB Display Control"), wxDefaultPosition, wxDefaultSize, wxSYSTEM_MENU|wxNO_BORDER|wxSTAY_ON_TOP)
+#else
+    : GRIBUICDataBase( &parent, CURSOR_DATA, _("GRIB Display Control"), wxDefaultPosition, wxDefaultSize, wxSYSTEM_MENU|wxNO_BORDER)
+#endif
+    , m_gpparent(parent)
 {
    // m_gGrabber = new GribGrabberWin( this );
   //  fgSizer58->Add( m_gGrabber, 0, wxALL, 0 );
 
     m_gCursorData = new CursorData( this, m_gpparent );
-        m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
+    m_fgCdataSizer->Add( m_gCursorData, 0, wxALL, 0 );
 
     Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUICData::OnMove ) );
 }
