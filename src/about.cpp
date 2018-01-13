@@ -60,12 +60,12 @@ wxString OpenCPNVersion =
                       VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH )
     + wxString::FromAscii(VERSION_DATE);
 
-    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.15<br>Base %i.%i.%i<br>Base Build Date %s"),
+    wxString OpenCPNVersionAndroid = wxString::Format(_T("Android Version 1.0.16<br>Base %i.%i.%i<br>Base Build Date %s"),
                                      VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DATE);
     
 const wxString AboutText =
     wxT("<br>OpenCPN<br>")
-    wxT("(c) 2000-2017 The OpenCPN Authors<br><br>");
+    wxT("(c) 2000-2018 The OpenCPN Authors<br><br>");
 
 const wxString OpenCPNInfo =
     wxT("<br><br>")
