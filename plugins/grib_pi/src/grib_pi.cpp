@@ -376,6 +376,9 @@ void grib_pi::OnToolbarToolCallback(int id)
     {
         starting = true;
         long style = m_DialogStyle == ATTACHED_HAS_CAPTION ? wxCAPTION|wxCLOSE_BOX|wxSYSTEM_MENU : wxBORDER_NONE|wxSYSTEM_MENU;
+#ifdef __WXOSX__
+        style |= wxSTAY_ON_TOP;
+#endif
         m_pGribCtrlBar = new GRIBUICtrlBar(m_parent_window, wxID_ANY, wxEmptyString, wxDefaultPosition,
                 wxDefaultSize, style, this);
 		m_pGribCtrlBar->SetScaledBitmap(scale_factor);
