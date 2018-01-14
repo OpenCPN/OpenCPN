@@ -37,6 +37,7 @@
 
 
 #define ID_LEGROUTE 1000
+#define SECONDS_PER_DAY 86400
 
 // Class declarations
 class Routeman;

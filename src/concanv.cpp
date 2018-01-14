@@ -379,11 +379,14 @@ void ConsoleCanvas::UpdateRouteData()
 
                 wxString tttg_s;
                 wxTimeSpan tttg_span;
+                float tttg_sec;
                 if( VMG > 0. )
                 {
-                    float tttg_sec = ( trng / gSog ) * 3600.;
+                    tttg_sec = ( trng / gSog ) * 3600.;
                     tttg_span = wxTimeSpan::Seconds( (long) tttg_sec );
-                    tttg_s = tttg_span.Format();
+                    //Show also #days if TTG > 24 h
+                    tttg_s = tttg_sec > SECONDS_PER_DAY ? 
+                      tttg_span.Format(_("%Dd %H:%M")) : tttg_span.Format("%H:%M:%S");
                 }
                 else
                 {
@@ -399,11 +402,13 @@ void ConsoleCanvas::UpdateRouteData()
                 eta = dtnow.Add( tttg_span );
                 wxString seta;
 
-                if( VMG > 0. )
-                    seta = eta.Format( _T("%H:%M") );
-                else
-                    seta = _T("---");
-
+                if (VMG > 0.) {
+                  // Show date, e.g. Feb 15, if TTG > 24 h
+                  seta = tttg_sec > SECONDS_PER_DAY ?
+                    eta.Format(_T("%b %d %H:%M")) : eta.Format(_T("%H:%M"));
+                } else {
+                  seta = _T("---");
+                }
                 pXTE->SetAValue( seta );
                 pXTE->SetALabel( wxString( _("ETA          ") ) );
             }
