@@ -60,6 +60,14 @@ extern bool g_bopengl;
 
 #define GetChartTableEntry(i) GetChartTable()[i]
 
+//  Calculating the chart coverage region with extremely complicated shape is very expensive,
+//  put a limit on the complefity of "not covered" areas to prevent the application from slowing
+//  down to total unusability.
+//  On US ENC charts, the number of NOCOVR PLYs seems to always be under 300, but on the SCS ENCs it
+//  can get as high as 10000 and make the application totally unusable with chart quilting enabled
+//  while bringing little real effect.
+#define NOCOVR_PLY_PERF_LIMIT 500
+#define AUX_PLY_PERF_LIMIT 500
 
 static int CompareScales( int *i1, int *i2 )
 {
@@ -488,11 +496,16 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
+    bool aux_ply_skipped = false;
     if( nAuxPlyEntries >= 1 ) {
         for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
-            float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
-
+            if( nAuxPly > AUX_PLY_PERF_LIMIT ) {
+                //wxLogMessage("PLY calculation skipped for %s, nAuxPly: %d", cte.GetpFullPath(), nAuxPly);
+                aux_ply_skipped = true;
+                break;
+            }
+            float *pfp = cte.GetpAuxPlyTableEntry( ip );
             LLRegion t_region(nAuxPly, pfp);
             t_region.Intersect(screen_region);
 //            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
@@ -502,7 +515,7 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         }
     }
 
-    else {
+    if( aux_ply_skipped || nAuxPlyEntries == 0 ) {
         int n_ply_entries = cte.GetnPlyEntries();
         float *pfp = cte.GetpPlyTable();
 
@@ -523,8 +536,12 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
     int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
     if( nNoCovrPlyEntries ) {
         for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
-            float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
             int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
+            if( nNoCovrPly > NOCOVR_PLY_PERF_LIMIT ) {
+                //wxLogMessage("NOCOVR calculation skipped for %s, nNoCovrPly: %d", cte.GetpFullPath(), nNoCovrPly);
+                continue;
+            }
+            float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
 
             LLRegion t_region(nNoCovrPly, pfp);
             t_region.Intersect(screen_region);

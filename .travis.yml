@@ -1,9 +1,19 @@
 language: cpp
+
+os:                                                                                                           
+  - linux
+  - osx
+  #We currently build against wxmac from Homebrew here for simplicity and to save time and resources, this is not exactly the same as the official builds backward compatible all the way to OS X 10.7 Lion, but should be "good enough" to find bugs affecting the clang toolchain
+
+before_install:                                                                                               
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
+
 install:
-    - sudo apt-get -qq update
-    - sudo apt-get install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev 
-    - sudo apt-get install libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev
-    - sudo apt-get install libarchive-dev liblzma-dev libexif-dev
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libarchive-dev liblzma-dev libexif-dev; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif libarchive wxmac; export PATH="/usr/local/opt/gettext/bin:$PATH";  echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile; fi
 
 script:
     - mkdir build && cd build

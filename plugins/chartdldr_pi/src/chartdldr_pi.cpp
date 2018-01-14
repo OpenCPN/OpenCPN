@@ -778,9 +778,10 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
 //     return;
     ///
     
-    bool b_usetmpfile = true;
 #ifdef __OCPN__ANDROID__
-    b_usetmpfile = false;
+    const bool b_usetmpfile = false;
+#else
+    const bool b_usetmpfile = true;
 #endif    
 
     wxFileName tfn;
@@ -933,7 +934,8 @@ void ChartSource::SaveUpdateData()
     for( iter = m_update_data.begin(); iter != m_update_data.end(); ++iter )
     {
         if( iter->first.find(" ") == std::string::npos )
-            outfile << iter->first << " " << iter->second << "\n";
+            if( !iter->first.empty() )
+                outfile << iter->first << " " << iter->second << "\n";
     }
 
     outfile.close();

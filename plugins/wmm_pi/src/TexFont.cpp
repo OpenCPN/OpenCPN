@@ -35,6 +35,8 @@ TexFont::TexFont( )
 {
     texobj = 0;
     m_blur = false;
+    tex_w = 0;
+    tex_h = 0;
 }
 
 TexFont::~TexFont( )
