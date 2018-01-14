@@ -2145,7 +2145,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int x, int y, dou
 
     ang += rotate_angle;
 
-    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, south, m_bDrawBarbedArrowHead);
+    drawLineBuffer(m_WindArrowCache[cacheidx], x, y, ang, 1.0, south, m_bDrawBarbedArrowHead);
 }
 
 void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y, double ang, double scale,bool south, bool head)
