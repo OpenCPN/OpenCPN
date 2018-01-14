@@ -778,9 +778,10 @@ void ChartDldrPanelImpl::UpdateChartList( wxCommandEvent& event )
 //     return;
     ///
     
-    bool b_usetmpfile = true;
 #ifdef __OCPN__ANDROID__
-    b_usetmpfile = false;
+    const bool b_usetmpfile = false;
+#else
+    const bool b_usetmpfile = true;
 #endif    
 
     wxFileName tfn;
