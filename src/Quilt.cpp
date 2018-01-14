@@ -67,6 +67,7 @@ extern bool g_bopengl;
 //  can get as high as 10000 and make the application totally unusable with chart quilting enabled
 //  while bringing little real effect.
 #define NOCOVR_PLY_PERF_LIMIT 500
+#define AUX_PLY_PERF_LIMIT 500
 
 static int CompareScales( int *i1, int *i2 )
 {
@@ -495,11 +496,16 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
+    bool aux_ply_skipped = false;
     if( nAuxPlyEntries >= 1 ) {
         for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
-            float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
-
+            if( nAuxPly > AUX_PLY_PERF_LIMIT ) {
+                //wxLogMessage("PLY calculation skipped for %s, nAuxPly: %d", cte.GetpFullPath(), nAuxPly);
+                aux_ply_skipped = true;
+                break;
+            }
+            float *pfp = cte.GetpAuxPlyTableEntry( ip );
             LLRegion t_region(nAuxPly, pfp);
             t_region.Intersect(screen_region);
 //            OCPNRegion t_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
@@ -509,7 +515,7 @@ LLRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         }
     }
 
-    else {
+    if( aux_ply_skipped || nAuxPlyEntries == 0 ) {
         int n_ply_entries = cte.GetnPlyEntries();
         float *pfp = cte.GetpPlyTable();
 
