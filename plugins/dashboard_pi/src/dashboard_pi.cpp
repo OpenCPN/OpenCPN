@@ -2240,9 +2240,6 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
 {
     wxPoint pf = m_pauimgr->GetPane( this ).floating_pos;
     bool bFloat = m_pauimgr->GetPane( this ).IsFloating();
-    wxSize floatSize = m_pauimgr->GetPane( this ).floating_size;
-    int old_orient = m_Container->m_pDashboardWindow->GetSizerOrientation();
-    
     m_pauimgr->DetachPane( this );
     SetSizerOrientation( orient );
     bool vertical = orient == wxVERTICAL;
@@ -2256,11 +2253,8 @@ void DashboardWindow::ChangePaneOrientation( int orient, bool updateAUImgr )
         MinSize(sz ).BestSize( sz ).FloatingSize( sz ).FloatingPosition( pf ).Float().
         Show( m_Container->m_bIsVisible ).Gripper(false) ;
     
-    if(bFloat){
+    if(bFloat)
         p.Float();
-        if(old_orient != orient)
-                p.FloatingSize(wxSize(floatSize.y, floatSize.x));
-    }
     else
         p.Dock();
             
