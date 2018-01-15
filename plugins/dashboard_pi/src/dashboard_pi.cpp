@@ -1590,13 +1590,9 @@ void dashboard_pi::ApplyConfig( void )
         } else {
             wxAuiPaneInfo& pane = m_pauimgr->GetPane( cont->m_pDashboardWindow );
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
-            if(cont->m_pDashboardWindow->GetSizerOrientation() != orient)
+            if(cont->m_pDashboardWindow->GetSizerOrientation() != orient ||
+               !cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList ))
                 cont->m_pDashboardWindow->ChangePaneOrientation( orient, false );
-            else if(!cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList )) {
-                wxSize sz = cont->m_pDashboardWindow->GetSize();
-                cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList, orient );
-                cont->m_pDashboardWindow->SetSize(sz);
-            }
         }
     }
     m_pauimgr->Update();
