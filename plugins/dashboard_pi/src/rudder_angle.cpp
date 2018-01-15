@@ -84,10 +84,8 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
       wxColour cl;
 
       m_cx = size.x / 2;
-      int availableHeight = size.y - m_TitleHeight - 6;
-      m_cy = m_TitleHeight + 2;
-      m_cy += availableHeight * .38;
-      m_radius = wxMin(m_cx, availableHeight * .62);
+      m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
+      m_radius = (size.y - m_TitleHeight)*.6;
 
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
