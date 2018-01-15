@@ -80,7 +80,7 @@ DashboardInstrument_Dial::DashboardInstrument_Dial( wxWindow *parent, wxWindowID
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      SetMinSize(wxSize(wxMax(MinWidth, w), m_TitleHeight+wxMax(MinWidth, w)));
+      SetMinSize(wxSize(MinWidth, m_TitleHeight+40));
 }
 
 void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
