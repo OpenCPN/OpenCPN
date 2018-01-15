@@ -35,7 +35,7 @@ extern int g_iDashDistanceUnit;
 //
 //----------------------------------------------------------------
 DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2 ,int cap_flag3,int cap_flag4)
-    :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2 | cap_flag3 | cap_flag4, false)
+    :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2 | cap_flag3 | cap_flag4)
 {
     m_data1 =_T("---");
     m_data2 =_T("---");
@@ -45,13 +45,6 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *ppare
     m_cap_flag4 = cap_flag4;
     s_lat = 99999999;
     s_lon = 99999999;
-
-    wxClientDC dc(this);
-    int w, dw;
-    dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-    dc.GetTextExtent(_T("000"), &dw, &m_DataHeight, 0, 0, g_pFontData);
-
-    SetMinSize( wxSize(wxMax(w, MinWidth), m_TitleHeight+2*m_DataHeight) );
 }
 
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc)
@@ -96,11 +89,19 @@ void DashboardInstrument_FromOwnship::SetData(int st, double data, wxString unit
     }
 	  	
     Refresh(false);
+}
 
-    wxClientDC dc(this);
-    int w;
-    dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-    dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, g_pFontData);
+wxSize DashboardInstrument_FromOwnship::GetSize( int orient, wxSize hint )
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      dc.GetTextExtent(_T("000.00 NMi"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-    SetMinSize(wxSize(w+10, m_TitleHeight+m_DataHeight*2));
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( w+10, wxMax(hint.y, m_TitleHeight+m_DataHeight*2) );
+      } else {
+          return wxSize( wxMax(hint.x, w+10), m_TitleHeight+m_DataHeight*2 );
+      }
+      
 }
