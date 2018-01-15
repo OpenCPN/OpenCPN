@@ -506,7 +506,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             .Append(_T(" ! "));
     }
     if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append( _T("\n") );
-	m_Message_Hiden.Append( m_Message );
+    m_Message_Hiden.Append( m_Message );
     DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
     return true;
 }
@@ -1095,6 +1095,11 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         // build magnitude from multiple record types like wind and current
         if(idy >= 0 && !polar && pGR[idy]) {
             pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
+            if (!pGRM->isOk()) {
+                m_Message_Hiden.Append(_("IsoBar Unable to compute record magnitude"));
+                delete pGRM;
+                return;
+            }
             pGRA = pGRM;
         }
 
@@ -1395,6 +1400,11 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
 
     if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
+        if (!pGRM->isOk()) {
+            m_Message_Hiden.Append(_("OverlayMap Unable to compute record magnitude"));
+            delete pGRM;
+            return;
+        }
         pGRA = pGRM;
     }
 
@@ -1505,6 +1515,11 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
     /* build magnitude from multiple record types like wind and current */
     if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
+        if (!pGRM->isOk()) {
+            m_Message_Hiden.Append(_("GribNumbers Unable to compute record magnitude"));
+            delete pGRM;
+            return;
+        }
         pGRA = pGRM;
     }
 
