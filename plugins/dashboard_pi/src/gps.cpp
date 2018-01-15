@@ -89,8 +89,8 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
       wxSize size = GetClientSize();
-      int cx = size.x/2, cy = (size.y-m_TitleHeight-52)/2 + m_TitleHeight;
-      int radius = wxMin(cx, cy-m_TitleHeight);
+      int cx = size.x/2, cy = size.y/2;
+      int radius = wxMin(cx, cy);
       wxColour cb;
 
       GetGlobalColor(_T("DASHB"), &cb);
@@ -144,10 +144,11 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       tdc.SelectObject( wxNullBitmap );
 
+
       dc->SetBackgroundMode(wxTRANSPARENT);
 
-      dc->DrawLine(3, size.y-52, size.x-3, size.y-52);
-      dc->DrawLine(3, size.y-12, size.x-3, size.y-12);
+      dc->DrawLine(3, 100, size.x-3, 100);
+      dc->DrawLine(3, 140, size.x-3, 140);
 
       pen.SetStyle(wxPENSTYLE_DOT);
       dc->SetPen(pen);
@@ -159,13 +160,13 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
 #endif
-      for(int i=0; i<3; i++)
-          dc->DrawLine(3, size.y-22-10*i, size.x-3, size.y-20-10*i);
+      dc->DrawLine(3, 110, size.x-3, 110);
+      dc->DrawLine(3, 120, size.x-3, 120);
+      dc->DrawLine(3, 130, size.x-3, 130);
 }
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 {
-    wxSize size = GetClientSize();
       // Draw SatID
 
       wxScreenDC sdc;
@@ -191,14 +192,15 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
       }
 
       tdc.SelectObject( wxNullBitmap );
-      dc->DrawBitmap(tbm, 0, size.y-10, false);
+      dc->DrawBitmap(tbm, 0, 142, false);
+
 }
 
 void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
 {
     wxSize size = GetClientSize();
-    int cx = size.x/2, cy = (size.y-m_TitleHeight-52)/2 + m_TitleHeight;
-    int radius = wxMin(cx, cy-m_TitleHeight);
+    int cx = size.x/2, cy = size.y/2;
+    int radius = wxMin(cx, cy);
 
     wxColour cl;
     GetGlobalColor( _T("DASHL"), &cl );
@@ -218,7 +220,7 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
     for( int idx = 0; idx < 12; idx++ ) {
         if( m_SatInfo[idx].SignalToNoiseRatio ) {
             int h = m_SatInfo[idx].SignalToNoiseRatio * 0.4;
-            dc->DrawRectangle( idx * 16 + 5, size.y - h - 12, 13, h );
+            dc->DrawRectangle( idx * 16 + 5, 140 - h, 13, h );
         }
     }
 
