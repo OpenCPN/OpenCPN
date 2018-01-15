@@ -58,9 +58,7 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      //SetMinSize( wxSize(MinWidth, m_TitleHeight+40) );
-      SetMinSize(wxSize(wxMax(MinWidth, w), m_TitleHeight+wxMax(MinWidth, w)));
-      
+      SetMinSize( wxSize(MinWidth, m_TitleHeight+40) );
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
