@@ -787,6 +787,8 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
   explicit OpenGLOptionsDlg(wxWindow *parent);
   const bool GetAcceleratedPanning(void) const;
   const bool GetTextureCompression(void) const;
+  const bool GetPolygonSmoothing(void) const;
+  const bool GetLineSmoothing(void) const;
   const bool GetShowFPS(void) const;
   const bool GetSoftwareGL(void) const;
   const bool GetTextureCompressionCaching(void) const;
@@ -800,7 +802,8 @@ class OpenGLOptionsDlg : private Uncopyable, public wxDialog {
   const wxString GetTextureCacheSize(void);
 
   wxCheckBox *m_cbUseAcceleratedPanning, *m_cbTextureCompression;
-  wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL;
+  wxCheckBox *m_cbTextureCompressionCaching, *m_cbShowFPS, *m_cbSoftwareGL,
+      *m_cbPolygonSmoothing, *m_cbLineSmoothing;
   wxSpinCtrl *m_sTextureDimension, *m_sTextureMemorySize;
   wxStaticText *m_cacheSize, *m_memorySize;
 

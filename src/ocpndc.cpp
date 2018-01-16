@@ -51,6 +51,11 @@
 #include "wx28compat.h"
 #include "cutil.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
+#endif
+
 extern float g_GLMinSymbolLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
@@ -192,8 +197,10 @@ void ocpnDC::SetGLAttrs( bool highQuality )
 
  // Enable anti-aliased polys, at best quality
     if( highQuality ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLPolygonSmoothing )
+            glEnable( GL_POLYGON_SMOOTH );
         glEnable( GL_BLEND );
     } else {
         glDisable(GL_LINE_SMOOTH);
@@ -355,7 +362,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
 #ifndef __WXQT__
             glEnable( GL_BLEND );
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
 #endif            
 
             if( pen_width > 1.0 ) {
@@ -578,8 +586,9 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         } else {
 
             if( b_hiqual ) {
-                glEnable( GL_LINE_SMOOTH );
-                ;//                SetGLStipple(m_pen.GetStyle());
+                if( g_GLOptions.m_GLLineSmoothing )
+                    glEnable( GL_LINE_SMOOTH );
+                //                SetGLStipple(m_pen.GetStyle());
             }
 
             glBegin( GL_LINE_STRIP );
@@ -784,7 +793,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
 #endif        
 
         if( ConfigureBrush() ) {
-            glEnable( GL_POLYGON_SMOOTH );
+            if( g_GLOptions.m_GLPolygonSmoothing )
+                glEnable( GL_POLYGON_SMOOTH );
             glBegin( GL_POLYGON );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );
@@ -793,7 +803,8 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         }
 
         if( ConfigurePen() ) {
-            glEnable( GL_LINE_SMOOTH );
+            if( g_GLOptions.m_GLLineSmoothing )
+                glEnable( GL_LINE_SMOOTH );
             glBegin( GL_LINE_LOOP );
             for( int i = 0; i < n; i++ )
                 glVertex2f( (points[i].x * scale) + xoffset, (points[i].y * scale) + yoffset );

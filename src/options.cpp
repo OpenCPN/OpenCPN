@@ -5583,6 +5583,9 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
 
+    g_GLOptions.m_GLPolygonSmoothing = dlg.GetPolygonSmoothing();
+    g_GLOptions.m_GLLineSmoothing = dlg.GetLineSmoothing();
+
     if (g_bGLexpert) {
       // user defined
       g_GLOptions.m_bTextureCompressionCaching =
@@ -8593,6 +8596,8 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   if (!g_bopengl || g_raster_format == GL_RGB) btnRebuild->Disable();
   btnClear->Enable(g_GLOptions.m_bTextureCompressionCaching);
   m_cbShowFPS = new wxCheckBox(this, wxID_ANY, _("Show FPS"));
+  m_cbPolygonSmoothing = new wxCheckBox(this, wxID_ANY, _("Polygon Smoothing"));
+  m_cbLineSmoothing = new wxCheckBox(this, wxID_ANY, _("Line Smoothing"));
   m_cbSoftwareGL =
       new wxCheckBox(this, wxID_ANY, _("Software OpenGL (restart OpenCPN)"));
   m_cbUseAcceleratedPanning =
@@ -8614,6 +8619,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   flexSizer->Add(btnClear, 0, wxALL | wxEXPAND, 5);
   flexSizer->Add(new wxStaticText(this, wxID_ANY, _("Miscellaneous")), 0,
                  wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+  flexSizer->Add(m_cbPolygonSmoothing, 0, wxALL | wxEXPAND, 5);
+  flexSizer->AddSpacer(0);
+  flexSizer->Add(m_cbLineSmoothing, 0, wxALL | wxEXPAND, 5);
+  flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbShowFPS, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5);
@@ -8643,6 +8652,14 @@ const bool OpenGLOptionsDlg::GetAcceleratedPanning(void) const {
 
 const bool OpenGLOptionsDlg::GetTextureCompression(void) const {
   return m_cbTextureCompression->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetPolygonSmoothing(void) const {
+    return m_cbPolygonSmoothing->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
+    return m_cbLineSmoothing->GetValue();
 }
 
 const bool OpenGLOptionsDlg::GetShowFPS(void) const {
@@ -8686,6 +8703,8 @@ void OpenGLOptionsDlg::Populate(void) {
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
   }
   m_cbShowFPS->SetValue(g_bShowFPS);
+  m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
+  m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
   if (cc1->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=

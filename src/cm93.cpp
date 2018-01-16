@@ -56,6 +56,7 @@
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
 #endif
 
 
@@ -6039,8 +6040,10 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
           
-          glEnable( GL_LINE_SMOOTH );
-          glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+          if( g_GLOptions.m_GLLineSmoothing ) {
+              glEnable( GL_LINE_SMOOTH );
+              glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+          }
           glEnable( GL_BLEND );
           glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
           
