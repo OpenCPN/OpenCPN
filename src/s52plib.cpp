@@ -393,8 +393,10 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_bShowLdisText = true;
     m_bExtendLightSectors = true;
 
+    // Set a few initial states
+    AddObjNoshow( "M_QUAL" );
     m_lightsOff = false;
-    m_anchorOn = false;
+    m_anchorOn = true;
     m_qualityOfDataOn = false;
 
     GenerateStateHash();
@@ -8975,36 +8977,46 @@ void s52plib::PrepareForRender()
                     pOLE->nViz = 1;
                 RemoveObjNoshow("LIGHTS");
             }
-            
-            // Handle Anchor area toggle
-            bool bAnchor = m_anchorOn;
+
             
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
             unsigned int num = sizeof(categories) / sizeof(categories[0]);
             
-            if(!bAnchor){
-                for( unsigned int c = 0; c < num; c++ ) {
-                    AddObjNoshow(categories[c]);
+            if( m_nDisplayCategory == OTHER ){
+                // Handle Anchor area toggle
+                bool bAnchor = m_anchorOn;
+                
+                
+                if(!bAnchor){
+                    for( unsigned int c = 0; c < num; c++ ) {
+                        AddObjNoshow(categories[c]);
+                    }
+                }
+                else{
+                    for( unsigned int c = 0; c < num; c++ ) {
+                        RemoveObjNoshow(categories[c]);
+                    }
+                    
+                    unsigned int cnt = 0;
+                    for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+                        OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+                        for( unsigned int c = 0; c < num; c++ ) {
+                            if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                                pOLE->nViz = 1;         // force on
+                                cnt++;
+                                break;
+                            }
+                        }
+                        if( cnt == num ) break;
+                    }
                 }
             }
-            else{
+            else{                               // if not category OTHER, then anchor-related features are always shown.
                 for( unsigned int c = 0; c < num; c++ ) {
                     RemoveObjNoshow(categories[c]);
                 }
-                
-                unsigned int cnt = 0;
-                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                    OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    for( unsigned int c = 0; c < num; c++ ) {
-                        if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                            pOLE->nViz = 1;         // force on
-                            cnt++;
-                            break;
-                        }
-                    }
-                    if( cnt == num ) break;
-                }
             }
+                
             // Handle Quality of data toggle
             bool bQuality = m_qualityOfDataOn;
             if(!bQuality){
