@@ -1116,7 +1116,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             wxDateTime now = wxDateTime::Now();
             LastGoodUpdateDate = now.Format( _T("%Y%m%d") );
             
-            bSuccess = !( oUpdateModule.Open( m_tmpup_array.Item( m_last_applied_update ).mb_str(), TRUE ) == 0 );
+            bSuccess = !( oUpdateModule.Open( last_successful_update_file.mb_str(), TRUE ) == 0 );
             
             if( bSuccess ) {
                 //      Get publish/update date
@@ -1138,7 +1138,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             
             // Inform the user
             wxString msg( _T("WARNING---ENC Update failed.  Last valid update file is:"));
-            msg +=  m_tmpup_array.Item( m_last_applied_update ).mb_str();
+            msg +=  last_successful_update_file.mb_str();
             wxLogMessage(msg);
             wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
             
