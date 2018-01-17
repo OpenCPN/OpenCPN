@@ -6879,6 +6879,26 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
     }
     
     if( event.Dragging() && event.LeftIsDown()){
+            /*
+             * fixed dragging.
+             * On my Surface Pro 3 running Arch Linux there is no mouse down event before the drag event.
+             * Hence, as there is no mouse down event, last_drag is not reset before the drag.
+             * And that results in one single drag session, meaning you cannot drag the map a few miles
+             * north, lift your finger, and the go even further north. Instead, the map resets itself
+             * always to the very first drag start (since there is not reset of last_drag).
+             *
+             * Besides, should not left down and dragging be enough of a situation to start a drag procedure?
+             *
+             * Anyways, guarded it to be active in touch situations only.
+             */
+            if( g_btouch ) {
+                if(false == m_bChartDragging) {
+                    last_drag.x = x, last_drag.y = y;
+                    m_bChartDragging = true;
+                }
+            }
+
+
             if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
                 m_bChartDragging = true;
                 StartTimedMovement();
