@@ -593,15 +593,7 @@ bool s52plib::GetAnchorOn()
     OBJLElement *pOLE = NULL;
         
     if(  MARINERS_STANDARD == GetDisplayCategory()){
-            // Need to loop once for SBDARE, which is our "master", then for
-            // other categories, since order is unknown?
-            for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                    old_vis = pOLE->nViz;
-                    break;
-                }
-            }
+        old_vis = m_anchorOn;
     }
     else if(OTHER == GetDisplayCategory())
         old_vis = true;
@@ -8973,8 +8965,6 @@ void s52plib::PrepareForRender()
             if(!bshow_lights)                     // On, going off
                 AddObjNoshow("LIGHTS");
             else{                                   // Off, going on
-                if(pOLE)
-                    pOLE->nViz = 1;
                 RemoveObjNoshow("LIGHTS");
             }
 
@@ -8982,8 +8972,8 @@ void s52plib::PrepareForRender()
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
             unsigned int num = sizeof(categories) / sizeof(categories[0]);
             
-            if( m_nDisplayCategory == OTHER ){
-                // Handle Anchor area toggle
+            // Handle Anchor area toggle
+            if( (m_nDisplayCategory == OTHER) || (m_nDisplayCategory == MARINERS_STANDARD) ){
                 bool bAnchor = m_anchorOn;
                 
                 
@@ -8995,19 +8985,6 @@ void s52plib::PrepareForRender()
                 else{
                     for( unsigned int c = 0; c < num; c++ ) {
                         RemoveObjNoshow(categories[c]);
-                    }
-                    
-                    unsigned int cnt = 0;
-                    for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                        OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                        for( unsigned int c = 0; c < num; c++ ) {
-                            if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                                pOLE->nViz = 1;         // force on
-                                cnt++;
-                                break;
-                            }
-                        }
-                        if( cnt == num ) break;
                     }
                 }
             }
