@@ -44,7 +44,7 @@ extern int g_iDashDepthUnit;
 #endif
 
 DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindowID id, wxString title) :
-    DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP, true)
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT | OCPN_DBP_STC_TMP)
 {
       m_MaxDepth = 0;
       m_Depth = 0;
@@ -54,13 +54,18 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
       {
             m_ArrayDepth[idx] = 0;
       }
-      
+}
+
+wxSize DashboardInstrument_Depth::GetSize( int orient, wxSize hint )
+{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      //SetMinSize( wxSize(MinWidth, m_TitleHeight+40) );
-      SetMinSize(wxSize(wxMax(MinWidth, w), m_TitleHeight+wxMax(MinWidth, w)));
-      
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+140, hint.y) );
+      } else {
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_Depth::SetData(int st, double data, wxString unit)
@@ -152,8 +157,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc)
       dc->SetBrush(brush);
       dc->SetPen(*wxTRANSPARENT_PEN);
 
-      //double ratioH = 100.0 / m_MaxDepth; // 140-40=100
-      double ratioH = 75.0 / m_MaxDepth; // 140-40=100
+      double ratioH = 100.0 / m_MaxDepth; // 140-40=100
       double ratioW = double(size.x-6) / (DEPTH_RECORD_COUNT-1);
       wxPoint points[DEPTH_RECORD_COUNT+2];
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)

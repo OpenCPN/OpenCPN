@@ -40,12 +40,12 @@
 //
 //----------------------------------------------------------------
 
-DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag, bool canExpand)
-    :wxControl(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE),
-     m_title(title),
-     m_cap_flag(cap_flag),
-     m_canExpand(canExpand)
+DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag)
+      :wxControl(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE)
 {
+      m_title = title;
+      m_cap_flag = cap_flag;
+
       SetBackgroundStyle( wxBG_STYLE_CUSTOM );
       SetDrawSoloInPane(false);
       wxClientDC dc(this);
@@ -65,7 +65,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       
 #ifdef __WXOSX__
       Connect(wxEVT_RIGHT_DOWN, wxMouseEventHandler(DashboardInstrument::MouseEvent), NULL, this);
-#endif
+#endif      
 }
 
 void DashboardInstrument::MouseEvent( wxMouseEvent &event )
@@ -134,7 +134,7 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             pen.SetColour( cl );
             dc.SetPen( pen );
             dc.SetBrush( cl );
-            dc.DrawRoundedRectangle( 0, 0, wxMax(size.x, 3), m_TitleHeight, 3 );
+            dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
 
             dc.SetFont( *g_pFontTitle );
             GetGlobalColor( _T("DASHF"), &cl );
@@ -173,17 +173,24 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 //----------------------------------------------------------------
 
 DashboardInstrument_Single::DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag, wxString format)
-    :DashboardInstrument(pparent, id, title, cap_flag, false)
+      :DashboardInstrument(pparent, id, title, cap_flag)
 {
       m_format = format;
       m_data = _T("---");
+}
 
+wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
+{
       wxClientDC dc(this);
-      int w, dw;
+      int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      dc.GetTextExtent(_T("000"), &dw, &m_DataHeight, 0, 0, g_pFontData);
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      SetMinSize( wxSize(wxMax(wxMax(w+10, dw), MinWidth), m_TitleHeight+m_DataHeight) );
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+m_DataHeight) );
+      } else {
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight );
+      }
 }
 
 void DashboardInstrument_Single::Draw(wxGCDC* dc)
@@ -257,20 +264,27 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 //----------------------------------------------------------------
 
 DashboardInstrument_Position::DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2)
-    :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2, false)
+      :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2)
 {
 
       m_data1 = _T("---");
       m_data2 = _T("---");
       m_cap_flag1 = cap_flag1;
       m_cap_flag2 = cap_flag2;
+}
 
+wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )
+{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
       dc.GetTextExtent(_T("000  00.0000 W"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-      SetMinSize( wxSize(w+10, m_TitleHeight+m_DataHeight*2) );
+      if( orient == wxHORIZONTAL ) {
+          return wxSize( w+10, wxMax(hint.y, m_TitleHeight+m_DataHeight*2) );
+      } else {
+          return wxSize( wxMax(hint.x, w+10), m_TitleHeight+m_DataHeight*2 );
+      }
 }
 
 void DashboardInstrument_Position::Draw(wxGCDC* dc)

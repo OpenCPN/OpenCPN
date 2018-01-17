@@ -55,6 +55,19 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle( wxWindow *pare
 //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
 }
 
+wxSize DashboardInstrument_RudderAngle::GetSize( int orient, wxSize hint )
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      if( orient == wxHORIZONTAL ) {
+          w = wxMax(hint.y, (DefaultWidth-m_TitleHeight)/.7);
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+      }
+      return wxSize( w, m_TitleHeight+w*.7 );
+}
+
 void DashboardInstrument_RudderAngle::SetData(int st, double data, wxString unit)
 {
       if (st == m_MainValueCap)
@@ -84,10 +97,8 @@ void DashboardInstrument_RudderAngle::DrawFrame(wxGCDC* dc)
       wxColour cl;
 
       m_cx = size.x / 2;
-      int availableHeight = size.y - m_TitleHeight - 6;
-      m_cy = m_TitleHeight + 2;
-      m_cy += availableHeight * .38;
-      m_radius = wxMin(m_cx, availableHeight * .62);
+      m_cy = m_TitleHeight + (size.y - m_TitleHeight) * 0.38;
+      m_radius = (size.y - m_TitleHeight)*.6;
 
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 

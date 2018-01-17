@@ -45,8 +45,12 @@
 #include "dial.h"
 
 DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID id, wxString title) :
-    DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS, true)
+      DashboardInstrument(parent, id, title, OCPN_DBP_STC_GPS)
 {
+      m_cx = 35;
+      m_cy = 57;
+      m_radius = 35;
+
       m_SatCount = 0;
       for (int idx = 0; idx < 12; idx++)
       {
@@ -55,11 +59,21 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
             m_SatInfo[idx].AzimuthDegreesTrue = 0;
             m_SatInfo[idx].SignalToNoiseRatio = 0;
       }
+}
 
+wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
+{
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      SetMinSize( wxSize(MinWidth, m_TitleHeight+40) );
+      if( orient == wxHORIZONTAL ) {
+          m_cx = DefaultWidth/2;
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+140) );
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+          m_cx = w/2;
+          return wxSize( w, m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
@@ -89,8 +103,6 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
       wxSize size = GetClientSize();
-      int cx = size.x/2, cy = (size.y-m_TitleHeight-52)/2 + m_TitleHeight;
-      int radius = wxMin(cx, cy-m_TitleHeight);
       wxColour cb;
 
       GetGlobalColor(_T("DASHB"), &cb);
@@ -109,8 +121,8 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
       pen.SetColour(cf);
       pen.SetWidth(1);
       dc->SetPen(pen);
-      
-      dc->DrawCircle(cx, cy, radius);
+
+      dc->DrawCircle(m_cx, m_cy, m_radius);
 
       dc->SetFont(*g_pFontSmall);
 
@@ -128,44 +140,45 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
         tdc.Clear();
         tdc.DrawText(_("N"), 0,0);
-        dc->Blit(cx-3, cy-radius-6, width, height, &tdc, 0, 0);
+        dc->Blit(m_cx-3, m_cy-m_radius-6, width, height, &tdc, 0, 0);
 
         tdc.Clear();
         tdc.DrawText(_("E"), 0,0);
-        dc->Blit(cx+radius-4, cy-5, width, height, &tdc, 0, 0);
+        dc->Blit(m_cx+m_radius-4, m_cy-5, width, height, &tdc, 0, 0);
 
         tdc.Clear();
         tdc.DrawText(_("S"), 0,0);
-        dc->Blit(cx-3, cy+radius-6, width, height, &tdc, 0, 0);
+        dc->Blit(m_cx-3, m_cy+m_radius-6, width, height, &tdc, 0, 0);
 
         tdc.Clear();
         tdc.DrawText(_("W"), 0,0);
-        dc->Blit(cx-radius-4, cy-5, width, height, &tdc, 0, 0);
+        dc->Blit(m_cx-m_radius-4, m_cy-5, width, height, &tdc, 0, 0);
 
       tdc.SelectObject( wxNullBitmap );
 
+
       dc->SetBackgroundMode(wxTRANSPARENT);
 
-      dc->DrawLine(3, size.y-52, size.x-3, size.y-52);
-      dc->DrawLine(3, size.y-12, size.x-3, size.y-12);
+      dc->DrawLine(3, 100, size.x-3, 100);
+      dc->DrawLine(3, 140, size.x-3, 140);
 
       pen.SetStyle(wxPENSTYLE_DOT);
       dc->SetPen(pen);
-      dc->DrawCircle(cx, cy, radius * sin(deg2rad(45)));
-      dc->DrawCircle(cx, cy, radius * sin(deg2rad(20)));
+      dc->DrawCircle(m_cx, m_cy, m_radius * sin(deg2rad(45)));
+      dc->DrawCircle(m_cx, m_cy, m_radius * sin(deg2rad(20)));
 
       //        wxSHORT_DASH is not supported on GTK, and it destroys the pen.
 #ifndef __WXGTK__
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
 #endif
-      for(int i=0; i<3; i++)
-          dc->DrawLine(3, size.y-22-10*i, size.x-3, size.y-20-10*i);
+      dc->DrawLine(3, 110, size.x-3, 110);
+      dc->DrawLine(3, 120, size.x-3, 120);
+      dc->DrawLine(3, 130, size.x-3, 130);
 }
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 {
-    wxSize size = GetClientSize();
       // Draw SatID
 
       wxScreenDC sdc;
@@ -191,15 +204,12 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
       }
 
       tdc.SelectObject( wxNullBitmap );
-      dc->DrawBitmap(tbm, 0, size.y-10, false);
+      dc->DrawBitmap(tbm, 0, 142, false);
+
 }
 
 void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
 {
-    wxSize size = GetClientSize();
-    int cx = size.x/2, cy = (size.y-m_TitleHeight-52)/2 + m_TitleHeight;
-    int radius = wxMin(cx, cy-m_TitleHeight);
-
     wxColour cl;
     GetGlobalColor( _T("DASHL"), &cl );
     wxBrush brush( cl );
@@ -218,7 +228,7 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
     for( int idx = 0; idx < 12; idx++ ) {
         if( m_SatInfo[idx].SignalToNoiseRatio ) {
             int h = m_SatInfo[idx].SignalToNoiseRatio * 0.4;
-            dc->DrawRectangle( idx * 16 + 5, size.y - h - 12, 13, h );
+            dc->DrawRectangle( idx * 16 + 5, 140 - h, 13, h );
         }
     }
 
@@ -243,9 +253,9 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
             tdc.DrawText( label, 0, 0 );
             tdc.SelectObject( wxNullBitmap );
 
-            int posx = cx + radius * cos( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+            int posx = m_cx + m_radius * cos( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
                             * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - width / 2;
-            int posy = cy + radius * sin( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+            int posy = m_cy + m_radius * sin( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
                             * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - height / 2;
              dc->DrawBitmap( tbm, posx, posy, false );
         }

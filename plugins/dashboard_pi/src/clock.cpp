@@ -48,13 +48,20 @@ DashboardInstrument_Clock::DashboardInstrument_Clock( wxWindow *parent, wxWindow
         setUTC( false );
     else
         setUTC( true );
+}
 
-    wxClientDC dc(this);
-    int w, dw;
-    dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-    dc.GetTextExtent(_T("00:00:00 UTC"), &dw, &m_DataHeight, 0, 0, g_pFontData);
-    
-    SetMinSize( wxSize(wxMax(wxMax(MinWidth, w), dw), m_TitleHeight+m_DataHeight));
+wxSize DashboardInstrument_Clock::GetSize( int orient, wxSize hint )
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
+
+      if( orient== wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+m_DataHeight, hint.y) );
+      } else {
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight );
+      }
 }
 
 void DashboardInstrument_Clock::SetData( int, double, wxString )
@@ -109,12 +116,19 @@ DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID
     m_phase = -1;
     m_radius = 14;
     m_hemisphere = _T("");
+}
 
-    wxClientDC dc(this);
-    int w;
-    dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
 
-    SetMinSize( wxSize(MinWidth, m_TitleHeight+10+m_radius*2) );
+      if( orient== wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+10+m_radius*2, hint.y) );
+      } else {
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+10+m_radius*2 );
+      }
 }
 
 void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
@@ -266,13 +280,20 @@ DashboardInstrument_Sun::DashboardInstrument_Sun( wxWindow *parent, wxWindowID i
     m_dt = wxDateTime::Now().ToUTC();
     m_sunrise = _T("---");
     m_sunset = _T("---");
+}
 
-    wxClientDC dc(this);
-    int w;
-    dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-    dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
+wxSize DashboardInstrument_Sun::GetSize( int orient, wxSize hint )
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      dc.GetTextExtent(_T("00:00:00 UTC"), &w, &m_DataHeight, 0, 0, g_pFontData);
 
-    SetMinSize( wxSize(MinWidth, m_TitleHeight+m_DataHeight*2) );
+      if( orient== wxHORIZONTAL ) {
+          return wxSize( DefaultWidth, wxMax(m_TitleHeight+m_DataHeight*2, hint.y) );
+      } else {
+          return wxSize( wxMax(hint.x, DefaultWidth), m_TitleHeight+m_DataHeight*2 );
+      }
 }
 
 void DashboardInstrument_Sun::Draw(wxGCDC* dc)

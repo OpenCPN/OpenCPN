@@ -145,7 +145,8 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc)
 	bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, g_pFontLabel);
 	m_cy = m_TitleHeight + 2;
 	m_cy += availableHeight / 2;
-        m_radius = wxMin(m_cx, availableHeight / 2);
+	m_radius = availableHeight / 2.0 * 0.95;
+
 
 	DrawLabels(bdc);
 	DrawFrame(bdc);
