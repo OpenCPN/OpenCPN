@@ -6888,10 +6888,14 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
              * always to the very first drag start (since there is not reset of last_drag).
              *
              * Besides, should not left down and dragging be enough of a situation to start a drag procedure?
+             *
+             * Anyways, guarded it to be active in touch situations only.
              */
-            if(false == m_bChartDragging) {
-                last_drag.x = x, last_drag.y = y;
-                m_bChartDragging = true;
+            if( g_btouch ) {
+                if(false == m_bChartDragging) {
+                    last_drag.x = x, last_drag.y = y;
+                    m_bChartDragging = true;
+                }
             }
 
 
