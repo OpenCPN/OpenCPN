@@ -251,11 +251,16 @@ public:
     bool qualityAvailable[6];
 
     void LoadQuality( int quality );
+    int GetMinAvailableQuality() { return minQualityAvailable; }
+    int GetMaxAvailableQuality() { return maxQualityAvailable; }
 
 private:
     int quality;  // 5 levels: 0=low ... 4=full
     int selectBestQuality( void );
     int selectBestQuality( ViewPort &vp );
+
+    int maxQualityAvailable;
+    int minQualityAvailable;
 
     std::string fpath;     // directory containing gshhs files
 
@@ -294,6 +299,8 @@ public:
 
     wxColor land;
     wxColor water;
+    int GetMinAvailableQuality();
+    int GetMaxAvailableQuality();
 
 private:
     GshhsReader* reader;

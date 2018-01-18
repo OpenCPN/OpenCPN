@@ -343,7 +343,9 @@ public:
       MyFrame     *parent_frame;
       wxString    FindValidUploadPort();
       CanvasMenuHandler  *m_canvasMenu;
-      
+      int GetMinAvailableGshhgQuality() { return pWorldBackgroundChart->GetMinAvailableQuality(); }
+      int GetMaxAvailableGshhgQuality() { return pWorldBackgroundChart->GetMaxAvailableQuality(); }
+
 private:
       void CallPopupMenu( int x, int y );
       

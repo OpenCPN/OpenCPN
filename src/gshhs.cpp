@@ -99,6 +99,18 @@ void GSHHSChart::Reset() {
     gshhsCrossesLandReset();
 }
 
+int GSHHSChart::GetMinAvailableQuality() {
+    if( !reader )
+        reader = new GshhsReader( );
+    return reader->GetMinAvailableQuality();
+}
+
+int GSHHSChart::GetMaxAvailableQuality() {
+    if( !reader )
+        reader = new GshhsReader( );
+    return reader->GetMaxAvailableQuality();
+}
+
 void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp )
 {
     if( ! reader ) {
@@ -1007,14 +1019,15 @@ GshhsPolygon::~GshhsPolygon()
 
 GshhsReader::GshhsReader( )
 {
-    int maxQualityAvailable = -1;
-    int minQualityAvailable = -1;
+    maxQualityAvailable = -1;
+    minQualityAvailable = -1;
 
     for( int i=0; i<5; i++ ) {
         qualityAvailable[i] = false;
         if( GshhsReader::gshhsFilesExists( i ) ) {
             qualityAvailable[i] = true;
-            if( minQualityAvailable < 0 ) minQualityAvailable = i;
+            if( minQualityAvailable < 0 )
+                minQualityAvailable = i;
             maxQualityAvailable = i;
         }
     }
