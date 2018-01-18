@@ -12,11 +12,9 @@
 //    #pragma implementation "jsonval.cpp"
 //#endif
 
-#ifdef NDEBUG
-// make wxLogTrace a noop if no debug set, it's really slow
-// must be defined before including wx/debug.h (also included by wx/wxprec.h)
+// make wxLogTrace a noop, it's really slow
+// must be defined before including debug.h
 #define wxDEBUG_LEVEL 0
-#endif
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
