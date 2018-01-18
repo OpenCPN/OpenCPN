@@ -859,25 +859,24 @@ int Osenc::ingest200(const wxString &senc_file_name,
                     obj->SetAreaGeometry(pPTG, m_ref_lat, m_ref_lon ) ;
                     
                     //  Set the Line geometry for the Feature
-                    LineGeometryDescriptor *pDescriptor = (LineGeometryDescriptor *)malloc(sizeof(LineGeometryDescriptor));
+                    LineGeometryDescriptor Descriptor;
                     
                     //  Copy some simple stuff
-                    pDescriptor->extent_e_lon = pPayload->extent_e_lon;
-                    pDescriptor->extent_w_lon = pPayload->extent_w_lon;
-                    pDescriptor->extent_s_lat = pPayload->extent_s_lat;
-                    pDescriptor->extent_n_lat = pPayload->extent_n_lat;
+                    Descriptor.extent_e_lon = pPayload->extent_e_lon;
+                    Descriptor.extent_w_lon = pPayload->extent_w_lon;
+                    Descriptor.extent_s_lat = pPayload->extent_s_lat;
+                    Descriptor.extent_n_lat = pPayload->extent_n_lat;
                     
-                    pDescriptor->indexCount = pPayload->edgeVector_count;
+                    Descriptor.indexCount = pPayload->edgeVector_count;
                     
                     // Copy the line index table, which in this case is offset in the payload
-                    pDescriptor->indexTable = (int *)malloc(pPayload->edgeVector_count * 3 * sizeof(int));
-                    memcpy( pDescriptor->indexTable, next_byte,
+                    Descriptor.indexTable = (int *)malloc(pPayload->edgeVector_count * 3 * sizeof(int));
+                    memcpy( Descriptor.indexTable, next_byte,
                             pPayload->edgeVector_count * 3 * sizeof(int) );
                     
                     
-                    obj->SetLineGeometry( pDescriptor, GEO_AREA, m_ref_lat, m_ref_lon ) ;
+                    obj->SetLineGeometry( &Descriptor, GEO_AREA, m_ref_lat, m_ref_lon ) ;
                   
-                    free( pDescriptor );
                 }
                 
                 break;
@@ -893,13 +892,23 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 
                 // Get the payload & parse it
                 _OSENC_LineGeometry_Record_Payload *pPayload = (_OSENC_LineGeometry_Record_Payload *)buf;
-                
-                LineGeometryDescriptor *plD = BuildLineGeometry( pPayload );
+                LineGeometryDescriptor lD;
+
+                //  Copy some simple stuff
+                lD.extent_e_lon = pPayload->extent_e_lon;
+                lD.extent_w_lon = pPayload->extent_w_lon;
+                lD.extent_s_lat = pPayload->extent_s_lat;
+                lD.extent_n_lat = pPayload->extent_n_lat;
+    
+                lD.indexCount = pPayload->edgeVector_count;
+
+                // Copy the payload tables
+                lD.indexTable = (int *)malloc(pPayload->edgeVector_count * 3 * sizeof(int));
+                memcpy( lD.indexTable, &pPayload->payLoad, pPayload->edgeVector_count * 3 * sizeof(int) );
                 
                 if(obj)
-                    obj->SetLineGeometry( plD, GEO_LINE, m_ref_lat, m_ref_lon ) ;
+                    obj->SetLineGeometry( &lD, GEO_LINE, m_ref_lat, m_ref_lon ) ;
                 
-                free( plD );
                 break;
                 
             }
@@ -915,20 +924,19 @@ int Osenc::ingest200(const wxString &senc_file_name,
                 OSENC_MultipointGeometry_Record_Payload *pPayload = (OSENC_MultipointGeometry_Record_Payload *)buf;
 
                 //  Set the Multipoint geometry for the Feature
-                MultipointGeometryDescriptor *pDescriptor = (MultipointGeometryDescriptor *)malloc(sizeof(MultipointGeometryDescriptor));
+                MultipointGeometryDescriptor Descriptor;
                 
                 //  Copy some simple stuff
-                pDescriptor->extent_e_lon = pPayload->extent_e_lon;
-                pDescriptor->extent_w_lon = pPayload->extent_w_lon;
-                pDescriptor->extent_s_lat = pPayload->extent_s_lat;
-                pDescriptor->extent_n_lat = pPayload->extent_n_lat;
+                Descriptor.extent_e_lon = pPayload->extent_e_lon;
+                Descriptor.extent_w_lon = pPayload->extent_w_lon;
+                Descriptor.extent_s_lat = pPayload->extent_s_lat;
+                Descriptor.extent_n_lat = pPayload->extent_n_lat;
                 
-                pDescriptor->pointCount = pPayload->point_count;
-                pDescriptor->pointTable = &pPayload->payLoad;
+                Descriptor.pointCount = pPayload->point_count;
+                Descriptor.pointTable = &pPayload->payLoad;
                 
-                obj->SetMultipointGeometry( pDescriptor, m_ref_lat, m_ref_lon);
+                obj->SetMultipointGeometry( &Descriptor, m_ref_lat, m_ref_lon);
                 
-                free( pDescriptor );
                 
                 break;
             }
@@ -3178,28 +3186,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
 }
 
 
-LineGeometryDescriptor *Osenc::BuildLineGeometry( _OSENC_LineGeometry_Record_Payload *pPayload )
-{
-    LineGeometryDescriptor *pDescriptor = (LineGeometryDescriptor *)malloc(sizeof(LineGeometryDescriptor));
-    
-    //  Copy some simple stuff
-    pDescriptor->extent_e_lon = pPayload->extent_e_lon;
-    pDescriptor->extent_w_lon = pPayload->extent_w_lon;
-    pDescriptor->extent_s_lat = pPayload->extent_s_lat;
-    pDescriptor->extent_n_lat = pPayload->extent_n_lat;
-    
-    pDescriptor->indexCount = pPayload->edgeVector_count;
-    
-    // Copy the payload tables
-    pDescriptor->indexTable = (int *)malloc(pPayload->edgeVector_count * 3 * sizeof(int));
-    memcpy( pDescriptor->indexTable, &pPayload->payLoad, pPayload->edgeVector_count * 3 * sizeof(int) );
-    
-    return pDescriptor;
-}
-
-
-
-
 //      Build PolyGeo Object from OSENC200 file record
 //      Return an integer count of bytes consumed from the record in creating the PolyTessGeo
 PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record, unsigned char **next_byte )
@@ -3297,8 +3283,7 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
         int byte_size = nvert * 2 * sizeof(float);              // the vertices
         total_byte_size += byte_size;
         
-        tp->p_vertex = (double *)malloc(byte_size);
-        memcpy(tp->p_vertex, pPayloadRun, byte_size);
+        tp->p_vertex = (double *)pPayloadRun;
         
         
         pPayloadRun += byte_size;
@@ -3315,7 +3300,6 @@ PolyTessGeo *Osenc::BuildPolyTessGeo(_OSENC_AreaGeometry_Record_Payload *record,
     unsigned char *p_run = vbuf;
     while( p_tp ) {
             memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float));
-            free(p_tp->p_vertex);
             p_tp->p_vertex = (double  *)p_run;
             p_run += p_tp->nVert * 2 * sizeof(float);
             p_tp = p_tp->p_next; // pick up the next in chain
