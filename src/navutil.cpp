@@ -658,6 +658,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
     Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
+    Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing, true);
+    Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing, true);
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
     Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
@@ -1968,6 +1970,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPUTextureCompressionCaching" ), g_GLOptions.m_bTextureCompressionCaching);
     Write( _T ( "GPUTextureDimension" ), g_GLOptions.m_iTextureDimension );
     Write( _T ( "GPUTextureMemSize" ), g_GLOptions.m_iTextureMemorySize );
+    Write( _T ( "PolygonSmoothing" ), g_GLOptions.m_GLPolygonSmoothing);
+    Write( _T ( "LineSmoothing" ), g_GLOptions.m_GLLineSmoothing);
 #endif
     Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
 
