@@ -657,7 +657,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             radius = 0;
     }
 
-    if(!g_bopengl && (dc.GetDC() || radius) ) {
+    if( dc.GetDC() || radius ) {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
