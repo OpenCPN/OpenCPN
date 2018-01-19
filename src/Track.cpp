@@ -104,6 +104,7 @@ extern double           g_TrackDeltaDistance;
 extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
 extern wxColour         g_colourTrackLineColour;
+extern bool g_bopengl;
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
@@ -656,7 +657,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             radius = 0;
     }
 
-    if(dc.GetDC() || radius) {
+    if(!g_bopengl && (dc.GetDC() || radius) ) {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -694,8 +695,6 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     }
 #ifdef ocpnUSE_GL    
     else { // opengl version
-        glColor3ub(col.Red(), col.Green(), col.Blue());
-        glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
         if( g_GLOptions.m_GLLineSmoothing )
             glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
@@ -708,6 +707,31 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         int *points = new int[2*size];
         glVertexPointer(2, GL_INT, 0, points);
 
+        //Hilite
+        extern wxColor GetDimColor(wxColor c);
+        wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
+        glColor4ub(trackLine_dim_colour.Red(), trackLine_dim_colour.Green(), trackLine_dim_colour.Blue(), 128);
+        glLineWidth( wxMax( g_GLMinSymbolLineWidth * 2, radius ) );
+        glEnableClientState(GL_VERTEX_ARRAY);
+        for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
+            lines != pointlists.end(); lines++) {
+
+            // convert from linked list to array
+            int i = 0;
+            for(std::list<wxPoint>::iterator line = lines->begin();
+                line != lines->end(); line++) {
+                points[i+0] = line->x;
+                points[i+1] = line->y;
+                i+=2;
+            }
+
+            glDrawArrays(GL_LINE_STRIP, 0, i >> 1);
+        }
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+        //Track
+        glColor3ub(col.Red(), col.Green(), col.Blue());
+        glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
         glEnableClientState(GL_VERTEX_ARRAY);
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
             lines != pointlists.end(); lines++) {
@@ -728,7 +752,6 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
         delete [] points;
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
-        
     }
 #endif
 
