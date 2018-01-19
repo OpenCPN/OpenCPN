@@ -539,8 +539,6 @@ void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
 
     glEnd();
 
-    glPopAttrib();
-
     delete [] cpoints;
 
  #endif    
