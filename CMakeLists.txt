@@ -1452,7 +1452,7 @@ IF (OPENGL_FOUND)
       IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
       ELSE ()
         # use standard optimizations for other architectures
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3")
