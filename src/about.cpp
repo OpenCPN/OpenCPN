@@ -492,7 +492,7 @@ void about::OnClose( wxCloseEvent& event )
 
 void about::OnDonateClick( wxCommandEvent& event )
 {
-      wxLaunchDefaultBrowser(_T("https://sourceforge.net/donate/index.php?group_id=180842"));
+      wxLaunchDefaultBrowser(_T("https://sourceforge.net/p/opencpn/donate/"));
 }
 
 void about::OnCopyClick( wxCommandEvent& event )
