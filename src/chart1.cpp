@@ -9283,8 +9283,14 @@ static void UpdatePositionCalculatedSogCog()
         if( time_diff / 1000 >= g_own_ship_sog_cog_calc_damp_sec ) {
             double brg, dist;
             DistanceBearingMercator( gLat, gLon, last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon, &brg, &dist );
-            gCog = brg;
-            gSog = dist / (time_diff.ToDouble() / 3600000.);
+            double tSog = dist / (time_diff.ToDouble() / 3600000.);
+            
+            // Guard against really fast (i.e. non-sense VDR playback speed) data updates with slow averaging constant
+            if(tSog < 100.){
+                gCog = brg;
+                gSog = tSog;
+            }
+            
             last_own_ship_sog_cog_calc_lat = gLat;
             last_own_ship_sog_cog_calc_lon = gLon;
             last_own_ship_sog_cog_calc_ts = now;
