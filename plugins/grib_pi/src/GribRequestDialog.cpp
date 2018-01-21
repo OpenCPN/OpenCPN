@@ -201,6 +201,9 @@ void GribRequestSetting::SetRequestDialogSize()
     /*then as default sizing do not work with wxScolledWindow let's compute it*/
     wxSize scroll = m_fgScrollSizer->Fit(m_sScrolledDialog);                                   // the area size to be scrolled
 
+#ifdef __WXGTK__
+    SetMinSize( wxSize( 0, 0 ) );
+#endif
     int w = GetOCPNCanvasWindow()->GetClientSize().x;           // the display size
     int h = GetOCPNCanvasWindow()->GetClientSize().y;
     int dMargin = 80;                                      //set a margin
@@ -210,6 +213,12 @@ void GribRequestSetting::SetRequestDialogSize()
 
 	Layout();
     Fit();
+#ifdef __WXGTK__
+    wxSize sd = GetSize();
+    if( sd.y == GetClientSize().y ) sd.y += 30;
+    SetSize( wxSize( sd.x, sd.y ) );
+    SetMinSize( wxSize( sd.x, sd.y ) );
+#endif
     Refresh();
 }
 

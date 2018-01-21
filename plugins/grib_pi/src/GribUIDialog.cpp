@@ -696,9 +696,12 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition( bool force_recompute )
     }
     Layout();
     Fit();
-    SetMinSize( GetBestSize() );
-    SetSize( GetBestSize() );
-    Update();
+    wxSize sd = GetSize();
+#ifdef __WXGTK__
+    if( m_HasCaption && sd.y == GetClientSize().y ) sd.y += 30;
+#endif
+    SetSize( wxSize( sd.x, sd.y ) );
+    SetMinSize( wxSize( sd.x, sd.y ) );
     pPlugIn->MoveDialog( this, pPlugIn->GetCtrlBarXY() );
     m_old_DialogStyle = m_DialogStyle;
 }
