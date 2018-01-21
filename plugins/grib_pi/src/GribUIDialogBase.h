@@ -37,7 +37,8 @@
 #include <wx/notebook.h>
 #include <wx/radiobox.h>
 #include <wx/statline.h>
-#include <wx/grid.h>
+//#include <wx/grid.h>
+#include "CustomGrid.h"
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -449,9 +450,9 @@ class GRIBTableBase : public wxDialog
 
 
 	public:
-		wxGrid* m_pGribTable;
-		wxStdDialogButtonSizer* m_pButtonTable;
-		wxButton* m_pButtonTableOK;
+		CustomGrid* m_pGribTable;
+        wxButton* m_pButtonTableOK;
+        int m_pIndex;
 
 		GRIBTableBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Data Table"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
 		~GRIBTableBase();

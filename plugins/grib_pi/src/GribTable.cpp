@@ -34,9 +34,13 @@
 #include <wx/glcanvas.h>
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
+#include <wx/grid.h>
 #include "GribTable.h"
+#include "CustomGrid.h"
+#include <wx/tokenzr.h>
 
 extern double m_cursor_lat, m_cursor_lon;
+
 //----------------------------------------------------------------------------------------------------------
 //          GRIB Table Implementation
 //----------------------------------------------------------------------------------------------------------
@@ -44,183 +48,225 @@ extern double m_cursor_lat, m_cursor_lon;
 GRIBTable::GRIBTable(GRIBUICtrlBar &parent)
     : GRIBTableBase(&parent), m_pGDialog(&parent){}
 
-void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
+void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowIndex )
 {
-    //init fonts and colours
-    wxFont labelfont = wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
-    wxFont timefont = wxFont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
-    wxFont datafont = wxFont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    m_pGribTable->m_gParent = this;
+    m_pIndex = NowIndex;
 
-    wxColour colour, colour0, colour1;
-    GetGlobalColor(_T("DILG1"), &colour);
-    GetGlobalColor(_T("DILG0"), &colour0);
-    GetGlobalColor(_T("DILG2"), &colour1);
+    //init row attr
+    wxGridCellAttr *datarow = new wxGridCellAttr();
+    datarow->SetFont(GetOCPNGUIScaledFont_PlugIn( _T("Dialog") ));
+    datarow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
 
     //populate "cursor position" display
-
     wxString l;
     l.Append(toSDMM_PlugIn(1, m_cursor_lat)).Append(_T("   "))
         .Append(toSDMM_PlugIn(2, m_cursor_lon));
     m_pCursorPosition->SetLabel(l);
-    m_pCursorPosition->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
-    m_pPositionText->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
-
-    //init row attr
-    wxGridCellAttr *daysrow = new wxGridCellAttr();
-    daysrow->SetFont(timefont);
-    daysrow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-
-    wxGridCellAttr *timerow = new wxGridCellAttr();
-    timerow->SetFont(timefont);
-    timerow->SetBackgroundColour(colour);
-    timerow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-
-    wxGridCellAttr *singledatarow = new wxGridCellAttr();
-    singledatarow->SetFont(datafont);
-    singledatarow->SetAlignment(wxALIGN_CENTRE, wxALIGN_CENTRE);
-
-    wxGridCellAttr *doubledatarow = new wxGridCellAttr();
-    doubledatarow->SetFont(datafont);
-    doubledatarow->SetAlignment(wxALIGN_CENTRE, -1);
-
-    //init labels
-    m_pGribTable->SetLabelFont(labelfont);
-    m_pGribTable->SetLabelBackgroundColour(colour);
+    m_pCursorPosition->SetFont(GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold());
+    m_pPositionText->SetFont(GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold());
 
     //create as columns as necessary
     m_pGribTable->AppendCols(rsa->GetCount());
-    m_pGribTable->SetSelectionBackground(colour);
-    m_pGribTable->SetSelectionForeground(m_pGribTable->GetDefaultCellTextColour());
 
-    //init days row
-    m_pGribTable->SetRowLabelValue(0, wxEmptyString);
-    m_pGribTable->SetRowAttr(0, daysrow);
-
-    //init time row
-    m_pGribTable->SetRowLabelValue(1, wxEmptyString);
-    m_pGribTable->SetRowAttr(1, timerow);
-
-    //populate grib
+    //populate grid
     wxDateTime time, day, ptime;
-    int nrows;
-    bool color = false;
-
+    int nrows, wcols = 0;
     for(unsigned i = 0; i < rsa->GetCount(); i++ ) {
+        //populate time labels
         time = rsa->Item(i).m_Reference_Time;
-        day = time;
-        if( i == 0 ) ptime = time;
+        m_pGribTable->SetColLabelValue(i ,GetTimeRowsStrings( time, zone , 1)
+						.Append( _T("\n"))
+						.Append( GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0))
+                                        );
+        nrows = -1;
+        m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
+        GribRecord **RecordArray = m_pTimeset->m_GribRecordPtrArray;
 
-        //populate and color 'day' row
-        if( ptime.GetDateOnly() != day.GetDateOnly() ) {
-            ptime = time;
-            color = !color;
-        }
-        if( !color )
-            m_pGribTable->SetCellBackgroundColour(0, i, colour0);
-        else
-            m_pGribTable->SetCellBackgroundColour(0, i, colour1);
-
-        m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings( day, zone , 1) );
-
-        //populate 'time' row
-        m_pGribTable->SetCellValue(1, i, GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0) );
-
-        nrows = 2;
-
-        GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
-        if (pTimeset == 0)
-            continue;
-
-        GribRecord **RecordArray = pTimeset->m_GribRecordPtrArray;
-
-        //create and polulate wind data row
+        /*create and polulate wind data row
+             wind is a special case:
+             1) if current unit is not bf ==> double speed display (current unit + bf)
+             2) create two lines for direction and speed and a third for gust if exists
+             3) these two or three lines will be part of the same block*/
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND &&
             m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND) {
-                AddDataRow( nrows, i, _("Wind"), doubledatarow );
-                wxString wc(GetWind(RecordArray));
-                //wind is a special case: if current unit is not bf ==> double speed display (current unit + bf)
-                if(m_pGDialog->m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS)
-                    if(!wc.IsEmpty()) wc.Append(_T("\n")).Append(GetWindBf(RecordArray));
-                //
-                m_pGribTable->SetCellValue(nrows, i, wc);
-                m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-                nrows++;
-        }
-        //create and polulate Pressure data row
-        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Pressure"), singledatarow );
-            m_pGribTable->SetCellValue(nrows, i, GetPressure(RecordArray));
             nrows++;
-        }
-        //create and polulate Wind gusts data row
-        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Wind Gust"), singledatarow );
-            m_pGribTable->SetCellValue(nrows, i, GetWindGust(RecordArray));
+            AddDataRow( nrows, i, _("Wind,Dir"), datarow );
+            double wdir;
+            GetWind(RecordArray, 1, wdir);       //this is a numerical row
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            m_pGribTable->SetNumericalRow( nrows, i, R_WIND, wdir );
             nrows++;
-        }
-        //create and polulate Waves data row
-        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND ||
-            m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
-                AddDataRow( nrows, i, _("Waves"), doubledatarow );
-                m_pGribTable->SetCellValue(nrows, i, GetWaves(RecordArray));
-                m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            AddDataRow( nrows, i, _("Wind,Speed"), datarow );
+            if(m_pGDialog->m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS)
+                m_pGribTable->SetCellValue(nrows, i, GetWind(RecordArray, 2, wdir) );
+            else
+                m_pGribTable->SetCellValue(nrows, i, GetWind(RecordArray, 3, wdir));
+            m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND) {
                 nrows++;
-        }
+                AddDataRow( nrows, i, _("Wind,Gust"), datarow );
+                if(m_pGDialog->m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS)
+                    m_pGribTable->SetCellValue(nrows, i, GetWindGust(RecordArray, 1) );
+                else
+                    m_pGribTable->SetCellValue(nrows, i, GetWindGust(RecordArray, 2));
+                m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            }
+        }//wind
+
+        //create and polulate Pressure data rown
+        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND) {
+            nrows++;
+            AddDataRow( nrows, i, _("Pressure"), datarow );
+            m_pGribTable->SetCellValue(nrows, i, GetPressure(RecordArray));
+        }//pressure
+
+        /*create and polulate Waves data rows
+            waves is another special case:
+             1) if significant height data exists then create a line for direction and height
+             then a third for periode if data exists
+             2) these two or three lines will be part of the same block*/
+        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND) {
+             double wdir;
+            if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
+                nrows++;
+                AddDataRow( nrows, i, _("Waves,Dir"), datarow );
+                GetWaves(RecordArray ,Idx_WVDIR, wdir);             //this is a numerical row
+                m_pGribTable->SetNumericalRow( nrows, i, R_WAVES, wdir );
+            }
+            nrows++;
+            AddDataRow( nrows, i, _("Waves,Hsig"), datarow );
+            m_pGribTable->SetCellValue(nrows, i, GetWaves(RecordArray, Idx_HTSIGW, wdir));
+            m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVPER) != wxNOT_FOUND) {
+                nrows++;
+                AddDataRow( nrows, i, _("Waves,Per"), datarow );
+                m_pGribTable->SetCellValue(nrows, i, GetWaves(RecordArray ,Idx_WVPER, wdir));
+            }
+        }//waves
+
         //create and polulate total rainfall data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Rainfall"), singledatarow );
+            nrows++;
+            AddDataRow( nrows, i, _("Rainfall"), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetRainfall(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-            nrows++;
-        }
-        //create and polulate total cloud control
+        }//rainfall
+
+        //create and populate total cloud control
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Cloud Cover"), singledatarow );
+            nrows++;
+            AddDataRow( nrows, i, _("Cloud Cover"), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetCloudCover(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-            nrows++;
-        }
+        }//cloud
+
         //create and polulate the Air Temperature data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Air\nTemperature"), singledatarow );
+            nrows++;
+            AddDataRow( nrows, i, _("Air Temp."), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetAirTemp(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-            nrows++;
-        }
+        }//air temp
+
         //create and polulate the Sea Surface Temperature data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Sea\nTemperature"), singledatarow );
+            nrows++;
+            AddDataRow( nrows, i, _("Sea Temp."), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetSeaTemp(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-            nrows++;
-        }
+        }//sea temp
+
         //create and polulate the Convective Available Potential Energy (CAPE) data row
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("CAPE"), singledatarow );
+            nrows++;
+            AddDataRow( nrows, i, _("CAPE"), datarow );
             m_pGribTable->SetCellValue(nrows, i, GetCAPE(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-            nrows++;
-        }
-        //create and polulate the current data row
+        }//cape
+
+        /*create and populate the current data rows
+            1)create two lines for direstion and speed
+            2) these two or three lines will be part of the same block*/
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND &&
             m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND) {
-                AddDataRow( nrows, i, _("Current"), doubledatarow );
-                m_pGribTable->SetCellValue(nrows, i, GetCurrent(RecordArray));
-                m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
-                nrows++;
-        }
-        delete pTimeset;
+            double wdir;
+            nrows++;
+            AddDataRow( nrows, i, _("Current,Dir"), datarow );
+            GetCurrent(RecordArray, 1, wdir);                       //this is a numerical row
+            m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+            m_pGribTable->SetNumericalRow( nrows, i, R_CURRENT, wdir );
+
+            nrows++;
+			AddDataRow( nrows, i, _("Current,Speed"), datarow );
+            m_pGribTable->SetCellValue(nrows, i, GetCurrent(RecordArray, 2, wdir));
+            m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
+        }//current // populate grid
         m_pGribTable->AutoSizeColumn(i, false);
-
-    }
+        wcols = wxMax(m_pGribTable->GetColSize(i), wcols);
+    }//populate grid
+    //put cursor outside the grid
+    m_pGribTable->SetGridCursor( m_pGribTable->GetNumberRows() -1, 0);
+    //set col size
+    m_pGribTable->SetDefaultColSize( wcols, true );
+    //set row size
     AutoSizeDataRows();
-    m_pGribTable->SetGridCursor( m_pGribTable->GetNumberRows(), 0);     //put cursor outside the grid
+    //set label size
+    m_pGribTable->SetColLabelSize(wxGRID_AUTOSIZE);
+    //set scroll steps
+    m_pGribTable->SetScrollLineX( wcols );
 
-    this->Fit();
-    this->Refresh();
-    singledatarow->DecRef();    // Give up pointer control to Grid
-    doubledatarow->DecRef();
+    datarow->DecRef();              // Give up pointer contrl to Grid
+
+    m_tScrollToNowTimer.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBTable::OnScrollToNowTimer ), NULL, this);
+}
+
+void GRIBTable::SetTableSizePosition(int vpWidth, int vpHeight)
+{
+    //Get size & position previously saved
+    int x = -1, y = -1, w = -1, h = -1;
+    wxFileConfig *pConf = GetOCPNConfigObject();
+    if (pConf) {
+        pConf->SetPath(_T("/Settings/GRIB"));
+        pConf->Read(_T("GribDataTablePosition_x"), &x);
+        pConf->Read(_T("GribDataTablePosition_y"), &y);
+        pConf->Read(_T("GribDataTableWidth"), &w);
+        pConf->Read(_T("GribDataTableHeight"), &h);
+    }
+    wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen(wxPoint(x, y));
+    //set a default size & position if saved values are outside of limits
+    bool refit = false;
+    wxSize scw = wxSize(vpWidth, (vpHeight - GetChartbarHeight()));
+    wxPoint pcw = GetOCPNCanvasWindow()->ClientToScreen(GetOCPNCanvasWindow()->GetPosition());
+    if( !(wxRect(pcw, scw).Contains(wxRect(final_pos, wxSize(w, h)))) )
+        refit = true;
+    if( w < (m_pGribTable->GetRowLabelSize() + (m_pGribTable->GetColSize(0))) || h < (m_pGribTable->GetColLabelSize() + (m_pGribTable->GetRowSize(0))) )
+        refit = true;
+    if( refit ){
+        w = (scw.GetWidth() / 10) * 9;  //10% less than canvas
+        h = (scw.GetHeight() / 10) * 9;
+        x = (scw.GetWidth() / 20);  //centered horizontally
+        y = (scw.GetHeight() / 50); //a bit out-centered toward the top
+        final_pos = GetOCPNCanvasWindow()->ClientToScreen(wxPoint(x, y));
+    }//
+    //in case client size toot large for the grib
+    int w1 = m_pGribTable->GetRowLabelSize() + (m_pGribTable->GetColSize(0) * m_pGribTable->GetNumberCols());
+    w = wxMin( w, w1 );
+    int h1 = m_pGribTable->GetColLabelSize() + (m_pGribTable->GetRowSize(0) * (m_pGribTable->GetNumberRows() + 4 ));
+    h = wxMin( h, h1 );
+
+    this->SetClientSize(w, h);
+    this->Move(final_pos);
+
+    //scroll to the end of time steps to prepare the next scroll to 'now'
+    m_pGribTable->MakeCellVisible(0, m_pGribTable->GetNumberCols() - 1);
+    //trigger scroll to 'now'(must be postpone after the dialog is shown)
+    m_tScrollToNowTimer.Start( 200, wxTIMER_ONE_SHOT );
+}
+
+void GRIBTable::OnScrollToNowTimer( wxTimerEvent& event )
+{
+    m_pGribTable->MakeCellVisible(0, m_pIndex);
 }
 
 void GRIBTable::OnClose( wxCloseEvent& event )
@@ -231,36 +277,24 @@ void GRIBTable::OnClose( wxCloseEvent& event )
 
 void GRIBTable::OnOKButton( wxCommandEvent& event )
 {
-    CloseDialog();
-    this->EndModal(wxID_OK);
-}
-
-void GRIBTable::OnClick( wxGridEvent& event )
-{
-    if(m_pGribTable->IsSelection()) m_pGribTable->ClearSelection();
-}
-
-void GRIBTable::OnRangeClick( wxGridRangeSelectEvent& event )
-{
-    if(m_pGribTable->IsSelection()) m_pGribTable->ClearSelection();
+		CloseDialog();
+		this->EndModal(wxID_OK);
 }
 
 void GRIBTable::CloseDialog()
 {
-    int x,y,w,h;
-    this->GetPosition(&x, &y);
-    this->GetSize(&w, &h);
+    wxSize s = this->GetClientSize();
+	wxPoint p = GetOCPNCanvasWindow()->ScreenToClient( this->GetPosition() );
 
     wxFileConfig *pConf = GetOCPNConfigObject();
-
     if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
-        pConf->Write( _T ( "GribDataTablePosition_x" ), x);
-        pConf->Write( _T ( "GribDataTablePosition_y" ), y);
-        pConf->Write( _T ( "GribDataTableWidth" ), w);
-        pConf->Write( _T ( "GribDataTableHeight" ), h);
-    }
+        pConf->Write( _T ( "GribDataTablePosition_x" ), p.x );
+        pConf->Write( _T ( "GribDataTablePosition_y" ), p.y );
+        pConf->Write( _T ( "GribDataTableWidth" ), s.GetWidth() );
+        pConf->Write( _T ( "GribDataTableHeight" ), s.GetHeight() );
+    }//
 }
 
 void GRIBTable::AddDataRow( int num_rows, int num_cols, wxString label, wxGridCellAttr *row_attr )
@@ -276,46 +310,55 @@ void GRIBTable::AddDataRow( int num_rows, int num_cols, wxString label, wxGridCe
 
 void GRIBTable::AutoSizeDataRows()
 {
+    int hrows = 0;
     for( int i = 0; i < m_pGribTable->GetNumberRows(); i++ ) {
         m_pGribTable->AutoSizeRow(i, false);
-        int h = m_pGribTable->GetRowHeight(i);
-        h += 10;
-        m_pGribTable->SetRowSize(i, h);
+        hrows = wxMax(m_pGribTable->GetRowHeight(i) + 3, hrows);
     }
+    m_pGribTable->SetDefaultRowSize( hrows, true );
+    //set scroll steps
+    m_pGribTable->SetScrollLineY(hrows);
 }
 
-wxString GRIBTable::GetWind(GribRecord **recordarray)
+wxString GRIBTable::GetWind(GribRecord **recordarray, int datatype, double& wdir )
 {
     wxString skn(wxEmptyString);
     int altitude = 0;
     double vkn, ang;
+    wdir = GRIB_NOTDEF;
     if(GribRecord::getInterpolatedValues(vkn, ang,
                                          recordarray[Idx_WIND_VX + altitude],
                                          recordarray[Idx_WIND_VY + altitude],
                                          m_cursor_lon, m_cursor_lat)) {
-
-       skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );
-
-       skn.Append(_T("\n\n"));
-
-       vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
-       skn.Append(wxString::Format( _T("%3d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) wxRound( vkn )));
-       m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WIND, vkn);
-    }
-    return skn;
+        if( datatype == 1 ){
+            wdir = ang;
+            return skn;
+        }
+        double cvkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
+        m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WIND, cvkn);
+        skn.Printf( wxString::Format( _T("%2d bf"), (int)wxRound( m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn)* vkn )) );
+		if( datatype ==2 ) { //wind speed unit other than bf
+            skn.Prepend(wxString::Format( _T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) wxRound( cvkn )) + _T(" - "));
+        }
+	}
+	return skn;
 }
 
-wxString GRIBTable::GetWindBf(GribRecord **recordarray)
+wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype )
 {
     wxString skn(wxEmptyString);
-    int altitude = 0;
-    double vkn, ang;
-    if(GribRecord::getInterpolatedValues(vkn, ang,
-                                         recordarray[Idx_WIND_VX + altitude],
-                                         recordarray[Idx_WIND_VY + altitude],
-                                         m_cursor_lon, m_cursor_lat)) {
-       vkn = m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
-       skn.Printf( wxString::Format( _T("%2d bf"), (int)wxRound( vkn )) );
+    if( recordarray[Idx_WIND_GUST] ) {
+        double vkn = recordarray[Idx_WIND_GUST]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+            if( vkn != GRIB_NOTDEF ) {
+                double cvkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
+                m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WIND_GUST, cvkn);
+
+                skn.Printf( wxString::Format( _T("%2d bf"), (int)wxRound( m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn)* vkn )) ); //wind gust unit bf
+                if( datatype == 1 ) { //wind gust unit other than bf
+                    skn.Prepend( wxString::Format(_T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int) wxRound( cvkn)) + _T(" - " ) );
+                }
+            }
     }
     return skn;
 }
@@ -336,50 +379,38 @@ wxString GRIBTable::GetPressure(GribRecord **recordarray)
     return skn;
 }
 
-wxString GRIBTable::GetWindGust(GribRecord **recordarray)
+wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype, double& wdir)
 {
     wxString skn(wxEmptyString);
-    if( recordarray[Idx_WIND_GUST] ) {
-        double vkn = recordarray[Idx_WIND_GUST]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-            if( vkn != GRIB_NOTDEF ) {
-                vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
-                skn.Printf( wxString::Format(_T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int) wxRound( vkn )) );
-                m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WIND_GUST, vkn);
-            }
-    }
-    return skn;
-}
-
-wxString GRIBTable::GetWaves(GribRecord **recordarray)
-{
-    wxString skn(wxEmptyString);
-    if( recordarray[Idx_HTSIGW] ) {
-        double height = recordarray[Idx_HTSIGW]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-        if( height != GRIB_NOTDEF ) {
-            height = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
-            skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
-            m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WAVE, height);
-
-            if( recordarray[Idx_WVDIR] ) {
-                double direction = recordarray[Idx_WVDIR]->
-                    getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
-                if( direction != GRIB_NOTDEF ){
-                    skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
-
-                    if( recordarray[Idx_WVPER] ) {
-                        double period = recordarray[Idx_WVPER]->
-                            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-                        if( period != GRIB_NOTDEF ) {
-                            skn.Append( wxString::Format( _T("\n%01ds") , (int) (period + 0.5)) );
-                        }
-                    }
+    wdir = GRIB_NOTDEF;
+	switch (datatype ) {
+		case Idx_HTSIGW:
+            if( recordarray[Idx_HTSIGW] ) {
+                double height = recordarray[Idx_HTSIGW]->
+					getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+                if( height != GRIB_NOTDEF ) {
+                    double cheight = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
+                    skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), cheight ));
+                    m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WAVE, cheight);
                 }
             }
-        }
-    }
+			break;
+		case Idx_WVDIR:
+			if( recordarray[Idx_WVDIR] ) {
+				double direction = recordarray[Idx_WVDIR]->
+							getInterpolatedValue(m_cursor_lon, m_cursor_lat, true, true );
+                wdir = direction;
+                return skn;
+			}
+			break;
+		case Idx_WVPER:
+			if( recordarray[Idx_WVPER] ) {
+				double period = recordarray[Idx_WVPER]->
+							getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+				if( period != GRIB_NOTDEF )
+					skn.Printf( wxString::Format( _T("%01ds") , (int) (period + 0.5)) );
+			}
+	}
     return skn;
 }
 
@@ -465,29 +496,23 @@ wxString GRIBTable::GetCAPE(GribRecord **recordarray)
 }
 
 
-wxString GRIBTable::GetCurrent(GribRecord **recordarray)
+wxString GRIBTable::GetCurrent(GribRecord **recordarray, int datatype, double& wdir)
 {
     wxString skn(wxEmptyString);
     double vkn, ang;
+    wdir = GRIB_NOTDEF;
     if(GribRecord::getInterpolatedValues(vkn, ang,
                                          recordarray[Idx_SEACURRENT_VX],
                                          recordarray[Idx_SEACURRENT_VY],
                                          m_cursor_lon, m_cursor_lat)) {
+
+        if( datatype == 1 ){
+            wdir = ang;
+            return skn;
+        }
         vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
-
-        // Current direction is generally reported as the "flow" direction,
-        // which is opposite from wind convention.
-        // So, adjust.
-        ang += 180;
-        if(ang >= 360) ang -= 360;
-        if( ang < 0 ) ang += 360;
-
-        skn.Printf( _T("%03d\u00B0"), (int) ( ang ) );
-
-        skn.Append(_T("\n\n"));
-
-        skn.Append( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
-        m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
+        skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
+		m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::CURRENT, vkn);
     }
     return skn;
 }
@@ -503,17 +528,22 @@ wxString GRIBTable::GetTimeRowsStrings( wxDateTime date_time, int time_zone, int
             case 0:
                 return t.Format( _T(" %H:%M  "), wxDateTime::Local ) + _T("LOC");
             case 1:
-                return t.Format( _T(" %a-%d-%b-%Y  "), wxDateTime::Local);
+                if(GetLocaleCanonicalName() == _T("en_US"))
+                    return t.Format( _T(" %a-%m/%d/%y  "), wxDateTime::Local);
+                else
+                    return t.Format( _T(" %a-%d/%m/%y  "), wxDateTime::Local);
             }
-            break;
         case 1:
             switch( type ){
             case 0:
                 return t.Format( _T(" %H:%M  "), wxDateTime::UTC ) + _T("UTC");
             case 1:
-                return t.Format( _T(" %a-%d-%b-%Y  "), wxDateTime::UTC );
+                if(GetLocaleCanonicalName() == _T("en_US"))
+                    return t.Format( _T(" %a-%m/%d/%y  "), wxDateTime::UTC );
+                else
+                    return t.Format( _T(" %a-%d/%m/%y  "), wxDateTime::UTC );
             }
-            break;
+        default:
+            return wxEmptyString;
     }
-    return wxEmptyString;
 }
