@@ -206,7 +206,7 @@ void GribRequestSetting::SetRequestDialogSize()
     int dMargin = 80;                                      //set a margin
     h -= ( m_rButton->GetSize().GetY() + dMargin );         //height available for the scrolled window
     w -= dMargin;                                           //width available for the scrolled window
-    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.GetWidth() ), h ) );		//set scrolled area size with margin
+    m_sScrolledDialog->SetMinSize( wxSize( wxMin( w, scroll.x ), wxMin( h, scroll.y ) ) );		//set scrolled area size with margin
 
 	Layout();
     Fit();
