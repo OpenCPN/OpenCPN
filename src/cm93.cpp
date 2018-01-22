@@ -4530,14 +4530,14 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             fileroot += new_scalechar;
             fileroot += _T ( "/" );
             wxString key1 = fileroot;
-            key1 += file1;
+            key1 += sub_char;
 
             fileroot.Prepend ( m_prefix );
 
             file1.Prepend ( fileroot );
          
             if(m_noFindArray.Index(key1) == wxNOT_FOUND){
-                if ( ::wxFileExists ( file ) ) {
+                if ( ::wxFileExists ( file1 ) ) {
                     bfound = true;
                     file = file1;                       // found the file as lowercase, substitute the name
                 }
