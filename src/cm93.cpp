@@ -4471,7 +4471,8 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       wxString file;
       file.Printf ( _T ( "%04d%04d." ), jlat, jlon );
       file += m_scalechar;
-
+      file[0] = sub_char;
+      
 
       
       wxString fileroot;
@@ -4479,10 +4480,9 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       fileroot += m_scalechar;
       fileroot += _T ( "/" );
       wxString key = fileroot;
-      key += sub_char;
+      key += file;
       fileroot.Prepend ( m_prefix );
 
-      file[0] = sub_char;
       file.Prepend ( fileroot );
 
       if ( g_bDebugCM93 )
@@ -4523,96 +4523,45 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
             wxString file1;
             file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
             file1 += new_scalechar;
-
             file1[0] = sub_char;
 
             fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
             fileroot += new_scalechar;
             fileroot += _T ( "/" );
-            wxString key1 = fileroot;
-            key1 += sub_char;
+            key = fileroot;
+            key += file1;
 
             fileroot.Prepend ( m_prefix );
 
             file1.Prepend ( fileroot );
          
-            if(m_noFindArray.Index(key1) == wxNOT_FOUND){
+            if(m_noFindArray.Index(key) == wxNOT_FOUND){
                 if ( ::wxFileExists ( file1 ) ) {
                     bfound = true;
                     file = file1;                       // found the file as lowercase, substitute the name
                 }
                 else{
-                    m_noFindArray.Add(key1);
+                    m_noFindArray.Add(key);
                 }
             }
             
             if(!bfound){                     // try compressed version
-                if(m_noFindArray.Index(key1 + _T(".xz")) == wxNOT_FOUND){
+                if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
                     if(::wxFileExists ( file1+_T(".xz"))){
                         compfile = file1 + _T(".xz");
                     }
                     else{
-                        m_noFindArray.Add(key1 + _T(".xz"));
+                        m_noFindArray.Add(key + _T(".xz"));
                     }
                 }
             }
       }
 
       
-                    
-                
-#if 0           
-          
-      if ( !::wxFileExists ( file ) ) {
-          if(::wxFileExists ( file+_T(".xz")))
-              compfile = file + _T(".xz");
-          else {
-          
-            //    Try with alternate case of m_scalechar
-            wxString new_scalechar = m_scalechar.Lower();
-
-            wxString file1;
-            file1.Printf ( _T ( "%04d%04d." ), jlat, jlon );
-            file1 += new_scalechar;
-
-            file1[0] = sub_char;
-
-            fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
-            fileroot += new_scalechar;
-            fileroot += _T ( "/" );
-            fileroot.Prepend ( m_prefix );
-
-            file1.Prepend ( fileroot );
-
-            if ( g_bDebugCM93 )
-            {
-                  char sfile[200];
-                  strncpy ( sfile, file1.mb_str(), 199 );
-                  sfile[199] = 0;
-                  printf ( "    alternate filename: %s\n", sfile );
-            }
-
-            if ( !::wxFileExists ( file1 ) ) {
-                if(::wxFileExists ( file1+_T(".xz")))
-                    compfile = file1 + _T(".xz");
-                else {
-
-                  //    This is not really an error if the sub_char is not '0'.  It just means there are no more subcells....
-                  if ( g_bDebugCM93 )
-                  {
-                        if ( sub_char == '0' )
-                              printf ( "   Tried to load non-existent CM93 cell\n" );
-                        else
-                              printf ( "   No sub_cells of scale(%lc) found\n", sub_char );
-                  }
-
-                  return 0;
-                }
-            }
-            file = file1;                       // found the file as lowercase, substitute the name
-          }
+      if ( g_bDebugCM93 ){
+          printf("noFind count: %d\n", m_noFindArray.GetCount());
       }
-#endif
+                
       if(!bfound && !compfile.Length())
           return 0;
       
