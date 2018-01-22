@@ -1724,7 +1724,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                        NULL, this);
 #endif
 
-  wxString columns[] = {_("On"),   _("Type"), _("Port"),   _("Prio"),
+  wxString columns[] = {_("On"),   _("Type"), _("Data Port"),   _("Prio"),
                         _("Parm"), _("I/O"),  _("Filters")};
   for (int i = 0; i < 7; ++i) {
     wxListItem col;
