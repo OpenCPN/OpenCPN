@@ -4474,6 +4474,15 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       file[0] = sub_char;
       
 
+      // We prefer to make use of the NoFind array to avoid file system access to cells known not to exist.
+      // However, when the arra becomes "large", then searching the array becomes slower than actually accessing the file system.
+      // So, detect this case, and skip the NoFind array if the array size is larger than nnn items.
+      // "nnn" determined by experimentation/intuition.
+      // Could also be platform dependent.
+      bool b_useNoFind = true;
+      if(m_noFindArray.GetCount() > 500)
+          b_useNoFind = false;
+      
       
       wxString fileroot;
       fileroot.Printf ( _T ( "%04d%04d/" ), ilatroot, ilonroot );
@@ -4495,24 +4504,34 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       bool bfound = false;
       wxString compfile;
-      if(m_noFindArray.Index(key) == wxNOT_FOUND){
-        if ( ::wxFileExists ( file ) ) {
-            bfound = true;;
-        }
-        else{
-            m_noFindArray.Add(key);
+      if(b_useNoFind){
+        if(m_noFindArray.Index(key) == wxNOT_FOUND){
+            if ( ::wxFileExists ( file ) ) 
+                bfound = true;
+            else
+                m_noFindArray.Add(key);
         }
       }
+      else{
+          if ( ::wxFileExists ( file ) ) 
+              bfound = true;;
+      }          
       
       if(!bfound){                     // try compressed version
+        if(b_useNoFind){
             if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
                 if(::wxFileExists ( file+_T(".xz"))){
                     compfile = file + _T(".xz");
                 }
-                else{
-                    m_noFindArray.Add(key + _T(".xz"));
-                }
             }
+            else{
+                m_noFindArray.Add(key + _T(".xz"));
+            }
+        }
+        else{
+            if(::wxFileExists ( file+_T(".xz")))
+                compfile = file + _T(".xz");
+        }
       }
 
       // Try again with alternate scale character
@@ -4535,30 +4554,43 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
             file1.Prepend ( fileroot );
          
-            if(m_noFindArray.Index(key) == wxNOT_FOUND){
+            if(b_useNoFind){
+                if(m_noFindArray.Index(key) == wxNOT_FOUND){
+                    if ( ::wxFileExists ( file1 ) ) {
+                        bfound = true;
+                        file = file1;                       // found the file as lowercase, substitute the name
+                    }
+                    else{
+                        m_noFindArray.Add(key);
+                    }
+                }
+            }
+            else{
                 if ( ::wxFileExists ( file1 ) ) {
                     bfound = true;
                     file = file1;                       // found the file as lowercase, substitute the name
                 }
-                else{
-                    m_noFindArray.Add(key);
-                }
             }
             
             if(!bfound){                     // try compressed version
-                if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
-                    if(::wxFileExists ( file1+_T(".xz"))){
+                if(b_useNoFind){
+                    if(m_noFindArray.Index(key + _T(".xz")) == wxNOT_FOUND){
+                        if(::wxFileExists ( file1+_T(".xz")))
+                            compfile = file1 + _T(".xz");
+                        else
+                            m_noFindArray.Add(key + _T(".xz"));
+                    }
+                }
+                else{
+                    if(::wxFileExists ( file1+_T(".xz")))
                         compfile = file1 + _T(".xz");
-                    }
-                    else{
-                        m_noFindArray.Add(key + _T(".xz"));
-                    }
                 }
             }
       }
 
       
-      if ( g_bDebugCM93 ){
+      if ( g_bDebugCM93 )
+      {
           printf("noFind count: %d\n", m_noFindArray.GetCount());
       }
                 
