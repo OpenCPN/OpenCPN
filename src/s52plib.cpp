@@ -5955,6 +5955,9 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
         }
     }
 
+    if( IsObjNoshow( rzRules->LUP->OBCL) )
+        b_catfilter = false;
+    
     if(!b_catfilter)            // No chance this object is visible
         return 0;
 
@@ -8624,7 +8627,8 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( m_nDisplayCategory == OTHER ){
         if(OTHER == obj_cat){
             if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) )
-                if( !m_bShowMeta &&  strncmp( rzRules->LUP->OBCL, "M_QUAL", 6 )) return false;
+                if( !m_bShowMeta &&  strncmp( rzRules->LUP->OBCL, "M_QUAL", 6 ))
+                    return false;
         }
     }
 
