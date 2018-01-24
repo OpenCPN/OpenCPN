@@ -931,17 +931,17 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 #if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) {
         wxGraphicsPath gpath = pgc->CreatePath();
-        gpath.MoveToPoint( points[0].x + xoffset, points[0].y + yoffset );
+        gpath.MoveToPoint( points[0].x * scale + xoffset, points[0].y  * scale + yoffset );
         for( int i = 1; i < n; i++ )
-            gpath.AddLineToPoint( points[i].x + xoffset, points[i].y + yoffset );
-        gpath.AddLineToPoint( points[0].x + xoffset, points[0].y + yoffset );
+            gpath.AddLineToPoint( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
+        gpath.AddLineToPoint( points[0].x * scale + xoffset, points[0].y * scale + yoffset );
 
         pgc->SetPen( GetPen() );
         pgc->SetBrush( GetBrush() );
         pgc->DrawPath( gpath );
 
         for( int i = 0; i < n; i++ )
-            dc->CalcBoundingBox( points[i].x + xoffset, points[i].y + yoffset );
+            dc->CalcBoundingBox( points[i].x * scale + xoffset, points[i].y * scale + yoffset );
     } else
 #endif
         DrawPolygon( n, points, xoffset, yoffset, scale );
