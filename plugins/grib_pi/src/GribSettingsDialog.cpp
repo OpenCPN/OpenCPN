@@ -598,6 +598,9 @@ void GribSettingsDialog::SetSettingsDialogSize()
     h -= (2 * m_sButton->GetSize().GetY()) + dMargin; //height available for the scrolled window
                                                       //two times the button's height to handle pages tab's height
 #endif
+#ifdef __WXGTK__
+    SetMinSize( wxSize( 0, 0 ) );
+#endif
 	for( size_t i = 0; i < m_nSettingsBook->GetPageCount(); i++ ) {						//compute and set scrolled windows size
 		wxScrolledWindow *sc = ((wxScrolledWindow*) m_nSettingsBook->GetPage( i ));
 		sc->SetMinSize( wxSize( 0, 0 ) );
@@ -627,6 +630,12 @@ void GribSettingsDialog::SetSettingsDialogSize()
 
 	Layout();
     Fit();
+#ifdef __WXGTK__
+    wxSize sd = GetSize();
+    if( sd.y == GetClientSize().y ) sd.y += 30;
+    SetSize( wxSize( sd.x, sd.y ) );
+    SetMinSize( wxSize( sd.x, sd.y ) );
+#endif
 	Refresh();
 }
 

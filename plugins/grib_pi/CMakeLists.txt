@@ -106,6 +106,8 @@ SET(SRC_GRIB
             src/TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
+            src/CustomGrid.h
+            src/CustomGrid.cpp
             src/icons.cpp
             src/GribReader.cpp
             src/GribRecord.cpp

@@ -2008,38 +2008,16 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 	fgSizer20->SetFlexibleDirection( wxBOTH );
 	fgSizer20->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
-	m_pGribTable = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxSize( -1,50 ), 0 );
+	m_pGribTable = new CustomGrid( this, wxID_ANY, wxDefaultPosition, wxSize( -1,50 ), 0, _T(" ") );
 
-	// Grid
-	m_pGribTable->CreateGrid( 2, 0 );
-	m_pGribTable->EnableEditing( false );
-	m_pGribTable->EnableGridLines( true );
-	m_pGribTable->EnableDragGridSize( false );
-	m_pGribTable->SetMargins( 0, 0 );
-
-	// Columns
-	m_pGribTable->EnableDragColMove( false );
-	m_pGribTable->EnableDragColSize( false );
-	m_pGribTable->SetColLabelSize( 0 );
-	m_pGribTable->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-
-	// Rows
-	m_pGribTable->EnableDragRowSize( false );
-	m_pGribTable->SetRowLabelSize( 120 );
-	m_pGribTable->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-
-	// Label Appearance
-
-	// Cell Defaults
-	m_pGribTable->SetDefaultCellFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
-	m_pGribTable->SetDefaultCellAlignment( wxALIGN_CENTRE, wxALIGN_TOP );
 	fgSizer20->Add( m_pGribTable, 0, wxALL|wxEXPAND, 5 );
 
 
 	fgSizer18->Add( fgSizer20, 1, wxEXPAND, 5 );
 
-	m_pButtonTable = new wxStdDialogButtonSizer();
-	m_pButtonTableOK = new wxButton( this, wxID_OK );
+	wxStdDialogButtonSizer *m_pButtonTable = new wxStdDialogButtonSizer();
+	m_pButtonTableOK = new wxButton( this, wxID_OK, _("Close") );
+	m_pButtonTableOK->SetFont( GetOCPNGUIScaledFont_PlugIn(_T("Dialog")) );
 	m_pButtonTable->AddButton( m_pButtonTableOK );
 	m_pButtonTable->Realize();
 
@@ -2057,9 +2035,6 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBTableBase::OnClose ) );
-	m_pGribTable->Connect( wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
-	m_pGribTable->Connect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
-	m_pGribTable->Connect( wxEVT_GRID_RANGE_SELECT, wxGridRangeSelectEventHandler( GRIBTableBase::OnRangeClick ), NULL, this );
 	m_pButtonTableOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBTableBase::OnOKButton ), NULL, this );
 }
 
@@ -2067,9 +2042,6 @@ GRIBTableBase::~GRIBTableBase()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBTableBase::OnClose ) );
-	m_pGribTable->Disconnect( wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
-	m_pGribTable->Disconnect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
-	m_pGribTable->Disconnect( wxEVT_GRID_RANGE_SELECT, wxGridRangeSelectEventHandler( GRIBTableBase::OnRangeClick ), NULL, this );
 	m_pButtonTableOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBTableBase::OnOKButton ), NULL, this );
 
 }
