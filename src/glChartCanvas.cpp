@@ -2015,8 +2015,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 // tweak GPS reference point indicator size
                 gps_circle_radius = w / 5;
                 
-                glScalef(scale_factor_x, scale_factor_y, 1);
-                
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0), glVertex2f(-w/2, -h/2);
                 glTexCoord2f(u, 0), glVertex2f(+w/2, -h/2);
