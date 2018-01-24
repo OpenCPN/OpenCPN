@@ -281,6 +281,8 @@ extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern float g_ChartScaleFactorExp;
+extern int g_ShipScaleFactor;
+extern float g_ShipScaleFactorExp;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -4602,6 +4604,20 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifdef __OCPN_ANDROID____
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+
+  m_pSlider_Ship_Factor = new wxSlider(
+      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
+      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+  m_pSlider_Ship_Factor->Hide();
+  miscOptions->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
+                   verticleInputFlags);
+  miscOptions->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
+  m_pSlider_Ship_Factor->Show();
+  
+#ifdef __OCPN_ANDROID____
+  m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
   
   miscOptions->AddSpacer(20);
 }
@@ -5233,7 +5249,7 @@ void options::SetInitialSettings(void) {
   
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
-
+  m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -6259,9 +6275,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
-  g_ChartScaleFactorExp =
-      g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
-
+  g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+  g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
+  g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  
   //  Only reload the icons if user has actually visted the UI page    
   if(m_bVisitLang)    
     pWayPointMan->ReloadAllIcons();

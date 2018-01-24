@@ -133,6 +133,7 @@ extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
 
 extern bool             g_bresponsive;
 extern float            g_ChartScaleFactorExp;
+extern float            g_ShipScaleFactorExp;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -897,9 +898,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     
     scale_factor *= pix_factor;
     
-    float user_scale_factor = g_ChartScaleFactorExp;
-    if( g_ChartScaleFactorExp > 1.0 )
-        user_scale_factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
+    float user_scale_factor = g_ShipScaleFactorExp;
+    if( g_ShipScaleFactorExp > 1.0 )
+        user_scale_factor = (log(g_ShipScaleFactorExp) + 1.0) * 1.2;   // soften the scale factor a bit
         
     scale_factor *= user_scale_factor;
 

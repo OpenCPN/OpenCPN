@@ -360,6 +360,8 @@ bool                      g_config_display_size_manual;
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;
 float                     g_ChartScaleFactorExp;
+int                       g_ShipScaleFactor;
+float                     g_ShipScaleFactorExp;
 
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;

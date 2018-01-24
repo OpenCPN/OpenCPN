@@ -119,6 +119,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 #endif
 
 extern float  g_ChartScaleFactorExp;
+extern float  g_ShipScaleFactorExp;
 
 #include <vector>
 
@@ -3933,8 +3934,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
                 
                 // Prepare COG predictor endpoint icon
             double png_pred_icon_scale_factor = .4;
-            if(g_ChartScaleFactorExp > 1.0)
-                png_pred_icon_scale_factor *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if(g_ShipScaleFactorExp > 1.0)
+                png_pred_icon_scale_factor *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
                 
             wxPoint icon[4];
                 
@@ -3989,8 +3990,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             double nominal_circle_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 5.0)));    // not less than 4 pixel
             
             // Scale the circle to ChartScaleFactor, slightly softened....
-            if(g_ChartScaleFactorExp > 1.0)
-                nominal_circle_size_pixels *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if(g_ShipScaleFactorExp > 1.0)
+                nominal_circle_size_pixels *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
             
             dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, nominal_circle_size_pixels/2 );
         }
@@ -4254,9 +4255,9 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 
                 wxBitmap os_bm( rot_image );
                 
-                if(g_ChartScaleFactorExp > 1){
+                if(g_ShipScaleFactorExp > 1){
                     wxImage scaled_image = os_bm.ConvertToImage();
-                    double factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+                    double factor = (log(g_ShipScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
                     os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * factor,
                                                         scaled_image.GetHeight() * factor,
                                                         wxIMAGE_QUALITY_HIGH));

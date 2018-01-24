@@ -176,6 +176,7 @@ extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
 extern float            g_ChartScaleFactorExp;
+extern float            g_ShipScaleFactorExp;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -1846,7 +1847,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     
         if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
         {
-            float scale =  g_ChartScaleFactorExp;
+            float scale =  g_ShipScaleFactorExp;
         
             const int v = 12;
             // start with cross
@@ -1986,9 +1987,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         
             // Scale the generic icon to ChartScaleFactor, slightly softened....
-            if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
-                scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
-                scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if((g_ShipScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
+                scale_factor_x = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
+                scale_factor_y = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
             }
         
         // Set the size of the little circle showing the GPS reference position
