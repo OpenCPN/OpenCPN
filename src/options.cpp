@@ -901,6 +901,7 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
 EVT_CLOSE(options::OnClose)
 
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -1026,6 +1027,7 @@ void options::Init(void) {
 
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
+  m_textSample = NULL;
   m_topImgList = NULL;
 
   m_pListbook = NULL;
@@ -4483,6 +4485,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                    wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(itemFontColorButton, 0, wxALL, border_size);
 #endif
+  m_textSample = new wxStaticText(itemPanelFont, wxID_ANY, _("Sample"), wxDefaultPosition, wxDefaultSize, 0);
+  itemFontStaticBoxSizer->Add(m_textSample, 0, wxALL, border_size);
+  wxCommandEvent e;
+  OnFontChoice(e);
+
   wxStaticBox* itemStyleStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Toolbar and Window Style"));
   wxStaticBoxSizer* itemStyleStaticBoxSizer =
@@ -6901,6 +6908,18 @@ void options::OnClose(wxCloseEvent& event) {
   EndModal(0);
 }
 
+void options::OnFontChoice(wxCommandEvent& event) {
+    wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+
+    wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
+    wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
+
+    m_textSample->SetFont(*pif);
+    m_textSample->SetForegroundColour(init_color);
+    m_itemBoxSizerFontPanel->Layout();
+    event.Skip();
+}
+
 void options::OnChooseFont(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
@@ -6950,6 +6969,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
     pParent->UpdateAllFonts();
     m_bfontChanged = true;
+    OnFontChoice(event);
   }
 
   event.Skip();
