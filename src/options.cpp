@@ -89,6 +89,12 @@ extern GLuint g_raster_format;
 
 #include "OCPNPlatform.h"
 
+#if !defined(__WXOSX__) || wxCHECK_VERSION(3, 1, 0) 
+#define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
+#else
+#define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS
+#endif
+
 wxString GetOCPNKnownLanguage(const wxString lang_canonical,
                               wxString& lang_dir);
 wxString GetOCPNKnownLanguage(const wxString lang_canonical);
@@ -2901,7 +2907,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                          _("Chart Zoom/Scale Weighting")), 0, wxEXPAND);
     m_pSlider_Zoom = new wxSlider(
         m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3021,7 +3027,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     // Chart Zoom Scale Weighting
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3031,7 +3037,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
     
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3322,7 +3328,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_pSlider_CM93_Zoom = new wxSlider(
         ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
         CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -3534,7 +3540,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_pSlider_CM93_Zoom = new wxSlider(
         ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
         CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -4579,7 +4585,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   m_pSlider_GUI_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+      wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_GUI_Factor->Hide();
   miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
@@ -4593,7 +4599,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   m_pSlider_Chart_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+      wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
   miscOptions->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
@@ -4607,7 +4613,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   m_pSlider_Ship_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+      wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_Ship_Factor->Hide();
   miscOptions->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
