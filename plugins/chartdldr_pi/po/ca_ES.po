@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:13-0500\n"
-"PO-Revision-Date: 2017-01-27 16:13-0500\n"
+"POT-Creation-Date: 2018-01-24 10:24-0500\n"
+"PO-Revision-Date: 2018-01-24 19:39-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Catalan\n"
 "Language: ca_ES\n"
@@ -15,395 +15,468 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ca\n"
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
-#
-#, c-format
-msgid ""
-"%d out of %d charts failed to download.\n"
-"Check the list, verify there is a working Internet connection and repeat the "
-"operation if needed."
-msgstr ""
-"%d cartes de %d no s'han descarregat.\n"
-" Comprova la llista, verifica que la connexió a Internet funciona i repeteix "
-"la operació si fa falta."
-#
-#, c-format
-msgid "%lu charts total, %lu updated, %lu new"
-msgstr "%lu cartes totals, %lu actualitzades, %lu noves"
-#
-#, c-format
-msgid "%s"
-msgstr ""
-#
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "El Catàleg no és vàlid."
+
+#: src/chartcatalog.cpp:560
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr "%s (%s a %s), milles de riu %3.1f - %3.1f"
-#
+
+#: src/chartcatalog.cpp:567
 #, c-format
-msgid "%u charts total, %u updated, %u new"
-msgstr "%u cartes totals, %u actualitzades, %u noves"
-#
-msgid "(Please update first)"
-msgstr "(Sisplau, actualitza primer)"
-#
-msgid "0 (transfer completed)"
-msgstr "0 (transferència completada)"
-#
-msgid "0 (transfer paused)"
-msgstr "0 (transferència en pausa)"
-#
-msgid "Abort"
-msgstr "Avorta"
-#
-msgid "Abort download"
-msgstr "Abandonar descàrrega"
-#
-msgid "Add"
-msgstr "Afegir"
-#
-msgid "Add a new chart catalog."
-msgstr "Afegir un nou catàleg de cartes."
-#
-msgid "After catalog update select for download"
-msgstr "Després escollir i actualitzar un catàleg per descarregar"
-#
-msgid "All new charts"
-msgstr "Totes les cartes noves"
-#
-msgid "All updated charts"
-msgstr "Totes les cartes actualitzades"
-#
-msgid "Allow bulk update of all configured chart sources and charts"
+msgid "%s"
 msgstr ""
-"Permet l'actualització en bloc de les fonts de cartes i cartes configurades"
-#
-msgid "Catalog"
-msgstr "Catàleg"
-#
-msgid "Catalog is not valid."
-msgstr "El Catàleg no és vàlid."
-#
-msgid "Catalogs"
-msgstr "Catàlegs"
-#
-msgid "Chart Directory"
-msgstr "Directori de Cartes"
-#
-msgid "Chart Downloader"
-msgstr "Descarregador de Cartes"
-#
-msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "Connector de Descàrrega de Cartes per a OpenCPN"
-#
-msgid ""
-"Chart Downloader PlugIn for OpenCPN\n"
-"Manages chart downloads and updates from sources supporting\n"
-"NOAA Chart Catalog format"
-msgstr ""
-"el Connector de Descàrrega de Cartes per a OpenCPN\n"
-"Gestiona els mapes de descàrrega i les actualitzacions de\n"
-"format de Catàlegs de Cartes NOAA"
-#
-msgid "Chart Downloader Preferences"
-msgstr "Preferències de Descàrrega de Cartes"
-#
-msgid "Chart source definition problem"
-msgstr "Problema de definició a la font de les cartes"
-#
+
+#: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"
 msgstr "DescarregadorCartes"
-#
-msgid "Charts"
-msgstr "Cartes"
-#
-msgid "Choose Chart File Directory"
-msgstr "Escollir el directori d'arxius de cartes"
-#
-msgid "Close"
-msgstr "Tancar"
-#
-msgid "Connection settings"
-msgstr "Paràmetres de connexió"
-#
-msgid "Connection settings used for the transfer:"
-msgstr "Ajustos de connexió utilitzats per a la transferència:"
-#
-msgid "Custom"
-msgstr "Personalitzat"
-#
-msgid "Default Path to Charts"
-msgstr "Camí per defecte a les Cartes"
-#
-msgid "Delete"
-msgstr "Esborrar"
-#
-msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr ""
-"Suprimeix el catàleg de cartes. No es suprimiran les cartes descarregades."
-#
+
+#: src/chartdldr_pi.cpp:248
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "Connector de Descàrrega de Cartes per a OpenCPN"
+
+#: src/chartdldr_pi.cpp:253
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "el Connector de Descàrrega de Cartes per a OpenCPN\n"
+"Gestiona els mapes de descàrrega i les actualitzacions de\n"
+"format de Catàlegs de Cartes NOAA"
+
+#: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
+#: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
+#: src/chartdldr_pi.cpp:829 src/chartdldr_pi.cpp:835 src/chartdldr_pi.cpp:1018
+#: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
+#: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
+msgid "Chart Downloader"
+msgstr "Descarregador de Cartes"
+
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
+msgid "Select all"
+msgstr "Selecciona-ho tot"
+
+#: src/chartdldr_pi.cpp:439 src/chartdldr_pi.cpp:458
 msgid "Deselect all"
 msgstr "Desselecciona-ho tot"
-#
+
+#: src/chartdldr_pi.cpp:443 src/chartdldr_pi.cpp:459
+msgid "Invert selection"
+msgstr "Inverteix selecció"
+
+#: src/chartdldr_pi.cpp:447 src/chartdldr_pi.cpp:460
+msgid "Select updated"
+msgstr "Selecciona les actualitzades"
+
+#: src/chartdldr_pi.cpp:451 src/chartdldr_pi.cpp:461
+msgid "Select new"
+msgstr "Selecciona les noves"
+
+#: src/chartdldr_pi.cpp:569
+msgid "New"
+msgstr "Noves"
+
+#: src/chartdldr_pi.cpp:578
+msgid "Update available"
+msgstr "Actualització disponible"
+
+#: src/chartdldr_pi.cpp:584
+msgid "Up to date"
+msgstr "Al dia"
+
+#: src/chartdldr_pi.cpp:591
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr "%lu cartes totals, %lu actualitzades, %lu noves"
+
+#: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
+msgid "(Please update first)"
+msgstr "(Sisplau, actualitza primer)"
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr "Error, l'enllaç a la font de cartes sembla erroni."
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747 src/chartdldr_pi.cpp:1029
+msgid "Error"
+msgstr "Error"
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download all new and updated charts.\n"
+"This may take a long time."
+msgstr "Has escollit actualitzar tots els catàlegs de cartes.\n"
+" Es descarregaran totes les cartes noves i actualitzades.\n"
+" Això pot durar força estona."
+
+#: src/chartdldr_pi.cpp:705
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only new (but not updated) charts.\n"
+"This may take a long time."
+msgstr "Has escollit actualitzar tots els catàlegs de cartes.\n"
+" Es descarregaran només les cartes noves (però no les actualitzades).\n"
+" Això pot durar força estona."
+
+#: src/chartdldr_pi.cpp:711
+msgid "You have chosen to update all chart catalogs.\n"
+"Then download only updated (but not new) charts.\n"
+"This may take a long time."
+msgstr "Has escollit actualitzar tots els catàlegs de cartes.\n"
+" Es descarregaran només les cartes actualitzades (però no les )noves.\n"
+" Això pot durar força estona."
+
+#: src/chartdldr_pi.cpp:729 src/chartdldr_pi.cpp:1092
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr "%d cartes de %d no s'han descarregat.\n"
+" Comprova la llista, verifica que la connexió a Internet funciona i repeteix la operació si fa falta."
+
+#: src/chartdldr_pi.cpp:765 src/chartdldr_pi.cpp:1914 src/chartdldr_pi.cpp:1937
 #, c-format
 msgid "Directory %s can't be created."
 msgstr "No es pot crear el directori  %s."
-#
-msgid ""
-"Do you really want to remove the chart source?\n"
-"The local chart files will not be removed, but you will not be able to update "
-"the charts anymore."
-msgstr ""
-"Segur que voleu eliminar la font de les cartes? \n"
-"Els fitxerss de cartes locals no se suprimiran, però ja no podreu actualitzar "
-"les llistes ."
-#
-msgid ""
-"Download\n"
-" selected charts"
-msgstr ""
-"Descarregar\n"
-" cartes seleccionades"
-#
-msgid "Download selected charts"
-msgstr "Descarregar cartes seleccionades"
-#
-msgid "Download the current chart catalog and update the data."
-msgstr "Descarregar el catàleg de cartes actual i actualitzar les dades."
-#
-msgid "Downloaded:"
-msgstr "Descarregat:"
-#
-#, c-format
-msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr "Descarregar carta %u de %u, descàrregues %u ha fallat (%s / %s)"
-#
+
+#: src/chartdldr_pi.cpp:801
 msgid "Downloading file"
 msgstr "Descarregant fitxer"
-#
-msgid "Edit Chart Source"
-msgstr "Editar la Font de les Cartes"
-#
-msgid "Edit..."
-msgstr "Editar..."
-#
-msgid "Elapsed time:"
-msgstr "Temps transcorregut:"
-#
-msgid "Error"
-msgstr "Error"
-#
-#, c-format
-msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr "Error, la URL de les dades del gràfic (%s) sembla errònia."
-#
-msgid "Error, the URL to the chart source data seems wrong."
-msgstr "Error, l'enllaç a la font de cartes sembla erroni."
-#
-msgid "Estimated remaining time:"
-msgstr "Temps restant estimat:"
-#
-msgid "Estimated total time:"
-msgstr "Temps total estimat:"
-#
-#, c-format
-msgid ""
-"Failed to Download Catalog: %s \n"
-"Verify there is a working Internet connection."
-msgstr ""
-"Error en descarregar el catàleg: %s \n"
-"Verifica que la connexió a Internet funciona."
-#
+
+#: src/chartdldr_pi.cpp:802
+msgid "Reading Headers: "
+msgstr "Llegint encapçalaments: "
+
+#: src/chartdldr_pi.cpp:828
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr "No es pot trobar el catàleg nou: %s "
-#
-msgid "Help"
-msgstr "Ajuda"
-#
-msgid "Invert selection"
-msgstr "Inverteix selecció"
-#
-msgid "Latest"
-msgstr "El darrer"
-#
-msgid "Local path"
-msgstr "Camí local"
-#
-msgid "Name"
-msgstr "Nom"
-#
-msgid "New"
-msgstr "Noves"
-#
-msgid "New chart source"
-msgstr "Font nova de cartes"
-#
+
+#: src/chartdldr_pi.cpp:834
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "Error en descarregar el catàleg: %s \n"
+"Verifica que la connexió a Internet funciona."
+
+#: src/chartdldr_pi.cpp:985 src/chartdldr_pi.cpp:991
 msgid "No charts selected for download."
 msgstr "No hi ha gràfics seleccionats per descarregar."
-#
-msgid "Not available"
-msgstr "No està disponible"
-#
-msgid "Password:"
-msgstr "contrasenya:"
-#
-#, c-format
-msgid ""
-"Path %s seems not to be covered by your configured Chart Directories.\n"
-"To see the charts you have to adjust the configuration on the 'Chart Files' "
-"tab."
-msgstr ""
-"El camí %sno sembla correspondre's a la vostra configuració dels Directoris "
-"de cartes.\n"
-"Per veure les cartes cal ajustar la configuració a la pestanya 'Fitxers de "
-"Cartes'."
-#
-msgid "Pause"
-msgstr "Pausa"
-#
-msgid "Port:"
-msgstr "Port:"
-#
-msgid "Predefined"
-msgstr "Predefinit"
-#
-msgid "Preferences"
-msgstr "Preferències"
-#
-msgid "Proxy host:"
-msgstr "Servidor proxy:"
-#
-msgid "Proxy password:"
-msgstr "Contrasenya de proxy:"
-#
-msgid "Proxy port:"
-msgstr "Port del servidor intermediari:"
-#
-msgid "Proxy settings"
-msgstr "Configuració del proxy"
-#
-msgid "Proxy username:"
-msgstr "Nom d'usuari proxy:"
-#
-msgid "Reading Headers: "
-msgstr "Llegint encapçalaments: "
-#
-msgid "Released"
-msgstr "Publicat"
-#
-msgid "Resume"
-msgstr "Reprendre"
-#
-msgid "Select a folder"
-msgstr "Selecciona carpeta"
-#
-msgid "Select all"
-msgstr "Selecciona-ho tot"
-#
-msgid "Select new"
-msgstr "Selecciona les noves"
-#
-msgid "Select updated"
-msgstr "Selecciona les actualitzades"
-#
-msgid "Settings"
-msgstr "Ajustaments"
-#
-msgid "Show local files"
-msgstr "Mostra els fitxers locals"
-#
-msgid "Speed:"
-msgstr "Velocitat:"
-#
-msgid "Start"
-msgstr "Iniciar"
-#
-msgid "Status"
-msgstr "Estat"
-#
-msgid "The chart source must have a name.\n"
-msgstr "La font de carta ha de tenir un nom.\n"
-#
-msgid "The chart source must have a valid URL.\n"
-msgstr "La font de carta ha de tenir una adreça URL vàlida.\n"
-#
-#, c-format
-msgid ""
-"The selected chart '%s' can't be downloaded automatically, do you want me to "
-"open a browser window and download them manually?\n"
-"\n"
-" After downloading the charts, please extract them to %s"
-msgstr ""
-"El gràfic seleccionat \"%s\" no pot ser descarregat automàticament. Voleu que "
-"obri una nova finestra de navegador i descarregar-los manualment? \n"
-"\n"
-" després de descarregar els gràfics, si us plau, extraieu-los a %s"
-#
-msgid "Title"
-msgstr "Títol"
-#
-msgid "URL"
-msgstr "URL"
-#
-msgid "URL:"
-msgstr "URL:"
-#
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Abort download"
+msgstr "Abandonar descàrrega"
+
+#: src/chartdldr_pi.cpp:1010
 msgid "Unknown"
 msgstr "Desconegut"
-#
-msgid "Up to date"
-msgstr "Al dia"
-#
-msgid "Update"
-msgstr "Actualització"
-#
-msgid "Update All"
-msgstr "Actualitza tot"
-#
-msgid "Update available"
-msgstr "Actualització disponible"
-#
-msgid "Uploaded:"
-msgstr "Pujat:"
-#
-msgid "Use proxy"
-msgstr "Utilitzar el proxy"
-#
-msgid "Username:"
-msgstr "Nom d'usuari/a:"
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
-"Then download all new and updated charts.\n"
-"This may take a long time."
-msgstr ""
-"Has escollit actualitzar tots els catàlegs de cartes.\n"
-" Es descarregaran totes les cartes noves i actualitzades.\n"
-" Això pot durar força estona."
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
-"Then download only new (but not updated) charts.\n"
-"This may take a long time."
-msgstr ""
-"Has escollit actualitzar tots els catàlegs de cartes.\n"
-" Es descarregaran només les cartes noves (però no les actualitzades).\n"
-" Això pot durar força estona."
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
-"Then download only updated (but not new) charts.\n"
-"This may take a long time."
-msgstr ""
-"Has escollit actualitzar tots els catàlegs de cartes.\n"
-" Es descarregaran només les cartes actualitzades (però no les )noves.\n"
-" Això pot durar força estona."
-#
+
+#: src/chartdldr_pi.cpp:1017
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr "El gràfic seleccionat \"%s\" no pot ser descarregat automàticament. Voleu que obri una nova finestra de navegador i descarregar-los manualment? \n\n"
+" després de descarregar els gràfics, si us plau, extraieu-los a %s"
+
+#: src/chartdldr_pi.cpp:1029
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "Error, la URL de les dades del gràfic (%s) sembla errònia."
+
+#: src/chartdldr_pi.cpp:1055
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "Descarregar carta %u de %u, descàrregues %u ha fallat (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
+msgid "Download\n"
+" selected charts"
+msgstr "Descarregar\n"
+" cartes seleccionades"
+
+#: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
+msgid "Download selected charts"
+msgstr "Descarregar cartes seleccionades"
+
+#: src/chartdldr_pi.cpp:1117 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Catàleg"
+
+#: src/chartdldr_pi.cpp:1118
+msgid "Released"
+msgstr "Publicat"
+
+#: src/chartdldr_pi.cpp:1119
+msgid "Local path"
+msgstr "Camí local"
+
+#: src/chartdldr_pi.cpp:1123
+msgid "Title"
+msgstr "Títol"
+
+#: src/chartdldr_pi.cpp:1124
+msgid "Status"
+msgstr "Estat"
+
+#: src/chartdldr_pi.cpp:1125
+msgid "Latest"
+msgstr "El darrer"
+
+#: src/chartdldr_pi.cpp:1168
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "Segur que voleu eliminar la font de les cartes? \n"
+"Els fitxerss de cartes locals no se suprimiran, però ja no podreu actualitzar les llistes ."
+
+#: src/chartdldr_pi.cpp:1232
+msgid "Edit Chart Source"
+msgstr "Editar la Font de les Cartes"
+
+#: src/chartdldr_pi.cpp:1271
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "El camí %sno sembla correspondre's a la vostra configuració dels Directoris de cartes.\n"
+"Per veure les cartes cal ajustar la configuració a la pestanya 'Fitxers de Cartes'."
+
+#: src/chartdldr_pi.cpp:1899 src/chartdldr_pi.cpp:1902
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "Heu de seleccionar una de les fonts de cartes predefinides o crear-ne una pròpia.\n"
+
+#: src/chartdldr_pi.cpp:1905
+msgid "The chart source must have a name.\n"
+msgstr "La font de carta ha de tenir un nom.\n"
+
+#: src/chartdldr_pi.cpp:1908
+msgid "The chart source must have a valid URL.\n"
+msgstr "La font de carta ha de tenir una adreça URL vàlida.\n"
+
+#: src/chartdldr_pi.cpp:1910
 msgid "You must select a local folder to store the charts.\n"
 msgstr "Heu de seleccionar una carpeta local per emmagatzemar les cartes.\n"
-#
-msgid ""
-"You must select one of the predefined chart sources or create one of your "
-"own.\n"
-msgstr ""
-"Heu de seleccionar una de les fonts de cartes predefinides o crear-ne una "
-"pròpia.\n"
+
+#: src/chartdldr_pi.cpp:1917
+msgid "Chart source definition problem"
+msgstr "Problema de definició a la font de les cartes"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Predefinit"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Nom"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Personalitzat"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Directori de Cartes"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
+msgid "Select a folder"
+msgstr "Selecciona carpeta"
+
+#: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
+msgid "Choose Chart File Directory"
+msgstr "Escollir el directori d'arxius de cartes"
+
+#: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
+msgid "Catalogs"
+msgstr "Catàlegs"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add"
+msgstr "Afegir"
+
+#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
+msgid "Add a new chart catalog."
+msgstr "Afegir un nou catàleg de cartes."
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete"
+msgstr "Esborrar"
+
+#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "Suprimeix el catàleg de cartes. No es suprimiran les cartes descarregades."
+
+#: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
+msgid "Edit..."
+msgstr "Editar..."
+
+#: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
+msgid "Update"
+msgstr "Actualització"
+
+#: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
+msgid "Download the current chart catalog and update the data."
+msgstr "Descarregar el catàleg de cartes actual i actualitzar les dades."
+
+#: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
+msgid "Update All"
+msgstr "Actualitza tot"
+
+#: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
+msgid "Charts"
+msgstr "Cartes"
+
+#: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
+msgid "Help"
+msgstr "Ajuda"
+
+#: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
+msgid "Show local files"
+msgstr "Mostra els fitxers locals"
+
+#: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u cartes totals, %u actualitzades, %u noves"
+
+#: src/chartdldrgui.cpp:464
+msgid "Default Path to Charts"
+msgstr "Camí per defecte a les Cartes"
+
+#: src/chartdldrgui.cpp:480
+msgid "Preferences"
+msgstr "Preferències"
+
+#: src/chartdldrgui.cpp:484
+msgid "After catalog update select for download"
+msgstr "Després escollir i actualitzar un catàleg per descarregar"
+
+#: src/chartdldrgui.cpp:488
+msgid "All updated charts"
+msgstr "Totes les cartes actualitzades"
+
+#: src/chartdldrgui.cpp:492
+msgid "All new charts"
+msgstr "Totes les cartes noves"
+
+#: src/chartdldrgui.cpp:498
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Permet l'actualització en bloc de les fonts de cartes i cartes configurades"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Font nova de cartes"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Preferències de Descàrrega de Cartes"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "No està disponible"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "Velocitat:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Temps transcorregut:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Temps total estimat:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Temps restant estimat:"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "Avorta"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "Ajustaments"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "Pausa"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "Iniciar"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "Tancar"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "Reprendre"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (transferència en pausa)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "Paràmetres de connexió"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "Ajustos de connexió utilitzats per a la transferència:"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (transferència completada)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "Descarregat:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "Pujat:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "Nom d'usuari/a:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "contrasenya:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "Port:"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Configuració del proxy"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "Utilitzar el proxy"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Servidor proxy:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Nom d'usuari proxy:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Contrasenya de proxy:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Port del servidor intermediari:"
+

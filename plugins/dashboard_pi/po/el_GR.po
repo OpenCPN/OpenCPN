@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:12-0500\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-24 19:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -15,330 +15,440 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: el\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
-#
-msgid " mag"
-msgstr " μαγν."
-#
+
+#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
+#: src/wind_history.cpp:433
+msgid "N"
+msgstr "Β"
+
+#: src/dashboard_pi.cpp:105
+msgid "Position"
+msgstr "Θέση"
+
+#: src/dashboard_pi.cpp:107
+msgid "SOG"
+msgstr "SOG (αληθής ταχύτητα)"
+
+#: src/dashboard_pi.cpp:109
+msgid "Speedometer"
+msgstr "Δρομόμετρο"
+
+#: src/dashboard_pi.cpp:111
+msgid "COG"
+msgstr "COG (αληθής πορεία)"
+
+#: src/dashboard_pi.cpp:113
+msgid "Mag COG"
+msgstr "Μαγν. COG"
+
+#: src/dashboard_pi.cpp:115
+msgid "GPS Compass"
+msgstr "Πυξίδα GPS"
+
+#: src/dashboard_pi.cpp:117
+msgid "True Compass"
+msgstr "Αληθής πυξίδα"
+
+#: src/dashboard_pi.cpp:119
+msgid "STW"
+msgstr "Φαινόμενη ταχύτητα (δρομομέτρου)"
+
+#: src/dashboard_pi.cpp:121
+msgid "True HDG"
+msgstr "Αληθής κατεύθυνση"
+
+#: src/dashboard_pi.cpp:123
+msgid "Mag HDG"
+msgstr "Μαγνητική κατ. πορείας"
+
+#: src/dashboard_pi.cpp:126
+msgid "App. Wind Angle & Speed"
+msgstr "Γωνία/ταχύτητα φαιν. ανέμου"
+
+#: src/dashboard_pi.cpp:128
+msgid "App & True Wind Angle"
+msgstr "Φαιν. & πραγμ. γωνία ανέμου"
+
+#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
+msgid "App. Wind Speed"
+msgstr "Ταχύτητα φαιν. ανέμου"
+
+#: src/dashboard_pi.cpp:134
+msgid "True Wind Angle & Speed"
+msgstr "Γωνία/ταχύτητα πραγμ. ανέμου"
+
+#: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
+msgid "Depth"
+msgstr "Βάθος"
+
+#: src/dashboard_pi.cpp:140 src/dashboard_pi.cpp:142
+msgid "Barometric pressure"
+msgstr "Βαρομετρική πίεση"
+
+#: src/dashboard_pi.cpp:144
+msgid "Water Temp."
+msgstr "Θερμ/σία νερού"
+
+#: src/dashboard_pi.cpp:146
+msgid "Air Temp."
+msgstr "Θερμ/σία αέρος"
+
+#: src/dashboard_pi.cpp:148
+msgid "App. Wind Angle"
+msgstr "Γωνία φαιν. ανέμου"
+
+#: src/dashboard_pi.cpp:150
+msgid "True Wind Angle"
+msgstr "Γωνία πραγμ. ανέμου"
+
+#: src/dashboard_pi.cpp:152
+msgid "True Wind Direction"
+msgstr "Κατεύθυνση πραγμ. ανέμου"
+
+#: src/dashboard_pi.cpp:154
+msgid "True Wind Speed"
+msgstr "Ταχύτητα πραγμ. ανέμου"
+
+#: src/dashboard_pi.cpp:156
+msgid "True Wind Dir. & Speed"
+msgstr "Κατεύθυνση/ταχύτητα πραγμ. ανέμου"
+
+#: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
+msgid "VMG"
+msgstr "VMG (ταχύτητα στη σωστή κατεύθυνση)"
+
+#: src/dashboard_pi.cpp:162 src/dashboard_pi.cpp:164
+msgid "Rudder Angle"
+msgstr "Γωνία πηδαλίου"
+
+#: src/dashboard_pi.cpp:166
+msgid "GPS in View"
+msgstr "Εμφάνιση GPS"
+
+#: src/dashboard_pi.cpp:168
+msgid "GPS Status"
+msgstr "Κατάσταση GPS"
+
+#: src/dashboard_pi.cpp:170
+msgid "Cursor"
+msgstr "Κέρσορας"
+
+#: src/dashboard_pi.cpp:172
+msgid "GPS Clock"
+msgstr "Ρολόι GPS"
+
+#: src/dashboard_pi.cpp:174
+msgid "Sunrise/Sunset"
+msgstr "Ανατολή/δύση ηλίου"
+
+#: src/dashboard_pi.cpp:176
+msgid "Moon phase"
+msgstr "Φάση σελήνης"
+
+#: src/dashboard_pi.cpp:178
+msgid "Wind history"
+msgstr "Ιστορικό Ανέμου"
+
+#: src/dashboard_pi.cpp:180
+msgid "Barometric history"
+msgstr "Ιστορικό πιέσεων"
+
+#: src/dashboard_pi.cpp:182
+msgid "Trip Log"
+msgstr "Ημερολ. ταξιδιού"
+
+#: src/dashboard_pi.cpp:184
+msgid "Sum Log"
+msgstr "Αθροιστικό Log"
+
+#: src/dashboard_pi.cpp:186
+msgid "From Ownship"
+msgstr "Από ίδιον πλοίο"
+
+#: src/dashboard_pi.cpp:188
+msgid "Pitch"
+msgstr "Κούνημα"
+
+#: src/dashboard_pi.cpp:190
+msgid "Heel"
+msgstr "Γέρσιμο"
+
+#: src/dashboard_pi.cpp:192
+msgid "Local GPS Clock"
+msgstr "Τοπική ώρα GPS"
+
+#: src/dashboard_pi.cpp:194
+msgid "Local CPU Clock"
+msgstr "Τοπική ώρα CPU"
+
+#: src/dashboard_pi.cpp:196
+msgid "Local Sunrise/Sunset"
+msgstr "Τοπική ώρα ανατολής/δύσης ήλιου"
+
+#: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
+#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
+#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
+msgid "Dashboard"
+msgstr "Πίνακας Οργάνων"
+
+#: src/dashboard_pi.cpp:508
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Πίνακας οργάνων για το OpenCPN"
+
+#: src/dashboard_pi.cpp:513
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Πρόσθετο «Πίνακας Οργάνων»\n"
+"Παρουσιάζει τα ναυτικά όργανα στην οθόνη από πηγή NMEA."
+
+#: src/dashboard_pi.cpp:1635
+msgid "Dashboard preferences"
+msgstr "Επιλογές για πίνακα οργάνων"
+
+#: src/dashboard_pi.cpp:1705
+msgid "show this dashboard"
+msgstr "Εμφάνιση αυτού του πίνακα οργάνων"
+
+#: src/dashboard_pi.cpp:1711
+msgid "Caption:"
+msgstr "Λεζάντα:"
+
+#: src/dashboard_pi.cpp:1719
+msgid "Orientation:"
+msgstr "Προσανατολισμός:"
+
+#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
+msgid "Vertical"
+msgstr "Κατακόρυφα"
+
+#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
+msgid "Horizontal"
+msgstr "Οριζόντια"
+
+#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
+#: src/dashboard_pi.cpp:2116
+msgid "Instruments"
+msgstr "Όργανα"
+
+#: src/dashboard_pi.cpp:1747
+msgid "Add"
+msgstr "Προσθήκη"
+
+#: src/dashboard_pi.cpp:1760
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#: src/dashboard_pi.cpp:1766
+msgid "Up"
+msgstr "Πάνω"
+
+#: src/dashboard_pi.cpp:1771
+msgid "Down"
+msgstr "Κάτω"
+
+#: src/dashboard_pi.cpp:1781
+msgid "Appearance"
+msgstr "Εμφάνιση"
+
+#: src/dashboard_pi.cpp:1783
+msgid "Fonts"
+msgstr "Γραμματοσειρές"
+
+#: src/dashboard_pi.cpp:1789
+msgid "Title:"
+msgstr "Τίτλος:"
+
+#: src/dashboard_pi.cpp:1795
+msgid "Data:"
+msgstr "Δεδομένα: "
+
+#: src/dashboard_pi.cpp:1801
+msgid "Label:"
+msgstr "Ετικέτα:"
+
+#: src/dashboard_pi.cpp:1807
+msgid "Small:"
+msgstr "Μικρό:"
+
+#: src/dashboard_pi.cpp:1815
+msgid "Units, Ranges, Formats"
+msgstr "Μονάδες, Όρια, Μορφή"
+
+#: src/dashboard_pi.cpp:1821
+msgid "Speedometer max value:"
+msgstr "Μέγ. τιμή δρομομέτρου:"
+
+#: src/dashboard_pi.cpp:1827
+msgid "Speed Over Ground Damping Factor:"
+msgstr "Συντ. απόσβεσης SOG:"
+
+#: src/dashboard_pi.cpp:1833
+msgid "COG Damping Factor:"
+msgstr "Συντελεστής απόσβεσης COG:"
+
+#: src/dashboard_pi.cpp:1839
+msgid "Local Time Offset From UTC:"
+msgstr "Διαφορά τοπικής ώρας από UTC:"
+
+#: src/dashboard_pi.cpp:1858
+msgid "Boat speed units:"
+msgstr "Μονάδες ταχύτητας πλοίου:"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
+msgid "Honor OpenCPN settings"
+msgstr "Προεπιλεγμένες ρυθμίσεις"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "Kts"
+msgstr "κόμβοι"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "mph"
+msgstr "μ.α.ώ."
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "km/h"
+msgstr "km/h"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "m/s"
+msgstr "m/s"
+
+#: src/dashboard_pi.cpp:1867
+msgid "Depth units:"
+msgstr " Βαθυμετρικές μονάδες: "
+
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
+msgid "Meters"
+msgstr "μέτρα"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Feet"
+msgstr "Πόδια"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Fathoms"
+msgstr "Οργιές"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Centimeters"
+msgstr "﻿Εκατοστά"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Inches"
+msgstr "ίντσες"
+
+#: src/dashboard_pi.cpp:1876
+msgid "Distance units:"
+msgstr "Μονάδες απόστασης:"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Nautical miles"
+msgstr "Ναυτικά μίλια"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Statute miles"
+msgstr "Αγγλικά μίλια"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Kilometers"
+msgstr "Χιλιόμετρα"
+
+#: src/dashboard_pi.cpp:1885
+msgid "Wind speed units:"
+msgstr "Μονάδες ταχύτητας ανέμου:"
+
+#: src/dashboard_pi.cpp:2099
+msgid "Add instrument"
+msgstr "Προσθήκη οργάνου"
+
+#: src/dashboard_pi.cpp:2105
+msgid "Select instrument to add:"
+msgstr "Διάλεξε όργανο για προσθήκη:"
+
+#: src/dashboard_pi.cpp:2199
+msgid "Preferences..."
+msgstr "Προτιμήσεις..."
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
+msgid "NE"
+msgstr "ΒΑ"
+
+#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
+msgid "E"
+msgstr "Α"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
+msgid "SE"
+msgstr "ΝΑ"
+
+#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
+msgid "S"
+msgstr "Ν"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
+msgid "SW"
+msgstr "ΝΔ"
+
+#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
+msgid "W"
+msgstr "Δ"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
+msgid "NW"
+msgstr "ΒΔ"
+
+#: src/instrument.cpp:236
 msgid " true"
 msgstr " αληθής"
-#
+
+#: src/instrument.cpp:238
+msgid " mag"
+msgstr " μαγν."
+
+#: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
 msgstr "--"
-#
+
+#: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
 msgstr "--- %s"
-#
-msgid "Add"
-msgstr "Προσθήκη"
-#
-msgid "Add instrument"
-msgstr "Προσθήκη οργάνου"
-#
-msgid "Air Temp."
-msgstr "Θερμ/σία αέρος"
-#
-msgid "App & True Wind Angle"
-msgstr "Φαιν. & πραγμ. γωνία ανέμου"
-#
-msgid "App. Wind Angle"
-msgstr "Γωνία φαιν. ανέμου"
-#
-msgid "App. Wind Angle & Speed"
-msgstr "Γωνία/ταχύτητα φαιν. ανέμου"
-#
-msgid "App. Wind Speed"
-msgstr "Ταχύτητα φαιν. ανέμου"
-#
-msgid "Appearance"
-msgstr "Εμφάνιση"
-#
-msgid "Barometric history"
-msgstr "Ιστορικό πιέσεων"
-#
-msgid "Barometric pressure"
-msgstr "Βαρομετρική πίεση"
-#
-msgid "Boat speed units:"
-msgstr "Μονάδες ταχύτητας πλοίου:"
-#
-msgid "COG"
-msgstr "COG (αληθής πορεία)"
-#
-msgid "COG Damping Factor:"
-msgstr "Συντελεστής απόσβεσης COG:"
-#
-msgid "Caption:"
-msgstr "Λεζάντα:"
-#
-msgid "Centimeters"
-msgstr "﻿Εκατοστά"
-#
-msgid "Cursor"
-msgstr "Κέρσορας"
-#
-msgid "Dashboard"
-msgstr "Πίνακας Οργάνων"
-#
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Πίνακας οργάνων για το OpenCPN"
-#
-msgid ""
-"Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-"Πρόσθετο «Πίνακας Οργάνων»\n"
-"Παρουσιάζει τα ναυτικά όργανα στην οθόνη από πηγή NMEA."
-#
-msgid "Dashboard preferences"
-msgstr "Επιλογές για πίνακα οργάνων"
-#
-msgid "Data:"
-msgstr "Δεδομένα: "
-#
-msgid "Delete"
-msgstr "Διαγραφή"
-#
-msgid "Depth"
-msgstr "Βάθος"
-#
-msgid "Depth units:"
-msgstr " Βαθυμετρικές μονάδες: "
-#
-msgid "Distance units:"
-msgstr "Μονάδες απόστασης:"
-#
-msgid "Down"
-msgstr "Κάτω"
-#
-msgid "E"
-msgstr "Α"
-#
+
+#: src/wind_history.cpp:436
+msgid "NNE"
+msgstr "ΒΒΑ"
+
+#: src/wind_history.cpp:442
 msgid "ENE"
 msgstr "ΑΒΑ"
-#
+
+#: src/wind_history.cpp:448
 msgid "ESE"
 msgstr "ΑΝΑ"
-#
-msgid "Fathoms"
-msgstr "Οργιές"
-#
-msgid "Feet"
-msgstr "Πόδια"
-#
-msgid "Fonts"
-msgstr "Γραμματοσειρές"
-#
-msgid "From Ownship"
-msgstr "Από ίδιον πλοίο"
-#
-msgid "GPS Clock"
-msgstr ""
-#
-msgid "GPS Compass"
-msgstr "Πυξίδα GPS"
-#
-msgid "GPS Status"
-msgstr "Κατάσταση GPS"
-#
-msgid "GPS in View"
-msgstr "Εμφάνιση GPS"
-#
-msgid "Heel"
-msgstr "Γέρσιμο"
-#
-msgid "Honor OpenCPN settings"
-msgstr "Προεπιλεγμένες ρυθμίσεις"
-#
-msgid "Horizontal"
-msgstr "Οριζόντια"
-#
-msgid "Inches"
-msgstr "ίντσες"
-#
-msgid "Instruments"
-msgstr "Όργανα"
-#
-msgid "Kilometers"
-msgstr "Χιλιόμετρα"
-#
-msgid "Kts"
-msgstr "κόμβοι"
-#
-msgid "Label:"
-msgstr "Ετικέτα:"
-#
-msgid "Local CPU Clock"
-msgstr ""
-#
-msgid "Local GPS Clock"
-msgstr ""
-#
-msgid "Local Sunrise/Sunset"
-msgstr ""
-#
-msgid "Local Time Offset From UTC:"
-msgstr ""
-#
-msgid "Mag COG"
-msgstr "Μαγν. COG"
-#
-msgid "Mag HDG"
-msgstr "Μαγνητική κατ. πορείας"
-#
+
+#: src/wind_history.cpp:454
+msgid "SSE"
+msgstr "ΝΝΑ"
+
+#: src/wind_history.cpp:460
+msgid "SSW"
+msgstr "ΝΝΔ"
+
+#: src/wind_history.cpp:466
+msgid "WSW"
+msgstr "ΔΝΔ"
+
+#: src/wind_history.cpp:472
+msgid "WNW"
+msgstr "ΔΒΔ"
+
+#: src/wind_history.cpp:478
+msgid "NNW"
+msgstr "ΒΒΔ"
+
+#: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Max %.1f %s από %02d:%02d Συνολικά %.1f %s"
-#
-msgid "Meters"
-msgstr "μέτρα"
-#
-msgid "Moon phase"
-msgstr "Φάση σελήνης"
-#
-msgid "N"
-msgstr "Β"
-#
-msgid "NE"
-msgstr "ΒΑ"
-#
-msgid "NNE"
-msgstr "ΒΒΑ"
-#
-msgid "NNW"
-msgstr "ΒΒΔ"
-#
-msgid "NW"
-msgstr "ΒΔ"
-#
-msgid "Nautical miles"
-msgstr "Ναυτικά μίλια"
-#
-msgid "Orientation:"
-msgstr "Προσανατολισμός:"
-#
-msgid "Pitch"
-msgstr "Κούνημα"
-#
-msgid "Position"
-msgstr "Θέση"
-#
-msgid "Preferences..."
-msgstr "Προτιμήσεις..."
-#
-msgid "Rudder Angle"
-msgstr "Γωνία πηδαλίου"
-#
-msgid "S"
-msgstr "Ν"
-#
-msgid "SE"
-msgstr "ΝΑ"
-#
-msgid "SOG"
-msgstr "SOG (αληθής ταχύτητα)"
-#
-msgid "SSE"
-msgstr "ΝΝΑ"
-#
-msgid "SSW"
-msgstr "ΝΝΔ"
-#
-msgid "STW"
-msgstr "Φαινόμενη ταχύτητα (δρομομέτρου)"
-#
-msgid "SW"
-msgstr "ΝΔ"
-#
-msgid "Select instrument to add:"
-msgstr "Διάλεξε όργανο για προσθήκη:"
-#
-msgid "Small:"
-msgstr "Μικρό:"
-#
-msgid "Speed Over Ground Damping Factor:"
-msgstr "Συντ. απόσβεσης SOG:"
-#
-msgid "Speedometer"
-msgstr "Δρομόμετρο"
-#
-msgid "Speedometer max value:"
-msgstr "Μέγ. τιμή δρομομέτρου:"
-#
-msgid "Statute miles"
-msgstr "Αγγλικά μίλια"
-#
-msgid "Sum Log"
-msgstr "Αθροιστικό Log"
-#
-msgid "Sunrise/Sunset"
-msgstr "Ανατολή/δύση ηλίου"
-#
-msgid "Title:"
-msgstr "Τίτλος:"
-#
-msgid "Trip Log"
-msgstr "Ημερολ. ταξιδιού"
-#
-msgid "True Compass"
-msgstr "Αληθής πυξίδα"
-#
-msgid "True HDG"
-msgstr "Αληθής κατεύθυνση"
-#
-msgid "True Wind Angle"
-msgstr "Γωνία πραγμ. ανέμου"
-#
-msgid "True Wind Angle & Speed"
-msgstr "Γωνία/ταχύτητα πραγμ. ανέμου"
-#
-msgid "True Wind Dir. & Speed"
-msgstr "Κατεύθυνση/ταχύτητα πραγμ. ανέμου"
-#
-msgid "True Wind Direction"
-msgstr "Κατεύθυνση πραγμ. ανέμου"
-#
-msgid "True Wind Speed"
-msgstr "Ταχύτητα πραγμ. ανέμου"
-#
-msgid "Units, Ranges, Formats"
-msgstr "Μονάδες, Όρια, Μορφή"
-#
-msgid "Up"
-msgstr "Πάνω"
-#
-msgid "VMG"
-msgstr "VMG (ταχύτητα στη σωστή κατεύθυνση)"
-#
-msgid "Vertical"
-msgstr "Κατακόρυφα"
-#
-msgid "W"
-msgstr "Δ"
-#
-msgid "WNW"
-msgstr "ΔΒΔ"
-#
-msgid "WSW"
-msgstr "ΔΝΔ"
-#
-msgid "Water Temp."
-msgstr "Θερμ/σία νερού"
-#
-msgid "Wind history"
-msgstr "Ιστορικό Ανέμου"
-#
-msgid "Wind speed units:"
-msgstr "Μονάδες ταχύτητας ανέμου:"
-#
-msgid "km/h"
-msgstr "km/h"
-#
-msgid "m/s"
-msgstr "m/s"
-#
-msgid "mph"
-msgstr "μ.α.ώ."
-#
-msgid "show this dashboard"
-msgstr "Εμφάνιση αυτού του πίνακα οργάνων"
+

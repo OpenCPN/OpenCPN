@@ -2,375 +2,467 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:13-0500\n"
-"PO-Revision-Date: 2017-06-29 09:35-0400\n"
+"POT-Creation-Date: 2018-01-24 10:24-0500\n"
+"PO-Revision-Date: 2018-01-24 19:41-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
-#
-#, c-format
-msgid ""
-"%d out of %d charts failed to download.\n"
-"Check the list, verify there is a working Internet connection and repeat the "
-"operation if needed."
-msgstr ""
-#
-#, c-format
-msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
-#
-#, c-format
-msgid "%s"
-msgstr ""
-#
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "Каталог не является допустимым."
+
+#: src/chartcatalog.cpp:560
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr ""
-#
+
+#: src/chartcatalog.cpp:567
 #, c-format
-msgid "%u charts total, %u updated, %u new"
+msgid "%s"
 msgstr ""
-#
-msgid "(Please update first)"
-msgstr "(Пожалуйста, сначала обновите)"
-#
-msgid "0 (transfer completed)"
-msgstr "0 (Передача завершена)"
-#
-msgid "0 (transfer paused)"
-msgstr "0 (передача приостановлена)"
-#
-msgid "Abort"
-msgstr "Отмена"
-#
-msgid "Abort download"
-msgstr "Отмена загрузки"
-#
-msgid "Add"
-msgstr "Добавить"
-#
-msgid "Add a new chart catalog."
-msgstr "Добавьте новый каталог карт."
-#
-msgid "After catalog update select for download"
-msgstr ""
-#
-msgid "All new charts"
-msgstr "Все новые карты"
-#
-msgid "All updated charts"
-msgstr "Все обновленные карты"
-#
-msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "Разрешить полное обновление всех карт"
-#
-msgid "Catalog"
-msgstr "Каталог"
-#
-msgid "Catalog is not valid."
-msgstr "Каталог не является допустимым."
-#
-msgid "Catalogs"
-msgstr "Каталоги"
-#
-msgid "Chart Directory"
-msgstr "Каталог Карт"
-#
-msgid "Chart Downloader"
+
+#: src/chartdldr_pi.cpp:243
+msgid "ChartDownloader"
 msgstr "Загрузчик Карт"
-#
+
+#: src/chartdldr_pi.cpp:248
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr "Загрузчик Карт плагин для OpenCPN"
-#
-msgid ""
-"Chart Downloader PlugIn for OpenCPN\n"
+
+#: src/chartdldr_pi.cpp:253
+msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
 msgstr ""
-#
-msgid "Chart Downloader Preferences"
-msgstr "Настройки загрузчика карт"
-#
-msgid "Chart source definition problem"
-msgstr "Проблема определения источника карт"
-#
-msgid "ChartDownloader"
+
+#: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
+#: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
+#: src/chartdldr_pi.cpp:829 src/chartdldr_pi.cpp:835 src/chartdldr_pi.cpp:1018
+#: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
+#: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
+msgid "Chart Downloader"
 msgstr "Загрузчик Карт"
-#
-msgid "Charts"
-msgstr "Карты"
-#
-msgid "Choose Chart File Directory"
-msgstr "Выбор каталога для файлов карт"
-#
-msgid "Close"
-msgstr "Закрыть"
-#
-msgid "Connection settings"
-msgstr "Параметры подключения"
-#
-msgid "Connection settings used for the transfer:"
-msgstr "Параметры подключения, используемые для передачи:"
-#
-msgid "Custom"
-msgstr "Пользовательское"
-#
-msgid "Default Path to Charts"
-msgstr "Путь к картам по умолчанию"
-#
-msgid "Delete"
-msgstr "Удалить"
-#
-msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr ""
-#
-msgid "Deselect all"
-msgstr "Отменить всё"
-#
-#, c-format
-msgid "Directory %s can't be created."
-msgstr "Невозможно создать каталог %s."
-#
-msgid ""
-"Do you really want to remove the chart source?\n"
-"The local chart files will not be removed, but you will not be able to update "
-"the charts anymore."
-msgstr ""
-#
-msgid ""
-"Download\n"
-" selected charts"
-msgstr ""
-#
-msgid "Download selected charts"
-msgstr "Скачать выбранные карты"
-#
-msgid "Download the current chart catalog and update the data."
-msgstr ""
-#
-msgid "Downloaded:"
-msgstr "Скачано:"
-#
-#, c-format
-msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr ""
-#
-msgid "Downloading file"
-msgstr "﻿Загрузка файла"
-#
-msgid "Edit Chart Source"
-msgstr "Редактировать источник карт"
-#
-msgid "Edit..."
-msgstr "Изменить..."
-#
-msgid "Elapsed time:"
-msgstr "Прошло времени:"
-#
-msgid "Error"
-msgstr "Oшибка"
-#
-#, c-format
-msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr ""
-#
-msgid "Error, the URL to the chart source data seems wrong."
-msgstr ""
-#
-msgid "Estimated remaining time:"
-msgstr "Примерное время ожидания:"
-#
-msgid "Estimated total time:"
-msgstr "Расчетное время:"
-#
-#, c-format
-msgid ""
-"Failed to Download Catalog: %s \n"
-"Verify there is a working Internet connection."
-msgstr ""
-#
-#, c-format
-msgid "Failed to Find New Catalog: %s "
-msgstr "Не удалось найти новый каталог: %s "
-#
-msgid "Help"
-msgstr "Справка"
-#
-msgid "Invert selection"
-msgstr "Инвертировать выделение"
-#
-msgid "Latest"
-msgstr "Последние"
-#
-msgid "Local path"
-msgstr "Локальный путь"
-#
-msgid "Name"
-msgstr "Имя"
-#
-msgid "New"
-msgstr "Новый"
-#
-msgid "New chart source"
-msgstr "Новый источник карт"
-#
-msgid "No charts selected for download."
-msgstr "Файлы для скачивания не выбраны."
-#
-msgid "Not available"
-msgstr "Недоступно"
-#
-msgid "Password:"
-msgstr "Пароль:"
-#
-#, c-format
-msgid ""
-"Path %s seems not to be covered by your configured Chart Directories.\n"
-"To see the charts you have to adjust the configuration on the 'Chart Files' "
-"tab."
-msgstr ""
-#
-msgid "Pause"
-msgstr "Приостановить"
-#
-msgid "Port:"
-msgstr "Порт:"
-#
-msgid "Predefined"
-msgstr "Стандартные"
-#
-msgid "Preferences"
-msgstr "Настройки"
-#
-msgid "Proxy host:"
-msgstr "Хост прокси:"
-#
-msgid "Proxy password:"
-msgstr "Пароль прокси-сервера:"
-#
-msgid "Proxy port:"
-msgstr "Порт прокси:"
-#
-msgid "Proxy settings"
-msgstr "Настройки прокси"
-#
-msgid "Proxy username:"
-msgstr "Имя пользователя прокси-сервера:"
-#
-msgid "Reading Headers: "
-msgstr "Чтение заголовков: "
-#
-msgid "Released"
-msgstr "Выпущен"
-#
-msgid "Resume"
-msgstr "Продолжить"
-#
-msgid "Select a folder"
-msgstr "Выбрать папку"
-#
+
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
 msgid "Select all"
 msgstr "Выбрать всё"
-#
-msgid "Select new"
-msgstr "Выберите новый"
-#
+
+#: src/chartdldr_pi.cpp:439 src/chartdldr_pi.cpp:458
+msgid "Deselect all"
+msgstr "Отменить всё"
+
+#: src/chartdldr_pi.cpp:443 src/chartdldr_pi.cpp:459
+msgid "Invert selection"
+msgstr "Инвертировать выделение"
+
+#: src/chartdldr_pi.cpp:447 src/chartdldr_pi.cpp:460
 msgid "Select updated"
 msgstr "Выберите обновление"
-#
-msgid "Settings"
-msgstr "Настройки"
-#
-msgid "Show local files"
-msgstr "Показ локальных файлов"
-#
-msgid "Speed:"
-msgstr "Скорость:"
-#
-msgid "Start"
-msgstr "Начать"
-#
-msgid "Status"
-msgstr "Состояние"
-#
-msgid "The chart source must have a name.\n"
-msgstr ""
-#
-msgid "The chart source must have a valid URL.\n"
-msgstr ""
-#
-#, c-format
-msgid ""
-"The selected chart '%s' can't be downloaded automatically, do you want me to "
-"open a browser window and download them manually?\n"
-"\n"
-" After downloading the charts, please extract them to %s"
-msgstr ""
-#
-msgid "Title"
-msgstr "Название"
-#
-msgid "URL"
-msgstr "URL"
-#
-msgid "URL:"
-msgstr "URL:"
-#
-msgid "Unknown"
-msgstr "Неизвестно"
-#
-msgid "Up to date"
-msgstr "Обновлено"
-#
-msgid "Update"
-msgstr "Обновить"
-#
-msgid "Update All"
-msgstr "Обновить все"
-#
+
+#: src/chartdldr_pi.cpp:451 src/chartdldr_pi.cpp:461
+msgid "Select new"
+msgstr "Выберите новый"
+
+#: src/chartdldr_pi.cpp:569
+msgid "New"
+msgstr "Новый"
+
+#: src/chartdldr_pi.cpp:578
 msgid "Update available"
 msgstr "Доступно обновление"
-#
-msgid "Uploaded:"
-msgstr "Загружено:"
-#
-msgid "Use proxy"
-msgstr "Использовать прокси"
-#
-msgid "Username:"
-msgstr "Имя пользователя:"
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:584
+msgid "Up to date"
+msgstr "Обновлено"
+
+#: src/chartdldr_pi.cpp:591
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
+msgid "(Please update first)"
+msgstr "(Пожалуйста, сначала обновите)"
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747 src/chartdldr_pi.cpp:1029
+msgid "Error"
+msgstr "Oшибка"
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
 msgstr ""
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:705
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr ""
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:711
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
 msgstr ""
-#
+
+#: src/chartdldr_pi.cpp:729 src/chartdldr_pi.cpp:1092
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:765 src/chartdldr_pi.cpp:1914 src/chartdldr_pi.cpp:1937
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "Невозможно создать каталог %s."
+
+#: src/chartdldr_pi.cpp:801
+msgid "Downloading file"
+msgstr "﻿Загрузка файла"
+
+#: src/chartdldr_pi.cpp:802
+msgid "Reading Headers: "
+msgstr "Чтение заголовков: "
+
+#: src/chartdldr_pi.cpp:828
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "Не удалось найти новый каталог: %s "
+
+#: src/chartdldr_pi.cpp:834
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:985 src/chartdldr_pi.cpp:991
+msgid "No charts selected for download."
+msgstr "Файлы для скачивания не выбраны."
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Abort download"
+msgstr "Отмена загрузки"
+
+#: src/chartdldr_pi.cpp:1010
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: src/chartdldr_pi.cpp:1017
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1029
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1055
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
+msgid "Download\n"
+" selected charts"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
+msgid "Download selected charts"
+msgstr "Скачать выбранные карты"
+
+#: src/chartdldr_pi.cpp:1117 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "Каталог"
+
+#: src/chartdldr_pi.cpp:1118
+msgid "Released"
+msgstr "Выпущен"
+
+#: src/chartdldr_pi.cpp:1119
+msgid "Local path"
+msgstr "Локальный путь"
+
+#: src/chartdldr_pi.cpp:1123
+msgid "Title"
+msgstr "Название"
+
+#: src/chartdldr_pi.cpp:1124
+msgid "Status"
+msgstr "Состояние"
+
+#: src/chartdldr_pi.cpp:1125
+msgid "Latest"
+msgstr "Последние"
+
+#: src/chartdldr_pi.cpp:1168
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1232
+msgid "Edit Chart Source"
+msgstr "Редактировать источник карт"
+
+#: src/chartdldr_pi.cpp:1271
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1899 src/chartdldr_pi.cpp:1902
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1905
+msgid "The chart source must have a name.\n"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1908
+msgid "The chart source must have a valid URL.\n"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1910
 msgid "You must select a local folder to store the charts.\n"
 msgstr ""
-#
-msgid ""
-"You must select one of the predefined chart sources or create one of your "
-"own.\n"
+
+#: src/chartdldr_pi.cpp:1917
+msgid "Chart source definition problem"
+msgstr "Проблема определения источника карт"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "Стандартные"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "Имя"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "Пользовательское"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "Каталог Карт"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
+msgid "Select a folder"
+msgstr "Выбрать папку"
+
+#: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
+msgid "Choose Chart File Directory"
+msgstr "Выбор каталога для файлов карт"
+
+#: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
+msgid "Catalogs"
+msgstr "Каталоги"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add"
+msgstr "Добавить"
+
+#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
+msgid "Add a new chart catalog."
+msgstr "Добавьте новый каталог карт."
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete"
+msgstr "Удалить"
+
+#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
 msgstr ""
+
+#: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
+msgid "Edit..."
+msgstr "Изменить..."
+
+#: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
+msgid "Update"
+msgstr "Обновить"
+
+#: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
+msgid "Download the current chart catalog and update the data."
+msgstr ""
+
+#: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
+msgid "Update All"
+msgstr "Обновить все"
+
+#: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
+msgid "Charts"
+msgstr "Карты"
+
+#: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
+msgid "Help"
+msgstr "Справка"
+
+#: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
+msgid "Show local files"
+msgstr "Показ локальных файлов"
+
+#: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr ""
+
+#: src/chartdldrgui.cpp:464
+msgid "Default Path to Charts"
+msgstr "Путь к картам по умолчанию"
+
+#: src/chartdldrgui.cpp:480
+msgid "Preferences"
+msgstr "Настройки"
+
+#: src/chartdldrgui.cpp:484
+msgid "After catalog update select for download"
+msgstr ""
+
+#: src/chartdldrgui.cpp:488
+msgid "All updated charts"
+msgstr "Все обновленные карты"
+
+#: src/chartdldrgui.cpp:492
+msgid "All new charts"
+msgstr "Все новые карты"
+
+#: src/chartdldrgui.cpp:498
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "Разрешить полное обновление всех карт"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "Новый источник карт"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "Настройки загрузчика карт"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "Недоступно"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "Скорость:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "Прошло времени:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "Расчетное время:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "Примерное время ожидания:"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "Отмена"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "Приостановить"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "Начать"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "Продолжить"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (передача приостановлена)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "Параметры подключения"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "Параметры подключения, используемые для передачи:"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (Передача завершена)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "Скачано:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "Загружено:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "Имя пользователя:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "Пароль:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "Порт:"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "Настройки прокси"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "Использовать прокси"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "Хост прокси:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "Имя пользователя прокси-сервера:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "Пароль прокси-сервера:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "Порт прокси:"
+

@@ -2,344 +2,453 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:12-0500\n"
-"PO-Revision-Date: 2017-08-04 22:34-0400\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-24 19:41-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
-#
-msgid " mag"
-msgstr " магн."
-#
+
+#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
+#: src/wind_history.cpp:433
+msgid "N"
+msgstr "С"
+
+#: src/dashboard_pi.cpp:105
+msgid "Position"
+msgstr "Местоположение"
+
+#: src/dashboard_pi.cpp:107
+msgid "SOG"
+msgstr "Скорость"
+
+#: src/dashboard_pi.cpp:109
+msgid "Speedometer"
+msgstr "Спидометр"
+
+#: src/dashboard_pi.cpp:111
+msgid "COG"
+msgstr "Курс"
+
+#: src/dashboard_pi.cpp:113
+msgid "Mag COG"
+msgstr "Магнитный курс"
+
+#: src/dashboard_pi.cpp:115
+msgid "GPS Compass"
+msgstr "GPS-компас"
+
+#: src/dashboard_pi.cpp:117
+msgid "True Compass"
+msgstr "Истинный компас"
+
+#: src/dashboard_pi.cpp:119
+msgid "STW"
+msgstr "Относ. скорость"
+
+#: src/dashboard_pi.cpp:121
+msgid "True HDG"
+msgstr "Ист. путевой угол"
+
+#: src/dashboard_pi.cpp:123
+msgid "Mag HDG"
+msgstr "Магн. путевой угол"
+
+#: src/dashboard_pi.cpp:126
+msgid "App. Wind Angle & Speed"
+msgstr "Вымп. угол и скор. ветра"
+
+#: src/dashboard_pi.cpp:128
+msgid "App & True Wind Angle"
+msgstr "Вымп. и Ист. угол ветра"
+
+#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
+msgid "App. Wind Speed"
+msgstr "Вымп. скорость ветра"
+
+#: src/dashboard_pi.cpp:134
+msgid "True Wind Angle & Speed"
+msgstr "Ист. угол и скор. ветра"
+
+#: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
+msgid "Depth"
+msgstr "Глубина"
+
+#: src/dashboard_pi.cpp:140 src/dashboard_pi.cpp:142
+msgid "Barometric pressure"
+msgstr "Атмосферное давление"
+
+#: src/dashboard_pi.cpp:144
+msgid "Water Temp."
+msgstr "Температура воды"
+
+#: src/dashboard_pi.cpp:146
+msgid "Air Temp."
+msgstr "Температура воздуха"
+
+#: src/dashboard_pi.cpp:148
+msgid "App. Wind Angle"
+msgstr "Вымп. угол ветра"
+
+#: src/dashboard_pi.cpp:150
+msgid "True Wind Angle"
+msgstr "Ист. угол ветра"
+
+#: src/dashboard_pi.cpp:152
+msgid "True Wind Direction"
+msgstr "Ист. направл. ветра"
+
+#: src/dashboard_pi.cpp:154
+msgid "True Wind Speed"
+msgstr "Ист. скорость ветра"
+
+#: src/dashboard_pi.cpp:156
+msgid "True Wind Dir. & Speed"
+msgstr "Ист. направл. и скор. ветра"
+
+#: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
+msgid "VMG"
+msgstr "Эффект. скорость"
+
+#: src/dashboard_pi.cpp:162 src/dashboard_pi.cpp:164
+msgid "Rudder Angle"
+msgstr "Угол перекладки руля"
+
+#: src/dashboard_pi.cpp:166
+msgid "GPS in View"
+msgstr "Число видимых спутников"
+
+#: src/dashboard_pi.cpp:168
+msgid "GPS Status"
+msgstr "Состояние ГНСС"
+
+#: src/dashboard_pi.cpp:170
+msgid "Cursor"
+msgstr "Курсор"
+
+#: src/dashboard_pi.cpp:172
+msgid "GPS Clock"
+msgstr "Часы"
+
+#: src/dashboard_pi.cpp:174
+msgid "Sunrise/Sunset"
+msgstr "Восход/Закат"
+
+#: src/dashboard_pi.cpp:176
+msgid "Moon phase"
+msgstr "Фаза луны"
+
+#: src/dashboard_pi.cpp:178
+msgid "Wind history"
+msgstr "История ветра"
+
+#: src/dashboard_pi.cpp:180
+msgid "Barometric history"
+msgstr "История давления"
+
+#: src/dashboard_pi.cpp:182
+msgid "Trip Log"
+msgstr "Журнал плавания"
+
+#: src/dashboard_pi.cpp:184
+msgid "Sum Log"
+msgstr "Итоговый журнал"
+
+#: src/dashboard_pi.cpp:186
+msgid "From Ownship"
+msgstr "Пеленг и Дистанция"
+
+#: src/dashboard_pi.cpp:188
+msgid "Pitch"
+msgstr "Дифферент"
+
+#: src/dashboard_pi.cpp:190
+msgid "Heel"
+msgstr "Дрейф"
+
+#: src/dashboard_pi.cpp:192
+msgid "Local GPS Clock"
+msgstr "Часы (ГНСС)"
+
+#: src/dashboard_pi.cpp:194
+msgid "Local CPU Clock"
+msgstr "Часы (CPU)"
+
+#: src/dashboard_pi.cpp:196
+msgid "Local Sunrise/Sunset"
+msgstr "Восход/Закат"
+
+#: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
+#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
+#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
+msgid "Dashboard"
+msgstr "Приборная панель"
+
+#: src/dashboard_pi.cpp:508
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Модуль «Приборная панель» для OpenCPN"
+
+#: src/dashboard_pi.cpp:513
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Модуль «Приборная панель» для OpenCPN\n"
+"Отображает показания навигационных инструментов NMEA."
+
+#: src/dashboard_pi.cpp:1635
+msgid "Dashboard preferences"
+msgstr "Настройки приборной панели"
+
+#: src/dashboard_pi.cpp:1705
+msgid "show this dashboard"
+msgstr "Показать эту панель"
+
+#: src/dashboard_pi.cpp:1711
+msgid "Caption:"
+msgstr "Название:"
+
+#: src/dashboard_pi.cpp:1719
+msgid "Orientation:"
+msgstr "Ориентация:"
+
+#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
+msgid "Vertical"
+msgstr "вертикальная"
+
+#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
+msgid "Horizontal"
+msgstr "горизонтальная"
+
+#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
+#: src/dashboard_pi.cpp:2116
+msgid "Instruments"
+msgstr "Инструменты"
+
+#: src/dashboard_pi.cpp:1747
+msgid "Add"
+msgstr "Добавить"
+
+#: src/dashboard_pi.cpp:1760
+msgid "Delete"
+msgstr "Удалить"
+
+#: src/dashboard_pi.cpp:1766
+msgid "Up"
+msgstr "Вверх"
+
+#: src/dashboard_pi.cpp:1771
+msgid "Down"
+msgstr "Вниз"
+
+#: src/dashboard_pi.cpp:1781
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: src/dashboard_pi.cpp:1783
+msgid "Fonts"
+msgstr "Шрифты"
+
+#: src/dashboard_pi.cpp:1789
+msgid "Title:"
+msgstr "Заголовок:"
+
+#: src/dashboard_pi.cpp:1795
+msgid "Data:"
+msgstr "Данные:"
+
+#: src/dashboard_pi.cpp:1801
+msgid "Label:"
+msgstr "Подпись:"
+
+#: src/dashboard_pi.cpp:1807
+msgid "Small:"
+msgstr "Мелкий текст:"
+
+#: src/dashboard_pi.cpp:1815
+msgid "Units, Ranges, Formats"
+msgstr "Единицы измерения, форматы"
+
+#: src/dashboard_pi.cpp:1821
+msgid "Speedometer max value:"
+msgstr "Предел спидометра:"
+
+#: src/dashboard_pi.cpp:1827
+msgid "Speed Over Ground Damping Factor:"
+msgstr "Скорость относительно земли, коэффициент затухания:"
+
+#: src/dashboard_pi.cpp:1833
+msgid "COG Damping Factor:"
+msgstr "Коэффициент затухания COG:"
+
+#: src/dashboard_pi.cpp:1839
+msgid "Local Time Offset From UTC:"
+msgstr "Смещение Локального Времени от UTC:"
+
+#: src/dashboard_pi.cpp:1858
+msgid "Boat speed units:"
+msgstr "Единицы скорости судна:"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
+msgid "Honor OpenCPN settings"
+msgstr "из OpenCPN"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "Kts"
+msgstr "уз."
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "mph"
+msgstr "миль/ч"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "km/h"
+msgstr "км/ч"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "m/s"
+msgstr "м/с"
+
+#: src/dashboard_pi.cpp:1867
+msgid "Depth units:"
+msgstr "Единицы глубины:"
+
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
+msgid "Meters"
+msgstr "м"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Feet"
+msgstr "фут"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Fathoms"
+msgstr "саж."
+
+#: src/dashboard_pi.cpp:1870
+msgid "Centimeters"
+msgstr "см"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Inches"
+msgstr "дюйм"
+
+#: src/dashboard_pi.cpp:1876
+msgid "Distance units:"
+msgstr "Единицы расстояния:"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Nautical miles"
+msgstr "м. м."
+
+#: src/dashboard_pi.cpp:1879
+msgid "Statute miles"
+msgstr "с. м."
+
+#: src/dashboard_pi.cpp:1879
+msgid "Kilometers"
+msgstr "км"
+
+#: src/dashboard_pi.cpp:1885
+msgid "Wind speed units:"
+msgstr "Единицы скорости ветра:"
+
+#: src/dashboard_pi.cpp:2099
+msgid "Add instrument"
+msgstr "Добавить инструмент"
+
+#: src/dashboard_pi.cpp:2105
+msgid "Select instrument to add:"
+msgstr "Выберите инструмент для добавления:"
+
+#: src/dashboard_pi.cpp:2199
+msgid "Preferences..."
+msgstr "Предпочтения…"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
+msgid "NE"
+msgstr "СВ"
+
+#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
+msgid "E"
+msgstr "В"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
+msgid "SE"
+msgstr "ЮВ"
+
+#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
+msgid "S"
+msgstr "Ю"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
+msgid "SW"
+msgstr "ЮЗ"
+
+#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
+msgid "W"
+msgstr "З"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
+msgid "NW"
+msgstr "СЗ"
+
+#: src/instrument.cpp:236
 msgid " true"
 msgstr " ист."
-#
+
+#: src/instrument.cpp:238
+msgid " mag"
+msgstr " магн."
+
+#: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
 msgstr ""
-#
+
+#: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
 msgstr ""
-#
-msgid "Add"
-msgstr "Добавить"
-#
-msgid "Add instrument"
-msgstr "Добавить инструмент"
-#
-msgid "Air Temp."
-msgstr "Температура воздуха"
-#
-msgid "App & True Wind Angle"
-msgstr "Вымп. и Ист. угол ветра"
-#
-msgid "App. Wind Angle"
-msgstr "Вымп. угол ветра"
-#
-msgid "App. Wind Angle & Speed"
-msgstr "Вымп. угол и скор. ветра"
-#
-msgid "App. Wind Speed"
-msgstr "Вымп. скорость ветра"
-#
-msgid "Appearance"
-msgstr "Внешний вид"
-#
-msgid "Barometric history"
-msgstr "История давления"
-#
-msgid "Barometric pressure"
-msgstr "Атмосферное давление"
-#
-msgid "Boat speed units:"
-msgstr "Единицы скорости судна:"
-#
-msgid "COG"
-msgstr "Курс"
-#
-msgid "COG Damping Factor:"
-msgstr "Коэффициент затухания COG:"
-#
-msgid "Caption:"
-msgstr "Название:"
-#
-msgid "Centimeters"
-msgstr "см"
-#
-msgid "Cursor"
-msgstr "Курсор"
-#
-msgid "Dashboard"
-msgstr "Приборная панель"
-#
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Модуль «Приборная панель» для OpenCPN"
-#
-msgid ""
-"Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-"Модуль «Приборная панель» для OpenCPN\n"
-"Отображает показания навигационных инструментов NMEA."
-#
-msgid "Dashboard preferences"
-msgstr "Настройки приборной панели"
-#
-msgid "Data:"
-msgstr "Данные:"
-#
-msgid "Delete"
-msgstr "Удалить"
-#
-msgid "Depth"
-msgstr "Глубина"
-#
-msgid "Depth units:"
-msgstr "Единицы глубины:"
-#
-msgid "Distance units:"
-msgstr "Единицы расстояния:"
-#
-msgid "Down"
-msgstr "Вниз"
-#
-msgid "E"
-msgstr "В"
-#
+
+#: src/wind_history.cpp:436
+msgid "NNE"
+msgstr "ССВ"
+
+#: src/wind_history.cpp:442
 msgid "ENE"
 msgstr "ВСВ"
-#
+
+#: src/wind_history.cpp:448
 msgid "ESE"
 msgstr "ВЮВ"
-#
-msgid "Fathoms"
-msgstr "саж."
-#
-msgid "Feet"
-msgstr "фут"
-#
-msgid "Fonts"
-msgstr "Шрифты"
-#
-msgid "From Ownship"
-msgstr "Пеленг и Дистанция"
-#
-msgid "GPS Clock"
-msgstr ""
-#
-msgid "GPS Compass"
-msgstr "GPS-компас"
-#
-msgid "GPS Status"
-msgstr "Состояние ГНСС"
-#
-msgid "GPS in View"
-msgstr "Число видимых спутников"
-#
-msgid "Heel"
-msgstr "Дрейф"
-#
-msgid "Honor OpenCPN settings"
-msgstr "из OpenCPN"
-#
-msgid "Horizontal"
-msgstr "горизонтальная"
-#
-msgid "Inches"
-msgstr "дюйм"
-#
-msgid "Instruments"
-msgstr "Инструменты"
-#
-msgid "Kilometers"
-msgstr "км"
-#
-msgid "Kts"
-msgstr "уз."
-#
-msgid "Label:"
-msgstr "Подпись:"
-#
-msgid "Local CPU Clock"
-msgstr ""
-#
-msgid "Local GPS Clock"
-msgstr ""
-#
-msgid "Local Sunrise/Sunset"
-msgstr ""
-#
-msgid "Local Time Offset From UTC:"
-msgstr ""
-#
-msgid "Mag COG"
-msgstr "Магнитный курс"
-#
-msgid "Mag HDG"
-msgstr "Магн. путевой угол"
-#
+
+#: src/wind_history.cpp:454
+msgid "SSE"
+msgstr "ЮЮВ"
+
+#: src/wind_history.cpp:460
+msgid "SSW"
+msgstr "ЮЮЗ"
+
+#: src/wind_history.cpp:466
+msgid "WSW"
+msgstr "ЗЮЗ"
+
+#: src/wind_history.cpp:472
+msgid "WNW"
+msgstr "ЗСЗ"
+
+#: src/wind_history.cpp:478
+msgid "NNW"
+msgstr "ССЗ"
+
+#: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Макс %.1f %s с %02d:%02d общая %.1f %s"
-#
-msgid "Meters"
-msgstr "м"
-#
-msgid "Moon phase"
-msgstr "Фаза луны"
-#
-msgid "N"
-msgstr "С"
-#
-msgid "NE"
-msgstr "СВ"
-#
-msgid "NNE"
-msgstr "ССВ"
-#
-msgid "NNW"
-msgstr "ССЗ"
-#
-msgid "NW"
-msgstr "СЗ"
-#
-msgid "Nautical miles"
-msgstr "м. м."
-#
-msgid "Orientation:"
-msgstr "Ориентация:"
-#
-msgid "Pitch"
-msgstr "Дифферент"
-#
-msgid "Position"
-msgstr "Местоположение"
-#
-msgid "Preferences..."
-msgstr "Предпочтения…"
-#
-msgid "Rudder Angle"
-msgstr "Угол перекладки руля"
-#
-msgid "S"
-msgstr "Ю"
-#
-msgid "SE"
-msgstr "ЮВ"
-#
-msgid "SOG"
-msgstr "Скорость"
-#
-msgid "SSE"
-msgstr "ЮЮВ"
-#
-msgid "SSW"
-msgstr "ЮЮЗ"
-#
-msgid "STW"
-msgstr "Относ. скорость"
-#
-msgid "SW"
-msgstr "ЮЗ"
-#
-msgid "Select instrument to add:"
-msgstr "Выберите инструмент для добавления:"
-#
-msgid "Small:"
-msgstr "Мелкий текст:"
-#
-msgid "Speed Over Ground Damping Factor:"
-msgstr "Скорость относительно земли, коэффициент затухания:"
-#
-msgid "Speedometer"
-msgstr "Спидометр"
-#
-msgid "Speedometer max value:"
-msgstr "Предел спидометра:"
-#
-msgid "Statute miles"
-msgstr "с. м."
-#
-msgid "Sum Log"
-msgstr "Итоговый журнал"
-#
-msgid "Sunrise/Sunset"
-msgstr "Восход/Закат"
-#
-msgid "Title:"
-msgstr "Заголовок:"
-#
-msgid "Trip Log"
-msgstr "Журнал плавания"
-#
-msgid "True Compass"
-msgstr "Истинный компас"
-#
-msgid "True HDG"
-msgstr "Ист. путевой угол"
-#
-msgid "True Wind Angle"
-msgstr "Ист. угол ветра"
-#
-msgid "True Wind Angle & Speed"
-msgstr "Ист. угол и скор. ветра"
-#
-msgid "True Wind Dir. & Speed"
-msgstr "Ист. направл. и скор. ветра"
-#
-msgid "True Wind Direction"
-msgstr "Ист. направл. ветра"
-#
-msgid "True Wind Speed"
-msgstr "Ист. скорость ветра"
-#
-msgid "Units, Ranges, Formats"
-msgstr "Единицы измерения, форматы"
-#
-msgid "Up"
-msgstr "Вверх"
-#
-msgid "VMG"
-msgstr "Эффект. скорость"
-#
-msgid "Vertical"
-msgstr "вертикальная"
-#
-msgid "W"
-msgstr "З"
-#
-msgid "WNW"
-msgstr "ЗСЗ"
-#
-msgid "WSW"
-msgstr "ЗЮЗ"
-#
-msgid "Water Temp."
-msgstr "Температура воды"
-#
-msgid "Wind history"
-msgstr "История ветра"
-#
-msgid "Wind speed units:"
-msgstr "Единицы скорости ветра:"
-#
-msgid "km/h"
-msgstr "км/ч"
-#
-msgid "m/s"
-msgstr "м/с"
-#
-msgid "mph"
-msgstr "миль/ч"
-#
-msgid "show this dashboard"
-msgstr "Показать эту панель"
+

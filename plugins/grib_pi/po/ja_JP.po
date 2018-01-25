@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:14-0500\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-24 19:40-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -15,270 +15,870 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ja\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
-#
-msgid " (Max size )"
-msgstr " (最大サイズ)"
-#
-msgid " can't be read!"
-msgstr " 読み取ることができません!"
-#
-msgid " contains no valid data!"
-msgstr " 有効なデータが含まれていない!"
-#
-msgid " files don't exist!"
-msgstr ""
-#
-msgid "300 hPa"
-msgstr "300 hPa"
-#
-msgid "500 hPa"
-msgstr "500 hPa"
-#
-msgid "700 hPa"
-msgstr "700 hPa"
-#
-msgid "850 hPa"
-msgstr "850 hPa"
-#
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "リクエスト メールを送信するためのアドレス。(LINUX では必須)"
-#
-msgid ""
-"Air\n"
-"Temperature"
-msgstr ""
-"大気\n"
-"温度"
-#
-msgid "Air Temp"
-msgstr "気温"
-#
-msgid "Air Temperature"
-msgstr "気温"
-#
-msgid "Air Temperature at"
-msgstr ""
-#
-msgid "Air Temperature(2m)"
-msgstr "気温（2m）"
-#
-msgid "Altitude"
-msgstr "高度"
-#
-msgid "Altitude(Geopotential)"
-msgstr "高度（ジオポテンシャル）"
-#
-msgid "Always visible"
-msgstr "常に表示"
-#
-msgid "Apply"
-msgstr "適用"
-#
-msgid "Area Selection"
-msgstr "エリア選択"
-#
-msgid "Attached icon bar"
-msgstr "添付アイコン バー"
-#
-msgid "Authorize Interpolation to start at current time"
-msgstr "現在の時刻に開始する補間を承認します。"
-#
-msgid "Barbed Arrows"
-msgstr "刺のある矢印"
-#
-msgid "Beaufort"
-msgstr "ビューフォート"
-#
-msgid ""
-"Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr ""
-"Zygribに電子メールを送信する前に、あなたのログイン名とコードが必要です\n"
-"www.zygrib.org/を訪問し、指示に従ってください...\n"
-" "
-#
-msgid "Building Isobar map"
-msgstr "等圧線図の構築"
-#
-msgid "Buttons Visibility"
-msgstr "ボタンの表示/非表示"
-#
-msgid "CAPE"
-msgstr "対流有効位置エネルギー（CAPE）"
-#
-msgid "Celsius"
-msgstr "摂氏"
-#
-msgid "Close"
-msgstr "閉じる"
-#
-msgid "Cloud Cover"
-msgstr "雲量"
-#
-msgid "Colors"
-msgstr "色"
-#
-msgid "Continue..."
-msgstr "継続"
-#
-msgid "Controled Colours"
-msgstr ""
-#
-msgid "Convective Available Potential Energy"
-msgstr "対流有効位置エネルギー"
-#
-msgid "Coord. "
-msgstr "座標。 "
-#
-msgid "Copy First Cumulative Missing Record"
-msgstr "最初の累積的に不足しているレコードをコピーします。"
-#
-msgid "Copy Missing Wave Records"
-msgstr "失われた波の記録をコピーします。"
-#
-msgid "Course"
-msgstr "コース"
-#
-msgid "Cumulative Rainfall per Hour"
-msgstr "累積時間雨量"
-#
-msgid "Current"
-msgstr "潮流"
-#
-msgid "Current time forecast"
-msgstr "現在の時刻の天気予報"
-#
-msgid "Data"
-msgstr "データ"
-#
-msgid "Data Display Options"
-msgstr "データ表示オプション"
-#
-msgid "Data Selection"
-msgstr "データの選択"
-#
-msgid "Data at Position:"
-msgstr "位置データ:"
-#
-msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
-"カーソル位置のデータ ダイアログは、アイコンバーにアタッチさてれています。ータ"
-"イトル/ドラッグバー付き"
-#
-msgid ""
-"Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
-"カーソル位置のデータ ダイアログは、アイコンバーにアタッチさてれています。ータ"
-"イトル/ドラッグバーなし"
-#
-msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr "カーソル位置のデータ ダイアログは、分離され水平方向に表示"
-#
-msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr "カーソル位置のデータ ダイアログは、分離され、縦方向に表示"
-#
-msgid "Data at cursor position"
-msgstr "カーソル位置のデータ"
-#
-msgid "Days"
-msgstr "日"
-#
-msgid "Default Colour"
-msgstr "デフォルトの色"
-#
-msgid "Default Size"
-msgstr "既定のサイズ"
-#
-msgid "Deg"
-msgstr "度"
-#
-msgid "Density"
-msgstr "密度"
-#
-msgid "Dialog"
-msgstr "ダイアログ"
-#
-msgid "Dialogs Style"
-msgstr "ダイアログ スタイル"
-#
-msgid "Direction Arrows"
-msgstr "方向矢印"
-#
-msgid "Display Iso CAPE"
-msgstr ""
-#
-msgid "Display Isobars"
-msgstr "等圧線を表示"
-#
-msgid "Display Isotachs"
-msgstr "等風速線を表示"
-#
-msgid "Display Isotherms"
-msgstr "等温線を表示"
-#
-msgid "Double Arrow"
-msgstr "二重矢印"
-#
-#, fuzzy
-msgid "Draw Barbed Arrows Head"
-msgstr "刺のある矢印"
-#
-msgid ""
-"Draw requested Area\n"
+
+#: src/GribUIDialog.cpp:375 src/GribUIDialog.cpp:854
+msgid "Start a request"
+msgstr "要求を開始します。"
+
+#: src/GribUIDialog.cpp:379
+msgid "Draw requested Area\n"
 "or Click here to stop request"
 msgstr ""
-#
-msgid "Draw requested Area or Click here to stop request"
+
+#: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:855
+msgid "Valid Area and Continue"
 msgstr ""
-#
-msgid "E"
-msgstr "E"
-#
-msgid "Enter your forecasted Course"
-msgstr "あなたの予想コースを入力します。"
-#
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr "あなたの 予測速度 を入力してください。(ノッ ト)"
-#
+
+#: src/GribUIDialog.cpp:425
+msgid "File: "
+msgstr "ファイル: "
+
+#: src/GribUIDialog.cpp:430
 msgid "Error! "
 msgstr "エラー! "
-#
-msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+
+#: src/GribUIDialog.cpp:430
+msgid " contains no valid data!"
+msgstr " 有効なデータが含まれていない!"
+
+#: src/GribUIDialog.cpp:455
+msgid "No valid GRIB file"
+msgstr "有効なGRIBファイルがありません。"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Hide data at cursor"
+msgstr "カーソル位置のデータを隠す"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Show data at cursor"
+msgstr "カーソル位置のデータを表示します"
+
+#: src/GribUIDialog.cpp:649 src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1168
+msgid "Start play back"
+msgstr "再生を開始します。"
+
+#: src/GribUIDialog.cpp:801 src/grib_pi.cpp:389 src/CursorData.cpp:578
+msgid "Menu"
+msgstr "メニュー"
+
+#: src/GribUIDialog.cpp:840
+msgid "Select geopotential altitude"
+msgstr "ジオポテンシャル高度を選択"
+
+#: src/GribUIDialog.cpp:842 src/GribUIDialogBase.cpp:65
+#: src/GribUIDialogBase.cpp:176 src/GribUIDialogBase.cpp:1160
+msgid "Now"
+msgstr "今"
+
+#: src/GribUIDialog.cpp:843 src/GribUIDialogBase.cpp:70
+#: src/GribUIDialogBase.cpp:181
+msgid "Zoom To Center"
+msgstr "中心にズームします。"
+
+#: src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1132
+msgid "Stop play back"
+msgstr "再生を停止します。"
+
+#: src/GribUIDialog.cpp:850 src/GribUIDialogBase.cpp:201
+msgid "Open a new file"
+msgstr "新しいファイルを開く"
+
+#: src/GribUIDialog.cpp:851 src/GribUIDialogBase.cpp:93
+#: src/GribUIDialogBase.cpp:206 src/GribUIDialogBase.cpp:1256
+#: src/GribUIDialogBase.h:315
+msgid "Settings"
+msgstr "設定"
+
+#: src/GribUIDialog.cpp:855
+msgid "Draw requested Area or Click here to stop request"
 msgstr ""
-"エラー! 最大緯度が最小緯度より小さい、または最大経度が最小経度より小さい"
-#
-msgid "Estimated File Size"
-msgstr "推定ファイル サイズ"
-#
-msgid "Fahrenheit"
-msgstr "華氏"
-#
-msgid "Fast"
-msgstr ""
-#
-msgid "Feet"
-msgstr "フィート"
-#
-msgid "File: "
-msgstr ""
-#
-msgid "Fixed"
-msgstr "修正済"
-#
-msgid "Forecast Model "
-msgstr "予測モデル "
-#
+
+#: src/GribUIDialog.cpp:1393 src/GribUIDialog.cpp:1414
+msgid "Select a GRIB file"
+msgstr "GRIB ファイルを選択します。"
+
+#: src/GribUIDialog.cpp:1653
+msgid " files don't exist!"
+msgstr " ファイルが存在しません!"
+
+#: src/GribUIDialog.cpp:1675
+msgid " can't be read!"
+msgstr " 読み取ることができません!"
+
+#: src/GribUIDialog.cpp:1890 src/GribUIDialog.cpp:1892
+#: src/GribUIDialogBase.h:167
 msgid "GRIB Display Control"
 msgstr "GRIB 表示コントロール"
-#
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "Knots"
+msgstr "ノット"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "m/s"
+msgstr "m/s"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "mph"
+msgstr "マイル/時"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "km/h"
+msgstr "km/h"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "Beaufort"
+msgstr "ビューフォート"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "MilliBars"
+msgstr "ミリバール"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "mmHG"
+msgstr "mmHG"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "inHG"
+msgstr "inHG"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Meters"
+msgstr "メートル"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Feet"
+msgstr "フィート"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Celsius"
+msgstr "摂氏"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Fahrenheit"
+msgstr "華氏"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Millimeters"
+msgstr "ミリメートル"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Inches"
+msgstr "インチ"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "Percentage"
+msgstr "パーセンテージ"
+
+#: src/GribSettingsDialog.cpp:37
+msgid "j/kg"
+msgstr "j/kg"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:417
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1753
+#: src/GribOverlayFactory.cpp:1124
+msgid "Wind"
+msgstr "風"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:429
+#: src/GribUIDialogBase.cpp:1759
+msgid "Wind Gust"
+msgstr "突風"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:441
+#: src/GribUIDialogBase.cpp:1756 src/GribTable.cpp:120
+msgid "Pressure"
+msgstr "圧力"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:455
+#: src/GribUIDialogBase.cpp:1786
+msgid "Waves"
+msgstr "波"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:473
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1775
+msgid "Current"
+msgstr "潮流"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:489
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1762
+#: src/GribTable.cpp:151
+msgid "Rainfall"
+msgstr "降雨量"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:503
+#: src/GribUIDialogBase.cpp:507 src/GribUIDialogBase.cpp:899
+#: src/GribUIDialogBase.cpp:1765 src/GribTable.cpp:159
+msgid "Cloud Cover"
+msgstr "雲量"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Air Temperature"
+msgstr "気温"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Sea Temperature"
+msgstr "海の温度"
+
+#: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:543
+#: src/GribUIDialogBase.cpp:1778 src/GribTable.cpp:183
+msgid "CAPE"
+msgstr "対流有効位置エネルギー（CAPE）"
+
+#: src/GribSettingsDialog.cpp:51
+msgid "Altitude(Geopotential)"
+msgstr "高度（ジオポテンシャル）"
+
+#: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:243
+msgid "Relative Humidity"
+msgstr "相対湿度"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "h"
+msgstr "時間"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "mn"
+msgstr "分"
+
+#: src/GribSettingsDialog.cpp:552
+msgid "Apply"
+msgstr "適用"
+
+#: src/GribSettingsDialog.cpp:742 src/GribSettingsDialog.cpp:751
+#: src/CursorData.cpp:495 src/CursorData.cpp:501
+msgid "Display Isotachs"
+msgstr "等風速線を表示"
+
+#: src/GribSettingsDialog.cpp:758 src/CursorData.cpp:506
+msgid "Display Isobars"
+msgstr "等圧線を表示"
+
+#: src/GribSettingsDialog.cpp:777 src/CursorData.cpp:511
+msgid "Display Isotherms"
+msgstr "等温線を表示"
+
+#: src/GribSettingsDialog.cpp:784 src/CursorData.cpp:519
+msgid "Display Iso CAPE"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:790 src/GribSettingsDialog.cpp:858
+#: src/GribUIDialogBase.cpp:818
+msgid "Spacing"
+msgstr "間隔"
+
+#: src/GribSettingsDialog.cpp:873
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "あなたはダイアログのタイトル/ドラッグバーを削除する必要がある\n"
+
+#: src/GribSettingsDialog.cpp:875
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "タイトル/ドラッグ バーを ダイアログに追加します。\n"
+
+#: src/GribSettingsDialog.cpp:878
+msgid "This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr "この変更はリロードが必要\n"
+"プラグインを閉じて、再読み込みした後で適用されます。"
+
+#: src/GribSettingsDialog.cpp:898
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "あなたは、補間を承認しました\n"
+"表示されたデータは実際のものではなく計算されたものであることを忘れないでください\n"
+"これは精度の低下を招きます"
+
+#: src/GribSettingsDialog.cpp:899 src/GribSettingsDialog.cpp:945
+#: src/grib_pi.cpp:704 src/GribRequestDialog.cpp:637
+msgid "Warning!"
+msgstr "警告 ！"
+
+#: src/GribSettingsDialog.cpp:944
+msgid "This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "このオプションの意味は補間を承認するものです\n"
+"表示されたデータは実際のものではなく計算されたものであることを忘れないでください\n"
+"これは精度の低下を招きます"
+
+#: src/GribUIDialogBase.cpp:35 src/GribUIDialogBase.cpp:152
+msgid "Previous"
+msgstr "前へ"
+
+#: src/GribUIDialogBase.cpp:46 src/GribUIDialogBase.cpp:163
+msgid "Next"
+msgstr "次へ"
+
+#: src/GribUIDialogBase.cpp:60 src/GribUIDialogBase.cpp:171
+msgid "Select geoptential altitude"
+msgstr "ジオポテンシャル高度を選択"
+
+#: src/GribUIDialogBase.cpp:445
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "平均海面圧 (MSLP)"
+
+#: src/GribUIDialogBase.cpp:459
+msgid "Significant Wave Height"
+msgstr "有義波高"
+
+#: src/GribUIDialogBase.cpp:464
+msgid "Waves period"
+msgstr "波の周期"
+
+#: src/GribUIDialogBase.cpp:469
+msgid "Waves Direction"
+msgstr "波の方向"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Surface Current Speed"
+msgstr "表面の現在の速度"
+
+#: src/GribUIDialogBase.cpp:482
+msgid "Surface Current Direction"
+msgstr "現在の表面の方向"
+
+#: src/GribUIDialogBase.cpp:493
+msgid "Cumulative Rainfall per Hour"
+msgstr "累積時間雨量"
+
+#: src/GribUIDialogBase.cpp:517 src/GribUIDialogBase.cpp:899
+msgid "Air Temp"
+msgstr "気温"
+
+#: src/GribUIDialogBase.cpp:529 src/GribUIDialogBase.cpp:899
+msgid "Sea Temp"
+msgstr "海の温度"
+
+#: src/GribUIDialogBase.cpp:533
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "海または表面レベルの気温"
+
+#: src/GribUIDialogBase.cpp:547
+msgid "Convective Available Potential Energy"
+msgstr "対流有効位置エネルギー"
+
+#: src/GribUIDialogBase.cpp:557 src/CursorData.cpp:241
+msgid "Altitude"
+msgstr "高度"
+
+#: src/GribUIDialogBase.cpp:574
+msgid "Temp."
+msgstr "気温"
+
+#: src/GribUIDialogBase.cpp:591
+msgid "Relat. Hum."
+msgstr "相対湿度"
+
+#: src/GribUIDialogBase.cpp:734
+msgid "Data Display Options"
+msgstr "データ表示オプション"
+
+#: src/GribUIDialogBase.cpp:748
+msgid "Units"
+msgstr "単位"
+
+#: src/GribUIDialogBase.cpp:760 src/CursorData.cpp:494
+msgid "Barbed Arrows"
+msgstr "刺のある矢印"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Default Colour"
+msgstr "デフォルトの色"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Controled Colours"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+#: src/GribUIDialogBase.cpp:913
+msgid "Spacing(pixels)"
+msgstr "間隔（ピクセル）"
+
+#: src/GribUIDialogBase.cpp:783 src/GribUIDialogBase.cpp:861
+#: src/GribUIDialogBase.cpp:917
+msgid "Fixed"
+msgstr "修正済"
+
+#: src/GribUIDialogBase.cpp:789 src/GribUIDialogBase.cpp:867
+#: src/GribUIDialogBase.cpp:923
+msgid "Minimum"
+msgstr "最小"
+
+#: src/GribUIDialogBase.cpp:802 src/GribUIDialogBase.cpp:832
+msgid "Always visible"
+msgstr "常に表示"
+
+#: src/GribUIDialogBase.cpp:811
+msgid "IsoBars"
+msgstr "等圧線"
+
+#: src/GribUIDialogBase.cpp:838 src/CursorData.cpp:524 src/CursorData.cpp:529
+msgid "Direction Arrows"
+msgstr "方向矢印"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Single Arrow"
+msgstr "単一矢印"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Double Arrow"
+msgstr "二重矢印"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Proportional Arrow"
+msgstr "比例の矢印"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Default Size"
+msgstr "既定のサイズ"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Small Size"
+msgstr "小さいサイズ"
+
+#: src/GribUIDialogBase.cpp:892 src/CursorData.cpp:496 src/CursorData.cpp:502
+#: src/CursorData.cpp:515 src/CursorData.cpp:520 src/CursorData.cpp:525
+#: src/CursorData.cpp:530
+msgid "OverlayMap"
+msgstr "オーバーレイマップ"
+
+#: src/GribUIDialogBase.cpp:895
+msgid "Colors"
+msgstr "色"
+
+#: src/GribUIDialogBase.cpp:899
+msgid "Generic"
+msgstr "一般"
+
+#: src/GribUIDialogBase.cpp:905 src/CursorData.cpp:497 src/CursorData.cpp:503
+#: src/CursorData.cpp:507 src/CursorData.cpp:516 src/CursorData.cpp:521
+#: src/CursorData.cpp:526 src/CursorData.cpp:531
+msgid "Numbers"
+msgstr "番号"
+
+#: src/GribUIDialogBase.cpp:932 src/CursorData.cpp:498 src/CursorData.cpp:532
+msgid "Particle Map"
+msgstr "粒子マップ"
+
+#: src/GribUIDialogBase.cpp:935
+msgid "Density"
+msgstr "密度"
+
+#: src/GribUIDialogBase.cpp:956
+msgid "Transparency for all Overlay Maps"
+msgstr "すべてのオーバーレイ マップの透明度"
+
+#: src/GribUIDialogBase.cpp:963
+msgid "Overlay Transparency (%)"
+msgstr "オーバーレイの透明度 (%)"
+
+#: src/GribUIDialogBase.cpp:982
+msgid "Data"
+msgstr "データ"
+
+#: src/GribUIDialogBase.cpp:992
+msgid "Playback Options"
+msgstr "再生オプション"
+
+#: src/GribUIDialogBase.cpp:1000
+msgid "Speed Control"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1012
+msgid "Slow"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1020
+msgid "Fast"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1026
+msgid "Loop Mode"
+msgstr "ループ モード"
+
+#: src/GribUIDialogBase.cpp:1036
+msgid "Loop Start"
+msgstr "ループの開始"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Top of Grib File"
+msgstr "Grib ファイルの先頭"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Current time forecast"
+msgstr "現在の時刻の天気予報"
+
+#: src/GribUIDialogBase.cpp:1048
+msgid "Interpolate between gribs"
+msgstr "Gribs 間を補間します。"
+
+#: src/GribUIDialogBase.cpp:1058
+msgid "Time Interval"
+msgstr "インターバル"
+
+#: src/GribUIDialogBase.cpp:1078 src/GribUIDialogBase.cpp:1208
+msgid "Playback"
+msgstr "再生"
+
+#: src/GribUIDialogBase.cpp:1088
+msgid "Dialogs Style"
+msgstr "ダイアログ スタイル"
+
+#: src/GribUIDialogBase.cpp:1095
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr "カーソル位置のデータ ダイアログは、アイコンバーにアタッチさてれています。ータイトル/ドラッグバー付き"
+
+#: src/GribUIDialogBase.cpp:1098
+msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr "カーソル位置のデータ ダイアログは、アイコンバーにアタッチさてれています。ータイトル/ドラッグバーなし"
+
+#: src/GribUIDialogBase.cpp:1101
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr "カーソル位置のデータ ダイアログは、分離され水平方向に表示"
+
+#: src/GribUIDialogBase.cpp:1104
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr "カーソル位置のデータ ダイアログは、分離され、縦方向に表示"
+
+#: src/GribUIDialogBase.cpp:1117
+msgid "Buttons Visibility"
+msgstr "ボタンの表示/非表示"
+
+#: src/GribUIDialogBase.cpp:1131
+msgid "Attached icon bar"
+msgstr "添付アイコン バー"
+
+#: src/GribUIDialogBase.cpp:1136
+msgid "Isolated icon bar"
+msgstr "アイコン バー分離"
+
+#: src/GribUIDialogBase.cpp:1144
+msgid "Geopot. Height Choice"
+msgstr "ジオポテンシャル、高さの選択"
+
+#: src/GribUIDialogBase.cpp:1176
+msgid "Zoom to Center"
+msgstr "中心にズームします。"
+
+#: src/GribUIDialogBase.cpp:1192
+msgid "Show Cursor Data"
+msgstr "カーソル 一のデータを表示"
+
+#: src/GribUIDialogBase.cpp:1224
+msgid "Time Slider"
+msgstr "タイム スライダー"
+
+#: src/GribUIDialogBase.cpp:1240
+msgid "Open File"
+msgstr "ファイルを開く"
+
+#: src/GribUIDialogBase.cpp:1272
+msgid "Request"
+msgstr "要求"
+
+#: src/GribUIDialogBase.cpp:1294
+msgid "GUI"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1385
+msgid "General Options"
+msgstr "一般的なオプション"
+
+#: src/GribUIDialogBase.cpp:1392
+msgid "Use High Definition Graphics"
+msgstr "高解像度グラフィックスを使用します。"
+
+#: src/GribUIDialogBase.cpp:1395
+msgid "Use Gradual Colors"
+msgstr "段階的な色を使用"
+
+#: src/GribUIDialogBase.cpp:1398
+msgid "Copy First Cumulative Missing Record"
+msgstr "最初の累積的に不足しているレコードをコピーします。"
+
+#: src/GribUIDialogBase.cpp:1401
+msgid "Copy Missing Wave Records"
+msgstr "失われた波の記録をコピーします。"
+
+#: src/GribUIDialogBase.cpp:1404
+msgid "Draw Barbed Arrows Head"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the More Recent File in Directory"
+msgstr "ディレクトリに新しいファイルを読み込む"
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the Last Opened File"
+msgstr "最後に開いたファイルを読み込む"
+
+#: src/GribUIDialogBase.cpp:1414
+msgid "Load File Options"
+msgstr "ファイルの読み込みオプション"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the first forecast in GRIB file"
+msgstr "GRIB ファイルで最初の予報を開始します。"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the nearest forecast to current time"
+msgstr "現在の時刻に最も近い予報を開始します。"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Authorize Interpolation to start at current time"
+msgstr "現在の時刻に開始する補間を承認します。"
+
+#: src/GribUIDialogBase.cpp:1420
+msgid "Start Options"
+msgstr "起動オプション"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "Local Time"
+msgstr "ローカル時刻"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:1426
+msgid "Time Options"
+msgstr "タイムオプション"
+
+#: src/GribUIDialogBase.cpp:1476
+msgid "Profile"
+msgstr "プロファイル"
+
+#: src/GribUIDialogBase.cpp:1489
+msgid "Sender eMail Address"
+msgstr "送信者メール アドレス"
+
+#: src/GribUIDialogBase.cpp:1518
+msgid "Mail To "
+msgstr "メールする "
+
+#: src/GribUIDialogBase.cpp:1528
+msgid "Forecast Model "
+msgstr "予測モデル "
+
+#: src/GribUIDialogBase.cpp:1545
+msgid "Moving Grib"
+msgstr "Grib の移動"
+
+#: src/GribUIDialogBase.cpp:1553
+msgid "Speed"
+msgstr "速度"
+
+#: src/GribUIDialogBase.cpp:1561
+msgid "Kts"
+msgstr "ノット"
+
+#: src/GribUIDialogBase.cpp:1566
+msgid "Course"
+msgstr "コース"
+
+#: src/GribUIDialogBase.cpp:1573 src/GribUIDialogBase.cpp:1624
+msgid "Deg"
+msgstr "度"
+
+#: src/GribUIDialogBase.cpp:1588
+msgid "zyGrib Login"
+msgstr "zyGrib ログイン"
+
+#: src/GribUIDialogBase.cpp:1596
+msgid "zyGrib Code"
+msgstr "zyGrib コード"
+
+#: src/GribUIDialogBase.cpp:1615
+msgid "Resolution"
+msgstr "解像度"
+
+#: src/GribUIDialogBase.cpp:1629
+msgid "Interval"
+msgstr "インターバル"
+
+#: src/GribUIDialogBase.cpp:1639
+msgid "Hours"
+msgstr "時間"
+
+#: src/GribUIDialogBase.cpp:1644
+msgid "Time Range"
+msgstr "時間範囲"
+
+#: src/GribUIDialogBase.cpp:1653
+msgid "Days"
+msgstr "日"
+
+#: src/GribUIDialogBase.cpp:1667
+msgid "Area Selection"
+msgstr "エリア選択"
+
+#: src/GribUIDialogBase.cpp:1679
+msgid "Manual Selection"
+msgstr "手動選択"
+
+#: src/GribUIDialogBase.cpp:1682
+msgid "Use Always this Area"
+msgstr "常にこの領域を使用"
+
+#: src/GribUIDialogBase.cpp:1692
+msgid "Max Lat"
+msgstr "最大緯度"
+
+#: src/GribUIDialogBase.cpp:1699 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "N"
+msgstr "N"
+
+#: src/GribUIDialogBase.cpp:1703
+msgid "Max Long"
+msgstr "最大経度"
+
+#: src/GribUIDialogBase.cpp:1710 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "E"
+msgstr "E"
+
+#: src/GribUIDialogBase.cpp:1715
+msgid "Min Lat"
+msgstr "最小緯度"
+
+#: src/GribUIDialogBase.cpp:1722 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "S"
+msgstr "S"
+
+#: src/GribUIDialogBase.cpp:1727
+msgid "Min Long"
+msgstr "最小経度"
+
+#: src/GribUIDialogBase.cpp:1734 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "W"
+msgstr "W"
+
+#: src/GribUIDialogBase.cpp:1746
+msgid "Data Selection"
+msgstr "データの選択"
+
+#: src/GribUIDialogBase.cpp:1768
+msgid "Air Temperature(2m)"
+msgstr "気温（2m）"
+
+#: src/GribUIDialogBase.cpp:1772
+msgid "Sea Temperature(surf.)"
+msgstr "海表面の温度"
+
+#: src/GribUIDialogBase.cpp:1802
+msgid "Geopotential Height"
+msgstr "ジオポテンシャル高度"
+
+#: src/GribUIDialogBase.cpp:1812
+msgid "850 hPa"
+msgstr "850 hPa"
+
+#: src/GribUIDialogBase.cpp:1815
+msgid "700 hPa"
+msgstr "700 hPa"
+
+#: src/GribUIDialogBase.cpp:1818
+msgid "500 hPa"
+msgstr "500 hPa"
+
+#: src/GribUIDialogBase.cpp:1821
+msgid "300 hPa"
+msgstr "300 hPa"
+
+#: src/GribUIDialogBase.cpp:1834
+msgid "Mail"
+msgstr "メール"
+
+#: src/GribUIDialogBase.cpp:1862
+msgid "Estimated File Size"
+msgstr "推定ファイル サイズ"
+
+#: src/GribUIDialogBase.cpp:1870
+msgid " (Max size )"
+msgstr " (最大サイズ)"
+
+#: src/GribUIDialogBase.cpp:1994
+msgid "Data at Position:"
+msgstr "位置データ:"
+
+#: src/GribUIDialogBase.cpp:2019
+msgid "Close"
+msgstr "閉じる"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "メール エラー: MAPI32。DLL がインストールされてない、またはこのコンピューターで無効です!"
+
+#: src/GribUIDialogBase.h:343
+msgid "Preferences"
+msgstr "設定"
+
+#: src/GribUIDialogBase.h:429
+msgid "Write and send eMail request"
+msgstr "書き込み、電子メール送信を要求"
+
+#: src/GribUIDialogBase.h:457
+msgid "Grib Data Table"
+msgstr "Grib データ テーブル"
+
+#: src/grib_pi.h:104 src/grib_pi.cpp:405 src/GribRequestDialog.cpp:127
+#: src/GribRequestDialog.cpp:198 src/GribRequestDialog.cpp:465
+#: src/CursorData.cpp:155
+msgid "Dialog"
+msgstr "ダイアログ"
+
+#: src/GribOverlayFactory.cpp:503
+msgid "Warning : Data at Geopotential Height"
+msgstr "警告: ジオポテンシャル高度のデータで"
+
+#: src/GribOverlayFactory.cpp:1099
+msgid "IsoBar Unable to compute record magnitude"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:1124
+msgid "Building Isobar map"
+msgstr "等圧線図の構築"
+
+#: src/GribOverlayFactory.cpp:1404
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:1452
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "このグラフィックス ハードウェアではオーバーレイはサポートされていない (OpenGL を無効にする)"
+
+#: src/GribOverlayFactory.cpp:1462
+msgid "Overlays too wide and can't be displayed:"
+msgstr "オーバーレイの幅が広すぎるため、表示できません。"
+
+#: src/GribOverlayFactory.cpp:1471
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "オーバーレイはDC モードのノースアップ以外では抑制されます (OpenGL を有効にする)"
+
+#: src/GribOverlayFactory.cpp:1488
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "見えないオーバーレイを表示する為にズームまたはスケール アウトしてください："
+
+#: src/GribOverlayFactory.cpp:1519
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr ""
+
+#: src/grib_pi.cpp:137
+msgid "Grib"
+msgstr "Grib"
+
+#: src/grib_pi.cpp:205
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN用GRIB プラグイン"
-#
-msgid ""
-"GRIB PlugIn for OpenCPN\n"
+
+#: src/grib_pi.cpp:211
+msgid "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n"
-"\n"
+"and a request function to get GRIB files by eMail.\n\n"
 "Supported GRIB data include:\n"
 "- wind direction and speed (at 10 m)\n"
 "- wind gust\n"
@@ -291,12 +891,10 @@ msgid ""
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr ""
-"OpenCPN用のGRIBプラグイン\n"
+msgstr "OpenCPN用のGRIBプラグイン\n"
 "基本的なGRIBファイルのオーバーレイを提供します\n"
 "いくつかのGRIBファイルの種類のための機能\n"
-"そして、リクエストファンクションは、電子メールでGRIBファイルを取得します\n"
-"\n"
+"そして、リクエストファンクションは、電子メールでGRIBファイルを取得します\n\n"
 "含まれているサポートされているGRIBデータは以下になります\n"
 "- 風向と速度(10メートルで)\n"
 "- 突風\n"
@@ -309,536 +907,209 @@ msgstr ""
 "- 表面電流の方向と速度\n"
 "- 対流有効位置エネルギー(CAPE)\n"
 "- 300、500、700、850ヘクトパスカルで、風、高度、温度と相対湿度"
-#
-msgid "GUI"
-msgstr ""
-#
-msgid "General Options"
-msgstr "一般的なオプション"
-#
-msgid "Generic"
-msgstr "一般"
-#
-msgid "Geopot. Height Choice"
-msgstr "ジオポテンシャル、高さの選択"
-#
-msgid "Geopotential Height"
-msgstr "ジオポテンシャル高度"
-#
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr ""
-"zyGrib のフォーラムでこのコードを取得します。(このパスワードではありません!)"
-#
-msgid "Grib"
-msgstr "Grib"
-#
-msgid "Grib Data Table"
-msgstr "Grib データ テーブル"
-#
-msgid "Hide data at cursor"
-msgstr "カーソル位置のデータを隠す"
-#
-msgid "Hours"
-msgstr "時間"
-#
-msgid "Inches"
-msgstr "インチ"
-#
-msgid "Interpolate between gribs"
-msgstr "Gribs 間を補間します。"
-#
-msgid "Interval"
-msgstr "インターバル"
-#
-msgid "IsoBars"
-msgstr "等圧線"
-#
-msgid "Isolated icon bar"
-msgstr "アイコン バー分離"
-#
-msgid "Knots"
-msgstr "ノット"
-#
-msgid "Kts"
-msgstr "ノット"
-#
-msgid "Load File Options"
-msgstr "ファイルの読み込みオプション"
-#
-msgid "Load the Last Opened File"
-msgstr "最後に開いたファイルを読み込む"
-#
-msgid "Load the More Recent File in Directory"
-msgstr "ディレクトリに新しいファイルを読み込む"
-#
-msgid "Local Time"
-msgstr "ローカル時刻"
-#
-msgid "Loop Mode"
-msgstr "ループ モード"
-#
-msgid "Loop Start"
-msgstr "ループの開始"
-#
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr ""
-"メール エラー: MAPI32。DLL がインストールされてない、またはこのコンピューター"
-"で無効です!"
-#
-msgid "MB"
-msgstr "MB"
-#
-msgid "Mail"
-msgstr "メール"
-#
-msgid "Mail To "
-msgstr "メールする "
-#
-msgid "Manual Selection"
-msgstr "手動選択"
-#
-msgid "Max"
-msgstr "最大"
-#
-msgid "Max Lat"
-msgstr "最大緯度"
-#
-msgid "Max Long"
-msgstr "最大経度"
-#
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "平均海面圧 (MSLP)"
-#
-msgid "Menu"
-msgstr "メニュー"
-#
-msgid "Meters"
-msgstr "メートル"
-#
-msgid "MilliBars"
-msgstr "ミリバール"
-#
-msgid "Millimeters"
-msgstr "ミリメートル"
-#
-msgid "Min Lat"
-msgstr "最小緯度"
-#
-msgid "Min Long"
-msgstr "最小経度"
-#
-msgid "Minimum"
-msgstr "最小"
-#
-msgid "Moving Grib"
-msgstr "Grib の移動"
-#
-msgid "N"
-msgstr "N"
-#
-msgid "N/A"
-msgstr ""
-#
-msgid "Next"
-msgstr "次へ"
-#
-msgid "No valid GRIB file"
-msgstr ""
-#
-msgid "Now"
-msgstr "今"
-#
-msgid "Numbers"
-msgstr "番号"
-#
-msgid "Open File"
-msgstr "ファイルを開く"
-#
-msgid "Open a new file"
-msgstr "新しいファイルを開く"
-#
-msgid "Overlay Transparency (%)"
-msgstr "オーバーレイの透明度 (%)"
-#
-msgid "OverlayMap"
-msgstr "オーバーレイマップ"
-#
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr ""
-"このグラフィックス ハードウェアではオーバーレイはサポートされていない (OpenGL "
-"を無効にする)"
-#
-msgid "Overlays too wide and can't be displayed:"
-msgstr "オーバーレイの幅が広すぎるため、表示できません。"
-#
-msgid "Particle Map"
-msgstr "粒子マップ"
-#
-msgid "Percentage"
-msgstr "パーセンテージ"
-#
-msgid "Playback"
-msgstr "再生"
-#
-msgid "Playback Options"
-msgstr "再生オプション"
-#
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr ""
-"見えないオーバーレイを表示する為にズームまたはスケール アウトしてください："
-#
-msgid "Preferences"
-msgstr "設定"
-#
-msgid "Pressure"
-msgstr "圧力"
-#
-msgid "Previous"
-msgstr "前へ"
-#
-msgid "Profile"
-msgstr "プロファイル"
-#
-msgid "Proportional Arrow"
-msgstr "比例の矢印"
-#
-msgid "Rainfall"
-msgstr "降雨量"
-#
-msgid "Relat. Hum."
-msgstr "相対湿度"
-#
-msgid "Relative Humidity"
-msgstr "相対湿度"
-#
-msgid "Request"
-msgstr "要求"
-#
-msgid ""
-"Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr ""
-"リクエストが送信できません。電子メールの設定を確認してください。\n"
-"また、ログファイルを参照してください。\n"
-"保存、終了、またはキャンセル..."
-#
-msgid "Resolution"
-msgstr "解像度"
-#
-msgid "S"
-msgstr "S"
-#
-msgid "Save"
-msgstr "保存"
-#
-msgid ""
-"Sea\n"
-"Temperature"
-msgstr ""
-"海\n"
-"温度"
-#
-msgid "Sea Surface Temperature"
-msgstr "海の表面温度"
-#
-msgid "Sea Temp"
-msgstr "海の温度"
-#
-msgid "Sea Temperature"
-msgstr "海の温度"
-#
-msgid "Sea Temperature(surf.)"
-msgstr "海表面の温度"
-#
-msgid "Sea or Air Temperature at Surface Level"
-msgstr "海または表面レベルの気温"
-#
-msgid "Select a GRIB file"
-msgstr "GRIB ファイルを選択します。"
-#
-msgid "Select geopotential altitude"
-msgstr "ジオポテンシャル高度を選択"
-#
-msgid "Select geoptential altitude"
-msgstr "ジオポテンシャル高度を選択"
-#
-msgid "Send"
-msgstr "送信"
-#
-msgid "Sender eMail Address"
-msgstr "送信者メール アドレス"
-#
-msgid "Settings"
-msgstr "設定"
-#
-msgid "Show Cursor Data"
-msgstr "カーソル 一のデータを表示"
-#
-msgid "Show data at cursor"
-msgstr "カーソル位置のデータを表示します"
-#
-msgid "Significant Wave Height"
-msgstr "有義波高"
-#
-msgid "Single Arrow"
-msgstr "単一矢印"
-#
-msgid "Slow"
-msgstr ""
-#
-msgid "Small Size"
-msgstr "小さいサイズ"
-#
-msgid "Spacing"
-msgstr "間隔"
-#
-msgid "Spacing(pixels)"
-msgstr "間隔（ピクセル）"
-#
-msgid "Speed"
-msgstr "速度"
-#
-msgid "Speed Control"
-msgstr ""
-#
-msgid "Start Options"
-msgstr "起動オプション"
-#
-msgid "Start a request"
-msgstr "要求を開始します。"
-#
-msgid "Start at the first forecast in GRIB file"
-msgstr "GRIB ファイルで最初の予報を開始します。"
-#
-msgid "Start at the nearest forecast to current time"
-msgstr "現在の時刻に最も近い予報を開始します。"
-#
-msgid "Start play back"
-msgstr "再生を開始します。"
-#
-msgid "Stop play back"
-msgstr "再生を停止します。"
-#
-msgid "Surface Current Direction"
-msgstr "現在の表面の方向"
-#
-msgid "Surface Current Speed"
-msgstr "表面の現在の速度"
-#
-msgid "Temp."
-msgstr "気温"
-#
-msgid "Temperature"
-msgstr "温度"
-#
-msgid ""
-"This change needs a complete reload.\n"
-"It will be applied after closing and re-opening the plugin"
-msgstr ""
-"この変更はリロードが必要\n"
-"プラグインを閉じて、再読み込みした後で適用されます。"
-#
-msgid "This is your zyGrib's forum access Login"
-msgstr "これは zyGrib のフォーラム アクセス ログインです。"
-#
-msgid ""
-"This option imply you authorize intrepolation\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr ""
-"このオプションの意味は補間を承認するものです\n"
-"表示されたデータは実際のものではなく計算されたものであることを忘れないでくださ"
-"い\n"
-"これは精度の低下を招きます"
-#
-msgid "Time Interval"
-msgstr "インターバル"
-#
-msgid "Time Options"
-msgstr "タイムオプション"
-#
-msgid "Time Range"
-msgstr "時間範囲"
-#
-msgid "Time Slider"
-msgstr "タイム スライダー"
-#
-msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "ファイルが大きすぎます、zyGrib の制限は、2 Mb です!"
-#
-msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
-#
-msgid "Too small area for this resolution!"
-msgstr "この解像度では領域が小さすぎます"
-#
-msgid "Top of Grib File"
-msgstr "Grib ファイルの先頭"
-#
-msgid "Transparency for all Overlay Maps"
-msgstr "すべてのオーバーレイ マップの透明度"
-#
-msgid "UTC"
-msgstr "UTC"
-#
-msgid "Units"
-msgstr "単位"
-#
-msgid "Use Always this Area"
-msgstr "常にこの領域を使用"
-#
-msgid "Use Gradual Colors"
-msgstr "段階的な色を使用"
-#
-msgid "Use High Definition Graphics"
-msgstr "高解像度グラフィックスを使用します。"
-#
-msgid "Valid Area and Continue"
-msgstr ""
-#
-msgid "W"
-msgstr "W"
-#
-msgid "Warning : Data at Geopotential Height"
-msgstr "警告: ジオポテンシャル高度のデータで"
-#
-msgid "Warning!"
-msgstr "警告 ！"
-#
-msgid "Waves"
-msgstr "波"
-#
-msgid "Waves Direction"
-msgstr "波の方向"
-#
-msgid "Waves period"
-msgstr "波の周期"
-#
+
+#: src/grib_pi.cpp:387
 msgid "Weather table"
 msgstr "気象表"
-#
-msgid "Wind"
-msgstr "風"
-#
-msgid "Wind Direction"
-msgstr "風向"
-#
-msgid "Wind Gust"
-msgstr "突風"
-#
-msgid "Wind Gust at"
-msgstr ""
-#
-msgid "Wind Speed"
-msgstr "風速"
-#
-msgid "Wind Speed in Bf"
-msgstr "風速は Bf で"
-#
-msgid "Write and send eMail request"
-msgstr "書き込み、電子メール送信を要求"
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but "
-"Recomputed\n"
+
+#: src/grib_pi.cpp:703
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
-"あなたは、補間を承認しました\n"
-"現時刻において表示されたデータは実際のものではなく計算されたものであることを忘"
-"れないでください\n"
+msgstr "あなたは、補間を承認しました\n"
+"現時刻において表示されたデータは実際のものではなく計算されたものであることを忘れないでください\n"
 "これは精度の低下を招きます"
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
+
+#: src/GribTable.cpp:94
+msgid "Wind,Dir"
 msgstr ""
-"あなたは、補間を承認しました\n"
-"表示されたデータは実際のものではなく計算されたものであることを忘れないでくださ"
-"い\n"
-"これは精度の低下を招きます"
-#
-msgid ""
-"You request a forecast for more than 8 days horizon.\n"
+
+#: src/GribTable.cpp:100
+msgid "Wind,Speed"
+msgstr ""
+
+#: src/GribTable.cpp:108
+msgid "Wind,Gust"
+msgstr ""
+
+#: src/GribTable.cpp:133
+msgid "Waves,Dir"
+msgstr ""
+
+#: src/GribTable.cpp:138
+msgid "Waves,Hsig"
+msgstr ""
+
+#: src/GribTable.cpp:143
+msgid "Waves,Per"
+msgstr ""
+
+#: src/GribTable.cpp:167
+msgid "Air Temp."
+msgstr ""
+
+#: src/GribTable.cpp:175
+msgid "Sea Temp."
+msgstr ""
+
+#: src/GribTable.cpp:195
+msgid "Current,Dir"
+msgstr ""
+
+#: src/GribTable.cpp:201
+msgid "Current,Speed"
+msgstr ""
+
+#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
+msgid "Send"
+msgstr "送信"
+
+#: src/GribRequestDialog.cpp:121
+msgid "Save"
+msgstr "保存"
+
+#: src/GribRequestDialog.cpp:138
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "リクエスト メールを送信するためのアドレス。(LINUX では必須)"
+
+#: src/GribRequestDialog.cpp:139
+msgid "This is your zyGrib's forum access Login"
+msgstr "これは zyGrib のフォーラム アクセス ログインです。"
+
+#: src/GribRequestDialog.cpp:140
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "zyGrib のフォーラムでこのコードを取得します。(このパスワードではありません!)"
+
+#: src/GribRequestDialog.cpp:141
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "あなたの 予測速度 を入力してください。(ノッ ト)"
+
+#: src/GribRequestDialog.cpp:142
+msgid "Enter your forecasted Course"
+msgstr "あなたの予想コースを入力します。"
+
+#: src/GribRequestDialog.cpp:475
+msgid "Coord. "
+msgstr "座標。 "
+
+#: src/GribRequestDialog.cpp:480 src/GribRequestDialog.cpp:843
+#: src/GribRequestDialog.cpp:846
+msgid "MB"
+msgstr "MB"
+
+#: src/GribRequestDialog.cpp:636
+msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
 msgstr ""
-#
-msgid "You want to add a title/drag bar to the dialog\n"
-msgstr "タイトル/ドラッグ バーを ダイアログに追加します。\n"
-#
-msgid "You want to remove the dialog title/drag bar\n"
-msgstr "あなたはダイアログのタイトル/ドラッグバーを削除する必要がある\n"
-#
-msgid ""
-"Your request is ready. An email is prepared in your email environment. \n"
+
+#: src/GribRequestDialog.cpp:846
+msgid "Max"
+msgstr "最大"
+
+#: src/GribRequestDialog.cpp:962
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Zygribに電子メールを送信する前に、あなたのログイン名とコードが必要です\n"
+"www.zygrib.org/を訪問し、指示に従ってください...\n"
+" "
+
+#: src/GribRequestDialog.cpp:963
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "ファイルが大きすぎます、zyGrib の制限は、2 Mb です!"
+
+#: src/GribRequestDialog.cpp:963
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr "エラー! 最大緯度が最小緯度より小さい、または最大経度が最小経度より小さい"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr "領域が広すぎます! それぞれの側は、180\\u00B0未満にする必要があります!"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too small area for this resolution!"
+msgstr "この解像度では領域が小さすぎます"
+
+#: src/GribRequestDialog.cpp:981 src/GribRequestDialog.cpp:1016
+msgid "Continue..."
+msgstr "継続"
+
+#: src/GribRequestDialog.cpp:1001 src/GribRequestDialog.cpp:1005
+msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr ""
-"準備がととのいました、電子メールは、電子メール環境に用意されています。\n"
+msgstr "準備がととのいました、電子メールは、電子メール環境に用意されています。\n"
 "それを確認して送信してください\n"
 "保存、終了キャンセル、または続行..."
-#
-msgid ""
-"Your request was sent \n"
+
+#: src/GribRequestDialog.cpp:1008
+msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
-msgstr ""
-"リクエストが送信されました\n"
-"（ご使用のシステムが構成され、MTAがあり、電子メールを送信することが可能である"
-"場合）\n"
+msgstr "リクエストが送信されました\n"
+"（ご使用のシステムが構成され、MTAがあり、電子メールを送信することが可能である場合）\n"
 "保存、終了、キャンセル、または続行..."
-#
-msgid "Zoom To Center"
-msgstr "中心にズームします。"
-#
-msgid "Zoom to Center"
-msgstr "中心にズームします。"
-#
-msgid "at"
-msgstr ""
-#
+
+#: src/GribRequestDialog.cpp:1013
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "リクエストが送信できません。電子メールの設定を確認してください。\n"
+"また、ログファイルを参照してください。\n"
+"保存、終了、またはキャンセル..."
+
+#: src/CursorData.cpp:225
+msgid "Data at cursor position"
+msgstr "カーソル位置のデータ"
+
+#: src/CursorData.cpp:239
 msgid "at Geopotential Height"
 msgstr "ジオポテンシャル高度で"
-#
-msgid "h"
-msgstr "時間"
-#
-msgid "inHG"
-msgstr "inHG"
-#
-msgid "j/kg"
-msgstr "j/kg"
-#
-msgid "km/h"
-msgstr "km/h"
-#
-msgid "m/s"
-msgstr "m/s"
-#
-msgid "mmHG"
-msgstr "mmHG"
-#
-msgid "mn"
-msgstr "分"
-#
-msgid "mph"
-msgstr "マイル/時"
-#
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+
+#: src/CursorData.cpp:242
+msgid "Temperature"
+msgstr "温度"
+
+#: src/CursorData.cpp:245
+msgid "at"
 msgstr ""
-"オーバーレイはDC モードのノースアップ以外では抑制されます (OpenGL を有効にす"
-"る)"
-#
+
+#: src/CursorData.cpp:250
+msgid "Wind Speed"
+msgstr "風速"
+
+#: src/CursorData.cpp:251
+msgid "Wind Speed in Bf"
+msgstr "風速は Bf で"
+
+#: src/CursorData.cpp:252
+msgid "Wind Direction"
+msgstr "風向"
+
+#: src/CursorData.cpp:255
+msgid "Wind Gust at"
+msgstr ""
+
+#: src/CursorData.cpp:258
+msgid "Air Temperature at"
+msgstr ""
+
+#: src/CursorData.cpp:258
 msgid "surface level"
 msgstr "表面のレベル"
-#
-msgid "zyGrib Code"
-msgstr "zyGrib コード"
-#
-msgid "zyGrib Login"
-msgstr "zyGrib ログイン"
+
+#: src/CursorData.cpp:258
+msgid "Sea Surface Temperature"
+msgstr "海の表面温度"
+
+#: src/CursorData.cpp:299 src/CursorData.cpp:300 src/CursorData.cpp:301
+#: src/CursorData.cpp:313 src/CursorData.cpp:326 src/CursorData.cpp:346
+#: src/CursorData.cpp:348 src/CursorData.cpp:352 src/CursorData.cpp:362
+#: src/CursorData.cpp:384 src/CursorData.cpp:385 src/CursorData.cpp:399
+#: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
+#: src/CursorData.cpp:448 src/CursorData.cpp:460 src/CursorData.cpp:472
+#: src/CursorData.cpp:483
+msgid "N/A"
+msgstr ""
+
