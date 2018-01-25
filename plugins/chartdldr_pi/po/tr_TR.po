@@ -181,8 +181,7 @@ msgstr ""
 #: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
 msgid "Download\n"
 " selected charts"
-msgstr "\n"
-" Seçilen grafikleri indirin"
+msgstr " Seçilen grafikleri indirin"
 
 #: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
 msgid "Download selected charts"

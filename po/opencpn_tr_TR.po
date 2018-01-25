@@ -2848,7 +2848,7 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr "\\ n OpenCPN, yararlı olacağı ümidiyle dağıtılır ancak herhangi bir garantisi olmadan; BELİRLİ BİR AMACA UYGUNLUK VEYA SATILABİLİRLİK HAKKINDA İÇERİK UYARILARI. \\ n \\ n Daha fazla ayrıntı için GNU Genel Kamu Lisansı'na bakın. \\ n \\ n OpenCPN yalnızca onaylanmış kağıt çizelgeleri ve geleneksel navigasyon yöntemleriyle birlikte kullanılmalıdır. \\ n \\ n Can ve mal güvenliği için OpenCPN'ye güvenmeyin. \\ n \\ n Lütfen kabul etmek ve devam etmek için \"Tamam\" düğmesini, bırakmak için \"İptal\" düğmesini tıklayın. \\ n"
+msgstr "\n OpenCPN, yararlı olacağı ümidiyle dağıtılır ancak herhangi bir garantisi olmadan; BELİRLİ BİR AMACA UYGUNLUK VEYA SATILABİLİRLİK HAKKINDA İÇERİK UYARILARI. \\ n \\ n Daha fazla ayrıntı için GNU Genel Kamu Lisansı'na bakın. \\ n \\ n OpenCPN yalnızca onaylanmış kağıt çizelgeleri ve geleneksel navigasyon yöntemleriyle birlikte kullanılmalıdır. \\ n \\ n Can ve mal güvenliği için OpenCPN'ye güvenmeyin. \\ n \\ n Lütfen kabul etmek ve devam etmek için \"Tamam\" düğmesini, bırakmak için \"İptal\" düğmesini tıklayın. \n"
 
 #: src/chart1.cpp:873
 msgid "Welcome to OpenCPN"
@@ -5250,7 +5250,7 @@ msgstr "Sıkışan herhangi bir çizelge bulunamadı."
 msgid "compressed %ld charts\n"
 "from %.1fMB to %.1fMB\n"
 "saved %.1fMB (%.1f%%)"
-msgstr "sıkıştırılmış % ld çizelgeleri \\ n den %.1f MB'ye.1f% MB \\ n kaydedilmiş.1f% MB ( %.1f %%)"
+msgstr "sıkıştırılmış %ld çizelgeleri \n den %.1fMB ye %.1fMB \n kaydedilmiş %.1fMB ( %.1f%%)"
 
 #: src/options.cpp:7212 src/options.cpp:7223
 msgid "Select Sound File"
