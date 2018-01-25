@@ -4587,6 +4587,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
   
   miscOptions->AddSpacer(10);
+
+  wxFlexGridSizer* sliderSizer;
+  sliderSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
+  sliderSizer->AddGrowableCol( 1 );
+  sliderSizer->SetFlexibleDirection( wxBOTH );
+  sliderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
   
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
@@ -4594,10 +4600,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_GUI_Factor->Hide();
-  miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
+  sliderSizer->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
-                   verticleInputFlags);
-  miscOptions->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
+                   inputFlags);
+  sliderSizer->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
 #ifdef __OCPN_ANDROID__
@@ -4608,10 +4614,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
-  miscOptions->Add(
+  sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      verticleInputFlags);
-  miscOptions->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
+      inputFlags);
+  sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
 #ifdef __OCPN_ANDROID____
@@ -4622,16 +4628,16 @@ void options::CreatePanel_UI(size_t parent, int border_size,
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
       wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_Ship_Factor->Hide();
-  miscOptions->Add(
+  sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
-                   verticleInputFlags);
-  miscOptions->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
+                   inputFlags);
+  sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
   m_pSlider_Ship_Factor->Show();
   
 #ifdef __OCPN_ANDROID____
   m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
-  
+  miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
   miscOptions->AddSpacer(20);
 }
 
