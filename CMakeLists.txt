@@ -1455,7 +1455,7 @@ IF (OPENGL_FOUND)
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
       ELSE ()
         # use standard optimizations for other architectures
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -fPIC")
       ENDIF ()
   ELSE (NOT MSVC)
         # try to use sse on x86 based systems
