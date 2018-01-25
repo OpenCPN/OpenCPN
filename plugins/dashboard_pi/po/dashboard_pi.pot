@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 4.8.10109\n"
+"Project-Id-Version: dashboard_pi 4.8.10119\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:12-0500\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/clock.cpp:150 src/dial.cpp:515 src/gps.cpp:130 src/wind.cpp:65
-#: src/wind_history.cpp:425
+#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
+#: src/wind_history.cpp:433
 msgid "N"
 msgstr ""
 
@@ -187,8 +187,8 @@ msgid "Local Sunrise/Sunset"
 msgstr ""
 
 #: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
-#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1654
-#: src/dashboard_pi.cpp:1693 src/dashboard_pi.cpp:1995
+#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
+#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
 msgid "Dashboard"
 msgstr ""
 
@@ -202,253 +202,253 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 
-#: src/dashboard_pi.cpp:1630
+#: src/dashboard_pi.cpp:1635
 msgid "Dashboard preferences"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1700
+#: src/dashboard_pi.cpp:1705
 msgid "show this dashboard"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1706
+#: src/dashboard_pi.cpp:1711
 msgid "Caption:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1714
+#: src/dashboard_pi.cpp:1719
 msgid "Orientation:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1718 src/dashboard_pi.cpp:2186
+#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
 msgid "Vertical"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1719 src/dashboard_pi.cpp:2188
+#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
 msgid "Horizontal"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1726 src/dashboard_pi.cpp:1734
-#: src/dashboard_pi.cpp:2114
+#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
+#: src/dashboard_pi.cpp:2116
 msgid "Instruments"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1742
+#: src/dashboard_pi.cpp:1747
 msgid "Add"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1755
+#: src/dashboard_pi.cpp:1760
 msgid "Delete"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1761
+#: src/dashboard_pi.cpp:1766
 msgid "Up"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1766
+#: src/dashboard_pi.cpp:1771
 msgid "Down"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1776
+#: src/dashboard_pi.cpp:1781
 msgid "Appearance"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1778
+#: src/dashboard_pi.cpp:1783
 msgid "Fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1784
+#: src/dashboard_pi.cpp:1789
 msgid "Title:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1790
+#: src/dashboard_pi.cpp:1795
 msgid "Data:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1796
+#: src/dashboard_pi.cpp:1801
 msgid "Label:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1802
+#: src/dashboard_pi.cpp:1807
 msgid "Small:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1810
+#: src/dashboard_pi.cpp:1815
 msgid "Units, Ranges, Formats"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1816
+#: src/dashboard_pi.cpp:1821
 msgid "Speedometer max value:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1822
+#: src/dashboard_pi.cpp:1827
 msgid "Speed Over Ground Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1828
+#: src/dashboard_pi.cpp:1833
 msgid "COG Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1834
+#: src/dashboard_pi.cpp:1839
 msgid "Local Time Offset From UTC:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1853
+#: src/dashboard_pi.cpp:1858
 msgid "Boat speed units:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1856 src/dashboard_pi.cpp:1874
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
 msgid "Honor OpenCPN settings"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1856 src/dashboard_pi.cpp:1883
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "Kts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1856 src/dashboard_pi.cpp:1883
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "mph"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1856 src/dashboard_pi.cpp:1883
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "km/h"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1856 src/dashboard_pi.cpp:1883
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
 msgid "m/s"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1862
+#: src/dashboard_pi.cpp:1867
 msgid "Depth units:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1865 src/dashboard_pi.cpp:1874
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
 msgid "Meters"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1865
+#: src/dashboard_pi.cpp:1870
 msgid "Feet"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1865
+#: src/dashboard_pi.cpp:1870
 msgid "Fathoms"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1865
+#: src/dashboard_pi.cpp:1870
 msgid "Centimeters"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1865
+#: src/dashboard_pi.cpp:1870
 msgid "Inches"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1871
+#: src/dashboard_pi.cpp:1876
 msgid "Distance units:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1874
+#: src/dashboard_pi.cpp:1879
 msgid "Nautical miles"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1874
+#: src/dashboard_pi.cpp:1879
 msgid "Statute miles"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1874
+#: src/dashboard_pi.cpp:1879
 msgid "Kilometers"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1880
+#: src/dashboard_pi.cpp:1885
 msgid "Wind speed units:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:2097
+#: src/dashboard_pi.cpp:2099
 msgid "Add instrument"
 msgstr ""
 
-#: src/dashboard_pi.cpp:2103
+#: src/dashboard_pi.cpp:2105
 msgid "Select instrument to add:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:2195
+#: src/dashboard_pi.cpp:2199
 msgid "Preferences..."
 msgstr ""
 
-#: src/dial.cpp:515 src/wind.cpp:65 src/wind_history.cpp:431
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
 msgid "NE"
 msgstr ""
 
-#: src/dial.cpp:515 src/gps.cpp:134 src/wind.cpp:65 src/wind_history.cpp:437
+#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
 msgid "E"
 msgstr ""
 
-#: src/dial.cpp:515 src/wind.cpp:65 src/wind_history.cpp:443
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
 msgid "SE"
 msgstr ""
 
-#: src/dial.cpp:515 src/gps.cpp:138 src/wind.cpp:65 src/wind_history.cpp:449
+#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
 msgid "S"
 msgstr ""
 
-#: src/dial.cpp:515 src/wind.cpp:65 src/wind_history.cpp:455
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
 msgid "SW"
 msgstr ""
 
-#: src/dial.cpp:515 src/gps.cpp:142 src/wind.cpp:65 src/wind_history.cpp:461
+#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
 msgid "W"
 msgstr ""
 
-#: src/dial.cpp:515 src/wind.cpp:65 src/wind_history.cpp:467
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
 msgid "NW"
 msgstr ""
 
-#: src/instrument.cpp:229
+#: src/instrument.cpp:236
 msgid " true"
 msgstr ""
 
-#: src/instrument.cpp:231
+#: src/instrument.cpp:238
 msgid " mag"
 msgstr ""
 
-#: src/wind_history.cpp:56 src/wind_history.cpp:99
+#: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
 msgstr ""
 
-#: src/wind_history.cpp:323
+#: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
 msgstr ""
 
-#: src/wind_history.cpp:428
+#: src/wind_history.cpp:436
 msgid "NNE"
 msgstr ""
 
-#: src/wind_history.cpp:434
+#: src/wind_history.cpp:442
 msgid "ENE"
 msgstr ""
 
-#: src/wind_history.cpp:440
+#: src/wind_history.cpp:448
 msgid "ESE"
 msgstr ""
 
-#: src/wind_history.cpp:446
+#: src/wind_history.cpp:454
 msgid "SSE"
 msgstr ""
 
-#: src/wind_history.cpp:452
+#: src/wind_history.cpp:460
 msgid "SSW"
 msgstr ""
 
-#: src/wind_history.cpp:458
+#: src/wind_history.cpp:466
 msgid "WSW"
 msgstr ""
 
-#: src/wind_history.cpp:464
+#: src/wind_history.cpp:472
 msgid "WNW"
 msgstr ""
 
-#: src/wind_history.cpp:470
+#: src/wind_history.cpp:478
 msgid "NNW"
 msgstr ""
 
-#: src/wind_history.cpp:567
+#: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr ""
