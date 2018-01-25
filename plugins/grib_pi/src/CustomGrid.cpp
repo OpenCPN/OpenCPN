@@ -55,9 +55,9 @@ CustomGrid::CustomGrid( wxWindow *parent, wxWindowID id, const wxPoint &pos,
     wxFileConfig *pConf = GetOCPNConfigObject();
     if (pConf) {
         pConf->SetPath(_T("/Settings/GRIB"));
-        m_IsDigit = pConf->Read(_T("GribDataTableRowPref"), _T("..."));
+        m_IsDigit = pConf->Read(_T("GribDataTableRowPref"), _T("XXX"));
     }
-    if( m_IsDigit.Len() != wxString(_T("...")).Len() ) m_IsDigit = _T("...");
+    if( m_IsDigit.Len() != wxString(_T("XXX")).Len() ) m_IsDigit = _T("XXX");
     //create structure for all numerical rows
     for( unsigned int i = 0; i < m_IsDigit.Len(); i++ ){
         m_NumRow.push_back(wxNOT_FOUND);
