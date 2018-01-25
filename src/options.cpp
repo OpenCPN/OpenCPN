@@ -7004,6 +7004,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
     pParent->UpdateAllFonts();
     m_bfontChanged = true;
+    OnFontChoice(event);
   }
 
   event.Skip();
