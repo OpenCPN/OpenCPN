@@ -12773,7 +12773,7 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
        
 //       SetClientSize(szyv.x + 20, szyv.y + 20); 
        
-       CentreOnParent();
+       CentreOnScreen();
        
        //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
        msgWindow->SetBackgroundColour(GetBackgroundColour());
@@ -12796,7 +12796,10 @@ void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
     SetClientSize(esize);     // This will force a recalc of internal representation
     
     int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
-    SetClientSize(wxSize(esize.x, height1 + 70 ));   // constant is 2xBorders + a little slop.
+    
+    int client_size_y = wxMin(::wxGetDisplaySize().y - 100, height1 + 70);    // Must fit on screen
+    
+    SetClientSize(wxSize(esize.x, client_size_y ));   // constant is 2xBorders + a little slop.
     
 }
 
