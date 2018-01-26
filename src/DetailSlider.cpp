@@ -140,7 +140,8 @@ void PopUpDSlide::OnCancelClick( wxCommandEvent& event )
 void PopUpDSlide::OnClose( wxCloseEvent& event )
 {
     g_bShowDetailSlider = false;
-
+    
+    m_p_DetailSlider->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this );
     Destroy();
     pPopupDetailSlider = NULL;
 }
