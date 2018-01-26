@@ -190,7 +190,7 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxDEFAULT_FRAME_STYLE;
+    long wstyle = AIS_TARGET_QUERY_STYLE;
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
