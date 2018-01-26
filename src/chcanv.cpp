@@ -1655,7 +1655,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                         pPopupDetailSlider = new PopUpDSlide( this, -1, ChartType, ChartFam,
                             wxPoint( g_detailslider_dialog_x, g_detailslider_dialog_y ),
                             wxDefaultSize, wxSIMPLE_BORDER, _T("") );
-                        if (pPopupDetailSlider) pPopupDetailSlider->ShowModal();
+                        if (pPopupDetailSlider)
+#ifdef __WXOSX__
+                            pPopupDetailSlider->Show();
+#else
+                            pPopupDetailSlider->ShowModal();
+#endif
                     }
                 }
             else //( !pPopupDetailSlider ) close popupslider
