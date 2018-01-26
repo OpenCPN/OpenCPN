@@ -80,8 +80,11 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
 						.Append( GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0))
                                         );
         nrows = -1;
-        m_pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
-        GribRecord **RecordArray = m_pTimeset->m_GribRecordPtrArray;
+        GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
+        if (pTimeset == 0)
+            continue;
+
+        GribRecord **RecordArray = pTimeset->m_GribRecordPtrArray;
 
         /*create and polulate wind data row
              wind is a special case:
@@ -202,6 +205,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa, int NowInde
             m_pGribTable->SetCellValue(nrows, i, GetCurrent(RecordArray, 2, wdir));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
         }//current // populate grid
+        delete pTimeset;
         m_pGribTable->AutoSizeColumn(i, false);
         wcols = wxMax(m_pGribTable->GetColSize(i), wcols);
     }//populate grid
