@@ -1523,12 +1523,21 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 break;
             }
 
-            wxString choices[] = { _T("5.0"), _T("10.0"), _T("20.0"), _T("50.0"), _T("100.0") };
+            const wxString choices[] = { _T("5.0"), _T("10.0"), _T("20.0"), _T("50.0"), _T("100.0") };
+
             wxSingleChoiceDialog precisionDlg ( this,
                     _("Select the maximum error allowed (in meters)\nafter data reduction:"),
                     _("Reduce Data Precision"), 5, choices );
-
+#ifdef __WXOSX__
+            precisionDlg.ShowWindowModal();
+            while ( precisionDlg.IsShown() ) {
+                wxMilliSleep(10);
+                wxYield();
+            }
+            int result = precisionDlg.GetReturnCode();
+#else
             int result = precisionDlg.ShowModal();
+#endif
             if( result == wxID_CANCEL ) break;
             double precision = 5.0;
             switch( precisionDlg.GetSelection() ) {
