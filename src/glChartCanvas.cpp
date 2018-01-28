@@ -832,7 +832,8 @@ void glChartCanvas::SetupOpenGL()
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
 
-#ifdef __WXMSW__
+#if defined( __WXMSW__ ) || defined(__WXOSX__)
+        
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
         wxLogMessage( _T("OpenGL-> Detected Windows Intel renderer, disabling Vertexbuffer Objects") );
         g_b_EnableVBO = false;
@@ -3626,6 +3627,22 @@ void glChartCanvas::Render()
                         glViewport( 0, 0, (GLint) sx, (GLint) sy );
                     }
                     else{
+#if 0                        
+                        // Should not really need to clear the screen, but consider this case:
+                        // A previous installation of OCPN loaded some PlugIn charts, so setting their coverage in the database.
+                        // In this installation, the PlugIns are not available, for whatever reason.
+                        // As a result, some areas on screen will not be rendered by the PlugIn, and
+                        // The backing chart is eclipsed by the unrendered chart coverage region.
+                        //  Result: leftover garbage in the unrendered regions.
+
+                        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+                        if( color.IsOk() )
+                            glClearColor( color.Red() / 256., color.Green()/256., color.Blue()/256., 1.0 );
+                        else
+                            glClearColor(0, 0., 0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT);
+#endif
+
                         m_fbo_offsetx = 0;
                         m_fbo_offsety = 0;
                         m_fbo_swidth = sx;
