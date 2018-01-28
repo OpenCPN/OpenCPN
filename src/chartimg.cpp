@@ -1495,12 +1495,39 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       }
 
 //    Convert captured plypoint information into chart COVR structures
+#if 1
+      // ensure covr region is in the chart region
+      float *points = new float[2*nPlypoint];
+      for(int i=0; i<nPlypoint; i++)
+          points[2*i+0] = pPlyTable[i].ltp, points[2*i+1] = pPlyTable[i].lnp;
+      LLRegion covrRegion(nPlypoint, points);
+      delete [] points;
+      covrRegion.Intersect(GetValidRegion());
+
+      m_nCOVREntries = covrRegion.contours.size();
+      m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
+      m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
+      std::list<poly_contour>::iterator it = covrRegion.contours.begin();
+      for(int i=0; i<m_nCOVREntries; i++) {
+          m_pCOVRTablePoints[i] = it->size();
+          m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
+          std::list<contour_pt>::iterator jt = it->begin();
+          for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
+              m_pCOVRTable[i][2*j+0] = jt->y;
+              m_pCOVRTable[i][2*j+1] = jt->x;
+              jt++;
+          }
+          it++;
+      }
+
+#else
       m_nCOVREntries = 1;
       m_pCOVRTablePoints = (int *)malloc(sizeof(int));
       *m_pCOVRTablePoints = nPlypoint;
       m_pCOVRTable = (float **)malloc(sizeof(float *));
       *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
       memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
+#endif
       free(pPlyTable);
 
 
