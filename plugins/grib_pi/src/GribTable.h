@@ -82,7 +82,6 @@ private:
     void OnOKButton( wxCommandEvent& event );
 
     GRIBUICtrlBar *m_pGDialog;
-    GribTimelineRecordSet * m_pTimeset;
     wxColour m_pDataCellsColour;
     wxTimer m_tScrollToNowTimer;
 };

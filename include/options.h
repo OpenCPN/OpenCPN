@@ -282,6 +282,7 @@ class options : private Uncopyable,
   void OnXidOkClick(wxCommandEvent &event);
   void OnCancelClick(wxCommandEvent &event);
   void OnChooseFont(wxCommandEvent &event);
+  void OnFontChoice(wxCommandEvent &event);
   void OnCPAWarnClick(wxCommandEvent &event);
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
@@ -495,6 +496,7 @@ class options : private Uncopyable,
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
+  wxStaticText *m_textSample;
   bool m_bVisitLang;
 
   // For "AIS Options"
