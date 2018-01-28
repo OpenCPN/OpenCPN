@@ -1495,41 +1495,72 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       }
 
 //    Convert captured plypoint information into chart COVR structures
-#if 1
       // ensure covr region is in the chart region
-      float *points = new float[2*nPlypoint];
-      for(int i=0; i<nPlypoint; i++)
-          points[2*i+0] = pPlyTable[i].ltp, points[2*i+1] = pPlyTable[i].lnp;
-      LLRegion covrRegion(nPlypoint, points);
-      delete [] points;
-      covrRegion.Intersect(GetValidRegion());
-
-      m_nCOVREntries = covrRegion.contours.size();
-      m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
-      m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
-      std::list<poly_contour>::iterator it = covrRegion.contours.begin();
-      for(int i=0; i<m_nCOVREntries; i++) {
-          m_pCOVRTablePoints[i] = it->size();
-          m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
-          std::list<contour_pt>::iterator jt = it->begin();
-          for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
-              m_pCOVRTable[i][2*j+0] = jt->y;
-              m_pCOVRTable[i][2*j+1] = jt->x;
-              jt++;
-          }
-          it++;
+ 
+     // A special-case test for poorly formatted charts
+     //  We look for cases where the declared PlyPoints are far outside of the chart raster bitmap
+     //  If found, we change the COVR region to the valid bitmap region, instead of the default PlyPoints region
+      
+      // Set a tentative longitude range.
+      m_LonMax = -360.;
+      m_LonMin = 360.;
+      for(int i=0; i < nPlypoint; i++){
+          m_LonMin  = wxMin(m_LonMin, pPlyTable[i].lnp);
+          m_LonMax  = wxMax(m_LonMax, pPlyTable[i].lnp);
       }
 
-#else
-      m_nCOVREntries = 1;
-      m_pCOVRTablePoints = (int *)malloc(sizeof(int));
-      *m_pCOVRTablePoints = nPlypoint;
-      m_pCOVRTable = (float **)malloc(sizeof(float *));
-      *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
-      memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
-#endif
-      free(pPlyTable);
+      if(!bHaveEmbeddedGeoref){
+          //   Analyze Refpoints early because we might need georef coefficient here.
+          AnalyzeRefpoints( false );              // no post test needed
+      }
+      
+      bool bAdjustPly = false;
+      wxRect bitRect(0, 0, Size_X, Size_Y);
+      bitRect.Inflate(5);               // allow for a little roundoff error
+      for(int i=0; i < nPlypoint; i++){
+          double pix_x, pix_y;
+          latlong_to_chartpix(pPlyTable[i].ltp, pPlyTable[i].lnp, pix_x, pix_y);
+          if(!bitRect.Contains(pix_x, pix_y)){
+              bAdjustPly = true;
+              if(m_b_cdebug)printf("Adjusting COVR region on: %s\n", name.ToUTF8().data());
+              break;
+          }
+      }
+      
+      if(bAdjustPly){
+        float *points = new float[2*nPlypoint];
+        for(int i=0; i<nPlypoint; i++)
+            points[2*i+0] = pPlyTable[i].ltp, points[2*i+1] = pPlyTable[i].lnp;
+        LLRegion covrRegion(nPlypoint, points);
+        delete [] points;
+        covrRegion.Intersect(GetValidRegion());
 
+        m_nCOVREntries = covrRegion.contours.size();
+        m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
+        m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
+        std::list<poly_contour>::iterator it = covrRegion.contours.begin();
+        for(int i=0; i<m_nCOVREntries; i++) {
+            m_pCOVRTablePoints[i] = it->size();
+            m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
+            std::list<contour_pt>::iterator jt = it->begin();
+            for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
+                m_pCOVRTable[i][2*j+0] = jt->y;
+                m_pCOVRTable[i][2*j+1] = jt->x;
+                jt++;
+            }
+            it++;
+        }
+      }
+      else{
+        m_nCOVREntries = 1;
+        m_pCOVRTablePoints = (int *)malloc(sizeof(int));
+        *m_pCOVRTablePoints = nPlypoint;
+        m_pCOVRTable = (float **)malloc(sizeof(float *));
+        *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
+        memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
+      }
+       
+      free(pPlyTable);
 
       //    Setup the datum transform parameters
       char d_str[100];
