@@ -2378,8 +2378,15 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
 
     wxString source;
     pdlg->Create( NULL, -1, _( "Send to GPS" ) + _T( "..." ), source );
-    pdlg->ShowModal();
 
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    pdlg->ShowModal();
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     delete pdlg;
 }
 
