@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:42-0500\n"
+"PO-Revision-Date: 2018-01-29 21:30-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -3583,7 +3583,7 @@ msgstr "XTE R"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -4278,7 +4278,7 @@ msgstr "Sees"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "Andmeport"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4454,7 +4454,7 @@ msgstr "automaatne päevase raja salvestus algab"
 
 #: src/options.cpp:2564
 msgid "Computer"
-msgstr "Arvuti"
+msgstr "arvuti"
 
 #: src/options.cpp:2567 src/routeprop.cpp:900 src/routeprop.cpp:907
 #: src/routeprop.cpp:1249 src/routeprop.cpp:1258 src/TrackPropDlg.cpp:351
@@ -5152,7 +5152,7 @@ msgstr "Kaardi objekti mõõtkavategur"
 
 #: src/options.cpp:4613
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Aluse mõõtkava faktor"
 
 #: src/options.cpp:4851 src/options.cpp:4913
 msgid "Connections"
@@ -5341,11 +5341,11 @@ msgstr "näita FPS'i"
 
 #: src/options.cpp:8616
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Hulknurga silumine"
 
 #: src/options.cpp:8617
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Joone silumine"
 
 #: src/options.cpp:8619
 msgid "Software OpenGL (restart OpenCPN)"

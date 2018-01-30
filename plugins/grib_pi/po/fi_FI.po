@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-01-29 21:27-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -922,19 +922,19 @@ msgstr "Olet päättänyt sallia interpolointi.\n"
 
 #: src/GribTable.cpp:94
 msgid "Wind,Dir"
-msgstr ""
+msgstr "Tuuli,Suunta"
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "Tuuli, nopeus"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
-msgstr ""
+msgstr "Tuuli, puuska"
 
 #: src/GribTable.cpp:133
 msgid "Waves,Dir"
-msgstr ""
+msgstr "Aallot,Suunta"
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
@@ -946,19 +946,19 @@ msgstr ""
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Ilman lämpötila."
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Meren lämpötila."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
-msgstr ""
+msgstr "Virta, Suunta"
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "Virta,Nopeus"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"

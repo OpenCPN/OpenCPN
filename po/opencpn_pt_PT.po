@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-01-29 21:28-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese\n"
 "Language: pt_PT\n"
@@ -1314,7 +1314,7 @@ msgstr "IMO"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Nation"
-msgstr ""
+msgstr "País"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Flag"
@@ -3134,7 +3134,7 @@ msgstr "Mostrar informação de fundeio ENC"
 
 #: src/chart1.cpp:5424 src/chart1.cpp:5430
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "Mostrar Qualidade dos Dados ENC"
 
 #: src/chart1.cpp:5445 src/chart1.cpp:5447
 msgid "Enter Full Screen"
@@ -3414,7 +3414,7 @@ msgstr " para "
 
 #: src/chcanv.cpp:2504
 msgid "Layer Track: "
-msgstr ""
+msgstr "Camada de rasto: "
 
 #: src/chcanv.cpp:5876 src/chcanv.cpp:6328
 msgid "Use nearby waypoint?"
@@ -3583,7 +3583,7 @@ msgstr "XTE         Dir"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -4278,7 +4278,7 @@ msgstr "Ligado"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "Porta de Dados"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4438,7 +4438,7 @@ msgstr "Kilómetros"
 
 #: src/options.cpp:2537
 msgid "Range Ring Colour"
-msgstr ""
+msgstr "Cor dos círculos de distância"
 
 #: src/options.cpp:2546 src/routemanagerdialog.cpp:590
 msgid "Tracks"
@@ -4472,7 +4472,7 @@ msgstr "Assinalar Rastos"
 
 #: src/options.cpp:2584
 msgid "Highlight Colour"
-msgstr ""
+msgstr "Cor de realce"
 
 #: src/options.cpp:2598
 msgid "Tracking Precision"
@@ -4517,15 +4517,15 @@ msgstr "Cores dos anéis de distância a pontos de passagem"
 
 #: src/options.cpp:2696
 msgid "Calculate values"
-msgstr ""
+msgstr "Calcular valores"
 
 #: src/options.cpp:2705
 msgid "Calculate SOG and COG from position changes"
-msgstr ""
+msgstr "Calcular o SOG e COG de mudanças de posição"
 
 #: src/options.cpp:2709
 msgid "Min seconds between updates"
-msgstr ""
+msgstr "Mínimo de segundos entre actualizações"
 
 #: src/options.cpp:2721
 msgid "Chart Files"
@@ -4601,7 +4601,7 @@ msgstr "Usar acelerador de gráficos (OpenGL)"
 
 #: src/options.cpp:2880 src/options.cpp:2996
 msgid "Chart Rotation Averaging Time"
-msgstr ""
+msgstr "Tempo médio de rotação da carta"
 
 #: src/options.cpp:2893 src/options.cpp:3009 src/options.cpp:4537
 msgid "seconds"
@@ -4876,15 +4876,15 @@ msgstr "Mostrar Unidades da Profundidade"
 
 #: src/options.cpp:3846
 msgid "Status Bar Option"
-msgstr ""
+msgstr "Opção Barra de Estado"
 
 #: src/options.cpp:3852
 msgid "Live ETA at Cursor"
-msgstr ""
+msgstr "ETA dinâmico no Cursor"
 
 #: src/options.cpp:3859
 msgid "Default Boat Speed "
-msgstr ""
+msgstr "Velocidade do barco por defeito "
 
 #: src/options.cpp:3966
 msgid "Units"
@@ -4938,7 +4938,7 @@ msgstr "Mostrar verdadeiro"
 
 #: src/options.cpp:4043
 msgid "Show magnetic bearings and headings"
-msgstr ""
+msgstr "Apresentar marcações e proas magnéticas"
 
 #: src/options.cpp:4049
 msgid "Assumed magnetic variation"
@@ -5140,7 +5140,7 @@ msgstr "Activar a interface Scaled Graphics"
 
 #: src/options.cpp:4573
 msgid "Use Settings for Inland ECDIS Version 2.3"
-msgstr ""
+msgstr "Usar configurações para Inland ECDIS versão 2.3"
 
 #: src/options.cpp:4585
 msgid "User Interface scale factor"
@@ -5152,7 +5152,7 @@ msgstr "Factor de escala dos Objetos na Carta"
 
 #: src/options.cpp:4613
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Fator de escala do Barco"
 
 #: src/options.cpp:4851 src/options.cpp:4913
 msgid "Connections"
@@ -5341,11 +5341,11 @@ msgstr "Mostrar FPS"
 
 #: src/options.cpp:8616
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Suavização de polígono"
 
 #: src/options.cpp:8617
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Suavização de Linha"
 
 #: src/options.cpp:8619
 msgid "Software OpenGL (restart OpenCPN)"
@@ -5385,7 +5385,10 @@ msgid "S57 Cell Update failed.\n"
 "No updates could be applied.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "Atualização da Célula S57 falhou.\n"
+"Nenhuma atualização aplicada.\n"
+"Características Enc podem estar incompletas ou imprecisas.\n\n"
+"Verifique o ficheiro de log para detalhes."
 
 #: src/Osenc.cpp:1285
 msgid "S57 Cell Update chain incomplete.\n"

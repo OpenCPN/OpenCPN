@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:38-0500\n"
+"PO-Revision-Date: 2018-01-29 21:26-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -456,7 +456,7 @@ msgstr "Générique"
 #: src/CursorData.cpp:507 src/CursorData.cpp:516 src/CursorData.cpp:521
 #: src/CursorData.cpp:526 src/CursorData.cpp:531
 msgid "Numbers"
-msgstr "Nombres"
+msgstr "Valeurs"
 
 #: src/GribUIDialogBase.cpp:932 src/CursorData.cpp:498 src/CursorData.cpp:532
 msgid "Particle Map"
@@ -838,7 +838,7 @@ msgstr "Attention : Données à l'altitude de la géopotentielle"
 
 #: src/GribOverlayFactory.cpp:1099
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "Isobare : impossible de calculer la valeur"
 
 #: src/GribOverlayFactory.cpp:1124
 msgid "Building Isobar map"
@@ -846,7 +846,7 @@ msgstr "Construction de la carte des isobares"
 
 #: src/GribOverlayFactory.cpp:1404
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "Superposition : Impossible de calculer la valeur"
 
 #: src/GribOverlayFactory.cpp:1452
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -868,7 +868,7 @@ msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les données non v
 
 #: src/GribOverlayFactory.cpp:1519
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "Valeur : Impossible de la calculer"
 
 #: src/grib_pi.cpp:137
 msgid "Grib"
@@ -924,43 +924,43 @@ msgstr "Vous avez choisi d'accepté l'interpolation.\n"
 
 #: src/GribTable.cpp:94
 msgid "Wind,Dir"
-msgstr ""
+msgstr "Wind, Dir."
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "Went, Vitesse"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
-msgstr ""
+msgstr "Vent, Rafale"
 
 #: src/GribTable.cpp:133
 msgid "Waves,Dir"
-msgstr ""
+msgstr "Vagues, Dir."
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "Vag., Haut. Signif."
 
 #: src/GribTable.cpp:143
 msgid "Waves,Per"
-msgstr ""
+msgstr "Vagues, Periode"
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Temp. air."
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Temp. eau."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
-msgstr ""
+msgstr "Courant, Dir."
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "Courant, Vitesse"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"

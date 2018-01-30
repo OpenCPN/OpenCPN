@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:38-0500\n"
+"PO-Revision-Date: 2018-01-29 21:26-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -244,7 +244,7 @@ msgstr "Navire militaire"
 
 #: src/ais.cpp:187
 msgid "Sailing Vessel"
-msgstr "Navire à voile"
+msgstr "Voilier"
 
 #: src/ais.cpp:188
 msgid "Pleasure craft"
@@ -2442,7 +2442,7 @@ msgstr "-"
 
 #: src/AISTargetListDialog.cpp:319 src/canvasMenu.cpp:582 src/chart1.cpp:5460
 msgid "AIS target list"
-msgstr "AIS : Liste des cibles ..."
+msgstr "Liste des cibles AIS"
 
 #: src/AISTargetListDialog.cpp:501
 msgid "Trk"
@@ -4876,7 +4876,7 @@ msgstr "L'unité de profondeur"
 
 #: src/options.cpp:3846
 msgid "Status Bar Option"
-msgstr "Couleur de la barre de statut"
+msgstr "Option de la barre d'état"
 
 #: src/options.cpp:3852
 msgid "Live ETA at Cursor"
