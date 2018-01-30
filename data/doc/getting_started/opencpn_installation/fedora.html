@@ -1,7 +1,49 @@
-<meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <title>opencpn:opencpn_user_manual:getting_started:opencpn_installation:fedora</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="opencpn,opencpn_user_manual,getting_started,opencpn_installation,fedora"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../../lib/exe/opensearch.html" title="OpenCPN Manuals"/>
+<link rel="start" href="fedora.html"/>
+<link rel="contents" href="fedora.html" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" />
+<link rel="alternate" type="application/rss+xml" title="Current namespace" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="fedora.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="fedora.html"/>
+<link rel="canonical" href="http://localhost/dokuwiki/doku.php?id=opencpn:opencpn_user_manual:getting_started:opencpn_installation:fedora"/>
+<link rel="stylesheet" type="text/css" href="../../lib/exe/css.php.t.bootstrap3.css"/>
+<!--[if gte IE 9]><!-->
+<script type="text/javascript">/*<![CDATA[*/var NS='opencpn:opencpn_user_manual:getting_started:opencpn_installation';var JSINFO = {"id":"opencpn:opencpn_user_manual:getting_started:opencpn_installation:fedora","namespace":"opencpn:opencpn_user_manual:getting_started:opencpn_installation","confirm_delete":"Are you sure you want to delete this page?","doku_base":"\/dokuwiki\/","cg_rev":"","dw_version":49.5,"chrome_version":0,"hide_captcha_error":"none","ckg_dbl_click":"","ckg_canonical":0,"has_wrap":"Wrap","wrapDiv":"WRAP","wrapSpan":"wrap","ckgEdPaste":"off","rel_links":0,"isadmin":0,"isauth":0,"move_renameokay":false,"schemes":["http","https","telnet","gopher","wais","ftp","ed2k","irc","ldap"],"htmlok":0};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/jquery.php.t.bootstrap3.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php.t.bootstrap3.js"></script>
+<!--<![endif]-->
+
+    <script type="text/javascript">
+    //<![CDATA[ 
+    function LoadScript( url )
+    {
+     document.write( '<scr' + 'ipt type="text/javascript" src="../..//url"><\/scr' + 'ipt>' ) ;        
+
+    }
+   function LoadScriptDefer( url )
+    {
+     document.write( '<scr' + 'ipt type="text/javascript" src="../..//url" defer><\/scr' + 'ipt>' ) ;        
+
+    }
+//]]> 
+
+ </script>
+</head>
+<body>
+<div class="dokuwiki export">
 
 
-<h1>Fedora</h1>
+
+<h1 class="sectionedit1" id="fedora">Fedora</h1>
 <div class="level1">
 
 <p>
@@ -13,19 +55,37 @@ Installing in a different, easy way. RPM
 </p>
 
 <p>
-<b>Installing on Fedora </b> A full repo is now available and can be used to install and update opencpn.<br/>
+<strong>Installing on Fedora </strong> A full repo is now available and can be used to install and update opencpn.<br/>
 
 To install the repo, please run this as root:
 </p>
 <pre class="code">dnf install [[http://je.onfray.fr/repo/fedora/23/x86_64/jeo-release-1.2-1.fc23.noarch.rpm|http://je.onfray.fr/repo/fedora/23/x86_64/jeo-release-1.2-1.fc23.noarch.rpm]]</pre>
 
-</div>
+<p>
+[SethDart Reports 3/6/17] <br/>
 
-<h3>Install above RPM</h3>
+I maintain my Fedora packages. Stable repo has 4.4, beta has 4.5.221.  They are built for all current Fedora releases : that is #24 and #25 now, both for i386 (32 bits) &amp; x86_64 (64 bits).  I&#039;m also building EPEL (RHEL/CentOS) packages for EPEL 6 &amp; 7, x86_64 only. I can add more if requested.
+</p>
+
+<p>
+There&#039;s nothing magic in these packages : I regularly update my .<abbr title="specification">spec</abbr> file (cmake automatically generated one breaks dependencies with subpackages and libraries) The .srpm is then built in a separate chroot for each flavour using regular Fedora mock tool.  I&#039;ll upload all these recipes to my github repo when I&#039;ve enough time.
+</p>
+
+<p>
+When I tried to help building OpenCPN for OpenSUSE, I created a VM, it must be laying somewhere around. I can give it another try.
+</p>
+
+<p>
+Keep up the good work.  Jean-Eudes 
+</p>
+
+</div>
+<!-- EDIT1 SECTION "Fedora" [20-1304] -->
+<h3 class="sectionedit2" id="install_above_rpm">Install above RPM</h3>
 <div class="level3">
 
 <p>
-You can install the above <b>rpm</b>, no matter if you&#039;re using i386 or x86_64, be it Fedora 22 or Fedora 23, it&#039;ll work on all these (you should be able to install it right from your browser clicking the above link and then install)<br/>
+You can install the above <strong>rpm</strong>, no matter if you&#039;re using i386 or x86_64, be it Fedora 22 or Fedora 23, it&#039;ll work on all these (you should be able to install it right from your browser clicking the above link and then install)<br/>
 
 By default, only the stable repo is enabled ; you can install opencpn-4.2 from your favorite package manager (dnf, Gnome package kit or KDE package kit).
 </p>
@@ -35,11 +95,11 @@ I&#039;ve created two separate packages:
 </p>
 
 <p>
-<b>opencpn</b> with the program and the two default plugins<br/>
+<strong>opencpn</strong> with the program and the two default plugins<br/>
 
 and<br/>
 
-<b>opencpn-doc</b> with the whole html doc to browse it offline.
+<strong>opencpn-doc</strong> with the whole html doc to browse it offline.
 </p>
 
 <p>
@@ -47,12 +107,12 @@ When a new stable is released, you&#039;ll be automatically notified and able to
 
 <br/>
 
-Security/Trust: all packages are signed with <b>Key ID: 7e53dbe19add462d</b>
+Security/Trust: all packages are signed with <strong>Key ID: 7e53dbe19add462d</strong>
 </p>
 
 </div>
-
-<h3>OpenCPN for OpenSUSE and Fedora</h3>
+<!-- EDIT2 SECTION "Install above RPM" [1305-2063] -->
+<h3 class="sectionedit3" id="opencpn_for_opensuse_and_fedora">OpenCPN for OpenSUSE and Fedora</h3>
 <div class="level3">
 
 <p>
@@ -70,15 +130,18 @@ My OpenSUSE wiki page is here.<br/>
 
 </p>
 <ul>
-<li class="level1"> <a href="https://en.opensuse.org/OpenCPN" class="urlextern" title="https://en.opensuse.org/OpenCPN" rel="nofollow"> OpenCPN for openSUSE English</a></li>
-<li class="level1"> <a href="https://fr.opensuse.org/OpenCPN" class="urlextern" title="https://fr.opensuse.org/OpenCPN" rel="nofollow"> OpenCPN for openSUSE French</a></li>
+<li class="level1"><div class="li"> <a href="https://en.opensuse.org/OpenCPN" class="urlextern" title="https://en.opensuse.org/OpenCPN" rel="nofollow"> OpenCPN for openSUSE English</a></div>
+</li>
+<li class="level1"><div class="li"> <a href="https://fr.opensuse.org/OpenCPN" class="urlextern" title="https://fr.opensuse.org/OpenCPN" rel="nofollow"> OpenCPN for openSUSE French</a></div>
+</li>
 </ul>
 
 <p>
 Alternative:
 </p>
 <ul>
-<li class="level1"> <a href="https://fr.opensuse.org/OpenCPN" class="urlextern" title="https://fr.opensuse.org/OpenCPN" rel="nofollow">opensus.org - OpenCPN for openSUSE French</a></li>
+<li class="level1"><div class="li"> <a href="https://fr.opensuse.org/OpenCPN" class="urlextern" title="https://fr.opensuse.org/OpenCPN" rel="nofollow">opensus.org - OpenCPN for openSUSE French</a></div>
+</li>
 </ul>
 
 <p>
@@ -86,3 +149,8 @@ I hope that it can help. Regards Dominig
 </p>
 
 </div>
+<!-- EDIT3 SECTION "OpenCPN for OpenSUSE and Fedora" [2064-] -->
+<!-- no cachefile used, but created /var/www/html/dokuwiki/data/cache/b/b9d5114a68cfc3918e188bf69258fc69.xhtml -->
+</div>
+</body>
+</html>

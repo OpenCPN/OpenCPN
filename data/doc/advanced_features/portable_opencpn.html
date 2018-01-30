@@ -1,8 +1,54 @@
-<meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <title>opencpn:opencpn_user_manual:advanced_features:portable_opencpn</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="opencpn,opencpn_user_manual,advanced_features,portable_opencpn"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.html" title="OpenCPN Manuals"/>
+<link rel="start" href="portable_opencpn.html"/>
+<link rel="contents" href="portable_opencpn.html" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" />
+<link rel="alternate" type="application/rss+xml" title="Current namespace" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="portable_opencpn.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="portable_opencpn.html"/>
+<link rel="canonical" href="http://localhost/dokuwiki/doku.php?id=opencpn:opencpn_user_manual:advanced_features:portable_opencpn"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css.php.t.bootstrap3.css"/>
+<!--[if gte IE 9]><!-->
+<script type="text/javascript">/*<![CDATA[*/var NS='opencpn:opencpn_user_manual:advanced_features';var JSINFO = {"id":"opencpn:opencpn_user_manual:advanced_features:portable_opencpn","namespace":"opencpn:opencpn_user_manual:advanced_features","confirm_delete":"Are you sure you want to delete this page?","doku_base":"\/dokuwiki\/","cg_rev":"","dw_version":49.5,"chrome_version":0,"hide_captcha_error":"none","ckg_dbl_click":"","ckg_canonical":0,"has_wrap":"Wrap","wrapDiv":"WRAP","wrapSpan":"wrap","ckgEdPaste":"off","rel_links":0,"isadmin":0,"isauth":0,"move_renameokay":false,"schemes":["http","https","telnet","gopher","wais","ftp","ed2k","irc","ldap"],"htmlok":0};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/jquery.php.t.bootstrap3.js"></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php.t.bootstrap3.js"></script>
+<!--<![endif]-->
+
+    <script type="text/javascript">
+    //<![CDATA[ 
+    function LoadScript( url )
+    {
+     document.write( '<scr' + 'ipt type="text/javascript" src="..//url"><\/scr' + 'ipt>' ) ;        
+
+    }
+   function LoadScriptDefer( url )
+    {
+     document.write( '<scr' + 'ipt type="text/javascript" src="..//url" defer><\/scr' + 'ipt>' ) ;        
+
+    }
+//]]> 
+
+ </script>
+</head>
+<body>
+<div class="dokuwiki export">
 
 
-<h1>Portable OpenCPN</h1>
+
+<h1 class="sectionedit1" id="portable_opencpn">Portable OpenCPN</h1>
 <div class="level1">
+
+<p>
+<a href="portable_opencpn_v2.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:portable_opencpn_v2">An updated version for OpenCPN 4.6.1 is also available</a>
+</p>
 
 <p>
 The OpenCPN portable option allows the program to run from an USB stick, or run independent from, and parallel to a normal installation.
@@ -12,8 +58,10 @@ The OpenCPN portable option allows the program to run from an USB stick, or run 
 Using Windows,  it is not possible to run concurrent instances of OpenCPN, unless using the portable option.
 </p>
 <ul>
-<li class="level1"> You can start the regular OpenCPN and a portable version later. The other way around will not work.</li>
-<li class="level1"> You can run multiple portable instances at the same time. It makes sense to run these from different folders, to avoid possible data corruption.</li>
+<li class="level1"><div class="li"> You can start the regular OpenCPN and a portable version later. The other way around will not work.</div>
+</li>
+<li class="level1"><div class="li"> You can run multiple portable instances at the same time. It makes sense to run these from different folders, to avoid possible data corruption.</div>
+</li>
 </ul>
 
 <p>
@@ -21,7 +69,7 @@ To differ between various instances of the program, the titlebar on portable ver
 </p>
 
 <p>
-<img src="../opencpn/manual/portable.h.31_tok.fbbae4_w.605.png" class="media" alt="" width="605" height="31" /><br/>
+<img src="../opencpn/manual/portable.h.31_tok.fbbae4_w.605.jpg" class="media" alt="" width="605" height="31" /><br/>
 
 </p>
 
@@ -30,38 +78,59 @@ It is thus possible to run multiple portable instances and identify each version
 </p>
 
 </div>
-
-<h3>To create a portable Windows version</h3>
+<!-- EDIT1 SECTION "Portable OpenCPN" [21-916] -->
+<h3 class="sectionedit2" id="to_create_a_portable_windows_version">To create a portable Windows version</h3>
 <div class="level3">
 <ol>
-<li class="level1"> Create a new directory dedicated to the portable OpenCPN.<br/>
+<li class="level1"><div class="li"> Create a new directory dedicated to the portable OpenCPN.<br/>
+</div>
 </li>
-<li class="level1 node"> In a separate window, navigate to C:\Program Files (x86)\OpenCPN (on 64-bit systems) or C:\Program Files\OpenCPN (on 32-bit systems), and copy (don&#039;t move) the following data directories (with containing files) into this new directory:<ul>
-<li class="level2"> doc/</li>
-<li class="level2"> plugins/</li>
-<li class="level2"> s57data/</li>
-<li class="level2"> share/</li>
-<li class="level2"> sounds/</li>
-<li class="level2"> tcdata/</li>
-<li class="level2"> uidata/</li>
-<li class="level2"> wvsdata/ (only for OpenCPN 3.2.0 and earlier)</li>
+<li class="level1 node"><div class="li"> In a separate window, navigate to C:\Program Files (x86)\OpenCPN (on 64-bit systems) or C:\Program Files\OpenCPN (on 32-bit systems), and copy (don&#039;t move) the following data directories (with containing files) into this new directory:</div>
+<ul>
+<li class="level2"><div class="li"> doc/</div>
+</li>
+<li class="level2"><div class="li"> plugins/</div>
+</li>
+<li class="level2"><div class="li"> s57data/</div>
+</li>
+<li class="level2"><div class="li"> share/</div>
+</li>
+<li class="level2"><div class="li"> sounds/</div>
+</li>
+<li class="level2"><div class="li"> tcdata/</div>
+</li>
+<li class="level2"><div class="li"> uidata/</div>
+</li>
+<li class="level2"><div class="li"> wvsdata/ (only for OpenCPN 3.2.0 and earlier)</div>
+</li>
 </ul>
 </li>
-<li class="level1 node"> From the same OpenCPN folder, copy the following files into the new directory:<ul>
-<li class="level2"> crashrpt_lang.ini</li>
-<li class="level2"> CrashRpt1401.dll</li>
-<li class="level2"> CrashSender1401.exe</li>
-<li class="level2"> license.txt</li>
-<li class="level2"> OpenCPN.exe (of course)</li>
-<li class="level2"> Eight wxWidgets dlls beginning with the name “wxbase” (This needs an expert&#039;s attention)</li>
+<li class="level1 node"><div class="li"> From the same OpenCPN folder, copy the following files into the new directory:</div>
+<ul>
+<li class="level2"><div class="li"> crashrpt_lang.ini</div>
+</li>
+<li class="level2"><div class="li"> CrashRpt1401.dll</div>
+</li>
+<li class="level2"><div class="li"> CrashSender1401.exe</div>
+</li>
+<li class="level2"><div class="li"> license.txt</div>
+</li>
+<li class="level2"><div class="li"> OpenCPN.exe (of course)</div>
+</li>
+<li class="level2"><div class="li"> Eight wxWidgets dlls beginning with the name “wxbase” (This needs an expert&#039;s attention)</div>
+</li>
 </ul>
 </li>
-<li class="level1 node"> Now navigate to C:\Windows\SysWOW64 (on 64-bit systems) or C:\Windows\System32 (on 32-bit systems) and copy the following files into the new directory:<ul>
-<li class="level2"> msvcp100.dll</li>
-<li class="level2"> msvcr100.dll</li>
+<li class="level1 node"><div class="li"> Now navigate to C:\Windows\SysWOW64 (on 64-bit systems) or C:\Windows\System32 (on 32-bit systems) and copy the following files into the new directory:</div>
+<ul>
+<li class="level2"><div class="li"> msvcp100.dll</div>
+</li>
+<li class="level2"><div class="li"> msvcr100.dll</div>
+</li>
 </ul>
 </li>
-<li class="level1"> If running Windows, create MSDOS batch file “opencpn portable.bat” (or other name of user choice) containing the one line:</li>
+<li class="level1"><div class="li"> If running Windows, create MSDOS batch file “opencpn portable.bat” (or other name of user choice) containing the one line:</div>
+</li>
 </ol>
 <pre class="code">&lt;code&gt;
 opencpn -p 
@@ -86,27 +155,32 @@ This setup works very well from a USB stick.
 
 </div>
 
-<h5>Additional Notes for OpenCPN v4.1.xx and 4.2</h5>
+<h5 id="additional_notes_for_opencpn_v41xx_and_42">Additional Notes for OpenCPN v4.1.xx and 4.2</h5>
 <div class="level5">
 
 <p>
 Use these files they are more current
 </p>
 <ul>
-<li class="level1"> msvcp120.dll  ←-better than msvcp100.dll</li>
-<li class="level1"> msvcr120.dll  ←-better than msvcr100.dll</li>
-<li class="level1"> libcurl.dll   ←-needed for chartdownloader and other features.</li>
-<li class="level1"> 16 wxWidgets  ←-Files in main directory, rather than the 8 mentioned, best to copy all.</li>
-<li class="level1"> zlib1.dll     ←-Also best to copy  zlib1.dll</li>
+<li class="level1"><div class="li"> msvcp120.dll  ←-better than msvcp100.dll</div>
+</li>
+<li class="level1"><div class="li"> msvcr120.dll  ←-better than msvcr100.dll</div>
+</li>
+<li class="level1"><div class="li"> libcurl.dll   ←-needed for chartdownloader and other features.</div>
+</li>
+<li class="level1"><div class="li"> 16 wxWidgets  ←-Files in main directory, rather than the 8 mentioned, best to copy all.</div>
+</li>
+<li class="level1"><div class="li"> zlib1.dll     ←-Also best to copy  zlib1.dll</div>
+</li>
 </ul>
 
 <p>
-<b>For a higher running priority see</b>: <em><a href="command_line.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:command_line">Command Line</a></em>
+<strong>For a higher running priority see</strong>: <em><a href="command_line.html" class="wikilink1" title="opencpn:opencpn_user_manual:advanced_features:command_line">Command Line</a></em>
 </p>
 
 </div>
-
-<h3>A Linux version</h3>
+<!-- EDIT2 SECTION "To create a portable Windows version" [917-3466] -->
+<h3 class="sectionedit3" id="a_linux_version">A Linux version</h3>
 <div class="level3">
 
 <p>
@@ -132,3 +206,8 @@ This can be useful for side-by-side testing…
 </p>
 
 </div>
+<!-- EDIT3 SECTION "A Linux version" [3467-] -->
+<!-- no cachefile used, but created /var/www/html/dokuwiki/data/cache/8/8269abd0f7035ed61ad376fbf3bed7ad.xhtml -->
+</div>
+</body>
+</html>
