@@ -62,9 +62,9 @@ PopUpDSlide::PopUpDSlide( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartT,
                         const wxPoint& pos, const wxSize& size, long style, const wxString& title )
 {
     Init();
-    Create( parent, ID_CM93ZOOMG, ChartT, ChartF, pos, size, style, title );
-
-    m_p_DetailSlider->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this);
+    if( Create( parent, ID_CM93ZOOMG, ChartT, ChartF, pos, size, style, title ) ) {
+        m_p_DetailSlider->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this);
+    }
 }
 
 PopUpDSlide::~PopUpDSlide()
@@ -141,7 +141,8 @@ void PopUpDSlide::OnClose( wxCloseEvent& event )
 {
     g_bShowDetailSlider = false;
     
-    m_p_DetailSlider->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this );
+    if( m_p_DetailSlider )
+       m_p_DetailSlider->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler(PopUpDSlide::OnKeyDown), NULL, this );
     Destroy();
     pPopupDetailSlider = NULL;
 }
