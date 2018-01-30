@@ -2726,7 +2726,11 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         delete ChartData;
         ChartData = new ChartDB();
         ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
-    
+
+        // Update group contents
+        if(g_pGroupArray)
+            ChartData->ApplyGroupArray(g_pGroupArray);
+        
         if(g_boptionsactive){
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
         }
