@@ -3914,10 +3914,16 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         LUPrec *LUP;
         LUPname LUP_Name = PAPER_CHART;
 
-        wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+        const wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
         if (objnam.Len() > 0) {
-            wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+            const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
             g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
+        }
+        //If there is a localized object name and it actually is different from the object name, send it as well...
+        const wxString nobjnam  = obj->GetAttrValueAsString("NOBJNM");
+        if (nobjnam.Len() > 0 && nobjnam != objnam) {
+            const wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+            g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, nobjnam, obj->m_lat, obj->m_lon, scale, nativescale );
         }
 
         switch( obj->Primitive_type ){
