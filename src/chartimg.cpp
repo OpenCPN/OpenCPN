@@ -1526,7 +1526,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
               break;
           }
       }
-      
+
       if(bAdjustPly){
         float *points = new float[2*nPlypoint];
         for(int i=0; i<nPlypoint; i++)
@@ -1535,21 +1535,32 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
         delete [] points;
         covrRegion.Intersect(GetValidRegion());
 
-        m_nCOVREntries = covrRegion.contours.size();
-        m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
-        m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
-        std::list<poly_contour>::iterator it = covrRegion.contours.begin();
-        for(int i=0; i<m_nCOVREntries; i++) {
-            m_pCOVRTablePoints[i] = it->size();
-            m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
-            std::list<contour_pt>::iterator jt = it->begin();
-            for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
-                m_pCOVRTable[i][2*j+0] = jt->y;
-                m_pCOVRTable[i][2*j+1] = jt->x;
-                jt++;
+        if(covrRegion.contours.size()){   // Check for no intersection caused by bogus georef....
+            m_nCOVREntries = covrRegion.contours.size();
+            m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
+            m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
+            std::list<poly_contour>::iterator it = covrRegion.contours.begin();
+            for(int i=0; i<m_nCOVREntries; i++) {
+                m_pCOVRTablePoints[i] = it->size();
+                m_pCOVRTable[i] = (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
+                std::list<contour_pt>::iterator jt = it->begin();
+                for(int j=0; j<m_pCOVRTablePoints[i]; j++) {
+                    m_pCOVRTable[i][2*j+0] = jt->y;
+                    m_pCOVRTable[i][2*j+1] = jt->x;
+                    jt++;
+                }
+                it++;
             }
-            it++;
         }
+        else{
+            m_nCOVREntries = 1;
+            m_pCOVRTablePoints = (int *)malloc(sizeof(int));
+            *m_pCOVRTablePoints = nPlypoint;
+            m_pCOVRTable = (float **)malloc(sizeof(float *));
+            *m_pCOVRTable = (float *)malloc(nPlypoint * 2 * sizeof(float));
+            memcpy(*m_pCOVRTable, pPlyTable, nPlypoint * 2 * sizeof(float));
+        }
+        
       }
       else{
         m_nCOVREntries = 1;
