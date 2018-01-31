@@ -4344,7 +4344,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case wxID_ABOUT:
         case ID_ABOUT: {
             if( !g_pAboutDlg )
+#ifdef __WXOSX__
+                g_pAboutDlg = new about( cc1, g_Platform->GetSharedDataDir() );
+#else
                 g_pAboutDlg = new about( this, g_Platform->GetSharedDataDir() );
+#endif
             else
                 g_pAboutDlg->SetFocus();
             g_pAboutDlg->Show();
