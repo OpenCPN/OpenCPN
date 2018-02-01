@@ -1015,7 +1015,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 } else {
                     if(file.getName().matches(getAllFilesFilespec)){
 
-                        Log.i("OpenCPN", "traverse:File: " + file.getAbsolutePath());
+                        //Log.i("OpenCPN", "traverse:File: " + file.getAbsolutePath());
                         getAllFilesResult += file.getAbsolutePath() + ";";
                     }
                 }
@@ -1025,11 +1025,21 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     public String getAllFilesWithFilespec(String dir, String filespec){
         getAllFilesResult = "";
-        getAllFilesFilespec = "(.*)[.]" + filespec.substring( filespec.length() - 3) + "$";
-        Log.i("OpenCPN", "getAllFilesWithFilespec " + getAllFilesFilespec );
 
-        File dirt = new File( dir );
-        traverse( dirt );
+        int dot_pos = filespec.lastIndexOf (".");
+        if( (dot_pos < filespec.length() - 1) && (dot_pos >= 0) ){
+            try{
+                getAllFilesFilespec = "(.*)[.]" + filespec.substring( dot_pos+1) + "$";
+                Log.i("OpenCPN", "getAllFilesWithFilespec " + getAllFilesFilespec );
+
+                File dirt = new File( dir );
+                traverse( dirt );
+            }
+            catch (Exception e) {
+                Log.i("OpenCPN", "getAllFilesWithFilespec exception");
+                e.printStackTrace();
+            }
+        }
 
         return getAllFilesResult;
     }
