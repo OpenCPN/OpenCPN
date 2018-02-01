@@ -1914,6 +1914,9 @@ bool MyApp::OnInit()
         XCloseDisplay(disp);
     }
 #endif
+#ifdef __WXOSX__
+    g_bTransparentToolbarInOpenGLOK = true;
+#endif
 #endif
 
 
