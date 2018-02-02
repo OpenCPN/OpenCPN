@@ -526,55 +526,6 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
     }
     
         
-    //  Add PlugIn Context Menu items
-    ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
-
-    for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
-        {
-        PlugInMenuItemContainer *pimis = item_array[i];
-        if( !pimis->b_viz )
-            continue;
-
-        wxMenu *submenu = NULL;
-        if(pimis->pmenu_item->GetSubMenu()) {
-            submenu = new wxMenu();
-            const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
-            for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
-                int id = -1;
-                for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
-                    PlugInMenuItemContainer *pimis = item_array[j];
-                    if(pimis->pmenu_item == *it)
-                        id = pimis->id;
-                }
-
-                wxMenuItem *pmi = new wxMenuItem( submenu, id,
-#if wxCHECK_VERSION(3,0,0)
-                                                        (*it)->GetItemLabelText(),
-#else
-                                                        (*it)->GetLabel(),
-#endif
-                                                        (*it)->GetHelp(),
-                                                          (*it)->GetKind());
-                submenu->Append(pmi);
-                pmi->Check((*it)->IsChecked());
-            }
-        }
-                
-        wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-#if wxCHECK_VERSION(3,0,0)
-                                                  pimis->pmenu_item->GetItemLabelText(),
-#else
-                                                  pimis->pmenu_item->GetLabel(),
-#endif
-                                                  pimis->pmenu_item->GetHelp(),
-                                                  pimis->pmenu_item->GetKind(),
-                                                  submenu );
-#ifdef __WXMSW__
-        pmi->SetFont(pimis->pmenu_item->GetFont());
-#endif
-        contextMenu->Append( pmi );
-        contextMenu->Enable( pimis->id, !pimis->b_grey );
-    }
 
     //  This is the default context menu
     menuFocus = contextMenu;
@@ -900,6 +851,67 @@ if( !g_bBasicMenus && (nChartStack > 1 ) ) {
         if( !bsep )
             menuFocus->AppendSeparator();
         MenuAppend1( menuFocus,  ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
+    }
+
+    //  Add PlugIn Context Menu items
+    ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
+
+    for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
+        PlugInMenuItemContainer *pimis = item_array[i];
+        if( !pimis->b_viz )
+            continue;
+
+        wxMenu *submenu = NULL;
+        if(pimis->pmenu_item->GetSubMenu()) {
+            submenu = new wxMenu();
+            const wxMenuItemList &items = pimis->pmenu_item->GetSubMenu()->GetMenuItems();
+            for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
+                int id = -1;
+                for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
+                    PlugInMenuItemContainer *pimis = item_array[j];
+                    if(pimis->pmenu_item == *it)
+                        id = pimis->id;
+                }
+
+                wxMenuItem *pmi = new wxMenuItem( submenu, id,
+#if wxCHECK_VERSION(3,0,0)
+                                                        (*it)->GetItemLabelText(),
+#else
+                                                        (*it)->GetLabel(),
+#endif
+                                                        (*it)->GetHelp(),
+                                                          (*it)->GetKind());
+                submenu->Append(pmi);
+                pmi->Check((*it)->IsChecked());
+            }
+        }
+
+        wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
+#if wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
+                                                  pimis->pmenu_item->GetKind(),
+                                                  submenu );
+#ifdef __WXMSW__
+        pmi->SetFont(pimis->pmenu_item->GetFont());
+#endif
+        wxMenu *dst = contextMenu;
+        if (pimis->m_in_menu == "Waypoint")
+            dst = menuWaypoint;
+        else if (pimis->m_in_menu == "Route" )
+            dst = menuRoute;
+        else if (pimis->m_in_menu == "Track" )
+            dst = menuTrack;
+        else if (pimis->m_in_menu == "AIS" )
+            dst = menuAIS;
+
+        if (dst != NULL) {
+            dst->Append( pmi );
+            dst->Enable( pimis->id, !pimis->b_grey );
+        }
     }
 
     //        Invoke the correct focused drop-down menu
