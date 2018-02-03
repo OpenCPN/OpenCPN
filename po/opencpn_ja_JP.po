@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-02-01 14:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -82,7 +82,7 @@ msgstr "GPS に送信します。"
 #: include/TrackPropDlg.h:179 src/TrackPropDlg.cpp:1086
 #: src/TrackPropDlg.cpp:1099
 msgid "Track properties"
-msgstr "追跡 プロパティ"
+msgstr "航跡 プロパティ"
 
 #: src/about.cpp:209 src/about.cpp:259 src/about.cpp:392
 #: src/AISTargetListDialog.cpp:301 src/chart1.cpp:1409 src/chart1.cpp:6152
@@ -132,7 +132,7 @@ msgstr "閉じる"
 
 #: src/ais.cpp:151
 msgid "Underway"
-msgstr "進行中"
+msgstr "汽走"
 
 #: src/ais.cpp:152
 msgid "At Anchor"
@@ -140,11 +140,11 @@ msgstr "錨泊"
 
 #: src/ais.cpp:153
 msgid "Not Under Command"
-msgstr "操船不自由"
+msgstr "操船不能"
 
 #: src/ais.cpp:154
 msgid "Restricted Manoeuvrability"
-msgstr "制限された操縦"
+msgstr "操船不自由"
 
 #: src/ais.cpp:155
 msgid "Constrained by draught"
@@ -164,7 +164,7 @@ msgstr "漁業に従事"
 
 #: src/ais.cpp:159
 msgid "Under way sailing"
-msgstr "航行中"
+msgstr "帆走"
 
 #: src/ais.cpp:160 src/ais.cpp:189
 msgid "High Speed Craft"
@@ -220,7 +220,7 @@ msgstr "リアル(オフポジション)"
 
 #: src/ais.cpp:181
 msgid "Vessel Fishing"
-msgstr "船釣り"
+msgstr "漁船"
 
 #: src/ais.cpp:182
 msgid "Vessel Towing"
@@ -3136,7 +3136,7 @@ msgstr "ENC の錨泊情報を表示"
 
 #: src/chart1.cpp:5424 src/chart1.cpp:5430
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "ENCデータの品質を表示"
 
 #: src/chart1.cpp:5445 src/chart1.cpp:5447
 msgid "Enter Full Screen"
@@ -3416,7 +3416,7 @@ msgstr " 着 "
 
 #: src/chcanv.cpp:2504
 msgid "Layer Track: "
-msgstr ""
+msgstr "航跡レイヤー: "
 
 #: src/chcanv.cpp:5876 src/chcanv.cpp:6328
 msgid "Use nearby waypoint?"
@@ -4280,7 +4280,7 @@ msgstr "On"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "データポート"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4440,7 +4440,7 @@ msgstr "キロメートル"
 
 #: src/options.cpp:2537
 msgid "Range Ring Colour"
-msgstr ""
+msgstr "範囲リングの色"
 
 #: src/options.cpp:2546 src/routemanagerdialog.cpp:590
 msgid "Tracks"
@@ -4474,7 +4474,7 @@ msgstr "トラックをハイライト表示します。"
 
 #: src/options.cpp:2584
 msgid "Highlight Colour"
-msgstr ""
+msgstr "ハイライトの色"
 
 #: src/options.cpp:2598
 msgid "Tracking Precision"
@@ -4523,11 +4523,11 @@ msgstr ""
 
 #: src/options.cpp:2705
 msgid "Calculate SOG and COG from position changes"
-msgstr ""
+msgstr "対地速度と対地コースを位置の変化から計算する"
 
 #: src/options.cpp:2709
 msgid "Min seconds between updates"
-msgstr ""
+msgstr "更新間隔の分秒"
 
 #: src/options.cpp:2721
 msgid "Chart Files"
@@ -4603,7 +4603,7 @@ msgstr "アクセラレータを使う (OpenGL)"
 
 #: src/options.cpp:2880 src/options.cpp:2996
 msgid "Chart Rotation Averaging Time"
-msgstr ""
+msgstr "チャート回転の平均時間"
 
 #: src/options.cpp:2893 src/options.cpp:3009 src/options.cpp:4537
 msgid "seconds"
@@ -4886,7 +4886,7 @@ msgstr ""
 
 #: src/options.cpp:3859
 msgid "Default Boat Speed "
-msgstr ""
+msgstr "既定の船速 "
 
 #: src/options.cpp:3966
 msgid "Units"
@@ -5344,11 +5344,11 @@ msgstr "FPS を表示"
 
 #: src/options.cpp:8616
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "ポリゴンの平滑化"
 
 #: src/options.cpp:8617
 msgid "Line Smoothing"
-msgstr ""
+msgstr "線のスムージング"
 
 #: src/options.cpp:8619
 msgid "Software OpenGL (restart OpenCPN)"
@@ -5389,7 +5389,10 @@ msgid "S57 Cell Update failed.\n"
 "No updates could be applied.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "S57セルの更新に失敗しました。\n"
+"更新されていません。\n"
+"ENC機能が不完全または不正確になることがあります。\n\n"
+"詳細については、ログファイルを確認してください。"
 
 #: src/Osenc.cpp:1285
 msgid "S57 Cell Update chain incomplete.\n"

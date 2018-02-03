@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:30-0500\n"
+"PO-Revision-Date: 2018-02-03 10:23-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -4954,7 +4954,7 @@ msgstr "näita tegelikke suundi ja kursse"
 
 #: src/options.cpp:4154
 msgid "Show magnetic bearings and headings."
-msgstr "Näita magnetsuundi ja -kursse."
+msgstr "näita magnetsuundi ja -kursse."
 
 #: src/options.cpp:4165 src/options.cpp:5043
 msgid "WMM Plugin calculated magnetic variation"

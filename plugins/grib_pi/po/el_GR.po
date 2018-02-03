@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-02-01 14:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Greek\n"
 "Language: el_GR\n"
@@ -604,7 +604,7 @@ msgstr "Αντίγραψε τα δεδομένα κυματισμού που λ�
 
 #: src/GribUIDialogBase.cpp:1404
 msgid "Draw Barbed Arrows Head"
-msgstr ""
+msgstr "Κεφαλή αγκαθωτών βελών"
 
 #: src/GribUIDialogBase.cpp:1412
 msgid "Load the More Recent File in Directory"
@@ -838,7 +838,7 @@ msgstr "Προσοχή: Δεδομένα σε γεωδυναμικό ύψος"
 
 #: src/GribOverlayFactory.cpp:1099
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "Ισοβαρείς: Αδύνατος ο υπολογισμός του μεγέθους"
 
 #: src/GribOverlayFactory.cpp:1124
 msgid "Building Isobar map"
@@ -846,7 +846,7 @@ msgstr "Ο χάρτης ισοβαρών κατασκευάζεται"
 
 #: src/GribOverlayFactory.cpp:1404
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "Χάρτης επικάλυψης: Αδύνατος ο υπολογισμός του μεγέθους"
 
 #: src/GribOverlayFactory.cpp:1452
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -866,7 +866,7 @@ msgstr "Μείωση μεγέθυνσης για να φανούν οι μη ο�
 
 #: src/GribOverlayFactory.cpp:1519
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "Αρ.Grib: Αδύνατος ο υπολογισμός του μεγέθους"
 
 #: src/grib_pi.cpp:137
 msgid "Grib"
@@ -922,43 +922,43 @@ msgstr "Έχετε επιτρέψει παρεμβολή δεδομένων.\n"
 
 #: src/GribTable.cpp:94
 msgid "Wind,Dir"
-msgstr ""
+msgstr "Άνεμος, κατευθ."
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "Άνεμος, ταχύτητα"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
-msgstr ""
+msgstr "Άνεμος, σπηλιάδες"
 
 #: src/GribTable.cpp:133
 msgid "Waves,Dir"
-msgstr ""
+msgstr "Κύματα, κατεύθ."
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "Κύματα, σημ. ύψος"
 
 #: src/GribTable.cpp:143
 msgid "Waves,Per"
-msgstr ""
+msgstr "Κύματα, περίοδος"
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Θερμοκρασία αέρα"
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Θερμοκρασία θαλ."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
-msgstr ""
+msgstr "Ρεύμα, κατεύθ."
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "Ρεύμα, ταχύτητα"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"
