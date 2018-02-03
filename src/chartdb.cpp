@@ -1342,24 +1342,21 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 #else
                   s52plib *plib = NULL;
 #endif                  
-                  
+                  wxString msg_fn(ChartFullPath);
+                  msg_fn.Replace(_T("%"), _T("%%"));
 
                   //    Vector charts need a PLIB for useful display....
                   if((chart_family != CHART_FAMILY_VECTOR) ||
                       ((chart_family == CHART_FAMILY_VECTOR) && plib) )
                   {
-                        wxString msg(_T("Initializing Chart "));
-                        msg.Append(ChartFullPath);
-                        wxLogMessage(msg);
+                        wxLogMessage(wxString::Format(_T("Initializing Chart %s"), msg_fn.c_str()));
 
                         ir = Ch->Init(ChartFullPath, init_flag);    // using the passed flag
                         Ch->SetColorScheme(/*pParent->*/GetColorScheme());
                   }
                   else
                   {
-                        wxString msg(_T("   No PLIB, Skipping vector chart "));
-                        msg.Append(ChartFullPath);
-                        wxLogMessage(msg);
+                        wxLogMessage(wxString::Format(_T("   No PLIB, Skipping vector chart  %s"), msg_fn.c_str()));
 
                         ir = INIT_FAIL_REMOVE;
 
@@ -1405,12 +1402,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   {
                         if(INIT_FAIL_NOERROR != ir)
                         {
-                              wxString fp = ChartFullPath;
-                              fp.Prepend(_T("   OpenChartFromStack...Error opening chart "));
-                              wxString id;
-                              id.Printf(_T("... return code %d"),  ir);
-                              fp.Append(id);
-                              wxLogMessage(fp);
+                              wxLogMessage(wxString::Format(_T("   OpenChartFromStack... Error opening chart %s ... return code %d"), msg_fn.c_str(), ir));
                         }
                   }
 
