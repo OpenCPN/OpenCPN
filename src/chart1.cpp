@@ -700,6 +700,8 @@ static int tick_idx;
 int               g_sticky_chart;
 int               g_sticky_projection;
 
+bool              g_benableUDPNullHeader;
+
 extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
 

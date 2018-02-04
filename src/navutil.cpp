@@ -414,6 +414,7 @@ extern bool             g_bSpaceDropMark;
 extern bool             g_bShowTide;
 extern bool             g_bShowCurrent;
 
+extern bool             g_benableUDPNullHeader;
 
 extern wxString         g_uiStyle;
 
@@ -823,6 +824,8 @@ int MyConfig::LoadMyConfig()
     
     g_benableAISNameCache = true;
     Read( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
+    
+    Read( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader, 0 );
     
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );

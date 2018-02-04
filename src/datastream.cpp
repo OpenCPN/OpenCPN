@@ -67,6 +67,8 @@ static const long long lNaN = 0xfff8000000000000;
 
 const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 
+extern bool g_benableUDPNullHeader;
+
 #define N_DOG_TIMEOUT   5
 
 #ifdef __WXMSW__
@@ -538,10 +540,16 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 size_t count = event.GetSocket()->LastCount();
                 if(count)
                 {
-                    // XXX FIXME: is it reliable?
-                    // copy all received bytes
-                    // there's 0 in furuno UDP tags before NMEA sentences.
-                    m_sock_buffer.append(&data.front(), count);
+                    if(!g_benableUDPNullHeader){
+                        data[count]=0;
+                        m_sock_buffer += (&data.front());
+                    }
+                    else{
+                        // XXX FIXME: is it reliable?
+                        // copy all received bytes
+                        // there's 0 in furuno UDP tags before NMEA sentences.
+                        m_sock_buffer.append(&data.front(), count);
+                    }
                 }
             }
 
