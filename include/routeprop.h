@@ -227,6 +227,10 @@ public:
     wxChoice      *m_chStyle;
     wxChoice      *m_chWidth;
 
+
+    wxStaticText* m_stDescription;
+    wxTextCtrl* m_tDescription;
+
     wxStaticBoxSizer* m_pListSizer;
     wxScrolledWindow *itemDialog1;
     
