@@ -2053,7 +2053,6 @@ int WayPointman::GetXIconImageListIndex( const wxBitmap *pbm )
 }
 
 //  Create the unique identifier
-
 wxString WayPointman::CreateGUID( RoutePoint *pRP )
 {
     //FIXME: this method is not needed at all (if GetUUID works...)
