@@ -2959,7 +2959,6 @@ bool Osenc::CreateSENCRecord200( OGRFeature *pFeature, Osenc_outstream *stream, 
                                     att_conv.RemoveLast();      // Remove the \037 that terminates UTF-16 strings in S57
                                     att_conv.Replace(_T("\n"), _T("|") );  //Replace  <new line> with special break character
                                     wxAttrValue = att_conv;
-                                    wxLogMessage(wxAttrValue);
                                     }
                                  else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
                                     wxCSConv conv(_T("iso8859-1") );
