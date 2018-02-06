@@ -854,11 +854,11 @@ void TrackPropDlg::CreateControls( void )
 
       m_sdbBtmBtnsSizerCancel = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_sdbBtmBtnsSizerCancel, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
+      itemBoxSizer16->Add( m_sdbBtmBtnsSizerCancel, 0, wxALIGN_BOTTOM | wxALL, 5 );
 
       m_sdbBtmBtnsSizerOK = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_RIGHT | wxALIGN_BOTTOM | wxALL, 5 );
+      itemBoxSizer16->Add( m_sdbBtmBtnsSizerOK, 0, wxALIGN_BOTTOM | wxALL, 5 );
       m_sdbBtmBtnsSizerOK->SetDefault();
 
 

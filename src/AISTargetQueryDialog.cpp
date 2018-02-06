@@ -296,7 +296,7 @@ void AISTargetQueryDialog::CreateControls()
     m_pQueryTextCtl = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                         wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
     m_pQueryTextCtl->SetBorders( 1 );
-    topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND, 5 );
+    topSizer->Add( m_pQueryTextCtl, 1, wxEXPAND, 5 );
 
     wxSizer* opt = new wxBoxSizer( wxHORIZONTAL );
     m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );

@@ -1352,15 +1352,15 @@ void RouteProp::CreateControls()
       m_SplitButton->Enable( false );
       
       wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-      itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 3 );
+      itemBoxSizerBottom->Add( itemBoxSizer16, 0, wxALL, 3 );
       
       m_CancelButton = new wxButton( this, ID_ROUTEPROP_CANCEL, _("Cancel"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+      itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1 );
       
       m_OKButton = new wxButton( this, ID_ROUTEPROP_OK, _("OK"), wxDefaultPosition,
       wxDefaultSize, 0 );
-      itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1);
+      itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
       m_OKButton->SetDefault();
       
       //      To correct a bug in MSW commctl32, we need to catch column width drag events, and do a Refresh()
@@ -2521,7 +2521,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     m_checkBoxShowName = new wxCheckBox( m_panelBasicProperties, wxID_ANY, _("Show name"),
             wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT );
-    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizerTextProperties->Add( m_checkBoxShowName, 0, wxALL, 5 );
 
     ///
     wxBoxSizer* bSizer8 = new wxBoxSizer( wxHORIZONTAL );
@@ -2573,7 +2573,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerArrivalRadius->Add( m_staticTextArrivalRadius, 0, wxALL, 0 );
 
     m_textArrivalRadius = new wxTextCtrl( m_panelBasicProperties, wxID_ANY, wxEmptyString);
-    bSizerArrivalRadius->Add( m_textArrivalRadius, 0, wxALL | wxALIGN_RIGHT, 5 );
+    bSizerArrivalRadius->Add( m_textArrivalRadius, 0, wxALL, 5 );
     bSizerTextProperties->Add( bSizerArrivalRadius, 0, wxEXPAND, 5 );
 
     //  Waypoints
@@ -2709,7 +2709,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_staticTextEditEnabled = new wxStaticText( m_panelBasicProperties, wxID_ANY,
                                                 _("Links are opened in the default browser."), wxDefaultPosition, wxDefaultSize,
                                                 0 );
-    sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    sbSizerLinks->Add( m_staticTextEditEnabled, 0, wxALL, 5 );
     
 
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
@@ -2766,9 +2766,9 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizer1->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 3 );
     
     m_sdbSizerButtonsCancel = new wxButton( this, ID_MARKPROP_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_sdbSizerButtonsCancel, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1 );
+    itemBoxSizer16->Add( m_sdbSizerButtonsCancel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1 );
     m_sdbSizerButtonsOK = new wxButton( this, ID_MARKPROP_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_sdbSizerButtonsOK, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 1);
+    itemBoxSizer16->Add( m_sdbSizerButtonsOK, 0, wxALIGN_CENTER_VERTICAL | wxALL, 1);
 
     m_sdbSizerButtonsOK->SetDefault();
 
