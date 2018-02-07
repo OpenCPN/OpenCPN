@@ -547,9 +547,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
         if (settings != GribOverlaySettings::CURRENT && settings != GribOverlaySettings::WAVE)
             break;
 #endif
-        if(width == 0 || height == 0)
-            return false;
-        if( width > maxt || height > maxt ) {
+        if( width > maxt || height > maxt || tp_scale > scalef * 1000.) { // arbitrary limit to loop
             if (tp_scale == scalef)
                 break;
             tp_scale /= 2.0;
@@ -565,6 +563,9 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
         uvp.view_scale_ppm = tp_scale;
         
     } while (1);
+
+    if (width == 0 || height == 0)
+        return false;
     
     //    Dont try to create enormous GRIB textures
     if( width > 1024 || height > 1024 )
