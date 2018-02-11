@@ -607,6 +607,8 @@ IF(OCPN_USE_CURL)
     ADD_DEFINITIONS(-D__OCPN_USE_CURL__)
 
 IF(WIN32)
+    INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" "${CMAKE_SOURCE_DIR}/buildwin/libeay32.dll" "${CMAKE_SOURCE_DIR}/buildwin/ssleay32.dll" DESTINATION ".")
+    INSTALL(FILES "${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt" DESTINATION ".")
     OPTION(OCPN_USE_EXTERN_CURL "Use external libcurl" OFF)
 ELSE(WIN32)
     SET(OCPN_USE_EXTERN_CURL ON)
