@@ -1396,6 +1396,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                 pChartCache->Add((void *)pce);
                                 m_cache_mutex.Unlock();
                               }
+                              else {
+                                delete pce;
+                              }
                         }
                   }
                   else if(INIT_FAIL_REMOVE == ir)                 // some problem in chart Init()

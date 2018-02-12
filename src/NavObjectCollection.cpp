@@ -1586,11 +1586,9 @@ bool NavObjectChanges::ApplyChanges(void)
 
                     Track *pExistingTrack = TrackExists( track_GUID );
                         
-                    if(!strcmp(child.first_child().value(), "add") ){
-                        if( pExistingTrack ) {
-                            pExistingTrack->AddPoint( pWp );
-                            pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
-                        }
+                    if(!strcmp(child.first_child().value(), "add") && pExistingTrack ) {
+                        pExistingTrack->AddPoint( pWp );
+                        pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
                     }
                     else
                         delete pWp;
