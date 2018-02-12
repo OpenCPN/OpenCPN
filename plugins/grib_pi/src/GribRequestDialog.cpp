@@ -572,6 +572,8 @@ bool GribRequestSetting::DoRenderZoneOverlay()
 
    glDisable( GL_BLEND );
 
+   glPopAttrib();
+   
 #endif
     }
     return true;
