@@ -104,6 +104,7 @@ extern double           g_TrackDeltaDistance;
 extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
 extern wxColour         g_colourTrackLineColour;
+extern wxColor GetDimColor(wxColor c);
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
@@ -628,7 +629,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     if( IsRunning() )
         basic_colour = GetGlobalColor( _T ( "URED" ) );
     else
-        basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
+        basic_colour = GetDimColor(g_colourTrackLineColour);
 
     wxPenStyle style = wxPENSTYLE_SOLID;
     int width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -676,7 +677,6 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
                 dc.StrokeLines( i, points );
 
-                extern wxColor GetDimColor(wxColor c);
                 wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
                 wxColour hilt( trackLine_dim_colour.Red(), trackLine_dim_colour.Green(), trackLine_dim_colour.Blue(), 128 );
 
