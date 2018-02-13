@@ -407,7 +407,7 @@ void about::CreateControls( void )
 
     buttonSizer->Add( new wxButton( this, ID_COPYLOG, _("Copy Log File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
     buttonSizer->Add( new wxButton( this, ID_COPYINI, _("Copy Settings File to Clipboard") ), 1, wxALL | wxEXPAND, 3 );
-    buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? wxALIGN_RIGHT : 0), 3 );
+    buttonSizer->Add( donateButton, 1, wxALL | (buttonSizer->GetOrientation() == wxHORIZONTAL ? 0 : wxALIGN_RIGHT), 3 );
 #endif
     
     //  Main Notebook
@@ -426,7 +426,7 @@ void about::CreateControls( void )
                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAboutHTMLCtl->SetBorders( 5 );
     wxBoxSizer* aboutSizer = new wxBoxSizer( wxVERTICAL );
-    aboutSizer->Add( pAboutHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    aboutSizer->Add( pAboutHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAbout->SetSizer( aboutSizer );
 
     //  Authors Panel
@@ -440,7 +440,7 @@ void about::CreateControls( void )
                                     wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pAuthorHTMLCtl->SetBorders( 5 );
     wxBoxSizer* authorSizer = new wxBoxSizer( wxVERTICAL );
-    authorSizer->Add( pAuthorHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    authorSizer->Add( pAuthorHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelAuthors->SetSizer( authorSizer );
     
 
@@ -454,7 +454,7 @@ void about::CreateControls( void )
                                       wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION);
     pLicenseHTMLCtl->SetBorders( 5 );
     wxBoxSizer* licenseSizer = new wxBoxSizer( wxVERTICAL );
-    licenseSizer->Add( pLicenseHTMLCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND | wxALL, 5 );
+    licenseSizer->Add( pLicenseHTMLCtl, 1, wxEXPAND | wxALL, 5 );
     itemPanelLicense->SetSizer( licenseSizer );
     
 

@@ -342,7 +342,7 @@ class options : private Uncopyable,
 
   // Sizer flags
   wxSizerFlags inputFlags, verticleInputFlags, labelFlags, groupInputFlags;
-  wxSizerFlags groupLabelFlags;
+  wxSizerFlags groupLabelFlags, groupLabelFlagsHoriz;
 
   // For general options
   wxScrolledWindow *pDisplayPanel;
