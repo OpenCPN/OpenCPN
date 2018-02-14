@@ -168,13 +168,13 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 	wxColour cl;
 	GetGlobalColor(_T("DASH2"), &cl);
 	wxPen pen1;
-	pen1.SetStyle(wxSOLID);
+	pen1.SetStyle(wxPENSTYLE_SOLID);
 	pen1.SetColour(cl);
 	pen1.SetWidth(2);
 	dc->SetPen(pen1);
 	GetGlobalColor(_T("DASH1"), &cl);
 	wxBrush brush1;
-	brush1.SetStyle(wxSOLID);
+	brush1.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush1.SetColour(cl);
 	dc->SetBrush(brush1);
 	dc->DrawCircle(m_cx, m_cy, m_radius / 8);
@@ -184,7 +184,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 
 	GetGlobalColor(_T("BLUE3"), &cl);
 	wxBrush brush2;
-	brush2.SetStyle(wxSOLID);
+	brush2.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush2.SetColour(cl);
 	dc->SetBrush(brush2);
 
@@ -217,7 +217,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc)
 
 	GetGlobalColor(_T("DASHN"), &cl);
 	wxBrush brush;
-	brush.SetStyle(wxSOLID);
+	brush.SetStyle(wxBRUSHSTYLE_SOLID);
 	brush.SetColour(cl);
 	dc->SetBrush(brush);
 
@@ -299,7 +299,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(wxGCDC* dc, double value,
 		TextPoint.y = (size.y * .75) - height;
 		GetGlobalColor(_T("DASHL"), &cl);
 		int penwidth = size.x / 100;
-		wxPen* pen = wxThePenList->FindOrCreatePen(cl, penwidth, wxSOLID);
+		wxPen* pen = wxThePenList->FindOrCreatePen(cl, penwidth, wxPENSTYLE_SOLID);
 		dc->SetPen(*pen);
 		GetGlobalColor(_T("DASHB"), &cl);
 		dc->SetBrush(cl);

@@ -1331,7 +1331,7 @@ void RouteProp::CreateControls()
         
         
         wxBoxSizer* itemBoxSizerBottom = new wxBoxSizer( wxHORIZONTAL );
-        itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
+        itemBoxSizer1->Add( itemBoxSizerBottom, 0, wxALL | wxEXPAND, 5 );
         
         wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
         itemBoxSizerBottom->Add( itemBoxSizerAux, 1, wxALIGN_LEFT | wxALL, 3 );

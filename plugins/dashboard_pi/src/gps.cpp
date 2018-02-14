@@ -169,7 +169,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
       //        wxSHORT_DASH is not supported on GTK, and it destroys the pen.
 #ifndef __WXGTK__
-      pen.SetStyle(wxSHORT_DASH);
+      pen.SetStyle(wxPENSTYLE_SHORT_DASH);
       dc->SetPen(pen);
 #endif
       dc->DrawLine(3, 110, size.x-3, 110);
