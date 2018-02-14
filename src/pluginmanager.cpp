@@ -6411,3 +6411,9 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
+/* API 1.16 */
+
+void PlugInHandleAutopilotRoute(bool enable)
+{
+    g_bPluginHandleAutopilotRoute = enable;
+}

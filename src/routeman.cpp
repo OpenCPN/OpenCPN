@@ -109,6 +109,8 @@ extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
 extern float            g_ChartScaleFactorExp;
 
+bool g_bPluginHandleAutopilotRoute;
+
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
 WX_DECLARE_LIST(wxString, markicon_key_list_type);
@@ -254,6 +256,14 @@ RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, 
 
 bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
 {
+    wxJSONValue v;
+    v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
+    v[_T("GUID")] = pRouteToActivate->m_GUID;
+    wxString msg_id( _T("OCPN_RTE_ACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+    if(g_bPluginHandleAutopilotRoute)
+        return true;
+
     pActiveRoute = pRouteToActivate;
 
     if( pStartPoint ) {
@@ -262,12 +272,6 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
         wxRoutePointListNode *node = ( pActiveRoute->pRoutePointList )->GetFirst();
         pActivePoint = node->GetData();               // start at beginning
     }
-
-    wxJSONValue v;
-    v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
-    v[_T("GUID")] = pRouteToActivate->m_GUID;
-    wxString msg_id( _T("OCPN_RTE_ACTIVATED") );
-    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 
     ActivateRoutePoint( pRouteToActivate, pActivePoint );
 
@@ -287,13 +291,19 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
 bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
 {
     wxJSONValue v;
+    v[_T("GUID")] = pRP_target->m_GUID;
+    v[_T("WP_activated")] = pRP_target->GetName();
+
+    wxString msg_id( _T("OCPN_WPT_ACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+
+    if(g_bPluginHandleAutopilotRoute)
+        return true;
+
     pActiveRoute = pA;
 
     pActivePoint = pRP_target;
     pActiveRoute->m_pRouteActivePoint = pRP_target;
-
-    v[_T("GUID")] = pRP_target->m_GUID;
-    v[_T("WP_activated")] = pRP_target->GetName();
 
     wxRoutePointListNode *node = ( pActiveRoute->pRoutePointList )->GetFirst();
     while( node ) {
@@ -353,9 +363,6 @@ bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
             pRoutePropDialog->UpdateProperties();
         }
     }
-
-    wxString msg_id( _T("OCPN_WPT_ACTIVATED") );
-    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 
     return true;
 }
