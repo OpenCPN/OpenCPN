@@ -1234,8 +1234,8 @@ extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily fa
                     const wxString &facename = wxEmptyString,
                     wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
 
-// API 1.16
-/* disable builtin console canvas, and autopilot nmea sentences */
-extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
+extern DECL_EXP int PlugInGetMinAvailableGshhgQuality();
+extern DECL_EXP int PlugInGetMaxAvailableGshhgQuality();
 
+extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
 #endif //_PLUGIN_H_

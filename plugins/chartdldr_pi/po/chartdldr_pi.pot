@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: chartdldr_pi 1.2\n"
+"Project-Id-Version: chartdldr_pi 1.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:13-0500\n"
+"POT-Creation-Date: 2018-01-24 10:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,100 +31,100 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:240
+#: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:245
+#: src/chartdldr_pi.cpp:248
 msgid "Chart Downloader PlugIn for OpenCPN"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:250
+#: src/chartdldr_pi.cpp:253
 msgid ""
 "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:257 src/chartdldr_pi.cpp:696 src/chartdldr_pi.cpp:703
-#: src/chartdldr_pi.cpp:709 src/chartdldr_pi.cpp:727 src/chartdldr_pi.cpp:762
-#: src/chartdldr_pi.cpp:825 src/chartdldr_pi.cpp:831 src/chartdldr_pi.cpp:1013
-#: src/chartdldr_pi.cpp:1088 src/chartdldr_pi.cpp:1164
-#: src/chartdldr_pi.cpp:1267 src/chartdldr_pi.cpp:1938
+#: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
+#: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
+#: src/chartdldr_pi.cpp:829 src/chartdldr_pi.cpp:835 src/chartdldr_pi.cpp:1018
+#: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
+#: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
 msgid "Chart Downloader"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:432 src/chartdldr_pi.cpp:454
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
 msgid "Select all"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:436 src/chartdldr_pi.cpp:455
+#: src/chartdldr_pi.cpp:439 src/chartdldr_pi.cpp:458
 msgid "Deselect all"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:440 src/chartdldr_pi.cpp:456
+#: src/chartdldr_pi.cpp:443 src/chartdldr_pi.cpp:459
 msgid "Invert selection"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:444 src/chartdldr_pi.cpp:457
+#: src/chartdldr_pi.cpp:447 src/chartdldr_pi.cpp:460
 msgid "Select updated"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:448 src/chartdldr_pi.cpp:458
+#: src/chartdldr_pi.cpp:451 src/chartdldr_pi.cpp:461
 msgid "Select new"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:566
+#: src/chartdldr_pi.cpp:569
 msgid "New"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:575
+#: src/chartdldr_pi.cpp:578
 msgid "Update available"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:581
+#: src/chartdldr_pi.cpp:584
 msgid "Up to date"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:588
+#: src/chartdldr_pi.cpp:591
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:667 src/chartdldr_pi.cpp:1241
+#: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
 msgid "(Please update first)"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:672 src/chartdldr_pi.cpp:744
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
 msgid "Error, the URL to the chart source data seems wrong."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:672 src/chartdldr_pi.cpp:744 src/chartdldr_pi.cpp:1024
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747 src/chartdldr_pi.cpp:1029
 msgid "Error"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:695
+#: src/chartdldr_pi.cpp:698
 msgid ""
 "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:702
+#: src/chartdldr_pi.cpp:705
 msgid ""
 "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:708
+#: src/chartdldr_pi.cpp:711
 msgid ""
 "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:726 src/chartdldr_pi.cpp:1087
+#: src/chartdldr_pi.cpp:729 src/chartdldr_pi.cpp:1092
 #, c-format
 msgid ""
 "%d out of %d charts failed to download.\n"
@@ -132,44 +132,44 @@ msgid ""
 "operation if needed."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:762 src/chartdldr_pi.cpp:1915 src/chartdldr_pi.cpp:1938
+#: src/chartdldr_pi.cpp:765 src/chartdldr_pi.cpp:1914 src/chartdldr_pi.cpp:1937
 #, c-format
 msgid "Directory %s can't be created."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:797
+#: src/chartdldr_pi.cpp:801
 msgid "Downloading file"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:798
+#: src/chartdldr_pi.cpp:802
 msgid "Reading Headers: "
 msgstr ""
 
-#: src/chartdldr_pi.cpp:824
+#: src/chartdldr_pi.cpp:828
 #, c-format
 msgid "Failed to Find New Catalog: %s "
 msgstr ""
 
-#: src/chartdldr_pi.cpp:830
+#: src/chartdldr_pi.cpp:834
 #, c-format
 msgid ""
 "Failed to Download Catalog: %s \n"
 "Verify there is a working Internet connection."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:980 src/chartdldr_pi.cpp:986
+#: src/chartdldr_pi.cpp:985 src/chartdldr_pi.cpp:991
 msgid "No charts selected for download."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:996
+#: src/chartdldr_pi.cpp:1001
 msgid "Abort download"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1005
+#: src/chartdldr_pi.cpp:1010
 msgid "Unknown"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1012
+#: src/chartdldr_pi.cpp:1017
 #, c-format
 msgid ""
 "The selected chart '%s' can't be downloaded automatically, do you want me to "
@@ -178,62 +178,62 @@ msgid ""
 " After downloading the charts, please extract them to %s"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1024
+#: src/chartdldr_pi.cpp:1029
 #, c-format
 msgid "Error, the URL to the chart (%s) data seems wrong."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1050
+#: src/chartdldr_pi.cpp:1055
 #, c-format
 msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1080 src/chartdldrgui.cpp:294
+#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
 msgid ""
 "Download\n"
 " selected charts"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1082 src/chartdldrgui.cpp:401
+#: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
 msgid "Download selected charts"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1112 src/chartdldrgui.cpp:95
+#: src/chartdldr_pi.cpp:1117 src/chartdldrgui.cpp:95
 msgid "Catalog"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1113
+#: src/chartdldr_pi.cpp:1118
 msgid "Released"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1114
+#: src/chartdldr_pi.cpp:1119
 msgid "Local path"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1118
+#: src/chartdldr_pi.cpp:1123
 msgid "Title"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1119
+#: src/chartdldr_pi.cpp:1124
 msgid "Status"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1120
+#: src/chartdldr_pi.cpp:1125
 msgid "Latest"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1163
+#: src/chartdldr_pi.cpp:1168
 msgid ""
 "Do you really want to remove the chart source?\n"
 "The local chart files will not be removed, but you will not be able to update "
 "the charts anymore."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1227
+#: src/chartdldr_pi.cpp:1232
 msgid "Edit Chart Source"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1266
+#: src/chartdldr_pi.cpp:1271
 #, c-format
 msgid ""
 "Path %s seems not to be covered by your configured Chart Directories.\n"
@@ -241,25 +241,25 @@ msgid ""
 "tab."
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1900 src/chartdldr_pi.cpp:1903
+#: src/chartdldr_pi.cpp:1899 src/chartdldr_pi.cpp:1902
 msgid ""
 "You must select one of the predefined chart sources or create one of your "
 "own.\n"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1906
+#: src/chartdldr_pi.cpp:1905
 msgid "The chart source must have a name.\n"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1909
+#: src/chartdldr_pi.cpp:1908
 msgid "The chart source must have a valid URL.\n"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1911
+#: src/chartdldr_pi.cpp:1910
 msgid "You must select a local folder to store the charts.\n"
 msgstr ""
 
-#: src/chartdldr_pi.cpp:1918
+#: src/chartdldr_pi.cpp:1917
 msgid "Chart source definition problem"
 msgstr ""
 

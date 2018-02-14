@@ -96,7 +96,7 @@ bool RMC::Parse( const SENTENCE& sentence )
    ** 12) Checksum
 
    ** Version 2.3
-   ** 12) Mode (D or A), optional, may be NULL
+   ** 12) The value can be A=autonomous, D=differential, E=Estimated, N=not valid, S=Simulator, optional, may be NULL
    ** 13) Checksum
    */
 
@@ -121,19 +121,21 @@ bool RMC::Parse( const SENTENCE& sentence )
        }
    }
 
-   //   Is this at least a 2.3 message?
-   bool bext_valid = true;
-   wxString checksum_in_sentence = sentence.Field( nFields );
-   if(!checksum_in_sentence.StartsWith(_T("*"))) {
-       if((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S"))) 
-            bext_valid = false;
+   // If sentence is at least Version 2.3, check the extra mode indicator field
+   bool mode_valid = true;
+   if(nFields >= 12){
+       wxString mode_string = sentence.Field( 12 );
+       if(!mode_string.StartsWith(_T("*"))) {
+           if((mode_string == _T("N")) || (mode_string == _T("S")))     // Not valid, or simulator mode
+               mode_valid = false;
+       }
    }
        
 
    UTCTime                    = sentence.Field( 1 );
    
    IsDataValid                = sentence.Boolean( 2 );
-   if( !bext_valid )
+   if( !mode_valid )
        IsDataValid = NFalse;
        
    Position.Parse( 3, 4, 5, 6, sentence );

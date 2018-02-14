@@ -119,6 +119,7 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 #endif
 
 extern float  g_ChartScaleFactorExp;
+extern float  g_ShipScaleFactorExp;
 
 #include <vector>
 
@@ -1654,7 +1655,12 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                         pPopupDetailSlider = new PopUpDSlide( this, -1, ChartType, ChartFam,
                             wxPoint( g_detailslider_dialog_x, g_detailslider_dialog_y ),
                             wxDefaultSize, wxSIMPLE_BORDER, _T("") );
-                        if (pPopupDetailSlider) pPopupDetailSlider->ShowModal();
+                        if (pPopupDetailSlider)
+#ifdef __WXOSX__
+                            pPopupDetailSlider->Show();
+#else
+                            pPopupDetailSlider->ShowModal();
+#endif
                     }
                 }
             else //( !pPopupDetailSlider ) close popupslider
@@ -2521,8 +2527,10 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 
                     s << FormatDistanceAdaptive( dist );
 
-                    double segmentSpeed = toUsrSpeed( dist / ( (segShow_point_b->GetCreateTime() - segShow_point_a->GetCreateTime()).GetSeconds().ToDouble() / 3600.) );
-                    s << wxString::Format( _T("  %.1f "), (float)segmentSpeed ) << getUsrSpeedUnit();
+                    if(segShow_point_a->GetTimeString() && segShow_point_b->GetTimeString()){
+                        double segmentSpeed = toUsrSpeed( dist / ( (segShow_point_b->GetCreateTime() - segShow_point_a->GetCreateTime()).GetSeconds().ToDouble() / 3600.) );
+                        s << wxString::Format( _T("  %.1f "), (float)segmentSpeed ) << getUsrSpeedUnit();
+                    }
 
                     m_pTrackRolloverWin->SetString( s );
 
@@ -3933,8 +3941,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
                 
                 // Prepare COG predictor endpoint icon
             double png_pred_icon_scale_factor = .4;
-            if(g_ChartScaleFactorExp > 1.0)
-                png_pred_icon_scale_factor *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if(g_ShipScaleFactorExp > 1.0)
+                png_pred_icon_scale_factor *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
                 
             wxPoint icon[4];
                 
@@ -3989,8 +3997,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, int img_height,
             double nominal_circle_size_pixels = wxMax(4.0, floor(m_pix_per_mm * (ref_dim / 5.0)));    // not less than 4 pixel
             
             // Scale the circle to ChartScaleFactor, slightly softened....
-            if(g_ChartScaleFactorExp > 1.0)
-                nominal_circle_size_pixels *= (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if(g_ShipScaleFactorExp > 1.0)
+                nominal_circle_size_pixels *= (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
             
             dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, nominal_circle_size_pixels/2 );
         }
@@ -4254,9 +4262,9 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 
                 wxBitmap os_bm( rot_image );
                 
-                if(g_ChartScaleFactorExp > 1){
+                if(g_ShipScaleFactorExp > 1){
                     wxImage scaled_image = os_bm.ConvertToImage();
-                    double factor = (log(g_ChartScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
+                    double factor = (log(g_ShipScaleFactorExp) + 1.0) * 1.0;   // soften the scale factor a bit
                     os_bm = wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * factor,
                                                         scaled_image.GetHeight() * factor,
                                                         wxIMAGE_QUALITY_HIGH));
@@ -6879,6 +6887,26 @@ bool ChartCanvas::MouseEventProcessCanvas( wxMouseEvent& event )
     }
     
     if( event.Dragging() && event.LeftIsDown()){
+            /*
+             * fixed dragging.
+             * On my Surface Pro 3 running Arch Linux there is no mouse down event before the drag event.
+             * Hence, as there is no mouse down event, last_drag is not reset before the drag.
+             * And that results in one single drag session, meaning you cannot drag the map a few miles
+             * north, lift your finger, and the go even further north. Instead, the map resets itself
+             * always to the very first drag start (since there is not reset of last_drag).
+             *
+             * Besides, should not left down and dragging be enough of a situation to start a drag procedure?
+             *
+             * Anyways, guarded it to be active in touch situations only.
+             */
+            if( g_btouch ) {
+                if(false == m_bChartDragging) {
+                    last_drag.x = x, last_drag.y = y;
+                    m_bChartDragging = true;
+                }
+            }
+
+
             if( ( last_drag.x != x ) || ( last_drag.y != y ) ) {
                 m_bChartDragging = true;
                 StartTimedMovement();

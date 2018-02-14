@@ -19726,7 +19726,7 @@
 			<attrib-code index="0">BOYSHP3</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
 			<attrib-code index="2">COLPAT2</attrib-code>
-			<instruction>SY(BOYSPH78);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPH65);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
@@ -19760,7 +19760,7 @@
 			<table-name>Paper</table-name>
 			<attrib-code index="0">BOYSHP3</attrib-code>
 			<attrib-code index="1">COLOUR3,1</attrib-code>
-			<instruction>SY(BOYSPH78);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPH65);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>

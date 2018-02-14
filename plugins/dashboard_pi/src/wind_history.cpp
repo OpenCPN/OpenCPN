@@ -418,7 +418,7 @@ void DashboardInstrument_WindDirHistory::DrawBackground(wxGCDC* dc)
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.25));
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.75));
 #ifdef __WXMSW__
-  pen.SetStyle(wxSHORT_DASH);
+  pen.SetStyle(wxPENSTYLE_SHORT_DASH);
   dc->SetPen(pen);
 #endif
   dc->DrawLine(m_LeftLegend+3, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.5), m_WindowRect.width-3-m_RightLegend, (int)(m_TopLineHeight+m_DrawAreaRect.height*0.5));

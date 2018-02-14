@@ -1648,8 +1648,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
 
     wxNotebook *itemNotebook = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
             wxNB_TOP );
-    itemBoxSizerMainPanel->Add( itemNotebook, 1,
-            wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
+    itemBoxSizerMainPanel->Add( itemNotebook, 1, wxALL | wxEXPAND, border_size );
 
     wxPanel *itemPanelNotebook01 = new wxPanel( itemNotebook, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
@@ -2187,6 +2186,10 @@ void DashboardWindow::OnContextMenu( wxContextMenuEvent& event )
 {
     wxMenu* contextMenu = new wxMenu();
 
+    wxAuiPaneInfo &pane = m_pauimgr->GetPane( this );
+    if ( pane.IsOk( ) && pane.IsDocked( ) ) {
+        contextMenu->Append( ID_DASH_UNDOCK, _( "Undock" ) );
+    }
     wxMenuItem* btnVertical = contextMenu->AppendRadioItem( ID_DASH_VERTICAL, _("Vertical") );
     btnVertical->Check( itemBoxSizer->GetOrientation() == wxVERTICAL );
     wxMenuItem* btnHorizontal = contextMenu->AppendRadioItem( ID_DASH_HORIZONTAL, _("Horizontal") );
@@ -2223,6 +2226,10 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
             ChangePaneOrientation( wxHORIZONTAL, true );
             m_Container->m_sOrientation = _T("H");
             break;
+        }
+        case ID_DASH_UNDOCK: {
+            ChangePaneOrientation( GetSizerOrientation( ), true );
+            return;     // Nothing changed so nothing need be saved
         }
     }
     m_plugin->SaveConfig();

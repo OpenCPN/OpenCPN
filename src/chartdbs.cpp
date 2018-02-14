@@ -2153,19 +2153,17 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 }
             }
 
+            wxString msg_fn(full_name);
+            msg_fn.Replace(_T("%"), _T("%%"));
             if( file_time_is_same ) {
                 // Produce the same output without actually calling `CreateChartTableEntry()`.
-                wxString msg = wxT("Loading chart data for ");
-                msg.Append(full_name);
-                wxLogMessage(msg);
+                wxLogMessage(wxString::Format(_T("Loading chart data for %s"), msg_fn.c_str()));
             } else {
                 pnewChart = CreateChartTableEntry(full_name, chart_desc);
                 if(!pnewChart)
                 {
                     bAddFinal = false;
-                    wxString msg = _T("   CreateChartTableEntry() failed for file: ");
-                    msg.Append(full_name);
-                    wxLogMessage(msg);
+                    wxLogMessage(wxString::Format(_T("   CreateChartTableEntry() failed for file: %s"), msg_fn.c_str()));
                 }
             }
 
@@ -2175,9 +2173,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             }
             else if( file_path_is_same )
             {
-                wxString msg = _T("   Replacing older chart file of same path: ");
-                msg.Append(full_name);
-                wxLogMessage(msg);
+                wxLogMessage(wxString::Format(_T("   Replacing older chart file of same path: %s"), msg_fn.c_str()));
             }
             else if( !file_time_is_same )
             {
@@ -2194,9 +2190,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                     {
                         pEntry->SetValid(true);
                         bAddFinal = false;
-                        wxString msg = _T("   Retaining newer chart file of same name: ");
-                        msg.Append(full_name);
-                        wxLogMessage(msg);
+                        wxLogMessage(wxString::Format(_T("   Retaining newer chart file of same name: %s"), msg_fn.c_str()));
 
                     }
                 }
@@ -2213,9 +2207,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
                 {
                     pEntry->SetValid(false);
                     bAddFinal = true;
-                    wxString msg = _T("   Replacing older chart file of same name: ");
-                    msg.Append(full_name);
-                    wxLogMessage(msg);
+                    wxLogMessage(wxString::Format(_T("   Replacing older chart file of same name: %s"), msg_fn.c_str()));
                 }
             }
 
@@ -2224,9 +2216,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             {
                   if(0 == b_add_msg)
                   {
-                        wxString msg = _T("   Adding chart file: ");
-                        msg.Append(full_name);
-                        wxLogMessage(msg);
+                        wxLogMessage(wxString::Format(_T("   Adding chart file: %s"), msg_fn.c_str()));
                   }
                   collision_map[file_name] = active_chartTable.GetCount();
                   active_chartTable.Add(pnewChart);
@@ -2236,9 +2226,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString& dir_name_base,
             {
                 if (pnewChart)
                     delete pnewChart;
-//                  wxString msg = _T("   Not adding chart file: ");
-//                  msg.Append(full_name);
-//                  wxLogMessage(msg);
+//                    wxLogMessage(wxString::Format(_T("   Not adding chart file: %s"), msg_fn.c_str()));
             }
       }
 
@@ -2268,14 +2256,14 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
     ChartTableEntry *pnewChart = NULL;
     bool bAddFinal = true;
     int b_add_msg = 0;
+    wxString msg_fn(full_name);
+    msg_fn.Replace(_T("%"), _T("%%"));
     
     pnewChart = CreateChartTableEntry(full_name, chart_desc);
     if(!pnewChart)
     {
         bAddFinal = false;
-        wxString msg = _T("   CreateChartTableEntry() failed for file: ");
-        msg.Append(full_name);
-        wxLogMessage(msg);
+        wxLogMessage(wxString::Format(_T("   CreateChartTableEntry() failed for file: %s"), msg_fn.c_str()));
         return false;
     }
     else         // traverse the existing database looking for duplicates, and choosing the right one
@@ -2303,9 +2291,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
                         {
                             bAddFinal = true;
                             active_chartTable[isearch].SetValid(false);
-                            wxString msg = _T("   Replacing older chart file of same path: ");
-                            msg.Append(full_name);
-                            wxLogMessage(msg);
+                            wxLogMessage(wxString::Format(_T("   Replacing older chart file of same path: %s"), msg_fn.c_str()));
                         }
                         
                         break;
@@ -2328,9 +2314,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
                             {
                                 active_chartTable[isearch].SetValid(true);
                                 bAddFinal = false;
-                                wxString msg = _T("   Retaining newer chart file of same name: ");
-                                msg.Append(full_name);
-                                wxLogMessage(msg);
+                                wxLogMessage(wxString::Format(_T("   Retaining newer chart file of same name: %s"), msg_fn.c_str()));
                                 
                             }
                         }
@@ -2348,9 +2332,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
                         {
                             active_chartTable[isearch].SetValid(false);
                             bAddFinal = true;
-                            wxString msg = _T("   Replacing older chart file of same name: ");
-                            msg.Append(full_name);
-                            wxLogMessage(msg);
+                            wxLogMessage(wxString::Format(_T("   Replacing older chart file of same name: %s"), msg_fn.c_str()));
                         }
                         
                         break;
@@ -2370,9 +2352,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
             {
                 if(0 == b_add_msg)
                 {
-                    wxString msg = _T("   Adding chart file: ");
-                    msg.Append(full_name);
-                    wxLogMessage(msg);
+                    wxLogMessage(wxString::Format(_T("   Adding chart file: %s"), msg_fn.c_str()));
                 }
 
                 active_chartTable.Add(pnewChart);
@@ -2382,9 +2362,7 @@ bool ChartDatabase::AddChart( wxString &chartfilename, ChartClassDescriptor &cha
             else
             {
                 delete pnewChart;
-                //                  wxString msg = _T("   Not adding chart file: ");
-                //                  msg.Append(full_name);
-                //                  wxLogMessage(msg);
+                //                  wxLogMessage(wxString::Format(_T("   Not adding chart file: %s"), msg_fn.c_str()));
                 rv = false;
             }
             
@@ -2572,24 +2550,20 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath, ChartClassDescript
 
 ChartTableEntry *ChartDatabase::CreateChartTableEntry(const wxString &filePath, ChartClassDescriptor &chart_desc)
 {
-      wxString msg = wxT("Loading chart data for ");
-      msg.Append(filePath);
-      wxLogMessage(msg);
+      wxString msg_fn(filePath);
+      msg_fn.Replace(_T("%"), _T("%%"));
+      wxLogMessage(wxString::Format(_T("Loading chart data for %s"), msg_fn.c_str()));
 
       ChartBase *pch = GetChart(filePath, chart_desc);
       if (pch == NULL) {
-            wxString msg = wxT("   ...creation failed for ");
-            msg.Append(filePath);
-            wxLogMessage(msg);
+            wxLogMessage(wxString::Format(_T("   ...creation failed for %s"), msg_fn.c_str()));
             return NULL;
       }
 
       InitReturn rc = pch->Init(filePath, HEADER_ONLY);
       if (rc != INIT_OK) {
             delete pch;
-            wxString msg = wxT("   ...initialization failed for ");
-            msg.Append(filePath);
-            wxLogMessage(msg);
+            wxLogMessage(wxString::Format(_T("   ...initialization failed for %s"), msg_fn.c_str()));
             return NULL;
       }
 

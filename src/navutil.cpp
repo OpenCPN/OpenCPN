@@ -402,6 +402,8 @@ extern int              g_nAutoHideToolbar;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
 extern float            g_ChartScaleFactorExp;
+extern int              g_ShipScaleFactor;
+extern float            g_ShipScaleFactorExp;
 
 extern bool             g_bInlandEcdis;
 extern int              g_iENCToolbarPosX;
@@ -412,6 +414,7 @@ extern bool             g_bSpaceDropMark;
 extern bool             g_bShowTide;
 extern bool             g_bShowCurrent;
 
+extern bool             g_benableUDPNullHeader;
 
 extern wxString         g_uiStyle;
 
@@ -596,6 +599,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "GUIScaleFactor" ), &g_GUIScaleFactor, 0 );
     Read( _T ( "ChartObjectScaleFactor" ), &g_ChartScaleFactor, 0 );
     g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ChartScaleFactor );
+    Read( _T ( "ShipScaleFactor" ), &g_ShipScaleFactor, 0 );
+    g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp( g_ShipScaleFactor );
     
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -658,6 +663,8 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
     Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
+    Read( _T ( "PolygonSmoothing" ), &g_GLOptions.m_GLPolygonSmoothing, true);
+    Read( _T ( "LineSmoothing" ), &g_GLOptions.m_GLLineSmoothing, true);
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
     Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
@@ -817,6 +824,8 @@ int MyConfig::LoadMyConfig()
     
     g_benableAISNameCache = true;
     Read( _T ( "EnableAISNameCache" ),  &g_benableAISNameCache );
+    
+    Read( _T ( "EnableUDPNullHeader" ),  &g_benableUDPNullHeader, 0 );
     
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
@@ -1935,7 +1944,8 @@ void MyConfig::UpdateSettings()
     
     Write( _T ( "GUIScaleFactor" ), g_GUIScaleFactor );
     Write( _T ( "ChartObjectScaleFactor" ), g_ChartScaleFactor );
-
+    Write( _T ( "ShipScaleFactor" ), g_ShipScaleFactor );
+    
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
@@ -1968,6 +1978,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPUTextureCompressionCaching" ), g_GLOptions.m_bTextureCompressionCaching);
     Write( _T ( "GPUTextureDimension" ), g_GLOptions.m_iTextureDimension );
     Write( _T ( "GPUTextureMemSize" ), g_GLOptions.m_iTextureMemorySize );
+    Write( _T ( "PolygonSmoothing" ), g_GLOptions.m_GLPolygonSmoothing);
+    Write( _T ( "LineSmoothing" ), g_GLOptions.m_GLLineSmoothing);
 #endif
     Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
 

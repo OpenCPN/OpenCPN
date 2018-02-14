@@ -89,6 +89,12 @@ extern GLuint g_raster_format;
 
 #include "OCPNPlatform.h"
 
+#if !defined(__WXOSX__) || wxCHECK_VERSION(3, 1, 0) 
+#define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS
+#else
+#define SLIDER_STYLE  wxSL_HORIZONTAL | wxSL_AUTOTICKS
+#endif
+
 wxString GetOCPNKnownLanguage(const wxString lang_canonical,
                               wxString& lang_dir);
 wxString GetOCPNKnownLanguage(const wxString lang_canonical);
@@ -281,6 +287,8 @@ extern int g_nAutoHideToolbar;
 extern int g_GUIScaleFactor;
 extern int g_ChartScaleFactor;
 extern float g_ChartScaleFactorExp;
+extern int g_ShipScaleFactor;
+extern float g_ShipScaleFactorExp;
 
 extern double g_config_display_size_mm;
 extern bool g_config_display_size_manual;
@@ -893,6 +901,7 @@ EVT_BUTTON(ID_APPLY, options::OnApplyClick)
 EVT_BUTTON(xID_OK, options::OnXidOkClick)
 EVT_BUTTON(wxID_CANCEL, options::OnCancelClick)
 EVT_BUTTON(ID_BUTTONFONTCHOOSE, options::OnChooseFont)
+EVT_CHOICE(ID_CHOICE_FONTELEMENT, options::OnFontChoice)
 EVT_CLOSE(options::OnClose)
 
 #if defined(__WXGTK__) || defined(__WXQT__)
@@ -1018,6 +1027,7 @@ void options::Init(void) {
 
   m_bVisitLang = FALSE;
   m_itemFontElementListBox = NULL;
+  m_textSample = NULL;
   m_topImgList = NULL;
 
   m_pListbook = NULL;
@@ -1724,7 +1734,7 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
                        NULL, this);
 #endif
 
-  wxString columns[] = {_("On"),   _("Type"), _("Port"),   _("Prio"),
+  wxString columns[] = {_("On"),   _("Type"), _("Data Port"),   _("Prio"),
                         _("Parm"), _("I/O"),  _("Filters")};
   for (int i = 0; i < 7; ++i) {
     wxListItem col;
@@ -2579,7 +2589,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
       new wxCheckBox(itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks"));
   hTrackGrid->Add(pTrackHighlite, 1, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL, border_size);
   wxStaticText* trackColourText =
-      new wxStaticText( itemPanelShip, wxID_STATIC, _("Highlight Colour"));
+      new wxStaticText( itemPanelShip, wxID_STATIC, _("Track Colour"));
   hTrackGrid->Add(trackColourText, 1, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, border_size);
   m_colourTrackLineColour = new wxColourPickerCtrl(
       itemPanelShip, wxID_STATIC, *wxRED, wxDefaultPosition, wxDefaultSize, 0,
@@ -2899,7 +2909,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                          _("Chart Zoom/Scale Weighting")), 0, wxEXPAND);
     m_pSlider_Zoom = new wxSlider(
         m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3019,7 +3029,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     // Chart Zoom Scale Weighting
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Raster")), labelFlags);
     m_pSlider_Zoom = new wxSlider(m_ChartDisplayPage, ID_CM93ZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
 
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3029,7 +3039,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Vector")), labelFlags);
     m_pSlider_Zoom_Vector = new wxSlider(m_ChartDisplayPage, ID_VECZOOM, 0, -5, 5, wxDefaultPosition,
-        wxSize(300, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        wxSize(300, 50), SLIDER_STYLE);
     
 #ifdef __OCPN__ANDROID__
     m_pSlider_Zoom_Vector->GetHandle()->setStyleSheet(getQtStyleSheet());
@@ -3320,7 +3330,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_pSlider_CM93_Zoom = new wxSlider(
         ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
         CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -3532,7 +3542,7 @@ void options::CreatePanel_VectorCharts(size_t parent, int border_size,
     m_pSlider_CM93_Zoom = new wxSlider(
         ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
         CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize(slider_width, 50),
-        wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+        SLIDER_STYLE);
     optionsColumn->Add(m_pSlider_CM93_Zoom, 0, wxALL /* | wxEXPAND*/,
                        border_size);
 
@@ -3855,7 +3865,7 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     wxBoxSizer *defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
     boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
     defaultBoatSpeedSizer->Add(new wxStaticText(pDisplayPanel, wxID_ANY, _("Default Boat Speed ")),
-                               groupLabelFlags);
+                               groupLabelFlagsHoriz);
     pSDefaultBoatSpeed = new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, _T(""), wxDefaultPosition,
                                         wxSize(50, -1), wxTE_RIGHT);
     defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL, group_item_spacing);
@@ -4475,6 +4485,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                    wxDefaultPosition, wxDefaultSize, 0);
   itemFontStaticBoxSizer->Add(itemFontColorButton, 0, wxALL, border_size);
 #endif
+  m_textSample = new wxStaticText(itemPanelFont, wxID_ANY, _("Sample"), wxDefaultPosition, wxDefaultSize, 0);
+  itemFontStaticBoxSizer->Add(m_textSample, 0, wxALL, border_size);
+  wxCommandEvent e;
+  OnFontChoice(e);
+
   wxStaticBox* itemStyleStaticBox =
       new wxStaticBox(itemPanelFont, wxID_ANY, _("Toolbar and Window Style"));
   wxStaticBoxSizer* itemStyleStaticBoxSizer =
@@ -4572,17 +4587,23 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
   
   miscOptions->AddSpacer(10);
+
+  wxFlexGridSizer* sliderSizer;
+  sliderSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
+  sliderSizer->AddGrowableCol( 1 );
+  sliderSizer->SetFlexibleDirection( wxBOTH );
+  sliderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
   
   int slider_width = wxMax(m_fontHeight * 4, 300);
 
   m_pSlider_GUI_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+      wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_GUI_Factor->Hide();
-  miscOptions->Add(new wxStaticText(itemPanelFont, wxID_ANY,
+  sliderSizer->Add(new wxStaticText(itemPanelFont, wxID_ANY,
                                     _("User Interface scale factor")),
-                   verticleInputFlags);
-  miscOptions->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
+                   inputFlags);
+  sliderSizer->Add(m_pSlider_GUI_Factor, 0, wxALL, border_size);
   m_pSlider_GUI_Factor->Show();
 
 #ifdef __OCPN_ANDROID__
@@ -4591,18 +4612,32 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   m_pSlider_Chart_Factor = new wxSlider(
       itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
-      wxSize(slider_width, 50), wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS);
+      wxSize(slider_width, 50), SLIDER_STYLE);
   m_pSlider_Chart_Factor->Hide();
-  miscOptions->Add(
+  sliderSizer->Add(
       new wxStaticText(itemPanelFont, wxID_ANY, _("Chart Object scale factor")),
-      verticleInputFlags);
-  miscOptions->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
+      inputFlags);
+  sliderSizer->Add(m_pSlider_Chart_Factor, 0, wxALL, border_size);
   m_pSlider_Chart_Factor->Show();
 
 #ifdef __OCPN_ANDROID____
   m_pSlider_Chart_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
 #endif
+
+  m_pSlider_Ship_Factor = new wxSlider(
+      itemPanelFont, wxID_ANY, 0, -5, 5, wxDefaultPosition,
+      wxSize(slider_width, 50), SLIDER_STYLE);
+  m_pSlider_Ship_Factor->Hide();
+  sliderSizer->Add(
+      new wxStaticText(itemPanelFont, wxID_ANY, _("Ship scale factor")),
+                   inputFlags);
+  sliderSizer->Add(m_pSlider_Ship_Factor, 0, wxALL, border_size);
+  m_pSlider_Ship_Factor->Show();
   
+#ifdef __OCPN_ANDROID____
+  m_pSlider_Ship_Factor->GetHandle()->setStyleSheet(getQtStyleSheet());
+#endif
+  miscOptions->Add( sliderSizer, 0, wxEXPAND, 5 );
   miscOptions->AddSpacer(20);
 }
 
@@ -4745,7 +4780,7 @@ void options::CreateControls(void) {
   }
 
   labelFlags = wxSizerFlags(0)
-                   .Align(wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL)
+                   .Align(wxALIGN_RIGHT)
                    .Border(wxALL, group_item_spacing);
   inputFlags = wxSizerFlags(0)
                    .Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL)
@@ -4756,6 +4791,9 @@ void options::CreateControls(void) {
   groupLabelFlags = wxSizerFlags(0)
                         .Align(wxALIGN_RIGHT | wxALIGN_TOP)
                         .Border(wxALL, group_item_spacing);
+  groupLabelFlagsHoriz = wxSizerFlags(0)
+    .Align( wxALIGN_TOP)
+    .Border(wxALL, group_item_spacing);
   groupInputFlags = wxSizerFlags(0)
                         .Align(wxALIGN_LEFT | wxALIGN_TOP)
                         .Border(wxBOTTOM, group_item_spacing * 2)
@@ -5233,7 +5271,7 @@ void options::SetInitialSettings(void) {
   
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
-
+  m_pSlider_Ship_Factor->SetValue(g_ShipScaleFactor);
   wxString screenmm;
 
   if (!g_config_display_size_manual) {
@@ -5582,6 +5620,9 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
 
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
+
+    g_GLOptions.m_GLPolygonSmoothing = dlg.GetPolygonSmoothing();
+    g_GLOptions.m_GLLineSmoothing = dlg.GetLineSmoothing();
 
     if (g_bGLexpert) {
       // user defined
@@ -6256,9 +6297,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
   g_ChartScaleFactor = m_pSlider_Chart_Factor->GetValue();
-  g_ChartScaleFactorExp =
-      g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
-
+  g_ChartScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ChartScaleFactor);
+  g_ShipScaleFactor = m_pSlider_Ship_Factor->GetValue();
+  g_ShipScaleFactorExp = g_Platform->getChartScaleFactorExp(g_ShipScaleFactor);
+  
   //  Only reload the icons if user has actually visted the UI page    
   if(m_bVisitLang)    
     pWayPointMan->ReloadAllIcons();
@@ -6875,6 +6917,18 @@ void options::OnClose(wxCloseEvent& event) {
   EndModal(0);
 }
 
+void options::OnFontChoice(wxCommandEvent& event) {
+    wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
+
+    wxFont* pif = FontMgr::Get().GetFont(sel_text_element);
+    wxColour init_color = FontMgr::Get().GetFontColor(sel_text_element);
+
+    m_textSample->SetFont(*pif);
+    m_textSample->SetForegroundColour(init_color);
+    m_itemBoxSizerFontPanel->Layout();
+    event.Skip();
+}
+
 void options::OnChooseFont(wxCommandEvent& event) {
   wxString sel_text_element = m_itemFontElementListBox->GetStringSelection();
   wxFontData font_data;
@@ -6924,6 +6978,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
     FontMgr::Get().SetFont(sel_text_element, psfont, color);
     pParent->UpdateAllFonts();
     m_bfontChanged = true;
+    OnFontChoice(event);
   }
 
   event.Skip();
@@ -6952,6 +7007,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
     pParent->UpdateAllFonts();
     m_bfontChanged = true;
+    OnFontChoice(event);
   }
 
   event.Skip();
@@ -8593,6 +8649,8 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   if (!g_bopengl || g_raster_format == GL_RGB) btnRebuild->Disable();
   btnClear->Enable(g_GLOptions.m_bTextureCompressionCaching);
   m_cbShowFPS = new wxCheckBox(this, wxID_ANY, _("Show FPS"));
+  m_cbPolygonSmoothing = new wxCheckBox(this, wxID_ANY, _("Polygon Smoothing"));
+  m_cbLineSmoothing = new wxCheckBox(this, wxID_ANY, _("Line Smoothing"));
   m_cbSoftwareGL =
       new wxCheckBox(this, wxID_ANY, _("Software OpenGL (restart OpenCPN)"));
   m_cbUseAcceleratedPanning =
@@ -8614,6 +8672,10 @@ OpenGLOptionsDlg::OpenGLOptionsDlg(wxWindow* parent)
   flexSizer->Add(btnClear, 0, wxALL | wxEXPAND, 5);
   flexSizer->Add(new wxStaticText(this, wxID_ANY, _("Miscellaneous")), 0,
                  wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL, 5);
+  flexSizer->Add(m_cbPolygonSmoothing, 0, wxALL | wxEXPAND, 5);
+  flexSizer->AddSpacer(0);
+  flexSizer->Add(m_cbLineSmoothing, 0, wxALL | wxEXPAND, 5);
+  flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbShowFPS, 0, wxALL | wxEXPAND, 5);
   flexSizer->AddSpacer(0);
   flexSizer->Add(m_cbSoftwareGL, 0, wxALL | wxEXPAND, 5);
@@ -8643,6 +8705,14 @@ const bool OpenGLOptionsDlg::GetAcceleratedPanning(void) const {
 
 const bool OpenGLOptionsDlg::GetTextureCompression(void) const {
   return m_cbTextureCompression->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetPolygonSmoothing(void) const {
+    return m_cbPolygonSmoothing->GetValue();
+}
+
+const bool OpenGLOptionsDlg::GetLineSmoothing(void) const {
+    return m_cbLineSmoothing->GetValue();
 }
 
 const bool OpenGLOptionsDlg::GetShowFPS(void) const {
@@ -8686,6 +8756,8 @@ void OpenGLOptionsDlg::Populate(void) {
     m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
   }
   m_cbShowFPS->SetValue(g_bShowFPS);
+  m_cbPolygonSmoothing->SetValue(g_GLOptions.m_GLPolygonSmoothing);
+  m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
   if (cc1->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=

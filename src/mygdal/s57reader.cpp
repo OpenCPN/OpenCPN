@@ -690,8 +690,19 @@ OGRFeature *S57Reader::AssembleFeature( DDFRecord * poRecord,
 /*      others.                                                         */
 /* -------------------------------------------------------------------- */
     poFDefn = FindFDefn( poRecord );
-    if( poFDefn == NULL )
-        return NULL;
+    if( poFDefn == NULL ){
+        
+        //  It is possible that a Feature was added by update, whose Class
+        //  was not already present in the module before updates.
+        //  So, if necessary, try to create and add an OGRFeatureDefn for this Feature.
+        int     nOBJL = poRecord->GetIntSubfield( "FRID", 0, "OBJL", 0 );
+        poFDefn = S57GenerateObjectClassDefn( poRegistrar, nOBJL,
+                                    this->GetOptionFlags() );
+        if(poFDefn)
+            AddFeatureDefn( poFDefn );
+        else
+            return NULL;
+    }
 
 /* -------------------------------------------------------------------- */
 /*      Does this match our target feature definition?  If not skip     */

@@ -67,6 +67,8 @@ static const long long lNaN = 0xfff8000000000000;
 
 const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 
+extern bool g_benableUDPNullHeader;
+
 #define N_DOG_TIMEOUT   5
 
 #ifdef __WXMSW__
@@ -531,9 +533,6 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             //    Disable input event notifications to preclude re-entrancy on non-blocking socket
             //           m_sock->SetNotify(wxSOCKET_LOST_FLAG);
 
-            //          Read the reply, one character at a time, looking for 0x0a (lf)
-            //          If the reply contains no lf, break on the buffer full
-
             std::vector<char> data(RD_BUF_SIZE+1);
             event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
             if(!event.GetSocket()->Error())
@@ -541,9 +540,16 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 size_t count = event.GetSocket()->LastCount();
                 if(count)
                 {
-                    data[count]=0;
-//                    m_sock_buffer.Append(data);
-                    m_sock_buffer += (&data.front());
+                    if(!g_benableUDPNullHeader){
+                        data[count]=0;
+                        m_sock_buffer += (&data.front());
+                    }
+                    else{
+                        // XXX FIXME: is it reliable?
+                        // copy all received bytes
+                        // there's 0 in furuno UDP tags before NMEA sentences.
+                        m_sock_buffer.append(&data.front(), count);
+                    }
                 }
             }
 

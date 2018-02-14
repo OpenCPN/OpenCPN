@@ -537,7 +537,10 @@ PolyTessGeo::~PolyTessGeo()
 
 int PolyTessGeo::BuildDeferredTess(void)
 {
-    return BuildTessGL();
+    if(m_pxgeom)
+        return BuildTessGL();
+    else
+        return 0;
 }
 
 

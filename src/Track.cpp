@@ -85,6 +85,11 @@ millions of points.
 #include "navutil.h"
 #include "Select.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
+#endif
+
 extern ChartCanvas      *cc1;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
@@ -99,6 +104,7 @@ extern double           g_TrackDeltaDistance;
 extern RouteProp                 *pRoutePropDialog;
 extern float            g_GLMinSymbolLineWidth;
 extern wxColour         g_colourTrackLineColour;
+extern wxColor GetDimColor(wxColor c);
 
 #if defined( __UNIX__ ) && !defined(__WXOSX__)  // high resolution stopwatch for profiling
 class OCPNStopWatch
@@ -623,7 +629,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     if( IsRunning() )
         basic_colour = GetGlobalColor( _T ( "URED" ) );
     else
-        basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
+        basic_colour = GetDimColor(g_colourTrackLineColour);
 
     wxPenStyle style = wxPENSTYLE_SOLID;
     int width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -651,7 +657,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
             radius = 0;
     }
 
-    if(dc.GetDC() || radius) {
+    if( dc.GetDC() || radius ) {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
@@ -671,7 +677,6 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
                 dc.StrokeLines( i, points );
 
-                extern wxColor GetDimColor(wxColor c);
                 wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
                 wxColour hilt( trackLine_dim_colour.Red(), trackLine_dim_colour.Green(), trackLine_dim_colour.Blue(), 128 );
 
@@ -691,7 +696,8 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     else { // opengl version
         glColor3ub(col.Red(), col.Green(), col.Blue());
         glLineWidth( wxMax( g_GLMinSymbolLineWidth, width ) );
-        glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
         
         int size = 0;

@@ -52,13 +52,17 @@
 #include <wx/tokenzr.h>
 #include <wx/fileconf.h>
 
-
 extern float g_GLMinCartographicLineWidth;
 extern float g_GLMinSymbolLineWidth;
 extern double  g_overzoom_emphasis_base;
 extern bool    g_oz_vector_scale;
 extern float g_ChartScaleFactorExp;
 extern int g_chart_zoom_modifier_vector;
+
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+extern ocpnGLOptions g_GLOptions;
+#endif
 
 float g_scaminScale;
 
@@ -593,15 +597,7 @@ bool s52plib::GetAnchorOn()
     OBJLElement *pOLE = NULL;
         
     if(  MARINERS_STANDARD == GetDisplayCategory()){
-            // Need to loop once for SBDARE, which is our "master", then for
-            // other categories, since order is unknown?
-            for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
-                    old_vis = pOLE->nViz;
-                    break;
-                }
-            }
+        old_vis = m_anchorOn;
     }
     else if(OTHER == GetDisplayCategory())
         old_vis = true;
@@ -3446,7 +3442,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
 #else    
     glLineWidth(lineWidth);
-    if(lineWidth > 4.0){
+    if(lineWidth > 4.0 && g_GLOptions.m_GLLineSmoothing){
         glEnable( GL_LINE_SMOOTH );
         glEnable( GL_BLEND );
     }
@@ -3659,7 +3655,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             else
                 glDisable( GL_LINE_STIPPLE );
 #endif
-            if(w >= 2){    
+            if(w >= 2 && g_GLOptions.m_GLLineSmoothing){    
                 glEnable( GL_LINE_SMOOTH );
                 glEnable( GL_BLEND );
             }
@@ -3864,7 +3860,7 @@ int s52plib::RenderLSLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         else
             glDisable( GL_LINE_STIPPLE );
 #endif
-        if(w >= 2){    
+        if(w >= 2 && g_GLOptions.m_GLLineSmoothing){
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
         }
@@ -4601,8 +4597,7 @@ int s52plib::RenderLCLegacy( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     else
         if( rzRules->obj->pPolyTessGeo ) {
             if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
-                if(rzRules->obj->pPolyTessGeo->m_pxgeom)
-                    rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
             }
 
             PolyTriGroup *pptg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
@@ -4909,8 +4904,11 @@ next_seg_dc:
                     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glEnable (GL_BLEND);
                     
-                    glEnable (GL_LINE_SMOOTH);
-                    glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+                    if( g_GLOptions.m_GLLineSmoothing )
+                    {
+                        glEnable (GL_LINE_SMOOTH);
+                        glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+                    }
 #endif
                     {
                         glBegin( GL_LINES );
@@ -4946,8 +4944,10 @@ next_seg_dc:
                     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glEnable (GL_BLEND);
 
-                    glEnable (GL_LINE_SMOOTH);
-                    glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+                    if( g_GLOptions.m_GLLineSmoothing ) {
+                        glEnable (GL_LINE_SMOOTH);
+                        glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+                    }
 
 #endif
                     {
@@ -5498,7 +5498,8 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 #ifndef __OCPN__ANDROID__
         glEnable( GL_BLEND );
-        glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
 #endif        
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
@@ -5953,6 +5954,9 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
         }
     }
 
+    if( IsObjNoshow( rzRules->LUP->OBCL) )
+        b_catfilter = false;
+    
     if(!b_catfilter)            // No chance this object is visible
         return 0;
 
@@ -7129,8 +7133,7 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
 
     if( obj->pPolyTessGeo ) {
         if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
-            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
         }
 
         wxPoint *pp3 = (wxPoint *) malloc( 3 * sizeof(wxPoint) );
@@ -7315,8 +7318,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         // perform deferred tesselation
         if( !rzRules->obj->pPolyTessGeo->IsOk() ){
-            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
         }
 
         //  Get the vertex data
@@ -7659,8 +7661,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     wxPoint *ptp;
     if( rzRules->obj->pPolyTessGeo ) {
         if( !rzRules->obj->pPolyTessGeo->IsOk() ){ // perform deferred tesselation
-            if(rzRules->obj->pPolyTessGeo->m_pxgeom)
-                rzRules->obj->pPolyTessGeo->BuildDeferredTess();
+            rzRules->obj->pPolyTessGeo->BuildDeferredTess();
         }
 
         ptp = (wxPoint *) malloc(
@@ -8622,7 +8623,8 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( m_nDisplayCategory == OTHER ){
         if(OTHER == obj_cat){
             if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) )
-                if( !m_bShowMeta &&  strncmp( rzRules->LUP->OBCL, "M_QUAL", 6 )) return false;
+                if( !m_bShowMeta &&  strncmp( rzRules->LUP->OBCL, "M_QUAL", 6 ))
+                    return false;
         }
     }
 
@@ -8973,8 +8975,6 @@ void s52plib::PrepareForRender()
             if(!bshow_lights)                     // On, going off
                 AddObjNoshow("LIGHTS");
             else{                                   // Off, going on
-                if(pOLE)
-                    pOLE->nViz = 1;
                 RemoveObjNoshow("LIGHTS");
             }
 
@@ -8982,8 +8982,8 @@ void s52plib::PrepareForRender()
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
             unsigned int num = sizeof(categories) / sizeof(categories[0]);
             
-            if( m_nDisplayCategory == OTHER ){
-                // Handle Anchor area toggle
+            // Handle Anchor area toggle
+            if( (m_nDisplayCategory == OTHER) || (m_nDisplayCategory == MARINERS_STANDARD) ){
                 bool bAnchor = m_anchorOn;
                 
                 
@@ -8995,19 +8995,6 @@ void s52plib::PrepareForRender()
                 else{
                     for( unsigned int c = 0; c < num; c++ ) {
                         RemoveObjNoshow(categories[c]);
-                    }
-                    
-                    unsigned int cnt = 0;
-                    for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                        OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                        for( unsigned int c = 0; c < num; c++ ) {
-                            if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                                pOLE->nViz = 1;         // force on
-                                cnt++;
-                                break;
-                            }
-                        }
-                        if( cnt == num ) break;
                     }
                 }
             }
@@ -9261,8 +9248,8 @@ void RenderFromHPGL::SetPen()
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
-    //    glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+        if( g_GLOptions.m_GLPolygonSmoothing )
+            glEnable( GL_POLYGON_SMOOTH );
         
         glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), transparency );
         int line_width = wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7);
@@ -9277,7 +9264,7 @@ void RenderFromHPGL::SetPen()
 #endif
         
 #ifndef __OCPN__ANDROID__
-        if(line_width >= 2)
+        if( line_width >= 2 && g_GLOptions.m_GLLineSmoothing )
             glEnable( GL_LINE_SMOOTH );
         else
             glDisable( GL_LINE_SMOOTH );

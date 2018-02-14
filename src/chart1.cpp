@@ -360,6 +360,8 @@ bool                      g_config_display_size_manual;
 int                       g_GUIScaleFactor;
 int                       g_ChartScaleFactor;
 float                     g_ChartScaleFactorExp;
+int                       g_ShipScaleFactor;
+float                     g_ShipScaleFactorExp;
 
 bool                      g_bShowTide;
 bool                      g_bShowCurrent;
@@ -697,6 +699,8 @@ static int tick_idx;
 
 int               g_sticky_chart;
 int               g_sticky_projection;
+
+bool              g_benableUDPNullHeader;
 
 extern wxString OpenCPNVersion; //Gunther
 extern options          *g_pOptions;
@@ -1911,6 +1915,9 @@ bool MyApp::OnInit()
         }
         XCloseDisplay(disp);
     }
+#endif
+#ifdef __WXOSX__
+    g_bTransparentToolbarInOpenGLOK = true;
 #endif
 #endif
 
@@ -4342,7 +4349,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case wxID_ABOUT:
         case ID_ABOUT: {
             if( !g_pAboutDlg )
+#ifdef __WXOSX__
+                g_pAboutDlg = new about( cc1, g_Platform->GetSharedDataDir() );
+#else
                 g_pAboutDlg = new about( this, g_Platform->GetSharedDataDir() );
+#endif
             else
                 g_pAboutDlg->SetFocus();
             g_pAboutDlg->Show();
@@ -9271,8 +9282,14 @@ static void UpdatePositionCalculatedSogCog()
         if( time_diff / 1000 >= g_own_ship_sog_cog_calc_damp_sec ) {
             double brg, dist;
             DistanceBearingMercator( gLat, gLon, last_own_ship_sog_cog_calc_lat, last_own_ship_sog_cog_calc_lon, &brg, &dist );
-            gCog = brg;
-            gSog = dist / (time_diff.ToDouble() / 3600000.);
+            double tSog = dist / (time_diff.ToDouble() / 3600000.);
+            
+            // Guard against really fast (i.e. non-sense VDR playback speed) data updates with slow averaging constant
+            if(tSog < 100.){
+                gCog = brg;
+                gSog = tSog;
+            }
+            
             last_own_ship_sog_cog_calc_lat = gLat;
             last_own_ship_sog_cog_calc_lon = gLon;
             last_own_ship_sog_cog_calc_ts = now;
@@ -12726,7 +12743,7 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
                                                 wxHW_SCROLLBAR_AUTO | wxHW_NO_SELECTION );
     msgWindow->SetBorders( 30 );
     
-    topsizer->Add( msgWindow, 1, wxALIGN_CENTER_HORIZONTAL | wxEXPAND, 5 );
+    topsizer->Add( msgWindow, 1, wxEXPAND, 5 );
     
     wxString html;
     html << message;
@@ -12753,7 +12770,7 @@ OCPN_TimedHTMLMessageDialog::OCPN_TimedHTMLMessageDialog( wxWindow *parent,
        
 //       SetClientSize(szyv.x + 20, szyv.y + 20); 
        
-       CentreOnParent();
+       CentreOnScreen();
        
        //msgWindow->SetBackgroundColour(wxColour(191, 183, 180));
        msgWindow->SetBackgroundColour(GetBackgroundColour());
@@ -12776,7 +12793,10 @@ void OCPN_TimedHTMLMessageDialog::RecalculateSize( void )
     SetClientSize(esize);     // This will force a recalc of internal representation
     
     int height1 = msgWindow->GetInternalRepresentation()->GetHeight();
-    SetClientSize(wxSize(esize.x, height1 + 70 ));   // constant is 2xBorders + a little slop.
+    
+    int client_size_y = wxMin(::wxGetDisplaySize().y - 100, height1 + 70);    // Must fit on screen
+    
+    SetClientSize(wxSize(esize.x, client_size_y ));   // constant is 2xBorders + a little slop.
     
 }
 

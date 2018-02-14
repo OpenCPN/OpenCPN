@@ -2,289 +2,884 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:14-0500\n"
-"PO-Revision-Date: 2017-08-04 22:34-0400\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-29 21:29-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ru\n"
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
-#
-msgid " (Max size )"
-msgstr " (макс. размер)"
-#
-msgid " can't be read!"
-msgstr " не удается прочитать!"
-#
-msgid " contains no valid data!"
-msgstr " не содержит допустимые данные!"
-#
-msgid " files don't exist!"
-msgstr " файл не существует!"
-#
-msgid "300 hPa"
-msgstr "300 гПа"
-#
-msgid "500 hPa"
-msgstr "500 гПа"
-#
-msgid "700 hPa"
-msgstr "700 гПа"
-#
-msgid "850 hPa"
-msgstr "850 гПа"
-#
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "Адрес, используемый при отправке (для Linux — обязательно)"
-#
-msgid ""
-"Air\n"
-"Temperature"
-msgstr ""
-"Температура\n"
-"воздуха"
-#
-msgid "Air Temp"
-msgstr "Темп. возд."
-#
-msgid "Air Temperature"
-msgstr "Температура воздуха"
-#
-msgid "Air Temperature at"
-msgstr "Температура воздуха"
-#
-msgid "Air Temperature(2m)"
-msgstr "Температура воздуха (2 м)"
-#
-msgid "Altitude"
-msgstr "Высота"
-#
-msgid "Altitude(Geopotential)"
-msgstr "Высота (Геопотенциальная)"
-#
-msgid "Always visible"
-msgstr "Отображать всегда"
-#
-msgid "Apply"
-msgstr "Применить"
-#
-msgid "Area Selection"
-msgstr "Выбор области"
-#
-msgid "Attached icon bar"
-msgstr "Прикреплено к панели управления"
-#
-msgid "Authorize Interpolation to start at current time"
-msgstr "Разрешить интерполяцию с текущего времени"
-#
-msgid "Barbed Arrows"
-msgstr "Стрелки-флюгеры"
-#
-msgid "Beaufort"
-msgstr "балл"
-#
-msgid ""
-"Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr ""
-"Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\n"
-"Зайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
-#
-msgid "Building Isobar map"
-msgstr "Построение карты изобар"
-#
-msgid "Buttons Visibility"
-msgstr "Видимые кнопки"
-#
-msgid "CAPE"
-msgstr "Энергия конвекции"
-#
-msgid "Celsius"
-msgstr "°C"
-#
-msgid "Close"
-msgstr "Закрыть"
-#
-msgid "Cloud Cover"
-msgstr "Облачность"
-#
-msgid "Colors"
-msgstr "Цветовая схема"
-#
-msgid "Continue..."
-msgstr "Продолжить…"
-#
-msgid "Controled Colours"
-msgstr "Переменный цвет"
-#
-msgid "Convective Available Potential Energy"
-msgstr "Потенциальная энергия конвекции"
-#
-msgid "Coord. "
-msgstr "Коорд. "
-#
-msgid "Copy First Cumulative Missing Record"
-msgstr "Копировать первую отсутствующую накопительную запись"
-#
-msgid "Copy Missing Wave Records"
-msgstr "Копировать отсутствующие данные о волнах"
-#
-msgid "Course"
-msgstr "Курс"
-#
-msgid "Cumulative Rainfall per Hour"
-msgstr "Объём осадков за час"
-#
-msgid "Current"
-msgstr "Течение"
-#
-msgid "Current time forecast"
-msgstr "Текущий прогноз"
-#
-msgid "Data"
-msgstr "Визуализация данных"
-#
-msgid "Data Display Options"
-msgstr "Параметры отображения данных"
-#
-msgid "Data Selection"
-msgstr "Выбор данных"
-#
-msgid "Data at Position:"
-msgstr "Данные в позиции:"
-#
-msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
-msgstr ""
-"Окно данные под курсором крепится к панели управления - (с панелью "
-"перетаскивания и заголовком)"
-#
-msgid ""
-"Data at cursor dialog is attached to icons bar - without a title/drag bar"
-msgstr ""
-"Окно данные под курсором крепится к панели управления - (без панели "
-"перетаскивания и заголовка)"
-#
-msgid "Data at cursor dialog is isolated and displayed horizontally"
-msgstr ""
-"Окно данные под курсором откреплено от панели управления - (расположено "
-"горизонтально)"
-#
-msgid "Data at cursor dialog is isolated and displayed vertically"
-msgstr ""
-"Окно данные под курсором откреплено от панели управления - (расположено "
-"вертикально)"
-#
-msgid "Data at cursor position"
-msgstr "Метеоданные под курсором"
-#
-msgid "Days"
-msgstr "дн."
-#
-msgid "Default Colour"
-msgstr "Стандартный цвет"
-#
-msgid "Default Size"
-msgstr "Размер по умолчанию"
-#
-msgid "Deg"
-msgstr "°"
-#
-msgid "Density"
-msgstr "Плотность"
-#
-msgid "Dialog"
-msgstr "Диалог"
-#
-msgid "Dialogs Style"
-msgstr "Отображение окна"
-#
-msgid "Direction Arrows"
-msgstr "Стрелки направления"
-#
-msgid "Display Iso CAPE"
-msgstr "Изолинии конвекции"
-#
-msgid "Display Isobars"
-msgstr "Линии изобар"
-#
-msgid "Display Isotachs"
-msgstr "Линии изотах"
-#
-msgid "Display Isotherms"
-msgstr "Линии изотерм"
-#
-msgid "Double Arrow"
-msgstr "Двойная стрелка"
-#
-#, fuzzy
-msgid "Draw Barbed Arrows Head"
-msgstr "Стрелки-флюгеры"
-#
-msgid ""
-"Draw requested Area\n"
+
+#: src/GribUIDialog.cpp:375 src/GribUIDialog.cpp:854
+msgid "Start a request"
+msgstr "Начать запрос"
+
+#: src/GribUIDialog.cpp:379
+msgid "Draw requested Area\n"
 "or Click here to stop request"
-msgstr ""
-"Выделите запрашиваемую область \n"
+msgstr "Выделите запрашиваемую область \n"
 "или Нажмите здесь, чтобы остановить запрос"
-#
-msgid "Draw requested Area or Click here to stop request"
-msgstr ""
-"Выделите запрашиваемую область или Нажмите здесь, чтобы остановить запрос"
-#
-msgid "E"
-msgstr "В"
-#
-msgid "Enter your forecasted Course"
-msgstr "Ваш прогнозируемый курс"
-#
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Ваша прогнозируемая скорость"
-#
+
+#: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:855
+msgid "Valid Area and Continue"
+msgstr "Подтвердить выбор области и продолжить"
+
+#: src/GribUIDialog.cpp:425
+msgid "File: "
+msgstr "Файл: "
+
+#: src/GribUIDialog.cpp:430
 msgid "Error! "
 msgstr "Ошибка! "
-#
-msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
-msgstr "Ошибка! Выбрана слишком маленькая территория!"
-#
-msgid "Estimated File Size"
-msgstr "Приблизительный размер файла"
-#
-msgid "Fahrenheit"
-msgstr "°F"
-#
-msgid "Fast"
-msgstr "Быстро"
-#
-msgid "Feet"
-msgstr "фут"
-#
-msgid "File: "
-msgstr ""
-#
-msgid "Fixed"
-msgstr "Зафиксировано"
-#
-msgid "Forecast Model "
-msgstr "Модель прогноза"
-#
+
+#: src/GribUIDialog.cpp:430
+msgid " contains no valid data!"
+msgstr " не содержит допустимые данные!"
+
+#: src/GribUIDialog.cpp:455
+msgid "No valid GRIB file"
+msgstr "Недопустимый файл"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Hide data at cursor"
+msgstr "Скрыть данные под курсором"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Show data at cursor"
+msgstr "Показать данные под курсором"
+
+#: src/GribUIDialog.cpp:649 src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1168
+msgid "Start play back"
+msgstr "Начать воспроизведение"
+
+#: src/GribUIDialog.cpp:801 src/grib_pi.cpp:389 src/CursorData.cpp:578
+msgid "Menu"
+msgstr "Меню"
+
+#: src/GribUIDialog.cpp:840
+msgid "Select geopotential altitude"
+msgstr "Выбор высоты геопотенциала"
+
+#: src/GribUIDialog.cpp:842 src/GribUIDialogBase.cpp:65
+#: src/GribUIDialogBase.cpp:176 src/GribUIDialogBase.cpp:1160
+msgid "Now"
+msgstr "Сейчас"
+
+#: src/GribUIDialog.cpp:843 src/GribUIDialogBase.cpp:70
+#: src/GribUIDialogBase.cpp:181
+msgid "Zoom To Center"
+msgstr "Центрировать и приблизить"
+
+#: src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1132
+msgid "Stop play back"
+msgstr "Остановить воспроизведение"
+
+#: src/GribUIDialog.cpp:850 src/GribUIDialogBase.cpp:201
+msgid "Open a new file"
+msgstr "Открыть новый файл"
+
+#: src/GribUIDialog.cpp:851 src/GribUIDialogBase.cpp:93
+#: src/GribUIDialogBase.cpp:206 src/GribUIDialogBase.cpp:1256
+#: src/GribUIDialogBase.h:315
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/GribUIDialog.cpp:855
+msgid "Draw requested Area or Click here to stop request"
+msgstr "Выделите запрашиваемую область или Нажмите здесь, чтобы остановить запрос"
+
+#: src/GribUIDialog.cpp:1393 src/GribUIDialog.cpp:1414
+msgid "Select a GRIB file"
+msgstr "Выберите GRIB-файл"
+
+#: src/GribUIDialog.cpp:1653
+msgid " files don't exist!"
+msgstr " файл не существует!"
+
+#: src/GribUIDialog.cpp:1675
+msgid " can't be read!"
+msgstr " не удается прочитать!"
+
+#: src/GribUIDialog.cpp:1890 src/GribUIDialog.cpp:1892
+#: src/GribUIDialogBase.h:167
 msgid "GRIB Display Control"
 msgstr "GRIB — Управление отображением"
-#
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "Knots"
+msgstr "уз."
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "m/s"
+msgstr "м/с"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "mph"
+msgstr "миль/ч"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "km/h"
+msgstr "км/ч"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "Beaufort"
+msgstr "балл"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "MilliBars"
+msgstr "мбар"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "mmHG"
+msgstr "мм рт. ст."
+
+#: src/GribSettingsDialog.cpp:32
+msgid "inHG"
+msgstr "дюйм рт. ст."
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Meters"
+msgstr "м"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Feet"
+msgstr "фут"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Celsius"
+msgstr "°C"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Fahrenheit"
+msgstr "°F"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Millimeters"
+msgstr "мм"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Inches"
+msgstr "дюйм"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "Percentage"
+msgstr "%"
+
+#: src/GribSettingsDialog.cpp:37
+msgid "j/kg"
+msgstr "Дж/кг"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:417
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1753
+#: src/GribOverlayFactory.cpp:1124
+msgid "Wind"
+msgstr "Ветер"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:429
+#: src/GribUIDialogBase.cpp:1759
+msgid "Wind Gust"
+msgstr "Порывы ветра"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:441
+#: src/GribUIDialogBase.cpp:1756 src/GribTable.cpp:120
+msgid "Pressure"
+msgstr "Давление"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:455
+#: src/GribUIDialogBase.cpp:1786
+msgid "Waves"
+msgstr "Волны"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:473
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1775
+msgid "Current"
+msgstr "Течение"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:489
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1762
+#: src/GribTable.cpp:151
+msgid "Rainfall"
+msgstr "Осадки"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:503
+#: src/GribUIDialogBase.cpp:507 src/GribUIDialogBase.cpp:899
+#: src/GribUIDialogBase.cpp:1765 src/GribTable.cpp:159
+msgid "Cloud Cover"
+msgstr "Облачность"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Air Temperature"
+msgstr "Температура воздуха"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Sea Temperature"
+msgstr "Температура воды"
+
+#: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:543
+#: src/GribUIDialogBase.cpp:1778 src/GribTable.cpp:183
+msgid "CAPE"
+msgstr "Энергия конвекции"
+
+#: src/GribSettingsDialog.cpp:51
+msgid "Altitude(Geopotential)"
+msgstr "Высота (Геопотенциальная)"
+
+#: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:243
+msgid "Relative Humidity"
+msgstr "Отн. влажность"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "h"
+msgstr "ч"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "mn"
+msgstr "мин."
+
+#: src/GribSettingsDialog.cpp:552
+msgid "Apply"
+msgstr "Применить"
+
+#: src/GribSettingsDialog.cpp:742 src/GribSettingsDialog.cpp:751
+#: src/CursorData.cpp:495 src/CursorData.cpp:501
+msgid "Display Isotachs"
+msgstr "Линии изотах"
+
+#: src/GribSettingsDialog.cpp:758 src/CursorData.cpp:506
+msgid "Display Isobars"
+msgstr "Линии изобар"
+
+#: src/GribSettingsDialog.cpp:777 src/CursorData.cpp:511
+msgid "Display Isotherms"
+msgstr "Линии изотерм"
+
+#: src/GribSettingsDialog.cpp:784 src/CursorData.cpp:519
+msgid "Display Iso CAPE"
+msgstr "Изолинии конвекции"
+
+#: src/GribSettingsDialog.cpp:790 src/GribSettingsDialog.cpp:858
+#: src/GribUIDialogBase.cpp:818
+msgid "Spacing"
+msgstr "Интервал"
+
+#: src/GribSettingsDialog.cpp:873
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Вы хотите удалить название/перетащить диалоговое окно\n"
+
+#: src/GribSettingsDialog.cpp:875
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Вы хотите добавить название/перетащить панель в диалог\n"
+
+#: src/GribSettingsDialog.cpp:878
+msgid "This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr "Это изменение потребует перезагрузки программы. \n"
+"будет применяняно после закрытия и повторного открытия плагина"
+
+#: src/GribSettingsDialog.cpp:898
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "Вы активировали интерполяцию данных.\n"
+"Имейте в виду, что отображаемые данные\n"
+"будут интерполированными, а не реальными!"
+
+#: src/GribSettingsDialog.cpp:899 src/GribSettingsDialog.cpp:945
+#: src/grib_pi.cpp:704 src/GribRequestDialog.cpp:637
+msgid "Warning!"
+msgstr "Внимание!"
+
+#: src/GribSettingsDialog.cpp:944
+msgid "This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "Вы активировали интерполяцию данных.\n"
+"Имейте в виду, что отображаемые данные\n"
+"будут интерполированными, а не реальными!"
+
+#: src/GribUIDialogBase.cpp:35 src/GribUIDialogBase.cpp:152
+msgid "Previous"
+msgstr "Предыдущий"
+
+#: src/GribUIDialogBase.cpp:46 src/GribUIDialogBase.cpp:163
+msgid "Next"
+msgstr "Следующий"
+
+#: src/GribUIDialogBase.cpp:60 src/GribUIDialogBase.cpp:171
+msgid "Select geoptential altitude"
+msgstr "Выбор высоты геопотенциала"
+
+#: src/GribUIDialogBase.cpp:445
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Давление на уровнем моря"
+
+#: src/GribUIDialogBase.cpp:459
+msgid "Significant Wave Height"
+msgstr "Значительная высота волн"
+
+#: src/GribUIDialogBase.cpp:464
+msgid "Waves period"
+msgstr "Период волнения"
+
+#: src/GribUIDialogBase.cpp:469
+msgid "Waves Direction"
+msgstr "Направление волн"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Surface Current Speed"
+msgstr "Скорость поверхностного течения"
+
+#: src/GribUIDialogBase.cpp:482
+msgid "Surface Current Direction"
+msgstr "Направление поверхностного течения"
+
+#: src/GribUIDialogBase.cpp:493
+msgid "Cumulative Rainfall per Hour"
+msgstr "Объём осадков за час"
+
+#: src/GribUIDialogBase.cpp:517 src/GribUIDialogBase.cpp:899
+msgid "Air Temp"
+msgstr "Темп. возд."
+
+#: src/GribUIDialogBase.cpp:529 src/GribUIDialogBase.cpp:899
+msgid "Sea Temp"
+msgstr "Темп. воды"
+
+#: src/GribUIDialogBase.cpp:533
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Море или температура воздуха на уровне поверхности"
+
+#: src/GribUIDialogBase.cpp:547
+msgid "Convective Available Potential Energy"
+msgstr "Потенциальная энергия конвекции"
+
+#: src/GribUIDialogBase.cpp:557 src/CursorData.cpp:241
+msgid "Altitude"
+msgstr "Высота"
+
+#: src/GribUIDialogBase.cpp:574
+msgid "Temp."
+msgstr "Темп."
+
+#: src/GribUIDialogBase.cpp:591
+msgid "Relat. Hum."
+msgstr "Относ. Влажность."
+
+#: src/GribUIDialogBase.cpp:734
+msgid "Data Display Options"
+msgstr "Параметры отображения данных"
+
+#: src/GribUIDialogBase.cpp:748
+msgid "Units"
+msgstr "Единицы измерения"
+
+#: src/GribUIDialogBase.cpp:760 src/CursorData.cpp:494
+msgid "Barbed Arrows"
+msgstr "Стрелки-флюгеры"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Default Colour"
+msgstr "Стандартный цвет"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Controled Colours"
+msgstr "Переменный цвет"
+
+#: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+#: src/GribUIDialogBase.cpp:913
+msgid "Spacing(pixels)"
+msgstr "Интервал (пикс)"
+
+#: src/GribUIDialogBase.cpp:783 src/GribUIDialogBase.cpp:861
+#: src/GribUIDialogBase.cpp:917
+msgid "Fixed"
+msgstr "Зафиксировано"
+
+#: src/GribUIDialogBase.cpp:789 src/GribUIDialogBase.cpp:867
+#: src/GribUIDialogBase.cpp:923
+msgid "Minimum"
+msgstr "Минимально"
+
+#: src/GribUIDialogBase.cpp:802 src/GribUIDialogBase.cpp:832
+msgid "Always visible"
+msgstr "Отображать всегда"
+
+#: src/GribUIDialogBase.cpp:811
+msgid "IsoBars"
+msgstr "Изобары"
+
+#: src/GribUIDialogBase.cpp:838 src/CursorData.cpp:524 src/CursorData.cpp:529
+msgid "Direction Arrows"
+msgstr "Стрелки направления"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Single Arrow"
+msgstr "Одиночная стрелка"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Double Arrow"
+msgstr "Двойная стрелка"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Proportional Arrow"
+msgstr "Пропорциональная стрелка"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Default Size"
+msgstr "Размер по умолчанию"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Small Size"
+msgstr "Малый размер"
+
+#: src/GribUIDialogBase.cpp:892 src/CursorData.cpp:496 src/CursorData.cpp:502
+#: src/CursorData.cpp:515 src/CursorData.cpp:520 src/CursorData.cpp:525
+#: src/CursorData.cpp:530
+msgid "OverlayMap"
+msgstr "Наложение метео-карты"
+
+#: src/GribUIDialogBase.cpp:895
+msgid "Colors"
+msgstr "Цветовая схема"
+
+#: src/GribUIDialogBase.cpp:899
+msgid "Generic"
+msgstr "Общий"
+
+#: src/GribUIDialogBase.cpp:905 src/CursorData.cpp:497 src/CursorData.cpp:503
+#: src/CursorData.cpp:507 src/CursorData.cpp:516 src/CursorData.cpp:521
+#: src/CursorData.cpp:526 src/CursorData.cpp:531
+msgid "Numbers"
+msgstr "Значения"
+
+#: src/GribUIDialogBase.cpp:932 src/CursorData.cpp:498 src/CursorData.cpp:532
+msgid "Particle Map"
+msgstr "Карта Частиц"
+
+#: src/GribUIDialogBase.cpp:935
+msgid "Density"
+msgstr "Плотность"
+
+#: src/GribUIDialogBase.cpp:956
+msgid "Transparency for all Overlay Maps"
+msgstr "Прозрачность для всех Наложенных метео-карт"
+
+#: src/GribUIDialogBase.cpp:963
+msgid "Overlay Transparency (%)"
+msgstr "Прозрачность (%)"
+
+#: src/GribUIDialogBase.cpp:982
+msgid "Data"
+msgstr "Визуализация данных"
+
+#: src/GribUIDialogBase.cpp:992
+msgid "Playback Options"
+msgstr "Настройка воспроизведения"
+
+#: src/GribUIDialogBase.cpp:1000
+msgid "Speed Control"
+msgstr "Контроль скорости"
+
+#: src/GribUIDialogBase.cpp:1012
+msgid "Slow"
+msgstr "Медленно"
+
+#: src/GribUIDialogBase.cpp:1020
+msgid "Fast"
+msgstr "Быстро"
+
+#: src/GribUIDialogBase.cpp:1026
+msgid "Loop Mode"
+msgstr "Повторять многократно"
+
+#: src/GribUIDialogBase.cpp:1036
+msgid "Loop Start"
+msgstr "Начало повтора"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Top of Grib File"
+msgstr "Начало файла данных"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Current time forecast"
+msgstr "Текущий прогноз"
+
+#: src/GribUIDialogBase.cpp:1048
+msgid "Interpolate between gribs"
+msgstr "Интерполировать во времени"
+
+#: src/GribUIDialogBase.cpp:1058
+msgid "Time Interval"
+msgstr "Временной интервал"
+
+#: src/GribUIDialogBase.cpp:1078 src/GribUIDialogBase.cpp:1208
+msgid "Playback"
+msgstr "Воспроизведение"
+
+#: src/GribUIDialogBase.cpp:1088
+msgid "Dialogs Style"
+msgstr "Отображение окна"
+
+#: src/GribUIDialogBase.cpp:1095
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr "Окно данные под курсором крепится к панели управления - (с панелью перетаскивания и заголовком)"
+
+#: src/GribUIDialogBase.cpp:1098
+msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr "Окно данные под курсором крепится к панели управления - (без панели перетаскивания и заголовка)"
+
+#: src/GribUIDialogBase.cpp:1101
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr "Окно данные под курсором откреплено от панели управления - (расположено горизонтально)"
+
+#: src/GribUIDialogBase.cpp:1104
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr "Окно данные под курсором откреплено от панели управления - (расположено вертикально)"
+
+#: src/GribUIDialogBase.cpp:1117
+msgid "Buttons Visibility"
+msgstr "Видимые кнопки"
+
+#: src/GribUIDialogBase.cpp:1131
+msgid "Attached icon bar"
+msgstr "Прикреплено к панели управления"
+
+#: src/GribUIDialogBase.cpp:1136
+msgid "Isolated icon bar"
+msgstr "Откреплено от панели управления"
+
+#: src/GribUIDialogBase.cpp:1144
+msgid "Geopot. Height Choice"
+msgstr "Выбор Геопотен. Высоты"
+
+#: src/GribUIDialogBase.cpp:1176
+msgid "Zoom to Center"
+msgstr "Центрировать и приблизить"
+
+#: src/GribUIDialogBase.cpp:1192
+msgid "Show Cursor Data"
+msgstr "Данные под курсором"
+
+#: src/GribUIDialogBase.cpp:1224
+msgid "Time Slider"
+msgstr "Ползунок времени"
+
+#: src/GribUIDialogBase.cpp:1240
+msgid "Open File"
+msgstr "Открыть файл"
+
+#: src/GribUIDialogBase.cpp:1272
+msgid "Request"
+msgstr "Запросить"
+
+#: src/GribUIDialogBase.cpp:1294
+msgid "GUI"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1385
+msgid "General Options"
+msgstr "Основные Настройки"
+
+#: src/GribUIDialogBase.cpp:1392
+msgid "Use High Definition Graphics"
+msgstr "Рисовать с высоким качеством"
+
+#: src/GribUIDialogBase.cpp:1395
+msgid "Use Gradual Colors"
+msgstr "Рисовать с переливами цветов"
+
+#: src/GribUIDialogBase.cpp:1398
+msgid "Copy First Cumulative Missing Record"
+msgstr "Копировать первую отсутствующую накопительную запись"
+
+#: src/GribUIDialogBase.cpp:1401
+msgid "Copy Missing Wave Records"
+msgstr "Копировать отсутствующие данные о волнах"
+
+#: src/GribUIDialogBase.cpp:1404
+msgid "Draw Barbed Arrows Head"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the More Recent File in Directory"
+msgstr "Загружать наиболее свежий файл из папки"
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the Last Opened File"
+msgstr "Загружать последний открытый файл"
+
+#: src/GribUIDialogBase.cpp:1414
+msgid "Load File Options"
+msgstr "Параметры загрузки файла"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the first forecast in GRIB file"
+msgstr "Начинать с первого прогноза в файле"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the nearest forecast to current time"
+msgstr "Начинать с наиболее актуального прогноза"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Authorize Interpolation to start at current time"
+msgstr "Разрешить интерполяцию с текущего времени"
+
+#: src/GribUIDialogBase.cpp:1420
+msgid "Start Options"
+msgstr "Параметры инициализации"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "Local Time"
+msgstr "Местное время"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "UTC"
+msgstr "Гринвичское время (UTC)"
+
+#: src/GribUIDialogBase.cpp:1426
+msgid "Time Options"
+msgstr "Параметры отображения времени"
+
+#: src/GribUIDialogBase.cpp:1476
+msgid "Profile"
+msgstr "Профиль запроса"
+
+#: src/GribUIDialogBase.cpp:1489
+msgid "Sender eMail Address"
+msgstr "Адрес отправителя"
+
+#: src/GribUIDialogBase.cpp:1518
+msgid "Mail To "
+msgstr "Поставщик данных"
+
+#: src/GribUIDialogBase.cpp:1528
+msgid "Forecast Model "
+msgstr "Модель прогноза"
+
+#: src/GribUIDialogBase.cpp:1545
+msgid "Moving Grib"
+msgstr "Данные для рейса"
+
+#: src/GribUIDialogBase.cpp:1553
+msgid "Speed"
+msgstr "Скорость"
+
+#: src/GribUIDialogBase.cpp:1561
+msgid "Kts"
+msgstr "уз."
+
+#: src/GribUIDialogBase.cpp:1566
+msgid "Course"
+msgstr "Курс"
+
+#: src/GribUIDialogBase.cpp:1573 src/GribUIDialogBase.cpp:1624
+msgid "Deg"
+msgstr "°"
+
+#: src/GribUIDialogBase.cpp:1588
+msgid "zyGrib Login"
+msgstr "Учётная запись zyGRIB"
+
+#: src/GribUIDialogBase.cpp:1596
+msgid "zyGrib Code"
+msgstr "Персональный код zyGRIB"
+
+#: src/GribUIDialogBase.cpp:1615
+msgid "Resolution"
+msgstr "Разрешение"
+
+#: src/GribUIDialogBase.cpp:1629
+msgid "Interval"
+msgstr "Интервал"
+
+#: src/GribUIDialogBase.cpp:1639
+msgid "Hours"
+msgstr "ч"
+
+#: src/GribUIDialogBase.cpp:1644
+msgid "Time Range"
+msgstr "Диапазон времени"
+
+#: src/GribUIDialogBase.cpp:1653
+msgid "Days"
+msgstr "дн."
+
+#: src/GribUIDialogBase.cpp:1667
+msgid "Area Selection"
+msgstr "Выбор области"
+
+#: src/GribUIDialogBase.cpp:1679
+msgid "Manual Selection"
+msgstr "Ручной выбор области"
+
+#: src/GribUIDialogBase.cpp:1682
+msgid "Use Always this Area"
+msgstr "Использовать эту области всегда"
+
+#: src/GribUIDialogBase.cpp:1692
+msgid "Max Lat"
+msgstr "Макс. Широта"
+
+#: src/GribUIDialogBase.cpp:1699 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "N"
+msgstr "C"
+
+#: src/GribUIDialogBase.cpp:1703
+msgid "Max Long"
+msgstr "Макс. Долгота"
+
+#: src/GribUIDialogBase.cpp:1710 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "E"
+msgstr "В"
+
+#: src/GribUIDialogBase.cpp:1715
+msgid "Min Lat"
+msgstr "Мин. Широта"
+
+#: src/GribUIDialogBase.cpp:1722 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "S"
+msgstr "Ю"
+
+#: src/GribUIDialogBase.cpp:1727
+msgid "Min Long"
+msgstr "Мин. Долгота"
+
+#: src/GribUIDialogBase.cpp:1734 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "W"
+msgstr "З"
+
+#: src/GribUIDialogBase.cpp:1746
+msgid "Data Selection"
+msgstr "Выбор данных"
+
+#: src/GribUIDialogBase.cpp:1768
+msgid "Air Temperature(2m)"
+msgstr "Температура воздуха (2 м)"
+
+#: src/GribUIDialogBase.cpp:1772
+msgid "Sea Temperature(surf.)"
+msgstr "Температура воды (0 м)"
+
+#: src/GribUIDialogBase.cpp:1802
+msgid "Geopotential Height"
+msgstr "Геопотенциальная Высота"
+
+#: src/GribUIDialogBase.cpp:1812
+msgid "850 hPa"
+msgstr "850 гПа"
+
+#: src/GribUIDialogBase.cpp:1815
+msgid "700 hPa"
+msgstr "700 гПа"
+
+#: src/GribUIDialogBase.cpp:1818
+msgid "500 hPa"
+msgstr "500 гПа"
+
+#: src/GribUIDialogBase.cpp:1821
+msgid "300 hPa"
+msgstr "300 гПа"
+
+#: src/GribUIDialogBase.cpp:1834
+msgid "Mail"
+msgstr "Почта"
+
+#: src/GribUIDialogBase.cpp:1862
+msgid "Estimated File Size"
+msgstr "Приблизительный размер файла"
+
+#: src/GribUIDialogBase.cpp:1870
+msgid " (Max size )"
+msgstr " (макс. размер)"
+
+#: src/GribUIDialogBase.cpp:1994
+msgid "Data at Position:"
+msgstr "Данные в позиции:"
+
+#: src/GribUIDialogBase.cpp:2019
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Ошибка: почтовая библиотека MAPI32.DLL не установлена или неисправна."
+
+#: src/GribUIDialogBase.h:343
+msgid "Preferences"
+msgstr "Настройки"
+
+#: src/GribUIDialogBase.h:429
+msgid "Write and send eMail request"
+msgstr "Составление запроса для отправки по эл. почте"
+
+#: src/GribUIDialogBase.h:457
+msgid "Grib Data Table"
+msgstr "Таблица метео данных Grib"
+
+#: src/grib_pi.h:104 src/grib_pi.cpp:405 src/GribRequestDialog.cpp:127
+#: src/GribRequestDialog.cpp:198 src/GribRequestDialog.cpp:465
+#: src/CursorData.cpp:155
+msgid "Dialog"
+msgstr "Диалог"
+
+#: src/GribOverlayFactory.cpp:503
+msgid "Warning : Data at Geopotential Height"
+msgstr "Предупреждение: Данные на высоте геопотенциала"
+
+#: src/GribOverlayFactory.cpp:1099
+msgid "IsoBar Unable to compute record magnitude"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:1124
+msgid "Building Isobar map"
+msgstr "Построение карты изобар"
+
+#: src/GribOverlayFactory.cpp:1404
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:1452
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Наложение метео-карты, не поддерживается вашей видеосистемой (отключите OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1462
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Наложение метео-карты слишком широкое и не может быть отображено:"
+
+#: src/GribOverlayFactory.cpp:1471
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "Повёрнутые наложения отключены в режиме DC"
+
+#: src/GribOverlayFactory.cpp:1488
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Отдалите карту или уменьшите масштаб, чтобы увидеть невидимые наложения:"
+
+#: src/GribOverlayFactory.cpp:1519
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr ""
+
+#: src/grib_pi.cpp:137
+msgid "Grib"
+msgstr "Метеокарты GRIB"
+
+#: src/grib_pi.cpp:205
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Модуль «GRIB» для OpenCPN"
-#
-msgid ""
-"GRIB PlugIn for OpenCPN\n"
+
+#: src/grib_pi.cpp:211
+msgid "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n"
-"\n"
+"and a request function to get GRIB files by eMail.\n\n"
 "Supported GRIB data include:\n"
 "- wind direction and speed (at 10 m)\n"
 "- wind gust\n"
@@ -297,529 +892,209 @@ msgid ""
 "- surface current direction and speed\n"
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr ""
-"Модуль «GRIB» для OpenCPN\n"
+msgstr "Модуль «GRIB» для OpenCPN\n"
 "Запрашивает прогноз погоды и отображает его поверх карты."
-#
-msgid "GUI"
-msgstr ""
-#
-msgid "General Options"
-msgstr "Основные Настройки"
-#
-msgid "Generic"
-msgstr "Общий"
-#
-msgid "Geopot. Height Choice"
-msgstr "Выбор Геопотен. Высоты"
-#
-msgid "Geopotential Height"
-msgstr "Геопотенциальная Высота"
-#
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Ваш код (не пароль!), полученный на форуме zyGRIB"
-#
-msgid "Grib"
-msgstr "Метеокарты GRIB"
-#
-msgid "Grib Data Table"
-msgstr "Таблица метео данных Grib"
-#
-msgid "Hide data at cursor"
-msgstr "Скрыть данные под курсором"
-#
-msgid "Hours"
-msgstr "ч"
-#
-msgid "Inches"
-msgstr "дюйм"
-#
-msgid "Interpolate between gribs"
-msgstr "Интерполировать во времени"
-#
-msgid "Interval"
-msgstr "Интервал"
-#
-msgid "IsoBars"
-msgstr "Изобары"
-#
-msgid "Isolated icon bar"
-msgstr "Откреплено от панели управления"
-#
-msgid "Knots"
-msgstr "уз."
-#
-msgid "Kts"
-msgstr "уз."
-#
-msgid "Load File Options"
-msgstr "Параметры загрузки файла"
-#
-msgid "Load the Last Opened File"
-msgstr "Загружать последний открытый файл"
-#
-msgid "Load the More Recent File in Directory"
-msgstr "Загружать наиболее свежий файл из папки"
-#
-msgid "Local Time"
-msgstr "Местное время"
-#
-msgid "Loop Mode"
-msgstr "Повторять многократно"
-#
-msgid "Loop Start"
-msgstr "Начало повтора"
-#
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "Ошибка: почтовая библиотека MAPI32.DLL не установлена или неисправна."
-#
-msgid "MB"
-msgstr "Мбайт"
-#
-msgid "Mail"
-msgstr "Почта"
-#
-msgid "Mail To "
-msgstr "Поставщик данных"
-#
-msgid "Manual Selection"
-msgstr "Ручной выбор области"
-#
-msgid "Max"
-msgstr "макс."
-#
-msgid "Max Lat"
-msgstr "Макс. Широта"
-#
-msgid "Max Long"
-msgstr "Макс. Долгота"
-#
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Давление на уровнем моря"
-#
-msgid "Menu"
-msgstr "Меню"
-#
-msgid "Meters"
-msgstr "м"
-#
-msgid "MilliBars"
-msgstr "мбар"
-#
-msgid "Millimeters"
-msgstr "мм"
-#
-msgid "Min Lat"
-msgstr "Мин. Широта"
-#
-msgid "Min Long"
-msgstr "Мин. Долгота"
-#
-msgid "Minimum"
-msgstr "Минимально"
-#
-msgid "Moving Grib"
-msgstr "Данные для рейса"
-#
-msgid "N"
-msgstr "C"
-#
-msgid "N/A"
-msgstr "н/д"
-#
-msgid "Next"
-msgstr "Следующий"
-#
-msgid "No valid GRIB file"
-msgstr ""
-#
-msgid "Now"
-msgstr "Сейчас"
-#
-msgid "Numbers"
-msgstr "Значения"
-#
-msgid "Open File"
-msgstr "Открыть файл"
-#
-msgid "Open a new file"
-msgstr "Открыть новый файл"
-#
-msgid "Overlay Transparency (%)"
-msgstr "Прозрачность (%)"
-#
-msgid "OverlayMap"
-msgstr "Наложение метео-карты"
-#
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr ""
-"Наложение метео-карты, не поддерживается вашей видеосистемой (отключите "
-"OpenGL)"
-#
-msgid "Overlays too wide and can't be displayed:"
-msgstr "Наложение метео-карты слишком широкое и не может быть отображено:"
-#
-msgid "Particle Map"
-msgstr "Карта Частиц"
-#
-msgid "Percentage"
-msgstr "%"
-#
-msgid "Playback"
-msgstr "Воспроизведение"
-#
-msgid "Playback Options"
-msgstr "Настройка воспроизведения"
-#
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr ""
-"Отдалите карту или уменьшите масштаб, чтобы увидеть невидимые наложения:"
-#
-msgid "Preferences"
-msgstr "Настройки"
-#
-msgid "Pressure"
-msgstr "Давление"
-#
-msgid "Previous"
-msgstr "Предыдущий"
-#
-msgid "Profile"
-msgstr "Профиль запроса"
-#
-msgid "Proportional Arrow"
-msgstr "Пропорциональная стрелка"
-#
-msgid "Rainfall"
-msgstr "Осадки"
-#
-msgid "Relat. Hum."
-msgstr "Относ. Влажность."
-#
-msgid "Relative Humidity"
-msgstr "Отн. влажность"
-#
-msgid "Request"
-msgstr "Запросить"
-#
-msgid ""
-"Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr ""
-"Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\n"
-"Записи в журнале работы могут помочь выяснить причину отказа."
-#
-msgid "Resolution"
-msgstr "Разрешение"
-#
-msgid "S"
-msgstr "Ю"
-#
-msgid "Save"
-msgstr "Сохранить"
-#
-msgid ""
-"Sea\n"
-"Temperature"
-msgstr ""
-"Температура\n"
-"воды"
-#
-msgid "Sea Surface Temperature"
-msgstr "Температура воды"
-#
-msgid "Sea Temp"
-msgstr "Темп. воды"
-#
-msgid "Sea Temperature"
-msgstr "Температура воды"
-#
-msgid "Sea Temperature(surf.)"
-msgstr "Температура воды (0 м)"
-#
-msgid "Sea or Air Temperature at Surface Level"
-msgstr "Море или температура воздуха на уровне поверхности"
-#
-msgid "Select a GRIB file"
-msgstr "Выберите GRIB-файл"
-#
-msgid "Select geopotential altitude"
-msgstr "Выбор высоты геопотенциала"
-#
-msgid "Select geoptential altitude"
-msgstr "Выбор высоты геопотенциала"
-#
-msgid "Send"
-msgstr "Отправить"
-#
-msgid "Sender eMail Address"
-msgstr "Адрес отправителя"
-#
-msgid "Settings"
-msgstr "Настройки"
-#
-msgid "Show Cursor Data"
-msgstr "Данные под курсором"
-#
-msgid "Show data at cursor"
-msgstr "Показать данные под курсором"
-#
-msgid "Significant Wave Height"
-msgstr "Значительная высота волн"
-#
-msgid "Single Arrow"
-msgstr "Одиночная стрелка"
-#
-msgid "Slow"
-msgstr "Медленно"
-#
-msgid "Small Size"
-msgstr "Малый размер"
-#
-msgid "Spacing"
-msgstr "Интервал"
-#
-msgid "Spacing(pixels)"
-msgstr "Интервал (пикс)"
-#
-msgid "Speed"
-msgstr "Скорость"
-#
-msgid "Speed Control"
-msgstr "Контроль скорости"
-#
-msgid "Start Options"
-msgstr "Параметры инициализации"
-#
-msgid "Start a request"
-msgstr "Начать запрос"
-#
-msgid "Start at the first forecast in GRIB file"
-msgstr "Начинать с первого прогноза в файле"
-#
-msgid "Start at the nearest forecast to current time"
-msgstr "Начинать с наиболее актуального прогноза"
-#
-msgid "Start play back"
-msgstr "Начать воспроизведение"
-#
-msgid "Stop play back"
-msgstr "Остановить воспроизведение"
-#
-msgid "Surface Current Direction"
-msgstr "Направление поверхностного течения"
-#
-msgid "Surface Current Speed"
-msgstr "Скорость поверхностного течения"
-#
-msgid "Temp."
-msgstr "Темп."
-#
-msgid "Temperature"
-msgstr "Температура"
-#
-msgid ""
-"This change needs a complete reload.\n"
-"It will be applied after closing and re-opening the plugin"
-msgstr ""
-"Это изменение потребует перезагрузки программы. \n"
-"будет применяняно после закрытия и повторного открытия плагина"
-#
-msgid "This is your zyGrib's forum access Login"
-msgstr "Имя вашей учётной записи на форуме zyGRIB"
-#
-msgid ""
-"This option imply you authorize intrepolation\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
-msgstr ""
-"Вы активировали интерполяцию данных.\n"
-"Имейте в виду, что отображаемые данные\n"
-"будут интерполированными, а не реальными!"
-#
-msgid "Time Interval"
-msgstr "Временной интервал"
-#
-msgid "Time Options"
-msgstr "Параметры отображения времени"
-#
-msgid "Time Range"
-msgstr "Диапазон времени"
-#
-msgid "Time Slider"
-msgstr "Ползунок времени"
-#
-msgid "Too big file! zyGrib limit is 2Mb!"
-msgstr "Слишком большой файл! zyGrib предел составляет 2 Мб!"
-#
-msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr "Слишком большой площадь! Каждая сторона должна быть меньше чем 180°!"
-#
-msgid "Too small area for this resolution!"
-msgstr "Слишком маленькая территория для этого разрешения!"
-#
-msgid "Top of Grib File"
-msgstr "Начало файла данных"
-#
-msgid "Transparency for all Overlay Maps"
-msgstr "Прозрачность для всех Наложенных метео-карт"
-#
-msgid "UTC"
-msgstr "Гринвичское время (UTC)"
-#
-msgid "Units"
-msgstr "Единицы измерения"
-#
-msgid "Use Always this Area"
-msgstr "Использовать эту области всегда"
-#
-msgid "Use Gradual Colors"
-msgstr "Рисовать с переливами цветов"
-#
-msgid "Use High Definition Graphics"
-msgstr "Рисовать с высоким качеством"
-#
-msgid "Valid Area and Continue"
-msgstr "Подтвердить выбор области и продолжить"
-#
-msgid "W"
-msgstr "З"
-#
-msgid "Warning : Data at Geopotential Height"
-msgstr "Предупреждение: Данные на высоте геопотенциала"
-#
-msgid "Warning!"
-msgstr "Внимание!"
-#
-msgid "Waves"
-msgstr "Волны"
-#
-msgid "Waves Direction"
-msgstr "Направление волн"
-#
-msgid "Waves period"
-msgstr "Период волнения"
-#
+
+#: src/grib_pi.cpp:387
 msgid "Weather table"
 msgstr "Таблица прогноза погоды"
-#
-msgid "Wind"
-msgstr "Ветер"
-#
-msgid "Wind Direction"
-msgstr "Направление ветра"
-#
-msgid "Wind Gust"
-msgstr "Порывы ветра"
-#
-msgid "Wind Gust at"
-msgstr "Порывы ветра"
-#
-msgid "Wind Speed"
-msgstr "Скорость ветра"
-#
-msgid "Wind Speed in Bf"
-msgstr "Скорость ветра по шкале Бофорта"
-#
-msgid "Write and send eMail request"
-msgstr "Составление запроса для отправки по эл. почте"
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but "
-"Recomputed\n"
+
+#: src/grib_pi.cpp:703
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
-msgstr ""
-"Вы активировали интерполяцию данных.\n"
+msgstr "Вы активировали интерполяцию данных.\n"
 "Имейте в виду, что отображаемые данные\n"
 "будут интерполированными, а не реальными!"
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed will not be real but recomputed\n"
-"This can decrease accuracy!"
+
+#: src/GribTable.cpp:94
+msgid "Wind,Dir"
 msgstr ""
-"Вы активировали интерполяцию данных.\n"
-"Имейте в виду, что отображаемые данные\n"
-"будут интерполированными, а не реальными!"
-#
-msgid ""
-"You request a forecast for more than 8 days horizon.\n"
+
+#: src/GribTable.cpp:100
+msgid "Wind,Speed"
+msgstr ""
+
+#: src/GribTable.cpp:108
+msgid "Wind,Gust"
+msgstr ""
+
+#: src/GribTable.cpp:133
+msgid "Waves,Dir"
+msgstr ""
+
+#: src/GribTable.cpp:138
+msgid "Waves,Hsig"
+msgstr ""
+
+#: src/GribTable.cpp:143
+msgid "Waves,Per"
+msgstr ""
+
+#: src/GribTable.cpp:167
+msgid "Air Temp."
+msgstr ""
+
+#: src/GribTable.cpp:175
+msgid "Sea Temp."
+msgstr ""
+
+#: src/GribTable.cpp:195
+msgid "Current,Dir"
+msgstr ""
+
+#: src/GribTable.cpp:201
+msgid "Current,Speed"
+msgstr ""
+
+#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
+msgid "Send"
+msgstr "Отправить"
+
+#: src/GribRequestDialog.cpp:121
+msgid "Save"
+msgstr "Сохранить"
+
+#: src/GribRequestDialog.cpp:138
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Адрес, используемый при отправке (для Linux — обязательно)"
+
+#: src/GribRequestDialog.cpp:139
+msgid "This is your zyGrib's forum access Login"
+msgstr "Имя вашей учётной записи на форуме zyGRIB"
+
+#: src/GribRequestDialog.cpp:140
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Ваш код (не пароль!), полученный на форуме zyGRIB"
+
+#: src/GribRequestDialog.cpp:141
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Ваша прогнозируемая скорость"
+
+#: src/GribRequestDialog.cpp:142
+msgid "Enter your forecasted Course"
+msgstr "Ваш прогнозируемый курс"
+
+#: src/GribRequestDialog.cpp:475
+msgid "Coord. "
+msgstr "Коорд. "
+
+#: src/GribRequestDialog.cpp:480 src/GribRequestDialog.cpp:843
+#: src/GribRequestDialog.cpp:846
+msgid "MB"
+msgstr "Мбайт"
+
+#: src/GribRequestDialog.cpp:636
+msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
-"Вы запрашиваете прогноз на более чем 8 дней.\n"
+msgstr "Вы запрашиваете прогноз на более чем 8 дней.\n"
 "Данные о волнах будут исключены из запроса.\n"
 "Имейте в виду, что после первых 8-ми дней\n"
 "разрешение будет 2,5°×2,5° с интервалом 12 ч."
-#
-msgid "You want to add a title/drag bar to the dialog\n"
-msgstr "Вы хотите добавить название/перетащить панель в диалог\n"
-#
-msgid "You want to remove the dialog title/drag bar\n"
-msgstr "Вы хотите удалить название/перетащить диалоговое окно\n"
-#
-msgid ""
-"Your request is ready. An email is prepared in your email environment. \n"
+
+#: src/GribRequestDialog.cpp:846
+msgid "Max"
+msgstr "макс."
+
+#: src/GribRequestDialog.cpp:962
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\n"
+"Зайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
+
+#: src/GribRequestDialog.cpp:963
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "Слишком большой файл! zyGrib предел составляет 2 Мб!"
+
+#: src/GribRequestDialog.cpp:963
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr "Ошибка! Выбрана слишком маленькая территория!"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr "Слишком большой площадь! Каждая сторона должна быть меньше чем 180°!"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too small area for this resolution!"
+msgstr "Слишком маленькая территория для этого разрешения!"
+
+#: src/GribRequestDialog.cpp:981 src/GribRequestDialog.cpp:1016
+msgid "Continue..."
+msgstr "Продолжить…"
+
+#: src/GribRequestDialog.cpp:1001 src/GribRequestDialog.cpp:1005
+msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
-msgstr ""
-"Ваш запрос сформирован и помещён в почтовую программу.\n"
+msgstr "Ваш запрос сформирован и помещён в почтовую программу.\n"
 "Нужно проверить сообщение и отправить его."
-#
-msgid ""
-"Your request was sent \n"
+
+#: src/GribRequestDialog.cpp:1008
+msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr "Ваш запрос был отправлен (если ваша почтовая система настроена)."
-#
-msgid "Zoom To Center"
-msgstr "Центрировать и приблизить"
-#
-msgid "Zoom to Center"
-msgstr "Центрировать и приблизить"
-#
-msgid "at"
-msgstr "через"
-#
+
+#: src/GribRequestDialog.cpp:1013
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\n"
+"Записи в журнале работы могут помочь выяснить причину отказа."
+
+#: src/CursorData.cpp:225
+msgid "Data at cursor position"
+msgstr "Метеоданные под курсором"
+
+#: src/CursorData.cpp:239
 msgid "at Geopotential Height"
 msgstr "на Геопотенциальной Высоте"
-#
-msgid "h"
-msgstr "ч"
-#
-msgid "inHG"
-msgstr "дюйм рт. ст."
-#
-msgid "j/kg"
-msgstr "Дж/кг"
-#
-msgid "km/h"
-msgstr "км/ч"
-#
-msgid "m/s"
-msgstr "м/с"
-#
-msgid "mmHG"
-msgstr "мм рт. ст."
-#
-msgid "mn"
-msgstr "мин."
-#
-msgid "mph"
-msgstr "миль/ч"
-#
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr "Повёрнутые наложения отключены в режиме DC"
-#
+
+#: src/CursorData.cpp:242
+msgid "Temperature"
+msgstr "Температура"
+
+#: src/CursorData.cpp:245
+msgid "at"
+msgstr "через"
+
+#: src/CursorData.cpp:250
+msgid "Wind Speed"
+msgstr "Скорость ветра"
+
+#: src/CursorData.cpp:251
+msgid "Wind Speed in Bf"
+msgstr "Скорость ветра по шкале Бофорта"
+
+#: src/CursorData.cpp:252
+msgid "Wind Direction"
+msgstr "Направление ветра"
+
+#: src/CursorData.cpp:255
+msgid "Wind Gust at"
+msgstr "Порывы ветра"
+
+#: src/CursorData.cpp:258
+msgid "Air Temperature at"
+msgstr "Температура воздуха"
+
+#: src/CursorData.cpp:258
 msgid "surface level"
 msgstr "уровень поверхности"
-#
-msgid "zyGrib Code"
-msgstr "Персональный код zyGRIB"
-#
-msgid "zyGrib Login"
-msgstr "Учётная запись zyGRIB"
+
+#: src/CursorData.cpp:258
+msgid "Sea Surface Temperature"
+msgstr "Температура воды"
+
+#: src/CursorData.cpp:299 src/CursorData.cpp:300 src/CursorData.cpp:301
+#: src/CursorData.cpp:313 src/CursorData.cpp:326 src/CursorData.cpp:346
+#: src/CursorData.cpp:348 src/CursorData.cpp:352 src/CursorData.cpp:362
+#: src/CursorData.cpp:384 src/CursorData.cpp:385 src/CursorData.cpp:399
+#: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
+#: src/CursorData.cpp:448 src/CursorData.cpp:460 src/CursorData.cpp:472
+#: src/CursorData.cpp:483
+msgid "N/A"
+msgstr "н/д"
+

@@ -106,6 +106,8 @@ SET(SRC_GRIB
             src/TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
+            src/CustomGrid.h
+            src/CustomGrid.cpp
             src/icons.cpp
             src/GribReader.cpp
             src/GribRecord.cpp
@@ -135,7 +137,7 @@ IF(NOT UNIX)
     )
     ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
 
-    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 ENDIF(NOT UNIX)
 
@@ -152,7 +154,7 @@ IF(QT_ANDROID)
     )
     SET(SRC_GRIB ${SRC_GRIB} ${SRC_BZIP_ANDROID})
 
-    INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/zlib-1.2.3)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/include)
     INCLUDE_DIRECTORIES(${PLUGIN_SOURCE_DIR}/src/bzip2)
 
     MESSAGE (STATUS ${SRC_GRIB})
@@ -213,6 +215,7 @@ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 IF(WIN32)
   IF(MSVC)
     SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
+    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} "${CMAKE_SOURCE_DIR}/buildwin/zlib1.lib")
   ELSE(MSVC)
     SET(OPENCPN_IMPORT_LIB "${PARENT}.dll")
     SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

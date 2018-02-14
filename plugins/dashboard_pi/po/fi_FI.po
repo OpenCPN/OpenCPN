@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:12-0500\n"
-"PO-Revision-Date: 2017-08-04 22:33-0400\n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-01-29 21:27-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
@@ -15,330 +15,440 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: fi\n"
 "X-Crowdin-File: /plugins/dashboard_pi/po/dashboard_pi.pot\n"
-#
-msgid " mag"
-msgstr " magneettinen"
-#
+
+#: src/clock.cpp:164 src/dial.cpp:525 src/gps.cpp:142 src/wind.cpp:65
+#: src/wind_history.cpp:433
+msgid "N"
+msgstr "N"
+
+#: src/dashboard_pi.cpp:105
+msgid "Position"
+msgstr "Sijainti"
+
+#: src/dashboard_pi.cpp:107
+msgid "SOG"
+msgstr "SOG"
+
+#: src/dashboard_pi.cpp:109
+msgid "Speedometer"
+msgstr "Nopeusmittari"
+
+#: src/dashboard_pi.cpp:111
+msgid "COG"
+msgstr "COG"
+
+#: src/dashboard_pi.cpp:113
+msgid "Mag COG"
+msgstr "Magn COG"
+
+#: src/dashboard_pi.cpp:115
+msgid "GPS Compass"
+msgstr "GPS kompassi"
+
+#: src/dashboard_pi.cpp:117
+msgid "True Compass"
+msgstr "Kompassi"
+
+#: src/dashboard_pi.cpp:119
+msgid "STW"
+msgstr "STW"
+
+#: src/dashboard_pi.cpp:121
+msgid "True HDG"
+msgstr "Tosi HDG"
+
+#: src/dashboard_pi.cpp:123
+msgid "Mag HDG"
+msgstr "Magneettinen HDG"
+
+#: src/dashboard_pi.cpp:126
+msgid "App. Wind Angle & Speed"
+msgstr "Suht. Tuulen kulma & nopeus"
+
+#: src/dashboard_pi.cpp:128
+msgid "App & True Wind Angle"
+msgstr "Suhteellinen & todellinen tuulikulma"
+
+#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
+msgid "App. Wind Speed"
+msgstr "Suhteellinen tuulennopeus"
+
+#: src/dashboard_pi.cpp:134
+msgid "True Wind Angle & Speed"
+msgstr "Tosi tuulen kulma & nopeus"
+
+#: src/dashboard_pi.cpp:136 src/dashboard_pi.cpp:138
+msgid "Depth"
+msgstr "Syvyys"
+
+#: src/dashboard_pi.cpp:140 src/dashboard_pi.cpp:142
+msgid "Barometric pressure"
+msgstr "Ilmanpaine"
+
+#: src/dashboard_pi.cpp:144
+msgid "Water Temp."
+msgstr "Veden lämpötila."
+
+#: src/dashboard_pi.cpp:146
+msgid "Air Temp."
+msgstr "Ilman lämpötila."
+
+#: src/dashboard_pi.cpp:148
+msgid "App. Wind Angle"
+msgstr "Suht. tuulikulma"
+
+#: src/dashboard_pi.cpp:150
+msgid "True Wind Angle"
+msgstr "Tosi tuulikulma"
+
+#: src/dashboard_pi.cpp:152
+msgid "True Wind Direction"
+msgstr "Tosi tuulensuunta"
+
+#: src/dashboard_pi.cpp:154
+msgid "True Wind Speed"
+msgstr "Tosi tuulennopeus"
+
+#: src/dashboard_pi.cpp:156
+msgid "True Wind Dir. & Speed"
+msgstr "Tosi tuulen suunta & nopeus"
+
+#: src/dashboard_pi.cpp:158 src/dashboard_pi.cpp:160
+msgid "VMG"
+msgstr "VMG"
+
+#: src/dashboard_pi.cpp:162 src/dashboard_pi.cpp:164
+msgid "Rudder Angle"
+msgstr "Peräsinkulma"
+
+#: src/dashboard_pi.cpp:166
+msgid "GPS in View"
+msgstr "Näkyvät satelliitit"
+
+#: src/dashboard_pi.cpp:168
+msgid "GPS Status"
+msgstr "GPS tilanne"
+
+#: src/dashboard_pi.cpp:170
+msgid "Cursor"
+msgstr "Kohdistin"
+
+#: src/dashboard_pi.cpp:172
+msgid "GPS Clock"
+msgstr "GPS kello"
+
+#: src/dashboard_pi.cpp:174
+msgid "Sunrise/Sunset"
+msgstr "Auringon nousu/lasku"
+
+#: src/dashboard_pi.cpp:176
+msgid "Moon phase"
+msgstr "Kuun vaihe"
+
+#: src/dashboard_pi.cpp:178
+msgid "Wind history"
+msgstr "Tuuli historia"
+
+#: src/dashboard_pi.cpp:180
+msgid "Barometric history"
+msgstr "Ilmanpaineen historia"
+
+#: src/dashboard_pi.cpp:182
+msgid "Trip Log"
+msgstr "Matka loki"
+
+#: src/dashboard_pi.cpp:184
+msgid "Sum Log"
+msgstr "Summa loki"
+
+#: src/dashboard_pi.cpp:186
+msgid "From Ownship"
+msgstr "Alkaen oma-alus"
+
+#: src/dashboard_pi.cpp:188
+msgid "Pitch"
+msgstr "Nyökintä"
+
+#: src/dashboard_pi.cpp:190
+msgid "Heel"
+msgstr "Kallistus"
+
+#: src/dashboard_pi.cpp:192
+msgid "Local GPS Clock"
+msgstr "Paikallinen GPS-kello"
+
+#: src/dashboard_pi.cpp:194
+msgid "Local CPU Clock"
+msgstr "Paikallinen CPU kello"
+
+#: src/dashboard_pi.cpp:196
+msgid "Local Sunrise/Sunset"
+msgstr "Paikallinen auringonnousu-ja lasku"
+
+#: src/dashboard_pi.cpp:388 src/dashboard_pi.cpp:503 src/dashboard_pi.cpp:1460
+#: src/dashboard_pi.cpp:1473 src/dashboard_pi.cpp:1659
+#: src/dashboard_pi.cpp:1698 src/dashboard_pi.cpp:1997
+msgid "Dashboard"
+msgstr "Mittaritaulu"
+
+#: src/dashboard_pi.cpp:508
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Mittaripaneeli OpenCPN:lle"
+
+#: src/dashboard_pi.cpp:513
+msgid "Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr "Mittaritaulu OpenCPN:lle\n"
+"Näyttää mittarit NMEA-tuloille."
+
+#: src/dashboard_pi.cpp:1635
+msgid "Dashboard preferences"
+msgstr "Mittaripaneelin asetukset"
+
+#: src/dashboard_pi.cpp:1705
+msgid "show this dashboard"
+msgstr "Näytä tämä mittaritaulu"
+
+#: src/dashboard_pi.cpp:1711
+msgid "Caption:"
+msgstr "Kuvateksti:"
+
+#: src/dashboard_pi.cpp:1719
+msgid "Orientation:"
+msgstr "Näytön asento:"
+
+#: src/dashboard_pi.cpp:1723 src/dashboard_pi.cpp:2190
+msgid "Vertical"
+msgstr "Pystysuora"
+
+#: src/dashboard_pi.cpp:1724 src/dashboard_pi.cpp:2192
+msgid "Horizontal"
+msgstr "Vaakasuora"
+
+#: src/dashboard_pi.cpp:1731 src/dashboard_pi.cpp:1739
+#: src/dashboard_pi.cpp:2116
+msgid "Instruments"
+msgstr "Mittarit"
+
+#: src/dashboard_pi.cpp:1747
+msgid "Add"
+msgstr "Lisää"
+
+#: src/dashboard_pi.cpp:1760
+msgid "Delete"
+msgstr "&Poista"
+
+#: src/dashboard_pi.cpp:1766
+msgid "Up"
+msgstr "Ylös"
+
+#: src/dashboard_pi.cpp:1771
+msgid "Down"
+msgstr "Alas"
+
+#: src/dashboard_pi.cpp:1781
+msgid "Appearance"
+msgstr "Ulkonäkö"
+
+#: src/dashboard_pi.cpp:1783
+msgid "Fonts"
+msgstr "Kirjasimet"
+
+#: src/dashboard_pi.cpp:1789
+msgid "Title:"
+msgstr "Otsikko:"
+
+#: src/dashboard_pi.cpp:1795
+msgid "Data:"
+msgstr "Tiedot:"
+
+#: src/dashboard_pi.cpp:1801
+msgid "Label:"
+msgstr "Otsikko:"
+
+#: src/dashboard_pi.cpp:1807
+msgid "Small:"
+msgstr "Pieni:"
+
+#: src/dashboard_pi.cpp:1815
+msgid "Units, Ranges, Formats"
+msgstr "Yksiköt, alueet, formaatit"
+
+#: src/dashboard_pi.cpp:1821
+msgid "Speedometer max value:"
+msgstr "Nopeusmittari max arvo:"
+
+#: src/dashboard_pi.cpp:1827
+msgid "Speed Over Ground Damping Factor:"
+msgstr "Nopeus pohjan suhteen vaimennuskerroin:"
+
+#: src/dashboard_pi.cpp:1833
+msgid "COG Damping Factor:"
+msgstr "COG vaimennuskerroin:"
+
+#: src/dashboard_pi.cpp:1839
+msgid "Local Time Offset From UTC:"
+msgstr "Paikallisen ajan UTC-ajan poikkeaman:"
+
+#: src/dashboard_pi.cpp:1858
+msgid "Boat speed units:"
+msgstr "Veneen nopeus yksiköt:"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1879
+msgid "Honor OpenCPN settings"
+msgstr "OpenCPN pääasetukset"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "Kts"
+msgstr "Kts"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "mph"
+msgstr "mph"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "km/h"
+msgstr "km/h"
+
+#: src/dashboard_pi.cpp:1861 src/dashboard_pi.cpp:1888
+msgid "m/s"
+msgstr "m/s"
+
+#: src/dashboard_pi.cpp:1867
+msgid "Depth units:"
+msgstr "Syvyys yksiköt:"
+
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:1879
+msgid "Meters"
+msgstr "Metrit"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Feet"
+msgstr "Jalat"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Fathoms"
+msgstr "Sylet"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Centimeters"
+msgstr "Senttimetriä"
+
+#: src/dashboard_pi.cpp:1870
+msgid "Inches"
+msgstr "Tuumaa"
+
+#: src/dashboard_pi.cpp:1876
+msgid "Distance units:"
+msgstr "Välimatkan yksiköt:"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Nautical miles"
+msgstr "&meripeninkulmaa"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Statute miles"
+msgstr "Maamailia"
+
+#: src/dashboard_pi.cpp:1879
+msgid "Kilometers"
+msgstr "&kilometriä"
+
+#: src/dashboard_pi.cpp:1885
+msgid "Wind speed units:"
+msgstr "Tuulen nopeus yksiköt:"
+
+#: src/dashboard_pi.cpp:2099
+msgid "Add instrument"
+msgstr "Lisää mittari"
+
+#: src/dashboard_pi.cpp:2105
+msgid "Select instrument to add:"
+msgstr "Valitse lisättävä mittari:"
+
+#: src/dashboard_pi.cpp:2199
+msgid "Preferences..."
+msgstr "Asetukset..."
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:439
+msgid "NE"
+msgstr "Koillinen"
+
+#: src/dial.cpp:525 src/gps.cpp:146 src/wind.cpp:65 src/wind_history.cpp:445
+msgid "E"
+msgstr "Itä"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:451
+msgid "SE"
+msgstr "Kaakko"
+
+#: src/dial.cpp:525 src/gps.cpp:150 src/wind.cpp:65 src/wind_history.cpp:457
+msgid "S"
+msgstr "Etelä"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:463
+msgid "SW"
+msgstr "Lounas"
+
+#: src/dial.cpp:525 src/gps.cpp:154 src/wind.cpp:65 src/wind_history.cpp:469
+msgid "W"
+msgstr "Länsi"
+
+#: src/dial.cpp:525 src/wind.cpp:65 src/wind_history.cpp:475
+msgid "NW"
+msgstr "Luode"
+
+#: src/instrument.cpp:236
 msgid " true"
 msgstr " tosi"
-#
+
+#: src/instrument.cpp:238
+msgid " mag"
+msgstr " magneettinen"
+
+#: src/wind_history.cpp:56 src/wind_history.cpp:107
 msgid "--"
 msgstr "--"
-#
+
+#: src/wind_history.cpp:331
 #, c-format
 msgid "--- %s"
 msgstr "--- %s"
-#
-msgid "Add"
-msgstr "Lisää"
-#
-msgid "Add instrument"
-msgstr "Lisää mittari"
-#
-msgid "Air Temp."
-msgstr "Ilman lämpötila."
-#
-msgid "App & True Wind Angle"
-msgstr "Suhteellinen & todellinen tuulikulma"
-#
-msgid "App. Wind Angle"
-msgstr "Suht. tuulikulma"
-#
-msgid "App. Wind Angle & Speed"
-msgstr "Suht. Tuulen kulma & nopeus"
-#
-msgid "App. Wind Speed"
-msgstr "Suhteellinen tuulennopeus"
-#
-msgid "Appearance"
-msgstr "Ulkonäkö"
-#
-msgid "Barometric history"
-msgstr "Ilmanpaineen historia"
-#
-msgid "Barometric pressure"
-msgstr "Ilmanpaine"
-#
-msgid "Boat speed units:"
-msgstr "Veneen nopeus yksiköt:"
-#
-msgid "COG"
-msgstr "COG"
-#
-msgid "COG Damping Factor:"
-msgstr "COG vaimennuskerroin:"
-#
-msgid "Caption:"
-msgstr "Kuvateksti:"
-#
-msgid "Centimeters"
-msgstr "Senttimetriä"
-#
-msgid "Cursor"
-msgstr "Kohdistin"
-#
-msgid "Dashboard"
-msgstr "Mittaritaulu"
-#
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr "Mittaripaneeli OpenCPN:lle"
-#
-msgid ""
-"Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-"Mittaritaulu OpenCPN:lle\n"
-"Näyttää mittarit NMEA-tuloille."
-#
-msgid "Dashboard preferences"
-msgstr "Mittaripaneelin asetukset"
-#
-msgid "Data:"
-msgstr "Tiedot:"
-#
-msgid "Delete"
-msgstr "&Poista"
-#
-msgid "Depth"
-msgstr "Syvyys"
-#
-msgid "Depth units:"
-msgstr "Syvyys yksiköt:"
-#
-msgid "Distance units:"
-msgstr "Välimatkan yksiköt:"
-#
-msgid "Down"
-msgstr "Alas"
-#
-msgid "E"
-msgstr "Itä"
-#
+
+#: src/wind_history.cpp:436
+msgid "NNE"
+msgstr "NNE"
+
+#: src/wind_history.cpp:442
 msgid "ENE"
 msgstr "ENE"
-#
+
+#: src/wind_history.cpp:448
 msgid "ESE"
 msgstr "ESE"
-#
-msgid "Fathoms"
-msgstr "Sylet"
-#
-msgid "Feet"
-msgstr "Jalat"
-#
-msgid "Fonts"
-msgstr "Kirjasimet"
-#
-msgid "From Ownship"
-msgstr "Alkaen oma-alus"
-#
-msgid "GPS Clock"
-msgstr ""
-#
-msgid "GPS Compass"
-msgstr "GPS kompassi"
-#
-msgid "GPS Status"
-msgstr "GPS tilanne"
-#
-msgid "GPS in View"
-msgstr "Näkyvät satelliitit"
-#
-msgid "Heel"
-msgstr "Kallistus"
-#
-msgid "Honor OpenCPN settings"
-msgstr "OpenCPN pääasetukset"
-#
-msgid "Horizontal"
-msgstr "Vaakasuora"
-#
-msgid "Inches"
-msgstr "Tuumaa"
-#
-msgid "Instruments"
-msgstr "Mittarit"
-#
-msgid "Kilometers"
-msgstr "&kilometriä"
-#
-msgid "Kts"
-msgstr "Kts"
-#
-msgid "Label:"
-msgstr "Otsikko:"
-#
-msgid "Local CPU Clock"
-msgstr ""
-#
-msgid "Local GPS Clock"
-msgstr ""
-#
-msgid "Local Sunrise/Sunset"
-msgstr ""
-#
-msgid "Local Time Offset From UTC:"
-msgstr ""
-#
-msgid "Mag COG"
-msgstr "Magn COG"
-#
-msgid "Mag HDG"
-msgstr "Magneettinen HDG"
-#
+
+#: src/wind_history.cpp:454
+msgid "SSE"
+msgstr "SSE"
+
+#: src/wind_history.cpp:460
+msgid "SSW"
+msgstr "SSW"
+
+#: src/wind_history.cpp:466
+msgid "WSW"
+msgstr "WSW"
+
+#: src/wind_history.cpp:472
+msgid "WNW"
+msgstr "WNW"
+
+#: src/wind_history.cpp:478
+msgid "NNW"
+msgstr "NNW"
+
+#: src/wind_history.cpp:575
 #, c-format
 msgid "Max %.1f %s since %02d:%02d  Overall %.1f %s"
 msgstr "Max %.1f %s jälkeen %02d:%02d yhteensä %.1f %s"
-#
-msgid "Meters"
-msgstr "Metrit"
-#
-msgid "Moon phase"
-msgstr "Kuun vaihe"
-#
-msgid "N"
-msgstr "P"
-#
-msgid "NE"
-msgstr "Koillinen"
-#
-msgid "NNE"
-msgstr "NNE"
-#
-msgid "NNW"
-msgstr "NNW"
-#
-msgid "NW"
-msgstr "Luode"
-#
-msgid "Nautical miles"
-msgstr "&meripeninkulmaa"
-#
-msgid "Orientation:"
-msgstr "Näytön asento:"
-#
-msgid "Pitch"
-msgstr "Nyökintä"
-#
-msgid "Position"
-msgstr "Sijainti"
-#
-msgid "Preferences..."
-msgstr "Asetukset..."
-#
-msgid "Rudder Angle"
-msgstr "Peräsinkulma"
-#
-msgid "S"
-msgstr "Etelä"
-#
-msgid "SE"
-msgstr "Kaakko"
-#
-msgid "SOG"
-msgstr "SOG"
-#
-msgid "SSE"
-msgstr "SSE"
-#
-msgid "SSW"
-msgstr "SSW"
-#
-msgid "STW"
-msgstr "STW"
-#
-msgid "SW"
-msgstr "Lounas"
-#
-msgid "Select instrument to add:"
-msgstr "Valitse lisättävä mittari:"
-#
-msgid "Small:"
-msgstr "Pieni:"
-#
-msgid "Speed Over Ground Damping Factor:"
-msgstr "Nopeus pohjan suhteen vaimennuskerroin:"
-#
-msgid "Speedometer"
-msgstr "Nopeusmittari"
-#
-msgid "Speedometer max value:"
-msgstr "Nopeusmittari max arvo:"
-#
-msgid "Statute miles"
-msgstr "Maamailia"
-#
-msgid "Sum Log"
-msgstr "Summa loki"
-#
-msgid "Sunrise/Sunset"
-msgstr "Auringon nousu/lasku"
-#
-msgid "Title:"
-msgstr "Otsikko:"
-#
-msgid "Trip Log"
-msgstr "Matka loki"
-#
-msgid "True Compass"
-msgstr "Kompassi"
-#
-msgid "True HDG"
-msgstr "Tosi HDG"
-#
-msgid "True Wind Angle"
-msgstr "Tosi tuulikulma"
-#
-msgid "True Wind Angle & Speed"
-msgstr "Tosi tuulen kulma & nopeus"
-#
-msgid "True Wind Dir. & Speed"
-msgstr "Tosi tuulen suunta & nopeus"
-#
-msgid "True Wind Direction"
-msgstr "Tosi tuulensuunta"
-#
-msgid "True Wind Speed"
-msgstr "Tosi tuulennopeus"
-#
-msgid "Units, Ranges, Formats"
-msgstr "Yksiköt, alueet, formaatit"
-#
-msgid "Up"
-msgstr "Ylös"
-#
-msgid "VMG"
-msgstr "VMG"
-#
-msgid "Vertical"
-msgstr "Pystysuora"
-#
-msgid "W"
-msgstr "Länsi"
-#
-msgid "WNW"
-msgstr "WNW"
-#
-msgid "WSW"
-msgstr "WSW"
-#
-msgid "Water Temp."
-msgstr "Veden lämpötila."
-#
-msgid "Wind history"
-msgstr "Tuuli historia"
-#
-msgid "Wind speed units:"
-msgstr "Tuulen nopeus yksiköt:"
-#
-msgid "km/h"
-msgstr "km/h"
-#
-msgid "m/s"
-msgstr "m/s"
-#
-msgid "mph"
-msgstr "mph"
-#
-msgid "show this dashboard"
-msgstr "Näytä tämä mittaritaulu"
+

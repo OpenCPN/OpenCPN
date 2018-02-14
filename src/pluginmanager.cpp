@@ -2726,7 +2726,11 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         delete ChartData;
         ChartData = new ChartDB();
         ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
-    
+
+        // Update group contents
+        if(g_pGroupArray)
+            ChartData->ApplyGroupArray(g_pGroupArray);
+        
         if(g_boptionsactive){
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
         }
@@ -4087,12 +4091,16 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pName->SetForegroundColour(*wxBLACK);
         m_pVersion->SetForegroundColour(*wxBLACK);
         m_pDescription->SetForegroundColour(*wxBLACK);
-        m_pDescription->SetLabel( m_pPlugin->m_long_description ); //Pick up translation, if any
+        m_pDescription->SetLabel( m_pPlugin->m_short_description ); //Pick up translation, if any
         if ( enabled )
             m_pButtonEnable->SetLabel(_("Disable"));
         else
             m_pButtonEnable->SetLabel(_("Enable"));
     }
+    
+    if(m_bSelected)
+        m_pDescription->SetLabel( m_pPlugin->m_long_description ); //Pick up translation, if any
+        
     m_pButtonPreferences->Enable( enabled && (m_pPlugin->m_cap_flag & WANTS_PREFERENCES) );
     
 }
@@ -6411,9 +6419,9 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
-/* API 1.16 */
+int PluginGetMinAvailableGshhgQuality() { return cc1->GetMinAvailableGshhgQuality(); }
+int PluginGetMaxAvailableGshhgQuality() { return cc1->GetMaxAvailableGshhgQuality(); }
 
-void PlugInHandleAutopilotRoute(bool enable)
-{
-    g_bPluginHandleAutopilotRoute = enable;
-}
+/* API 1.16 */
+// disable builtin console canvas, and autopilot nmea sentences
+void PlugInHandleAutopilotRoute(bool enable) { g_bPluginHandleAutopilotRoute = enable; }

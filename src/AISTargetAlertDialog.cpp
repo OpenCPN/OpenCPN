@@ -189,11 +189,11 @@ void AISTargetAlertDialog::CreateControls()
     
     m_pAlertTextCtl->SetBorders( 5 );
 
-    topSizer->Add( m_pAlertTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
+    topSizer->Add( m_pAlertTextCtl, 1, wxALL | wxEXPAND, 5 );
 
     // A horizontal box sizer to contain Ack
     wxBoxSizer* AckBox = new wxBoxSizer( wxHORIZONTAL );
-    topSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
+    topSizer->Add( AckBox, 0, wxALL, 5 );
 
     // The Silence button
     if( g_bAIS_CPA_Alert_Audio ){

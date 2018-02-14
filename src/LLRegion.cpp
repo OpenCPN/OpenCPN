@@ -308,7 +308,8 @@ static void /*APIENTRY*/ LLerrorCallback(GLenum errorCode)
     const GLubyte *estring;
     estring = gluErrorString(errorCode);
     fprintf (stderr, "Tessellation Error: %s\n", estring);
-    exit (0);
+    wxLogMessage( _T("Tessellation Error: %s"), (char *)estring );
+    //exit (0);
 }
 
 void LLRegion::Intersect(const LLRegion& region)

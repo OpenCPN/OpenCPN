@@ -176,6 +176,7 @@ extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
 extern float            g_ChartScaleFactorExp;
+extern float            g_ShipScaleFactorExp;
 
 float            g_GLMinSymbolLineWidth;
 float            g_GLMinCartographicLineWidth;
@@ -831,7 +832,8 @@ void glChartCanvas::SetupOpenGL()
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
 
-#ifdef __WXMSW__
+#if defined( __WXMSW__ ) || defined(__WXOSX__)
+        
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
         wxLogMessage( _T("OpenGL-> Detected Windows Intel renderer, disabling Vertexbuffer Objects") );
         g_b_EnableVBO = false;
@@ -1387,8 +1389,8 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     else
         color = GetGlobalColor( _T ( "UINFR" ) );
 
-//    glEnable( GL_BLEND );
-    glEnable( GL_LINE_SMOOTH );
+    if( g_GLOptions.m_GLLineSmoothing )
+        glEnable( GL_LINE_SMOOTH );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
     glLineWidth( g_GLMinSymbolLineWidth );
@@ -1838,13 +1840,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     int img_height = 0;
     
     if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) {
-        glEnable( GL_LINE_SMOOTH );
-        glEnable( GL_POLYGON_SMOOTH );
+        if( g_GLOptions.m_GLLineSmoothing )
+            glEnable( GL_LINE_SMOOTH );
+        if( g_GLOptions.m_GLPolygonSmoothing )
+            glEnable( GL_POLYGON_SMOOTH );
         glEnableClientState(GL_VERTEX_ARRAY);
     
         if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
         {
-            float scale =  g_ChartScaleFactorExp;
+            float scale =  g_ShipScaleFactorExp;
         
             const int v = 12;
             // start with cross
@@ -1984,9 +1988,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
         
             // Scale the generic icon to ChartScaleFactor, slightly softened....
-            if((g_ChartScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
-                scale_factor_x = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
-                scale_factor_y = (log(g_ChartScaleFactorExp) + 1.0) * 1.1;   
+            if((g_ShipScaleFactorExp > 1.0) && ( g_OwnShipIconType == 0 )){
+                scale_factor_x = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
+                scale_factor_y = (log(g_ShipScaleFactorExp) + 1.0) * 1.1;   
             }
         
         // Set the size of the little circle showing the GPS reference position
@@ -2012,8 +2016,6 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 
                 // tweak GPS reference point indicator size
                 gps_circle_radius = w / 5;
-                
-                glScalef(scale_factor_x, scale_factor_y, 1);
                 
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0), glVertex2f(-w/2, -h/2);
@@ -3414,8 +3416,10 @@ void glChartCanvas::Render()
     // set opengl settings that don't normally change
     // this should be able to go in SetupOpenGL, but it's
     // safer here incase a plugin mangles these
-    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
+    if( g_GLOptions.m_GLLineSmoothing )
+        glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    if( g_GLOptions.m_GLPolygonSmoothing )
+        glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     //  Delete any textures known to the GPU that
@@ -3623,6 +3627,22 @@ void glChartCanvas::Render()
                         glViewport( 0, 0, (GLint) sx, (GLint) sy );
                     }
                     else{
+#if 0                        
+                        // Should not really need to clear the screen, but consider this case:
+                        // A previous installation of OCPN loaded some PlugIn charts, so setting their coverage in the database.
+                        // In this installation, the PlugIns are not available, for whatever reason.
+                        // As a result, some areas on screen will not be rendered by the PlugIn, and
+                        // The backing chart is eclipsed by the unrendered chart coverage region.
+                        //  Result: leftover garbage in the unrendered regions.
+
+                        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+                        if( color.IsOk() )
+                            glClearColor( color.Red() / 256., color.Green()/256., color.Blue()/256., 1.0 );
+                        else
+                            glClearColor(0, 0., 0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT);
+#endif
+
                         m_fbo_offsetx = 0;
                         m_fbo_offsety = 0;
                         m_fbo_swidth = sx;

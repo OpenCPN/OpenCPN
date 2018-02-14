@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-09 10:13-0500\n"
-"PO-Revision-Date: 2017-06-29 09:34-0400\n"
+"POT-Creation-Date: 2018-01-24 10:24-0500\n"
+"PO-Revision-Date: 2018-02-01 14:00-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -15,376 +15,460 @@ msgstr ""
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ja\n"
 "X-Crowdin-File: /plugins/chartdldr_pi/po/chartdldr_pi.pot\n"
-#
-#, c-format
-msgid ""
-"%d out of %d charts failed to download.\n"
-"Check the list, verify there is a working Internet connection and repeat the "
-"operation if needed."
-msgstr ""
-#
-#, c-format
-msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
-#
-#, c-format
-msgid "%s"
-msgstr ""
-#
+
+#: src/chartcatalog.cpp:46
+msgid "Catalog is not valid."
+msgstr "カタログは無効です。"
+
+#: src/chartcatalog.cpp:560
 #, c-format
 msgid "%s (%s to %s), river miles %3.1f - %3.1f"
 msgstr ""
-#
+
+#: src/chartcatalog.cpp:567
 #, c-format
-msgid "%u charts total, %u updated, %u new"
-msgstr "%u チャート合計, %u 更新, %u 新規"
-#
-msgid "(Please update first)"
+msgid "%s"
 msgstr ""
-#
-msgid "0 (transfer completed)"
-msgstr "0 (転送完了)"
-#
-msgid "0 (transfer paused)"
-msgstr "0 (転送の一時停止)"
-#
-msgid "Abort"
-msgstr "中止"
-#
-msgid "Abort download"
-msgstr "ダウンロードを中止"
-#
-msgid "Add"
-msgstr "追加"
-#
-msgid "Add a new chart catalog."
-msgstr "新しいチャート カタログを追加します。"
-#
-msgid "After catalog update select for download"
-msgstr ""
-#
-msgid "All new charts"
-msgstr "すべての新しいチャート"
-#
-msgid "All updated charts"
-msgstr "すべての更新されたチャート"
-#
-msgid "Allow bulk update of all configured chart sources and charts"
-msgstr "すべての構成済みのチャート ソースとチャートの一括更新を許可します。"
-#
-msgid "Catalog"
-msgstr "カタログ"
-#
-msgid "Catalog is not valid."
-msgstr "カタログは無効です。"
-#
-msgid "Catalogs"
-msgstr "カタログ"
-#
-msgid "Chart Directory"
-msgstr "チャート ディレクトリ"
-#
-msgid "Chart Downloader"
-msgstr "チャートダウンローダー"
-#
-msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr "OpenCPN 用チャートダウンロード プラグイン"
-#
-msgid ""
-"Chart Downloader PlugIn for OpenCPN\n"
-"Manages chart downloads and updates from sources supporting\n"
-"NOAA Chart Catalog format"
-msgstr ""
-"OpenCPN用チャートダウンローダープラグイン。\n"
-"サポート情報源からのチャートのダウンロードと更新を管理します。\n"
-"NOAAチャートカタログ形式。"
-#
-msgid "Chart Downloader Preferences"
-msgstr "チャートダウンローダーの設定"
-#
-msgid "Chart source definition problem"
-msgstr "チャ－トのソースの定義の問題"
-#
+
+#: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"
 msgstr "チャートダウンローダー"
-#
-msgid "Charts"
-msgstr "チャート"
-#
-msgid "Choose Chart File Directory"
-msgstr "チャート ファイル ディレクトリを選択"
-#
-msgid "Close"
-msgstr "閉じる"
-#
-msgid "Connection settings"
-msgstr "接続設定"
-#
-msgid "Connection settings used for the transfer:"
-msgstr "転送のための接続設定が使用されます。"
-#
-msgid "Custom"
-msgstr "カスタム"
-#
-msgid "Default Path to Charts"
-msgstr "チャートの既定のパス"
-#
-msgid "Delete"
-msgstr "削除"
-#
-msgid "Delete the chart catalog. The downloaded charts are not deleted."
-msgstr ""
-"チャートカタログを削除します。ダウンロード済みのチャートは削除されません。"
-#
-msgid "Deselect all"
-msgstr "全て選択解除"
-#
-#, c-format
-msgid "Directory %s can't be created."
-msgstr "ディレクトリ %s を作成できません。"
-#
-msgid ""
-"Do you really want to remove the chart source?\n"
-"The local chart files will not be removed, but you will not be able to update "
-"the charts anymore."
-msgstr ""
-"本当にチャートソースを削除しますか？\n"
-"ローカルチャートファイルは削除されませんが、チャートを更新することはできなくな"
-"ります"
-#
-msgid ""
-"Download\n"
-" selected charts"
-msgstr ""
-"選択したチャートを\n"
-"ダウンロード"
-#
-msgid "Download selected charts"
-msgstr "選択したチャートをダウンロード"
-#
-msgid "Download the current chart catalog and update the data."
-msgstr "現在のチャート カタログをダウンロードしてデータを更新します。"
-#
-msgid "Downloaded:"
-msgstr "ダウンロード済み:"
-#
-#, c-format
-msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
-msgstr "チャートをダウンロードしています %u / %u、 失敗 %u     (%s / %s)"
-#
-msgid "Downloading file"
-msgstr "ファイルをダウンロード中"
-#
-msgid "Edit Chart Source"
-msgstr "チャートのソースを編集します。"
-#
-msgid "Edit..."
-msgstr "編集..."
-#
-msgid "Elapsed time:"
-msgstr "経過時間:"
-#
-msgid "Error"
-msgstr "エラー"
-#
-#, c-format
-msgid "Error, the URL to the chart (%s) data seems wrong."
-msgstr "エラー、チャートの URL (%s) が間違っているようです。"
-#
-msgid "Error, the URL to the chart source data seems wrong."
-msgstr ""
-#
-msgid "Estimated remaining time:"
-msgstr "推定残り時間"
-#
-msgid "Estimated total time:"
-msgstr "推定合計時間:"
-#
-#, c-format
-msgid ""
-"Failed to Download Catalog: %s \n"
-"Verify there is a working Internet connection."
-msgstr ""
-"カタログのダウンロードに失敗しました: %s \n"
-"インターネットへの接続があるか確認してください"
-#
-#, c-format
-msgid "Failed to Find New Catalog: %s "
-msgstr "新しいカタログの検索に失敗しました: %s "
-#
-msgid "Help"
-msgstr "ヘルプ"
-#
-msgid "Invert selection"
-msgstr "選択を反転"
-#
-msgid "Latest"
-msgstr "最新"
-#
-msgid "Local path"
-msgstr "ローカル パス"
-#
-msgid "Name"
-msgstr "名前"
-#
-msgid "New"
-msgstr "新規"
-#
-msgid "New chart source"
-msgstr "新しいチャートのソース"
-#
-msgid "No charts selected for download."
-msgstr "ダウンロードするチャートが選択されていません"
-#
-msgid "Not available"
-msgstr "利用不可"
-#
-msgid "Password:"
-msgstr "パスワード:"
-#
-#, c-format
-msgid ""
-"Path %s seems not to be covered by your configured Chart Directories.\n"
-"To see the charts you have to adjust the configuration on the 'Chart Files' "
-"tab."
-msgstr ""
-"パス%sは設定済みチャートのディレクトリによってカバーされていないようです。\n"
-"チャートを参照するには、「チャートファイル] タブの設定を調整する必要がありま"
-"す。"
-#
-msgid "Pause"
-msgstr "一時停止"
-#
-msgid "Port:"
-msgstr "ポート:"
-#
-msgid "Predefined"
-msgstr "定義済み"
-#
-msgid "Preferences"
-msgstr "設定"
-#
-msgid "Proxy host:"
-msgstr "プロクシ ホスト:"
-#
-msgid "Proxy password:"
-msgstr "プロクシ パスワード:"
-#
-msgid "Proxy port:"
-msgstr "プロクシ ポート:"
-#
-msgid "Proxy settings"
-msgstr "プロクシの設定"
-#
-msgid "Proxy username:"
-msgstr "プロクシ ユーザー名:"
-#
-msgid "Reading Headers: "
-msgstr "ヘッダーを読み取る： "
-#
-msgid "Released"
-msgstr "リリース"
-#
-msgid "Resume"
-msgstr "再開"
-#
-msgid "Select a folder"
-msgstr "フォルダを選択"
-#
+
+#: src/chartdldr_pi.cpp:248
+msgid "Chart Downloader PlugIn for OpenCPN"
+msgstr "OpenCPN 用チャートダウンロード プラグイン"
+
+#: src/chartdldr_pi.cpp:253
+msgid "Chart Downloader PlugIn for OpenCPN\n"
+"Manages chart downloads and updates from sources supporting\n"
+"NOAA Chart Catalog format"
+msgstr "OpenCPN用チャートダウンローダープラグイン。\n"
+"サポート情報源からのチャートのダウンロードと更新を管理します。\n"
+"NOAAチャートカタログ形式。"
+
+#: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
+#: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
+#: src/chartdldr_pi.cpp:829 src/chartdldr_pi.cpp:835 src/chartdldr_pi.cpp:1018
+#: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
+#: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
+msgid "Chart Downloader"
+msgstr "チャートダウンローダー"
+
+#: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
 msgid "Select all"
 msgstr "全て選択"
-#
-msgid "Select new"
-msgstr ""
-#
+
+#: src/chartdldr_pi.cpp:439 src/chartdldr_pi.cpp:458
+msgid "Deselect all"
+msgstr "全て選択解除"
+
+#: src/chartdldr_pi.cpp:443 src/chartdldr_pi.cpp:459
+msgid "Invert selection"
+msgstr "選択を反転"
+
+#: src/chartdldr_pi.cpp:447 src/chartdldr_pi.cpp:460
 msgid "Select updated"
 msgstr ""
-#
-msgid "Settings"
-msgstr "設定"
-#
-msgid "Show local files"
-msgstr "ローカルのファイルを表示"
-#
-msgid "Speed:"
-msgstr "速度:"
-#
-msgid "Start"
-msgstr "スタート"
-#
-msgid "Status"
-msgstr "ステータス"
-#
-msgid "The chart source must have a name.\n"
-msgstr "チャートのソースが名前を持っている必要があります\n"
-#
-msgid "The chart source must have a valid URL.\n"
-msgstr "チャートのソースが有効なURLを持っている必要があります\n"
-#
-#, c-format
-msgid ""
-"The selected chart '%s' can't be downloaded automatically, do you want me to "
-"open a browser window and download them manually?\n"
-"\n"
-" After downloading the charts, please extract them to %s"
+
+#: src/chartdldr_pi.cpp:451 src/chartdldr_pi.cpp:461
+msgid "Select new"
 msgstr ""
-#
-msgid "Title"
-msgstr "タイトル"
-#
-msgid "URL"
-msgstr "URL"
-#
-msgid "URL:"
-msgstr "URL:"
-#
-msgid "Unknown"
-msgstr "不明"
-#
-msgid "Up to date"
-msgstr ""
-#
-msgid "Update"
-msgstr "アップデート"
-#
-msgid "Update All"
-msgstr "すべてアップデート"
-#
+
+#: src/chartdldr_pi.cpp:569
+msgid "New"
+msgstr "新規"
+
+#: src/chartdldr_pi.cpp:578
 msgid "Update available"
 msgstr ""
-#
-msgid "Uploaded:"
-msgstr "アップロード済み:"
-#
-msgid "Use proxy"
-msgstr "プロクシを使用"
-#
-msgid "Username:"
-msgstr "ユーザー名:"
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:584
+msgid "Up to date"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:591
+#, c-format
+msgid "%lu charts total, %lu updated, %lu new"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
+msgid "(Please update first)"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
+msgid "Error, the URL to the chart source data seems wrong."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747 src/chartdldr_pi.cpp:1029
+msgid "Error"
+msgstr "エラー"
+
+#: src/chartdldr_pi.cpp:698
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download all new and updated charts.\n"
 "This may take a long time."
 msgstr ""
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:705
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download only new (but not updated) charts.\n"
 "This may take a long time."
 msgstr ""
-#
-msgid ""
-"You have chosen to update all chart catalogs.\n"
+
+#: src/chartdldr_pi.cpp:711
+msgid "You have chosen to update all chart catalogs.\n"
 "Then download only updated (but not new) charts.\n"
 "This may take a long time."
 msgstr ""
-#
+
+#: src/chartdldr_pi.cpp:729 src/chartdldr_pi.cpp:1092
+#, c-format
+msgid "%d out of %d charts failed to download.\n"
+"Check the list, verify there is a working Internet connection and repeat the operation if needed."
+msgstr ""
+
+#: src/chartdldr_pi.cpp:765 src/chartdldr_pi.cpp:1914 src/chartdldr_pi.cpp:1937
+#, c-format
+msgid "Directory %s can't be created."
+msgstr "ディレクトリ %s を作成できません。"
+
+#: src/chartdldr_pi.cpp:801
+msgid "Downloading file"
+msgstr "ファイルをダウンロード中"
+
+#: src/chartdldr_pi.cpp:802
+msgid "Reading Headers: "
+msgstr "ヘッダーを読み取る： "
+
+#: src/chartdldr_pi.cpp:828
+#, c-format
+msgid "Failed to Find New Catalog: %s "
+msgstr "新しいカタログの検索に失敗しました: %s "
+
+#: src/chartdldr_pi.cpp:834
+#, c-format
+msgid "Failed to Download Catalog: %s \n"
+"Verify there is a working Internet connection."
+msgstr "カタログのダウンロードに失敗しました: %s \n"
+"インターネットへの接続があるか確認してください"
+
+#: src/chartdldr_pi.cpp:985 src/chartdldr_pi.cpp:991
+msgid "No charts selected for download."
+msgstr "ダウンロードするチャートが選択されていません"
+
+#: src/chartdldr_pi.cpp:1001
+msgid "Abort download"
+msgstr "ダウンロードを中止"
+
+#: src/chartdldr_pi.cpp:1010
+msgid "Unknown"
+msgstr "不明"
+
+#: src/chartdldr_pi.cpp:1017
+#, c-format
+msgid "The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n"
+" After downloading the charts, please extract them to %s"
+msgstr ""
+
+#: src/chartdldr_pi.cpp:1029
+#, c-format
+msgid "Error, the URL to the chart (%s) data seems wrong."
+msgstr "エラー、チャートの URL (%s) が間違っているようです。"
+
+#: src/chartdldr_pi.cpp:1055
+#, c-format
+msgid "Downloading chart %u of %u, %u downloads failed (%s / %s)"
+msgstr "チャートをダウンロードしています %u / %u、 失敗 %u     (%s / %s)"
+
+#: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
+msgid "Download\n"
+" selected charts"
+msgstr "選択したチャートを\n"
+"ダウンロード"
+
+#: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
+msgid "Download selected charts"
+msgstr "選択したチャートをダウンロード"
+
+#: src/chartdldr_pi.cpp:1117 src/chartdldrgui.cpp:95
+msgid "Catalog"
+msgstr "カタログ"
+
+#: src/chartdldr_pi.cpp:1118
+msgid "Released"
+msgstr "リリース"
+
+#: src/chartdldr_pi.cpp:1119
+msgid "Local path"
+msgstr "ローカル パス"
+
+#: src/chartdldr_pi.cpp:1123
+msgid "Title"
+msgstr "タイトル"
+
+#: src/chartdldr_pi.cpp:1124
+msgid "Status"
+msgstr "ステータス"
+
+#: src/chartdldr_pi.cpp:1125
+msgid "Latest"
+msgstr "最新"
+
+#: src/chartdldr_pi.cpp:1168
+msgid "Do you really want to remove the chart source?\n"
+"The local chart files will not be removed, but you will not be able to update the charts anymore."
+msgstr "本当にチャートソースを削除しますか？\n"
+"ローカルチャートファイルは削除されませんが、チャートを更新することはできなくなります"
+
+#: src/chartdldr_pi.cpp:1232
+msgid "Edit Chart Source"
+msgstr "チャートのソースを編集します。"
+
+#: src/chartdldr_pi.cpp:1271
+#, c-format
+msgid "Path %s seems not to be covered by your configured Chart Directories.\n"
+"To see the charts you have to adjust the configuration on the 'Chart Files' tab."
+msgstr "パス%sは設定済みチャートのディレクトリによってカバーされていないようです。\n"
+"チャートを参照するには、「チャートファイル] タブの設定を調整する必要があります。"
+
+#: src/chartdldr_pi.cpp:1899 src/chartdldr_pi.cpp:1902
+msgid "You must select one of the predefined chart sources or create one of your own.\n"
+msgstr "定義済みのチャートのソースのいずれかを選択するか、独自のものを作成します \n"
+
+#: src/chartdldr_pi.cpp:1905
+msgid "The chart source must have a name.\n"
+msgstr "チャートのソースが名前を持っている必要があります\n"
+
+#: src/chartdldr_pi.cpp:1908
+msgid "The chart source must have a valid URL.\n"
+msgstr "チャートのソースが有効なURLを持っている必要があります\n"
+
+#: src/chartdldr_pi.cpp:1910
 msgid "You must select a local folder to store the charts.\n"
 msgstr "チャートを格納するローカル フォルダーを選択する必要があります。\n"
-#
-msgid ""
-"You must select one of the predefined chart sources or create one of your "
-"own.\n"
+
+#: src/chartdldr_pi.cpp:1917
+msgid "Chart source definition problem"
+msgstr "チャ－トのソースの定義の問題"
+
+#: src/chartdldrgui.cpp:104
+msgid "Predefined"
+msgstr "定義済み"
+
+#: src/chartdldrgui.cpp:125
+msgid "Name"
+msgstr "名前"
+
+#: src/chartdldrgui.cpp:133
+msgid "URL"
+msgstr "URL"
+
+#: src/chartdldrgui.cpp:145
+msgid "Custom"
+msgstr "カスタム"
+
+#: src/chartdldrgui.cpp:149
+msgid "Chart Directory"
+msgstr "チャート ディレクトリ"
+
+#: src/chartdldrgui.cpp:158 src/chartdldrgui.cpp:473
+msgid "Select a folder"
+msgstr "フォルダを選択"
+
+#: src/chartdldrgui.cpp:198 src/chartdldrgui.cpp:530
+msgid "Choose Chart File Directory"
+msgstr "チャート ファイル ディレクトリを選択"
+
+#: src/chartdldrgui.cpp:223 src/chartdldrgui.cpp:336
+msgid "Catalogs"
+msgstr "カタログ"
+
+#: src/chartdldrgui.cpp:246 src/chartdldrgui.cpp:347
+msgid "Add"
+msgstr "追加"
+
+#: src/chartdldrgui.cpp:247 src/chartdldrgui.cpp:348
+msgid "Add a new chart catalog."
+msgstr "新しいチャート カタログを追加します。"
+
+#: src/chartdldrgui.cpp:251 src/chartdldrgui.cpp:352
+msgid "Delete"
+msgstr "削除"
+
+#: src/chartdldrgui.cpp:252 src/chartdldrgui.cpp:353
+msgid "Delete the chart catalog. The downloaded charts are not deleted."
+msgstr "チャートカタログを削除します。ダウンロード済みのチャートは削除されません。"
+
+#: src/chartdldrgui.cpp:256 src/chartdldrgui.cpp:357
+msgid "Edit..."
+msgstr "編集..."
+
+#: src/chartdldrgui.cpp:259 src/chartdldrgui.cpp:360
+msgid "Update"
+msgstr "アップデート"
+
+#: src/chartdldrgui.cpp:261 src/chartdldrgui.cpp:362
+msgid "Download the current chart catalog and update the data."
+msgstr "現在のチャート カタログをダウンロードしてデータを更新します。"
+
+#: src/chartdldrgui.cpp:265 src/chartdldrgui.cpp:366
+msgid "Update All"
+msgstr "すべてアップデート"
+
+#: src/chartdldrgui.cpp:270 src/chartdldrgui.cpp:379
+msgid "Charts"
+msgstr "チャート"
+
+#: src/chartdldrgui.cpp:291 src/chartdldrgui.cpp:395
+msgid "Help"
+msgstr "ヘルプ"
+
+#: src/chartdldrgui.cpp:297 src/chartdldrgui.cpp:404
+msgid "Show local files"
+msgstr "ローカルのファイルを表示"
+
+#: src/chartdldrgui.cpp:303 src/chartdldrgui.cpp:388
+#, c-format
+msgid "%u charts total, %u updated, %u new"
+msgstr "%u チャート合計, %u 更新, %u 新規"
+
+#: src/chartdldrgui.cpp:464
+msgid "Default Path to Charts"
+msgstr "チャートの既定のパス"
+
+#: src/chartdldrgui.cpp:480
+msgid "Preferences"
+msgstr "設定"
+
+#: src/chartdldrgui.cpp:484
+msgid "After catalog update select for download"
 msgstr ""
-"定義済みのチャートのソースのいずれかを選択するか、独自のものを作成します \n"
+
+#: src/chartdldrgui.cpp:488
+msgid "All updated charts"
+msgstr "すべての更新されたチャート"
+
+#: src/chartdldrgui.cpp:492
+msgid "All new charts"
+msgstr "すべての新しいチャート"
+
+#: src/chartdldrgui.cpp:498
+msgid "Allow bulk update of all configured chart sources and charts"
+msgstr "すべての構成済みのチャート ソースとチャートの一括更新を許可します。"
+
+#: src/chartdldrgui.h:77
+msgid "New chart source"
+msgstr "新しいチャートのソース"
+
+#: src/chartdldrgui.h:154
+msgid "Chart Downloader Preferences"
+msgstr "チャートダウンローダーの設定"
+
+#: src/wxcurl/dialog.cpp:137
+msgid "Not available"
+msgstr "利用不可"
+
+#: src/wxcurl/dialog.cpp:168
+msgid "URL:"
+msgstr "URL:"
+
+#: src/wxcurl/dialog.cpp:187
+msgid "Speed:"
+msgstr "速度:"
+
+#: src/wxcurl/dialog.cpp:196
+msgid "Elapsed time:"
+msgstr "経過時間:"
+
+#: src/wxcurl/dialog.cpp:198
+msgid "Estimated total time:"
+msgstr "推定合計時間:"
+
+#: src/wxcurl/dialog.cpp:200
+msgid "Estimated remaining time:"
+msgstr "推定残り時間"
+
+#: src/wxcurl/dialog.cpp:243 src/wxcurl/dialog.cpp:397
+msgid "Abort"
+msgstr "中止"
+
+#: src/wxcurl/dialog.cpp:245
+msgid "Settings"
+msgstr "設定"
+
+#: src/wxcurl/dialog.cpp:250 src/wxcurl/dialog.cpp:418
+msgid "Pause"
+msgstr "一時停止"
+
+#: src/wxcurl/dialog.cpp:252
+msgid "Start"
+msgstr "スタート"
+
+#: src/wxcurl/dialog.cpp:397
+msgid "Close"
+msgstr "閉じる"
+
+#: src/wxcurl/dialog.cpp:408
+msgid "Resume"
+msgstr "再開"
+
+#: src/wxcurl/dialog.cpp:411
+msgid "0 (transfer paused)"
+msgstr "0 (転送の一時停止)"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings"
+msgstr "接続設定"
+
+#: src/wxcurl/dialog.cpp:459
+msgid "Connection settings used for the transfer:"
+msgstr "転送のための接続設定が使用されます。"
+
+#: src/wxcurl/dialog.cpp:514
+msgid "0 (transfer completed)"
+msgstr "0 (転送完了)"
+
+#: src/wxcurl/dialog.cpp:535
+msgid "Downloaded:"
+msgstr "ダウンロード済み:"
+
+#: src/wxcurl/dialog.cpp:583
+msgid "Uploaded:"
+msgstr "アップロード済み:"
+
+#: src/wxcurl/panel.cpp:111
+msgid "Username:"
+msgstr "ユーザー名:"
+
+#: src/wxcurl/panel.cpp:112
+msgid "Password:"
+msgstr "パスワード:"
+
+#: src/wxcurl/panel.cpp:120
+msgid "Port:"
+msgstr "ポート:"
+
+#: src/wxcurl/panel.cpp:134
+msgid "Proxy settings"
+msgstr "プロクシの設定"
+
+#: src/wxcurl/panel.cpp:136
+msgid "Use proxy"
+msgstr "プロクシを使用"
+
+#: src/wxcurl/panel.cpp:141
+msgid "Proxy host:"
+msgstr "プロクシ ホスト:"
+
+#: src/wxcurl/panel.cpp:142
+msgid "Proxy username:"
+msgstr "プロクシ ユーザー名:"
+
+#: src/wxcurl/panel.cpp:143
+msgid "Proxy password:"
+msgstr "プロクシ パスワード:"
+
+#: src/wxcurl/panel.cpp:144
+msgid "Proxy port:"
+msgstr "プロクシ ポート:"
+
