@@ -721,7 +721,7 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
 //         nbval ++;
 
      int nbval = 0;     // how many values in grid ?
-     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+     if (GRY->getValue(i0, j0) != GRIB_NOTDEF)
          nbval ++;
      if (GRY->getValue(i1, j0) != GRIB_NOTDEF)
          nbval ++;
@@ -730,7 +730,20 @@ bool GribRecord::getInterpolatedValues(double &M, double &A,
      if (GRY->getValue(i1, j1) != GRIB_NOTDEF)
          nbval ++;
 
-    if (nbval < 3)
+    if (nbval <= 3)
+        return false;
+
+     nbval = 0;     // how many values in grid ?
+     if (GRX->getValue(i0, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j0) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i0, j1) != GRIB_NOTDEF)
+         nbval ++;
+     if (GRX->getValue(i1, j1) != GRIB_NOTDEF)
+         nbval ++;
+
+    if (nbval <= 3)
         return false;
 
     dx = (3.0 - 2.0*dx)*dx*dx;   // pseudo hermite interpolation
