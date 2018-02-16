@@ -204,7 +204,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     if( b_layer ) {
         if( GuidString.IsEmpty() )
-            GuidString = _T("LayGUID");
+            GuidString = pWayPointMan->CreateGUID(NULL);
     }
 
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
@@ -518,7 +518,9 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
 			else
             if( ChildName == _T ( "rtept" ) ) {
                 RoutePoint *tpWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
-                RoutePoint *erp = ::WaypointExists( tpWp->m_GUID );
+                RoutePoint *erp = NULL;
+                if(!b_layer)
+                    erp = ::WaypointExists( tpWp->m_GUID );
 				// 1) if b_change is true, that means we are after crash - load the route and points as found in source file
 				// 2) if route_existing, we are loading a different route with the same guid. In this case load points as found in
 				//source file, changing the guid, but keep existing "isolated point" as found in the DB
