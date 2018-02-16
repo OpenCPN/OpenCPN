@@ -53,7 +53,7 @@ NavObjectCollection1::~NavObjectCollection1()
 
 
 
-RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node, 
+static RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node, 
                                wxString def_symbol_name,
                                wxString GUID,
                                bool b_fullviz,
@@ -255,7 +255,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
     return ( pWP );
 }
 
-TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
+static TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
 {
     wxString TimeString;
 
@@ -282,7 +282,7 @@ TrackPoint * GPXLoadTrackPoint1( pugi::xml_node &wpt_node )
     return new TrackPoint( rlat, rlon, TimeString );
 }
 
-Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
+static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                       bool b_layer,
                       bool b_layerviz,
                       int layer_id )
@@ -426,7 +426,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
 }
 
 
-Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
+static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                       bool b_layer, bool b_layerviz,
                       int layer_id, bool b_change )
 {
@@ -1488,10 +1488,10 @@ bool NavObjectChanges::ApplyChanges(void)
     
     while(strlen(object.name()))
     {
-        if( !strcmp(object.name(), "wpt") ) {
+        if( !strcmp(object.name(), "wpt") && pWayPointMan) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
             
-            if(pWp && pWayPointMan) {
+            if(pWp ) {
                 pWp->m_bIsolatedMark = true;
                 RoutePoint *pExisting = WaypointExists( pWp->m_GUID );
                 
@@ -1521,10 +1521,10 @@ bool NavObjectChanges::ApplyChanges(void)
             }
         }
         else
-            if( !strcmp(object.name(), "trk") ) {
+            if( !strcmp(object.name(), "trk") && g_pRouteMan) {
                 Track * pTrack = GPXLoadTrack1( object, false, false, false, 0);
 
-                if(pTrack && g_pRouteMan) {
+                if(pTrack ) {
                     pugi::xml_node xchild = object.child("extensions");
                     pugi::xml_node child = xchild.child("opencpn:action");
                     
@@ -1553,10 +1553,10 @@ bool NavObjectChanges::ApplyChanges(void)
             }
             
             else
-                if( !strcmp(object.name(), "rte") ) {
+                if( !strcmp(object.name(), "rte") && g_pRouteMan) {
                     Route *pRoute = GPXLoadRoute1( object, true, false, false, 0, true );
                     
-                    if(pRoute && g_pRouteMan) {
+                    if(pRoute ) {
                         pugi::xml_node xchild = object.child("extensions");
                         pugi::xml_node child = xchild.child("opencpn:action");
 
@@ -1582,10 +1582,10 @@ bool NavObjectChanges::ApplyChanges(void)
                     }
                 }
             else
-                if( !strcmp(object.name(), "tkpt") ) {
+                if( !strcmp(object.name(), "tkpt") && pWayPointMan) {
                     TrackPoint *pWp = ::GPXLoadTrackPoint1( object );
                     
-                    if(pWp && pWayPointMan) {
+                    if(pWp ) {
 //                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
                         
                         pugi::xml_node xchild = object.child("extensions");

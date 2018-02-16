@@ -6325,6 +6325,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
         break;
       }
     }
+    assert(itemIndex >= 0);
     OBJLElement* pOLE = (OBJLElement*)(ps52plib->pOBJLArray->Item(itemIndex));
     pOLE->nViz = ps57CtlListBox->IsChecked(iPtr);
   }
