@@ -837,15 +837,11 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             mPriTWA = 1;
 							wxString m_twaunit;
 							double m_twaangle;
-							if (m_NMEA0183.Mwv.WindAngle >180) {
-								m_twaunit = _T("\u00B0L");
-								m_twaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
-							}
-							else {
-								m_twaunit = _T("\u00B0R");
-								m_twaangle = m_NMEA0183.Mwv.WindAngle;
-							}
-                            SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
+					
+							m_twaunit = _T("\u00B0T");
+							m_twaangle = m_NMEA0183.Mwv.WindAngle;
+							
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_TWD,
 								m_twaangle, m_twaunit);
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWS,
                                     toUsrSpeed_Plugin( m_NMEA0183.Mwv.WindSpeed * m_wSpeedFactor, g_iDashWindSpeedUnit ),
