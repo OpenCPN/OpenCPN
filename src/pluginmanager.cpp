@@ -6421,3 +6421,7 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
 
 int PluginGetMinAvailableGshhgQuality() { return cc1->GetMinAvailableGshhgQuality(); }
 int PluginGetMaxAvailableGshhgQuality() { return cc1->GetMaxAvailableGshhgQuality(); }
+
+/* API 1.16 */
+// disable builtin console canvas, and autopilot nmea sentences
+void PlugInHandleAutopilotRoute(bool enable) { g_bPluginHandleAutopilotRoute = enable; }

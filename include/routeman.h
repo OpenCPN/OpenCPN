@@ -40,7 +40,7 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
-
+extern bool g_bPluginHandleAutopilotRoute;
 
 //----------------------------------------------------------------------------
 //    forward class declarations
