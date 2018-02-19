@@ -350,7 +350,7 @@ msgstr "Pława kardynalna W"
 
 #: src/ais.cpp:214
 msgid "Beacon, Port Hand"
-msgstr "Pława: prawa strona"
+msgstr "Pława: lewa strona"
 
 #: src/ais.cpp:215
 msgid "Beacon, Starboard Hand"
@@ -390,7 +390,7 @@ msgstr "Znak kardynalny S"
 
 #: src/ais.cpp:224
 msgid "Cardinal Mark W"
-msgstr "Znak kardynalny N"
+msgstr "Znak kardynalny W"
 
 #: src/ais.cpp:225
 msgid "Port Hand Mark"
@@ -1234,7 +1234,7 @@ msgstr "Statek, jednostka konserwacyjna, zuraw pływający, kabelowiec, statek b
 
 #: src/AIS_Decoder.cpp:251
 msgid "Fishing boat"
-msgstr "Lodz rybacka"
+msgstr "Łódź rybacka"
 
 #: src/AIS_Decoder.cpp:252
 msgid "Barge, tanker, chemical"
@@ -2917,7 +2917,7 @@ msgstr " w celu poznania szczegółów."
 
 #: src/chart1.cpp:2089
 msgid " -- [Portable(-p) executing from "
-msgstr " -- [Wersja portable(-p) uruchomiona z "
+msgstr " -- [Wersja przenośna(-p) uruchomiona z "
 
 #: src/chart1.cpp:2210
 msgid "Retrieving initial Chart Directory set from Windows Registry"
@@ -3586,7 +3586,7 @@ msgstr "XTE R"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -3654,7 +3654,7 @@ msgstr "Wyślij"
 
 #: src/ConnectionParams.cpp:227
 msgid "In"
-msgstr "Wejscie danych"
+msgstr "Wejście danych"
 
 #: src/ConnectionParams.cpp:232
 msgid "In: None"
@@ -3666,7 +3666,7 @@ msgstr "Wyjście danych"
 
 #: src/ConnectionParams.cpp:241
 msgid ", Out: None"
-msgstr ", wyjście: brak filtru"
+msgstr ", Wyjście: brak filtru"
 
 #: src/glChartCanvas.cpp:682
 msgid "Failed to initialize OpenGL"
