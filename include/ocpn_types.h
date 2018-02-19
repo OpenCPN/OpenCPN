@@ -67,7 +67,8 @@ typedef enum ChartTypeEnum
       CHART_TYPE_S57,
       CHART_TYPE_CM93,
       CHART_TYPE_CM93COMP,
-      CHART_TYPE_PLUGIN
+      CHART_TYPE_PLUGIN,
+      CHART_TYPE_MBTILES
 }_ChartTypeEnum;
 
 //    ChartFamily constants

@@ -2645,6 +2645,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                 get_region.Intersect( region );
                 if( !get_region.Empty() ) {
                     if( chart->GetChartFamily() == CHART_FAMILY_RASTER ) {
+                        
                         ChartBaseBSB *Patch_Ch_BSB = dynamic_cast<ChartBaseBSB*>( chart );
                         if (Patch_Ch_BSB) {
                             SetClipRegion(vp, pqp->ActiveRegion/*pqp->quilt_region*/);
@@ -2652,6 +2653,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &rect_regi
                             DisableClipRegion();
                             b_rendered = true;
                         }
+                        else if(chart->GetChartType() == CHART_TYPE_MBTILES){
+                            SetClipRegion(vp, pqp->ActiveRegion/*pqp->quilt_region*/);
+                            chart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, get_region );
+                            DisableClipRegion();
+                        }
+                        
                     } else if(chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                         RenderNoDTA(vp, get_region);
 
@@ -3060,8 +3067,12 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         RenderQuiltViewGL( vp, rect_region );
     else {
         LLRegion region = vp.GetLLRegion(rect_region);
-        if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-            RenderRasterChartRegionGL( Current_Ch, vp, region );
+        if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER ){
+            if(Current_Ch->GetChartType() == CHART_TYPE_MBTILES)
+                Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
+            else
+                RenderRasterChartRegionGL( Current_Ch, vp, region );
+        }
         else if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
             chart_region.Intersect(region);
             RenderNoDTA(vp, chart_region);
