@@ -834,8 +834,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
     if (isatty(com_fd) != 0)
     {
         /* Save original terminal parameters */
-        if (tcgetattr(com_fd,&ttyset_old) != 0)
+        if (tcgetattr(com_fd,&ttyset_old) != 0) {
+            close(com_fd);
             return -128;
+        }
 
         memcpy(&ttyset, &ttyset_old, sizeof(termios));
 
@@ -876,8 +878,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
         }
         ttyset.c_cflag &=~ CSIZE;
         ttyset.c_cflag |= (CSIZE & (stopbits==2 ? CS7 : CS8));
-        if (tcsetattr(com_fd, TCSANOW, &ttyset) != 0)
+        if (tcsetattr(com_fd, TCSANOW, &ttyset) != 0) {
+            close(com_fd);
             return -129;
+        }
 
         tcflush(com_fd, TCIOFLUSH);
     }

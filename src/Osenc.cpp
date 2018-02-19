@@ -2573,7 +2573,7 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
        
         //  Transcribe points to a buffer
         
-            double *ppd = (double *)malloc(nPoints * sizeof(MyPoint));
+            double *ppd = (double *)malloc(nPoints * 2 *sizeof(double));
             double *ppr = ppd;
             
             for( int i = 0; i < nPoints; i++ ) {

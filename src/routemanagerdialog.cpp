@@ -141,39 +141,51 @@ extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
 
-// sort callback. Sort by route name.
-int sort_route_name_dir;
-#if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortRoutesOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
-#else
-int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
-#endif
+static int SortRouteTrack(int column, int order, wxListCtrl *lc, wxListItem &it1, wxListItem &it2)
 {
-    wxListCtrl *lc = (wxListCtrl*)list;
-
-    wxListItem it1, it2;
-    it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(1);
+    it1.SetColumn(column);
     it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
-    it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(1);
+    it2.SetColumn(column);
     it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
 
     lc->GetItem(it1);
     lc->GetItem(it2);
 
-    if(sort_route_name_dir & 1)
-    return it2.GetText().CmpNoCase(it1.GetText());
-    else
-    return it1.GetText().CmpNoCase(it2.GetText());
+    if(order & 1)
+        return it2.GetText().CmpNoCase(it1.GetText());
 
+    return it1.GetText().CmpNoCase(it2.GetText());
+}
+
+// sort callback. Sort by route name.
+static int sort_route_name_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+static int wxCALLBACK SortRoutesOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+#else
+int wxCALLBACK SortRoutesOnName(long item1, long item2, long list)
+#endif
+{
+    wxListCtrl *ctrl = (wxListCtrl*)list;
+    wxString a, b;
+    a = ctrl->GetItemText(item1, 1);
+    b = ctrl->GetItemText(item2, 1);
+    if( sort_route_name_dir )
+        return a.CmpNoCase(b);
+    return b.CmpNoCase(a);
+    /*
+    wxListCtrl *lc = (wxListCtrl*)list;
+    wxListItem it1, it2;
+    it1.SetId(lc->FindItem(-1, item1));
+    it2.SetId(lc->FindItem(-1, item2));
+
+    return SortRouteTrack(1, sort_route_name_dir, lc, it1, it2);
+    */
 }
 
 // sort callback. Sort by route Destination.
-int sort_route_to_dir;
+static int sort_route_to_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortRoutesOnTo(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortRoutesOnTo(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortRoutesOnTo(long item1, long item2, long list)
 #endif
@@ -182,26 +194,15 @@ int wxCALLBACK SortRoutesOnTo(long item1, long item2, long list)
 
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(2);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
     it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(2);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
 
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    if(sort_route_to_dir & 1)
-    return it2.GetText().CmpNoCase(it1.GetText());
-    else
-    return it1.GetText().CmpNoCase(it2.GetText());
+    return SortRouteTrack(2, sort_route_to_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by track name.
-int sort_track_name_dir;
+static int sort_track_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortTracksOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortTracksOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortTracksOnName(long item1, long item2, long list)
 #endif
@@ -210,40 +211,17 @@ int wxCALLBACK SortTracksOnName(long item1, long item2, long list)
 
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(1);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
     it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(1);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
 
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    if(sort_track_name_dir & 1)
-    return it2.GetText().CmpNoCase(it1.GetText());
-    else
-    return it1.GetText().CmpNoCase(it2.GetText());
-
+    return SortRouteTrack(1, sort_track_name_dir, lc, it1, it2);
 }
 
-// sort callback. Sort by track length.
-int sort_track_len_dir;
-#if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortTracksOnDistance(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
-#else
-int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
-#endif
+static int SortDouble(int column, int order, wxListCtrl *lc, wxListItem &it1, wxListItem &it2)
 {
-    wxListCtrl *lc = (wxListCtrl*)list;
-
-    wxListItem it1, it2;
-    it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(2);
+    it1.SetColumn(column);
     it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
 
-    it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(2);
+    it2.SetColumn(column);
     it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
 
     lc->GetItem(it1);
@@ -257,19 +235,35 @@ int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
     s1.ToDouble(&l1);
     s2.ToDouble(&l2);
 
-    if(sort_track_len_dir & 1)
-    return(l1 < l2);
-    else
-    return(l2 < l1);
+    if(order & 1)
+        return (l1 < l2);
 
+    return (l2 < l1);
 }
 
-int sort_wp_key;
+// sort callback. Sort by track length.
+static int sort_track_len_dir;
+#if wxCHECK_VERSION(2, 9, 0)
+static int wxCALLBACK SortTracksOnDistance(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+#else
+int wxCALLBACK SortTracksOnDistance(long item1, long item2, long list)
+#endif
+{
+    wxListCtrl *lc = (wxListCtrl*)list;
+
+    wxListItem it1, it2;
+    it1.SetId(lc->FindItem(-1, item1));
+    it2.SetId(lc->FindItem(-1, item2));
+
+    return SortDouble(2, sort_track_len_dir, lc, it1, it2);
+}
+
+static int sort_wp_key;
 
 // sort callback. Sort by wpt name.
-int sort_wp_name_dir;
+static int sort_wp_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortWaypointsOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortWaypointsOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
 #endif
@@ -292,47 +286,26 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
 }
 
 // sort callback. Sort by wpt distance.
-int sort_wp_len_dir;
+static int sort_wp_len_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortWaypointsOnDistance(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortWaypointsOnDistance(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortWaypointsOnDistance(long item1, long item2, long list)
 #endif
-
 {
     wxListCtrl *lc = (wxListCtrl*)list;
 
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(2);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
     it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(2);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
 
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    wxString s1, s2;
-    s1.Printf(_T("%11s"), it1.GetText().c_str());
-    s2.Printf(_T("%11s"), it2.GetText().c_str());
-
-    double l1, l2;
-    s1.ToDouble(&l1);
-    s2.ToDouble(&l2);
-
-    if(sort_wp_len_dir & 1)
-    return(l1 < l2);
-    else
-    return(l2 < l1);
-
+    return SortDouble(2, sort_wp_len_dir, lc, it1, it2); 
 }
 
 // sort callback. Sort by layer name.
-int sort_layer_name_dir;
+static int sort_layer_name_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortLayersOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortLayersOnName(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
 #endif
@@ -341,27 +314,14 @@ int wxCALLBACK SortLayersOnName(long item1, long item2, long list)
 
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(1);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
     it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(1);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    if(sort_layer_name_dir & 1)
-    return it2.GetText().CmpNoCase(it1.GetText());
-    else
-    return it1.GetText().CmpNoCase(it2.GetText());
-
+    return SortRouteTrack(1, sort_layer_name_dir, lc, it1, it2);
 }
 
 // sort callback. Sort by layer size.
-int sort_layer_len_dir;
+static int sort_layer_len_dir;
 #if wxCHECK_VERSION(2, 9, 0)
-int wxCALLBACK SortLayersOnSize(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
+static int wxCALLBACK SortLayersOnSize(wxIntPtr item1, wxIntPtr item2, wxIntPtr list)
 #else
 int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 #endif
@@ -370,28 +330,8 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(2);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-
     it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(2);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    wxString s1, s2;
-    s1.Printf(_T("%11s"), it1.GetText().c_str());
-    s2.Printf(_T("%11s"), it2.GetText().c_str());
-
-    double l1, l2;
-    s1.ToDouble(&l1);
-    s2.ToDouble(&l2);
-
-    if(sort_layer_len_dir & 1)
-    return(l1 < l2);
-    else
-    return(l2 < l1);
+    return SortDouble(2, sort_layer_len_dir, lc, it1, it2); 
 
 }
 
