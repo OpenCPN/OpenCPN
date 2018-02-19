@@ -5155,7 +5155,7 @@ msgstr "Wielkość obiektów mapy wektorowej"
 
 #: src/options.cpp:4613
 msgid "Ship scale factor"
-msgstr "Wielkość jednowstek"
+msgstr "Wielkość jednostek"
 
 #: src/options.cpp:4851 src/options.cpp:4913
 msgid "Connections"
@@ -5628,7 +5628,7 @@ msgstr "Połącz wybrane ślady"
 
 #: src/routemanagerdialog.cpp:1494
 msgid "Reduce Data..."
-msgstr "Zredukuj Dane..."
+msgstr "Zredukuj dane..."
 
 #: src/routemanagerdialog.cpp:1496
 msgid "&Copy as text"
@@ -5719,7 +5719,7 @@ msgstr "Próbujesz usunąć aktywną trasę do AIS MOB, jesteś pewien?"
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "Można przemianować punkty drogi wg nowej kolejności, tzn. '001', '002', itd.\n\n"
-"Czy chcesz tak zrobić?"
+"Czy chcesz to zrobić?"
 
 #: src/RoutePoint.cpp:538 src/RoutePoint.cpp:539 src/RoutePoint.cpp:706
 #: src/RoutePoint.cpp:707
@@ -5975,7 +5975,7 @@ msgstr "&Styl:"
 #: src/routeprop.cpp:938 src/routeprop.cpp:1286 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
 msgid "Solid"
-msgstr "Symbolizowane"
+msgstr "Ciągła"
 
 #: src/routeprop.cpp:938 src/routeprop.cpp:1286 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
