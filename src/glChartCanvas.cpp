@@ -3375,8 +3375,8 @@ void glChartCanvas::SetColorScheme(ColorScheme cs)
 int n_render;
 void glChartCanvas::Render()
 {
-    if( !m_bsetup ||
-        ( cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed() ) ||
+    if( !m_bsetup || !cc1->m_pQuilt ||
+        ( cc1->VPoint.b_quilt && !cc1->m_pQuilt->IsComposed() ) ||
         ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
             SwapBuffers();

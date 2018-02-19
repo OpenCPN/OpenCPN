@@ -1254,7 +1254,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             {
                   LoadS57();
                   Ch = new s57chart();
-                  s57chart *Chs57 = dynamic_cast<s57chart*>(Ch);
+                  s57chart *Chs57 = static_cast<s57chart*>(Ch);
 
                   Chs57->SetNativeScale(cte.GetScale());
 
@@ -1274,7 +1274,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
             {
                   LoadS57();
                   Ch = new cm93chart();
-                  cm93chart *Chcm93 = dynamic_cast<cm93chart*>(Ch);
+                  cm93chart *Chcm93 = static_cast<cm93chart*>(Ch);
 
                   Chcm93->SetNativeScale(cte.GetScale());
 
@@ -1293,7 +1293,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                   LoadS57();
                   Ch = new cm93compchart();
 
-                  cm93compchart *Chcm93 = dynamic_cast<cm93compchart*>(Ch);
+                  cm93compchart *Chcm93 = static_cast<cm93compchart*>(Ch);
 
                   Chcm93->SetNativeScale(cte.GetScale());
 
@@ -1402,6 +1402,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                               if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
                                 pChartCache->Add((void *)pce);
                                 m_cache_mutex.Unlock();
+                              }
+                              else {
+                                delete pce;
                               }
                         }
                   }
