@@ -95,7 +95,7 @@ IF (NOT WIN32)
   SET (LIB_INSTALL_DIR "lib")
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2")
+    SET (PACKAGE_DEPS "libc6, libwxgtk3.0-0, wx3.0-i18n, libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2, libsqlite3")
     SET (PACKAGE_RECS "xcalib,xdg-utils")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SYSTEM_PROCESSOR MATCHES "arm*")
@@ -892,6 +892,61 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
+# SQLite3 support required for MBTiles.
+
+set(SQLITECPP_SRC
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Backup.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Column.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Database.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Exception.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Statement.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/src/Transaction.cpp
+)
+# list of header files of the library
+set(SQLITECPP_INC
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/SQLiteCpp.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Assertion.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Backup.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Column.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Database.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Exception.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Statement.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Transaction.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/Utils.h
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
+)
+include_directories( src/SQLiteCpp/include )
+ADD_LIBRARY(SQLiteCpp ${SQLITECPP_SRC} ${SQLITECPP_INC})
+SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
+
+
+IF(UNIX)
+    SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
+    FIND_PATH( SQLITE3_INCLUDE_DIR sqlite.h
+              PATHS ${SQLITE3_INC_LOOK_PATHS})
+
+    message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
+
+    SET(SQLITE3_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
+    FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${SQLITE3_LIB_LOOK_PATHS} NAMES sqlite3 libsqlite3)
+    message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
+    
+    IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
+      MESSAGE(STATUS "Found SQLite3 dev environment.")
+      INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
+    ELSE(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
+      MESSAGE(STATUS "Could not find SQLite3 dev environment.")
+    ENDIF(SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
+    
+    add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
+   
+ENDIF(UNIX)
+
+IF(WIN32)
+    ADD_LIBRARY(sqlite3 ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
+    include_directories( src/SQLiteCpp/sqlite3 )
+    SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
+ENDIF(WIN32)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -1103,6 +1158,8 @@ SET(HDRS
                 include/S57Sector.h
                 include/FlexHash.h
                 include/iENCToolbar.h
+                include/mbtiles.h
+
 )
 
 SET(SRCS
@@ -1197,6 +1254,7 @@ SET(SRCS
                 src/OCPNPlatform.cpp 
                 src/FlexHash.cpp
                 src/iENCToolbar.cpp
+                src/mbtiles.cpp
     )
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
@@ -1698,6 +1756,7 @@ IF(WIN32)
 
     ENDIF(MSVC)
 ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
+
 ENDIF(WIN32)
 
 
@@ -1902,6 +1961,8 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
       ${GETTEXT_LIBRARY}
       ${BZIP2_LIBRARIES}
       ${ZLIB_LIBRARY}
+      SQLiteCpp
+      sqlite3
       )
 
 IF(X11_FOUND AND NOT APPLE)
