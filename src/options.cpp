@@ -3854,6 +3854,7 @@ void ChartGroupsUI::CompletePanel(void)
   //    Add the Chart Group (page) "New" and "Delete" buttons
   m_pNewGroupButton = new wxButton(m_panel, ID_GROUPNEWGROUP, _("New Group..."));
   m_pDeleteGroupButton = new wxButton(m_panel, ID_GROUPDELETEGROUP, _("Delete Group"));
+  m_pDeleteGroupButton->Disable();              // for default "all Charts" group
 
   m_pNewGroupButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnNewGroup), NULL, this );
   m_pDeleteGroupButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(ChartGroupsUI::OnDeleteGroup), NULL, this );
@@ -7830,6 +7831,12 @@ void ChartGroupsUI::OnGroupPageChange(wxNotebookEvent& event) {
   }
   m_pRemoveButton->Disable();
   m_pAddButton->Disable();
+
+  // Disable delete option for "All Charts" group
+  if(m_GroupSelectedPage == 0)
+      m_pDeleteGroupButton->Disable();
+  else
+      m_pDeleteGroupButton->Enable();
 }
 
 void ChartGroupsUI::OnAvailableSelection(wxTreeEvent& event) {
@@ -7879,6 +7886,7 @@ void ChartGroupsUI::OnNewGroup(wxCommandEvent& event) {
       m_GroupSelectedPage =
           m_GroupNB->GetPageCount() - 1;  // select the new page
       m_GroupNB->ChangeSelection(m_GroupSelectedPage);
+      m_pDeleteGroupButton->Enable();
       modified = TRUE;
     }
   }
