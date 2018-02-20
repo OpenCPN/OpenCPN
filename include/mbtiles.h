@@ -75,9 +75,7 @@ class  ChartMBTiles     :public ChartBase
 
       ChartMBTiles();
       virtual ~ChartMBTiles();
-      void FreeLineCacheRows(int start=0, int end=-1);
-      bool HaveLineCacheRow(int row);
-
+ 
       //    Accessors
       virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
       virtual ThumbData *GetThumbData();
@@ -91,15 +89,12 @@ class  ChartMBTiles     :public ChartBase
 
       virtual InitReturn Init( const wxString& name, ChartInitFlag init_flags );
 
-      virtual int latlong_to_pix_vp(double lat, double lon, double &pixx, double &pixy, ViewPort& vp);
-      virtual int vp_pix_to_latlong(ViewPort& vp, double pixx, double pixy, double *lat, double *lon);
 
       bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
                                         const OCPNRegion &RectRegion, const LLRegion &Region);
 
-      //virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
       virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
@@ -109,128 +104,35 @@ class  ChartMBTiles     :public ChartBase
 
       void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
-      wxImage *GetImage();
-
-      void SetVPRasterParms(const ViewPort &vpt);
-
-      virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );
-      virtual int GetSize_X(){ return Size_X;}
-      virtual int GetSize_Y(){ return Size_Y;}
-
-      virtual void latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy);
-      void chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon);
-
       double GetPPM(){ return m_ppm_avg;}
 
 protected:
 //    Methods
-
-
       bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
-
-
-
-
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
       InitReturn PostInit(void);
 
       void PrepareTiles();
-      void PrepareTilesForZoom(int zoomFactor);
+      void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
       bool getTileTexture(SQLite::Database &db, mbTileDescriptor *tile);
       bool tileIsPopulated(mbTileDescriptor *tile);
+      void FlushTiles( void );
       
 
 //    Protected Data
-      //PixelCache        *pPixCache;
-
-      int         Size_X;                 // Chart native pixel dimensions
-      int         Size_Y;
-      int         m_Chart_DU;
-      double      m_cph;
-      double      m_proj_parameter;                     // Mercator:               Projection Latitude
-                                                      // Transverse Mercator:    Central Meridian
-      double      m_dx;                                 // Pixel scale factors, from KAP header
-      double      m_dy;
-
-      wxString    m_bsb_ver;
-      bool        m_b_apply_dtm;
-
-      int         m_datum_index;
-      double      m_dtm_lat;
-      double      m_dtm_lon;
 
 
-      wxRect      cache_rect;
-      wxRect      cache_rect_scaled;
-      bool        cached_image_ok;
-      double      m_cached_scale_ppm;
-      wxRect      m_last_vprect;
-
-
-      wxRect      Rsrc;                   // Current chart source rectangle
-      double      m_raster_scale_factor;
-
-      int         nRefpoint;
-
-
-      int         nColorSize;
-      int         *pline_table;           // pointer to Line offset table
-
-
-      wxInputStream    *ifs_hdr;
-      wxInputStream    *ifss_bitmap;
-      wxBufferedInputStream *ifs_bitmap;
-
-      wxString          *pBitmapFilePath;
-
-      unsigned char     *ifs_buf;
-      unsigned char     *ifs_bufend;
-      int               ifs_bufsize;
-      unsigned char     *ifs_lp;
-      int               ifs_file_offset;
-      int               nFileOffsetDataStart;
-      int               m_nLineOffset;
-
-      GeoRef            cPoints;
-
-      double            wpx[12], wpy[12], pwx[12], pwy[12];     // Embedded georef coefficients
-      int               wpx_type, wpy_type, pwx_type, pwy_type;
-      int               n_wpx, n_wpy, n_pwx, n_pwy;
-      bool              bHaveEmbeddedGeoref;
-
-
-
-//    Integer digital scale value above which bilinear scaling is not allowed,
-//      and subsampled scaling must be performed
-      int         m_bilinear_limit;
-
-
-      bool        bUseLineCache;
-
-      float       m_LonMax;
-      float       m_LonMin;
-      float       m_LatMax;
-      float       m_LatMin;
-
-
+      float       m_LonMax, m_LonMin, m_LatMax, m_LatMin;
 
       double      m_ppm_avg;              // Calculated true scale factor of the 1X chart,
                                         // pixels per meter
-      OCPNRegion  m_last_region;
 
       int       m_b_cdebug;
 
-      double    m_proj_lat, m_proj_lon;
-
-      ViewPort  m_vp_render_last;
-      
-      wxCriticalSection m_critSect;
-      wxULongLong m_filesize;
-      
-      // MBTiles
       int       m_minZoom, m_maxZoom;
       mbTileZoomDescriptor      **m_tileArray;
       LLRegion  m_minZoomRegion;
+      bool      m_bPNG;
       
 };
 

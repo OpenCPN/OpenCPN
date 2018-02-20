@@ -60,7 +60,6 @@
 #include "ChartDataInputStream.h"
 
 #include <SQLiteCpp/SQLiteCpp.h>
-//#include <sqlite3.h>
 #define SQLITE_DONE        101  /* sqlite3_step() has finished executing */
 
 //  Missing from MSW include files
@@ -216,19 +215,18 @@ double tiley2lat(int y, int z)
 class mbTileDescriptor
 {
 public:
-    mbTileDescriptor() {  glTextureName = 0; m_bNotAvailable = false;}
+    mbTileDescriptor() {  glTextureName = 0; m_bNotAvailable = false; m_bgeomSet = false;}
     
     virtual ~mbTileDescriptor() { }
     
     int tile_x, tile_y;
     int m_zoomLevel;
     float latmin, lonmin, latmax, lonmax;
-    //wxRect rect;
     LLBBox box;
     
     GLuint glTextureName;
     bool m_bNotAvailable;
-    
+    bool m_bgeomSet;
     
 };
 
@@ -263,22 +261,11 @@ ChartMBTiles::ChartMBTiles()
       //    Init some private data
       m_ChartFamily = CHART_FAMILY_RASTER;
       m_ChartType = CHART_TYPE_MBTILES;
-      
 
       m_Chart_Skew = 0.0;
 
-
       m_datum_str = _T("WGS84");                // assume until proven otherwise
-
-      m_dtm_lat = 0.;
-      m_dtm_lon = 0.;
-
-//       m_dx = 0.;
-//       m_dy = 0.;
-//       m_proj_lat = 0.;
-//       m_proj_lon = 0.;
-//       m_proj_parameter = 0.;
-//       m_b_apply_dtm = true;
+      m_bPNG = true;
 
       m_b_cdebug = 0;
 
@@ -302,6 +289,7 @@ ChartMBTiles::ChartMBTiles()
 
 ChartMBTiles::~ChartMBTiles()
 {
+    FlushTiles();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -317,82 +305,12 @@ ThumbData *ChartMBTiles::GetThumbData()
 ThumbData *ChartMBTiles::GetThumbData(int tnx, int tny, float lat, float lon)
 {
     return NULL;
-#if 0    
-    //    Create the bitmap if needed
-    if(!pThumbData->pDIBThumb)
-        pThumbData->pDIBThumb = CreateThumbnail(tnx, tny, m_global_color_scheme);
-    
-    
-    pThumbData->Thumb_Size_X = tnx;
-    pThumbData->Thumb_Size_Y = tny;
-    
-    //    Plot the supplied Lat/Lon on the thumbnail
-    int divx = Size_X / tnx;
-    int divy = Size_Y / tny;
-    
-    int div_factor = __min(divx, divy);
-    
-    double pixx, pixy;
-    
-    
-    //    Using a temporary synthetic ViewPort and source rectangle,
-    //    calculate the ships position on the thumbnail
-    ViewPort tvp;
-    tvp.pix_width = tnx;
-    tvp.pix_height = tny;
-    tvp.view_scale_ppm = GetPPM() / div_factor;
-    wxRect trex = Rsrc;
-    Rsrc.x = 0;
-    Rsrc.y = 0;
-    latlong_to_pix_vp(lat, lon, pixx, pixy, tvp);
-    Rsrc = trex;
-    
-    pThumbData->ShipX = pixx;// / div_factor;
-    pThumbData->ShipY = pixy;// / div_factor;
-    
-    
-    return pThumbData;
-#endif    
 }
 
 bool ChartMBTiles::UpdateThumbData(double lat, double lon)
 {
     return true;
-#if 0    
-    //    Plot the supplied Lat/Lon on the thumbnail
-    //  Return TRUE if the pixel location of ownship has changed
-    
-    int divx = Size_X / pThumbData->Thumb_Size_X;
-    int divy = Size_Y / pThumbData->Thumb_Size_Y;
-    
-    int div_factor = __min(divx, divy);
-    
-    double pixx_test, pixy_test;
-    
-    
-    //    Using a temporary synthetic ViewPort and source rectangle,
-    //    calculate the ships position on the thumbnail
-    ViewPort tvp;
-    tvp.pix_width =  pThumbData->Thumb_Size_X;
-    tvp.pix_height =  pThumbData->Thumb_Size_Y;
-    tvp.view_scale_ppm = GetPPM() / div_factor;
-    wxRect trex = Rsrc;
-    Rsrc.x = 0;
-    Rsrc.y = 0;
-    latlong_to_pix_vp(lat, lon, pixx_test, pixy_test, tvp);
-    Rsrc = trex;
-    
-    if((pixx_test != pThumbData->ShipX) || (pixy_test != pThumbData->ShipY))
-    {
-        pThumbData->ShipX = pixx_test;
-        pThumbData->ShipY = pixy_test;
-        return TRUE;
-    }
-    else
-        return FALSE;
-#endif    
 }
-
 
 bool ChartMBTiles::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 {
@@ -420,8 +338,7 @@ double ChartMBTiles::GetNormalScaleMax(double canvas_scale_factor, int canvas_wi
 
 double ChartMBTiles::GetNearestPreferredScalePPM(double target_scale_ppm)
 {
-      return .0001; //GetClosestValidNaturalScalePPM(target_scale_ppm, .01, 64.);            // changed from 32 to 64 to allow super small
-                                                                                    // scale BSB charts as quilt base
+    return target_scale_ppm;
 }
 
 
@@ -461,6 +378,10 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
                 
             }
             
+            else if(!strncmp(colName, "format", 6) ){
+                m_bPNG = !strncmp(colValue, "png", 3);
+            }
+            
             //Get the min and max zoom values present in the db
             else if(!strncmp(colName, "minzoom", 7)){
                 sscanf( colValue, "%i", &m_minZoom );
@@ -484,7 +405,6 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       }     
       
  
- m_maxZoom = wxMin(m_maxZoom, 16);
  
       // set the chart scale parameters based on the minzoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];
@@ -531,7 +451,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 
       m_minZoomRegion = covrRegion;
       
-      //  Populate M_COVR entries
+      //  Populate M_COVR entries for the OCPN chart database
       if(covrRegion.contours.size()){   // Check for no intersection caused by ??
         m_nCOVREntries = covrRegion.contours.size();
         m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
@@ -613,13 +533,29 @@ void ChartMBTiles::PrepareTiles()
     m_tileArray = new mbTileZoomDescriptor* [(m_maxZoom - m_minZoom) + 1];
     
     for(int i=0 ; i < (m_maxZoom - m_minZoom) + 1 ; i++){
-        PrepareTilesForZoom(m_minZoom + i);
+        PrepareTilesForZoom(m_minZoom + i, (i==0));        // Preset the geometry only on the minZoom tiles
     }
     //printf("PrepareTiles time: %f\n", sw.GetTime());
     
 }
 
-void ChartMBTiles::PrepareTilesForZoom(int zoomFactor)
+void ChartMBTiles::FlushTiles( void )
+{
+    for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
+        mbTileZoomDescriptor *tzd = m_tileArray[iz];
+        
+        for( int i = 0; i < tzd->ny_tile; i++ ) {
+            for( int j = 0; j < tzd->nx_tile; j++ ) {
+                mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j];
+                glDeleteTextures(1, &tile->glTextureName);
+                delete tile;
+            }
+        }
+        delete tzd;
+    }
+}
+
+void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
 {
     mbTileZoomDescriptor *tzd = new mbTileZoomDescriptor;
     
@@ -641,36 +577,32 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor)
     int tex_dim = 256;
     
     //    Using a 2D loop, iterate thru the tiles at this zoom level
-    wxRect rect;
-    rect.y = 0;
     int tile_y = tzd->tile_y_min;
     
     for( int i = 0; i < tzd->ny_tile; i++ ) {
-        rect.height = tex_dim;
-        rect.x = 0;
         int tile_x= tzd->tile_x_min;
         
         for( int j = 0; j < tzd->nx_tile; j++ ) {
-            rect.width = tex_dim;
-
            
             mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j] = new mbTileDescriptor;
             tile->tile_x = tile_x;
             tile->tile_y = tile_y;
             tile->m_zoomLevel = zoomFactor;
             
-            const double eps = 6e-6;  // about 1cm on earth's surface at equator
+            //  If directed, defer expensize geometry computation until actually needed for drawing.
+            if(bset_geom){
+                const double eps = 6e-6;  // about 1cm on earth's surface at equator
                 
-            tile->lonmin = round(tilex2long(tile_x, zoomFactor)/eps)*eps;
-            tile->lonmax = round(tilex2long(tile_x + 1, zoomFactor)/eps)*eps;
-            tile->latmin = round(tiley2lat(tile_y - 1, zoomFactor)/eps)*eps;
-            tile->latmax = round(tiley2lat(tile_y, zoomFactor)/eps)*eps;
+                tile->lonmin = round(tilex2long(tile_x, zoomFactor)/eps)*eps;
+                tile->lonmax = round(tilex2long(tile_x + 1, zoomFactor)/eps)*eps;
+                tile->latmin = round(tiley2lat(tile_y - 1, zoomFactor)/eps)*eps;
+                tile->latmax = round(tiley2lat(tile_y, zoomFactor)/eps)*eps;
 
-            tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
-            rect.x += rect.width;
+                tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
+                tile->m_bgeomSet = true;
+            }
             tile_x++;
         }
-        rect.y += rect.height;
         tile_y++;
     }
 }
@@ -688,739 +620,10 @@ bool ChartMBTiles::GetChartExtent(Extent *pext)
 }
 
 
-#if 0
-bool ChartBaseBSB::SetMinMax(void)
-{
-      //    Calculate the Chart Extents(M_LatMin, M_LonMin, etc.)
-      //     from the COVR data, for fast database search
-      m_LonMax = -360.0;
-      m_LonMin = 360.0;
-      m_LatMax = -90.0;
-      m_LatMin = 90.0;
-
-      Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);
-      int cnPlypoint = GetCOVRTablenPoints(0);
-
-      for(int u=0 ; u<cnPlypoint ; u++)
-      {
-            if(ppp->lnp > m_LonMax)
-                  m_LonMax = ppp->lnp;
-            if(ppp->lnp < m_LonMin)
-                  m_LonMin = ppp->lnp;
-
-            if(ppp->ltp > m_LatMax)
-                  m_LatMax = ppp->ltp;
-            if(ppp->ltp < m_LatMin)
-                  m_LatMin = ppp->ltp;
-
-            ppp++;
-      }
-
-      //    Check for special cases
-
-      //    Case 1:  Chart spans International Date Line or Greenwich, Longitude min/max is non-obvious.
-      if((m_LonMax * m_LonMin) < 0)              // min/max are opposite signs
-      {
-            //    Georeferencing is not yet available, so find the reference points closest to min/max ply points
-
-            if(0 == nRefpoint)
-                  return false;        // have to bail here
-
-                  //    for m_LonMax
-            double min_dist_x = 360;
-            int imaxclose = 0;
-            for(int ic=0 ; ic<nRefpoint ; ic++)
-            {
-                  double dist = sqrt(((m_LatMax - pRefTable[ic].latr) * (m_LatMax - pRefTable[ic].latr))
-                                    + ((m_LonMax - pRefTable[ic].lonr) * (m_LonMax - pRefTable[ic].lonr)));
-
-                  if(dist < min_dist_x)
-                  {
-                        min_dist_x = dist;
-                        imaxclose = ic;
-                  }
-            }
-
-                  //    for m_LonMin
-            double min_dist_n = 360;
-            int iminclose = 0;
-            for(int id=0 ; id<nRefpoint ; id++)
-            {
-                  double dist = sqrt(((m_LatMin - pRefTable[id].latr) * (m_LatMin - pRefTable[id].latr))
-                                    + ((m_LonMin - pRefTable[id].lonr) * (m_LonMin - pRefTable[id].lonr)));
-
-                  if(dist < min_dist_n)
-                  {
-                        min_dist_n = dist;
-                        iminclose = id;
-                  }
-            }
-
-            //    Is this chart crossing IDL or Greenwich?
-            // Make the check
-            if(pRefTable[imaxclose].xr < pRefTable[iminclose].xr)
-            {
-                  //    This chart crosses IDL and needs a flip, meaning that all negative longitudes need to be normalized
-                  //    and the min/max relcalculated
-                  //    This code added to correct non-rectangular charts crossing IDL, such as nz14605.kap
-
-                  m_LonMax = -360.0;
-                  m_LonMin = 360.0;
-                  m_LatMax = -90.0;
-                  m_LatMin = 90.0;
-
-
-                  Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);      // Normalize the plypoints
-                  int cnPlypoint = GetCOVRTablenPoints(0);
-
-
-                  for(int u=0 ; u<cnPlypoint ; u++)
-                  {
-                        if( ppp->lnp < 0.)
-                              ppp->lnp += 360.;
-
-                        if(ppp->lnp > m_LonMax)
-                              m_LonMax = ppp->lnp;
-                        if(ppp->lnp < m_LonMin)
-                              m_LonMin = ppp->lnp;
-
-                        if(ppp->ltp > m_LatMax)
-                              m_LatMax = ppp->ltp;
-                        if(ppp->ltp < m_LatMin)
-                              m_LatMin = ppp->ltp;
-
-                        ppp++;
-                  }
-            }
-
-
-      }
-
-      // Case 2 Lons are both < -180, which means the extent will be reported incorrectly
-      // and the plypoint structure will be wrong
-      // This case is seen first on 81004_1.KAP, (Mariannas)
-
-      if((m_LonMax < -180.) && (m_LonMin < -180.))
-      {
-            m_LonMin += 360.;               // Normalize the extents
-            m_LonMax += 360.;
-
-            Plypoint *ppp = (Plypoint *)GetCOVRTableHead(0);      // Normalize the plypoints
-            int cnPlypoint = GetCOVRTablenPoints(0);
-
-            for(int u=0 ; u<cnPlypoint ; u++)
-            {
-                  ppp->lnp += 360.;
-                  ppp++;
-            }
-      }
-
-      return true;
-}
-#endif
 
 void ChartMBTiles::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
 }
-
-
-#if 0
-wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
-{
-
-//    Calculate the size and divisors
-
-      int divx = wxMax(1, Size_X / (4 * tnx) );
-      int divy = wxMax(1, Size_Y / (4 * tny) );
-
-      int div_factor = __min(divx, divy);
-
-      int des_width = Size_X / div_factor;
-      int des_height = Size_Y / div_factor;
-
-      wxRect gts;
-      gts.x = 0;                                // full chart
-      gts.y = 0;
-      gts.width = Size_X;
-      gts.height = Size_Y;
-
-      int this_bpp = 24;                       // for wxImage
-//    Allocate the pixel storage needed for one line of chart bits
-      unsigned char *pLineT = (unsigned char *)malloc((Size_X+1) * BPP/8);
-
-
-//    Scale the data quickly
-      unsigned char *pPixTN = (unsigned char *)malloc(des_width * des_height * this_bpp/8 );
-
-      int ix = 0;
-      int iy = 0;
-      int iyd = 0;
-      int ixd = 0;
-      int yoffd;
-      unsigned char *pxs;
-      unsigned char *pxd;
-
-      //    Temporarily set the color scheme
-      ColorScheme cs_tmp = m_global_color_scheme;
-      SetColorScheme(cs, false);
-
-
-      while(iyd < des_height)
-      {
-            if(0 == BSBGetScanline( pLineT, iy, 0, Size_X, 1))          // get a line
-            {
-                  free(pLineT);
-                  free(pPixTN);
-                  return NULL;
-            }
-
-
-            yoffd = iyd * des_width * this_bpp/8;                 // destination y
-
-            ix = 0;
-            ixd = 0;
-            while(ixd < des_width )
-            {
-                  pxs = pLineT + (ix * BPP/8);
-                  pxd = pPixTN + (yoffd + (ixd * this_bpp/8));
-                  *pxd++ = *pxs++;
-                  *pxd++ = *pxs++;
-                  *pxd = *pxs;
-
-                  ix += div_factor;
-                  ixd++;
-
-            }
-
-            iy += div_factor;
-            iyd++;
-      }
-
-      free(pLineT);
-
-      //    Reset ColorScheme
-      SetColorScheme(cs_tmp, false);
-
-
-
-      wxBitmap *retBMP;
-
-#ifdef ocpnUSE_ocpnBitmap
-      wxBitmap* bmx2 = new ocpnBitmap(pPixTN, des_width, des_height, -1);
-      wxImage imgx2 = bmx2->ConvertToImage();
-      imgx2.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
-      retBMP = new wxBitmap( imgx2 );
-      delete bmx2;
-#else
-      wxImage thumb_image(des_width, des_height, pPixTN, true);
-      thumb_image.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
-      retBMP = new wxBitmap(thumb_image);
-#endif
-
-
-      free(pPixTN);
-
-      return retBMP;
-
-}
-
-#endif
-
-
-//-----------------------------------------------------------------------
-//          Pixel to Lat/Long Conversion helpers
-//-----------------------------------------------------------------------
-static double polytrans( double* coeff, double lon, double lat );
-
-int ChartMBTiles::vp_pix_to_latlong(ViewPort& vp, double pixx, double pixy, double *plat, double *plon)
-{
-    return 0;
-    
-#if 0    
-      if(bHaveEmbeddedGeoref)
-      {
-            double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-            double px = pixx*raster_scale + Rsrc.x;
-            double py = pixy*raster_scale + Rsrc.y;
-//            pix_to_latlong(px, py, plat, plon);
-
-            if(1)
-            {
-                  double lon = polytrans( pwx, px, py );
-                  lon = (lon < 0) ? lon + m_cph : lon - m_cph;
-                  *plon = lon - m_lon_datum_adjust;
-                  *plat = polytrans( pwy, px, py ) - m_lat_datum_adjust;
-            }
-
-            return 0;
-      }
-      else
-      {
-            double slat, slon;
-            double xp, yp;
-
-            if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
-            {
-                   //      Use Projected Polynomial algorithm
-
-                  double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                  //      Apply poly solution to vp center point
-                  double easting, northing;
-                  toTM(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                  double xc = polytrans( cPoints.wpx, easting, northing );
-                  double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-                  double px = xc + (pixx- (vp.pix_width / 2))*raster_scale;
-                  double py = yc + (pixy- (vp.pix_height / 2))*raster_scale;
-
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, px, py );
-                  double north = polytrans( cPoints.pwy, px, py );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromTM ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Datum adjustments.....
-//??                  lon = (lon < 0) ? lon + m_cph : lon - m_cph;
-                  double slon_p = lon - m_lon_datum_adjust;
-                  double slat_p = lat - m_lat_datum_adjust;
-
-//                  printf("%8g %8g %8g %8g %g\n", slat, slat_p, slon, slon_p, slon - slon_p);
-                  slon = slon_p;
-                  slat = slat_p;
-
-            }
-            else if(m_projection == PROJECTION_MERCATOR)
-            {
-                   //      Use Projected Polynomial algorithm
-
-                  double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                  //      Apply poly solution to vp center point
-                  double easting, northing;
-                  toSM_ECC(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                  double xc = polytrans( cPoints.wpx, easting, northing );
-                  double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-                  double px = xc + (pixx- (vp.pix_width / 2))*raster_scale;
-                  double py = yc + (pixy- (vp.pix_height / 2))*raster_scale;
-
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, px, py );
-                  double north = polytrans( cPoints.pwy, px, py );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromSM_ECC ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Make Datum adjustments.....
-                  double slon_p = lon - m_lon_datum_adjust;
-                  double slat_p = lat - m_lat_datum_adjust;
-
-                  slon = slon_p;
-                  slat = slat_p;
-
-//                  printf("vp.clon  %g    xc  %g   px   %g   east  %g  \n", vp.clon, xc, px, east);
-
-            }
-            else if(m_projection == PROJECTION_POLYCONIC)
-            {
-                   //      Use Projected Polynomial algorithm
-
-                  double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                  //      Apply poly solution to vp center point
-                  double easting, northing;
-                  toPOLY(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                  double xc = polytrans( cPoints.wpx, easting, northing );
-                  double yc = polytrans( cPoints.wpy, easting, northing );
-
-                  //    convert screen pixels to chart pixmap relative
-                  double px = xc + (pixx- (vp.pix_width / 2))*raster_scale;
-                  double py = yc + (pixy- (vp.pix_height / 2))*raster_scale;
-
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, px, py );
-                  double north = polytrans( cPoints.pwy, px, py );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromPOLY ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Make Datum adjustments.....
-                  double slon_p = lon - m_lon_datum_adjust;
-                  double slat_p = lat - m_lat_datum_adjust;
-
-                  slon = slon_p;
-                  slat = slat_p;
-
-            }
-            else
-            {
-                  // Use a Mercator estimator, with Eccentricity corrrection applied
-                  int dx = pixx - ( vp.pix_width  / 2 );
-                  int dy = ( vp.pix_height / 2 ) - pixy;
-
-                  xp = ( dx * cos ( vp.skew ) ) - ( dy * sin ( vp.skew ) );
-                  yp = ( dy * cos ( vp.skew ) ) + ( dx * sin ( vp.skew ) );
-
-                  double d_east = xp / vp.view_scale_ppm;
-                  double d_north = yp / vp.view_scale_ppm;
-
-                  fromSM_ECC ( d_east, d_north, vp.clat, vp.clon, &slat, &slon );
-            }
-
-            *plat = slat;
-
-            if(slon < -180.)
-                  slon += 360.;
-            else if(slon > 180.)
-                  slon -= 360.;
-            *plon = slon;
-
-            return 0;
-      }
-#endif
-}
-
-
-
-
-int ChartMBTiles::latlong_to_pix_vp(double lat, double lon, double &pixx, double &pixy, ViewPort& vp)
-{
-#if 0    
-    double alat, alon;
-
-    if(bHaveEmbeddedGeoref)
-    {
-          double alat, alon;
-
-          alon = lon + m_lon_datum_adjust;
-          alat = lat + m_lat_datum_adjust;
-
-          AdjustLongitude(alon);
-
-          if(1)
-          {
-                /* change longitude phase (CPH) */
-                double lonp = (alon < 0) ? alon + m_cph : alon - m_cph;
-                double xd = polytrans( wpx, lonp, alat );
-                double yd = polytrans( wpy, lonp, alat );
-
-                double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                pixx = (xd - Rsrc.x) / raster_scale;
-                pixy = (yd - Rsrc.y) / raster_scale;
-
-            return 0;
-          }
-    }
-    else
-    {
-          double easting, northing;
-          double xlon = lon;
-
-                //  Make sure lon and lon0 are same phase
-/*
-          if((xlon * vp.clon) < 0.)
-          {
-                if(xlon < 0.)
-                      xlon += 360.;
-                else
-                      xlon -= 360.;
-          }
-
-          if(fabs(xlon - vp.clon) > 180.)
-          {
-                if(xlon > vp.clon)
-                      xlon -= 360.;
-                else
-                      xlon += 360.;
-          }
-*/
-
-
-          if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
-          {
-                //      Use Projected Polynomial algorithm
-
-                alon = lon + m_lon_datum_adjust;
-                alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from TM Projection
-                toTM(alat, alon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                double xd = polytrans( cPoints.wpx, easting, northing );
-                double yd = polytrans( cPoints.wpy, easting, northing );
-
-                //      Apply poly solution to vp center point
-                toTM(vp.clat + m_lat_datum_adjust, vp.clon + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                double xc = polytrans( cPoints.wpx, easting, northing );
-                double yc = polytrans( cPoints.wpy, easting, northing );
-
-                //      Calculate target point relative to vp center
-                double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                double xs = xc - vp.pix_width  * raster_scale / 2;
-                double ys = yc - vp.pix_height * raster_scale / 2;
-
-                pixx = (xd - xs) / raster_scale;
-                pixy = (yd - ys) / raster_scale;
-
-          }
-          else if(m_projection == PROJECTION_MERCATOR)
-          {
-                //      Use Projected Polynomial algorithm
-
-                alon = lon + m_lon_datum_adjust;
-                alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from  Projection
-                xlon = alon;
-                AdjustLongitude(xlon);
-                toSM_ECC(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                double xd = polytrans( cPoints.wpx, easting, northing );
-                double yd = polytrans( cPoints.wpy, easting, northing );
-
-                //      Apply poly solution to vp center point
-                double xlonc = vp.clon;
-                AdjustLongitude(xlonc);
-
-                toSM_ECC(vp.clat + m_lat_datum_adjust, xlonc + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                double xc = polytrans( cPoints.wpx, easting, northing );
-                double yc = polytrans( cPoints.wpy, easting, northing );
-
-                //      Calculate target point relative to vp center
-                double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                double xs = xc - vp.pix_width  * raster_scale / 2;
-                double ys = yc - vp.pix_height * raster_scale / 2;
-
-                pixx = (xd - xs) / raster_scale;
-                pixy = (yd - ys) / raster_scale;
-
-          }
-          else if(m_projection == PROJECTION_POLYCONIC)
-          {
-                //      Use Projected Polynomial algorithm
-
-                alon = lon + m_lon_datum_adjust;
-                alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from  Projection
-                xlon = AdjustLongitude(alon);
-                toPOLY(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                double xd = polytrans( cPoints.wpx, easting, northing );
-                double yd = polytrans( cPoints.wpy, easting, northing );
-
-                //      Apply poly solution to vp center point
-                double xlonc = AdjustLongitude(vp.clon);
-
-                toPOLY(vp.clat + m_lat_datum_adjust, xlonc + m_lon_datum_adjust, m_proj_lat, m_proj_lon, &easting, &northing);
-                double xc = polytrans( cPoints.wpx, easting, northing );
-                double yc = polytrans( cPoints.wpy, easting, northing );
-
-                //      Calculate target point relative to vp center
-                double raster_scale = GetPPM() / vp.view_scale_ppm;
-
-                double xs = xc - vp.pix_width  * raster_scale / 2;
-                double ys = yc - vp.pix_height * raster_scale / 2;
-
-                pixx = (xd - xs) / raster_scale;
-                pixy = (yd - ys) / raster_scale;
-
-          }
-          else
-          {
-                toSM_ECC(lat, xlon, vp.clat, vp.clon, &easting, &northing);
-
-                double epix = easting  * vp.view_scale_ppm;
-                double npix = northing * vp.view_scale_ppm;
-
-                double dx = epix * cos ( vp.skew ) + npix * sin ( vp.skew );
-                double dy = npix * cos ( vp.skew ) - epix * sin ( vp.skew );
-
-                pixx = ( (double)vp.pix_width  / 2 ) + dx;
-                pixy = ( (double)vp.pix_height / 2 ) - dy;
-          }
-                return 0;
-    }
-#endif
-    return 1;
-}
-
-
-void ChartMBTiles::latlong_to_chartpix(double lat, double lon, double &pixx, double &pixy)
-{
-#if 0    
-      double alat, alon;
-      pixx = 0.0;
-      pixy = 0.0;
-
-      if(bHaveEmbeddedGeoref)
-      {
-            double alat, alon;
-
-            alon = lon + m_lon_datum_adjust;
-            alat = lat + m_lat_datum_adjust;
-
-            alon = AdjustLongitude(alon);
-
-            /* change longitude phase (CPH) */
-            double lonp = (alon < 0) ? alon + m_cph : alon - m_cph;
-            pixx = polytrans( wpx, lonp, alat );
-            pixy = polytrans( wpy, lonp, alat );
-      }
-      else
-      {
-            double easting, northing;
-            double xlon = lon;
-
-            if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
-            {
-                //      Use Projected Polynomial algorithm
-
-                  alon = lon + m_lon_datum_adjust;
-                  alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from TM Projection
-                  toTM(alat, alon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                  pixx = polytrans( cPoints.wpx, easting, northing );
-                  pixy = polytrans( cPoints.wpy, easting, northing );
-
-
-            }
-            else if(m_projection == PROJECTION_MERCATOR)
-            {
-                //      Use Projected Polynomial algorithm
-
-                  alon = lon + m_lon_datum_adjust;
-                  alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from  Projection
-                  xlon = AdjustLongitude(alon);
-
-                  toSM_ECC(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                  pixx = polytrans( cPoints.wpx, easting, northing );
-                  pixy = polytrans( cPoints.wpy, easting, northing );
-
-
-            }
-            else if(m_projection == PROJECTION_POLYCONIC)
-            {
-                //      Use Projected Polynomial algorithm
-
-                  alon = lon + m_lon_datum_adjust;
-                  alat = lat + m_lat_datum_adjust;
-
-                //      Get e/n from  Projection
-                  xlon = AdjustLongitude(alon);
-                  toPOLY(alat, xlon, m_proj_lat, m_proj_lon, &easting, &northing);
-
-                //      Apply poly solution to target point
-                  pixx = polytrans( cPoints.wpx, easting, northing );
-                  pixy = polytrans( cPoints.wpy, easting, northing );
-
-            }
-      }
-#endif      
-}
-
-void ChartMBTiles::chartpix_to_latlong(double pixx, double pixy, double *plat, double *plon)
-{
-#if 0    
-      if(bHaveEmbeddedGeoref)
-      {
-            double lon = polytrans( pwx, pixx, pixy );
-            lon = (lon < 0) ? lon + m_cph : lon - m_cph;
-            *plon = lon - m_lon_datum_adjust;
-            *plat = polytrans( pwy, pixx, pixy ) - m_lat_datum_adjust;
-      }
-      else
-      {
-            double slat, slon;
-            if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
-            {
-                   //      Use Projected Polynomial algorithm
-
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, pixx, pixy );
-                  double north = polytrans( cPoints.pwy, pixx, pixy );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromTM ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Datum adjustments.....
-//??                  lon = (lon < 0) ? lon + m_cph : lon - m_cph;
-                  slon = lon - m_lon_datum_adjust;
-                  slat = lat - m_lat_datum_adjust;
-
-
-            }
-            else if(m_projection == PROJECTION_MERCATOR)
-            {
-                   //      Use Projected Polynomial algorithm
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, pixx, pixy );
-                  double north = polytrans( cPoints.pwy, pixx, pixy );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromSM_ECC ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Make Datum adjustments.....
-                  slon = lon - m_lon_datum_adjust;
-                  slat = lat - m_lat_datum_adjust;
-            }
-            else if(m_projection == PROJECTION_POLYCONIC)
-            {
-                   //      Use Projected Polynomial algorithm
-                  //    Apply polynomial solution to chart relative pixels to get e/n
-                  double east  = polytrans( cPoints.pwx, pixx, pixy );
-                  double north = polytrans( cPoints.pwy, pixx, pixy );
-
-                  //    Apply inverse Projection to get lat/lon
-                  double lat,lon;
-                  fromPOLY ( east, north, m_proj_lat, m_proj_lon, &lat, &lon );
-
-                  //    Make Datum adjustments.....
-                  slon = lon - m_lon_datum_adjust;
-                  slat = lat - m_lat_datum_adjust;
-
-            }
-            else
-            {
-                  slon = 0.;
-                  slat = 0.;
-            }
-
-            *plat = slat;
-
-            if(slon < -180.)
-                  slon += 360.;
-            else if(slon > 180.)
-                  slon -= 360.;
-            *plon = slon;
-
-      }
-#endif
-}
-
 
 
 
@@ -1428,25 +631,6 @@ void ChartMBTiles::chartpix_to_latlong(double pixx, double pixy, double *plat, d
 
 void ChartMBTiles::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
-#if 0    
-      SetVPRasterParms(VPoint);
-
-      double raster_scale =  VPoint.view_scale_ppm / GetPPM();
-
-      int rxl, rxr;
-      int ryb, ryt;
-
-      rxl = wxMax(-Rsrc.x * raster_scale, VPoint.rv_rect.x);
-      rxr = wxMin((Size_X - Rsrc.x) * raster_scale, VPoint.rv_rect.width + VPoint.rv_rect.x);
- 
-      ryt = wxMax(-Rsrc.y * raster_scale, VPoint.rv_rect.y);
-      ryb = wxMin((Size_Y - Rsrc.y) * raster_scale, VPoint.rv_rect.height + VPoint.rv_rect.y);
-      
-      
-      
-      pValidRegion->Clear();
-      pValidRegion->Union(rxl, ryt, rxr - rxl, ryb - ryt);
-#endif
     return;
     
 
@@ -1455,7 +639,6 @@ void ChartMBTiles::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pVal
 LLRegion ChartMBTiles::GetValidRegion()
 {
     return m_minZoomRegion;
-    //return LLRegion( m_LatMin, m_LonMin, m_LatMax, m_LonMax);
 }
 
 
@@ -1494,12 +677,10 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
     else{
         if(tile->m_bNotAvailable)
             return false;
-        // fetch the png data from the mbtile database
+        // fetch the tile data from the mbtile database
         try
         {
-            // Open the MBTiles database file
-            //SQLite::Database  db(m_FullPath.fn_str());
-            
+          
             char qrs[100];
             sprintf(qrs, "select * from tiles where zoom_level = %d AND tile_column=%d AND tile_row=%d", tile->m_zoomLevel, tile->tile_x, tile->tile_y);
             
@@ -1522,7 +703,11 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
                 
                 
                 wxMemoryInputStream blobStream(blob, length);
-                wxImage blobImage(blobStream, wxBITMAP_TYPE_PNG);
+                wxImage blobImage;
+                if(m_bPNG)
+                    blobImage = wxImage(blobStream, wxBITMAP_TYPE_PNG);
+                else
+                    blobImage = wxImage(blobStream, wxBITMAP_TYPE_JPEG);
                 
                 int blobWidth = blobImage.GetWidth();
                 int blobHeight = blobImage.GetHeight();
@@ -1621,13 +806,23 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
 
         mbTileDescriptor **tiles = tzd->m_tileDesc;
 
-#if 1        
         for(int i=botTile ; i < topTile+1 ; i++){
             for(int j = leftTile ; j < rightTile+1 ; j++){
                 int index = (i - tzd->tile_y_min) * tzd->nx_tile;
                 index += (j - tzd->tile_x_min);
                 
                 mbTileDescriptor *tile = tiles[index];
+                if(!tile->m_bgeomSet){
+                    const double eps = 6e-6;  // about 1cm on earth's surface at equator
+                    
+                    tile->lonmin = round(tilex2long(tile->tile_x, zoomFactor)/eps)*eps;
+                    tile->lonmax = round(tilex2long(tile->tile_x + 1, zoomFactor)/eps)*eps;
+                    tile->latmin = round(tiley2lat(tile->tile_y - 1, zoomFactor)/eps)*eps;
+                    tile->latmax = round(tiley2lat(tile->tile_y, zoomFactor)/eps)*eps;
+                    
+                    tile->box.Set(tile->latmin, tile->lonmin, tile->latmax, tile->lonmax);
+                    tile->m_bgeomSet = true;
+                }
                 
                 if(!Region.IntersectOut(tile->box)) {
                     
@@ -1660,44 +855,6 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
         }
         
                 
-#else        
-        int numtiles = tzd->nx_tile * tzd->ny_tile;
-        for(int i = 0; i<numtiles; i++) {
-            mbTileDescriptor *tile = tiles[i];
-            if(Region.IntersectOut(tile->box)) {
-            } else {
-//                printf("draw:  %d %d\n", tile->tile_x, tile->tile_y);
-                
-                bool btexture = getTileTexture(db, tile);
-                if(!btexture) { // failed to load, draw red
-                    glDisable(GL_TEXTURE_2D);
-                    glColor3f(1, 0, 0);
-                }
-                else{
-                    glEnable(GL_TEXTURE_2D);
-                    glColor4f(1, 1, 1, 1);
-                }
-                
-                if(i ==212){
-                    glDisable(GL_TEXTURE_2D);
-                    glColor4f(0, 0, 1, 1);
-                }
-                
-                wxPoint2DDouble p;
-                p = vp.GetDoublePixFromLL(tile->latmin, tile->lonmin); coords[0] = p.m_x;  coords[1] = p.m_y;
-                p = vp.GetDoublePixFromLL(tile->latmax, tile->lonmin); coords[2] = p.m_x;  coords[3] = p.m_y;
-                p = vp.GetDoublePixFromLL(tile->latmax, tile->lonmax); coords[4] = p.m_x;  coords[5] = p.m_y;
-                p = vp.GetDoublePixFromLL(tile->latmin, tile->lonmax); coords[6] = p.m_x;  coords[7] = p.m_y;
-                
-                
-                glTexCoordPointer(2, GL_FLOAT, 2*sizeof(GLfloat), texcoords);
-                glVertexPointer(2, GL_FLOAT, 2*sizeof(GLfloat), coords);
-                glDrawArrays(GL_QUADS, 0, 4);
-                
-                
-            }
-        }
-#endif        
         zoomFactor++;
         //printf("\n");
     }
@@ -1895,137 +1052,10 @@ bool ChartMBTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 #endif
 }
 
-#if 0
-wxImage *ChartMBTiles::GetImage()
-{
-      int img_size_x = ((Size_X >> 2) * 4) + 4;
-      wxImage *img = new wxImage( img_size_x, Size_Y, false);
-
-      unsigned char *ppnx = img->GetData();
-
-
-      for(int i=0 ; i < Size_Y ; i++)
-      {
-            wxRect source_rect(0,i,Size_X, 1);
-            wxRect dest_rect(0,0,Size_X, 1);
-
-            GetAndScaleData(img->GetData(), img_size_x * Size_Y * 3, source_rect, Size_X, dest_rect, Size_X, 1.0, RENDER_HIDEF);
-
-            ppnx += img_size_x * 3;
-      }
-
-      return img;
-}
-
-#endif
-
-bool ChartMBTiles::GetChartBits(wxRect& source, unsigned char *pPix, int sub_samp)
-{
-    return false;
-#if 0    
-    
-    wxCriticalSectionLocker locker(m_critSect);
-    
-      int iy;
-#define FILL_BYTE 0
-
-//    Decode the KAP file RLL stream into image pPix
-
-      unsigned char *pCP;
-      pCP = pPix;
-
-      iy = source.y;
-
-      while (iy < source.y + source.height)
-      {
-            if((iy >= 0) && (iy < Size_Y))
-            {
-                    if(source.x >= 0)
-                    {
-                            if((source.x + source.width) > Size_X)
-                            {
-                                if((Size_X - source.x) < 0)
-                                        memset(pCP, FILL_BYTE, source.width  * BPP/8);
-                                else
-                                {
-
-                                        BSBGetScanline( pCP,  iy, source.x, Size_X, sub_samp);
-                                        memset(pCP + (Size_X - source.x) * BPP/8, FILL_BYTE,
-                                               (source.x + source.width - Size_X) * BPP/8);
-                                }
-                            }
-                            else
-                                BSBGetScanline( pCP, iy, source.x, source.x + source.width, sub_samp);
-                    }
-                    else
-                    {
-                            if((source.width + source.x) >= 0)
-                            {
-                                // Special case, black on left side
-                                //  must ensure that (black fill length % sub_samp) == 0
-
-                                int xfill_corrected = -source.x + (source.x % sub_samp);    //+ve
-                                memset(pCP, FILL_BYTE, (xfill_corrected * BPP/8));
-                                BSBGetScanline( pCP + (xfill_corrected * BPP/8),  iy, 0,
-                                        source.width + source.x , sub_samp);
-
-                            }
-                            else
-                            {
-                                memset(pCP, FILL_BYTE, source.width  * BPP/8);
-                            }
-                    }
-            }
-
-            else              // requested y is off chart
-            {
-                  memset(pCP, FILL_BYTE, source.width  * BPP/8);
-
-            }
-
-            pCP += source.width * BPP/8 * sub_samp;
-
-            iy += sub_samp;
-      }     // while iy
-
-
-      return true;
-#endif      
-}
 
 
 
 
-
-
-
-#ifdef PRINT_TIMINGS
-class OCPNStopWatch
-{
-    public:
-        OCPNStopWatch() { Reset(); }
-        void Reset() { clock_gettime(CLOCK_REALTIME, &tp); }
-
-    double Time() {
-        timespec tp_end;
-        clock_gettime(CLOCK_REALTIME, &tp_end);
-        return (tp_end.tv_sec - tp.tv_sec) * 1.e3 + (tp_end.tv_nsec - tp.tv_nsec) / 1.e6;
-    }
-
-private:
-    timespec tp;
-};
-#endif
-
-#define FAIL \
-    do { \
-      free(pt->pTileOffset); \
-      pt->pTileOffset = NULL; \
-      free(pt->pPix); \
-      pt->pPix = NULL; \
-      pt->bValid = false; \
-      return 0; \
-    } while(0)
 
 
 

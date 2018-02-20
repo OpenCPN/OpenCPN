@@ -826,7 +826,10 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 1 * mod;
+            if(CHART_TYPE_MBTILES == type)
+                return scale * 4 * mod;         // MBTiles are fast enough
+            else
+                return scale * 1 * mod;
         }
 
         case CHART_FAMILY_VECTOR:{
