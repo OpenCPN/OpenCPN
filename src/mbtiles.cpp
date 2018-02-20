@@ -265,6 +265,7 @@ ChartMBTiles::ChartMBTiles()
       m_Chart_Skew = 0.0;
 
       m_datum_str = _T("WGS84");                // assume until proven otherwise
+      m_projection = PROJECTION_WEB_MERCATOR;
       m_bPNG = true;
 
       m_b_cdebug = 0;
@@ -405,6 +406,8 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       }     
       
  
+      // Bound the max zoom reasonably
+      m_maxZoom = wxMin(m_maxZoom, 16);
  
       // set the chart scale parameters based on the minzoom factor
       m_ppm_avg = 1.0 / OSM_zoomMPP[m_minZoom];

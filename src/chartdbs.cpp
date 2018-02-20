@@ -1468,6 +1468,8 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
                   line += _("Transverse Mercator");
             else if(PROJECTION_POLYCONIC == cte.GetChartProjectionType())
                   line += _("Polyconic");
+            else if(PROJECTION_WEB_MERCATOR == cte.GetChartProjectionType())
+                line += _("Web Mercator (EPSG:3857)");
             line += _T("\n");
             max_width = wxMax(max_width, line.Len());
             r += line;
