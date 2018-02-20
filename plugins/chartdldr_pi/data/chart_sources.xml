@@ -1000,5 +1000,16 @@
         </catalog>
       </catalogs>
     </section>
+    <section>                                                                                                 
+      <name>MBTiles</name>
+      <catalogs>
+        <catalog>
+          <name>NOAA (~500MB each, prefer the RNC charts)</name>
+          <type>MBTiles</type>
+          <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/NOAA_MBTiles_Catalog.xml</location>
+          <dir>{USERDATA}/MBTiles/NOAA</dir>
+        </catalog>
+      </catalogs>
+    </section> 
   </sections>
 </ChartCatalog>
