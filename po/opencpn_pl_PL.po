@@ -810,11 +810,11 @@ msgstr "Alarm bezpieczeństwa - Poziom 3"
 
 #: src/ais.cpp:374
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Akwen distress: Statek niezdolny do żeglugi i dryfujcy"
+msgstr "Akwen distress: Statek niezdolny do żeglugi i dryfujący"
 
 #: src/ais.cpp:375
 msgid "Distress Area: Vessel sinking"
-msgstr "Akwen distress: Statek tonący "
+msgstr "Akwen distress: Statek tonący"
 
 #: src/ais.cpp:376
 msgid "Distress Area: Vessel abandoning ship"
@@ -882,7 +882,7 @@ msgstr "Kieruj sie do tego miejsca - czekaj na instrukcje"
 
 #: src/ais.cpp:395
 msgid "Clearance granted - proceed to berth"
-msgstr "Odprawa dokonana - kieruj sie do nabrzeza"
+msgstr "Odprawa dokonana - kieruj sie do nabrzeża"
 
 #: src/ais.cpp:398
 msgid "Information: Pilot boarding position"
@@ -1206,7 +1206,7 @@ msgstr "Holownik, jeden lub więcej holi"
 
 #: src/AIS_Decoder.cpp:243
 msgid "Tug, assisting a vessel or linked combination"
-msgstr "Holownik, asystujacy statkowi lub kombinacja połączona"
+msgstr "Holownik, asystujący statkowi lub kombinacja połączona"
 
 #: src/AIS_Decoder.cpp:245
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
@@ -1459,7 +1459,7 @@ msgstr "Baza"
 
 #: src/AIS_Target_Data.cpp:891
 msgid "Base Station"
-msgstr "Baza"
+msgstr "Stacja bazowa"
 
 #: src/AIS_Target_Data.cpp:893
 msgid "GPSGate Buddy"
@@ -2889,7 +2889,7 @@ msgstr "OpenCPN przygotowuje mapy ENC"
 #: src/chart1.cpp:1446
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
-msgstr "Odległość od naszego statkup: %4.0f Mm"
+msgstr "Odległość od naszego statku: %4.0f Mm"
 
 #: src/chart1.cpp:1476
 msgid "ENC Completed."
@@ -3070,7 +3070,7 @@ msgstr "Pokaż wszystkie obiekty AIS"
 
 #: src/chart1.cpp:4722 src/chart1.cpp:4778
 msgid "MAN OVERBOARD"
-msgstr "MOB - CZŁOWIEK ZA BURTĄ…"
+msgstr "MOB - CZŁOWIEK ZA BURTĄ"
 
 #: src/chart1.cpp:4741
 msgid "1.0 NM along COG"
@@ -3235,7 +3235,7 @@ msgstr "Własny statek"
 
 #: src/chart1.cpp:9951
 msgid "Temporary AISMOB Route"
-msgstr "Tymczasowa droga do MOB"
+msgstr "Tymczasowa droga do AIS MOB"
 
 #: src/chart1.cpp:9952
 msgid "Present own ship"
@@ -3748,7 +3748,7 @@ msgstr "Link"
 
 #: src/LinkPropDlg.cpp:50
 msgid "Link description"
-msgstr "Opis"
+msgstr "Opis linku"
 
 #: src/LinkPropDlg.cpp:59
 msgid "URL"
@@ -4113,23 +4113,23 @@ msgstr "prędkość (b/s)"
 
 #: src/options.cpp:1435 src/options.cpp:2039
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: src/options.cpp:1435 src/options.cpp:2039
 msgid "300"
-msgstr ""
+msgstr "300"
 
 #: src/options.cpp:1435 src/options.cpp:2039
 msgid "600"
-msgstr ""
+msgstr "600"
 
 #: src/options.cpp:1435 src/options.cpp:2039
 msgid "1200"
-msgstr ""
+msgstr "1200"
 
 #: src/options.cpp:1435 src/options.cpp:2039
 msgid "2400"
-msgstr ""
+msgstr "2400"
 
 #: src/options.cpp:1436 src/options.cpp:2040
 msgid "4800"
@@ -4237,7 +4237,7 @@ msgstr "Użyj trybu GRMN dla wejścia"
 
 #: src/options.cpp:1496 src/options.cpp:2105
 msgid "Receive Input on this Port"
-msgstr "Odbior danych z tego Portu"
+msgstr "Odbiór danych z tego portu"
 
 #: src/options.cpp:1500 src/options.cpp:2111
 msgid "Output on this port"
@@ -4281,7 +4281,7 @@ msgstr "Włącz"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "port danych"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4596,7 +4596,7 @@ msgstr "Potwiedź usunięcie"
 
 #: src/options.cpp:2849 src/options.cpp:3139
 msgid "Enable Transparent Toolbar"
-msgstr "Włącz przezroczysty przybornik"
+msgstr "Włącz przeźroczysty przybornik"
 
 #: src/options.cpp:2862 src/options.cpp:3123
 msgid "Use Accelerated Graphics (OpenGL)"
@@ -4604,7 +4604,7 @@ msgstr "Użyj przyspieszonej Grafiki (OpenGL)"
 
 #: src/options.cpp:2880 src/options.cpp:2996
 msgid "Chart Rotation Averaging Time"
-msgstr ""
+msgstr "Średni czas obrotu mapy"
 
 #: src/options.cpp:2893 src/options.cpp:3009 src/options.cpp:4537
 msgid "seconds"
@@ -4966,8 +4966,8 @@ msgstr "Wtyczka WMM oblicza deklinację magnetyczną"
 #: src/options.cpp:4179
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr " Aby ustawić deklinację magnetyczną ręcznie, należy wyłączyć wtyczkę WMM \n"
-"."
+msgstr " Aby ustawić deklinację magnetyczną ręcznie,  \n"
+" należy wyłączyć wtyczkę WMM."
 
 #: src/options.cpp:4214
 msgid "AIS Targets"
@@ -5011,7 +5011,7 @@ msgstr "Pokaż ślady obiektów, długość (min)"
 
 #: src/options.cpp:4310
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr "Ukryj obiekty zakotwiczone / zacumowane, prędkość max [w.]"
+msgstr "Ukryj obiekty zakotwiczone / zacumowane, prędkość max (w.)"
 
 #: src/options.cpp:4318
 msgid "Allow attenuation of less critical targets if more than ... targets"
@@ -5079,7 +5079,7 @@ msgstr "Nie alarmuj o obiektach zakotwiczonych/zacumowanych"
 
 #: src/options.cpp:4414
 msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr "Włącz automat. potwierdzanie po (min.)"
+msgstr "Włącz automatyczne potwierdzanie po (min.)"
 
 #: src/options.cpp:4426
 msgid "General Options"
@@ -5686,7 +5686,7 @@ msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr "Niektóre punkty drogi używane s w drogach lub alarmach kotwicznych. \n"
+msgstr "Niektóre punkty drogi używane są w drogach lub alarmach kotwicznych. \n"
 " Czy na pewno chcesz je usunąć? \n"
 " To zmieni przebieg dróg i usunie alarmy kotwiczne. \n"
 " Jeśli odpowiesz \"nie\" punkty drogi użyte w drogach lub alarmach zostaną zachowane."
