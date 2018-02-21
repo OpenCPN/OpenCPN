@@ -621,9 +621,16 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
     if( g_bHighliteTracks ) {
         double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
         radius = radius_meters * VP.view_scale_ppm;
+        if(radius < 1.0)
+            radius = 0;
     }
 
-    if(dc.GetDC() || radius) {
+#ifndef USE_ANDROID_GLES2
+    if(dc.GetDC() )
+#else
+    if(1)
+#endif    
+    {
         dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxBRUSHSTYLE_SOLID ) );
         for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
