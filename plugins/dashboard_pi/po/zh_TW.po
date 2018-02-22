@@ -1,0 +1,236 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dashboard_pi 2.4.620\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2011-06-24 09:04+0800\n"
+"Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
+"Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: TAIWAN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#
+msgid "Add"
+msgstr "新增"
+
+#
+msgid "Add instrument"
+msgstr "增加航儀"
+
+#
+msgid "Apparent wind"
+msgstr "視風向"
+
+#
+msgid "Appearance"
+msgstr "外觀"
+
+#
+msgid "COG"
+msgstr "COG"
+
+#
+msgid "Caption:"
+msgstr "標題:"
+
+#
+msgid "Clock"
+msgstr "時鐘"
+
+#
+msgid "Compass"
+msgstr "羅盤"
+
+#
+msgid "Cursor"
+msgstr "游標"
+
+#
+msgid "Dashboard"
+msgstr "儀表板"
+
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "OpenCPN 儀表板插件"
+
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"OpenCPN 儀表板插件\n"
+"提供來自NMEA來源的航儀資訊顯示."
+
+#
+msgid "Dashboard preferences"
+msgstr "儀表板偏好設定"
+
+#
+msgid "Data:"
+msgstr "資料:"
+
+#
+msgid "Delete"
+msgstr "刪除"
+
+#
+msgid "Depth"
+msgstr "水深"
+
+#
+msgid "Down"
+msgstr "下"
+
+#
+msgid "E"
+msgstr "E"
+
+#
+msgid "Edit"
+msgstr "編輯"
+
+#
+msgid "Fonts"
+msgstr "字型"
+
+#
+msgid "GPS in view"
+msgstr "可接收GPS"
+
+#
+msgid "GPS status"
+msgstr "GPS 狀態"
+
+#
+msgid "HDG"
+msgstr "HDG"
+
+#
+msgid "Horizontal"
+msgstr "水平"
+
+#
+msgid "Instrument width:"
+msgstr "航儀寬度:"
+
+#
+msgid "Instruments"
+msgstr "航儀"
+
+#
+msgid "Label:"
+msgstr "標籤:"
+
+#
+msgid "Moon phase"
+msgstr "月相"
+
+#
+msgid "N"
+msgstr "N"
+
+#
+msgid "NE"
+msgstr "NE"
+
+#
+msgid "NW"
+msgstr "NW"
+
+#
+msgid "Orientation:"
+msgstr "方向:"
+
+#
+msgid "Position"
+msgstr "位置"
+
+#
+msgid "Rudder angle"
+msgstr "舵角"
+
+#
+msgid "S"
+msgstr "S"
+
+#
+msgid "SE"
+msgstr "SE"
+
+#
+msgid "SOG"
+msgstr "SOG對地速度"
+
+#
+msgid "STW"
+msgstr "STW對水速度"
+
+#
+msgid "SW"
+msgstr "SW"
+
+#
+msgid "Select instrument to add:"
+msgstr "選擇新增航儀:"
+
+#
+msgid "Small:"
+msgstr "Small:"
+
+#
+msgid "Speedometer"
+msgstr "速度計"
+
+#
+msgid "Sunrise/Sunset"
+msgstr "日升/日落"
+
+#
+msgid "Temp"
+msgstr "Temp"
+
+#
+msgid "Title:"
+msgstr "標題:"
+
+#
+msgid "True wind"
+msgstr "絕對風向"
+
+#
+msgid "Up"
+msgstr "上"
+
+#
+msgid "VMG"
+msgstr "VMG"
+
+#
+msgid "Vertical"
+msgstr "垂直"
+
+#
+msgid "W"
+msgstr "W"
+
+#
+msgid "Wind angle"
+msgstr "迎風角"
+
+#
+msgid "Wind speed"
+msgstr "風速"
+
+#
+msgid "show this dashboard"
+msgstr "顯示這個儀表板"
+

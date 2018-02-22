@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.2.1110\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2011-01-09 18:59+0200\n"
+"Last-Translator: Peep Prants <peep@prants.ee>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+#
+#
+msgid "Add"
+msgstr "Lisa"
+#
+#
+msgid "Add instrument"
+msgstr "Lisa paneel"
+#
+#
+msgid "Apparent wind"
+msgstr ""
+#
+msgid "Appearance"
+msgstr ""
+#
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+#
+msgid "Compass"
+msgstr "Kompass"
+#
+msgid "Cursor"
+msgstr ""
+#
+#
+msgid "Dashboard"
+msgstr "Infotahvel"
+#
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "OpenCPN lisa Infopaneel"
+#
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+#
+#
+msgid "Dashboard preferences"
+msgstr ""
+#
+msgid "Data:"
+msgstr "Andmed:"
+#
+#
+msgid "Delete"
+msgstr "Kustuta"
+#
+#
+msgid "Depth"
+msgstr "Sügavus"
+#
+#
+msgid "Down"
+msgstr "Alla"
+#
+#
+msgid "E"
+msgstr "E"
+#
+#
+msgid "Edit"
+msgstr "Muuda"
+#
+msgid "Fonts"
+msgstr "Fondid"
+#
+#
+msgid "GPS in view"
+msgstr "GPS vaade"
+#
+#
+msgid "GPS status"
+msgstr "GPS staatus"
+#
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+#
+msgid "Instrument width:"
+msgstr "Sildi laius:"
+#
+#
+msgid "Instruments"
+msgstr "Paneelid"
+#
+msgid "Label:"
+msgstr "Silt:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+#
+msgid "N"
+msgstr "N"
+#
+#
+msgid "NE"
+msgstr "NE"
+#
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr ""
+#
+#
+msgid "Position"
+msgstr "Positsioon"
+#
+#
+msgid "Rudder angle"
+msgstr "Rooli nurk"
+#
+#
+msgid "S"
+msgstr "S"
+#
+#
+msgid "SE"
+msgstr "SE"
+#
+#
+msgid "SOG"
+msgstr "SOG"
+#
+#
+msgid "STW"
+msgstr "STW"
+#
+#
+msgid "SW"
+msgstr "SW"
+#
+#
+msgid "Select instrument to add:"
+msgstr "Vali paneel:"
+#
+msgid "Small:"
+msgstr "Väike:"
+#
+#
+msgid "Speedometer"
+msgstr "Spidomeeter"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+#
+msgid "Temp"
+msgstr "Temp."
+#
+msgid "Title:"
+msgstr "Tiitel:"
+#
+#
+msgid "True wind"
+msgstr "Tõeline tuul"
+#
+#
+msgid "Up"
+msgstr "Ülesse"
+#
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+#
+msgid "W"
+msgstr "W"
+#
+#
+msgid "Wind angle"
+msgstr "Tuule nurk"
+#
+#
+msgid "Wind speed"
+msgstr "Tuule kiirus"
+#
+msgid "show this dashboard"
+msgstr ""

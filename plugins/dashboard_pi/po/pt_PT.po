@@ -1,0 +1,216 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.2.1110\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2010-11-24 22:54-0500\n"
+"Last-Translator: Dave Register <bdbcat@yahoo.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+#
+#
+msgid "Add"
+msgstr ""
+#
+#
+msgid "Add instrument"
+msgstr ""
+#
+#
+msgid "Apparent wind"
+msgstr ""
+#
+msgid "Appearance"
+msgstr ""
+#
+#
+msgid "COG"
+msgstr ""
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+#
+msgid "Compass"
+msgstr ""
+#
+msgid "Cursor"
+msgstr ""
+#
+#
+msgid "Dashboard"
+msgstr ""
+#
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr ""
+#
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+#
+#
+msgid "Dashboard preferences"
+msgstr ""
+#
+msgid "Data:"
+msgstr ""
+#
+#
+msgid "Delete"
+msgstr ""
+#
+#
+msgid "Depth"
+msgstr ""
+#
+#
+msgid "Down"
+msgstr ""
+#
+#
+msgid "E"
+msgstr ""
+#
+#
+msgid "Edit"
+msgstr ""
+#
+msgid "Fonts"
+msgstr ""
+#
+#
+msgid "GPS in view"
+msgstr ""
+#
+#
+msgid "GPS status"
+msgstr ""
+#
+#
+msgid "HDG"
+msgstr ""
+#
+msgid "Horizontal"
+msgstr ""
+#
+#
+msgid "Instrument width:"
+msgstr ""
+#
+#
+msgid "Instruments"
+msgstr ""
+#
+msgid "Label:"
+msgstr ""
+#
+msgid "Moon phase"
+msgstr ""
+#
+#
+msgid "N"
+msgstr ""
+#
+#
+msgid "NE"
+msgstr ""
+#
+#
+msgid "NW"
+msgstr ""
+#
+msgid "Orientation:"
+msgstr ""
+#
+#
+msgid "Position"
+msgstr ""
+#
+#
+msgid "Rudder angle"
+msgstr ""
+#
+#
+msgid "S"
+msgstr ""
+#
+#
+msgid "SE"
+msgstr ""
+#
+#
+msgid "SOG"
+msgstr ""
+#
+#
+msgid "STW"
+msgstr ""
+#
+#
+msgid "SW"
+msgstr ""
+#
+#
+msgid "Select instrument to add:"
+msgstr ""
+#
+msgid "Small:"
+msgstr ""
+#
+#
+msgid "Speedometer"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+#
+msgid "Temp"
+msgstr ""
+#
+msgid "Title:"
+msgstr ""
+#
+#
+msgid "True wind"
+msgstr ""
+#
+#
+msgid "Up"
+msgstr ""
+#
+#
+msgid "VMG"
+msgstr ""
+#
+msgid "Vertical"
+msgstr ""
+#
+#
+msgid "W"
+msgstr ""
+#
+#
+msgid "Wind angle"
+msgstr ""
+#
+#
+msgid "Wind speed"
+msgstr ""
+#
+msgid "show this dashboard"
+msgstr ""

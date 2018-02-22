@@ -1,6 +1,0 @@
-use_xtide_coastline.patch
-ref_debian_gpl2.patch
-ref_debian_doc_dir.patch
-use_pkg_tinyxml.patch
-backport_libgps20_support.patch
-allow_harden_plugins.patch

@@ -1,0 +1,5036 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+
+#
+#
+#
+#
+msgid "\n"
+msgstr ""
+
+#
+#
+#
+msgid ""
+"\n"
+"\n"
+"\n"
+msgstr ""
+
+#
+#
+#
+#
+msgid ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN... Un piccolo Chart Plotter, Open Source"
+
+#
+#
+#
+msgid ""
+"\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n"
+"\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n"
+"\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n"
+"\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr ""
+"\n"
+"OpenCPN viene distribuito nella speranza che sia utile,\n"
+"ma SENZA ALCUNA GARANZIA; senza nenche la\n"
+"garanzia implicita di COMMERCIABILITA' o UTILITA'\n"
+"per uno SCOPO PARTICOLARE.\n"
+"\n"
+"Leggi la GNU General Public License per maggiori dettagli.\n"
+"\n"
+"OpenCPN deve essere usato insieme alla cartografia\n"
+"ufficiale ed a metodi tradizionali di navigazione.\n"
+"\n"
+"NON DEVI affidarti a OpenCPN per la sicurezza dei beni o\n"
+"della vita umana.\n"
+"\n"
+"Se accetti, premi \"OK\" per procedere, \"Annulla\" per uscire.\n"
+
+#
+#
+#
+#
+msgid ""
+"           No Charts Installed.\n"
+"Please select chart folders in ToolBox->Charts."
+msgstr ""
+"           Nessuna carta caricata.\n"
+"Selezionare le cartelle contenenti le carte in Strumenti->Carte"
+
+#
+#
+#
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr "\"Nome Nave\" MMSI (CallSign)"
+
+#
+#
+#
+#
+msgid "      COG arrow predictor length (Minutes):"
+msgstr "      Lunghezza delle frecce COG (Minuti):"
+
+#
+#
+#
+#
+msgid "      Max moored target speed (Kts.):"
+msgstr "      Velocità Max. Target ancorati (nodi):"
+
+#
+#
+#
+#
+msgid "      Target track length (Minutes):"
+msgstr "      Lunghezza tracce Target (Minuti):"
+
+#
+#
+#
+#
+msgid "   Chart File RLL data corrupt on chart "
+msgstr "   I dati RLL nel file sono corrotti"
+
+#
+#
+#
+#
+msgid "   Chart File contains less than 3 PLY points: "
+msgstr "   La carta contiene meno di 3 punti PLY: "
+
+#
+#
+#
+#
+msgid "   Chart File corrupt in PostInit() on chart "
+msgstr "   Il file della Carta è corrotto in PostInit()"
+
+#
+#
+#
+#
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "   La carta non ha un header BSB, inizializzazione fallita."
+
+#
+#
+#
+msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+
+#
+#
+#
+#
+#, c-format
+msgid "   Could not read first %d bytes of header for chart file: "
+msgstr "   Non posso leggere i primi %d bytes dell'header: "
+
+#
+#
+#
+#
+msgid "   Error creating Line Index for chart "
+msgstr "   Errore nel creare il Line Index della carta "
+
+#
+#
+#
+#
+msgid "   Line Index corrupt, recreating Index for chart "
+msgstr "   Line Index corrotto, ricreo l'Index della carta "
+
+#
+#
+#
+msgid "   PlugInManager: Cannot load library: "
+msgstr "   PlugInManager: Non posso caricare la libreria: "
+
+#
+#
+#
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+
+#
+#
+#
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr "   PlugInManager: Non posso caricare il simbolo destroy_pi: "
+
+#
+#
+#
+#
+msgid "   Result: OK, Internal georef solution used."
+msgstr "   Risultato: OK, usata Georeferenziazione interna."
+
+#
+#
+#
+#
+msgid "   Trying again with internally calculated georef solution "
+msgstr "   Riprovo ricalcolando internamente la Georeferenziazione"
+
+#
+#
+#
+#
+msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
+msgstr "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
+
+#
+#
+#
+#
+msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
+msgstr "   VP Final Check: Georeference Chart_Error_Factor on chart "
+
+#
+#
+#
+#
+msgid "  ..And TCPA is less than (Minutes):"
+msgstr "  ...e il TCPA è minore di (Minuti):"
+
+#
+#
+#
+#
+msgid "  Could not open AIS serial port '"
+msgstr "  Impossibile aprire porta Sorgente AIS '"
+
+#
+#
+#
+#
+msgid "  Could not open serial port '"
+msgstr "  Impossibile aprire porta seriale '"
+
+#
+#
+#
+#
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D Giorni  %H Ore  %M Minuti"
+
+#
+#
+#
+#
+msgid " %H Hours  %M Minutes"
+msgstr " %H Ore  %M Minuti"
+
+#
+#
+#
+#
+msgid " - "
+msgstr ""
+
+#
+#, c-format
+msgid " COG: %03d Deg."
+msgstr " COG: %03d °"
+
+#
+msgid " COG: 000 Deg."
+msgstr " COG: 000 °"
+
+#
+#
+#
+#
+msgid " COG: Unavailable"
+msgstr " COG : Non disponibile"
+
+#
+#
+#
+#
+msgid " ChartFile:  "
+msgstr " File:  "
+
+#
+#
+#
+#
+msgid " Datum:  "
+msgstr " Datum:  "
+
+#
+#
+#
+#
+msgid " Depth Units:  "
+msgstr " Profondità in: "
+
+#
+#
+#
+#
+msgid " ID:  "
+msgstr " ID Carta:  "
+
+#
+#
+#
+#
+msgid " Name:  "
+msgstr " Nome : "
+
+#
+#
+#
+#
+msgid " Projection:  "
+msgstr " Proiezione: "
+
+#
+#
+#
+#
+#, c-format
+msgid " Scale:  1:%d"
+msgstr " Scala:  1:%d"
+
+#
+#
+#
+#
+msgid " Ship: "
+msgstr " GPS: "
+
+#
+#
+#
+#
+msgid " Soundings:  "
+msgstr " Riferimento Prof.: "
+
+#
+#
+#
+#
+msgid " Source Edition:  "
+msgstr " Edizione: "
+
+#
+#
+#
+#
+msgid " Updated:  "
+msgstr " Aggiornata al: "
+
+#
+#
+#
+#
+#, c-format
+msgid " is %5g"
+msgstr " è %5g"
+
+#
+#
+#
+msgid " to "
+msgstr " a "
+
+#
+#
+#
+#
+msgid "&Acknowledge"
+msgstr "&OK"
+
+#
+#
+#
+#
+msgid "&Activate"
+msgstr "&Attiva"
+
+#
+#
+#
+#
+msgid "&Cancel"
+msgstr "&Cancella"
+
+#
+#
+#
+#
+msgid "&Delete"
+msgstr "&Elimina"
+
+#
+#
+#
+#
+msgid "&Delete All"
+msgstr "E&limina tutto"
+
+#
+#
+#
+#
+msgid "&Export Route..."
+msgstr "E&sporta Rotta"
+
+#
+#
+#
+#
+msgid "&Export Track..."
+msgstr "E&sporta Traccia"
+
+#
+#
+#
+#
+msgid "&Export Wpt..."
+msgstr "E&sporta Wpt."
+
+#
+#
+#
+#
+msgid "&Font family:"
+msgstr "Gruppo dei C&aratteri:"
+
+#
+#
+#
+#
+msgid "&Go To"
+msgstr "&Rotta al Wpt."
+
+#
+#
+#
+#
+msgid "&Kilometers"
+msgstr "&Chilometri"
+
+#
+#
+#
+#
+msgid "&Nautical miles"
+msgstr "&Miglia Nautiche"
+
+#
+#
+#
+msgid "&New"
+msgstr "&Nuovo Wpt."
+
+#
+#
+#
+#
+msgid "&OK"
+msgstr "&OK"
+
+#
+#
+#
+#
+msgid "&Point size:"
+msgstr "Dimensione in &Punti:"
+
+#
+#
+#
+#
+msgid "&Properties"
+msgstr "&Proprietà"
+
+#
+#
+#
+#
+msgid "&Properties..."
+msgstr "&Proprietà"
+
+#
+#
+#
+#
+msgid "&Reverse"
+msgstr "In&verti"
+
+#
+#
+#
+#
+msgid "&Send to GPS"
+msgstr "&Invia al GPS"
+
+#
+#
+#
+#
+msgid "&Silence Alert"
+msgstr "&Silenzia allerta"
+
+#
+#
+#
+#
+msgid "&Start Track"
+msgstr "&Inizio Traccia"
+
+#
+#
+#
+#
+msgid "&Style:"
+msgstr "&Stile:"
+
+#
+#
+#
+#
+msgid "&Underline"
+msgstr "&Sottolineatura"
+
+#
+#
+#
+#
+msgid "&Weight:"
+msgstr "&Spessore:"
+
+#
+#
+#
+#
+msgid "&Zoom to"
+msgstr "&Zoom a..."
+
+#
+#
+#
+#
+msgid ""
+"'\n"
+" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+msgstr ""
+"'\n"
+" Suggerimento: Prova la notazione 'xxx.xxx.xxx.xxx'"
+
+#
+#
+#
+#
+msgid ""
+"'\n"
+"Suggestion: Try closing other applications."
+msgstr ""
+"'\n"
+"Suggerimento: Prova a chiudere altre applicazioni."
+
+#
+#
+#
+#
+msgid "(Unnamed Layer)"
+msgstr "(Layer senza nome)"
+
+#
+#
+#
+#
+msgid "(Unnamed Route)"
+msgstr "(Rotta senza nome)"
+
+#
+#
+#
+#
+msgid "(Unnamed Track)"
+msgstr "(Traccia senza nome)"
+
+#
+#
+#
+#
+msgid "(Unnamed Waypoint)"
+msgstr "(Waypoint senza nome)"
+
+#
+#
+#
+msgid "-"
+msgstr ""
+
+#
+#
+msgid "--"
+msgstr ""
+
+#
+#
+#
+#
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr "---<<< Attenzione:  La georeferenziazione è inaccurata >>>---"
+
+#
+#
+#
+#
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr "---<<< Attenzione:  La georeferenziazione potrebbe essere inaccurata >>>---"
+
+#
+#
+msgid "1.0 NM along COG"
+msgstr "Un miglio da Uomo a Mare, in direzione COG"
+
+#
+#
+#
+#
+msgid "2 Color"
+msgstr "2 Colori"
+
+#
+#
+#
+#
+msgid "4 Color"
+msgstr "4 Colori"
+
+#
+#
+msgid "?"
+msgstr ""
+
+#
+#
+#
+msgid "A"
+msgstr ""
+
+#
+#
+#
+#
+msgid "AIS"
+msgstr "AIS"
+
+#
+#
+#
+#
+msgid "AIS Alert"
+msgstr "Allerta AIS"
+
+#
+#
+#
+#
+msgid "AIS Data Port"
+msgstr "Sorgente Dati AIS"
+
+#
+#
+#
+#
+msgid "AIS General"
+msgstr "AIS Generale"
+
+#
+#
+#
+#
+msgid "AIS Target Query"
+msgstr "Interroga Target AIS"
+
+#
+#
+#
+#
+msgid "AIS target list"
+msgstr "Lista Target AIS"
+
+#
+#
+#
+#
+msgid "AISRollover"
+msgstr "AISRollover"
+
+#
+#
+#
+#
+msgid "AISTargetAlert"
+msgstr ""
+
+#
+#
+#
+#
+msgid "AISTargetQuery"
+msgstr ""
+
+#
+#
+#
+#
+msgid "About"
+msgstr "Info..."
+
+#
+#
+#
+#
+msgid "About OpenCPN"
+msgstr "Informazioni su OpenCPN"
+
+#
+#
+#
+#
+msgid "Activate"
+msgstr "&Attiva"
+
+#
+#
+msgid "Activate CM93 Offset"
+msgstr "Attiva CM93 Offset"
+
+#
+#
+#
+#
+msgid "Activate Next in Route"
+msgstr "Attiva Waypoint successivo"
+
+#
+#
+#
+#
+msgid "Activate Route"
+msgstr "Attiva Rotta"
+
+#
+#
+#
+#
+msgid "Activate Waypoint"
+msgstr "Attiva Waypoint"
+
+#
+#
+#
+#
+msgid "Active Chart Directories"
+msgstr "Lista delle Cartelle Attive da dove vengono caricate le Carte Nautiche"
+
+#
+#
+#
+#
+msgid "Add Selection"
+msgstr "Aggiungi le cartelle selezionate"
+
+#
+#
+#
+#
+msgid "Add this chart to quilt."
+msgstr "Aggiungi questa carta al Mosaico"
+
+#
+#
+#
+#
+msgid "Additional information"
+msgstr "Informazioni Aggiuntive"
+
+#
+#
+msgid "Aground"
+msgstr "In Secca"
+
+#
+#
+#
+#
+msgid "Aid to Navigation"
+msgstr "Aiuto alla Navigazione"
+
+#
+#
+#
+#
+msgid "All files (*.*)|*.*"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Append Waypoint"
+msgstr "Appendi Waypoint"
+
+#
+#
+#
+#
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Elimino <TUTTE> le Rotte?"
+
+#
+#
+#
+#
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Elimino <TUTTE> le Tracce?"
+
+#
+#
+#
+#
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr "Elimino <TUTTI> i Punti?"
+
+#
+#
+#
+#
+msgid "Are you sure you want to delete this track?"
+msgstr "Elimino questa Traccia?"
+
+#
+#
+msgid "Assumed 1 Mile Point"
+msgstr "Punto a 1 Miglio"
+
+#
+#
+#
+#
+msgid "At Anchor"
+msgstr "Ancorata"
+
+#
+#
+#
+msgid "AtoN"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Authors"
+msgstr "Autori"
+
+#
+#
+#
+#
+msgid "Auto Follow"
+msgstr "Attiva/Disattiva l'inseguimento automatico della posizione"
+
+#
+#
+msgid "Automatic Daily Tracks"
+msgstr "Tracce Giornaliere Automatiche"
+
+#
+#
+#
+#
+msgid "Autopilot Output Port"
+msgstr "Interfaccia d'uscita per l'autopilota"
+
+#
+#
+#
+#
+msgid "Available Chart Directories"
+msgstr "Cartelle da selezionare per ricercare Carte Nautiche"
+
+#
+#
+msgid "Avg. speed (Kts)"
+msgstr "Velocità Media (nodi)"
+
+#
+#
+#
+msgid "B"
+msgstr ""
+
+#
+#
+msgid "Barge, tanker, chemical"
+msgstr "Chiatta, Cisterna, Merci chimiche"
+
+#
+#
+#
+#
+msgid "Base"
+msgstr "Base"
+
+#
+#
+#
+#
+msgid "Base Station"
+msgstr "Stazione Base"
+
+#
+#
+#
+msgid "BaseClassCommonName"
+msgstr ""
+
+#
+#
+msgid "Beacon, Isolated Danger"
+msgstr "Beacon, Pericolo Isolato"
+
+#
+#
+msgid "Beacon, Port Hand"
+msgstr "Beacon, Laterale Sinistra"
+
+#
+#
+msgid "Beacon, Preferred Channel Port Hand"
+msgstr "Beacon, Biforcazione canale, principale a Sinistra"
+
+#
+#
+msgid "Beacon, Preferred Channel Starboard Hand"
+msgstr "Beacon, Biforcazione canale, principale a Dritta"
+
+#
+#
+msgid "Beacon, Safe Water"
+msgstr "Beacon, Acque Sicure"
+
+#
+#
+msgid "Beacon, Special Mark"
+msgstr "Beacon, Segnale Speciale"
+
+#
+#
+msgid "Beacon, Starboard Hand"
+msgstr "Beacon, Laterale Dritta"
+
+#
+#
+#
+#
+msgid "Bearing"
+msgstr "Rilevamento"
+
+#
+#
+#
+#
+#, c-format
+msgid "Bearing:                %03d Deg.\n"
+msgstr ""
+"Rilevamento  : %03d °\n"
+"\n"
+
+#
+#
+#
+#
+msgid "Bearing:                Unavailable\n"
+msgstr ""
+"Rilevamento  : Non disponibile\n"
+"\n"
+
+#
+msgid "Black"
+msgstr "Nero"
+
+#
+msgid "Blue"
+msgstr "Blu"
+
+#
+#
+#
+#
+msgid "Boundaries"
+msgstr "Bordi delle Aree"
+
+#
+#
+#
+#
+msgid "Brg"
+msgstr "Rlv"
+
+#
+#
+msgid "Bulk carrier maritime"
+msgstr ""
+
+#
+#
+msgid "Bunkership"
+msgstr "Bettolina"
+
+#
+#
+#
+#
+msgid "C&olour:"
+msgstr "C&olore:"
+
+#
+#
+#
+#
+msgid "CM93"
+msgstr ""
+
+#
+#
+msgid "CM93 Offset Dialog"
+msgstr "Aggiusta Offset CM93"
+
+#
+#
+msgid "CM93 Offset Display"
+msgstr "CM93 Offsets"
+
+#
+#
+msgid "CM93 Offsets"
+msgstr "CM93 Offsets"
+
+#
+#
+#
+#
+msgid "CM93 Zoom Detail"
+msgstr "Dettagli CM93"
+
+#
+#
+#
+msgid "CPA"
+msgstr ""
+
+#
+#
+#
+#
+msgid "CPA Calculation"
+msgstr "Calcolo CPA"
+
+#
+#
+#
+#
+msgid "CPA TCPA"
+msgstr "CPA TCPA"
+
+#
+#
+#
+#
+msgid "CPA/TCPA Alerts"
+msgstr "Allerta CPA/TCPA"
+
+#
+#
+#
+#
+msgid "CPA:       \n"
+msgstr "                  CPA : ---\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "CPA:                 %6.1f NM\n"
+msgstr "                  CPA : %3.1f Miglia\n"
+
+#
+#
+#
+#
+msgid "Call"
+msgstr "Chiamata"
+
+#
+#
+#
+msgid ""
+"Call to gps_open failed.\n"
+"Is gpsd running?\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"Chiamata di gps_open fallita.\n"
+"gpsd è attivo?\n"
+"\n"
+"gpsd host è: "
+
+#
+#
+#
+#
+msgid "CallSign:             "
+msgstr "CallSign     : "
+
+#
+#
+#
+#
+msgid "Cancel"
+msgstr "Annulla"
+
+#
+#
+msgid "Card. E"
+msgstr "Cardinale E"
+
+#
+#
+msgid "Card. N"
+msgstr "Cardinale N"
+
+#
+#
+msgid "Card. S"
+msgstr "Cardinale S"
+
+#
+#
+msgid "Card. W"
+msgstr "Cardinale W"
+
+#
+#
+msgid "Cardinal E Beacon"
+msgstr "Beacon, Cardinale E"
+
+#
+#
+msgid "Cardinal Mark E"
+msgstr "Segnale Cardinale E"
+
+#
+#
+msgid "Cardinal Mark N"
+msgstr "Segnale Cardinale N"
+
+#
+#
+msgid "Cardinal Mark S"
+msgstr "Segnale Cardinale S"
+
+#
+#
+msgid "Cardinal Mark W"
+msgstr "Segnale Cardinale W"
+
+#
+#
+msgid "Cardinal N Beacon"
+msgstr "Beacon, Cardinale N"
+
+#
+#
+msgid "Cardinal S Beacon"
+msgstr "Beacon, Cardinale S"
+
+#
+#
+msgid "Cardinal W Beacon"
+msgstr "Beacon, Cardinale W"
+
+#
+#
+msgid "Cargo Ship"
+msgstr "Nave Cargo"
+
+#
+#
+#
+#
+msgid "Cell"
+msgstr "Cella"
+
+#
+#
+msgid "Cell Scale"
+msgstr "Scala Cella"
+
+#
+#
+#
+#
+msgid "Change Color Scheme"
+msgstr "Cambia lo Schema dei colori (giorno...notte)"
+
+#
+#
+#
+#
+msgid "Chart"
+msgstr "Carta"
+
+#
+#
+#
+#
+msgid "Chart Depth Units"
+msgstr "Unità di misura"
+
+#
+#
+#
+#
+msgid "Chart Display Filters"
+msgstr "Opzioni di Visualizzazione Carta Vettoriale"
+
+#
+#
+#
+#
+msgid "Chart Display Options"
+msgstr "Opzioni Visualizzazione Carta"
+
+#
+#
+#
+#
+msgid "Chart Display Style"
+msgstr "Stile Visualizzazione Carta"
+
+#
+#
+#
+#
+msgid "Chart Print"
+msgstr "Stampa la Carta"
+
+#
+#
+#
+#
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Charts"
+msgstr "Carte"
+
+#
+#
+#
+#
+msgid "Choose Font..."
+msgstr "Scegli Carattere..."
+
+#
+#
+#
+#
+msgid "Class"
+msgstr "Classe"
+
+#
+#
+#
+#
+msgid "Class:                "
+msgstr "Classe       : "
+
+#
+#
+#
+#
+msgid "Clear All"
+msgstr "Cancella tutto"
+
+#
+#
+#
+#
+msgid "Clear Anchor Watch"
+msgstr "Annulla allarme Ancora"
+
+#
+#
+#
+#
+msgid "Click to cancel the font selection."
+msgstr "Click per cancellare la selezione del carattere"
+
+#
+#
+#
+#
+msgid "Click to confirm the font selection."
+msgstr "Click per confermare la selezione del carattere"
+
+#
+#
+#
+#
+msgid "Close"
+msgstr "Chiudi"
+
+#
+#
+#
+msgid "CoG"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Color:"
+msgstr "C&olore:"
+
+#
+#
+#
+#
+msgid "Colors"
+msgstr "Numero Colori"
+
+#
+#
+#
+msgid "Console Legend"
+msgstr ""
+
+#
+#
+#
+msgid "Console Value"
+msgstr ""
+
+#
+#
+msgid "Constrained by draught"
+msgstr "Condizionata dall'Immersione"
+
+#
+#
+msgid "Container vessel"
+msgstr "Unità porta Container"
+
+#
+#
+#
+#
+msgid "Could not resolve TCP/IP host '"
+msgstr "Indirizzo IP non trovato"
+
+#
+#
+#
+#
+msgid "Course UP Mode"
+msgstr "Modalità 'Rotta in Alto' (Course Up)"
+
+#
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr "Periodo di aggiornamento in modalità 'Rotta in Alto' (Secondi)"
+
+#
+#
+#
+#
+#, c-format
+msgid "Course:                 %03d Deg.\n"
+msgstr "Rotta        : %03d °\n"
+
+#
+#
+#
+#
+msgid "Course:                 000 Deg.\n"
+msgstr "Rotta        : 000 °\n"
+
+#
+#
+#
+#
+msgid "Course:                 Unavailable\n"
+msgstr "Rotta        : Non disponibile\n"
+
+#
+#
+#
+#
+msgid "Create Route"
+msgstr "Crea una Rotta"
+
+#
+#
+msgid "Cruise ship"
+msgstr "Nave da Crociera"
+
+#
+#
+#
+#
+msgid "Current"
+msgstr "Corrente"
+
+#
+#
+#
+#
+msgid "Cursor: "
+msgstr "Cursore: "
+
+#
+#
+#
+#
+msgid "Cyan"
+msgstr "Ciano"
+
+#
+#
+msgid "D/V"
+msgstr ""
+
+#
+msgid "Dark Blue"
+msgstr "Blu scuro"
+
+#
+msgid "Dark Cyan"
+msgstr "Ciano scuro"
+
+#
+msgid "Dark Gray"
+msgstr "Grigio scuro"
+
+#
+msgid "Dark Green"
+msgstr "Verde scuro"
+
+#
+msgid "Dark Magenta"
+msgstr "Magenta scuro"
+
+#
+msgid "Dark Red"
+msgstr "Rosso scuro"
+
+#
+msgid "Dark Yellow"
+msgstr "Giallo scuro"
+
+#
+#
+#
+#
+msgid "De-Clutter Text (exp.)"
+msgstr "De-sovrapponi Testo"
+
+#
+#
+#
+#
+msgid "Deactivate"
+msgstr "&Disattiva"
+
+#
+#
+#
+#
+msgid "Deactivate Route"
+msgstr "Disattiva Rotta"
+
+#
+msgid "Decimal degrees"
+msgstr "Gradi e decimi di grado"
+
+#
+#
+#
+#
+msgid "Deep Depth"
+msgstr "Profondità Alta"
+
+#
+#
+#
+#
+msgid "Default color"
+msgstr "Automatico"
+
+#
+msgid "Degrees, Decimal minutes"
+msgstr "Gradi, Minuti e decimi"
+
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr "Gradi, Minuti, Secondi"
+
+#
+#
+#
+#
+msgid "Delete All"
+msgstr "E&limina tutto"
+
+#
+#
+#
+#
+msgid "Delete Mark"
+msgstr "Elimina Punto"
+
+#
+#
+#
+#
+msgid "Delete Route"
+msgstr "Elimina Rotta"
+
+#
+#
+#
+#
+msgid "Delete Selection"
+msgstr "Elimina le cartelle selezionate"
+
+#
+#
+#
+#
+msgid "Delete Track"
+msgstr "Elimina Traccia"
+
+#
+#
+#
+#
+msgid "Delete Waypoint"
+msgstr "Elimina Waypoint"
+
+#
+#
+#
+#
+msgid "Depart From"
+msgstr "Partenza"
+
+#
+#
+msgid "Departure Time (m/d/y h:m)"
+msgstr "Orario Partenza (M/G/A Ore:Minuti)"
+
+#
+#
+#
+#
+msgid "Depth Settings"
+msgstr "Configurazioni di profondità"
+
+#
+#
+#
+#
+msgid "Depth Settings(m)"
+msgstr "Limiti di profondità"
+
+#
+#
+#
+#
+msgid "Description"
+msgstr "Descrizione"
+
+#
+#
+#
+#
+msgid "Destination"
+msgstr "Destinazione"
+
+#
+#
+#
+#
+msgid "Destination:          "
+msgstr "Destinazione : "
+
+#
+#
+#
+#
+msgid "Disable"
+msgstr "Disabilita"
+
+#
+#
+#
+#
+msgid "Disable Full Screen Quilting"
+msgstr "Disabilita Mosaico Carte quando a tutto schermo"
+
+#
+#
+#
+#
+msgid "Display"
+msgstr "Visualizzazione"
+
+#
+#
+#
+#
+msgid "Display Category"
+msgstr "Preset Visualizzazione"
+
+#
+#
+#
+#
+msgid "Distance"
+msgstr "Distanza"
+
+#
+#
+#
+#
+msgid "Distance between rings"
+msgstr "Distanza tra i cerchi Radar"
+
+#
+#
+msgid "Done."
+msgstr "Fatto."
+
+#
+#
+msgid "Dredge"
+msgstr "Draga"
+
+#
+#
+#
+#
+msgid "Drop MOB Marker"
+msgstr "UOMO A MARE: Aggiungi Punto e Rotta!"
+
+#
+#
+#
+#
+msgid "Drop Mark Here"
+msgstr "Aggiungi un Punto"
+
+#
+#
+#
+#
+msgid "E&xport All..."
+msgstr "Esporta &tutto..."
+
+#
+#
+#
+#
+msgid "ENC/Vector"
+msgstr ""
+
+#
+#
+#
+msgid "ETA"
+msgstr "ETA"
+
+#
+#
+#
+#
+msgid "ETA          "
+msgstr ""
+
+#
+#
+#
+msgid "ETA:"
+msgstr "ETA          : "
+
+#
+#
+#
+#
+msgid "ETA:                  "
+msgstr "ETA          : "
+
+#
+msgid "ETE"
+msgstr ""
+
+#
+#
+#
+#
+msgid "ETE/Timestamp"
+msgstr ""
+
+#
+#
+msgid "Elapsed time : "
+msgstr "Tempo trascorso :"
+
+#
+#
+#
+msgid "Enable"
+msgstr "Abilita"
+
+#
+#
+#
+#
+msgid "Enable CM93 Detail Slider"
+msgstr "Modifica Dettagli CM93"
+
+#
+#
+#
+#
+msgid "Enable Chart Quilting"
+msgstr "Abilita Mosaico Carte (taglio e sovrapposizione)"
+
+#
+#
+msgid "Enable Manual CM93 Offsets"
+msgstr "Abilita l'allineamento manuale delle carte CM93 (Offset)"
+
+#
+#
+#
+msgid "Enable Target Alert Acknowledge timeout (minutes)"
+msgstr "Abilita il Timeout per riconoscimento allarme (Minuti)"
+
+#
+#
+#
+#
+msgid "Enable Wheel-Zoom-to-Cursor"
+msgstr "Centra la carta sul cursore quando si usa la rotella del mouse (zoom)"
+
+#
+msgid "Enable transparent toolbar"
+msgstr "Attiva Toolbar trasparente"
+
+#
+#
+#
+#
+msgid "End Route"
+msgstr "Fine Rotta"
+
+#
+#
+msgid "Engaged in Fishing"
+msgstr "In Pesca"
+
+#
+#
+#
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr "Errore di caricamento delle Rotte. Controlla il logfile..."
+
+#
+#
+#
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr "Errore di caricamento dei Waypoints. Controlla il logfile..."
+
+#
+#
+msgid "Estimated time : "
+msgstr "Tempo stimato :"
+
+#
+#
+#
+#
+msgid "Etc."
+msgstr "Etc."
+
+#
+#
+#
+#
+msgid "Export GPX file"
+msgstr "Esporta file GPX"
+
+#
+#
+#
+#
+msgid "Extend Route"
+msgstr "Estendi Rotta"
+
+#
+#
+#
+#
+msgid "Extend Track"
+msgstr "Estendi Traccia"
+
+#
+#
+msgid "ExtendedTideIcon"
+msgstr ""
+
+#
+#
+msgid "F/V"
+msgstr ""
+
+#
+#
+msgid "Fast ship"
+msgstr "Nave Veloce"
+
+#
+#
+#
+#
+msgid "Fathoms"
+msgstr "Fathoms (1 F=1.83m)"
+
+#
+#
+#
+#
+msgid "Feet"
+msgstr "Piedi (1 feet=0.305m)"
+
+#
+#
+msgid "Ferry"
+msgstr "Traghetto"
+
+#
+#
+msgid "Filter NMEA Course and Speed data"
+msgstr "Filtra i dati di Rotta e Velocità da NMEA"
+
+#
+#
+msgid "Filter Period (Sec.)"
+msgstr "     Periodo del Filtro (Secondi)"
+
+#
+#
+msgid "Fishing boat"
+msgstr "Peschereccio"
+
+#
+#
+msgid "Fix.Struct."
+msgstr "Strut.Fissa"
+
+#
+#
+msgid "Fixed Structure"
+msgstr "Struttura Fissa"
+
+#
+#
+#
+#
+msgid "Font Options"
+msgstr "Opzioni Caratteri"
+
+#
+#
+#
+#
+msgid "Force Full Database Rebuild"
+msgstr "Forza la ricostruzione del Database"
+
+#
+#
+msgid "Freightbarge"
+msgstr "Chiatta merci"
+
+#
+#
+msgid "Freightbarge with containers"
+msgstr "Chiatta merci con Container"
+
+#
+#
+#
+#
+#, c-format
+msgid "From Ownship: %03d Deg  %6.2f NMi"
+msgstr "Dall'imbarcazione: %03d ° %6.2f M"
+
+#
+#
+#
+#
+msgid "GPS"
+msgstr "GPS"
+
+#
+#
+#
+#
+msgid "GPS/Plotter Port"
+msgstr "Porta GPS/Plotter"
+
+#
+#
+#
+#
+msgid "GPSD Data Server"
+msgstr ""
+
+#
+#
+#
+#
+msgid "GUI Options"
+msgstr "Opzioni speciali dell'interfaccia Utente"
+
+#
+#
+#
+#
+msgid "Gas tanker"
+msgstr "Cisterna (Gas)"
+
+#
+#
+msgid "General cargo Vessel maritime"
+msgstr "Unità Cargo Generico"
+
+#
+#
+#
+#
+msgid "Go To Here"
+msgstr "Rotta fino a qui!"
+
+#
+#
+#
+#
+msgid "Go To Mark/WP"
+msgstr "Vai a WP/Mark"
+
+#
+#
+#
+#
+msgid "Go to "
+msgstr "Vai a "
+
+#
+msgid "Green"
+msgstr "Verde"
+
+#
+#
+msgid "HSC"
+msgstr ""
+
+#
+#
+msgid "HW"
+msgstr ""
+
+#
+#
+#
+#
+#, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Prua         : %03d °\n"
+
+#
+#
+#
+#
+msgid "Help"
+msgstr "Aiuto"
+
+#
+#
+#
+#
+msgid "Here"
+msgstr "Partenza"
+
+#
+#
+msgid "Hide WPT names"
+msgstr "Nascondi nomi WPT"
+
+#
+#
+msgid "Hide from chart"
+msgstr "Nascondi dalla Carta"
+
+#
+#
+msgid "High Speed Craft"
+msgstr "Imbarcazione alta velocità"
+
+#
+#
+msgid "Hydrofoil"
+msgstr "Aliscafo"
+
+#
+#
+#
+#
+msgid "I&mport GPX..."
+msgstr "I&mporta GPX..."
+
+#
+msgid "IMO:\n"
+msgstr "IMO          :\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "IMO:                 %8d\n"
+msgstr "IMO          : %7d\n"
+
+#
+#
+#
+#
+msgid "Icon"
+msgstr "Icona"
+
+#
+#
+#
+#
+msgid "Import GPX file"
+msgstr "Importa file GPX"
+
+#
+#
+#
+msgid "Inland Blue Flag        Clear\n"
+msgstr "Passaggio a dritta    : Non Attivo\n"
+
+#
+#
+#
+msgid "Inland Blue Flag        Set\n"
+msgstr "Passaggio a dritta    : Attivo\n"
+
+#
+#
+#
+#
+msgid "Insert Waypoint"
+msgstr "Inserisci Waypoint"
+
+#
+#
+msgid "Isol. Dngr"
+msgstr "Peric.Isol."
+
+#
+#
+#
+#
+msgid "Isolated Danger"
+msgstr "Pericolo Isolato"
+
+#
+#
+msgid "Jump To"
+msgstr "Vai a"
+
+#
+#
+#
+#
+msgid "Jump To Position"
+msgstr "Zoom a Lat/Lon"
+
+#
+#
+msgid "Jump To Position..."
+msgstr "Zoom a Lat/Lon"
+
+#
+#
+msgid "LE/V"
+msgstr ""
+
+#
+#
+msgid "LMT @ Location"
+msgstr "LMT @ Posizione"
+
+#
+#
+msgid "LW"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Language"
+msgstr "Seleziona Lingua (Select Language)"
+
+#
+#
+#
+#
+msgid "Language/Fonts"
+msgstr "Lingua/Caratteri"
+
+#
+#
+#
+#
+msgid "Last Position Report Time:  "
+msgstr "Ora ultimo Report     : "
+
+#
+#
+#
+#
+msgid "Latitude"
+msgstr "Latitudine"
+
+#
+#
+msgid "Law Enforcement Vessel"
+msgstr "Unità di Polizia"
+
+#
+#
+#
+#
+msgid "Layer Name"
+msgstr "Nome Layer"
+
+#
+#
+msgid "Layers"
+msgstr "Layers"
+
+#
+#
+msgid "Ldg Lt Front"
+msgstr "Luce Front."
+
+#
+#
+msgid "Ldg Lt Rear"
+msgstr "Luce Post."
+
+#
+#
+msgid "Leading Light Front"
+msgstr "Luce principale Frontale"
+
+#
+#
+msgid "Leading Light Rear"
+msgstr "Luce principale Posteriore"
+
+#
+#
+#
+#
+msgid "Leg"
+msgstr "Tratto"
+
+#
+#
+#
+#
+msgid "Leg/Route"
+msgstr "Tratto/Rotta"
+
+#
+#
+#
+#
+msgid "Leg: from "
+msgstr "Tratto: da "
+
+#
+#
+#
+#
+msgid "Length"
+msgstr "Lunghezza"
+
+#
+#
+#
+#
+msgid "License"
+msgstr "Licenza"
+
+#
+#
+#
+#
+msgid "Light"
+msgstr "Faro"
+
+#
+#
+#
+#
+msgid "Light Gray"
+msgstr "Grigio chiaro"
+
+#
+#
+msgid "Light Vessel/Rig"
+msgstr "Unità Faro"
+
+#
+#
+msgid "Light w/Sectors"
+msgstr "Faro con settori"
+
+#
+#
+msgid "Limit range: NM"
+msgstr "Distanza Max: M"
+
+#
+#
+#
+#
+msgid "Links"
+msgstr "Links"
+
+#
+#
+msgid "Liquified gas tanker"
+msgstr "Cisterna (Gas Liquefatto)"
+
+#
+#
+#
+#
+msgid "List contents"
+msgstr "&Lista contenuti"
+
+#
+#
+msgid "Local @ PC"
+msgstr "Locale @ PC"
+
+#
+#
+#
+#
+msgid "Lock all waypoints unless a waypoint property dialog is visible"
+msgstr "Blocca i Waypoints (tranne quando è visibile il pannello delle proprietà)"
+
+#
+#
+msgid "Long Tow"
+msgstr "Rimorchio Lungo"
+
+#
+#
+#
+#
+msgid "Longitude"
+msgstr "Longitudine"
+
+#
+#
+#
+#
+msgid "Look Ahead Mode"
+msgstr "Modalità 'Più Spazio Avanti' (Look Ahead)"
+
+#
+#
+#
+#
+msgid "Lost Targets"
+msgstr "Target Persi"
+
+#
+#
+msgid "Lt"
+msgstr ""
+
+#
+#
+msgid "Lt sect."
+msgstr ""
+
+#
+#
+msgid "LtV/Rig"
+msgstr ""
+
+#
+#
+msgid "M/T"
+msgstr ""
+
+#
+#
+msgid "M/V"
+msgstr ""
+
+#
+#
+#
+#
+msgid "MAN OVERBOARD"
+msgstr "UOMO A MARE"
+
+#
+#
+#
+#
+msgid "META Objects"
+msgstr "META Oggetti"
+
+#
+#
+#
+msgid "MMSI"
+msgstr ""
+
+#
+#
+#
+#
+#, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "MMSI         : %09d\n"
+
+#
+#
+msgid "M_COVR ID"
+msgstr ""
+
+#
+msgid "Magenta"
+msgstr "Magenta"
+
+#
+#
+#
+#
+msgid "Mariner's Standard"
+msgstr "Oggetti S-57/ENC"
+
+#
+#
+#
+#
+msgid "Mariners Standard"
+msgstr "Personalizzata"
+
+#
+#
+#
+#
+msgid "Mark Icon"
+msgstr "Icona del Punto"
+
+#
+#
+#
+#
+msgid "Mark Information"
+msgstr "Informazioni Punto"
+
+#
+#
+#
+#
+msgid "Mark Name"
+msgstr "Nome del Punto"
+
+#
+#
+#
+#
+msgid "Mark Properties"
+msgstr "Propietà Punto/WP"
+
+#
+#
+#
+#
+msgid "Mark targets as lost after (Minutes:):"
+msgstr "Segna i Target come persi dopo (Minuti):"
+
+#
+#
+#
+#
+msgid "Mark/WP Properties"
+msgstr "Propietà Punto/WP"
+
+#
+#
+#
+#
+msgid "Marks"
+msgstr "Punti"
+
+#
+#
+#
+#
+msgid "Max Detail Here"
+msgstr "Massimo Dettaglio"
+
+#
+#
+#
+#
+msgid "Measure Off"
+msgstr "Chiudi Stumento Misura"
+
+#
+#
+#
+#
+msgid "Measure....."
+msgstr "Strumento Misura..."
+
+#
+#
+msgid "Med/V"
+msgstr ""
+
+#
+#
+msgid "Medical Transport"
+msgstr "Trasporto Medico"
+
+#
+#
+#
+#
+msgid "Mercator"
+msgstr "Mercatore"
+
+#
+#
+#
+#
+msgid "Meters"
+msgstr "Metri"
+
+#
+#
+#
+#
+msgid "Metres"
+msgstr "Metri"
+
+#
+#
+msgid "Mil/V"
+msgstr ""
+
+#
+#
+msgid "Military Vessel"
+msgstr "Unità Militare"
+
+#
+#
+msgid "Moored"
+msgstr "Ormeggiata"
+
+#
+#
+msgid "Motor freighter"
+msgstr "Chiatta motorizzata"
+
+#
+#
+msgid "Motor freighter pushing at least one tank-ship"
+msgstr "Chiatta motorizzata che spinge almeno una Cisterna"
+
+#
+#
+msgid "Motor freighter pushing one or more freighters"
+msgstr "Chiatta motorizzata che spinge almeno una chiatta"
+
+#
+#
+msgid "Motor freighter with one or more ships alongside"
+msgstr "Chiatta motorizzata con una o più unità al seguito"
+
+#
+#
+msgid "Motor freighter with tanker"
+msgstr "Chiatta motorizzata con Cisterna"
+
+#
+#
+msgid "Motor freighter, tug"
+msgstr "Chiatta motorizzata, Rimorchiatore"
+
+#
+#
+msgid "Motor tanker"
+msgstr "Petroliera, Cisterna"
+
+#
+#
+msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
+msgstr "Cisterna, carico secco (es. cemento)"
+
+#
+#
+msgid "Motor tanker, liquid cargo, type C"
+msgstr "Petroliera, carico liquido, tipo C"
+
+#
+#
+msgid "Motor tanker, liquid cargo, type N"
+msgstr "Petroliera, carico liquido, tipo N"
+
+#
+#
+msgid "Motor tanker, tug"
+msgstr "Cisterna, Rimorchiatore"
+
+#
+#
+#
+#
+msgid "Move Boat Here"
+msgstr "Muovi Imbarcazione qui!"
+
+#
+#
+#
+msgid "NMEA Baud Rate"
+msgstr ""
+
+#
+#
+#
+#
+msgid "NMEA Data Source"
+msgstr "Sorgente dati NMEA"
+
+#
+#
+#
+#
+msgid "NMEA Options"
+msgstr "Opzioni NMEA"
+
+#
+#
+#
+#
+msgid "Name"
+msgstr "Nome"
+
+#
+#
+#
+#
+msgid "Name:  "
+msgstr "Nome Target  : "
+
+#
+#
+#
+#
+msgid "Nav Status"
+msgstr "Stato"
+
+#
+#
+#
+#
+msgid "Navigation Data"
+msgstr "Dati di Navigazione"
+
+#
+#
+#
+#
+msgid "Navigational Status:  "
+msgstr "Stato        : "
+
+#
+#
+#
+#
+msgid "New Mark"
+msgstr "Nuovo Punto"
+
+#
+#
+#
+#
+msgid "Next"
+msgstr "Succ."
+
+#
+#
+msgid "Next tide event"
+msgstr "Prossimo Evento Marea"
+
+#
+#
+#
+#
+msgid "No CPA Calculation if target range is greater than (NMi):"
+msgstr "Nessun calcolo CPA se la distanza è maggiore di (Miglia):"
+
+#
+#
+#
+#
+msgid "No Chart Available"
+msgstr "Nessuna Carta disponibile"
+
+#
+#
+msgid "No. of items"
+msgstr "Numero oggetti"
+
+#
+#
+msgid "Not Under Command"
+msgstr "Che Non Governa"
+
+#
+#
+#
+#
+msgid "Number of radar rings shown"
+msgstr "Numero di cerchi da mostrare"
+
+#
+#
+#
+#
+msgid "OK"
+msgstr "OK"
+
+#
+#
+#
+#
+msgid "Object Query"
+msgstr "Info Oggetti Vettoriali"
+
+#
+#
+msgid "Object, not otherwise specified"
+msgstr "Oggetto, non meglio specificato"
+
+#
+#
+msgid "Object, towed, not otherwise specified"
+msgstr "Oggetto, rimorchiato, non meglio specificato"
+
+#
+#
+#
+#
+msgid "Ok"
+msgstr "Ok"
+
+#
+#
+#
+#
+msgid "OpenCPN Alert"
+msgstr "OpenCPN Allerta"
+
+#
+#
+msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr "OpenCPN Aggiustamento Offset Celle CM93"
+
+#
+#
+#
+#
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN Aggiunta Carte..."
+
+#
+#
+#
+#
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN Analisi Carte..."
+
+#
+#
+#
+#
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN Aggiornamento Carte"
+
+#
+#
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN Conversione Tracce in Rotte..."
+
+#
+#
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN Ricerca Catelle..."
+
+#
+#
+#
+#
+msgid "OpenCPN Info"
+msgstr "OpenCPN Info"
+
+#
+#
+#
+#
+msgid "OpenCPN Message"
+msgstr "OpenCPN Messaggio"
+
+#
+#
+#
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+
+#
+#
+#
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager ha creato questa base class"
+
+#
+#
+#
+#
+msgid "OpenCPN Route Create"
+msgstr "OpenCPN Crea Rotta"
+
+#
+#
+#
+#
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN Creazione File S57 SENC..."
+
+#
+#
+#
+#
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN Eliminazione Tracce"
+
+#
+#
+#
+#
+msgid "Options"
+msgstr "Opzioni"
+
+#
+#
+#
+#
+msgid "Other"
+msgstr "Completa"
+
+#
+#
+#
+#
+msgid "OverZoom"
+msgstr "OverZoom"
+
+#
+#
+#
+#
+msgid "Overwrite existing file?"
+msgstr "Sovrascrivo il file esistente?"
+
+#
+#
+#
+#
+msgid "OwnShip COG arrow predictor length (Minutes):"
+msgstr "Lunghezza delle frecce predizione COG (Minuti):"
+
+#
+#
+#
+#
+msgid "OwnShip Display Options"
+msgstr "Opzioni Visualizzazione Imbarcazione"
+
+#
+#
+msgid "P/V"
+msgstr ""
+
+#
+#
+msgid "PC/V"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Paper Chart"
+msgstr "Mappa Cartacea"
+
+#
+#
+msgid "Pass/V"
+msgstr ""
+
+#
+#
+msgid "Passenger Ship"
+msgstr "Nave Passeggeri"
+
+#
+#
+msgid "Passenger ship without accomodation"
+msgstr "Nave Passeggeri senza alloggio "
+
+#
+#
+msgid "Passenger ship, ferry, cruise ship, red cross ship"
+msgstr "Nave Passeggeri, Traghetto, Crociera, Croce Rossa"
+
+#
+#
+msgid "Pilot Vessel"
+msgstr "Pilotina"
+
+#
+#
+#
+#
+msgid "Place Trackpoints at distance interval (NMi):"
+msgstr "Aggiungi un Punto sulla traccia ogni (Miglia):"
+
+#
+#
+#
+#
+msgid "Place Trackpoints at time interval (Seconds):"
+msgstr "Aggiungi un punto sulla traccia ogni (Secondi):"
+
+#
+#
+#
+#
+msgid "Plain"
+msgstr "Semplici"
+
+#
+#
+#
+#
+msgid "Plan Speed"
+msgstr "Velocità pianificata"
+
+#
+#
+#
+#
+msgid "Plan speed (Kts)"
+msgstr "Velocità pianificata"
+
+#
+#
+#
+#
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Abilita allarme sonoro per allerta CPA/TCPA"
+
+#
+#
+#
+#
+msgid "Play ships bells"
+msgstr "Rintocchi Campana ogni mezz'ora, uno alle 0:30, 4:30, 8:30, 12:30, 16:30, 20:30"
+
+#
+#
+#
+#
+msgid "Please restart OpenCPN to activate new language selection."
+msgstr "Riavviare OpenCPN per attivare la lingua selezionata (Restart OpenCPN)"
+
+#
+#
+#
+#
+msgid "Pleasure craft"
+msgstr "Unità da diporto"
+
+#
+#
+msgid "Pleasure craft, longer than 20 metres"
+msgstr "Unità da diporto, lunghezza oltre 20 metri"
+
+#
+#
+msgid "PlugInManager searching for PlugIns in location "
+msgstr "PlugInManager ricerca le cartelle dei PlugIns "
+
+#
+#
+#
+msgid "PlugInManager: Deactivating PlugIn: "
+msgstr "PlugInManager: Disattivazione PlugIn: "
+
+#
+#
+#
+msgid "PlugInManager: Initializing PlugIn: "
+msgstr "PlugInManager: Inizializzazione PlugIn: "
+
+#
+#
+#
+msgid "PlugInManager: Loading PlugIn: "
+msgstr "PlugInManager: Caricamento PlugIn: "
+
+#
+#
+#
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr "PlugInManager: Disabilitazione PlugIn: "
+
+#
+#
+#
+#, c-format
+msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+msgstr "PlugInManager: Disabilito PlugIn con versione API errata %d.%d: "
+
+#
+#
+#
+msgid "PlugIns"
+msgstr "PlugIns"
+
+#
+#
+#
+#
+msgid "Points"
+msgstr "Simboli"
+
+#
+#
+msgid "Pollution Control Vessel"
+msgstr "Unità anti Inquinamento"
+
+#
+#
+#
+msgid "Polyconic"
+msgstr "Policonica"
+
+#
+#
+#
+#
+msgid "Port"
+msgstr "Sinistra"
+
+#
+#
+msgid "Port Hand"
+msgstr "Laterale Sinistra"
+
+#
+#
+msgid "Port Hand Mark"
+msgstr "Segnale Laterale Sinistra"
+
+#
+#
+msgid "Port Tender"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Position"
+msgstr "Posizione"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Tempo dal Report      : %d s\n"
+
+#
+#
+#
+#
+msgid "Position:               "
+msgstr "Posizione Target AIS  : "
+
+#
+#
+#
+msgid ""
+"Possible libgps API version mismatch.\n"
+"libgps did not reasonably respond to version request\n"
+"\n"
+"Would you like to use this version of libgps anyway?"
+msgstr ""
+"Possibile errore di versione libgps API.\n"
+"libgps non ha risposto alla richiesta di versione\n"
+"\n"
+"Uso questa versione di libgps comunque?"
+
+#
+#
+msgid "Pref. Chnl"
+msgstr ""
+
+#
+#
+msgid "Preferences"
+msgstr "Preferenze"
+
+#
+#
+msgid "Preferred Channel Port Hand"
+msgstr "Biforcazione canale, principale a Sinistra"
+
+#
+#
+msgid "Preferred Channel Starboard Hand"
+msgstr "Biforcazione canale, principale a Dritta"
+
+#
+#
+#
+#
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr "Prepara il GPS per caricare WP/Rotte e premi Invia..."
+
+#
+#
+#
+#
+msgid "Preserve scale when switching charts"
+msgstr "Mantieni la scala quando cambia la carta"
+
+#
+#
+#
+#
+msgid "Prev"
+msgstr "Prec."
+
+#
+#
+#
+#
+msgid "Preview:"
+msgstr "Anteprima:"
+
+#
+#
+#
+#
+msgid "Print Chart"
+msgstr "Stampa la Carta"
+
+#
+#
+#
+#
+msgid "Printing"
+msgstr "Stampa"
+
+#
+#
+#
+#
+msgid "Processing Waypoints..."
+msgstr "Processamento Waypoints..."
+
+#
+#
+#
+#
+msgid "Progress..."
+msgstr "Avanzamento..."
+
+#
+#
+#
+#
+msgid "Properties"
+msgstr "Proprietà"
+
+#
+#
+msgid "Pushboat, single"
+msgstr "Spintore, singolo"
+
+#
+#
+msgid "Pushtow, eight barges at least one tanker or gas barge"
+msgstr "Spintore, otto chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, eight cargo barges"
+msgstr "Spintore, otto chiatte da carico"
+
+#
+#
+msgid "Pushtow, five barges at least one tanker or gas barge"
+msgstr "Spintore, cinque chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, five cargo barges"
+msgstr "Spintore, cinque chiatte da carico"
+
+#
+#
+msgid "Pushtow, four barges at least one tanker or gas barge"
+msgstr "Spintore, quattro chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, four cargo barges"
+msgstr "Spintore, quattro chiatte da carico"
+
+#
+#
+msgid "Pushtow, nine or more barges"
+msgstr "Spintore, nove o più chiatte da carico"
+
+#
+#
+msgid "Pushtow, nine or more barges at least one tanker or gas barge"
+msgstr "Spintore, nove o più chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, one cargo barge"
+msgstr "Spintore, una chiatta"
+
+#
+#
+msgid "Pushtow, one tank/gas barge"
+msgstr "Spintore, una chiatta cisterna o gas"
+
+#
+#
+msgid "Pushtow, seven barges at least one tanker or gas barge"
+msgstr "Spintore, sette chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, seven cargo barges"
+msgstr "Spintore, sette chiatte da carico"
+
+#
+#
+msgid "Pushtow, six barges at least one tanker or gas barge"
+msgstr "Spintore, sei chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, six cargo barges"
+msgstr "Spintore, sei chiatte da carico"
+
+#
+#
+msgid "Pushtow, three barges at least one tanker or gas barge"
+msgstr "Spintore, tre chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, three cargo barges"
+msgstr "Spintore, tre chiatte da carico"
+
+#
+#
+msgid "Pushtow, two barges at least one tanker or gas barge"
+msgstr "Spintore, due chiatte, almeno una cisterna o gas"
+
+#
+#
+msgid "Pushtow, two cargo barges"
+msgstr "Spintore, due chiatte da carico"
+
+#
+#
+msgid "RACON"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Radar rings"
+msgstr "Cerchi distanza Radar"
+
+#
+#
+#
+#
+msgid "Range"
+msgstr "Distanza"
+
+#
+#
+#
+#
+msgid "Range:                  Unavailable\n"
+msgstr "Distanza     : Non disponibile\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "Range:                %5.1f NM\n"
+msgstr "Distanza     : %3.1f Miglia\n"
+
+#
+#
+#
+#
+msgid "Raster"
+msgstr "Raster"
+
+#
+#
+#
+#
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+msgstr "Accostata    : a Sinistra, %3d°/Min.\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+msgstr "Accostata    : a Destra, %3d°/Min.\n"
+
+#
+#
+#
+#
+msgid "Rate Of Turn            0\n"
+msgstr "Accostata    : Nessuna\n"
+
+#
+#
+#
+#
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Accostata    : a Sinistra, > 10°/Min.\n"
+
+#
+#
+#
+#
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Accostata    : a Destra, > 10°/Min.\n"
+
+#
+#
+msgid "Real"
+msgstr "Reale"
+
+#
+#
+#
+#
+msgid "Real (On Position)"
+msgstr "Reale (in posizione)"
+
+#
+#
+#
+#
+msgid "Real(Off Position)"
+msgstr "Reale (fuori posizione)"
+
+#
+#
+#
+#
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr "Aggiornamento del database delle carte dal file di configurazione..."
+
+#
+msgid "Red"
+msgstr "Rosso"
+
+#
+#
+msgid "Red cross ship"
+msgstr "Nave Croce Rossa"
+
+#
+#
+msgid "Ref. Pt"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Reference Point"
+msgstr "Punto di riferimento:"
+
+#
+#
+#
+#
+msgid "Reference Station :"
+msgstr "Stazione di riferimento:"
+
+#
+#
+msgid "Remaining time : "
+msgstr "Tempo restante :"
+
+#
+#
+#
+#
+msgid "Remove Waypoint from Route"
+msgstr "Rimuovi Waypoint dalla Rotta"
+
+#
+#
+#
+#
+msgid "Remove lost targets after (Minutes:):"
+msgstr "Rimuovi i Target persi dopo (Minuti):"
+
+#
+#
+#
+#
+msgid "Remove this chart from quilt."
+msgstr "Rimuovi carta dal Mosaico"
+
+#
+#
+#
+#
+msgid "Rename Waypoints?"
+msgstr "Rinomina Waypoints?"
+
+#
+#
+msgid "Reserved 11"
+msgstr ""
+
+#
+#
+msgid "Reserved 12"
+msgstr ""
+
+#
+#
+msgid "Reserved 13"
+msgstr ""
+
+#
+#
+msgid "Reserved 14"
+msgstr ""
+
+#
+#
+msgid "Restricted Manoeuvrability"
+msgstr "Manovrabilità limitata"
+
+#
+#
+#
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr "Selezione iniziale delle Cartelle con Carte dal Registro di Windows"
+
+#
+#
+#
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr "Selezione iniziale della lingua dal Registro di Windows"
+
+#
+#
+#
+#
+msgid "Reverse Route"
+msgstr "Inverti Rotta"
+
+#
+#
+#
+msgid "Rollover"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Route"
+msgstr "Rotta"
+
+#
+#
+#
+#
+msgid "Route Manager"
+msgstr "Gestore Rotte, Tracce e Punti"
+
+#
+#
+#
+#
+msgid "Route Name"
+msgstr "Nome Rotta"
+
+#
+#
+#
+#
+msgid "Route Properties"
+msgstr "Proprietà Rotta"
+
+#
+#
+#
+msgid "Route Uploaded successfully."
+msgstr "Rotta caricata correttamente."
+
+#
+#
+#
+msgid "Route from Track"
+msgstr "&Rotta da Traccia"
+
+#
+#
+msgid "RouteLegInfoRollover"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Routes"
+msgstr "Rotte"
+
+#
+#
+msgid "S/V"
+msgstr ""
+
+#
+#
+msgid "SAR/V"
+msgstr ""
+
+#
+#
+#
+msgid "SOG COG"
+msgstr ""
+
+#
+#
+msgid "Safe Water"
+msgstr "Acque Sicure"
+
+#
+#
+#
+#
+msgid "Safety Depth"
+msgstr "Profondità Sicura"
+
+#
+#
+msgid "Sailing Vessel"
+msgstr "Unità a Vela"
+
+#
+#
+#
+#
+msgid "Scale In"
+msgstr "Scala Maggiore"
+
+#
+#
+#
+#
+msgid "Scale Out"
+msgstr "Scala Minore"
+
+#
+#
+msgid "Search and Rescue Vessel"
+msgstr "Unità da Ricerca e Soccorso"
+
+#
+#
+#
+#
+msgid "Select Alert Sound"
+msgstr "Seleziona il suono"
+
+#
+#
+#
+#
+msgid "Select All"
+msgstr "Seleziona tutto"
+
+#
+#
+#
+#
+msgid "Select Chart Types for Quilting"
+msgstr "Seleziona i tipi di carta per il Mosaico"
+
+#
+#
+#
+#
+msgid "Select Sound File"
+msgstr "Seleziona il suono"
+
+#
+#
+#
+#
+msgid "Send"
+msgstr "Invia"
+
+#
+#
+#
+#
+msgid "Send Route To GPS"
+msgstr "Invia Rotta al GPS"
+
+#
+#
+#
+#
+msgid "Send To GPS..."
+msgstr "Invia al GPS..."
+
+#
+#
+msgid "Service vessel, police patrol, port service"
+msgstr "Unità di Servizio, Polizia, Portuale"
+
+#
+#
+#
+#
+msgid "Set Anchor Watch"
+msgstr "Attiva allarme Ancora"
+
+#
+#
+#
+#
+msgid "Set Course Up Mode"
+msgstr "Visualizza 'Rotta in Alto'"
+
+#
+#
+msgid "Set North Up Mode"
+msgstr "Visualizza 'Nord in Alto'"
+
+#
+#
+#
+#
+msgid "Settings"
+msgstr "Configurazioni"
+
+#
+#
+#
+#
+msgid "Shallow Depth"
+msgstr "Profondità Bassa"
+
+#
+#
+#
+#
+msgid "Shift to Larger Scale Chart"
+msgstr "Seleziona una carta a scala maggiore"
+
+#
+#
+#
+#
+msgid "Shift to Smaller Scale Chart"
+msgstr "Seleziona una carta a scala minore"
+
+#
+#
+#
+#
+msgid "Show AIS Targets"
+msgstr "Mostra/Nascondi Target AIS"
+
+#
+#
+#
+#
+msgid "Show ATON labels"
+msgstr "Mostra etichette ATON"
+
+#
+#
+#
+#
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "Mostra la finestra di allerta CPA/TCPA"
+
+#
+#
+#
+#
+msgid "Show Chart Outlines"
+msgstr "Mostra i bordi delle carte"
+
+#
+#
+#
+#
+msgid "Show Current Information"
+msgstr "Mostra Info Corrente"
+
+#
+#
+#
+#
+msgid "Show Currents"
+msgstr "Mostra/Nascondi le Correnti"
+
+#
+#
+#
+#
+msgid "Show Depth Units"
+msgstr "Mostra l'unità di misura della profondità"
+
+#
+#
+#
+#
+msgid "Show ENC Text"
+msgstr "Mostra/Nascondi il Testo sulle carte ENC"
+
+#
+#
+#
+#
+msgid "Show GPS/NMEA data stream window"
+msgstr "Mostra la finestra con i dati GPS/NMEA"
+
+#
+#
+#
+#
+msgid "Show Grid"
+msgstr "Mostra la griglia Lat/Lon"
+
+#
+#
+#
+#
+msgid "Show Important Text Only"
+msgstr "Solo testo importante"
+
+#
+#
+#
+#
+msgid "Show Lat/Long as"
+msgstr "Modalità visualizzazione Latitudine e Longitudine"
+
+#
+#
+#
+#
+msgid "Show Light Descriptions"
+msgstr "Descrizioni Fari"
+
+#
+#
+#
+#
+msgid "Show Name"
+msgstr "Mostra nome sulla carta"
+
+#
+#
+#
+#
+msgid "Show Printing Icon"
+msgstr "Mostra l'icona di stampa"
+
+#
+#
+#
+#
+msgid "Show Soundings"
+msgstr "Mostra Profondità"
+
+#
+#
+#
+#
+msgid "Show Status Bar"
+msgstr "Mostra la barra di stato (in basso)"
+
+#
+#
+#
+#
+msgid "Show Tide Information"
+msgstr "Mostra Info Marea"
+
+#
+#
+#
+#
+msgid "Show Tides"
+msgstr "Mostra/Nascondi le Maree"
+
+#
+#
+#
+#
+msgid "Show Track icon"
+msgstr "Mostra l'icona della Traccia"
+
+#
+#
+#
+#
+msgid "Show WPT names"
+msgstr "Mostra nomi WPT"
+
+#
+msgid "Show layers initially"
+msgstr "Mostra inizialmente i Layer"
+
+#
+#
+#
+#
+msgid "Show on chart"
+msgstr "Mostra sulla &Carta"
+
+#
+#
+#
+#
+msgid "Show radar rings"
+msgstr "Mostra i cerchi di distanza Radar"
+
+#
+#
+#
+msgid "Show skewed raster charts as North-Up"
+msgstr "Mostra le Carte Raster ruotate in modalità 'Nord in Alto'"
+
+#
+#
+#
+#
+msgid "Show target COG arrows"
+msgstr "Mostra le frecce COG dei Target"
+
+#
+#
+#
+#
+msgid "Show target tracks"
+msgstr "Mostra le Tracce dei Target"
+
+#
+#
+msgid "Show toolbar in fullscreen mode"
+msgstr "Mostra la Toolbar quando a tutto schermo"
+
+#
+#
+#
+#
+msgid "Shows the font preview."
+msgstr "Mostra l'anteprima dei Caratteri"
+
+#
+#
+#
+#
+msgid "Simplified"
+msgstr "Semplificati"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Dimensioni   : %dm x %dm x ---m\n"
+"\n"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x %4.1fm\n"
+"\n"
+msgstr ""
+"Dimensioni   : %dm x %dm x %4.1fm\n"
+"\n"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
+msgstr ""
+"Dimensioni   : %dm x %dm x ---m\n"
+"\n"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:                 ---m x ---m x %4.1fm\n"
+"\n"
+msgstr ""
+"Dimensioni   : ---m x ---m x %4.1fm\n"
+"\n"
+
+#
+#
+#
+msgid ""
+"Size:                 ---m x ---m x ---m\n"
+"\n"
+msgstr ""
+"Dimensioni   : ---m x ---m x ---m\n"
+"\n"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+msgstr ""
+"Dimensioni   :%5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+
+#
+#
+#
+#
+#, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+msgstr ""
+"Dimensioni   :%5.1fm x %4.1fm x ---m\n"
+"\n"
+
+#
+#
+#
+msgid "SoG"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Spare"
+msgstr ""
+
+#
+#
+msgid "Special"
+msgstr "Speciale"
+
+#
+#
+#
+#
+msgid "Special Mark"
+msgstr "Segnale Speciale"
+
+#
+#
+#
+#
+msgid "Speed (Kts)"
+msgstr "Velocità (nodi)"
+
+#
+#
+#
+#
+msgid "Speed:                  Unavailable\n"
+msgstr "Velocità     : Non disponibile\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "Speed:                %5.2f Kts.\n"
+msgstr "Velocità     : %3.1f Nodi\n"
+
+#
+#
+#
+#
+msgid "Split Route"
+msgstr "Dividi Rotta"
+
+#
+#
+#
+#
+msgid "Split Track"
+msgstr "Dividi Traccia"
+
+#
+#
+#
+#
+msgid "Standard"
+msgstr "Standard"
+
+#
+#
+msgid "Starboard Hand Mark"
+msgstr "Segnale Laterale Dritta"
+
+#
+#
+#
+#
+msgid "Start"
+msgstr "Inizio"
+
+#
+#
+msgid "Stbd"
+msgstr "Dritta"
+
+#
+#
+msgid "Stbd Hand"
+msgstr "Laterale Dritta"
+
+#
+#
+#
+#
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Sopprimi allarmi per Target ancorati/ormeggiati"
+
+#
+#
+#
+#
+msgid "Supress anchored/moored targets"
+msgstr "Sopprimi i Target ancorati/ormeggiati"
+
+#
+#
+#
+#
+msgid "Symbolized"
+msgstr "A simboli"
+
+#
+#
+#
+#
+msgid "TCP/IP WiFi Data Server"
+msgstr ""
+
+#
+#
+#
+#
+msgid "TCPA:  \n"
+msgstr "Minima Distanza, TCPA : ---\n"
+
+#
+#
+#
+#
+#, c-format
+msgid "TCPA:                 %02d:%02d Hr:Min\n"
+msgstr "Minima Distanza, TCPA : %1d:%02d ore:min\n"
+
+#
+#
+msgid "Tankbarge"
+msgstr "Chiatta Cisterna"
+
+#
+#
+msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
+msgstr "Chiatta Cisterna, carico secco (es. cemento)"
+
+#
+#
+msgid "Tankbarge, gas"
+msgstr "Chiatta Cisterna, Gas"
+
+#
+#
+msgid "Tankbarge, liquid cargo, type C"
+msgstr "Chiatta Cisterna, carico liquido, tipo C"
+
+#
+#
+msgid "Tankbarge, liquid cargo, type N"
+msgstr "Chiatta Cisterna, carico liquido, tipo N"
+
+#
+#
+msgid "Tanker"
+msgstr "Petroliera"
+
+#
+#
+msgid "Target Count"
+msgstr "Target acquisiti"
+
+#
+#
+msgid "Target info"
+msgstr "Target info"
+
+#
+#
+#
+msgid "Temporary GOTO Route"
+msgstr "Rotta Temporanea"
+
+#
+#
+#
+msgid "Temporary MOB Route"
+msgstr "Rotta Uomo a Mare"
+
+#
+#
+#
+msgid "Temporary layer"
+msgstr "Layer Temporaneo"
+
+#
+#
+#
+#
+msgid "Tender"
+msgstr "Tender"
+
+#
+#
+#
+#
+msgid "Test Alert Sound"
+msgstr "Ascolta il suono"
+
+#
+#
+#
+#
+msgid "Text Element"
+msgstr "Elementi Testo"
+
+#
+#
+#
+#
+msgid "The font colour."
+msgstr "Il colore dei Caratteri"
+
+#
+#
+#
+#
+msgid "The font family."
+msgstr "Il gruppo dei Caratteri"
+
+#
+#
+#
+#
+msgid "The font point size."
+msgstr "La dimensione in punti dei Caratteri"
+
+#
+#
+#
+#
+msgid "The font style."
+msgstr "Lo stile dei Caratteri"
+
+#
+#
+#
+#
+msgid "The font weight."
+msgstr "Lo spessore dei Caratteri"
+
+#
+#
+#
+#
+msgid "There"
+msgstr "Destinazione"
+
+#
+#
+#
+#
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr ""
+"C'è stato un problema di stampa.\n"
+"Controllare la configurazione della stampante."
+
+#
+#
+#
+#
+msgid "This Leg"
+msgstr "Tratto"
+
+#
+#
+#
+#
+msgid "Tide"
+msgstr "Marea"
+
+#
+#
+msgid "TideCurrentGraphRollover"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Time Enroute"
+msgstr "Tempo di percorrenza"
+
+#
+#
+msgid "Times shown as"
+msgstr "Orari mostrati come:"
+
+#
+msgid "Timestamp"
+msgstr ""
+
+#
+#
+#
+#
+msgid "To"
+msgstr "Partenza-Destinazione"
+
+#
+#
+#
+#
+msgid "To Waypoint"
+msgstr "Waypoint"
+
+#
+#
+#
+#
+msgid "Today"
+msgstr "Oggi"
+
+#
+#
+#
+#
+msgid "Toggle Tracking"
+msgstr "Mostra/Nascondi la Traccia"
+
+#
+#
+#
+#
+msgid "Tomorrow"
+msgstr "Domani"
+
+#
+#
+#
+#
+msgid "ToolBox"
+msgstr "Strumenti"
+
+#
+#
+#
+msgid "ToolTips"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Total Distance"
+msgstr "Distanza Totale"
+
+#
+#
+#
+#
+msgid "Tow"
+msgstr "Rimorchio"
+
+#
+#
+#
+#
+msgid "Track Name"
+msgstr "Nome Traccia"
+
+#
+#
+#
+#
+msgid "Track Properties"
+msgstr "Proprietà Traccia"
+
+#
+#
+#
+#
+msgid "Tracks"
+msgstr "Tracce"
+
+#
+#
+#
+#
+msgid "Transverse Mercator"
+msgstr "Traversa di Mercatore"
+
+#
+#
+#
+#
+#, c-format
+msgid "TrueScale: %8.0f             "
+msgstr "Scala Reale: %8.0f"
+
+#
+#
+#
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.1fx"
+msgstr "Scala Reale: %8.0f  Zoom %4.1fx"
+
+#
+#
+#
+#
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.2fx"
+msgstr "Scala Reale: %8.0f  Zoom %4.2fx"
+
+#
+#
+msgid "Tug"
+msgstr "Rimorchiatore"
+
+#
+#
+msgid "Tug freighter, coupled"
+msgstr "Rimorchiatore Cargo accoppiato"
+
+#
+#
+msgid "Tug, assisting a vessel or linked combination"
+msgstr "Rimorchiatore che assiste unità o unità combinate"
+
+#
+#
+msgid "Tug, freighter"
+msgstr "Rimorchiatore, Cargo"
+
+#
+#
+msgid "Tug, freighter/tanker, coupled"
+msgstr "Rimorchiatore, Cargo/Cisterna, accoppiati"
+
+#
+#
+msgid "Tug, one or more tows"
+msgstr "Rimorchiatore, uno o più rimorchi"
+
+#
+#
+msgid "Tug, single"
+msgstr "Rimorchiatore, singolo"
+
+#
+#
+msgid "Tug, tanker"
+msgstr "Rimorchiatore, Cisterna"
+
+#
+#
+#
+msgid "Type"
+msgstr "Tipo"
+
+#
+#
+#
+#
+msgid "Type:                 "
+msgstr "Tipo         : "
+
+#
+#
+#
+#
+msgid "UN Ship Type:         "
+msgstr "UN Tipo di Nave:"
+
+#
+#
+#
+#
+msgid "UTC"
+msgstr ""
+
+#
+#
+#
+msgid ""
+"Unable to initialize libgps.\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"Impossibile inizializzare libgps.\n"
+"\n"
+"gpsd host è:"
+
+#
+#
+#
+msgid "Unable to load libgps"
+msgstr "Impossibile caricare libgps"
+
+#
+#
+#
+#
+msgid "Undefined"
+msgstr "Indefinito"
+
+#
+#
+msgid "Under way sailing"
+msgstr "In Navigazione a Vela"
+
+#
+#
+msgid "Underway"
+msgstr "In Navigazione"
+
+#
+#
+msgid "Unit carrier maritime"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Units"
+msgstr "Unità"
+
+#
+#
+#
+#
+msgid "Unk"
+msgstr "Sconosciuto"
+
+#
+#
+#
+#
+msgid "Unknown"
+msgstr "Sconosciuto"
+
+#
+#
+msgid "Unlist contents"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Unspecified"
+msgstr "Non specificato"
+
+#
+#
+#
+#
+msgid "Update Control"
+msgstr "Controllo aggiornamenti al Database Carte"
+
+#
+#
+#
+msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+msgstr "Usa Garmin GRMN/GRMN (Host) Mode per caricare Waypoints e Rotte."
+
+#
+#
+#
+#
+msgid "Use SCAMIN"
+msgstr "Usa SCAMIN"
+
+#
+#
+#
+#
+msgid "Use nearby waypoint?"
+msgstr "Uso il Punto più vicino?"
+
+#
+#
+msgid "User X Offset"
+msgstr "Offset X"
+
+#
+#
+msgid "User X Offset (Metres)"
+msgstr "Offset X (Metri)"
+
+#
+#
+msgid "User Y Offset"
+msgstr "Offset Y"
+
+#
+#
+msgid "User Y Offset (Metres)"
+msgstr "Offset Y (Metri)"
+
+#
+#
+#
+#
+msgid "Vector Charts"
+msgstr "Carte Vettoriali"
+
+#
+#
+msgid "Vessel Diving"
+msgstr "Unità in Immersione"
+
+#
+#
+msgid "Vessel Dredging"
+msgstr "Unità in Dragaggio"
+
+#
+#
+msgid "Vessel Fishing"
+msgstr "Unità in Pesca"
+
+#
+#
+msgid "Vessel Towing"
+msgstr "Unità in Rimorchio"
+
+#
+#
+msgid "Vessel Towing, Long"
+msgstr "Unità in Rimorchio lungo"
+
+#
+#
+msgid "Vessel, type unknown"
+msgstr "Unità, tipo sconosciuto"
+
+#
+#
+msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
+msgstr "Unità, Manutenzione, Gru galleggiante, Posacavi, Nave-boa, Draga"
+
+#
+#
+msgid "Virtual"
+msgstr "Virtuale"
+
+#
+#
+msgid "Virtual (Off Position)"
+msgstr "Virtuale (fuori posizione)"
+
+#
+#
+msgid "Virtual (On Position)"
+msgstr "Virtuale (in posizione)"
+
+#
+#
+#
+#
+msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Warn if CPA less than (NMi):"
+msgstr "Avverti se il CPA è minore di (Miglia):"
+
+#
+#
+#
+#
+msgid "Waypoint Locking"
+msgstr "Blocco Waypoint"
+
+#
+#
+#
+#
+msgid "Waypoint Name"
+msgstr "Nome Waypoint"
+
+#
+#
+#
+msgid "Waypoint(s) Uploaded successfully."
+msgstr "Waypoint(s) caricati correttamente."
+
+#
+#
+#
+#
+msgid "Waypoints"
+msgstr "Waypoints"
+
+#
+#
+#
+#
+msgid ""
+"Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n"
+"\n"
+"Do you want to rename the waypoints?"
+msgstr ""
+"I Waypoints possono essere rinumerati come '001', '002' etc.\n"
+"\n"
+"Rinomino i Waypoints?"
+
+#
+#
+#
+#
+msgid "Welcome to OpenCPN"
+msgstr "Benvenuto in OpenCPN"
+
+#
+#
+#
+#
+msgid "Whether the font is underlined."
+msgstr "Se il Carattere è sottolineato"
+
+#
+msgid "White"
+msgstr "Bianco"
+
+#
+#
+#
+#
+msgid "WiFi Options"
+msgstr "Opzioni WiFi"
+
+#
+#
+msgid "Wing In Ground Effect"
+msgstr ""
+
+#
+#
+msgid "X Offset (Positive moves map to East) (NMi Projected) :"
+msgstr "X Offset (se positivo, muove la mappa verso Est) (Miglia/cos(lat)) :"
+
+#
+#
+#
+#
+msgid "XTE         L"
+msgstr "XTE       Sx"
+
+#
+#
+#
+#
+msgid "XTE         R"
+msgstr "XTE       Dx"
+
+#
+#
+msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
+msgstr "Y Offset (se positivo, muove la mappa verso Nord) (Miglia/cos(lat)) :"
+
+#
+#
+msgid "Yat"
+msgstr ""
+
+#
+#
+#
+#
+msgid "Yellow"
+msgstr "Giallo"
+
+#
+#
+#
+#
+msgid "Zoom In"
+msgstr "Zoom +"
+
+#
+#
+#
+#
+msgid "Zoom Out"
+msgstr "Zoom -"
+
+#
+#
+#
+msgid "[Class] Type (Status)"
+msgstr "[Classe] Tipo (Stato)"
+
+#
+#
+msgid "_A"
+msgstr ""
+
+#
+#
+msgid "_B"
+msgstr ""
+
+#
+#
+msgid "_plus"
+msgstr ""
+
+#
+#
+#
+#
+msgid "cm93 Detail"
+msgstr "Dettagli CM93"
+
+#
+#
+#
+#, c-format
+msgid ""
+"libgps API version mismatch.\n"
+"OpenCPN found version %d.%d, but requires at least version 3.0\n"
+"\n"
+"Would you like to use this version of libgps anyway?"
+msgstr ""
+"Errore di versione libgps API.\n"
+"OpenCPN ha trovato la versione %d.%d ma richiede almeno la 3.0\n"
+"\n"
+"Uso questa versione di libgps comunque?"
+
+#
+#
+msgid "wgsox"
+msgstr ""
+
+#
+#
+msgid "wgsoy"
+msgstr ""
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Chiudi"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Delete All Routes..."
+#~ msgstr "Elimina tutte le &Rotte..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "Elimina tutte le &Tracce..."
+#
+#
+#~ msgid "&Toggle Chart"
+#~ msgstr "&Mostra/Nascondi Carta"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "(Active Track)"
+#~ msgstr "(Traccia attiva)"
+#
+#
+#
+#~ msgid "Attempting to load libgps.so"
+#~ msgstr "Tentativo di caricamento libgps.so"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93 Offset Off"
+#~ msgstr "CM93 Disabilita Offset"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93 Offset On"
+#~ msgstr "CM93 Applica Offset"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93 Offset Tool Off"
+#~ msgstr "CM93 Disattiva Strum. Offset"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93 Offset Tool....."
+#~ msgstr "CM93 Strumento Offset..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93 Offsets On"
+#~ msgstr "CM93 Offset Attivo"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Cell X Offset"
+#~ msgstr "Configura Offset CM93"
+
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Cell Y Offset"
+#~ msgstr "Configura Offset CM93"
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Chart file corrupt.. disabling this chart \n"
+#~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Classe sconosciuta\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Class:     "
+#~ msgstr ""
+#~ "Classe:    A\n"
+#~ "\n"
+

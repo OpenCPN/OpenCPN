@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dashboard_pi 2.2.1124\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2010-11-28 18:28+0100\n"
+"Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+#
+msgid "Add"
+msgstr "Dodaj"
+#
+msgid "Add instrument"
+msgstr "Dodaj instrument"
+#
+msgid "Apparent wind"
+msgstr "Wiatr pozorny"
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "Kompas"
+#
+msgid "Cursor"
+msgstr ""
+#
+msgid "Dashboard"
+msgstr "Wskaźniki NMEA"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Wtyczka obsługi Tablicy wskaźników do OpenCPN"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Wtyczka obsługi Tablicy wskaźników do OpenCPN\n"
+"wyświetla dane ze wskaźników NMEA."
+#
+msgid "Dashboard preferences"
+msgstr "Preferencje Tablicy wskaźników"
+#
+msgid "Data:"
+msgstr "Data:"
+#
+msgid "Delete"
+msgstr "Usuń"
+#
+msgid "Depth"
+msgstr "Głębokość"
+#
+msgid "Down"
+msgstr "Na dół"
+#
+msgid "E"
+msgstr "E"
+#
+msgid "Edit"
+msgstr "Zmień"
+#
+msgid "Fonts"
+msgstr "Czcionki"
+#
+msgid "GPS in view"
+msgstr "Odbiór GPS"
+#
+msgid "GPS status"
+msgstr "Status GPS"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "Szerokość instrumentu"
+#
+msgid "Instruments"
+msgstr "Instrumenty"
+#
+msgid "Label:"
+msgstr "Etykieta:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NE"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "Pozycja"
+#
+msgid "Rudder angle"
+msgstr "Kąt wychylenia steru"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SE"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
+msgid "Select instrument to add:"
+msgstr "Wybierz instrument do dodania"
+#
+msgid "Small:"
+msgstr "Zmniejsz:"
+#
+msgid "Speedometer"
+msgstr "Spidometr"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Temperatura"
+#
+msgid "Title:"
+msgstr "Nazwa:"
+#
+msgid "True wind"
+msgstr "Wiatr rzeczywisty"
+#
+msgid "Up"
+msgstr "Do góry"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Wind angle"
+msgstr "Kąt do wiatru"
+#
+msgid "Wind speed"
+msgstr "Prędkość wiatru"
+#
+msgid "show this dashboard"
+msgstr ""

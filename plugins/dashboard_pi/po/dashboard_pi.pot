@@ -1,0 +1,234 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dashboard_pi 2.4.628\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-28 10:00-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/compass.cpp:128 src/wind.cpp:85 src/gps.cpp:125 src/dashboard_pi.cpp:550
+msgid "N"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85
+msgid "NE"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85 src/gps.cpp:126
+msgid "E"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85
+msgid "SE"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85 src/gps.cpp:127
+msgid "S"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85
+msgid "SW"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85 src/gps.cpp:128
+msgid "W"
+msgstr ""
+
+#: src/compass.cpp:128 src/wind.cpp:85
+msgid "NW"
+msgstr ""
+
+#: src/dashboard_pi.cpp:100
+msgid "Position"
+msgstr ""
+
+#: src/dashboard_pi.cpp:102
+msgid "SOG"
+msgstr ""
+
+#: src/dashboard_pi.cpp:104
+msgid "Speedometer"
+msgstr ""
+
+#: src/dashboard_pi.cpp:106
+msgid "COG"
+msgstr ""
+
+#: src/dashboard_pi.cpp:108
+msgid "Compass"
+msgstr ""
+
+#: src/dashboard_pi.cpp:110
+msgid "STW"
+msgstr ""
+
+#: src/dashboard_pi.cpp:112
+msgid "HDG"
+msgstr ""
+
+#: src/dashboard_pi.cpp:114
+msgid "Apparent wind"
+msgstr ""
+
+#: src/dashboard_pi.cpp:116
+msgid "Wind angle"
+msgstr ""
+
+#: src/dashboard_pi.cpp:118 src/dashboard_pi.cpp:120
+msgid "Wind speed"
+msgstr ""
+
+#: src/dashboard_pi.cpp:122
+msgid "True wind"
+msgstr ""
+
+#: src/dashboard_pi.cpp:124 src/dashboard_pi.cpp:126
+msgid "Depth"
+msgstr ""
+
+#: src/dashboard_pi.cpp:128
+msgid "Temp"
+msgstr ""
+
+#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
+msgid "VMG"
+msgstr ""
+
+#: src/dashboard_pi.cpp:134 src/dashboard_pi.cpp:136
+msgid "Rudder angle"
+msgstr ""
+
+#: src/dashboard_pi.cpp:138
+msgid "GPS in view"
+msgstr ""
+
+#: src/dashboard_pi.cpp:140
+msgid "GPS status"
+msgstr ""
+
+#: src/dashboard_pi.cpp:142
+msgid "Cursor"
+msgstr ""
+
+#: src/dashboard_pi.cpp:144
+msgid "Clock"
+msgstr ""
+
+#: src/dashboard_pi.cpp:146
+msgid "Sunrise/Sunset"
+msgstr ""
+
+#: src/dashboard_pi.cpp:148
+msgid "Moon phase"
+msgstr ""
+
+#: src/dashboard_pi.cpp:239 src/dashboard_pi.cpp:304 src/dashboard_pi.cpp:1009
+#: src/dashboard_pi.cpp:1017 src/dashboard_pi.cpp:1161
+#: src/dashboard_pi.cpp:1196 src/dashboard_pi.cpp:1388
+msgid "Dashboard"
+msgstr ""
+
+#: src/dashboard_pi.cpp:310
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr ""
+
+#: src/dashboard_pi.cpp:315
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+
+#: src/dashboard_pi.cpp:1142
+msgid "Dashboard preferences"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1203
+msgid "show this dashboard"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1208
+msgid "Caption:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1213
+msgid "Orientation:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1216
+msgid "Vertical"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1217
+msgid "Horizontal"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1220
+msgid "Instrument width:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1229 src/dashboard_pi.cpp:1236
+#: src/dashboard_pi.cpp:1501
+msgid "Instruments"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1244
+msgid "Add"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1248
+msgid "Edit"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1252
+msgid "Delete"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1257
+msgid "Up"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1261
+msgid "Down"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1269
+msgid "Appearance"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1271
+msgid "Fonts"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1277
+msgid "Title:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1281
+msgid "Data:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1285
+msgid "Label:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1289
+msgid "Small:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1487
+msgid "Add instrument"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1491
+msgid "Select instrument to add:"
+msgstr ""
