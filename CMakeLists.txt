@@ -81,6 +81,9 @@ IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
     MESSAGE(FATAL_ERROR "There exists a relic 'include/version.h' in the source tree! Remove it.")
 ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/version.h")
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 #Red Hat:   /etc/redhat-release
 #Slackware: /etc/slackware-version
