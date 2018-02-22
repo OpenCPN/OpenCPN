@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=OpenCPN
+Comment=Open source chart plotter / navigator
+Exec=opencpn
+Icon=opencpn
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Education;Science;Geography;

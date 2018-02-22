@@ -1,0 +1,342 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.4 build 628\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-28 10:00-0400\n"
+"PO-Revision-Date: 2011-06-28 18:41+0100\n"
+"Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
+"Language-Team: AB Torsk & Bäver <N/A>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Poedit-Language: Swedish\n"
+"X-Poedit-Country: SWEDEN\n"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:125
+#: src/dashboard_pi.cpp:550
+msgid "N"
+msgstr "N"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "NE"
+msgstr "NO"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:126
+msgid "E"
+msgstr "O"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "SE"
+msgstr "SO"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:127
+msgid "S"
+msgstr "S"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "SW"
+msgstr "SV"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+#: src/gps.cpp:128
+msgid "W"
+msgstr "V"
+
+#
+#
+#: src/compass.cpp:128
+#: src/wind.cpp:85
+msgid "NW"
+msgstr "NV"
+
+#
+#
+#: src/dashboard_pi.cpp:100
+msgid "Position"
+msgstr "Position"
+
+#
+#
+#: src/dashboard_pi.cpp:102
+msgid "SOG"
+msgstr "SOG"
+
+#
+#
+#: src/dashboard_pi.cpp:104
+msgid "Speedometer"
+msgstr "Hastighetsmätare"
+
+#
+#
+#: src/dashboard_pi.cpp:106
+msgid "COG"
+msgstr "COG"
+
+#
+#
+#: src/dashboard_pi.cpp:108
+msgid "Compass"
+msgstr "Kompass"
+
+#
+#
+#: src/dashboard_pi.cpp:110
+msgid "STW"
+msgstr "STW"
+
+#
+#
+#: src/dashboard_pi.cpp:112
+msgid "HDG"
+msgstr "HDG"
+
+#
+#
+#: src/dashboard_pi.cpp:114
+msgid "Apparent wind"
+msgstr "Skenbar vind"
+
+#
+#
+#: src/dashboard_pi.cpp:116
+msgid "Wind angle"
+msgstr "Vindvinkel"
+
+#
+#
+#: src/dashboard_pi.cpp:118
+#: src/dashboard_pi.cpp:120
+msgid "Wind speed"
+msgstr "Vindstyrka"
+
+#
+#
+#: src/dashboard_pi.cpp:122
+msgid "True wind"
+msgstr "Sann vind"
+
+#
+#
+#: src/dashboard_pi.cpp:124
+#: src/dashboard_pi.cpp:126
+msgid "Depth"
+msgstr "Djup"
+
+#
+#
+#: src/dashboard_pi.cpp:128
+msgid "Temp"
+msgstr "Temp"
+
+#
+#
+#: src/dashboard_pi.cpp:130
+#: src/dashboard_pi.cpp:132
+msgid "VMG"
+msgstr "VMG"
+
+#
+#
+#: src/dashboard_pi.cpp:134
+#: src/dashboard_pi.cpp:136
+msgid "Rudder angle"
+msgstr "Rodervinkel"
+
+#
+#
+#: src/dashboard_pi.cpp:138
+msgid "GPS in view"
+msgstr "Synliga satelliter"
+
+#
+#
+#: src/dashboard_pi.cpp:140
+msgid "GPS status"
+msgstr "GPS status"
+
+#: src/dashboard_pi.cpp:142
+msgid "Cursor"
+msgstr "Markör"
+
+#: src/dashboard_pi.cpp:144
+msgid "Clock"
+msgstr "Klocka"
+
+#: src/dashboard_pi.cpp:146
+msgid "Sunrise/Sunset"
+msgstr "Soluppgång/Solnedgång"
+
+#: src/dashboard_pi.cpp:148
+msgid "Moon phase"
+msgstr "Månfas"
+
+#
+#
+#: src/dashboard_pi.cpp:239
+#: src/dashboard_pi.cpp:304
+#: src/dashboard_pi.cpp:1009
+#: src/dashboard_pi.cpp:1017
+#: src/dashboard_pi.cpp:1161
+#: src/dashboard_pi.cpp:1196
+#: src/dashboard_pi.cpp:1388
+msgid "Dashboard"
+msgstr "Instrumentpanel"
+
+#
+#
+#: src/dashboard_pi.cpp:310
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Instrumentpanel för OpenCPN"
+
+#
+#
+#: src/dashboard_pi.cpp:315
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Instrumentpanel för OpenCPN\n"
+"Visar navigationsinstrument baserade på tillgänglig NMEA-information."
+
+#
+#
+#: src/dashboard_pi.cpp:1142
+msgid "Dashboard preferences"
+msgstr "Inställningar"
+
+#: src/dashboard_pi.cpp:1203
+msgid "show this dashboard"
+msgstr "Visa den här panelen"
+
+#: src/dashboard_pi.cpp:1208
+msgid "Caption:"
+msgstr "Titel:"
+
+#: src/dashboard_pi.cpp:1213
+msgid "Orientation:"
+msgstr "Orientering:"
+
+#: src/dashboard_pi.cpp:1216
+msgid "Vertical"
+msgstr "Vertikal"
+
+#: src/dashboard_pi.cpp:1217
+msgid "Horizontal"
+msgstr "Horisontell"
+
+#
+#
+#: src/dashboard_pi.cpp:1220
+msgid "Instrument width:"
+msgstr "Instrumentbredd:"
+
+#
+#
+#: src/dashboard_pi.cpp:1229
+#: src/dashboard_pi.cpp:1236
+#: src/dashboard_pi.cpp:1501
+msgid "Instruments"
+msgstr "Instrument"
+
+#
+#
+#: src/dashboard_pi.cpp:1244
+msgid "Add"
+msgstr "Lägg till"
+
+#
+#
+#: src/dashboard_pi.cpp:1248
+msgid "Edit"
+msgstr "Ändra"
+
+#
+#
+#: src/dashboard_pi.cpp:1252
+msgid "Delete"
+msgstr "Ta bort"
+
+#
+#
+#: src/dashboard_pi.cpp:1257
+msgid "Up"
+msgstr "Upp"
+
+#
+#
+#: src/dashboard_pi.cpp:1261
+msgid "Down"
+msgstr "Ner"
+
+#: src/dashboard_pi.cpp:1269
+msgid "Appearance"
+msgstr "Utseende"
+
+#
+#: src/dashboard_pi.cpp:1271
+msgid "Fonts"
+msgstr "Typsnitt"
+
+#
+#: src/dashboard_pi.cpp:1277
+msgid "Title:"
+msgstr "Titel:"
+
+#
+#: src/dashboard_pi.cpp:1281
+msgid "Data:"
+msgstr "Data:"
+
+#
+#: src/dashboard_pi.cpp:1285
+msgid "Label:"
+msgstr "Beskrivning:"
+
+#
+#: src/dashboard_pi.cpp:1289
+msgid "Small:"
+msgstr "Liten:"
+
+#
+#
+#: src/dashboard_pi.cpp:1487
+msgid "Add instrument"
+msgstr "Lägg till instrument"
+
+#
+#
+#: src/dashboard_pi.cpp:1491
+msgid "Select instrument to add:"
+msgstr "Välj instrument att lägga till"
+

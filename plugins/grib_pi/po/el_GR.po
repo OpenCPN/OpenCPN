@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: grib_pi 2.2.1207\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:28-0400\n"
+"PO-Revision-Date: 2010-12-20 18:23+0200\n"
+"Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+#
+msgid "&Close"
+msgstr "&Κλείσιμο"
+#
+msgid "Current Velocity, Kts."
+msgstr "Τρέχουσα Ταχύτητα, Kts. "
+#
+msgid "GRIB"
+msgstr "GRIB"
+#
+msgid "GRIB Data"
+msgstr "Στοιχεία GRIB"
+#
+msgid "GRIB Display Control"
+msgstr "Έλεγχος Εμφάνησης GRIB"
+#
+msgid "GRIB File Directory"
+msgstr "Φάκελος Αρχείων GRIB"
+#
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "Επιπρόσθετο GRIB για το OpenCPN"
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"\n"
+"Supported GRIB file types include:\n"
+"- wind direction and speed\n"
+"- significant wave height\n"
+"- sea surface temperature\n"
+"- surface current direction and speed."
+msgstr ""
+"Επιπρόσθετο GRIB για το OpenCPN\n"
+"Παρέχει Δυνατότητες εμφάνησης αρχείων GRIB για διάφορα αρχεία GRIB.\n"
+"\n"
+"Οι υποστηριζόμενοι τύποι αρχείων GRIB περιλαμβάνουν:\n"
+"-  κατεύθυνση και ταχύτητα ανέμου\n"
+"-  διακριτό ύψος κύματος\n"
+"-  Θερμοκρασία Επιφανείας\n"
+"-  επίκαιρη επιφανειακή κατεύθυνση και ταχύτητα."
+#
+msgid "GRIB Preferences"
+msgstr "Ιδιότητες GRIB"
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα CRAIN GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα HTSGW GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
+#
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
+#
+msgid "Pressure, mBar"
+msgstr "Ατμ. Πίεση, mBar"
+#
+msgid "Sea Surface Temp, C"
+msgstr "Θερμοκρασία Επιφανείας, C "
+#
+msgid "Select GRIB Directory"
+msgstr "Διάλεξε φάκελο αρχείων GRIB"
+#
+msgid "Show GRIB icon"
+msgstr "Δείξε εικόνα GRIB"
+#
+msgid "Significant Wave Height, m"
+msgstr "Διακριτό ύψος Κύματος, m(μέτρα) "
+#
+msgid "Use High Definition Graphics"
+msgstr "Χρησιμοποίησε Γραφικά Υψηλής Ευκρίνιας"
+#
+#, c-format
+msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgstr ""
+"ΠΡΟΣΟΧΗ:  Τα στοιχεία του αρχείου GRIB από το QuickScat είναι  %d  Ώρες παλιά."
+#
+msgid "Wind Direction"
+msgstr "Διεύθυνση Ανέμου"
+#
+msgid "Wind Speed, Kts."
+msgstr "Ταχύτητα Ανέμου, Kts"

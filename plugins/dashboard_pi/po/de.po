@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.2.1110\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-12 12:56-0400\n"
+"PO-Revision-Date: 2011-06-15 16:58+0100\n"
+"Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Poedit-Basepath: F:\\GIT\\opencpn\\plugins\\dashboard_pi\n"
+#
+msgid "Add"
+msgstr "Hinzufügen"
+#
+msgid "Add instrument"
+msgstr "Instrument hinzufügen"
+#
+msgid "Apparent wind"
+msgstr "Wind - scheinbarer"
+#
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr "Fenstertitel:"
+#
+msgid "Clock"
+msgstr "Uhr"
+#
+msgid "Compass"
+msgstr "Kompass"
+#
+msgid "Cursor"
+msgstr "Cursor Pos."
+#
+msgid "Dashboard"
+msgstr "Dashboard"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Dashboard Plugin für OpenCPN"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Dashboard Plugin für OpenCPN\n"
+"ermöglicht Instrumentenanzeigen aus NMEA Quellen."
+#
+msgid "Dashboard preferences"
+msgstr "Dashboard Einstellungen"
+#
+msgid "Data:"
+msgstr "Daten:"
+#
+msgid "Delete"
+msgstr "Löschen"
+#
+msgid "Depth"
+msgstr "Echolot"
+#
+msgid "Down"
+msgstr "runter"
+#
+msgid "E"
+msgstr "O"
+#
+msgid "Edit"
+msgstr "Bearbeiten"
+#
+msgid "Fonts"
+msgstr "Schrift"
+#
+msgid "GPS in view"
+msgstr "GPS Sat. Anzahl"
+#
+msgid "GPS status"
+msgstr "GPS Status"
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr "horizontal"
+#
+msgid "Instrument width:"
+msgstr "Instrumenten Breite:"
+#
+msgid "Instruments"
+msgstr "Instrumente"
+#
+msgid "Label:"
+msgstr "Label:"
+#
+msgid "Moon phase"
+msgstr "Mondphase"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NO"
+#
+msgid "NW"
+msgstr "NW"
+#
+msgid "Orientation:"
+msgstr "Ausrichtung:"
+#
+msgid "Position"
+msgstr "Position"
+#
+msgid "Rudder angle"
+msgstr "Ruderlage"
+#
+msgid "S"
+msgstr "S"
+#
+msgid "SE"
+msgstr "SO"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "STW"
+msgstr "STW"
+#
+msgid "SW"
+msgstr "SW"
+#
+msgid "Select instrument to add:"
+msgstr "Instrument auswählen zum Hinzufügen:"
+#
+msgid "Small:"
+msgstr "Klein:"
+#
+msgid "Speedometer"
+msgstr "Log"
+#
+msgid "Sunrise/Sunset"
+msgstr "Sonnenauf-/ -untergang"
+#
+msgid "Temp"
+msgstr "Thermometer"
+#
+msgid "Title:"
+msgstr "Titel:"
+#
+msgid "True wind"
+msgstr "Wind - wahrer"
+#
+msgid "Up"
+msgstr "hoch"
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "vertikal"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "Wind angle"
+msgstr "Wind"
+#
+msgid "Wind speed"
+msgstr "Windgeschwindigkeit"
+#
+msgid "show this dashboard"
+msgstr "ausgewähltes Dashboard anzeigen"

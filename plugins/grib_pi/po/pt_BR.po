@@ -1,0 +1,137 @@
+# OPENCPN TRANSLATION TO BRAZILIAN PORTUGUESE.
+# Copyright (C) 2000-2010 The OpenCPN Authors
+# This file is distributed under the same license as the PACKAGE package.
+# ELOI BARROS<eloibarros@hotmail.com>, 2010.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.1.0b620\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:28-0400\n"
+"PO-Revision-Date: 2010-06-25 19:44-0300\n"
+"Last-Translator: Eloi Barros <eloibarros@hotmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: BRAZIL\n"
+"X-Poedit-SourceCharset: utf-8\n"
+#
+# 
+# 
+msgid "&Close"
+msgstr "Fechar"
+#
+# 
+# 
+msgid "Current Velocity, Kts."
+msgstr "Velocidade da Corrente, Nós."
+#
+# 
+# 
+msgid "GRIB"
+msgstr "GRIB"
+#
+# 
+# 
+msgid "GRIB Data"
+msgstr "Dados GRIB"
+#
+# 
+# 
+msgid "GRIB Display Control"
+msgstr "Controle da Apresentação GRIB"
+#
+# 
+# 
+msgid "GRIB File Directory"
+msgstr "Diretório de Arquivos GRIB"
+#
+msgid "GRIB PlugIn for OpenCPN"
+msgstr ""
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"\n"
+"Supported GRIB file types include:\n"
+"- wind direction and speed\n"
+"- significant wave height\n"
+"- sea surface temperature\n"
+"- surface current direction and speed."
+msgstr ""
+#
+msgid "GRIB Preferences"
+msgstr ""
+#
+msgid "Grib"
+msgstr ""
+#
+# 
+# 
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "Por favor Afaste ou Diminua a Escala para ver CRAIN GRIB suprimido"
+#
+# 
+# 
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Por favor Afaste ou Diminua a Escala para ver HTSGW GRIB suprimido"
+#
+# 
+# 
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr ""
+"Por favor Afaste ou Diminua a Escala para ver OCEAN CURRENT GRIB suprimido"
+#
+# 
+# 
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "Por favor Afaste ou Diminua a Escala para ver SEATEMP GRIB suprimido"
+#
+# 
+# 
+msgid "Pressure, mBar"
+msgstr "Pressão, hPa"
+#
+# 
+# 
+msgid "Sea Surface Temp, C"
+msgstr "Temperatura da Superfície do Mar, C"
+#
+# 
+# 
+msgid "Select GRIB Directory"
+msgstr "Selecionar Diretório de Arquivos GRIB"
+#
+# 
+# 
+msgid "Show GRIB icon"
+msgstr "Mostrar ícone GRIB"
+#
+# 
+# 
+msgid "Significant Wave Height, m"
+msgstr "Altura Significativa das Ondas, m"
+#
+# 
+# 
+msgid "Use High Definition Graphics"
+msgstr "Usar Gráficos de Alta Definição"
+#
+# 
+# 
+#, c-format
+msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgstr "AVISO: Dados GRIB são de %d horas atrás."
+#
+# 
+# 
+msgid "Wind Direction"
+msgstr "Direção do Vento"
+#
+# 
+# 
+msgid "Wind Speed, Kts."
+msgstr "Veloc. do Vento, Nós"

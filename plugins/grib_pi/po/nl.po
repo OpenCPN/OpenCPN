@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grib_pi 2.4.708 beta for 2.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:28-0400\n"
+"PO-Revision-Date: 2011-07-10 12:28+0100\n"
+"Last-Translator: NAV <rider2@kpnmail.nl>\n"
+"Language-Team:  <rider2@kpnmail.nl>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Bookmarks: -1,-1,-1,-1,-1,182,-1,-1,-1,-1\n"
+
+#
+#
+msgid "&Close"
+msgstr "&Sluiten"
+
+#
+#
+msgid "Current Velocity, Kts."
+msgstr "stroomsnelheid (knopen)"
+
+#
+#
+msgid "GRIB"
+msgstr "GRIB"
+
+#
+#
+msgid "GRIB Data"
+msgstr "GRIB gegevens"
+
+#
+#
+msgid "GRIB Display Control"
+msgstr "GRIB Weergaveopties"
+
+#
+#
+msgid "GRIB File Directory"
+msgstr "Map voor GRIB bestand"
+
+#
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "GRIB PlugIn voor OpenCPN"
+
+#
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"\n"
+"Supported GRIB file types include:\n"
+"- wind direction and speed\n"
+"- significant wave height\n"
+"- sea surface temperature\n"
+"- surface current direction and speed."
+msgstr ""
+"GRIB PlugIn voor OpenCPN\n"
+"Geeft kaartoverlay van GRIB gegevens voor verschillende bestandtypes.\n"
+"\n"
+"Ondersteunde GRIB bestandtypes zijn:\n"
+"- windrichting en snelheid\n"
+"- significante golfhoogte\n"
+"- oppervlaktetemperatuur zeewater\n"
+"- stroomrichting en -snelheid."
+
+#
+msgid "GRIB Preferences"
+msgstr "GRIB voorkeuren"
+
+#
+msgid "Grib"
+msgstr "Grib"
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte OCEAN CURRENT GRIB te zien."
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+
+#
+#
+msgid "Pressure, mBar"
+msgstr "luchtdruk (hPa)"
+
+#
+#
+msgid "Sea Surface Temp, C"
+msgstr "zeewatertemperatuur (°C)"
+
+#
+#
+msgid "Select GRIB Directory"
+msgstr "Map voor GRIB bestand"
+
+#
+#
+msgid "Show GRIB icon"
+msgstr "Toon GRIB-icoon"
+
+#
+#
+msgid "Significant Wave Height, m"
+msgstr "significante golfhoogte (m)"
+
+#
+#
+msgid "Use High Definition Graphics"
+msgstr "Gebruik hoge grafische resolutie"
+
+#
+#
+#, c-format
+msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgstr "WAARSCHUWING: QuickScat GRIB gegevens zijn %d uur oud"
+
+#
+#
+msgid "Wind Direction"
+msgstr "windrichting"
+
+#
+#
+msgid "Wind Speed, Kts."
+msgstr "windsnelheid (knopen)"
+

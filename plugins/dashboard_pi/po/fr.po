@@ -1,0 +1,218 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.2.1110\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2011-05-27 07:43+0100\n"
+"Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+#
+#
+msgid "Add"
+msgstr "Ajouter"
+#
+#
+msgid "Add instrument"
+msgstr "Ajouter un instrument"
+#
+#
+msgid "Apparent wind"
+msgstr "Vent apparent"
+#
+msgid "Appearance"
+msgstr "Apparence"
+#
+#
+msgid "COG"
+msgstr "COG"
+#
+msgid "Caption:"
+msgstr "Titre :"
+#
+msgid "Clock"
+msgstr ""
+#
+#
+msgid "Compass"
+msgstr "Compas"
+#
+msgid "Cursor"
+msgstr ""
+#
+#
+msgid "Dashboard"
+msgstr "TABLEAU DE BORD"
+#
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Greffon tableau de bord pour OpenCPN"
+#
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Plug-in tableau de bord pour OpenCPN\n"
+"Fournit des instruments de navigation à partir de données NMEA."
+#
+#
+msgid "Dashboard preferences"
+msgstr "Préférences du tableau de bord"
+#
+msgid "Data:"
+msgstr "Données :"
+#
+#
+msgid "Delete"
+msgstr "Supprimer"
+#
+#
+msgid "Depth"
+msgstr "Profondeur"
+#
+#
+msgid "Down"
+msgstr "Descendre"
+#
+#
+msgid "E"
+msgstr "E"
+#
+#
+msgid "Edit"
+msgstr "Editer"
+#
+msgid "Fonts"
+msgstr "Polices"
+#
+#
+msgid "GPS in view"
+msgstr "Satellites visibles"
+#
+#
+msgid "GPS status"
+msgstr "Etat du GPS"
+#
+#
+msgid "HDG"
+msgstr "HDG"
+#
+msgid "Horizontal"
+msgstr "Horizontal"
+#
+#
+msgid "Instrument width:"
+msgstr "Largeur des instruments :"
+#
+#
+msgid "Instruments"
+msgstr "Instruments"
+#
+msgid "Label:"
+msgstr "Contenu :"
+#
+msgid "Moon phase"
+msgstr ""
+#
+#
+msgid "N"
+msgstr "N"
+#
+#
+msgid "NE"
+msgstr "NE"
+#
+#
+msgid "NW"
+msgstr "NO"
+#
+msgid "Orientation:"
+msgstr "Orientation :"
+#
+#
+msgid "Position"
+msgstr "Position"
+#
+#
+msgid "Rudder angle"
+msgstr "Angle de barre"
+#
+#
+msgid "S"
+msgstr "S"
+#
+#
+msgid "SE"
+msgstr "SE"
+#
+#
+msgid "SOG"
+msgstr "SOG"
+#
+#
+msgid "STW"
+msgstr "STW"
+#
+#
+msgid "SW"
+msgstr "SO"
+#
+#
+msgid "Select instrument to add:"
+msgstr "Séléctionnez l'instrument à ajouter"
+#
+msgid "Small:"
+msgstr "Petit :"
+#
+#
+msgid "Speedometer"
+msgstr "Compteur"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+#
+msgid "Temp"
+msgstr "Température"
+#
+msgid "Title:"
+msgstr "Titre :"
+#
+#
+msgid "True wind"
+msgstr "Vent vrai"
+#
+#
+msgid "Up"
+msgstr "Monter"
+#
+#
+msgid "VMG"
+msgstr "VMG"
+#
+msgid "Vertical"
+msgstr "Vertical"
+#
+#
+msgid "W"
+msgstr "O"
+#
+#
+msgid "Wind angle"
+msgstr "Angle de vent"
+#
+#
+msgid "Wind speed"
+msgstr "Vitesse du vent"
+#
+msgid "show this dashboard"
+msgstr "Montrer ce tableau de bord"

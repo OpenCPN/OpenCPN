@@ -1,0 +1,28 @@
+0 ICON "bitmaps\opencpn.ico"
+1 VERSIONINFO
+	FILEVERSION ${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH},0
+	PRODUCTVERSION ${VERSION_MAJOR},${VERSION_MINOR}, 0, 0
+	FILEFLAGSMASK 0
+	FILEOS 0x00040004L
+	FILETYPE 0x00000001L
+	BEGIN
+		BLOCK "StringFileInfo"
+			BEGIN
+				BLOCK "040904E4"
+					BEGIN
+						VALUE "CompanyName",      "OpenCPN.org\0"
+						VALUE "FileDescription",  "Chart Plotter and Navigator\0"
+						VALUE "FileVersion",      "${VERSION_MAJOR},${VERSION_MINOR},${VERSION_PATCH}\0"
+						VALUE "InternalName",     "opencpn.exe\0"
+						VALUE "LegalCopyright",   "GPL v2\0"
+						VALUE "OriginalFilename", "opencpn.exe\0"
+						VALUE "ProductName",      "OpenCPN\0"
+						VALUE "ProductVersion",   "${VERSION_MAJOR},${VERSION_MINOR}\0"
+					END
+			END
+
+		BLOCK "VarFileInfo"
+			BEGIN
+
+			END
+	END

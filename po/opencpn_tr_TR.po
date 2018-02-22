@@ -1,0 +1,4055 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn 2.1.0b415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-08 20:33-0400\n"
+"PO-Revision-Date: 2010-12-06 16:30+0200\n"
+"Last-Translator: Yalin <yalinb@ii.metu.edu.tr>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Turkish\n"
+"X-Poedit-Country: TURKEY\n"
+#
+# 
+msgid "\n"
+msgstr "\n"
+#
+# 
+msgid ""
+"\n"
+"\n"
+"\n"
+msgstr ""
+#
+# 
+msgid ""
+"\n"
+"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN...Ufak ve Güzel bir Açık Kaynak Seyir Yazılımı"
+#
+# 
+msgid ""
+"\n"
+"OpenCPN is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied\n"
+"warranty of MERCHANTABILITY or FITNESS FOR A\n"
+"PARTICULAR PURPOSE.\n"
+"See the GNU General Public License for more details.\n"
+"\n"
+"OpenCPN must only be used in conjunction with approved\n"
+"paper charts and traditional methods of navigation.\n"
+"\n"
+"DO NOT rely upon OpenCPN for safety of life or property.\n"
+"\n"
+"Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
+msgstr ""
+#
+# 
+msgid ""
+"           No Charts Installed.\n"
+"Please select chart folders in ToolBox->Charts."
+msgstr ""
+"           Kurulu harita yok.\n"
+"Lütfen Araç Kutusu->Haritalar ile harita klasörlerini seçiniz."
+#
+# 
+msgid "      \"Ship Name\" MMSI (Call Sign)"
+msgstr ""
+#
+# 
+msgid "      COG arrow predictor length (Minutes):"
+msgstr "COG oku kestirimi için uzunluk (Dakika):"
+#
+# 
+msgid "      Max moored target speed (Kts.):"
+msgstr "    Demir atmış hedefler için maksimum hız (Kts.):"
+#
+# 
+msgid "      Target track length (Minutes):"
+msgstr "      Hedef izi uzunluğu (Dakika):"
+#
+# 
+msgid "   Chart File RLL data corrupt on chart "
+msgstr "   Chart File RLL data corrupt on chart "
+#
+# 
+msgid "   Chart File contains less than 3 PLY points: "
+msgstr "   Harita dosyası üçten daha az nokta içeriyor: "
+#
+# 
+msgid "   Chart File corrupt in PostInit() on chart "
+msgstr "   Chart File corrupt in PostInit() on chart "
+#
+# 
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "   Harita dosyasında BSB header yok, başlatılamıyor."
+#
+# 
+msgid "   Chart projection is UNKNOWN, assuming Mercator: "
+msgstr "   Chart projeksiyon türü bilinmiyor, Merkator farz edilecek: "
+#
+# 
+#, c-format
+msgid "   Could not read first %d bytes of header for chart file: "
+msgstr "   Harita dosyasının baş kısmında ilk %d bayt okunamadı: "
+#
+# 
+msgid "   Error creating Line Index for chart "
+msgstr "   Error creating Line Index for chart "
+#
+# 
+msgid "   Line Index corrupt, recreating Index for chart "
+msgstr "   Line Index corrupt, recreating Index for chart "
+#
+# 
+msgid "   PlugInManager: Cannot load library: "
+msgstr ""
+#
+# 
+msgid "   PlugInManager: Cannot load symbol create_pi: "
+msgstr ""
+#
+# 
+msgid "   PlugInManager: Cannot load symbol destroy_pi: "
+msgstr ""
+#
+# 
+msgid "   Result: OK, Internal georef solution used."
+msgstr "   Result: OK, Internal georef solution used."
+#
+# 
+msgid "   Trying again with internally calculated georef solution "
+msgstr "   Trying again with internally calculated georef solution "
+#
+# 
+msgid ""
+"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
+"chart "
+msgstr ""
+"   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
+"chart "
+#
+# 
+msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
+msgstr "   VP Final Check: Georeference Chart_Error_Factor on chart "
+#
+# 
+msgid "  ..And TCPA is less than (Minutes):"
+msgstr "   ..ve TCPA (Time to CPA) bu kadar olduğunda (Dakika):"
+#
+# 
+msgid "  Could not open AIS serial port '"
+msgstr " AIS seri portu açılamadı '"
+#
+# 
+msgid "  Could not open serial port '"
+msgstr "  Seri port açılamadı '"
+#
+# 
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D Gün  %H Saat  %M Dakika"
+#
+# 
+msgid " %H Hours  %M Minutes"
+msgstr " %H Saat  %M Dakika"
+#
+# 
+msgid " - "
+msgstr " - "
+#
+#, c-format
+msgid " COG: %03d Deg."
+msgstr ""
+#
+msgid " COG: 000 Deg."
+msgstr ""
+#
+# 
+#, fuzzy
+msgid " COG: Unavailable"
+msgstr "Hazırda Harita Yok"
+#
+# 
+msgid " ChartFile:  "
+msgstr " Harita Dosyası:  "
+#
+# 
+msgid " Datum:  "
+msgstr " Datum:  "
+#
+# 
+msgid " Depth Units:  "
+msgstr " Derinlik Birimleri:  "
+#
+# 
+msgid " ID:  "
+msgstr " ID:  "
+#
+# 
+msgid " Name:  "
+msgstr " İsim:  "
+#
+# 
+msgid " Projection:  "
+msgstr " Projeksiyon:  "
+#
+# 
+#, c-format
+msgid " Scale:  1:%d"
+msgstr " Ölçek:  1:%d"
+#
+# 
+msgid " Ship: "
+msgstr " Gemi: "
+#
+# 
+msgid " Soundings:  "
+msgstr " Sesli uyarılar: "
+#
+# 
+msgid " Source Edition:  "
+msgstr " Kaynak Versiyonu: "
+#
+# 
+msgid " Updated:  "
+msgstr " Güncelleme: "
+#
+# 
+#, c-format
+msgid " is %5g"
+msgstr " is %5g"
+#
+# 
+msgid " to "
+msgstr ""
+#
+# 
+msgid "&Acknowledge"
+msgstr "&Uyarı Alındığını Onayla"
+#
+# 
+msgid "&Activate"
+msgstr "&Aktive Et"
+#
+# 
+msgid "&Cancel"
+msgstr "&İptal"
+#
+# 
+msgid "&Delete"
+msgstr "&Sil"
+#
+# 
+#, fuzzy
+msgid "&Delete All"
+msgstr "&Sil"
+#
+# 
+#, fuzzy
+msgid "&Export Route..."
+msgstr "Dışarıya Rota Gönder..."
+#
+# 
+#, fuzzy
+msgid "&Export Track..."
+msgstr "Dışarıya Seyir İzi Gönder..."
+#
+# 
+#, fuzzy
+msgid "&Export Wpt..."
+msgstr "Dışarıya &gönder..."
+#
+# 
+msgid "&Font family:"
+msgstr "&Yazı tipi ailesi:"
+#
+# 
+#, fuzzy
+msgid "&Go To"
+msgstr "Buraya Git"
+#
+# 
+msgid "&Kilometers"
+msgstr "&Kilometre"
+#
+# 
+msgid "&Nautical miles"
+msgstr "&Deniz mili"
+#
+# 
+msgid "&New"
+msgstr ""
+#
+# 
+msgid "&OK"
+msgstr "&OK"
+#
+# 
+msgid "&Point size:"
+msgstr "&Büyüklük:"
+#
+# 
+#, fuzzy
+msgid "&Properties"
+msgstr "Özellikler"
+#
+# 
+msgid "&Properties..."
+msgstr "Ö&zellikler..."
+#
+# 
+msgid "&Reverse"
+msgstr "&Tersine Çevir"
+#
+# 
+#, fuzzy
+msgid "&Send to GPS"
+msgstr "GPS'e Gönder..."
+#
+# 
+msgid "&Silence Alert"
+msgstr "&Alarmı Sustur"
+#
+# 
+#, fuzzy
+msgid "&Start Track"
+msgstr "Hedef izlerini göster"
+#
+# 
+msgid "&Style:"
+msgstr "&Tarz: "
+#
+# 
+msgid "&Underline"
+msgstr "&Altı çizili"
+#
+# 
+msgid "&Weight:"
+msgstr "&Kalınlık:"
+#
+# 
+msgid "&Zoom to"
+msgstr "&Yakınlaştır"
+#
+# 
+msgid ""
+"'\n"
+" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+msgstr ""
+"'\n"
+" Öneri: 'xxx.xxx.xxx.xxx' notasyonunu deneyin"
+#
+# 
+msgid ""
+"'\n"
+"Suggestion: Try closing other applications."
+msgstr ""
+"'\n"
+"Öneri: Diğer uygulamaları kapatmayı deneyin."
+#
+# 
+#, fuzzy
+msgid "(Unnamed Layer)"
+msgstr "(İsimsiz Rota)"
+#
+# 
+msgid "(Unnamed Route)"
+msgstr "(İsimsiz Rota)"
+#
+# 
+msgid "(Unnamed Track)"
+msgstr "(İsimsiz Seyir İzi)"
+#
+# 
+#, fuzzy
+msgid "(Unnamed Waypoint)"
+msgstr "Mevkileri Yeniden İsimlendir?"
+#
+# 
+msgid "-"
+msgstr "-"
+#
+# 
+#, fuzzy
+msgid "--"
+msgstr "-"
+#
+# 
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+#
+# 
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+#
+# 
+msgid "1.0 NM along COG"
+msgstr ""
+#
+# 
+msgid "2 Color"
+msgstr "2 Renk"
+#
+# 
+msgid "4 Color"
+msgstr "4 Renk"
+#
+# 
+msgid "?"
+msgstr ""
+#
+# 
+msgid "A"
+msgstr "A"
+#
+# 
+msgid "AIS"
+msgstr "AIS (Otomatik Tanımlama Sistemi)"
+#
+# 
+msgid "AIS Alert"
+msgstr "AIS (Otomatik Tanımlama Sistemi) Alarmı"
+#
+# 
+msgid "AIS Data Port"
+msgstr "AIS Veri Portu"
+#
+# 
+msgid "AIS General"
+msgstr "AIS Genel"
+#
+# 
+msgid "AIS Target Query"
+msgstr "AIS Hedef Sorgulama"
+#
+# 
+msgid "AIS target list"
+msgstr "AIS hedef listesi"
+#
+# 
+#, fuzzy
+msgid "AISRollover"
+msgstr "AIS (Otomatik Tanımlama Sistemi) Alarmı"
+#
+# 
+#, fuzzy
+msgid "AISTargetAlert"
+msgstr "AIS Hedef Sorgulama"
+#
+# 
+msgid "AISTargetQuery"
+msgstr "AIS Hedef Sorgulama"
+#
+# 
+msgid "About"
+msgstr "Hakkında"
+#
+# 
+msgid "About OpenCPN"
+msgstr "OpenCPN Hakkında"
+#
+# 
+msgid "Activate"
+msgstr "Aktive Et"
+#
+# 
+msgid "Activate CM93 Offset"
+msgstr ""
+#
+# 
+msgid "Activate Next in Route"
+msgstr "Rotada Sıradaki Mevkiyi Aktive Et"
+#
+# 
+msgid "Activate Route"
+msgstr "Rotayı Aktive Et"
+#
+# 
+msgid "Activate Waypoint"
+msgstr "Mevkiyi Aktive Et"
+#
+# 
+msgid "Active Chart Directories"
+msgstr "Aktif Harita Klasörleri"
+#
+# 
+msgid "Add Selection"
+msgstr "Seçimi Ekle"
+#
+# 
+msgid "Add this chart to quilt."
+msgstr "Bu haritayı örtüştürmeye dahil et."
+#
+# 
+msgid "Additional information"
+msgstr "Ekstra bilgi"
+#
+# 
+msgid "Aground"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Aid to Navigation"
+msgstr ""
+"Navigasyona Yardım\n"
+"\n"
+#
+# 
+msgid "All files (*.*)|*.*"
+msgstr "Tüm dosyalar (*.*)|*.*"
+#
+# 
+msgid "Append Waypoint"
+msgstr "Mevkiyi Ekle"
+#
+# 
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Bütün rotalarını silmek istediğinizden emin misiniz?"
+#
+# 
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Bütün seyir izlerini silmek istediğinizden emin misiniz?"
+#
+# 
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr "Bütün mevki noktalarını silmek istediğinizden emin misiniz?"
+#
+# 
+#, fuzzy
+msgid "Are you sure you want to delete this track?"
+msgstr "Bütün seyir izlerini silmek istediğinizden emin misiniz?"
+#
+# 
+msgid "Assumed 1 Mile Point"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "At Anchor"
+msgstr "Çapa İzleme Oluştur"
+#
+# 
+msgid "AtoN"
+msgstr "AtoN"
+#
+# 
+msgid "Authors"
+msgstr "Hazırlayanlar"
+#
+# 
+msgid "Auto Follow"
+msgstr "Otomatik Takip"
+#
+# 
+msgid "Automatic Daily Tracks"
+msgstr ""
+#
+# 
+msgid "Autopilot Output Port"
+msgstr "Otopilot Çıkış Portu"
+#
+# 
+msgid "Available Chart Directories"
+msgstr "Hazırdaki Harita Klasörleri"
+#
+# 
+msgid "Avg. speed (Kts)"
+msgstr ""
+#
+# 
+msgid "B"
+msgstr "B"
+#
+# 
+msgid "Barge, tanker, chemical"
+msgstr ""
+#
+# 
+msgid "Base"
+msgstr "Temel (basit)"
+#
+# 
+#, fuzzy
+msgid "Base Station"
+msgstr "Varılacak yer"
+#
+# 
+msgid "BaseClassCommonName"
+msgstr ""
+#
+# 
+msgid "Beacon, Isolated Danger"
+msgstr ""
+#
+# 
+msgid "Beacon, Port Hand"
+msgstr ""
+#
+# 
+msgid "Beacon, Preferred Channel Port Hand"
+msgstr ""
+#
+# 
+msgid "Beacon, Preferred Channel Starboard Hand"
+msgstr ""
+#
+# 
+msgid "Beacon, Safe Water"
+msgstr ""
+#
+# 
+msgid "Beacon, Special Mark"
+msgstr ""
+#
+# 
+msgid "Beacon, Starboard Hand"
+msgstr ""
+#
+# 
+msgid "Bearing"
+msgstr "Bearing"
+#
+# 
+#, fuzzy, c-format
+msgid "Bearing:                %03d Deg.\n"
+msgstr "Bearing:              %5.0f Deg.\n"
+#
+# 
+#, fuzzy
+msgid "Bearing:                Unavailable\n"
+msgstr "Hız:              Bilinmiyor\n"
+#
+msgid "Black"
+msgstr ""
+#
+msgid "Blue"
+msgstr ""
+#
+# 
+msgid "Boundaries"
+msgstr "Sınırlar"
+#
+# 
+msgid "Brg"
+msgstr "Brg"
+#
+# 
+msgid "Bulk carrier maritime"
+msgstr ""
+#
+# 
+msgid "Bunkership"
+msgstr ""
+#
+# 
+msgid "C&olour:"
+msgstr "&Renk:"
+#
+# 
+msgid "CM93"
+msgstr "CM93"
+#
+# 
+msgid "CM93 Offset Dialog"
+msgstr ""
+#
+# 
+msgid "CM93 Offset Display"
+msgstr ""
+#
+# 
+msgid "CM93 Offsets"
+msgstr ""
+#
+# 
+msgid "CM93 Zoom Detail"
+msgstr "CM93 Yakınlaştırma Detayı"
+#
+# 
+msgid "CPA"
+msgstr ""
+#
+# 
+msgid "CPA Calculation"
+msgstr "CPA (Closest Point of Approach) Hesaplaması"
+#
+# 
+#, fuzzy
+msgid "CPA TCPA"
+msgstr "CPA/TCPA Alarmları"
+#
+# 
+msgid "CPA/TCPA Alerts"
+msgstr "CPA/TCPA Alarmları"
+#
+# 
+msgid "CPA:       \n"
+msgstr "CPA(Closest Point of Approach):  \n"
+#
+# 
+#, c-format
+msgid "CPA:                 %6.1f NM\n"
+msgstr "CPA(Closest Point of Approach): %6.1f NM\n"
+#
+# 
+msgid "Call"
+msgstr "Çağrı"
+#
+# 
+msgid ""
+"Call to gps_open failed.\n"
+"Is gpsd running?\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"gps_open'a yapılan çağrı sonuçlanmadı.\n"
+"gpsd çalışıyor mu?\n"
+"\n"
+"gpsd hostu: "
+#
+# 
+#, fuzzy
+msgid "CallSign:             "
+msgstr "Konum:                 "
+#
+# 
+msgid "Cancel"
+msgstr "İptal"
+#
+# 
+msgid "Card. E"
+msgstr ""
+#
+# 
+msgid "Card. N"
+msgstr ""
+#
+# 
+msgid "Card. S"
+msgstr ""
+#
+# 
+msgid "Card. W"
+msgstr ""
+#
+# 
+msgid "Cardinal E Beacon"
+msgstr ""
+#
+# 
+msgid "Cardinal Mark E"
+msgstr ""
+#
+# 
+msgid "Cardinal Mark N"
+msgstr ""
+#
+# 
+msgid "Cardinal Mark S"
+msgstr ""
+#
+# 
+msgid "Cardinal Mark W"
+msgstr ""
+#
+# 
+msgid "Cardinal N Beacon"
+msgstr ""
+#
+# 
+msgid "Cardinal S Beacon"
+msgstr ""
+#
+# 
+msgid "Cardinal W Beacon"
+msgstr ""
+#
+# 
+msgid "Cargo Ship"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Cell"
+msgstr "Çağrı"
+#
+# 
+msgid "Cell Scale"
+msgstr ""
+#
+# 
+msgid "Change Color Scheme"
+msgstr "Renk Düzenini Değiştir"
+#
+# 
+msgid "Chart"
+msgstr "Harita"
+#
+# 
+msgid "Chart Depth Units"
+msgstr "Harita Derinlik Birimleri"
+#
+# 
+msgid "Chart Display Filters"
+msgstr "Harita Görüntüleme Filtreleri"
+#
+# 
+msgid "Chart Display Options"
+msgstr "Harita Görüntüleme Seçenekleri"
+#
+# 
+msgid "Chart Display Style"
+msgstr "Harita Görüntüleme Tarzı"
+#
+# 
+msgid "Chart Print"
+msgstr "Çıktı Alma"
+#
+# 
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr "Chart1::Event...TCMgr Not Available"
+#
+# 
+msgid "Charts"
+msgstr "Haritalar"
+#
+# 
+msgid "Choose Font..."
+msgstr "Yazı Tipi Seç..."
+#
+# 
+msgid "Class"
+msgstr "Sınıf"
+#
+# 
+#, fuzzy
+msgid "Class:                "
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+# 
+msgid "Clear All"
+msgstr "Hepsini Sil"
+#
+# 
+msgid "Clear Anchor Watch"
+msgstr "Çapa İzlemeyi Kaldır"
+#
+# 
+msgid "Click to cancel the font selection."
+msgstr "Yazı tipi seçimini iptal etmek için tıklayınız."
+#
+# 
+msgid "Click to confirm the font selection."
+msgstr "Yazı tipi seçimini onaylamak için tıklayınız."
+#
+# 
+msgid "Close"
+msgstr "Kapat"
+#
+# 
+msgid "CoG"
+msgstr "CoG"
+#
+# 
+#, fuzzy
+msgid "Color:"
+msgstr "&Renk:"
+#
+# 
+msgid "Colors"
+msgstr "Renkler"
+#
+# 
+msgid "Console Legend"
+msgstr ""
+#
+# 
+msgid "Console Value"
+msgstr ""
+#
+# 
+msgid "Constrained by draught"
+msgstr ""
+#
+# 
+msgid "Container vessel"
+msgstr ""
+#
+# 
+msgid "Could not resolve TCP/IP host '"
+msgstr "TCP/IP hostu çözümlenemedi '"
+#
+# 
+msgid "Course UP Mode"
+msgstr "Gidilen Yön YUKARI Modu"
+#
+msgid "Course-Up Mode Display Update Period (Sec.)"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "Course:                 %03d Deg.\n"
+msgstr "Yön:               %5.0f Deg.\n"
+#
+# 
+#, fuzzy
+msgid "Course:                 000 Deg.\n"
+msgstr "Yön:               %5.0f Deg.\n"
+#
+# 
+#, fuzzy
+msgid "Course:                 Unavailable\n"
+msgstr "Hız:              Bilinmiyor\n"
+#
+# 
+msgid "Create Route"
+msgstr "Rota Oluştur"
+#
+# 
+msgid "Cruise ship"
+msgstr ""
+#
+# 
+msgid "Current"
+msgstr "Akıntı"
+#
+# 
+msgid "Cursor: "
+msgstr "Kursör: "
+#
+# 
+#, fuzzy
+msgid "Cyan"
+msgstr "İptal"
+#
+# 
+msgid "D/V"
+msgstr ""
+#
+msgid "Dark Blue"
+msgstr ""
+#
+msgid "Dark Cyan"
+msgstr ""
+#
+msgid "Dark Gray"
+msgstr ""
+#
+msgid "Dark Green"
+msgstr ""
+#
+msgid "Dark Magenta"
+msgstr ""
+#
+msgid "Dark Red"
+msgstr ""
+#
+msgid "Dark Yellow"
+msgstr ""
+#
+# 
+msgid "De-Clutter Text (exp.)"
+msgstr "Metni Düzenle"
+#
+# 
+msgid "Deactivate"
+msgstr "Deaktive Et"
+#
+# 
+msgid "Deactivate Route"
+msgstr "Rotayı Deaktive Et"
+#
+msgid "Decimal degrees"
+msgstr ""
+#
+# 
+msgid "Deep Depth"
+msgstr "Derin Derinlik"
+#
+# 
+#, fuzzy
+msgid "Default color"
+msgstr "Yazı rengi."
+#
+msgid "Degrees, Decimal minutes"
+msgstr ""
+#
+msgid "Degrees, Minutes, Seconds"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Delete All"
+msgstr "Hepsini Seç"
+#
+# 
+msgid "Delete Mark"
+msgstr "İşareti Sil"
+#
+# 
+msgid "Delete Route"
+msgstr "Rotayı Sil"
+#
+# 
+msgid "Delete Selection"
+msgstr "Seçimi Kaldır"
+#
+# 
+msgid "Delete Track"
+msgstr "Seyir İzini Sil"
+#
+# 
+msgid "Delete Waypoint"
+msgstr "Mevkiyi Sil"
+#
+# 
+msgid "Depart From"
+msgstr "Yola çıkılan yer"
+#
+# 
+msgid "Departure Time (m/d/y h:m)"
+msgstr ""
+#
+# 
+msgid "Depth Settings"
+msgstr "Derinlik Ayarları"
+#
+# 
+msgid "Depth Settings(m)"
+msgstr "Derinlik Ayarları(m)"
+#
+# 
+msgid "Description"
+msgstr "Açıklama"
+#
+# 
+msgid "Destination"
+msgstr "Varılacak yer"
+#
+# 
+msgid "Destination:          "
+msgstr "Varış yeri:          "
+#
+# 
+#, fuzzy
+msgid "Disable"
+msgstr "Uzaklık"
+#
+# 
+#, fuzzy
+msgid "Disable Full Screen Quilting"
+msgstr "Harita Örtüştürmeyi Aktive Et"
+#
+# 
+msgid "Display"
+msgstr "Görüntüleme"
+#
+# 
+msgid "Display Category"
+msgstr "Görüntüleme Kategorisi"
+#
+# 
+msgid "Distance"
+msgstr "Uzaklık"
+#
+# 
+msgid "Distance between rings"
+msgstr "Çemberler arası mesafe"
+#
+# 
+msgid "Done."
+msgstr ""
+#
+# 
+msgid "Dredge"
+msgstr ""
+#
+# 
+msgid "Drop MOB Marker"
+msgstr "MOB(Denize Adam Düştü) İşareti Koy"
+#
+# 
+msgid "Drop Mark Here"
+msgstr "Buraya İşaret Koy"
+#
+# 
+#, fuzzy
+msgid "E&xport All..."
+msgstr "Dışarıya &gönder..."
+#
+# 
+msgid "ENC/Vector"
+msgstr "ENC/Vektörel"
+#
+# 
+#, fuzzy
+msgid "ETA"
+msgstr "ETA (Tahmini Varış Zamanı)"
+#
+# 
+msgid "ETA          "
+msgstr "ETA/Tahmini Varış Zamanı "
+#
+# 
+#, fuzzy
+msgid "ETA:"
+msgstr "ETA (Tahmini Varış Zamanı)"
+#
+# 
+msgid "ETA:                  "
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+msgid "ETE"
+msgstr ""
+#
+# 
+msgid "ETE/Timestamp"
+msgstr "ETE/Timestamp"
+#
+# 
+msgid "Elapsed time : "
+msgstr ""
+#
+# 
+msgid "Enable"
+msgstr ""
+#
+# 
+msgid "Enable CM93 Detail Slider"
+msgstr "CM93 Detay Kaydırıcıyı Aktive Et"
+#
+# 
+msgid "Enable Chart Quilting"
+msgstr "Harita Örtüştürmeyi Aktive Et"
+#
+# 
+msgid "Enable Manual CM93 Offsets"
+msgstr ""
+#
+# 
+msgid "Enable Target Alert Acknowledge timeout (minutes)"
+msgstr ""
+#
+# 
+msgid "Enable Wheel-Zoom-to-Cursor"
+msgstr "Fare tekeri ile yakınlaştırmayı aktive et"
+#
+msgid "Enable transparent toolbar"
+msgstr ""
+#
+# 
+msgid "End Route"
+msgstr "Rotayı Sonlandır"
+#
+# 
+msgid "Engaged in Fishing"
+msgstr ""
+#
+# 
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr ""
+#
+# 
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+#
+# 
+msgid "Estimated time : "
+msgstr ""
+#
+# 
+msgid "Etc."
+msgstr "Diğer"
+#
+# 
+msgid "Export GPX file"
+msgstr "Dışarıya GPX dosyası gönder"
+#
+# 
+#, fuzzy
+msgid "Extend Route"
+msgstr "Rotayı Sonlandır"
+#
+# 
+#, fuzzy
+msgid "Extend Track"
+msgstr "Seyir İzini Sil"
+#
+# 
+msgid "ExtendedTideIcon"
+msgstr ""
+#
+# 
+msgid "F/V"
+msgstr ""
+#
+# 
+msgid "Fast ship"
+msgstr ""
+#
+# 
+msgid "Fathoms"
+msgstr "Kulaç (6 Ayak)"
+#
+# 
+msgid "Feet"
+msgstr "Ayak"
+#
+# 
+msgid "Ferry"
+msgstr ""
+#
+# 
+msgid "Filter NMEA Course and Speed data"
+msgstr ""
+#
+# 
+msgid "Filter Period (Sec.)"
+msgstr ""
+#
+# 
+msgid "Fishing boat"
+msgstr ""
+#
+# 
+msgid "Fix.Struct."
+msgstr ""
+#
+# 
+msgid "Fixed Structure"
+msgstr ""
+#
+# 
+msgid "Font Options"
+msgstr "Yazı Tipi Seçenekleri"
+#
+# 
+msgid "Force Full Database Rebuild"
+msgstr "Tüm veritabanı yeniden yapılandırmasını zorla"
+#
+# 
+msgid "Freightbarge"
+msgstr ""
+#
+# 
+msgid "Freightbarge with containers"
+msgstr ""
+#
+# 
+#, c-format
+msgid "From Ownship: %03d Deg  %6.2f NMi"
+msgstr "Kursör Gemiden: %03d Deg  %6.2f NMi"
+#
+# 
+msgid "GPS"
+msgstr "GPS"
+#
+# 
+msgid "GPS/Plotter Port"
+msgstr "GPS/Plotter Port"
+#
+# 
+msgid "GPSD Data Server"
+msgstr "GPSD Veri Sağlayıcısı"
+#
+# 
+msgid "GUI Options"
+msgstr "Kullanıcı Arayüzü Seçenekleri"
+#
+# 
+#, fuzzy
+msgid "Gas tanker"
+msgstr "Raster"
+#
+# 
+msgid "General cargo Vessel maritime"
+msgstr ""
+#
+# 
+msgid "Go To Here"
+msgstr "Buraya Git"
+#
+# 
+#, fuzzy
+msgid "Go To Mark/WP"
+msgstr "Buraya Git"
+#
+# 
+#, fuzzy
+msgid "Go to "
+msgstr "Buraya Git"
+#
+msgid "Green"
+msgstr ""
+#
+# 
+msgid "HSC"
+msgstr ""
+#
+# 
+msgid "HW"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "Heading:                %03d Deg.\n"
+msgstr "Bearing:              %5.0f Deg.\n"
+#
+# 
+msgid "Help"
+msgstr "Yardım"
+#
+# 
+msgid "Here"
+msgstr "Burası"
+#
+# 
+msgid "Hide WPT names"
+msgstr ""
+#
+# 
+msgid "Hide from chart"
+msgstr ""
+#
+# 
+msgid "High Speed Craft"
+msgstr ""
+#
+# 
+msgid "Hydrofoil"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "I&mport GPX..."
+msgstr "Dışarıdan &al..."
+#
+msgid "IMO:\n"
+msgstr ""
+#
+# 
+#, fuzzy, c-format
+msgid "IMO:                 %8d\n"
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+# 
+msgid "Icon"
+msgstr "İkon"
+#
+# 
+msgid "Import GPX file"
+msgstr "Dışarıdan GPX dosyası al"
+#
+# 
+msgid "Inland Blue Flag        Clear\n"
+msgstr ""
+#
+# 
+msgid "Inland Blue Flag        Set\n"
+msgstr ""
+#
+# 
+msgid "Insert Waypoint"
+msgstr "Mevki Koy"
+#
+# 
+msgid "Isol. Dngr"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Isolated Danger"
+msgstr "Rota Yöneticisi"
+#
+# 
+msgid "Jump To"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Jump To Position"
+msgstr "Konum"
+#
+# 
+msgid "Jump To Position..."
+msgstr ""
+#
+# 
+msgid "LE/V"
+msgstr ""
+#
+# 
+msgid "LMT @ Location"
+msgstr ""
+#
+# 
+msgid "LW"
+msgstr ""
+#
+# 
+msgid "Language"
+msgstr "Dil"
+#
+# 
+msgid "Language/Fonts"
+msgstr "Dil/Yazı Tipleri"
+#
+# 
+#, fuzzy
+msgid "Last Position Report Time:  "
+msgstr "Son Rapor Zamanı:         "
+#
+# 
+msgid "Latitude"
+msgstr "Enlem"
+#
+# 
+msgid "Law Enforcement Vessel"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Layer Name"
+msgstr "Burayı İşaretle"
+#
+# 
+msgid "Layers"
+msgstr ""
+#
+# 
+msgid "Ldg Lt Front"
+msgstr ""
+#
+# 
+msgid "Ldg Lt Rear"
+msgstr ""
+#
+# 
+msgid "Leading Light Front"
+msgstr ""
+#
+# 
+msgid "Leading Light Rear"
+msgstr ""
+#
+# 
+msgid "Leg"
+msgstr "Ayak"
+#
+# 
+msgid "Leg/Route"
+msgstr "Ayak/Rota"
+#
+# 
+#, fuzzy
+msgid "Leg: from "
+msgstr "Ayak: "
+#
+# 
+#, fuzzy
+msgid "Length"
+msgstr "Ayak"
+#
+# 
+msgid "License"
+msgstr "Lisans"
+#
+# 
+#, fuzzy
+msgid "Light"
+msgstr "&Kalınlık:"
+#
+# 
+#, fuzzy
+msgid "Light Gray"
+msgstr "&Kalınlık:"
+#
+# 
+msgid "Light Vessel/Rig"
+msgstr ""
+#
+# 
+msgid "Light w/Sectors"
+msgstr ""
+#
+# 
+msgid "Limit range: NM"
+msgstr ""
+#
+# 
+msgid "Links"
+msgstr "Bağlantılar"
+#
+# 
+msgid "Liquified gas tanker"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "List contents"
+msgstr "Lisans"
+#
+# 
+msgid "Local @ PC"
+msgstr ""
+#
+# 
+msgid "Lock all waypoints unless a waypoint property dialog is visible"
+msgstr "Mevki özellik kutusu görünür değilse tüm mevkileri kilitle "
+#
+# 
+msgid "Long Tow"
+msgstr ""
+#
+# 
+msgid "Longitude"
+msgstr "Boylam"
+#
+# 
+msgid "Look Ahead Mode"
+msgstr "Daha İleriyi Göster Modu"
+#
+# 
+msgid "Lost Targets"
+msgstr "Kayıp Hedefler"
+#
+# 
+msgid "Lt"
+msgstr ""
+#
+# 
+msgid "Lt sect."
+msgstr ""
+#
+# 
+msgid "LtV/Rig"
+msgstr ""
+#
+# 
+msgid "M/T"
+msgstr ""
+#
+# 
+msgid "M/V"
+msgstr ""
+#
+# 
+msgid "MAN OVERBOARD"
+msgstr "DENİZE ADAM DÜŞTÜ (MOB)"
+#
+# 
+msgid "META Objects"
+msgstr "META Nesneleri"
+#
+# 
+msgid "MMSI"
+msgstr "MMSI"
+#
+# 
+#, fuzzy, c-format
+msgid "MMSI:                 %09d\n"
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+# 
+msgid "M_COVR ID"
+msgstr ""
+#
+msgid "Magenta"
+msgstr ""
+#
+# 
+msgid "Mariner's Standard"
+msgstr "Denizci Standartı"
+#
+# 
+#, fuzzy
+msgid "Mariners Standard"
+msgstr "Denizci Standartı"
+#
+# 
+msgid "Mark Icon"
+msgstr "İşaret ikonu"
+#
+# 
+msgid "Mark Information"
+msgstr "İşaret Bilgisi"
+#
+# 
+msgid "Mark Name"
+msgstr "Burayı İşaretle"
+#
+# 
+msgid "Mark Properties"
+msgstr "İşaret Özellikleri"
+#
+# 
+msgid "Mark targets as lost after (Minutes:):"
+msgstr "Hedefleri kayıp olarak işaretlemek için geçecek süre (Dk.)"
+#
+# 
+msgid "Mark/WP Properties"
+msgstr "İşaret/Mevki Özellikleri"
+#
+# 
+#, fuzzy
+msgid "Marks"
+msgstr "Yeni İşaret"
+#
+# 
+msgid "Max Detail Here"
+msgstr "Detaylar Burada"
+#
+# 
+msgid "Measure Off"
+msgstr "Ölçmeyi Kapat"
+#
+# 
+msgid "Measure....."
+msgstr "Ölçüm....."
+#
+# 
+msgid "Med/V"
+msgstr ""
+#
+# 
+msgid "Medical Transport"
+msgstr ""
+#
+# 
+msgid "Mercator"
+msgstr "Merkator"
+#
+# 
+msgid "Meters"
+msgstr "Metre"
+#
+# 
+msgid "Metres"
+msgstr "Metre"
+#
+# 
+msgid "Mil/V"
+msgstr ""
+#
+# 
+msgid "Military Vessel"
+msgstr ""
+#
+# 
+msgid "Moored"
+msgstr ""
+#
+# 
+msgid "Motor freighter"
+msgstr ""
+#
+# 
+msgid "Motor freighter pushing at least one tank-ship"
+msgstr ""
+#
+# 
+msgid "Motor freighter pushing one or more freighters"
+msgstr ""
+#
+# 
+msgid "Motor freighter with one or more ships alongside"
+msgstr ""
+#
+# 
+msgid "Motor freighter with tanker"
+msgstr ""
+#
+# 
+msgid "Motor freighter, tug"
+msgstr ""
+#
+# 
+msgid "Motor tanker"
+msgstr ""
+#
+# 
+msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
+msgstr ""
+#
+# 
+msgid "Motor tanker, liquid cargo, type C"
+msgstr ""
+#
+# 
+msgid "Motor tanker, liquid cargo, type N"
+msgstr ""
+#
+# 
+msgid "Motor tanker, tug"
+msgstr ""
+#
+# 
+msgid "Move Boat Here"
+msgstr "Gemiyi Buraya Taşı"
+#
+# 
+msgid "NMEA Baud Rate"
+msgstr "NMEA Aktarım Hızı"
+#
+# 
+msgid "NMEA Data Source"
+msgstr "NMEA Veri Kaynağı"
+#
+# 
+msgid "NMEA Options"
+msgstr "NMEA Seçenekleri"
+#
+# 
+msgid "Name"
+msgstr "İsim"
+#
+# 
+#, fuzzy
+msgid "Name:  "
+msgstr " İsim:  "
+#
+# 
+msgid "Nav Status"
+msgstr "Nav Durumu"
+#
+# 
+msgid "Navigation Data"
+msgstr "Navigasyon Verisi"
+#
+# 
+msgid "Navigational Status:  "
+msgstr "Navigasyon Durumu:  "
+#
+# 
+msgid "New Mark"
+msgstr "Yeni İşaret"
+#
+# 
+msgid "Next"
+msgstr "Sonraki"
+#
+# 
+msgid "Next tide event"
+msgstr ""
+#
+# 
+msgid "No CPA Calculation if target range is greater than (NMi):"
+msgstr "CPA hesabı yapmayı bırakmak için hedefin varacağı uzaklık (NMi):"
+#
+# 
+msgid "No Chart Available"
+msgstr "Hazırda Harita Yok"
+#
+# 
+msgid "No. of items"
+msgstr ""
+#
+# 
+msgid "Not Under Command"
+msgstr ""
+#
+# 
+msgid "Number of radar rings shown"
+msgstr "Gösterilen radar çemberi sayısı"
+#
+# 
+msgid "OK"
+msgstr "Tamam"
+#
+# 
+msgid "Object Query"
+msgstr "Nesne Sorgulama"
+#
+# 
+msgid "Object, not otherwise specified"
+msgstr ""
+#
+# 
+msgid "Object, towed, not otherwise specified"
+msgstr ""
+#
+# 
+msgid "Ok"
+msgstr "Tamam"
+#
+# 
+msgid "OpenCPN Alert"
+msgstr "OpenCPN Alarmı"
+#
+# 
+msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN Harita Güncelleme"
+#
+# 
+#, fuzzy
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN Harita Güncelleme"
+#
+# 
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN Harita Güncelleme"
+#
+# 
+msgid "OpenCPN Converting Track to Route...."
+msgstr ""
+#
+# 
+msgid "OpenCPN Directory Scan...."
+msgstr ""
+#
+# 
+msgid "OpenCPN Info"
+msgstr "OpenCPN Info"
+#
+# 
+msgid "OpenCPN Message"
+msgstr "OpenCPN Mesaj"
+#
+# 
+msgid "OpenCPN PlugIn Base Class"
+msgstr ""
+#
+# 
+msgid ""
+"OpenCPN PlugIn Base Class\n"
+"PlugInManager created this base class"
+msgstr ""
+#
+# 
+msgid "OpenCPN Route Create"
+msgstr "OpenCPN Rota Oluşturma"
+#
+# 
+#, fuzzy
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN Rota Oluşturma"
+#
+# 
+#, fuzzy
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN Alarmı"
+#
+# 
+msgid "Options"
+msgstr "Seçenekler"
+#
+# 
+msgid "Other"
+msgstr "Diğer"
+#
+# 
+msgid "OverZoom"
+msgstr "Aşırı Yakınlaştırma"
+#
+# 
+msgid "Overwrite existing file?"
+msgstr "Varolan dosyanın üzerine yaz?"
+#
+# 
+msgid "OwnShip COG arrow predictor length (Minutes):"
+msgstr "Gemi COG oku tahmini uzaklığı (Dakika):"
+#
+# 
+msgid "OwnShip Display Options"
+msgstr "Gemi Görüntüleme Seçenekleri"
+#
+# 
+msgid "P/V"
+msgstr ""
+#
+# 
+msgid "PC/V"
+msgstr ""
+#
+# 
+msgid "Paper Chart"
+msgstr "Kağıt Harita"
+#
+# 
+msgid "Pass/V"
+msgstr ""
+#
+# 
+msgid "Passenger Ship"
+msgstr ""
+#
+# 
+msgid "Passenger ship without accomodation"
+msgstr ""
+#
+# 
+msgid "Passenger ship, ferry, cruise ship, red cross ship"
+msgstr ""
+#
+# 
+msgid "Pilot Vessel"
+msgstr ""
+#
+# 
+msgid "Place Trackpoints at distance interval (NMi):"
+msgstr "İz noktalarını katedilen mesafeye göre yerleştir (NMi):"
+#
+# 
+msgid "Place Trackpoints at time interval (Seconds):"
+msgstr "İz noktalarını zamana göre yerleştir (saniye):"
+#
+# 
+msgid "Plain"
+msgstr "Düz"
+#
+# 
+msgid "Plan Speed"
+msgstr "Plan Hız"
+#
+# 
+#, fuzzy
+msgid "Plan speed (Kts)"
+msgstr "Plan Hız"
+#
+# 
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "CPA/TCPA Alarmlarında Ses Çıkar"
+#
+# 
+msgid "Play ships bells"
+msgstr "Geminin çanlarını çal"
+#
+# 
+msgid "Please restart OpenCPN to activate new language selection."
+msgstr "Yeni dil seçimini aktive etmek için OpenCPN'i yeniden başlatın."
+#
+# 
+#, fuzzy
+msgid "Pleasure craft"
+msgstr "Ölçmeyi Kapat"
+#
+# 
+msgid "Pleasure craft, longer than 20 metres"
+msgstr ""
+#
+# 
+msgid "PlugInManager searching for PlugIns in location "
+msgstr ""
+#
+# 
+msgid "PlugInManager: Deactivating PlugIn: "
+msgstr ""
+#
+# 
+msgid "PlugInManager: Initializing PlugIn: "
+msgstr ""
+#
+# 
+msgid "PlugInManager: Loading PlugIn: "
+msgstr ""
+#
+# 
+msgid "PlugInManager: UnLoading PlugIn: "
+msgstr ""
+#
+# 
+#, c-format
+msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
+msgstr ""
+#
+# 
+msgid "PlugIns"
+msgstr ""
+#
+# 
+msgid "Points"
+msgstr "Noktalar"
+#
+# 
+msgid "Pollution Control Vessel"
+msgstr ""
+#
+# 
+msgid "Polyconic"
+msgstr "Polikonik"
+#
+# 
+#, fuzzy
+msgid "Port"
+msgstr "Noktalar"
+#
+# 
+msgid "Port Hand"
+msgstr ""
+#
+# 
+msgid "Port Hand Mark"
+msgstr ""
+#
+# 
+msgid "Port Tender"
+msgstr ""
+#
+# 
+msgid "Position"
+msgstr "Konum"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Position Report Age:       %3d Sec.\n"
+"\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+#, fuzzy
+msgid "Position:               "
+msgstr "Konum:                 "
+#
+# 
+#, fuzzy
+msgid ""
+"Possible libgps API version mismatch.\n"
+"libgps did not reasonably respond to version request\n"
+"\n"
+"Would you like to use this version of libgps anyway?"
+msgstr ""
+"libgps API versiyonu uymuyor.\n"
+"Bulunan Opencpn versiyonu %d.%d, gereken en düşük versiyon 3.1"
+#
+# 
+msgid "Pref. Chnl"
+msgstr ""
+#
+# 
+msgid "Preferences"
+msgstr ""
+#
+# 
+msgid "Preferred Channel Port Hand"
+msgstr ""
+#
+# 
+msgid "Preferred Channel Starboard Hand"
+msgstr ""
+#
+# 
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr "GPS'i Rota/Mevki yüklemesi için hazırlayın ve Gönder'e basın..."
+#
+# 
+msgid "Preserve scale when switching charts"
+msgstr "Haritalar arası geçişte ölçeği koru"
+#
+# 
+msgid "Prev"
+msgstr "Önceki"
+#
+# 
+msgid "Preview:"
+msgstr "Ön izleme:"
+#
+# 
+msgid "Print Chart"
+msgstr "Harita Çıktısı Al"
+#
+# 
+msgid "Printing"
+msgstr "Çıktı Alma"
+#
+# 
+#, fuzzy
+msgid "Processing Waypoints..."
+msgstr "Bütün Mevkileri Sil..."
+#
+# 
+msgid "Progress..."
+msgstr "İlerliyor..."
+#
+# 
+msgid "Properties"
+msgstr "Özellikler"
+#
+# 
+msgid "Pushboat, single"
+msgstr ""
+#
+# 
+msgid "Pushtow, eight barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, eight cargo barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, five barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, five cargo barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, four barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, four cargo barges"
+msgstr ""
+#
+msgid "Pushtow, nine or more barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, nine or more barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, one cargo barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, one tank/gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, seven barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, seven cargo barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, six barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, six cargo barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, three barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, three cargo barges"
+msgstr ""
+#
+# 
+msgid "Pushtow, two barges at least one tanker or gas barge"
+msgstr ""
+#
+# 
+msgid "Pushtow, two cargo barges"
+msgstr ""
+#
+# 
+msgid "RACON"
+msgstr ""
+#
+# 
+msgid "Radar rings"
+msgstr "Radar çemberleri"
+#
+# 
+msgid "Range"
+msgstr "Menzil"
+#
+# 
+#, fuzzy
+msgid "Range:                  Unavailable\n"
+msgstr "Hız:              Bilinmiyor\n"
+#
+# 
+#, c-format
+msgid "Range:                %5.1f NM\n"
+msgstr "Menzil:                %5.1f NM\n"
+#
+# 
+msgid "Raster"
+msgstr "Raster"
+#
+# 
+#, fuzzy, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+#, fuzzy, c-format
+msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+#, fuzzy
+msgid "Rate Of Turn            0\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+#, fuzzy
+msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+msgstr "Rapor Yaşı:              %3d Sec.\n"
+#
+# 
+msgid "Real"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Real (On Position)"
+msgstr "Konum"
+#
+# 
+#, fuzzy
+msgid "Real(Off Position)"
+msgstr "Konum"
+#
+# 
+#, fuzzy
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr ""
+"OpenCPN'in, konfigürasyon dosyası girdileri ile harita veritabanını "
+"güncellemeye ihtiyacı var...."
+#
+msgid "Red"
+msgstr ""
+#
+# 
+msgid "Red cross ship"
+msgstr ""
+#
+# 
+msgid "Ref. Pt"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Reference Point"
+msgstr "Kerteriz İstasyon:"
+#
+# 
+#, fuzzy
+msgid "Reference Station :"
+msgstr "Kerteriz İstasyon:"
+#
+# 
+msgid "Remaining time : "
+msgstr ""
+#
+# 
+msgid "Remove Waypoint from Route"
+msgstr "Mevkiyi Rotadan Çıkar"
+#
+# 
+msgid "Remove lost targets after (Minutes:):"
+msgstr "Kayıp hedefleri kaldırmak için geçecek süre (Dk.):"
+#
+# 
+msgid "Remove this chart from quilt."
+msgstr "Bu haritayı örtüştürmeden çıkar."
+#
+# 
+msgid "Rename Waypoints?"
+msgstr "Mevkileri Yeniden İsimlendir?"
+#
+# 
+msgid "Reserved 11"
+msgstr ""
+#
+# 
+msgid "Reserved 12"
+msgstr ""
+#
+# 
+msgid "Reserved 13"
+msgstr ""
+#
+# 
+msgid "Reserved 14"
+msgstr ""
+#
+# 
+msgid "Restricted Manoeuvrability"
+msgstr ""
+#
+# 
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr ""
+#
+# 
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr ""
+#
+# 
+msgid "Reverse Route"
+msgstr "Rotayı Tersine Çevir"
+#
+# 
+msgid "Rollover"
+msgstr ""
+#
+# 
+msgid "Route"
+msgstr "Rota"
+#
+# 
+msgid "Route Manager"
+msgstr "Rota Yöneticisi"
+#
+# 
+msgid "Route Name"
+msgstr "Rota İsmi"
+#
+# 
+msgid "Route Properties"
+msgstr "Rota Özellikleri"
+#
+# 
+msgid "Route Uploaded successfully."
+msgstr ""
+#
+# 
+msgid "Route from Track"
+msgstr ""
+#
+# 
+msgid "RouteLegInfoRollover"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Routes"
+msgstr "Rota"
+#
+# 
+msgid "S/V"
+msgstr ""
+#
+# 
+msgid "SAR/V"
+msgstr ""
+#
+# 
+msgid "SOG COG"
+msgstr ""
+#
+# 
+msgid "Safe Water"
+msgstr ""
+#
+# 
+msgid "Safety Depth"
+msgstr "Güvenli Derinlik"
+#
+# 
+msgid "Sailing Vessel"
+msgstr ""
+#
+# 
+msgid "Scale In"
+msgstr "Daha detaylı (küçük alanlı) haritaya geç"
+#
+# 
+msgid "Scale Out"
+msgstr "Daha az detaylı (büyük alanlı) haritaya geç"
+#
+# 
+msgid "Search and Rescue Vessel"
+msgstr ""
+#
+# 
+msgid "Select Alert Sound"
+msgstr "Alarm Sesini Seç"
+#
+# 
+msgid "Select All"
+msgstr "Hepsini Seç"
+#
+# 
+msgid "Select Chart Types for Quilting"
+msgstr "Örtüştürme için Harita Tiplerini Seç"
+#
+# 
+msgid "Select Sound File"
+msgstr "Ses Dosyası Seç"
+#
+# 
+msgid "Send"
+msgstr "Gönder"
+#
+# 
+msgid "Send Route To GPS"
+msgstr "Rotayı GPS'e Gönder"
+#
+# 
+msgid "Send To GPS..."
+msgstr "GPS'e Gönder..."
+#
+# 
+msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+# 
+msgid "Set Anchor Watch"
+msgstr "Çapa İzleme Oluştur"
+#
+# 
+#, fuzzy
+msgid "Set Course Up Mode"
+msgstr "Gidilen Yön YUKARI Modu"
+#
+# 
+msgid "Set North Up Mode"
+msgstr ""
+#
+# 
+msgid "Settings"
+msgstr "Ayarlar"
+#
+# 
+msgid "Shallow Depth"
+msgstr "Sığ Derinlik"
+#
+# 
+msgid "Shift to Larger Scale Chart"
+msgstr "Daha Büyük Ölçekli Haritaya Geç"
+#
+# 
+msgid "Shift to Smaller Scale Chart"
+msgstr "Daha Küçük Ölçekli Haritaya Geç"
+#
+# 
+msgid "Show AIS Targets"
+msgstr "AIS Hedeflerini Göster"
+#
+# 
+msgid "Show ATON labels"
+msgstr "ATON Etiketlerini Göster"
+#
+# 
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "CPA/TCPA Alarm Kutusunu Göster"
+#
+# 
+msgid "Show Chart Outlines"
+msgstr "Harita Sınırlarını Göster"
+#
+# 
+#, fuzzy
+msgid "Show Current Information"
+msgstr "İşaret Bilgisi"
+#
+# 
+msgid "Show Currents"
+msgstr "Akıntıları Göster"
+#
+# 
+#, fuzzy
+msgid "Show Depth Units"
+msgstr "Derinlik Birimlerini Göster"
+#
+# 
+msgid "Show ENC Text"
+msgstr "ENC Metnini Göster"
+#
+# 
+msgid "Show GPS/NMEA data stream window"
+msgstr "GPS/NMEA veri akış penceresini göster"
+#
+# 
+#, fuzzy
+msgid "Show Grid"
+msgstr "Gelgitleri Göster"
+#
+# 
+msgid "Show Important Text Only"
+msgstr "Sadece Önemli Metinleri Göster"
+#
+# 
+#, fuzzy
+msgid "Show Lat/Long as"
+msgstr "AIS Hedeflerini Göster"
+#
+# 
+msgid "Show Light Descriptions"
+msgstr "Fener Açıklamalarını Göster"
+#
+# 
+msgid "Show Name"
+msgstr "İsim Göster"
+#
+# 
+msgid "Show Printing Icon"
+msgstr "Çıktı Alma İkonunu Göster"
+#
+# 
+#, fuzzy
+msgid "Show Soundings"
+msgstr "Sesleri Göster"
+#
+# 
+msgid "Show Status Bar"
+msgstr "Durum Çubuğunu Göster"
+#
+# 
+#, fuzzy
+msgid "Show Tide Information"
+msgstr "İşaret Bilgisi"
+#
+# 
+msgid "Show Tides"
+msgstr "Gelgitleri Göster"
+#
+# 
+msgid "Show Track icon"
+msgstr "Seyir İzi İkonunu Göster"
+#
+# 
+#, fuzzy
+msgid "Show WPT names"
+msgstr "İsim Göster"
+#
+msgid "Show layers initially"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Show on chart"
+msgstr "AIS Hedeflerini Göster"
+#
+# 
+msgid "Show radar rings"
+msgstr "Radar çemberlerini göster"
+#
+# 
+msgid "Show skewed raster charts as North-Up"
+msgstr ""
+#
+# 
+msgid "Show target COG arrows"
+msgstr "Hedef COG oklarını göster"
+#
+# 
+msgid "Show target tracks"
+msgstr "Hedef izlerini göster"
+#
+# 
+msgid "Show toolbar in fullscreen mode"
+msgstr ""
+#
+# 
+msgid "Shows the font preview."
+msgstr "Yazı ön izlemesi."
+#
+# 
+msgid "Simplified"
+msgstr "Basitleştirilmiş"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm\n"
+"\n"
+msgstr ""
+"Büyüklük:            %5dm x %dm x ---m\n"
+"\n"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm x %4.1fm\n"
+"\n"
+msgstr ""
+"Büyüklük:            %5dm x %dm x %4.1fm\n"
+"\n"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 %dm x %dm x ---m\n"
+"\n"
+msgstr ""
+"Büyüklük:            %5dm x %dm x ---m\n"
+"\n"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:                 ---m x ---m x %4.1fm\n"
+"\n"
+msgstr ""
+"Büyüklük:            ---m x ---m x %4.1fm\n"
+"\n"
+#
+# 
+#, fuzzy
+msgid ""
+"Size:                 ---m x ---m x ---m\n"
+"\n"
+msgstr ""
+"Büyüklük:            ---m x ---m x ---m\n"
+"\n"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x %4.1fm\n"
+"\n"
+msgstr ""
+"Büyüklük:            %5dm x %dm x %4.1fm\n"
+"\n"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"Size:               %5.1fm x %4.1fm x ---m\n"
+"\n"
+msgstr ""
+"Büyüklük:            %5dm x %dm x ---m\n"
+"\n"
+#
+# 
+msgid "SoG"
+msgstr "SoG"
+#
+# 
+#, fuzzy
+msgid "Spare"
+msgstr "Başlangıç"
+#
+# 
+msgid "Special"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Special Mark"
+msgstr "İşareti Sil"
+#
+# 
+#, fuzzy
+msgid "Speed (Kts)"
+msgstr "Rüzgar Hızı, Kts."
+#
+# 
+#, fuzzy
+msgid "Speed:                  Unavailable\n"
+msgstr "Hız:              Bilinmiyor\n"
+#
+# 
+#, c-format
+msgid "Speed:                %5.2f Kts.\n"
+msgstr "Hız:                 %5.2f Kts.\n"
+#
+# 
+#, fuzzy
+msgid "Split Route"
+msgstr "Rotayı Sil"
+#
+# 
+#, fuzzy
+msgid "Split Track"
+msgstr "Hedef izlerini göster"
+#
+# 
+msgid "Standard"
+msgstr "Standart"
+#
+# 
+msgid "Starboard Hand Mark"
+msgstr ""
+#
+# 
+msgid "Start"
+msgstr "Başlangıç"
+#
+# 
+msgid "Stbd"
+msgstr ""
+#
+# 
+msgid "Stbd Hand"
+msgstr ""
+#
+# 
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Demir atmış hedefler için alarmları yok say"
+#
+# 
+msgid "Supress anchored/moored targets"
+msgstr "Demir atmış hedefleri yok say"
+#
+# 
+msgid "Symbolized"
+msgstr "Sembollü"
+#
+# 
+msgid "TCP/IP WiFi Data Server"
+msgstr "TCP/IP WiFi Veri Sağlayıcısı"
+#
+# 
+msgid "TCPA:  \n"
+msgstr "TCPA(Time to Closest Point of Approach):  \n"
+#
+# 
+#, c-format
+msgid "TCPA:                 %02d:%02d Hr:Min\n"
+msgstr "TCPA(Time toClosest Point of Approach): %02d:%02d Hr:Min\n"
+#
+# 
+msgid "Tankbarge"
+msgstr ""
+#
+# 
+msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
+msgstr ""
+#
+# 
+msgid "Tankbarge, gas"
+msgstr ""
+#
+# 
+msgid "Tankbarge, liquid cargo, type C"
+msgstr ""
+#
+# 
+msgid "Tankbarge, liquid cargo, type N"
+msgstr ""
+#
+# 
+msgid "Tanker"
+msgstr ""
+#
+msgid "Target Count"
+msgstr ""
+#
+# 
+msgid "Target info"
+msgstr ""
+#
+# 
+msgid "Temporary GOTO Route"
+msgstr "Geçici GOTO Rotası"
+#
+# 
+#, fuzzy
+msgid "Temporary MOB Route"
+msgstr "Geçici GOTO Rotası"
+#
+# 
+#, fuzzy
+msgid "Temporary layer"
+msgstr "Geçici GOTO Rotası"
+#
+# 
+#, fuzzy
+msgid "Tender"
+msgstr "Gönder"
+#
+# 
+msgid "Test Alert Sound"
+msgstr "Alarm Sesini Test Et"
+#
+# 
+msgid "Text Element"
+msgstr "Metin Öğesi"
+#
+# 
+msgid "The font colour."
+msgstr "Yazı rengi."
+#
+# 
+msgid "The font family."
+msgstr "Yazı tipi ailesi."
+#
+# 
+msgid "The font point size."
+msgstr "Yazı büyüklüğü."
+#
+# 
+msgid "The font style."
+msgstr "Yazı tarzı."
+#
+# 
+msgid "The font weight."
+msgstr "Yazı kalınlığı."
+#
+# 
+msgid "There"
+msgstr "Orası"
+#
+# 
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr ""
+"Çıktı almada problem var.\n"
+"Belki seçili yazıcınız doğru bir şekilde kurulmamıştır?"
+#
+# 
+msgid "This Leg"
+msgstr "Bu Ayak"
+#
+# 
+msgid "Tide"
+msgstr "Gelgit"
+#
+# 
+msgid "TideCurrentGraphRollover"
+msgstr ""
+#
+# 
+msgid "Time Enroute"
+msgstr "Rotadaki Zaman"
+#
+# 
+msgid "Times shown as"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Timestamp"
+#
+# 
+msgid "To"
+msgstr "ya"
+#
+# 
+msgid "To Waypoint"
+msgstr "Mevkiye"
+#
+# 
+msgid "Today"
+msgstr "Bugün"
+#
+# 
+msgid "Toggle Tracking"
+msgstr "İzleme şeklini değiştir"
+#
+# 
+msgid "Tomorrow"
+msgstr "Yarın"
+#
+# 
+msgid "ToolBox"
+msgstr "Araç Kutusu"
+#
+# 
+msgid "ToolTips"
+msgstr ""
+#
+# 
+msgid "Total Distance"
+msgstr "Toplam Mesafe"
+#
+# 
+#, fuzzy
+msgid "Tow"
+msgstr "ya"
+#
+# 
+#, fuzzy
+msgid "Track Name"
+msgstr "Burayı İşaretle"
+#
+# 
+msgid "Track Properties"
+msgstr "Seyir İzi Özellikleri"
+#
+# 
+msgid "Tracks"
+msgstr "Seyir İzleri"
+#
+# 
+msgid "Transverse Mercator"
+msgstr "Transverse Merkator"
+#
+# 
+#, c-format
+msgid "TrueScale: %8.0f             "
+msgstr "DoğruÖlçek: %8.0f            "
+#
+# 
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.1fx"
+msgstr "Doğru Ölçek: %8.0f  Yakınlaştırma %4.1fx"
+#
+# 
+#, c-format
+msgid "TrueScale: %8.0f  Zoom %4.2fx"
+msgstr "Doğru Ölçek: %8.0f  Yakınlaştırma %4.2fx"
+#
+# 
+msgid "Tug"
+msgstr ""
+#
+# 
+msgid "Tug freighter, coupled"
+msgstr ""
+#
+# 
+msgid "Tug, assisting a vessel or linked combination"
+msgstr ""
+#
+# 
+msgid "Tug, freighter"
+msgstr ""
+#
+# 
+msgid "Tug, freighter/tanker, coupled"
+msgstr ""
+#
+# 
+msgid "Tug, one or more tows"
+msgstr ""
+#
+# 
+msgid "Tug, single"
+msgstr ""
+#
+# 
+msgid "Tug, tanker"
+msgstr ""
+#
+# 
+msgid "Type"
+msgstr "Tip"
+#
+# 
+#, fuzzy
+msgid "Type:                 "
+msgstr "ETA(Tahmini Varış Zamanı):"
+#
+# 
+#, fuzzy
+msgid "UN Ship Type:         "
+msgstr "Gemi Tipi:           "
+#
+# 
+msgid "UTC"
+msgstr "UTC"
+#
+# 
+msgid ""
+"Unable to initialize libgps.\n"
+"\n"
+"gpsd host is: "
+msgstr ""
+"libgps başlatılamadı.\n"
+"\n"
+"gpsd hostu: "
+#
+# 
+#, fuzzy
+msgid "Unable to load libgps"
+msgstr ""
+"libgps yüklenemedi.\n"
+"\n"
+"gpsd hostu: "
+#
+# 
+#, fuzzy
+msgid "Undefined"
+msgstr "&Altı çizili"
+#
+# 
+msgid "Under way sailing"
+msgstr ""
+#
+# 
+msgid "Underway"
+msgstr ""
+#
+# 
+msgid "Unit carrier maritime"
+msgstr ""
+#
+# 
+msgid "Units"
+msgstr "Birim"
+#
+# 
+msgid "Unk"
+msgstr "Bilinmyr"
+#
+# 
+msgid "Unknown"
+msgstr "Bilinmeyen"
+#
+# 
+msgid "Unlist contents"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Unspecified"
+msgstr "&Altı çizili"
+#
+# 
+msgid "Update Control"
+msgstr "Güncelleme Kontrolü"
+#
+# 
+msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+msgstr ""
+#
+# 
+msgid "Use SCAMIN"
+msgstr "SCAMIN Kullan"
+#
+# 
+msgid "Use nearby waypoint?"
+msgstr "Yakındaki mevkiyi kullan?"
+#
+# 
+msgid "User X Offset"
+msgstr ""
+#
+# 
+msgid "User X Offset (Metres)"
+msgstr ""
+#
+# 
+msgid "User Y Offset"
+msgstr ""
+#
+# 
+msgid "User Y Offset (Metres)"
+msgstr ""
+#
+# 
+msgid "Vector Charts"
+msgstr "Vektörel Haritalar"
+#
+# 
+msgid "Vessel Diving"
+msgstr ""
+#
+# 
+msgid "Vessel Dredging"
+msgstr ""
+#
+# 
+msgid "Vessel Fishing"
+msgstr ""
+#
+# 
+msgid "Vessel Towing"
+msgstr ""
+#
+# 
+msgid "Vessel Towing, Long"
+msgstr ""
+#
+# 
+msgid "Vessel, type unknown"
+msgstr ""
+#
+# 
+msgid ""
+"Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
+"dredge"
+msgstr ""
+#
+# 
+msgid "Virtual"
+msgstr ""
+#
+# 
+msgid "Virtual (Off Position)"
+msgstr ""
+#
+# 
+msgid "Virtual (On Position)"
+msgstr ""
+#
+# 
+msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
+msgstr "WAV dosyaları (*.wav)|*.wav|Tüm dosyalar (*.*)|*.*"
+#
+# 
+msgid "Warn if CPA less than (NMi):"
+msgstr "CPA bu değerin altına düştüğünde uyarı ver (NMi):"
+#
+# 
+msgid "Waypoint Locking"
+msgstr "Mevki Kilitleme"
+#
+# 
+#, fuzzy
+msgid "Waypoint Name"
+msgstr "Mevkiler"
+#
+# 
+msgid "Waypoint(s) Uploaded successfully."
+msgstr ""
+#
+# 
+msgid "Waypoints"
+msgstr "Mevkiler"
+#
+# 
+msgid ""
+"Waypoints can be renamed to reflect the new order, the names will be '001', "
+"'002' etc.\n"
+"\n"
+"Do you want to rename the waypoints?"
+msgstr ""
+"Yeni sıralamayı göstermek için mevki noktaları '001' '002' ... şeklinde "
+"yeniden isimlendirilebilir.\n"
+"\n"
+"Yeniden isimlendirmek ister misiniz?"
+#
+# 
+#, fuzzy
+msgid "Welcome to OpenCPN"
+msgstr "OpenCPN Hakkında"
+#
+# 
+msgid "Whether the font is underlined."
+msgstr "Yazının altı çizili mi?"
+#
+msgid "White"
+msgstr ""
+#
+# 
+msgid "WiFi Options"
+msgstr "WiFi Seçenekleri"
+#
+# 
+msgid "Wing In Ground Effect"
+msgstr ""
+#
+# 
+msgid "X Offset (Positive moves map to East) (NMi Projected) :"
+msgstr ""
+#
+# 
+msgid "XTE         L"
+msgstr "XTE/İz Hatası       Sol"
+#
+# 
+msgid "XTE         R"
+msgstr "XTE/İz Hatası       Sağ"
+#
+# 
+msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
+msgstr ""
+#
+# 
+msgid "Yat"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Yellow"
+msgstr "Çağrı"
+#
+# 
+msgid "Zoom In"
+msgstr "Yakınlaştır"
+#
+# 
+msgid "Zoom Out"
+msgstr "Uzaklaştır"
+#
+# 
+msgid "[Class] Type (Status)"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "_A"
+msgstr "A"
+#
+# 
+#, fuzzy
+msgid "_B"
+msgstr "B"
+#
+# 
+msgid "_plus"
+msgstr ""
+#
+# 
+msgid "cm93 Detail"
+msgstr "cm93 Detayı"
+#
+# 
+#, fuzzy, c-format
+msgid ""
+"libgps API version mismatch.\n"
+"OpenCPN found version %d.%d, but requires at least version 3.0\n"
+"\n"
+"Would you like to use this version of libgps anyway?"
+msgstr ""
+"libgps API versiyonu uymuyor.\n"
+"Bulunan Opencpn versiyonu %d.%d, gereken en düşük versiyon 3.1"
+#
+# 
+msgid "wgsox"
+msgstr ""
+#
+# 
+msgid "wgsoy"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "&Close"
+#~ msgstr "&Kapat"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "&Delete All Routes..."
+#~ msgstr "&Bütün rotaları sil..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "&Delete All Tracks..."
+#~ msgstr "&Bütün seyir izlerini sil..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "(Active Track)"
+#~ msgstr "(Aktif Seyir İzi)"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "CallSign:  "
+#~ msgstr "Arama İşareti:"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Chart file corrupt.. disabling this chart \n"
+#~ msgstr "Harita dosyası bozuk.. bu harita devre dışı bırakılıyor \n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid ""
+#~ "Class unknown\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Sınıf bilinmiyor\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid ""
+#~ "Class:     A\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Sınıf:     A\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid ""
+#~ "Class:     B\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Sınıf:     B\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Current Velocity, Kts."
+#~ msgstr "Şuanki Hız, Kts."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "ETA:                  Unknown"
+#~ msgstr "ETA(Tahmini Varış Zamanı): Bilinmiyor"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+#~ msgid "Exit OpenCPN"
+#~ msgstr "OpenCPN'den Çıkış"
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Failed to load libgps.so"
+#~ msgstr ""
+#~ "libgps yüklenemedi.\n"
+#~ "\n"
+#~ "gpsd hostu: "
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Failed to load libgps.so.19"
+#~ msgstr ""
+#~ "libgps yüklenemedi.\n"
+#~ "\n"
+#~ "gpsd hostu: "
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GPX"
+#~ msgstr "GPX"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GRIB Data"
+#~ msgstr "GRIB Verisi"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GRIB Display Control"
+#~ msgstr "GRIB Ekranı"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GRIB File Directory"
+#~ msgstr "GRIB Dosyası Klasörü"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Import new layer"
+#~ msgstr "Dışarıdan GPX dosyası al"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "MarinersStandard"
+#~ msgstr "Denizci Standartı"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#~ msgstr ""
+#~ "Saklı CRAIN GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
+#~ "geçiniz"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+#~ msgstr ""
+#~ "Saklı HTSGW GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
+#~ "geçiniz"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
+#~ msgstr ""
+#~ "Saklı OCEAN CURRENT GRIB'i görmek için uzaklaştırma yapınız ya da büyük "
+#~ "haritaya geçiniz"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#~ msgstr ""
+#~ "Saklı SEATEMP GRIB'i görmek için uzaklaştırma yapınız ya da büyük haritaya "
+#~ "geçiniz"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Pressure, mBar"
+#~ msgstr "Basınç, mBar"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Recent Report Period:   %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Güncel Rapor Peryodu:     %3d Sec.\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Route Manager..."
+#~ msgstr "Rota Yöneticisi..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Sea Surface Temp, C"
+#~ msgstr "Deniz Yüzeyi Sıcaklığı, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Select GRIB Directory"
+#~ msgstr "GRIB Klasörünü Seç"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Send Route To GPS..."
+#~ msgstr "Rotayı GPS'e Gönder..."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "ShipName:  "
+#~ msgstr "Gemi İsmi:  "
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show GPX icons"
+#~ msgstr "GPX ikonlarını göster"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show GRIB dialog"
+#~ msgstr "GRIB kutusunu göster"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Show GRIB icon"
+#~ msgstr "GRIB ikonu göster"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Significant Wave Height, m"
+#~ msgstr "Anlamlı Dalga Yüksekliği, m."
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük:            %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Listing"
+#~ msgstr "İzleme şeklini değiştir"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Toggle Names"
+#~ msgstr "Rota İsmi"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Use High Definition Graphics"
+#~ msgstr "Yüksek çözünürlüklü çizim kullan"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "UYARI: QuickScat GRIB verisi %d saat öncesinin."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Wind Direction"
+#~ msgstr "Rüzgar Yönü"

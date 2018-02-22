@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: dashboard_pi 2.2.1207\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"PO-Revision-Date: 2010-12-20 18:31+0200\n"
+"Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
+"Language-Team:  <ogog1@otenet.gr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Greek\n"
+"X-Poedit-Country: GREECE\n"
+#
+msgid "Add"
+msgstr "Προσθήκη"
+#
+msgid "Add instrument"
+msgstr "Πρόσθεσε Όργανο"
+#
+msgid "Apparent wind"
+msgstr "Φαινομενικός Άνεμος"
+#
+msgid "Appearance"
+msgstr ""
+#
+msgid "COG"
+msgstr "COG(Πορεία επί Εδάφους)"
+#
+msgid "Caption:"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "Compass"
+msgstr "Πυξίδα"
+#
+msgid "Cursor"
+msgstr ""
+#
+msgid "Dashboard"
+msgstr "Πίνακας Οργάνων"
+#
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Πίνακας Οργάνων, επιπρόσθετο για το OpenCPN"
+#
+msgid ""
+"Dashboard PlugIn for OpenCPN\n"
+"Provides navigation instrument display from NMEA source."
+msgstr ""
+"Πρόσθετος Πίνακας Οργάνων για το OpenCPN\n"
+"Παρέχει ενδείξεις οργάνων ναυσιπλο'ί'ας από κώδικα ΝΜΕΑ"
+#
+msgid "Dashboard preferences"
+msgstr "Ιδιότητες Πίνακα Οργάνων"
+#
+msgid "Data:"
+msgstr "Στοιχεία:"
+#
+msgid "Delete"
+msgstr "Διαγραφή"
+#
+msgid "Depth"
+msgstr "Βάθος"
+#
+msgid "Down"
+msgstr "Κάτω"
+#
+msgid "E"
+msgstr "Α (E)"
+#
+msgid "Edit"
+msgstr "Επεξεργασία"
+#
+msgid "Fonts"
+msgstr "Γραμματοσειρές"
+#
+msgid "GPS in view"
+msgstr "Ορατό GPS"
+#
+msgid "GPS status"
+msgstr "Κατάσταση GPS"
+#
+msgid "HDG"
+msgstr "HDG(heading:κατεύθυνση)"
+#
+msgid "Horizontal"
+msgstr ""
+#
+msgid "Instrument width:"
+msgstr "Πλάτος Οργάνων:"
+#
+msgid "Instruments"
+msgstr "Όργανα"
+#
+msgid "Label:"
+msgstr "Ετικέτα:"
+#
+msgid "Moon phase"
+msgstr ""
+#
+msgid "N"
+msgstr "Β (N)"
+#
+msgid "NE"
+msgstr "ΒΑ (NE)"
+#
+msgid "NW"
+msgstr "ΒΔ (NW)"
+#
+msgid "Orientation:"
+msgstr ""
+#
+msgid "Position"
+msgstr "Θέση (Συντεταγμένες)"
+#
+msgid "Rudder angle"
+msgstr "Γωνία Πηδαλίου"
+#
+msgid "S"
+msgstr "Ν (S)"
+#
+msgid "SE"
+msgstr "ΝΑ (SE)"
+#
+msgid "SOG"
+msgstr "SOG(Ταχύτητα επί Εδάφους)"
+#
+msgid "STW"
+msgstr "STW(Ταχύτητα επί Ύδατος)"
+#
+msgid "SW"
+msgstr "ΝΔ (SW)"
+#
+msgid "Select instrument to add:"
+msgstr "Επέλεξε Όργανο για Προσθήκη:"
+#
+msgid "Small:"
+msgstr "Στενό:"
+#
+msgid "Speedometer"
+msgstr "Ταχύμετρο"
+#
+msgid "Sunrise/Sunset"
+msgstr ""
+#
+msgid "Temp"
+msgstr "Θερμοκρασία"
+#
+msgid "Title:"
+msgstr "Τίτλος:"
+#
+msgid "True wind"
+msgstr "Αληθής Άνεμος"
+#
+msgid "Up"
+msgstr "Επάνω"
+#
+msgid "VMG"
+msgstr "VMG(Η επίκαιρη ταχύτητα του σκάφους)"
+#
+msgid "Vertical"
+msgstr ""
+#
+msgid "W"
+msgstr "Δ (W)"
+#
+msgid "Wind angle"
+msgstr "Γωνία Ανέμου"
+#
+msgid "Wind speed"
+msgstr "Ταχύτητα Ανέμου"
+#
+msgid "show this dashboard"
+msgstr ""

@@ -1,0 +1,22 @@
+/* XPM */
+static const char *anchorage[]={
+"16 16 3 1",
+". c None",
+"# c #0000ff",
+"a c #c0ffff",
+"...#########....",
+"..##aaaaaaa##...",
+".##aaa###aaa##..",
+"##aaaa#a#aaaa##.",
+"##aaaa###aaaa##.",
+"##aaaaa#aaaaa##.",
+"##aa#######aa##.",
+"##aaaaa#aaaaa##.",
+"##aaaaa#aaaaa##.",
+"##aaaaa#aaaaa##.",
+"##a#aaa#aaa#a##.",
+"##a#aaa#aaa#a##.",
+"##aa##a#a##aa##.",
+".##aaa#a#aaa##..",
+"..##aaaaaaa##...",
+"...#########...."};
