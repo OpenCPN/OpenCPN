@@ -1,9 +1,14 @@
 language: cpp
 
-os:                                                                                                           
-  - linux
-  - osx
-  #We currently build against wxmac from Homebrew here for simplicity and to save time and resources, this is not exactly the same as the official builds backward compatible all the way to OS X 10.7 Lion, but should be "good enough" to find bugs affecting the clang toolchain
+matrix:
+  include:
+    - dist: precise
+      compiler: gcc
+    - dist: trusty
+      compiler: gcc
+    - os: osx
+      compiler: clang
+      #We currently build against wxmac from Homebrew here for simplicity and to save time and resources, this is not exactly the same as the official builds backward compatible all the way to OS X 10.7 Lion, but should be "good enough" to find bugs affecting the clang toolchain
 
 before_install:                                                                                               
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
