@@ -24,8 +24,6 @@
  **************************************************************************/
 
 #include <iostream>
-using namespace std; // FIXME: 'using namespace' must not be used in header files
-
 
 #ifndef __ROUTEPRINTOUT_H__
 #define __ROUTEPRINTOUT_H__
