@@ -1,4 +1,4 @@
-opencpn (2.5.0+dfsg-1) unstable; urgency=low
+opencpn (2.5.0+dfsg-1) UNRELEASED; urgency=low
 
   * Packaged for upstream version 2.5.0
   * Drop most of TinyXML patch (superseded by upstream)
@@ -16,6 +16,9 @@ opencpn (2.5.0+dfsg-1) unstable; urgency=low
 
   [ Anton Martchukov ]
   * Additional copyright file auditing
+
+  [ Andreas Tille ]
+  * Moved from SVN to Git
 
  -- M. Hamish Bowman <hamish_b@yahoo.com>  Sun, 16 Mar 2014 13:51:34 +1300
 
