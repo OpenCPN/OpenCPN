@@ -8,18 +8,20 @@ matrix:
       compiler: gcc
     - os: osx
       compiler: clang
-      #We currently build against wxmac from Homebrew here for simplicity and to save time and resources, this is not exactly the same as the official builds backward compatible all the way to OS X 10.7 Lion, but should be "good enough" to find bugs affecting the clang toolchain
 
 before_install:                                                                                               
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
+#  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
+# Homebrew upgrade disabled to save time
 
 install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libwxgtk3.0-dev libwxgtk3.0-0 libgps-dev libglu1-mesa-dev libgtk2.0-dev libbz2-dev libtinyxml-dev; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libportaudio2 portaudio19-dev libcurl4-openssl-dev libexpat1-dev libcairo2-dev; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libarchive-dev liblzma-dev libexif-dev libsqlite3-dev gettext; fi
 #    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install wxmac --devel; fi
+# We do not use wxmac, everything comes in the prebuilt tarball downloaded bellow
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cairo libexif libarchive;  wget http://opencpn.navnux.org/build_deps/cairo_macos107.tar.xz; tar xJf cairo_macos107.tar.xz -C /tmp; wget http://opencpn.navnux.org/build_deps/wx_opencpn_macos107.tar.xz; tar xJf wx_opencpn_macos107.tar.xz -C /tmp; wget http://opencpn.navnux.org/build_deps/libarchive_macos107.tar.xz; tar xJf libarchive_macos107.tar.xz -C /tmp; export PATH="/usr/local/opt/gettext/bin:$PATH";  echo 'export PATH="/usr/local/opt/gettext/bin:$PATH"' >> ~/.bash_profile; fi
+# We install cairo and libarchive from Homebrew to pull in the dependencies, but use the custom Lion compatible build later.
 
 script:
     - mkdir build && cd build
