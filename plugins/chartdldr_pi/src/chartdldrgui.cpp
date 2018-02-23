@@ -14,7 +14,7 @@
 QString qtStyleSheet = "QScrollBar:horizontal {\
 border: 0px solid grey;\
 background-color: rgb(240, 240, 240);\
-height: 35px;\
+height: 50px;\
 margin: 0px 1px 0 1px;\
 }\
 QScrollBar::handle:horizontal {\
@@ -39,12 +39,12 @@ subcontrol-origin: margin;\
 QScrollBar:vertical {\
 border: 0px solid grey;\
 background-color: rgb(240, 240, 240);\
-width: 35px;\
+width: 50px;\
 margin: 1px 0px 1px 0px;\
 }\
 QScrollBar::handle:vertical {\
 background-color: rgb(200, 200, 200);\
-min-height: 20px;\
+min-height: 50px;\
 border-radius: 10px;\
 }\
 QScrollBar::add-line:vertical {\
@@ -234,7 +234,6 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
         m_lbChartSources = new wxListCtrl( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_NO_SORT_HEADER|wxLC_REPORT|wxLC_SINGLE_SEL );
         m_lbChartSources->SetMinSize( wxSize( 100,100 ) );
 
-
         activeListSizer->Add( m_lbChartSources, 1, wxEXPAND );
 
 
@@ -280,7 +279,7 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
 	m_clCharts = new wxCheckedListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL);
 
 
-        m_clCharts->SetMinSize( wxSize( 100,100 ) );
+        m_clCharts->SetMinSize( wxSize( 100,10 * GetCharHeight() ) );
         nbSizer->Add( m_clCharts, 1, wxEXPAND );
 
 

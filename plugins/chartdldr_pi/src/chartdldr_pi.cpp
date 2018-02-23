@@ -70,7 +70,7 @@
     
     #define CATALOGS_NAME_WIDTH 350
     #define CATALOGS_DATE_WIDTH 230
-    #define CATALOGS_PATH_WIDTH 600
+    #define CATALOGS_PATH_WIDTH 1000
     #define CHARTS_NAME_WIDTH 520
     #define CHARTS_STATUS_WIDTH 150
     #define CHARTS_DATE_WIDTH 200
@@ -520,7 +520,7 @@ bool getDisplayMetrics()
     g_androidDPmm = ldpi / 25.4;
 //    g_androidDensity = density;
     
-    qDebug() << "PI Metrics" << g_androidDPmm << density;
+    //qDebug() << "PI Metrics" << g_androidDPmm << density;
     return true;
 #else
     
@@ -854,6 +854,11 @@ void ChartDldrPanelImpl::AppendCatalog( ChartSource *cs )
             m_lbChartSources->SetItem(id, 0, pPlugIn->m_pChartCatalog->title);
             m_lbChartSources->SetItem(id, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
             m_lbChartSources->SetItem(id, 2, path);
+#ifdef __OCPN__ANDROID__
+            m_lbChartSources->GetHandle()->resizeColumnToContents(0);
+            m_lbChartSources->GetHandle()->resizeColumnToContents(1);
+            m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+#endif            
         }
     }
 }
@@ -1434,6 +1439,11 @@ void ChartDldrPanelImpl::DoEditSource()
                 m_lbChartSources->SetItem(cat, 0, pPlugIn->m_pChartCatalog->title);
                 m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
                 m_lbChartSources->SetItem(cat, 2, path);
+#ifdef __OCPN__ANDROID__
+                m_lbChartSources->GetHandle()->resizeColumnToContents(0);
+                m_lbChartSources->GetHandle()->resizeColumnToContents(1);
+                m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+#endif                
             }
         }
         bool covered = false;
