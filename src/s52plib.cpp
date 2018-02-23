@@ -1945,9 +1945,11 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
                 glDeleteTextures(1, (GLuint *)&ptext->texobj);
                 ptext->texobj = 0;
             }
-
-            ptext->rendered_char_height = h_scaled - descent;
-
+            
+            // We cannot get the font ascent value to remove the interline spacing from the font "height".
+            // So we have to estimate based on conventional Arial metrics
+            ptext->rendered_char_height = (h_scaled - descent) * 8 / 10;
+            
         }
         // We render string with "special" characters the old, hard way, since we don't necessarily have the glyphs in our font,
         // or if we do we would need a hashmap to cache and extract them
@@ -1959,7 +1961,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
                 if(scale_factor <= 1.){
                     sdc.GetTextExtent( ptext->frmtd, &w_scaled, &h_scaled, &descent, &exlead, scaled_font ); // measure the text
-                    ptext->rendered_char_height = h_scaled - descent;
+
+                    // We cannot get the font ascent value to remove the interline spacing from the font "height".
+                    // So we have to estimate based on conventional Arial metrics
+                    ptext->rendered_char_height = (h_scaled - descent) * 8 / 10;
                 }
 
                 ptext->text_width = w_scaled;
@@ -2219,9 +2224,11 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             int w, h;
             f_cache->GetTextExtent(ptext->frmtd, &w, &h);
-
-            ptext->rendered_char_height = h;
-
+            
+            // We don't store descent/ascent info for font texture cache
+            // So we have to estimate based on conventional Arial metrics
+            ptext->rendered_char_height = h * 65 / 100;
+            
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
@@ -2251,10 +2258,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             switch ( ptext->vjust){
                 case '3':               // top
-                    yadjust += h;
+                    yadjust += ptext->rendered_char_height;
                     break;
                 case '2':               // centered
-                     yadjust += h/2;
+                     yadjust += ptext->rendered_char_height/2;
                      break;
                 case '1':               // bottom (default)
                 default:
@@ -2363,18 +2370,22 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             wxCoord w, h, descent, exlead;
             pdc->GetTextExtent( ptext->frmtd, &w, &h, &descent, &exlead ); // measure the text
-
+            
+            // We cannot get the font ascent value to remove the interline spacing.
+            // So we have to estimate based on conventional Arial metrics
+            int rendered_text_height = (h - descent) * 8 / 10;
+            
             //  Adjust the y position to account for the convention that S52 text is drawn
             //  with the lower left corner at the specified point, instead of the wx convention
             //  using upper right corner
             int yadjust = 0;
             int xadjust = 0;
-
-            yadjust =  - ( h - descent );
-
+            
+            yadjust =  - ( rendered_text_height );
+            
             //  Add in the offsets, specified in units of nominal font height
-            yadjust += ptext->yoffs * ( h - descent );
-
+            yadjust += ptext->yoffs * ( rendered_text_height );
+            
             //  X offset specified in units of average char width
             xadjust += ptext->xoffs * ptext->avgCharWidth;
 
@@ -2393,10 +2404,10 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
             switch ( ptext->vjust){
                 case '3':               // top
-                    yadjust += h;
+                    yadjust += rendered_text_height;
                     break;
                 case '2':               // centered
-                     yadjust += h/2;
+                     yadjust += rendered_text_height/2;
                      break;
                 case '1':               // bottom (default)
                 default:
