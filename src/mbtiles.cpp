@@ -74,12 +74,18 @@ typedef unsigned __int64 uint64_t;
 // Random Prototypes
 // ----------------------------------------------------------------------------
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
 #ifdef OCPN_USE_CONFIG
 class MyConfig;
 extern MyConfig        *pConfig;
 #endif
 
-
+#define LON_UNDEF NAN
+#define LAT_UNDEF NAN
 
 // The OpenStreetMaps zommlevel translation tables
 //  https://wiki.openstreetmap.org/wiki/Zoom_levels
@@ -266,7 +272,7 @@ ChartMBTiles::ChartMBTiles()
 
       m_datum_str = _T("WGS84");                // assume until proven otherwise
       m_projection = PROJECTION_WEB_MERCATOR;
-      m_bPNG = true;
+      m_imageType = wxBITMAP_TYPE_ANY;
 
       m_b_cdebug = 0;
 
@@ -279,6 +285,11 @@ ChartMBTiles::ChartMBTiles()
       m_pCOVRTable = NULL;
       m_pNoCOVRTablePoints = NULL;
       m_pNoCOVRTable = NULL;
+    
+      m_LonMin = LON_UNDEF;
+      m_LonMax = LON_UNDEF;
+      m_LatMin = LAT_UNDEF;
+      m_LatMax = LAT_UNDEF;
       
 #ifdef OCPN_USE_CONFIG
       wxFileConfig *pfc = (wxFileConfig *)pConfig;
@@ -342,8 +353,77 @@ double ChartMBTiles::GetNearestPreferredScalePPM(double target_scale_ppm)
     return target_scale_ppm;
 }
 
-
-
+//Checks/corrects/completes the initialization based on real data from the tiles table
+void ChartMBTiles::InitFromTiles( const wxString& name )
+{
+    try
+    {
+        // Open the MBTiles database file
+        SQLite::Database  db(name.mb_str());
+        
+        // Check if tiles with advertised min and max zoom level really exist, or correct the defaults
+        // We can't blindly use what we find though - the DB often contains empty cells at very low zoom levels, so if we have some info from metadata, we will use that if more conservative...
+        SQLite::Statement query(db, "SELECT min(zoom_level) AS min_zoom, max(zoom_level) AS max_zoom FROM tiles");
+        while (query.executeStep())
+        {
+            const char* colMinZoom = query.getColumn(0);
+            const char* colMaxZoom = query.getColumn(1);
+            
+            int zoom;
+            sscanf( colMinZoom, "%i", &zoom );
+            m_minZoom = wxMax(m_minZoom, zoom);
+            sscanf( colMaxZoom, "%i", &zoom );
+            m_maxZoom = wxMin(m_maxZoom, zoom);
+        }
+        
+        std::cout << name.c_str() << " zoom_min: " << m_minZoom << " zoom_max: " << m_maxZoom << std::endl;
+        
+        // Try to guess the coverage extents from the tiles. This will be hard to get right - the finest resolution likely does not cover the whole area, while the lowest resolution tiles probably contain a lot of theoretical space which actually is not covered. And some resolutions may be actually missing... What do we use?
+        // If we have the metadata and it is not completely off, we should probably prefer it.
+        SQLite::Statement query1(db, wxString::Format("SELECT min(tile_row) AS min_row, max(tile_row) as max_row, min(tile_column) as min_column, max(tile_column) as max_column, count(*) as cnt, zoom_level FROM tiles  WHERE zoom_level >= %d AND zoom_level <= %d GROUP BY zoom_level ORDER BY zoom_level ASC", m_minZoom, m_maxZoom).c_str());
+        float minLat = 999., maxLat = -999.0, minLon = 999., maxLon = -999.0;
+        while (query1.executeStep())
+        {
+            const char* colMinRow = query1.getColumn(0);
+            const char* colMaxRow = query1.getColumn(1);
+            const char* colMinCol = query1.getColumn(2);
+            const char* colMaxCol = query1.getColumn(3);
+            const char* colCnt = query1.getColumn(4);
+            const char* colZoom = query1.getColumn(5);
+            
+            int minRow, maxRow, minCol, maxCol, cnt, zoom;
+            sscanf( colMinRow, "%i", &minRow );
+            sscanf( colMaxRow, "%i", &maxRow );
+            sscanf( colMinCol, "%i", &minCol );
+            sscanf( colMaxCol, "%i", &maxCol );
+            sscanf( colMinRow, "%i", &minRow );
+            sscanf( colMaxRow, "%i", &maxRow );
+            sscanf( colCnt, "%i", &cnt );
+            sscanf( colZoom, "%i", &zoom );
+            
+            // Let's try to use the simplest possible algo and just look for the zoom level with largest extent (Which probably be the one with lowest resolution?)...
+            minLat = wxMin(minLat, tiley2lat(minRow, zoom));
+            maxLat = wxMax(maxLat, tiley2lat(maxRow - 1, zoom));
+            minLon = wxMin(minLon, tilex2long(minCol, zoom));
+            maxLon = wxMax(maxLon, tilex2long(maxCol + 1, zoom));
+            std::cout << "Zoom: " << zoom << " minlat: " << tiley2lat(minRow, zoom) << " maxlat: " << tiley2lat(maxRow - 1, zoom) << " minlon: " << tilex2long(minCol, zoom) << " maxlon: " << tilex2long(maxCol + 1, zoom) << std::endl;
+        }
+        // ... and use what we found only in case we miss some of the values from metadata...
+        if(wxIsNaN(m_LatMin))
+            m_LatMin = minLat;
+        if(wxIsNaN(m_LatMax))
+            m_LatMax = maxLat;
+        if(wxIsNaN(m_LonMin))
+            m_LonMin = minLon;
+        if(wxIsNaN(m_LonMax))
+            m_LonMax = maxLon;
+    }
+    catch (std::exception& e)
+    {
+        const char *t = e.what();
+        std::cout << "exception: " << e.what() << std::endl;
+    }
+}
 
 InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
 {
@@ -379,9 +459,10 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
                 
             }
             
-            else if(!strncmp(colName, "format", 6) ){
-                m_bPNG = !strncmp(colValue, "png", 3);
-            }
+            // Not very interesting as it may be wrong, we better find out from first loaded tile and adjust m_imageType accordingly
+            //else if(!strncmp(colName, "format", 6) ){
+            //    m_bPNG = !strncmp(colValue, "png", 3);
+            //}
             
             //Get the min and max zoom values present in the db
             else if(!strncmp(colName, "minzoom", 7)){
@@ -404,7 +485,9 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
           const char *t = e.what();
           std::cout << "exception: " << e.what() << std::endl;
       }     
-      
+    
+      // Fix the missing/wrong metadata values
+      InitFromTiles(name);
  
       // Bound the max zoom reasonably
       m_maxZoom = wxMin(m_maxZoom, 16);
@@ -707,10 +790,8 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
                 
                 wxMemoryInputStream blobStream(blob, length);
                 wxImage blobImage;
-                if(m_bPNG)
-                    blobImage = wxImage(blobStream, wxBITMAP_TYPE_PNG);
-                else
-                    blobImage = wxImage(blobStream, wxBITMAP_TYPE_JPEG);
+
+                blobImage = wxImage(blobStream, m_imageType);
                 
                 int blobWidth = blobImage.GetWidth();
                 int blobHeight = blobImage.GetHeight();
@@ -719,6 +800,9 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
                 int tex_w = 256;
                 int tex_h = 256;
                 unsigned char *imgdata = blobImage.GetData();
+                if( !imgdata )
+                    return false;
+                m_imageType = blobImage.GetType();
                 unsigned char *teximage = (unsigned char *) malloc( stride * tex_w * tex_h );
                 
                 for( int j = 0; j < tex_w*tex_h; j++ ){

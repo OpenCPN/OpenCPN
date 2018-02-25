@@ -607,16 +607,21 @@ void LLRegion::Optimize()
 #endif
 
         // eliminiate parallel segments
-        contour_pt l = *i->rbegin();
-        poly_contour::iterator j = i->begin(), k = j;
-        k++;
-        while(k != i->end()) {
-            if(fabs(cross(vector(*j, l), vector(*j, *k))) < 1e-12)
+        bool end = false;
+        poly_contour::iterator j = i->begin();
+        int s = i->size();
+        for(int c=0; c<s; c++) {
+            poly_contour::iterator l = j, k = j;
+            l--; if(l == i->end()) l--;
+            k++; if(k == i->end()) k++;
+            if(l == k)
+                break;
+            if(fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
                 i->erase(j);
-            else
-                l = *j;
-            j = k;
-            k++;
+                j = l;
+                c--;
+            } else
+                j = k;
         }
 
         // erase zero contours

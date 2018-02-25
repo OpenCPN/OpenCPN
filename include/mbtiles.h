@@ -132,8 +132,10 @@ protected:
       int       m_minZoom, m_maxZoom;
       mbTileZoomDescriptor      **m_tileArray;
       LLRegion  m_minZoomRegion;
-      bool      m_bPNG;
-      
+      wxBitmapType m_imageType;
+
+private:
+      void InitFromTiles( const wxString& name );
 };
 
 

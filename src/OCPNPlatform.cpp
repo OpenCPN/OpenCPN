@@ -1130,8 +1130,6 @@ wxString &OCPNPlatform::GetPrivateDataDir()
         
         if( g_bportable ){
             m_PrivateDataDir = GetHomeDir();
-            if(m_PrivateDataDir.Last() == wxFileName::GetPathSeparator())
-                m_PrivateDataDir.RemoveLast();
         }
         
 #ifdef __OCPN__ANDROID__

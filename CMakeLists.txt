@@ -920,7 +920,7 @@ ADD_LIBRARY(SQLiteCpp ${SQLITECPP_SRC} ${SQLITECPP_INC})
 SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
 
 
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
     SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
     FIND_PATH( SQLITE3_INCLUDE_DIR sqlite.h
               PATHS ${SQLITE3_INC_LOOK_PATHS})
@@ -940,13 +940,13 @@ IF(UNIX)
     
     add_definitions(-DSQLITE_USE_LEGACY_STRUCT)
    
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
-IF(WIN32)
+IF(WIN32 OR APPLE)
     ADD_LIBRARY(sqlite3 ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.c ${CMAKE_CURRENT_SOURCE_DIR}/src/SQLiteCpp/sqlite3/sqlite3.h)
     include_directories( src/SQLiteCpp/sqlite3 )
     SET(EXTRA_LIBS ${EXTRA_LIBS} sqlite3)
-ENDIF(WIN32)
+ENDIF(WIN32 OR APPLE)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
