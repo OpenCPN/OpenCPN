@@ -899,26 +899,17 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
     wxString fwname = wxString::FromUTF8(windowsName);
     wxString filePathAndName;
 
-#ifdef __WXMSW__
-    filePathAndName = fwname;
-    filePathAndName.Prepend( home_locn );
-
-#else
     filePathAndName = g_Platform->GetPrivateDataDir();
-    appendOSDirSlash(&filePathAndName);
-    filePathAndName.Append( fname );
+    if (filePathAndName.Last() != wxFileName::GetPathSeparator())
+       filePathAndName.Append(wxFileName::GetPathSeparator());
+
+#ifdef __WXMSW__
+     filePathAndName.Append( fwname );
+#else
+     filePathAndName.Append( fname );
 #endif
 
-    if( g_bportable ) {
-        filePathAndName.Clear();
-#ifdef __WXMSW__
-        filePathAndName.Append( fwname );
-#else
-        filePathAndName.Append( fname );
-#endif
-        filePathAndName.Prepend( home_locn );
-    }
-    return filePathAndName;
+     return filePathAndName;
 }
 
 
