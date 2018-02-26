@@ -643,8 +643,10 @@ void ChartMBTiles::FlushTiles( void )
         for( int i = 0; i < tzd->ny_tile; i++ ) {
             for( int j = 0; j < tzd->nx_tile; j++ ) {
                 mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j];
-                glDeleteTextures(1, &tile->glTextureName);
-                delete tile;
+                if( tile ){
+                    glDeleteTextures(1, &tile->glTextureName);
+                    delete tile;
+                }
             }
         }
         delete tzd;
@@ -680,13 +682,15 @@ void ChartMBTiles::PrepareTilesForZoom(int zoomFactor, bool bset_geom)
         
         for( int j = 0; j < tzd->nx_tile; j++ ) {
            
-            mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j] = new mbTileDescriptor;
-            tile->tile_x = tile_x;
-            tile->tile_y = tile_y;
-            tile->m_zoomLevel = zoomFactor;
+            tzd->m_tileDesc[i*tzd->nx_tile + j] = NULL;
+            
+            if(bset_geom){
+                mbTileDescriptor *tile = tzd->m_tileDesc[i*tzd->nx_tile + j] = new mbTileDescriptor;
+                tile->tile_x = tile_x;
+                tile->tile_y = tile_y;
+                tile->m_zoomLevel = zoomFactor;
             
             //  If directed, defer expensize geometry computation until actually needed for drawing.
-            if(bset_geom){
                 const double eps = 6e-6;  // about 1cm on earth's surface at equator
                 
                 tile->lonmin = round(tilex2long(tile_x, zoomFactor)/eps)*eps;
@@ -914,6 +918,13 @@ bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& 
                 index += (j - tzd->tile_x_min);
                 
                 mbTileDescriptor *tile = tiles[index];
+                if(NULL == tile){
+                    tile = tiles[index] = new mbTileDescriptor;
+                    tile->tile_x = j;
+                    tile->tile_y = i;
+                    tile->m_zoomLevel = zoomFactor;
+                }
+                
                 if(!tile->m_bgeomSet){
                     const double eps = 6e-6;  // about 1cm on earth's surface at equator
                     
