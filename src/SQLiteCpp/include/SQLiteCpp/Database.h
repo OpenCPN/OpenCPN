@@ -19,13 +19,14 @@
 struct sqlite3;
 struct sqlite3_context;
 
+#ifndef _SQLITE3_H_ //This forward define may be problematic so let's try it only if needed
 #ifndef SQLITE_USE_LEGACY_STRUCT // Since SQLITE 3.19 (used by default since SQLiteCpp 2.1.0)
 typedef struct sqlite3_value sqlite3_value;
 #else // Before SQLite 3.19 (legacy struct forward declaration can be activated with CMake SQLITECPP_LEGACY_STRUCT var)
 struct Mem;
 typedef struct Mem sqlite3_value;
 #endif
-
+#endif //_SQLITE3_H_
 
 namespace SQLite
 {
