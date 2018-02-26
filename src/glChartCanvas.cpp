@@ -1148,6 +1148,7 @@ void glChartCanvas::MultMatrixViewPort(ViewPort &vp, float lat, float lon)
     switch(vp.m_projection_type) {
     case PROJECTION_MERCATOR:
     case PROJECTION_EQUIRECTANGULAR:
+    case PROJECTION_WEB_MERCATOR:
         cc1->GetDoubleCanvasPointPixVP(vp, lat, lon, &point);
         glTranslated(point.m_x, point.m_y, 0);
         glScaled(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
@@ -1178,6 +1179,7 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float 
     switch(vp.m_projection_type) {
     case PROJECTION_MERCATOR:
     case PROJECTION_EQUIRECTANGULAR:
+    case PROJECTION_WEB_MERCATOR:
         cvp.clat = lat;
         break;
 
@@ -1197,7 +1199,7 @@ ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp, float lat, float 
 
 bool glChartCanvas::CanClipViewport(const ViewPort &vp)
 {
-    return vp.m_projection_type == PROJECTION_MERCATOR ||
+    return vp.m_projection_type == PROJECTION_MERCATOR || vp.m_projection_type == PROJECTION_WEB_MERCATOR ||
         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
 }
 
@@ -1524,9 +1526,11 @@ void glChartCanvas::GridDraw( )
     // if it is known the grid has straight lines it's a bit faster
     bool straight_latitudes =
         vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_WEB_MERCATOR ||
         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
     bool straight_longitudes =
         vp.m_projection_type == PROJECTION_MERCATOR ||
+        vp.m_projection_type == PROJECTION_WEB_MERCATOR ||
         vp.m_projection_type == PROJECTION_POLAR ||
         vp.m_projection_type == PROJECTION_EQUIRECTANGULAR;
 

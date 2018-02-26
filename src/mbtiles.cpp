@@ -377,7 +377,13 @@ void ChartMBTiles::InitFromTiles( const wxString& name )
         }
         
         std::cout << name.c_str() << " zoom_min: " << m_minZoom << " zoom_max: " << m_maxZoom << std::endl;
+ 
+        // Traversing the entire tile table can be expensive....
+        //  Use declared bounds if present.
         
+        if(!wxIsNaN(m_LatMin) && !wxIsNaN(m_LatMax) && !wxIsNaN(m_LonMin) && !wxIsNaN(m_LonMax) )
+            return;
+            
         // Try to guess the coverage extents from the tiles. This will be hard to get right - the finest resolution likely does not cover the whole area, while the lowest resolution tiles probably contain a lot of theoretical space which actually is not covered. And some resolutions may be actually missing... What do we use?
         // If we have the metadata and it is not completely off, we should probably prefer it.
         SQLite::Statement query1(db, wxString::Format("SELECT min(tile_row) AS min_row, max(tile_row) as max_row, min(tile_column) as min_column, max(tile_column) as max_column, count(*) as cnt, zoom_level FROM tiles  WHERE zoom_level >= %d AND zoom_level <= %d GROUP BY zoom_level ORDER BY zoom_level ASC", m_minZoom, m_maxZoom).c_str());
@@ -484,6 +490,7 @@ InitReturn ChartMBTiles::Init( const wxString& name, ChartInitFlag init_flags )
       {
           const char *t = e.what();
           std::cout << "exception: " << e.what() << std::endl;
+          return INIT_FAIL_REMOVE;
       }     
     
       // Fix the missing/wrong metadata values
@@ -627,6 +634,9 @@ void ChartMBTiles::PrepareTiles()
 
 void ChartMBTiles::FlushTiles( void )
 {
+    if(!bReadyToRender)
+        return;
+    
     for(int iz=0 ; iz < (m_maxZoom - m_minZoom) + 1 ; iz++){
         mbTileZoomDescriptor *tzd = m_tileArray[iz];
         
@@ -717,9 +727,10 @@ void ChartMBTiles::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 
 void ChartMBTiles::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
-    return;
     
-
+    pValidRegion->Clear();
+    pValidRegion->Union(0, 0, VPoint.pix_width, VPoint.pix_height);
+    return;
 }
 
 LLRegion ChartMBTiles::GetValidRegion()
@@ -843,6 +854,10 @@ bool ChartMBTiles::getTileTexture(SQLite::Database &db, mbTileDescriptor *tile)
 
 bool ChartMBTiles::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &RectRegion, const LLRegion &Region)
 {
+    // Do not render if significantly underzoomed
+    if( VPoint.chart_scale > (10 * m_Chart_Scale) )
+        return true;
+    
     ViewPort vp = VPoint;
     
     // Open the MBTiles database file

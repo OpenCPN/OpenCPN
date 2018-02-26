@@ -168,6 +168,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
         lat0_cache = clat;
         switch( m_projection_type ) {
         case PROJECTION_MERCATOR:
+        case PROJECTION_WEB_MERCATOR:
             cache0 = toSMcache_y30(clat);
             break;
         case PROJECTION_POLAR:
@@ -183,6 +184,7 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
 
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
+    case PROJECTION_WEB_MERCATOR:
         toSMcache( lat, xlon, cache0, clon, &easting, &northing );
         break;
 
@@ -277,6 +279,7 @@ void ViewPort::GetLLFromPix( const wxPoint2DDouble &p, double *lat, double *lon 
     double slat = 0.0, slon = 0.0;
     switch( m_projection_type ) {
     case PROJECTION_MERCATOR:
+    case PROJECTION_WEB_MERCATOR:
         //TODO  This could be fromSM_ECC to better match some Raster charts
         //      However, it seems that cm93 (and S57) prefer no eccentricity correction
         //      Think about it....
