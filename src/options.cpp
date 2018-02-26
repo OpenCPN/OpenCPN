@@ -7262,12 +7262,7 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 #endif
 
   if (response == wxID_OK) {
-    if (g_bportable) {
-      wxFileName f(sel_file);
-      f.MakeRelativeTo(g_Platform->GetHomeDir());
-      g_sAIS_Alert_Sound_File = f.GetFullPath();
-    } else
-      g_sAIS_Alert_Sound_File = sel_file;
+    g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(sel_file);
 
     g_anchorwatch_sound.UnLoad();
   }
@@ -7862,22 +7857,12 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
 #endif
 
   if (response == wxID_OK) {
-    if (g_bportable) {
-      wxFileName f(sel_file);
-      f.MakeRelativeTo(g_Platform->GetHomeDir());
-      tcDataSelected->Append(f.GetFullPath());
-    } else
-      tcDataSelected->Append(sel_file);
+    tcDataSelected->Append(g_Platform->NormalizePath(sel_file));
 
     //    Record the currently selected directory for later use
     wxFileName fn(sel_file);
     wxString data_dir = fn.GetPath();
-    if (g_bportable) {
-      wxFileName f(data_dir);
-      f.MakeRelativeTo(g_Platform->GetHomeDir());
-      g_TCData_Dir = f.GetFullPath();
-    } else
-      g_TCData_Dir = data_dir;
+     g_TCData_Dir = g_Platform->NormalizePath(data_dir);
   }
 }
 

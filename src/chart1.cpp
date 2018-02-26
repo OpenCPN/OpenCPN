@@ -1976,22 +1976,16 @@ bool MyApp::OnInit()
     //  If empty, preset one default (US) Ascii data source
     wxString default_tcdata =  ( g_Platform->GetSharedDataDir() + _T("tcdata") +
              wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
-    wxFileName fdefault( default_tcdata );
-
+    
     if(!TideCurrentDataSet.GetCount()) {
-        if( g_bportable ) {
-            fdefault.MakeRelativeTo( g_Platform->GetPrivateDataDir() );
-            TideCurrentDataSet.Add( fdefault.GetFullPath() );
-        }
-        else
-            TideCurrentDataSet.Add( default_tcdata );
+        TideCurrentDataSet.Add(g_Platform->NormalizePath(default_tcdata) );
     }
     else {
         wxString first_tide = TideCurrentDataSet.Item(0);
         wxFileName ft(first_tide);
         if(!ft.FileExists()){
             TideCurrentDataSet.RemoveAt(0);
-            TideCurrentDataSet.Insert( default_tcdata, 0 );
+            TideCurrentDataSet.Insert(g_Platform->NormalizePath(default_tcdata), 0 );
         }
     }
 
@@ -2002,14 +1996,7 @@ bool MyApp::OnInit()
         wxString default_sound =  ( g_Platform->GetSharedDataDir() + _T("sounds") +
         wxFileName::GetPathSeparator() +
         _T("2bells.wav"));
-
-        if( g_bportable ) {
-            wxFileName f( default_sound );
-            f.MakeRelativeTo( g_Platform->GetPrivateDataDir() );
-            g_sAIS_Alert_Sound_File = f.GetFullPath();
-        }
-        else
-            g_sAIS_Alert_Sound_File = default_sound ;
+        g_sAIS_Alert_Sound_File = g_Platform->NormalizePath(default_sound);
     }
 
 
