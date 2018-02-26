@@ -59,8 +59,8 @@
 #include "ocpn_pixel.h"
 #include "ChartDataInputStream.h"
 
+#include <sqlite3.h> //We need some defines
 #include <SQLiteCpp/SQLiteCpp.h>
-#define SQLITE_DONE        101  /* sqlite3_step() has finished executing */
 
 //  Missing from MSW include files
 #ifdef _MSC_VER
