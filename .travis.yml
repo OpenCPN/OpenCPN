@@ -30,6 +30,7 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DOCPN_USE_LIBCPP=ON -DwxWidgets_CONFIG_EXECUTABLE=/tmp/wx_opencpn_macos107/bin/wx-config -DwxWidgets_CONFIG_OPTIONS="--prefix=/tmp/wx_opencpn_macos107" -DLibArchive_INCLUDE_DIR=/tmp/libarchive_macos107/include -DLibArchive_LIBRARY=/tmp/libarchive_macos107/lib/libarchive.dylib -DCAIRO_INCLUDE_DIR=/tmp/cairo_macos107/include -DCAIRO_LIBRARY=/tmp/cairo_macos107/lib/libcairo.dylib -DCMAKE_INSTALL_PREFIX=/tmp/opencpn ..; fi
     - make -s
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir -p /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; chmod 644 /usr/local/lib/lib*.dylib; cp /tmp/libarchive_macos107/lib/libarchive.16.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; cp /tmp/cairo_macos107/lib/libcairo.2.dylib /tmp/opencpn/bin/OpenCPN.app/Contents/MacOS/; make install; make create-dmg; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make package; fi
 
 notifications:
     email: false
