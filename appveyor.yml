@@ -27,7 +27,7 @@ install:
   - cmd: nsis-3.03-setup.exe /S
 
   # Download and unzip wxwidgets
-  - ps: Start-FileDownload http://downloads.sourceforge.net/project/opencpnplugins/opencpn_packaging_data/wxWidgets-3.1.1.7z
+  - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/wxWidgets-3.1.1.7z
   - cmd: 7z x wxWidgets-3.1.1.7z -o%WXWIN% > null
 
   # some debugging information
@@ -43,7 +43,7 @@ before_build:
   - cd c:\project\opencpn
   - mkdir build
   - cd build
-  - ps: Start-FileDownload http://downloads.sourceforge.net/project/opencpnplugins/opencpn_packaging_data/OpenCPN_buildwin-4.99.7z
+  - ps: Start-FileDownload http://opencpn.navnux.org/build_deps/OpenCPN_buildwin-4.99.7z
   - cmd: 7z x -y OpenCPN_buildwin-4.99.7z -oc:\project\opencpn\buildwin
   - cmake -T v141_xp ..
 
