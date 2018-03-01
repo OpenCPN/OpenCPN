@@ -943,7 +943,7 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
 
 IF(UNIX AND NOT APPLE)
     SET(SQLITE3_INC_LOOK_PATHS /usr/local/include /usr/include )
-    FIND_PATH( SQLITE3_INCLUDE_DIR sqlite.h
+    FIND_PATH( SQLITE3_INCLUDE_DIR sqlite3.h
               PATHS ${SQLITE3_INC_LOOK_PATHS})
 
     message(STATUS " SQLite3 include directory found: ${SQLITE3_INCLUDE_DIR}")
