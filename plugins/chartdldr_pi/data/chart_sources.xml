@@ -874,6 +874,12 @@
           <location>https://raw.githubusercontent.com/chartcatalogs/catalogs/master/BE_IENC_Catalog.xml</location>
           <dir>{USERDATA}/ENC/BE_INLAND</dir>
         </catalog>
+        <catalog>                                                                                             
+          <name>Belgium OSM Raster Charts</name>
+          <type>RNC</type>
+          <location>http://www.openwaterkaart.nl/charts/OSM-raster-be/OSM-raster-be-catalog.xml</location>
+          <dir>{USERDATA}/ENC/BE_OSMRASTER</dir>
+        </catalog>
         <catalog>
           <name>Brasil RNC Nautical Charts</name>
           <type>RNC</type>
