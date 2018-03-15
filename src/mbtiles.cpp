@@ -55,11 +55,12 @@
 #include <sys/stat.h>
 #include <sstream>
 
+#include <sqlite3.h> //We need some defines
+
 #include "mbtiles.h"
 #include "ocpn_pixel.h"
 #include "ChartDataInputStream.h"
 
-#include <sqlite3.h> //We need some defines
 #include <SQLiteCpp/SQLiteCpp.h>
 
 //  Missing from MSW include files
