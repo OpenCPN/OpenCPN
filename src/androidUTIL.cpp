@@ -2074,52 +2074,83 @@ double GetAndroidDisplaySize()
     //  Return string may have commas instead of periods, if using Euro locale
     //  We just fix it here...
     return_string.Replace( _T(","), _T(".") );
+
+    wxSize screen_size = wxSize(1,2);
     
+    if(QApplication::desktop()){                // Desktop might not yet be initialized
+        screen_size = ::wxGetDisplaySize();
+    }
+        
     wxLogMessage(_T("Metrics:") + return_string);
-    wxSize screen_size = ::wxGetDisplaySize();
     wxString msg;
+    
     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x, screen_size.y);
     wxLogMessage(msg);
     
     double density = 1.0;
+    long androidWidth = 2;
+    long androidHeight = 1;
+    long androidDmWidth = 2;
+    long androidDmHeight = 1;
+    long abh;
+    
     wxStringTokenizer tk(return_string, _T(";"));
     if( tk.HasMoreTokens() ){
         wxString token = tk.GetNextToken();     // xdpi
         token = tk.GetNextToken();              // density
         
-        long b = ::wxGetDisplaySize().y;        
         token.ToDouble( &density );
 
         token = tk.GetNextToken();              // ldpi
         
         token = tk.GetNextToken();              // width
+        token.ToLong( &androidWidth );
         token = tk.GetNextToken();              // height - statusBarHeight
         token = tk.GetNextToken();              // width
         token = tk.GetNextToken();              // height
-        token = tk.GetNextToken();              // dm.widthPixels
-        token = tk.GetNextToken();              // dm.heightPixels
- 
-        token = tk.GetNextToken();              // actionBarHeight
-        long abh;
-        token.ToLong( &abh );
-        g_ActionBarHeight = wxMax(abh, 50);
-
-//        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
+        token.ToLong( &androidHeight );
         
+        token = tk.GetNextToken();              // dm.widthPixels
+        token.ToLong( &androidDmWidth );
+        token = tk.GetNextToken();              // dm.heightPixels
+        token.ToLong( &androidDmHeight );
+        
+        token = tk.GetNextToken();              // actionBarHeight
+        token.ToLong( &abh );
+
     }
     
     double ldpi = 160. * density;
+    if(ldpi < 160)
+        ldpi = 160.;
     
-    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
+    // Find the max dimension among all possibilities
+    double maxDim = wxMax(screen_size.x, screen_size.y);
+    maxDim = wxMax(maxDim, androidHeight);
+    maxDim = wxMax(maxDim, androidWidth);
+    
     ret = (maxDim / ldpi) * 25.4;
- 
-    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
+
+    if(ret < 75){               // 3 inches is too small....
+        double ret_bad = ret;
+        ret = 100;
+        msg.Printf(_T("WARNING: Android Auto Display Size OVERRIDE_TOO_SMALL: %g  ldpi: %g  density: %g correctedsize: %g "), ret_bad, ldpi, density, ret);
+    }
+    else if(ret > 400){         // Too large
+        double ret_bad = ret;
+        ret = 400;
+        msg.Printf(_T("WARNING: Android Auto Display Size OVERRIDE_TOO_LARGE: %g  ldpi: %g  density: %g corrected size: %g"), ret_bad, ldpi, density, ret);
+    }
+    else{        
+        msg.Printf(_T("Android Auto Display Size (mm, est.): %g   ldpi: %g  density: %g"), ret, ldpi, density);
+    }
     wxLogMessage(msg);
     
     //  Save some items as global statics for convenience
     g_androidDPmm = ldpi / 25.4;
     g_androidDensity = density;
-
+    g_ActionBarHeight = wxMax(abh, 50);
+    
 
     return ret;
 }
