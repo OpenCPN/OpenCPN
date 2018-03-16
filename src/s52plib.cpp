@@ -11977,13 +11977,9 @@ static const GLchar* S52circle_filled_fragment_shader_source =
     "uniform vec2 circle_center;\n"
     "void main(){\n"
     "float d = distance(gl_FragCoord.xy, circle_center);\n"
-    "if (d > circle_radius) {\n"
-    "    discard;\n"
-    "} else if( d > (circle_radius - border_width)) {\n"
-    "    gl_FragColor = border_color;\n"
-    "} else {\n"
-    "    gl_FragColor = circle_color;\n"
-    "}\n"
+    "if (d < (circle_radius - border_width)) { gl_FragColor = circle_color; }\n"
+    "else if (d < circle_radius) { gl_FragColor = border_color; }\n"
+    "else { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }\n"
     "}\n";
 
 
