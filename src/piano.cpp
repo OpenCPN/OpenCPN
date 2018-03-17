@@ -89,6 +89,7 @@ Piano::Piano()
     m_hover_last = -1;
     m_brounded = false;
     m_bBusy = false;
+    m_gotPianoDown = false;
     
     m_nRegions = 0;
 
@@ -671,7 +672,6 @@ bool Piano::MouseEvent( wxMouseEvent& event )
 
     int x, y;
     event.GetPosition( &x, &y );
-
     if(event.Leaving() || y < cc1->GetCanvasHeight() - GetHeight()) {
         if(m_bleaving)
             return false;
@@ -766,6 +766,7 @@ void Piano::ResetRollover( void )
     m_index_last = -1;
     m_hover_icon_last = -1;
     m_hover_last = -1;
+    m_gotPianoDown = false;
 }
 
 int Piano::GetHeight()
@@ -790,18 +791,17 @@ void Piano::onTimerEvent(wxTimerEvent &event)
 {
     switch(m_action){
         case DEFERRED_KEY_CLICK_DOWN:
+            m_gotPianoDown = true;
             break;
         case DEFERRED_KEY_CLICK_UP:
             ShowBusy( false );
-            if(m_hover_last >= 0){              // turn it off, and return
+            if((m_hover_last >= 0) || !m_gotPianoDown){              // turn it off, and return
                 gFrame->HandlePianoRollover( -1, -1 );
                 ResetRollover();
             }
             else{
-#ifdef ocpnUSE_GL
-                if(g_bopengl && cc1->GetglCanvas() && !cc1->GetglCanvas()->isInGesture())
-#endif    
-                    gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+                gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+                m_gotPianoDown = false;
             }
             break;
         case INFOWIN_TIMEOUT:

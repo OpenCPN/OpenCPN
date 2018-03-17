@@ -98,7 +98,8 @@ private:
       int         m_index_last;
       int         m_hover_icon_last;
       int         m_hover_last;
-
+      bool        m_gotPianoDown;
+      
       wxBrush     m_backBrush;
       wxBrush     m_tBrush;
       wxBrush     m_vBrush;
