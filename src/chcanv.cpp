@@ -171,7 +171,6 @@ extern TrackPropDlg     *pTrackPropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
-extern bool             g_bPreserveScaleOnX;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -3035,7 +3034,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
             b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
-            if( ( !g_bPreserveScaleOnX ) &&  (b_smallest || (0 == m_pQuilt->GetExtendedStackCount())))
+            if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
                 proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                                 GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
         }
