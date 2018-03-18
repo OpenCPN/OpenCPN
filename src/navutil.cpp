@@ -780,7 +780,11 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "InvisibleLayers" ), &g_InvisibleLayers );
 
     Read( _T ( "PreserveScaleOnX" ), &g_bPreserveScaleOnX, 0 );
-
+    
+    // Improve touch screen reaction to piano (chart bar) buttons
+    if(g_btouch)
+        g_bPreserveScaleOnX = false;
+    
     g_locale = _T("en_US");
     Read( _T ( "Locale" ), &g_locale );
     Read( _T ( "LocaleOverride" ), &g_localeOverride );
