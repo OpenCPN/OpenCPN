@@ -7369,10 +7369,22 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   } else if (lang_canonical == _T("gl_ES")) {
     dir_suffix = _T("gl_ES");
     return_string = wxString("Galician", wxConvUTF8);
+  } else if (lang_canonical == _T("ja_JP")) {
+    dir_suffix = _T("ja_JP");
+    return_string = wxString("Japanese", wxConvUTF8);
+  } else if (lang_canonical == _T("ar_SA")) {
+    dir_suffix = _T("ar_SA");
+    return_string = wxString("Arabic", wxConvUTF8);
+  } else if (lang_canonical == _T("vi_VN")) {
+    dir_suffix = _T("vi_VN");
+    return_string = wxString("Vietnamese", wxConvUTF8);
   } else {
     dir_suffix = lang_canonical;
     const wxLanguageInfo* info = wxLocale::FindLanguageInfo(lang_canonical);
-    return_string = info->Description;
+    if(info)
+        return_string = info->Description;
+    else
+        return_string = lang_canonical;
   }
 
   lang_dir = dir_suffix;

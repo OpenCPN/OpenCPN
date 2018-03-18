@@ -9,11 +9,11 @@
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
  */
+#include <sqlite3.h>
+
 #include <SQLiteCpp/Backup.h>
 
 #include <SQLiteCpp/Exception.h>
-
-#include <sqlite3.h>
 
 namespace SQLite
 {
