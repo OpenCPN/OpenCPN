@@ -418,8 +418,11 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_bShowLdisText = true;
     m_bExtendLightSectors = true;
 
+    // Set a few initial states
+    AddObjNoshow( "M_QUAL" );
     m_lightsOff = false;
-    m_anchorOn = false;
+    m_anchorOn = true;
+    m_qualityOfDataOn = false;
 
     GenerateStateHash();
 
@@ -631,24 +634,39 @@ bool s52plib::GetAnchorOn()
     OBJLElement *pOLE = NULL;
 
     if(  MARINERS_STANDARD == GetDisplayCategory()){
-            // Need to loop once for SBDARE, which is our "master", then for
-            // other categories, since order is unknown?
+        old_vis = m_anchorOn;
+    }
+    else if(OTHER == GetDisplayCategory())
+        old_vis = true;
+
+    //other cat  
+    //const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
+
+    old_vis &= !IsObjNoshow("SBDARE");
+
+    return (old_vis != 0);
+}
+
+bool s52plib::GetQualityOfDataOn()
+{
+    //  Investigate and report the logical condition that "Quality of Data Condition" is shown
+    
+    int old_vis =  0;
+    OBJLElement *pOLE = NULL;
+        
+    if(  MARINERS_STANDARD == GetDisplayCategory()){
             for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
                 OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
                     old_vis = pOLE->nViz;
                     break;
                 }
-                pOLE = NULL;
             }
     }
     else if(OTHER == GetDisplayCategory())
         old_vis = true;
 
-    const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
-    unsigned int num = sizeof(categories) / sizeof(categories[0]);
-
-    old_vis &= !IsObjNoshow("SBDARE");
+    old_vis &= !IsObjNoshow("M_QUAL");
 
     return (old_vis != 0);
 }
@@ -4742,7 +4760,6 @@ int s52plib::RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *v
 
     // Get pointers to the attributes in the program.
     GLint mPosAttrib = glGetAttribLocation( S52Dash_shader_program, "position" );
-    GLint mUvAttrib  = glGetAttribLocation( S52Dash_shader_program, "aUV" );
 
     GLint startPos  = glGetUniformLocation( S52Dash_shader_program, "startPos" );
     GLint texWidth  = glGetUniformLocation( S52Dash_shader_program, "texWidth" );
@@ -4833,7 +4850,6 @@ int s52plib::RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *v
                                     odc->DrawLine( x0, y0, x1, y1, true );
 #else
 
-//                            float lpix = sqrtf( powf(x0 - x1, 2) + powf(y0 - y1, 2) );
 
 
                             // segment must be at least on-screen....
@@ -4855,18 +4871,13 @@ int s52plib::RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *v
                                 }
 
                                 wxRect rseg(xa, ya, xw, yh);
+                                rseg.Inflate(1);        // avoid zero width/height
+                                
                                 if(rseg.Intersects(m_last_clip_rect)){
-//                                     float uv[8];
                                     float coords[4];
-
-//                                     uv[0] = 0; uv[1] = 0; uv[2] = 1/*lpix / tex_w*/; uv[3] = 0;
-//                                     uv[3] = 1; uv[4] = 1; uv[5] = 0; uv[5] = 1;
 
                                     coords[0] = x0; coords[1] = y0; coords[2] = x1; coords[3] = y1;
 
-
-
-                                    //
                                     float start[2];
                                     start[0] = x0; start[1] = GetOCPNCanvasWindow()->GetSize().y - y0;
                                     glUniform2fv(startPos, 1, start);
@@ -4875,11 +4886,6 @@ int s52plib::RenderLS_Dash_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *v
                                     // Set the attribute mPosAttrib with the vertices in the screen coordinates...
                                     glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
                                     glEnableVertexAttribArray( mPosAttrib );
-
-                                            // Set the attribute mUvAttrib with the vertices in the GL coordinates...
-//                                     glVertexAttribPointer( mUvAttrib, 2, GL_FLOAT, GL_FALSE, 0, uv );
-//                                     glEnableVertexAttribArray( mUvAttrib );
-
 
                                     // Perform the actual drawing.
                                     glDrawArrays(GL_LINES, 0, 2);
@@ -10634,7 +10640,7 @@ void s52plib::PrepareForRender( void )
 void s52plib::PrepareForRender(ViewPort *vp)
 {
     m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
-
+    
 #ifdef USE_ANDROID_GLES2
 void PrepareS52ShaderUniforms(ViewPort *vp);
     if(vp)
@@ -10645,78 +10651,88 @@ void PrepareS52ShaderUniforms(ViewPort *vp);
     //  If it has, reload from global preferences file, and other dynamic status information.
     //  This additional step is only necessary for Plugin chart rendering, as core directly sets
     //  options and updates State Hash as needed.
-
+    
     int core_config = PI_GetPLIBStateHash();
     if(core_config != m_myConfig){
-
+        
         g_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
-
+        
         //  If a modern (> OCPN 4.4) version of the core is active,
         //  we may rely upon having been updated on S52PLIB state by means of PlugIn messaging scheme.
         if( (m_coreVersionMajor >= 4) && (m_coreVersionMinor >= 5) ){
-
+            
             // First, we capture some temporary values that were set by messaging, but would be overwritten by config read
             bool bTextOn = m_bShowS57Text;
             bool bSoundingsOn = m_bShowSoundg;
             enum _DisCat old = m_nDisplayCategory;
-
+            
             PLIB_LoadS57Config();
-
+            
             //  And then reset the temp values that were overwritten by config load
             m_bShowS57Text = bTextOn;
             m_bShowSoundg = bSoundingsOn;
             m_nDisplayCategory = old;
-
+            
             OBJLElement *pOLE = NULL;
-
+            
             // Detect and manage "LIGHTS" toggle
             bool bshow_lights = !m_lightsOff;
             if(!bshow_lights)                     // On, going off
                 AddObjNoshow("LIGHTS");
             else{                                   // Off, going on
-                if(pOLE)
-                    pOLE->nViz = 1;
                 RemoveObjNoshow("LIGHTS");
             }
 
-            // Handle Anchor area toggle
-            bool bAnchor = m_anchorOn;
-
+            
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
             unsigned int num = sizeof(categories) / sizeof(categories[0]);
-
-            if(!bAnchor){
-                for( unsigned int c = 0; c < num; c++ ) {
-                    AddObjNoshow(categories[c]);
+            
+            // Handle Anchor area toggle
+            if( (m_nDisplayCategory == OTHER) || (m_nDisplayCategory == MARINERS_STANDARD) ){
+                bool bAnchor = m_anchorOn;
+                
+                
+                if(!bAnchor){
+                    for( unsigned int c = 0; c < num; c++ ) {
+                        AddObjNoshow(categories[c]);
+                    }
+                }
+                else{
+                    for( unsigned int c = 0; c < num; c++ ) {
+                        RemoveObjNoshow(categories[c]);
+                    }
                 }
             }
-            else{
+            else{                               // if not category OTHER, then anchor-related features are always shown.
                 for( unsigned int c = 0; c < num; c++ ) {
                     RemoveObjNoshow(categories[c]);
                 }
-
-                unsigned int cnt = 0;
+            }
+                
+            // Handle Quality of data toggle
+            bool bQuality = m_qualityOfDataOn;
+            if(!bQuality){
+                AddObjNoshow("M_QUAL");
+            }
+            else{
+                RemoveObjNoshow("M_QUAL");
                 for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
                     OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    for( unsigned int c = 0; c < num; c++ ) {
-                        if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
-                            pOLE->nViz = 1;         // force on
-                            cnt++;
-                            break;
-                        }
+                    if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
+                        pOLE->nViz = 1;         // force on
+                        break;
                     }
-                    if( cnt == num ) break;
                 }
             }
         }
-
+        
         m_myConfig = PI_GetPLIBStateHash();
     }
-
+    
     // Reset the LIGHTS declutter machine
     lastLightLat = 0;
     lastLightLon = 0;
-
+    
 }
 
 void s52plib::ClearTextList( void )
@@ -10732,7 +10748,7 @@ bool s52plib::EnableGLLS(bool b_enable)
     m_benableGLLS = b_enable;
     return return_val;
 }
-
+    
 void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 {
     return;
@@ -12048,13 +12064,10 @@ static const GLchar* S52ring_fragment_shader_source =
     // Dash/Dot line shader
 static const GLchar* S52Dash_vertex_shader_source =
     "attribute vec2 position;\n"
-    "attribute vec2 aUV;\n"
     "uniform mat4 MVMatrix;\n"
     "uniform mat4 TransformMatrix;\n"
-    "varying vec2 varCoord;\n"
     "void main() {\n"
     "   gl_Position = MVMatrix * TransformMatrix * vec4(position, 0.0, 1.0);\n"
-    "   varCoord = aUV;\n"
     "}\n";
 
 static const GLchar* S52Dash_fragment_shader_source =
@@ -12062,12 +12075,10 @@ static const GLchar* S52Dash_fragment_shader_source =
     "uniform sampler2D uTex;\n"
     "uniform vec2 startPos;\n"
     "uniform float texWidth;\n"
-    "varying vec2 varCoord;\n"
     "uniform vec4 color;\n"
     "void main() {\n"
     "   float d = distance(gl_FragCoord.xy, startPos);\n"
     "   float x = mod(d,texWidth) / texWidth;\n"
-    "   //gl_FragColor = texture2D(uTex, vec2(x, 0.0));\n"
     "   if(x < 0.5) gl_FragColor = color;\n"
     "   else gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\n"
     "}\n";
