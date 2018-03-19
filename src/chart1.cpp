@@ -4398,6 +4398,9 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_MENU_ROUTE_MANAGER:
         case ID_ROUTEMANAGER: {
+            if(!pWayPointMan)
+                return;                 // too early
+                
             pRouteManagerDialog = RouteManagerDialog::getInstance( cc1 ); // There is one global instance of the Dialog
 
             if( pRouteManagerDialog->IsShown() )
