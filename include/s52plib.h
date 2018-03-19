@@ -180,6 +180,9 @@ public:
     
     void SetAnchorOn(bool val){ m_anchorOn = val; }
     bool GetAnchorOn();
+
+    void SetQualityOfDataOn(bool val){ m_qualityOfDataOn = val; }
+    bool GetQualityOfDataOn();
     
     int GetMajorVersion( void ) { return m_VersionMajor; }
     int GetMinorVersion( void ) { return m_VersionMinor; }
@@ -284,7 +287,7 @@ private:
     int RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderToGLAP_GLSL( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
-    
+
     //    Object Renderers
     int RenderTX( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderTE( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
@@ -401,7 +404,8 @@ private:
 
     bool m_lightsOff;
     bool m_anchorOn;
-    
+    bool m_qualityOfDataOn;
+
     long m_state_hash;
 
     bool m_txf_ready;
@@ -459,7 +463,7 @@ public:
     GLenum       s_odc_tess_mode;
     int          s_odc_nvertex;
     GLfloat     *s_odc_tess_work_buf;
-    
+
 private:
     const char* findColorNameInRef( char colorCode, char* col );
     void RotatePoint( wxPoint& point, wxPoint origin, double angle );
