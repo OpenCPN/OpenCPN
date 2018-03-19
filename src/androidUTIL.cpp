@@ -1164,6 +1164,9 @@ extern "C"{
 extern "C"{
     JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeMenuItem(JNIEnv *env, jobject obj, int item)
     {
+        if(!gFrame)                     // App Frame not yet set up, on slow devices
+            return 71;
+        
         wxString msg1;
         msg1.Printf(_T("invokeMenuItem: %d"), item);
         wxLogMessage(msg1);
