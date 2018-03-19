@@ -2823,6 +2823,8 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
     char *col = prule->colRef.LCRF;
     wxPoint r0( (int) ( pivot_x / fsf ), (int) ( pivot_y / fsf ) );
 
+    HPGL->SetVP(vp);
+    
     if( !m_pdc ) { // OpenGL Mode, do a direct render
         HPGL->SetTargetOpenGl();
         HPGL->Render( str, col, r, pivot, origin, xscale, render_angle, true );
@@ -5529,6 +5531,7 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
 
                         HPGL->SetTargetDC( pdc );
                         theta = atan2f( dy, dx );
+                        HPGL->SetVP(vp);
                         HPGL->Render( str, col, r, pivot, pivot, 1.0, theta * 180. / PI, false );
 
                         xs += sym_len * dx / seg_len * sym_factor;
@@ -9847,6 +9850,7 @@ render_canvas_parms* s52plib::CreatePatternBufferSpec( ObjRazRules *rzRules, Rul
                             (int) ( ( pivot_y - box.GetMinY() ) / fsf ) + 1 );
 
                 HPGL->SetTargetDC( &mdc );
+                HPGL->SetVP(vp);
                 HPGL->Render( str, col, r0, pivot, origin, 1.0 /*render_scale*/, 0, false);
 
 //                 mdc.SetPen( wxPen( wxColor(0, 0, 250), 1, wxPENSTYLE_SOLID ) );
@@ -11062,13 +11066,13 @@ wxPoint RenderFromHPGL::ParsePoint( wxString& argument )
 
 void RenderFromHPGL::SetPen()
 {
+    float nominal_line_width_pix = wxMax(1.0, floor(plib->GetPPMM() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+    int pen_width_mod =  floor( penWidth * nominal_line_width_pix);
+    
+    pen = wxThePenList->FindOrCreatePen( penColor, pen_width_mod, wxPENSTYLE_SOLID );
+    brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
 
     if( renderToDC ) {
-        float nominal_line_width_pix = wxMax(1.0, floor(plib->GetPPMM() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
-        int pen_width_mod =  floor( penWidth * nominal_line_width_pix);
-        
-        pen = wxThePenList->FindOrCreatePen( penColor, pen_width_mod, wxPENSTYLE_SOLID );
-        brush = wxTheBrushList->FindOrCreateBrush( penColor, wxBRUSHSTYLE_SOLID );
         targetDC->SetPen( *pen );
         targetDC->SetBrush( *brush );
     }
@@ -11168,16 +11172,89 @@ void RenderFromHPGL::Line( wxPoint from, wxPoint to )
 
 void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
 {
-#ifndef USE_ANDROID_GLES2    
-
     if( renderToDC ) {
-        if( filled ) targetDC->SetBrush( *brush );
+        if( filled )
+            targetDC->SetBrush( *brush );
         else
             targetDC->SetBrush( *wxTRANSPARENT_BRUSH );
         targetDC->DrawCircle( center, radius );
     }
 #ifdef ocpnUSE_GL
     if( renderToOpenGl ) {
+#ifdef USE_ANDROID_GLES2
+        if(!m_vp)               // oops, forgot to set the VP parameters
+            return;
+        
+    //      Enable anti-aliased lines, at best quality
+        glEnable( GL_BLEND );
+        
+        float coords[8];
+        coords[0] = center.x - radius;  coords[1] = center.y + radius;
+        coords[2] = center.x + radius;  coords[3] = center.y + radius;
+        coords[4] = center.x - radius;  coords[5] = center.y - radius;
+        coords[6] = center.x + radius;  coords[7] = center.y - radius;
+        
+        glUseProgram( S52circle_filled_shader_program );
+            
+        // Get pointers to the attributes in the program.
+        GLint mPosAttrib = glGetAttribLocation( S52circle_filled_shader_program, "aPos" );
+        
+            // Disable VBO's (vertex buffer objects) for attributes.
+        glBindBuffer( GL_ARRAY_BUFFER, 0 );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+            
+        glVertexAttribPointer( mPosAttrib, 2, GL_FLOAT, GL_FALSE, 0, coords );
+        glEnableVertexAttribArray( mPosAttrib );
+
+        //  Circle radius
+        GLint radiusloc = glGetUniformLocation(S52circle_filled_shader_program,"circle_radius");
+        glUniform1f(radiusloc, radius);
+
+        //  Circle center point
+        GLint centerloc = glGetUniformLocation(S52circle_filled_shader_program,"circle_center");
+        float ctrv[2];
+        ctrv[0] = center.x; ctrv[1] = m_vp->pix_height - center.y;
+        glUniform2fv(centerloc, 1, ctrv);
+        
+        //  Circle fill color
+        float colorv[4];
+        colorv[3] = 0.0;        // transparent default
+        
+        if(brush){
+            colorv[0] = brush->GetColour().Red() / float(256);
+            colorv[1] = brush->GetColour().Green() / float(256);
+            colorv[2] = brush->GetColour().Blue() / float(256);
+            if(filled)
+                colorv[3] = 1.0; 
+        }
+
+        GLint colloc = glGetUniformLocation(S52circle_filled_shader_program,"circle_color");
+        glUniform4fv(colloc, 1, colorv);
+        
+        //  Border color
+        float bcolorv[4];
+        bcolorv[0] = penColor.Red() / float(256);
+        bcolorv[1] = penColor.Green() / float(256);
+        bcolorv[2] = penColor.Blue() / float(256);
+        bcolorv[3] = penColor.Alpha() / float(256);
+        
+        GLint bcolloc = glGetUniformLocation(S52circle_filled_shader_program,"border_color");
+        glUniform4fv(bcolloc, 1, bcolorv);
+        
+        //  Border Width
+        float nominal_line_width_pix = wxMax(1.0, floor(plib->GetPPMM() / 5.0));             //0.2 mm nominal, but not less than 1 pixel
+        float line_width =  wxMax(g_GLMinSymbolLineWidth, (float) penWidth * nominal_line_width_pix);
+        
+        GLint borderWidthloc = glGetUniformLocation(S52circle_filled_shader_program,"border_width");
+        glUniform1f(borderWidthloc, line_width);
+        
+            // Perform the actual drawing.
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        //      Enable anti-aliased lines, at best quality
+        glDisable( GL_BLEND );
+
+#else        
         int noSegments = 2 + ( radius * 4 );
         if( noSegments > 200 ) noSegments = 200;
         glBegin( GL_LINE_STRIP );
@@ -11185,6 +11262,7 @@ void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
             glVertex2f( center.x + radius * sinf( a ),
                         center.y + radius * cosf( a ) );
         glEnd();
+#endif        
     }
 #endif
 #if wxUSE_GRAPHICS_CONTEXT
@@ -11203,8 +11281,6 @@ void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
         targetGCDC->DrawPoint( center.x, center.y + radius );
         targetGCDC->SetPen( *pen );
     }
-#endif
-
 #endif
 }
 
@@ -11997,7 +12073,6 @@ static const GLchar* S52circle_filled_fragment_shader_source =
     "else if (d < circle_radius) { gl_FragColor = border_color; }\n"
     "else { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }\n"
     "}\n";
-
 
     //  Ring shader
 
