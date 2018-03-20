@@ -9925,7 +9925,8 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
     pConfig->AddNewWayPoint( pWP_MOB, -1 );       // use auto next num
 
 
-    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+    /* We want to start tracking any MOB in range (Which will trigger false alarms with messages received over the network etc., but will a) not discard nearby event even in case our GPS is momentarily unavailable and b) work even when the boat is stationary, in which case some GPS units do not provide COG)
+    if( bGPSValid && !wxIsNaN(gCog) && !wxIsNaN(gSog) ) { */
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon,
                                               wxString( _( "Own ship" ) ), GPX_EMPTY_STRING );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
@@ -9954,7 +9955,7 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         v[_T("GUID")] = pAISMOBRoute->m_GUID;
         wxString msg_id( _T("OCPN_MAN_OVERBOARD") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
-    }
+    //}
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
         pRouteManagerDialog->UpdateRouteListCtrl();
