@@ -4131,17 +4131,20 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         ApplicationInfo aif = getApplicationInfo();
         if((aif.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) ==  ApplicationInfo.FLAG_EXTERNAL_STORAGE){
             Log.i("OpenCPN", "App might be on EXTERNAL_STORAGE");
-            File[] fx = getExternalFilesDirs(null);
-            if(null != fx){
-                if(fx.length > 1){
-                    Log.i("OpenCPN", "App is really on EXTERNAL_STORAGE");
-                    filesDir = fx[1].getAbsolutePath();
+
+            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT)
+            {
+                File[] fx = getExternalFilesDirs(null);
+                if(null != fx){
+                    if(fx.length > 1){
+                        Log.i("OpenCPN", "App is really on EXTERNAL_STORAGE");
+                        filesDir = fx[1].getAbsolutePath();
+                    }
+                }
+                else{
+                    Log.i("OpenCPN", "App has no ExternalFilesDirs");
                 }
             }
-            else{
-                Log.i("OpenCPN", "App has no ExternalFilesDirs");
-            }
-
         }
 
         m_filesDir = filesDir;
