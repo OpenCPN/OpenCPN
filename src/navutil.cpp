@@ -1538,11 +1538,12 @@ void MyConfig::LoadNavObjects()
     if( NULL == m_pNavObjectInputSet )
         m_pNavObjectInputSet = new NavObjectCollection1();
 
+    int wpt_dups;
     if( ::wxFileExists( m_sNavObjSetFile ) &&
         m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
-        m_pNavObjectInputSet->LoadAllGPXObjects();
+        m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
 
-    wxLogMessage( _T("Done loading navobjects") );
+    wxLogMessage( _T("Done loading navobjects, %d duplicate waypoints ignored"), wpt_dups );
     delete m_pNavObjectInputSet;
 
     if( ::wxFileExists( m_sNavObjSetChangesFile ) ) {
@@ -2712,9 +2713,13 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
                 if(islayer){
                     l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
                 }
-                else
-                    pSet->LoadAllGPXObjects( !pSet->IsOpenCPN() ); // Import with full vizibility of names and objects
-
+                else {
+                    int wpt_dups;
+                    pSet->LoadAllGPXObjects( !pSet->IsOpenCPN(), wpt_dups ); // Import with full visibility of names and objects
+                    if(wpt_dups > 0) {
+                        OCPNMessageBox(parent, wxString::Format(_("%d duplicate waypoints detected during import and ignored."), wpt_dups), _("OpenCPN Info"), wxICON_INFORMATION|wxOK, 10);
+                    }
+                }
                 delete pSet;
             }
         }

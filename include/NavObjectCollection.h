@@ -94,7 +94,7 @@ public:
     bool AddGPXWaypoint(RoutePoint *pWP );
     
     bool CreateAllGPXObjects();
-    bool LoadAllGPXObjects( bool b_full_viz = false);
+    bool LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates );
     int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz);
     
     bool SaveFile( const wxString filename );

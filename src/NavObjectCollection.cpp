@@ -1297,8 +1297,9 @@ bool NavObjectCollection1::SaveFile( const wxString filename )
     return true;
 }
 
-bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
+bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz, int &wpt_duplicates )
 {
+    wpt_duplicates = 0;
     pugi::xml_node objects = this->child("gpx");
     
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
@@ -1313,8 +1314,10 @@ bool NavObjectCollection1::LoadAllGPXObjects( bool b_full_viz )
                         pWayPointMan->AddRoutePoint( pWp );
                      pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );
             }
-            else
+            else {
                 delete pWp;
+                wpt_duplicates++;
+            }
         }
         else
             if( !strcmp(object.name(), "trk") ) {
