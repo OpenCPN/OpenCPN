@@ -30,7 +30,6 @@
 #include <wx/gauge.h>
 #include <wx/clrpicker.h>
 #include "Hyperlink.h"
-#include "gpxdocument.h"
 
 class ocpnDC;
 class wxDC;
@@ -38,7 +37,7 @@ class wxDC;
 class RoutePoint
 {
 public:
-      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = GPX_EMPTY_STRING, bool bAddToList = true);
+      RoutePoint(double lat, double lon, const wxString& icon_ident, const wxString& name, const wxString &pGUID = wxEmptyString, bool bAddToList = true);
       RoutePoint( RoutePoint* orig );
       RoutePoint();
       virtual ~RoutePoint(void);

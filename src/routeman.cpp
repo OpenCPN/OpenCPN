@@ -322,7 +322,7 @@ bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
         if( pRouteActivatePoint ) delete pRouteActivatePoint;
 
         pRouteActivatePoint = new RoutePoint( gLat, gLon, wxString( _T("") ), wxString( _T("") ),
-                GPX_EMPTY_STRING, false ); // Current location
+                wxEmptyString, false ); // Current location
         pRouteActivatePoint->m_bShowName = false;
 
         pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -1082,7 +1082,7 @@ void Routeman::ZeroCurrentXTEToActivePoint()
     // When zeroing XTE create a "virtual" waypoint at present position
     if( pRouteActivatePoint ) delete pRouteActivatePoint;
     pRouteActivatePoint = new RoutePoint( gLat, gLon, wxString( _T("") ), wxString( _T("") ),
-    GPX_EMPTY_STRING, false ); // Current location
+    wxEmptyString, false ); // Current location
     pRouteActivatePoint->m_bShowName = false;
 
     pActiveRouteSegmentBeginPoint = pRouteActivatePoint;

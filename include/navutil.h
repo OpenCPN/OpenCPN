@@ -43,7 +43,6 @@
 
 #include "bbox.h"
 #include "chcanv.h"
-#include "tinyxml.h"
 #include "chartdbs.h"
 #include "RoutePoint.h"
 #include "vector2D.h"
@@ -105,9 +104,9 @@ class TrackList;
 //void InsertRoute(Route *pTentRoute, int routenum);
 //void UpdateRoute(Route *pTentRoute);
 
-GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false, bool b_props_minimal = false );
-GpxRteElement *CreateGPXRte ( Route *pRoute );
-GpxTrkElement *CreateGPXTrk ( Route *pRoute );
+//GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false, bool b_props_minimal = false );
+//GpxRteElement *CreateGPXRte ( Route *pRoute );
+//GpxTrkElement *CreateGPXTrk ( Route *pRoute );
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists( const wxString& name, double lat, double lon);
@@ -275,6 +274,13 @@ class WXDLLEXPORT X11FontPicker : public wxFontDialogBase
 };
 
 
-
+class GpxDocument
+{
+public:
+    static wxString GetUUID(void);
+    static void SeedRandom();
+private:
+    static int GetRandomNumber(int min, int max);
+};
 
 #endif

@@ -2104,7 +2104,7 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
 void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
 {
     RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-            GPX_EMPTY_STRING );
+            wxEmptyString );
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
@@ -2249,7 +2249,7 @@ void RouteManagerDialog::OnWptGoToClick( wxCommandEvent &event )
     if( !wp ) return;
 
     RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-            GPX_EMPTY_STRING );
+            wxEmptyString );
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
 
     Route *temp_route = new Route();

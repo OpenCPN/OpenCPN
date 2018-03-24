@@ -1086,7 +1086,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
 
 // add first point
 
-    pWP_dst = new RoutePoint( pWP_src->m_lat, pWP_src->m_lon, icon, _T ( "" ), GPX_EMPTY_STRING );
+    pWP_dst = new RoutePoint( pWP_src->m_lat, pWP_src->m_lon, icon, _T ( "" ), wxEmptyString );
     route->AddPoint( pWP_dst );
 
     pWP_dst->m_bShowName = false;
@@ -1117,7 +1117,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
 
             while( delta_inserts-- ) {
                 ll_gc_ll( pWP_prev->m_lat, pWP_prev->m_lon, delta_hdg, delta_dist, &tlat, &tlon );
-                pWP_dst = new RoutePoint( tlat, tlon, icon, _T ( "" ), GPX_EMPTY_STRING );
+                pWP_dst = new RoutePoint( tlat, tlon, icon, _T ( "" ), wxEmptyString );
                 route->AddPoint( pWP_dst );
                 pWP_dst->m_bShowName = false;
                 pSelect->AddSelectableRoutePoint( pWP_dst->m_lat, pWP_dst->m_lon, pWP_dst );
@@ -1147,7 +1147,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
             if( isProminent || ( xte > g_TrackDeltaDistance ) ) {
 
                 pWP_dst = new RoutePoint( prp_OK->m_lat, prp_OK->m_lon, icon, _T ( "" ),
-                        GPX_EMPTY_STRING );
+                        wxEmptyString );
 
                 route->AddPoint( pWP_dst );
                 pWP_dst->m_bShowName = false;
@@ -1187,7 +1187,7 @@ Route *Track::RouteFromTrack( wxGenericProgressDialog *pprog )
     if( delta_dist >= g_TrackDeltaDistance ) {
         pWP_dst = new RoutePoint( TrackPoints.back()->m_lat,
                                   TrackPoints.back()->m_lon,
-                                  icon, _T ( "" ), GPX_EMPTY_STRING );
+                                  icon, _T ( "" ), wxEmptyString );
         route->AddPoint( pWP_dst );
 
         pWP_dst->m_bShowName = false;

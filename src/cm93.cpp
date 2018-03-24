@@ -36,6 +36,7 @@
 #include <wx/mstream.h>
 #include <wx/spinctrl.h>
 #include <wx/listctrl.h>
+#include <wx/regex.h>
 
 #include "mygdal/ogr_api.h"
 #include "s57chart.h"

@@ -1160,7 +1160,6 @@ SET(HDRS
 		include/ais.h
 		include/pluginmanager.h
 		include/ocpn_plugin.h
-		include/gpxdocument.h
 		include/wx/json_defs.h
 		include/wx/jsonwriter.h
 		include/wx/jsonreader.h
@@ -1256,7 +1255,6 @@ SET(SRCS
 		src/about.cpp
 		src/ais.cpp
 		src/pluginmanager.cpp
-		src/gpxdocument.cpp
 		src/wxJSON/jsonwriter.cpp
 		src/wxJSON/jsonreader.cpp
 		src/wxJSON/jsonval.cpp
