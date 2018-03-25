@@ -41,7 +41,6 @@
 #include "routeman.h"
 #include "routeprop.h"
 #include "routemanagerdialog.h"
-#include "tinyxml.h"
 #include "undo.h"
 #include "chcanv.h"
 

@@ -1289,7 +1289,7 @@ void ChartCanvas::DropMarker( bool atOwnShip )
     lat = atOwnShip ? gLat : m_cursor_lat;
     lon = atOwnShip ? gLon : m_cursor_lon;
     
-    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+    RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
     pSelect->AddSelectableRoutePoint( lat, lon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
@@ -5900,7 +5900,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 if( NULL == pMousePoint ) {                 // need a new point
-                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
+                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
                     
                     pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
@@ -5947,7 +5947,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                     
                                     if( i < segmentCount ) {
                                         gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
-                                                                  GPX_EMPTY_STRING );
+                                                                  wxEmptyString );
                                         gcPoint->SetNameShown( false );
                                         pConfig->AddNewWayPoint( gcPoint, -1 );
                                         pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
@@ -6007,7 +6007,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
-                                                          wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
+                                                          wxString( _T ( "circle" ) ), wxEmptyString, wxEmptyString );
                 pMousePoint->m_bShowName = false;
                 
                 m_pMeasureRoute->AddPoint( pMousePoint );
@@ -6351,7 +6351,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 }
                 
                 if( NULL == pMousePoint ) {                 // need a new point
-                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
+                    pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), wxEmptyString );
                     pMousePoint->SetNameShown( false );
                     
                     pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
@@ -6397,7 +6397,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                                 
                                 if( i < segmentCount ) {
                                     gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
-                                                              GPX_EMPTY_STRING );
+                                                              wxEmptyString );
                                     gcPoint->SetNameShown( false );
                                     pConfig->AddNewWayPoint( gcPoint, -1 );
                                     pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
@@ -6458,7 +6458,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 
                 
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
-                                                          wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
+                                                          wxString( _T ( "circle" ) ), wxEmptyString, wxEmptyString );
                                                           pMousePoint->m_bShowName = false;
                                                           
                 m_pMeasureRoute->AddPoint( pMousePoint );

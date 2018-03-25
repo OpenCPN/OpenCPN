@@ -379,7 +379,7 @@ void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
     if( m_pdecoder ) { 
         AIS_Target_Data *td =  m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
         if( td ) {
-            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, wxEmptyString );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
             pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
             pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num

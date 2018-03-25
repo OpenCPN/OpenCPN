@@ -107,7 +107,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
         else {
             RoutePoint *psourcepoint = psourceroute->GetPoint( i );
             RoutePoint *ptargetpoint = new RoutePoint( psourcepoint->m_lat, psourcepoint->m_lon,
-                    psourcepoint->GetIconName(), psourcepoint->GetName(), GPX_EMPTY_STRING, false );
+                    psourcepoint->GetIconName(), psourcepoint->GetName(), wxEmptyString, false );
 
             AddPoint( ptargetpoint, false );
         }
@@ -692,7 +692,7 @@ RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
         bool bRenamePoints )
 {
     RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
-            GetNewMarkSequenced(), GPX_EMPTY_STRING );
+            GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
     newpoint->SetNameShown( false );
@@ -717,7 +717,7 @@ RoutePoint *Route::InsertPointAfter( RoutePoint *pRP, double rlat, double rlon,
     nRP++;
     
     RoutePoint *newpoint = new RoutePoint( rlat, rlon, wxString( _T ( "diamond" ) ),
-                                           GetNewMarkSequenced(), GPX_EMPTY_STRING );
+                                           GetNewMarkSequenced(), wxEmptyString );
     newpoint->m_bIsInRoute = true;
     newpoint->m_bDynamicName = true;
     newpoint->SetNameShown( false );

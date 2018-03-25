@@ -890,11 +890,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_GOTO_HERE: {
         RoutePoint *pWP_dest = new RoutePoint( zlat, zlon, g_default_wp_icon, wxEmptyString,
-                                               GPX_EMPTY_STRING );
+                                               wxEmptyString );
         pSelect->AddSelectableRoutePoint( zlat, zlon, pWP_dest );
 
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
+                                              wxEmptyString );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
 
         Route *temp_route = new Route();
@@ -922,7 +922,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_DROP_WP: {
         RoutePoint *pWP = new RoutePoint( zlat, zlon, g_default_wp_icon, wxEmptyString,
-                                          GPX_EMPTY_STRING );
+                                          wxEmptyString );
         pWP->m_bIsolatedMark = true;                      // This is an isolated mark
         pSelect->AddSelectableRoutePoint( zlat, zlon, pWP );
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
@@ -941,7 +941,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_WP_MENU_GOTO: {
         RoutePoint *pWP_src = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                              GPX_EMPTY_STRING );
+                                              wxEmptyString );
         pSelect->AddSelectableRoutePoint( gLat, gLon, pWP_src );
 
         Route *temp_route = new Route();
