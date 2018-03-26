@@ -1536,7 +1536,7 @@ void MyConfig::LoadNavObjects()
     if( NULL == m_pNavObjectInputSet )
         m_pNavObjectInputSet = new NavObjectCollection1();
 
-    int wpt_dups;
+    int wpt_dups = 0;
     if( ::wxFileExists( m_sNavObjSetFile ) &&
         m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
         m_pNavObjectInputSet->LoadAllGPXObjects(false, wpt_dups);
