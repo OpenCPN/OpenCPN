@@ -4592,7 +4592,7 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
       
       if ( g_bDebugCM93 )
       {
-          printf("noFind count: %d\n", m_noFindArray.GetCount());
+          printf("noFind count: %d\n", (int)m_noFindArray.GetCount());
       }
                 
       if(!bfound && !compfile.Length())
