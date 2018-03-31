@@ -606,28 +606,31 @@ void LLRegion::Optimize()
             else if(fabs(j->x + 180) < 2e-4) j->x = -180;
 #endif
 
-        // eliminiate parallel segments
-        bool end = false;
-        poly_contour::iterator j = i->begin();
-        int s = i->size();
-        for(int c=0; c<s; c++) {
-            poly_contour::iterator l = j, k = j;
-            l--; if(l == i->end()) l--;
-            k++; if(k == i->end()) k++;
-            if(l == k)
-                break;
-            if(fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
-                i->erase(j);
-                j = l;
-                c--;
-            } else
-                j = k;
-        }
-
-        // erase zero contours
-        if(i->size() < 3)
-            i = contours.erase(i);
-        else
-            i++;
+            bool finished = true;   // Have all parallel segments been removed?
+            while (!finished) {
+                finished = true;
+                // eliminiate parallel segments
+                poly_contour::iterator j = i->begin();
+                j++;
+                bool end_found = false;
+                while (!end_found) {
+                    poly_contour::iterator l = j, k = j;
+                    l--; k++;
+                    if (k == i->end()) {
+                        k = i->begin();
+                        end_found = true;
+                    }
+                    if (fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
+                        i->erase(j);
+                        finished = false;   // There may be more parallel segments
+                    }
+                    j = k;
+                }
+            }
+            // erase zero contours
+            if (i->size() < 3)
+                i = contours.erase(i);
+            else
+                i++;
     }
 }
