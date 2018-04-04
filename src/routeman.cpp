@@ -551,9 +551,6 @@ void Routeman::DoAdvance(void)
         if( pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
             pConfig->DeleteConfigRoute( pthis_route );
             DeleteRoute( pthis_route );
-            if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (pthis_route == pRoutePropDialog->GetRoute()) ) {
-                pRoutePropDialog->Hide();
-            }
         }
 
         if( pRouteManagerDialog )
@@ -837,6 +834,9 @@ bool Routeman::DeleteRoute( Route *pRoute )
         if (pRoute->m_bIsInLayer) {
             ::wxEndBusyCursor();
             return false;
+        }
+        if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (pRoute == pRoutePropDialog->GetRoute()) ) {
+                pRoutePropDialog->Hide();
         }
             
         pConfig->DeleteConfigRoute( pRoute );

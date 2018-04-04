@@ -1193,9 +1193,6 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
             if( !g_pRouteMan->DeleteRoute( m_pSelectedRoute ) )
                 break;
-            if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (m_pSelectedRoute == pRoutePropDialog->GetRoute()) ) {
-                pRoutePropDialog->Hide();
-            }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateRouteListCtrl();
