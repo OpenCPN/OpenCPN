@@ -47,6 +47,7 @@
 #include "navutil.h"
 #include "georef.h"
 #include "routeprop.h"
+#include "TrackPropDlg.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 #include "multiplexer.h"
@@ -91,8 +92,10 @@ extern bool             g_bMagneticAPB;
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
 
+extern TrackPropDlg     *pTrackPropDialog;
 extern ActiveTrack      *g_pActiveTrack;
 extern int              g_track_line_width;
+
 extern RouteProp        *pRoutePropDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
@@ -964,6 +967,9 @@ void Routeman::DeleteTrack( Track *pTrack )
             pprog->SetSize( 400, wxDefaultCoord );
             pprog->Centre();
             
+        }
+        if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (pTrack == pTrackPropDialog->GetTrack()) ) {
+                pTrackPropDialog->Hide();
         }
 
         //    Remove the track from associated lists
