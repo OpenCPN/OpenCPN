@@ -76,9 +76,18 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
     sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
     bSizerBottomContainer->Add( sbSizer1, 0, wxALIGN_LEFT | wxALL, 5 );
 
-    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizerBottomContainer->Add( m_buttonPause, 0, wxALL, 5 );
+    wxStaticBox *buttonBox = new wxStaticBox(this, wxID_ANY, _(""));
+    wxStaticBoxSizer *bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
+    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_buttonCopy = new wxButton(this, wxID_ANY, _("Copy"), wxDefaultPosition, wxDefaultSize, 0);
+    m_buttonCopy->SetToolTip(_("Copy NMEA Debug window to clipboard."));
+
+    bbSizer1->Add(m_buttonPause, 0, wxALL, 5);
+    bbSizer1->Add(m_buttonCopy, 0, wxALL, 5);
+    bSizerBottomContainer->Add(bbSizer1, 1, wxALL | wxEXPAND, 5);
+
+    m_buttonCopy->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(TTYWindow::OnCopyClick), NULL, this);
     m_buttonPause->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TTYWindow::OnPauseClick ), NULL, this );
 
     bpause = false;
@@ -158,6 +167,8 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
         m_buttonPause->SetLabel( _("Pause") );
     }
 }
+
+void TTYWindow::OnCopyClick(wxCommandEvent& event) { m_pScroll->Copy(); }
 
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
 {
