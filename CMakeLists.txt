@@ -88,6 +88,15 @@ if ( CMAKE_VERSION VERSION_GREATER 3.4 )
   endif()
 endif()
 
+# Add support for address etc sanitizers, part 1/2 (other half after ADD_EXECUTABLE)
+if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+  set(ENABLE_SANITIZER "none" CACHE STRING "Add clang sanitizer to the build")
+  set_property(CACHE ENABLE_SANITIZER PROPERTY STRINGS none address memory thread undefined)
+  if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+    add_compile_options(-fsanitize=${ENABLE_SANITIZER})
+  endif()
+endif()
+
 if ( CMAKE_VERSION VERSION_GREATER 3.9 )
   set(ENABLE_CPPCHECK OFF CACHE BOOL "Add cppcheck automatically to builds")
   if (ENABLE_CPPCHECK)
@@ -1941,8 +1950,10 @@ TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
 
 ENDIF()
 
-
-
+# Sanitizers, part 2/2
+if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+    target_link_libraries(${PACKAGE_NAME} -fsanitize=${ENABLE_SANITIZER})
+endif()
 
 
 If(NOT APPLE AND NOT QT_ANDROID)
