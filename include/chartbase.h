@@ -158,6 +158,7 @@ public:
       virtual wxString GetPubDate(){ return m_PubYear;}
       virtual int GetNativeScale(){ return m_Chart_Scale;}
       wxString GetFullPath() const { return m_FullPath;}
+      wxString GetHashKey() const;
       wxString GetName(){ return m_Name;}
       wxString GetDescription() { return m_Description;}
       wxString GetID(){ return m_ID;}
