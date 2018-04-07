@@ -1951,10 +1951,11 @@ TARGET_LINK_LIBRARIES( gorp ${wxWidgets_LIBRARIES} )
 ENDIF()
 
 # Sanitizers, part 2/2
-if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
-    target_link_libraries(${PACKAGE_NAME} -fsanitize=${ENABLE_SANITIZER})
+if ( CMAKE_VERSION VERSION_GREATER 3.4 )
+  if (NOT "${ENABLE_SANITIZER}" MATCHES "none")
+     target_link_libraries(${PACKAGE_NAME} -fsanitize=${ENABLE_SANITIZER})
+  endif()
 endif()
-
 
 If(NOT APPLE AND NOT QT_ANDROID)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
