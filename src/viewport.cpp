@@ -469,7 +469,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &region, const LLReg
     return r;
 }
 
-OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, int nPoints, float *llpoints,
                                            int chart_native_scale, wxPoint *ppoints )
 {
     //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
@@ -487,7 +487,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         float lat_max = -10000.;
         float lat_min = 10000.;
 
-        for( unsigned int ip = 0; ip < nPoints; ip++ ) {
+        for( int ip = 0; ip < nPoints; ip++ ) {
             lon_max = wxMax(lon_max, pfp[1]);
             lon_min = wxMin(lon_min, pfp[1]);
             lat_max = wxMax(lat_max, pfp[0]);
@@ -596,7 +596,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         p3.y = lat; p3.x = lon;
         
         
-        for(size_t i=0 ; i < npPoints-1 ; i++){            
+        for(int i=0 ; i < npPoints-1 ; i++){            
             //  Quick check on y dimension
             int y0 = pp[i].y; int y1 = pp[i+1].y;
 
@@ -653,7 +653,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         while( screen_region_it2.HaveRects() ) {
             wxRect rect = screen_region_it2.GetRect();
  
-            for(size_t i=0 ; i < npPoints-1 ; i++){
+            for(int i=0 ; i < npPoints-1 ; i++){
                 int x0 = pp[i].x;  int y0 = pp[i].y;
 
                 if((x0 < rect.x) || (x0 > rect.x+rect.width) ||
