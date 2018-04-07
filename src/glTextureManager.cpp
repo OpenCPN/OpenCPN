@@ -1228,7 +1228,7 @@ void glTextureManager::ClearAllRasterTextures( void )
 bool glTextureManager::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
 {
     //    Look for the texture factory for this chart
-    ChartPathHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc->GetFullPath() );
+    ChartPathHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc->GetHashKey() );
     
     //    Found ?
     if( ittf != m_chart_texfactory_hash.end() ) {
