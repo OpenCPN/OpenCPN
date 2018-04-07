@@ -612,8 +612,8 @@ void LLRegion::Optimize()
         int s = i->size();
         for(int c=0; c<s; c++) {
             poly_contour::iterator l = j, k = j;
-            l--; if(l == i->end()) l--;
-            k++; if(k == i->end()) k++;
+            if (l == i->begin()) l = i->end(); l--;
+            k++; if(k == i->end()) k = i->begin();
             if(l == k)
                 break;
             if(fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
