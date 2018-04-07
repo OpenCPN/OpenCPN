@@ -593,7 +593,7 @@ static Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
 }
 
 
-bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
+static bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
 {
     wxString s;
     pugi::xml_node child;
@@ -726,7 +726,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     return true;
 }
 
-bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int flags )
+static bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int flags )
 {
     wxString s;
     pugi::xml_node child;
@@ -746,7 +746,7 @@ bool GPXCreateTrkpt( pugi::xml_node node, TrackPoint *pt, unsigned int flags )
     return true;
 }
 
-bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags )
+static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags )
 {
     pugi::xml_node child;
 
@@ -863,7 +863,7 @@ bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags )
     return true;
 }
                    
-bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
+static bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
 {
     pugi::xml_node child;
     
@@ -1068,7 +1068,7 @@ void InsertTrack( Track *pTentTrack, bool bApplyChanges = false )
         delete pTentTrack;
 }                       
                        
-void UpdateRouteA( Route *pTentRoute )
+static void UpdateRouteA( Route *pTentRoute )
  {
     if( !pTentRoute )
         return;
