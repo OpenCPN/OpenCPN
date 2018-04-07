@@ -206,6 +206,16 @@ ChartBase::~ChartBase()
       free( m_pNoCOVRTablePoints );
 
 }
+
+wxString ChartBase::GetHashKey() const
+{
+    wxString key = GetFullPath();
+    wxChar separator = wxFileName::GetPathSeparator();
+    for(unsigned int pos = 0; pos < key.size(); pos = key.find(separator, pos))
+        key.replace(pos, 1, _T("!"));
+    return key;
+}
+
 /*
 int ChartBase::Continue_BackgroundHiDefRender(void)
 {
