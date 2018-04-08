@@ -141,7 +141,7 @@ enum
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
-WX_DEFINE_LIST(ListOfPI_S57Obj);
+
 
 //    Some static helper funtions
 //    Scope is local to this module
