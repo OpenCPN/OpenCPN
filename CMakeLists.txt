@@ -50,6 +50,10 @@ ELSE(APPLE)
   SET(PACKAGE_NAME opencpn)
 ENDIF(APPLE)
 
+IF(NOT MSVC)
+   SET(OBJ_VISIBILITY "-fvisibility=hidden" )
+ENDIF()
+
 if (CMAKE_VERSION VERSION_LESS "3.1")
   include(CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -667,6 +671,7 @@ IF(NOT QT_ANDROID)
         src/wxcurl/utils.cpp
     )
     ADD_LIBRARY(WXCURL ${SRC_WXCURL})
+
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
     SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
@@ -890,12 +895,15 @@ ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
         )
         ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
     endif()
+
     ADD_LIBRARY(WXSVG ${SRC_WXSVG})
     TARGET_LINK_LIBRARIES(WXSVG ${SVG_LIBS})
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVG)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include/wxSVGXML)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxsvg/src)
+    set_property(TARGET WXSVG PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
     SET(EXTRA_LIBS ${EXTRA_LIBS} WXSVG)
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
@@ -947,6 +955,8 @@ set(SQLITECPP_INC
 )
 include_directories( src/SQLiteCpp/include )
 ADD_LIBRARY(SQLiteCpp ${SQLITECPP_SRC} ${SQLITECPP_INC})
+set_property(TARGET SQLiteCpp PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
 SET(EXTRA_LIBS ${EXTRA_LIBS} SQLiteCpp)
 
 
@@ -1063,6 +1073,8 @@ SET(SRC_NMEA0183
         src/nmea0183/xte.hpp
 	)
 ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
+set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 
 
@@ -1437,6 +1449,7 @@ IF (USE_S57)
 	)
 	ADD_LIBRARY(S57ENC ${SRC_S57ENC})
 	INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
+    	set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 	SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
 	
 ELSE (USE_S57)
@@ -1496,6 +1509,7 @@ IF (USE_GARMINHOST)
 
 	ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
+    	set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 	SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
         IF(WIN32)
            ADD_DEFINITIONS(-D__WIN32__)
@@ -1513,6 +1527,7 @@ SET(SRC_SYMBOLS
     )
 
 ADD_LIBRARY(SYMBOLS ${SRC_SYMBOLS})
+set_property(TARGET SYMBOLS PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
 
@@ -1549,7 +1564,7 @@ IF (OPENGL_FOUND)
       IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3 -msse2 -DSQUISH_USE_SSE=2 -fPIC")
       ELSE ()
         # use standard optimizations for other architectures
         set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -fPIC")
@@ -1578,7 +1593,7 @@ IF (OPENGL_FOUND)
 
   # always use optimizations for the texture compression which is much faster
   IF ( NOT MSVC )
-      set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-O3")
+      set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
 
       IF (( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64") AND NOT QT_ANDROID)
         set_source_files_properties(src/mipmap/mipmap_sse.c PROPERTIES COMPILE_FLAGS "-msse")
