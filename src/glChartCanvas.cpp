@@ -156,13 +156,6 @@ extern double           g_ownship_HDTpredictor_miles;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 
-extern double           gLat, gLon, gCog, gSog, gHdt;
-
-extern int              g_OwnShipIconType;
-extern double           g_ownship_predictor_minutes;
-extern double           g_n_ownship_length_meters;
-extern double           g_n_ownship_beam_meters;
-
 extern int              g_GroupIndex;
 extern ChartDB          *ChartData;
 
