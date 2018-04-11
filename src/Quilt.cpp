@@ -1328,10 +1328,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
 {
     if( !ChartData )
-        return false;
+        return vp_in.view_scale_ppm;
 
     if(ChartData->IsBusy())             // This prevent recursion on chart loads that Yeild()
-        return false;
+        return vp_in.view_scale_ppm;
 
     ViewPort vp_local = vp_in;                   // need a non-const copy
 
