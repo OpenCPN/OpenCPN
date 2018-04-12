@@ -4395,7 +4395,10 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
             m_depth_unit_id = (ChartDepthUnitType)m_ppicb->GetDepthUnitId();
             m_Chart_Skew = m_ppicb->GetChartSkew();
             m_Chart_Scale = m_ppicb->GetNativeScale();
-
+            
+            // We estimate ppm_avg as needed by raster texture cache logic...
+            m_ppm_avg = 10000/m_ppicb->GetNativeScale();
+            
             bReadyToRender = m_ppicb->IsReadyToRender();
 
         }
