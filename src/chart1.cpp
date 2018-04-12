@@ -6833,39 +6833,42 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 }
             }
             if( ut_index < ChartData->GetChartTableEntries() ) {
-                printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
+                // printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
                 const ChartTableEntry *cte = &ChartData->GetChartTableEntry( ut_index );
-                double lat = ( cte->GetLatMax() + cte->GetLatMin() ) / 2;
-                double lon = ( cte->GetLonMax() + cte->GetLonMin() ) / 2;
 
-                vLat = lat;
-                vLon = lon;
+                double clat = ( cte->GetLatMax() + cte->GetLatMin() ) / 2;
+                double clon = ( cte->GetLonMax() + cte->GetLonMin() ) / 2;
 
-                cc1->SetViewPoint( lat, lon );
+                vLat = clat;
+                vLon = clon;
+
+                cc1->SetViewPoint( clat, clon );
 
                 if( cc1->GetQuiltMode() ) {
                     if( cc1->IsChartQuiltableRef( ut_index ) ) SelectQuiltRefdbChart( ut_index );
                 } else
                     SelectdbChart( ut_index );
 
-                double ppm;
+                double ppm; // final ppm scale to use
                 if (g_unit_test_1) {
                     ppm = cc1->GetCanvasScaleFactor() / cte->GetScale();
                     ppm /= 2;
                 }
                 else {
-                    // for full chart choose use max width or heigh
-                    //ChartBase *pc = ChartData->OpenChartFromDB( ut_index, FULL_INIT );
-                    
-                    //double scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth() );
-                    double dlat = fabs( (cte->GetLatMax() - cte->GetLatMin() ));
-                    double scale = cte->GetScale()*10;
-                    //double ppm1 = dlat
-                    double ppm1 =cc1->GetCanvasScaleFactor() / scale;
-                    //ppm = (dlat*1852.0)/**cc1->GetCanvasScaleFactor() *//;
-                    ppm = (double)cc1->GetCanvasHeight()/(dlat*1852.0*100);
-                    // printf("%f %f %d %f %f %f\n", dlat, cc1->GetCanvasScaleFactor(), cc1->GetCanvasHeight(), scale, ppm, ppm1);
+                    double rw, rh; // width, height
+                    int ww, wh;    // chart window width, height
 
+                    // width in nm
+                    DistanceBearingMercator( cte->GetLatMin(), cte->GetLonMin(), cte->GetLatMin(),
+                              cte->GetLonMax(), NULL, &rw );
+
+                    // height in nm
+                    DistanceBearingMercator( cte->GetLatMin(), cte->GetLonMin(), cte->GetLatMax(),
+                             cte->GetLonMin(), NULL, &rh );
+
+                    cc1->GetSize( &ww, &wh );
+                    ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+                    ppm = wxMin(ppm, 1.0);
                 }
                 cc1->SetVPScale( ppm );
 
