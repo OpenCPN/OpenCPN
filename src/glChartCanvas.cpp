@@ -2526,35 +2526,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
     if(vp.m_projection_type == PROJECTION_MERCATOR &&
        chart->GetChartProjectionType() == PROJECTION_MERCATOR) {
         double scalefactor = pBSBChart->GetRasterScaleFactor(vp);
-        ///// XXX HACK ////////////////////
-        //////////////////////////////////
-        /// missing GetRasterScaleFactor in plugin
-        /// partial revert of 026f7d371
-        ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( chart );
-        if( pPlugInWrapper ) {
-               wxRect R;
-
-               double skew_norm = chart->GetChartSkew();
-               if( skew_norm > 180. ) skew_norm -= 360.;
-
-               ViewPort svp = vp;
-               svp.pix_width = svp.rv_rect.width;
-               svp.pix_height = svp.rv_rect.height;
-
-               if(vp.b_quilt && (fabs(skew_norm) > 1.0)){
-                  //  make a larger viewport to ensure getting all of the chart tiles
-                  ViewPort xvp = svp;
-                  xvp.pix_width *= 2;
-                  xvp.pix_height *= 2;
-                  pPlugInWrapper->ComputeSourceRectangle( xvp, &R );
-              }
-              else {
-                  pPlugInWrapper->ComputeSourceRectangle( svp, &R );
-              }
-              // hopefully ComputeSourceRectangle had computed the right value
-              scalefactor = pBSBChart->GetRasterScaleFactor(vp);
-        }
-        //////////////////////////////////
         base_level = log(scalefactor) / log(2.0);
 
         if(base_level < 0) /* for overzoom */
