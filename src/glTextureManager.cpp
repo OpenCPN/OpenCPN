@@ -71,9 +71,8 @@ extern int              g_uncompressed_tile_size;
 extern int              g_nCPUCount;
 
 extern bool             b_inCompressAllCharts;
-extern double g_gl_ms_per_frame;
-extern OCPNPlatform *g_Platform;
 
+extern OCPNPlatform *g_Platform;
 extern ChartCanvas *cc1;
 extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
@@ -910,12 +909,9 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             // We need to force a refresh to replace the uncompressed texture
             // This frees video memory and is also really required if we had
             // gone up a mipmap level
-            //  But do not do this for very slow GL systems.
-            if(g_gl_ms_per_frame < 100){
-                if(cc1) {
-                    glChartCanvas::Invalidate(); // ensure we refresh
-                    cc1->Refresh();
-                }
+            if(cc1) {
+                glChartCanvas::Invalidate(); // ensure we refresh
+                cc1->Refresh();
             }
             ptd->compdata_ticks = 10;
         }

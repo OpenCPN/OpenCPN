@@ -3376,11 +3376,9 @@ void glChartCanvas::Render()
     if(b_timeGL && g_bShowFPS){
         if(n_render % 10){
             glFinish();   
+            g_glstopwatch.Start();
         }
     }
-    
-    g_glstopwatch.Start();
-    
     wxPaintDC( this );
 
     //  If we are in the middle of a fast pan, we don't want the FBO coordinates to be reset
@@ -3855,13 +3853,7 @@ void glChartCanvas::Render()
             //                printf(" OpenGL frame time: %3.0f  %3.0f\n", g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
         }
     }
-    else{
-        double filter = .05;
-        g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) + ((double)(g_glstopwatch.Time()) * filter);
-        //if(g_gl_ms_per_frame > 0)
-            //printf(" OpenGL frame time: %3.0f  %3.0f\n", g_gl_ms_per_frame, 1000./ g_gl_ms_per_frame);
-    }
-    
+
     g_glTextureManager->TextureCrunch(0.8);
     g_glTextureManager->FactoryCrunch(0.6);
     
