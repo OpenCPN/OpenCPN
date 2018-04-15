@@ -7030,8 +7030,10 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
   }
   else if(1 == i){              // Vector charts panel
     LoadS57();
-    if (!m_bVectorInit)
+    if (!m_bVectorInit){
         SetInitialVectorSettings();
+        UpdateOptionsUnits();  // sets depth values, overriding defaults
+    }
   }
   
   event.Skip();  // Allow continued event processing
