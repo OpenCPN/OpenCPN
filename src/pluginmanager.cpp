@@ -4400,12 +4400,14 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
             // This number works for average BSB charts, scanned with average resolution
             m_ppm_avg = 10000./m_ppicb->GetNativeScale();               // fallback value
             
-            // Caluculate a "better" ppm from the chart geo extent and raster size.
-            Extent extent;
-            if( GetChartExtent(&extent) ){
-                double lon_range = extent.ELON - extent.WLON;
-                if( (lon_range > 0) && (lon_range < 90.0) )              // Be safe about IDL crossing and huge charts
-                    m_ppm_avg = GetSize_X() / (lon_range * 1852 * 60);
+            // Calcuculate a "better" ppm from the chart geo extent and raster size.
+            if( (fabs(m_Chart_Skew) < .01) && (CHART_FAMILY_RASTER == m_ChartFamily) ){
+                Extent extent;
+                if( GetChartExtent(&extent) ){
+                    double lon_range = extent.ELON - extent.WLON;
+                    if( (lon_range > 0) && (lon_range < 90.0) )              // Be safe about IDL crossing and huge charts
+                        m_ppm_avg = GetSize_X() / (lon_range * 1852 * 60);
+                }
             }
             
             bReadyToRender = m_ppicb->IsReadyToRender();
