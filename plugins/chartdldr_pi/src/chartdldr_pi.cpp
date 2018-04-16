@@ -1003,83 +1003,82 @@ void ChartDldrPanelImpl::DownloadCharts()
 
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
-        //Prepare download queues
-        if( m_clCharts->IsChecked(i) )
-        {
-            m_bTransferComplete = false;
-            m_bTransferSuccess = true;
-            m_totalsize = _("Unknown");
-            m_transferredsize = _T("0");
-            m_downloading++;
-            if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
-            {
-                if( wxYES ==
-                        wxMessageBox(
-                                wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
-After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
-                {
-                    wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
-                }
-            }
-            else
-            {
-                //download queue
-                wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
-                if( url.IsReference() )
-                {
-                    wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
-                    this->Enable();
-                    return;
-                }
-                //construct local file path
-                wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
-                wxFileName fn;
-                fn.SetFullName(file);
-                fn.SetPath(cs->GetDir());
-                wxString path = fn.GetFullPath();
-                if( wxFileExists( path ) )
-                    wxRemoveFile( path );
-                wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
-
-                //  Ready to start download
-#ifdef __OCPN__ANDROID__
-                wxString file_path = _T("file://") + fn.GetFullPath();
-#else
-                wxString file_path = fn.GetFullPath();
-#endif
-                
-                long handle;
-                OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
-
-                while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
-                {
-                    m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                                 m_downloading, to_download, m_failed_downloads,
-                                                                 m_transferredsize.c_str(), m_totalsize.c_str() ) );
-                    wxMilliSleep(30);
-                    wxYield();
-//                    if( !IsShownOnScreen() )
-//                        cancelled = true;
-                }
-                
-                if(cancelled){
-                    OCPN_cancelDownloadFileBackground( handle );
-                }
-                    
-                if( m_bTransferSuccess && !cancelled )
-                {
-                    wxFileName myfn(path);
-                    pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
-                    cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
-                } else {
-                    if( wxFileExists( path ) )
-                        wxRemoveFile( path );
-                    m_failed_downloads++;
-                }
-            }
-        }
         if( cancelled )
             break;
+        //Prepare download queues
+        if( !m_clCharts->IsChecked(i) )
+            continue;
+
+        m_bTransferComplete = false;
+        m_bTransferSuccess = true;
+        m_totalsize = _("Unknown");
+        m_transferredsize = _T("0");
+        m_downloading++;
+        if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
+        {
+            if( wxYES == wxMessageBox(
+                            wxString::Format( _("The selected chart '%s' can't be downloaded automatically, do you want me to open a browser window and download them manually?\n\n \
+After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCatalog->charts.Item(i).title.c_str(), pPlugIn->m_pChartSource->GetDir().c_str() ), _("Chart Downloader"), wxYES_NO | wxCENTRE | wxICON_QUESTION ) )
+            {
+                wxLaunchDefaultBrowser( pPlugIn->m_pChartCatalog->charts.Item(i).GetManualDownloadUrl() );
+            }
+            continue;
+        }
+
+        //download queue
+        wxURI url(pPlugIn->m_pChartCatalog->charts.Item(i).GetDownloadLocation());
+        if( url.IsReference() )
+        {
+            wxMessageBox(wxString::Format(_("Error, the URL to the chart (%s) data seems wrong."), url.BuildURI().c_str()), _("Error"));
+            this->Enable();
+            /// XXX undo anything?
+            return;
+        }
+        //construct local file path
+        wxString file = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartFilename();
+        wxFileName fn;
+        fn.SetFullName(file);
+        fn.SetPath(cs->GetDir());
+        wxString path = fn.GetFullPath();
+        if( wxFileExists( path ) )
+            wxRemoveFile( path );
+        wxString title = pPlugIn->m_pChartCatalog->charts.Item(i).GetChartTitle();
+
+        //  Ready to start download
+#ifdef __OCPN__ANDROID__
+        wxString file_path = _T("file://") + fn.GetFullPath();
+#else
+        wxString file_path = fn.GetFullPath();
+#endif
+        
+        long handle;
+        OCPN_downloadFileBackground( url.BuildURI(), file_path, this, &handle);
+
+        while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
+        {
+            m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+                                                         m_downloading, to_download, m_failed_downloads,
+                                                         m_transferredsize.c_str(), m_totalsize.c_str() ) );
+            wxMilliSleep(30);
+            wxYield();
+//            if( !IsShownOnScreen() )
+//                cancelled = true;
+        }
+        
+        if(cancelled){
+            OCPN_cancelDownloadFileBackground( handle );
+        }
+            
+        if( m_bTransferSuccess && !cancelled )
+        {
+            wxFileName myfn(path);
+            pPlugIn->ProcessFile(path, myfn.GetPath(), true, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime());
+            cs->ChartUpdated( pPlugIn->m_pChartCatalog->charts.Item(i).number, pPlugIn->m_pChartCatalog->charts.Item(i).GetUpdateDatetime().GetTicks() );
+        } else {
+            if( wxFileExists( path ) )
+                wxRemoveFile( path );
+            m_failed_downloads++;
+        }
     }
     DisableForDownload( true );
 #ifdef __OCPN__ANDROID__
