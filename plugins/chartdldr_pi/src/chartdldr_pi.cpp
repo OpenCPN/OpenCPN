@@ -721,8 +721,8 @@ void ChartDldrPanelImpl::UpdateAllCharts( wxCommandEvent& event )
             break;
         UpdateChartList( event );
         DownloadCharts();
-        attempted_to_update += downloading;
-        failed_to_update += failed_downloads;
+        attempted_to_update += m_downloading;
+        failed_to_update += m_failed_downloads;
     }
     wxLogMessage( wxString::Format(_T("chartdldr_pi::UpdateAllCharts() downloaded %d out of %d charts."), attempted_to_update - failed_to_update, attempted_to_update) );
     if( failed_to_update > 0 )
@@ -992,14 +992,15 @@ void ChartDldrPanelImpl::DownloadCharts()
         return;
     }
 
-    failed_downloads = 0;
     cancelled = false;
     to_download = m_clCharts->GetCheckedItemCount();
-    downloading = 0;
+    m_downloading = 0;
+    m_failed_downloads = 0;
     DisableForDownload( false );
     //wxString old_label = m_bDnldCharts->GetLabel();     // Broken on Android??
     m_bDnldCharts->SetLabel( _("Abort download") );
     DownloadIsCancel = true;
+
     for( int i = 0; i < m_clCharts->GetItemCount(); i++ )
     {
         //Prepare download queues
@@ -1009,7 +1010,7 @@ void ChartDldrPanelImpl::DownloadCharts()
             m_bTransferSuccess = true;
             m_totalsize = _("Unknown");
             m_transferredsize = _T("0");
-            downloading++;
+            m_downloading++;
             if( pPlugIn->m_pChartCatalog->charts.Item(i).NeedsManualDownload() )
             {
                 if( wxYES ==
@@ -1053,7 +1054,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                 while( !m_bTransferComplete && m_bTransferSuccess  && !cancelled )
                 {
                     m_stCatalogInfo->SetLabel( wxString::Format( _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-                                                                 downloading, to_download, failed_downloads,
+                                                                 m_downloading, to_download, m_failed_downloads,
                                                                  m_transferredsize.c_str(), m_totalsize.c_str() ) );
                     wxMilliSleep(30);
                     wxYield();
@@ -1073,7 +1074,7 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
                 } else {
                     if( wxFileExists( path ) )
                         wxRemoveFile( path );
-                    failed_downloads++;
+                    m_failed_downloads++;
                 }
             }
         }
@@ -1088,10 +1089,11 @@ After downloading the charts, please extract them to %s"), pPlugIn->m_pChartCata
 #endif
     DownloadIsCancel = false;
     SetSource(GetSelectedCatalog());
-    if( failed_downloads > 0 && !updatingAll )
-        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed."), failed_downloads,downloading ),
+    if( m_failed_downloads > 0 && !updatingAll )
+        wxMessageBox( wxString::Format( _("%d out of %d charts failed to download.\nCheck the list, verify there is a working Internet connection and repeat the operation if needed.")
+                , m_failed_downloads, m_downloading ),
                 _("Chart Downloader"), wxOK | wxICON_ERROR );
-    if( (downloading-failed_downloads > 0) && !updatingAll )
+    if( (m_downloading - m_failed_downloads > 0) && !updatingAll )
         ForceChartDBUpdate();
 }
 
@@ -1127,12 +1129,12 @@ ChartDldrPanelImpl::ChartDldrPanelImpl( chartdldr_pi* plugin, wxWindow* parent, 
     downloadInProgress = false;
     cancelled = true;
     to_download = -1;
-    downloading = -1;
+    m_downloading = -1;
     updatingAll = false;
     pPlugIn = plugin;
     m_populated = false;
     DownloadIsCancel = false;
-    failed_downloads = 0;
+    m_failed_downloads = 0;
     m_stCatalogInfo->SetLabel( wxEmptyString );
     m_bTransferComplete = true;
     m_bTransferSuccess = true;
