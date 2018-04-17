@@ -28,8 +28,10 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "Track.h"
+#include "routeman.h"
 
 extern ChartCanvas *cc1;
+extern Routeman    *g_pRouteMan;
 
 Select::Select()
 {
@@ -624,7 +626,8 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_DRAGHANDLE:    
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
-                        ret_list.Append( pFindSel );
+                        if(cc1->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                            ret_list.Append( pFindSel );
                     }
                     break;
                 case SELTYPE_ROUTESEGMENT:
@@ -634,7 +637,9 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) ret_list.Append( pFindSel );
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) )
+                        if(cc1->m_bShowNavobjects || ((Route *)pFindSel->m_pData3)->m_bRtIsActive)
+                            ret_list.Append( pFindSel );
 
                     break;
                 }
