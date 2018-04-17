@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:26-0500\n"
+"PO-Revision-Date: 2018-04-09 11:17-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -838,7 +838,7 @@ msgstr "Advertencia: Datos a altura Geopotencial"
 
 #: src/GribOverlayFactory.cpp:1099
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "IsoBar no puede calcular la magnitud del registro"
 
 #: src/GribOverlayFactory.cpp:1124
 msgid "Building Isobar map"
@@ -846,7 +846,7 @@ msgstr "Construyendo mapa isobaras"
 
 #: src/GribOverlayFactory.cpp:1404
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "OverlayMap No se puede calcular la magnitud del registro"
 
 #: src/GribOverlayFactory.cpp:1452
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -866,7 +866,7 @@ msgstr "Por favor ajuste Zoom o Escala para ver capas invisibles:"
 
 #: src/GribOverlayFactory.cpp:1519
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "GribNumbers No se puede calcular la magnitud del registro"
 
 #: src/grib_pi.cpp:137
 msgid "Grib"

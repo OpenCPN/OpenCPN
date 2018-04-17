@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:24-0500\n"
-"PO-Revision-Date: 2018-01-29 21:29-0500\n"
+"PO-Revision-Date: 2018-04-09 11:20-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ru\n"
@@ -28,7 +28,7 @@ msgstr ""
 #: src/chartcatalog.cpp:567
 #, c-format
 msgid "%s"
-msgstr ""
+msgstr "%с"
 
 #: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"
@@ -42,7 +42,8 @@ msgstr "Загрузчик Карт плагин для OpenCPN"
 msgid "Chart Downloader PlugIn for OpenCPN\n"
 "Manages chart downloads and updates from sources supporting\n"
 "NOAA Chart Catalog format"
-msgstr ""
+msgstr "Модуль \"Загрузчик Карт\" для OpenCPN\n"
+"Загружает и обновляет навигационные карты из различных источников."
 
 #: src/chartdldr_pi.cpp:260 src/chartdldr_pi.cpp:699 src/chartdldr_pi.cpp:706
 #: src/chartdldr_pi.cpp:712 src/chartdldr_pi.cpp:730 src/chartdldr_pi.cpp:765
@@ -87,11 +88,11 @@ msgstr "Обновлено"
 #: src/chartdldr_pi.cpp:591
 #, c-format
 msgid "%lu charts total, %lu updated, %lu new"
-msgstr ""
+msgstr "%lu карт всего, %lu обновлений, %lu новых"
 
 #: src/chartdldr_pi.cpp:670 src/chartdldr_pi.cpp:1246
 msgid "(Please update first)"
-msgstr "(Пожалуйста, сначала обновите)"
+msgstr "Требуется Обновление"
 
 #: src/chartdldr_pi.cpp:675 src/chartdldr_pi.cpp:747
 msgid "Error, the URL to the chart source data seems wrong."
@@ -180,7 +181,7 @@ msgstr ""
 #: src/chartdldr_pi.cpp:1085 src/chartdldrgui.cpp:294
 msgid "Download\n"
 " selected charts"
-msgstr ""
+msgstr "Загрузить выбранные карты"
 
 #: src/chartdldr_pi.cpp:1087 src/chartdldrgui.cpp:401
 msgid "Download selected charts"
@@ -336,7 +337,7 @@ msgstr "Настройки"
 
 #: src/chartdldrgui.cpp:484
 msgid "After catalog update select for download"
-msgstr ""
+msgstr "Выберите для загрузки после обновления каталога"
 
 #: src/chartdldrgui.cpp:488
 msgid "All updated charts"

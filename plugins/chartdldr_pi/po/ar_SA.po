@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:24-0500\n"
-"PO-Revision-Date: 2018-01-24 19:39-0500\n"
+"PO-Revision-Date: 2018-03-03 08:22-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Arabic\n"
 "Language: ar_SA\n"
@@ -36,7 +36,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:248
 msgid "Chart Downloader PlugIn for OpenCPN"
-msgstr ""
+msgstr "مخطط تنزيل بلوغين ل أوبينكبن"
 
 #: src/chartdldr_pi.cpp:253
 msgid "Chart Downloader PlugIn for OpenCPN\n"
@@ -50,7 +50,7 @@ msgstr ""
 #: src/chartdldr_pi.cpp:1093 src/chartdldr_pi.cpp:1169
 #: src/chartdldr_pi.cpp:1272 src/chartdldr_pi.cpp:1937
 msgid "Chart Downloader"
-msgstr ""
+msgstr "مخطط تنزيل"
 
 #: src/chartdldr_pi.cpp:435 src/chartdldr_pi.cpp:457
 msgid "Select all"
@@ -217,7 +217,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1232
 msgid "Edit Chart Source"
-msgstr ""
+msgstr "تحرير مصدر الرسم البياني"
 
 #: src/chartdldr_pi.cpp:1271
 #, c-format
@@ -243,7 +243,7 @@ msgstr ""
 
 #: src/chartdldr_pi.cpp:1917
 msgid "Chart source definition problem"
-msgstr ""
+msgstr "مشكلة تعريف مصدر الرسم البياني"
 
 #: src/chartdldrgui.cpp:104
 msgid "Predefined"
@@ -348,7 +348,7 @@ msgstr ""
 
 #: src/chartdldrgui.cpp:498
 msgid "Allow bulk update of all configured chart sources and charts"
-msgstr ""
+msgstr "السماح بالتحديث المجمع لجميع مصادر المخطط المخططات والمخططات"
 
 #: src/chartdldrgui.h:77
 msgid "New chart source"

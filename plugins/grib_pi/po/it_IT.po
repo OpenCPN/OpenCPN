@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-03-11 10:38-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:425
 msgid "File: "
-msgstr ""
+msgstr "File: "
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -43,7 +43,7 @@ msgstr " contiene dati non validi!"
 
 #: src/GribUIDialog.cpp:455
 msgid "No valid GRIB file"
-msgstr ""
+msgstr "File GRIB non valido"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
 msgid "Hide data at cursor"
@@ -99,7 +99,7 @@ msgstr "Seleziona Cartella dei file GRIB"
 
 #: src/GribUIDialog.cpp:1653
 msgid " files don't exist!"
-msgstr ""
+msgstr " file è inesistente!"
 
 #: src/GribUIDialog.cpp:1675
 msgid " can't be read!"
@@ -481,15 +481,15 @@ msgstr "Impostazioni animazione"
 
 #: src/GribUIDialogBase.cpp:1000
 msgid "Speed Control"
-msgstr ""
+msgstr "Controllo velocità"
 
 #: src/GribUIDialogBase.cpp:1012
 msgid "Slow"
-msgstr ""
+msgstr "Lento"
 
 #: src/GribUIDialogBase.cpp:1020
 msgid "Fast"
-msgstr ""
+msgstr "Veloce"
 
 #: src/GribUIDialogBase.cpp:1026
 msgid "Loop Mode"
@@ -919,7 +919,7 @@ msgstr ""
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "Vento, Velocità"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
@@ -939,11 +939,11 @@ msgstr ""
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Temperatura aria"
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Temperatura mare"
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
@@ -995,7 +995,10 @@ msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
 "and the time intervall 12 hours."
-msgstr ""
+msgstr "Richiedi una previsione dell'orizzonte per più di 8 giorni.\n"
+"Questo è in conflitto con i dati di Wave che verranno rimossi dalla tua richiesta.\n"
+"Non dimenticare che oltre i primi 8 giorni, la risoluzione sarà solo 2.5 \\u00B0x2.5\\u00B0\n"
+"e l'intervallo di tempo 12 ore."
 
 #: src/GribRequestDialog.cpp:846
 msgid "Max"
@@ -1017,7 +1020,7 @@ msgstr "Errore! Max Lat minore di Min Lat o Max Lon minore di Min Lon!"
 
 #: src/GribRequestDialog.cpp:964
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Area troppo grande! Ogni lato deve essere minore di 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:964
 msgid "Too small area for this resolution!"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-02-01 14:00-0500\n"
+"PO-Revision-Date: 2018-04-09 11:19-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -91,7 +91,7 @@ msgstr "設定"
 
 #: src/GribUIDialog.cpp:855
 msgid "Draw requested Area or Click here to stop request"
-msgstr ""
+msgstr "要求されたエリアを描画または止める場合はここをクリック"
 
 #: src/GribUIDialog.cpp:1393 src/GribUIDialog.cpp:1414
 msgid "Select a GRIB file"
@@ -260,7 +260,7 @@ msgstr "等温線を表示"
 
 #: src/GribSettingsDialog.cpp:784 src/CursorData.cpp:519
 msgid "Display Iso CAPE"
-msgstr ""
+msgstr "ISO CAPEを表示"
 
 #: src/GribSettingsDialog.cpp:790 src/GribSettingsDialog.cpp:858
 #: src/GribUIDialogBase.cpp:818
@@ -483,15 +483,15 @@ msgstr "再生オプション"
 
 #: src/GribUIDialogBase.cpp:1000
 msgid "Speed Control"
-msgstr ""
+msgstr "速度制御"
 
 #: src/GribUIDialogBase.cpp:1012
 msgid "Slow"
-msgstr ""
+msgstr "低速"
 
 #: src/GribUIDialogBase.cpp:1020
 msgid "Fast"
-msgstr ""
+msgstr "速い"
 
 #: src/GribUIDialogBase.cpp:1026
 msgid "Loop Mode"
@@ -603,7 +603,7 @@ msgstr "失われた波の記録をコピーします。"
 
 #: src/GribUIDialogBase.cpp:1404
 msgid "Draw Barbed Arrows Head"
-msgstr ""
+msgstr "風速の矢羽を描画"
 
 #: src/GribUIDialogBase.cpp:1412
 msgid "Load the More Recent File in Directory"
@@ -922,43 +922,43 @@ msgstr "あなたは、補間を承認しました\n"
 
 #: src/GribTable.cpp:94
 msgid "Wind,Dir"
-msgstr ""
+msgstr "風向"
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "風速"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
-msgstr ""
+msgstr "最大瞬間風速"
 
 #: src/GribTable.cpp:133
 msgid "Waves,Dir"
-msgstr ""
+msgstr "波向"
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "波浪（有義波高）"
 
 #: src/GribTable.cpp:143
 msgid "Waves,Per"
-msgstr ""
+msgstr "波周期"
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "気温"
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "海水温度."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
-msgstr ""
+msgstr "流向"
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "海流の速度"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"
@@ -1089,11 +1089,11 @@ msgstr "風向"
 
 #: src/CursorData.cpp:255
 msgid "Wind Gust at"
-msgstr ""
+msgstr "最大瞬間風速"
 
 #: src/CursorData.cpp:258
 msgid "Air Temperature at"
-msgstr ""
+msgstr "気温"
 
 #: src/CursorData.cpp:258
 msgid "surface level"
@@ -1111,5 +1111,5 @@ msgstr "海の表面温度"
 #: src/CursorData.cpp:448 src/CursorData.cpp:460 src/CursorData.cpp:472
 #: src/CursorData.cpp:483
 msgid "N/A"
-msgstr ""
+msgstr "なし"
 

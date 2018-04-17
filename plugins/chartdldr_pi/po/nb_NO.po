@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:24-0500\n"
-"PO-Revision-Date: 2018-01-24 19:42-0500\n"
+"PO-Revision-Date: 2018-04-12 09:20-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -28,7 +28,7 @@ msgstr "%s (%s to %s), elvemil %3.1f - %3.1f"
 #: src/chartcatalog.cpp:567
 #, c-format
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"

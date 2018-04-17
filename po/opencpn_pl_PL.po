@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:28-0500\n"
+"PO-Revision-Date: 2018-03-04 05:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=((n == 1) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || n%10 == 1 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 12 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: pl\n"
@@ -350,7 +350,7 @@ msgstr "Pława kardynalna W"
 
 #: src/ais.cpp:214
 msgid "Beacon, Port Hand"
-msgstr "Pława: prawa strona"
+msgstr "Pława: lewa strona"
 
 #: src/ais.cpp:215
 msgid "Beacon, Starboard Hand"
@@ -390,7 +390,7 @@ msgstr "Znak kardynalny S"
 
 #: src/ais.cpp:224
 msgid "Cardinal Mark W"
-msgstr "Znak kardynalny N"
+msgstr "Znak kardynalny W"
 
 #: src/ais.cpp:225
 msgid "Port Hand Mark"
@@ -810,7 +810,7 @@ msgstr "Alarm bezpieczeństwa - Poziom 3"
 
 #: src/ais.cpp:374
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Akwen distress: Statek niezdolny do żeglugi i dryfujcy"
+msgstr "Akwen distress: Statek niezdolny do żeglugi i dryfujący"
 
 #: src/ais.cpp:375
 msgid "Distress Area: Vessel sinking"
@@ -882,7 +882,7 @@ msgstr "Kieruj sie do tego miejsca - czekaj na instrukcje"
 
 #: src/ais.cpp:395
 msgid "Clearance granted - proceed to berth"
-msgstr "Odprawa dokonana - kieruj sie do nabrzeza"
+msgstr "Odprawa dokonana - kieruj sie do nabrzeża"
 
 #: src/ais.cpp:398
 msgid "Information: Pilot boarding position"
@@ -954,7 +954,7 @@ msgstr "Cecha mapy: kanał niedrożny"
 
 #: src/ais.cpp:415
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr "Funkcja mapy: Zmniejszony przeswit pionowy"
+msgstr "Funkcja mapy: Zmniejszony prześwit pionowy"
 
 #: src/ais.cpp:416
 msgid "Chart Feature: Bridge closed"
@@ -1206,7 +1206,7 @@ msgstr "Holownik, jeden lub więcej holi"
 
 #: src/AIS_Decoder.cpp:243
 msgid "Tug, assisting a vessel or linked combination"
-msgstr "Holownik, asystujacy statkowi lub kombinacja połączona"
+msgstr "Holownik, asystujący statkowi lub kombinacja połączona"
 
 #: src/AIS_Decoder.cpp:245
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
@@ -1230,11 +1230,11 @@ msgstr "Statek pasażerski bez kajut"
 
 #: src/AIS_Decoder.cpp:250
 msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
-msgstr "Statek, jednostka konserwacyjna, zuraw pływający, kabelowiec, statek boja, poglebiarka"
+msgstr "Statek, jednostka konserwacyjna, żuraw pływający, kabelowiec, statek boja, pogłębiarka"
 
 #: src/AIS_Decoder.cpp:251
 msgid "Fishing boat"
-msgstr "Lodz rybacka"
+msgstr "Łódź rybacka"
 
 #: src/AIS_Decoder.cpp:252
 msgid "Barge, tanker, chemical"
@@ -1459,7 +1459,7 @@ msgstr "Baza"
 
 #: src/AIS_Target_Data.cpp:891
 msgid "Base Station"
-msgstr "Baza"
+msgstr "Stacja bazowa"
 
 #: src/AIS_Target_Data.cpp:893
 msgid "GPSGate Buddy"
@@ -2527,8 +2527,8 @@ msgstr "Zapisz ślad"
 #: src/AISTargetQueryDialog.cpp:173
 msgid "The recently captured track of this target has been recorded.\n"
 "Do you want to continue recording until the end of the current OpenCPN session?"
-msgstr "Niedawno przechwycona sciezka tego celu została zapisana. \n"
-"Do chcesz kontynuować nagrywanie do końca bieżącej sesji OpenCPN?"
+msgstr "Niedawno przechwycona ścieżka tego celu została zapisana. \n"
+"Czy chcesz kontynuować nagrywanie do końca bieżącej sesji OpenCPN?"
 
 #: src/AISTargetQueryDialog.cpp:174 src/chart1.cpp:5836 src/chart1.cpp:11272
 #: src/chart1.cpp:11303 src/LinkPropDlg.cpp:130 src/options.cpp:549
@@ -2827,7 +2827,7 @@ msgstr "Zmienić nazwy punktów drogi?"
 
 #: src/canvasMenu.cpp:1184
 msgid "Are you sure you want to delete this route?"
-msgstr "Naprawdę chcesz usunąć tę drogę?"
+msgstr "Czy na pewno chcesz usunąć tę drogę?"
 
 #: src/canvasMenu.cpp:1185
 msgid "OpenCPN Route Delete"
@@ -2889,7 +2889,7 @@ msgstr "OpenCPN przygotowuje mapy ENC"
 #: src/chart1.cpp:1446
 #, c-format
 msgid "Distance from Ownship:  %4.0f NMi"
-msgstr "Odległość od naszego statkup: %4.0f Mm"
+msgstr "Odległość od naszego statku: %4.0f Mm"
 
 #: src/chart1.cpp:1476
 msgid "ENC Completed."
@@ -2917,7 +2917,7 @@ msgstr " w celu poznania szczegółów."
 
 #: src/chart1.cpp:2089
 msgid " -- [Portable(-p) executing from "
-msgstr " -- [Wersja portable(-p) uruchomiona z "
+msgstr " -- [Wersja przenośna(-p) uruchomiona z "
 
 #: src/chart1.cpp:2210
 msgid "Retrieving initial Chart Directory set from Windows Registry"
@@ -3070,7 +3070,7 @@ msgstr "Pokaż wszystkie obiekty AIS"
 
 #: src/chart1.cpp:4722 src/chart1.cpp:4778
 msgid "MAN OVERBOARD"
-msgstr "MOB - CZŁOWIEK ZA BURTĄ…"
+msgstr "MOB - CZŁOWIEK ZA BURTĄ"
 
 #: src/chart1.cpp:4741
 msgid "1.0 NM along COG"
@@ -3137,7 +3137,7 @@ msgstr "Pokaż inf. dot. kotwiczenia (ENC)"
 
 #: src/chart1.cpp:5424 src/chart1.cpp:5430
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "Pokaż jakość danych ENC"
 
 #: src/chart1.cpp:5445 src/chart1.cpp:5447
 msgid "Enter Full Screen"
@@ -3235,7 +3235,7 @@ msgstr "Własny statek"
 
 #: src/chart1.cpp:9951
 msgid "Temporary AISMOB Route"
-msgstr "Tymczasowa droga do MOB"
+msgstr "Tymczasowa droga do AIS MOB"
 
 #: src/chart1.cpp:9952
 msgid "Present own ship"
@@ -3253,7 +3253,7 @@ msgstr "OpenCPN wymaga dostępu do portów szeregowych, aby użyć szeregowych d
 msgid "No Serial Ports can be found on this system.\n"
 "You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
 msgstr "Nie można znaleźć portów szeregowych w systemie. \n"
-"Należy zainstalować port szeregowy lub sterownik lub podłączyć urządzenie szeregowego USB. \n"
+"Należy zainstalować port szeregowy lub sterownik oraz podłączyć urządzenie szeregowego USB. \n"
 
 #: src/chart1.cpp:11291
 msgid "You do currently not have permission to access the serial ports on this system.\n\n"
@@ -3273,7 +3273,7 @@ msgstr " Mapa z pliku:"
 
 #: src/chartdbs.cpp:1387
 msgid " Name:  "
-msgstr "Tytuł: :  "
+msgstr "Tytuł: "
 
 #: src/chartdbs.cpp:1415 src/chartdbs.cpp:1417 src/chcanv.cpp:3710
 #: src/chcanv.cpp:3712 src/chcanv.cpp:3715 src/chcanv.cpp:3719
@@ -3497,7 +3497,7 @@ msgstr "Nadmierne powiększenie"
 
 #: src/chcanv.cpp:9358 src/chcanv.cpp:9359
 msgid "ExtendedTideIcon"
-msgstr "Rozszerzona Ikona Plywu"
+msgstr "Rozszerzona Ikona Pływu"
 
 #: src/chcanv.cpp:9624
 msgid "CurrentValue"
@@ -3509,7 +3509,7 @@ msgstr "   Brak zewnętrznej aplikacji \"xcalib\". Jasność ekranu nie została
 
 #: src/cm93.cpp:6788
 msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr "Korekta polozenia Komórki CM93 w OpenCPN"
+msgstr "Korekta położenia Komórki CM93 w OpenCPN"
 
 #: src/cm93.cpp:6805
 msgid "Cell"
@@ -3566,7 +3566,7 @@ msgstr "Opis parametru"
 #: src/concanv.cpp:111 src/concanv.cpp:115 src/concanv.cpp:119
 #: src/concanv.cpp:123 src/concanv.cpp:127 src/concanv.cpp:553
 msgid "Console Value"
-msgstr "Wartośc parametru"
+msgstr "Wartość parametru"
 
 #: src/concanv.cpp:215
 msgid "Full Route"
@@ -3574,7 +3574,7 @@ msgstr "Cała droga"
 
 #: src/concanv.cpp:216
 msgid "Show Highway"
-msgstr "Pokaż droge"
+msgstr "Pokaż drogę"
 
 #: src/concanv.cpp:328
 msgid "XTE         L"
@@ -3654,7 +3654,7 @@ msgstr "Wyślij"
 
 #: src/ConnectionParams.cpp:227
 msgid "In"
-msgstr "Wejscie danych"
+msgstr "Wejście danych"
 
 #: src/ConnectionParams.cpp:232
 msgid "In: None"
@@ -3666,7 +3666,7 @@ msgstr "Wyjście danych"
 
 #: src/ConnectionParams.cpp:241
 msgid ", Out: None"
-msgstr ", wyjście: brak filtru"
+msgstr ", Wyjście: brak filtru"
 
 #: src/glChartCanvas.cpp:682
 msgid "Failed to initialize OpenGL"
@@ -3748,7 +3748,7 @@ msgstr "Link"
 
 #: src/LinkPropDlg.cpp:50
 msgid "Link description"
-msgstr "Opis"
+msgstr "Opis linku"
 
 #: src/LinkPropDlg.cpp:59
 msgid "URL"
@@ -3760,7 +3760,7 @@ msgstr "Plik lokalny..."
 
 #: src/LinkPropDlg.cpp:119
 msgid "Choose a file"
-msgstr "Wartośc parametru"
+msgstr "Wybierz plik"
 
 #: src/LinkPropDlg.cpp:130
 msgid "Link not complete, can't be saved."
@@ -4229,7 +4229,7 @@ msgstr "Sprawdzaj sumę kontrolną"
 
 #: src/options.cpp:1483 src/options.cpp:2092
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr "Jeśli zaznaczone tylko komunikaty z prawidłowa sumą kontrolna są używane"
+msgstr "Jeśli zaznaczone - używane są tylko komunikaty z prawidłową sumą kontrolną"
 
 #: src/options.cpp:1487
 msgid "Use GRMN mode for input"
@@ -4237,7 +4237,7 @@ msgstr "Użyj trybu GRMN dla wejścia"
 
 #: src/options.cpp:1496 src/options.cpp:2105
 msgid "Receive Input on this Port"
-msgstr "Odbior danych z tego Portu"
+msgstr "Odbiór danych z tego portu"
 
 #: src/options.cpp:1500 src/options.cpp:2111
 msgid "Output on this port"
@@ -4273,7 +4273,7 @@ msgstr "Wysyłaj komunikaty"
 
 #: src/options.cpp:1584 src/options.cpp:2192 src/options.cpp:8486
 msgid "Drop sentences"
-msgstr "Odrzuć ciag danych"
+msgstr "Odrzuć ciąg danych"
 
 #: src/options.cpp:1729
 msgid "On"
@@ -4281,7 +4281,7 @@ msgstr "Włącz"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "port danych"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4361,7 +4361,7 @@ msgstr "x.xxxx"
 
 #: src/options.cpp:2337 src/pluginmanager.cpp:4083 src/pluginmanager.cpp:4094
 msgid "Enable"
-msgstr "Włacz"
+msgstr "Włącz"
 
 #: src/options.cpp:2338
 msgid "Parameters"
@@ -4441,7 +4441,7 @@ msgstr "Kilometry"
 
 #: src/options.cpp:2537
 msgid "Range Ring Colour"
-msgstr ""
+msgstr "Kolor okręgu odległości"
 
 #: src/options.cpp:2546 src/routemanagerdialog.cpp:590
 msgid "Tracks"
@@ -4475,7 +4475,7 @@ msgstr "Wyróżniaj ślady"
 
 #: src/options.cpp:2584
 msgid "Highlight Colour"
-msgstr ""
+msgstr "Kolor podświetlenia"
 
 #: src/options.cpp:2598
 msgid "Tracking Precision"
@@ -4503,7 +4503,7 @@ msgstr "Promień okręgu \"zaliczenia\" punktu drogi (Mm)"
 
 #: src/options.cpp:2628
 msgid "Advance route waypoint on arrival only"
-msgstr "Przesun punkt trasy tylko po przejsciu"
+msgstr "Przesun punkt trasy tylko po przejściu"
 
 #: src/options.cpp:2633 src/routemanagerdialog.cpp:669 src/routeprop.cpp:967
 #: src/routeprop.cpp:1316 src/TrackPropDlg.cpp:418
@@ -4520,15 +4520,15 @@ msgstr "Kolor okręgów punktu drogi"
 
 #: src/options.cpp:2696
 msgid "Calculate values"
-msgstr ""
+msgstr "Przeliczanie wartości"
 
 #: src/options.cpp:2705
 msgid "Calculate SOG and COG from position changes"
-msgstr ""
+msgstr "Przelicz SoG i CoG "
 
 #: src/options.cpp:2709
 msgid "Min seconds between updates"
-msgstr ""
+msgstr "Min. ilość sekund między aktualizacjami"
 
 #: src/options.cpp:2721
 msgid "Chart Files"
@@ -4596,7 +4596,7 @@ msgstr "Potwiedź usunięcie"
 
 #: src/options.cpp:2849 src/options.cpp:3139
 msgid "Enable Transparent Toolbar"
-msgstr "Włącz przezroczysty przybornik"
+msgstr "Włącz przeźroczysty przybornik"
 
 #: src/options.cpp:2862 src/options.cpp:3123
 msgid "Use Accelerated Graphics (OpenGL)"
@@ -4604,7 +4604,7 @@ msgstr "Użyj przyspieszonej Grafiki (OpenGL)"
 
 #: src/options.cpp:2880 src/options.cpp:2996
 msgid "Chart Rotation Averaging Time"
-msgstr ""
+msgstr "Średni czas obrotu mapy"
 
 #: src/options.cpp:2893 src/options.cpp:3009 src/options.cpp:4537
 msgid "seconds"
@@ -4879,7 +4879,7 @@ msgstr "Pokaż jednostki głębokości"
 
 #: src/options.cpp:3846
 msgid "Status Bar Option"
-msgstr ""
+msgstr "Opcje paska statusu"
 
 #: src/options.cpp:3852
 msgid "Live ETA at Cursor"
@@ -4887,7 +4887,7 @@ msgstr ""
 
 #: src/options.cpp:3859
 msgid "Default Boat Speed "
-msgstr ""
+msgstr "Domyślna prędkość jednostki"
 
 #: src/options.cpp:3966
 msgid "Units"
@@ -4966,8 +4966,8 @@ msgstr "Wtyczka WMM oblicza deklinację magnetyczną"
 #: src/options.cpp:4179
 msgid " To set the magnetic variation manually,\n"
 " you must disable the WMM plugin."
-msgstr " Aby ustawić deklinację magnetyczną ręcznie, należy wyłączyć wtyczkę WMM \n"
-"."
+msgstr " Aby ustawić deklinację magnetyczną ręcznie,  \n"
+" należy wyłączyć wtyczkę WMM."
 
 #: src/options.cpp:4214
 msgid "AIS Targets"
@@ -5011,7 +5011,7 @@ msgstr "Pokaż ślady obiektów, długość (min)"
 
 #: src/options.cpp:4310
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr "Ukryj obiekty zakotwiczone / zacumowane, prędkość max [w.]"
+msgstr "Ukryj obiekty zakotwiczone / zacumowane, prędkość max (w.)"
 
 #: src/options.cpp:4318
 msgid "Allow attenuation of less critical targets if more than ... targets"
@@ -5079,7 +5079,7 @@ msgstr "Nie alarmuj o obiektach zakotwiczonych/zacumowanych"
 
 #: src/options.cpp:4414
 msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr "Włącz automat. potwierdzanie po (min.)"
+msgstr "Włącz automatyczne potwierdzanie po (min.)"
 
 #: src/options.cpp:4426
 msgid "General Options"
@@ -5155,7 +5155,7 @@ msgstr "Wielkość obiektów mapy wektorowej"
 
 #: src/options.cpp:4613
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Wielkość jednostek"
 
 #: src/options.cpp:4851 src/options.cpp:4913
 msgid "Connections"
@@ -5292,11 +5292,11 @@ msgstr "Filtrowanie komunikatów NMEA"
 
 #: src/options.cpp:8533
 msgid "Enter the NMEA sentence (2, 3 or 5 characters) "
-msgstr "Wprowadź ciag danych NMEA (2, 3 lub 5 znaków) "
+msgstr "Wprowadź ciąg danych NMEA (2, 3 lub 5 znaków) "
 
 #: src/options.cpp:8534
 msgid "Enter the NMEA sentence"
-msgstr "Wprowadz ciag danych NMEA"
+msgstr "Wprowadź ciąg danych NMEA"
 
 #: src/options.cpp:8551
 msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n"
@@ -5344,11 +5344,11 @@ msgstr "Pokaż ilość klatek na sekundę"
 
 #: src/options.cpp:8616
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Wygładzanie wielokątów"
 
 #: src/options.cpp:8617
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Wygładzanie linii"
 
 #: src/options.cpp:8619
 msgid "Software OpenGL (restart OpenCPN)"
@@ -5628,7 +5628,7 @@ msgstr "Połącz wybrane ślady"
 
 #: src/routemanagerdialog.cpp:1494
 msgid "Reduce Data..."
-msgstr "Zredukuj Dane..."
+msgstr "Zredukuj dane..."
 
 #: src/routemanagerdialog.cpp:1496
 msgid "&Copy as text"
@@ -5648,13 +5648,13 @@ msgstr "Zmniejsz dokładność danych"
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
-msgstr "Ilosc danych uzytych przez slad \n"
+msgstr "Ilość danych użytych przez ślad \n"
 " zostala zredukowana o %d%%."
 
 #: src/routemanagerdialog.cpp:1645
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
-msgstr "Aktualnie uruchomiony slad nie został połączony. \n"
+msgstr "Aktualnie uruchomiony ślad nie został połączony. \n"
 "Możesz scalić go później kiedy bedzie zakończony."
 
 #: src/routemanagerdialog.cpp:1896
@@ -5686,7 +5686,7 @@ msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr "Niektóre punkty drogi używane s w drogach lub alarmach kotwicznych. \n"
+msgstr "Niektóre punkty drogi używane są w drogach lub alarmach kotwicznych. \n"
 " Czy na pewno chcesz je usunąć? \n"
 " To zmieni przebieg dróg i usunie alarmy kotwiczne. \n"
 " Jeśli odpowiesz \"nie\" punkty drogi użyte w drogach lub alarmach zostaną zachowane."
@@ -5719,7 +5719,7 @@ msgstr "Próbujesz usunąć aktywną trasę do AIS MOB, jesteś pewien?"
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
 msgstr "Można przemianować punkty drogi wg nowej kolejności, tzn. '001', '002', itd.\n\n"
-"Czy chcesz tak zrobić?"
+"Czy chcesz to zrobić?"
 
 #: src/RoutePoint.cpp:538 src/RoutePoint.cpp:539 src/RoutePoint.cpp:706
 #: src/RoutePoint.cpp:707
@@ -5895,42 +5895,42 @@ msgstr "czarny (Black)"
 #: src/routeprop.cpp:924 src/routeprop.cpp:1272 src/routeprop.cpp:2623
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Red"
-msgstr "Ciemnoczerwony"
+msgstr "ciemnoczerwony"
 
 #: src/routeprop.cpp:924 src/routeprop.cpp:1272 src/routeprop.cpp:2623
 #: src/TrackPropDlg.cpp:375 src/TrackPropDlg.cpp:614
 msgid "Dark Green"
-msgstr "Ciemnozielony"
+msgstr "ciemnozielony"
 
 #: src/routeprop.cpp:925 src/routeprop.cpp:1273 src/routeprop.cpp:2624
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Yellow"
-msgstr "Ciemnożółty"
+msgstr "ciemnożółty"
 
 #: src/routeprop.cpp:925 src/routeprop.cpp:1273 src/routeprop.cpp:2624
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Blue"
-msgstr "Ciemnoniebieski"
+msgstr "ciemnoniebieski"
 
 #: src/routeprop.cpp:925 src/routeprop.cpp:1273 src/routeprop.cpp:2624
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Magenta"
-msgstr "Ciemnopurpurowy"
+msgstr "ciemnopurpurowy"
 
 #: src/routeprop.cpp:925 src/routeprop.cpp:1273 src/routeprop.cpp:2624
 #: src/TrackPropDlg.cpp:376 src/TrackPropDlg.cpp:615
 msgid "Dark Cyan"
-msgstr "Ciemny cyjan"
+msgstr "ciemny cyjan"
 
 #: src/routeprop.cpp:926 src/routeprop.cpp:1274 src/routeprop.cpp:2625
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Light Gray"
-msgstr "Jasnoszary"
+msgstr "jasnoszary"
 
 #: src/routeprop.cpp:926 src/routeprop.cpp:1274 src/routeprop.cpp:2625
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
 msgid "Dark Gray"
-msgstr "Ciemnoszary"
+msgstr "ciemnoszary"
 
 #: src/routeprop.cpp:926 src/routeprop.cpp:1274 src/routeprop.cpp:2625
 #: src/TrackPropDlg.cpp:377 src/TrackPropDlg.cpp:616
@@ -5975,7 +5975,7 @@ msgstr "&Styl:"
 #: src/routeprop.cpp:938 src/routeprop.cpp:1286 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
 msgid "Solid"
-msgstr "Symbolizowane"
+msgstr "Ciągła"
 
 #: src/routeprop.cpp:938 src/routeprop.cpp:1286 src/TrackPropDlg.cpp:389
 #: src/TrackPropDlg.cpp:627
@@ -6087,7 +6087,7 @@ msgstr "Naprawdę chcesz usunąć <WSZYSTKIE> punkty drogi?"
 
 #: src/routeprop.cpp:1488
 msgid "OpenCPN Remove Waypoint"
-msgstr "Usuwanie punkttu drogi OpenCPN"
+msgstr "Usuwanie punktu drogi OpenCPN"
 
 #: src/routeprop.cpp:1730 src/routeprop.cpp:1844
 msgid " %D D  %H H  %M M"
@@ -6147,7 +6147,7 @@ msgstr "Kolor okręgu"
 
 #: src/routeprop.cpp:2660 src/TrackPropDlg.cpp:754
 msgid "Links"
-msgstr "Links"
+msgstr "Linki"
 
 #: src/routeprop.cpp:2671 src/TrackPropDlg.cpp:760
 msgid "wxFB Website"
@@ -6160,7 +6160,7 @@ msgstr "Dodaj nowy"
 #: src/routeprop.cpp:2710 src/routeprop.cpp:3304 src/TrackPropDlg.cpp:793
 #: src/TrackPropDlg.cpp:1455
 msgid "Links are opened in the default browser."
-msgstr "Kliknij w link aby otworzyć w domyślnej przeglądarce."
+msgstr "Kliknij link aby otworzyć w domyślnej przeglądarce."
 
 #: src/routeprop.cpp:2738
 msgid "GUID"
@@ -6314,7 +6314,7 @@ msgstr "Przedłuż drogę"
 
 #: src/TrackPropDlg.cpp:494 src/TrackPropDlg.cpp:844
 msgid "To route"
-msgstr "Zrób drogę"
+msgstr "Stwórz drogę"
 
 #: src/TrackPropDlg.cpp:587
 msgid "From"
@@ -6338,7 +6338,7 @@ msgstr "Przemianować punkty drogi?"
 
 #: src/TrackPropDlg.cpp:697
 msgid "LMT @ Track Start"
-msgstr "Czas lokalny @ Start Sladu"
+msgstr "Czas lokalny @ Start Śladu"
 
 #: src/TrackPropDlg.cpp:848
 msgid "Export"
@@ -6382,7 +6382,7 @@ msgstr "Dane wejsciowe filtrowane, dane wyjściowe filtrowane i odrzucone"
 
 #: src/TTYWindow.cpp:129
 msgid "Input Message filtered and dropped"
-msgstr "Dane wejsciowe filtrowane i odrzucone"
+msgstr "Dane wejściowe filtrowane i odrzucone"
 
 #: src/TTYWindow.cpp:136
 msgid "Output Message"

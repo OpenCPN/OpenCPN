@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-02-03 10:23-0500\n"
+"PO-Revision-Date: 2018-04-12 09:19-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -4394,11 +4394,11 @@ msgstr "vektor tegelikus mõõtkavas"
 
 #: src/options.cpp:2466
 msgid "Length Over All (m)"
-msgstr "Üldpikkus (LOA) (m)"
+msgstr "üldpikkus (LOA) (m)"
 
 #: src/options.cpp:2472
 msgid "Width Over All (m)"
-msgstr "Suurim laius (m)"
+msgstr "suurim laius (m)"
 
 #: src/options.cpp:2478
 msgid "GPS Offset from Bow (m)"
@@ -4410,7 +4410,7 @@ msgstr "GPS-i nihe laeva miidlis (m)"
 
 #: src/options.cpp:2490
 msgid "Minimum Screen Size (mm)"
-msgstr "Vähim suurus ekraanil (mm)"
+msgstr "vähim suurus ekraanil (mm)"
 
 #: src/options.cpp:2502 src/routeprop.cpp:2580
 msgid "Show range rings"
@@ -4472,7 +4472,7 @@ msgstr "erista jäljed"
 
 #: src/options.cpp:2584
 msgid "Highlight Colour"
-msgstr "Eslletõste värv"
+msgstr "esiletõste värv"
 
 #: src/options.cpp:2598
 msgid "Tracking Precision"

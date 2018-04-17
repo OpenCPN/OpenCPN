@@ -1,0 +1,1117 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: opencpn\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-01-24 10:23-0500\n"
+"PO-Revision-Date: 2018-03-16 19:12-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: crowdin.com\n"
+"X-Crowdin-Project: opencpn\n"
+"X-Crowdin-Language: id\n"
+"X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
+
+#: src/GribUIDialog.cpp:375 src/GribUIDialog.cpp:854
+msgid "Start a request"
+msgstr "Permintaan awal"
+
+#: src/GribUIDialog.cpp:379
+msgid "Draw requested Area\n"
+"or Click here to stop request"
+msgstr "Berlangganan ke area yang diminta\n"
+"atau klik di sini untuk membatalkan permintaan"
+
+#: src/GribUIDialog.cpp:383 src/GribUIDialog.cpp:855
+msgid "Valid Area and Continue"
+msgstr "Area yang cocok dan Lanjutkan"
+
+#: src/GribUIDialog.cpp:425
+msgid "File: "
+msgstr "Berkas: "
+
+#: src/GribUIDialog.cpp:430
+msgid "Error! "
+msgstr "Kesalahan! "
+
+#: src/GribUIDialog.cpp:430
+msgid " contains no valid data!"
+msgstr " tidak memuat data yang cocok!"
+
+#: src/GribUIDialog.cpp:455
+msgid "No valid GRIB file"
+msgstr "Tidak ada file GRIB yang sah"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Hide data at cursor"
+msgstr "Menyembunyikan data pada kursor"
+
+#: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
+msgid "Show data at cursor"
+msgstr "Menampilkan data pada kursor"
+
+#: src/GribUIDialog.cpp:649 src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1168
+msgid "Start play back"
+msgstr "Mulai permutaran"
+
+#: src/GribUIDialog.cpp:801 src/grib_pi.cpp:389 src/CursorData.cpp:578
+msgid "Menu"
+msgstr "Menu"
+
+#: src/GribUIDialog.cpp:840
+msgid "Select geopotential altitude"
+msgstr "Memilih ketinggian geopotensial"
+
+#: src/GribUIDialog.cpp:842 src/GribUIDialogBase.cpp:65
+#: src/GribUIDialogBase.cpp:176 src/GribUIDialogBase.cpp:1160
+msgid "Now"
+msgstr "Sekarang"
+
+#: src/GribUIDialog.cpp:843 src/GribUIDialogBase.cpp:70
+#: src/GribUIDialogBase.cpp:181
+msgid "Zoom To Center"
+msgstr "Zoom Ke Tengah"
+
+#: src/GribUIDialog.cpp:847 src/GribUIDialog.cpp:1132
+msgid "Stop play back"
+msgstr "Berhenti bermain"
+
+#: src/GribUIDialog.cpp:850 src/GribUIDialogBase.cpp:201
+msgid "Open a new file"
+msgstr "Membuka sebuah berkas baru"
+
+#: src/GribUIDialog.cpp:851 src/GribUIDialogBase.cpp:93
+#: src/GribUIDialogBase.cpp:206 src/GribUIDialogBase.cpp:1256
+#: src/GribUIDialogBase.h:315
+msgid "Settings"
+msgstr "Pengaturan"
+
+#: src/GribUIDialog.cpp:855
+msgid "Draw requested Area or Click here to stop request"
+msgstr "Gambarlah Area yang diminta atau Klik di sini untuk membatalkan permintaan"
+
+#: src/GribUIDialog.cpp:1393 src/GribUIDialog.cpp:1414
+msgid "Select a GRIB file"
+msgstr "Memilih berkas GRIB"
+
+#: src/GribUIDialog.cpp:1653
+msgid " files don't exist!"
+msgstr " tidak ada berkas!"
+
+#: src/GribUIDialog.cpp:1675
+msgid " can't be read!"
+msgstr " tidak bisa dibaca!"
+
+#: src/GribUIDialog.cpp:1890 src/GribUIDialog.cpp:1892
+#: src/GribUIDialogBase.h:167
+msgid "GRIB Display Control"
+msgstr "Kontrol Tampilan GRIB"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "Knots"
+msgstr "Knot"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "m/s"
+msgstr "m/detik"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "mph"
+msgstr "mph"
+
+#: src/GribSettingsDialog.cpp:31 src/GribSettingsDialog.cpp:38
+msgid "km/h"
+msgstr "km/jam"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "Beaufort"
+msgstr "Beaufort"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "MilliBars"
+msgstr "Milibar"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "mmHG"
+msgstr "mmHG"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "inHG"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Meters"
+msgstr "Meter"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Feet"
+msgstr "Kaki"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Celsius"
+msgstr "Celsius"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Fahrenheit"
+msgstr "Fahrenheit"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Millimeters"
+msgstr "Milimeter"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Inches"
+msgstr "Inci"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "Percentage"
+msgstr "Persentase"
+
+#: src/GribSettingsDialog.cpp:37
+msgid "j/kg"
+msgstr "j/kg"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:417
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1753
+#: src/GribOverlayFactory.cpp:1124
+msgid "Wind"
+msgstr "Angin"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:429
+#: src/GribUIDialogBase.cpp:1759
+msgid "Wind Gust"
+msgstr "Hembusan Angin"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:441
+#: src/GribUIDialogBase.cpp:1756 src/GribTable.cpp:120
+msgid "Pressure"
+msgstr "Tekanan"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:455
+#: src/GribUIDialogBase.cpp:1786
+msgid "Waves"
+msgstr "Ombak"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:473
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1775
+msgid "Current"
+msgstr "Saat ini"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:489
+#: src/GribUIDialogBase.cpp:899 src/GribUIDialogBase.cpp:1762
+#: src/GribTable.cpp:151
+msgid "Rainfall"
+msgstr "Curah hujan"
+
+#: src/GribSettingsDialog.cpp:49 src/GribUIDialogBase.cpp:503
+#: src/GribUIDialogBase.cpp:507 src/GribUIDialogBase.cpp:899
+#: src/GribUIDialogBase.cpp:1765 src/GribTable.cpp:159
+msgid "Cloud Cover"
+msgstr "Tutup awan"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Air Temperature"
+msgstr "Suhu Udara"
+
+#: src/GribSettingsDialog.cpp:50
+msgid "Sea Temperature"
+msgstr "Suhu Laut"
+
+#: src/GribSettingsDialog.cpp:50 src/GribUIDialogBase.cpp:543
+#: src/GribUIDialogBase.cpp:1778 src/GribTable.cpp:183
+msgid "CAPE"
+msgstr "TANJUNG"
+
+#: src/GribSettingsDialog.cpp:51
+msgid "Altitude(Geopotential)"
+msgstr "Ketinggian(Geopotential)"
+
+#: src/GribSettingsDialog.cpp:51 src/CursorData.cpp:243
+msgid "Relative Humidity"
+msgstr "Kelembaban relatif"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "h"
+msgstr "jam"
+
+#: src/GribSettingsDialog.cpp:500
+msgid "mn"
+msgstr "menit"
+
+#: src/GribSettingsDialog.cpp:552
+msgid "Apply"
+msgstr "Menerapkan"
+
+#: src/GribSettingsDialog.cpp:742 src/GribSettingsDialog.cpp:751
+#: src/CursorData.cpp:495 src/CursorData.cpp:501
+msgid "Display Isotachs"
+msgstr "Tampilan Isotachs"
+
+#: src/GribSettingsDialog.cpp:758 src/CursorData.cpp:506
+msgid "Display Isobars"
+msgstr "Tampilan Isobar"
+
+#: src/GribSettingsDialog.cpp:777 src/CursorData.cpp:511
+msgid "Display Isotherms"
+msgstr "Tampilan Isoterm"
+
+#: src/GribSettingsDialog.cpp:784 src/CursorData.cpp:519
+msgid "Display Iso CAPE"
+msgstr "Menampilkan Iso CAPE"
+
+#: src/GribSettingsDialog.cpp:790 src/GribSettingsDialog.cpp:858
+#: src/GribUIDialogBase.cpp:818
+msgid "Spacing"
+msgstr "Jarak"
+
+#: src/GribSettingsDialog.cpp:873
+msgid "You want to remove the dialog title/drag bar\n"
+msgstr "Kamu ingin menghapus judul dialog drag bar\n"
+
+#: src/GribSettingsDialog.cpp:875
+msgid "You want to add a title/drag bar to the dialog\n"
+msgstr "Kamu ingin menambahkan judul/drag bar ke dialog\n"
+
+#: src/GribSettingsDialog.cpp:878
+msgid "This change needs a complete reload.\n"
+"It will be applied after closing and re-opening the plugin"
+msgstr "Perubahan ini membutuhkan isi ulang yang lengkap.\n"
+"Ini akan diterapkan setelah penutupan dan pembukaan kembali plugin"
+
+#: src/GribSettingsDialog.cpp:898
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "Memberi otorisasi interpolasi telah anda pilih.\n"
+"Jangan lupa data yang ditampilkan tidak nyata tapi akan di hitung ulang\n"
+" ini akan mengurangkan ketepatannya!"
+
+#: src/GribSettingsDialog.cpp:899 src/GribSettingsDialog.cpp:945
+#: src/grib_pi.cpp:704 src/GribRequestDialog.cpp:637
+msgid "Warning!"
+msgstr "Peringatan!"
+
+#: src/GribSettingsDialog.cpp:944
+msgid "This option imply you authorize intrepolation\n"
+"Don't forget that data displayed will not be real but recomputed\n"
+"This can decrease accuracy!"
+msgstr "Pilihan ini menyiratkan Anda mengizinkan interpolasi\n"
+"Jangan lupa data yang ditampilkan tidak akan nyata tapi dihitung ulang\n"
+"Hal ini bisa menurunkan akurasi!"
+
+#: src/GribUIDialogBase.cpp:35 src/GribUIDialogBase.cpp:152
+msgid "Previous"
+msgstr "Sebelumnya"
+
+#: src/GribUIDialogBase.cpp:46 src/GribUIDialogBase.cpp:163
+msgid "Next"
+msgstr "Selanjutnya"
+
+#: src/GribUIDialogBase.cpp:60 src/GribUIDialogBase.cpp:171
+msgid "Select geoptential altitude"
+msgstr "Memilih ketinggian geopotensial"
+
+#: src/GribUIDialogBase.cpp:445
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Berarti Tingkat Tekanan Laut (MSLP)"
+
+#: src/GribUIDialogBase.cpp:459
+msgid "Significant Wave Height"
+msgstr "Tinggi Gelombang Signifikan"
+
+#: src/GribUIDialogBase.cpp:464
+msgid "Waves period"
+msgstr "Periode gelombang"
+
+#: src/GribUIDialogBase.cpp:469
+msgid "Waves Direction"
+msgstr "Arah gelombang"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Surface Current Speed"
+msgstr "Kecepatan permukaan saat ini"
+
+#: src/GribUIDialogBase.cpp:482
+msgid "Surface Current Direction"
+msgstr "Arah Permukaan Arus"
+
+#: src/GribUIDialogBase.cpp:493
+msgid "Cumulative Rainfall per Hour"
+msgstr "Curah Hujan Kumulatif per Jam"
+
+#: src/GribUIDialogBase.cpp:517 src/GribUIDialogBase.cpp:899
+msgid "Air Temp"
+msgstr "Suhu Udara"
+
+#: src/GribUIDialogBase.cpp:529 src/GribUIDialogBase.cpp:899
+msgid "Sea Temp"
+msgstr "Suhu Laut"
+
+#: src/GribUIDialogBase.cpp:533
+msgid "Sea or Air Temperature at Surface Level"
+msgstr "Suhu Laut atau Udara di Tingkat Permukaan"
+
+#: src/GribUIDialogBase.cpp:547
+msgid "Convective Available Potential Energy"
+msgstr "Tersedia Energi potensial Konvektif"
+
+#: src/GribUIDialogBase.cpp:557 src/CursorData.cpp:241
+msgid "Altitude"
+msgstr "Ketinggian"
+
+#: src/GribUIDialogBase.cpp:574
+msgid "Temp."
+msgstr "Suhu."
+
+#: src/GribUIDialogBase.cpp:591
+msgid "Relat. Hum."
+msgstr "Relat. Bersenandung."
+
+#: src/GribUIDialogBase.cpp:734
+msgid "Data Display Options"
+msgstr "Pilihan Tampilan Data"
+
+#: src/GribUIDialogBase.cpp:748
+msgid "Units"
+msgstr "Unit"
+
+#: src/GribUIDialogBase.cpp:760 src/CursorData.cpp:494
+msgid "Barbed Arrows"
+msgstr "Panah berduri"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Default Colour"
+msgstr "Warna Default"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Controled Colours"
+msgstr "Warna Terkendali"
+
+#: src/GribUIDialogBase.cpp:779 src/GribUIDialogBase.cpp:857
+#: src/GribUIDialogBase.cpp:913
+msgid "Spacing(pixels)"
+msgstr "Jarak(piksel)"
+
+#: src/GribUIDialogBase.cpp:783 src/GribUIDialogBase.cpp:861
+#: src/GribUIDialogBase.cpp:917
+msgid "Fixed"
+msgstr "Tetap"
+
+#: src/GribUIDialogBase.cpp:789 src/GribUIDialogBase.cpp:867
+#: src/GribUIDialogBase.cpp:923
+msgid "Minimum"
+msgstr "Minimum"
+
+#: src/GribUIDialogBase.cpp:802 src/GribUIDialogBase.cpp:832
+msgid "Always visible"
+msgstr "Selalu terlihat"
+
+#: src/GribUIDialogBase.cpp:811
+msgid "IsoBars"
+msgstr "Isobar"
+
+#: src/GribUIDialogBase.cpp:838 src/CursorData.cpp:524 src/CursorData.cpp:529
+msgid "Direction Arrows"
+msgstr "Arah panah"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Single Arrow"
+msgstr "Panah tunggal"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Double Arrow"
+msgstr "Panah ganda"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Proportional Arrow"
+msgstr "Panah proporsional"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Default Size"
+msgstr "Ukuran Standar"
+
+#: src/GribUIDialogBase.cpp:880
+msgid "Small Size"
+msgstr "Ukuran Kecil"
+
+#: src/GribUIDialogBase.cpp:892 src/CursorData.cpp:496 src/CursorData.cpp:502
+#: src/CursorData.cpp:515 src/CursorData.cpp:520 src/CursorData.cpp:525
+#: src/CursorData.cpp:530
+msgid "OverlayMap"
+msgstr "OverlayMap"
+
+#: src/GribUIDialogBase.cpp:895
+msgid "Colors"
+msgstr "Warna"
+
+#: src/GribUIDialogBase.cpp:899
+msgid "Generic"
+msgstr "Umum"
+
+#: src/GribUIDialogBase.cpp:905 src/CursorData.cpp:497 src/CursorData.cpp:503
+#: src/CursorData.cpp:507 src/CursorData.cpp:516 src/CursorData.cpp:521
+#: src/CursorData.cpp:526 src/CursorData.cpp:531
+msgid "Numbers"
+msgstr "Angka"
+
+#: src/GribUIDialogBase.cpp:932 src/CursorData.cpp:498 src/CursorData.cpp:532
+msgid "Particle Map"
+msgstr "Partikel Peta"
+
+#: src/GribUIDialogBase.cpp:935
+msgid "Density"
+msgstr "Massa jenis"
+
+#: src/GribUIDialogBase.cpp:956
+msgid "Transparency for all Overlay Maps"
+msgstr "Transparansi untuk semua hamparan peta"
+
+#: src/GribUIDialogBase.cpp:963
+msgid "Overlay Transparency (%)"
+msgstr "Transparansi Hamparan (%)"
+
+#: src/GribUIDialogBase.cpp:982
+msgid "Data"
+msgstr "Data"
+
+#: src/GribUIDialogBase.cpp:992
+msgid "Playback Options"
+msgstr "Pilihan Pemutaran"
+
+#: src/GribUIDialogBase.cpp:1000
+msgid "Speed Control"
+msgstr "Kontrol Kecepatan"
+
+#: src/GribUIDialogBase.cpp:1012
+msgid "Slow"
+msgstr "Lambat"
+
+#: src/GribUIDialogBase.cpp:1020
+msgid "Fast"
+msgstr "Cepat"
+
+#: src/GribUIDialogBase.cpp:1026
+msgid "Loop Mode"
+msgstr "Mode Loop"
+
+#: src/GribUIDialogBase.cpp:1036
+msgid "Loop Start"
+msgstr "Loop mulai"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Top of Grib File"
+msgstr "Atas dari File Grib"
+
+#: src/GribUIDialogBase.cpp:1040
+msgid "Current time forecast"
+msgstr "Perkiraan waktu sekarang"
+
+#: src/GribUIDialogBase.cpp:1048
+msgid "Interpolate between gribs"
+msgstr "Interpolasi antara gribs"
+
+#: src/GribUIDialogBase.cpp:1058
+msgid "Time Interval"
+msgstr "Jarak waktu"
+
+#: src/GribUIDialogBase.cpp:1078 src/GribUIDialogBase.cpp:1208
+msgid "Playback"
+msgstr "Pemutaran"
+
+#: src/GribUIDialogBase.cpp:1088
+msgid "Dialogs Style"
+msgstr "Gaya Dialog"
+
+#: src/GribUIDialogBase.cpp:1095
+msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
+msgstr "Data pada dialog kursor dilampirkan pada ikon bar - dengan judul/drag bar"
+
+#: src/GribUIDialogBase.cpp:1098
+msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
+msgstr "Data pada dialog kursor dilampirkan pada ikon bar - tampa judul/drag bar"
+
+#: src/GribUIDialogBase.cpp:1101
+msgid "Data at cursor dialog is isolated and displayed horizontally"
+msgstr "Data pada dialog kursor terisolasi dan ditampilkan secara horizontal"
+
+#: src/GribUIDialogBase.cpp:1104
+msgid "Data at cursor dialog is isolated and displayed vertically"
+msgstr "Data pada dialog kursor terisolasi dan ditampilkan secara vertikal"
+
+#: src/GribUIDialogBase.cpp:1117
+msgid "Buttons Visibility"
+msgstr "Tombol Visibilitas"
+
+#: src/GribUIDialogBase.cpp:1131
+msgid "Attached icon bar"
+msgstr "Terpasang icon bar"
+
+#: src/GribUIDialogBase.cpp:1136
+msgid "Isolated icon bar"
+msgstr "Terisolasi icon bar"
+
+#: src/GribUIDialogBase.cpp:1144
+msgid "Geopot. Height Choice"
+msgstr "Geopot. Ideal Tinggi"
+
+#: src/GribUIDialogBase.cpp:1176
+msgid "Zoom to Center"
+msgstr "Perbesar ke Tengah"
+
+#: src/GribUIDialogBase.cpp:1192
+msgid "Show Cursor Data"
+msgstr "Tampilkan Data Kursor"
+
+#: src/GribUIDialogBase.cpp:1224
+msgid "Time Slider"
+msgstr "Waktu Slider"
+
+#: src/GribUIDialogBase.cpp:1240
+msgid "Open File"
+msgstr "Buka Berkas"
+
+#: src/GribUIDialogBase.cpp:1272
+msgid "Request"
+msgstr "Permintaan"
+
+#: src/GribUIDialogBase.cpp:1294
+msgid "GUI"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1385
+msgid "General Options"
+msgstr "Pilihan Umum"
+
+#: src/GribUIDialogBase.cpp:1392
+msgid "Use High Definition Graphics"
+msgstr "Menggunakan Grafis Definisi Tinggi"
+
+#: src/GribUIDialogBase.cpp:1395
+msgid "Use Gradual Colors"
+msgstr "Gunakan Warna Bertahap"
+
+#: src/GribUIDialogBase.cpp:1398
+msgid "Copy First Cumulative Missing Record"
+msgstr "Salin kumulatif Data Pertama yang Hilang"
+
+#: src/GribUIDialogBase.cpp:1401
+msgid "Copy Missing Wave Records"
+msgstr "Salin Gelombang Catatan Hilang"
+
+#: src/GribUIDialogBase.cpp:1404
+msgid "Draw Barbed Arrows Head"
+msgstr "Menggambar Kepala Panah Berduri"
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the More Recent File in Directory"
+msgstr "Muat File yang Lebih Baru di Direktori"
+
+#: src/GribUIDialogBase.cpp:1412
+msgid "Load the Last Opened File"
+msgstr "Muat File yang Dibuka Terakhir"
+
+#: src/GribUIDialogBase.cpp:1414
+msgid "Load File Options"
+msgstr "Beban File Pilihan"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the first forecast in GRIB file"
+msgstr "Mulai dari perkiraan pertama di file GRIB"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Start at the nearest forecast to current time"
+msgstr "Mulai dari yang terdekat dengan pola untuk waktu saat ini"
+
+#: src/GribUIDialogBase.cpp:1418
+msgid "Authorize Interpolation to start at current time"
+msgstr "Interpolasi Otorisasi untuk memulai pada waktu saat ini"
+
+#: src/GribUIDialogBase.cpp:1420
+msgid "Start Options"
+msgstr "Mulai Pilihan"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "Local Time"
+msgstr "Waktu lokal"
+
+#: src/GribUIDialogBase.cpp:1424
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:1426
+msgid "Time Options"
+msgstr "Pilihan Waktu"
+
+#: src/GribUIDialogBase.cpp:1476
+msgid "Profile"
+msgstr "Profil"
+
+#: src/GribUIDialogBase.cpp:1489
+msgid "Sender eMail Address"
+msgstr "Alamat eMail Pengirim"
+
+#: src/GribUIDialogBase.cpp:1518
+msgid "Mail To "
+msgstr "Mail ke "
+
+#: src/GribUIDialogBase.cpp:1528
+msgid "Forecast Model "
+msgstr "Model Prakiraan "
+
+#: src/GribUIDialogBase.cpp:1545
+msgid "Moving Grib"
+msgstr "Pindah Grib"
+
+#: src/GribUIDialogBase.cpp:1553
+msgid "Speed"
+msgstr "Kecepatan"
+
+#: src/GribUIDialogBase.cpp:1561
+msgid "Kts"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1566
+msgid "Course"
+msgstr "Kursus"
+
+#: src/GribUIDialogBase.cpp:1573 src/GribUIDialogBase.cpp:1624
+msgid "Deg"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1588
+msgid "zyGrib Login"
+msgstr "zygrib masuk"
+
+#: src/GribUIDialogBase.cpp:1596
+msgid "zyGrib Code"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1615
+msgid "Resolution"
+msgstr "Resolusi"
+
+#: src/GribUIDialogBase.cpp:1629
+msgid "Interval"
+msgstr "Selang"
+
+#: src/GribUIDialogBase.cpp:1639
+msgid "Hours"
+msgstr "Jam"
+
+#: src/GribUIDialogBase.cpp:1644
+msgid "Time Range"
+msgstr "Rentang Waktu"
+
+#: src/GribUIDialogBase.cpp:1653
+msgid "Days"
+msgstr "Hari"
+
+#: src/GribUIDialogBase.cpp:1667
+msgid "Area Selection"
+msgstr "Seleksi Area"
+
+#: src/GribUIDialogBase.cpp:1679
+msgid "Manual Selection"
+msgstr "Pilihan Manual"
+
+#: src/GribUIDialogBase.cpp:1682
+msgid "Use Always this Area"
+msgstr "Gunakan Selalu Area Ini"
+
+#: src/GribUIDialogBase.cpp:1692
+msgid "Max Lat"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1699 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "N"
+msgstr "N"
+
+#: src/GribUIDialogBase.cpp:1703
+msgid "Max Long"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1710 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "E"
+msgstr "E"
+
+#: src/GribUIDialogBase.cpp:1715
+msgid "Min Lat"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1722 src/GribRequestDialog.cpp:310
+#: src/GribRequestDialog.cpp:313
+msgid "S"
+msgstr "S"
+
+#: src/GribUIDialogBase.cpp:1727
+msgid "Min Long"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:1734 src/GribRequestDialog.cpp:311
+#: src/GribRequestDialog.cpp:312
+msgid "W"
+msgstr "W"
+
+#: src/GribUIDialogBase.cpp:1746
+msgid "Data Selection"
+msgstr "Pemilihan data"
+
+#: src/GribUIDialogBase.cpp:1768
+msgid "Air Temperature(2m)"
+msgstr "Suhu Udara (2m)"
+
+#: src/GribUIDialogBase.cpp:1772
+msgid "Sea Temperature(surf.)"
+msgstr "Suhu Laut (surf.)"
+
+#: src/GribUIDialogBase.cpp:1802
+msgid "Geopotential Height"
+msgstr "Tinggi Geopotensial"
+
+#: src/GribUIDialogBase.cpp:1812
+msgid "850 hPa"
+msgstr "850 hPa"
+
+#: src/GribUIDialogBase.cpp:1815
+msgid "700 hPa"
+msgstr "700 hPa"
+
+#: src/GribUIDialogBase.cpp:1818
+msgid "500 hPa"
+msgstr "500 hPa"
+
+#: src/GribUIDialogBase.cpp:1821
+msgid "300 hPa"
+msgstr "300 hPa"
+
+#: src/GribUIDialogBase.cpp:1834
+msgid "Mail"
+msgstr "Surat"
+
+#: src/GribUIDialogBase.cpp:1862
+msgid "Estimated File Size"
+msgstr "Perkiraan Ukuran File"
+
+#: src/GribUIDialogBase.cpp:1870
+msgid " (Max size )"
+msgstr " (Ukuran Maksimal )"
+
+#: src/GribUIDialogBase.cpp:1994
+msgid "Data at Position:"
+msgstr "Data di Posisi:"
+
+#: src/GribUIDialogBase.cpp:2019
+msgid "Close"
+msgstr "Dekat"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Kesalahan MAIL: MAPI32.DLL tidak dipasang atau tidak valid di komputer ini!"
+
+#: src/GribUIDialogBase.h:343
+msgid "Preferences"
+msgstr "Preferensi"
+
+#: src/GribUIDialogBase.h:429
+msgid "Write and send eMail request"
+msgstr "Tulis dan kirim permintaan eMail"
+
+#: src/GribUIDialogBase.h:457
+msgid "Grib Data Table"
+msgstr "Tabel Data Grib"
+
+#: src/grib_pi.h:104 src/grib_pi.cpp:405 src/GribRequestDialog.cpp:127
+#: src/GribRequestDialog.cpp:198 src/GribRequestDialog.cpp:465
+#: src/CursorData.cpp:155
+msgid "Dialog"
+msgstr "Dialog"
+
+#: src/GribOverlayFactory.cpp:503
+msgid "Warning : Data at Geopotential Height"
+msgstr "Peringatan: Data di Geopotential tinggi"
+
+#: src/GribOverlayFactory.cpp:1099
+msgid "IsoBar Unable to compute record magnitude"
+msgstr "IsoBar Dapat menghitung besarnya rekor"
+
+#: src/GribOverlayFactory.cpp:1124
+msgid "Building Isobar map"
+msgstr "Bangunan peta Isobar"
+
+#: src/GribOverlayFactory.cpp:1404
+msgid "OverlayMap Unable to compute record magnitude"
+msgstr "OverlayPeta Mampu menghitung besarnya rekor"
+
+#: src/GribOverlayFactory.cpp:1452
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Hamparan tidak didukung oleh perangkat keras grafis ini (Nonaktifkan OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1462
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Hamparan terlalu lebar dan tidak dapat ditampilkan:"
+
+#: src/GribOverlayFactory.cpp:1471
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "hamparan ditekan jika tidak mengarah ke utara dalam mode DC (mengaktifkan OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1488
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Harap Zoom atau Scale Out untuk melihat lapisan tak terlihat:"
+
+#: src/GribOverlayFactory.cpp:1519
+msgid "GribNumbers Unable to compute record magnitude"
+msgstr "GribNumbers Tidak dapat menghitung besarnya rekaman"
+
+#: src/grib_pi.cpp:137
+msgid "Grib"
+msgstr "Ingin"
+
+#: src/grib_pi.cpp:205
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "Plugin GRIB untuk OpenCPN"
+
+#: src/grib_pi.cpp:211
+msgid "GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
+"- sea surface temperature\n"
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "Grib plugin untuk OpenCPN\n"
+"Menyediakan kemampuan file overlay Grib dasar untuk beberapa jenis file yang Grib\n"
+"dan fungsi permintaan untuk mendapatkan file GRIB dengan eMail.\n\n"
+"Data Grib didukung mencakup:\n"
+"- arah angin dan kecepatan (pada 10 m)\n"
+"- hembusan angin\n"
+"- tekanan permukaan\n"
+"- curah hujan\n"
+"- penutup awan\n"
+"- tinggi gelombang signifikan dan arah\n"
+" suhu permukaan udara (pada 2 m)\n"
+"- suhu permukaan laut\n"
+"- arah arus permukaan dan kecepatan\n"
+"- Energi Potensial Konvektif Tersedia (CAPE)\n"
+"- angin, ketinggian, suhu dan kelembaban relatif di 300, 500, 700, 850 hPa."
+
+#: src/grib_pi.cpp:387
+msgid "Weather table"
+msgstr "Daftar Cuaca"
+
+#: src/grib_pi.cpp:703
+msgid "You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but Recomputed\n"
+"This can decrease accuracy!"
+msgstr "Anda telah memilih untuk memberi otorisasi interpolasi. \n"
+"Jangan lupa data yang ditampilkan pada waktu sekarang tidak akan nyata tapi dihitung ulang\n"
+"Ini bisa menurunkan akurasi!"
+
+#: src/GribTable.cpp:94
+msgid "Wind,Dir"
+msgstr "Angin, Dir"
+
+#: src/GribTable.cpp:100
+msgid "Wind,Speed"
+msgstr "Kecepatan Angin"
+
+#: src/GribTable.cpp:108
+msgid "Wind,Gust"
+msgstr "Hembusan,angin"
+
+#: src/GribTable.cpp:133
+msgid "Waves,Dir"
+msgstr "Gelombang, Dir"
+
+#: src/GribTable.cpp:138
+msgid "Waves,Hsig"
+msgstr "Gelombang, Hsig"
+
+#: src/GribTable.cpp:143
+msgid "Waves,Per"
+msgstr "Gelombang, Per"
+
+#: src/GribTable.cpp:167
+msgid "Air Temp."
+msgstr "Udara temp."
+
+#: src/GribTable.cpp:175
+msgid "Sea Temp."
+msgstr ""
+
+#: src/GribTable.cpp:195
+msgid "Current,Dir"
+msgstr "Saat ini, Dir"
+
+#: src/GribTable.cpp:201
+msgid "Current,Speed"
+msgstr "Kecepatan saat ini"
+
+#: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
+msgid "Send"
+msgstr "Kirim"
+
+#: src/GribRequestDialog.cpp:121
+msgid "Save"
+msgstr "Menyimpan"
+
+#: src/GribRequestDialog.cpp:138
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Alamat yang digunakan untuk mengirim permintaan eMail. (Wajib untuk LINUX)"
+
+#: src/GribRequestDialog.cpp:139
+msgid "This is your zyGrib's forum access Login"
+msgstr "Ini adalah forum akses Login zyGrib kamu"
+
+#: src/GribRequestDialog.cpp:140
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Dapatkan Kode ini di forum zyGrib (Ini bukan kata sandi anda!)"
+
+#: src/GribRequestDialog.cpp:141
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Masukkan kecepatan forescasted Anda (dalam knot)"
+
+#: src/GribRequestDialog.cpp:142
+msgid "Enter your forecasted Course"
+msgstr "Masukkan Kursus yang Anda peramalan"
+
+#: src/GribRequestDialog.cpp:475
+msgid "Coord. "
+msgstr ""
+
+#: src/GribRequestDialog.cpp:480 src/GribRequestDialog.cpp:843
+#: src/GribRequestDialog.cpp:846
+msgid "MB"
+msgstr "MB"
+
+#: src/GribRequestDialog.cpp:636
+msgid "You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0\n"
+"and the time intervall 12 hours."
+msgstr "Anda meminta sebuah perkiraan untuk lebih dari 8 hari horizon.\n"
+"ini adalah bertentangan dengan Gelombang data yang akan dihapus dari permintaan anda.\n"
+"jangan serta lupa bahwa di luar 8 hari pertama, resolusi akan hanya 2.5\\u00B0x2.5\\u00B0\n"
+"dan waktu intervall 12 jam."
+
+#: src/GribRequestDialog.cpp:846
+msgid "Max"
+msgstr ""
+
+#: src/GribRequestDialog.cpp:962
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr "Sebelum mengirimkan email ke Zygrib Anda perlu memasukkan Login dan kode. \n"
+"Please kunjungi www.zygrib.org/ dan ikuti petunjuk..."
+
+#: src/GribRequestDialog.cpp:963
+msgid "Too big file! zyGrib limit is 2Mb!"
+msgstr "File terlalu besar! batas zyGrib adalah 2Mb!"
+
+#: src/GribRequestDialog.cpp:963
+msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
+msgstr "Kesalahan! Max Lat lebih rendah dari Min Lat atau Max Lon lebih rendah dari Min Lon!"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too large area! Each side must be less than 180\\u00B0!"
+msgstr "Terlalu luas! Setiap sisi harus kurang dari 180\\u00B0!"
+
+#: src/GribRequestDialog.cpp:964
+msgid "Too small area for this resolution!"
+msgstr "Area yang terlalu kecil untuk resolusi ini!"
+
+#: src/GribRequestDialog.cpp:981 src/GribRequestDialog.cpp:1016
+msgid "Continue..."
+msgstr "Lanjutkan..."
+
+#: src/GribRequestDialog.cpp:1001 src/GribRequestDialog.cpp:1005
+msgid "Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Permintaan anda sudah siap. Email disiapkan di daerah email Anda. \n"
+"kamu hanya akan mengverifikasi dan mengirim itu...\n"
+"simpan atau batal untuk menyelesaikan... atau menlanjutkan..."
+
+#: src/GribRequestDialog.cpp:1008
+msgid "Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr "Permintaan anda dikirim \n"
+"(jika sistem anda memiliki MTA yang dikonfigurasi dan bisa mengirim email).\n"
+"simpan atau batal untuk menyelesaikan... untuk melanjutkan..."
+
+#: src/GribRequestDialog.cpp:1013
+msgid "Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr "Permintaan tidak bisa dikirim. Mohon verikifikasi email anda systeme parameters.\n"
+"kamu juga harus melihat file log Anda.\n"
+"simpan atau batal untuk menyelesaikan..."
+
+#: src/CursorData.cpp:225
+msgid "Data at cursor position"
+msgstr "Data pada posisi kursor"
+
+#: src/CursorData.cpp:239
+msgid "at Geopotential Height"
+msgstr "ketinggian pada Geopotential"
+
+#: src/CursorData.cpp:242
+msgid "Temperature"
+msgstr "Temperatur"
+
+#: src/CursorData.cpp:245
+msgid "at"
+msgstr "di"
+
+#: src/CursorData.cpp:250
+msgid "Wind Speed"
+msgstr "Kecepatan Angin"
+
+#: src/CursorData.cpp:251
+msgid "Wind Speed in Bf"
+msgstr "Kecepatan angin di Bf"
+
+#: src/CursorData.cpp:252
+msgid "Wind Direction"
+msgstr "Arah Angin"
+
+#: src/CursorData.cpp:255
+msgid "Wind Gust at"
+msgstr "Hembusan Angin di"
+
+#: src/CursorData.cpp:258
+msgid "Air Temperature at"
+msgstr "Suhu Udara di"
+
+#: src/CursorData.cpp:258
+msgid "surface level"
+msgstr "tingkat permukaan"
+
+#: src/CursorData.cpp:258
+msgid "Sea Surface Temperature"
+msgstr "Suhu Permukaan Laut"
+
+#: src/CursorData.cpp:299 src/CursorData.cpp:300 src/CursorData.cpp:301
+#: src/CursorData.cpp:313 src/CursorData.cpp:326 src/CursorData.cpp:346
+#: src/CursorData.cpp:348 src/CursorData.cpp:352 src/CursorData.cpp:362
+#: src/CursorData.cpp:384 src/CursorData.cpp:385 src/CursorData.cpp:399
+#: src/CursorData.cpp:412 src/CursorData.cpp:424 src/CursorData.cpp:436
+#: src/CursorData.cpp:448 src/CursorData.cpp:460 src/CursorData.cpp:472
+#: src/CursorData.cpp:483
+msgid "N/A"
+msgstr "N/A"
+

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:42-0500\n"
+"PO-Revision-Date: 2018-04-12 09:19-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Norwegian Bokmal\n"
 "Language: nb_NO\n"
@@ -55,7 +55,7 @@ msgstr "Alternativer"
 
 #: include/routeprintout.h:92 src/routeprintout.cpp:362
 msgid "Print Route Selection"
-msgstr "Skriv ut valgte ruter"
+msgstr "Skriv ut valgt rute"
 
 #: include/routeprop.h:66 src/canvasMenu.cpp:1426 src/chcanv.cpp:5788
 #: src/routemanagerdialog.cpp:1219 src/routemanagerdialog.cpp:1221
@@ -148,7 +148,7 @@ msgstr "Begrenset manøvreringsevne"
 
 #: src/ais.cpp:155
 msgid "Constrained by draught"
-msgstr "Hindret av dybde"
+msgstr "Hindret av dypgående"
 
 #: src/ais.cpp:156
 msgid "Moored"
@@ -3583,7 +3583,7 @@ msgstr "XTE         R"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %T:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -4278,7 +4278,7 @@ msgstr "På"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "Dataport"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -5152,7 +5152,7 @@ msgstr "Kartobjekt skaleringsfaktor"
 
 #: src/options.cpp:4613
 msgid "Ship scale factor"
-msgstr ""
+msgstr "Skipets skalerings faktor"
 
 #: src/options.cpp:4851 src/options.cpp:4913
 msgid "Connections"
@@ -5341,11 +5341,11 @@ msgstr "Vis FPS"
 
 #: src/options.cpp:8616
 msgid "Polygon Smoothing"
-msgstr ""
+msgstr "Polygon-utjevning"
 
 #: src/options.cpp:8617
 msgid "Line Smoothing"
-msgstr ""
+msgstr "Linje utjevning"
 
 #: src/options.cpp:8619
 msgid "Software OpenGL (restart OpenCPN)"

@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-02-01 14:00-0500\n"
+"PO-Revision-Date: 2018-04-12 09:18-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Czech\n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: cs\n"
@@ -2509,7 +2509,7 @@ msgstr "Kopírovat MMSI"
 
 #: src/AISTargetListDialog.cpp:660
 msgid "AutoSort"
-msgstr ""
+msgstr "Automatické řazení"
 
 #: src/AISTargetListDialog.cpp:670
 msgid "Limit range: NM"
@@ -3300,15 +3300,15 @@ msgstr " Projekce:"
 
 #: src/chartdbs.cpp:1463
 msgid "Mercator"
-msgstr ""
+msgstr "Mercator"
 
 #: src/chartdbs.cpp:1465
 msgid "Transverse Mercator"
-msgstr ""
+msgstr "Transverse Mercator"
 
 #: src/chartdbs.cpp:1467
 msgid "Polyconic"
-msgstr ""
+msgstr "Polyconic"
 
 #: src/chartdbs.cpp:1476
 msgid " Source Edition:  "
@@ -3583,7 +3583,7 @@ msgstr "XTE         P"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -4166,15 +4166,15 @@ msgstr ""
 
 #: src/options.cpp:1451 src/options.cpp:2055
 msgid "NMEA 0183"
-msgstr ""
+msgstr "NMEA 0183"
 
 #: src/options.cpp:1451 src/options.cpp:2055
 msgid "NMEA 2000"
-msgstr ""
+msgstr "NMEA 2000"
 
 #: src/options.cpp:1452 src/options.cpp:2056
 msgid "Seatalk"
-msgstr ""
+msgstr "Seatalk"
 
 #: src/options.cpp:1462 src/options.cpp:2066 src/options.cpp:2338
 msgid "Priority"
@@ -4278,19 +4278,19 @@ msgstr "Zap"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "Datový Port"
 
 #: src/options.cpp:1729
 msgid "Prio"
-msgstr ""
+msgstr "Prio"
 
 #: src/options.cpp:1730
 msgid "Parm"
-msgstr ""
+msgstr "Param"
 
 #: src/options.cpp:1730
 msgid "I/O"
-msgstr ""
+msgstr "I/O"
 
 #: src/options.cpp:1730 src/options.cpp:2339
 msgid "Filters"
@@ -5044,7 +5044,7 @@ msgstr "[Třída] Typ (Stav)"
 
 #: src/options.cpp:4371
 msgid "SOG COG"
-msgstr ""
+msgstr "SOG COG"
 
 #: src/options.cpp:4374
 msgid "CPA TCPA"
@@ -6002,7 +6002,7 @@ msgstr "Šířka:"
 #: src/routeprop.cpp:956 src/routeprop.cpp:1305 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:637
 msgid "1 pixel"
-msgstr ""
+msgstr "1 pixel"
 
 #: src/routeprop.cpp:956 src/routeprop.cpp:1305 src/TrackPropDlg.cpp:407
 #: src/TrackPropDlg.cpp:637
@@ -6088,11 +6088,11 @@ msgstr "OpenCPN odstranit trasový bod"
 
 #: src/routeprop.cpp:1730 src/routeprop.cpp:1844
 msgid " %D D  %H H  %M M"
-msgstr ""
+msgstr " %D D  %H H  %M M"
 
 #: src/routeprop.cpp:1733 src/routeprop.cpp:1847
 msgid " %H H  %M M"
-msgstr ""
+msgstr " %H H  %M M"
 
 #: src/routeprop.cpp:1739 src/routeprop.cpp:1853
 msgid " %D Days  %H Hours  %M Minutes"
@@ -6112,7 +6112,7 @@ msgstr "ETE"
 
 #: src/routeprop.cpp:2040
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: src/routeprop.cpp:2479 src/TrackPropDlg.cpp:535
 msgid "Basic"
@@ -6161,7 +6161,7 @@ msgstr "Linky jsou otevírány ve výchozí aplikaci."
 
 #: src/routeprop.cpp:2738
 msgid "GUID"
-msgstr ""
+msgstr "GUID"
 
 #: src/routeprop.cpp:2748
 msgid "GPX"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:29-0500\n"
+"PO-Revision-Date: 2018-04-12 09:19-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Swedish\n"
 "Language: sv_SE\n"
@@ -838,7 +838,7 @@ msgstr "Varning: Data på Geopotential höjd"
 
 #: src/GribOverlayFactory.cpp:1099
 msgid "IsoBar Unable to compute record magnitude"
-msgstr ""
+msgstr "IsoBar. Fel i beräkning av omfattningen"
 
 #: src/GribOverlayFactory.cpp:1124
 msgid "Building Isobar map"
@@ -846,7 +846,7 @@ msgstr "Skapar isobar-karta"
 
 #: src/GribOverlayFactory.cpp:1404
 msgid "OverlayMap Unable to compute record magnitude"
-msgstr ""
+msgstr "Överlagrad karta. Fel i beräkning av omfattningen"
 
 #: src/GribOverlayFactory.cpp:1452
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
@@ -866,7 +866,7 @@ msgstr "Zooma ut eller öka skalan för att visa GRIB.information"
 
 #: src/GribOverlayFactory.cpp:1519
 msgid "GribNumbers Unable to compute record magnitude"
-msgstr ""
+msgstr "Antal grib-punkter. Fel i beräkning av omfattningen"
 
 #: src/grib_pi.cpp:137
 msgid "Grib"
@@ -914,43 +914,43 @@ msgstr "Du har valt att tillåta interpolation. \n"
 
 #: src/GribTable.cpp:94
 msgid "Wind,Dir"
-msgstr ""
+msgstr "Vindriktning"
 
 #: src/GribTable.cpp:100
 msgid "Wind,Speed"
-msgstr ""
+msgstr "Vindhastighet"
 
 #: src/GribTable.cpp:108
 msgid "Wind,Gust"
-msgstr ""
+msgstr "Byvind"
 
 #: src/GribTable.cpp:133
 msgid "Waves,Dir"
-msgstr ""
+msgstr "Vågriktning"
 
 #: src/GribTable.cpp:138
 msgid "Waves,Hsig"
-msgstr ""
+msgstr "Våghöjd"
 
 #: src/GribTable.cpp:143
 msgid "Waves,Per"
-msgstr ""
+msgstr "Vågperiod"
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Lufttemp."
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Vattentemp."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
-msgstr ""
+msgstr "Strömriktning"
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "Strömhastighet"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"

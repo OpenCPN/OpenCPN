@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:41-0500\n"
+"PO-Revision-Date: 2018-03-03 08:26-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Vietnamese\n"
 "Language: vi_VN\n"
@@ -1314,7 +1314,7 @@ msgstr "IMO"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Nation"
-msgstr ""
+msgstr "Quốc gia"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Flag"
@@ -3134,7 +3134,7 @@ msgstr "Hiển thị thông tin neo đậu ENC"
 
 #: src/chart1.cpp:5424 src/chart1.cpp:5430
 msgid "Show ENC Data Quality"
-msgstr ""
+msgstr "Hiển thị chất lượng dữ liệu ENC"
 
 #: src/chart1.cpp:5445 src/chart1.cpp:5447
 msgid "Enter Full Screen"
@@ -3414,7 +3414,7 @@ msgstr " đến "
 
 #: src/chcanv.cpp:2504
 msgid "Layer Track: "
-msgstr ""
+msgstr "Theo dõi lớp: "
 
 #: src/chcanv.cpp:5876 src/chcanv.cpp:6328
 msgid "Use nearby waypoint?"
@@ -3427,7 +3427,7 @@ msgstr "Tạo lộ trình OpenCPN"
 
 #: src/chcanv.cpp:5923 src/chcanv.cpp:6373
 msgid "For this leg the Great Circle route is "
-msgstr ""
+msgstr "Cho chặng này đường Great Circle là "
 
 #: src/chcanv.cpp:5924 src/chcanv.cpp:6374
 msgid " shorter than rhumbline.\n\n"
@@ -3435,7 +3435,7 @@ msgstr " ngắn hơn rhumbline.\n\n"
 
 #: src/chcanv.cpp:5925 src/chcanv.cpp:6375
 msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr ""
+msgstr "Bạn có muốn bao gồm điểm định tuyến Great Circle cho chặng này?"
 
 #: src/chcanv.cpp:7081 src/chcanv.cpp:7093 src/S57QueryDialog.cpp:87
 msgid "ObjectQuery"
@@ -3473,7 +3473,7 @@ msgstr "Trộn điểm?"
 #: src/chcanv.cpp:7820 src/chcanv.cpp:7851 src/RolloverWin.cpp:121
 #: src/RolloverWin.cpp:207 src/RolloverWin.cpp:321
 msgid "RouteLegInfoRollover"
-msgstr ""
+msgstr "RouteLegInfoRollover"
 
 #: src/chcanv.cpp:9003 src/options.cpp:4007 src/options.cpp:4115
 msgid "Feet"
@@ -3583,7 +3583,7 @@ msgstr "XTE R"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -4278,7 +4278,7 @@ msgstr "Mở"
 
 #: src/options.cpp:1729
 msgid "Data Port"
-msgstr ""
+msgstr "Cổng dữ liệu"
 
 #: src/options.cpp:1729
 msgid "Prio"
@@ -4472,7 +4472,7 @@ msgstr "Tô màu lộ trình"
 
 #: src/options.cpp:2584
 msgid "Highlight Colour"
-msgstr ""
+msgstr "Màu sắc nổi bật"
 
 #: src/options.cpp:2598
 msgid "Tracking Precision"

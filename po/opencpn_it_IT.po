@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:40-0500\n"
+"PO-Revision-Date: 2018-03-11 10:38-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -1314,7 +1314,7 @@ msgstr "IMO"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Nation"
-msgstr ""
+msgstr "Nazione"
 
 #: src/AIS_Target_Data.cpp:359
 msgid "Flag"
@@ -2848,7 +2848,12 @@ msgid "\n"
 "OpenCPN must only be used in conjunction with approved paper charts and traditional methods of navigation.\n\n"
 "DO NOT rely upon OpenCPN for safety of life or property.\n\n"
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
-msgstr ""
+msgstr "\n"
+"OpenCPN è distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; senza nemmeno la garanzia implicita di COMMERCIABILITÀ o IDONEITÀ PER UN PARTICOLARE SCOPO.\n\n"
+"Vedi la GNU General Public License per maggiori dettagli.\n\n"
+"OpenCPN deve essere utilizzato solo in combinazione con mappe in formato cartaceo approvate e metodi di navigazione tradizionali.\n\n"
+"NON fare affidamento su OpenCPN per la sicurezza della vita o della proprietà.\n\n"
+"Per favore fare clic su \"OK\" per accettare e procedere, \"Annulla\" per uscire.\n"
 
 #: src/chart1.cpp:873
 msgid "Welcome to OpenCPN"
@@ -3578,7 +3583,7 @@ msgstr "XTE       Dx"
 
 #: src/concanv.cpp:389
 msgid "%Dd %H:%M"
-msgstr ""
+msgstr "%Dd %H:%M"
 
 #: src/concanv.cpp:413
 msgid "ETA          "
@@ -3662,7 +3667,7 @@ msgstr ", Out: Nessuno"
 
 #: src/glChartCanvas.cpp:682
 msgid "Failed to initialize OpenGL"
-msgstr ""
+msgstr "Impossibile inizializzare OpenGL"
 
 #: src/glChartCanvas.cpp:1008
 msgid "OpenGL-> SSE2 Instruction set not available"
@@ -4329,7 +4334,7 @@ msgstr ""
 
 #: src/options.cpp:2116
 msgid "blank = default ID"
-msgstr ""
+msgstr "vuoto = ID di default"
 
 #: src/options.cpp:2133
 msgid "x"
@@ -4512,7 +4517,7 @@ msgstr "Colore dei Range Rings su Waypoint"
 
 #: src/options.cpp:2696
 msgid "Calculate values"
-msgstr ""
+msgstr "Calcolare i valori"
 
 #: src/options.cpp:2705
 msgid "Calculate SOG and COG from position changes"
@@ -4641,7 +4646,8 @@ msgstr "Vettoriali"
 #: src/options.cpp:3045
 msgid "With a lower value, the same zoom level shows a less detailed chart.\n"
 "With a higher value, the same zoom level shows a more detailed chart."
-msgstr ""
+msgstr "Con un valore inferiore, lo stesso livello di zoom mostra un grafico meno dettagliato.\n"
+"Con un valore più alto, lo stesso livello di zoom mostra un grafico più dettagliato."
 
 #: src/options.cpp:3061 src/options.cpp:3798
 msgid "Controls"
@@ -5005,7 +5011,7 @@ msgstr ""
 
 #: src/options.cpp:4318
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "Permetti l'attenuazione di obiettivi meno critici se più di ... obiettivi"
 
 #: src/options.cpp:4326
 msgid "Show area notices (from AIS binary messages)"
@@ -5230,7 +5236,10 @@ msgid "Compression will alter chart files on disk.\n"
 "This may make them incompatible with other programs or older versions of OpenCPN.\n"
 "Compressed charts may take slightly longer to load and display on some systems.\n"
 "They can be decompressed again using unxz or 7 zip programs."
-msgstr ""
+msgstr "La compressione modificherà i file di grafico sul disco.\n"
+"Questi potrebbero renderli incompatibili con altri programmi o versioni precedenti di OpenCPN.\n"
+"I grafici compressi potrebbero impiegare un tempo leggermente più lungo per caricare e visualizzare su alcuni sistemi.\n"
+"Sono nuovamente decompressi utilizzando i programmi unxz o 7 zip."
 
 #: src/options.cpp:6755 src/routeman.cpp:819 src/routeman.cpp:897
 msgid "OpenCPN Warning"
@@ -5359,7 +5368,9 @@ msgstr "Varie"
 msgid "S57 Cell Update failed.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "Aggiornamento Cella S57 non riuscito.\n"
+"Le funzionalità Enc potrebbero essere incomplete o imprecise.\n\n"
+"Controlla il file di registro per i dettagli."
 
 #: src/Osenc.cpp:1157 src/Osenc.cpp:1163 src/Osenc.cpp:1286
 #: src/s57chart.cpp:3640
@@ -5371,13 +5382,18 @@ msgid "S57 Cell Update failed.\n"
 "No updates could be applied.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "Aggiornamento Cella S57 fallito.\n"
+"Non possono essere applicati aggiornamenti.\n"
+"Le funzionalità ENC potrebbero essere incomplete o imprecise.\n\n"
+"Controlla il file di registro per dettagli."
 
 #: src/Osenc.cpp:1285
 msgid "S57 Cell Update chain incomplete.\n"
 "ENC features may be incomplete or inaccurate.\n\n"
 "Check the logfile for details."
-msgstr ""
+msgstr "La catena di Aggiornamento delle Celle S57 è incompleta.\n"
+"Le funzionalità di Enc potrebbero essere incomplete o imprecise.\n\n"
+"Controlla il file di registro per i dettagli."
 
 #: src/Osenc.cpp:1612
 msgid "OpenCPN S57 SENC File Create..."
@@ -5416,7 +5432,7 @@ msgstr "Libreria di PlugIn illeggibile rilevata, controllare le autorizzazioni d
 
 #: src/pluginmanager.cpp:1206
 msgid "Incompatible plugin detected"
-msgstr ""
+msgstr "Riscontrato plugin incompatibile"
 
 #: src/pluginmanager.cpp:1209
 #, c-format

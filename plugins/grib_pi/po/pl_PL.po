@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:28-0500\n"
+"PO-Revision-Date: 2018-03-04 05:54-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=((n == 1) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || n%10 == 1 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 12 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: pl\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:425
 msgid "File: "
-msgstr ""
+msgstr "Plik: "
 
 #: src/GribUIDialog.cpp:430
 msgid "Error! "
@@ -43,7 +43,7 @@ msgstr " nie zawiera prawidłowych danych!"
 
 #: src/GribUIDialog.cpp:455
 msgid "No valid GRIB file"
-msgstr ""
+msgstr "Brak prawidłowego pliku"
 
 #: src/GribUIDialog.cpp:648 src/GribUIDialog.cpp:844
 msgid "Hide data at cursor"
@@ -99,7 +99,7 @@ msgstr "Wybierz plik GRIB"
 
 #: src/GribUIDialog.cpp:1653
 msgid " files don't exist!"
-msgstr ""
+msgstr " pliki nie istnieją!"
 
 #: src/GribUIDialog.cpp:1675
 msgid " can't be read!"
@@ -483,15 +483,15 @@ msgstr "Opcje odtwarzania"
 
 #: src/GribUIDialogBase.cpp:1000
 msgid "Speed Control"
-msgstr ""
+msgstr "Kontrola prędkości"
 
 #: src/GribUIDialogBase.cpp:1012
 msgid "Slow"
-msgstr ""
+msgstr "Wolno"
 
 #: src/GribUIDialogBase.cpp:1020
 msgid "Fast"
-msgstr ""
+msgstr "Szybko"
 
 #: src/GribUIDialogBase.cpp:1026
 msgid "Loop Mode"
@@ -943,11 +943,11 @@ msgstr ""
 
 #: src/GribTable.cpp:167
 msgid "Air Temp."
-msgstr ""
+msgstr "Temperatura powietrza."
 
 #: src/GribTable.cpp:175
 msgid "Sea Temp."
-msgstr ""
+msgstr "Temperatura morza."
 
 #: src/GribTable.cpp:195
 msgid "Current,Dir"
@@ -955,7 +955,7 @@ msgstr ""
 
 #: src/GribTable.cpp:201
 msgid "Current,Speed"
-msgstr ""
+msgstr "Aktualna prędkość"
 
 #: src/GribRequestDialog.cpp:120 src/GribRequestDialog.cpp:951
 msgid "Send"
@@ -1021,7 +1021,7 @@ msgstr "Błąd! Max Szer. mniejsza niż Min Szer. lub Max Dług. mniejsza niż M
 
 #: src/GribRequestDialog.cpp:964
 msgid "Too large area! Each side must be less than 180\\u00B0!"
-msgstr ""
+msgstr "Zbyt duży obszar! Nie może być większy niż 180\\u00B0!"
 
 #: src/GribRequestDialog.cpp:964
 msgid "Too small area for this resolution!"
@@ -1057,7 +1057,7 @@ msgstr "Żądanie nie może zostać wysłane. Zweryfikuj proszę ustawienia pocz
 
 #: src/CursorData.cpp:225
 msgid "Data at cursor position"
-msgstr ""
+msgstr "Dane na pozycji kursora"
 
 #: src/CursorData.cpp:239
 msgid "at Geopotential Height"

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-02-01 14:00-0500\n"
+"PO-Revision-Date: 2018-04-09 11:19-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
-msgstr "WMM プラグイン"
+msgstr "WMMプラグイン"
 
 #: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -39,7 +39,7 @@ msgstr "WMM"
 
 #: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
-msgstr "OpenCPN 用、世界磁気モデル プラグイン"
+msgstr "OpenCPN用世界磁気モデルプラグイン"
 
 #: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
@@ -123,11 +123,11 @@ msgstr "(DIP) - 地磁気傾斜 "
 
 #: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
 msgid "Vari"
-msgstr "偏角"
+msgstr "自差"
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr "磁気偏角"
+msgstr "自差"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
@@ -151,11 +151,11 @@ msgstr "拡張"
 
 #: src/WmmUIDialog.cpp:274
 msgid "Variation only"
-msgstr "偏角のみ"
+msgstr "自差のみ"
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
-msgstr "View"
+msgstr "表示"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
@@ -179,7 +179,7 @@ msgstr "ウィンドウの透明度"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Variation"
-msgstr ""
+msgstr "自差"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"

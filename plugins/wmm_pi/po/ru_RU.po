@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:29-0500\n"
+"PO-Revision-Date: 2018-04-09 11:20-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Generator: crowdin.com\n"
 "X-Crowdin-Project: opencpn\n"
 "X-Crowdin-Language: ru\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:102
 msgid "WMM Plugin"
-msgstr ""
+msgstr "Плагин ВДМ"
 
 #: src/wmm_pi.cpp:209 src/wmm_pi.cpp:277 src/WmmUIDialog.h:87
 msgid "WMM"
@@ -39,7 +39,7 @@ msgstr ""
 
 #: src/wmm_pi.cpp:283
 msgid "World Magnetic Model PlugIn for OpenCPN"
-msgstr ""
+msgstr "Мир Магнитная модель плагин для OpenCPN"
 
 #: src/wmm_pi.cpp:288
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
@@ -49,23 +49,29 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "After then, if new version of the plugin will not be released\n"
 "in time, get a new WMM.COF from NOAA and place it to the\n"
 "location you can find in the OpenCPN logfile."
-msgstr ""
+msgstr "Всемирная магнитная модель Plugin для OpenCPN\n"
+"Реализует всемирную магнитную модель NOAA\n"
+"Больше информации: http://www.ngdc.noaa.gov/geomag/WMM/\n"
+"Модель wmm2015 в комплекте истекает 31 декабря 2019 года.\n"
+"После то, если новая версия не выйдет\n"
+"со временем получи новый МММ.COF от NOAA и поместите его в\n"
+"местоположение, которое вы можете найти в лог-файле OpenCPN."
 
 #: src/wmm_pi.cpp:472 src/wmm_pi.cpp:610
 msgid "Error, see log."
-msgstr ""
+msgstr "Ошибка, см. журнал."
 
 #: src/wmm_pi.cpp:840 src/WmmUIDialog.h:112
 msgid "WMM Preferences"
-msgstr ""
+msgstr "Предпочтения ВДМ"
 
 #: src/wmm_pi.h:79 src/WmmUIDialog.h:152
 msgid "Magnetic Plot Settings"
-msgstr ""
+msgstr "Параметры Магнитной Печати"
 
 #: src/WmmUIDialog.cpp:26
 msgid "Boat"
-msgstr ""
+msgstr "Лодка"
 
 #: src/WmmUIDialog.cpp:33 src/WmmUIDialog.cpp:129
 msgid "F "
@@ -73,7 +79,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:35 src/WmmUIDialog.cpp:131
 msgid "Total Intensity"
-msgstr ""
+msgstr "Общая Интенсивность"
 
 #: src/WmmUIDialog.cpp:43 src/WmmUIDialog.cpp:139
 msgid "H "
@@ -81,7 +87,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:45 src/WmmUIDialog.cpp:141
 msgid "Horizontal Intensity"
-msgstr ""
+msgstr "Горизонтальная Интенсивность"
 
 #: src/WmmUIDialog.cpp:53 src/WmmUIDialog.cpp:149
 msgid "X "
@@ -89,7 +95,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:55 src/WmmUIDialog.cpp:151
 msgid "North Component"
-msgstr ""
+msgstr "Северный Компонент"
 
 #: src/WmmUIDialog.cpp:63 src/WmmUIDialog.cpp:159
 msgid "Y "
@@ -97,7 +103,7 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:65 src/WmmUIDialog.cpp:161
 msgid "East Component"
-msgstr ""
+msgstr "Восточный Компонент"
 
 #: src/WmmUIDialog.cpp:73 src/WmmUIDialog.cpp:169
 msgid "Z "
@@ -105,103 +111,103 @@ msgstr ""
 
 #: src/WmmUIDialog.cpp:75 src/WmmUIDialog.cpp:171
 msgid "Vertical Component"
-msgstr ""
+msgstr "Вертикальная составляющая"
 
 #: src/WmmUIDialog.cpp:83 src/WmmUIDialog.cpp:179
 msgid "Incl"
-msgstr ""
+msgstr "Вкл"
 
 #: src/WmmUIDialog.cpp:85 src/WmmUIDialog.cpp:181
 msgid "(DIP) - Geomagnetic Inclination "
-msgstr ""
+msgstr "(ДИП) - Геомагнитного наклонения "
 
 #: src/WmmUIDialog.cpp:103 src/WmmUIDialog.cpp:199
 msgid "Vari"
-msgstr ""
+msgstr "Вари"
 
 #: src/WmmUIDialog.cpp:105 src/WmmUIDialog.cpp:201
 msgid "Magnetic Variation"
-msgstr ""
+msgstr "Магнитное склонение"
 
 #: src/WmmUIDialog.cpp:122
 msgid "Cursor"
-msgstr ""
+msgstr "Указатель"
 
 #: src/WmmUIDialog.cpp:222
 msgid "Plot"
-msgstr ""
+msgstr "Сюжет"
 
 #: src/WmmUIDialog.cpp:231
 msgid "Enable plot"
-msgstr ""
+msgstr "Включить земельный участок"
 
 #: src/WmmUIDialog.cpp:235
 msgid "Settings..."
-msgstr ""
+msgstr "Настроить..."
 
 #: src/WmmUIDialog.cpp:274
 msgid "Extended"
-msgstr ""
+msgstr "Вытянутый"
 
 #: src/WmmUIDialog.cpp:274
 msgid "Variation only"
-msgstr ""
+msgstr "Только вариации"
 
 #: src/WmmUIDialog.cpp:276
 msgid "View"
-msgstr ""
+msgstr "Вид"
 
 #: src/WmmUIDialog.cpp:280
 msgid "Show Plot Options"
-msgstr ""
+msgstr "Показать Параметры Печати"
 
 #: src/WmmUIDialog.cpp:283
 msgid "Show also data at cursor position"
-msgstr ""
+msgstr "Показать также данные в позиции курсора"
 
 #: src/WmmUIDialog.cpp:286
 msgid "Show toolbar icon"
-msgstr ""
+msgstr "Показать значок панели инструментов"
 
 #: src/WmmUIDialog.cpp:289
 msgid "Show data in toolbar icon"
-msgstr ""
+msgstr "Показать данные на панели инструментов"
 
 #: src/WmmUIDialog.cpp:293
 msgid "Window transparency"
-msgstr ""
+msgstr "Прозрачность окна"
 
 #: src/WmmUIDialog.cpp:329 src/MagneticPlotMap.cpp:362
 msgid "Variation"
-msgstr ""
+msgstr "Изменение"
 
 #: src/WmmUIDialog.cpp:336 src/WmmUIDialog.cpp:346
 msgid "Degrees"
-msgstr ""
+msgstr "Постепенно"
 
 #: src/WmmUIDialog.cpp:340 src/MagneticPlotMap.cpp:363
 msgid "Inclination"
-msgstr ""
+msgstr "Наклон"
 
 #: src/WmmUIDialog.cpp:350 src/MagneticPlotMap.cpp:363
 msgid "Field Strength"
-msgstr ""
+msgstr "Напряженность поля"
 
 #: src/WmmUIDialog.cpp:356
 msgid "Nano Tesla"
-msgstr ""
+msgstr "Нано Тесла"
 
 #: src/WmmUIDialog.cpp:366
 msgid "Step Size"
-msgstr ""
+msgstr "Размер шага"
 
 #: src/WmmUIDialog.cpp:377
 msgid "Pole Accuracy"
-msgstr ""
+msgstr "Точность Поляка"
 
 #: src/WmmUIDialog.cpp:381
 msgid "About"
-msgstr ""
+msgstr "Около"
 
 #: src/WmmUIDialog.cpp:384
 msgid "Save"
@@ -213,5 +219,5 @@ msgstr "Отменить"
 
 #: src/MagneticPlotMap.cpp:361
 msgid "Building Magnetic Map"
-msgstr ""
+msgstr "Построение Магнитной Карты"
 

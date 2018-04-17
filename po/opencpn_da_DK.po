@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:39-0500\n"
+"PO-Revision-Date: 2018-03-03 08:22-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Danish\n"
 "Language: da_DK\n"
@@ -598,7 +598,7 @@ msgstr "LtV/Rig"
 
 #: src/ais.cpp:299 src/AIS_Target_Data.cpp:893
 msgid "Buddy"
-msgstr "Ven"
+msgstr "Makker"
 
 #: src/ais.cpp:300 src/AIS_Target_Data.cpp:896 src/AIS_Target_Data.cpp:898
 msgid "DSC"

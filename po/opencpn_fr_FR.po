@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-29 21:26-0500\n"
+"PO-Revision-Date: 2018-04-12 09:17-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -55,7 +55,7 @@ msgstr "Options :"
 
 #: include/routeprintout.h:92 src/routeprintout.cpp:362
 msgid "Print Route Selection"
-msgstr "Route sélectionnée : Imprimer"
+msgstr "Imprimer la route sélectionnée"
 
 #: include/routeprop.h:66 src/canvasMenu.cpp:1426 src/chcanv.cpp:5788
 #: src/routemanagerdialog.cpp:1219 src/routemanagerdialog.cpp:1221
@@ -414,7 +414,7 @@ msgstr "Danger isolé"
 
 #: src/ais.cpp:230 src/ais.cpp:285 src/ais.cpp:296
 msgid "Safe Water"
-msgstr "Eau libre"
+msgstr "Eaux saines"
 
 #: src/ais.cpp:231
 msgid "Special Mark"
@@ -3212,7 +3212,7 @@ msgstr "Montrer cette carte"
 msgid "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr "Problème d'impression.\n"
-"Votre imprimante actuelle est elle bienl configurée ?"
+"Votre imprimante actuelle est elle bien configurée ?"
 
 #: src/chart1.cpp:9069 src/chart1.cpp:9129 src/routemanagerdialog.cpp:998
 msgid "(Unnamed Route)"
@@ -5277,7 +5277,7 @@ msgstr "Nouveau groupe de cartes"
 
 #: src/options.cpp:7808 src/options.cpp:7822
 msgid "Select Tide/Current Data"
-msgstr "Choisissez des données de marées et courants"
+msgstr "Choisissez les données de marées et courants"
 
 #: src/options.cpp:7880
 msgid "Stop Scan"

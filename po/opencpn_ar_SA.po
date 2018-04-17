@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-24 10:23-0500\n"
-"PO-Revision-Date: 2018-01-24 19:39-0500\n"
+"PO-Revision-Date: 2018-03-03 08:22-0500\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Arabic\n"
 "Language: ar_SA\n"
@@ -176,47 +176,47 @@ msgstr "الجناح في ارض الواقع"
 
 #: src/ais.cpp:162
 msgid "Power-driven vessel towing astern (regional use)"
-msgstr ""
+msgstr "سفينة سحب أسترو مدفوعة بالقدرة (الاستخدام الإقليمي)"
 
 #: src/ais.cpp:163
 msgid "Power-driven vessel pushing ahead or towing alongside (regional use)"
-msgstr ""
+msgstr "سفينة يحركها قوة دفع أو سحب جنبا إلى جنب مع (الاستخدام الإقليمي)"
 
 #: src/ais.cpp:164
 msgid "Reserved 13"
-msgstr ""
+msgstr "محجوزة 13"
 
 #: src/ais.cpp:165
 msgid "Reserved 14"
-msgstr ""
+msgstr "محجوزة 14"
 
 #: src/ais.cpp:166 src/AIS_Target_Data.cpp:402
 msgid "Undefined"
-msgstr ""
+msgstr "غير محدد"
 
 #: src/ais.cpp:167
 msgid "Virtual"
-msgstr ""
+msgstr "افتراضية"
 
 #: src/ais.cpp:168
 msgid "Virtual (On Position)"
-msgstr ""
+msgstr "الظاهري (في الموقع)"
 
 #: src/ais.cpp:169
 msgid "Virtual (Off Position)"
-msgstr ""
+msgstr "فيرتوال (أوف لوكاتيون)"
 
 #: src/ais.cpp:170
 msgid "Real"
-msgstr ""
+msgstr "حقيقي"
 
 #: src/ais.cpp:171
 msgid "Real (On Position)"
-msgstr ""
+msgstr "ريال (في الموضع)"
 
 #: src/ais.cpp:172
 msgid "Real(Off Position)"
-msgstr ""
+msgstr "ريال (وضع إيقاف)"
 
 #: src/ais.cpp:181
 msgid "Vessel Fishing"
@@ -224,15 +224,15 @@ msgstr "سفينة صيد "
 
 #: src/ais.cpp:182
 msgid "Vessel Towing"
-msgstr ""
+msgstr "السفينة، سحب"
 
 #: src/ais.cpp:183
 msgid "Vessel Towing, Long"
-msgstr ""
+msgstr "سفينة سحب، طويل"
 
 #: src/ais.cpp:184
 msgid "Vessel Dredging"
-msgstr ""
+msgstr "سفينة غوص"
 
 #: src/ais.cpp:185
 msgid "Vessel Diving"
@@ -244,19 +244,19 @@ msgstr "سفينة عسكرية"
 
 #: src/ais.cpp:187
 msgid "Sailing Vessel"
-msgstr ""
+msgstr "السفينة الشراعية"
 
 #: src/ais.cpp:188
 msgid "Pleasure craft"
-msgstr ""
+msgstr "قوارب ممتعة"
 
 #: src/ais.cpp:190
 msgid "Pilot Vessel"
-msgstr ""
+msgstr "سفينة الطيار"
 
 #: src/ais.cpp:191
 msgid "Search and Rescue Vessel"
-msgstr ""
+msgstr "البحث والإنقاذ السفن"
 
 #: src/ais.cpp:192 src/ais.cpp:257
 msgid "Tug"
@@ -264,37 +264,37 @@ msgstr "قاطرة "
 
 #: src/ais.cpp:193
 msgid "Port Tender"
-msgstr ""
+msgstr "ميناء المناقصة"
 
 #: src/ais.cpp:194
 msgid "Pollution Control Vessel"
-msgstr ""
+msgstr "التلوث السيطرة السفينة"
 
 #: src/ais.cpp:195
 msgid "Law Enforcement Vessel"
-msgstr ""
+msgstr "إنفورسيمنت، سفينة"
 
 #: src/ais.cpp:196
 msgid "Medical Transport"
-msgstr ""
+msgstr "النقل الطبي"
 
 #: src/ais.cpp:197
 msgid "Passenger Ship"
-msgstr ""
+msgstr "سفينة المسافر"
 
 #: src/ais.cpp:198
 msgid "Cargo Ship"
-msgstr ""
+msgstr "قارب الشحن"
 
 #: src/ais.cpp:199 src/AIS_Decoder.cpp:256
 msgid "Tanker"
-msgstr ""
+msgstr "ناقلة بترول"
 
 #: src/ais.cpp:200 src/AIS_Target_Data.cpp:388 src/AIS_Target_Data.cpp:673
 #: src/AIS_Target_Data.cpp:733 src/AIS_Target_Data.cpp:907
 #: src/chartdbs.cpp:1461
 msgid "Unknown"
-msgstr ""
+msgstr "غير معروف"
 
 #: src/ais.cpp:201
 msgid "Unspecified"
@@ -306,11 +306,11 @@ msgstr "النقطة المرجعية"
 
 #: src/ais.cpp:203 src/ais.cpp:269
 msgid "RACON"
-msgstr ""
+msgstr "وRACO"
 
 #: src/ais.cpp:204
 msgid "Fixed Structure"
-msgstr ""
+msgstr "ترتيب ثابت"
 
 #: src/ais.cpp:205
 msgid "Spare"
@@ -322,95 +322,95 @@ msgstr "الضوء"
 
 #: src/ais.cpp:207
 msgid "Light w/Sectors"
-msgstr ""
+msgstr "ضوء ث / القطاعات"
 
 #: src/ais.cpp:208
 msgid "Leading Light Front"
-msgstr ""
+msgstr "ضوء الرائدة الجبهة"
 
 #: src/ais.cpp:209
 msgid "Leading Light Rear"
-msgstr ""
+msgstr "ضوء الرائدة الجبهة"
 
 #: src/ais.cpp:210
 msgid "Cardinal N Beacon"
-msgstr ""
+msgstr "الكاردينال N منارة"
 
 #: src/ais.cpp:211
 msgid "Cardinal E Beacon"
-msgstr ""
+msgstr "الكاردينال N منارة"
 
 #: src/ais.cpp:212
 msgid "Cardinal S Beacon"
-msgstr ""
+msgstr "الكاردينال N منارة"
 
 #: src/ais.cpp:213
 msgid "Cardinal W Beacon"
-msgstr ""
+msgstr "الكاردينال W منارة"
 
 #: src/ais.cpp:214
 msgid "Beacon, Port Hand"
-msgstr ""
+msgstr "منارة، ناحية ميناء"
 
 #: src/ais.cpp:215
 msgid "Beacon, Starboard Hand"
-msgstr ""
+msgstr "الرائدة ضوء الجبهة"
 
 #: src/ais.cpp:216
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr ""
+msgstr "منارة، ميناء قناة المفضلة من جهة"
 
 #: src/ais.cpp:217
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "منارة، قناة المفضلة ستاربوارد اليد"
 
 #: src/ais.cpp:218
 msgid "Beacon, Isolated Danger"
-msgstr ""
+msgstr "مناره ، خطر معزول"
 
 #: src/ais.cpp:219
 msgid "Beacon, Safe Water"
-msgstr ""
+msgstr "منارة، المياه الآمنة"
 
 #: src/ais.cpp:220
 msgid "Beacon, Special Mark"
-msgstr ""
+msgstr "منارة، علامة خاصة"
 
 #: src/ais.cpp:221
 msgid "Cardinal Mark N"
-msgstr ""
+msgstr "الكاردينال مارك N"
 
 #: src/ais.cpp:222
 msgid "Cardinal Mark E"
-msgstr ""
+msgstr "الكاردينال مارك E"
 
 #: src/ais.cpp:223
 msgid "Cardinal Mark S"
-msgstr ""
+msgstr "الكاردينال مارك E"
 
 #: src/ais.cpp:224
 msgid "Cardinal Mark W"
-msgstr ""
+msgstr "الكاردينال مارك W"
 
 #: src/ais.cpp:225
 msgid "Port Hand Mark"
-msgstr ""
+msgstr "ميناء علامة اليد"
 
 #: src/ais.cpp:226
 msgid "Starboard Hand Mark"
-msgstr ""
+msgstr "علامة اليد المائلة"
 
 #: src/ais.cpp:227
 msgid "Preferred Channel Port Hand"
-msgstr ""
+msgstr "اختيار قناة ميناء اليد"
 
 #: src/ais.cpp:228
 msgid "Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "اختيار قناة ميناء ميمنة اليد"
 
 #: src/ais.cpp:229
 msgid "Isolated Danger"
-msgstr ""
+msgstr "خطر بعيد"
 
 #: src/ais.cpp:230 src/ais.cpp:285 src/ais.cpp:296
 msgid "Safe Water"
@@ -422,11 +422,11 @@ msgstr "علامة خاصة"
 
 #: src/ais.cpp:232
 msgid "Light Vessel/Rig"
-msgstr ""
+msgstr "الإضاءة قارب / تزوير"
 
 #: src/ais.cpp:233
 msgid "GpsGate Buddy"
-msgstr ""
+msgstr "GpsGate رفيق"
 
 #: src/ais.cpp:234
 msgid "Position Report"
@@ -438,23 +438,23 @@ msgstr "الخطر"
 
 #: src/ais.cpp:236
 msgid "ARPA radar target"
-msgstr ""
+msgstr "ARPA الرادار الهدف"
 
 #: src/ais.cpp:237 src/AIS_Target_Data.cpp:904
 msgid "APRS Position Report"
-msgstr ""
+msgstr "APRS بيان الموضع"
 
 #: src/ais.cpp:246
 msgid "F/V"
-msgstr ""
+msgstr "F / V"
 
 #: src/ais.cpp:247
 msgid "Tow"
-msgstr ""
+msgstr "سحب"
 
 #: src/ais.cpp:248
 msgid "Long Tow"
-msgstr ""
+msgstr "جر طويلة"
 
 #: src/ais.cpp:249
 msgid "Dredge"
@@ -462,59 +462,59 @@ msgstr "تكريك"
 
 #: src/ais.cpp:250
 msgid "D/V"
-msgstr ""
+msgstr "د/V"
 
 #: src/ais.cpp:251
 msgid "Mil/V"
-msgstr ""
+msgstr "ميل/V"
 
 #: src/ais.cpp:252
 msgid "S/V"
-msgstr ""
+msgstr "S/V"
 
 #: src/ais.cpp:253
 msgid "Yat"
-msgstr ""
+msgstr "صون يأت"
 
 #: src/ais.cpp:254
 msgid "HSC"
-msgstr ""
+msgstr "HSC"
 
 #: src/ais.cpp:255
 msgid "P/V"
-msgstr ""
+msgstr "P/V"
 
 #: src/ais.cpp:256
 msgid "SAR/V"
-msgstr ""
+msgstr "SAR/V"
 
 #: src/ais.cpp:258
 msgid "Tender"
-msgstr ""
+msgstr "مناقصة"
 
 #: src/ais.cpp:259
 msgid "PC/V"
-msgstr ""
+msgstr "PC/V"
 
 #: src/ais.cpp:260
 msgid "LE/V"
-msgstr ""
+msgstr "LE/V"
 
 #: src/ais.cpp:261
 msgid "Med/V"
-msgstr ""
+msgstr "Med/V"
 
 #: src/ais.cpp:262
 msgid "Pass/V"
-msgstr ""
+msgstr "تجاوز/V"
 
 #: src/ais.cpp:263
 msgid "M/V"
-msgstr ""
+msgstr "M/V"
 
 #: src/ais.cpp:264
 msgid "M/T"
-msgstr ""
+msgstr "M/T"
 
 #: src/ais.cpp:265 src/ais.cpp:271
 msgid "?"
@@ -522,183 +522,183 @@ msgstr ""
 
 #: src/ais.cpp:267 src/AIS_Target_Data.cpp:889
 msgid "AtoN"
-msgstr ""
+msgstr "AtoN"
 
 #: src/ais.cpp:268
 msgid "Ref. Pt"
-msgstr ""
+msgstr "Ref. Pt"
 
 #: src/ais.cpp:270
 msgid "Fix.Struct."
-msgstr ""
+msgstr "Fix.Struct."
 
 #: src/ais.cpp:272
 msgid "Lt"
-msgstr ""
+msgstr "Lt"
 
 #: src/ais.cpp:273
 msgid "Lt sect."
-msgstr ""
+msgstr "Lt sect."
 
 #: src/ais.cpp:274
 msgid "Ldg Lt Front"
-msgstr ""
+msgstr "Ldg Lt Front"
 
 #: src/ais.cpp:275
 msgid "Ldg Lt Rear"
-msgstr ""
+msgstr "Ldg Lt Rear"
 
 #: src/ais.cpp:276 src/ais.cpp:287
 msgid "Card. N"
-msgstr ""
+msgstr "Card. N"
 
 #: src/ais.cpp:277 src/ais.cpp:288
 msgid "Card. E"
-msgstr ""
+msgstr "Card. E"
 
 #: src/ais.cpp:278 src/ais.cpp:289
 msgid "Card. S"
-msgstr ""
+msgstr "بطاقة. S"
 
 #: src/ais.cpp:279 src/ais.cpp:290
 msgid "Card. W"
-msgstr ""
+msgstr "بطاقة. W"
 
 #: src/ais.cpp:280
 msgid "Port"
-msgstr ""
+msgstr "ميناء"
 
 #: src/ais.cpp:281
 msgid "Stbd"
-msgstr ""
+msgstr "Stbd"
 
 #: src/ais.cpp:282 src/ais.cpp:283 src/ais.cpp:293 src/ais.cpp:294
 msgid "Pref. Chnl"
-msgstr ""
+msgstr "Pref. Chnl"
 
 #: src/ais.cpp:284 src/ais.cpp:295
 msgid "Isol. Dngr"
-msgstr ""
+msgstr "Isol. Dngr"
 
 #: src/ais.cpp:286 src/ais.cpp:297
 msgid "Special"
-msgstr ""
+msgstr "استثنائي"
 
 #: src/ais.cpp:291
 msgid "Port Hand"
-msgstr ""
+msgstr "ميناء المحفوظة"
 
 #: src/ais.cpp:292
 msgid "Stbd Hand"
-msgstr ""
+msgstr "Stbdb يد"
 
 #: src/ais.cpp:298
 msgid "LtV/Rig"
-msgstr ""
+msgstr "LtV/Rig"
 
 #: src/ais.cpp:299 src/AIS_Target_Data.cpp:893
 msgid "Buddy"
-msgstr ""
+msgstr "رفيق"
 
 #: src/ais.cpp:300 src/AIS_Target_Data.cpp:896 src/AIS_Target_Data.cpp:898
 msgid "DSC"
-msgstr ""
+msgstr "DSC"
 
 #: src/ais.cpp:302 src/AIS_Target_Data.cpp:902
 msgid "ARPA"
-msgstr ""
+msgstr "ARPA"
 
 #: src/ais.cpp:303 src/AIS_Target_Data.cpp:904
 msgid "APRS"
-msgstr ""
+msgstr "APRS"
 
 #: src/ais.cpp:310
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr ""
+msgstr "مجال الحذر: الثدييات البحرية الموئل (يعني لا تلاحظ الحيتان)"
 
 #: src/ais.cpp:311
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr ""
+msgstr "مجال الحذر: الثدييات البحرية في المنطقة--تقليل السرعة"
 
 #: src/ais.cpp:312
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr ""
+msgstr "الرعاية بقعة الثدييات المائية في المنطقة - البقاء آمنة"
 
 #: src/ais.cpp:313
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr ""
+msgstr "الرعاية بقعة الثدييات المائية في المنطقة - مراجع المعلومات"
 
 #: src/ais.cpp:314
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr ""
+msgstr "منطقة الرعاية محمية المنزل - تقليل السرعة"
 
 #: src/ais.cpp:315
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr ""
+msgstr "منطقة الرعاية محمية المنزل - البقاء واضحة"
 
 #: src/ais.cpp:316
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr ""
+msgstr "منطقة الرعاية محمية المنزل - أي الصيد أو رسو"
 
 #: src/ais.cpp:317
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr ""
+msgstr "منطقة الرعاية ديرليكتس (الانجراف مادة)"
 
 #: src/ais.cpp:318
 msgid "Caution Area: Traffic congestion"
-msgstr ""
+msgstr "منطقة الحذر ازدحام المرور"
 
 #: src/ais.cpp:319
 msgid "Caution Area: Marine event"
-msgstr ""
+msgstr "منطقة الحذر: البحرية المستخدمة"
 
 #: src/ais.cpp:320
 msgid "Caution Area: Divers down"
-msgstr ""
+msgstr "منطقة الحذر: الغواصين أسفل"
 
 #: src/ais.cpp:321
 msgid "Caution Area: Swim area"
-msgstr ""
+msgstr "منطقة الحذر: منطقة السباحة"
 
 #: src/ais.cpp:322
 msgid "Caution Area: Dredge operations"
-msgstr ""
+msgstr "منطقة الحذر: عمليات نعرات"
 
 #: src/ais.cpp:323
 msgid "Caution Area: Survey operations"
-msgstr ""
+msgstr "منطقة الحذر: عمليات المسح"
 
 #: src/ais.cpp:324
 msgid "Caution Area: Underwater operation"
-msgstr ""
+msgstr "منطقة الحذر: تحت عملية المياه"
 
 #: src/ais.cpp:325
 msgid "Caution Area: Seaplane operations"
-msgstr ""
+msgstr "منطقة الحذر: عمليات الطائرة البحرية"
 
 #: src/ais.cpp:326
 msgid "Caution Area: Fishery - nets in water"
-msgstr ""
+msgstr "منطقة الحذر: الشباك في الماء"
 
 #: src/ais.cpp:327
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr ""
+msgstr "منطقة الحذر: مجموعة من سفن الصيد"
 
 #: src/ais.cpp:328
 msgid "Caution Area: Fairway closed"
-msgstr ""
+msgstr "منطقة الحذر: طريقة عادلة مغلقة"
 
 #: src/ais.cpp:329
 msgid "Caution Area: Harbour closed"
-msgstr ""
+msgstr "منطقة الحذر: إغلاق الميناء"
 
 #: src/ais.cpp:330
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr ""
+msgstr "المخاطر (تعريف في حقل النص المقترن)"
 
 #: src/ais.cpp:331
 msgid "Caution Area: Underwater vehicle operation"
-msgstr ""
+msgstr "منطقة الحذر: تشغيل السيارة تحت الماء"
 
 #: src/ais.cpp:332 src/ais.cpp:341 src/ais.cpp:349 src/ais.cpp:356
 #: src/ais.cpp:357 src/ais.cpp:358 src/ais.cpp:359 src/ais.cpp:360
@@ -710,331 +710,334 @@ msgstr ""
 #: src/ais.cpp:426 src/ais.cpp:427 src/ais.cpp:428 src/ais.cpp:429
 #: src/ais.cpp:433 src/ais.cpp:434
 msgid "(reserved for future use)"
-msgstr ""
+msgstr "تشغيل السيارة تحت الماء"
 
 #: src/ais.cpp:333
 msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr ""
+msgstr "بيئة منطقة الحذر: العاصفة الأمامية (خط المربعات)"
 
 #: src/ais.cpp:334
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr ""
+msgstr "بيئة منطقة الحذر: الجليد البحري الخطير"
 
 #: src/ais.cpp:335
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr ""
+msgstr "بيئة منطقة الحذر: تحذير العاصفة (خلية العاصفة أو خط العواصف)"
 
 #: src/ais.cpp:336
 msgid "Environmental Caution Area: High wind"
-msgstr ""
+msgstr "بيئة منطقة الحذر: الرياح العاتية"
 
 #: src/ais.cpp:337
 msgid "Environmental Caution Area: High waves"
-msgstr ""
+msgstr "بيئة منطقة الحذر: موجات عالية"
 
 #: src/ais.cpp:338
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
-msgstr ""
+msgstr "بيئة منطقة الحذر: الرؤية المقيدة (الضباب، المطر، الخ)"
 
 #: src/ais.cpp:339
 msgid "Environmental Caution Area: Strong currents"
-msgstr ""
+msgstr "بيئة منطقة الحذر: تيارات قوية"
 
 #: src/ais.cpp:340
 msgid "Environmental Caution Area: Heavy icing"
-msgstr ""
+msgstr "بيئة منطقة الحذر: الجليد الثقيل"
 
 #: src/ais.cpp:342
 msgid "Restricted Area: Fishing prohibited"
-msgstr ""
+msgstr "منطقة محظورة الصيد محظور"
 
 #: src/ais.cpp:343
 msgid "Restricted Area: No anchoring."
-msgstr ""
+msgstr "منطقة مقيدة لا رسو."
 
 #: src/ais.cpp:344
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr ""
+msgstr "منطقة محظورة: تتطلب الموافقة على الدخول قبل العبور"
 
 #: src/ais.cpp:345
 msgid "Restricted Area: Entry prohibited"
-msgstr ""
+msgstr "منطقة محظورة: ممنوع دخول"
 
 #: src/ais.cpp:346
 msgid "Restricted Area: Active military OPAREA"
-msgstr ""
+msgstr "منطقة محظورة: ممنوع دخول"
 
 #: src/ais.cpp:347
 msgid "Restricted Area: Firing - danger area."
-msgstr ""
+msgstr "منطقة محظورة: ممنوع دخول."
 
 #: src/ais.cpp:348
 msgid "Restricted Area: Drifting Mines"
-msgstr ""
+msgstr "منطقة محظورة: الانجراف الألغام"
 
 #: src/ais.cpp:350
 msgid "Anchorage Area: Anchorage open"
-msgstr ""
+msgstr "مرساة المنطقة: مرسى مفتوح"
 
 #: src/ais.cpp:351
 msgid "Anchorage Area: Anchorage closed"
-msgstr ""
+msgstr "مرساة المنطقة: تم إغلاق مرسى"
 
 #: src/ais.cpp:352
 msgid "Anchorage Area: Anchoring prohibited"
-msgstr ""
+msgstr "مرساة المنطقة: يحظر رسو"
 
 #: src/ais.cpp:353
 msgid "Anchorage Area: Deep draft anchorage"
-msgstr ""
+msgstr "مرساة المنطقة"
 
 #: src/ais.cpp:354
 msgid "Anchorage Area: Shallow draft anchorage"
-msgstr ""
+msgstr "مرساة المنطقة: خطة منخفضة مارينا"
 
 #: src/ais.cpp:355
 msgid "Anchorage Area: Vessel transfer operations"
-msgstr ""
+msgstr "مرساة المنطقة: قارب عملية التحرك"
 
 #: src/ais.cpp:366
 msgid "Security Alert - Level 1"
-msgstr ""
+msgstr "تنبيه الأمان - المستوى 1"
 
 #: src/ais.cpp:367
 msgid "Security Alert - Level 2"
-msgstr ""
+msgstr "تنبيه الأمان - المستوى 2"
 
 #: src/ais.cpp:368
 msgid "Security Alert - Level 3"
-msgstr ""
+msgstr "تنبيه الأمان - المستوى 3"
 
 #: src/ais.cpp:374
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr ""
+msgstr "منطقة الاستغاثة: القارب المعوقين و أدريفت"
 
 #: src/ais.cpp:375
 msgid "Distress Area: Vessel sinking"
-msgstr ""
+msgstr "منطقة الاستغاثة: قارب غرق"
 
 #: src/ais.cpp:376
 msgid "Distress Area: Vessel abandoning ship"
-msgstr ""
+msgstr "منطقة الاستغاثة: سفينة التخلي عن السفينة"
 
 #: src/ais.cpp:377
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr ""
+msgstr "منطقة الاستغاثة: تطلب السفينة المساعدة الطبية"
 
 #: src/ais.cpp:378
 msgid "Distress Area: Vessel flooding"
-msgstr ""
+msgstr "منطقة الاستغاثة: السفن فيضان"
 
 #: src/ais.cpp:379
 msgid "Distress Area: Vessel fire/explosion"
-msgstr ""
+msgstr "منطقة الاستغاثة: سفينة النار / الانفجار"
 
 #: src/ais.cpp:380
 msgid "Distress Area: Vessel grounding"
-msgstr ""
+msgstr "منطقة الاستغاثة: سفينة التأريض"
 
 #: src/ais.cpp:381
 msgid "Distress Area: Vessel collision"
-msgstr ""
+msgstr "منطقة الاستغاثة: تصادم السفينة"
 
 #: src/ais.cpp:382
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr ""
+msgstr "منطقة الاستغاثة: قائمة القوارب / الغرق"
 
 #: src/ais.cpp:383
 msgid "Distress Area: Vessel under assault"
-msgstr ""
+msgstr "منطقة الاستغاثة: قارب تحت الهجوم"
 
 #: src/ais.cpp:384
 msgid "Distress Area: Person overboard"
-msgstr ""
+msgstr "منطقة الاستغاثة: الفردية خارج الخطر"
 
 #: src/ais.cpp:385
 msgid "Distress Area: SAR area"
-msgstr ""
+msgstr "منطقة الاستغاثة: منطقة SAR"
 
 #: src/ais.cpp:386
 msgid "Distress Area: Pollution response area"
-msgstr ""
+msgstr "منطقة الاستغاثة: منطقة الاستجابة للتلوث"
 
 #: src/ais.cpp:390
 msgid "Instruction: Contact VTS at this point/juncture"
-msgstr ""
+msgstr "تعليمات الاتصال VTS في هذه المرحلة / المنعطف"
 
 #: src/ais.cpp:391
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr ""
+msgstr "تعليمات الاتصال إدارة الموانئ في هذه النقطة / المنعطف"
 
 #: src/ais.cpp:392
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr ""
+msgstr "تعليمات لا المضي قدما وراء هذه نقطة / المنعطف"
 
 #: src/ais.cpp:393
 msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr ""
+msgstr "تعليمات: تنتظر التعليمات قبل المضي قدما بعد هذه نقطة / المنعطف"
 
 #: src/ais.cpp:394
 msgid "Proceed to this location - await instructions"
-msgstr ""
+msgstr "انتقل إلى هذا لوكاتيون - أوايت إنستروكشيونس"
 
 #: src/ais.cpp:395
 msgid "Clearance granted - proceed to berth"
-msgstr ""
+msgstr "التخلي الممنوحة - المضي قدما إلى مرسى"
 
 #: src/ais.cpp:398
 msgid "Information: Pilot boarding position"
-msgstr ""
+msgstr "معلومات الطيار الصعود الموقف"
 
 #: src/ais.cpp:399
 msgid "Information: Icebreaker waiting area"
-msgstr ""
+msgstr "معلومات الكسارة الجليد منطقة الانتظار"
 
 #: src/ais.cpp:400
 msgid "Information: Places of refuge"
-msgstr ""
+msgstr "معلومات: أ ماكن اللجوء"
 
 #: src/ais.cpp:401
 msgid "Information: Position of icebreakers"
-msgstr ""
+msgstr "تعليمات لا المضي قدما وراء هذه نقطة / المنعطف"
 
 #: src/ais.cpp:402
 msgid "Information: Location of response units"
-msgstr ""
+msgstr "معلومات: م وقع وحدات الاستجابة"
 
 #: src/ais.cpp:403
 msgid "VTS active target"
-msgstr ""
+msgstr "VTS نشط الهدف"
 
 #: src/ais.cpp:404
 msgid "Rogue or suspicious vessel"
-msgstr ""
+msgstr "مارقة أو مشبوهة سفينة"
 
 #: src/ais.cpp:405
 msgid "Vessel requesting non-distress assistance"
-msgstr ""
+msgstr "السفينة تطلب عدم الاستغاثة المساعدة"
 
 #: src/ais.cpp:406
 msgid "Chart Feature: Sunken vessel"
-msgstr ""
+msgstr "الرسم البياني ميزة: الغارقة السفينة"
 
 #: src/ais.cpp:407
 msgid "Chart Feature: Submerged object"
-msgstr ""
+msgstr "الرسم البياني ميزة: المغمورة الكائن"
 
 #: src/ais.cpp:408
 msgid "Chart Feature: Semi-submerged object"
-msgstr ""
+msgstr "الرسم البياني ميزة"
 
 #: src/ais.cpp:409
 msgid "Chart Feature: Shoal area"
-msgstr ""
+msgstr "الرسم البياني ميزة: الضحلة المنطقة"
 
 #: src/ais.cpp:410
 msgid "Chart Feature: Shoal area due north"
-msgstr ""
+msgstr "الرسم البياني ميزة: منطقة ضحلة بسبب الشمال"
 
 #: src/ais.cpp:411
 msgid "Chart Feature: Shoal area due east"
-msgstr ""
+msgstr "الرسم البياني ميزة: منطقة ضحلة شرقا مستقلا"
 
 #: src/ais.cpp:412
 msgid "Chart Feature: Shoal area due south"
-msgstr ""
+msgstr "الرسم البياني ميزة: منطقة ضحلة في الجنوب"
 
 #: src/ais.cpp:413
 msgid "Chart Feature: Shoal area due west"
-msgstr ""
+msgstr "الرسم البياني ميزة: منطقة ضحلة غرب المستحق"
 
 #: src/ais.cpp:414
 msgid "Chart Feature: Channel obstruction"
-msgstr ""
+msgstr "الرسم البياني ميزة: إعاقة القناة"
 
 #: src/ais.cpp:415
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr ""
+msgstr "الرسم البياني ميزة"
 
 #: src/ais.cpp:416
 msgid "Chart Feature: Bridge closed"
-msgstr ""
+msgstr "الرسم البياني ميزة: أغلق الجسر"
 
 #: src/ais.cpp:417
 msgid "Chart Feature: Bridge partially open"
-msgstr ""
+msgstr "الرسم البياني ميزة: جسر مفتوح جزئيا"
 
 #: src/ais.cpp:418
 msgid "Chart Feature: Bridge fully open"
-msgstr ""
+msgstr "الرسم البياني ميزة: جسر مفتوح تماما"
 
 #: src/ais.cpp:422
 msgid "Report from ship: Icing info"
-msgstr ""
+msgstr "تقرير من السفينة تثليج ورد"
 
 #: src/ais.cpp:424
 msgid "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr ""
+msgstr "تقرير من سفينة: متنوعة المعلومات - تعريف في المرتبطة حقل النص"
 
 #: src/ais.cpp:430
 msgid "Route: Recommended route"
-msgstr ""
+msgstr "الطريق أوصت الطريق"
 
 #: src/ais.cpp:431
 msgid "Route: Alternative route"
-msgstr ""
+msgstr "الطريق البديل الطريق"
 
 #: src/ais.cpp:432
 msgid "Route: Recommended route through ice"
-msgstr ""
+msgstr "الطريق الطريق الموصى بها من خلال الجليد"
 
 #: src/ais.cpp:435
 msgid "Other - Define in associated text field"
-msgstr ""
+msgstr "أخرى تعريف في المرتبطة حقل النص"
 
 #: src/ais.cpp:436
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr ""
+msgstr "إلغاء - إلغاء المنطقة كما التي حددتها رسالة الربط"
 
 #: src/ais.cpp:437
 msgid "Undefined (default)"
-msgstr ""
+msgstr "غير معروف (الافتراضي)"
 
 #: src/ais.cpp:1684 src/ais.cpp:1685
 msgid "AIS Target Name"
-msgstr ""
+msgstr "AIS الهدف اسم"
 
 #: src/AIS_Decoder.cpp:193
 msgid "Vessel, type unknown"
-msgstr ""
+msgstr "السفينة، نوع غير معروف"
 
 #: src/AIS_Decoder.cpp:194
 msgid "Freightbarge"
-msgstr ""
+msgstr "الشحن البارجة"
 
 #: src/AIS_Decoder.cpp:195
 msgid "Tankbarge"
-msgstr ""
+msgstr "تانك بارج"
 
 #: src/AIS_Decoder.cpp:196
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
+msgstr "تانك\n"
+" البارجة، البضائع الجافة\n"
+" كما لو السائل\n"
+" (مثل الاسمنت)"
 
 #: src/AIS_Decoder.cpp:197
 msgid "Service vessel, police patrol, port service"
-msgstr ""
+msgstr "خدمة السفينة، دورية الشرطة، خدمة الميناء"
 
 #: src/AIS_Decoder.cpp:198 src/AIS_Decoder.cpp:244
 msgid "Pushboat, single"
-msgstr ""
+msgstr "دفع القارب، واحد"
 
 #: src/AIS_Decoder.cpp:199
 msgid "Object, not otherwise specified"
-msgstr ""
+msgstr "كائن، لا خلاف ذلك المحدد"
 
 #: src/AIS_Decoder.cpp:200
 msgid "Object, towed, not otherwise specified"
-msgstr ""
+msgstr "كائن، سحبها، لم يحدد خلاف ذلك"
 
 #: src/AIS_Decoder.cpp:201
 msgid "Bunkership"
@@ -1050,11 +1053,11 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:204
 msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
+msgstr "ناقلة السيارات، البضائع السائلة، نوع n"
 
 #: src/AIS_Decoder.cpp:205
 msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
+msgstr "ناقلة السيارات، البضائع السائلة، نوع c"
 
 #: src/AIS_Decoder.cpp:206
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
@@ -1078,19 +1081,19 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:211
 msgid "Motor freighter with one or more ships alongside"
-msgstr ""
+msgstr "سيارة شحن مع واحد أو أكثر من السفن جنبا إلى جنب"
 
 #: src/AIS_Decoder.cpp:212
 msgid "Motor freighter with tanker"
-msgstr ""
+msgstr "السيارات، ب، الناقلة"
 
 #: src/AIS_Decoder.cpp:213
 msgid "Motor freighter pushing one or more freighters"
-msgstr ""
+msgstr "موتور الشحن دفع واحد أو أكثر الشحن"
 
 #: src/AIS_Decoder.cpp:214
 msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
+msgstr "محرك الشحن دفع واحد على الأقل خزان سفينة"
 
 #: src/AIS_Decoder.cpp:215
 msgid "Tug, freighter"
@@ -1162,39 +1165,40 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:232
 msgid "Pushtow, one tank/gas barge"
-msgstr ""
+msgstr "دفع السحب، اثنين من البوارج على الأقل ناقلة واحدة\n"
+" أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:233
 msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
+msgstr "دفع السحب، ثلاثة بارجس على الأقل واحد ناقلة أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:234
 msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
+msgstr "دفع السحب، أربعة بارجيس على الأقل ناقلة واحدة أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:235
 msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
+msgstr "دفع السحب، خمسة بارجيس على الأقل واحد ناقلة أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:236
 msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
+msgstr "بوشتو، خمسة بارجس ناقلة واحدة على الأقل أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:237
 msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
+msgstr "بوشتو، وستة بارجات ناقلة واحدة أو بارجة غاز على الأقل"
 
 #: src/AIS_Decoder.cpp:238
 msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
+msgstr "بوشتو، سبعة بارجات ناقلة واحدة على الأقل أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:239
 msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
+msgstr "بوشتو، ثمانية بارجات ناقلة واحدة على الأقل أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:240
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
+msgstr "بوشتو، تسعة أو أكثر من البوارج ناقلة واحدة على الأقل أو بارجة الغاز"
 
 #: src/AIS_Decoder.cpp:241
 msgid "Tug, single"
@@ -1206,11 +1210,11 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:243
 msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
+msgstr "الشد، مساعدة سفينة أو الجمع بين ربط"
 
 #: src/AIS_Decoder.cpp:245
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr ""
+msgstr "سفينة ركاب، أعبر، سفينة الطواف، الأحمر، تقاطع، شيب"
 
 #: src/AIS_Decoder.cpp:246
 msgid "Ferry"
@@ -1230,7 +1234,7 @@ msgstr ""
 
 #: src/AIS_Decoder.cpp:250
 msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
-msgstr ""
+msgstr "السفينة، العمل الحرفية الصيانة، العائمة ديريك، كابل السفينة، العوامة السفينة، نعرات"
 
 #: src/AIS_Decoder.cpp:251
 msgid "Fishing boat"
@@ -2825,15 +2829,15 @@ msgstr ""
 
 #: src/canvasMenu.cpp:1184
 msgid "Are you sure you want to delete this route?"
-msgstr ""
+msgstr "هل تريد بالتأكيد حذف هذا المسار؟"
 
 #: src/canvasMenu.cpp:1185
 msgid "OpenCPN Route Delete"
-msgstr ""
+msgstr "أوبينكبن مسار حذف"
 
 #: src/canvasMenu.cpp:1438
 msgid "Are you sure you want to delete this track?"
-msgstr ""
+msgstr "هل تريد بالتأكيد حذف هذا المقطع الصوتي؟"
 
 #: src/canvasMenu.cpp:1439 src/routeman.cpp:954
 msgid "OpenCPN Track Delete"
@@ -2866,7 +2870,7 @@ msgstr ""
 
 #: src/chart1.cpp:932
 msgid "Disable OpenGL video acceleration. This setting will be remembered."
-msgstr ""
+msgstr "تعطيل تسريع فيديو برنامج أوبنغل. سيتم تذكر هذا الإعداد."
 
 #: src/chart1.cpp:935
 msgid "Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."
@@ -2887,7 +2891,7 @@ msgstr ""
 
 #: src/chart1.cpp:1764 src/chart1.cpp:1770
 msgid "Failed to initialize the user interface. "
-msgstr ""
+msgstr "أخفق تهيئة واجهة المستخدم. "
 
 #: src/chart1.cpp:1765
 msgid "OpenCPN cannot start. "
@@ -2911,11 +2915,11 @@ msgstr ""
 
 #: src/chart1.cpp:2210
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr ""
+msgstr "استرجاع أول دليل مخطط مجموعة من سجل ويندوز"
 
 #: src/chart1.cpp:2273
 msgid "Rebuilding chart database from configuration file entries..."
-msgstr ""
+msgstr "إعادة إنشاء قاعدة بيانات المخطط من إدخالات ملف التكوين..."
 
 #: src/chart1.cpp:2276
 msgid "Elapsed time : "
@@ -3190,7 +3194,7 @@ msgstr ""
 
 #: src/chart1.cpp:5835
 msgid "Please restart OpenCPN to activate language or style changes."
-msgstr ""
+msgstr "الرجاء إعادة تشغيل أوبينبن لتفعيل اللغة أو تغيير النمط."
 
 #: src/chart1.cpp:7421
 msgid "Rotated Mode"
@@ -3348,7 +3352,7 @@ msgstr ""
 
 #: src/chartimg.cpp:2054
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr ""
+msgstr "   فهرس الخط تالف، وإعادة إنشاء فهرس للمخطط "
 
 #: src/chartimg.cpp:2059
 msgid "   Error creating Line Index for chart "
@@ -3421,7 +3425,7 @@ msgstr ""
 
 #: src/chcanv.cpp:5925 src/chcanv.cpp:6375
 msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr ""
+msgstr "هل تريد تضمين نقاط توجيه الدائرة العظمى لهذه الساق؟"
 
 #: src/chcanv.cpp:7081 src/chcanv.cpp:7093 src/S57QueryDialog.cpp:87
 msgid "ObjectQuery"
@@ -3438,7 +3442,7 @@ msgstr ""
 
 #: src/chcanv.cpp:7299
 msgid "Answering 'No' will create a new waypoint at the same location."
-msgstr ""
+msgstr "الإجابة \"لا\" سيخلق إحداثية جديدة في نفس الموقع."
 
 #: src/chcanv.cpp:7300
 msgid "Merge waypoint?"
@@ -3454,12 +3458,12 @@ msgstr ""
 
 #: src/chcanv.cpp:7358
 msgid "Merge waypoints?"
-msgstr ""
+msgstr "دمج نقاط الطريق؟"
 
 #: src/chcanv.cpp:7820 src/chcanv.cpp:7851 src/RolloverWin.cpp:121
 #: src/RolloverWin.cpp:207 src/RolloverWin.cpp:321
 msgid "RouteLegInfoRollover"
-msgstr ""
+msgstr "RouteLegInfoRollover"
 
 #: src/chcanv.cpp:9003 src/options.cpp:4007 src/options.cpp:4115
 msgid "Feet"
@@ -3488,15 +3492,15 @@ msgstr ""
 
 #: src/chcanv.cpp:10010
 msgid "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr ""
+msgstr "   لم يتم العثور على التطبيق الخارجي \"زكاليب\". لم يتغير سطوع الشاشة."
 
 #: src/cm93.cpp:6788
 msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr ""
+msgstr "أوبينكبن CM93 تعديلات تعويض الخلية"
 
 #: src/cm93.cpp:6805
 msgid "Cell"
-msgstr ""
+msgstr "زنزانة"
 
 #: src/cm93.cpp:6808
 msgid "M_COVR ID"
@@ -3657,19 +3661,19 @@ msgstr ""
 
 #: src/glChartCanvas.cpp:1008
 msgid "OpenGL-> SSE2 Instruction set not available"
-msgstr ""
+msgstr "OpenGL-> SSE2 مجموعة التعليمات غير متوفرة"
 
 #: src/glChartCanvas.cpp:1024
 msgid "OpenGL-> Using oes etc1 compression"
-msgstr ""
+msgstr "OpenGL-> باستخدام أوس الخ ضغط 1"
 
 #: src/glChartCanvas.cpp:1045
 msgid "OpenGL-> Using s3tc dxt1 compression"
-msgstr ""
+msgstr "OpenGL-> باستخدام ضغط s3tc dxt1"
 
 #: src/glChartCanvas.cpp:1050
 msgid "OpenGL-> Using 3dfx fxt1 compression"
-msgstr ""
+msgstr "OpenGL-> باستخدام ضغط 3dfx fxt1"
 
 #: src/glChartCanvas.cpp:1052
 msgid "OpenGL-> No Useable compression format found"
@@ -3893,11 +3897,11 @@ msgstr ""
 
 #: src/OCPNPlatform.cpp:693
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr ""
+msgstr "استرجاع اختيار اللغة الأولي من سجل ويندوز"
 
 #: src/OCPNPlatform.cpp:1390
 msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
+msgstr "سيتم نقل السجل القديم إلى opencpn.log.log"
 
 #: src/OCPN_Sound.cpp:147
 #, c-format
@@ -4044,7 +4048,7 @@ msgstr ""
 
 #: src/options.cpp:1241 src/options.cpp:1844
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr ""
+msgstr "استخدام محامل المغناطيسية في الجملة الناتج إكاف"
 
 #: src/options.cpp:1252 src/options.cpp:1855
 msgid "Data Connections"
@@ -4211,7 +4215,7 @@ msgstr ""
 
 #: src/options.cpp:1483 src/options.cpp:2092
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr ""
+msgstr "إذا تم تحديده، يتم تمرير الجمل التي تحتوي على المجموع الاختباري الصحيح فقط"
 
 #: src/options.cpp:1487
 msgid "Use GRMN mode for input"
@@ -4283,7 +4287,7 @@ msgstr ""
 
 #: src/options.cpp:1799
 msgid "Filter NMEA Course and Speed data"
-msgstr ""
+msgstr "تصفية نميا دورة وسرعة البيانات"
 
 #: src/options.cpp:1831
 msgid "Format uploads for Furuno GP3X"
@@ -4295,7 +4299,7 @@ msgstr ""
 
 #: src/options.cpp:1868
 msgid "Add Connection"
-msgstr ""
+msgstr "إضافة اتصال"
 
 #: src/options.cpp:1872
 msgid "Remove Connection"
@@ -4431,7 +4435,7 @@ msgstr ""
 
 #: src/options.cpp:2552
 msgid "Automatic Daily Tracks at midnight"
-msgstr ""
+msgstr "المسارات اليومية التلقائية في منتصف الليل"
 
 #: src/options.cpp:2559
 msgid "Automatic Daily Tracks at"
@@ -4506,7 +4510,7 @@ msgstr ""
 
 #: src/options.cpp:2705
 msgid "Calculate SOG and COG from position changes"
-msgstr ""
+msgstr "حساب سوغ و كوغ من التغييرات الموقف"
 
 #: src/options.cpp:2709
 msgid "Min seconds between updates"
@@ -4562,11 +4566,11 @@ msgstr ""
 
 #: src/options.cpp:2826 src/options.cpp:2982
 msgid "Suppress blur/fog effects on overzoom"
-msgstr ""
+msgstr "قمع تأثيرات الضبابية / الضباب على الزائد"
 
 #: src/options.cpp:2830 src/options.cpp:2987
 msgid "Suppress scaled vector charts on overzoom"
-msgstr ""
+msgstr "قمع المخططات ناقلات تحجيم على زيادة"
 
 #: src/options.cpp:2838
 msgid "Lock Waypoints"
@@ -4618,7 +4622,7 @@ msgstr ""
 
 #: src/options.cpp:2973
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr ""
+msgstr "قمع المخططات ناقلات تحجيم على زيادة"
 
 #: src/options.cpp:3022
 msgid "Raster"
@@ -4639,11 +4643,11 @@ msgstr ""
 
 #: src/options.cpp:3068
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr ""
+msgstr "قفل نقاط الطريق (ما لم يتم عرض مربع حوار الملكية الوسيطة)"
 
 #: src/options.cpp:3074
 msgid "Confirm deletion of tracks and routes"
-msgstr ""
+msgstr "أكد حذف المسارات والمسارات"
 
 #: src/options.cpp:3117
 msgid "Graphics"
@@ -4836,7 +4840,7 @@ msgstr ""
 
 #: src/options.cpp:3790 src/options.cpp:3918
 msgid "Preserve scale when switching charts"
-msgstr ""
+msgstr "الحفاظ على نطاق عند تبديل الرسوم البيانية"
 
 #: src/options.cpp:3804 src/options.cpp:3932
 msgid "Smooth Panning / Zooming"
@@ -4910,39 +4914,39 @@ msgstr ""
 
 #: src/options.cpp:4023 src/options.cpp:4131
 msgid "Degrees, Minutes, Seconds"
-msgstr ""
+msgstr "درجات، دقائق، ثانية"
 
 #: src/options.cpp:4035 src/options.cpp:4143
 msgid "Bearings"
-msgstr ""
+msgstr "رمان"
 
 #: src/options.cpp:4040
 msgid "Show true"
-msgstr ""
+msgstr "إظهار صحيح"
 
 #: src/options.cpp:4043
 msgid "Show magnetic bearings and headings"
-msgstr ""
+msgstr "إظهار المحامل المغناطيسية والعناوين"
 
 #: src/options.cpp:4049
 msgid "Assumed magnetic variation"
-msgstr ""
+msgstr "يفترض الاختلاف المغناطيسي"
 
 #: src/options.cpp:4071 src/options.cpp:4174
 msgid "deg (-W, +E)"
-msgstr ""
+msgstr "أنت (-W، + E)"
 
 #: src/options.cpp:4151
 msgid "Show true bearings and headings"
-msgstr ""
+msgstr "إظهار المحامل الحقيقية والعناوين"
 
 #: src/options.cpp:4154
 msgid "Show magnetic bearings and headings."
-msgstr ""
+msgstr "إظهار المحامل المغناطيسية والعناوين."
 
 #: src/options.cpp:4165 src/options.cpp:5043
 msgid "WMM Plugin calculated magnetic variation"
-msgstr ""
+msgstr "وم المساعد حساب الاختلاف المغناطيسي"
 
 #: src/options.cpp:4179
 msgid " To set the magnetic variation manually,\n"
@@ -4951,15 +4955,15 @@ msgstr ""
 
 #: src/options.cpp:4214
 msgid "AIS Targets"
-msgstr ""
+msgstr "أهداف إيس"
 
 #: src/options.cpp:4221
 msgid "CPA Calculation"
-msgstr ""
+msgstr "حساب كبا"
 
 #: src/options.cpp:4231
 msgid "No (T)CPA Alerts if target range is greater than (NMi)"
-msgstr ""
+msgstr "لا (T) كبا تنبيهات إذا كان النطاق المستهدف أكبر من (نمي)"
 
 #: src/options.cpp:4238
 msgid "Warn if CPA less than (NMi)"
@@ -4975,47 +4979,47 @@ msgstr ""
 
 #: src/options.cpp:4267
 msgid "Mark targets as lost after (min)"
-msgstr ""
+msgstr "وضع علامة على الأهداف المفقودة بعد (دقيقة)"
 
 #: src/options.cpp:4274
 msgid "Remove lost targets after (min)"
-msgstr ""
+msgstr "إزالة الأهداف المفقودة بعد (دقيقة)"
 
 #: src/options.cpp:4294
 msgid "Show target COG predictor arrow, length (min)"
-msgstr ""
+msgstr "إظهار الهدف سهم التنبؤ كوغ، طول (دقيقة)"
 
 #: src/options.cpp:4302
 msgid "Show target tracks, length (min)"
-msgstr ""
+msgstr "عرض المسارات المستهدفة ، والطول (بالدقيقة)"
 
 #: src/options.cpp:4310
 msgid "Suppress anchored/moored targets, speed max (kn)"
-msgstr ""
+msgstr "قمع الأهداف الراسية / الراسية، والسرعة القصوى (كن)"
 
 #: src/options.cpp:4318
 msgid "Allow attenuation of less critical targets if more than ... targets"
-msgstr ""
+msgstr "السماح بتوهين الأهداف الأقل أهمية إذا كان أكثر من ... أهداف"
 
 #: src/options.cpp:4326
 msgid "Show area notices (from AIS binary messages)"
-msgstr ""
+msgstr "إظهار إشعارات المنطقة (من رسائل إيس الثنائية)"
 
 #: src/options.cpp:4333
 msgid "Show AIS targets real size"
-msgstr ""
+msgstr "عرض إيس يستهدف الحجم الحقيقي"
 
 #: src/options.cpp:4340
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr ""
+msgstr "عرض أسماء مع أهداف إيس على نطاق أكبر من 1:"
 
 #: src/options.cpp:4348
 msgid "Treat WPL sentences as APRS position reports"
-msgstr ""
+msgstr "علاج الجمل وبل كما تقارير موقف أبرس"
 
 #: src/options.cpp:4358
 msgid "Rollover"
-msgstr ""
+msgstr "يتدحرج"
 
 #: src/options.cpp:4364
 msgid "\"Ship Name\" MMSI (Call Sign)"
@@ -5047,7 +5051,7 @@ msgstr ""
 
 #: src/options.cpp:4398
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
-msgstr ""
+msgstr "تشغيل الصوت على كبا / تكبا تنبيهات وحالات الطوارئ دسك / سارت."
 
 #: src/options.cpp:4402
 msgid "Test Alert Sound"
@@ -5055,11 +5059,11 @@ msgstr ""
 
 #: src/options.cpp:4407
 msgid "Supress Alerts for anchored/moored targets"
-msgstr ""
+msgstr "تنبيهات الضغط لأهداف الراسية / الراسية"
 
 #: src/options.cpp:4414
 msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr ""
+msgstr "تمكين تنبيه الهدف إقرار مهلة (دقيقة)"
 
 #: src/options.cpp:4426
 msgid "General Options"
@@ -5099,15 +5103,15 @@ msgstr ""
 
 #: src/options.cpp:4520
 msgid "Show Compass/GPS Status Window"
-msgstr ""
+msgstr "عرض البوصلة / حالة غس النافذة"
 
 #: src/options.cpp:4528
 msgid "Enable Toolbar auto-hide"
-msgstr ""
+msgstr "تمكين إخفاء شريط الأدوات تلقائيا"
 
 #: src/options.cpp:4542
 msgid "Play Ships Bells"
-msgstr ""
+msgstr "لعب السفن أجراس"
 
 #: src/options.cpp:4557
 msgid "Sound Device Index"
@@ -5426,11 +5430,11 @@ msgstr ""
 
 #: src/Route.cpp:1131
 msgid "Error on Route Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "خطأ في تحميل الطريق. غارمين غس غير متصل"
 
 #: src/Route.cpp:1133
 msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
+msgstr "خطأ في تحميل الطريق. الرجاء التحقق من ملفات السجل..."
 
 #: src/routemanagerdialog.cpp:522 src/routemanagerdialog.cpp:616
 msgid "Show"
@@ -5529,35 +5533,35 @@ msgstr ""
 
 #: src/routemanagerdialog.cpp:773
 msgid "Layers"
-msgstr ""
+msgstr "طبقات"
 
 #: src/routemanagerdialog.cpp:795
 msgid "Layer Name"
-msgstr ""
+msgstr "اسم المستوى"
 
 #: src/routemanagerdialog.cpp:796
 msgid "No. of items"
-msgstr ""
+msgstr "عدد العناصر"
 
 #: src/routemanagerdialog.cpp:810
 msgid "Temporary layer"
-msgstr ""
+msgstr "مستوى غير دائم"
 
 #: src/routemanagerdialog.cpp:820 src/routemanagerdialog.cpp:2444
 #: src/routemanagerdialog.cpp:2456 src/routeprop.cpp:2731
 #: src/TrackPropDlg.cpp:288 src/TrackPropDlg.cpp:607
 msgid "Show on chart"
-msgstr ""
+msgstr "تظهر على الرسم البياني"
 
 #: src/routemanagerdialog.cpp:825 src/routemanagerdialog.cpp:2449
 #: src/routemanagerdialog.cpp:2457
 msgid "Show WPT names"
-msgstr ""
+msgstr "إظهار الأسماء"
 
 #: src/routemanagerdialog.cpp:830 src/routemanagerdialog.cpp:2454
 #: src/routemanagerdialog.cpp:2458
 msgid "List contents"
-msgstr ""
+msgstr "محتويات القائمة	"
 
 #: src/routemanagerdialog.cpp:1003 src/routemanagerdialog.cpp:1281
 msgid " - "
@@ -5566,124 +5570,131 @@ msgstr ""
 #: src/routemanagerdialog.cpp:1127 src/routemanagerdialog.cpp:1823
 #: src/routemanagerdialog.cpp:2228
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr ""
+msgstr "هل أنت متأكد أنك ترغب في إزالة الكائن المحدد (ق)"
 
 #: src/routemanagerdialog.cpp:1175
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr ""
+msgstr "هل أنت متأكد من أنك تريد إزالة مسارات<ALL> تتبع؟"
 
 #: src/routemanagerdialog.cpp:1371
 msgid "Do you also want to make the shared waypoints being part of this route invisible?"
-msgstr ""
+msgstr "هل ترغب أيضا في صياغة نقاط الطريق المشتركة كونها جزءا من هذه الطريقة الغيب؟"
 
 #: src/routemanagerdialog.cpp:1371
 msgid "Question"
-msgstr ""
+msgstr "تحقيق"
 
 #: src/routemanagerdialog.cpp:1492
 msgid "&Merge Selected Tracks"
-msgstr ""
+msgstr "دمج المسارات المحددة&"
 
 #: src/routemanagerdialog.cpp:1494
 msgid "Reduce Data..."
-msgstr ""
+msgstr "تصغير البيانات..."
 
 #: src/routemanagerdialog.cpp:1496
 msgid "&Copy as text"
-msgstr ""
+msgstr "نسخ كنص&"
 
 #: src/routemanagerdialog.cpp:1528
 msgid "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
-msgstr ""
+msgstr "حدد الحد الأقصى للخطأ المسموح به (بالأمتار)\n"
+" بعد تقليل البيانات:"
 
 #: src/routemanagerdialog.cpp:1529
 msgid "Reduce Data Precision"
-msgstr ""
+msgstr "تقليل دقة البيانات"
 
 #: src/routemanagerdialog.cpp:1548
 #, c-format
 msgid "The amount of data used by the track\n"
 " was reduced by %d%%."
-msgstr ""
+msgstr "مقدار البيانات المستخدمة بواسطة المسار\n"
+" تم تخفيضه %%%d."
 
 #: src/routemanagerdialog.cpp:1645
 msgid "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
-msgstr ""
+msgstr "لم يتم دمج المسار قيد التشغيل حاليا.\n"
+"يمكنك الجمع بين ذلك في وقت لاحق عندما يكون من خلال."
 
 #: src/routemanagerdialog.cpp:1896
 msgid "OpenCPN Converting Track to Route...."
-msgstr ""
+msgstr "OpenCPN تحويل المسار إلى الطريق...."
 
 #: src/routemanagerdialog.cpp:1897
 msgid "Processing Waypoints..."
-msgstr ""
+msgstr "معالجة نقاط الطريق..."
 
 #: src/routemanagerdialog.cpp:1907
 msgid "Done."
-msgstr ""
+msgstr "فعله."
 
 #: src/routemanagerdialog.cpp:1930
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr ""
+msgstr "هل أنت متأكد أنك تريد حذف<ALL>المسارات؟"
 
 #: src/routemanagerdialog.cpp:2261
 msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
-msgstr ""
+msgstr "كنت تريد حذف يستخدم في الطريق، هل تريد حقا لحذفه؟"
 
 #: src/routemanagerdialog.cpp:2383
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr ""
+msgstr "هل أنت متأكد أنك تريد إزالته<ALL>نقاط الطريق؟"
 
 #: src/routemanagerdialog.cpp:2389
 msgid "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
-msgstr ""
+msgstr "هناك بعض نقاط الطريقة المستخدمة في الطرق أو مرساة الإنذارات.\n"
+" هل ترغب في إزالتها كذلك؟\n"
+" سيؤدي ذلك إلى تغيير المسار وإبطال أجهزة الإنذار الآمنة. \n"
+" الإجابة لا تحافظ على نقاط الوضع تستخدم في الطرق أو الإنذارات."
 
 #: src/routemanagerdialog.cpp:2442
 msgid "Hide from chart"
-msgstr ""
+msgstr "إخفاء من الرسم البياني"
 
 #: src/routemanagerdialog.cpp:2447
 msgid "Hide WPT names"
-msgstr ""
+msgstr "إخفاء WPT الأسماء"
 
 #: src/routemanagerdialog.cpp:2452
 msgid "Unlist contents"
-msgstr ""
+msgstr "محتويات غير مدرجة"
 
 #: src/routemanagerdialog.cpp:2521
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr ""
+msgstr "هل أنت متأكد أنك تريد إزالة هذا الطلاء وكذلك<ALL> من محتوياته؟"
 
 #: src/routemanagerdialog.cpp:2786
 msgid "(Unnamed Layer)"
-msgstr ""
+msgstr "(طبقة غير محددة)"
 
 #: src/routeman.cpp:819 src/routeman.cpp:897
 msgid "You are trying to delete an active AIS MOB route, are you REALLY sure?"
-msgstr ""
+msgstr "كنت تحاول إزالة حية AIS MOB route, الطريق، هل أنت متأكد جدا؟"
 
 #: src/routeman.cpp:1042
 msgid "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\n"
 "Do you want to rename the waypoints?"
-msgstr ""
+msgstr "يمكن إعادة تسمية نقاط الطريقة لتعكس النظام الأصلي، وسوف تكون الأسماء '001', '002' \n\n"
+" هل ترغب في إعادة تسمية نقاط الأسلوب؟"
 
 #: src/RoutePoint.cpp:538 src/RoutePoint.cpp:539 src/RoutePoint.cpp:706
 #: src/RoutePoint.cpp:707
 msgid "Marks"
-msgstr ""
+msgstr "رموز"
 
 #: src/RoutePoint.cpp:1024
 msgid "Waypoint(s) Transmitted."
-msgstr ""
+msgstr "نقطة الطريق المرسلة."
 
 #: src/RoutePoint.cpp:1027
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr ""
+msgstr "خطأ على الطريق نقطة حتى تحميل. Garmin GPS لا ترتبط"
 
 #: src/RoutePoint.cpp:1029
 msgid "Error on Waypoint Upload.  Please check logfiles..."
@@ -5718,11 +5729,11 @@ msgstr ""
 
 #: src/routeprintout.cpp:406
 msgid "Show course from each Waypoint to the next one. "
-msgstr ""
+msgstr "عرض بالطبع من كل إحداثية إلى المرحلة التالية. "
 
 #: src/routeprintout.cpp:413
 msgid "Show Distance from each Waypoint to the next one."
-msgstr ""
+msgstr "عرض المسافة من كل نقطة الطريق إلى المرحلة التالية."
 
 #: src/routeprintout.cpp:420
 msgid "Show Waypoint description."
@@ -6074,7 +6085,7 @@ msgstr ""
 
 #: src/routeprop.cpp:2500
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr ""
+msgstr "هذا إحداثية جزء من طبقة ولا يمكن تحريرها"
 
 #: src/routeprop.cpp:2522
 msgid "Show name"
@@ -6111,7 +6122,7 @@ msgstr ""
 #: src/routeprop.cpp:2710 src/routeprop.cpp:3304 src/TrackPropDlg.cpp:793
 #: src/TrackPropDlg.cpp:1455
 msgid "Links are opened in the default browser."
-msgstr ""
+msgstr "يتم فتح الروابط في المتصفح الافتراضي."
 
 #: src/routeprop.cpp:2738
 msgid "GUID"
@@ -6157,11 +6168,11 @@ msgstr ""
 
 #: src/SendToGpsDlg.cpp:86
 msgid "GPS/Plotter Port"
-msgstr ""
+msgstr "غس/الراسمة ميناء"
 
 #: src/SendToGpsDlg.cpp:116
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr ""
+msgstr "إعداد نظام تحديد المواقع لمسار الطريق/إحداثية واضغط على إرسال..."
 
 #: src/SendToGpsDlg.cpp:120
 msgid "Progress..."
@@ -6322,27 +6333,27 @@ msgstr ""
 
 #: src/TTYWindow.cpp:115
 msgid "Message accepted"
-msgstr ""
+msgstr "تم قبول الرسالة"
 
 #: src/TTYWindow.cpp:122
 msgid "Input message filtered, output message filtered and dropped"
-msgstr ""
+msgstr "رسالة الإدخال المصفاة، رسالة الإختبار تصفيتها وإسقاطها"
 
 #: src/TTYWindow.cpp:129
 msgid "Input Message filtered and dropped"
-msgstr ""
+msgstr "إدخال رسالة تصفيتها وإسقاطها"
 
 #: src/TTYWindow.cpp:136
 msgid "Output Message"
-msgstr ""
+msgstr "رسالة الإخراج"
 
 #: src/TTYWindow.cpp:143
 msgid "Information Message or Message with errors"
-msgstr ""
+msgstr "معلومات رسالة أو رسالة مع أخطاء"
 
 #: src/TTYWindow.cpp:153
 msgid "Resume"
-msgstr ""
+msgstr "استئنف"
 
 #: src/undo.cpp:84
 msgid "Delete Waypoint"
