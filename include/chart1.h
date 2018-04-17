@@ -398,6 +398,7 @@ class MyFrame: public wxFrame
     void ToggleAnchor(void);
     void TrackOn(void);
     void SetENCDisplayCategory( enum _DisCat nset );
+    void ToggleNavobjects(void);
     
     Track *TrackOff(bool do_add_point = false);
     void TrackDailyRestart(void);

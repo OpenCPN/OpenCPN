@@ -5223,6 +5223,12 @@ void MyFrame::TogglebFollow( void )
 
 }
 
+void MyFrame::ToggleNavobjects( void )
+{
+    cc1->m_bShowNavobjects = !cc1->m_bShowNavobjects;
+    cc1->Refresh();
+}
+
 void MyFrame::SetbFollow( void )
 {
     JumpToPosition(gLat, gLon, cc1->GetVPScale());
