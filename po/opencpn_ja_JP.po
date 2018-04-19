@@ -1524,7 +1524,7 @@ msgstr "ドイツ"
 
 #: src/AIS_Target_Data.cpp:950
 msgid "Georgia"
-msgstr "ジョージア\n"
+msgstr "ジョージア"
 ""
 
 #: src/AIS_Target_Data.cpp:951

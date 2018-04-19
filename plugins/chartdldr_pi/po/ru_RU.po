@@ -28,7 +28,7 @@ msgstr ""
 #: src/chartcatalog.cpp:567
 #, c-format
 msgid "%s"
-msgstr "%с"
+msgstr "%s"
 
 #: src/chartdldr_pi.cpp:243
 msgid "ChartDownloader"
