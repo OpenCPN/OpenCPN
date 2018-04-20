@@ -726,7 +726,7 @@ found_uclc_file:
 
 
 //    Validate some of the header data
-      if((Size_X == 0) || (Size_Y == 0))
+      if( Size_X <= 0 || Size_Y <= 0 )
       {
           free(pPlyTable);
           return INIT_FAIL_REMOVE;
@@ -1095,7 +1095,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                                   msg += m_FullPath;
                                   wxLogMessage(msg);
                                   free(pPlyTable);
-
                                   return INIT_FAIL_REMOVE;
                               }
                         }
@@ -1115,11 +1114,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                               sscanf(&buffer[i], "%f,", &x);
                               m_dy = x;
                         }
-
-
                  }
             }
-
 
             else if (!strncmp(buffer, "RGB", 3))
                   CreatePaletteEntry(buffer, COLOR_RGB_DEFAULT);
@@ -1144,7 +1140,6 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
             else if (!strncmp(buffer, "PRG", 3))
                   CreatePaletteEntry(buffer, PRG);
-
 
             else if (!strncmp(buffer, "REF", 3))
             {
@@ -1293,7 +1288,10 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             {
                   int i;
                   float ltp,lnp;
-                  sscanf(&buffer[4], "%d,%f,%f", &i, &ltp, &lnp);
+                  if (sscanf(&buffer[4], "%d,%f,%f", &i, &ltp, &lnp) != 3) {
+                      free(pPlyTable);
+                      return INIT_FAIL_REMOVE;
+                  }
                   Plypoint *tmp = pPlyTable;
                   pPlyTable = (Plypoint *)realloc(pPlyTable, sizeof(Plypoint) * (nPlypoint+1));
                   if (NULL == pPlyTable)
@@ -1305,6 +1303,11 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
                       pPlyTable[nPlypoint].ltp = ltp;
                       pPlyTable[nPlypoint].lnp = lnp;
                       nPlypoint++;
+                  }
+                  if (NULL == pPlyTable || nPlypoint > 1000000) {
+                      // arbitrary 8MB for pPlyTable 
+                      nPlypoint = 0;
+                      break;
                   }
             }
 
@@ -1366,8 +1369,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                   }
             }
-
-      }
+      } // while
 
       //    Some charts improperly encode the DTM parameters.
       //    Identify them as necessary, for further processing
@@ -1396,7 +1398,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             
 
 //    Validate some of the header data
-      if((Size_X == 0) || (Size_Y == 0))
+      if( Size_X <= 0 || Size_Y <= 0 )
       {
           free(pPlyTable);
           return INIT_FAIL_REMOVE;
@@ -1404,7 +1406,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       if(nPlypoint < 3)
       {
-            wxString msg(_("   Chart File contains less than 3 PLY points: "));
+            wxString msg(_("   Chart File contains less than 3 or too many PLY points: "));
             msg.Append(m_FullPath);
             wxLogMessage(msg);
             free(pPlyTable);
@@ -1689,8 +1691,7 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       InitReturn pi_ret = PostInit();
       if( pi_ret  != INIT_OK)
             return pi_ret;
-      else
-            return INIT_OK;
+      return INIT_OK;
 }
 
 
@@ -1970,6 +1971,13 @@ InitReturn ChartBaseBSB::PostInit(void)
       // catch undefined shift if not already done in derived classes
       if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
          wxString msg(_("   Invalid nColorSize data, corrupt in PostInit() on chart "));
+         msg.Append(m_FullPath);
+         wxLogMessage(msg);
+         return INIT_FAIL_REMOVE;
+      }
+
+      if (Size_X <= 0 || Size_X > INT_MAX / 4 ||  Size_Y <= 0 || Size_Y -1 > INT_MAX / 4) {
+         wxString msg(_("   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart "));
          msg.Append(m_FullPath);
          wxLogMessage(msg);
          return INIT_FAIL_REMOVE;
