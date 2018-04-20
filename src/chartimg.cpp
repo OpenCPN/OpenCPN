@@ -814,6 +814,12 @@ found_uclc_file:
 
 //    Read the Color table bit size
       nColorSize = ifs_bitmap->GetC();
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+            wxString msg(_("   Invalid nColorSize data, corrupt on chart "));
+            msg.Append(m_FullPath);
+            wxLogMessage(msg);
+            return INIT_FAIL_REMOVE;
+      }
 
 
 //    Perform common post-init actions in ChartBaseBSB
@@ -1666,9 +1672,14 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
             return INIT_FAIL_REMOVE;
       }
 
-
 //    Read the Color table bit size
       nColorSize = ifs_hdr->GetC();
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+            wxString msg(_("   Invalid nColorSize data, corrupt on chart "));
+            msg.Append(m_FullPath);
+            wxLogMessage(msg);
+            return INIT_FAIL_REMOVE;
+      }
 
       nFileOffsetDataStart = ifs_hdr->TellI();
       delete ifs_hdr;
@@ -1968,6 +1979,14 @@ void ChartBaseBSB::CreatePaletteEntry(char *buffer, int palette_index)
 
 InitReturn ChartBaseBSB::PostInit(void)
 {
+      // catch undefined shift if not already done in derived classes
+      if ( nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
+         wxString msg(_("   Invalid nColorSize data, corrupt in PostInit() on chart "));
+         msg.Append(m_FullPath);
+         wxLogMessage(msg);
+         return INIT_FAIL_REMOVE;
+      }
+
      //    Validate the palette array, substituting DEFAULT for missing entries
      int nfwd_def = 1;
      int nrev_def = 1;
