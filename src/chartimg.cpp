@@ -583,15 +583,10 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
       pBitmapFilePath->Prepend(Path);
 
       wxFileName NOS_filename(*pBitmapFilePath);
-      if(NOS_filename.FileExists())
+      if(! NOS_filename.FileExists())
       {
-            ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
-            ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
-      }
 //    File as fetched verbatim from the .geo file doesn't exist.
 //    Try all possible upper/lower cases
-      else
-      {
 //    Extract the filename and extension
             wxString fname(NOS_filename.GetName());
             wxString fext(NOS_filename.GetExt());
@@ -660,17 +655,10 @@ found_uclc_file:
 
             delete pBitmapFilePath;                   // fix up the member element
             pBitmapFilePath = new wxString(NOS_filename.GetFullPath());
-            ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
-            ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
 
-      }           //else
-
-
-      if(ifs_bitmap == NULL)
-      {
-          free(pPlyTable);
-          return INIT_FAIL_REMOVE;
       }
+      ifss_bitmap = new wxFFileInputStream(*pBitmapFilePath); // open the bitmap file
+      ifs_bitmap = new wxBufferedInputStream(*ifss_bitmap);
 
       if(!ifss_bitmap->IsOk())
       {
