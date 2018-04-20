@@ -76,7 +76,7 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * list
     sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
     bSizerBottomContainer->Add( sbSizer1, 0, wxALIGN_LEFT | wxALL, 5 );
 
-    wxStaticBox *buttonBox = new wxStaticBox(this, wxID_ANY, _(""));
+    wxStaticBox *buttonBox = new wxStaticBox(this, wxID_ANY, wxEmptyString);
     wxStaticBoxSizer *bbSizer1 = new wxStaticBoxSizer(buttonBox, wxVERTICAL);
 
     m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );

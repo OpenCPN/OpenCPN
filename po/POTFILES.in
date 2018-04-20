@@ -35,7 +35,6 @@ include/glChartCanvas.h
 include/glTexCache.h
 include/glTextureDescriptor.h
 include/GoToPositionDialog.h
-include/gpxdocument.h
 include/gshhs.h
 include/Hyperlink.h
 include/IDX_entry.h
@@ -150,7 +149,6 @@ src/glChartCanvas.cpp
 src/glTexCache.cpp
 src/glTextureDescriptor.cpp
 src/GoToPositionDialog.cpp
-src/gpxdocument.cpp
 src/gshhs.cpp
 src/Hyperlink.cpp
 src/IDX_entry.cpp
@@ -219,3 +217,5 @@ src/TTYWindow.cpp
 src/undo.cpp
 src/viewport.cpp
 src/wificlient.cpp
+src/wxcurl/dialog.cpp
+src/wxcurl/panel.cpp
