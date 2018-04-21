@@ -365,8 +365,8 @@ Track *ActiveTrack::DoExtendDaily()
         if( pLastPoint->GetCreateTime() == pExtendPoint->GetCreateTime() ) begin = 2;
         pSelect->DeleteAllSelectableTrackSegments( pExtendTrack );
         wxString suffix = _T("");
-        if( m_TrackNameString.IsNull() ) {
-            suffix = pExtendTrack->m_TrackNameString;
+        if( GetName().IsNull() ) {
+            suffix = pExtendTrack->GetName();
             if( suffix.IsNull() ) suffix = wxDateTime::Today().FormatISODate();
         }
         pExtendTrack->Clone( this, begin, GetnPoints(), suffix );
@@ -375,8 +375,8 @@ Track *ActiveTrack::DoExtendDaily()
 
         return pExtendTrack;
     } else {
-        if( m_TrackNameString.IsNull() )
-            m_TrackNameString = wxDateTime::Today().FormatISODate();
+        if( GetName().IsNull() )
+            SetName(wxDateTime::Today().FormatISODate());
         return NULL;
     }
 }

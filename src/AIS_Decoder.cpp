@@ -1909,7 +1909,7 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
         if ( 0 == m_persistent_tracks.count( ptarget->MMSI ) )
         {
             t = new Track();
-            t->m_TrackNameString = wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() );
+            t->SetName( wxString::Format( _T("AIS %s (%u) %s %s"), ptarget->GetFullName().c_str(), ptarget->MMSI, wxDateTime::Now().FormatISODate().c_str(), wxDateTime::Now().FormatISOTime().c_str() ) );
             pTrackList->Append( t );
             pConfig->AddNewTrack( t );
             m_persistent_tracks[ptarget->MMSI] = t;

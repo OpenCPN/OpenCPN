@@ -210,7 +210,7 @@ void MyTrackPrintout::DrawPage( wxDC* dc )
     int header_textOffsetX = 2;
     int header_textOffsetY = 2;
     
-    dc->DrawText( myTrack->m_TrackNameString,  150, 20 );
+    dc->DrawText( myTrack->GetName(),  150, 20 );
     
     int currentX = marginX;
     int currentY = marginY;

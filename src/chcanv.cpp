@@ -2505,9 +2505,10 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     else
                         s.Append( _("Layer Track: ") );
 
-                    if( pt->m_TrackNameString.IsEmpty() ) s.Append( _("(unnamed)") );
+                    if( pt->GetName().IsEmpty() )
+                        s.Append( _("(unnamed)") );
                     else
-                        s.Append( pt->m_TrackNameString );
+                        s.Append( pt->GetName() );
 
                     s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pt->Length())
                     << _T("\n");
@@ -7452,7 +7453,7 @@ void pupHandler_PasteTrack() {
     TrackPoint* newPoint;
     TrackPoint* prevPoint = NULL;
 
-    newTrack->m_TrackNameString = pasted->m_TrackNameString;
+    newTrack->SetName(pasted->GetName());
 
     for( int i = 0; i < pasted->GetnPoints(); i++ ) {
         curPoint = pasted->GetPoint( i );

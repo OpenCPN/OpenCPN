@@ -27,6 +27,8 @@
 #include <wx/panel.h>
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 
 enum {
       SORT_ON_DISTANCE  = 1,
@@ -138,7 +140,8 @@ class RouteManagerDialog : public wxDialog {
             void OnImportClick(wxCommandEvent &event);
             void OnExportClick(wxCommandEvent &event);
             void OnExportVizClick(wxCommandEvent &event);
-            
+            void OnFilterChanged( wxCommandEvent& event );
+
             // properties
             wxNotebook *m_pNotebook;
             wxPanel    *m_pPanelRte;
@@ -149,6 +152,14 @@ class RouteManagerDialog : public wxDialog {
             wxListCtrl *m_pTrkListCtrl;
             wxListCtrl *m_pWptListCtrl;
             wxListCtrl  *m_pLayListCtrl;
+            wxStaticText *m_stFilterWpt;
+            wxTextCtrl *m_tFilterWpt;
+            wxStaticText *m_stFilterRte;
+            wxTextCtrl *m_tFilterRte;
+            wxStaticText *m_stFilterTrk;
+            wxTextCtrl *m_tFilterTrk;
+            wxStaticText *m_stFilterLay;
+            wxTextCtrl *m_tFilterLay;
 
             wxButton *btnRteProperties;
             wxButton *btnRteActivate;
