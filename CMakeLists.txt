@@ -659,6 +659,7 @@ IF(NOT QT_ANDROID)
         INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/libcrypto-1_1.dll DESTINATION ".")
         INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/zlib.dll DESTINATION ".")
         INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/zlib1.dll DESTINATION ".")
+        INSTALL(FILES ${CMAKE_SOURCE_DIR}/buildwin/curl-ca-bundle.crt DESTINATION ".")
     ENDIF(WIN32)
     
 ENDIF(NOT QT_ANDROID)
