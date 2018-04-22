@@ -877,8 +877,8 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                 m_skip = true;
             if(m_skip)
                 m_skipout = true;
-            return;
         }
+        return;
     }
     
     if(ticket->b_isaborted || ticket->b_abort){
