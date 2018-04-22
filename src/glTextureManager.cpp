@@ -792,92 +792,93 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
     JobTicket *ticket = event.GetTicket();
 
     if(event.type ==1){
-        if(m_progDialog){
+        if(!m_progDialog){
+            // currently unreachable, but...
+            return;
+        }
+        // Look for a matching entry...
+        bool bfound = false;
+        ProgressInfoItem *item;
+        wxProgressInfoListNode *tnode = progList.GetFirst();
+        while(tnode){
+            item = tnode->GetData();
+            if(item->file_path == ticket->m_ChartPath){
+                bfound = true;
+                break;
+            }
+            tnode = tnode->GetNext();
+        }
+        if(bfound){
+            wxString msgx;
+            if(1){
+                int bar_length = NBAR_LENGTH;
+                if(m_bcompact)
+                    bar_length = 20;
+                
+                msgx += _T("\n[");
+                wxString block = wxString::Format(_T("%c"), 0x2588);
+                float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
+                for(int i=0 ; i < bar_length ; i++){
+                    if(i <= cutoff)
+                        msgx += block;
+                    else
+                        msgx += _T("-");
+                }
+                msgx += _T("]");
+
+                if(!m_bcompact){
+                    wxString msgy;
+                    msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
+                    msgx += msgy;
             
-            // Look for a matching entry...
-            bool bfound = false;
-            ProgressInfoItem *item;
-            wxProgressInfoListNode *tnode = progList.GetFirst();
-            while(tnode){
-                item = tnode->GetData();
-                if(item->file_path == ticket->m_ChartPath){
-                    bfound = true;
-                    break;
+                    wxFileName fn(ticket->m_ChartPath);
+                    msgx += fn.GetFullName();
                 }
-                tnode = tnode->GetNext();
             }
-            if(bfound){
-                wxString msgx;
-                if(1){
-                    int bar_length = NBAR_LENGTH;
-                    if(m_bcompact)
-                        bar_length = 20;
-                    
-                    msgx += _T("\n[");
-                    wxString block = wxString::Format(_T("%c"), 0x2588);
-                    float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
-                    for(int i=0 ; i < bar_length ; i++){
-                        if(i <= cutoff)
-                            msgx += block;
-                        else
-                            msgx += _T("-");
-                    }
-                    msgx += _T("]");
+            else
+                msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
+            
+            item->msgx = msgx;
+        }
 
-                    if(!m_bcompact){
-                        wxString msgy;
-                        msgy.Printf(_T("  [%3d/%3d]  "), event.nstat+1, event.nstat_max);
-                        msgx += msgy;
-                
-                        wxFileName fn(ticket->m_ChartPath);
-                        msgx += fn.GetFullName();
-                    }
-                }
-                else
-                    msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
-                
-                item->msgx = msgx;
-            }
-
-                // look for an empty slot
-            else{
-                bool bfound_empty = false;
-                tnode = progList.GetFirst();
-                while(tnode){
-                    item = tnode->GetData();
-                    if(item->file_path.IsEmpty()){
-                        bfound_empty = true;
-                        break;
-                    }
-                    
-                    tnode = tnode->GetNext();
-                }
-                
-                if(bfound_empty){
-                    item->file_path = ticket->m_ChartPath;
-                    wxString msgx;
-                    msgx.Printf(_T("\n [%3d/%3d]"), event.nstat+1, event.nstat_max);
-                    item->msgx = msgx;
-                }
-            }
-        
-            // Ready to compose
-            wxString msg;
+            // look for an empty slot
+        else{
+            bool bfound_empty = false;
             tnode = progList.GetFirst();
             while(tnode){
                 item = tnode->GetData();
-                msg += item->msgx + _T("\n");
+                if(item->file_path.IsEmpty()){
+                    bfound_empty = true;
+                    break;
+                }
+                
                 tnode = tnode->GetNext();
             }
             
-            if(m_skipout)
-                m_progMsg = _T("Skipping, please wait...\n\n");
-            
-            if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
-                m_skip = true;
-            if(m_skip)
-                m_skipout = true;
+            if(bfound_empty){
+                item->file_path = ticket->m_ChartPath;
+                wxString msgx;
+                msgx.Printf(_T("\n [%3d/%3d]"), event.nstat+1, event.nstat_max);
+                item->msgx = msgx;
+            }
         }
+
+        // Ready to compose
+        wxString msg;
+        tnode = progList.GetFirst();
+        while(tnode){
+            item = tnode->GetData();
+            msg += item->msgx + _T("\n");
+            tnode = tnode->GetNext();
+        }
+
+        if(m_skipout)
+            m_progMsg = _T("Skipping, please wait...\n\n");
+        
+        if (!m_progDialog->Update(m_jcnt, m_progMsg + msg, &m_skip ))
+            m_skip = true;
+        if(m_skip)
+            m_skipout = true;
         return;
     }
     
