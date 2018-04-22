@@ -686,7 +686,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
                     if( !wxIsNaN( mVar )  && (mPriHeadingT > 3) ){
                         mPriHeadingT = 4;
-                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("\u00B0"));
+                        double heading = mHdm + mVar;
+                        if (heading < 0)
+                            heading += 360;
+                        else if (heading >= 360.0)
+                            heading -= 360;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
                         mHDT_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
@@ -708,7 +713,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
                     if( !wxIsNaN( mVar )  && (mPriHeadingT > 2) ){
                         mPriHeadingT = 3;
-                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("\u00B0"));
+                        double heading = mHdm + mVar;
+                        if (heading < 0)
+                            heading += 360;
+                        else if (heading >= 360.0)
+                            heading -= 360;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
                         mHDT_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
