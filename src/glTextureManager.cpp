@@ -808,6 +808,21 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             }
             tnode = tnode->GetNext();
         }
+
+        if (!bfound) {
+            // look for an empty slot
+            tnode = progList.GetFirst();
+            while(tnode){
+                item = tnode->GetData();
+                if(item->file_path.IsEmpty()){
+                    bfound = true;
+                    item->file_path = ticket->m_ChartPath;
+                    break;
+                }
+                tnode = tnode->GetNext();
+            }
+        }
+
         if(bfound){
             wxString msgx;
             if(1){
@@ -817,7 +832,9 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                 
                 msgx += _T("\n[");
                 wxString block = wxString::Format(_T("%c"), 0x2588);
-                float cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
+                float cutoff = -1.;
+                if (event.nstat_max != 0)
+                    cutoff = ((event.nstat+1) / (float)event.nstat_max) * bar_length;
                 for(int i=0 ; i < bar_length ; i++){
                     if(i <= cutoff)
                         msgx += block;
@@ -839,28 +856,6 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
                 msgx.Printf(_T("\n %3d/%3d"), event.nstat+1, event.nstat_max);
             
             item->msgx = msgx;
-        }
-
-            // look for an empty slot
-        else{
-            bool bfound_empty = false;
-            tnode = progList.GetFirst();
-            while(tnode){
-                item = tnode->GetData();
-                if(item->file_path.IsEmpty()){
-                    bfound_empty = true;
-                    break;
-                }
-                
-                tnode = tnode->GetNext();
-            }
-            
-            if(bfound_empty){
-                item->file_path = ticket->m_ChartPath;
-                wxString msgx;
-                msgx.Printf(_T("\n [%3d/%3d]"), event.nstat+1, event.nstat_max);
-                item->msgx = msgx;
-            }
         }
 
         // Ready to compose
