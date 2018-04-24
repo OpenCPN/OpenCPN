@@ -2188,10 +2188,10 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     if( cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ) {
         SetBackgroundColour( wxColour(0,0,0) );
         
-        SetWindowStyleFlag( (GetWindowStyleFlag() & !wxSIMPLE_BORDER) | wxNO_BORDER);
+        SetWindowStyleFlag( (GetWindowStyleFlag() & ~wxSIMPLE_BORDER) | wxNO_BORDER);
     }
     else{
-        SetWindowStyleFlag( (GetWindowStyleFlag() & !wxNO_BORDER) | wxSIMPLE_BORDER);
+        SetWindowStyleFlag( (GetWindowStyleFlag() & ~wxNO_BORDER) | wxSIMPLE_BORDER);
         SetBackgroundColour( wxNullColour );
     }
         
