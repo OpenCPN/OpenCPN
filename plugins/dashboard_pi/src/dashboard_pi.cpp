@@ -53,6 +53,7 @@ int g_iDashDepthUnit;
 int g_iDashDistanceUnit;
 int g_iDashWindSpeedUnit;
 int g_iUTCOffset;
+double g_dDashDBTOffset;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -560,6 +561,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             * 0.3048;
                     else if( m_NMEA0183.Dbt.DepthFathoms != 999. ) depth =
                             m_NMEA0183.Dbt.DepthFathoms * 1.82880;
+                    depth += g_dDashDBTOffset;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, toUsrDistance_Plugin( depth / 1852.0, g_iDashDepthUnit ), getUsrDistanceUnit_Plugin( g_iDashDepthUnit ) );
                 }
             }
@@ -577,6 +579,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     double depth = 999.;
                     if( m_NMEA0183.Dpt.DepthMeters != 999. ) depth = m_NMEA0183.Dpt.DepthMeters;
                     if( m_NMEA0183.Dpt.OffsetFromTransducerMeters != 999. ) depth += m_NMEA0183.Dpt.OffsetFromTransducerMeters;
+                    depth += g_dDashDBTOffset;
                     SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, toUsrDistance_Plugin( depth / 1852.0, g_iDashDepthUnit ), getUsrDistanceUnit_Plugin( g_iDashDepthUnit ) );
                 }
             }
@@ -1439,6 +1442,8 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
         g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
+        pConf->Read( _T("DepthOffset"), &g_dDashDBTOffset, 0 );
+
         pConf->Read( _T("DistanceUnit"), &g_iDashDistanceUnit, 0 );
         pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
 
@@ -1537,6 +1542,7 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("SpeedUnit"), g_iDashSpeedUnit );
         pConf->Write( _T("SOGDamp"), g_iDashSOGDamp );
         pConf->Write( _T("DepthUnit"), g_iDashDepthUnit );
+        pConf->Write( _T("DepthOffset"), g_dDashDBTOffset );
         pConf->Write( _T("DistanceUnit"), g_iDashDistanceUnit );
         pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
         pConf->Write( _T("UTCOffset"), g_iUTCOffset );
@@ -1882,6 +1888,12 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceDepthUnit->SetSelection( g_iDashDepthUnit - 3);
     itemFlexGridSizer04->Add( m_pChoiceDepthUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
 
+    wxStaticText* itemStaticDepthO = new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Depth Offset (meters):"),
+        wxDefaultPosition, wxDefaultSize, 0);
+    itemFlexGridSizer04->Add(itemStaticDepthO, 0, wxEXPAND | wxALL, border_size);
+    m_pSpinDBTOffset = new wxSpinCtrlDouble(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -100, 100, g_dDashDBTOffset, 0.1);
+    itemFlexGridSizer04->Add(m_pSpinDBTOffset, 0, wxALIGN_RIGHT | wxALL, 0);
+
     wxStaticText* itemStaticText0b = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Distance units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticText0b, 0, wxEXPAND | wxALL, border_size );
@@ -1934,6 +1946,7 @@ void DashboardPreferencesDialog::SaveDashboardConfig()
     g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
     g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
+    g_dDashDBTOffset = m_pSpinDBTOffset->GetValue();
     if( curSel != -1 ) {
         DashboardWindowContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
