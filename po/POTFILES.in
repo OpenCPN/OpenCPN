@@ -141,6 +141,7 @@ src/ConnectionParams.cpp
 src/crashprint.cpp
 src/cutil.cpp
 src/datastream.cpp
+src/DetailSlider.cpp
 src/FontDesc.cpp
 src/FontMgr.cpp
 src/geodesic.cpp
