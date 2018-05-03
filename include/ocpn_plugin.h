@@ -1234,4 +1234,14 @@ extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily fa
                     const wxString &facename = wxEmptyString,
                     wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
 
+enum SDDMFORMAT
+{
+    DEGREES_DECIMAL_MINUTES = 0,
+    DECIMAL_DEGREES,
+    DEGREES_MINUTES_SECONDS,
+    END_SDDMFORMATS
+};
+
+extern DECL_EXP int GetLatLonFormat(void);
+
 #endif //_PLUGIN_H_

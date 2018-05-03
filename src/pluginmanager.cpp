@@ -131,6 +131,8 @@ extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
 
+extern int              g_iSDMMFormat;
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -6411,3 +6413,7 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
+int GetLatLonFormat()
+{
+    return g_iSDMMFormat;
+}
