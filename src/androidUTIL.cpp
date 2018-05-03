@@ -3291,7 +3291,17 @@ bool DoAndroidPreferences( void )
     return true;
 }
 
-
+int doAndroidPOST( const wxString &url, wxString &parms)
+{
+    wxString result = callActivityMethod_s2s( "doHttpPost", url, parms );
+    
+    if( result.IsSameAs(_T("NOK")) )
+        return 1;                       // general error
+        
+    return 0;
+}
+    
+    
 int startAndroidFileDownload( const wxString &url, const wxString& destination, wxEvtHandler *evh, long *dl_id )
 {
 //    if(evh)

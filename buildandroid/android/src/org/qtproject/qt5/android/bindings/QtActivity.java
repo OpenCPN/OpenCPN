@@ -78,6 +78,9 @@ import org.apache.http.util.EntityUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.OutputStreamWriter;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -2013,6 +2016,130 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         return "OK";
     }
+
+    public String doHttpPost( final String turl, final String encodedData) {
+
+        Log.i("OpenCPN", "POST parms: " + encodedData);
+
+        HttpURLConnection urlc = null;
+        OutputStreamWriter out = null;
+        DataOutputStream dataout = null;
+        BufferedReader in = null;
+        try {
+            URL url = new URL(turl);
+            urlc = (HttpURLConnection) url.openConnection();
+            urlc.setRequestMethod("POST");
+            urlc.setDoOutput(true);
+            urlc.setDoInput(true);
+            urlc.setUseCaches(false);
+            urlc.setAllowUserInteraction(false);
+            //urlc.setRequestProperty(HEADER_USER_AGENT, HEADER_USER_AGENT_VALUE);
+            urlc.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            dataout = new DataOutputStream(urlc.getOutputStream());
+
+            // perform POST operation
+            dataout.writeBytes(encodedData);
+
+            int responseCode = urlc.getResponseCode();
+            Log.i("OpenCPN", "Response code: " +  Integer.toString(responseCode));
+
+            in = new BufferedReader(new InputStreamReader(urlc.getInputStream()),8096);
+            String response;
+            // write html to System.out for debug
+            while ((response = in.readLine()) != null) {
+                Log.i("OpenCPN", response);
+                //System.out.println(response);
+            }
+            in.close();
+            urlc.disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "OK";
+    }
+
+    public String doHttpPostX( final String url, final String parameters ){
+
+        // Creating an instance of HttpClient.
+
+          HttpClient httpclient = new DefaultHttpClient();
+          try {
+
+               // Creating an instance of HttpPost.
+               HttpPost httpost = new HttpPost( url );
+
+           // Extract the parameters
+           // Adding all form parameters in a List of type NameValuePair
+                Log.i("OpenCPN", "POST parms: " + parameters);
+                List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+
+                StringTokenizer tkz = new StringTokenizer(parameters, ";");
+
+                while(tkz.hasMoreTokens()){
+                    String p0 = tkz.nextToken();
+                    String p1 = tkz.nextToken();
+                    Log.i("OpenCPN", "parms: " + p0 + "  " + p1);
+                    nvps.add(new BasicNameValuePair(p0, p1));
+                }
+
+
+           /**
+            * UrlEncodedFormEntity encodes form parameters and produce an
+            * output like param1=value1&param2=value2
+            */
+                try{
+                    httpost.setEntity(new UrlEncodedFormEntity(nvps));
+                }catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+
+           // Executing the request.
+                HttpResponse response = httpclient.execute(httpost);
+
+                Log.i("OpenCPN", "POST Response Status line :" + response.getStatusLine());
+
+                try {
+                    // Do the needful with entity.
+                    HttpEntity entity = response.getEntity();
+
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                    StringBuffer result = new StringBuffer();
+                    String line = "";
+                    while ((line = rd.readLine()) != null) {
+                        Log.i("OpenCPN", line);
+                        result.append(line);
+                    }
+
+                 }catch(Exception e) {
+                     e.printStackTrace();
+                 }
+           }catch(Exception e) {
+               e.printStackTrace();
+           }
+
+           return "OK";
+       }
+
+
 
     public String downloadFile( final String url, final String destination ){
 
