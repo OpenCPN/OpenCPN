@@ -131,6 +131,8 @@ extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
 
+extern int              g_iSDMMFormat;
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -6425,3 +6427,8 @@ int PluginGetMaxAvailableGshhgQuality() { return cc1->GetMaxAvailableGshhgQualit
 /* API 1.16 */
 // disable builtin console canvas, and autopilot nmea sentences
 void PlugInHandleAutopilotRoute(bool enable) { g_bPluginHandleAutopilotRoute = enable; }
+
+int GetLatLonFormat()
+{
+    return g_iSDMMFormat;
+}
