@@ -133,6 +133,8 @@ extern ChartGroupArray  *g_pGroupArray;
 
 unsigned int      gs_plib_flags;
 
+extern int              g_iSDMMFormat;
+
 enum
 {
     CurlThreadId = wxID_HIGHEST+1
@@ -6410,3 +6412,7 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
+int GetLatLonFormat()
+{
+    return g_iSDMMFormat;
+}
