@@ -6544,7 +6544,7 @@ void MyFrame::DoStackDelta( int direction )
 // and takes a while to initialize.  This gets opencpn up and running much faster.
 void MyFrame::OnInitTimer(wxTimerEvent& event)
 {
-    qDebug() << "OnInitTimer: " << m_iInitCount;
+    ///qDebug() << "OnInitTimer: " << m_iInitCount;
     
     switch(m_iInitCount++) {
         case 0:
@@ -7648,48 +7648,63 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
         
     } else {
         if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
-//            if( ChartData ) ChartData->PurgeCache();
-
-
-            //  If the chart is a vector chart, and of very large scale,
-            //  then we had better set the new scale directly to avoid excessive underzoom
-            //  on, eg, Inland ENCs
-            bool set_scale = false;
-            if(ChartData){
-                if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
-                    if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
-                        set_scale = true;
-                    }
-                }
-            }
-
-            if(!set_scale){
-                SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
-            }
-            else {
+            
+            ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
+            if( pc ) {
+                
                 SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
-
-
-            //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
-                ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
-                if( pc ) {
-                    double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
-
-                    if(g_bPreserveScaleOnX){
-                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                                100 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
+                
+                // Is the chart going to render at the current scale?
+                double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
+            
+                double scaleMult = proposed_scale_onscreen / pc->GetNativeScale();
+                double maxFactor = 1;
+                
+                
+                // TODO
+                //  Harmonize this logic (now in three places) with one simple method
+                {
+                    ChartFamilyEnum family = pc->GetChartFamily();
+                    
+                    double zoom_mod = (double)g_chart_zoom_modifier;
+                    if(family == CHART_FAMILY_VECTOR)
+                        zoom_mod = (double)g_chart_zoom_modifier_vector;
+                    
+                    double modf = zoom_mod/5.;  // -1->1
+                    double user_mod = pow(16., modf);
+                    user_mod = wxMax(user_mod, .2);
+                    user_mod = wxMin(user_mod, 16.0);
+                    
+                    int type_mod = 1;
+                    // Apply zoom scale modifier according to chart family.
+                    switch(family){
+                        case CHART_FAMILY_RASTER:{
+                            type_mod = 1;
+                            break;
+                        }
+                        
+                        case CHART_FAMILY_VECTOR:{
+                            type_mod = 4;
+                            break;
+                        }
+                        
+                        default:{
+                            user_mod = wxMin(user_mod, 2.0);
+                            type_mod = 2;
+                            break;
+                        }
                     }
-                    else{
-                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                                        20 * pc->GetNormalScaleMax(cc1->GetCanvasScaleFactor(), cc1->GetCanvasWidth()));
-
-                        proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
-                                                pc->GetNormalScaleMin(cc1->GetCanvasScaleFactor(), g_b_overzoom_x));
-                    }
-
-                    cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
+                    
+                    maxFactor = type_mod * user_mod;
                 }
-            }
+               
+               if(scaleMult > maxFactor)
+                   maxFactor -= .001;
+               
+               proposed_scale_onscreen = wxMin(proposed_scale_onscreen, maxFactor * pc->GetNativeScale());
+               
+               cc1->SetVPScale( cc1->GetCanvasScaleFactor() / proposed_scale_onscreen );
+            }       
         }
         else {
             ToggleQuiltMode();
