@@ -3929,7 +3929,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
     bool b_render = true;
     if(vp.b_quilt){
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
-
+        
      //  Kicks in at very small scale, ZOOM OUT   
     //  Check the first, smallest scale chart
      // Except, cm93 is presumed always renderable at small enough scale
@@ -3943,9 +3943,23 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
                   b_render = false;
               }
           }
+
+          // Some ENC chartsets are made of tiled large scale charts, with no intermediate or small scale charts.
+          // These types do not quilt well, and require excessive zomm-in to view at all
+          //  Try to detect and accomodate these types by relaxing the underzoom requirement arbitrarilly.
+          if(!b_render){
+              if(chart->GetChartFamily() == CHART_FAMILY_VECTOR){
+                  if( chart->GetNativeScale() < 10000){  
+                     double scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
+                     double scaleMult = scale_onscreen / chart->GetNativeScale();
+                
+                     if(scaleMult < 300)
+                         b_render = true;
+                  }
+              }
+          }
          
     }
-    
     
     //qDebug() << "RCTime1" << rsw.GetTime();
     
