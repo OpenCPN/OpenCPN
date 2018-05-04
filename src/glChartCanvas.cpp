@@ -4525,10 +4525,6 @@ void glChartCanvas::Render()
                     busy = true;
             }
             
-            // enable rendering to texture in framebuffer object
-            //( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
-            glBindFramebuffer( GL_FRAMEBUFFER, m_fb0 );
-            
             float dx = 0;
             float dy = 0;
             
