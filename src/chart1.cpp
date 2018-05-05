@@ -4820,9 +4820,11 @@ void MyFrame::ActivateMOB( void )
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-        pRouteManagerDialog->UpdateRouteListCtrl();
-        pRouteManagerDialog->UpdateWptListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+        }
     }
 
     cc1->InvalidateGL();
@@ -4992,9 +4994,11 @@ void MyFrame::TrackDailyRestart( void )
         g_pActiveTrack->AdjustCurrentTrackPoint(pMidnightPoint);
     }
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-        pRouteManagerDialog->UpdateTrkListCtrl();
-        pRouteManagerDialog->UpdateRouteListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
     }
 }
 
@@ -10002,9 +10006,11 @@ void MyFrame::ActivateAISMOBRoute( AIS_Target_Data *ptarget )
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-        pRouteManagerDialog->UpdateRouteListCtrl();
-        pRouteManagerDialog->UpdateWptListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+            pRouteManagerDialog->UpdateRouteListCtrl();
+            pRouteManagerDialog->UpdateWptListCtrl();
+        }
     }
 
     cc1->Refresh( false );

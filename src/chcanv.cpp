@@ -1358,7 +1358,11 @@ void ChartCanvas::DropMarker( bool atOwnShip )
     pSelect->AddSelectableRoutePoint( lat, lon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
     
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateWptListCtrl();
+    }
+    
     undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
     undo->AfterUndoableAction( NULL );
     InvalidateGL();
@@ -7126,7 +7130,10 @@ void pupHandler_PasteWaypoint() {
     if( answer == wxID_YES ) {
         nearPoint->SetName( pasted->GetName() );
         nearPoint->m_MarkDescription = pasted->m_MarkDescription;
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
+        }
     }
 
     if( answer == wxID_NO ) {
@@ -7135,7 +7142,10 @@ void pupHandler_PasteWaypoint() {
         pSelect->AddSelectableRoutePoint( newPoint->m_lat, newPoint->m_lon, newPoint );
         pConfig->AddNewWayPoint( newPoint, -1 );
         pWayPointMan->AddRoutePoint( newPoint );
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
+        }
     }
 
     cc1->InvalidateGL();
@@ -7248,9 +7258,11 @@ void pupHandler_PasteRoute() {
             pRoutePropDialog->UpdateProperties();
         }
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
-            pRouteManagerDialog->UpdateRouteListCtrl();
-            pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+                pRouteManagerDialog->UpdateRouteListCtrl();
+                pRouteManagerDialog->UpdateWptListCtrl();
+            }
         }
         cc1->InvalidateGL();
         cc1->Refresh( false );
@@ -7378,8 +7390,10 @@ void ChartCanvas::FinishRoute( void )
             pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-            pRouteManagerDialog->UpdateRouteListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateRouteListCtrl();
+        }
 
     }
     m_bAppendingRoute = false;
