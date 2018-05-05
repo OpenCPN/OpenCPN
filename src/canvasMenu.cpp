@@ -961,7 +961,12 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         pSelect->AddSelectableRoutePoint( zlat, zlon, pWP );
         pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
 
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+        if(RouteManagerDialog::getInstanceFlag()){
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+                pRouteManagerDialog->UpdateWptListCtrl();
+            }
+        }
+        
         parent->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
         parent->undo->AfterUndoableAction( NULL );
         parent->InvalidateGL();
