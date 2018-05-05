@@ -4859,11 +4859,11 @@ void MyFrame::TrackOn( void )
     androidSetTrackTool(true);
     #endif
 
-
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-    {
-        pRouteManagerDialog->UpdateTrkListCtrl();
-        pRouteManagerDialog->UpdateRouteListCtrl();
+    if(RouteManagerDialog::getInstanceFlag()){
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+            pRouteManagerDialog->UpdateTrkListCtrl();
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        }
     }
 
     wxJSONValue v;
