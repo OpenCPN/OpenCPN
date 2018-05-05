@@ -465,7 +465,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
             }
             
             // Tide/Current window
-            if(cc1->getTCWin()){
+            if( cc1 & cc1->getTCWin()){
                 bool bshown = cc1->getTCWin()->IsShown();
                 cc1->getTCWin()->Hide();
                 cc1->getTCWin()->RecalculateSize();
