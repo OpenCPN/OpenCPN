@@ -95,22 +95,6 @@
 
 #define CHART_DIR "Charts"
 
-void write_file( const wxString extract_file, char *data, unsigned long datasize )
-{
-    wxFileName fn(extract_file);
-    if( wxDirExists( fn.GetPath() ) )
-    {
-        if( !wxFileName::Mkdir(fn.GetPath(), 0755, wxPATH_MKDIR_FULL) )
-        {
-            wxLogError(_T("Can not create directory '") + fn.GetPath() + _T("'."));
-            return;
-        }
-    }
-    wxFileOutputStream f(extract_file);
-    f.Write(data, datasize);
-    f.Close();
-}
-
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
