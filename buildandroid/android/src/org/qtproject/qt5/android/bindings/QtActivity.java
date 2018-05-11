@@ -458,6 +458,10 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     public taskHandler m_taskHandler;
     public MyDocSpinnerDialog myDocSpinnerInstance;
 
+    private String g_postResult = "";
+    private boolean g_postActive = false;
+    PostTask g_postTask;
+
     //BroadcastReceiver which receives broadcasted Intents
     private final BroadcastReceiver mLocaleChangeReceiver = new BroadcastReceiver() {
 
@@ -2017,7 +2021,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         return "OK";
     }
 
-    public String doHttpPost( final String turl, final String encodedData) {
+
+
+    public String doHttpPostSync( final String turl, final String encodedData) {
 
         Log.i("OpenCPN", "POST parms: " + encodedData);
 
@@ -2025,6 +2031,8 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
         OutputStreamWriter out = null;
         DataOutputStream dataout = null;
         BufferedReader in = null;
+        String result = "";
+
         try {
             URL url = new URL(turl);
             urlc = (HttpURLConnection) url.openConnection();
@@ -2048,32 +2056,189 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
             // write html to System.out for debug
             while ((response = in.readLine()) != null) {
                 Log.i("OpenCPN", response);
-                //System.out.println(response);
+                result += response;
             }
+
             in.close();
             urlc.disconnect();
 
         } catch (IOException e) {
             e.printStackTrace();
+            result = "NOK";
         } finally {
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    result = "NOK";
                 }
             }
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+            e.printStackTrace();
+                    result = "NOK";
                 }
             }
         }
 
-        return "OK";
+        return result;
     }
+
+
+
+    class PostTask extends AsyncTask<String,Void,String>
+    {
+
+      @Override
+      protected String doInBackground(String... arg0) {
+
+          g_postActive = true;
+          //Log.i("OpenCPN", "POST url: " + arg0[0]);
+          //Log.i("OpenCPN", "POST parms: " + arg0[1]);
+
+          HttpURLConnection urlc = null;
+          OutputStreamWriter out = null;
+          DataOutputStream dataout = null;
+          BufferedReader in = null;
+          String result = "";
+
+          try {
+              URL url = new URL(arg0[0]);
+              urlc = (HttpURLConnection) url.openConnection();
+              urlc.setRequestMethod("POST");
+              urlc.setDoOutput(true);
+              urlc.setDoInput(true);
+              urlc.setUseCaches(false);
+              urlc.setAllowUserInteraction(false);
+              //urlc.setRequestProperty(HEADER_USER_AGENT, HEADER_USER_AGENT_VALUE);
+              urlc.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+              dataout = new DataOutputStream(urlc.getOutputStream());
+
+              // perform POST operation
+              Log.i("OpenCPN", "doin it...");
+
+              dataout.writeBytes(arg0[1]);
+
+              int responseCode = urlc.getResponseCode();
+              Log.i("OpenCPN", "Response code: " +  Integer.toString(responseCode));
+
+              in = new BufferedReader(new InputStreamReader(urlc.getInputStream()),8096);
+              String response;
+              // write html to System.out for debug
+              while ((response = in.readLine()) != null) {
+                  //Log.i("OpenCPN", response);
+                  result += response;
+              }
+
+              in.close();
+              urlc.disconnect();
+
+          } catch (IOException e) {
+              e.printStackTrace();
+              Log.i("OpenCPN", "Exception 1");
+              result = "NOK";
+          } finally {
+              if (out != null) {
+                  try {
+                      out.close();
+                  } catch (IOException e) {
+                      e.printStackTrace();
+                      Log.i("OpenCPN", "Exception 2");
+                      result = "NOK";
+                  }
+              }
+              if (in != null) {
+                  try {
+                      in.close();
+                  } catch (IOException e) {
+              e.printStackTrace();
+                      Log.i("OpenCPN", "Exception 3");
+                      result = "NOK";
+                  }
+              }
+          }
+
+          //Log.i("OpenCPN", "async result: " + result);
+
+          return result;
+      }
+
+      @Override
+      protected void onPostExecute(String result) {
+          // TODO Auto-generated method stub
+          super.onPostExecute(result);
+
+          g_postResult = result;
+          g_postActive = false;
+      }
+  }
+
+
+  public String doHttpPostAsync( final String url, final String encodedData) {
+      // Clear the data
+      g_postActive = false;
+      g_postResult = "";
+
+      new PostTask().execute(url, encodedData);
+
+      return "OK";
+  }
+
+  public String checkPostAsync(){
+      if(g_postActive)
+        return "ACTIVE";
+      else
+        return g_postResult;
+  }
+
+
+
+
+
+
+
+
+/*
+
+
+
+          String text =null;
+          try {
+              Log.i("DEBUGGER_TAG", "TheTask");
+              HttpClient httpclient = new DefaultHttpClient();
+           HttpPost httppost = new HttpPost(arg0[0]);
+
+              List < NameValuePair > nameValuePairs = new ArrayList < NameValuePair > (5);
+              nameValuePairs.add(new BasicNameValuePair("user", "OpenCPN"));
+              nameValuePairs.add(new BasicNameValuePair("password", "<(d!.U5}j6._]CHH"));
+              httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+
+              HttpResponse resp = httpclient.execute(httppost);
+              HttpEntity ent = resp.getEntity();
+              text = EntityUtils.toString(ent);
+          }
+          catch (Exception e)
+          {
+               e.printStackTrace();
+          }
+
+          Log.i("DEBUGGER_TAG", "TheTask Text:" + text);
+          return text;
+      }
+
+      @Override
+      protected void onPostExecute(String result) {
+          // TODO Auto-generated method stub
+          super.onPostExecute(result);
+      }
+
+     }
+
+*/
 
     public String doHttpPostX( final String url, final String parameters ){
 

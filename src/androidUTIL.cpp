@@ -329,6 +329,7 @@ extern bool     g_btrackContinuous;
 #define ACTION_RESIZE_PERSISTENTS       1
 #define ACTION_FILECHOOSER_END          3
 #define ACTION_COLORDIALOG_END          4
+#define ACTION_POSTASYNC_END            5
 
 class androidUtilHandler : public wxEvtHandler
 {
@@ -602,6 +603,53 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event)
                 
                 break;
             }
+            
+        case ACTION_POSTASYNC_END:            //  Handle polling of android async POST task end
+            {
+                //qDebug() << "colorpicker poll";
+                //  Get a reference to the running FileChooser
+                QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                                       "activity", "()Landroid/app/Activity;");
+                
+                if ( !activity.isValid() ){
+                    //qDebug() << "onTimerEvent : Activity is not valid";
+                    return;
+                }
+                
+                //  Call the method which tracks the completion of the POST async task.
+                QAndroidJniObject data = activity.callObjectMethod("checkPostAsync", "()Ljava/lang/String;");
+                
+                jstring s = data.object<jstring>();
+                
+                JNIEnv* jenv;
+                
+                //  Need a Java environment to decode the resulting string
+                if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+                    //qDebug() << "GetEnv failed.";
+                }
+                else {
+                    
+                    // The string coming back will be either:
+                    //  "ACTIVE"   ......Post command not done yet.
+                    //  A valid XML response body.
+                    if(!s){
+                        qDebug() << "checkPostAsync returned null";
+                    }
+                    else if( (jenv)->GetStringLength( s )){
+                        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+                        qDebug() << "checkPostAsync returned " << ret_string;
+                        if( strncmp(ret_string, "ACTIVE", 6) ){         // Must be done....
+                            m_done = true;
+                            m_stringResult =  wxString(ret_string, wxConvUTF8);
+                        }
+                    }
+                }
+                
+                
+                break;
+            }
+            
+            
         default:
             break;
     }
@@ -3291,14 +3339,44 @@ bool DoAndroidPreferences( void )
     return true;
 }
 
-int doAndroidPOST( const wxString &url, wxString &parms)
+wxString doAndroidPOST( const wxString &url, wxString &parms)
 {
-    wxString result = callActivityMethod_s2s( "doHttpPost", url, parms );
-    
-    if( result.IsSameAs(_T("NOK")) )
-        return 1;                       // general error
+    //  Start a timer to poll for results 
+    if(g_androidUtilHandler){
+        g_androidUtilHandler->m_eventTimer.Stop();
+        g_androidUtilHandler->m_done = false;
+
+        androidShowBusyIcon();
         
-    return 0;
+        wxString result = callActivityMethod_s2s( "doHttpPostAsync", url, parms );
+        
+        if(result == _T("OK") ){
+            qDebug() << "doHttpPostAsync ResultOK, starting spin loop";
+            g_androidUtilHandler->m_action = ACTION_POSTASYNC_END;
+            g_androidUtilHandler->m_eventTimer.Start(500, wxTIMER_CONTINUOUS);
+            
+            //  Spin, waiting for result
+            while(!g_androidUtilHandler->m_done){
+                wxMilliSleep(50);
+                wxSafeYield(NULL, true);
+            }
+            
+            qDebug() << "out of spin loop";
+            g_androidUtilHandler->m_action = ACTION_NONE;
+            g_androidUtilHandler->m_eventTimer.Stop();
+            androidHideBusyIcon();
+            
+            wxString presult = g_androidUtilHandler->GetStringResult();
+            
+            return presult;
+        }
+        else{
+            qDebug() << "doHttpPostAsync Result NOT OK";
+            androidHideBusyIcon();
+        }
+    }
+        
+    return wxEmptyString;    
 }
     
     

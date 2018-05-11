@@ -6302,12 +6302,10 @@ void OCPN_cancelDownloadFileBackground( long handle )
 
 _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameters, wxString& result, int timeout_secs )
 {
+#ifndef __OCPN__ANDROID__    
+    
 #ifdef __OCPN_USE_CURL__
     
-#ifdef __OCPN__ANDROID__
-    //TODO
-    return OCPN_DL_FAILED;
-#else
     wxCurlHTTP post;
     post.SetOpt(CURLOPT_TIMEOUT, timeout_secs);
     size_t res = post.Post( parameters.ToAscii(), parameters.Len(), url );
@@ -6320,10 +6318,22 @@ _OCPN_DLStatus OCPN_postDataHttp( const wxString& url, const wxString& parameter
         result = wxEmptyString;
     
     return OCPN_DL_FAILED;
-#endif
 #else
     return OCPN_DL_FAILED;
-#endif    
+#endif 
+    
+#else    
+
+    wxString lparms = parameters;
+    wxString postResult = doAndroidPOST( url, lparms);
+    if(postResult.IsSameAs(_T("NOK")))
+        return OCPN_DL_FAILED;
+    
+    result = postResult;
+    return OCPN_DL_NO_ERROR;
+    
+#endif
+    
     
 }
 
