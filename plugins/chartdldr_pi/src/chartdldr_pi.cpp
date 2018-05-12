@@ -668,6 +668,11 @@ void ChartDldrPanelImpl::SetSource( int id )
         ::wxBeginBusyCursor();      //wxSetCursor(wxCURSOR_WAIT);
         wxYield();
         ChartSource *cs = pPlugIn->m_chartSources->Item(id);
+        
+        wxString label = _("Charts");
+        label += _T(": ") + m_csTitle;
+        m_chartsLabel->SetLabel(label);
+        
         cs->LoadUpdateData();
         cs->UpdateLocalFiles();
         pPlugIn->m_pChartSource = cs;
@@ -677,6 +682,7 @@ void ChartDldrPanelImpl::SetSource( int id )
     else
     {
         pPlugIn->m_pChartSource = NULL;
+        m_chartsLabel->SetLabel( _("Charts"));
     }
 }
 
@@ -1440,9 +1446,9 @@ void ChartDldrPanelImpl::DoEditSource()
                 m_lbChartSources->SetItem(cat, 1, pPlugIn->m_pChartCatalog->GetReleaseDate().Format(_T("%Y-%m-%d %H:%M")));
                 m_lbChartSources->SetItem(cat, 2, path);
 #ifdef __OCPN__ANDROID__
-                m_lbChartSources->GetHandle()->resizeColumnToContents(0);
-                m_lbChartSources->GetHandle()->resizeColumnToContents(1);
-                m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+//                 m_lbChartSources->GetHandle()->resizeColumnToContents(0);
+//                 m_lbChartSources->GetHandle()->resizeColumnToContents(1);
+//                 m_lbChartSources->GetHandle()->resizeColumnToContents(2);
 #endif                
             }
         }

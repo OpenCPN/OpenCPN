@@ -98,6 +98,10 @@ class ChartDldrPanel : public wxPanel
 		wxButton* m_bDnldCharts;
 		wxButton* m_bShowLocal;
 
+                wxNotebook *m_DLoadNB;
+                wxString m_csTitle;
+                wxStaticText *m_chartsLabel;
+                
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnPaint( wxPaintEvent& event ) { event.Skip(); }
 		virtual void OnLeftDClick( wxMouseEvent& event ) { event.Skip(); }
@@ -111,7 +115,8 @@ class ChartDldrPanel : public wxPanel
 		virtual void DoHelp( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDownloadCharts( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowLocalDir( wxCommandEvent& event ) { event.Skip(); }
-
+		virtual void OnSize( wxSizeEvent& event );
+                
 
 	public:
 		wxCheckedListCtrl *m_clCharts;
