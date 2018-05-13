@@ -39,6 +39,10 @@
 #include "ocpn_plugin.h"
 
 ///////////////////////////////////////////////////////////////////////////
+class ChartPanel;
+class ChartDldrPanelImpl;
+
+WX_DECLARE_OBJARRAY(ChartPanel *,      ArrayOfChartPanels);    
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,6 +106,9 @@ class ChartDldrPanel : public wxPanel
                 wxString m_csTitle;
                 wxStaticText *m_chartsLabel;
                 
+                ArrayOfChartPanels m_panelArray;
+                wxBoxSizer  *m_boxSizerCharts;
+                
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnPaint( wxPaintEvent& event ) { event.Skip(); }
 		virtual void OnLeftDClick( wxMouseEvent& event ) { event.Skip(); }
@@ -111,7 +118,6 @@ class ChartDldrPanel : public wxPanel
 		virtual void EditSource( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateChartList( wxCommandEvent& event ) { event.Skip(); }
 		virtual void UpdateAllCharts( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnContextMenu( wxMouseEvent& event ) { event.Skip(); }
 		virtual void DoHelp( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDownloadCharts( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnShowLocalDir( wxCommandEvent& event ) { event.Skip(); }
@@ -120,10 +126,14 @@ class ChartDldrPanel : public wxPanel
 
 	public:
 		wxCheckedListCtrl *m_clCharts;
-
+                wxScrolledWindow *m_scrollWinChartList;
+                
 		ChartDldrPanel( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxTAB_TRAVERSAL );
 		~ChartDldrPanel();
-        ChartDldrPanel() { }
+                ChartDldrPanel() { }
+                
+                virtual void OnContextMenu( wxMouseEvent& event ) { event.Skip(); }
+                
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -160,5 +170,27 @@ class ChartDldrPrefsDlg : public wxDialog
 		~ChartDldrPrefsDlg();
 
 };
+
+class ChartPanel: public wxPanel
+{
+public:
+    ChartPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, wxString Name, wxString stat, wxString latest, ChartDldrPanel *DldrPanel, bool bcheck);
+    ~ChartPanel();
+    
+    void OnContextMenu( wxMouseEvent& event );
+    wxCheckBox *GetCB(){ return m_cb; }
+    
+private:
+    wxCheckBox* m_cb;
+    wxStaticText *m_chartInfo;
+    wxStaticText *m_chartInfo2;
+    wxString m_stat;
+    wxString m_latest;
+    ChartDldrPanel *m_dldrPanel;
+    
+};
+
+
+
 
 #endif //__CHARTDLDRGUI_H__

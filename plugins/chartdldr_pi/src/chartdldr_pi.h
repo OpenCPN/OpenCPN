@@ -215,6 +215,12 @@ protected:
     void            OnContextMenu( wxMouseEvent& event );
     void            SetBulkUpdate( bool bulk_update );
 
+    int             GetChartCount();
+    int             GetCheckedChartCount();
+    bool            isChartChecked( int i );
+    void            CheckAllCharts( bool value );
+    void            InvertCheckAllCharts( );
+    
 public:
     ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
     ~ChartDldrPanelImpl();
