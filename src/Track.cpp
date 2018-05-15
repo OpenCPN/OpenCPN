@@ -128,23 +128,22 @@ private:
 WX_DEFINE_LIST ( TrackList );
 
 TrackPoint::TrackPoint(double lat, double lon, wxString ts)
-    : m_lat(lat), m_lon(lon), m_timestring(NULL)
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL)
 {
     SetCreateTime(ts);
 }
 
 TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
-    : m_lat(lat), m_lon(lon), m_timestring(NULL)
+    : m_lat(lat), m_lon(lon), m_GPXTrkSegNo(1), m_timestring(NULL)
 {
     SetCreateTime(dt);
 }
 
 // Copy Constructor
 TrackPoint::TrackPoint( TrackPoint* orig )
-    : m_lat(orig->m_lat), m_lon(orig->m_lon), m_timestring(NULL)
+    : m_lat(orig->m_lat), m_lon(orig->m_lon), m_GPXTrkSegNo(1), m_timestring(NULL)
 {
     SetCreateTime(orig->GetCreateTime());
-    m_GPXTrkSegNo = 1;
 }
 
 TrackPoint::~TrackPoint()
@@ -968,7 +967,6 @@ void Track::AddPointFinalized( TrackPoint *pNewPoint )
 TrackPoint* Track::AddNewPoint( vector2D point, wxDateTime time )
 {
     TrackPoint *tPoint = new TrackPoint( point.lat, point.lon, time );
-    tPoint->m_GPXTrkSegNo = 1;
 
     AddPointFinalized( tPoint );
 
