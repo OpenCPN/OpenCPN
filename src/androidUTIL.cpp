@@ -1694,6 +1694,62 @@ wxString callActivityMethod_s2s(const char *method, wxString parm1, wxString par
     
 }
 
+wxString callActivityMethod_s3s(const char *method, wxString parm1, wxString parm2, wxString parm3)
+{
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    JNIEnv* jenv;
+    
+    wxString return_string;
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
+                                                                           "activity", "()Landroid/app/Activity;");
+    if(CheckPendingJNIException())
+        return _T("NOK");
+    
+    if ( !activity.isValid() ){
+        return return_string;
+    }
+    
+    //  Need a Java environment to decode the resulting string
+    if (java_vm->GetEnv( (void **) &jenv, JNI_VERSION_1_6) != JNI_OK) {
+        return _T("jenv Error");
+    }
+    
+    wxCharBuffer p1b = parm1.ToUTF8();
+    jstring p1 = (jenv)->NewStringUTF(p1b.data());
+    
+    wxCharBuffer p2b = parm2.ToUTF8();
+    jstring p2 = (jenv)->NewStringUTF(p2b.data());
+    
+    wxCharBuffer p3b = parm3.ToUTF8();
+    jstring p3 = (jenv)->NewStringUTF(p3b.data());
+    
+    //  Call the desired method
+    //qDebug() << "Calling method_s3s" << " (" << method << ")";
+    
+    QAndroidJniObject data = activity.callObjectMethod(method, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+                                                       p1, p2, p3);
+    (jenv)->DeleteLocalRef(p1);
+    (jenv)->DeleteLocalRef(p2);
+    (jenv)->DeleteLocalRef(p3);
+    
+    if(CheckPendingJNIException())
+        return _T("NOK");
+
+    //qDebug() << "Back from method_s3s";
+        
+    jstring s = data.object<jstring>();
+        
+    if( (jenv)->GetStringLength( s )){
+        const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+        return_string = wxString(ret_string, wxConvUTF8);
+    }
+        
+    return return_string;
+        
+}
+
+
 wxString callActivityMethod_s4s(const char *method, wxString parm1, wxString parm2, wxString parm3, wxString parm4)
 {
     if(CheckPendingJNIException())
@@ -2360,7 +2416,9 @@ void androidShowBusyIcon()
 {
     if(b_androidBusyShown)
         return;
-    
+
+    //qDebug() << "ShowBusy";
+        
     //  Get a reference to the running native activity
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod("org/qtproject/qt5/android/QtNative",
                                                                            "activity", "()Landroid/app/Activity;");
@@ -3339,7 +3397,7 @@ bool DoAndroidPreferences( void )
     return true;
 }
 
-wxString doAndroidPOST( const wxString &url, wxString &parms)
+wxString doAndroidPOST( const wxString &url, wxString &parms, int timeoutMsec)
 {
     //  Start a timer to poll for results 
     if(g_androidUtilHandler){
@@ -3348,7 +3406,9 @@ wxString doAndroidPOST( const wxString &url, wxString &parms)
 
         androidShowBusyIcon();
         
-        wxString result = callActivityMethod_s2s( "doHttpPostAsync", url, parms );
+        wxString stimeout;
+        stimeout.Printf(_T("%d"), timeoutMsec);
+        wxString result = callActivityMethod_s3s( "doHttpPostAsync", url, parms, stimeout );
         
         if(result == _T("OK") ){
             qDebug() << "doHttpPostAsync ResultOK, starting spin loop";
@@ -3390,6 +3450,8 @@ int startAndroidFileDownload( const wxString &url, const wxString& destination, 
     
         wxString result = callActivityMethod_s2s( "downloadFile", url, destination );
 
+        androidShowBusyIcon();
+        
         if( result.IsSameAs(_T("NOK")) )
             return 1;                       // general error
             
@@ -3433,6 +3495,7 @@ void finishAndroidFileDownload( void )
     s_bdownloading = false;
     s_requested_url.Clear();
     s_download_evHandler = NULL;
+    androidHideBusyIcon();
     
     return;
 }

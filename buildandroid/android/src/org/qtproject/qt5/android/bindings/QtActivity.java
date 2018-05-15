@@ -2115,15 +2115,29 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
               urlc.setAllowUserInteraction(false);
               //urlc.setRequestProperty(HEADER_USER_AGENT, HEADER_USER_AGENT_VALUE);
               urlc.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+
+              int timeout = 4950;
+              try {
+                  timeout = Integer.parseInt(arg0[2]);
+              } catch(NumberFormatException nfe) {
+                // Handle parse error.
+                nfe.printStackTrace();
+                Log.i("OpenCPN", "Timeout value parse exception");
+              }
+              urlc.setConnectTimeout(timeout);
+              urlc.setReadTimeout(timeout);
+              //Log.i("OpenCPN", "Timeout: " + String.valueOf(timeout));
+
+
               dataout = new DataOutputStream(urlc.getOutputStream());
 
               // perform POST operation
-              Log.i("OpenCPN", "doin it...");
+              //Log.i("OpenCPN", "doin it...");
 
               dataout.writeBytes(arg0[1]);
 
               int responseCode = urlc.getResponseCode();
-              Log.i("OpenCPN", "Response code: " +  Integer.toString(responseCode));
+              Log.i("OpenCPN", "AsyncTask HTTPPOST Response code: " +  Integer.toString(responseCode));
 
               in = new BufferedReader(new InputStreamReader(urlc.getInputStream()),8096);
               String response;
@@ -2138,7 +2152,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
           } catch (IOException e) {
               e.printStackTrace();
-              Log.i("OpenCPN", "Exception 1");
+              Log.i("OpenCPN", "AsyncTask IOException 1");
               result = "NOK";
           } finally {
               if (out != null) {
@@ -2146,7 +2160,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                       out.close();
                   } catch (IOException e) {
                       e.printStackTrace();
-                      Log.i("OpenCPN", "Exception 2");
+                      Log.i("OpenCPN", "AsyncTask IOException 2");
                       result = "NOK";
                   }
               }
@@ -2177,12 +2191,13 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
   }
 
 
-  public String doHttpPostAsync( final String url, final String encodedData) {
+  public String doHttpPostAsync( final String url, final String encodedData, final String timeoutMsec) {
+      //Log.i("OpenCPN", "doHttpPostAsync start ");
       // Clear the data
       g_postActive = false;
       g_postResult = "";
 
-      new PostTask().execute(url, encodedData);
+      new PostTask().execute(url, encodedData, timeoutMsec);
 
       return "OK";
   }
@@ -2200,46 +2215,6 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
 
 
-
-/*
-
-
-
-          String text =null;
-          try {
-              Log.i("DEBUGGER_TAG", "TheTask");
-              HttpClient httpclient = new DefaultHttpClient();
-           HttpPost httppost = new HttpPost(arg0[0]);
-
-              List < NameValuePair > nameValuePairs = new ArrayList < NameValuePair > (5);
-              nameValuePairs.add(new BasicNameValuePair("user", "OpenCPN"));
-              nameValuePairs.add(new BasicNameValuePair("password", "<(d!.U5}j6._]CHH"));
-              httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-
-              HttpResponse resp = httpclient.execute(httppost);
-              HttpEntity ent = resp.getEntity();
-              text = EntityUtils.toString(ent);
-          }
-          catch (Exception e)
-          {
-               e.printStackTrace();
-          }
-
-          Log.i("DEBUGGER_TAG", "TheTask Text:" + text);
-          return text;
-      }
-
-      @Override
-      protected void onPostExecute(String result) {
-          // TODO Auto-generated method stub
-          super.onPostExecute(result);
-      }
-
-     }
-
-*/
-
     public String doHttpPostX( final String url, final String parameters ){
 
         // Creating an instance of HttpClient.
@@ -2252,7 +2227,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
            // Extract the parameters
            // Adding all form parameters in a List of type NameValuePair
-                Log.i("OpenCPN", "POST parms: " + parameters);
+                //Log.i("OpenCPN", "POST parms: " + parameters);
                 List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
                 StringTokenizer tkz = new StringTokenizer(parameters, ";");
@@ -2260,7 +2235,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                 while(tkz.hasMoreTokens()){
                     String p0 = tkz.nextToken();
                     String p1 = tkz.nextToken();
-                    Log.i("OpenCPN", "parms: " + p0 + "  " + p1);
+                    //Log.i("OpenCPN", "parms: " + p0 + "  " + p1);
                     nvps.add(new BasicNameValuePair(p0, p1));
                 }
 
@@ -2279,7 +2254,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
            // Executing the request.
                 HttpResponse response = httpclient.execute(httpost);
 
-                Log.i("OpenCPN", "POST Response Status line :" + response.getStatusLine());
+                //Log.i("OpenCPN", "POST Response Status line :" + response.getStatusLine());
 
                 try {
                     // Do the needful with entity.
@@ -2290,7 +2265,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                     StringBuffer result = new StringBuffer();
                     String line = "";
                     while ((line = rd.readLine()) != null) {
-                        Log.i("OpenCPN", line);
+                        //Log.i("OpenCPN", line);
                         result.append(line);
                     }
 

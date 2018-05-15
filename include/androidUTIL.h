@@ -117,7 +117,7 @@ extern int queryAndroidFileDownload( long dl_ID, wxString *result );
 extern void finishAndroidFileDownload();
 extern void cancelAndroidFileDownload( long dl_ID );
 
-extern wxString doAndroidPOST( const wxString &url, wxString &parms);
+extern wxString doAndroidPOST( const wxString &url, wxString &parms, int timeoutMsec);
 
 extern wxString getFontQtStylesheet(wxFont *font);
 extern wxSize getAndroidConfigSize();
