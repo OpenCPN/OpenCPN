@@ -1392,9 +1392,15 @@ void glTextureManager::BuildCompressedCache()
         /* skip if not kap */
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
-        if(chart_type != CHART_TYPE_KAP)
-            continue;
-        
+        if(chart_type == CHART_TYPE_PLUGIN){
+            if(cte.GetChartFamily() != CHART_FAMILY_RASTER)
+                continue;
+        }
+        else{
+            if(chart_type != CHART_TYPE_KAP)
+                continue;
+        }
+                
         wxString CompressedCacheFilePath = CompressedCachePath(ChartData->GetDBChartFileName(i));
         wxFileName fn(CompressedCacheFilePath);
         //        if(fn.FileExists()) /* skip if file exists */
