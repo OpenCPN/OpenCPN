@@ -4905,8 +4905,13 @@ void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion
 
 void ChartPlugInWrapper::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
-    if(m_ppicb)
+    if(m_ppicb) {
         m_ppicb->SetColorScheme(cs, bApplyImmediate);
+    }
+    m_global_color_scheme = cs;
+    //      Force a new thumbnail
+    if(pThumbData)
+        pThumbData->pDIBThumb = NULL;
 }
 
 
