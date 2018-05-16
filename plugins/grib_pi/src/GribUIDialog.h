@@ -115,6 +115,11 @@ public:
     wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName, double scale_factor);
     void OpenFileFromJSON( wxString json);
         
+    // 
+    double getTimeInterpolatedValue ( int idx, double lon, double lat, wxDateTime t);
+    bool getTimeInterpolatedValues ( double &M, double &A, int idx1, int idx2, double lon, double lat, wxDateTime t);
+
+
     wxWindow *pParent;
     GribOverlaySettings m_OverlaySettings;
 
