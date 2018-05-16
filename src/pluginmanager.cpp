@@ -130,6 +130,8 @@ extern int              g_chart_zoom_modifier_vector;
 extern double           g_display_size_mm;
 extern bool             g_bopengl;
 
+extern ChartGroupArray  *g_pGroupArray;
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -533,13 +535,15 @@ bool PlugInManager::CallLateInit(void)
             case 112:
             case 113:
             case 114:
+            case 115:
                 if(pic->m_cap_flag & WANTS_LATE_INIT) {
                     wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
                     msg += pic->m_plugin_file;
                     wxLogMessage(msg);
 
                     opencpn_plugin_110* ppi = dynamic_cast<opencpn_plugin_110*>(pic->m_pplugin);
-                    ppi->LateInit();
+                    if (ppi)
+                        ppi->LateInit();
                     }
                 break;
         }
@@ -565,6 +569,7 @@ void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxStr
                 case 112:
                 case 113:
                 case 114:
+		case 115:
                 {
                     opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
                     if(ppi)
@@ -1335,6 +1340,9 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     case 114:
         pic->m_pplugin = dynamic_cast<opencpn_plugin_114*>(plug_in);
         break;
+    case 115:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_115*>(plug_in);
+        break;
         
     default:
         break;
@@ -1400,13 +1408,13 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 112:
                     case 113:
                     case 114:
+		    case 115:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
                             ppi->RenderOverlay(*pdc, &pivp);
                         break;
                     }
-
                     default:
                         break;
                     }
@@ -1453,13 +1461,13 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 112:
                     case 113:
                     case 114:
+                    case 115:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
                             b_rendered = ppi->RenderOverlay(mdc, &pivp);
                         break;
                     }
-
                     default:
                     {
                         b_rendered = pic->m_pplugin->RenderOverlay(&mdc, &pivp);
@@ -1516,6 +1524,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 case 112:
                 case 113:
                 case 114:
+                case 115:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1547,20 +1556,20 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     case 112:
                     case 113:
                     case 114:
+                    case 115:
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
-                            if(ppi)
-                                if(ppi->MouseEventHook( event ))
-                                    bret = true;
-                            break;
-                        }
-                        
-                        default:
-                            break;
+                        if(ppi)
+                            if(ppi->MouseEventHook( event ))
+                                bret = true;
+                        break;
                     }
+                    default:
+                        break;
                 }
             }
         }
+    }
     }
     
     return bret;;
@@ -1580,13 +1589,13 @@ bool PlugInManager::SendKeyEventToPlugins( wxKeyEvent &event)
                     {
                         case 113:
                         case 114:
+                        case 115:
                         {
                             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
                             if(ppi && ppi->KeyboardEventHook( event ))
                                 bret = true;
                             break;
                         }
-                        
                         default:
                             break;
                     }
@@ -1642,6 +1651,7 @@ void NotifySetupOptionsPlugin( PlugInContainer *pic )
             case 112:
             case 113:
             case 114:
+            case 115:
             {
                 opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
                 if(ppi) {
@@ -1818,6 +1828,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 112:
                 case 113:
                 case 114:
+                case 115:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1897,13 +1908,13 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 case 112:
                 case 113:
                 case 114:
+                case 115:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
                         ppi->SetPositionFixEx(pfix_ex);
                     break;
                 }
-
                 default:
                     break;
                 }
@@ -1948,6 +1959,7 @@ void PlugInManager::SendConfigToAllPlugIns()
         v[_T("OpenCPN S52PLIB ShowSoundings")] = ps52plib->GetShowSoundings();
         v[_T("OpenCPN S52PLIB ShowLights")] = !ps52plib->GetLightsOff();
         v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
+        v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfDataOn();
         v[_T("OpenCPN S52PLIB DisplayCategory")] = ps52plib->GetDisplayCategory();
     }
 #endif    
@@ -2709,6 +2721,11 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             ChartData = new ChartDB();
             ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
+            // Update group contents
+            if(g_pGroupArray)
+                ChartData->ApplyGroupArray(g_pGroupArray);
+            
+            
             if(g_boptionsactive){
                 g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
             }
@@ -2741,7 +2758,11 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         delete ChartData;
         ChartData = new ChartDB();
         ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
-    
+
+        // Update group contents
+        if(g_pGroupArray)
+            ChartData->ApplyGroupArray(g_pGroupArray);
+        
         if(g_boptionsactive){
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
         }
@@ -3265,6 +3286,16 @@ wxArrayString GetWaypointGUIDArray( void )
     return result;
 }
 
+wxArrayString GetIconNameArray(void)
+{
+	wxArrayString result;
+
+	for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
+		wxString *ps = pWayPointMan->GetIconKey(i);
+		result.Add(*ps);
+	}
+	return result;
+}
 
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
@@ -3778,6 +3809,15 @@ opencpn_plugin_114::~opencpn_plugin_114(void)
 {
 }
 
+//    Opencpn_Plugin_115 Implementation
+opencpn_plugin_115::opencpn_plugin_115(void *pmgr)
+: opencpn_plugin_114(pmgr)
+{
+}
+
+opencpn_plugin_115::~opencpn_plugin_115(void)
+{
+}
 
 //          Helper and interface classes
 
@@ -3858,8 +3898,10 @@ PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint
         m_pitemBoxSizer01->Layout();
         wxSize sel_size = pPluginPanel->GetSize();
 
+#ifndef __WXQT__        
         pPluginPanel->SetSelected( false );       // reset to unselected
         m_pitemBoxSizer01->Layout();
+#endif
         
         int dy = sel_size.y - nsel_size.y;
         dy += 10;                                 // fluff
@@ -4404,6 +4446,20 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
             m_Chart_Skew = m_ppicb->GetChartSkew();
             m_Chart_Scale = m_ppicb->GetNativeScale();
 
+            // We estimate ppm_avg as needed by raster texture cache logic...
+            // This number works for average BSB charts, scanned with average resolution
+            m_ppm_avg = 10000./m_ppicb->GetNativeScale();               // fallback value
+            
+            // Calcuculate a "better" ppm from the chart geo extent and raster size.
+            if( (fabs(m_Chart_Skew) < .01) && (CHART_FAMILY_RASTER == m_ChartFamily) ){
+                Extent extent;
+                if( GetChartExtent(&extent) ){
+                    double lon_range = extent.ELON - extent.WLON;
+                    if( (lon_range > 0) && (lon_range < 90.0) )              // Be safe about IDL crossing and huge charts
+                        m_ppm_avg = GetSize_X() / (lon_range * 1852 * 60);
+                }
+            }
+            
             bReadyToRender = m_ppicb->IsReadyToRender();
 
         }
@@ -4641,7 +4697,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
 
 #ifdef USE_S57
                     ps52plib->m_last_clip_rect = upd.GetRect();
-#endif
+#endif                    
 
 #ifndef USE_ANDROID_GLES2
                     glPushMatrix(); //    Adjust for rotation
@@ -4935,8 +4991,9 @@ void ChartPlugInWrapper::ComputeSourceRectangle(const ViewPort &VPoint, wxRect *
 
 double ChartPlugInWrapper::GetRasterScaleFactor(const ViewPort &vp)
 {
-    if(m_ppicb)
-        return m_ppicb->GetRasterScaleFactor();
+    if(m_ppicb){
+        return  (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
+     }
     else
         return 1.0;
 }

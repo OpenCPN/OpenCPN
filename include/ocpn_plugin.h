@@ -524,6 +524,14 @@ public:
 
 };
 
+class DECL_EXP opencpn_plugin_115 : public opencpn_plugin_114
+{
+public:
+    opencpn_plugin_115(void *pmgr);
+    virtual ~opencpn_plugin_115();
+    
+};
+
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
