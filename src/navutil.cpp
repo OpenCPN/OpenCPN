@@ -1358,7 +1358,7 @@ int MyConfig::LoadMyConfig()
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
     Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
-    g_colourTrackLineColour = GetGlobalColor( _T ( "CHMGD" ) );
+    g_colourTrackLineColour = wxColour( 197, 69, 195 );  //CHMGD
     wxString l_wxsTrackLineColour;
     Read( _T( "TrackLineColour" ), &l_wxsTrackLineColour );
     g_colourTrackLineColour.Set( l_wxsTrackLineColour );
