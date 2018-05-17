@@ -633,7 +633,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
+static inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
 {
     double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
     double x3 = line2.m_p1.x, y3 = line2.m_p1.y, x4 = line2.m_p2.x, y4 = line2.m_p2.y;
@@ -643,15 +643,16 @@ inline bool my_intersects( const wxLineF &line1, const wxLineF &line2 )
     double bx = x3 - x4, by = y3 - y4;
     double cx = x1 - x3, cy = y1 - y3;
 
+#  define INTER_LIMIT 1e-7
     double denominator = ay * bx - ax * by;
     if( denominator < 1e-10 ) {
-        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > 1e-5)
+        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > INTER_LIMIT)
+            return false; /* different intercepts, no intersection */
+        if(fabs((x1*ay - ax*y1)*by - (x3*by - bx*y3)*ay) > INTER_LIMIT)
             return false; /* different intercepts, no intersection */
 
         return true;
     }
-
-#  define INTER_LIMIT 1e-7
 
     const double reciprocal = 1 / denominator;
     const double na = ( by * cx - bx * cy ) * reciprocal;
