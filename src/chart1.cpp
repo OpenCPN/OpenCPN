@@ -2431,10 +2431,6 @@ extern ocpnGLOptions g_GLOptions;
         g_MainToolbar->Raise();
 #endif
 
-    // Setup Tides/Currents to settings present at last shutdown
-    gFrame->ShowTides( g_bShowTide );
-    gFrame->ShowCurrents( g_bShowCurrent );
- 
     // Start delayed initialization chain after 100 milliseconds
 //    gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
@@ -6753,6 +6749,13 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
 
             if(g_pi_manager)
                 g_pi_manager->SendConfigToAllPlugIns();
+            
+            // Do some final UI setups
+            
+            // Setup Tides/Currents to settings present at last shutdown
+            // We defer this to allow the Font cacheing logic on QT builds to settle before rendering text.    
+            gFrame->ShowTides( g_bShowTide );
+            gFrame->ShowCurrents( g_bShowCurrent );
             
             wxLogMessage( wxString::Format(_T("OpenCPN Startup in %ld ms."), init_sw.Time() ) );
             break;
