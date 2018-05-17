@@ -5186,8 +5186,12 @@ void options::CreateControls(void) {
 }
 
 void options::SetInitialPage(int page_sel) {
-  m_pListbook->SetSelection(page_sel);
-
+  
+  if(page_sel < (int)m_pListbook->GetPageCount())
+    m_pListbook->SetSelection(page_sel);
+  else
+    m_pListbook->SetSelection(0);
+  
   for (size_t i = 0; i < m_pListbook->GetPageCount(); i++) {
     wxNotebookPage* pg = m_pListbook->GetPage(i);
     wxNotebook* nb = dynamic_cast<wxNotebook*>(pg);
