@@ -956,7 +956,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     //    Calculate AIS target Position Predictor, using global static variable for length of vector
 
     float pred_lat, pred_lon;
-    spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
+    spherical_ll_gc_ll( td->Lat, td->Lon, td->COG.degrees(), target_sog * g_ShowCOG_Mins / 60., &pred_lat, &pred_lon );
 
     //    Is predicted point in the VPoint?
     if( vp.GetBBox().Contains( pred_lat,  pred_lon ) )
@@ -992,7 +992,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
             //    Use a 100 pixel vector to calculate angle
             float angle_distance_nm = ( 100. / vp.view_scale_ppm ) / 1852.;
             float angle_lat, angle_lon;
-            spherical_ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
+            spherical_ll_gc_ll( td->Lat, td->Lon, td->COG.degrees(), angle_distance_nm, &angle_lat, &angle_lon );
 
             wxPoint AnglePoint;
             GetCanvasPointPix(vp, cp, angle_lat, angle_lon, &AnglePoint );
@@ -1205,7 +1205,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
         //  Calculate the point of CPA for target
         double tcpa_lat, tcpa_lon;
-        ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
+        ll_gc_ll( td->Lat, td->Lon, td->COG.degrees(), target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
         wxPoint tCPAPoint;
         wxPoint TPoint = TargetPoint;
         GetCanvasPointPix(vp, cp, tcpa_lat, tcpa_lon, &tCPAPoint );
@@ -1373,7 +1373,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
             //      Draw RateOfTurn Vector
             if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && (!g_bShowScaled) ) {
-                float cog_angle = td->COG *PI/180.;
+                float cog_angle = td->COG.radians();
                 
                 float theta2 = theta;           // ownship drawn angle
                  if (td->SOG >= g_ShowMoored_Kts )
@@ -1687,7 +1687,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
                 int w, h;
                 dc.GetTextExtent( tgt_name, &w, &h );
 
-                if ( ( td->COG > 90 ) && ( td->COG < 180 ) )
+                if ( ( td->COG.decimal() > 90 ) && ( td->COG.decimal() < 180 ) )
                     dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y-h );
                 else
                     dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y+0.5*h );

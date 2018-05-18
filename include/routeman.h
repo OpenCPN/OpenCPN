@@ -86,7 +86,7 @@ public:
       bool ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint = NULL);
       bool ActivateRoutePoint(Route *pA, RoutePoint *pRP);
       bool ActivateNextPoint(Route *pr, bool skipped);
-      RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, double cog, double sog);
+      RoutePoint *FindBestActivatePoint(Route *pR, double lat, double lon, TrueHeading cog, double sog);
 
       bool UpdateProgress();
       bool UpdateAutopilot();
@@ -97,11 +97,11 @@ public:
       Route *GetpActiveRoute(){ return pActiveRoute;}
       RoutePoint *GetpActivePoint(){ return pActivePoint;}
       double GetCurrentRngToActivePoint(){ return CurrentRngToActivePoint;}
-      double GetCurrentBrgToActivePoint(){ return CurrentBrgToActivePoint;}
+      TrueHeading GetCurrentBrgToActivePoint(){ return CurrentBrgToActivePoint;}
       double GetCurrentRngToActiveNormalArrival(){ return CurrentRangeToActiveNormalCrossing;}
       double GetCurrentXTEToActivePoint(){ return CurrentXTEToActivePoint;}
       void   ZeroCurrentXTEToActivePoint();
-      double GetCurrentSegmentCourse(){ return CurrentSegmentCourse;}
+      TrueHeading GetCurrentSegmentCourse(){ return CurrentSegmentCourse;}
       int   GetXTEDir(){ return XTEDir;}
 
       wxPen   * GetRoutePen(void){return m_pRoutePen;}
@@ -126,17 +126,17 @@ private:
       MyApp       *m_pparent_app;
       Route       *pActiveRoute;
       RoutePoint  *pActivePoint;
-      double       RouteBrgToActivePoint;        //TODO all these need to be doubles
+      TrueHeading  RouteBrgToActivePoint;        //TODO all these need to be doubles
       double       CurrentSegmentBeginLat;
       double       CurrentSegmentBeginLon;
       double       CurrentRngToActivePoint;
-      double       CurrentBrgToActivePoint;
+      TrueHeading  CurrentBrgToActivePoint;
       double       CurrentXTEToActivePoint;
-      double       CourseToRouteSegment;
+      TrueHeading  CourseToRouteSegment;
       double       CurrentRangeToActiveNormalCrossing;
       RoutePoint  *pActiveRouteSegmentBeginPoint;
       RoutePoint  *pRouteActivatePoint;
-      double       CurrentSegmentCourse;
+      TrueHeading CurrentSegmentCourse;
       int         XTEDir;
       bool        m_bArrival;
       wxPen       *m_pRoutePen;

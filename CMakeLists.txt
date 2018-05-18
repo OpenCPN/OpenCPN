@@ -1205,7 +1205,7 @@ SET(HDRS
                 include/FlexHash.h
                 include/iENCToolbar.h
                 include/mbtiles.h
-
+                include/angle.h
 )
 
 SET(SRCS

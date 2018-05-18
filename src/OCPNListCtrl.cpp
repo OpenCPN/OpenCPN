@@ -137,26 +137,19 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
             }
 
             case tlBRG: {
-                if( pAISTarget->b_positionOnceValid && bGPSValid && ( pAISTarget->Brg >= 0. )
+                if( pAISTarget->b_positionOnceValid && bGPSValid && pAISTarget->Brg.valid()
                         && ( fabs( pAISTarget->Lat ) < 85. ) ) {
-                    int brg = (int) wxRound( pAISTarget->Brg );
-                    if( pAISTarget->Brg > 359.5 ) brg = 0;
-
-                    ret.Printf( _T("%03d"), brg );
+                    ret.Printf( _T("%03d"), pAISTarget->Brg.decimal() );
                 } else
                     ret = _("-");
                 break;
             }
 
             case tlCOG: {
-                if( ( pAISTarget->COG >= 360.0 ) || ( pAISTarget->Class == AIS_ATON )
+                if( ( !pAISTarget->COG.valid() ) || ( pAISTarget->Class == AIS_ATON )
                         || ( pAISTarget->Class == AIS_BASE ) ) ret = _("-");
-                else {
-                    int crs = wxRound( pAISTarget->COG );
-                    if( crs == 360 ) ret.Printf( _T("  000") );
-                    else
-                        ret.Printf( _T("  %03d"), crs );
-                }
+                else
+                    ret.Printf( _T("  %03d"), pAISTarget->COG.decimal() );
                 break;
             }
 

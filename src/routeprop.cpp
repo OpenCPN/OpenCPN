@@ -1944,21 +1944,21 @@ bool RouteProp::UpdateProperties()
             DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
 
             // calculation of course at current WayPoint.
-            double course=10, tmp_leg_dist=23;
+            double rawCourse=10, tmp_leg_dist=23;
             wxRoutePointListNode *next_node = node->GetNext();
             RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
             if (_next_prp )
             {
-            DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+            DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &rawCourse, &tmp_leg_dist );
             }else
             {
-              course = 0.0;
+              rawCourse = 0.0;
               tmp_leg_dist = 0.0;
             }
 
-            prp->SetCourse(course); // save the course to the next waypoint for printing.
+            prp->SetCourse(rawCourse); // save the course to the next waypoint for printing.
             // end of calculation
-
+            TrueHeading course = TrueHeading::FromDegrees(rawCourse);
 
             t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
             if( arrival )
@@ -1981,9 +1981,9 @@ bool RouteProp::UpdateProperties()
                 if( enroute ) {
                     double latAverage = (prp->m_lat + slat)/2;
                     double lonAverage = (prp->m_lon + slon)/2;
-                    double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
+                    MagneticHeading varBrg = gFrame->GetMag( TrueHeading::FromDegrees(brg), latAverage, lonAverage);
                 
-                    t.Printf( _T("%03.0f Deg. M"), varBrg );
+                    t.Printf( _T("%03.0f Deg. M"), varBrg.degrees() );
                 } else
                     t = nullify;
 
@@ -2006,9 +2006,9 @@ bool RouteProp::UpdateProperties()
 
                         double latAverage = (prp->m_lat + next_lat)/2;
                         double lonAverage = (prp->m_lon + next_lon)/2;
-                        double varCourse = gFrame->GetMag( course, latAverage, lonAverage);
+                        MagneticHeading varCourse = gFrame->GetMag( course, latAverage, lonAverage);
 
-                        t.Printf( _T("%03.0f Deg. M"), varCourse );
+                        t.Printf( _T("%03.0f Deg. M"), varCourse.degrees() );
                         m_wpList->SetItem( item_line_index, cols[COURSE_MAGNETIC], t );
                     }
                     else
@@ -2016,7 +2016,7 @@ bool RouteProp::UpdateProperties()
                 }
                 if ( g_bShowTrue ) {
                     if ( arrival ) {
-                        t.Printf( _T("%03.0f Deg. T"), course );
+                        t.Printf( _T("%03.0f Deg. T"), course.degrees() );
                         m_wpList->SetItem( item_line_index, cols[COURSE], t );
                     } else
                         m_wpList->SetItem( item_line_index, cols[COURSE], nullify );

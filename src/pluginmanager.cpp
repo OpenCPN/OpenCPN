@@ -3801,7 +3801,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
     pret->Class =           ptarget->Class;
     pret->NavStatus =       ptarget->NavStatus;
     pret->SOG =             ptarget->SOG;
-    pret->COG =             ptarget->COG;
+    pret->COG =             ptarget->COG.degrees();
     pret->HDG =             ptarget->HDG;
     pret->Lon =             ptarget->Lon;
     pret->Lat =             ptarget->Lat;
@@ -3810,7 +3810,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
     pret->IMO =             ptarget->IMO;
 
     pret->Range_NM =        ptarget->Range_NM;
-    pret->Brg =             ptarget->Brg;
+    pret->Brg =             ptarget->Brg.degrees();
 
     //      Per target collision parameters
     pret->bCPA_Valid =      ptarget->bCPA_Valid;

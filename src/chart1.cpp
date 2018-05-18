@@ -7223,23 +7223,38 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 }
 
-double MyFrame::GetMag(double a)
-{
-    if(!wxIsNaN(gVar)){
-        if((a - gVar) >360.)
-            return (a - gVar - 360.);
-        else
-            return ((a - gVar) >= 0.) ? (a - gVar) : (a - gVar + 360.);
+
+void MyFrame::AppendHeadingTo(wxString& out, TrueHeading brg) {
+    if( !brg.valid() ) {
+        out << "---";
+        return;
     }
-    else{
-        if((a - g_UserVar) >360.)
-            return (a - g_UserVar - 360.);
-        else
-            return ((a - g_UserVar) >= 0.) ? (a - g_UserVar) : (a - g_UserVar + 360.);
-    }
+    if( g_bShowMag )
+        out << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), GetMag( brg ).decimal() );
+    if( g_bShowTrue )
+        out << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), brg.decimal() );
 }
 
-double MyFrame::GetMag(double a, double lat, double lon)
+void MyFrame::AppendHeadingTo(wxString& out, TrueHeading brg, double lat1, double lon1, double lat2, double lon2) {
+    if( !brg.valid() ) {
+        out << "---";
+        return;
+    }
+    if( g_bShowMag ) {
+        // FIXME use a proper average after the latlon types have been introduced.
+        out << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), GetMag( brg, (lat1+lat2)/2, (lon1+lon2)/2 ).decimal() );
+    }
+    if( g_bShowTrue )
+        out << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), brg.decimal() );
+}
+
+MagneticHeading MyFrame::GetMag(TrueHeading a)
+{
+    double variance = wxIsNaN(gVar) ? g_UserVar : gVar;
+    return MagneticHeading(a)-MagneticHeading::FromDegrees(variance);
+}
+
+MagneticHeading MyFrame::GetMag(TrueHeading a, double lat, double lon)
 {
     double Variance = wxIsNaN( gVar ) ? g_UserVar : gVar;
     if(g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"))){
@@ -7254,10 +7269,7 @@ double MyFrame::GetMag(double a, double lat, double lon)
         if ( fabs(gQueryVar) < 360.0 )   // Don't use WMM variance if not updated yet
             Variance = gQueryVar;
     }
-    if((a - Variance ) > 360.)
-        return (a - Variance - 360.);
-    else
-        return ((a - Variance) >= 0.) ? (a - Variance) : (a - Variance + 360.);
+    return MagneticHeading(a)-MagneticHeading::FromDegrees(Variance);
 }
 
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date)
@@ -9168,7 +9180,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             {
                 v[0][_T("error")] = false;
                 v[0][_T("range")] = g_pRouteMan->GetCurrentRngToActivePoint();
-                v[0][_T("bearing")] = g_pRouteMan->GetCurrentBrgToActivePoint();
+                v[0][_T("bearing")] = g_pRouteMan->GetCurrentBrgToActivePoint().degrees();
                 v[0][_T("XTE")] = g_pRouteMan->GetCurrentXTEToActivePoint();
                 v[0][_T("active_route_GUID")] = g_pRouteMan->GetpActiveRoute()->m_RouteNameString;
                 v[0][_T("active_waypoint_lat")] = g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLatitude();
@@ -9683,15 +9695,8 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
             else
                 sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
-            wxString cogs;
-            if( wxIsNaN(gCog) )
-                cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
-            else {
-                if( g_bShowTrue )
-                    cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gCog );
-                if( g_bShowMag )
-                    cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( gCog ) );
-            }
+            wxString cogs("COG ");
+            AppendHeadingTo(cogs, TrueHeading::FromDegrees(gCog));
 
             sogcog.Append( cogs );
             SetStatusText( sogcog, STAT_FIELD_SOGCOG );

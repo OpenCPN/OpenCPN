@@ -29,6 +29,7 @@
 #include <wx/datetime.h>
 
 #include "ais.h"
+#include "angle.h"
 
 void make_hash_ERI(int key, const wxString & description);
 void clear_hash_ERI( void );
@@ -58,7 +59,7 @@ public:
     int                       SyncState;
     int                       SlotTO;
     double                    SOG;
-    double                    COG;
+    TrueHeading               COG;
     double                    HDG;
     double                    Lon;
     double                    Lat;
@@ -119,7 +120,7 @@ public:
     bool                      b_in_ack_timeout;
 
     double                    Range_NM;
-    double                    Brg;
+    TrueHeading               Brg;
 
     wxString                  MSG_14_text;
 

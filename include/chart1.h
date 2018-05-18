@@ -37,6 +37,7 @@
 #include "wx/msw/private.h"
 #endif
 
+#include "angle.h"
 #include "ocpn_types.h"
 #include "viewport.h"
 #include "nmea0183.h"
@@ -455,10 +456,14 @@ class MyFrame: public wxFrame
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
 
     bool CheckGroup(int igroup);
-    double GetMag(double a);
-    double GetMag(double a, double lat, double lon);
+
+    void AppendHeadingTo(wxString& out, TrueHeading brg);
+    void AppendHeadingTo(wxString& out, TrueHeading brg, double lat1, double lon1, double lat2, double lon2);
+
+    MagneticHeading GetMag(TrueHeading a);
+    MagneticHeading GetMag(TrueHeading a, double lat, double lon);
     bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
-    
+
     void DestroyPersistentDialogs();
     void TouchAISActive(void);
     void UpdateAISTool(void);

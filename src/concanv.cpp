@@ -54,7 +54,6 @@ extern MyFrame          *gFrame;
 extern bool             g_bShowActiveRouteHighway;
 extern double           gCog;
 extern double           gSog;
-extern bool             g_bShowTrue, g_bShowMag;
 
 bool             g_bShowRouteTotal;
 
@@ -271,15 +270,8 @@ void ConsoleCanvas::UpdateRouteData()
             float rng = g_pRouteMan->GetCurrentRngToActivePoint();
 
             // Brg to the next waypoint
-            float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
-            if( dcog >= 359.5 )
-                dcog = 0;
-            
             wxString cogstr;
-            if( g_bShowTrue )
-                cogstr << wxString::Format( wxString("%6.0f", wxConvUTF8 ), dcog );
-            if( g_bShowMag )
-                cogstr << wxString::Format( wxString("%6.0f(M)", wxConvUTF8 ), gFrame->GetMag( dcog ) );
+            gFrame->AppendHeadingTo(cogstr, g_pRouteMan->GetCurrentBrgToActivePoint());
             
             pBRG->SetAValue( cogstr );
 
@@ -290,7 +282,7 @@ void ConsoleCanvas::UpdateRouteData()
             if( !wxIsNaN(gCog) && !wxIsNaN(gSog) )
             {
                 double BRG;
-                BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
+                BRG = g_pRouteMan->GetCurrentBrgToActivePoint().degrees();
                 VMG = gSog * cos( ( BRG - gCog ) * PI / 180. ) ;
                 str_buf.Printf( _T("%6.2f"), toUsrSpeed( VMG ) );
             }
@@ -697,7 +689,7 @@ void CDI::OnPaint( wxPaintEvent& event )
     int pix_per_xte = 120;
 
     if( g_pRouteMan->GetpActiveRoute() ) {
-        double angle = 90 - ( g_pRouteMan->GetCurrentSegmentCourse() - gCog );
+        double angle = 90 - ( g_pRouteMan->GetCurrentSegmentCourse().degrees() - gCog );
 
         double dy = path_length * sin( angle * PI / 180. );
         double dx = path_length * cos( angle * PI / 180. );

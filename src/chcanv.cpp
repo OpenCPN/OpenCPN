@@ -292,7 +292,6 @@ extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OCPN_Sound        g_anchorwatch_sound;
 
-extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
@@ -2393,15 +2392,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     << _(" to ") << segShow_point_b->GetName()
                     << _T("\n");
 
-                    if( g_bShowTrue )
-                        s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-                    if( g_bShowMag ){
-                        double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat)/2;
-                        double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon)/2;
-                        double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
-                        
-                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-                    }
+                    gFrame->AppendHeadingTo(s, TrueHeading::FromDegrees(brg),
+                        segShow_point_a->m_lat, segShow_point_a->m_lon,
+                        segShow_point_b->m_lat, segShow_point_b->m_lon);
 
                     s << FormatDistanceAdaptive( dist );
 
@@ -2512,16 +2505,9 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pt->Length())
                     << _T("\n");
 
-                    if( g_bShowTrue )
-                        s << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-                    if( g_bShowMag ){
-                        double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat)/2;
-                        double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon)/2;
-                        double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
-
-                        s << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-                    }
-
+                    gFrame->AppendHeadingTo(s, TrueHeading::FromDegrees(brg),
+                                            segShow_point_a->m_lat, segShow_point_a->m_lon,
+                                            segShow_point_b->m_lat, segShow_point_b->m_lon);
                     s << FormatDistanceAdaptive( dist );
 
                     if(segShow_point_a->GetTimeString() && segShow_point_b->GetTimeString()){
@@ -2638,11 +2624,7 @@ void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
     double brg, dist;
     wxString s;
     DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
-    if( g_bShowMag )
-        s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( brg ) );
-    else
-        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-    
+    gFrame->AppendHeadingTo(s, TrueHeading::FromDegrees(brg));
     s << FormatDistanceAdaptive( dist );
     
     // CUSTOMIZATION - LIVE ETA OPTION
@@ -7942,16 +7924,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        if( g_bShowTrue )
-            routeInfo << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)brg );
-        if( g_bShowMag ){
-            double latAverage = (m_cursor_lat + render_lat)/2;
-            double lonAverage = (m_cursor_lon + render_lon)/2;
-            double varBrg = gFrame->GetMag( brg, latAverage, lonAverage);
-            
-            routeInfo << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)varBrg );
-        }
-
+        gFrame->AppendHeadingTo(routeInfo, TrueHeading::FromDegrees(brg), m_cursor_lat, m_cursor_lon, render_lat, render_lon);
         routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
 
         wxString s0;

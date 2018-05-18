@@ -29,8 +29,6 @@ extern ChartCanvas *cc1;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
-extern bool g_bShowMag;
-extern bool g_bShowTrue;
 extern MyFrame *gFrame;
 extern bool g_bAISShowTracks;
 
@@ -93,7 +91,6 @@ AIS_Target_Data::AIS_Target_Data()
     b_show_AIS_CPA = false;
 
     SOG = 555.;
-    COG = 666.;
     HDG = 511.;
     ROTAIS = -128;
     Lat = 0.;
@@ -117,7 +114,6 @@ AIS_Target_Data::AIS_Target_Data()
     TCPA = 100;
 
     Range_NM = -1.;
-    Brg = -1.;
 
     DimA = DimB = DimC = DimD = 0;;
 
@@ -285,8 +281,7 @@ wxString AIS_Target_Data::GetFullName( void )
     
     return retName;
 }
-    
-    
+
 wxString AIS_Target_Data::BuildQueryResult( void )
 {
     wxString html;
@@ -546,20 +541,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
 
         if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS ) {
-            int crs = wxRound( COG );
-            if( crs < 360 ) {
-                wxString magString, trueString;
-                if( g_bShowMag )
-                    magString << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
-                if( g_bShowTrue )
-                    trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) crs );
-                
-                courseStr << trueString << magString;
-            }   
-            else if( COG == 360.0 )
-                courseStr = _T("---");
-            else if( crs == 360 )
-                courseStr = _T("0&deg;");
+            gFrame->AppendHeadingTo(courseStr, COG);
 
             double speed_show = toUsrSpeed( SOG );
             
@@ -600,18 +582,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     else
         rngStr = _("---");
 
-    int brg = (int) wxRound( Brg );
-    if( Brg > 359.5 )
-        brg = 0;
-    if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) ){
-        wxString magString, trueString;
-        if( g_bShowMag )
-            magString << wxString::Format( wxString("%03d°(M)", wxConvUTF8 ), (int)gFrame->GetMag( Brg ) );
-        if( g_bShowTrue )
-            trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) Brg );
-        
-        brgStr << trueString << magString;
-    }   
+    if( b_positionOnceValid && bGPSValid && Brg.valid() && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) )
+        gFrame->AppendHeadingTo(brgStr, Brg);
     else
         brgStr = _("---");
 
@@ -769,23 +741,9 @@ wxString AIS_Target_Data::GetRolloverString( void )
         else
             result << wxString::Format( _T("SOG %.0f "), speed_show ) << getUsrSpeedUnit() << _T(" ");
         
-        int crs = wxRound( COG );
-        if( b_positionOnceValid ) {
-            if( crs < 360 ) {
-                wxString magString, trueString;
-                if( g_bShowMag )
-                    magString << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetMag( crs ) );
-                if( g_bShowTrue )
-                    trueString << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int) crs );
-                
-                result << trueString << magString;    
-            }
-                
-            else if( COG == 360.0 )
-                result << _(" COG Unavailable");
-            else if( crs == 360 )
-                result << wxString( " COG 000°", wxConvUTF8 );
-        } else
+        if( b_positionOnceValid )
+            gFrame->AppendHeadingTo(result, COG);
+        else
             result << _(" COG Unavailable");
     }
 

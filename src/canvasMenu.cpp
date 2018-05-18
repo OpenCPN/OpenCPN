@@ -1219,7 +1219,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         if(m_pSelectedRoute){
             if(wxNOT_FOUND == m_pSelectedRoute->m_RouteNameString.Find(_T("MOB")) ){
                 best_point = g_pRouteMan->FindBestActivatePoint( m_pSelectedRoute, gLat,
-                                 gLon, gCog, gSog );
+                                 gLon, TrueHeading::FromDegrees(gCog), gSog );
             }
             else
                 best_point = m_pSelectedRoute->GetPoint( 2 );

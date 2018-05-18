@@ -164,38 +164,23 @@ static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarge
         }
 
         case tlBRG: {
-            int brg1 = wxRound( t1->Brg );
-            if( brg1 == 360 ) n1 = 0.;
-            else
-                n1 = brg1;
-
-            int brg2 = wxRound( t2->Brg );
-            if( brg2 == 360 ) n2 = 0.;
-            else
-                n2 = brg2;
-
+            // Round here.
+            n1 = t1->Brg.decimal();
+            n2 = t2->Brg.decimal();
             b_cmptype_num = true;
             break;
         }
 
         case tlCOG: {
-            if( ( t1->COG >= 360.0 ) || ( t1->Class == AIS_ATON ) || ( t1->Class == AIS_BASE ) ) n1 =
+            if( ( !t1->COG.valid() ) || ( t1->Class == AIS_ATON ) || ( t1->Class == AIS_BASE ) ) n1 =
                     -1.0;
-            else {
-                int crs = wxRound( t1->COG );
-                if( crs == 360 ) n1 = 0.;
-                else
-                    n1 = crs;
-            }
+            else
+                n1 = t1->COG.decimal();
 
-            if( ( t2->COG >= 360.0 ) || ( t2->Class == AIS_ATON ) || ( t2->Class == AIS_BASE ) ) n2 =
+            if( ( !t2->COG.valid() ) || ( t2->Class == AIS_ATON ) || ( t2->Class == AIS_BASE ) ) n2 =
                     -1.0;
-            else {
-                int crs = wxRound( t2->COG );
-                if( crs == 360 ) n2 = 0.;
-                else
-                    n2 = crs;
-            }
+            else
+                n2 = t2->COG.decimal();
 
             b_cmptype_num = true;
             break;

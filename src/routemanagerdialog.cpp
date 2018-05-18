@@ -1273,8 +1273,8 @@ void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
 
         ZoomtoRoute( route );
 
-        RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint( route, gLat, gLon, gCog,
-                gSog );
+        RoutePoint *best_point = g_pRouteMan->FindBestActivatePoint( route, gLat, gLon,
+                TrueHeading::FromDegrees(gCog), gSog );
         g_pRouteMan->ActivateRoute( route, best_point );
 //            g_pRouteMan->ActivateRoute(route);
     } else

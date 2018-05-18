@@ -111,6 +111,7 @@ extern bool             g_bAdvanceRouteWaypointOnArrivalOnly;
 extern Route            *pAISMOBRoute;
 extern bool             g_btouch;
 extern float            g_ChartScaleFactorExp;
+extern MyFrame          *gFrame;
 
 bool g_bPluginHandleAutopilotRoute;
 
@@ -225,7 +226,7 @@ wxArrayPtrVoid *Routeman::GetRouteArrayContaining( RoutePoint *pWP )
     }
 }
 
-RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, double cog,
+RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, TrueHeading cog,
         double sog )
 {
     if( !pR ) return NULL;
@@ -241,7 +242,7 @@ RoutePoint *Routeman::FindBestActivatePoint( Route *pR, double lat, double lon, 
         double brg, dist;
         DistanceBearingMercator( pn->m_lat, pn->m_lon, lat, lon, &brg, &dist );
 
-        double angle = brg - cog;
+        double angle = brg - cog.degrees();
         double soa = cos( angle * PI / 180. );
 
         double time_to_wp = dist / soa;
@@ -430,14 +431,13 @@ bool Routeman::UpdateProgress()
         toSM( pActivePoint->m_lat, pActivePoint->m_lon, gLat, gLon, &east, &north );
         double a = atan( north / east );
         if( fabs( pActivePoint->m_lon - gLon ) < 180. ) {
-            if( pActivePoint->m_lon > gLon ) CurrentBrgToActivePoint = 90. - ( a * 180 / PI );
-            else
-                CurrentBrgToActivePoint = 270. - ( a * 180 / PI );
+            if( pActivePoint->m_lon > gLon ) a = 90. - ( a * 180 / PI );
+            else a = 270. - ( a * 180 / PI );
         } else {
-            if( pActivePoint->m_lon > gLon ) CurrentBrgToActivePoint = 270. - ( a * 180 / PI );
-            else
-                CurrentBrgToActivePoint = 90. - ( a * 180 / PI );
+            if( pActivePoint->m_lon > gLon ) a = 270. - ( a * 180 / PI );
+            else a = 90. - ( a * 180 / PI );
         }
+        CurrentBrgToActivePoint = TrueHeading::FromDegrees(a);
 
 //      Calculate range using Great Circle Formula
 
@@ -479,22 +479,19 @@ bool Routeman::UpdateProgress()
         toSM( pActivePoint->m_lat, pActivePoint->m_lon, pActiveRouteSegmentBeginPoint->m_lat,
                 pActiveRouteSegmentBeginPoint->m_lon, &x2, &y2 );
 
+        // FIXME is this really the right way to calculate this? At least document here.
         double e1 = atan2( ( x2 - x1 ), ( y2 - y1 ) );
-        CurrentSegmentCourse = e1 * 180 / PI;
-        if( CurrentSegmentCourse < 0 ) CurrentSegmentCourse += 360;
+        if(e1 < 0)
+            e1 += 2*PI;
+        CurrentSegmentCourse = TrueHeading::FromRadians( e1 );
 
         //      Compute XTE direction
         double h = atan( vn.y / vn.x );
-        if( vn.x > 0 ) CourseToRouteSegment = 90. - ( h * 180 / PI );
-        else
-            CourseToRouteSegment = 270. - ( h * 180 / PI );
+        if( vn.x > 0 ) h = 90. - ( h * 180 / PI );
+        else h = 270. - ( h * 180 / PI );
+        CourseToRouteSegment = TrueHeading::FromDegrees(h);
 
-        h = CurrentBrgToActivePoint - CourseToRouteSegment;
-        if( h < 0 ) h = h + 360;
-
-        if( h > 180 ) XTEDir = 1;
-        else
-            XTEDir = -1;
+        XTEDir = ((CurrentBrgToActivePoint - CourseToRouteSegment).degrees() > 180 ) ? 1 : -1;
 
 //      Determine Arrival
 
@@ -634,7 +631,7 @@ bool Routeman::UpdateAutopilot()
                 m_NMEA0183.Rmb.DestinationPosition.Longitude.Set( pActivePoint->m_lon, _T("E") );
 
             m_NMEA0183.Rmb.RangeToDestinationNauticalMiles = CurrentRngToActivePoint;
-            m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
+            m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint.degrees();
             m_NMEA0183.Rmb.DestinationClosingVelocityKnots = gSog;
 
             if( m_bArrival ) m_NMEA0183.Rmb.IsArrivalCircleEntered = NTrue;
@@ -725,26 +722,26 @@ bool Routeman::UpdateAutopilot()
             if( g_bMagneticAPB && !wxIsNaN(gVar) ) {
                 
                 double brg1m = ((brg1 - gVar) >= 0.) ? (brg1 - gVar) : (brg1 - gVar + 360.);
-                double bapm = ((CurrentBrgToActivePoint - gVar) >= 0.) ? (CurrentBrgToActivePoint - gVar) : (CurrentBrgToActivePoint - gVar + 360.);
-                
+                MagneticHeading bapm = gFrame->GetMag(CurrentBrgToActivePoint);
+
                 m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
                 m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");
                 
-                m_NMEA0183.Apb.BearingPresentPositionToDestination = bapm;
+                m_NMEA0183.Apb.BearingPresentPositionToDestination = bapm.degrees();
                 m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("M");
                 
-                m_NMEA0183.Apb.HeadingToSteer = bapm;
+                m_NMEA0183.Apb.HeadingToSteer = bapm.degrees();
                 m_NMEA0183.Apb.HeadingToSteerUnits = _T("M");
             }
             else {
                 m_NMEA0183.Apb.BearingOriginToDestination = brg1;
                 m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("T");
 
-                m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint;
+                m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint.degrees();
                 m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("T");
             
 
-                m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
+                m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint.degrees();
                 m_NMEA0183.Apb.HeadingToSteerUnits = _T("T");
             }
             

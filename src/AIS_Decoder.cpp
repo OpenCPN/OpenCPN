@@ -84,8 +84,6 @@ extern double gLon;
 extern double gCog;
 extern double gSog;
 extern double gHdt;
-extern double gHdm;
-extern double gVar;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 extern ArrayOfMMSIProperties   g_MMSI_Props_Array;
@@ -383,10 +381,10 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
                     pos->kLon = NAN;
                 }
 
-                if(TargetData.COG == 360.0)
+                if(!TargetData.COG.valid())
                     pos->kCog = NAN;
                 else
-                    pos->kCog = TargetData.COG;
+                    pos->kCog = TargetData.COG.degrees();
 
 
                 if(TargetData.SOG > 102.2)
@@ -848,7 +846,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->Lat = gpsg_lat;
                 pTargetData->Lon = gpsg_lon;
                 pTargetData->b_positionOnceValid = true;
-                pTargetData->COG = gpsg_cog;
+                pTargetData->COG = TrueHeading::FromDegrees(gpsg_cog);
                 pTargetData->SOG = gpsg_sog;
                 pTargetData->ShipType = 52; // buddy
                 pTargetData->Class = AIS_GPSG_BUDDY;
@@ -868,7 +866,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                     if( !bnewtarget ) {
                         int age_of_last = ( now.GetTicks() - pTargetData->PositionReportTicks );
                         if ( age_of_last > 0 ) {
-                            ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, arpa_lat, arpa_lon, &pTargetData->COG, &pTargetData->SOG );
+                            double rawCog;
+                            ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, arpa_lat, arpa_lon, &rawCog, &pTargetData->SOG );
+                            pTargetData->COG = TrueHeading::FromDegrees(rawCog);
                             pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
                         }
                     }
@@ -879,7 +879,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                         ll_gc_ll( gLat, gLon, arpa_brg, arpa_dist, &pTargetData->Lat, &pTargetData->Lon );
                     else
                         arpa_lost = true;
-                    pTargetData->COG = arpa_cog;
+                    pTargetData->COG = TrueHeading::FromDegrees(arpa_cog);
                     pTargetData->SOG = arpa_sog;
                 }
                 pTargetData->PositionReportTicks = now.GetTicks();
@@ -906,7 +906,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 if( !bnewtarget ) {
                     int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
                     if ( age_of_last > 0 ) {
-                        ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, aprs_lat, aprs_lon, &pTargetData->COG, &pTargetData->SOG );
+                        double rawCog;
+                        ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, aprs_lat, aprs_lon, &rawCog, &pTargetData->SOG );
+                        pTargetData->COG = TrueHeading::FromDegrees(rawCog);
                         pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
                     }
                 }
@@ -1200,7 +1202,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
         m_ptentative_dsctarget->Lat = dsc_lat;
         m_ptentative_dsctarget->Lon = dsc_lon;
         m_ptentative_dsctarget->b_positionOnceValid = true; 
-        m_ptentative_dsctarget->COG = 0;
+        m_ptentative_dsctarget->COG.reset();
         m_ptentative_dsctarget->SOG = 0;
         m_ptentative_dsctarget->ShipType = dsc_fmt; // DSC report
         m_ptentative_dsctarget->Class = AIS_DSC;
@@ -1329,7 +1331,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 ptd->b_positionDoubtful = true;
 
             //    decode balance of message....
-            ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
+            ptd->COG = TrueHeading::FromDegrees(0.1 * ( bstr->GetInt( 117, 12 ) ));
             ptd->HDG = 1.0 * ( bstr->GetInt( 129, 9 ) );
 
             ptd->ROTAIS = bstr->GetInt( 43, 8 );
@@ -1421,7 +1423,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             } else
                 ptd->b_positionDoubtful = true;
 
-            ptd->COG = 0.1 * ( bstr->GetInt( 113, 12 ) );
+            ptd->COG = TrueHeading::FromDegrees(0.1 * ( bstr->GetInt( 113, 12 ) ));
             ptd->HDG = 1.0 * ( bstr->GetInt( 125, 9 ) );
 
             ptd->m_utc_sec = bstr->GetInt( 134, 6 );
@@ -1457,7 +1459,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             } else
                 ptd->b_positionDoubtful = true;
 
-            ptd->COG = 0.1 * (bstr->GetInt(113, 12));
+            ptd->COG = TrueHeading::FromDegrees(0.1 * (bstr->GetInt(113, 12)));
             ptd->HDG = 1.0 * (bstr->GetInt(125, 9));
             ptd->m_utc_sec = bstr->GetInt(134, 6);
             //From bit 140 and forward data as of mes 5
@@ -1563,7 +1565,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             } else
                 ptd->b_positionDoubtful = true;
 
-            ptd->COG = -1.;
+            ptd->COG.reset();
             ptd->HDG = 511;
             ptd->SOG = -1.;
 
@@ -1597,7 +1599,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                         ptd->b_positionDoubtful = true;
                     
             //    decode balance of message....
-            ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
+            ptd->COG = TrueHeading::FromDegrees(0.1 * ( bstr->GetInt( 117, 12 ) ));
 
             int alt_tent = bstr->GetInt( 39, 12 );
             ptd->altitude = alt_tent;
@@ -1615,7 +1617,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             ptd->IMO = 0;
             ptd->SOG = 0;
             ptd->HDG = 0;
-            ptd->COG = 0;
+            ptd->COG.reset();
             ptd->ROTAIS = -128;                 // i.e. not available
             ptd->DimA = bstr->GetInt( 220, 9 );
             ptd->DimB = bstr->GetInt( 229, 9 );
@@ -2080,9 +2082,6 @@ void AIS_Decoder::UpdateAllAlarms( void )
 
 void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
 {
-    ptarget->Range_NM = -1.;            // Defaults
-    ptarget->Brg = -1.;
-
     //    Compute the current Range/Brg to the target
     //    This should always be possible even if GPS data is not valid
     //    because O must always have a position for own-ship. Plugins need
@@ -2090,9 +2089,9 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     double brg, dist;
     DistanceBearingMercator( ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist );
     ptarget->Range_NM = dist;
-    ptarget->Brg = brg;
+    ptarget->Brg = TrueHeading::FromDegrees(brg);
 
-    if( dist <= 1e-5 ) ptarget->Brg = -1.0;             // Brg is undefined if Range == 0.
+    if( dist <= 1e-5 ) ptarget->Brg.reset();             // Brg is undefined if Range == 0.
 
     if( !ptarget->b_positionOnceValid || !bGPSValid ) {
         ptarget->bCPA_Valid = false;
@@ -2110,7 +2109,7 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     }
 
     double cpa_calc_ownship_cog = gCog;
-    double cpa_calc_target_cog = ptarget->COG;
+    double cpa_calc_target_cog = ptarget->COG.degrees();
 
 //    Ownship is not reporting valid SOG, so no way to calculate CPA
     if( wxIsNaN(gSog) || ( gSog > 102.2 ) ) {
@@ -2129,7 +2128,7 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     }
 
 //    Target is maybe anchored and not reporting COG
-    if( ptarget->COG == 360.0 ) {
+    if( !ptarget->COG.valid() ) {
         if( ptarget->SOG > 102.2 ) {
             ptarget->bCPA_Valid = false;
             return;
@@ -2314,7 +2313,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 //      So mark the target as lost, with unknown position, and make it not selectable
                 td->b_lost = true;
                 td->b_positionOnceValid = false;
-                td->COG = 360.0;
+                td->COG.reset();
                 td->SOG = 103.0;
                 td->HDG = 511.0;
                 td->ROTAIS = -128;
@@ -2710,7 +2709,7 @@ void AIS_Decoder::SendJSONMsg(AIS_Target_Data* pTarget)
     jMsg[wxS("lat")] = pTarget->Lat;
     jMsg[wxS("lon")] = pTarget->Lon;
     jMsg[wxS("sog")] = pTarget->SOG;
-    jMsg[wxS("cog")] = pTarget->COG;
+    jMsg[wxS("cog")] = pTarget->COG.degrees();
     jMsg[wxS("hdg")] = pTarget->HDG;
     jMsg[wxS("mmsi")] = pTarget->MMSI;
     jMsg[wxS("class")] = pTarget->Class;
