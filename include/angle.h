@@ -22,10 +22,10 @@
      of the class.
  */
 class Angle {
-    double deg = std::numeric_limits<double>::quiet_NaN();
+  double deg;
 
 public:
-  constexpr Angle() = default;
+  constexpr Angle() : deg(std::numeric_limits<double>::quiet_NaN()) {};
 
   static Angle FromRadians(double rad) {
       return Angle(checkRange(rad*radToDeg));
@@ -94,7 +94,7 @@ public:
 
 private:
     // Constructor with degrees private - use static creator functions.
-    constexpr Angle(double d) : deg(d) {}
+    constexpr explicit Angle(double d) : deg(d) {}
 
     // sigh, standard does not define pi, there are hacks, but..
     static constexpr double pi = 3.14159265358979323846264338327950288;
@@ -127,7 +127,7 @@ private:
     }
 };
 
-using MagneticHeading = Angle;
-using TrueHeading = Angle;
+typedef Angle MagneticHeading;
+typedef Angle TrueHeading;
 
 #endif // _ANGLE_H_
