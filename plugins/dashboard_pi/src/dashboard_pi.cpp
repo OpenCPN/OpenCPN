@@ -1882,16 +1882,33 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     wxStaticText* itemStaticTextDepthU = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Depth units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticTextDepthU, 0, wxEXPAND | wxALL, border_size );
-    wxString m_DepthUnitChoices[] = { _("Meters"), _("Feet"), _("Fathoms"), _("Centimeters"), _("Inches") };
+    wxString m_DepthUnitChoices[] = { _("Meters"), _("Feet"), _("Fathoms"), _("Inches"), _("Centimeters") };
     int m_DepthUnitNChoices = sizeof( m_DepthUnitChoices ) / sizeof( wxString );
     m_pChoiceDepthUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_DepthUnitNChoices, m_DepthUnitChoices, 0 );
     m_pChoiceDepthUnit->SetSelection( g_iDashDepthUnit - 3);
     itemFlexGridSizer04->Add( m_pChoiceDepthUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
-
-    wxStaticText* itemStaticDepthO = new wxStaticText(itemPanelNotebook02, wxID_ANY, _("Depth Offset (meters):"),
+    wxString dMess = wxString::Format(_("Depth Offset (%s):"),m_DepthUnitChoices[g_iDashDepthUnit-3]);
+    wxStaticText* itemStaticDepthO = new wxStaticText(itemPanelNotebook02, wxID_ANY, dMess,
         wxDefaultPosition, wxDefaultSize, 0);
+    double DepthOffset;
+    switch (g_iDashDepthUnit - 3) {
+    case 1:
+        DepthOffset = g_dDashDBTOffset * 3.2808399;
+        break;
+    case 2:
+        DepthOffset = g_dDashDBTOffset * 0.54680665;
+        break;
+    case 3:
+        DepthOffset = g_dDashDBTOffset * 39.3700787;
+        break;
+    case 4:
+        DepthOffset = g_dDashDBTOffset * 100;
+        break;
+    default:
+        DepthOffset = g_dDashDBTOffset;
+    }
     itemFlexGridSizer04->Add(itemStaticDepthO, 0, wxEXPAND | wxALL, border_size);
-    m_pSpinDBTOffset = new wxSpinCtrlDouble(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -100, 100, g_dDashDBTOffset, 0.1);
+    m_pSpinDBTOffset = new wxSpinCtrlDouble(itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, -100, 100, DepthOffset, 0.1);
     itemFlexGridSizer04->Add(m_pSpinDBTOffset, 0, wxALIGN_RIGHT | wxALL, 0);
 
     wxStaticText* itemStaticText0b = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Distance units:"),
@@ -1943,10 +1960,26 @@ void DashboardPreferencesDialog::SaveDashboardConfig()
     g_iDashSOGDamp = m_pSpinSOGDamp->GetValue();
     g_iUTCOffset = m_pChoiceUTCOffset->GetSelection() - 24;
     g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
+    double DashDBTOffset = m_pSpinDBTOffset->GetValue();
+    switch (g_iDashDepthUnit - 3) {
+    case 1:
+        g_dDashDBTOffset = DashDBTOffset / 3.2808399;
+        break;
+    case 2:
+        g_dDashDBTOffset = DashDBTOffset / 0.54680665;
+        break;
+    case 3:
+        g_dDashDBTOffset = DashDBTOffset / 39.3700787;
+        break;
+    case 4:
+        g_dDashDBTOffset = DashDBTOffset / 100;
+        break;
+    default:
+        g_dDashDBTOffset = DashDBTOffset;
+    }
     g_iDashDepthUnit = m_pChoiceDepthUnit->GetSelection() + 3;
     g_iDashDistanceUnit = m_pChoiceDistanceUnit->GetSelection() - 1;
     g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
-    g_dDashDBTOffset = m_pSpinDBTOffset->GetValue();
     if( curSel != -1 ) {
         DashboardWindowContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
