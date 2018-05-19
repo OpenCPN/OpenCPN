@@ -285,12 +285,14 @@ public class UnzipService extends IntentService {
                             FileOutputStream outStream = null;
 
                             if(nStrip > 0){
-                                fileName = "";
                                 String[] parts = ze.getName().split("\\/");
-                                for (int i = 1; i < parts.length; i++) {
-                                    fileName += parts[i];
-                                    if(i < (parts.length - 1)){
-                                        fileName += File.separator;
+                                if(parts.length > 1){
+                                fileName = "";
+                                    for (int i = 1; i < parts.length; i++) {
+                                        fileName += parts[i];
+                                        if(i < (parts.length - 1)){
+                                            fileName += File.separator;
+                                        }
                                     }
                                 }
 
@@ -332,7 +334,7 @@ public class UnzipService extends IntentService {
                                 try{
                                     outStream = new FileOutputStream(_targetLocation + File.separator + fileName);
                                 }catch(Exception e){
-                                    Log.i("OpenCPN", "UnzipService:unzip  Zip ExceptionA");
+                                    Log.i("OpenCPN", "UnzipService:unzip  Zip ExceptionA: " + _targetLocation + File.separator + fileName);
                                 }
                             }
 
