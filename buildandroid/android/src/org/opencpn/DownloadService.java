@@ -21,6 +21,7 @@ import android.os.ResultReceiver;
 import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
@@ -28,6 +29,8 @@ import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.opencpn.MySSLSocketFactory;
 
 public class DownloadService extends IntentService {
     public static final int UPDATE_PROGRESS = 8344;
@@ -91,18 +94,44 @@ public class DownloadService extends IntentService {
 
         long total = 0;
         int fileLength = -1;
+        InputStream input = null;
 
         if(null != outputStream){
         try {
             URL url = new URL(urlToDownload);
-            URLConnection connection = url.openConnection();
-            connection.connect();
+            if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
+                Log.i("OpenCPN", "Protocol(): " + url.getProtocol());
 
-            // this will be useful so that you can show a typical 0-100% progress bar
-            fileLength = connection.getContentLength();
+                if(url.getProtocol().equalsIgnoreCase("https")){
+                    HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-            // download the file
-            InputStream input = new BufferedInputStream(connection.getInputStream());
+                    // Force a TLSv1.2 connection
+                    MySSLSocketFactory myFact = new MySSLSocketFactory(connection.getSSLSocketFactory());
+                    connection.setSSLSocketFactory(myFact);
+
+                    connection.connect();
+                    fileLength = connection.getContentLength();
+                    input = new BufferedInputStream(connection.getInputStream());
+
+                }
+                else{
+                    URLConnection connection = url.openConnection();
+                    connection.connect();
+                    fileLength = connection.getContentLength();
+                    input = new BufferedInputStream(connection.getInputStream());
+                }
+
+            }
+            else{
+                URLConnection connection = url.openConnection();
+                connection.connect();
+
+                // this will be useful so that you can show a typical 0-100% progress bar
+                fileLength = connection.getContentLength();
+
+                // download the file from stream
+                input = new BufferedInputStream(connection.getInputStream());
+            }
 
 
             byte data[] = new byte[1024];
@@ -126,6 +155,7 @@ public class DownloadService extends IntentService {
             outputStream.close();
             input.close();
         } catch (IOException e) {
+            Log.i("OpenCPN", "Download Service Exception A ");
             e.printStackTrace();
         }
         }
