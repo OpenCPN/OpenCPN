@@ -4522,6 +4522,17 @@ void glChartCanvas::Render()
             b_newview = true;
             b_full = true;
         }
+        
+        // If no charts are to be rendered, we need to refresh the entire display
+        //  This fixes a problem with routes/tracks/marks rendering on pans at very small scale.
+        //  It is a workaround, so finding root cause should be considered a TODO
+        
+        if(VPoint.b_quilt){
+            ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
+            if(!chart)
+                b_full = true;
+        }
+            
 #endif        
         
          if( b_newview ) {
