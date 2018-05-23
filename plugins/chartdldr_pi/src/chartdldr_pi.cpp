@@ -1964,7 +1964,7 @@ bool ChartDldrGuiAddSourceDlg::ValidateUrl( const wxString Url, bool catalog_xml
     return re.Matches(Url);
 }
 
-wxString FormatBytes(double bytes)
+static wxString FormatBytes(double bytes)
 {
     return wxString::Format( _T("%.1fMB"), bytes / 1024 / 1024 );
 }
