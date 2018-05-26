@@ -1301,6 +1301,12 @@ SET(SRCS
                 src/iENCToolbar.cpp
                 src/mbtiles.cpp
     )
+IF(APPLE)
+    SET(SRCS ${SRCS}
+        src/DarkMode.mm
+        src/DarkMode.h
+    )
+ENDIF(APPLE)
 
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   SET(HDRS ${HDRS} include/crashprint.h )

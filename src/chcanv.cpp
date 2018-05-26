@@ -38,6 +38,10 @@
 #include "dychart.h"
 #include "OCPNPlatform.h"
 
+#ifdef __WXOSX__
+#include "DarkMode.h"
+#endif
+
 #include <wx/listimpl.cpp>
 
 #include "chcanv.h"
@@ -220,6 +224,8 @@ extern bool             g_bWayPointPreventDragging;
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bShowChartBar;
 extern bool             g_bInlandEcdis;
+
+extern bool             g_bDarkDecorations;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
@@ -10381,14 +10387,18 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
         if( cs == GLOBAL_COLOR_SCHEME_DAY || cs == GLOBAL_COLOR_SCHEME_RGB ) {
 #ifdef __WXOSX__
             window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
+            ctrl->SetBackgroundColour( window_back_color );
+            if( g_bDarkDecorations ) {
+                applyDarkAppearanceToWindow(ctrl->MacGetTopLevelWindowRef(), false, true, true);
+            }
 #else
             window_back_color = wxNullColour;
+            ctrl->SetBackgroundColour( window_back_color );
 #endif
 
             col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
         }
 
-        ctrl->SetBackgroundColour( window_back_color );
     }
 
     wxWindowList kids = ctrl->GetChildren();
