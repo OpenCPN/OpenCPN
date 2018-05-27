@@ -7363,6 +7363,9 @@ wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString& lang_dir) {
   } else if (lang_canonical == _T("zh_TW")) {
     dir_suffix = _T("zh_TW");
     return_string = wxString("正體字", wxConvUTF8);
+  } else if (lang_canonical == _T("zh_CN")) {
+      dir_suffix = _T("zh_CN");
+      return_string = wxString("Simplified Chinese", wxConvUTF8);
   } else if (lang_canonical == _T("ca_ES")) {
     dir_suffix = _T("ca_ES");
     return_string = wxString("Catalan", wxConvUTF8);
