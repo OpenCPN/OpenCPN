@@ -635,6 +635,52 @@ ENDIF(UNIX AND NOT QT_ANDROID)
 
 ENDIF (NOT WIN32 AND NOT APPLE)
 
+OPTION(OCPN_NEW_SERIAL "Use new serial communication implementation" ON)
+
+IF(OCPN_NEW_SERIAL)
+  if(APPLE)
+    find_library(IOKIT_LIBRARY IOKit)
+    find_library(FOUNDATION_LIBRARY Foundation)
+  endif()
+
+  ## Sources
+  set(serial_SRCS
+    src/serial/src/serial.cc
+    src/serial/include/serial/serial.h
+    src/serial/include/serial/v8stdint.h
+  )
+  if(APPLE)
+    # If OSX
+    list(APPEND serial_SRCS src/serial/src/impl/unix.cc)
+    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_osx.cc)
+  elseif(UNIX)
+    # If unix
+    list(APPEND serial_SRCS src/serial/src/impl/unix.cc)
+    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_linux.cc)
+  else()
+    # If windows
+    list(APPEND serial_SRCS src/serial/src/impl/win.cc)
+    list(APPEND serial_SRCS src/serial/src/impl/list_ports/list_ports_win.cc)
+  endif()
+
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/serial/include)
+
+  ## Add serial library
+  add_library(SERIAL ${serial_SRCS})
+  if(APPLE)
+    target_link_libraries(SERIAL ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
+  elseif(UNIX)
+    target_link_libraries(SERIAL rt pthread)
+  else()
+    target_link_libraries(SERIAL setupapi)
+  endif()
+
+  set(EXTRA_LIBS ${EXTRA_LIBS} SERIAL)
+  add_definitions(-DocpnUSE_NEWSERIAL)
+
+  message(STATUS "Using new serial library...")
+ENDIF(OCPN_NEW_SERIAL)
+
 OPTION(OCPN_USE_CURL "Use Curl libraries" ON)
 
 IF(OCPN_USE_CURL)

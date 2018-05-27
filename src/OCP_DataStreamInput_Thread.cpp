@@ -37,7 +37,7 @@
 #define DS_RX_BUFFER_SIZE 4096
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
-extern const wxEventType wxEVT_OCPN_THREADMSG;
+const wxEventType wxEVT_OCPN_THREADMSG = wxNewEventType();
 
 #include "chart1.h"
 extern MyFrame *gFrame;
@@ -54,7 +54,6 @@ typedef enum DS_ENUM_BUFFER_STATE
       DS_RX_BUFFER_EMPTY,
       DS_RX_BUFFER_FULL
 }_DS_ENUM_BUFFER_STATE;
-
 
 /**
  * This thread manages reading the data stream from the declared serial port.
@@ -102,6 +101,226 @@ OCP_DataStreamInput_Thread::~OCP_DataStreamInput_Thread(void)
 void OCP_DataStreamInput_Thread::OnExit(void)
 {
 }
+
+#ifdef ocpnUSE_NEWSERIAL
+
+size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(const wxString& string)
+{
+    size_t status;
+    status = m_serial.write(string.c_str(), string.Len());
+    
+    return status;
+}
+
+size_t OCP_DataStreamInput_Thread::WriteComPortPhysical(char *msg)
+{
+    ssize_t status;
+    status = m_serial.write((uint8_t*)msg, strlen(msg));
+    return status;
+}
+
+void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
+{
+    //    Signal the main program thread
+    OCPN_ThreadMessageEvent event(wxEVT_OCPN_THREADMSG, 0);
+    event.SetSString( std::string(msg.mb_str()));
+    if( gFrame )
+        gFrame->GetEventHandler()->AddPendingEvent(event);
+}
+
+bool OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
+{
+    try {
+        m_serial.setPort(com_name.ToStdString());
+        m_serial.setBaudrate(baud_rate);
+        m_serial.open();
+        m_serial.setTimeout(250, 250, 0, 250, 0);
+    } catch (std::exception &e) {
+        //std::cerr << "Unhandled Exception while opening serial port: " << e.what() << std::endl;
+    }
+    return m_serial.isOpen();
+}
+
+void OCP_DataStreamInput_Thread::CloseComPortPhysical()
+{
+    try {
+        m_serial.close();
+    } catch (std::exception &e) {
+        //std::cerr << "Unhandled Exception while closing serial port: " << e.what() << std::endl;
+    }
+}
+
+void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(const char *buf)
+{
+    if( m_pMessageTarget ) {
+        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+        Nevent.SetNMEAString( buf );
+        Nevent.SetStream( m_launcher );
+        
+        m_pMessageTarget->AddPendingEvent(Nevent);
+    }
+    
+    return;
+}
+
+bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString &msg)
+{
+    if(out_que.size() < OUT_QUEUE_LENGTH){
+        wxCharBuffer buf = msg.ToUTF8();
+        if(buf.data()){
+            char *qmsg = (char *)malloc(strlen(buf.data()) +1);
+            strcpy(qmsg, buf.data());
+            out_que.push(qmsg);
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void *OCP_DataStreamInput_Thread::Entry()
+{
+    
+    bool not_done = true;
+    bool nl_found = false;
+    wxString msg;
+    
+    
+    //    Request the com port from the comm manager
+    if (!OpenComPortPhysical(m_PortName, m_baud))
+    {
+        wxString msg(_T("NMEA input device open failed: "));
+        msg.Append(m_PortName);
+        ThreadMessage(msg);
+        goto thread_exit;
+    }
+    
+    m_launcher->SetSecThreadActive();               // I am alive
+    
+    //    The main loop
+    static size_t retries = 0;
+
+    while((not_done) && (m_launcher->m_Thread_run_flag > 0))
+    {
+        if(TestDestroy())
+            not_done = false;                               // smooth exit
+        
+        uint8_t next_byte = 0;
+        size_t newdata = -1;
+        if( m_serial.isOpen() ) {
+            try {
+                newdata = m_serial.read(&next_byte, 1);
+            } catch (std::exception &e) {
+                //std::cerr << "Serial read exception: " << e.what() << std::endl;
+                if(10 < retries++) {
+                    // We timed out waiting for the next character 10 times, let's close the port so that the reconnection logic kicks in and tries to fix our connection.
+                    CloseComPortPhysical();
+                    retries = 0;
+                }
+            }
+        } else {
+            // Reconnection logic. Let's try to reopen the port while waiting longer every time (until we simply keep trying every 2.5 seconds)
+            //std::cerr << "Serial port seems closed." << std::endl;
+            wxMilliSleep(250 * retries);
+            CloseComPortPhysical();
+            if(OpenComPortPhysical(m_PortName, m_baud))
+                retries = 0;
+            else if(retries < 10)
+                retries++;
+        }
+
+        if(newdata == 1)
+        {
+            nl_found = false;
+            *put_ptr++ = next_byte;
+            if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                put_ptr = rx_buffer;
+            
+            if(0x0a == next_byte)
+                nl_found = true;
+            
+            //    Found a NL char, thus end of message?
+            if(nl_found)
+            {
+                char *tptr;
+                char *ptmpbuf;
+                
+                //    Copy the message into a temporary _buffer
+                
+                tptr = tak_ptr;
+                ptmpbuf = temp_buf;
+                
+                while((*tptr != 0x0a) && (tptr != put_ptr))
+                {
+                    *ptmpbuf++ = *tptr++;
+                    
+                    if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                        tptr = rx_buffer;
+                    
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
+                    
+                }
+                if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
+                {
+                    *ptmpbuf++ = *tptr++;
+                    if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
+                        tptr = rx_buffer;
+                    
+                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun2");
+                    
+                    *ptmpbuf = 0;
+                    
+                    tak_ptr = tptr;
+                    
+                    //    Message is ready to parse and send out
+                    //    Messages may be coming in as <blah blah><lf><cr>.
+                    //    One example device is KVH1000 heading sensor.
+                    //    If that happens, the first character of a new captured message will the <cr>,
+                    //    and we need to discard it.
+                    //    This is out of spec, but we should handle it anyway
+                    if(temp_buf[0] == '\r')
+                        Parse_And_Send_Posn(&temp_buf[1]);
+                    else
+                        Parse_And_Send_Posn(temp_buf);
+                    
+                }
+                
+            }                   //if nl
+        }                       // if newdata > 0
+        
+        //      Check for any pending output message
+        
+        m_outCritical.Enter();
+        {
+            bool b_qdata = !out_que.empty();
+            
+            while(b_qdata){
+                
+                //  Take a copy of message
+                char *qmsg = out_que.front();
+                char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+                strncpy( msg, qmsg, MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+                out_que.pop();
+                free(qmsg);
+                
+                m_outCritical.Leave();
+                WriteComPortPhysical(msg);
+                m_outCritical.Enter();
+                
+                b_qdata = !out_que.empty();
+            } //while b_qdata
+        }
+        m_outCritical.Leave();
+
+    }
+thread_exit:
+    CloseComPortPhysical();
+    m_launcher->SetSecThreadInActive();             // I am dead
+    m_launcher->m_Thread_run_flag = -1;
+    
+    return 0;
+}
+#else //ocpnUSE_NEWSERIAL
 
 //      Sadly, the thread itself must implement the underlying OS serial port
 //      in a very machine specific way....
@@ -733,8 +952,6 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(const char *buf)
     return;
 }
 
-const wxEventType wxEVT_OCPN_THREADMSG = wxNewEventType();
-
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
     //    Signal the main program thread
@@ -1094,4 +1311,5 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 }
 
 #endif            // __WXMSW__
+#endif //ocpnUSE_NEWSERIAL
 

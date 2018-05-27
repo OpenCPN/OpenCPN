@@ -40,6 +40,10 @@
 
 #include "dsPortType.h"
 
+#ifdef ocpnUSE_NEWSERIAL
+#include "serial/serial.h"
+#endif
+
 #define OUT_QUEUE_LENGTH                20
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
@@ -68,6 +72,15 @@ public:
 
 
 private:
+#ifdef ocpnUSE_NEWSERIAL
+    serial::Serial m_serial;
+    void ThreadMessage(const wxString &msg);
+    bool OpenComPortPhysical(const wxString &com_name, int baud_rate);
+    void CloseComPortPhysical();
+    void Parse_And_Send_Posn(const char *s);
+    size_t WriteComPortPhysical(char *msg);
+    size_t WriteComPortPhysical(const wxString& string);
+#else
     void ThreadMessage(const wxString &msg);
     void Parse_And_Send_Posn(const char *s);
     int OpenComPortPhysical(const wxString &com_name, int baud_rate);
@@ -78,7 +91,7 @@ private:
     bool CheckComPortPhysical(int port_descriptor);
     
     void HandleASuccessfulRead( char *buf, int nread );
-    
+#endif
     wxCriticalSection       m_outCritical;
     wxEvtHandler            *m_pMessageTarget;
     DataStream              *m_launcher;

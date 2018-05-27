@@ -153,6 +153,10 @@
 #include "crashprint.h"
 #endif
 
+#ifdef ocpnUSE_NEWSERIAL
+#include "serial/serial.h"
+#endif
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY( ArrayOfCDI );
 
@@ -10766,7 +10770,25 @@ DEFINE_GUID(GUID_CLASS_COMPORT, 0x86e0d1e0L, 0x8089, 0x11d0, 0x9c, 0xe4, 0x08, 0
 wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
-
+#ifdef ocpnUSE_NEWSERIAL
+    std::vector<serial::PortInfo> ports = serial::list_ports();
+    for(std::vector<serial::PortInfo>::iterator it = ports.begin(); it != ports.end(); ++it) {
+        preturn->Add((*it).port);
+    }
+#ifdef __WXMSW__
+    //    Search for Garmin device driver on Windows platforms
+    HDEVINFO hdeviceinfo = INVALID_HANDLE_VALUE;
+    hdeviceinfo = SetupDiGetClassDevs( (GUID *) &GARMIN_DETECT_GUID, NULL, NULL,
+                                      DIGCF_PRESENT | DIGCF_INTERFACEDEVICE );
+    if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
+        
+        if(GarminProtocolHandler::IsGarminPlugged()){
+            wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Device.") );
+            preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
+        }
+    }
+#endif // __WXMSW__
+#else
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
 
     //Initialize the pattern table
@@ -11179,6 +11201,7 @@ wxArrayString *EnumerateSerialPorts( void )
 #endif
 
 #endif      //__WXMSW__
+#endif //ocpnUSE_NEWSERIAL
     return preturn;
 }
 
