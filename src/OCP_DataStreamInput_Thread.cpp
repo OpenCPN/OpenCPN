@@ -192,7 +192,7 @@ void *OCP_DataStreamInput_Thread::Entry()
         wxString msg(_T("NMEA input device open failed: "));
         msg.Append(m_PortName);
         ThreadMessage(msg);
-        goto thread_exit;
+        //goto thread_exit; // This means we will not be trying to connect = The device must be connected when the thread is created. Does not seem to be needed/what we want as the reconnection logic is able to pick it up whenever it actually appears (Of course given it appears with the expected device name).
     }
     
     m_launcher->SetSecThreadActive();               // I am alive
