@@ -211,10 +211,6 @@ class GribRecord
         double  getLatMax() const   { return latMax;}
         double  getLonMax() const   { return lonMax;}
 
-        // Is a point within the extent of the grid?
-        inline bool   isPointInMap(double x, double y) const;
-        inline bool   isXInMap(double x) const;
-        inline bool   isYInMap(double y) const;
         // Is there a value at a particular grid point ?
         inline bool   hasValue(int i, int j) const;
         // Is there a value that is not GRIB_NOTDEF ?
@@ -232,6 +228,12 @@ class GribRecord
         void   print();
         bool isFilled(){ return m_bfilled; }
         void setFilled(bool val=true){ m_bfilled = val;}
+
+    private:
+        // Is a point within the extent of the grid?
+        inline bool   isPointInMap(double x, double y) const;
+        inline bool   isXInMap(double x) const;
+        inline bool   isYInMap(double y) const;
 
     protected:
     //private:
