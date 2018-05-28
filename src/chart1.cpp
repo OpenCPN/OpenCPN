@@ -10773,7 +10773,12 @@ wxArrayString *EnumerateSerialPorts( void )
 #ifdef ocpnUSE_NEWSERIAL
     std::vector<serial::PortInfo> ports = serial::list_ports();
     for(std::vector<serial::PortInfo>::iterator it = ports.begin(); it != ports.end(); ++it) {
-        preturn->Add((*it).port);
+        wxString port((*it).port);
+        if( (*it).description.length() > 0 && (*it).description != "n/a" ) {
+            port.Append(_T(" - "));
+            port.Append((*it).description);
+        }
+        preturn->Add(port);
     }
 #ifdef __WXMSW__
     //    Search for Garmin device driver on Windows platforms
