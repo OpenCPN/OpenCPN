@@ -205,6 +205,7 @@ class GribRecord
         // coordiantes of grid point
         inline double  getX(int i) const   { return Lo1+i*Di;}
         inline double  getY(int j) const   { return La1+j*Dj;}
+        void    getXY(int i, int j, double *x, double *y) const { *x = getX(i); *y = getY(j);};
 
         double  getLatMin() const   { return latMin;}
         double  getLonMin() const   { return lonMin;}
