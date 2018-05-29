@@ -6480,6 +6480,13 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                     if( g_bWayPointPreventDragging ) bSelectAllowed = false;
                 } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
                     bSelectAllowed = false;
+
+				/*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the 
+				draghandle icon, not on the point iself a new selection will select nothing and the drag will never
+				be ended, so the legs around this point never selectable. At this step we don't need a new selection,
+				just keep the previoulsly selected and dragged point */
+				if (m_bRoutePoinDragging)
+					bSelectAllowed = false;
                 
                 if(bSelectAllowed){
                     
