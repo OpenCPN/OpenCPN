@@ -5399,6 +5399,13 @@ void ChartCanvas::CallPopupMenu(int x, int y)
         m_pFoundRoutePoint->Draw( dc );
         RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
     }
+
+	/**in touch mode a route point could have been selected and draghandle icon shown so clear the selection*/
+	if (g_btouch && m_pRoutePointEditTarget) {
+		m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+		m_pRoutePointEditTarget->m_bPtIsSelected = false;
+		m_pRoutePointEditTarget->EnableDragHandle(false);
+	}
     
     //      Get all the selectable things at the cursor
     pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
