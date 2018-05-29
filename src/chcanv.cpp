@@ -5742,6 +5742,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             else {
                 m_pRoutePointEditTarget->m_bIsBeingEdited = false;
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
+				if (g_btouch)
+					m_pRoutePointEditTarget->EnableDragHandle(false);
                 wxRect wp_rect;
                 m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
                 m_pRoutePointEditTarget = NULL;         //cancel selection
