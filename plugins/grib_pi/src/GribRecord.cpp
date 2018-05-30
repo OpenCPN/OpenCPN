@@ -437,14 +437,13 @@ void  GribRecord::multiplyAllData(double k)
     if (data == 0 || !isOk())
         return;
 
-	for (zuint j=0; j<Nj; j++) {
-		for (zuint i=0; i<Ni; i++)
-		{
-			if (isDefined(i,j)) {
-				data[j*Ni+i] *= k;
-			}
-		}
-	}
+    for (zuint j=0; j<Nj; j++) {
+        for (zuint i=0; i<Ni; i++) {
+            if (isDefined(i,j)) {
+                data[j*Ni+i] *= k;
+            }
+        }
+    }
 }
 
 //----------------------------------------------
