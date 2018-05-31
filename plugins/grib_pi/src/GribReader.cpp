@@ -182,13 +182,15 @@ void GribReader::readAllGribRecords()
         if (firstdate== -1)
 	    firstdate = rec->getRecordCurrentDate();
 
-        if ((rec->getDataType()==GRB_PRESSURE && rec->getLevelType()==LV_MSL && rec->getLevelValue()==0)
-                    || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
-                    || ( RecordIsWind(rec) && rec->getLevelType()==LV_ISOBARIC //wind at x hpa
-                    && (  rec->getLevelValue()==850
-			|| rec->getLevelValue()==700
-			|| rec->getLevelValue()==500
-			|| rec->getLevelValue()==300 ) ) )
+        if ((rec->getDataType()==GRB_PRESSURE && rec->getLevelValue()==0 &&
+                (rec->getLevelType()==LV_MSL || rec->getLevelType()==LV_GND_SURF)
+            )
+            || ( RecordIsWind(rec) && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==10)
+                || ( RecordIsWind(rec) && rec->getLevelType()==LV_ISOBARIC //wind at x hpa
+                    && (  rec->getLevelValue()==850 || rec->getLevelValue()==700
+			|| rec->getLevelValue()==500 || rec->getLevelValue()==300 
+                       ) 
+               ) )
             storeRecordInMap(rec);
 
         else if( (rec->getDataType()==GRB_WIND_GUST
