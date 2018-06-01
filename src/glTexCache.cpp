@@ -151,7 +151,8 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
 
     m_fs = 0;
     m_LRUtime = 0;
-
+    m_ntex = 0;
+    m_tiles = NULL;
     for (int i = 0; i < N_COLOR_SCHEMES; i++) {
         for (int j = 0; j < MAX_TEX_LEVEL; j++) {
             m_cache[i][j] = NULL;
@@ -176,7 +177,6 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format)
     m_td_array = (glTextureDescriptor **)calloc(m_ntex, sizeof(glTextureDescriptor *));
 
     m_prepared_projection_type = 0;
-    m_tiles = NULL;
 }
 
 glTexFactory::~glTexFactory()
