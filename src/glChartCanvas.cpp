@@ -171,7 +171,6 @@ extern PlugInManager* g_pi_manager;
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern TrackList        *pTrackList;
-extern bool             b_inCompressAllCharts;
 extern bool             g_bGLexpert;
 extern bool             g_bcompression_wait;
 extern bool             g_bresponsive;
