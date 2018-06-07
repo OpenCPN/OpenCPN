@@ -2307,7 +2307,9 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
     glBegin(GL_QUADS);
     double xs = vp->pix_width/double(xsquares), ys = vp->pix_height/double(ysquares);
     int i = 0, j = 0;
-    double lva[2][xsquares+1][2];
+    typedef double mx[2][2];
+
+    mx *lva = new mx[xsquares+1];
     int tw = pGO->m_iTextureDim[0], th = pGO->m_iTextureDim[1];
     double latstep = fabs(pGR->getDj()) / (th-2-1) * (pGR->getNj()-1);
     double lonstep = pGR->getDi() / (tw-2*!repeat-1) * (pGR->getNi()-1);
@@ -2328,17 +2330,17 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
                     lon -= 360;
             }
 
-            lva[j][i][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
-            lva[j][i][1] = ((lat - lat_min) / latstep          + 1.5) / th;
+            lva[i][j][0] = ((lon - lon_min) / lonstep - repeat + 1.5) / tw;
+            lva[i][j][1] = ((lat - lat_min) / latstep          + 1.5) / th;
 
             if(pGR->getDj() < 0)
-                lva[j][i][1] = 1 - lva[j][i][1];
+                lva[i][j][1] = 1 - lva[i][j][1];
 
             if(x > 0 && y > 0) {
-                double u0 = lva[!j][i-1][0], v0 = lva[!j][i-1][1];
-                double u1 = lva[!j][i  ][0], v1 = lva[!j][i  ][1];
-                double u2 = lva[ j][i  ][0], v2 = lva[ j][i  ][1];
-                double u3 = lva[ j][i-1][0], v3 = lva[ j][i-1][1];
+                double u0 = lva[i-1][!j][0], v0 = lva[i-1][!j][1];
+                double u1 = lva[i  ][!j][0], v1 = lva[i  ][!j][1];
+                double u2 = lva[i  ][ j][0], v2 = lva[i  ][ j][1];
+                double u3 = lva[i-1][ j][0], v3 = lva[i-1][ j][1];
 
                 if(repeat) { /* ensure all 4 texcoords are in the same phase */
                     if(u1 - u0 > .5) u1--; else if(u0 - u1 > .5) u1++;
@@ -2363,6 +2365,7 @@ void GRIBOverlayFactory::DrawGLTexture( GribOverlay *pGO, GribRecord *pGR, PlugI
         j = !j;
     }
     glEnd();
+    delete [] lva;
 
     glDisable(GL_BLEND);
     glDisable(texture_format);
