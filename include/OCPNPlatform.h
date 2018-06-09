@@ -132,6 +132,7 @@ public:
     wxString &GetLogFileName(){ return mlog_file; }
     MyConfig *GetConfigObject();
     wxString GetSupplementalLicenseString();
+    wxString NormalizePath(const wxString &full_path); //Adapt for portable use
     
     int DoFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString Title, wxString initDir,
                                 wxString suggestedName, wxString wildcard);

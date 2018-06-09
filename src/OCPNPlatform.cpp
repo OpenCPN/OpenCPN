@@ -1173,6 +1173,19 @@ wxString &OCPNPlatform::GetPluginDir()
     return m_PluginsDir;
 }
 
+wxString OCPNPlatform::NormalizePath(const wxString &full_path) {
+  if (!g_bportable) {
+    return full_path;
+  } else {
+    wxString path(full_path);
+    wxFileName f(path);
+    // If not on another voulme etc. make the portable relative path
+    if (f.MakeRelativeTo(g_Platform->GetPrivateDataDir())) {
+      path = f.GetFullPath();
+    }
+    return path;
+  }
+}
 
 wxString &OCPNPlatform::GetConfigFileName()
 {

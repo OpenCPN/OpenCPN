@@ -2249,8 +2249,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "InitChartDir" ), *pInit_Chart_Dir );
     Write( _T ( "GPXIODir" ), m_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
-    Write( _T ( "BasemapDir" ), gWorldMapLocation );
-
+    Write( _T ( "BasemapDir" ), g_Platform->NormalizePath(gWorldMapLocation) );
+    
     SetPath( _T ( "/Settings/NMEADataSource" ) );
     wxString connectionconfigs;
     for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
