@@ -564,7 +564,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, int nPoints
 
     if(!valid)
     {
-        delete[] pp;
+        if ( ppoints == NULL ) delete[] pp;
         return OCPNRegion(); //empty;
     }
  
