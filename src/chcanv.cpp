@@ -6503,6 +6503,10 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 bool b_was_editing_route = m_bRouteEditing;
                 FindRoutePointsAtCursor( SelectRadius, true );    // Possibly selecting a point in a route for later dragging
                 
+				/*route and a mark points in layer can't be dragged so should't be selected and no draghandle icon*/
+				if (m_pRoutePointEditTarget && m_pRoutePointEditTarget->m_bIsInLayer)
+					m_pRoutePointEditTarget = NULL;
+
                 if( !b_was_editing_route ) {
                     if( m_pEditRouteArray ) {
                         b_startedit_route = true;
