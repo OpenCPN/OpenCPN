@@ -86,15 +86,15 @@ bool PopUpDSlide::Create( wxWindow *parent, wxWindowID id, ChartTypeEnum ChartT,
     int value;
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         value = g_cm93_zoom_factor;
-        WindowText=wxT("CM93 Detail Level");
+        WindowText = _("CM93 Detail Level");
         }
         else if ( (ChartType == CHART_TYPE_KAP) || (ChartType == CHART_TYPE_GEO) || (ChartFam == CHART_FAMILY_RASTER ) ){
             value = g_chart_zoom_modifier;
-            WindowText=wxT("Rasterchart Zoom/Scale Weighting");
+            WindowText = _("Rasterchart Zoom/Scale Weighting");
         }
             else if ( (ChartType == CHART_TYPE_S57) || (ChartFam == CHART_FAMILY_VECTOR ) ){
                 value = g_chart_zoom_modifier_vector;
-                WindowText=wxT("Vectorchart Zoom/Scale Weighting");
+                WindowText = _("Vectorchart Zoom/Scale Weighting");
             }
             else{ 
                 pPopupDetailSlider = NULL;
