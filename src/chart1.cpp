@@ -3663,6 +3663,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         }
     }
 
+    //  Clear the cache, and thus close all charts to avoid memory leaks
+    if(ChartData)
+        ChartData->PurgeCache();
+    
     // pthumbwin is a cc1 child 
     pthumbwin = NULL;
     cc1->Destroy();
