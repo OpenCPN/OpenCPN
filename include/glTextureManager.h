@@ -107,6 +107,7 @@ public:
     bool        binplace;
     unsigned char *compcomp_bits_array[10];
     int         compcomp_size_array[10];
+    bool        b_inCompressAll;
 };
 
 

@@ -890,7 +890,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
         if(bthread_debug)
             printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
                     ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.GetCount());
-    } else if(!b_inCompressAllCharts) {
+    } else if(!ticket->b_inCompressAll) {
         //   Normal completion from here
         glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->m_rect );
         if(ptd) {
@@ -922,7 +922,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
     }
 
     //      Free all possible memory
-    if(b_inCompressAllCharts) { // if compressing all write cache here
+    if(ticket->b_inCompressAll) { // if compressing all write cache here
         ChartBase *pchart = ChartData->OpenChartFromDB(ticket->m_ChartPath, FULL_INIT );
         ChartData->DeleteCacheChart(pchart);
         delete ticket->pFact;
@@ -1042,6 +1042,8 @@ bool glTextureManager::ScheduleJob(glTexFactory* client, const wxRect &rect, int
     pt->b_isaborted = false;
     pt->bpost_zip_compress = b_postZip;
     pt->binplace = b_inplace;
+    pt->b_inCompressAll = b_inCompressAllCharts;
+    
 
     /* do we compress in ram using builtin libraries, or do we
        upload to the gpu and use the driver to perform compression?
