@@ -495,55 +495,27 @@ void s52plib::SetPPMM( float ppmm )
 void s52plib::DestroyLUP( LUPrec *pLUP )
 {
     Rules *top = pLUP->ruleList;
-    
-    while( top != NULL ) {
-        Rules *Rtmp = top->next;
-        
-        if( top->INST0 ) free( top->INST0 ); // free the Instruction string head
-
-        if( top->b_private_razRule ) // need to free razRule?
-        {
-            Rule *pR = top->razRule;
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-            
-            free( pR->vector.LVCT );
-            
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-            
-            free( pR->colRef.SCRF );
-            
-            ClearRulesCache( pR );
-            
-            free( pR );
-        }
-        
-        free( top );
-        top = Rtmp;
-    }
+    DestroyRulesChain(top);
     
     delete pLUP->ATTCArray;
     delete pLUP->INST;
 }
-
-
-
 
 void s52plib::DestroyRulesChain( Rules *top )
 {
     while( top != NULL ) {
         Rules *Rtmp = top->next;
         
-        if( top->INST0 )
-            free( top->INST0 ); // free the Instruction string head
+        free( top->INST0 ); // free the Instruction string head
 
         if( top->b_private_razRule ) // need to free razRule?
         {
             Rule *pR = top->razRule;
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
+            delete pR->exposition.LXPO;
             
             free( pR->vector.LVCT );
             
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
+            delete pR->bitmap.SBTM;
             
             free( pR->colRef.SCRF );
             
@@ -1215,79 +1187,62 @@ void s52plib::ClearRulesCache( Rule *pR ) //  Clear out any existing cached symb
             pR->parm0 = ID_EMPTY;
             break;
         }
+        case ID_GL_PATT_SPEC: {
+            render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
+            free( pp->pix_buff );
+#ifdef ocpnUSE_GL
+            if(pp->OGL_tex_name) glDeleteTextures( 1, (GLuint *) &pp->OGL_tex_name );
+#endif
+            delete pp;
+            pR->pixelPtr = NULL;
+            pR->parm0 = ID_EMPTY;
+            break;
+        }
+        case ID_RGB_PATT_SPEC: {
+            render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
+            free( pp->pix_buff );
+            delete pp;
+            pR->pixelPtr = NULL;
+            pR->parm0 = ID_EMPTY;
+            break;
+        }
         case ID_EMPTY:
+            break;
         default:
+            assert(false);
             break;
     }
-
 }
 
 void s52plib::DestroyPatternRuleNode( Rule *pR )
 {
-    if( pR ) {
-        if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-
-        free( pR->vector.LVCT );
-
-        if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-
-        free( pR->colRef.SCRF );
-
-        if( pR->pixelPtr ) {
-            if( pR->parm0 == ID_GL_PATT_SPEC ) {
-                render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                free( pp->pix_buff );
-                delete pp;
-            } else
-                if( pR->parm0 == ID_RGB_PATT_SPEC ) {
-                    render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                    free( pp->pix_buff );
-                    delete pp;
-                }
-        }
-    }
+    DestroyRuleNode(pR);
 }
 
 void s52plib::DestroyRuleNode( Rule *pR )
 {
-    if( pR ) {
+    if( !pR )
+        return;
 
-        if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
+    delete pR->exposition.LXPO;
 
-        free( pR->vector.LVCT );
+    free( pR->vector.LVCT );
 
-        if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
+    delete pR->bitmap.SBTM;
 
-        free( pR->colRef.SCRF );
+    free( pR->colRef.SCRF );
 
-        ClearRulesCache( pR ); //  Clear out any existing cached symbology
-
-        if( pR->pixelPtr ) {
-            if( pR->definition.PADF == 'R' ) {
-                wxBitmap *pbm = (wxBitmap *) ( pR->pixelPtr );
-                delete pbm;
-            }
-        }
-    }
+    ClearRulesCache( pR ); //  Clear out any existing cached symbology
 }
 
 void s52plib::DestroyRules( RuleHash *rh )
 {
-
     RuleHash::iterator it;
-    wxString key;
     Rule *pR;
 
     for( it = ( *rh ).begin(); it != ( *rh ).end(); ++it ) {
-        key = it->first;
         pR = it->second;
-        if( pR ) {
-            free( pR->vector.LVCT );
-            free( pR->colRef.SCRF );
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-            ClearRulesCache( pR );
-        }
+        DestroyRuleNode( pR );
     }
 
     rh->clear();
@@ -1303,7 +1258,6 @@ void s52plib::FlushSymbolCaches( void )
     if( !rh ) return;
 
     RuleHash::iterator it;
-    wxString key;
     Rule *pR;
 
     for( it = ( *rh ).begin(); it != ( *rh ).end(); ++it ) {
@@ -1318,33 +1272,9 @@ void s52plib::FlushSymbolCaches( void )
 
     for( it = ( *rh ).begin(); it != ( *rh ).end(); ++it ) {
         pR = it->second;
-        if( pR ) {
-            if( pR->parm0 && pR->pixelPtr ) {
-                switch( pR->parm0 ){
-                    case ID_GL_PATT_SPEC: {
-#ifdef ocpnUSE_GL
-                        render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                        free( pp->pix_buff );
-                        glDeleteTextures( 1, (GLuint *) &pp->OGL_tex_name );
-                        delete pp;
-                        pR->pixelPtr = NULL;
-                        pR->parm0 = 0;
-#endif
-                        break;
-                    }
-                    case ID_RGB_PATT_SPEC: {
-                        render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                        free( pp->pix_buff );
-                        delete pp;
-                        pR->pixelPtr = NULL;
-                        pR->parm0 = 0;
-                        break;
-                    }
-                }
-            }
-        }
+        if( pR ) ClearRulesCache( pR );
     }
-    
+
     //    OpenGL Hashmaps
     CARC_Hash::iterator ita;
     for( ita = m_CARC_hashmap.begin(); ita != m_CARC_hashmap.end(); ++ita ) {
@@ -1361,46 +1291,11 @@ void s52plib::FlushSymbolCaches( void )
     }
     m_CARC_DL_hashmap.clear();
 #endif
-    
 }
 
 void s52plib::DestroyPattRules( RuleHash *rh )
 {
-
-    RuleHash::iterator it;
-    wxString key;
-    Rule *pR;
-
-    for( it = ( *rh ).begin(); it != ( *rh ).end(); ++it ) {
-        key = it->first;
-        pR = it->second;
-        if( pR ) {
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-
-            free( pR->vector.LVCT );
-
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-
-            free( pR->colRef.SCRF );
-
-            if( pR->pixelPtr ) {
-                if( pR->definition.PADF == 'V' ) {
-                    render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                    free( pp->pix_buff );
-                    delete pp;
-                } else
-                    if( pR->definition.PADF == 'R' ) {
-                        render_canvas_parms *pp = (render_canvas_parms *) ( pR->pixelPtr );
-                        free( pp->pix_buff );
-                        delete pp;
-                    }
-            }
-        }
-
-    }
-
-    rh->clear();
-    delete rh;
+    DestroyRules(rh);
 }
 
 
@@ -5229,26 +5124,7 @@ int s52plib::RenderCARC_VBO( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     if(m_pdc){          // DC rendering
         if(fabs(prule->parm7 - xscale) > .00001){
-            if(prule->pixelPtr){
-                switch( prule->parm0 ){
-                    case ID_wxBitmap: {
-                        wxBitmap *pbm = (wxBitmap *) ( prule->pixelPtr );
-                        delete pbm;
-                        break;
-                    }
-                    case ID_RGBA: {
-                        unsigned char *p = (unsigned char *) ( prule->pixelPtr );
-                        free( p );
-                        break;
-                    }
-                    case ID_EMPTY:
-                    default:
-                        break;
-                }
-
-                prule->parm0 = ID_EMPTY;
-                prule->pixelPtr = NULL;
-            }
+            ClearRulesCache( prule );
         }
 
     //Instantiate the symbol if necessary
