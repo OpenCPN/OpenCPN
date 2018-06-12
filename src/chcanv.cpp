@@ -5258,6 +5258,13 @@ void ChartCanvas::CallPopupMenu(int x, int y)
         RefreshRect( m_pFoundRoutePoint->CurrentRect_in_DC );
     }
     
+    /**in touch mode a route point could have been selected and draghandle icon shown so clear the selection*/
+    if (g_btouch && m_pRoutePointEditTarget) {
+        m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+        m_pRoutePointEditTarget->m_bPtIsSelected = false;
+        m_pRoutePointEditTarget->EnableDragHandle(false);
+    }
+        
     //      Get all the selectable things at the cursor
     pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
     pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
@@ -5600,6 +5607,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             else {
                 m_pRoutePointEditTarget->m_bIsBeingEdited = false;
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
+                if (g_btouch)
+                    m_pRoutePointEditTarget->EnableDragHandle(false);
                 wxRect wp_rect;
                 m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
                 m_pRoutePointEditTarget = NULL;         //cancel selection
@@ -6337,6 +6346,14 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
                 if( NULL == pMarkPropDialog ) {
                     if( g_bWayPointPreventDragging ) bSelectAllowed = false;
                 } else if( !pMarkPropDialog->IsShown() && g_bWayPointPreventDragging )
+                    bSelectAllowed = false;
+                
+                
+                /*if this left up happens at the end of a route point dragging and if the cursor/thumb is on the 
+                  draghandle icon, not on the point iself a new selection will select nothing and the drag will never
+                  be ended, so the legs around this point never selectable. At this step we don't need a new selection,
+                  just keep the previoulsly selected and dragged point */
+                if (m_bRoutePoinDragging)
                     bSelectAllowed = false;
                 
                 if(bSelectAllowed){
