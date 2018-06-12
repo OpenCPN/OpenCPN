@@ -153,6 +153,10 @@
 #include "crashprint.h"
 #endif
 
+#ifdef __WXOSX__
+#include "DarkMode.h"
+#endif
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY( ArrayOfCDI );
 
@@ -678,6 +682,8 @@ double                    g_UserVar;
 bool                      g_bMagneticAPB;
 
 bool                      g_bInlandEcdis;
+
+bool                      g_bDarkDecorations;
 
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
@@ -2926,15 +2932,25 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     g_Piano->ResetRollover();
     g_Piano->SetColorScheme( cs );
 
-    if( g_options ) g_options->SetColorScheme( cs );
+    if( g_options ) {
+        g_options->SetColorScheme( cs );
+    }
 
-    if( console ) console->SetColorScheme( cs );
+    if( console ) {
+        console->SetColorScheme( cs );
+    }
 
-    if( g_pRouteMan ) g_pRouteMan->SetColorScheme( cs );
+    if( g_pRouteMan ) {
+        g_pRouteMan->SetColorScheme( cs );
+    }
 
-    if( pMarkPropDialog ) pMarkPropDialog->SetColorScheme( cs );
+    if( pMarkPropDialog ) {
+        pMarkPropDialog->SetColorScheme( cs );
+    }
     
-    if( pRoutePropDialog ) pRoutePropDialog->SetColorScheme( cs );
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->SetColorScheme( cs );
+    }
     
     //    For the AIS target query dialog, we must rebuild it to incorporate the style desired for the colorscheme selected
     if( g_pais_query_dialog_active ) {
@@ -2963,6 +2979,11 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     UpdateToolbar( cs );
 
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
+#ifdef __WXOSX__
+    if( g_bDarkDecorations ) {
+        applyDarkAppearanceToWindow(MacGetTopLevelWindowRef(), true);
+    }
+#endif
 }
 
 void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
@@ -5661,7 +5682,9 @@ int MyFrame::DoOptionsDialog()
     if(NULL == g_options) {
         g_Platform->ShowBusySpinner();
         g_options = new options( this, -1, _("Options") );
-        g_options->SetColorScheme(global_color_scheme);
+        //g_options->SetColorScheme(global_color_scheme);
+        //applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
+
         g_Platform->HideBusySpinner();
     }
 
@@ -6669,7 +6692,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
         case 4:
         {
             g_options = new options( this, -1, _("Options") );
-            g_options->SetColorScheme(global_color_scheme);
+            //g_options->SetColorScheme(global_color_scheme);
+            //applyDarkAppearanceToWindow(g_options->MacGetTopLevelWindowRef());
             
             if( g_MainToolbar )
                 g_MainToolbar->EnableTool( ID_SETTINGS, true );

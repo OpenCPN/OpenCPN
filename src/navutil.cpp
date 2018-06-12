@@ -418,6 +418,8 @@ extern wxString         g_uiStyle;
 
 int                     g_nCPUCount;
 
+extern bool             g_bDarkDecorations;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -545,6 +547,8 @@ int MyConfig::LoadMyConfig()
     Read( _T ( "NCacheLimit" ), &g_nCacheLimit, 0 );
      
     Read( _T ( "InlandEcdis" ), &g_bInlandEcdis, 0 );// First read if in iENC mode as this will override some config settings
+    
+    Read( _T ("DarkDecorations" ), &g_bDarkDecorations, 0 );
 
     Read( _T( "SpaceDropMark" ), &g_bSpaceDropMark, 0 );
     int mem_limit;
@@ -1912,6 +1916,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ConfigVersionString" ), g_config_version_string );
     Write( _T ( "NavMessageShown" ), n_NavMessageShown );
     Write( _T ( "InlandEcdis" ), g_bInlandEcdis );
+    
+    Write( _T ( "DarkDecorations"), g_bDarkDecorations );
+    
     Write( _T ( "UIexpert" ), g_bUIexpert );
     Write( _T( "SpaceDropMark" ), g_bSpaceDropMark );
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
