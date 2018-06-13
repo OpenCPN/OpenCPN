@@ -1230,6 +1230,8 @@ ViewPort glChartCanvas::ClippedViewport(const ViewPort &vp, const LLRegion &regi
 
 void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
 {
+    if(!cc1->m_bShowNavobjects)
+        return;
     ocpnDC dc(*this);
 
     for(wxTrackListNode *node = pTrackList->GetFirst();

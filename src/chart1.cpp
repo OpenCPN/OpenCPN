@@ -4288,6 +4288,11 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 #endif
 
+        case ID_MENU_SHOW_NAVOBJECTS : {
+            ToggleNavobjects();
+            break;
+        }
+
         case ID_MENU_AIS_TARGETS: {
             if ( g_bShowAIS ) SetAISDisplayStyle(2);
             else SetAISDisplayStyle(0);
@@ -5245,6 +5250,13 @@ void MyFrame::TogglebFollow( void )
 
 }
 
+void MyFrame::ToggleNavobjects( void )
+{
+    cc1->m_bShowNavobjects = !cc1->m_bShowNavobjects;
+    SetMenubarItemState( ID_MENU_SHOW_NAVOBJECTS, cc1->m_bShowNavobjects );
+    cc1->Refresh();
+}
+
 void MyFrame::SetbFollow( void )
 {
     JumpToPosition(gLat, gLon, cc1->GetVPScale());
@@ -5463,12 +5475,14 @@ void MyFrame::RegisterGlobalMenuItems()
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("A")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_DATA_QUALITY, _menuText(_("Show ENC Data Quality"), _T("U")) );
+    view_menu->AppendCheckItem( ID_MENU_SHOW_NAVOBJECTS, _menuText(_("Show Navobjects"), _T("V")) );
 #else
     view_menu->AppendCheckItem( ID_MENU_ENC_TEXT, _menuText(_("Show ENC text"), _T("Alt-T")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_LIGHTS, _menuText(_("Show ENC Lights"), _T("Alt-L")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_SOUNDINGS, _menuText(_("Show ENC Soundings"), _T("Alt-S")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_ANCHOR, _menuText(_("Show ENC Anchoring Info"), _T("Alt-A")) );
     view_menu->AppendCheckItem( ID_MENU_ENC_DATA_QUALITY, _menuText(_("Show ENC Data Quality"), _T("Alt-U")) );
+    view_menu->AppendCheckItem( ID_MENU_SHOW_NAVOBJECTS, _menuText(_("Show Navobjects"), _T("Alt-V")) );
 #endif
 #endif
     view_menu->AppendSeparator();
@@ -5554,6 +5568,7 @@ void MyFrame::UpdateGlobalMenuItems()
     m_pMenuBar->FindItem( ID_MENU_AIS_TRACKS )->Check( g_bAISShowTracks );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPADIALOG )->Check( g_bAIS_CPA_Alert );
     m_pMenuBar->FindItem( ID_MENU_AIS_CPASOUND )->Check( g_bAIS_CPA_Alert_Audio );
+    m_pMenuBar->FindItem( ID_MENU_SHOW_NAVOBJECTS )->Check( cc1->m_bShowNavobjects );
 #ifdef USE_S57
     if( ps52plib ) {
         m_pMenuBar->FindItem( ID_MENU_ENC_TEXT )->Check( ps52plib->GetShowS57Text() );

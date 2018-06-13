@@ -200,7 +200,9 @@ enum
     ID_CMD_SELECT_CHART_TYPE,
     ID_CMD_SELECT_CHART_FAMILY,
     ID_CMD_INVALIDATE,
-    
+
+    ID_MENU_SHOW_NAVOBJECTS,
+
 };
 
 enum
@@ -399,6 +401,7 @@ class MyFrame: public wxFrame
     void ToggleTestPause(void);
     void TrackOn(void);
     void SetENCDisplayCategory( enum _DisCat nset );
+    void ToggleNavobjects(void);
     
     Track *TrackOff(bool do_add_point = false);
     void TrackDailyRestart(void);

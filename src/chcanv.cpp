@@ -383,6 +383,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bMayToggleMenuBar = true;
 
     m_bFollow = false;
+    m_bShowNavobjects = true;
     m_bTCupdate = false;
     m_bAppendingRoute = false;          // was true in MSW, why??
     pThumbDIBShow = NULL;
@@ -1721,6 +1722,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 'U':
             parent_frame->ToggleDataQuality();
+            break;
+
+        case 'V':
+            parent_frame->ToggleNavobjects();
             break;
 
         case 1:                      // Ctrl A
@@ -8928,11 +8933,16 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
         wxDCClipper( *pdc, ru );
     }
 
-    DrawAllTracksInBBox( dc, GetVP().GetBBox() );
-    DrawAllRoutesInBBox( dc, GetVP().GetBBox() );
-    DrawAllWaypointsInBBox( dc, GetVP().GetBBox() );
-    DrawAnchorWatchPoints( dc );
-
+    if( m_bShowNavobjects ) {
+        DrawAllTracksInBBox( dc, GetVP().GetBBox() );
+        DrawAllRoutesInBBox( dc, GetVP().GetBBox() );
+        DrawAllWaypointsInBBox( dc, GetVP().GetBBox() );
+        DrawAnchorWatchPoints( dc );
+    } else {
+        DrawActiveTrackInBBox( dc, GetVP().GetBBox() );
+        DrawActiveRouteInBBox( dc, GetVP().GetBBox() );
+    }
+    
     AISDraw( dc, GetVP(), this );
     ShipDraw( dc );
     AlertDraw( dc );
@@ -9179,6 +9189,23 @@ void ChartCanvas::DrawAllTracksInBBox( ocpnDC& dc, LLBBox& BltBBox )
 }
 
 
+void ChartCanvas::DrawActiveTrackInBBox( ocpnDC& dc, LLBBox& BltBBox )
+{
+    Track *active_track = NULL;
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext()) {
+        Track *pTrackDraw = node->GetData();
+        
+        if( g_pActiveTrack == pTrackDraw ) {
+            active_track = pTrackDraw;
+            break;
+        }
+    }
+    if( active_track )
+        active_track->Draw( dc, GetVP(), BltBBox );
+}
+
+
 void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox )
 {
     Route *active_route = NULL;
@@ -9196,6 +9223,23 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox )
     }
 
     //  Draw any active or selected route (or track) last, so that is is always on top
+    if( active_route )
+        active_route->Draw( dc, GetVP(), BltBBox );
+}
+
+void ChartCanvas::DrawActiveRouteInBBox( ocpnDC& dc, LLBBox& BltBBox )
+{
+    Route *active_route = NULL;
+    
+    for(wxRouteListNode *node = pRouteList->GetFirst();
+        node; node = node->GetNext()) {
+        Route *pRouteDraw = node->GetData();
+        if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() ) {
+            active_route = pRouteDraw;
+            break;
+        }
+        
+    }
     if( active_route )
         active_route->Draw( dc, GetVP(), BltBBox );
 }
