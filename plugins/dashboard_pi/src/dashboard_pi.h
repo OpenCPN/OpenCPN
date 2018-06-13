@@ -217,6 +217,7 @@ public:
       wxChoice                     *m_pChoiceUTCOffset;
       wxChoice                     *m_pChoiceSpeedUnit;
       wxChoice                     *m_pChoiceDepthUnit;
+      wxSpinCtrlDouble             *m_pSpinDBTOffset;
       wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
 
