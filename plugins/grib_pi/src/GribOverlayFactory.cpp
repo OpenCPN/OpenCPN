@@ -545,13 +545,27 @@ void GRIBOverlayFactory::GetCalibratedGraphicColor(int settings, double val_in, 
 
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR)
 {
-    bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() == 360;
+    bool repeat = pGR->getLonMin() == 0 && pGR->getLonMax() + pGR->getDi() >= 360.;
 
     // create the texture to the size of the grib data plus a transparent border
     int tw, th, samples = 1;
-
-    // oversample up to 16x
-    for(;;) {
+    double delta;
+    if (pGR->getNi() > 1024 || pGR->getNj() > 1024 ) {
+        // downsample
+        samples = 0;
+        tw = pGR->getNi();
+        th = pGR->getNj();
+        double dw, dh;
+        dw = (tw >  1022)?1022./tw:1.;
+        dh = (th >  1022)?1022./th:1.;
+        delta = wxMin(dw, dh);
+        th *= delta;
+        tw *= delta;
+        tw += 2*!repeat;
+        th += 2;
+    }
+    else for(;;) {
+        // oversample up to 16x
         tw = samples*(pGR->getNi()-1)+1 + 2*!repeat;
         th = samples*(pGR->getNj()-1)+1 + 2;
         if(tw >= 512 || th >= 512 || samples == 16)
@@ -564,8 +578,18 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
         return false;
 
     unsigned char *data = new unsigned char[tw*th*4];
-
-    if(samples == 1 ) { // optimized case when there is only 1 sample
+    if (samples == 0) {
+        for( int j = 0; j < pGR->getNj(); j++ ) {
+            for( int i = 0; i < pGR->getNi(); i++ ) {
+                double v = pGR->getValue(i,   j);
+                int y = (j + 1)*delta;
+                int x = (i + !repeat)*delta;
+                int doff = 4*(y*tw + x);
+                GetCalibratedGraphicColor(settings, v, data + doff);
+            }
+        }
+    }
+    else if(samples == 1 ) { // optimized case when there is only 1 sample
         for( int j = 0; j < pGR->getNj(); j++ ) {
             for( int i = 0; i < pGR->getNi(); i++ ) {
                 double v = pGR->getValue(i,   j);
