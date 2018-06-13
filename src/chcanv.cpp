@@ -1703,6 +1703,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleQuiltMode();
             break;
 
+        case 'P':
+            parent_frame->ToggleTestPause();
+            break;
 #if 0
         case 'R':
             parent_frame->ToggleRocks();

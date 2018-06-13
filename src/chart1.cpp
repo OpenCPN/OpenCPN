@@ -172,7 +172,9 @@ OCPNPlatform              *g_Platform;
 
 bool                      g_bFirstRun;
 
+bool                      g_bPauseTest;
 int                       g_unit_test_1;
+int                       g_unit_test_2;
 bool                      g_start_fullscreen;
 bool                      g_rebuild_gl_cache;
 bool                      g_parse_all_enc;
@@ -944,11 +946,15 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("rebuild_gl_raster_cache"), wxEmptyString, _T("Rebuild OpenGL raster cache on start.") );
     parser.AddSwitch( _T("parse_all_enc"), wxEmptyString, _T("Convert all S-57 charts to OpenCPN's internal format on start.") );
     parser.AddOption( _T("unit_test_1"), wxEmptyString, _("Display a slideshow of <num> charts and then exit. Zero or negative <num> specifies no limit."), wxCMD_LINE_VAL_NUMBER );
+
+    parser.AddSwitch( _T("unit_test_2") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
     long number;
+
+    g_unit_test_2 = parser.Found( _T("unit_test_2") );
     g_bportable = parser.Found( _T("p") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
@@ -2410,12 +2416,6 @@ extern ocpnGLOptions g_GLOptions;
 
     FontMgr::Get().ScrubList(); // Clean the font list, removing nonsensical entries
 
-//      Start up the ticker....
-    gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
-
-//      Start up the ViewPort Rotation angle Averaging Timer....
-    if(g_bCourseUp)
-        gFrame->FrameCOGTimer.Start( 10, wxTIMER_CONTINUOUS );
 
     cc1->ReloadVP();                  // once more, and good to go
 
@@ -2470,6 +2470,13 @@ extern ocpnGLOptions g_GLOptions;
     gFrame->ShowTides( g_bShowTide );
     gFrame->ShowCurrents( g_bShowCurrent );
  
+//      Start up the ticker....
+    gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
+
+//      Start up the ViewPort Rotation angle Averaging Timer....
+    if(g_bCourseUp)
+        gFrame->FrameCOGTimer.Start( 10, wxTIMER_CONTINUOUS );
+
     // Start delayed initialization chain after 100 milliseconds
     gFrame->InitTimer.Start( 100, wxTIMER_CONTINUOUS );
 
@@ -5290,6 +5297,11 @@ void MyFrame::ToggleChartOutlines( void )
     SetMenubarItemState( ID_MENU_CHART_OUTLINES, g_bShowOutlines );
 }
 
+void MyFrame::ToggleTestPause( void )
+{
+    g_bPauseTest = !g_bPauseTest;
+}
+
 void MyFrame::SetMenubarItemState( int item_id, bool state )
 {
     if( m_pMenuBar ) {
@@ -6821,7 +6833,8 @@ int ut_index;
 void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 {
 
-    if( g_unit_test_1 ) {
+
+    if( ! g_bPauseTest && (g_unit_test_1 || g_unit_test_2) ) {
 //            if((0 == ut_index) && GetQuiltMode())
 //                  ToggleQuiltMode();
 
@@ -6832,24 +6845,49 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         int ut_index_max = ( ( g_unit_test_1 > 0 ) ? ( g_unit_test_1 - 1 ) : INT_MAX );
 
         if( ChartData ) {
+            if( g_GroupIndex > 0 ) {
+                while (ut_index < ChartData->GetChartTableEntries() && !ChartData->IsChartInGroup( ut_index, g_GroupIndex ) ) {
+                    ut_index++;
+                }
+            }
             if( ut_index < ChartData->GetChartTableEntries() ) {
-                printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
+                // printf("%d / %d\n", ut_index, ChartData->GetChartTableEntries());
                 const ChartTableEntry *cte = &ChartData->GetChartTableEntry( ut_index );
-                double lat = ( cte->GetLatMax() + cte->GetLatMin() ) / 2;
-                double lon = ( cte->GetLonMax() + cte->GetLonMin() ) / 2;
 
-                vLat = lat;
-                vLon = lon;
+                double clat = ( cte->GetLatMax() + cte->GetLatMin() ) / 2;
+                double clon = ( cte->GetLonMax() + cte->GetLonMin() ) / 2;
 
-                cc1->SetViewPoint( lat, lon );
+                vLat = clat;
+                vLon = clon;
+
+                cc1->SetViewPoint( clat, clon );
 
                 if( cc1->GetQuiltMode() ) {
                     if( cc1->IsChartQuiltableRef( ut_index ) ) SelectQuiltRefdbChart( ut_index );
                 } else
                     SelectdbChart( ut_index );
 
-                double ppm = cc1->GetCanvasScaleFactor() / cte->GetScale();
-                ppm /= 2;
+                double ppm; // final ppm scale to use
+                if (g_unit_test_1) {
+                    ppm = cc1->GetCanvasScaleFactor() / cte->GetScale();
+                    ppm /= 2;
+                }
+                else {
+                    double rw, rh; // width, height
+                    int ww, wh;    // chart window width, height
+
+                    // width in nm
+                    DistanceBearingMercator( cte->GetLatMin(), cte->GetLonMin(), cte->GetLatMin(),
+                              cte->GetLonMax(), NULL, &rw );
+
+                    // height in nm
+                    DistanceBearingMercator( cte->GetLatMin(), cte->GetLonMin(), cte->GetLatMax(),
+                             cte->GetLonMin(), NULL, &rh );
+
+                    cc1->GetSize( &ww, &wh );
+                    ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
+                    ppm = wxMin(ppm, 1.0);
+                }
                 cc1->SetVPScale( ppm );
 
                 cc1->ReloadVP();
@@ -6858,8 +6896,9 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 if( ut_index > ut_index_max )
                     exit(0);
             }
-            else
-                exit(0);
+            else {
+                _exit(0);
+            }
         }
     }
     g_tick++;
@@ -7238,7 +7277,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
-    FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
+    if (g_unit_test_2)
+        FrameTimer1.Start( TIMER_GFRAME_1*3, wxTIMER_CONTINUOUS );
+    else 
+        FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 }
 
 double MyFrame::GetMag(double a)

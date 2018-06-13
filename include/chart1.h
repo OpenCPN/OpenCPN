@@ -396,6 +396,7 @@ class MyFrame: public wxFrame
     void ToggleRocks(void);
     bool ToggleLights( bool doToggle = true, bool temporary = false );
     void ToggleAnchor(void);
+    void ToggleTestPause(void);
     void TrackOn(void);
     void SetENCDisplayCategory( enum _DisCat nset );
     
