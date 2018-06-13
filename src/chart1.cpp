@@ -4845,7 +4845,7 @@ void MyFrame::TrackOn( void )
     wxJSONValue v;
     wxDateTime now;
     now = now.Now().ToUTC();
-    wxString name = g_pActiveTrack->m_TrackNameString;
+    wxString name = g_pActiveTrack->GetName();
     if(name.IsEmpty())
     {
         TrackPoint *tp = g_pActiveTrack->GetPoint( 0 );
@@ -9019,7 +9019,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             wxString name = wxEmptyString;
             if((*it)->m_GUID == trk_id)
             {
-                name = (*it)->m_TrackNameString;
+                name = (*it)->GetName();
                 if(name.IsEmpty())
                 {
                     TrackPoint *rp = (*it)->GetPoint( 0 );
@@ -9147,7 +9147,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             } else { // track
                 for(TrackList::iterator it = pTrackList->begin(); it != pTrackList->end(); it++)
                 {
-                    wxString name = (*it)->m_TrackNameString;
+                    wxString name = (*it)->GetName();
                     if(name.IsEmpty())
                     {
                         TrackPoint *tp = (*it)->GetPoint( 0 );

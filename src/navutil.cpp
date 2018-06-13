@@ -441,7 +441,8 @@ wxString GetLayerName( int id )
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
         Layer *lay = (Layer *) ( *it );
-        if( lay->m_LayerID == id ) return ( lay->m_LayerName );
+        if( lay->m_LayerID == id )
+            return ( lay->m_LayerName );
     }
     return ( name );
 }

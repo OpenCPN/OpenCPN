@@ -396,7 +396,7 @@ static Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                 }
         }
         
-        pTentTrack->m_TrackNameString = TrackName;
+        pTentTrack->SetName( TrackName );
         pTentTrack->m_TrackDescription = DescString;
 
         if( b_propviz )
@@ -750,8 +750,8 @@ static bool GPXCreateTrk( pugi::xml_node node, Track *pTrack, unsigned int flags
 {
     pugi::xml_node child;
 
-    if( pTrack->m_TrackNameString.Len() ) {
-        wxCharBuffer buffer=pTrack->m_TrackNameString.ToUTF8();
+    if( pTrack->GetName().Len() ) {
+        wxCharBuffer buffer=pTrack->GetName().ToUTF8();
         if(buffer.data()) {
             child = node.append_child("name");
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
@@ -1525,7 +1525,7 @@ bool NavObjectChanges::ApplyChanges(void)
                     Track *pExisting = TrackExists( pTrack->m_GUID );
                     if(!strcmp(child.first_child().value(), "update") ){
                          if( pExisting ) {
-                             pExisting->m_TrackNameString = pTrack->m_TrackNameString;
+                             pExisting->SetName(pTrack->GetName());
                              pExisting->m_TrackStartString = pTrack->m_TrackStartString;
                              pExisting->m_TrackEndString = pTrack->m_TrackEndString;
                         }

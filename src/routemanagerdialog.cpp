@@ -436,6 +436,25 @@ void RouteManagerDialog::Create()
     sort_layer_len_dir = 1;
     
     // Setup GUI
+    wxBoxSizer* bSizerRteContents;
+    bSizerRteContents = new wxBoxSizer( wxVERTICAL );
+    
+    wxFlexGridSizer* fgSizerFilterRte;
+    fgSizerFilterRte = new wxFlexGridSizer( 0, 2, 0, 0 );
+    fgSizerFilterRte->AddGrowableCol( 1 );
+    fgSizerFilterRte->SetFlexibleDirection( wxBOTH );
+    fgSizerFilterRte->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    m_stFilterRte = new wxStaticText( m_pPanelRte, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterRte->Wrap( -1 );
+    fgSizerFilterRte->Add( m_stFilterRte, 0, wxALL, 5 );
+    
+    m_tFilterRte = new wxTextCtrl( m_pPanelRte, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizerFilterRte->Add( m_tFilterRte, 1, wxALL|wxEXPAND, 5 );
+    
+    bSizerRteContents->Add( fgSizerFilterRte, 0, wxEXPAND, 5 );
+    m_tFilterRte->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
+
     m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, wxSize(-1, -1),
                                        wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                                        | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
@@ -453,7 +472,8 @@ void RouteManagerDialog::Create()
                                wxMouseEventHandler(RouteManagerDialog::OnRteToggleVisibility), NULL, this );
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_COL_CLICK,
                                wxListEventHandler(RouteManagerDialog::OnRteColumnClicked), NULL, this );
-    sbsRoutes->Add( m_pRouteListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    bSizerRteContents->Add( m_pRouteListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    sbsRoutes->Add( bSizerRteContents, 1, wxEXPAND, 5 );
     
     // Columns: visibility ctrl, name
     // note that under MSW for SetColumnWidth() to work we need to create the
@@ -524,9 +544,28 @@ void RouteManagerDialog::Create()
     //  Create "Tracks" panel
     m_pPanelTrk = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxNO_BORDER | wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer3 = new wxBoxSizer( wxHORIZONTAL );
-    m_pPanelTrk->SetSizer( itemBoxSizer3 );
+    wxBoxSizer* sbsTracks = new wxBoxSizer( wxHORIZONTAL );
+    m_pPanelTrk->SetSizer( sbsTracks );
     m_pNotebook->AddPage( m_pPanelTrk, _("Tracks") );
+    
+    wxBoxSizer* bSizerTrkContents;
+    bSizerTrkContents = new wxBoxSizer( wxVERTICAL );
+    
+    wxFlexGridSizer* fgSizerFilterTrk;
+    fgSizerFilterTrk = new wxFlexGridSizer( 0, 2, 0, 0 );
+    fgSizerFilterTrk->AddGrowableCol( 1 );
+    fgSizerFilterTrk->SetFlexibleDirection( wxBOTH );
+    fgSizerFilterTrk->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    m_stFilterTrk = new wxStaticText( m_pPanelTrk, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterTrk->Wrap( -1 );
+    fgSizerFilterTrk->Add( m_stFilterTrk, 0, wxALL, 5 );
+    
+    m_tFilterTrk = new wxTextCtrl( m_pPanelTrk, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizerFilterTrk->Add( m_tFilterTrk, 1, wxALL|wxEXPAND, 5 );
+    
+    bSizerTrkContents->Add( fgSizerFilterTrk, 0, wxEXPAND, 5 );
+    m_tFilterTrk->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
     
     m_pTrkListCtrl = new wxListCtrl( m_pPanelTrk, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
@@ -550,14 +589,15 @@ void RouteManagerDialog::Create()
     this->Connect( wxEVT_COMMAND_MENU_SELECTED,
                    wxCommandEventHandler(RouteManagerDialog::OnTrkMenuSelected), NULL, this );
     
-    itemBoxSizer3->Add( m_pTrkListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    bSizerTrkContents->Add( m_pTrkListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    sbsTracks->Add( bSizerTrkContents, 1, wxEXPAND, 5 );
     
     m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pTrkListCtrl->InsertColumn( colTRKNAME, _("Track Name"), wxLIST_FORMAT_LEFT, 20 * char_width );
     m_pTrkListCtrl->InsertColumn( colTRKLENGTH, _("Length"), wxLIST_FORMAT_LEFT, 5 * char_width );
     
     wxBoxSizer *bsTrkButtons = new wxBoxSizer( wxVERTICAL );
-    itemBoxSizer3->Add( bsTrkButtons, 0, wxEXPAND );
+    sbsTracks->Add( bsTrkButtons, 0, wxEXPAND );
     
     wxScrolledWindow *wint = new wxScrolledWindow( m_pPanelTrk, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                                    wxNO_BORDER | wxTAB_TRAVERSAL | wxVSCROLL);
@@ -603,10 +643,29 @@ void RouteManagerDialog::Create()
     //  Create "Waypoints" panel
     m_pPanelWpt = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxNO_BORDER | wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer4 = new wxBoxSizer( wxHORIZONTAL );
-    m_pPanelWpt->SetSizer( itemBoxSizer4 );
+    wxBoxSizer* sbsWpts = new wxBoxSizer( wxHORIZONTAL );
+    m_pPanelWpt->SetSizer( sbsWpts );
     m_pNotebook->AddPage( m_pPanelWpt, _("Waypoints") );
     
+    wxBoxSizer* bSizerWptContents;
+	bSizerWptContents = new wxBoxSizer( wxVERTICAL );
+
+    wxFlexGridSizer* fgSizerFilterWpt;
+	fgSizerFilterWpt = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizerFilterWpt->AddGrowableCol( 1 );
+	fgSizerFilterWpt->SetFlexibleDirection( wxBOTH );
+	fgSizerFilterWpt->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_stFilterWpt = new wxStaticText( m_pPanelWpt, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stFilterWpt->Wrap( -1 );
+	fgSizerFilterWpt->Add( m_stFilterWpt, 0, wxALL, 5 );
+	
+	m_tFilterWpt = new wxTextCtrl( m_pPanelWpt, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerFilterWpt->Add( m_tFilterWpt, 1, wxALL|wxEXPAND, 5 );
+
+    bSizerWptContents->Add( fgSizerFilterWpt, 0, wxEXPAND, 5 );
+	m_tFilterWpt->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
+
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     #ifdef __OCPN__ANDROID__    
@@ -623,14 +682,15 @@ void RouteManagerDialog::Create()
                              wxMouseEventHandler(RouteManagerDialog::OnWptToggleVisibility), NULL, this );
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_COL_CLICK,
                              wxListEventHandler(RouteManagerDialog::OnWptColumnClicked), NULL, this );
-    itemBoxSizer4->Add( m_pWptListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
-    
+    bSizerWptContents->Add( m_pWptListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    sbsWpts->Add( bSizerWptContents, 1, wxEXPAND, 5 );    
+
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 15 * char_width );
     m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from own ship"), wxLIST_FORMAT_LEFT, 14 * char_width );
     
     wxBoxSizer *bsWptButtons = new wxBoxSizer( wxVERTICAL );
-    itemBoxSizer4->Add( bsWptButtons, 0, wxEXPAND );
+    sbsWpts->Add( bsWptButtons, 0, wxEXPAND );
     
     wxScrolledWindow *winw = new wxScrolledWindow( m_pPanelWpt, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                                    wxNO_BORDER | wxTAB_TRAVERSAL | wxVSCROLL);
@@ -707,9 +767,28 @@ void RouteManagerDialog::Create()
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxNO_BORDER | wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer7 = new wxBoxSizer( wxHORIZONTAL );
-    m_pPanelLay->SetSizer( itemBoxSizer7 );
+    wxBoxSizer* sbsLayers = new wxBoxSizer( wxHORIZONTAL );
+    m_pPanelLay->SetSizer( sbsLayers );
     m_pNotebook->AddPage( m_pPanelLay, _("Layers") );
+    
+    wxBoxSizer* bSizerLayContents;
+    bSizerLayContents = new wxBoxSizer( wxVERTICAL );
+    
+    wxFlexGridSizer* fgSizerFilterLay;
+    fgSizerFilterLay = new wxFlexGridSizer( 0, 2, 0, 0 );
+    fgSizerFilterLay->AddGrowableCol( 1 );
+    fgSizerFilterLay->SetFlexibleDirection( wxBOTH );
+    fgSizerFilterLay->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    
+    m_stFilterLay = new wxStaticText( m_pPanelLay, wxID_ANY, wxT("Filter"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterLay->Wrap( -1 );
+    fgSizerFilterLay->Add( m_stFilterLay, 0, wxALL, 5 );
+    
+    m_tFilterLay = new wxTextCtrl( m_pPanelLay, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizerFilterLay->Add( m_tFilterLay, 1, wxALL|wxEXPAND, 5 );
+    
+    bSizerLayContents->Add( fgSizerFilterLay, 0, wxEXPAND, 5 );
+    m_tFilterLay->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( RouteManagerDialog::OnFilterChanged ), NULL, this );
     
     m_pLayListCtrl = new wxListCtrl( m_pPanelLay, -1, wxDefaultPosition, wxDefaultSize,
                                      wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
@@ -728,14 +807,15 @@ void RouteManagerDialog::Create()
                              wxMouseEventHandler(RouteManagerDialog::OnLayToggleVisibility), NULL, this );
     m_pLayListCtrl->Connect( wxEVT_COMMAND_LIST_COL_CLICK,
                              wxListEventHandler(RouteManagerDialog::OnLayColumnClicked), NULL, this );
-    itemBoxSizer7->Add( m_pLayListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    bSizerLayContents->Add( m_pLayListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
+    sbsLayers->Add( bSizerLayContents, 1, wxEXPAND, 5 );
     
     m_pLayListCtrl->InsertColumn( colLAYVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 4 * char_width );
     m_pLayListCtrl->InsertColumn( colLAYNAME, _("Layer Name"), wxLIST_FORMAT_LEFT, 10 * char_width );
     m_pLayListCtrl->InsertColumn( colLAYITEMS, _("No. of items"), wxLIST_FORMAT_LEFT, 10 * char_width );
     
     wxBoxSizer *bsLayButtons = new wxBoxSizer( wxVERTICAL );
-    itemBoxSizer7->Add( bsLayButtons, 0, wxEXPAND);
+    sbsLayers->Add( bsLayButtons, 0, wxEXPAND);
     
     wxScrolledWindow *winl = new wxScrolledWindow( m_pPanelLay, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                                    wxNO_BORDER | wxTAB_TRAVERSAL | wxVSCROLL);
@@ -917,6 +997,10 @@ void RouteManagerDialog::UpdateRouteListCtrl()
     int list_index = 0;
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
         if( !( *it )->IsListed() ) continue;
+        
+        if( ! ( *it )->GetName().Upper().Contains(m_tFilterRte->GetValue().Upper()) ) {
+            continue;
+        }
 
         wxListItem li;
         li.SetId( list_index );
@@ -1509,7 +1593,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
                 Track *track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-                csvString << track->m_TrackNameString << _T("\t")
+                csvString << track->GetName() << _T("\t")
                           << wxString::Format( _T("%.1f"), track->Length() ) << _T("\t")
                         << _T("\n");
             }
@@ -1619,6 +1703,10 @@ void RouteManagerDialog::UpdateTrkListCtrl()
     for( it = ( *pTrackList ).begin(); it != ( *pTrackList ).end(); ++it, ++index ) {;
         Track *trk = *it;
         if( !trk->IsListed() ) continue;
+        
+        if( !trk->GetName(true).Upper().Contains(m_tFilterTrk->GetValue().Upper()) ) {
+            continue;
+        }
 
         wxListItem li;
         li.SetId( list_index );
@@ -1633,15 +1721,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         }
         long idx = m_pTrkListCtrl->InsertItem( li );
 
-        wxString name = trk->m_TrackNameString;
-        if( name.IsEmpty() ) {
-            TrackPoint *rp = trk->GetPoint( 0 );
-            if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
-                    + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
-            else
-                name = _("(Unnamed Track)");
-        }
-        m_pTrkListCtrl->SetItem( idx, colTRKNAME, name );
+        m_pTrkListCtrl->SetItem( idx, colTRKNAME, trk->GetName(true) );
 
         wxString len;
         len.Printf( wxT("%5.2f"), trk->Length() );
@@ -1828,8 +1908,8 @@ void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
 
         if( ptrack_to_export ) {
             list.Append( ptrack_to_export );
-            if( ptrack_to_export->m_TrackNameString != wxEmptyString )
-                suggested_name = ptrack_to_export->m_TrackNameString;
+            if( ptrack_to_export->GetName() != wxEmptyString )
+                suggested_name = ptrack_to_export->GetName();
         }
     }
 
@@ -1921,6 +2001,11 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
         RoutePoint *rp = node->GetData();
         if( rp && rp->IsListed() ) {
             if( rp->m_bIsInRoute && !rp->m_bKeepXRoute ) {
+                node = node->GetNext();
+                continue;
+            }
+            
+            if( ! rp->GetName().Upper().Contains(m_tFilterWpt->GetValue().Upper()) ) {
                 node = node->GetNext();
                 continue;
             }
@@ -2723,6 +2808,10 @@ void RouteManagerDialog::UpdateLayListCtrl()
     int index = 0;
     for( it = ( *pLayerList ).begin(); it != ( *pLayerList ).end(); ++it, ++index ) {
         Layer *lay = (Layer *) ( *it );
+        
+        if( !lay->m_LayerName.Upper().Contains(m_tFilterLay->GetValue().Upper()) ) {
+            continue;
+        }
 
         wxListItem li;
         li.SetId( index );
@@ -2791,6 +2880,19 @@ void RouteManagerDialog::OnExportClick( wxCommandEvent &event )
 void RouteManagerDialog::OnExportVizClick( wxCommandEvent &event )
 {
     pConfig->ExportGPX( this, true, true );     // only visible objects, layers included
+}
+
+void RouteManagerDialog::OnFilterChanged( wxCommandEvent &event )
+{
+    if( event.GetEventObject() == m_tFilterWpt ) {
+        UpdateWptListCtrl( NULL, true );
+    } else if ( event.GetEventObject() == m_tFilterRte ) {
+        UpdateRouteListCtrl();
+    } else if ( event.GetEventObject() == m_tFilterTrk ) {
+        UpdateTrkListCtrl();
+    } else if ( event.GetEventObject() == m_tFilterLay ) {
+        UpdateLayListCtrl();
+    }
 }
 
 //END Event handlers

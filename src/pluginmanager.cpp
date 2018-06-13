@@ -3396,7 +3396,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
 
-    track->m_TrackNameString = ptrack->m_NameString;
+    track->SetName(ptrack->m_NameString);
     track->m_TrackStartString = ptrack->m_StartString;
     track->m_TrackEndString = ptrack->m_EndString;
     track->m_GUID = ptrack->m_GUID;

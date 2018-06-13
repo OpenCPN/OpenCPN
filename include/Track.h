@@ -101,11 +101,27 @@ public:
 
     void ClearHighlights();
     
+    wxString GetName( bool auto_if_empty = false ) const {
+        if( !auto_if_empty || !m_TrackNameString.IsEmpty() ) {
+            return m_TrackNameString;
+        } else {
+            wxString name;
+            TrackPoint *rp = NULL;
+            if((int) TrackPoints.size() > 0)
+                rp = TrackPoints[0];
+            if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
+                + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
+            else
+                name = _("(Unnamed Track)");
+            return name;
+        }
+    }
+    void SetName( const wxString name ) { m_TrackNameString = name; }
+    
     wxString    m_GUID;
     bool        m_bIsInLayer;
     int         m_LayerID;
 
-    wxString    m_TrackNameString;
     wxString    m_TrackDescription;
 
     wxString    m_TrackStartString;
@@ -148,6 +164,8 @@ private:
     void AddPointToLists(std::list< std::list<wxPoint> > &pointlists, int &last, int n);
 
     void Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos);
+    
+    wxString    m_TrackNameString;
 };
 
 WX_DECLARE_LIST(Track, TrackList); // establish class Route as list member

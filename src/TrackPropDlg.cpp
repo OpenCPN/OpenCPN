@@ -992,7 +992,7 @@ bool TrackPropDlg::UpdateProperties()
         bSizerLinks->Fit( m_scrolledWindowLinks );
     }
 
-    m_tName->SetValue( m_pTrack->m_TrackNameString );
+    m_tName->SetValue( m_pTrack->GetName() );
     m_tFrom->SetValue( m_pTrack->m_TrackStartString );
     m_tTo->SetValue( m_pTrack->m_TrackEndString );
     if(m_tDescription)m_tDescription->SetValue( m_pTrack->m_TrackDescription );
@@ -1199,7 +1199,7 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
     wxString csvString;
 
     csvString << this->GetTitle() << eol
-            << _("Name") << tab << m_pTrack->m_TrackNameString << eol
+            << _("Name") << tab << m_pTrack->GetName() << eol
             << _("Depart From") << tab << m_pTrack->m_TrackStartString << eol
             << _("Destination") << tab << m_pTrack->m_TrackEndString << eol
             << _("Total distance") << tab << m_tTotDistance->GetValue() << eol
@@ -1309,8 +1309,8 @@ void TrackPropDlg::OnExportBtnClick( wxCommandEvent& event )
     wxString suggested_name = _("track");
     TrackList list;
     list.Append( m_pTrack );
-    if( m_pTrack->m_TrackNameString != wxEmptyString )
-        suggested_name = m_pTrack->m_TrackNameString;
+    if( m_pTrack->GetName() != wxEmptyString )
+        suggested_name = m_pTrack->GetName();
     pConfig->ExportGPXTracks( this, &list, suggested_name );
 }
 
@@ -1522,7 +1522,7 @@ bool TrackPropDlg::SaveChanges( void )
 {
     if( m_pTrack && !m_pTrack->m_bIsInLayer ) {
         //  Get User input Text Fields
-        m_pTrack->m_TrackNameString = m_tName->GetValue();
+        m_pTrack->SetName(m_tName->GetValue());
         m_pTrack->m_TrackStartString = m_tFrom->GetValue();
         m_pTrack->m_TrackEndString = m_tTo->GetValue();
         if(m_tDescription) m_pTrack->m_TrackDescription = m_tDescription->GetValue();
@@ -1541,7 +1541,7 @@ bool TrackPropDlg::SaveChanges( void )
     if( m_pTrack && m_pTrack->IsRunning() )
     {
         wxJSONValue v;
-        v[_T("Name")] =  m_pTrack->m_TrackNameString;
+        v[_T("Name")] =  m_pTrack->GetName();
         v[_T("GUID")] =  m_pTrack->m_GUID;
         wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
         g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
