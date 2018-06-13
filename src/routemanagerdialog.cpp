@@ -435,6 +435,8 @@ void RouteManagerDialog::Create()
     sort_layer_name_dir = 0;
     sort_layer_len_dir = 1;
     
+    m_listIconSize = 2 * GetCharHeight();
+    
     // Setup GUI
     wxBoxSizer* bSizerRteContents;
     bSizerRteContents = new wxBoxSizer( wxVERTICAL );
@@ -865,7 +867,7 @@ void RouteManagerDialog::Create()
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
-    m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
+    m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(m_listIconSize), wxIMAGE_LIST_SMALL );
     m_pLayListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
     
     SetColorScheme();
@@ -1990,7 +1992,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     }
 
     //  Freshen the image list
-    m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
+    m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(m_listIconSize), wxIMAGE_LIST_SMALL );
     
     m_pWptListCtrl->DeleteAllItems();
 
@@ -2068,9 +2070,9 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
         m_pWptListCtrl->EnsureVisible( m_lastWptItem );
 
-    if(pWayPointMan->Getpmarkicon_image_list()->GetImageCount()) {
+    if(pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetImageCount()) {
         int iwidth, iheight;
-        pWayPointMan->Getpmarkicon_image_list()->GetSize(0, iwidth, iheight);
+        pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetSize(0, iwidth, iheight);
         
         m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
     }
