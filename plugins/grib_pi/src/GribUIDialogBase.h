@@ -126,8 +126,8 @@ class GRIBUICtrlBarBase : public wxDialog
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnMouseEvent( wxMouseEvent& event ) { event.Skip(); }
+		virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnSize( wxSizeEvent& event ) { event.Skip(); }
-        virtual void OnPaint( wxPaintEvent& event) { event.Skip(); }
 		virtual void OnPrev( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
@@ -334,9 +334,9 @@ class GribPreferencesDialogBase : public wxDialog
 	public:
 		wxCheckBox* m_cbUseHiDef;
 		wxCheckBox* m_cbUseGradualColors;
-		wxCheckBox* m_cbDrawBarbedArrowHead;
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
+		wxCheckBox* m_cbDrawBarbedArrowHead;
 		wxRadioBox* m_rbLoadOptions;
 		wxRadioBox* m_rbStartOptions;
 		wxRadioBox* m_rbTimeFormat;
