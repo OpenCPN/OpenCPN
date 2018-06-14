@@ -154,7 +154,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
     //Get text controls sizing data
     wxFont *font = OCPNGetFont(_("Dialog"), 10);
     int wn, wd, ws,wl;
-    GetTextExtent( _T("abcdefghih"), &wn, NULL, 0, 0, font); // normal width text control size
+    GetTextExtent( _T("abcdefghihjk"), &wn, NULL, 0, 0, font); // normal width text control size
     GetTextExtent( _T("abcdef"), &ws, NULL, 0, 0, font); // short width text control size for direction only
     GetTextExtent( _T("abcdefghijklmopq"), &wd, NULL, 0, 0, font); // long width text control size for double unit wind display
     GetTextExtent( _T("abcdefghijklm"), &wl, NULL, 0, 0, font); // long width text control size for double unit wave display
@@ -320,7 +320,7 @@ void CursorData::UpdateTrackingControls( void )
 
         if( press != GRIB_NOTDEF ) {
             press = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
-            int p = (m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units == 2) ? 2 : 0;  // if PRESSURE & inHG = two decimals
+            int p = (m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units == 2) ? 2 : 1;  // if PRESSURE & inHG = two decimals
             m_tcPressure->SetValue( wxString::Format(_T("%2.*f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE), p, ( press )) );
         } else
             m_tcPressure->SetValue( _("N/A") );
