@@ -551,7 +551,6 @@ CursorDataBase::CursorDataBase( wxWindow* parent, wxWindowID id, const wxPoint& 
 
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
-	// -----------------
 
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 
