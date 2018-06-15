@@ -6329,7 +6329,12 @@ bool OCPN_isOnline()
 void PlugInManager::OnEndPerformCurlDownload(wxCurlEndPerformEvent &ev)
 {
     OCPN_downloadEvent event( wxEVT_DOWNLOAD_EVENT, 0 );
-    event.setDLEventStatus( OCPN_DL_NO_ERROR );
+    if (ev.IsSuccessful()) {
+        event.setDLEventStatus( OCPN_DL_NO_ERROR );
+    }
+    else {
+        event.setDLEventStatus( OCPN_DL_FAILED );
+    }
     event.setDLEventCondition( OCPN_DL_EVENT_TYPE_END );
     event.setComplete(true);
     

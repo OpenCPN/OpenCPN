@@ -132,28 +132,26 @@ void GribReader::readAllGribRecords()
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV2Record(file, id);
-                if (rec->isOk() == true)
-                    is_v2 = true;
+                is_v2 = rec->isOk();
             }
         }
         else {
             GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
             if (rec2 && rec2->hasMoreDataSet())  {
-                rec = static_cast<GribV2Record *>(rec)->GribV2NextDataSet(file, id);
-                if (prevDataSet != 0) {
-                    delete prevDataSet;
-                }
+                rec = rec2->GribV2NextDataSet(file, id);
+                delete prevDataSet;
             }
             else {
                 rec = new GribV2Record(file, id);
             }
+
+            is_v2 = rec->isOk();
             if (rec->isOk() == false) {
                 delete rec;
                 rec = new GribV1Record(file, id);
             }
-            else 
-                is_v2 = true;
         }
+        prevDataSet = 0;
         if (rec->isOk() == false)
         {
             delete rec;
@@ -161,16 +159,14 @@ void GribReader::readAllGribRecords()
         }
         b_EOF = rec->isEof();
 
-        prevDataSet = 0;
         if (!rec->isDataKnown())
         {
             GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
-            if ( rec2 == 0 || rec2->hasMoreDataSet()) {
+            if ( rec2 == 0 || !rec2->hasMoreDataSet()) {
                 delete rec;
                 rec = 0;
             }
-            else if (is_v2) {
-                // must delete it in the next iteration
+            else { // must delete it in the next iteration
                 prevDataSet = rec;
             }
             continue;
@@ -271,11 +267,12 @@ void GribReader::readAllGribRecords()
                 delete rec;
                 rec = 0;
             }
-            else if (is_v2) {
+            else {
                 prevDataSet = rec;
             }
         }
     } while (!b_EOF);
+    delete prevDataSet;
 }
 
 

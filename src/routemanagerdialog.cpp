@@ -1646,7 +1646,6 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 for(int i=0; i<mergeTrack->GetnPoints(); i++) {
                     tPoint = mergeTrack->GetPoint(i);
                     newPoint = new TrackPoint( tPoint->m_lat, tPoint->m_lon, tPoint->GetCreateTime() );
-                    newPoint->m_GPXTrkSegNo = 1;
 
                     targetTrack->AddPoint( newPoint );
 
