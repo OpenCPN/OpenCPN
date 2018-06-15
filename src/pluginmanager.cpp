@@ -4395,7 +4395,21 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
             m_depth_unit_id = (ChartDepthUnitType)m_ppicb->GetDepthUnitId();
             m_Chart_Skew = m_ppicb->GetChartSkew();
             m_Chart_Scale = m_ppicb->GetNativeScale();
-
+            
+            // We estimate ppm_avg as needed by raster texture cache logic...
+            // This number works for average BSB charts, scanned with average resolution
+            m_ppm_avg = 10000./m_ppicb->GetNativeScale();               // fallback value
+            
+            // Calcuculate a "better" ppm from the chart geo extent and raster size.
+            if( (fabs(m_Chart_Skew) < .01) && (CHART_FAMILY_RASTER == m_ChartFamily) ){
+                Extent extent;
+                if( GetChartExtent(&extent) ){
+                    double lon_range = extent.ELON - extent.WLON;
+                    if( (lon_range > 0) && (lon_range < 90.0) )              // Be safe about IDL crossing and huge charts
+                        m_ppm_avg = GetSize_X() / (lon_range * 1852 * 60);
+                }
+            }
+            
             bReadyToRender = m_ppicb->IsReadyToRender();
 
         }
@@ -4881,8 +4895,13 @@ void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion
 
 void ChartPlugInWrapper::SetColorScheme(ColorScheme cs, bool bApplyImmediate)
 {
-    if(m_ppicb)
+    if(m_ppicb) {
         m_ppicb->SetColorScheme(cs, bApplyImmediate);
+    }
+    m_global_color_scheme = cs;
+    //      Force a new thumbnail
+    if(pThumbData)
+        pThumbData->pDIBThumb = NULL;
 }
 
 
@@ -4906,8 +4925,9 @@ void ChartPlugInWrapper::ComputeSourceRectangle(const ViewPort &VPoint, wxRect *
 
 double ChartPlugInWrapper::GetRasterScaleFactor(const ViewPort &vp)
 {
-    if(m_ppicb)
-        return m_ppicb->GetRasterScaleFactor();
+    if(m_ppicb){
+        return  (wxRound(100000 * GetPPM() / vp.view_scale_ppm)) / 100000.;
+     }
     else
         return 1.0;
 }
@@ -5895,6 +5915,7 @@ PI_DLEvtHandler::~PI_DLEvtHandler()
 void PI_DLEvtHandler::onDLEvent( OCPN_downloadEvent &event)
 {
 //    qDebug() << "Got Event " << (int)event.getDLEventStatus() << (int)event.getDLEventCondition();
+
     g_download_status = event.getDLEventStatus();
     g_download_condition = event.getDLEventCondition();
 

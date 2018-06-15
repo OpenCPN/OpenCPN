@@ -1263,10 +1263,10 @@ bool glTextureManager::TextureCrunch(double factor)
     
     ChartPathHashTexfactType::iterator it0;
     for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        wxString chart_full_path = it0->first;
         glTexFactory *ptf = it0->second;
         if(!ptf)
             continue;
+        wxString chart_full_path = ptf->GetChartPath();
         
         bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor *hysteresis;
         if(!bGLMemCrunch)
@@ -1384,8 +1384,14 @@ void glTextureManager::BuildCompressedCache()
         /* skip if not kap */
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
-        if(chart_type != CHART_TYPE_KAP)
-            continue;
+        if(chart_type == CHART_TYPE_PLUGIN){
+            if(cte.GetChartFamily() != CHART_FAMILY_RASTER)
+                continue;
+        }
+        else{
+            if(chart_type != CHART_TYPE_KAP)
+                continue;
+        }
         
         wxString CompressedCacheFilePath = CompressedCachePath(ChartData->GetDBChartFileName(i));
         wxFileName fn(CompressedCacheFilePath);

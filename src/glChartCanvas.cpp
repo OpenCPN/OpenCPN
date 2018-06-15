@@ -2498,7 +2498,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
 
     if(b_inCompressAllCharts) return; // don't want multiple texfactories to exist
     
-    double scalefactor = pBSBChart->GetRasterScaleFactor(vp);
 
     //    Look for the texture factory for this chart
     wxString key = chart->GetHashKey();
@@ -2527,6 +2526,7 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, L
     int base_level;
     if(vp.m_projection_type == PROJECTION_MERCATOR &&
        chart->GetChartProjectionType() == PROJECTION_MERCATOR) {
+        double scalefactor = pBSBChart->GetRasterScaleFactor(vp);
         base_level = log(scalefactor) / log(2.0);
 
         if(base_level < 0) /* for overzoom */
