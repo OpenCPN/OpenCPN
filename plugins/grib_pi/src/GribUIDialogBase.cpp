@@ -835,6 +835,15 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 
 	fgSizer15->Add( m_fIsoBarVisibility, 1, wxALL|wxEXPAND, 5 );
 
+
+	fgSizer15->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	m_cbAbbrIsoBarsNumbers = new wxCheckBox( m_scSetDataPanel, wxID_ANY, _("Abbreviated Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer15->Add( m_cbAbbrIsoBarsNumbers, 0, wxEXPAND, 5 );
+
+
+	fgSizer15->Add( 0, 0, 1, wxEXPAND, 5 );
+
 	m_cbDirectionArrows = new wxCheckBox( m_scSetDataPanel, wxID_ANY, _("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbDirectionArrows, 0, wxBOTTOM|wxTOP, 5 );
 

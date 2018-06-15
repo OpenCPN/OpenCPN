@@ -250,6 +250,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxSpinCtrl* m_sIsoBarSpacing;
 		wxFlexGridSizer* m_fIsoBarVisibility;
 		wxCheckBox* m_sIsoBarVisibility;
+		wxCheckBox* m_cbAbbrIsoBarsNumbers;
 		wxCheckBox* m_cbDirectionArrows;
 		wxFlexGridSizer* m_fgDirArrData1;
 		wxChoice* m_cDirectionArrowForm;

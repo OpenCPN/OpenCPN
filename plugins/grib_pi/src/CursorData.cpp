@@ -35,7 +35,7 @@ extern int m_DialogStyle;
 #define round(x) wxRound(x) //extern int round (double x);
 #endif
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_ABBR, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
 
 //---------------------------------------------------------------------------------------
 //               GRIB Cursor Data  implementation
@@ -504,6 +504,7 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
             break;
         case GribOverlaySettings::PRESSURE:
             MenuAppend( menu, ISO_LINE, _("Display Isobars"), id );
+            MenuAppend( menu, ISO_ABBR, _("Abbreviated Isobars Numbers"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
             break;
         case GribOverlaySettings::AIR_TEMPERATURE:
@@ -544,6 +545,9 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
                 break;
             case ISO_LINE:
                 m_gparent.m_OverlaySettings.Settings[id].m_bIsoBars = it->IsChecked();
+                break;
+            case ISO_ABBR:
+                m_gparent.m_OverlaySettings.Settings[id].m_bAbbrIsoBarsNumbers = it->IsChecked();
                 break;
             case D_ARROWS:
                 m_gparent.m_OverlaySettings.Settings[id].m_bDirectionArrows = it->IsChecked();
@@ -586,6 +590,8 @@ void CursorData::MenuAppend( wxMenu *menu, int id, wxString label, int setting)
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bBarbedArrows;
     else if( id == ISO_LINE )
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bIsoBars;
+    else if( id == ISO_ABBR )
+        check = m_gparent.m_OverlaySettings.Settings[setting].m_bAbbrIsoBarsNumbers;
     else if( id == D_ARROWS )
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bDirectionArrows;
     else if( id == OVERLAY )

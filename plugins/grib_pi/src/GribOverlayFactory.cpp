@@ -866,9 +866,19 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 wxString GRIBOverlayFactory::getLabelString(double value, int settings)
 {
     int p;   
+    wxString f = _T("%.*f");
+
     switch(settings) {
     case GribOverlaySettings::PRESSURE: /* 2 */
-        p = m_Settings.Settings[settings].m_Units == 2 ? 2 : 0;
+        p = 0;
+        if (m_Settings.Settings[settings].m_Units == 2 )
+            p = 2;
+        else if (m_Settings.Settings[settings].m_Units == 0 &&
+                 m_Settings.Settings[settings].m_bAbbrIsoBarsNumbers)
+        {
+            value -= floor(value/100.)*100.;
+            f = _T("%02.*f");
+        }
         break;
     case GribOverlaySettings::WAVE: /* 3 */
     case GribOverlaySettings::CURRENT: /* 4 */
@@ -880,11 +890,10 @@ wxString GRIBOverlayFactory::getLabelString(double value, int settings)
         p = value < 100. ? 2 : value < 10. ? 1 : 0;
         p += m_Settings.Settings[settings].m_Units == 1 ? 1 : 0;
             break;
-
     default :
         p = 0;
     }
-    return wxString::Format( _T("%.*f"), p, value );
+    return wxString::Format( f , p, value );
 }
 
 /* return cached wxImage for a given number, or create it if not in the cache */
@@ -1114,7 +1123,9 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         double max = m_Settings.GetMax(settings);
 
         /* convert min and max to units being used */
-        double factor = ( settings == 2 && m_Settings.Settings[2].m_Units == 2 ) ? 0.03 : 1.;//divide spacing by 1/33 for PRESURRE & inHG
+        double factor = ( settings == GribOverlaySettings::PRESSURE &&
+                            m_Settings.Settings[settings].m_Units == 2 ) ? 0.03 : 1.;//divide spacing by 1/33 for PRESURRE & inHG
+
         for( double press = min; press <= max; press += (m_Settings.Settings[settings].m_iIsoBarSpacing * factor) ) {
             if(progressdialog)
                 progressdialog->Update(press-min);
