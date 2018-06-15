@@ -394,10 +394,10 @@ class GribRequestSettingBase : public wxDialog
 		wxCheckBox* m_pRainfall;
 		wxCheckBox* m_pCloudCover;
 		wxCheckBox* m_pAirTemp;
+		wxCheckBox* m_pCAPE;
+		wxCheckBox* m_pReflectivity;
 		wxCheckBox* m_pSeaTemp;
 		wxCheckBox* m_pCurrent;
-		wxCheckBox* m_pReflectivity;
-		wxCheckBox* m_pCAPE;
 		wxCheckBox* m_pWaves;
 		wxChoice* m_pWModel;
 		wxCheckBox* m_pAltitudeData;
