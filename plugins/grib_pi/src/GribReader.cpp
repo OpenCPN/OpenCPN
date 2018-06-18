@@ -447,44 +447,44 @@ void GribReader::readGribFileContent()
     createListDates();
 //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
 
-
 	//-----------------------------------------------------
 	// Are dewpoint data in file ?
 	// If no, compute it with Magnus-Tetens formula, if possible.
 	//-----------------------------------------------------
 	dewpointDataStatus = DATA_IN_FILE;
-	if (getNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) == 0)
+	if ( getNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) != 0)
+	    return;
+
+    dewpointDataStatus = NO_DATA_IN_FILE;
+    if ( getNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) == 0
+		   || getNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) == 0)
+		return;
+
+	dewpointDataStatus = COMPUTED_DATA;
+	for (auto iter :setAllDates )
 	{
-		dewpointDataStatus = NO_DATA_IN_FILE;
-		if (  getNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) > 0
-		   && getNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) > 0)
+		time_t date = iter;
+		GribRecord *recModel = getGribRecord(GRB_TEMP,LV_ABOV_GND,2,date);
+		if (recModel == nullptr)
+		    continue;
+
+        // Crée un GribRecord avec les dewpoints calculés
+		GribRecord *recDewpoint = new GribRecord(*recModel);
+        recDewpoint->setDataType(GRB_DEWPOINT);
+		for (zuint i=0; i<(zuint)recModel->getNi(); i++)
 		{
-			dewpointDataStatus = COMPUTED_DATA;
-			std::set<time_t>::iterator iter;
-			for (iter=setAllDates.begin(); iter!=setAllDates.end(); iter++)
+		    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
 			{
-				time_t date = *iter;
-				GribRecord *recModel = getGribRecord(GRB_TEMP,LV_ABOV_GND,2,date);
-				if (recModel != NULL)
-				{
-					// Crée un GribRecord avec les dewpoints calculés
-					GribRecord *recDewpoint = new GribRecord(*recModel);
-                                        recDewpoint->setDataType(GRB_DEWPOINT);
-					for (zuint i=0; i<(zuint)recModel->getNi(); i++)
-					    for (zuint j=0; j<(zuint)recModel->getNj(); j++)
-					    {
-					        double x, y;
-					        recModel->getXY(i, j, &x, &y);
-						double dp = computeDewPoint(x, y, date);
-						recDewpoint->setValue(i, j, dp);
-                                            }
-                                        storeRecordInMap(recDewpoint);
-				}
-			}
+			    double x, y;
+			    recModel->getXY(i, j, &x, &y);
+				double dp = computeDewPoint(x, y, date);
+				recDewpoint->setValue(i, j, dp);
+            }
 		}
+        storeRecordInMap(recDewpoint);
 	}
-	//-----------------------------------------------------
 }
+
 
 //---------------------------------------------------
 int GribReader::getDewpointDataStatus(int /*levelType*/,int /*levelValue*/)
