@@ -1490,9 +1490,6 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues( double &M, double &A, int idx1, i
     if(!beforeX || !afterX)
         return false;
 
-    if(!beforeY || !afterY)
-        return false;
-
     time_t t1 = beforeX->getRecordCurrentDate();
     time_t t2 = afterX->getRecordCurrentDate();
     if (t1 == t2) {
