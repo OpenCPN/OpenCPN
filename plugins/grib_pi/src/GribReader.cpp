@@ -446,7 +446,21 @@ void GribReader::readGribFileContent()
 
     createListDates();
 //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
+	// XXX should it be done after reading all files, rather than per file?
+	if ( getNumberOfGribRecords(GRB_WIND_GUST, LV_GND_SURF, 0) == 0) {
+		for (auto date :setAllDates ) {
+			GribRecord *recX = getGribRecord(GRB_WIND_GUST_VX, LV_GND_SURF, 0, date);
+			if (recX == nullptr)
+				continue;
 
+			GribRecord *recY = getGribRecord(GRB_WIND_GUST_VY, LV_GND_SURF, 0, date);
+			if (recY == nullptr)
+			    continue;
+			GribRecord *rec = GribRecord::MagnitudeRecord(*recX, *recY);
+			rec->setDataType(GRB_WIND_GUST);
+			storeRecordInMap(rec);
+		}
+    }
 	//-----------------------------------------------------
 	// Are dewpoint data in file ?
 	// If no, compute it with Magnus-Tetens formula, if possible.
