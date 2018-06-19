@@ -347,6 +347,28 @@ public:
       int GetMinAvailableGshhgQuality() { return pWorldBackgroundChart->GetMinAvailableQuality(); }
       int GetMaxAvailableGshhgQuality() { return pWorldBackgroundChart->GetMaxAvailableQuality(); }
 
+      ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew);
+      void UpdateToolbarColorScheme( ColorScheme cs );
+      void SetAISCanvasDisplayStyle(int StyleIndx);
+      void TouchAISToolActive( void );
+      void UpdateAISTBTool( void );
+      void SetToolbarScaleFactor( double scale_factor){ m_toolbar_scalefactor = scale_factor; }
+      ocpnFloatingToolbarDialog *GetToolbar(){ return m_toolBar; }
+      void SetToolbarConfigString( wxString& config){ m_toolbarConfig = config; }
+      wxString GetToolbarConfigString(){ return m_toolbarConfig; }
+      
+      void SetToolbarPosition( wxPoint position );
+      wxPoint GetToolbarPosition();
+      void SetToolbarOrientation( long orient );
+      long GetToolbarOrientation();
+      
+      void SubmergeToolbar(void);
+      void SurfaceToolbar(void);
+      void ToggleToolbar( bool b_smooth = false );
+      bool IsToolbarShown();
+      void DestroyToolbar();
+      
+      
 private:
       void CallPopupMenu( int x, int y );
       
@@ -659,6 +681,12 @@ private:
       
       bool        m_dragoffsetSet;
 
+      ocpnFloatingToolbarDialog *m_toolBar;
+      double      m_toolbar_scalefactor;
+      wxString    m_toolbarConfig;
+      wxPoint     m_toolbarPosition;
+      long        m_toolbarOrientation;
+      
 DECLARE_EVENT_TABLE()
 };
 

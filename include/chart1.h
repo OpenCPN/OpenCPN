@@ -424,11 +424,9 @@ class MyFrame: public wxFrame
     void ShowTides(bool bShow);
     void ShowCurrents(bool bShow);
 
-    void SubmergeToolbar(void);
-    void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
-    void SurfaceToolbar(void);
-    void ToggleToolbar( bool b_smooth = false );
-    void RaiseToolbarRecoveryWindow();
+    void SubmergeAllToolbars(void);
+    void SurfaceAllToolbars(void);
+    void ToggleAllToolbars( bool b_smooth = false );
     bool IsToolbarShown();
     void SetToolbarScale(void);
     void SetGPSCompassScale(void);
@@ -491,8 +489,8 @@ class MyFrame: public wxFrame
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
-    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbar(); }
-    void RequestNewToolbar( bool bforcenew = false);
+    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbars(); }
+    void RequestNewToolbars( bool bforcenew = false);
 
     void ActivateMOB(void);
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
@@ -512,15 +510,8 @@ class MyFrame: public wxFrame
     void ODoSetSize(void);
     void DoCOGSet(void);
 
-        //      Toolbar support
-    ocpnToolBarSimple *CreateAToolbar();
-    void DestroyMyToolbar();
-    void UpdateToolbar(ColorScheme cs);
-
-    void EnableToolbar(bool newstate);
-
-    bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
-    bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
+    void UpdateAllToolbars( ColorScheme cs );
+    
     void FilterCogSog(void);
     void SetChartUpdatePeriod(ViewPort &vp);
 
@@ -552,8 +543,6 @@ class MyFrame: public wxFrame
 
     wxString         m_lastAISiconName;
 
-    bool             m_toolbar_scale_tools_shown;
-
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
 
@@ -577,6 +566,7 @@ class MyFrame: public wxFrame
     bool                b_autofind;
     
     time_t              m_last_track_rotation_ts;
+    wxRect              m_mainlast_tb_rect;
     
     DECLARE_EVENT_TABLE()
 };

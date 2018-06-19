@@ -386,6 +386,10 @@ public:
       void SetAutoHideTimer(int time);
       void SetAutoHide( bool hide ){ m_bAutoHideToolbar = hide; }
       
+      bool CheckAndAddPlugInTool( ocpnToolBarSimple *tb );
+      bool AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb );
+      ocpnToolBarSimple *CreateMyToolbar();
+      
       int GetDockX() {
             return m_dock_x;
       }
@@ -398,6 +402,10 @@ public:
       
       wxMenu  *m_FloatingToolbarConfigMenu;
 
+      wxString m_tblastAISiconName;
+      wxToolBarToolBase *m_pTBAISTool;
+      bool m_toolbar_scale_tools_shown;
+      
 protected:
     ocpnToolBarSimple *m_ptoolbar;
     
@@ -432,6 +440,8 @@ private:
       bool m_bAutoHideToolbar;
       int m_nAutoHideToolbar;
       bool m_benableSubmerge;
+      
+      
 
 };
 
@@ -478,7 +488,7 @@ public:
 
     std::vector<wxCheckBox*> cboxes;
     wxMenu        *m_configMenu;
-    
+    ocpnFloatingToolbarDialog *m_ToolbarDialogAncestor;
 };
 
 #endif

@@ -2746,7 +2746,7 @@ void SwitchInlandEcdisMode( bool Switch )
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
         g_bDrawAISSize = false;
-        if (gFrame) gFrame->RequestNewToolbar(true);
+        if (gFrame) gFrame->RequestNewToolbars(true);
     }
     else{      
         wxLogMessage( _T("Switch InlandEcdis mode Off") );
@@ -2763,7 +2763,7 @@ void SwitchInlandEcdisMode( bool Switch )
             pConfig->SetPath( _T ( "/Settings/AIS" ) );
             pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
         }
-        if (gFrame) gFrame->RequestNewToolbar(true);
+        if (gFrame) gFrame->RequestNewToolbars(true);
     }        
 }
 

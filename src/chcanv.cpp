@@ -336,6 +336,7 @@ bool                    g_bShowLiveETA;
 double                  g_defaultBoatSpeed;
 double                  g_defaultBoatSpeedUserUnit;
 
+extern int              g_nAIS_activity_timer;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -452,6 +453,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_glcc = NULL;
     m_pGLcontext = NULL;
+    
+    m_toolBar = NULL;
+    m_toolbar_scalefactor = 1.0;
     
     g_ChartNotRenderScaleFactor = 2.0;
 
@@ -1456,7 +1460,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             
             SetCursor( *pCursorArrow );
             
-            gFrame->SurfaceToolbar();
+            SurfaceToolbar();
             InvalidateGL();
             Refresh( false );
         }
@@ -1826,7 +1830,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
                 SetCursor( *pCursorArrow );
 
-                gFrame->SurfaceToolbar();
+                SurfaceToolbar();
                 InvalidateGL();
                 Refresh( false );
             }
@@ -1834,7 +1838,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( parent_frame->nRoute_State )         // creating route?
             {
                 FinishRoute();
-                gFrame->SurfaceToolbar();
+                SurfaceToolbar();
                 InvalidateGL();
                 Refresh( false );
             }
@@ -2195,7 +2199,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         SetBackgroundColour( wxNullColour );
     }
         
-    
+    UpdateToolbarColorScheme( cs );
+        
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
@@ -4871,6 +4876,14 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Inform the parent Frame that I am being resized...
     gFrame->ProcessCanvasResize();
 
+    //  Adjust the toolbar, if necessary
+    if( m_toolBar ) {
+        m_toolBar->RePosition();
+        m_toolBar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        m_toolBar->Realize();
+        m_toolBar->RePosition();
+    }
+    
 //    Set up the scroll margins
     xr_margin = m_canvas_width * 95 / 100;
     xl_margin = m_canvas_width * 5 / 100;
@@ -5330,7 +5343,14 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
         if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 ) )
         {
             wxPoint p = ClientToScreen( wxPoint( x, y ) );
-            gFrame->SubmergeToolbarIfOverlap( p.x, p.y, 20 );
+            
+            // Submerge the toolbar if necessary
+            if( m_toolBar ) {
+                wxRect rect = m_toolBar->GetScreenRect();
+                rect.Inflate( 20 );
+                if( rect.Contains( p.x, p.y ) )
+                    m_toolBar->Submerge();
+            }
         }
     }
     
@@ -6772,8 +6792,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
             
-            if( !gFrame->IsToolbarShown())
-                gFrame->SurfaceToolbar();
+            if( !m_toolBar->IsToolbarShown())
+                SurfaceToolbar();
             ret = true;
         }
         
@@ -6790,8 +6810,8 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            if( !gFrame->IsToolbarShown())
-                gFrame->SurfaceToolbar();
+            if( !m_toolBar->IsToolbarShown())
+                SurfaceToolbar();
             ret = true;
         }
 
@@ -9930,6 +9950,269 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
     }
 
     g_pais_query_dialog_active->Show();
+}
+
+//--------------------------------------------------------------------------------------------------------
+//
+//      Toolbar support
+//
+//--------------------------------------------------------------------------------------------------------
+
+void ChartCanvas::SetToolbarPosition( wxPoint position )
+{
+    m_toolbarPosition = position;
+}
+
+void ChartCanvas::SetToolbarOrientation( long orient )
+{
+    m_toolbarOrientation = orient;
+}
+
+wxPoint ChartCanvas::GetToolbarPosition()
+{
+    if(m_toolBar){
+        wxPoint tbp = m_toolBar->GetPosition();  //toolbar is a TLW, so this is screen coordinates.
+        return ScreenToClient( tbp );
+    }
+    else
+        return wxPoint(0,0);
+}
+
+long ChartCanvas::GetToolbarOrientation()
+{
+    if(m_toolBar)
+        return m_toolBar->GetOrient();
+    else
+        return 0;
+}
+
+void ChartCanvas::SubmergeToolbar( void )
+{
+    if( m_toolBar )
+        m_toolBar->Submerge();
+}
+
+void ChartCanvas::SurfaceToolbar( void )
+{
+    if( m_toolBar )
+        m_toolBar->Surface();
+}
+
+bool ChartCanvas::IsToolbarShown()
+{
+    return m_toolBar->IsShown();
+}
+
+void ChartCanvas::ToggleToolbar( bool b_smooth )
+{
+    if( m_toolBar ) {
+        if( m_toolBar->IsShown() ){
+            SubmergeToolbar();
+        }
+        else{
+            SurfaceToolbar();
+            m_toolBar->Raise();
+        }
+    }
+}
+
+void ChartCanvas::DestroyToolbar()
+{
+    if( m_toolBar )
+        m_toolBar->DestroyToolBar();
+}
+        
+
+ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
+{
+    bool b_reshow = true;
+    if( m_toolBar ) {
+        b_reshow = m_toolBar->IsShown();
+        float ff = fabs(m_toolBar->GetScaleFactor() - m_toolbar_scalefactor);
+        if((ff > 0.01f) || bforcenew){
+            m_toolBar->DestroyToolBar();
+            delete m_toolBar;
+            m_toolBar = NULL;
+        }
+    }
+
+    if( !m_toolBar ) {
+        m_toolBar = new ocpnFloatingToolbarDialog( cc1, m_toolbarPosition, m_toolbarOrientation, m_toolbar_scalefactor );
+        m_toolBar->CreateConfigMenu();
+    }
+
+    if( m_toolBar ) {
+        if( m_toolBar->IsToolbarShown() )
+            m_toolBar->DestroyToolBar();
+        
+
+        m_toolBar->CreateMyToolbar();
+        if (m_toolBar->isSubmergedToGrabber()) {
+            m_toolBar->SubmergeToGrabber();
+        } else {
+            m_toolBar->RePosition();
+            m_toolBar->SetColorScheme(global_color_scheme);
+            m_toolBar->Show(b_reshow && g_bshowToolbar);
+        }
+    }
+
+    return m_toolBar;
+
+}
+
+//      Update inplace the current toolbar with bitmaps corresponding to the current color scheme
+void ChartCanvas::UpdateToolbarColorScheme( ColorScheme cs )
+{
+    if( !m_toolBar )
+        return;
+    
+    if( m_toolBar ) {
+        if(m_toolBar->GetColorScheme() != cs){
+            m_toolBar->SetColorScheme( cs );
+            
+            if( m_toolBar->IsToolbarShown() ) {
+                m_toolBar->DestroyToolBar();
+                m_toolBar->CreateMyToolbar();
+                if (m_toolBar->isSubmergedToGrabber()) 
+                    m_toolBar->SubmergeToGrabber(); //Surface(); //SubmergeToGrabber();
+                
+            }
+        }
+    }
+    
+    
+    if( m_toolBar->GetToolbar() ) {
+        //  Re-establish toggle states
+        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+        m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
+        m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+    }
+    
+    return;
+}
+
+extern bool     g_bAllowShowScaled;
+extern bool     g_bShowScaled;
+
+void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx)
+{
+    // make some arrays to hold the dfferences between cycle steps
+    //show all, scaled, hide all
+    bool bShowAIS_Array[3] = {true, true, false}; 
+    bool bShowScaled_Array[3] = {false, true, true};
+    wxString ToolShortHelp_Array[3] = { _("Show all AIS Targets"),
+                                        _("Attenuate less critical AIS targets"),
+                                        _("Hide AIS Targets") };
+    wxString iconName_Array[3] = { _T("AIS"),  _T("AIS_Suppressed"), _T("AIS_Disabled")};
+    int ArraySize = 3;
+    int AIS_Toolbar_Switch = 0;
+    if (StyleIndx == -1){// -1 means coming from toolbar button
+        //find current state of switch 
+        for ( int i = 1; i < ArraySize; i++){
+            if( (bShowAIS_Array[i] == g_bShowAIS) && (bShowScaled_Array[i] == g_bShowScaled) )
+                AIS_Toolbar_Switch = i;
+        }
+        AIS_Toolbar_Switch++; // we did click so continu with next item
+        if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch == 1) )
+            AIS_Toolbar_Switch++; 
+
+    }
+    else { // coming from menu bar.
+        AIS_Toolbar_Switch = StyleIndx;
+    }
+     //make sure we are not above array
+    if (AIS_Toolbar_Switch >= ArraySize )
+        AIS_Toolbar_Switch=0;
+    
+    int AIS_Toolbar_Switch_Next = AIS_Toolbar_Switch+1; //Find out what will happen at next click
+    if ( (!g_bAllowShowScaled) && (AIS_Toolbar_Switch_Next == 1) )
+        AIS_Toolbar_Switch_Next++;                
+    if (AIS_Toolbar_Switch_Next >= ArraySize )
+        AIS_Toolbar_Switch_Next=0; // If at end of cycle start at 0
+    
+    //Set found values to global and member variables
+    g_bShowAIS = bShowAIS_Array[AIS_Toolbar_Switch];
+    g_bShowScaled = bShowScaled_Array[AIS_Toolbar_Switch];
+    if( m_toolBar ) {
+        m_toolBar->SetToolShortHelp( ID_AIS, ToolShortHelp_Array[AIS_Toolbar_Switch_Next] );
+        if( m_toolBar->m_pTBAISTool ) {
+            m_toolBar->GetToolbar()->SetToolNormalBitmapEx( m_toolBar->m_pTBAISTool, iconName_Array[AIS_Toolbar_Switch] );
+            m_toolBar->GetToolbar()->Refresh();
+            m_toolBar->m_tblastAISiconName = iconName_Array[AIS_Toolbar_Switch];
+        }
+    }
+
+}
+
+void ChartCanvas::TouchAISToolActive( void )
+{
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    
+    if( m_toolBar->m_pTBAISTool ) {
+        if( ( !g_pAIS->IsAISSuppressed() ) && ( !g_pAIS->IsAISAlertGeneral() ) ) {
+            g_nAIS_activity_timer = 5;                // seconds
+            
+            wxString iconName = _T("AIS_Normal_Active");
+            if( g_pAIS->IsAISAlertGeneral() ) iconName = _T("AIS_AlertGeneral_Active");
+            if( g_pAIS->IsAISSuppressed() ) iconName = _T("AIS_Suppressed_Active");
+            if( !g_bShowAIS ) iconName = _T("AIS_Disabled");
+            
+            if( m_toolBar->m_tblastAISiconName != iconName ) {
+                if( m_toolBar->GetToolbar()) {
+                    m_toolBar->GetToolbar()->SetToolNormalBitmapEx( m_toolBar->m_pTBAISTool, iconName );
+                    m_toolBar->GetToolbar()->Refresh();
+                    m_toolBar->m_tblastAISiconName = iconName;
+                }
+            }
+        }
+    }
+}
+
+void ChartCanvas::UpdateAISTBTool( void )
+{
+    if(!g_pAIS) return;
+    if(!m_toolBar) return;
+    
+    bool b_need_refresh = false;
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    
+    wxString iconName;
+    
+    if( m_toolBar->m_pTBAISTool ) {
+        bool b_update = false;
+        
+        iconName = _T("AIS");
+        if( g_pAIS->IsAISSuppressed() )
+            iconName = _T("AIS_Suppressed");
+        if( g_pAIS->IsAISAlertGeneral() )
+            iconName = _T("AIS_AlertGeneral");
+        if( !g_bShowAIS )
+            iconName = _T("AIS_Disabled");
+        
+        //  Manage timeout for AIS activity indicator
+        if( g_nAIS_activity_timer ) {
+                g_nAIS_activity_timer--;
+                
+                if( 0 == g_nAIS_activity_timer ) b_update = true;
+                else {
+                    iconName = _T("AIS_Normal_Active");
+                    if( g_pAIS->IsAISSuppressed() )
+                        iconName = _T("AIS_Suppressed_Active");
+                    if( g_pAIS->IsAISAlertGeneral() )
+                        iconName = _T("AIS_AlertGeneral_Active");
+                    if( !g_bShowAIS )
+                        iconName = _T("AIS_Disabled");
+                }
+            }
+            
+            if( ( m_toolBar->m_tblastAISiconName != iconName ) ) b_update = true;
+            
+            if( b_update && m_toolBar->GetToolbar()) {
+                m_toolBar->GetToolbar()->SetToolNormalBitmapEx( m_toolBar->m_pTBAISTool, iconName );
+                m_toolBar->GetToolbar()->Refresh();
+                m_toolBar->m_tblastAISiconName = iconName;
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------

@@ -1071,7 +1071,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
         parent->CancelMeasureRoute();
-        gFrame->SurfaceToolbar();
+        gFrame->SurfaceAllToolbars();
         parent->InvalidateGL();
         parent->Refresh( false );
         break;
@@ -1479,7 +1479,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_RC_MENU_FINISH:
         parent->FinishRoute();
-        gFrame->SurfaceToolbar();
+        gFrame->SurfaceAllToolbars();
         parent->Refresh( false );
         break;
 

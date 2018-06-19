@@ -2072,7 +2072,7 @@ void PlugInManager::RemoveToolbarTool(int tool_id)
         }
     }
 
-    pParent->RequestNewToolbar();
+    pParent->RequestNewToolbars();
 }
 
 void PlugInManager::SetToolbarToolViz(int item, bool viz)
@@ -2086,7 +2086,7 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz)
                 pttc->b_viz = viz;
                 
                 //      Apply the change      
-                pParent->RequestNewToolbar();
+                pParent->RequestNewToolbars();
                 
                 break;
             }
