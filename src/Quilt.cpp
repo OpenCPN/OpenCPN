@@ -908,7 +908,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // However, we don't want excessive underzoom, for performance reasons.
     // So make sure any adjusted min_scale is not more than twice the already established value
     if(scales.size() > 1){
-        for(int i=0 ; i < scales.size()-1 ; i++){
+        for(unsigned i=0 ; i < scales.size()-1 ; i++){
             int min_scale_test = wxMax(scales[i].min, scales[i+1].max+1);
             min_scale_test = wxMin(min_scale_test, scales[i].min * 2);
             scales[i].min = min_scale_test;
