@@ -140,7 +140,7 @@ static bool s_ProgressCallBack( void )
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
 {
-    const uint64_t	m = 0x880355f21e6d1965ULL;
+    const uint64_t    m = 0x880355f21e6d1965ULL;
     const uint64_t *pos = (const uint64_t *)buf;
     const uint64_t *end = pos + (len >> 3);
     const unsigned char *pc;
@@ -2967,10 +2967,9 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     //  Create arrays to hold geometry objects temporarily
     MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pAuxCntArray = new wxArrayInt;
+    std::vector<int> auxCntArray, noCovrCntArray;
 
     MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pNoCovrCntArray = new wxArrayInt;
 
     //Get the first M_COVR object
     pFeat = GetChartFirstM_COVR( catcov );
@@ -3007,11 +3006,11 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
                     if( catcov == 1 ) {
                         pAuxPtrArray->Add( pf );
-                        pAuxCntArray->Add( npt );
+                        auxCntArray.push_back( npt );
                     }
                     else if( catcov == 2 ){
                         pNoCovrPtrArray->Add( pf );
-                        pNoCovrCntArray->Add( npt );
+                        noCovrCntArray.push_back( npt );
                     }
                 }
 
@@ -3022,7 +3021,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     //    Allocate the storage
 
-    m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = auxCntArray.size();
 
     //    Create new COVR entries
 
@@ -3031,7 +3030,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
+            m_pCOVRTablePoints[j] = auxCntArray[j];
             m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
     }
@@ -3045,7 +3044,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
 
     //      And for the NoCovr regions
-    m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+    m_nNoCOVREntries = noCovrCntArray.size();
 
     if( m_nNoCOVREntries ) {
         //    Create new NoCOVR entries
@@ -3053,8 +3052,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
         m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-            int npoints = pNoCovrCntArray->Item( j );
-            m_pNoCOVRTablePoints[j] = npoints;
+            m_pNoCOVRTablePoints[j] = noCovrCntArray[j];
             m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
     }
@@ -3064,9 +3062,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     }
 
     delete pAuxPtrArray;
-    delete pAuxCntArray;
     delete pNoCovrPtrArray;
-    delete pNoCovrCntArray;
 
 
     if( 0 == m_nCOVREntries ) {                        // fallback
@@ -3181,25 +3177,25 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
 
         //Coverage areas
         SENCFloatPtrArray &AuxPtrArray = senc.getSENCReadAuxPointArray();
-        wxArrayInt &AuxCntArray = senc.getSENCReadAuxPointCountArray();
+        std::vector<int> &AuxCntArray = senc.getSENCReadAuxPointCountArray();
 
-        m_nCOVREntries = AuxCntArray.GetCount();
+        m_nCOVREntries = AuxCntArray.size();
 
         m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-            m_pCOVRTablePoints[j] = AuxCntArray.Item( j );
-            m_pCOVRTable[j] = (float *) malloc( AuxCntArray.Item( j ) * 2 * sizeof(float) );
-            memcpy( m_pCOVRTable[j], AuxPtrArray.Item( j ),
-                    AuxCntArray.Item( j ) * 2 * sizeof(float) );
+            m_pCOVRTablePoints[j] = AuxCntArray[j];
+            m_pCOVRTable[j] = (float *) malloc( AuxCntArray[j] * 2 * sizeof(float) );
+            memcpy( m_pCOVRTable[j], AuxPtrArray[j],
+                    AuxCntArray[j] * 2 * sizeof(float) );
         }
 
         // NoCoverage areas
         SENCFloatPtrArray &NoCovrPtrArray = senc.getSENCReadNOCOVRPointArray();
-        wxArrayInt &NoCovrCntArray = senc.getSENCReadNOCOVRPointCountArray();
+        std::vector<int> &NoCovrCntArray = senc.getSENCReadNOCOVRPointCountArray();
 
-        m_nNoCOVREntries = NoCovrCntArray.GetCount();
+        m_nNoCOVREntries = NoCovrCntArray.size();
 
         if( m_nNoCOVREntries ) {
             //    Create new NoCOVR entries
@@ -3207,10 +3203,10 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
             m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
 
             for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-                int npoints = NoCovrCntArray.Item( j );
+                int npoints = NoCovrCntArray[j];
                 m_pNoCOVRTablePoints[j] = npoints;
                 m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-                memcpy( m_pNoCOVRTable[j], NoCovrPtrArray.Item( j ),
+                memcpy( m_pNoCOVRTable[j], NoCovrPtrArray[j],
                         npoints * 2 * sizeof(float) );
             }
         }

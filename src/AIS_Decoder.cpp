@@ -2244,7 +2244,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     AIS_Target_Hash *current_targets = GetTargetList();
 
     it = ( *current_targets ).begin();
-    wxArrayInt remove_array;                    // collector for MMSI of targets to be removed
+    std::vector<int> remove_array;                    // collector for MMSI of targets to be removed
     
     while( it != ( *current_targets ).end() ) {
         bool b_new_it = false;
@@ -2326,7 +2326,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
                 //      then remove the target from all lists
                 //      or a lost ARPA target.
                 if ( target_static_age > removelost_Mins * 60 * 3 || b_arpalost )
-                    remove_array.Add(td->MMSI);         //Add this target to removal list
+                    remove_array.push_back(td->MMSI);         //Add this target to removal list
             }
         }
         
@@ -2335,7 +2335,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
             if(td->MMSI == props->MMSI){
                 if(props->m_bignore)
-                    remove_array.Add(td->MMSI);         //Add this target to removal list
+                    remove_array.push_back(td->MMSI);         //Add this target to removal list
                 break;
             }
         }
@@ -2345,7 +2345,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     }
 
     //  Remove all the targets collected in remove_array in one pass
-    for(unsigned int i=0 ; i < remove_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < remove_array.size() ; i++){
         AIS_Target_Hash::iterator itd = current_targets->find( remove_array[i] );
         if(itd != current_targets->end() ){
             AIS_Target_Data *td = itd->second;

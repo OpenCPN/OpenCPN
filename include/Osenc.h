@@ -476,9 +476,9 @@ public:
     Extent &getReadExtent(){ return m_extent; }
     
     SENCFloatPtrArray &getSENCReadAuxPointArray(){ return m_AuxPtrArray;}
-    wxArrayInt &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
+    std::vector<int> &getSENCReadAuxPointCountArray(){ return m_AuxCntArray;}
     SENCFloatPtrArray &getSENCReadNOCOVRPointArray(){ return m_NoCovrPtrArray;}
-    wxArrayInt &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
+    std::vector<int> &getSENCReadNOCOVRPointCountArray(){ return m_NoCovrCntArray;}
     
     int createSenc200(const wxString& FullPath000, const wxString& SENCFileName, bool b_showProg = true);
     
@@ -580,9 +580,9 @@ private:
     
     //  Arrays used to accumulate coverage regions on oSENC load
     SENCFloatPtrArray     m_AuxPtrArray;
-    wxArrayInt            m_AuxCntArray;
+    std::vector<int>            m_AuxCntArray;
     SENCFloatPtrArray     m_NoCovrPtrArray;
-    wxArrayInt            m_NoCovrCntArray;
+    std::vector<int>            m_NoCovrCntArray;
     
     
     Osenc_outstream       *m_pauxOutstream;

@@ -1764,7 +1764,6 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     // Toggling AIS display on and off
     if( !g_bShowAIS )
         return;//
-    //wxArrayInt importancearray; 
     //      Iterate over the AIS Target Hashmap
     AIS_Target_Hash::iterator it;
 

@@ -842,13 +842,13 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
     }
 }
 
+struct scale {
+    int index, nom, min, max;
+};
+
 int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum type, double proposed_scale_onscreen )
 {
-    //  Make 3 lists
-    wxArrayInt nom_scale;
-    wxArrayInt max_scale;
-    wxArrayInt min_scale;
-    wxArrayInt index_array;
+    std::vector<scale> scales;
 
     //  For Vector charts, or for ZoomIN operations, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
@@ -868,9 +868,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
                 && IsChartQuiltableRef( test_db_index )
                 /*&& !IsChartS57Overlay( test_db_index )*/ ){
 
-                index_array.Add(test_db_index);
                 int nscale = ChartData->GetDBChartScale(test_db_index);
-                nom_scale.Add(nscale);
 
                 int nmax_scale = GetNomScaleMax(nscale, type, family);
 
@@ -878,10 +876,9 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
                 //  The range will be clipped later
                 if(0 == i_first)
                     nmax_scale = 1;
-                max_scale.Add(nmax_scale);
 
                 int nmin_scale = GetNomScaleMin(nscale, type, family);
-                min_scale.Add(nmin_scale);
+                scales.push_back(scale{test_db_index, nscale, nmin_scale, nmax_scale});
 
                 i_first ++;
             }
@@ -894,10 +891,10 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     //  small enough to allow reasonable zoomout.
     //  But this will be calculated without regard to zoom scale factor, so that the piano does not grow excessively
     if(CHART_FAMILY_VECTOR == family){
-        for(size_t i = index_array.GetCount() ; i ; i--){
-            int test_db_index = index_array.Item( i-1 );
+        for(size_t i = scales.size(); i ; i--){
+            int test_db_index = scales[i-1].index;
             if( type == ChartData->GetDBChartType( test_db_index ) ){
-                min_scale.Item(i-1) = nom_scale.Item(i-1) * 80;
+                scales[i-1].min = scales[i-1].nom * 80;
                 break;
             }
         }
@@ -910,11 +907,11 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // the next smaller scale chart.  Makes a nicer image...
     // However, we don't want excessive underzoom, for performance reasons.
     // So make sure any adjusted min_scale is not more than twice the already established value
-    if(index_array.GetCount() > 1){
-        for(size_t i=0 ; i < index_array.GetCount()-1 ; i++){
-            int min_scale_test = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
-            min_scale_test = wxMin(min_scale_test, min_scale.Item(i) * 2 );
-            min_scale.Item(i) = min_scale_test;
+    if(scales.size() > 1){
+        for(int i=0 ; i < scales.size()-1 ; i++){
+            int min_scale_test = wxMax(scales[i].min, scales[i+1].max+1);
+            min_scale_test = wxMin(min_scale_test, scales[i].min * 2);
+            scales[i].min = min_scale_test;
 //              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
         }
     }
@@ -923,9 +920,9 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     // Traverse the list again, from smaller to larger scale, filling in any holes by
     // increasing the max_scale of smaller scale charts.
     // Skip cm93 if present
-    if(index_array.GetCount() > 2){
-        for(size_t i=index_array.GetCount()-2 ; i >= 1 ; i--){
-              max_scale.Item(i) = wxMin(max_scale.Item(i), min_scale.Item(i-1) - 1);
+    if(scales.size() > 2){
+        for(size_t i=scales.size()-2; i >= 1 ; i--){
+              scales[i].max = wxMin(scales[i].max, scales[i-1].min - 1);
         }
     }
 
@@ -935,13 +932,10 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     int new_ref_dbIndex = -1;
 
     // Search for the largest scale chart whose scale limits contain the requested scale.
-    for(size_t i=0 ; i < index_array.GetCount() ; i++){
-        int a = min_scale.Item(i);
-        int b = max_scale.Item(i);
-
-        if( ( proposed_scale_onscreen < min_scale.Item(i) * 1.05) &&   // 5 percent leeway to allow for roundoff errors
-            (proposed_scale_onscreen > max_scale.Item(i)) ) {
-            new_ref_dbIndex = index_array.Item(i);
+    for(size_t i=0 ; i < scales.size(); i++){
+        if( ( proposed_scale_onscreen < scales[i].min * 1.05) &&   // 5 percent leeway to allow for roundoff errors
+            (proposed_scale_onscreen > scales[i].max) ) {
+            new_ref_dbIndex = scales[i].index;
             break;
         }
     }

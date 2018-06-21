@@ -212,14 +212,8 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
           nPlyEntries = theChart.GetCOVRTablePoints(0);
           
           if(nPlyEntries > 5 && (LOD_meters > .01)){
-              wxArrayInt index_keep;
+              std::vector<int> index_keep{0, nPlyEntries-1, 1, nPlyEntries-2};
               
-              index_keep.Clear();
-              index_keep.Add(0);
-              index_keep.Add(nPlyEntries-1);
-              index_keep.Add(1);
-              index_keep.Add(nPlyEntries-2);
-
               double *DPbuffer = (double *)malloc(2 * nPlyEntries * sizeof(double));
               
               double *pfed = DPbuffer;
@@ -232,16 +226,15 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
               }
               
               DouglasPeucker(DPbuffer, 1, nPlyEntries-2, LOD_meters/(1852 * 60), &index_keep);
-//              printf("DB DP Reduction: %d/%d\n", index_keep.GetCount(), nPlyEntries);
+//              printf("DB DP Reduction: %d/%d\n", index_keep.size(), nPlyEntries);
 
               // Mark the keepers by adding a simple constant to ltp
-              for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
-                  int k = index_keep.Item(i);
-                  DPbuffer[2*k] += 2000.;
+              for(unsigned int i=0 ; i < index_keep.size() ; i++){
+                  DPbuffer[2*index_keep[i]] += 2000.;
               }
               
               
-              float *pf = (float *)malloc(2 * index_keep.GetCount() * sizeof(float));
+              float *pf = (float *)malloc(2 * index_keep.size() * sizeof(float));
               float *pfe = pf;
               
               for (int i = 0; i < nPlyEntries; i++) {
@@ -252,7 +245,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
               }
 
               pPlyTable = pf;
-              nPlyEntries = index_keep.GetCount();
+              nPlyEntries = index_keep.size();
               free( DPbuffer );
           }
           else {
@@ -303,13 +296,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
               int nPE = theChart.GetCOVRTablePoints(j);
               
               if(nPE > 5 && (LOD_meters > .01)){
-                  wxArrayInt index_keep;
-                  
-                  index_keep.Clear();
-                  index_keep.Add(0);
-                  index_keep.Add(nPE-1);
-                  index_keep.Add(1);
-                  index_keep.Add(nPE-2);
+                  std::vector<int> index_keep{0,nPE-1, 1, nPE-2};
                   
                   double *DPbuffer = (double *)malloc(2 * nPE * sizeof(double));
                   
@@ -323,16 +310,15 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
                   }
                   
                   DouglasPeucker(DPbuffer, 1, nPE-2, LOD_meters/(1852 * 60), &index_keep);
- //                 printf("DBa DP Reduction: %d/%d\n", index_keep.GetCount(), nPE);
+ //                 printf("DBa DP Reduction: %d/%d\n", index_keep.size(), nPE);
                   
                   // Mark the keepers by adding a simple constant to ltp
-                  for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
-                      int k = index_keep.Item(i);
-                      DPbuffer[2*k] += 2000.;
+                  for(unsigned int i=0 ; i < index_keep.size() ; i++){
+                      DPbuffer[2*index_keep[i]] += 2000.;
                   }
                   
                   
-                  float *pf = (float *)malloc(2 * index_keep.GetCount() * sizeof(float));
+                  float *pf = (float *)malloc(2 * index_keep.size() * sizeof(float));
                   float *pfe = pf;
                   
                   for (int i = 0; i < nPE; i++) {
@@ -343,7 +329,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
                   }
                   
                   pft0[j] = pf;
-                  pip[j] = index_keep.GetCount();
+                  pip[j] = index_keep.size();
                   free( DPbuffer );
               }
               else {
@@ -940,22 +926,21 @@ std::vector<float> ChartTableEntry::GetReducedPlyPoints()
         *npsm++ = y;
     }
 
-    wxArrayInt index_keep;
+    std::vector<int> index_keep;
     if(nPoints > 10){
-        index_keep.Clear();
-        index_keep.Add(0);
-        index_keep.Add(nPoints-1);
-        index_keep.Add(1);
-        index_keep.Add(nPoints-2);
+        index_keep.push_back(0);
+        index_keep.push_back(nPoints-1);
+        index_keep.push_back(1);
+        index_keep.push_back(nPoints-2);
 
                 
         DouglasPeuckerM(ppsm, 1, nPoints-2, LOD_meters , &index_keep);
                 
     }
     else {
-        index_keep.Clear();
+        index_keep.resize(nPoints);
         for(int i = 0 ; i < nPoints ; i++)
-            index_keep.Add(i);
+            index_keep[i] = i;
     }
             
     double *ppr = ppd;  
@@ -963,8 +948,8 @@ std::vector<float> ChartTableEntry::GetReducedPlyPoints()
         double x = *ppr++;
         double y = *ppr++;
                 
-        for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-            if(index_keep.Item(j) == ip){
+        for(unsigned int j=0 ; j < index_keep.size() ; j++){
+            if(index_keep[j] == ip){
                 m_reducedPlyPoints.push_back(x);
                 m_reducedPlyPoints.push_back(y);
                 break;
@@ -1026,32 +1011,31 @@ std::vector<float> ChartTableEntry::GetReducedAuxPlyPoints( int iTable)
     }
 
 
-    wxArrayInt index_keep;
+    std::vector<int> index_keep;
     if(nPoints > 10 ){
-        index_keep.Clear();
-        index_keep.Add(0);
-        index_keep.Add(nPoints-1);
-        index_keep.Add(1);
-        index_keep.Add(nPoints-2);
+        index_keep.push_back(0);
+        index_keep.push_back(nPoints-1);
+        index_keep.push_back(1);
+        index_keep.push_back(nPoints-2);
                 
         DouglasPeuckerM(ppsm, 1, nPoints - 2, LOD_meters, &index_keep);
                 
     }
     else {
-        index_keep.Clear();
+        index_keep.resize(nPoints);
         for(int i = 0 ; i < nPoints ; i++)
-            index_keep.Add(i);
+            index_keep[i] = i;
     }
    
-   int nnn = index_keep.GetCount();
+   int nnn = index_keep.size();
    
     double *ppr = ppd;  
     for(int ip = 0 ; ip < nPoints ; ip++){
         double x = *ppr++;
         double y = *ppr++;
                 
-        for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-            if(index_keep.Item(j) == ip){
+        for(unsigned int j=0 ; j < index_keep.size() ; j++){
+            if(index_keep[j] == ip){
                 vec.push_back(x);
                 vec.push_back(y);
                 break;
@@ -2861,7 +2845,7 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray)
                         //  Otherwise, append a sep character so that similar paths are distinguished.
                         //  See FS#1060
                         if(!chart_full_path->IsSameAs(element_root))
-                            element_root.Append(separator);	// Prevent comingling similar looking path names
+                            element_root.Append(separator);    // Prevent comingling similar looking path names
                         if(chart_full_path->StartsWith(element_root))
                         {
                               bool b_add = true;
