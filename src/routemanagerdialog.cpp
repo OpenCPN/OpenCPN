@@ -33,6 +33,8 @@
 #include <wx/clipbrd.h>
 
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 #include "styles.h"
 #include "dychart.h"
@@ -1523,14 +1525,11 @@ void RouteManagerDialog::OnTrkRightClick( wxListEvent &event )
     PopupMenu( &menu );
 }
 
-WX_DEFINE_ARRAY( Track*, TrackArray );
-
-static int CompareTracks( Track** track1, Track** track2 )
+static bool CompareTracks( Track* track1, Track* track2 )
 {
-    TrackPoint* start1 = ( *track1 )->GetPoint(0);
-    TrackPoint* start2 = ( *track2 )->GetPoint(0);
-    if( start1->GetCreateTime() > start2->GetCreateTime() ) return 1;
-    return -1; // Two tracks starting at the same time is not possible.
+    TrackPoint* start1 = track1->GetPoint(0);
+    TrackPoint* start2 = track2->GetPoint(0);
+    return start1->GetCreateTime() < start2->GetCreateTime();
 }
 
 void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
@@ -1616,8 +1615,8 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             TrackPoint* tPoint;
             TrackPoint* newPoint;
             TrackPoint* lastPoint;
-            TrackArray mergeList;
-            TrackArray deleteList;
+            std::vector<Track*> mergeList;
+            std::vector<Track*> deleteList;
             bool runningSkipped = false;
 
             ::wxBeginBusyCursor();
@@ -1626,17 +1625,17 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
                 if( item == -1 ) break;
                 Track* track = pTrackList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-                mergeList.Add( track );
+                mergeList.push_back( track );
             }
 
-            mergeList.Sort( (CMPFUNC_wxArrayTrackArray) CompareTracks );
+            std::sort(mergeList.begin(), mergeList.end(), CompareTracks );
 
-            targetTrack = mergeList.Item( 0 );
+            targetTrack = mergeList[ 0 ];
             lastPoint = targetTrack->GetLastPoint();
 
-            for( unsigned int t = 1; t < mergeList.Count(); t++ ) {
-
-                mergeTrack = mergeList.Item( t );
+            for(auto const& mergeTrack: mergeList) {
+                if(mergeTrack == *mergeList.begin())
+                    continue;
 
                 if( mergeTrack->IsRunning() ) {
                     runningSkipped = true;
@@ -1654,18 +1653,17 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
                     lastPoint = newPoint;
                 }
-                deleteList.Add( mergeTrack );
+                deleteList.push_back( mergeTrack );
             }
 
-            for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
-                Track* deleteTrack = deleteList.Item( i );
+            for(auto const& deleteTrack: deleteList) {
                 g_pAIS->DeletePersistentTrack( deleteTrack );
                 pConfig->DeleteConfigTrack( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );
             }
 
-            mergeList.Clear();
-            deleteList.Clear();
+            mergeList.clear();
+            deleteList.clear();
 
             ::wxEndBusyCursor();
 

@@ -160,7 +160,7 @@ public:
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
       static wxString GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName );
-      static int CompareLights( const void** l1, const void** l2 );
+      static bool CompareLights( const S57Light* l1, const S57Light* l2 );
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
       static wxString GetAttributeDecode(wxString& att, int ival);
 
