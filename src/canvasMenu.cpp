@@ -578,8 +578,6 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 
     if( !g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE )) {
         if( g_pAIS ) {
-            MenuAppend1( contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS target list") + _T("...") );
-
             if( g_bShowAIS && (seltype & SELTYPE_AISTARGET) ) {
                 MenuAppend1( menuAIS, ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
                 AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
@@ -596,29 +594,24 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                     else
                         MenuAppend1( menuAIS, ID_DEF_MENU_AISSHOWTRACK, _("Show Target Track") );
                 }
+
                 MenuAppend1( menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI") );
 
-                menuAIS->AppendSeparator();
-                
-                if( !parent->GetVP().b_quilt ) {
-                    if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
-                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
-                    }
-                    
-                } else {
-                    ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
-                    if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
-                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
-                    }
-                }
-                        
+				if (!g_bBasicMenus && myptarget) {
+					wxString name = myptarget->GetFullName();
+					if (name.IsEmpty())
+						name.Printf(_T("%d"), m_FoundAIS_MMSI);
+					menuAIS->SetTitle(menuAIS->GetTitle() + _T(" ( ") + name + _T(" )"));
+				}
                 
                 menuFocus = menuAIS;
             }
+			else
+				MenuAppend1(contextMenu, ID_DEF_MENU_AISTARGETLIST, _("AIS target list") + _T("..."));
         }
     }
 
-    if( menuFocus != menuAIS && (seltype & SELTYPE_ROUTESEGMENT) ) {
+    if( seltype & SELTYPE_ROUTESEGMENT ) {
         bool blay = false;
         if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer )
             blay = true;
@@ -678,13 +671,19 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                 MenuAppend1( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
             }
 #endif                
-                
-        }
-        //      Set this menu as the "focused context menu"
-        menuFocus = menuRoute;
+		}
+		if (!g_bBasicMenus && m_pSelectedRoute) {
+			wxString name = m_pSelectedRoute->m_RouteNameString;
+			if (name.IsEmpty())
+				name = _("Unnamed Route");
+			menuRoute->SetTitle(menuRoute->GetTitle() + _T(" ( ") + name + _T(" )"));
+		}
+        //Eventually set this menu as the "focused co ntext menu"
+		if (menuFocus != menuAIS)
+			menuFocus = menuRoute;
     }
 
-    if( menuFocus != menuAIS && (seltype & SELTYPE_TRACKSEGMENT) ) {
+    if( seltype & SELTYPE_TRACKSEGMENT ) {
         bool blay = false;
         if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer )
             blay = true;
@@ -700,11 +699,15 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend1( menuTrack, ID_TK_MENU_DELETE, _( "Delete" ) + _T( "..." ) );
         }
 
-        //      Set this menu as the "focused context menu"
-        menuFocus = menuTrack;
+		if (!g_bBasicMenus && m_pSelectedTrack)
+			menuTrack->SetTitle(menuTrack->GetTitle() + _T(" ( ") + m_pSelectedTrack->GetName(true) + (" )"));
+
+        //Eventually set this menu as the "focused context menu"
+		if ( menuFocus != menuAIS )
+			menuFocus = menuTrack;
     }
 
-    if( menuFocus != menuAIS && (seltype & SELTYPE_ROUTEPOINT) ) {
+    if( seltype & SELTYPE_ROUTEPOINT ) {
         bool blay = false;
         if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
@@ -756,11 +759,18 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             
             
         }
-        //      Set this menu as the "focused context menu"
-        menuFocus = menuWaypoint;
+		if (!g_bBasicMenus && m_pFoundRoutePoint) {
+			wxString name = m_pFoundRoutePoint->GetName();
+			if (name.IsEmpty())
+				name = _("Unnamed Waypoint");
+			menuWaypoint->SetTitle(menuWaypoint->GetTitle() + _T(" ( ") + name + _T(" )"));
+		}
+        //Eventually set this menu as the "focused context menu"
+		if (menuFocus != menuAIS)
+			menuFocus = menuWaypoint;
     }
 
-    if( menuFocus != menuAIS && (seltype & SELTYPE_MARKPOINT) ) {
+    if( seltype & SELTYPE_MARKPOINT ) {
         bool blay = false;
         if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
@@ -807,10 +817,39 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                 }
             }
         }
-
-        //      Set this menu as the "focused context menu"
-        menuFocus = menuWaypoint;
+		if (!g_bBasicMenus && m_pFoundRoutePoint) {
+			wxString name = m_pFoundRoutePoint->GetName();
+			if (name.IsEmpty())
+				name = _("Unnamed Waypoint");
+			menuWaypoint->SetTitle(menuWaypoint->GetTitle() + _T(" ( ") + name + _T(" )"));
+		}
+        //Eventually set this menu as the "focused context menu"
+		if (menuFocus != menuAIS)
+			menuFocus = menuWaypoint;
     }
+
+	if ( !g_bBasicMenus && menuFocus != contextMenu) {
+		/*add the relevant submenus*/
+		menuFocus->AppendSeparator();
+		wxMenuItem * subMenu1;
+		if (menuWaypoint->GetMenuItemCount() && menuFocus != menuWaypoint) {
+			subMenu1 = menuFocus->AppendSubMenu(menuWaypoint, menuWaypoint->GetTitle());
+			menuWaypoint->SetTitle(wxEmptyString);
+			SetMenuItemFont1(subMenu1);
+		}
+		if (menuTrack->GetMenuItemCount() && menuFocus != menuTrack) {
+			subMenu1 = menuFocus->AppendSubMenu(menuTrack, menuTrack->GetTitle());
+			menuTrack->SetTitle(wxEmptyString);
+			SetMenuItemFont1(subMenu1);
+		}
+		if (menuRoute->GetMenuItemCount() && menuFocus != menuRoute) {
+			subMenu1 = menuFocus->AppendSubMenu(menuRoute, menuRoute->GetTitle());
+			menuRoute->SetTitle(wxEmptyString);
+			SetMenuItemFont1(subMenu1);
+		}
+		subMenu1 = menuFocus->AppendSubMenu(contextMenu, _("Main Menu"));
+		SetMenuItemFont1(subMenu1);
+	}
 
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
