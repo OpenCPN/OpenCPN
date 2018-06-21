@@ -501,8 +501,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     if( g_pGroupArray->GetCount() ) {
 
 #ifdef __WXMSW__
-          wxMenuItem* subItem1 = subMenuChart->AppendRadioItem( wxID_CANCEL , _T("temporary") );
-          SetMenuItemFont1(subItem1);
+		MenuAppend1(subMenuChart, wxID_CANCEL, _("temporary"));
 #endif
           wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE ,
                   _("All Active Charts") );
