@@ -43,7 +43,6 @@ extern int         g_detailslider_dialog_y;
 extern ChartCanvas *cc1;
 extern MyFrame     *gFrame;
 extern bool        g_bQuiltEnable;
-extern ChartStack  *pCurrentStack;
 
 BEGIN_EVENT_TABLE(PopUpDSlide, wxDialog)
     EVT_KEY_DOWN(PopUpDSlide::OnKeyDown )

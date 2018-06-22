@@ -128,7 +128,6 @@ extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern RouteList        *pRouteList;
 extern wxString         g_default_wp_icon;
-extern ChartStack       *pCurrentStack;
 extern bool              g_btouch;
 extern int              g_GroupIndex;
 extern bool             g_bBasicMenus;
@@ -480,11 +479,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         
  
 #ifndef __OCPN__ANDROID__        
-    if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
-        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
-        if( dbIndex != -1 )
-            MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
-    }
+//TODO stack
+//     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
+//         int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
+//         if( dbIndex != -1 )
+//             MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
+//     }
 #endif
 
 
@@ -1135,7 +1135,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     case ID_DEF_MENU_QUILTREMOVE: {
         if( parent->GetVP().b_quilt ) {
             int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
-            parent->parent_frame->RemoveChartFromQuilt( dbIndex );
+            parent->RemoveChartFromQuilt( dbIndex );
 
             parent->ReloadVP();
 

@@ -214,7 +214,6 @@ extern bool             g_bShowAreaNotices;
 extern int              g_Show_Target_Name_Scale;
 
 extern MyFrame          *gFrame;
-extern Piano            *g_Piano;
 extern ocpnCompass      *g_Compass;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
@@ -264,7 +263,6 @@ extern double           g_ownship_predictor_minutes;
 extern double           g_ownship_HDTpredictor_miles;
 
 extern ArrayOfInts      g_quilt_noshow_index_array;
-extern ChartStack       *pCurrentStack;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
 extern wxString         g_sAIS_Alert_Sound_File;
@@ -337,6 +335,7 @@ double                  g_defaultBoatSpeed;
 double                  g_defaultBoatSpeedUserUnit;
 
 extern int              g_nAIS_activity_timer;
+extern bool             g_bskew_comp;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -408,6 +407,11 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bedge_pan = false;
     m_disable_edge_pan = false;
     m_dragoffsetSet = false;
+    m_bautofind = false;
+    m_bFirstAuto = true;
+    
+    m_vLat = vLat;
+    m_vLon = vLon;
     
     m_pCIWin = NULL;
 
@@ -456,6 +460,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     
     m_toolBar = NULL;
     m_toolbar_scalefactor = 1.0;
+    m_pCurrentStack = NULL;
+    m_bpersistent_quilt = false;
+    m_piano_ctx_menu = NULL;
     
     g_ChartNotRenderScaleFactor = 2.0;
 
@@ -787,7 +794,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     SetUserOwnship();
         
     m_pBrightPopup = NULL;
-    m_pQuilt = new Quilt();
+    m_pQuilt = new Quilt( this );
     
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -796,7 +803,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_pgridFont = FontMgr::Get().FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
-        
+    
+    m_Piano = new Piano(this);
+    
 }
 
 ChartCanvas::~ChartCanvas()
@@ -868,6 +877,658 @@ ChartCanvas::~ChartCanvas()
 #endif
 
 }
+
+void ChartCanvas::ConfigureChartBar()
+{
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    m_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+    m_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+    
+    if( GetQuiltMode() ) {
+        m_Piano->SetRoundedRectangles( true );
+    }
+    m_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+    m_Piano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
+    m_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+    
+}
+
+
+
+
+//TODO
+///extern bool     bFirstAuto;
+extern int      g_restore_stackindex;
+extern int      g_restore_dbindex;
+extern bool     g_bLookAhead;
+extern bool     g_bPreserveScaleOnX;
+extern ChartDummy *pDummyChart;
+extern int      g_sticky_chart;
+
+bool ChartCanvas::DoCanvasUpdate( void )
+{
+    
+    double tLat, tLon;           // Chart Stack location
+    double vpLat, vpLon;         // ViewPort location
+    
+    bool bNewChart = false;
+    bool bNewView = false;
+    bool bCanvasChartAutoOpen = true;                             // debugging
+    
+    bool bNewPiano = false;
+    bool bOpenSpecified;
+    ChartStack LastStack;
+    ChartBase *pLast_Ch;
+    
+    ChartStack WorkStack;
+    
+    if( bDBUpdateInProgress ) return false;
+    if( !ChartData ) return false;
+    
+    if(ChartData->IsBusy())
+        return false;
+    
+    int last_nEntry = -1;
+    if( m_pCurrentStack )
+        last_nEntry = m_pCurrentStack->nEntry;
+    
+    //    Startup case:
+    //    Quilting is enabled, but the last chart seen was not quiltable
+    //    In this case, drop to single chart mode, set persistence flag,
+    //    And open the specified chart
+//TODO implement this    
+//     if( m_bFirstAuto && ( g_restore_dbindex >= 0 ) ) {
+//         if( GetQuiltMode() ) {
+//             if( !IsChartQuiltableRef( g_restore_dbindex ) ) {
+//                 gFrame->ToggleQuiltMode();
+//                 m_bpersistent_quilt = true;
+//                 Current_Ch = NULL;
+//             }
+//         }
+//     }
+    
+    //      If in auto-follow mode, use the current glat,glon to build chart stack.
+    //      Otherwise, use vLat, vLon gotten from click on chart canvas, or other means
+    
+    if( cc1->m_bFollow == true ) {
+        tLat = gLat;
+        tLon = gLon;
+        vpLat = gLat;
+        vpLon = gLon;
+        
+        // on lookahead mode, adjust the vp center point
+        if( g_bLookAhead ) {
+            double angle = g_COGAvg + ( cc1->GetVPRotation() * 180. / PI );
+            
+            double pixel_deltay = fabs( cos( angle * PI / 180. ) ) * cc1->GetCanvasHeight() / 4;
+            double pixel_deltax = fabs( sin( angle * PI / 180. ) ) * cc1->GetCanvasWidth() / 4;
+            
+            double pixel_delta_tent = sqrt(
+                ( pixel_deltay * pixel_deltay ) + ( pixel_deltax * pixel_deltax ) );
+            
+            double pixel_delta = 0;
+            
+            //    The idea here is to cancel the effect of LookAhead for slow gSog, to avoid
+            //    jumping of the vp center point during slow maneuvering, or at anchor....
+            if( !wxIsNaN(gSog) ) {
+                if( gSog < 1.0 ) pixel_delta = 0.;
+                else
+                    if( gSog >= 3.0 ) pixel_delta = pixel_delta_tent;
+                    else
+                        pixel_delta = pixel_delta_tent * ( gSog - 1.0 ) / 2.0;
+            }
+            
+            double meters_to_shift = cos( gLat * PI / 180. ) * pixel_delta / cc1->GetVPScale();
+            
+            double dir_to_shift = g_COGAvg;
+            
+            ll_gc_ll( gLat, gLon, dir_to_shift, meters_to_shift / 1852., &vpLat, &vpLon );
+        }
+        
+    } else {
+        tLat = m_vLat;
+        tLon = m_vLon;
+        vpLat = m_vLat;
+        vpLon = m_vLon;
+        
+    }
+    
+    if( GetQuiltMode() ) {
+        int current_db_index = -1;
+        if( m_pCurrentStack )
+            current_db_index = m_pCurrentStack->GetCurrentEntrydbIndex(); // capture the currently selected Ref chart dbIndex
+        else
+            m_pCurrentStack = new ChartStack;
+            
+            //  This logic added to enable opening a chart when there is no
+                //  previous chart indication, either from inital startup, or from adding new chart directory
+            if( m_bautofind && (-1 == GetQuiltReferenceChartIndex()) && m_pCurrentStack ){
+                if(m_pCurrentStack->nEntry){
+                    int new_dbIndex = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry-1);    // smallest scale
+                SelectQuiltRefdbChart(new_dbIndex, true);
+                m_bautofind = false;
+             }
+         }
+                
+         ChartData->BuildChartStack( m_pCurrentStack, tLat, tLon );
+         m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
+                
+         if( m_bFirstAuto ) {
+                    double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale(); // as set from config load
+                        
+                        int initial_db_index = g_restore_dbindex;
+                        if( initial_db_index < 0 ) {
+                            if( m_pCurrentStack->nEntry ) {
+                                if( ( g_restore_stackindex < m_pCurrentStack->nEntry )
+                                    && ( g_restore_stackindex >= 0 ) )
+                                    initial_db_index = m_pCurrentStack->GetDBIndex( g_restore_stackindex );
+                                else
+                                    initial_db_index = m_pCurrentStack->GetDBIndex( m_pCurrentStack->nEntry - 1 );
+                            } else
+                                m_bautofind = true; //initial_db_index = 0;
+                        }
+                        
+                        if( m_pCurrentStack->nEntry ) {
+                            
+                            int initial_type = ChartData->GetDBChartType( initial_db_index );
+                            
+                            //    Check to see if the target new chart is quiltable as a reference chart
+                            
+                            if( !IsChartQuiltableRef( initial_db_index ) ) {
+                                // If it is not quiltable, then walk the stack up looking for a satisfactory chart
+                                // i.e. one that is quiltable and of the same type
+                                // XXX if there's none?
+                                int stack_index = g_restore_stackindex;
+                                
+                                if ( stack_index >= 0 ) while( ( stack_index < m_pCurrentStack->nEntry - 1 ) ) {
+                                    int test_db_index = m_pCurrentStack->GetDBIndex( stack_index );
+                                    if( IsChartQuiltableRef( test_db_index )
+                                        && ( initial_type == ChartData->GetDBChartType( initial_db_index ) ) ) {
+                                        initial_db_index = test_db_index;
+                                    break;
+                                        }
+                                        stack_index++;
+                                }
+                            }
+                            
+                            ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
+                            if( pc ) {
+                                SetQuiltRefChart( initial_db_index );
+                                m_pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
+                            }
+                        }
+                        
+                        bNewView |= SetViewPoint( vpLat, vpLon,
+                                                       GetCanvasScaleFactor() / proposed_scale_onscreen, 0,
+                                                       GetVPRotation() );
+                        
+                }
+                // else
+                bNewView |= SetViewPoint( vpLat, vpLon, GetVPScale(), 0, GetVPRotation() );
+                
+                goto update_finish;
+                
+    }
+    
+    //  Single Chart Mode from here....
+    pLast_Ch = Current_Ch;
+    ChartTypeEnum new_open_type;
+    ChartFamilyEnum new_open_family;
+    if( pLast_Ch ) {
+        new_open_type = pLast_Ch->GetChartType();
+        new_open_family = pLast_Ch->GetChartFamily();
+    } else {
+        new_open_type = CHART_TYPE_KAP;
+        new_open_family = CHART_FAMILY_RASTER;
+    }
+    
+    bOpenSpecified = m_bFirstAuto;
+    
+    //  Make sure the target stack is valid
+    if( NULL == m_pCurrentStack )
+        m_pCurrentStack = new ChartStack;
+                                                                    
+                                                                    // Build a chart stack based on tLat, tLon
+    if( 0 == ChartData->BuildChartStack( &WorkStack, tLat, tLon, g_sticky_chart ) ) {      // Bogus Lat, Lon?
+        if( NULL == pDummyChart ) {
+            pDummyChart = new ChartDummy;
+            bNewChart = true;
+        }
+        
+        if( Current_Ch ) if( Current_Ch->GetChartType() != CHART_TYPE_DUMMY ) bNewChart = true;
+                                                                    
+                                                                    Current_Ch = pDummyChart;
+        
+        //    If the current viewpoint is invalid, set the default scale to something reasonable.
+                                                                    double set_scale = GetVPScale();
+                                                                    if( !GetVP().IsValid() ) set_scale = 1. / 20000.;
+                                                                    
+                                                                    bNewView |= SetViewPoint( tLat, tLon, set_scale, 0, GetVPRotation() );
+                                                                    
+                                                                    //      If the chart stack has just changed, there is new status
+                                                                    if(WorkStack.nEntry && m_pCurrentStack->nEntry){
+                                                                        if( !ChartData->EqualStacks( &WorkStack, m_pCurrentStack ) ) {
+                                                                            bNewPiano = true;
+                                                                            bNewChart = true;
+                                                                        }
+                                                                    }
+                                                                    
+                                                                    //      Copy the new (by definition empty) stack into the target stack
+                                                                    ChartData->CopyStack( m_pCurrentStack, &WorkStack );
+                                                                    
+                                                                    goto update_finish;
+    }
+    
+    //              Check to see if Chart Stack has changed
+    if( !ChartData->EqualStacks( &WorkStack, m_pCurrentStack ) ) {
+        //      New chart stack, so...
+        bNewPiano = true;
+        
+        //      Save a copy of the current stack
+        ChartData->CopyStack( &LastStack, m_pCurrentStack );
+        
+        //      Copy the new stack into the target stack
+        ChartData->CopyStack( m_pCurrentStack, &WorkStack );
+        
+        //  Is Current Chart in new stack?
+        
+        int tEntry = -1;
+        if( NULL != Current_Ch )                                  // this handles startup case
+            tEntry = ChartData->GetStackEntry( m_pCurrentStack, Current_Ch->GetFullPath() );
+        
+        if( tEntry != -1 ) {                // Current_Ch is in the new stack
+            m_pCurrentStack->CurrentStackEntry = tEntry;
+            bNewChart = false;
+        }
+        
+        else                           // Current_Ch is NOT in new stack
+        {                                       // So, need to open a new chart
+        //      Find the largest scale raster chart that opens OK
+        
+        ChartBase *pProposed = NULL;
+        
+        if( bCanvasChartAutoOpen ) {
+            bool search_direction = false;        // default is to search from lowest to highest
+            int start_index = 0;
+            
+            //    A special case:  If panning at high scale, open largest scale chart first
+            if( ( LastStack.CurrentStackEntry == LastStack.nEntry - 1 )
+                || ( LastStack.nEntry == 0 ) ) {
+                search_direction = true;
+            start_index = m_pCurrentStack->nEntry - 1;
+                }
+                
+                //    Another special case, open specified index on program start
+                if( bOpenSpecified ) {
+                    search_direction = false;
+                    start_index = g_restore_stackindex;
+                    if( ( start_index < 0 ) | ( start_index >= m_pCurrentStack->nEntry ) ) start_index =
+                        0;
+                    new_open_type = CHART_TYPE_DONTCARE;
+                }
+                
+                pProposed = ChartData->OpenStackChartConditional( m_pCurrentStack, start_index,
+                                                                  search_direction, new_open_type, new_open_family );
+                
+                //    Try to open other types/families of chart in some priority
+                if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
+                    m_pCurrentStack, start_index, search_direction, CHART_TYPE_CM93COMP,
+                    CHART_FAMILY_VECTOR );
+                
+                if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
+                    m_pCurrentStack, start_index, search_direction, CHART_TYPE_CM93COMP,
+                    CHART_FAMILY_RASTER );
+                
+                bNewChart = true;
+                
+        }     // bCanvasChartAutoOpen
+        
+        else
+            pProposed = NULL;
+        
+        //  If no go, then
+            //  Open a Dummy Chart
+            if( NULL == pProposed ) {
+                if( NULL == pDummyChart ) {
+                    pDummyChart = new ChartDummy;
+                    bNewChart = true;
+                }
+                
+                if( pLast_Ch ) if( pLast_Ch->GetChartType() != CHART_TYPE_DUMMY ) bNewChart = true;
+                                                                    
+                                                                    pProposed = pDummyChart;
+            }
+            
+            // Arriving here, pProposed points to an opened chart, or NULL.
+            if( Current_Ch ) Current_Ch->Deactivate();
+                                                                    Current_Ch = pProposed;
+            
+            if( Current_Ch ) {
+                Current_Ch->Activate();
+                m_pCurrentStack->CurrentStackEntry = ChartData->GetStackEntry( m_pCurrentStack,
+                                                                             Current_Ch->GetFullPath() );
+            }
+        }   // need new chart
+        
+        // Arriving here, Current_Ch is opened and OK, or NULL
+        if( NULL != Current_Ch ) {
+            
+            //      Setup the view using the current scale
+            double set_scale = GetVPScale();
+            
+            //    If the current viewpoint is invalid, set the default scale to something reasonable.
+            if( !GetVP().IsValid() )
+                set_scale = 1. / 20000.;
+            else {                                    // otherwise, match scale if elected.
+                double proposed_scale_onscreen;
+                
+                if( m_bFollow ) {          // autoset the scale only if in autofollow
+                    double new_scale_ppm = Current_Ch->GetNearestPreferredScalePPM( GetVPScale() );
+                    proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+                }
+                else
+                    proposed_scale_onscreen = GetCanvasScaleFactor() / set_scale;
+                
+                
+                //  This logic will bring a new chart onscreen at roughly twice the true paper scale equivalent.
+                    //  Note that first chart opened on application startup (bOpenSpecified = true) will open at the config saved scale
+                    if( bNewChart && !g_bPreserveScaleOnX && !bOpenSpecified ) {
+                        proposed_scale_onscreen = Current_Ch->GetNativeScale() / 2;
+                        double equivalent_vp_scale = GetCanvasScaleFactor()
+                        / proposed_scale_onscreen;
+                        double new_scale_ppm = Current_Ch->GetNearestPreferredScalePPM(
+                            equivalent_vp_scale );
+                        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+                    }
+                    
+                    if( m_bFollow ) {     // bounds-check the scale only if in autofollow
+                    proposed_scale_onscreen =
+                    wxMin(proposed_scale_onscreen, Current_Ch->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
+                    proposed_scale_onscreen =
+                    wxMax(proposed_scale_onscreen, Current_Ch->GetNormalScaleMin(GetCanvasScaleFactor(), g_b_overzoom_x));
+                    }
+                    
+                    set_scale = GetCanvasScaleFactor() / proposed_scale_onscreen;
+            }
+            
+            bNewView |= SetViewPoint( vpLat, vpLon, set_scale,
+                                           Current_Ch->GetChartSkew() * PI / 180., GetVPRotation() );
+            
+        }
+    }         // new stack
+    
+    else                                                                 // No change in Chart Stack
+    {
+        if( ( m_bFollow ) && Current_Ch )
+            bNewView |= SetViewPoint( vpLat, vpLon, GetVPScale(), Current_Ch->GetChartSkew() * PI / 180., GetVPRotation() );
+    }
+    
+    update_finish:
+    
+    //    Ask for a new tool bar if the stack is going to or coming from only one entry.
+//TODO    
+//     if(cc1->GetToolbar()){
+//         bool scale_tools_shown = cc1->GetToolbar()->m_toolbar_scale_tools_shown;
+//         if( pCurrentStack
+//             && ( ( ( pCurrentStack->nEntry <= 1 ) && scale_tools_shown )
+//             || ( ( pCurrentStack->nEntry > 1 ) && !scale_tools_shown ) ) ) if( !m_bFirstAuto ) RequestNewToolbars();
+//     }
+//     
+//     if( bNewPiano ) UpdateControlBar();
+                                                                    
+                                                                    //  Update the ownship position on thumbnail chart, if shown
+    if( pthumbwin && pthumbwin->IsShown() ) {
+        if( pthumbwin->pThumbChart ){
+            if( pthumbwin->pThumbChart->UpdateThumbData( gLat, gLon ) )
+                pthumbwin->Refresh( TRUE );
+        }
+    }
+    
+    m_bFirstAuto = false;                           // Auto open on program start
+    
+    //  If we need a Refresh(), do it here...
+    //  But don't duplicate a Refresh() done by SetViewPoint()
+    if( bNewChart && !bNewView )
+        Refresh( false );
+                                                                    
+#ifdef ocpnUSE_GL
+    // If a new chart, need to invalidate gl viewport for refresh
+    // so the fbo gets flushed
+    if(g_bopengl & bNewChart)
+        GetglCanvas()->Invalidate();
+#endif
+        
+    return bNewChart | bNewView;
+}
+
+void ChartCanvas::SelectQuiltRefdbChart( int db_index, bool b_autoscale )
+{
+    if( m_pCurrentStack )
+        m_pCurrentStack->SetCurrentEntryFromdbIndex( db_index );
+    
+    SetQuiltRefChart( db_index );
+    if (ChartData) {
+        ChartBase *pc = ChartData->OpenChartFromDB( db_index, FULL_INIT );
+        if( pc ) {
+            if(b_autoscale) {
+                double best_scale_ppm = GetBestVPScale( pc );
+                SetVPScale( best_scale_ppm );
+            }
+        }
+        else
+            SetQuiltRefChart( -1 );
+    }
+    else
+        SetQuiltRefChart( -1 );
+}
+
+void ChartCanvas::SelectQuiltRefChart( int selected_index )
+{
+    ArrayOfInts piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+    int current_db_index = piano_chart_index_array.Item( selected_index );
+    
+    SelectQuiltRefdbChart( current_db_index );
+}
+
+double ChartCanvas::GetBestVPScale( ChartBase *pchart )
+{
+    if( pchart ) {
+        double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale();
+        
+        if( ( g_bPreserveScaleOnX ) || ( CHART_TYPE_CM93COMP == pchart->GetChartType() ) ) {
+            double new_scale_ppm = GetVPScale();
+            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+        } else {
+            //  This logic will bring the new chart onscreen at roughly twice the true paper scale equivalent.
+            proposed_scale_onscreen = pchart->GetNativeScale() / 2;
+            double equivalent_vp_scale = GetCanvasScaleFactor() / proposed_scale_onscreen;
+            double new_scale_ppm = pchart->GetNearestPreferredScalePPM( equivalent_vp_scale );
+            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+        }
+        
+        // Do not allow excessive underzoom, even if the g_bPreserveScaleOnX flag is set.
+        // Otherwise, we get severe performance problems on all platforms
+        
+        double max_underzoom_multiplier = 2.0;
+        if(GetVP().b_quilt){
+            double scale_max = m_pQuilt->GetNomScaleMin(pchart->GetNativeScale(), pchart->GetChartType(), pchart->GetChartFamily());
+            max_underzoom_multiplier = scale_max / pchart->GetNativeScale();
+        }
+        
+        proposed_scale_onscreen =
+        wxMin(proposed_scale_onscreen,
+              pchart->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()) * max_underzoom_multiplier);
+        
+        //  And, do not allow excessive overzoom either
+        proposed_scale_onscreen =
+        wxMax(proposed_scale_onscreen, pchart->GetNormalScaleMin(GetCanvasScaleFactor(), false));
+        
+        return GetCanvasScaleFactor() / proposed_scale_onscreen;
+    } else
+        return 1.0;
+}
+
+void ChartCanvas::SetupCanvasQuiltMode( void )
+{
+    
+    if( GetQuiltMode() )                               // going to quilt mode
+    {
+        ChartData->LockCache();
+        
+        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        
+        m_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        m_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        m_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        m_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        
+        m_Piano->SetRoundedRectangles( true );
+        
+        //    Select the proper Ref chart
+        int target_new_dbindex = -1;
+        if( m_pCurrentStack ) {
+            target_new_dbindex = GetQuiltReferenceChartIndex();    //m_pCurrentStack->GetCurrentEntrydbIndex();
+            
+            if(-1 != target_new_dbindex){
+                if( !IsChartQuiltableRef( target_new_dbindex ) ){
+                    
+                    int proj = ChartData->GetDBChartProj(target_new_dbindex);
+                    int type = ChartData->GetDBChartType(target_new_dbindex);
+                    
+                    // walk the stack up looking for a satisfactory chart
+                    int stack_index = m_pCurrentStack->CurrentStackEntry;
+                    
+                    while((stack_index < m_pCurrentStack->nEntry-1) && (stack_index >= 0)) {
+                        int proj_tent = ChartData->GetDBChartProj( m_pCurrentStack->GetDBIndex(stack_index));
+                        int type_tent = ChartData->GetDBChartType( m_pCurrentStack->GetDBIndex(stack_index));
+                        
+                        if(IsChartQuiltableRef(m_pCurrentStack->GetDBIndex(stack_index))){
+                            if((proj == proj_tent) && (type_tent == type)){
+                                target_new_dbindex = m_pCurrentStack->GetDBIndex(stack_index);
+                                break;
+                            }
+                        }
+                        stack_index++;
+                    }
+                }
+            }
+        }
+        
+        if( IsChartQuiltableRef( target_new_dbindex ) )
+            SelectQuiltRefdbChart( target_new_dbindex, false );        // Try not to allow a scale change
+        else
+            SelectQuiltRefdbChart( -1, false );
+            
+            Current_Ch = NULL;                  // Bye....
+            
+            //TODOSetChartThumbnail( -1 );            //Turn off thumbnails for sure
+            
+            //  Re-qualify the quilt reference chart selection
+            AdjustQuiltRefChart(  );
+        
+        //  Restore projection type saved on last quilt mode toggle
+            //TODO
+//             if(g_sticky_projection != -1)
+//                 GetVP().SetProjectionType(g_sticky_projection);
+//             else
+//                 GetVP().SetProjectionType(PROJECTION_MERCATOR);
+            
+            
+            
+    } else                                                  // going to SC Mode
+    {
+        ArrayOfInts empty_array;
+        m_Piano->SetActiveKeyArray( empty_array );
+        m_Piano->SetNoshowIndexArray( empty_array );
+        m_Piano->SetEclipsedIndexArray( empty_array );
+        
+        ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+        m_Piano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        m_Piano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        m_Piano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+        m_Piano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+        
+        m_Piano->SetRoundedRectangles( false );
+        //TODO  Make this a member g_sticky_projection = GetVP().m_projection_type;
+        
+    }
+    
+    //    When shifting from quilt to single chart mode, select the "best" single chart to show
+    if( !GetQuiltMode() ) {
+        if( ChartData && ChartData->IsValid() ) {
+            UnlockQuilt();
+            
+            double tLat, tLon;
+            if( m_bFollow == true ) {
+                tLat = gLat;
+                tLon = gLon;
+            } else {
+                tLat = vLat;
+                tLon = vLon;
+            }
+            
+            if( !Current_Ch ) {
+                
+                // Build a temporary chart stack based on tLat, tLon
+                ChartStack TempStack;
+                ChartData->BuildChartStack( &TempStack, tLat, tLon, g_sticky_chart );
+                
+                //    Iterate over the quilt charts actually shown, looking for the largest scale chart that will be in the new chartstack....
+                //    This will (almost?) always be the reference chart....
+                
+                ChartBase *Candidate_Chart = NULL;
+                int cur_max_scale = (int) 1e8;
+                
+                ChartBase *pChart = GetFirstQuiltChart();
+                while( pChart ) {
+                    //  Is this pChart in new stack?
+                    int tEntry = ChartData->GetStackEntry( &TempStack, pChart->GetFullPath() );
+                    if( tEntry != -1 ) {
+                        if( pChart->GetNativeScale() < cur_max_scale ) {
+                            Candidate_Chart = pChart;
+                            cur_max_scale = pChart->GetNativeScale();
+                        }
+                    }
+                    pChart = GetNextQuiltChart();
+                }
+                
+                Current_Ch = Candidate_Chart;
+                
+                //    If the quilt is empty, there is no "best" chart.
+                //    So, open the smallest scale chart in the current stack
+                if( NULL == Current_Ch ) {
+                    Current_Ch = ChartData->OpenStackChartConditional( &TempStack,
+                                                                       TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE,
+                                                                       CHART_FAMILY_DONTCARE );
+                }
+            }
+            
+            //  Invalidate all the charts in the quilt,
+            // as any cached data may be region based and not have fullscreen coverage
+            InvalidateAllQuiltPatchs();
+            
+            if( Current_Ch ) {
+                int dbi = ChartData->FinddbIndex( Current_Ch->GetFullPath() );
+                ArrayOfInts one_array;
+                one_array.Add( dbi );
+                m_Piano->SetActiveKeyArray( one_array );
+            }
+            
+            if( Current_Ch ) {
+                GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
+            }
+            
+        }
+        //    Invalidate the current stack so that it will be rebuilt on next tick
+        if( m_pCurrentStack )
+            m_pCurrentStack->b_valid = false;
+    }
+    
+}
+
 
 bool ChartCanvas::IsTempMenuBarEnabled()
 {
@@ -1127,11 +1788,11 @@ int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
 {
     int new_dbIndex = -1;
     if( !VPoint.b_quilt ) {
-        if( pCurrentStack ) {
-            for( int i = 0; i < pCurrentStack->nEntry; i++ ) {
-                int sc = ChartData->GetStackChartScale( pCurrentStack, i, NULL, 0 );
+        if( m_pCurrentStack ) {
+            for( int i = 0; i < m_pCurrentStack->nEntry; i++ ) {
+                int sc = ChartData->GetStackChartScale( m_pCurrentStack, i, NULL, 0 );
                 if( sc >= scale ) {
-                    new_dbIndex = pCurrentStack->GetDBIndex( i );
+                    new_dbIndex = m_pCurrentStack->GetDBIndex( i );
                     break;
                 }
             }
@@ -2200,7 +2861,9 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     }
         
     UpdateToolbarColorScheme( cs );
-        
+    
+    m_Piano->SetColorScheme( cs );
+    
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
@@ -2986,8 +3649,8 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             if( new_db_index >= 0 )
                 pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
-            if(pCurrentStack)
-                pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+            if(m_pCurrentStack)
+                m_pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
         }
 
         if( pc ) {
@@ -3049,8 +3712,8 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
             if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
-            if(pCurrentStack)
-                pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+            if(m_pCurrentStack)
+                m_pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
             
             b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
@@ -3323,11 +3986,11 @@ int ChartCanvas::AdjustQuiltRefChart( void )
 
 void ChartCanvas::UpdateCanvasOnGroupChange( void )
 {
-    delete pCurrentStack;
-    pCurrentStack = NULL;
-    pCurrentStack = new ChartStack;
+    delete m_pCurrentStack;
+    m_pCurrentStack = NULL;
+    m_pCurrentStack = new ChartStack;
     wxASSERT(ChartData);
-    ChartData->BuildChartStack( pCurrentStack, VPoint.clat, VPoint.clon );
+    ChartData->BuildChartStack( m_pCurrentStack, VPoint.clat, VPoint.clon );
 
     if( m_pQuilt ) {
         m_pQuilt->Compose( VPoint );
@@ -3471,13 +4134,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             }
         }
         //  Create the stack
-        if( pCurrentStack ) {
+        if( m_pCurrentStack ) {
             assert(ChartData != 0);
             int current_db_index;
-            current_db_index = pCurrentStack->GetCurrentEntrydbIndex();       // capture the current
+            current_db_index = m_pCurrentStack->GetCurrentEntrydbIndex();       // capture the current
 
-            ChartData->BuildChartStack( pCurrentStack, lat, lon, current_db_index);
-            pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
+            ChartData->BuildChartStack( m_pCurrentStack, lat, lon, current_db_index);
+            m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
         }
 
         if(!g_bopengl)
@@ -3491,18 +4154,18 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
         //  Create the quilt
         if( ChartData /*&& ChartData->IsValid()*/ ) {
-            if( !pCurrentStack ) return false;
+            if( !m_pCurrentStack ) return false;
 
             int current_db_index;
-            current_db_index = pCurrentStack->GetCurrentEntrydbIndex();       // capture the current
+            current_db_index = m_pCurrentStack->GetCurrentEntrydbIndex();       // capture the current
 
-            ChartData->BuildChartStack( pCurrentStack, lat, lon );
-            pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
+            ChartData->BuildChartStack( m_pCurrentStack, lat, lon );
+            m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
 
             //   Check to see if the current quilt reference chart is in the new stack
             int current_ref_stack_index = -1;
-            for( int i = 0; i < pCurrentStack->nEntry; i++ ) {
-                if( m_pQuilt->GetRefChartdbIndex() == pCurrentStack->GetDBIndex( i ) ) current_ref_stack_index =
+            for( int i = 0; i < m_pCurrentStack->nEntry; i++ ) {
+                if( m_pQuilt->GetRefChartdbIndex() == m_pCurrentStack->GetDBIndex( i ) ) current_ref_stack_index =
                         i;
             }
 
@@ -3545,15 +4208,15 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 //    Try to find a chart that is the same type, and has a scale of just smaller than the current ref chart
 
                 candidate_stack_index = 0;
-                while( candidate_stack_index <= pCurrentStack->nEntry - 1 ) {
+                while( candidate_stack_index <= m_pCurrentStack->nEntry - 1 ) {
                     const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(
-                            pCurrentStack->GetDBIndex( candidate_stack_index ) );
+                        m_pCurrentStack->GetDBIndex( candidate_stack_index ) );
                     int candidate_scale = cte_candidate.GetScale();
                     int candidate_type = cte_candidate.GetChartType();
 
                     if( ( candidate_scale >= target_scale ) && ( candidate_type == target_type ) ){
                         bool renderable = true;
-                        ChartBase* tentative_referenceChart = ChartData->OpenChartFromDB( pCurrentStack->GetDBIndex( candidate_stack_index ),
+                        ChartBase* tentative_referenceChart = ChartData->OpenChartFromDB( m_pCurrentStack->GetDBIndex( candidate_stack_index ),
                                                                                 FULL_INIT );
                         if( tentative_referenceChart ) {
                             double chartMaxScale = tentative_referenceChart->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() );
@@ -3568,10 +4231,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 }
 
                 //    If that did not work, look for a chart of just larger scale and same type
-                if( candidate_stack_index >= pCurrentStack->nEntry ) {
-                    candidate_stack_index = pCurrentStack->nEntry - 1;
+                if( candidate_stack_index >= m_pCurrentStack->nEntry ) {
+                    candidate_stack_index = m_pCurrentStack->nEntry - 1;
                     while( candidate_stack_index >= 0 ) {
-                        int idx = pCurrentStack->GetDBIndex( candidate_stack_index );
+                        int idx = m_pCurrentStack->GetDBIndex( candidate_stack_index );
                         if ( idx >= 0) {
                             const ChartTableEntry &cte_candidate = ChartData->GetChartTableEntry(idx);
                             int candidate_scale = cte_candidate.GetScale();
@@ -3585,10 +4248,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 }
 
                 // and if that did not work, chose stack entry 0
-                if( ( candidate_stack_index >= pCurrentStack->nEntry )
+                if( ( candidate_stack_index >= m_pCurrentStack->nEntry )
                         || ( candidate_stack_index < 0 ) ) candidate_stack_index = 0;
 
-                int new_ref_index = pCurrentStack->GetDBIndex( candidate_stack_index );
+                int new_ref_index = m_pCurrentStack->GetDBIndex( candidate_stack_index );
 
                 m_pQuilt->SetReferenceChart( new_ref_index ); //maybe???
 
@@ -3665,7 +4328,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         InvalidateGL();
     }
 
-    parent_frame->UpdateControlBar();
+    UpdateCanvasControlBar();           // Refresh the Piano
 
     VPoint.chart_scale = 1.0;           // fallback default value
     
@@ -3793,9 +4456,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         }
     }
 
-    //  Maintain global vLat/vLon
-    vLat = VPoint.clat;
-    vLon = VPoint.clon;
+    //  Maintain member vLat/vLon
+    m_vLat = VPoint.clat;
+    m_vLon = VPoint.clon;
 
     return b_ret;
 }
@@ -4957,7 +5620,7 @@ void ChartCanvas::ShowChartInfoWindow( int x, int dbIndex )
             if( ( p.x + m_pCIWin->GetWinSize().x ) > m_canvas_width )
                 p.x = (m_canvas_width - m_pCIWin->GetWinSize().x)/2;    // centered
 
-            p.y = m_canvas_height - g_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
+            p.y = m_canvas_height - m_Piano->GetHeight() - 4 - m_pCIWin->GetWinSize().y;
 
             m_pCIWin->dbIndex = dbIndex;
             m_pCIWin->SetPosition( p );
@@ -5159,7 +5822,7 @@ bool ChartCanvas::MouseEventChartBar( wxMouseEvent& event )
     if(!g_bShowChartBar)
         return false;
 
-    if (! g_Piano->MouseEvent(event) )
+    if (! m_Piano->MouseEvent(event) )
         return false;
 
     cursor_region = CENTER;
@@ -8082,7 +8745,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //On OS X we have to explicitly extend the region for the piano area
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     if(!style->chartStatusWindowTransparent && g_bShowChartBar)
-        height += g_Piano->GetHeight();
+        height += m_Piano->GetHeight();
 #endif // __WXMAC__
     wxRegion rgn_chart( 0, 0, GetVP().pix_width, height );
 
@@ -8102,8 +8765,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     // subtract the chart bar if it isn't transparent, and determine if we need to paint it
     wxRegion rgn_blit = ru;
     if(g_bShowChartBar) {
-        wxRect chart_bar_rect(0, GetClientSize().y - g_Piano->GetHeight(),
-                              GetClientSize().x, g_Piano->GetHeight());
+        wxRect chart_bar_rect(0, GetClientSize().y - m_Piano->GetHeight(),
+                              GetClientSize().x, m_Piano->GetHeight());
 
         ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
         if(ru.Contains(chart_bar_rect) != wxOutRegion) {
@@ -8160,7 +8823,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             return;  // not ready
 
         bool busy = false;
-        if( cc1->m_pQuilt->IsQuiltVector() &&
+        if( m_pQuilt->IsQuiltVector() &&
             ( m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm || m_cache_vp.rotation != VPoint.rotation))
         {
             OCPNPlatform::ShowBusySpinner();
@@ -8343,15 +9006,16 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
                clipping regions with more than 1 rectangle so... */
             wxColour water = pWorldBackgroundChart->water;
-            temp_dc.SetPen( *wxTRANSPARENT_PEN );
-            temp_dc.SetBrush( wxBrush( water ) );
-            OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
-            while( upd.HaveRects() ) {
-                wxRect rect = upd.GetRect();
-                temp_dc.DrawRectangle(rect);
-                upd.NextRect();
+            if(water.IsOk()){
+                temp_dc.SetPen( *wxTRANSPARENT_PEN );
+                temp_dc.SetBrush( wxBrush( water ) );
+                OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
+                while( upd.HaveRects() ) {
+                    wxRect rect = upd.GetRect();
+                    temp_dc.DrawRectangle(rect);
+                    upd.NextRect();
+                }
             }
-
             //    Associate with temp_dc
             wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
             temp_dc.SetDeviceClippingRegion( *clip_region );
@@ -8471,7 +9135,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     }
 
     if( m_brepaint_piano && g_bShowChartBar ) {
-        g_Piano->Paint(GetClientSize().y - g_Piano->GetHeight(), mscratch_dc);
+        m_Piano->Paint(GetClientSize().y - m_Piano->GetHeight(), mscratch_dc);
         //m_brepaint_piano = false;
     }
 
@@ -8567,9 +9231,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 //  Render the text directly to the scratch bitmap
                 OCPNRegion chart_all_text_region( wxRect( 0, 0, GetVP().pix_width, GetVP().pix_height ) );
                 
-                if(g_bShowChartBar && g_Piano) {
-                    wxRect chart_bar_rect(0, GetVP().pix_height - g_Piano->GetHeight(),
-                                          GetVP().pix_width, g_Piano->GetHeight());
+                if(g_bShowChartBar && m_Piano) {
+                    wxRect chart_bar_rect(0, GetVP().pix_height - m_Piano->GetHeight(),
+                                          GetVP().pix_width, m_Piano->GetHeight());
                     
                     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
                     if(!style->chartStatusWindowTransparent)
@@ -10037,7 +10701,7 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
     }
 
     if( !m_toolBar ) {
-        m_toolBar = new ocpnFloatingToolbarDialog( cc1, m_toolbarPosition, m_toolbarOrientation, m_toolbar_scalefactor );
+        m_toolBar = new ocpnFloatingToolbarDialog( this, m_toolbarPosition, m_toolbarOrientation, m_toolbar_scalefactor );
         m_toolBar->CreateConfigMenu();
     }
 
@@ -10214,6 +10878,564 @@ void ChartCanvas::UpdateAISTBTool( void )
         }
     }
 }
+
+void ChartCanvas::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type,
+                                    ChartFamilyEnum New_Family )
+{
+    if( !GetpCurrentStack() ) return;
+    if( !ChartData ) return;
+    
+    if( index < GetpCurrentStack()->nEntry ) {
+        //      Open the new chart
+        ChartBase *pTentative_Chart;
+        pTentative_Chart = ChartData->OpenStackChartConditional( GetpCurrentStack(), index, bDir,
+                                                                 New_Type, New_Family );
+        
+        if( pTentative_Chart ) {
+            if( Current_Ch ) Current_Ch->Deactivate();
+            
+            Current_Ch = pTentative_Chart;
+            Current_Ch->Activate();
+            
+            cc1->GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry( cc1->GetpCurrentStack(),
+                                                                                   Current_Ch->GetFullPath() );
+        }
+        //else
+        //    SetChartThumbnail( -1 );   // need to reset thumbnail on failed chart open
+            
+            //      Setup the view
+            double zLat, zLon;
+        if( cc1->m_bFollow ) {
+            zLat = gLat;
+            zLon = gLon;
+        } else {
+            zLat = vLat;
+            zLon = vLon;
+        }
+        
+        double best_scale_ppm = GetBestVPScale( Current_Ch );
+        double rotation = GetVPRotation();
+        double oldskew = GetVPSkew();
+        double newskew = Current_Ch->GetChartSkew() * PI / 180.0;
+        
+        if (!g_bskew_comp && !g_bCourseUp) {
+            if (fabs(oldskew) > 0.0001)
+                rotation = 0.0;
+            if (fabs(newskew) > 0.0001)
+                rotation = newskew;
+        }
+        
+        SetViewPoint( zLat, zLon, best_scale_ppm, newskew, rotation );
+        
+        //SetChartUpdatePeriod( cc1->GetVP() );
+        
+        //UpdateGPSCompassStatusBox();           // Pick up the rotation
+        
+    }
+    
+    //  refresh Piano
+    int idx = GetpCurrentStack()->GetCurrentEntrydbIndex();
+    if (idx < 0)
+        return;
+    
+    ArrayOfInts piano_active_chart_index_array;
+    piano_active_chart_index_array.Add( GetpCurrentStack()->GetCurrentEntrydbIndex() );
+    m_Piano->SetActiveKeyArray( piano_active_chart_index_array );
+}
+
+void ChartCanvas::SelectdbChart( int dbindex )
+{
+    if( !GetpCurrentStack() ) return;
+    if( !ChartData ) return;
+    
+    if( dbindex >= 0 ) {
+        //      Open the new chart
+        ChartBase *pTentative_Chart;
+        pTentative_Chart = ChartData->OpenChartFromDB( dbindex, FULL_INIT );
+        
+        if( pTentative_Chart ) {
+            if( Current_Ch ) Current_Ch->Deactivate();
+            
+            Current_Ch = pTentative_Chart;
+            Current_Ch->Activate();
+            
+            GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry( GetpCurrentStack(),  Current_Ch->GetFullPath() );
+        }
+        //else
+        //    SetChartThumbnail( -1 );       // need to reset thumbnail on failed chart open
+            
+            //      Setup the view
+        double zLat, zLon;
+        if( cc1->m_bFollow ) {
+            zLat = gLat;
+            zLon = gLon;
+        } else {
+            zLat = vLat;
+            zLon = vLon;
+        }
+        
+        double best_scale_ppm = GetBestVPScale( Current_Ch );
+        
+        if( Current_Ch )
+            SetViewPoint( zLat, zLon, best_scale_ppm, Current_Ch->GetChartSkew() * PI / 180., GetVPRotation() );
+            
+        //SetChartUpdatePeriod( cc1->GetVP() );
+        
+        //UpdateGPSCompassStatusBox();           // Pick up the rotation
+        
+    }
+    
+    // TODO refresh_Piano();
+}
+
+
+void ChartCanvas::selectCanvasChartDisplay( int type, int family)
+{
+    double target_scale = GetVP().view_scale_ppm;
+    
+    if( !GetQuiltMode() ) {
+        if(GetpCurrentStack()){
+            int stack_index = -1;
+            for(int i = 0; i < GetpCurrentStack()->nEntry ; i++){
+                int check_dbIndex = GetpCurrentStack()->GetDBIndex( i );
+                if (check_dbIndex < 0)
+                    continue;
+                const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
+                if(type == cte.GetChartType()){
+                    stack_index = i;
+                    break;
+                }
+                else if(family == cte.GetChartFamily()){
+                    stack_index = i;
+                    break;
+                }
+            }
+            
+            if(stack_index >= 0){
+                SelectChartFromStack( stack_index );
+            }
+        }
+    } else {
+        int sel_dbIndex = -1;
+        ArrayOfInts piano_chart_index_array = cc1->GetQuiltExtendedStackdbIndexArray();
+        for(unsigned int i = 0; i < piano_chart_index_array.Count() ; i++){
+            int check_dbIndex = piano_chart_index_array.Item( i );
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
+            if(type == cte.GetChartType()){
+                if( IsChartQuiltableRef( check_dbIndex ) ) {
+                    sel_dbIndex = check_dbIndex;
+                    break;
+                }
+            }
+            else if(family == cte.GetChartFamily()){
+                if( IsChartQuiltableRef( check_dbIndex ) ) {
+                    sel_dbIndex = check_dbIndex;
+                    break;
+                }
+            }
+        }
+        
+        if(sel_dbIndex >= 0){
+            SelectQuiltRefdbChart( sel_dbIndex, false );  // no autoscale
+            //  Re-qualify the quilt reference chart selection
+            AdjustQuiltRefChart(  );
+        }
+        
+        //  Now reset the scale to the target...
+        SetVPScale(target_scale);
+        
+        
+        
+        
+    }
+    
+    SetQuiltChartHiLiteIndex( -1 );
+    
+    ReloadVP();
+}
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------
+//
+//      Piano support
+//
+//-------------------------------------------------------------------------------------------------------
+
+void ChartCanvas::HandlePianoClick( int selected_index, int selected_dbIndex )
+{
+    if( !m_pCurrentStack ) return;
+    if( !ChartData) return;
+    
+    // stop movement or on slow computer we may get something like :
+    // zoom out with the wheel (timer is set)
+    // quickly click and display a chart, which may zoom in
+    // but the delayed timer fires first and it zooms out again!
+    StopMovement();
+    
+    if( !GetQuiltMode() ) {
+        if( m_bpersistent_quilt/* && g_bQuiltEnable*/ ) {
+            if( IsChartQuiltableRef( selected_dbIndex ) ) {
+                //ToggleQuiltMode();
+                SelectQuiltRefdbChart( selected_dbIndex );
+                m_bpersistent_quilt = false;
+            } else {
+                SelectChartFromStack( selected_index );
+            }
+        } else {
+            SelectChartFromStack( selected_index );
+            g_sticky_chart = selected_dbIndex;
+        }
+        
+        if( Current_Ch )
+            GetVP().SetProjectionType(Current_Ch->GetChartProjectionType());
+        
+    } else {
+        if( IsChartQuiltableRef( selected_dbIndex ) ){
+            //            if( ChartData ) ChartData->PurgeCache();
+            
+            
+            //  If the chart is a vector chart, and of very large scale,
+            //  then we had better set the new scale directly to avoid excessive underzoom
+            //  on, eg, Inland ENCs
+            bool set_scale = false;
+            if( CHART_TYPE_S57 == ChartData->GetDBChartType( selected_dbIndex ) ){
+                if( ChartData->GetDBChartScale(selected_dbIndex) < 5000){
+                    set_scale = true;
+                }
+            }
+            
+            if(!set_scale){
+                SelectQuiltRefdbChart( selected_dbIndex, true );  // autoscale
+            }
+            else {
+                SelectQuiltRefdbChart( selected_dbIndex, false );  // no autoscale
+                
+                
+                //  Adjust scale so that the selected chart is underzoomed/overzoomed by a controlled amount
+                ChartBase *pc = ChartData->OpenChartFromDB( selected_dbIndex, FULL_INIT );
+                if( pc ) {
+                    double proposed_scale_onscreen = GetCanvasScaleFactor() / cc1->GetVPScale();
+                    
+                    if(g_bPreserveScaleOnX){
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                        100 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
+                    }
+                    else{
+                        proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                        20 * pc->GetNormalScaleMax(GetCanvasScaleFactor(), GetCanvasWidth()));
+                        
+                        proposed_scale_onscreen = wxMax(proposed_scale_onscreen,
+                                                        pc->GetNormalScaleMin(GetCanvasScaleFactor(), g_b_overzoom_x));
+                    }
+                    
+                    SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+                }
+            }
+        }
+        else {
+            //TODOToggleQuiltMode();
+            SelectdbChart( selected_dbIndex );
+            m_bpersistent_quilt = true;
+        }
+    }
+    
+    SetQuiltChartHiLiteIndex( -1 );
+    gFrame->UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    HideChartInfoWindow();
+    DoCanvasUpdate();
+    ReloadVP();                  // Pick up the new selections
+}
+
+
+void ChartCanvas::HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex )
+{
+    if( !GetpCurrentStack() ) return;
+    
+    PianoPopupMenu( x, y, selected_index, selected_dbIndex );
+    UpdateCanvasControlBar();
+    
+    SetQuiltChartHiLiteIndex( -1 );
+}
+
+void ChartCanvas::HandlePianoRollover( int selected_index, int selected_dbIndex )
+{
+    if( !GetpCurrentStack() ) return;
+    if( !ChartData ) return;
+    
+    if (ChartData->IsBusy())
+        return;
+    
+    wxPoint key_location = m_Piano->GetKeyOrigin( selected_index );
+    
+    if( !GetQuiltMode() ) {
+        //SetChartThumbnail( selected_index );
+        ShowChartInfoWindow( key_location.x, selected_dbIndex );
+    } else {
+        ArrayOfInts piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+        
+        if( ( GetpCurrentStack()->nEntry > 1 ) || ( piano_chart_index_array.GetCount() >= 1 ) ) {
+            ShowChartInfoWindow( key_location.x, selected_dbIndex );
+            SetQuiltChartHiLiteIndex( selected_dbIndex );
+            
+            ReloadVP( false );         // no VP adjustment allowed
+        } else if( GetpCurrentStack()->nEntry == 1 ) {
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( GetpCurrentStack()->GetDBIndex( 0 ) );
+            if( CHART_TYPE_CM93COMP != cte.GetChartType() ) {
+                ShowChartInfoWindow( key_location.x, selected_dbIndex );
+                ReloadVP( false );
+            } else if( ( -1 == selected_index ) && ( -1 == selected_dbIndex ) ) {
+                ShowChartInfoWindow( key_location.x, selected_dbIndex );
+            }
+        }
+        //SetChartThumbnail( -1 );        // hide all thumbs in quilt mode
+    }
+}
+
+
+void ChartCanvas::UpdateCanvasControlBar( void )
+{
+    
+    if( !GetpCurrentStack() ) return;
+    if( !ChartData) return;
+    if ( !g_bShowChartBar ) return;
+    
+    int sel_type = -1;
+    int sel_family = -1;
+    
+    ArrayOfInts piano_chart_index_array;
+    ArrayOfInts empty_piano_chart_index_array;
+    
+    wxString old_hash = m_Piano->GetStoredHash();
+    
+    if( GetQuiltMode() ) {
+        piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+        m_Piano->SetKeyArray( piano_chart_index_array );
+        
+        ArrayOfInts piano_active_chart_index_array = GetQuiltCandidatedbIndexArray();
+        m_Piano->SetActiveKeyArray( piano_active_chart_index_array );
+        
+        ArrayOfInts piano_eclipsed_chart_index_array = GetQuiltEclipsedStackdbIndexArray();
+        m_Piano->SetEclipsedIndexArray( piano_eclipsed_chart_index_array );
+        
+        m_Piano->SetNoshowIndexArray( g_quilt_noshow_index_array );
+        
+        sel_type = ChartData->GetDBChartType(GetQuiltReferenceChartIndex());
+        sel_family = ChartData->GetDBChartFamily(GetQuiltReferenceChartIndex());
+    } else {
+        piano_chart_index_array = ChartData->GetCSArray( GetpCurrentStack() );
+        m_Piano->SetKeyArray( piano_chart_index_array );
+        // TODO refresh_Piano();
+        
+        if(Current_Ch){
+            sel_type = Current_Ch->GetChartType();
+            sel_family = Current_Ch->GetChartFamily();
+        }
+        
+    }
+    
+    //    Set up the TMerc and Skew arrays
+    ArrayOfInts piano_skew_chart_index_array;
+    ArrayOfInts piano_tmerc_chart_index_array;
+    ArrayOfInts piano_poly_chart_index_array;
+    
+    for( unsigned int ino = 0; ino < piano_chart_index_array.GetCount(); ino++ ) {
+        const ChartTableEntry &ctei = ChartData->GetChartTableEntry(
+            piano_chart_index_array.Item( ino ) );
+        double skew_norm = ctei.GetChartSkew();
+        if( skew_norm > 180. ) skew_norm -= 360.;
+        
+        if( ctei.GetChartProjectionType() == PROJECTION_TRANSVERSE_MERCATOR )
+            piano_tmerc_chart_index_array.Add( piano_chart_index_array.Item( ino ) );
+        
+        //    Polyconic skewed charts should show as skewed
+            else
+                if( ctei.GetChartProjectionType() == PROJECTION_POLYCONIC ) {
+                    if( fabs( skew_norm ) > 1. )
+                        piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
+                    else
+                        piano_poly_chart_index_array.Add( piano_chart_index_array.Item( ino ) );
+                } else
+                    if( fabs( skew_norm ) > 1. )
+                        piano_skew_chart_index_array.Add(piano_chart_index_array.Item( ino ) );
+                    
+    }
+    m_Piano->SetSkewIndexArray( piano_skew_chart_index_array );
+    m_Piano->SetTmercIndexArray( piano_tmerc_chart_index_array );
+    m_Piano->SetPolyIndexArray( piano_poly_chart_index_array );
+    m_Piano->FormatKeys();
+    
+    wxString new_hash = m_Piano->GenerateAndStoreNewHash();
+    if(new_hash != old_hash) {
+        //SetChartThumbnail( -1 );
+        HideChartInfoWindow();
+        m_Piano->ResetRollover();
+        SetQuiltChartHiLiteIndex( -1 );
+        m_brepaint_piano = true;
+    }
+    
+    // Create a bitmask int that describes what Family/Type of charts are shown in the bar,
+    // and notify the platform.
+    int mask = 0;
+    for( unsigned int ino = 0; ino < piano_chart_index_array.GetCount(); ino++ ) {
+        const ChartTableEntry &ctei = ChartData->GetChartTableEntry( piano_chart_index_array.Item( ino ) );
+        ChartFamilyEnum e = (ChartFamilyEnum)ctei.GetChartFamily();
+        ChartTypeEnum t = (ChartTypeEnum)ctei.GetChartType();
+        if(e == CHART_FAMILY_RASTER)
+            mask |= 1;
+        if(e == CHART_FAMILY_VECTOR){
+            if(t == CHART_TYPE_CM93COMP)
+                mask |= 4;
+            else
+                mask |= 2;
+        }
+    }
+    
+    wxString s_indicated;
+    if(sel_type == CHART_TYPE_CM93COMP)
+        s_indicated = _T("cm93");
+    else{
+        if(sel_family == CHART_FAMILY_RASTER)
+            s_indicated = _T("raster");
+        else if(sel_family == CHART_FAMILY_VECTOR)
+            s_indicated = _T("vector");
+    }
+    
+    g_Platform->setChartTypeMaskSel(mask, s_indicated);
+    
+}
+
+void ChartCanvas::FormatPianoKeys( void )
+{
+    m_Piano->FormatKeys();
+    
+}
+
+void ChartCanvas::PianoPopupMenu( int x, int y, int selected_index, int selected_dbIndex )
+{
+    if( !GetpCurrentStack() ) return;
+
+    //    No context menu if quilting is disabled
+    if( !GetQuiltMode() ) return;
+
+    menu_selected_dbIndex = selected_dbIndex;
+    menu_selected_index = selected_index;
+
+    m_piano_ctx_menu = new wxMenu();
+
+    //    Search the no-show array
+    bool b_is_in_noshow = false;
+    for( unsigned int i = 0; i < g_quilt_noshow_index_array.GetCount(); i++ ) {
+        if( g_quilt_noshow_index_array.Item( i ) == selected_dbIndex ) // chart is in the noshow list
+                {
+            b_is_in_noshow = true;
+            break;
+        }
+    }
+
+    if( b_is_in_noshow ) {
+        m_piano_ctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
+        Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+                wxCommandEventHandler(ChartCanvas::OnPianoMenuEnableChart) );
+    } else
+        if( cc1->GetpCurrentStack()->nEntry > 1 ) {
+            m_piano_ctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
+            Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
+                    wxCommandEventHandler(ChartCanvas::OnPianoMenuDisableChart) );
+        }
+
+    wxPoint pos = wxPoint(x, y - 30);
+
+//        Invoke the drop-down menu
+    if( m_piano_ctx_menu->GetMenuItems().GetCount() )
+        PopupMenu( m_piano_ctx_menu, pos );
+
+    delete m_piano_ctx_menu;
+    m_piano_ctx_menu = NULL;
+
+    HideChartInfoWindow();
+    m_Piano->ResetRollover();
+
+    SetQuiltChartHiLiteIndex( -1 );
+
+    ReloadVP();
+}
+
+void ChartCanvas::OnPianoMenuEnableChart( wxCommandEvent& event )
+{
+    for( unsigned int i = 0; i < g_quilt_noshow_index_array.GetCount(); i++ ) {
+        if( g_quilt_noshow_index_array.Item( i ) == menu_selected_dbIndex ) // chart is in the noshow list
+                {
+            g_quilt_noshow_index_array.RemoveAt( i );
+            break;
+        }
+    }
+}
+
+void ChartCanvas::OnPianoMenuDisableChart( wxCommandEvent& event )
+{
+    if( !GetpCurrentStack() ) return;
+    if( !ChartData ) return;
+
+    RemoveChartFromQuilt( menu_selected_dbIndex );
+
+//      It could happen that the chart being disabled is the reference chart....
+    if( menu_selected_dbIndex == GetQuiltRefChartdbIndex() ) {
+        int type = ChartData->GetDBChartType( menu_selected_dbIndex );
+
+        int i = menu_selected_index + 1;          // select next smaller scale chart
+        bool b_success = false;
+        while( i < GetpCurrentStack()->nEntry - 1 ) {
+            int dbIndex = GetpCurrentStack()->GetDBIndex( i );
+            if( type == ChartData->GetDBChartType( dbIndex ) ) {
+                SelectQuiltRefChart( i );
+                b_success = true;
+                break;
+            }
+            i++;
+        }
+
+        //    If that did not work, try to select the next larger scale compatible chart
+        if( !b_success ) {
+            i = menu_selected_index - 1;
+            while( i > 0 ) {
+                int dbIndex = GetpCurrentStack()->GetDBIndex( i );
+                if( type == ChartData->GetDBChartType( dbIndex ) ) {
+                    SelectQuiltRefChart( i );
+                    b_success = true;
+                    break;
+                }
+                i--;
+            }
+        }
+    }
+}
+
+void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
+{
+    //    Remove the item from the list (if it appears) to avoid multiple addition
+    for( unsigned int i = 0; i < g_quilt_noshow_index_array.GetCount(); i++ ) {
+        if( g_quilt_noshow_index_array.Item( i ) == dbIndex ) // chart is already in the noshow list
+                {
+                    g_quilt_noshow_index_array.RemoveAt( i );
+                    break;
+                }
+    }
+    
+    g_quilt_noshow_index_array.Add( dbIndex );
+    
+}
+
+
+
+
+
+
+
+
+
 
 //--------------------------------------------------------------------------------------------------------
 //    Screen Brightness Control Support Routines

@@ -56,11 +56,9 @@ WX_DEFINE_OBJARRAY(RectArray);
 //------------------------------------------------------------------------------
 extern ChartDB *ChartData;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern MyFrame *gFrame;
 extern bool g_btouch;
 extern int  g_GUIScaleFactor;
 
-extern ChartCanvas               *cc1;
 extern Piano                     *g_Piano;
 extern OCPNPlatform              *g_Platform;
 
@@ -72,8 +70,10 @@ BEGIN_EVENT_TABLE(Piano, wxEvtHandler)
 END_EVENT_TABLE()
 
 // Define a constructor
-Piano::Piano()
+Piano::Piano(ChartCanvas *parent)
 {
+    m_parentCanvas = parent;;
+    
     m_index_last = -1;
     m_iactive = -1;
 
@@ -91,9 +91,11 @@ Piano::Piano()
     m_pPolyIconBmp = NULL;
     m_pSkewIconBmp = NULL;
     m_pTmercIconBmp = NULL;
+
+    SetColorScheme( GLOBAL_COLOR_SCHEME_RGB );      // default
     
     m_eventTimer.SetOwner( this, PIANO_EVENT_TIMER );
-    
+
     m_tex = m_tex_piano_height = 0;
 }
 
@@ -125,7 +127,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
     if(!style->chartStatusWindowTransparent) {
         dc.SetPen( *wxTRANSPARENT_PEN );
         dc.SetBrush( m_backBrush );
-        dc.DrawRectangle( 0, y, cc1->GetClientSize().x, GetHeight() );
+        dc.DrawRectangle( 0, y, m_parentCanvas->GetClientSize().x, GetHeight() );
     }
 
 //    Create the Piano Keys
@@ -590,7 +592,7 @@ void Piano::BuildGLTexture()
 void Piano::DrawGL(int off)
 {
 #ifdef ocpnUSE_GL    
-    unsigned int w = cc1->GetClientSize().x, h = GetHeight(), endx = 0;
+    unsigned int w = m_parentCanvas->GetClientSize().x, h = GetHeight(), endx = 0;
  
     if(m_tex_piano_height != h)
         BuildGLTexture();
@@ -875,7 +877,7 @@ wxString &Piano::GetStoredHash()
 void Piano::FormatKeys( void )
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    int width = cc1->GetClientSize().x, height = GetHeight();
+    int width = m_parentCanvas->GetClientSize().x, height = GetHeight();
     width *= g_btouch ? 0.98f : 0.6f;
 
     int nKeys = m_key_array.GetCount();
@@ -910,7 +912,7 @@ bool Piano::MouseEvent( wxMouseEvent& event )
     int x, y;
     event.GetPosition( &x, &y );
 
-    if(event.Leaving() || y < cc1->GetCanvasHeight() - GetHeight()) {
+    if(event.Leaving() || y < m_parentCanvas->GetCanvasHeight() - GetHeight()) {
         if(m_bleaving)
             return false;
         m_bleaving = true;
@@ -951,7 +953,7 @@ bool Piano::MouseEvent( wxMouseEvent& event )
             }
         } else if( event.RightDown() ) {
             if( sel_index != m_hover_last ) {
-                gFrame->HandlePianoRollover( sel_index, sel_dbindex );
+                m_parentCanvas->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
                 
 //                m_action = INFOWIN_TIMEOUT;
@@ -959,29 +961,29 @@ bool Piano::MouseEvent( wxMouseEvent& event )
                 
             }
         } else if( event.ButtonUp() ) {
-            gFrame->HandlePianoRollover( -1, -1 );
+            m_parentCanvas->HandlePianoRollover( -1, -1 );
             ResetRollover();
         }
     }
     else{
         if( m_bleaving ) {
-            gFrame->HandlePianoRollover( -1, -1 );
+            m_parentCanvas->HandlePianoRollover( -1, -1 );
             ResetRollover();
         } else if( event.LeftDown() ) {
             if( -1 != sel_index ) {
-                gFrame->HandlePianoClick( sel_index, sel_dbindex );
-                gFrame->Raise();
+                m_parentCanvas->HandlePianoClick( sel_index, sel_dbindex );
+                m_parentCanvas->Raise();
             } else
                 return false;
         } else if( event.RightDown() ) {
             if( -1 != sel_index ) {
-                gFrame->HandlePianoRClick( x, y, sel_index, sel_dbindex );
-                gFrame->Raise();
+                m_parentCanvas->HandlePianoRClick( x, y, sel_index, sel_dbindex );
+                m_parentCanvas->Raise();
             } else
                 return false;
         } else if(!event.ButtonUp()){
             if( sel_index != m_hover_last ) {
-                gFrame->HandlePianoRollover( sel_index, sel_dbindex );
+                m_parentCanvas->HandlePianoRollover( sel_index, sel_dbindex );
                 m_hover_last = sel_index;
             }
         }
@@ -1031,16 +1033,16 @@ void Piano::onTimerEvent(wxTimerEvent &event)
         case DEFERRED_KEY_CLICK_UP:
             ShowBusy( false );
             if(m_hover_last >= 0){              // turn it off, and return
-                gFrame->HandlePianoRollover( -1, -1 );
+                m_parentCanvas->HandlePianoRollover( -1, -1 );
                 ResetRollover();
             }
             else{
-                gFrame->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
+                m_parentCanvas->HandlePianoClick( m_click_sel_index, m_click_sel_dbindex );
 //            ShowBusy( false );
             }
             break;
         case INFOWIN_TIMEOUT:
-            gFrame->HandlePianoRollover( -1, -1 );
+            m_parentCanvas->HandlePianoRollover( -1, -1 );
             ResetRollover();
             break;
         default:

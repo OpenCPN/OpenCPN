@@ -2844,9 +2844,13 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 
 int GetChartbarHeight( void )
 {
-    if(g_bShowChartBar)
-        return g_Piano->GetHeight();
-    return 0;
+    int val = 0;
+    if(g_bShowChartBar){
+        if(cc1 && cc1->GetPiano()){
+            val = cc1->GetPiano()->GetHeight();
+        }
+    }
+    return val;
 }
 
 

@@ -419,7 +419,6 @@ class MyFrame: public wxFrame
     void SetQuiltMode(bool bquilt);
     bool GetQuiltMode(void);
     void UpdateControlBar(void);
-    void RemoveChartFromQuilt(int dbIndex);
 
     void ShowTides(bool bShow);
     void ShowCurrents(bool bShow);
@@ -430,15 +429,6 @@ class MyFrame: public wxFrame
     bool IsToolbarShown();
     void SetToolbarScale(void);
     void SetGPSCompassScale(void);
-    
-    void HandlePianoClick(int selected_index, int selected_dbIndex);
-    void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
-    void HandlePianoRollover(int selected_index, int selected_dbIndex);
-
-    void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
-    void OnPianoMenuDisableChart(wxCommandEvent& event);
-    void OnPianoMenuEnableChart(wxCommandEvent& event);
-    bool IsPianoContextMenuActive(){ return piano_ctx_menu != 0; }
     
     void SetGroupIndex(int index);
 

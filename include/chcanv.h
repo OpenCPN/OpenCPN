@@ -94,6 +94,8 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
       class ChInfoWin;
       class glChartCanvas;
       class CanvasMenuHandler;
+      class ChartStack;
+      class Piano;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -121,6 +123,10 @@ typedef enum ownship_state_t
 enum {
       ID_S57QUERYTREECTRL =            10000,
       ID_AISDIALOGOK
+};
+
+enum {
+    ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
 };
 
 //----------------------------------------------------------------------------
@@ -176,6 +182,10 @@ public:
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
+      ChartStack *GetpCurrentStack(){ return m_pCurrentStack; }
+      
+      void SetupCanvasQuiltMode( void );
+      
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
@@ -203,6 +213,7 @@ public:
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
       double GetBestStartScale(int dbi_hint, const ViewPort &vp);
+      void ConfigureChartBar();
       
       int GetNextContextMenuId();
 
@@ -231,6 +242,7 @@ public:
       void SetVP(ViewPort &);
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
+      Piano *GetPiano(){ return m_Piano; }
 
       bool isRouteEditing( void ){ return m_bRouteEditing && m_pRoutePointEditTarget; }
       bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
@@ -299,6 +311,24 @@ public:
       void CancelMeasureRoute();
       void DropMarker(bool atOwnShip = true);
 
+      bool DoCanvasUpdate( void );
+      void SelectQuiltRefdbChart( int db_index, bool b_autoscale = true );
+      void SelectQuiltRefChart( int selected_index );
+      double GetBestVPScale( ChartBase *pchart );
+      void selectCanvasChartDisplay( int type, int family);
+      void RemoveChartFromQuilt( int dbIndex );
+      
+      void HandlePianoClick( int selected_index, int selected_dbIndex );
+      void HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex );
+      void HandlePianoRollover( int selected_index, int selected_dbIndex );
+      void UpdateCanvasControlBar( void );
+      void FormatPianoKeys( void );
+      void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
+      void OnPianoMenuDisableChart(wxCommandEvent& event);
+      void OnPianoMenuEnableChart(wxCommandEvent& event);
+      bool IsPianoContextMenuActive(){ return m_piano_ctx_menu != 0; }
+      
+      
       //Todo build more accessors
       bool        m_bFollow;
       wxCursor    *pCursorPencil;
@@ -368,6 +398,8 @@ public:
       bool IsToolbarShown();
       void DestroyToolbar();
       
+      void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
+      void SelectdbChart( int dbindex );
       
 private:
       void CallPopupMenu( int x, int y );
@@ -686,6 +718,16 @@ private:
       wxString    m_toolbarConfig;
       wxPoint     m_toolbarPosition;
       long        m_toolbarOrientation;
+      
+      bool        m_bautofind;
+      bool        m_bFirstAuto;
+      double      m_vLat, m_vLon;
+      ChartStack  *m_pCurrentStack;
+      Piano       *m_Piano;
+      bool        m_bpersistent_quilt;
+      
+      wxMenu      *m_piano_ctx_menu;
+      int         menu_selected_dbIndex, menu_selected_index;
       
 DECLARE_EVENT_TABLE()
 };

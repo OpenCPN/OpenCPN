@@ -132,7 +132,6 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
 extern ocpnCompass         *g_Compass;
-extern ChartStack *pCurrentStack;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
 
@@ -2158,7 +2157,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
 void glChartCanvas::DrawChartBar( ocpnDC &dc )
 {
-    g_Piano->DrawGL(cc1->m_canvas_height - g_Piano->GetHeight());
+//TODO    g_Piano->DrawGL(cc1->m_canvas_height - g_Piano->GetHeight());
 }
 
 void glChartCanvas::DrawQuiting()
@@ -3096,6 +3095,8 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, const LLRegion &region)
 
 void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
 {
+//TODO stack from parent    
+#if 0    
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
     if( color.IsOk() )
         glColor3ub( color.Red(), color.Green(), color.Blue() );
@@ -3140,6 +3141,7 @@ void glChartCanvas::RenderNoDTA(ViewPort &vp, ChartBase *chart)
         glVertex2i( x1, y2 );
         glEnd();
     }
+#endif    
 }
 
 /* render world chart, but only in this rectangle */

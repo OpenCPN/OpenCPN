@@ -1100,7 +1100,6 @@ extern bool     g_bTrackActive;
 extern bool     g_bShowAIS;
 extern s52plib *ps52plib;
 extern ocpnCompass *g_Compass;
-extern ChartStack  *pCurrentStack;
 
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
@@ -1132,8 +1131,8 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
             style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
 //TODO  Move this up to parent with parent's chartstack
-    m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
-            && ( pCurrentStack->nEntry > 1 );
+//     m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
+//             && ( pCurrentStack->nEntry > 1 );
 
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
@@ -1407,6 +1406,7 @@ bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple
                     break;
             }
 
+           
             wxToolBarToolBase * tool = tb->AddTool( pttc->id, wxString( pttc->label ), *( ptool_bmp ),
                                                     wxString( pttc->shortHelp ), pttc->kind );
             
