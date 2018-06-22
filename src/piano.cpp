@@ -130,7 +130,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
 
 //    Create the Piano Keys
 
-    int nKeys = m_key_array.GetCount();
+    int nKeys = m_key_array.size();
 
     wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxPENSTYLE_SOLID );
     dc.SetPen( ppPen );
@@ -255,7 +255,7 @@ void Piano::UpdateGLTexture()
         memcpy(pos, data, 4*w);
     }
 
-    int nKeys = m_key_array.GetCount();
+    int nKeys = m_key_array.size();
     // draw the keys
     for( int i = 0; i < nKeys; i++ ) {
         int key_db_index = m_key_array[i];
@@ -446,7 +446,7 @@ void Piano::DrawGL(int off)
     printf("t3: %f\n", sw.Time());
     glBegin(GL_QUADS);
 
-    int nKeys = m_key_array.GetCount();
+    int nKeys = m_key_array.size();
     // draw the bitmaps
     for( int i = 0; i < nKeys; i++ ) {
         int key_db_index = m_key_array[i];
@@ -597,7 +597,7 @@ void Piano::DrawGL(int off)
 
     int y1 = off, y2 = y1 + h;
 
-    int nKeys = m_key_array.GetCount();
+    int nKeys = m_key_array.size();
 
     // we could cache the coordinates and recompute only when the piano hash changes,
     // but the performance is already fast enough at this point
@@ -774,45 +774,45 @@ void Piano::ShowBusy( bool busy )
 //    Update();
 }
 
-void Piano::SetKeyArray( ArrayOfInts array )
+void Piano::SetKeyArray( std::vector<int> array )
 {
     m_key_array = array;
     FormatKeys();
 }
 
-void Piano::SetNoshowIndexArray( ArrayOfInts array )
+void Piano::SetNoshowIndexArray( std::vector<int> array )
 {
     m_noshow_index_array = array;
 }
 
-void Piano::SetActiveKeyArray( ArrayOfInts array )
+void Piano::SetActiveKeyArray( std::vector<int> array )
 {
     m_active_index_array = array;
 }
 
-void Piano::SetEclipsedIndexArray( ArrayOfInts array )
+void Piano::SetEclipsedIndexArray( std::vector<int> array )
 {
     m_eclipsed_index_array = array;
 }
 
-void Piano::SetSkewIndexArray( ArrayOfInts array )
+void Piano::SetSkewIndexArray( std::vector<int> array )
 {
     m_skew_index_array = array;
 }
 
-void Piano::SetTmercIndexArray( ArrayOfInts array )
+void Piano::SetTmercIndexArray( std::vector<int> array )
 {
     m_tmerc_index_array = array;
 }
 
-void Piano::SetPolyIndexArray( ArrayOfInts array )
+void Piano::SetPolyIndexArray( std::vector<int> array )
 {
     m_poly_index_array = array;
 }
 
-bool Piano::InArray(ArrayOfInts &array, int key)
+bool Piano::InArray(std::vector<int> &array, int key)
 {
-    for( unsigned int ino = 0; ino < array.GetCount(); ino++ )
+    for( unsigned int ino = 0; ino < array.size(); ino++ )
         if( array[ino] == key )
             return true;
     return false;
@@ -822,37 +822,37 @@ wxString Piano::GetStateHash()
 {
     wxString hash;
 
-    for(unsigned int i=0 ; i < m_key_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_key_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dK"), m_key_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_noshow_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dN"), m_noshow_index_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_active_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_active_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dA"), m_active_index_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_eclipsed_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_eclipsed_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dE"), m_eclipsed_index_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_skew_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_skew_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dW"), m_skew_index_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_tmerc_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_tmerc_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dM"), m_tmerc_index_array[i]);
         hash += a;
     }
-    for(unsigned int i=0 ; i < m_poly_index_array.GetCount() ; i++){
+    for(unsigned int i=0 ; i < m_poly_index_array.size() ; i++){
         wxString a;
         a.Printf(_T("%dP"), m_poly_index_array[i]);
         hash += a;
@@ -878,7 +878,7 @@ void Piano::FormatKeys( void )
     int width = cc1->GetClientSize().x, height = GetHeight();
     width *= g_btouch ? 0.98f : 0.6f;
 
-    int nKeys = m_key_array.GetCount();
+    int nKeys = m_key_array.size();
     if( nKeys ) {
         int kw = style->chartStatusIconWidth;
         if( !kw ) kw = width / nKeys;
@@ -897,7 +897,7 @@ void Piano::FormatKeys( void )
 
 wxPoint Piano::GetKeyOrigin( int key_index )
 {
-    if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.GetCount() - 1 ) ) {
+    if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.size() - 1 ) ) {
         wxRect box = KeyRect[key_index];
         return wxPoint( box.x, box.y );
     } else
