@@ -3369,7 +3369,7 @@ void s57chart::GetChartNameFromTXT( const wxString& FullPath, wxString &Name )
     name.Clear();
 
     for( unsigned int j = 0; j < FileList.GetCount(); j++ ) {
-        wxFileName file( FileList.Item( j ) );
+        wxFileName file( FileList[j] );
         if( ( ( file.GetExt() ).MakeUpper() ) == _T("TXT") ) {
             //  Look for the line beginning with the name of the .000 file
             wxTextFile text_file( file.GetFullPath() );
@@ -5114,8 +5114,8 @@ int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
     if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return -1;
     if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return 1;
 
-    l1.attributeValues.Item( attrIndex1 ).ToDouble( &angle1 );
-    l2.attributeValues.Item( attrIndex2 ).ToDouble( &angle2 );
+    l1.attributeValues[attrIndex1].ToDouble( &angle1 );
+    l2.attributeValues[attrIndex2].ToDouble( &angle2 );
 
     if( angle1 == angle2 ) return 0;
     if( angle1 > angle2 ) return 1;
@@ -5358,7 +5358,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         wxString lastPos;
 
         for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
-            S57Light* thisLight = (S57Light*) lights.Item( curLightNo );
+            S57Light* thisLight = (S57Light*) lights[curLightNo];
             int attrIndex;
 
             if( thisLight->position != lastPos ) {
@@ -5381,7 +5381,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
-                wxString color = thisLight->attributeValues.Item( attrIndex );
+                wxString color = thisLight->attributeValues[attrIndex];
                 if( color == _T("red (3)") ) lightsHtml
                         << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
                 if( color == _T("green (4)") ) lightsHtml
@@ -5394,31 +5394,31 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             attrIndex = thisLight->attributeNames.Index( _T("LITCHR") );
             if( attrIndex != wxNOT_FOUND ) {
-                wxString character = thisLight->attributeValues.Item( attrIndex );
+                wxString character = thisLight->attributeValues[attrIndex];
                 lightsHtml << character.BeforeFirst( wxChar( '(' ) ) << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("SIGGRP") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("SIGPER") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("HEIGHT") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("VALNMR") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
@@ -5426,10 +5426,10 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             attrIndex = thisLight->attributeNames.Index( _T("SECTR1") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << _T("(") <<thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << _T("(") <<thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" - ");
                 attrIndex = thisLight->attributeNames.Index( _T("SECTR2") );
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ) << _T(") ");
+                lightsHtml << thisLight->attributeValues[attrIndex] << _T(") ");
             }
 
             lightsHtml << _T("</nobr>");
@@ -5438,7 +5438,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<nobr>");
                 lightsHtml
-                        << thisLight->attributeValues.Item( attrIndex ).BeforeFirst(
+                        << thisLight->attributeValues[attrIndex].BeforeFirst(
                                 wxChar( '(' ) );
                 lightsHtml << _T("</nobr> ");
             }
@@ -5447,7 +5447,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<nobr>");
                 lightsHtml
-                        << thisLight->attributeValues.Item( attrIndex ).BeforeFirst(
+                        << thisLight->attributeValues[attrIndex].BeforeFirst(
                                 wxChar( '(' ) );
                 lightsHtml << _T("</nobr> ");
             }
@@ -5455,8 +5455,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             attrIndex = thisLight->attributeNames.Index( _T("OBJNAM") );
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<br><nobr>");
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ).Left( 1 ).Upper();
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ).Mid( 1 );
+                lightsHtml << thisLight->attributeValues[attrIndex].Left( 1 ).Upper();
+                lightsHtml << thisLight->attributeValues[attrIndex].Mid( 1 );
                 lightsHtml << _T("</nobr> ");
             }
 

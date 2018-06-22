@@ -1701,8 +1701,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     bool b_noshow = false;
     bool b_forceshow = false;
     for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-        if(td->MMSI == g_MMSI_Props_Array.Item(i)->MMSI ){
-            MMSIProperties *props = g_MMSI_Props_Array.Item(i);
+        if(td->MMSI == g_MMSI_Props_Array[i]->MMSI ){
+            MMSIProperties *props = g_MMSI_Props_Array[i];
             if( TRACKTYPE_NEVER == props->TrackType){
                 b_noshow = true;
                 break;

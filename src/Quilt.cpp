@@ -295,7 +295,7 @@ bool Quilt::IsChartQuiltableRef( int db_index )
     //    In noshow array?
     bool b_noshow = false;
     for( unsigned int i = 0; i < g_quilt_noshow_index_array.GetCount(); i++ ) {
-        if( g_quilt_noshow_index_array.Item( i ) == db_index )        // chart is in the noshow list
+        if( g_quilt_noshow_index_array[i] == db_index )        // chart is in the noshow list
         {
             b_noshow = true;
             break;
@@ -344,7 +344,7 @@ ArrayOfInts Quilt::GetCandidatedbIndexArray( bool from_ref_chart, bool exclude_u
                 if( exclude_user_hidden ) {
                     bool b_noshow = false;
                     for( unsigned int i = 0; i < g_quilt_noshow_index_array.GetCount(); i++ ) {
-                        if( g_quilt_noshow_index_array.Item( i ) == pqc->dbIndex ) // chart is in the noshow list
+                        if( g_quilt_noshow_index_array[i] == pqc->dbIndex ) // chart is in the noshow list
                         {
                             b_noshow = true;
                             break;
@@ -777,7 +777,7 @@ int Quilt::GetNewRefChart( void )
     unsigned int im = m_extended_stack_array.GetCount();
     if( im > 0 ) {
         for( unsigned int is = 0; is < im; is++ ) {
-            const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
+            const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array[is] );
 
             double skew_norm = m.GetChartSkew();
             if( skew_norm > 180. ) skew_norm -= 360.;
@@ -786,7 +786,7 @@ int Quilt::GetNewRefChart( void )
                     && ( m_reference_family == m.GetChartFamily() )
                     && ( m_bquiltanyproj || m_quilt_proj == m.GetChartProjectionType() )
                     && ( m_bquiltskew || (fabs(skew_norm) < 1.0) ) ){
-                new_ref_dbIndex = m_extended_stack_array.Item( is );
+                new_ref_dbIndex = m_extended_stack_array[is];
                 break;
             }
         }
@@ -861,7 +861,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     //  Walk the extended chart array, capturing data
     int i_first = 0;
     for(size_t i=0 ; i < m_extended_stack_array.GetCount() ; i++){
-        int test_db_index = m_extended_stack_array.Item( i );
+        int test_db_index = m_extended_stack_array[i];
 
         if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
@@ -912,7 +912,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
             int min_scale_test = wxMax(scales[i].min, scales[i+1].max+1);
             min_scale_test = wxMin(min_scale_test, scales[i].min * 2);
             scales[i].min = min_scale_test;
-//              min_scale.Item(i) = wxMax(min_scale.Item(i), max_scale.Item(i+1) + 1);
+//              min_scale[i] = wxMax(min_scale[i], max_scale.Item(i+1) + 1);
         }
     }
 
@@ -1028,7 +1028,7 @@ bool Quilt::IsChartSmallestScale( int dbIndex )
     unsigned int target_stack_index = 0;
     if( m_extended_stack_array.GetCount() ) {
         while( ( target_stack_index <= ( m_extended_stack_array.GetCount() - 1 ) ) ) {
-            int test_db_index = m_extended_stack_array.Item( target_stack_index );
+            int test_db_index = m_extended_stack_array[target_stack_index];
 
             if( specified_type == ChartData->GetDBChartType( test_db_index ) ) target_dbindex =
                     test_db_index;
@@ -1045,7 +1045,7 @@ LLRegion Quilt::GetHiliteRegion()
     if( m_nHiLiteIndex >= 0 ) {
         // Walk the PatchList, looking for the target hilite index
         for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            wxPatchListNode *pcinode = m_PatchList.Item(i);
             QuiltPatch *piqp = pcinode->GetData();
             if( ( m_nHiLiteIndex == piqp->dbIndex ) && ( piqp->b_Valid ) ) // found it
             {
@@ -1064,7 +1064,7 @@ LLRegion Quilt::GetHiliteRegion()
                         // Do not highlite fully eclipsed charts
                         bool b_eclipsed = false;
                         for( unsigned int ir = 0; ir < m_eclipsed_stack_array.GetCount(); ir++ ) {
-                            if( m_nHiLiteIndex == m_eclipsed_stack_array.Item( ir ) ) {
+                            if( m_nHiLiteIndex == m_eclipsed_stack_array[ir] ) {
                                 b_eclipsed = true;
                                 break;
                             }
@@ -1246,7 +1246,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                     // by virtue of being under the Viewport center point....
                     bool b_exists = false;
                     for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
-                        if( i == m_extended_stack_array.Item( ir ) ) {
+                        if( i == m_extended_stack_array[ir] ) {
                             b_exists = true;
                             break;
                         }
@@ -1260,8 +1260,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                         bool b_noadd = false;
                         ChartTableEntry *pn = ChartData->GetpChartTableEntry( i );
                         for( unsigned int id = 0; id < m_extended_stack_array.GetCount() ; id++ ) {
-                            if( m_extended_stack_array.Item( id ) != -1 ) {
-                                ChartTableEntry *pm = ChartData->GetpChartTableEntry( m_extended_stack_array.Item( id ) );
+                            if( m_extended_stack_array[id] != -1 ) {
+                                ChartTableEntry *pm = ChartData->GetpChartTableEntry( m_extended_stack_array[id] );
                                 if( pm->GetFileTime() && pn->GetFileTime()) {
                                     if( labs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                         if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) )
@@ -1292,7 +1292,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             // check to see if it is already in
             bool sure_exists = false;
             for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
-                if( sure_index == m_extended_stack_array.Item(ir) ) {
+                if( sure_index == m_extended_stack_array[ir] ) {
                     sure_exists = true;
                     break;
                 }
@@ -1505,7 +1505,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         //      Is the lost chart in the extended stack ?
         //      If so, build a new Cnadidate array based upon the lost chart
         for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
-            if( m_lost_refchart_dbIndex == m_extended_stack_array.Item( ir ) ) {
+            if( m_lost_refchart_dbIndex == m_extended_stack_array[ir] ) {
                 m_refchart_dbIndex = m_lost_refchart_dbIndex;
                 BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
                 m_lost_refchart_dbIndex = -1;
@@ -1602,7 +1602,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 //  don't subtract its region when determining the smaller scale charts to include.....
                 bool b_in_noshow = false;
                 for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.GetCount(); ins++ ) {
-                    if( g_quilt_noshow_index_array.Item( ins ) == pqc->dbIndex ) // chart is in the noshow list
+                    if( g_quilt_noshow_index_array[ins] == pqc->dbIndex ) // chart is in the noshow list
                     {
                         b_in_noshow = true;
                         break;
@@ -1654,7 +1654,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             if( cte.Scale_ge( m_reference_scale) ) {
                 bool b_in_noshow = false;
                 for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.GetCount(); ins++ ) {
-                    if( g_quilt_noshow_index_array.Item( ins ) == pqc->dbIndex ) // chart is in the noshow list
+                    if( g_quilt_noshow_index_array[ins] == pqc->dbIndex ) // chart is in the noshow list
                     {
                         b_in_noshow = true;
                         break;
@@ -1834,7 +1834,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     if(!m_bquiltanyproj) {
         //    Walk the PatchList, marking any entries whose projection does not match the determined quilt projection
         for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            wxPatchListNode *pcinode = m_PatchList.Item(i);
             QuiltPatch *piqp = pcinode->GetData();
             if( ( piqp->ProjType != m_quilt_proj ) && ( piqp->ProjType != PROJECTION_UNKNOWN ) )
                 piqp->b_Valid = false;
@@ -1843,10 +1843,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
     //    Walk the PatchList, marking any entries which appear in the noshow array
     for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-        wxPatchListNode *pcinode = m_PatchList.Item( i );
+        wxPatchListNode *pcinode = m_PatchList.Item(i);
         QuiltPatch *piqp = pcinode->GetData();
         for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.GetCount(); ins++ ) {
-            if( g_quilt_noshow_index_array.Item( ins ) == piqp->dbIndex ) // chart is in the noshow list
+            if( g_quilt_noshow_index_array[ins] == piqp->dbIndex ) // chart is in the noshow list
             {
                 piqp->b_Valid = false;
                 break;
@@ -1865,7 +1865,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
        
         // find cm93 in the list
         for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
-            wxPatchListNode *pcinode = m_PatchList.Item( i );
+            wxPatchListNode *pcinode = m_PatchList.Item(i);
             QuiltPatch *piqp = pcinode->GetData();
             if( !piqp->b_Valid )                         // skip invalid entries
                 continue;
@@ -1889,7 +1889,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
      //  Proceeding from largest scale to smallest....           
     
     for( int i = m_PatchList.GetCount()-1; i >=0; i-- ) {
-        wxPatchListNode *pcinode = m_PatchList.Item( i );
+        wxPatchListNode *pcinode = m_PatchList.Item(i);
         QuiltPatch *piqp = pcinode->GetData();
         if( !piqp->b_Valid )                         // skip invalid entries
             continue;
@@ -1926,7 +1926,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 #else
     // this is the old algorithm does the same thing in n^2/2 operations instead of 2*n-1
     for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-        wxPatchListNode *pcinode = m_PatchList.Item( i );
+        wxPatchListNode *pcinode = m_PatchList.Item(i);
         QuiltPatch *piqp = pcinode->GetData();
 
         if( !piqp->b_Valid )                         // skip invalid entries
@@ -1944,7 +1944,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         //fetch and subtract regions for all larger scale charts
         for( unsigned int k = i + 1; k < m_PatchList.GetCount(); k++ ) {
-            wxPatchListNode *pnode = m_PatchList.Item( k );
+            wxPatchListNode *pnode = m_PatchList.Item(k);
             QuiltPatch *pqp = pnode->GetData();
 
             if( !pqp->b_Valid )                         // skip invalid entries
@@ -1978,7 +1978,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
         //    Whatever is left in the vpr region and has not been yet rendered must belong to the current target chart
 
-        wxPatchListNode *pinode = m_PatchList.Item( i );
+        wxPatchListNode *pinode = m_PatchList.Item(i);
         QuiltPatch *pqpi = pinode->GetData();
         pqpi->ActiveRegion = vpr_region;
 
@@ -2004,14 +2004,14 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Walk the list again, removing any entries marked as eclipsed....
     unsigned int il = 0;
     while( il < m_PatchList.GetCount() ) {
-        wxPatchListNode *pcinode = m_PatchList.Item( il );
+        wxPatchListNode *pcinode = m_PatchList.Item(il);
         QuiltPatch *piqp = pcinode->GetData();
         if( piqp->b_eclipsed ) {
             //    Make sure that this chart appears in the eclipsed list...
             //    This can happen when....
             bool b_noadd = false;
             for( unsigned int ir = 0; ir < m_eclipsed_stack_array.GetCount(); ir++ ) {
-                if( piqp->dbIndex == m_eclipsed_stack_array.Item( ir ) ) {
+                if( piqp->dbIndex == m_eclipsed_stack_array[ir] ) {
                     b_noadd = true;
                     break;
                 }
@@ -2103,7 +2103,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     for( unsigned int k = 0; k < m_PatchList.GetCount(); k++ ) {
-        wxPatchListNode *pnode = m_PatchList.Item( k );
+        wxPatchListNode *pnode = m_PatchList.Item(k);
         QuiltPatch *pqp = pnode->GetData();
 
         if( !pqp->b_Valid )                         // skip invalid entries
@@ -2150,7 +2150,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    If still missing, remove its patch from the quilt
     //    This will probably leave a "black hole" in the quilt...
     for( unsigned int k = 0; k < m_PatchList.GetCount(); k++ ) {
-        wxPatchListNode *pnode = m_PatchList.Item( k );
+        wxPatchListNode *pnode = m_PatchList.Item(k);
         QuiltPatch *pqp = pnode->GetData();
 
         if( pqp->b_Valid ) {
@@ -2176,7 +2176,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bquilt_has_overlays = false;
     m_max_error_factor = 0.;
     for( unsigned int k = 0; k < m_PatchList.GetCount(); k++ ) {
-        wxPatchListNode *pnode = m_PatchList.Item( k );
+        wxPatchListNode *pnode = m_PatchList.Item(k);
         QuiltPatch *pqp = pnode->GetData();
 
         if( !pqp->b_Valid )                         // skip invalid entries
@@ -2207,7 +2207,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //  Create and store a hash value representing the contents of the m_extended_stack_array
     unsigned long xa_hash = 5381;
     for(unsigned int im=0 ; im < m_extended_stack_array.GetCount() ; im++) {
-        int dbindex = m_extended_stack_array.Item(im);
+        int dbindex = m_extended_stack_array[im];
         xa_hash = ((xa_hash << 5) + xa_hash) + dbindex; /* hash * 33 + dbindex */
     }
 

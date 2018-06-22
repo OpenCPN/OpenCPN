@@ -293,7 +293,7 @@ class covr_set
 
             bool Init ( wxChar scale_char, wxString &prefix );
             unsigned int GetCoverCount() { return m_covr_array_outlines.GetCount(); }
-            M_COVR_Desc *GetCover ( unsigned int im ) { return &m_covr_array_outlines.Item ( im ); }
+            M_COVR_Desc *GetCover ( unsigned int im ) { return &m_covr_array_outlines[im]; }
             void Add_MCD ( M_COVR_Desc *pmcd );
             bool Add_Update_MCD ( M_COVR_Desc *pmcd );
             bool IsCovrLoaded ( int cell_index );
@@ -482,7 +482,7 @@ bool covr_set::Add_Update_MCD ( M_COVR_Desc *pmcd )
             bool b_found = false;
             for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
             {
-                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
                   if ( ( pmcd_candidate->m_cell_index == pmcd->m_cell_index ) &&
                           ( pmcd_candidate->m_object_id == pmcd->m_object_id ) &&
                           ( pmcd_candidate->m_subcell == pmcd->m_subcell ) )
@@ -516,7 +516,7 @@ int covr_set::Find_MCD ( M_COVR_Desc *pmcd )
 
             for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
             {
-                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+                  M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
                   if ( ( pmcd_candidate->m_cell_index == pmcd->m_cell_index ) &&
                           ( pmcd_candidate->m_object_id == pmcd->m_object_id ) &&
                           ( pmcd_candidate->m_subcell == pmcd->m_subcell ) )
@@ -535,7 +535,7 @@ M_COVR_Desc *covr_set::Find_MCD ( int cell_index, int object_id, int subcell )
 
       for ( unsigned int i=0 ; i < m_covr_array_outlines.GetCount() ; i++ )
       {
-            M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines.Item ( i );
+            M_COVR_Desc *pmcd_candidate = &m_covr_array_outlines[i];
             if ( ( pmcd_candidate->m_cell_index == cell_index ) &&
                     ( pmcd_candidate->m_object_id == object_id ) &&
                     ( pmcd_candidate->m_subcell == subcell ) )
@@ -2196,7 +2196,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             bcell_is_in = false;
             for ( unsigned int j=0 ; j < m_cells_loaded_array.GetCount() ; j++ )
             {
-                  if ( vpcells.Item ( i ) == m_cells_loaded_array.Item ( j ) )
+                  if ( vpcells[i] == m_cells_loaded_array[j] )
                   {
                         bcell_is_in = true;
                         break;
@@ -2207,7 +2207,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             if ( !bcell_is_in )
             {
                 OCPNPlatform::ShowBusySpinner();
-                  int cell_index = vpcells.Item ( i );
+                  int cell_index = vpcells[i];
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
@@ -4382,24 +4382,24 @@ bool cm93chart::UpdateCovrSet ( ViewPort *vpt )
       for ( unsigned int i=0 ; i < vpcells.GetCount() ; i++ )
       {
             //    If the cell is not already in the master coverset, go load enough of it to get the offsets and outlines.....
-            if ( !m_pcovr_set->IsCovrLoaded ( vpcells.Item ( i ) ) )
+            if ( !m_pcovr_set->IsCovrLoaded ( vpcells[i] ) )
             {
-                  if ( loadcell_in_sequence ( vpcells.Item ( i ), '0' ) )
+                  if ( loadcell_in_sequence ( vpcells[i], '0' ) )
                   {
-                        ProcessMCOVRObjects ( vpcells.Item ( i ), '0' );
+                        ProcessMCOVRObjects ( vpcells[i], '0' );
                         Unload_CM93_Cell();           // all done with this (sub)cell
                   }
-                  m_pcovr_set->m_cell_hash[vpcells.Item ( i )] = 1;
+                  m_pcovr_set->m_cell_hash[vpcells[i]] = 1;
 
                   char loadcell_key = 'A';               // starting subcells
 
                   //    Load the subcells in sequence
                   //    On successful load, add it to the covr set and process the cell
-                  while ( loadcell_in_sequence ( vpcells.Item ( i ), loadcell_key ) )
+                  while ( loadcell_in_sequence ( vpcells[i], loadcell_key ) )
                   {
                         //Extract the m_covr structures inline
 
-                        ProcessMCOVRObjects ( vpcells.Item ( i ), loadcell_key );
+                        ProcessMCOVRObjects ( vpcells[i], loadcell_key );
 
                         Unload_CM93_Cell();           // all done with this (sub)cell
 
@@ -4422,7 +4422,7 @@ bool cm93chart::IsPointInLoadedM_COVR ( double xc, double yc )
 #else
       for ( unsigned int im=0 ; im < m_pcovr_array_loaded.GetCount() ; im++ )
       {
-            if ( G_PtInPolygon_FL ( m_pcovr_array_loaded.Item ( im )->pvertices, m_pcovr_array_loaded.Item ( im )->m_nvertices, xc, yc ) )
+            if ( G_PtInPolygon_FL ( m_pcovr_array_loaded[im]->pvertices, m_pcovr_array_loaded[im]->m_nvertices, xc, yc ) )
                   return true;
       }
       return false;
@@ -5386,7 +5386,7 @@ OCPNRegion cm93compchart::GetValidScreenCanvasRegion ( const ViewPort& VPoint, c
 
             for ( unsigned int im=0 ; im < m_pcm93chart_current->m_pcovr_array_loaded.GetCount() ; im++ )
             {
-                  M_COVR_Desc *pmcd = ( m_pcm93chart_current->m_pcovr_array_loaded.Item ( im ) );
+                  M_COVR_Desc *pmcd = ( m_pcm93chart_current->m_pcovr_array_loaded[im] );
 
                   //    We can make a quick test based on the bbox of the M_COVR and the bbox of the ViewPort
 
@@ -6707,7 +6707,7 @@ wxString  OCPNOffsetListCtrl::OnGetItemText ( long item, long column ) const
 {
 
       wxString ret;
-      M_COVR_Desc *pmcd = m_parent->m_pcovr_array.Item ( item );
+      M_COVR_Desc *pmcd = m_parent->m_pcovr_array[item];
 
       switch ( column )
       {
@@ -7008,7 +7008,7 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
 
                         for ( unsigned int icell=0 ; icell < cell_array.GetCount() ; icell++ )
                         {
-                              if ( cell_array.Item ( icell ) == mcd->m_cell_index )
+                              if ( cell_array[icell] == mcd->m_cell_index )
                               {
                                     wxPoint *pwp = pchart->GetDrawBuffer ( mcd->m_nvertices );
                                     OCPNRegion rgn = mcd->GetRegion ( vp, pwp );
@@ -7024,7 +7024,7 @@ void CM93OffsetDialog::UpdateMCOVRList ( const ViewPort &vpt )
                   int sel_index = -1;
                   for ( unsigned int im=0 ; im < m_pcovr_array.GetCount() ; im++ )
                   {
-                        M_COVR_Desc *mcd = m_pcovr_array.Item ( im );
+                        M_COVR_Desc *mcd = m_pcovr_array[im];
                         if ( ( m_selected_cell_index == mcd->m_cell_index ) &&
                                 ( m_selected_object_id == mcd->m_object_id ) &&
                                 ( m_selected_subcell == mcd->m_subcell ) )

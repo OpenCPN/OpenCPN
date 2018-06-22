@@ -796,7 +796,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             // Check to see if this MMSI has been configured to be ignored completely...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                MMSIProperties *props =  g_MMSI_Props_Array[i];
                 if(mmsi == props->MMSI){
                     if(props->m_bignore)
                         return AIS_NoError;
@@ -947,7 +947,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             // Check to see if this MMSI wants VDM translated to VDO or whether we want to persist it's track...
             for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                MMSIProperties *props =  g_MMSI_Props_Array[i];
                 if(mmsi == props->MMSI)
                 {
                     pTargetData->b_OwnShip = (props->m_bVDM) ? true : false;
@@ -2027,7 +2027,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
                 //    No alert for my Follower
                 bool hit = false;
                 for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-                    MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+                    MMSIProperties *props =  g_MMSI_Props_Array[i];
                     if(td->MMSI == props->MMSI){
                         if (props->m_bFollower) {
                             hit = true;
@@ -2332,7 +2332,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
         
         // Remove any targets specified as to be "ignored", so that they won't trigger phantom alerts (e.g. SARTs)
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-            MMSIProperties *props =  g_MMSI_Props_Array.Item(i);
+            MMSIProperties *props =  g_MMSI_Props_Array[i];
             if(td->MMSI == props->MMSI){
                 if(props->m_bignore)
                     remove_array.push_back(td->MMSI);         //Add this target to removal list
@@ -2523,7 +2523,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     //  indicating that this Alert is a MOB for THIS ship.
     if(palert_target && (palert_target->Class == AIS_SART) ){
         for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-            if(palert_target->MMSI == g_MMSI_Props_Array.Item(i)->MMSI){
+            if(palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI){
                 if(pAISMOBRoute)
                     gFrame->UpdateAISMOBRoute(palert_target);
                 else

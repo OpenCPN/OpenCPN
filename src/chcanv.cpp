@@ -1140,9 +1140,9 @@ int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
         if( im > 0 ) {
             for( unsigned int is = 0; is < im; is++ ) {
                 const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                               m_pQuilt->GetExtendedStackIndexArray().Item( is ) );
+                                               m_pQuilt->GetExtendedStackIndexArray()[is] );
                 if( ( m.Scale_ge(scale ) )/* && (m_reference_family == m.GetChartFamily())*/) {
-                    new_dbIndex = m_pQuilt->GetExtendedStackIndexArray().Item( is );
+                    new_dbIndex = m_pQuilt->GetExtendedStackIndexArray()[is];
                     break;
                 }
             }
@@ -3278,7 +3278,7 @@ int ChartCanvas::AdjustQuiltRefChart( void )
                     int extended_array_count = m_pQuilt->GetExtendedStackIndexArray().GetCount();
                     while( ( !brender_ok )  && ( (int)target_stack_index < ( extended_array_count - 1 ) ) ) {
                         target_stack_index++;
-                        int test_db_index = m_pQuilt->GetExtendedStackIndexArray().Item( target_stack_index );
+                        int test_db_index = m_pQuilt->GetExtendedStackIndexArray()[target_stack_index];
                     
                         if( ( ref_family == ChartData->GetDBChartFamily( test_db_index ) )
                             && IsChartQuiltableRef( test_db_index ) ) {
@@ -3291,7 +3291,7 @@ int ChartCanvas::AdjustQuiltRefChart( void )
                     }
                     
                     if(brender_ok){             // found a better reference chart
-                        int new_db_index = m_pQuilt->GetExtendedStackIndexArray().Item( target_stack_index );
+                        int new_db_index = m_pQuilt->GetExtendedStackIndexArray()[target_stack_index];
                         if( ( ref_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index ) ) {
                             m_pQuilt->SetReferenceChart( new_db_index );
@@ -7623,7 +7623,7 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
         bool b_group_draw = false;
         if( g_GroupIndex > 0 ) {
             for( unsigned int ig = 0; ig < pt->GetGroupArray().GetCount(); ig++ ) {
-                int index = pt->GetGroupArray().Item( ig );
+                int index = pt->GetGroupArray()[ig];
                 if( g_GroupIndex == index ) {
                     b_group_draw = true;
                     break;
@@ -10470,7 +10470,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxCo
 
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
 
         if( win->IsKindOf( CLASSINFO(wxListBox) ) )

@@ -136,7 +136,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
     dc.SetPen( ppPen );
 
     for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
+        int key_db_index = m_key_array[i];
 
         if( -1 == key_db_index ) continue;
 
@@ -163,7 +163,7 @@ void Piano::Paint( int y, ocpnDC& dc, wxDC *shapeDC )
         if(m_bBusy)
             dc.SetBrush( m_uvBrush );
             
-        wxRect box = KeyRect.Item( i );
+        wxRect box = KeyRect[i];
         box.y += y;
 
         if( m_brounded ) {
@@ -258,7 +258,7 @@ void Piano::UpdateGLTexture()
     int nKeys = m_key_array.GetCount();
     // draw the keys
     for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
+        int key_db_index = m_key_array[i];
 
         if( -1 == key_db_index ) continue;
 
@@ -285,7 +285,7 @@ void Piano::UpdateGLTexture()
         if(m_bBusy)
             SetColor(color, m_uvBrush );
             
-        wxRect box = KeyRect.Item( i );
+        wxRect box = KeyRect[i];
 
         bool eclipsed = InArray(m_eclipsed_index_array, key_db_index);
 
@@ -449,11 +449,11 @@ void Piano::DrawGL(int off)
     int nKeys = m_key_array.GetCount();
     // draw the bitmaps
     for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
+        int key_db_index = m_key_array[i];
 
         if( -1 == key_db_index ) continue;
 
-        wxRect box = KeyRect.Item( i );
+        wxRect box = KeyRect[i];
 
         float u1 = 0, u2 = 1, v = 1;
 
@@ -607,7 +607,7 @@ void Piano::DrawGL(int off)
 
     // draw the keys
     for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
+        int key_db_index = m_key_array[i];
 
         int b;
         if( ChartData->GetDBChartType( key_db_index ) == CHART_TYPE_CM93 ||
@@ -621,7 +621,7 @@ void Piano::DrawGL(int off)
         if(!InArray(m_active_index_array, key_db_index))
             b++;
 
-        wxRect box = KeyRect.Item( i );
+        wxRect box = KeyRect[i];
         float y = h*b, v1 = (y+.5)/m_texh, v2 = (y+h-.5)/m_texh;
         // u contains the pixel coordinates in the texture for the three possible rectangles
         const float u[3][6] = {{0, 3, 4, 4, 5, 8},
@@ -685,11 +685,11 @@ void Piano::DrawGL(int off)
     // draw the bitmaps
     vc = tc = 0;
     for( int i = 0; i < nKeys; i++ ) {
-        int key_db_index = m_key_array.Item( i );
+        int key_db_index = m_key_array[i];
 
         if( -1 == key_db_index ) continue;
 
-        wxRect box = KeyRect.Item( i );
+        wxRect box = KeyRect[i];
 
         wxBitmap *bitmaps[] = {m_pInVizIconBmp, m_pTmercIconBmp, m_pSkewIconBmp, m_pPolyIconBmp};
         int index;
@@ -813,7 +813,7 @@ void Piano::SetPolyIndexArray( ArrayOfInts array )
 bool Piano::InArray(ArrayOfInts &array, int key)
 {
     for( unsigned int ino = 0; ino < array.GetCount(); ino++ )
-        if( array.Item( ino ) == key )
+        if( array[ino] == key )
             return true;
     return false;
 }
@@ -824,37 +824,37 @@ wxString Piano::GetStateHash()
 
     for(unsigned int i=0 ; i < m_key_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dK"), m_key_array.Item(i));
+        a.Printf(_T("%dK"), m_key_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_noshow_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dN"), m_noshow_index_array.Item(i));
+        a.Printf(_T("%dN"), m_noshow_index_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_active_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dA"), m_active_index_array.Item(i));
+        a.Printf(_T("%dA"), m_active_index_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_eclipsed_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dE"), m_eclipsed_index_array.Item(i));
+        a.Printf(_T("%dE"), m_eclipsed_index_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_skew_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dW"), m_skew_index_array.Item(i));
+        a.Printf(_T("%dW"), m_skew_index_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_tmerc_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dM"), m_tmerc_index_array.Item(i));
+        a.Printf(_T("%dM"), m_tmerc_index_array[i]);
         hash += a;
     }
     for(unsigned int i=0 ; i < m_poly_index_array.GetCount() ; i++){
         wxString a;
-        a.Printf(_T("%dP"), m_poly_index_array.Item(i));
+        a.Printf(_T("%dP"), m_poly_index_array[i]);
         hash += a;
     }
 
@@ -898,7 +898,7 @@ void Piano::FormatKeys( void )
 wxPoint Piano::GetKeyOrigin( int key_index )
 {
     if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.GetCount() - 1 ) ) {
-        wxRect box = KeyRect.Item( key_index );
+        wxRect box = KeyRect[key_index];
         return wxPoint( box.x, box.y );
     } else
         return wxPoint( -1, -1 );
@@ -923,9 +923,9 @@ bool Piano::MouseEvent( wxMouseEvent& event )
     int sel_dbindex = -1;
 
     for( int i = 0; i < m_nRegions; i++ ) {
-        if( KeyRect.Item( i ).Contains( x, 6 ) ) {
+        if( KeyRect[i].Contains( x, 6 ) ) {
             sel_index = i;
-            sel_dbindex = m_key_array.Item( i );
+            sel_dbindex = m_key_array[i];
             break;
         }
     }

@@ -764,9 +764,9 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
-            imsg += g_locale_catalog_array.Item(i);
+            imsg += g_locale_catalog_array[i];
             wxLogMessage( imsg );
-            locale->AddCatalog( g_locale_catalog_array.Item(i) );
+            locale->AddCatalog( g_locale_catalog_array[i] );
         }
         
         

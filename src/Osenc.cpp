@@ -230,14 +230,14 @@ Osenc::~Osenc()
     std::vector<int> &AuxCntArray = getSENCReadAuxPointCountArray();
     int nCOVREntries = AuxCntArray.size();
         for( unsigned int j = 0; j < (unsigned int) nCOVREntries; j++ ) {
-        free(AuxPtrArray.Item(j));
+        free(AuxPtrArray[j]);
     }
 
     SENCFloatPtrArray &AuxNoPtrArray = getSENCReadNOCOVRPointArray();
     std::vector<int> &AuxNoCntArray = getSENCReadNOCOVRPointCountArray();
     int nNoCOVREntries = AuxNoCntArray.size();
     for( unsigned int j = 0; j < (unsigned int) nNoCOVREntries; j++ ) {
-        free(AuxNoPtrArray.Item(j));
+        free(AuxNoPtrArray[j]);
     }
     
     free(pBuffer);
@@ -1087,13 +1087,13 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
 
     // Apply the updates...
     for(unsigned int i_up = 0 ; i_up < m_tmpup_array.GetCount() ; i_up++){
-        wxFileName fn(m_tmpup_array.Item( i_up ));
+        wxFileName fn(m_tmpup_array[i_up]);
         wxString ext = fn.GetExt();
         long n_upd;
         ext.ToLong(&n_upd);
         
         DDFModule oUpdateModule;
-        if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
+        if(!oUpdateModule.Open( m_tmpup_array[i_up].mb_str(), FALSE )){
             break;
         }
         int upResult = poReader->ApplyUpdates( &oUpdateModule, n_upd );
@@ -1101,7 +1101,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             break;
         }
         m_last_applied_update = n_upd;
-        last_successful_update_file = m_tmpup_array.Item( i_up );
+        last_successful_update_file = m_tmpup_array[i_up];
     }
 
     
@@ -1697,7 +1697,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     //  Delete any temporary (working) real and dummy update files,
     //  as well as .000 file created by ValidateAndCountUpdates()
     for( unsigned int iff = 0; iff < m_tmpup_array.GetCount(); iff++ )
-        remove( m_tmpup_array.Item( iff ).mb_str() );
+        remove( m_tmpup_array[iff].mb_str() );
     
     int ret_code = 0;
     
