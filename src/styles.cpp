@@ -480,9 +480,9 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
     return wxBitmap( GetToolSize().x, GetToolSize().y ); // Prevents crashing.
 }
 
-wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor )
+wxBitmap Style::BuildPluginIcon( wxBitmap &bm, int iconType, double factor )
 {
-	if( ! bm || ! bm->IsOk() ) return wxNullBitmap;
+    if(  !bm.IsOk() ) return wxNullBitmap;
 
     wxBitmap iconbm;
 
@@ -497,40 +497,40 @@ wxBitmap Style::BuildPluginIcon( const wxBitmap* bm, int iconType, double factor
                 else
                     bg = GetToggledBG();
 
-                if((bg.GetWidth() >= bm->GetWidth()) && (bg.GetHeight() >= bm->GetHeight())){
+                if((bg.GetWidth() >= bm.GetWidth()) && (bg.GetHeight() >= bm.GetHeight())){
                     int w = bg.GetWidth() * factor;
                     int h = bg.GetHeight() * factor;
                     wxImage scaled_image = bg.ConvertToImage();
                     bg = wxBitmap(scaled_image.Scale(w, h, wxIMAGE_QUALITY_HIGH));
                     
-                    wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
+                    wxSize offset = wxSize( bg.GetWidth() - bm.GetWidth(), bg.GetHeight() - bm.GetHeight() );
                     offset /= 2;
-                    iconbm = MergeBitmaps( bg, *bm, offset );
+                    iconbm = MergeBitmaps( bg, bm, offset );
                 }
                 else{
                     // A bit of contorted logic for non-square backgrounds...
-                    double factor = ((double)bm->GetHeight()) / bg.GetHeight();
+                    double factor = ((double)bm.GetHeight()) / bg.GetHeight();
                     int nw = bg.GetWidth() * factor;
-                    int nh = bm->GetHeight();
+                    int nh = bm.GetHeight();
                     if(bg.GetWidth() == bg.GetHeight())
                         nw = nh;
                     wxImage scaled_image = bg.ConvertToImage();
                     bg = wxBitmap(scaled_image.Scale(nw, nh, wxIMAGE_QUALITY_HIGH));
                     
-                    wxSize offset = wxSize( bg.GetWidth() - bm->GetWidth(), bg.GetHeight() - bm->GetHeight() );
+                    wxSize offset = wxSize( bg.GetWidth() - bm.GetWidth(), bg.GetHeight() - bm.GetHeight() );
                     offset /= 2;
-                    iconbm = MergeBitmaps( bg, *bm, offset );
+                    iconbm = MergeBitmaps( bg, bm, offset );
                 }
                 
             } else {
                 wxBitmap bg( GetToolSize().x, GetToolSize().y );
                 wxMemoryDC mdc( bg );
-                wxSize offset = GetToolSize() - wxSize( bm->GetWidth(), bm->GetHeight() );
+                wxSize offset = GetToolSize() - wxSize( bm.GetWidth(), bm.GetHeight() );
                 offset /= 2;
                 mdc.SetBackground( wxBrush( GetGlobalColor( _T("GREY2") ), wxBRUSHSTYLE_SOLID ) );
                 mdc.Clear();
                 mdc.SelectObject( wxNullBitmap );
-                iconbm = MergeBitmaps( bg, *bm, offset );
+                iconbm = MergeBitmaps( bg, bm, offset );
             }
             break;
         }

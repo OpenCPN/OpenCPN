@@ -232,8 +232,8 @@ public:
             
         } else {
             isPluginTool = true;
-            pluginNormalIcon = &bmpNormal;
-            pluginRolloverIcon = &bmpRollover;
+            pluginNormalIcon = bmpNormal;
+            pluginRolloverIcon = bmpRollover;
         }
     }
 
@@ -292,8 +292,8 @@ public:
     wxRect trect;
     wxString toolname;
     wxString iconName;
-    const wxBitmap* pluginNormalIcon;
-    const wxBitmap* pluginRolloverIcon;
+    wxBitmap pluginNormalIcon;
+    wxBitmap pluginRolloverIcon;
     const wxBitmap* pluginToggledIcon;
     bool firstInLine;
     bool lastInLine;
@@ -2329,7 +2329,7 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
                     if( svgDoc.Load(svgFile) ){
                         bool square = (tool->m_width == tool->m_height);
                         bmp = wxBitmap( svgDoc.Render( tool->m_width, tool->m_height, NULL, !square, true ) );
-                        bmp = m_style->BuildPluginIcon( &bmp, toggleFlag, m_sizefactor );
+                        bmp = m_style->BuildPluginIcon( bmp, toggleFlag, m_sizefactor );
                     }
                     else
                         bmp = m_style->BuildPluginIcon( tool->pluginNormalIcon, TOOLICON_NORMAL );
@@ -2889,8 +2889,8 @@ void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRoll
     ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
     if( tool ) {
         if(tool->isPluginTool){
-            tool->pluginNormalIcon = bmp;
-            tool->pluginRolloverIcon = bmpRollover;
+            tool->pluginNormalIcon = *bmp;
+            tool->pluginRolloverIcon = *bmpRollover;
             tool->bitmapOK = false;
         }
         else{

@@ -112,7 +112,7 @@ public:
       wxBitmap GetToolIcon(const wxString & toolname,
                            int iconType = TOOLICON_NORMAL, bool rollover = false,
                            int width = -1, int height = -1);
-      wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType, double scale = 1.0 );
+      wxBitmap BuildPluginIcon( wxBitmap &bm, int iconType, double scale = 1.0 );
       bool NativeToolIconExists(const wxString & name);
       
       int GetTopMargin() const { return toolMarginTop[currentOrientation]; }
