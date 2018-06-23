@@ -52,6 +52,7 @@
 class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
+class ocpnCompass;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -163,8 +164,7 @@ public:
       
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
-      virtual void Refresh( bool eraseBackground = true,
-                            const wxRect *rect = (const wxRect *) NULL );
+      virtual void Refresh( bool eraseBackground = true, const wxRect *rect = (const wxRect *) NULL );
       virtual void Update();
 
       void LostMouseCapture(wxMouseCaptureLostEvent& event);
@@ -301,6 +301,8 @@ public:
       void ShowTrackPropertiesDialog( Track* selected );
       void DrawTCWindow(int x, int y, void *pIDX);
       
+      void UpdateGPSCompassStatusBox( bool b_force_new );
+      ocpnCompass *GetCompass(){ return m_Compass; }
       
       wxColour GetFogColor(){ return m_fog_color; }      
       
@@ -728,6 +730,9 @@ private:
       
       wxMenu      *m_piano_ctx_menu;
       int         menu_selected_dbIndex, menu_selected_index;
+      
+      ocpnCompass *m_Compass;
+      wxRect       m_mainlast_tb_rect;
       
 DECLARE_EVENT_TABLE()
 };

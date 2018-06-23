@@ -214,7 +214,6 @@ extern bool             g_bShowAreaNotices;
 extern int              g_Show_Target_Name_Scale;
 
 extern MyFrame          *gFrame;
-extern ocpnCompass      *g_Compass;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -336,6 +335,7 @@ double                  g_defaultBoatSpeedUserUnit;
 
 extern int              g_nAIS_activity_timer;
 extern bool             g_bskew_comp;
+extern float            g_compass_scalefactor;
 
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
@@ -463,6 +463,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pCurrentStack = NULL;
     m_bpersistent_quilt = false;
     m_piano_ctx_menu = NULL;
+    m_Compass = NULL;
     
     g_ChartNotRenderScaleFactor = 2.0;
 
@@ -805,6 +806,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
     
     m_Piano = new Piano(this);
+
+    m_Compass = new ocpnCompass(this);
+    m_Compass->Show(pConfig->m_bShowCompassWin);
     
 }
 
@@ -1747,8 +1751,8 @@ void ChartCanvas::InvalidateGL()
         if(g_bopengl)
             glChartCanvas::Invalidate();
 #endif
-    if(g_Compass)
-        g_Compass->UpdateStatus( true );
+    if(m_Compass)
+        m_Compass->UpdateStatus( true );
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -2532,10 +2536,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 9:                      // Ctrl I
-            if (g_Compass) {
-                g_Compass->Show(!g_Compass->IsShown());
-                if (g_Compass->IsShown())
-                    g_Compass->UpdateStatus();
+            if (m_Compass) {
+                m_Compass->Show(!m_Compass->IsShown());
+                if (m_Compass->IsShown())
+                    m_Compass->UpdateStatus();
                 m_brepaint_piano = true;
                 Refresh( false );
             }
@@ -2864,6 +2868,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     
     m_Piano->SetColorScheme( cs );
     
+    m_Compass->SetColorScheme( cs );
 
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
@@ -5542,7 +5547,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Adjust the toolbar, if necessary
     if( m_toolBar ) {
         m_toolBar->RePosition();
-        m_toolBar->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+        m_toolBar->SetGeometry(m_Compass->IsShown(), m_Compass->GetRect());
         m_toolBar->Realize();
         m_toolBar->RePosition();
     }
@@ -5801,8 +5806,8 @@ bool leftIsDown;
 bool ChartCanvas::MouseEventOverlayWindows( wxMouseEvent& event )
 {
     if (!m_bChartDragging && !m_bDrawingRoute) {
-        if(g_Compass && g_Compass->IsShown() && g_Compass->GetRect().Contains(event.GetPosition())) { 
-            if (g_Compass->MouseEvent( event )) {
+        if(m_Compass && m_Compass->IsShown() && m_Compass->GetRect().Contains(event.GetPosition())) { 
+            if (m_Compass->MouseEvent( event )) {
                 cursor_region = CENTER;
                 if( !g_btouch )
                     SetCanvasCursor( event );
@@ -5861,8 +5866,8 @@ bool ChartCanvas::MouseEventSetup( wxMouseEvent& event,  bool b_handle_dclick )
     
     int chartbar_height = GetChartbarHeight();
 
-    if( g_Compass && g_Compass->IsShown() &&
-        g_Compass->GetRect().Contains(event.GetPosition())) {
+    if( m_Compass && m_Compass->IsShown() &&
+        m_Compass->GetRect().Contains(event.GetPosition())) {
         cursor_region = CENTER;
     } else if( x > xr_margin ) {
         cursor_region = MID_RIGHT;
@@ -8777,8 +8782,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         }        
     }
 
-    if(g_Compass && g_Compass->IsShown()){
-        wxRect compassRect = g_Compass->GetRect();
+    if(m_Compass && m_Compass->IsShown()){
+        wxRect compassRect = m_Compass->GetRect();
         if(ru.Contains(compassRect) != wxOutRegion) {
             ru.Subtract(compassRect);
         }
@@ -9139,8 +9144,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         //m_brepaint_piano = false;
     }
 
-    if(g_Compass)
-        g_Compass->Paint(scratch_dc);
+    if(m_Compass)
+        m_Compass->Paint(scratch_dc);
 
     //quiting?
     if( g_bquiting ) {
@@ -9240,8 +9245,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                         chart_all_text_region.Subtract(chart_bar_rect);
                 }
                 
-                if(g_Compass && g_Compass->IsShown()){
-                    wxRect compassRect = g_Compass->GetRect();
+                if(m_Compass && m_Compass->IsShown()){
+                    wxRect compassRect = m_Compass->GetRect();
                     if(chart_all_text_region.Contains(compassRect) != wxOutRegion) {
                         chart_all_text_region.Subtract(compassRect);
                     }
@@ -9697,8 +9702,8 @@ emboss_data *ChartCanvas::EmbossDepthScale()
 
     ped->x = ( GetVP().pix_width - ped->width );
 
-    if(g_Compass && pConfig->m_bShowCompassWin){
-        wxRect r = g_Compass->GetRect();
+    if(m_Compass && pConfig->m_bShowCompassWin){
+        wxRect r = m_Compass->GetRect();
         ped->y = r.y + r.height;
      }
      else{
@@ -10878,6 +10883,58 @@ void ChartCanvas::UpdateAISTBTool( void )
         }
     }
 }
+
+//---------------------------------------------------------------------------------
+//
+//      Compass/GPS status icon support
+//
+//---------------------------------------------------------------------------------
+
+void ChartCanvas::UpdateGPSCompassStatusBox( bool b_force_new )
+{
+    //    Look for change in overlap or positions
+    bool b_update = false;
+    int cc1_edge_comp = 2;
+    
+    if( m_toolBar ) {
+        wxRect rect = m_Compass->GetRect();
+        wxSize parent_size = GetSize();
+        
+        // check to see if it would overlap if it was in its home position (upper right)
+        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
+        wxRect tentative_rect( tentative_pt, rect.GetSize() );
+        
+        //  If the toolbar location has changed, or the proposed compassDialog location has changed
+        if( m_toolBar->GetScreenRect() != m_mainlast_tb_rect || b_force_new) {
+            
+            wxRect tb_rect = m_toolBar->GetScreenRect();
+            wxPoint tentative_pt_in_screen(ClientToScreen(tentative_pt));
+            wxRect tentative_rect_in_screen(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
+                                            rect.width, rect.height);
+            
+            //    if they would not intersect, go ahead and move it to the upper right
+            //      Else it has to be on lower right
+            if( !tb_rect.Intersects( tentative_rect_in_screen ) )
+                m_Compass->Move( tentative_pt );
+            else
+                m_Compass->Move( wxPoint( GetSize().x - rect.width - cc1_edge_comp,
+                                          GetSize().y - ( rect.height + cc1_edge_comp ) ) );
+                
+                if(rect != m_Compass->GetRect()) {
+                    Refresh(true);
+                    m_brepaint_piano = true;
+                    b_update = true;
+                }
+                m_mainlast_tb_rect = tb_rect;
+            
+        }
+    }
+    
+    if( m_Compass && m_Compass->IsShown())
+        m_Compass->UpdateStatus( b_force_new | b_update );
+}
+
+
 
 void ChartCanvas::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type,
                                     ChartFamilyEnum New_Family )

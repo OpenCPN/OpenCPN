@@ -483,7 +483,7 @@ class MyFrame: public wxFrame
     void RequestNewToolbars( bool bforcenew = false);
 
     void ActivateMOB(void);
-    void UpdateGPSCompassStatusBox(bool b_force_new = false);
+    void UpdateGPSCompassStatusBoxes(bool b_force_new = false);
     void UpdateRotationState( double rotation );
     
     bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,

@@ -25,11 +25,12 @@
 
 
 class ocpnDC;
+class ChartCanvas;
 
 class ocpnCompass
 {
 public:
-      ocpnCompass();
+      ocpnCompass(ChartCanvas *parent);
       ~ocpnCompass();
 
       bool IsShown() const { return m_shown; }
@@ -50,6 +51,7 @@ public:
 private:
       void CreateBmp( bool bnew = false );
 
+      ChartCanvas *m_parent;
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;
       wxStaticBitmap *m_pStatBoxToolStaticBmp;

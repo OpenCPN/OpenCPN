@@ -131,7 +131,6 @@ extern ocpnFloatingToolbarDialog *g_MainToolbar;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern bool             g_bShowChartBar;
 extern Piano           *g_Piano;
-extern ocpnCompass         *g_Compass;
 extern glTextureManager   *g_glTextureManager;
 extern bool             b_inCompressAllCharts;
 
@@ -3840,8 +3839,8 @@ void glChartCanvas::Render()
     if(g_bShowChartBar)
         DrawChartBar(gldc);
 
-    if (g_Compass)
-        g_Compass->Paint(gldc);
+// TODO    if (g_Compass)
+//         g_Compass->Paint(gldc);
     
     //quiting?
     if( g_bquiting )

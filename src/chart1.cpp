@@ -672,8 +672,6 @@ int                       g_maintoolbar_y;
 long                      g_maintoolbar_orient;
 float                     g_compass_scalefactor;
 
-ocpnCompass              *g_Compass;
-
 bool                      g_benable_rotate;
 
 bool                      g_bShowTrue, g_bShowMag;
@@ -2478,9 +2476,6 @@ extern ocpnGLOptions g_GLOptions;
 
     cc1->ReloadVP();                  // once more, and good to go
 
-    g_Compass = new ocpnCompass;
-    g_Compass->SetScaleFactor(g_compass_scalefactor);
-    g_Compass->Show(pConfig->m_bShowCompassWin);
 
     gFrame->Refresh( false );
     gFrame->Raise();
@@ -3095,8 +3090,6 @@ void MyFrame::UpdateAllToolbars( ColorScheme cs )
     if(g_iENCToolbar)
         g_iENCToolbar->SetColorScheme( cs );
 
-    if(g_Compass)
-        g_Compass->SetColorScheme( cs );
 
     return;
 }
@@ -3351,9 +3344,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAISTargetList->Destroy();
     }
 
-    delete g_Compass;
-    g_Compass = NULL;
-
 
 #ifndef __WXQT__
     SetStatusBar( NULL );
@@ -3493,7 +3483,7 @@ void MyFrame::OnMove( wxMoveEvent& event )
     if(cc1 && cc1->GetToolbar())
         cc1->GetToolbar()->RePosition();
 
-//    UpdateGPSCompassStatusBox( );
+    UpdateGPSCompassStatusBoxes( );
 
     if( console && console->IsShown() )
         PositionConsole();
@@ -3508,7 +3498,7 @@ void MyFrame::OnMove( wxMoveEvent& event )
 
 void MyFrame::ProcessCanvasResize( void )
 {
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBoxes( true );
 
     if( console && console->IsShown() )
         PositionConsole();
@@ -3559,15 +3549,19 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
     }
 
     if(timer_sequence == 2){
-        // .. for each canvas...
-        if( cc1 && cc1->GetToolbar()) {
-            g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
-            SetToolbarScale();
-            cc1->GetToolbar()->RePosition();
-            cc1->GetToolbar()->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-            cc1->GetToolbar()->Realize();
-            cc1->GetToolbar()->Refresh( false );
+        // ..For each canvas...
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if( cc && cc->GetToolbar()) {
+                g_Platform->GetDisplaySizeMM();             // causes a reload of all display metrics
+                SetToolbarScale();
+                cc->GetToolbar()->RePosition();
+                cc->GetToolbar()->SetGeometry(cc->GetCompass()->IsShown(), cc->GetCompass()->GetRect());
+                cc->GetToolbar()->Realize();
+                cc->GetToolbar()->Refresh( false );
+            }
         }
+        
         timer_sequence++;
         m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
         return;
@@ -3730,27 +3724,26 @@ void MyFrame::ODoSetSize( void )
     }
 
 
-    // .. for each canvas...
-    if(cc1 && cc1->GetToolbar()){
-        wxSize oldSize = cc1->GetToolbar()->GetSize();
-        cc1->GetToolbar()->RePosition();
-        cc1->GetToolbar()->SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
-        cc1->GetToolbar()->Realize();
-
-        if( oldSize != cc1->GetToolbar()->GetSize() )
-            cc1->GetToolbar()->Refresh( false );
-
-        cc1->GetToolbar()->RePosition();
-
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if( cc && cc->GetToolbar()) {
+            wxSize oldSize = cc->GetToolbar()->GetSize();
+            cc->GetToolbar()->RePosition();
+            cc->GetToolbar()->SetGeometry(cc->GetCompass()->IsShown(), cc->GetCompass()->GetRect());
+            cc->GetToolbar()->Realize();
+            
+            if( oldSize != cc->GetToolbar()->GetSize() )
+                cc->GetToolbar()->Refresh( false );
+            
+            cc->GetToolbar()->RePosition();
+        }
     }
+    
+    UpdateGPSCompassStatusBoxes( true );
 
-
-    UpdateGPSCompassStatusBox( true );
-
-    if( console ) PositionConsole();
-
-//    if( cc1 )
-//        g_Piano->FormatKeys();
+    if( console )
+        PositionConsole();
 
     // .. for each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
@@ -3794,10 +3787,10 @@ void MyFrame::PositionConsole( void )
     console->GetSize( &consx, &consy );
 
     int yOffset = 60;
-    if(g_Compass){
-        if(g_Compass->GetRect().y < 100)        // Compass is is normal upper right position.                
-            yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
-    }
+//  TODO    if(g_Compass){
+//         if(g_Compass->GetRect().y < 100)        // Compass is is normal upper right position.                
+//             yOffset = g_Compass->GetRect().y + g_Compass->GetRect().height + 45;
+//     }
     
     wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + yOffset ) );
     console->Move( screen_pos );
@@ -4690,7 +4683,7 @@ void MyFrame::ToggleCourseUp( void )
         m_pMenuBar->SetLabel( ID_MENU_CHART_NORTHUP, _("North Up Mode") );
 
     DoCOGSet();
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBoxes( true );
     DoChartUpdate();
     cc1->ReloadVP();
 }
@@ -5053,7 +5046,7 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     SendSizeEvent();
 
     if( bFlyingUpdate )
-        g_Compass->Show(pConfig->m_bShowCompassWin);
+        cc1->GetCompass()->Show(pConfig->m_bShowCompassWin);
 
     if( bnewtoolbar )
         UpdateAllToolbars( global_color_scheme );
@@ -5469,8 +5462,13 @@ int MyFrame::DoOptionsDialog()
 
     //  We set the compass size first, since that establishes the available space for the toolbar.
     SetGPSCompassScale();
-    g_Compass->SetScaleFactor(g_compass_scalefactor);
-    UpdateGPSCompassStatusBox();
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
+    }
+    UpdateGPSCompassStatusBoxes();
 
     SetToolbarScale();
     RequestNewToolbars();
@@ -5826,7 +5824,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     UpdateControlBar();
 
-    UpdateGPSCompassStatusBox( );
+    UpdateGPSCompassStatusBoxes( );
 
     cc1->SetCursor( wxCURSOR_ARROW );
 
@@ -6930,7 +6928,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( g_pAISTargetList && ( 0 == ( g_tick % ( 5 ) ) ) ) g_pAISTargetList->UpdateAISTargetList();
 
     //  Pick up any change Toolbar status displays
-    UpdateGPSCompassStatusBox();
+    UpdateGPSCompassStatusBoxes();
     UpdateAISTool();
 
     if( console && console->IsShown() ) {
@@ -7119,54 +7117,20 @@ void MyFrame::UpdateRotationState( double rotation )
         }
     }
 
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBoxes( true );
     DoChartUpdate();
     cc1->ReloadVP();
 }
 
 
-void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
+void MyFrame::UpdateGPSCompassStatusBoxes( bool b_force_new )
 {
-   //    Look for change in overlap or positions
-    bool b_update = false;
-    int cc1_edge_comp = 2;
-
-    if( g_MainToolbar ) {
-        wxRect rect = g_Compass->GetRect();
-        wxSize parent_size = cc1->GetSize();
-
-        // check to see if it would overlap if it was in its home position (upper right)
-        wxPoint tentative_pt(parent_size.x - rect.width - cc1_edge_comp, g_StyleManager->GetCurrentStyle()->GetCompassYOffset());
-        wxRect tentative_rect( tentative_pt, rect.GetSize() );
-
-        //  If the toolbar location has changed, or the proposed compassDialog location has changed
-        if( g_MainToolbar->GetScreenRect() != m_mainlast_tb_rect || b_force_new) {
-
-            wxRect tb_rect = g_MainToolbar->GetScreenRect();
-            wxPoint tentative_pt_in_screen(cc1->ClientToScreen(tentative_pt));
-            wxRect tentative_rect_in_screen(tentative_pt_in_screen.x, tentative_pt_in_screen.y,
-                                            rect.width, rect.height);
-
-            //    if they would not intersect, go ahead and move it to the upper right
-            //      Else it has to be on lower right
-            if( !tb_rect.Intersects( tentative_rect_in_screen ) )
-                g_Compass->Move( tentative_pt );
-            else
-                g_Compass->Move( wxPoint( cc1->GetSize().x - rect.width - cc1_edge_comp,
-                                          cc1->GetSize().y - ( rect.height + cc1_edge_comp ) ) );
-
-            if(rect != g_Compass->GetRect()) {
-                Refresh(true);
-                cc1->m_brepaint_piano = true;
-                b_update = true;
-            }
-            m_mainlast_tb_rect = tb_rect;
-
-        }
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->UpdateGPSCompassStatusBox( b_force_new );
     }
-
-    if( g_Compass && g_Compass->IsShown())
-        g_Compass->UpdateStatus( b_force_new | b_update );
 }
 
 int MyFrame::GetnChartStack( void )
@@ -7364,7 +7328,7 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
 
         SetChartUpdatePeriod( cc1->GetVP() );
 
-        UpdateGPSCompassStatusBox();           // Pick up the rotation
+        UpdateGPSCompassStatusBoxes();           // Pick up the rotation
 
     }
 
@@ -7410,7 +7374,7 @@ void MyFrame::SelectdbChart( int dbindex )
 
         SetChartUpdatePeriod( cc1->GetVP() );
 
-        UpdateGPSCompassStatusBox();           // Pick up the rotation
+        UpdateGPSCompassStatusBoxes();           // Pick up the rotation
 
     }
 
@@ -8646,7 +8610,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, bool cog_sog_valid, const wxStrin
         //      Maintain the validity flags
         bool last_bGPSValid = bGPSValid;
         bGPSValid = true;
-        if( !last_bGPSValid ) UpdateGPSCompassStatusBox();
+        if( !last_bGPSValid ) UpdateGPSCompassStatusBoxes();
 
         //      Show a little heartbeat tick in StatusWindow0 on NMEA events
         //      But no faster than 10 hz.
@@ -9390,8 +9354,13 @@ void MyFrame::applySettingsString( wxString settings)
 
     //  We set the compass size first, since that establishes the available space for the toolbar.
     SetGPSCompassScale();
-    g_Compass->SetScaleFactor(g_compass_scalefactor);
-    UpdateGPSCompassStatusBox( true );
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
+    }
+    UpdateGPSCompassStatusBoxes( true );
 
     if(b_newToolbar){
         g_Platform->ShowBusySpinner();

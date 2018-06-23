@@ -1099,7 +1099,6 @@ extern bool     g_bShowScaled;
 extern bool     g_bTrackActive;
 extern bool     g_bShowAIS;
 extern s52plib *ps52plib;
-extern ocpnCompass *g_Compass;
 
 
 ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
@@ -1108,8 +1107,13 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
     if( !tb )
         return 0;
 
-    if(g_Compass)
-        SetGeometry(g_Compass->IsShown(), g_Compass->GetRect());
+    ocpnCompass *pCompass = NULL;
+    ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+    if(parentCanvas)
+        pCompass = parentCanvas->GetCompass();
+    
+    if(pCompass)
+        SetGeometry(pCompass->IsShown(), pCompass->GetRect());
     else
         SetGeometry(false, wxRect(0,0,1,1));
 
