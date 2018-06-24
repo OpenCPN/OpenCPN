@@ -29,6 +29,7 @@
 #include "chcanv.h"
 #include "Track.h"
 #include "routeman.h"
+#include "Route.h"
 
 extern ChartCanvas *cc1;
 extern Routeman    *g_pRouteMan;

@@ -287,8 +287,17 @@ private:
 };
 
 
+//  Class to encapsulate persistant canvas configuration(s)
+class canvasConfig
+{
+public:    
+    canvasConfig();
+    ~canvasConfig();
+    
+    double iLat, iLon;
+};
 
-
+WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
 
 
 class MyApp: public wxApp
@@ -350,6 +359,7 @@ class MyFrame: public wxFrame
     void OnResume(wxPowerEvent &event);
 #endif // wxHAS_POWER_EVENTS
     
+    void RefreshCanvasOther( ChartCanvas *ccThis );
     void UpdateAllFonts(void);
     void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);

@@ -47,6 +47,7 @@
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "Route.h"
 
 #define DIALOG_MARGIN 3
 

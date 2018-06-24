@@ -348,6 +348,7 @@ public:
       RoutePoint  *m_prev_pMousePoint;
       Quilt       *m_pQuilt;
       bool        m_bShowNavobjects;
+      int         m_canvasIndex;
       
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 

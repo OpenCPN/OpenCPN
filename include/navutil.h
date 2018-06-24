@@ -46,7 +46,6 @@
 #include "chartdbs.h"
 #include "RoutePoint.h"
 #include "vector2D.h"
-#include "Route.h"
 #include "SelectItem.h"
 
 enum
@@ -91,6 +90,8 @@ class NavObjectCollection1;
 class NavObjectChanges;
 class TrackPoint;
 class TrackList;
+class RouteList;
+class canvasConfig;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers
@@ -146,7 +147,9 @@ public:
       virtual void DestroyConfigGroups ( void );
       virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
 
-
+      virtual void LoadCanvasConfigs( );
+      virtual void LoadConfigCanvas( canvasConfig *cc );
+      
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();

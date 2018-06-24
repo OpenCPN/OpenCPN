@@ -419,6 +419,8 @@ extern wxString         g_uiStyle;
 int                     g_nCPUCount;
 
 extern bool             g_bDarkDecorations;
+extern unsigned int     g_canvasConfig;
+extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1310,6 +1312,9 @@ int MyConfig::LoadMyConfig()
     //    Groups
     LoadConfigGroups( g_pGroupArray );
 
+    //    Multicanvas Settings
+    LoadCanvasConfigs();
+    
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
@@ -1902,6 +1907,82 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
     }
 
 }
+
+void MyConfig::LoadCanvasConfigs( )
+{
+    SetPath( _T ( "/Canvas" ) );
+    Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
+
+    int n_canvas;
+    wxString s;
+    canvasConfig *pcc;
+    
+    switch( g_canvasConfig ){
+        
+        case 0:
+        default:
+            n_canvas = 1;
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            
+            pcc = new canvasConfig;
+            
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            break;
+        case 1:
+            n_canvas = 1;
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            canvasConfig *pcc = new canvasConfig;
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+            SetPath( s );
+            pcc = new canvasConfig;
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            
+            break;
+            
+    }
+}
+            
+void MyConfig::LoadConfigCanvas( canvasConfig *cc )
+{
+     wxString st;
+    double st_lat, st_lon;
+    
+    //    Reasonable starting point
+    cc->iLat = START_LAT;                   // display viewpoint
+    cc->iLon = START_LON;
+    
+    if( Read( _T ( "canvasVPLatLon" ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
+        
+        //    Sanity check the lat/lon...both have to be reasonable.
+        if( fabs( st_lon ) < 360. ) {
+            while( st_lon < -180. )
+                st_lon += 360.;
+            
+            while( st_lon > 180. )
+                st_lon -= 360.;
+            
+            cc->iLon = st_lon;
+        }
+        
+        if( fabs( st_lat ) < 90.0 )
+            cc->iLat = st_lat;
+    }
+}   
+            
+    
+    
 
 void MyConfig::UpdateSettings()
 {

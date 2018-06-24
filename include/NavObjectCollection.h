@@ -26,11 +26,15 @@
 #define __NAVOBJECTCOLLECTION_H__
 
 #include "pugixml.hpp"
-#include "Route.h"
-#include "RoutePoint.h"
+#include <wx/string.h>
+
 class Track;
 class TrackList;
 class TrackPoint;
+class RouteList;
+class RoutePointList;
+class Route;
+class RoutePoint;
 
 //      Bitfield definition controlling the GPX nodes output for point objects
 #define         OUT_TYPE        1 << 1          //  Output point type

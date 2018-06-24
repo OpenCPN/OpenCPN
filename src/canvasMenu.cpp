@@ -64,7 +64,7 @@
 #include "AIS_Target_Data.h"
 #include "SendToGpsDlg.h"
 #include "Track.h"
-
+#include "Route.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw

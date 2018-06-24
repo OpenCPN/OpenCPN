@@ -32,6 +32,7 @@
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
 #include "Track.h"
+#include "Route.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

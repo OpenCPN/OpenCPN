@@ -112,6 +112,7 @@
 #include "Track.h"
 #include "iENCToolbar.h"
 #include "Quilt.h"
+#include "Route.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -738,7 +739,10 @@ unsigned int     g_canvasConfig;
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
 
+WX_DEFINE_OBJARRAY(arrayofCanvasConfigPtr);
+
 arrayofCanvasPtr   g_canvasArray;
+arrayofCanvasConfigPtr g_canvasConfigArray;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -925,6 +929,14 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
 
      return filePathAndName;
 }
+
+//------------------------------------------------------------------------------
+// canvasConfig Implementation
+//------------------------------------------------------------------------------
+
+canvasConfig::canvasConfig(){}
+
+canvasConfig::~canvasConfig(){}
 
 
 // `Main program' equivalent, creating windows and returning main app frame
@@ -2146,6 +2158,7 @@ bool MyApp::OnInit()
         case 0:                                                 // a single canvas
             cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
             g_canvasArray.Add(cc1);
+            cc1->m_canvasIndex = 0;
             
             gFrame->SetCanvasWindow( cc1 );
     
@@ -2171,6 +2184,8 @@ bool MyApp::OnInit()
         case 1:{                                                 // two canvas, horizontal
            cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
            g_canvasArray.Add(cc1);
+           cc1->m_canvasIndex = 0;
+           
            gFrame->SetCanvasWindow( cc1 );
            
            cc1->SetDisplaySizeMM(g_display_size_mm);
@@ -2192,6 +2207,7 @@ bool MyApp::OnInit()
            
            cc2 = new ChartCanvas( gFrame );                         // the chart display canvas
            g_canvasArray.Add(cc2);
+           cc2->m_canvasIndex = 1;
            
            cc2->SetDisplaySizeMM(g_display_size_mm);
            cc2->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
@@ -5752,6 +5768,18 @@ bool MyFrame::ScrubGroupArray()
 
     return b_change;
 }
+
+void MyFrame::RefreshCanvasOther( ChartCanvas *ccThis )
+{
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc && (cc != ccThis))
+            cc->Refresh();
+    }
+}
+    
+
 
 // Flav: This method reloads all charts for convenience
 void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )

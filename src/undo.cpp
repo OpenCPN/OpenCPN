@@ -43,6 +43,7 @@
 #include "routemanagerdialog.h"
 #include "undo.h"
 #include "chcanv.h"
+#include "Route.h"
 
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;

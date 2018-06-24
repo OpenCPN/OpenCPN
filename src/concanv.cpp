@@ -48,6 +48,7 @@
 #include "navutil.h"
 #include "FontMgr.h"
 #include "wx28compat.h"
+#include "Route.h"
 
 extern Routeman         *g_pRouteMan;
 extern MyFrame          *gFrame;

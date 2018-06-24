@@ -50,6 +50,7 @@
 #include "PositionParser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
+#include "Route.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
