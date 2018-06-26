@@ -147,7 +147,8 @@ public:
       void OnPaint(wxPaintEvent& event);
       void PaintCleanup();
       void Scroll(int dx, int dy);
-
+      void OnToolLeftClick( wxCommandEvent& event );
+      
       bool MouseEventOverlayWindows( wxMouseEvent& event );
       bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
@@ -185,13 +186,17 @@ public:
       ChartStack *GetpCurrentStack(){ return m_pCurrentStack; }
       
       void SetupCanvasQuiltMode( void );
+      void SetCanvasConfig(canvasConfig *pcc);
       
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
       double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);
-
+      void SetbFollow(void);
+      void TogglebFollow( void );
+      void JumpToPosition( double lat, double lon, double scale );
+      
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
       bool GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
@@ -734,6 +739,8 @@ private:
       
       ocpnCompass *m_Compass;
       wxRect       m_mainlast_tb_rect;
+      int          m_restore_dbindex;
+      int          m_restore_group;
       
 DECLARE_EVENT_TABLE()
 };

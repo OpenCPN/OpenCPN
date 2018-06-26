@@ -934,7 +934,10 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
 // canvasConfig Implementation
 //------------------------------------------------------------------------------
 
-canvasConfig::canvasConfig(){}
+canvasConfig::canvasConfig()
+{
+    canvas = NULL;
+}
 
 canvasConfig::~canvasConfig(){}
 
@@ -2151,22 +2154,23 @@ bool MyApp::OnInit()
 //                        to the parent client area automatically, (as a favor?)
 //                        Here, we'll do explicit sizing on SIZE events
 
-    g_canvasConfig = 1;
-    
     switch(g_canvasConfig){
         default:
         case 0:                                                 // a single canvas
             cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
             g_canvasArray.Add(cc1);
             cc1->m_canvasIndex = 0;
+            g_canvasConfigArray.Item(0)->canvas = cc1;
             
             gFrame->SetCanvasWindow( cc1 );
     
             cc1->SetDisplaySizeMM(g_display_size_mm);
     
+            cc1->SetCanvasConfig(g_canvasConfigArray.Item(0));
+            
             cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-            cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-            cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
+            //cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
+            //cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
             cc1->SetToolbarConfigString(g_toolbarConfig);
             cc1->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             cc1->SetToolbarOrientation( g_maintoolbar_orient);
@@ -2185,13 +2189,16 @@ bool MyApp::OnInit()
            cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
            g_canvasArray.Add(cc1);
            cc1->m_canvasIndex = 0;
+           g_canvasConfigArray.Item(0)->canvas = cc1;
            
            gFrame->SetCanvasWindow( cc1 );
+
+           cc1->SetCanvasConfig(g_canvasConfigArray.Item(0));
            
            cc1->SetDisplaySizeMM(g_display_size_mm);
            cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-           cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
+           //cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
+           //cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            cc1->SetToolbarConfigString(g_toolbarConfig);
            cc1->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc1->SetToolbarOrientation( g_maintoolbar_orient);
@@ -2208,11 +2215,14 @@ bool MyApp::OnInit()
            cc2 = new ChartCanvas( gFrame );                         // the chart display canvas
            g_canvasArray.Add(cc2);
            cc2->m_canvasIndex = 1;
+           g_canvasConfigArray.Item(1)->canvas = cc2;
+           
+           cc2->SetCanvasConfig(g_canvasConfigArray.Item(1));
            
            cc2->SetDisplaySizeMM(g_display_size_mm);
            cc2->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
-           cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
+           //cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
+           //cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
            cc2->SetToolbarConfigString(g_toolbarConfig);
            cc2->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc2->SetToolbarOrientation( g_maintoolbar_orient);
@@ -2997,7 +3007,13 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     SetSystemColors( cs );
 
-    cc1->SetColorScheme( cs );
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->SetColorScheme( cs );
+    }
+    
 
     if( pWayPointMan ) pWayPointMan->SetColorScheme( cs );
 
@@ -3007,8 +3023,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     cc1->HideChartInfoWindow();
     cc1->SetQuiltChartHiLiteIndex( -1 );
 
-    //g_Piano->ResetRollover();
-    //g_Piano->SetColorScheme( cs );
 
     if( g_options ) {
         g_options->SetColorScheme( cs );
@@ -3968,8 +3982,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
         }
 
-        case ID_MENU_NAV_FOLLOW:
-        case ID_FOLLOW: {
+        case ID_MENU_NAV_FOLLOW:{
             TogglebFollow();
             break;
         }
@@ -7424,6 +7437,7 @@ void MyFrame::SetChartUpdatePeriod( ViewPort &vp )
 
 void MyFrame::SetChartThumbnail( int index )
 {
+    //TODO
 #if 0
     if( bDBUpdateInProgress ) return;
 

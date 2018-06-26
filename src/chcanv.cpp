@@ -150,7 +150,7 @@ extern ChartBase        *Current_Vector_Ch;
 extern ChartBase        *Current_Ch;
 extern double           g_ChartNotRenderScaleFactor;
 extern double           gLat, gLon, gCog, gSog, gHdt;
-extern double           vLat, vLon;
+//extern double           vLat, vLon;
 extern ChartDB          *ChartData;
 extern bool             bDBUpdateInProgress;
 extern ColorScheme      global_color_scheme;
@@ -363,6 +363,8 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_CHAR(ChartCanvas::OnKeyChar)
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
+    EVT_MENU(-1, ChartCanvas::OnToolLeftClick)
+    
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -412,8 +414,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bautofind = false;
     m_bFirstAuto = true;
     
-    m_vLat = vLat;
-    m_vLon = vLon;
+    m_vLat = 0.;
+    m_vLon = 0.;
     
     m_pCIWin = NULL;
 
@@ -884,6 +886,18 @@ ChartCanvas::~ChartCanvas()
 
 }
 
+void ChartCanvas::SetCanvasConfig(canvasConfig *pcc)
+{
+    SetViewPoint( pcc->iLat, pcc->iLon, pcc->iScale, 0., pcc->iRotation );
+    m_vLat = pcc->iLat;
+    m_vLon = pcc->iLon;
+
+    m_restore_dbindex = pcc->DBindex;
+    m_bFollow = pcc->bFollow;
+    
+}
+
+
 void ChartCanvas::ConfigureChartBar()
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -906,7 +920,7 @@ void ChartCanvas::ConfigureChartBar()
 //TODO
 ///extern bool     bFirstAuto;
 extern int      g_restore_stackindex;
-extern int      g_restore_dbindex;
+//extern int      g_restore_dbindex;
 extern bool     g_bLookAhead;
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
@@ -957,7 +971,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
     //      If in auto-follow mode, use the current glat,glon to build chart stack.
     //      Otherwise, use vLat, vLon gotten from click on chart canvas, or other means
     
-    if( cc1->m_bFollow == true ) {
+    if( m_bFollow ) {
         tLat = gLat;
         tLon = gLon;
         vpLat = gLat;
@@ -1023,7 +1037,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
          if( m_bFirstAuto ) {
                     double proposed_scale_onscreen = GetCanvasScaleFactor() / GetVPScale(); // as set from config load
                         
-                        int initial_db_index = g_restore_dbindex;
+                        int initial_db_index = m_restore_dbindex;
                         if( initial_db_index < 0 ) {
                             if( m_pCurrentStack->nEntry ) {
                                 if( ( g_restore_stackindex < m_pCurrentStack->nEntry )
@@ -1472,8 +1486,8 @@ void ChartCanvas::SetupCanvasQuiltMode( void )
                 tLat = gLat;
                 tLon = gLon;
             } else {
-                tLat = vLat;
-                tLon = vLon;
+                tLat = m_vLat;
+                tLon = m_vLon;
             }
             
             if( !Current_Ch ) {
@@ -2106,7 +2120,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
 
     case WXK_F2:
-        parent_frame->TogglebFollow();
+        TogglebFollow();
         break;
 
     case WXK_F3: {
@@ -2400,7 +2414,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 1:                      // Ctrl A
-            parent_frame->TogglebFollow();
+            TogglebFollow();
+        
             break;
 
         case 2:                      // Ctrl B
@@ -3744,7 +3759,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             GetCanvasPointPix( zlat, zlon, &r );
             PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
 
-            ClearbFollow();      // update the follow flag
+            //ClearbFollow();      // update the follow flag
         }
         else
             SetVPScale( new_scale );
@@ -3797,11 +3812,94 @@ void ChartCanvas::DoTiltCanvas( double tilt )
     Refresh( false );
 }
 
+void ChartCanvas::TogglebFollow( void )
+{
+    if( !m_bFollow )
+        SetbFollow();
+    else
+        ClearbFollow();
+}
+
 void ChartCanvas::ClearbFollow( void )
 {
     m_bFollow = false;      // update the follow flag
-    parent_frame->SetToolbarItemState( ID_FOLLOW, false );
+    
+    //    Center the screen on the GPS position, for lack of a better place
+    m_vLat = gLat;
+    m_vLon = gLon;
+    
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(false);
+    #endif
+   
+    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
+    
+    DoCanvasUpdate();
+    ReloadVP();
+    parent_frame->SetChartUpdatePeriod( GetVP() );
+    
 }
+
+void ChartCanvas::SetbFollow( void )
+{
+    JumpToPosition(gLat, gLon, GetVPScale());
+    m_bFollow = true;
+    
+    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
+    parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
+    
+    #ifdef __OCPN__ANDROID__
+    androidSetFollowTool(true);
+    #endif
+    
+    DoCanvasUpdate();
+    ReloadVP();
+    parent_frame->SetChartUpdatePeriod( GetVP() );
+}
+
+void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
+{
+    if (lon > 180.0)
+        lon -= 360.0;
+    m_vLat = lat;
+    m_vLon = lon;
+    StopMovement();
+    m_bFollow = false;
+    
+    /*
+     *  No Need to adjust the reference chart.  Quilt will do it for us.
+     *    //  is the current chart available at the target location?
+     *    int currently_selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+     * 
+     *    //  If not, then select the smallest scale chart at the target location (may be empty)
+     *    ChartData->BuildChartStack( pCurrentStack, lat, lon );
+     *    if(!pCurrentStack->DoesStackContaindbIndex(currently_selected_index)){
+     *        pCurrentStack->CurrentStackEntry = pCurrentStack->nEntry - 1;
+     *        int selected_index = pCurrentStack->GetCurrentEntrydbIndex();
+     *        if( cc1->GetQuiltMode() )
+     *            cc1->SetQuiltRefChart( selected_index );
+     }
+     */
+    if( !GetQuiltMode() ) {
+        double skew = 0;
+        if(Current_Ch)
+            skew = Current_Ch->GetChartSkew() * PI / 180.;
+        SetViewPoint( lat, lon, scale, skew, cc1->GetVPRotation() );
+    } else {
+        SetViewPoint( lat, lon, scale, 0, cc1->GetVPRotation() );
+    }
+    
+    ReloadVP();
+    
+    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+  
+    //TODO
+//    if( g_pi_manager ) {
+//        g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
+//    }
+}
+
 
 bool ChartCanvas::PanCanvas( double dx, double dy )
 {
@@ -3864,8 +3962,10 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
         }
     }
 
-    ClearbFollow();      // update the follow flag
-
+    //ClearbFollow();      // update the follow flag
+    m_bFollow = false;      // update the follow flag
+    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    
     Refresh( false );
 
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
@@ -10632,6 +10732,25 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
 //
 //--------------------------------------------------------------------------------------------------------
 
+void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
+{
+    //  Handle the per-canvas toolbar clicks here
+    
+    switch( event.GetId() ){
+        case ID_FOLLOW: {
+            TogglebFollow();
+            break;
+        }
+        
+        default:
+            break;
+    }
+     
+    //  And then let  gFrame handle the rest....
+    event.Skip();
+}
+    
+
 void ChartCanvas::SetToolbarPosition( wxPoint position )
 {
     m_toolbarPosition = position;
@@ -10971,8 +11090,8 @@ void ChartCanvas::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_
             zLat = gLat;
             zLon = gLon;
         } else {
-            zLat = vLat;
-            zLon = vLon;
+            zLat = m_vLat;
+            zLon = m_vLon;
         }
         
         double best_scale_ppm = GetBestVPScale( Current_Ch );
@@ -11032,8 +11151,8 @@ void ChartCanvas::SelectdbChart( int dbindex )
             zLat = gLat;
             zLon = gLon;
         } else {
-            zLat = vLat;
-            zLon = vLon;
+            zLat = m_vLat;
+            zLon = m_vLon;
         }
         
         double best_scale_ppm = GetBestVPScale( Current_Ch );
@@ -11638,7 +11757,7 @@ int InitScreenBrightness( void )
 
                 gFrame->Disable();
                 gFrame->Enable();
-                SetFocus();
+                //SetFocus();
 
             }
         }

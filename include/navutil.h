@@ -149,6 +149,8 @@ public:
 
       virtual void LoadCanvasConfigs( );
       virtual void LoadConfigCanvas( canvasConfig *cc );
+      virtual void SaveCanvasConfigs( );
+      virtual void SaveConfigCanvas( canvasConfig *cc );
       
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);

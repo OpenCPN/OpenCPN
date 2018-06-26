@@ -1263,14 +1263,12 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 
 //      Set up the toggle states
 
-    if( cc1 ) {
+    if( parentCanvas ) {
         //  Re-establish toggle states
-        tb->ToggleTool( ID_CURRENT, cc1->GetbShowCurrent() );
-        tb->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
+        tb->ToggleTool( ID_CURRENT, parentCanvas->GetbShowCurrent() );
+        tb->ToggleTool( ID_TIDE, parentCanvas->GetbShowTide() );
+        tb->ToggleTool( ID_FOLLOW, parentCanvas->m_bFollow );
     }
-
-    if( cc1 )
-        tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
 
 #ifdef USE_S57
     if( ( ps52plib ) ){

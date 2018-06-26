@@ -72,6 +72,7 @@
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "chartdb.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -1910,12 +1911,30 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 void MyConfig::LoadCanvasConfigs( )
 {
-    SetPath( _T ( "/Canvas" ) );
-    Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
-
     int n_canvas;
     wxString s;
     canvasConfig *pcc;
+    
+    SetPath( _T ( "/Canvas" ) );
+    
+    //  If the canvas config has never been set/persisted, use the global settings
+    if(!HasEntry( _T ( "CanvasConfig" ))){
+    
+        pcc = new canvasConfig;
+        pcc->iLat = vLat;
+        pcc->iLon = vLon;
+        pcc->iRotation = initial_rotation;
+        pcc->iScale = initial_scale_ppm;
+        pcc->DBindex = g_restore_dbindex;
+        pcc->bFollow = false;
+        
+        g_canvasConfigArray.Add(pcc);
+        
+        return;
+    }
+    
+    Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
+
     
     switch( g_canvasConfig ){
         
@@ -1955,7 +1974,7 @@ void MyConfig::LoadCanvasConfigs( )
             
 void MyConfig::LoadConfigCanvas( canvasConfig *cc )
 {
-     wxString st;
+    wxString st;
     double st_lat, st_lon;
     
     //    Reasonable starting point
@@ -1979,10 +1998,111 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
         if( fabs( st_lat ) < 90.0 )
             cc->iLat = st_lat;
     }
+    
+    cc->iScale = .0003;        // decent initial value
+    cc->iRotation = 0;
+    
+    double st_view_scale;
+    if( Read( wxString( _T ( "canvasVPScale" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
+        //    Sanity check the scale
+        st_view_scale = fmax ( st_view_scale, .001/32 );
+        st_view_scale = fmin ( st_view_scale, 4 );
+        cc->iScale = st_view_scale;
+    }
+    
+    double st_rotation;
+    if( Read( wxString( _T ( "canvasVPRotation" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
+        //    Sanity check the rotation
+        st_rotation = fmin ( st_rotation, 360 );
+        st_rotation = fmax ( st_rotation, 0 );
+        cc->iRotation = st_rotation * PI / 180.;
+    }
+
+    Read( _T ( "canvasInitialdBIndex" ), &cc->DBindex, 0 );
+    Read( _T ( "canvasbFollow" ), &cc->bFollow, 0 );
+    
 }   
             
     
+void MyConfig::SaveCanvasConfigs( )
+{
+    SetPath( _T ( "/Canvas" ) );
+    Write( _T ( "CanvasConfig" ), (int )g_canvasConfig );
+
+    wxString s;
+    canvasConfig *pcc;
     
+    switch( g_canvasConfig ){
+        
+        case 0:
+        default:
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            
+            if(g_canvasConfigArray.GetCount() > 0 ){
+                pcc = g_canvasConfigArray.Item(0);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+            }
+            break;
+            
+        case 1:
+ 
+            if(g_canvasConfigArray.GetCount() > 1 ){
+                
+                s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+                SetPath( s );
+                pcc = g_canvasConfigArray.Item(0);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+                
+                s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+                SetPath( s );
+                pcc = g_canvasConfigArray.Item(1);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+            }        
+            break;
+            
+    }
+}
+    
+
+void MyConfig::SaveConfigCanvas( canvasConfig *cc )
+{
+    wxString st1;
+    
+    if(cc->canvas){
+        ViewPort vp = cc->canvas->GetVP();
+            
+        if( vp.IsValid() ) {
+            st1.Printf( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
+            Write( _T ( "canvasVPLatLon" ), st1 );
+            st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
+            Write( _T ( "canvasVPScale" ), st1 );
+            st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
+            Write( _T ( "canvasVPRotation" ), st1 );
+        }
+        
+        int restore_dbindex = cc->canvas->GetpCurrentStack()->GetCurrentEntrydbIndex();
+        if( cc->canvas->GetQuiltMode())
+            restore_dbindex = cc->canvas->GetQuiltReferenceChartIndex();
+        
+        Write( _T ( "canvasInitialdBIndex" ), restore_dbindex );
+        Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
+        
+        //Write( _T ( "ActiveChartGroup" ), GroupIndex );
+        
+    }
+}
+        
+        
 
 void MyConfig::UpdateSettings()
 {
@@ -2448,6 +2568,7 @@ void MyConfig::UpdateSettings()
         Write( p, g_MMSI_Props_Array.Item(i)->Serialize() );
     }
 
+    SaveCanvasConfigs();
 
     Flush();
 }

@@ -294,7 +294,15 @@ public:
     canvasConfig();
     ~canvasConfig();
     
-    double iLat, iLon;
+    ChartCanvas *canvas;
+    double iLat, iLon, iScale, iRotation;
+    int DBindex; 
+    int GroupID;
+    bool bFollow;
+    bool bQuilt;
+    wxString toolbarConfig;
+    bool bShowTides;
+    bool bShowCurrents;
 };
 
 WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
@@ -505,6 +513,7 @@ class MyFrame: public wxFrame
     wxSize              m_newsize;
     
     void FastClose();
+    void SetChartUpdatePeriod(ViewPort &vp);
     
   private:
     void ODoSetSize(void);
@@ -513,7 +522,6 @@ class MyFrame: public wxFrame
     void UpdateAllToolbars( ColorScheme cs );
     
     void FilterCogSog(void);
-    void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
