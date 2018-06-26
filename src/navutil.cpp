@@ -2022,6 +2022,7 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
 
     Read( _T ( "canvasInitialdBIndex" ), &cc->DBindex, 0 );
     Read( _T ( "canvasbFollow" ), &cc->bFollow, 0 );
+    Read( _T ( "ActiveChartGroup" ), &cc->GroupID, 0 );
     
 }   
             
@@ -2097,7 +2098,7 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cc )
         Write( _T ( "canvasInitialdBIndex" ), restore_dbindex );
         Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
         
-        //Write( _T ( "ActiveChartGroup" ), GroupIndex );
+        Write( _T ( "ActiveChartGroup" ), cc->canvas->m_groupIndex );
         
     }
 }

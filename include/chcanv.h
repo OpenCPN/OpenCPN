@@ -184,6 +184,11 @@ public:
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
       ChartStack *GetpCurrentStack(){ return m_pCurrentStack; }
+      void SetGroupIndex( int index );
+      bool CheckGroup( int igroup );
+      void canvasRefreshGroupIndex( void );
+      void canvasChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge );
+      
       
       void SetupCanvasQuiltMode( void );
       void SetCanvasConfig(canvasConfig *pcc);
@@ -354,6 +359,7 @@ public:
       Quilt       *m_pQuilt;
       bool        m_bShowNavobjects;
       int         m_canvasIndex;
+      int         m_groupIndex;
       
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 

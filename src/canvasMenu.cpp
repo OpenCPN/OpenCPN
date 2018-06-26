@@ -129,7 +129,6 @@ extern GoToPositionDialog *pGoToPositionDialog;
 extern RouteList        *pRouteList;
 extern wxString         g_default_wp_icon;
 extern bool              g_btouch;
-extern int              g_GroupIndex;
 extern bool             g_bBasicMenus;
 
 
@@ -520,7 +519,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 #ifdef __WXMSW__
     subMenuChart->Remove( wxID_CANCEL );
 #endif
-        subMenuChart->Check( ID_DEF_MENU_GROUPBASE + g_GroupIndex, true );
+        subMenuChart->Check( ID_DEF_MENU_GROUPBASE + parent->m_groupIndex, true );
     }
     
         
@@ -1509,7 +1508,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     //  Chart Groups....
     if( ( event.GetId() >= ID_DEF_MENU_GROUPBASE )
             && ( event.GetId() <= ID_DEF_MENU_GROUPBASE + (int) g_pGroupArray->GetCount() ) ) {
-        gFrame->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
+        parent->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
     }
 
     parent->InvalidateGL();

@@ -41,7 +41,6 @@ WX_DEFINE_LIST( PatchList );
 extern ChartDB *ChartData;
 extern ArrayOfInts g_quilt_noshow_index_array;
 extern s52plib *ps52plib;
-extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -1193,7 +1192,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    We can eliminate some charts immediately
             //    Try to make these tests in some sensible order....
 
-            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
+            int groupIndex = m_parent->m_groupIndex;
+            if( ( groupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, groupIndex ) ) ) continue;
             
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 

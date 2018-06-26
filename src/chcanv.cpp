@@ -282,7 +282,6 @@ bool                    g_bDebugOGL;
 
 extern bool             g_b_assume_azerty;
 
-extern int              g_GroupIndex;
 extern ChartGroupArray  *g_pGroupArray;
 extern wxString         g_default_wp_icon;
 
@@ -413,6 +412,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_dragoffsetSet = false;
     m_bautofind = false;
     m_bFirstAuto = true;
+    m_groupIndex = 0;
     
     m_vLat = 0.;
     m_vLon = 0.;
@@ -894,7 +894,7 @@ void ChartCanvas::SetCanvasConfig(canvasConfig *pcc)
 
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
-    
+    m_groupIndex = pcc->GroupID;
 }
 
 
@@ -914,9 +914,6 @@ void ChartCanvas::ConfigureChartBar()
     
 }
 
-
-
-
 //TODO
 ///extern bool     bFirstAuto;
 extern int      g_restore_stackindex;
@@ -925,6 +922,176 @@ extern bool     g_bLookAhead;
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
 extern int      g_sticky_chart;
+
+void ChartCanvas::canvasRefreshGroupIndex( void )
+{
+    SetGroupIndex(m_groupIndex);
+}
+
+void ChartCanvas::SetGroupIndex( int index )
+{
+    int new_index = index;
+    if( index > (int) g_pGroupArray->GetCount() )
+        new_index = 0;
+    
+    bool bgroup_override = false;
+    int old_group_index = new_index;
+    
+    if( !CheckGroup( new_index ) ) {
+        new_index = 0;
+        bgroup_override = true;
+    }
+    
+    //    Get the currently displayed chart native scale, and the current ViewPort
+    int current_chart_native_scale = GetCanvasChartNativeScale();
+    ViewPort vp = GetVP();
+    
+    m_groupIndex = new_index;
+    
+    //  Invalidate the "sticky" chart on group change, since it might not be in the new group
+    g_sticky_chart = -1;
+    
+    //    We need a aartstack and quilt to figure out which chart to open in the new group
+    UpdateCanvasOnGroupChange();
+    
+    int dbi_hint = FindClosestCanvasChartdbIndex( current_chart_native_scale );
+    
+    double best_scale = GetBestStartScale(dbi_hint, vp);
+    
+    SetVPScale( best_scale );
+    
+    if(GetQuiltMode())
+        dbi_hint = GetQuiltReferenceChartIndex();
+    
+    //    Refresh the canvas, selecting the "best" chart,
+        //    applying the prior ViewPort exactly
+        canvasChartsRefresh( dbi_hint, vp, true );
+        
+        //    Message box is deferred so that canvas refresh occurs properly before dialog
+        if( bgroup_override ) {
+            wxString msg( _("Group \"") );
+
+            ChartGroup *pGroup = g_pGroupArray->Item( old_group_index - 1 );
+            msg += pGroup->m_group_name;
+            
+            msg += _("\" is empty, switching to \"All Active Charts\" group.");
+            
+            OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
+        }
+}
+
+bool ChartCanvas::CheckGroup( int igroup )
+{
+    if(!ChartData)
+        return true;                            //  Not known yet...
+        
+    if( igroup == 0 )
+        return true;              // "all charts" is always OK
+
+    ChartGroup *pGroup = g_pGroupArray->Item( igroup - 1 );
+    
+    if( !pGroup->m_element_array.GetCount() )   //  truly empty group is OK
+        return true;
+    
+    bool b_chart_in_group = false;
+    
+    for( unsigned int j = 0; j < pGroup->m_element_array.GetCount(); j++ ) {
+        wxString element_root = pGroup->m_element_array.Item( j )->m_element_name;
+        
+        for( unsigned int ic = 0; ic < (unsigned int) ChartData->GetChartTableEntries(); ic++ ) {
+            ChartTableEntry *pcte = ChartData->GetpChartTableEntry( ic );
+            wxString chart_full_path( pcte->GetpFullPath(), wxConvUTF8 );
+            
+            if( chart_full_path.StartsWith( element_root ) ) {
+                b_chart_in_group = true;
+                break;
+            }
+        }
+        
+        if( b_chart_in_group ) break;
+    }
+    
+    return b_chart_in_group;                           // this group is empty
+    
+}
+
+
+void ChartCanvas::canvasChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
+{
+    if( !ChartData )
+        return;
+    
+    OCPNPlatform::ShowBusySpinner();
+    
+    double old_scale = GetVPScale();
+    InvalidateQuilt();
+    SetQuiltRefChart( -1 );
+    
+    Current_Ch = NULL;
+    
+    //delete pCurrentStack;
+    //pCurrentStack = NULL;
+    
+    if( b_purge )
+        ChartData->PurgeCache();
+    
+    //    Build a new ChartStack
+    //pCurrentStack = new ChartStack;
+    //ChartData->BuildChartStack( pCurrentStack, vLat, vLon );
+    
+    if( -1 != dbi_hint ) {
+        if( GetQuiltMode() ) {
+            GetpCurrentStack()->SetCurrentEntryFromdbIndex( dbi_hint );
+            SetQuiltRefChart( dbi_hint );
+        } else {
+            //      Open the saved chart
+            ChartBase *pTentative_Chart;
+            pTentative_Chart = ChartData->OpenChartFromDB( dbi_hint, FULL_INIT );
+            
+            if( pTentative_Chart ) {
+                /* Current_Ch is always NULL here, (set above) should this go before that? */
+                if( Current_Ch )
+                    Current_Ch->Deactivate();
+                
+                Current_Ch = pTentative_Chart;
+                Current_Ch->Activate();
+                
+                GetpCurrentStack()->CurrentStackEntry = ChartData->GetStackEntry( GetpCurrentStack(),
+                                                                                       Current_Ch->GetFullPath() );
+            }
+            //else
+                //SetChartThumbnail( dbi_hint );       // need to reset thumbnail on failed chart open
+        }
+        
+        //refresh_Piano();
+    } else {
+        //    Select reference chart from the stack, as though clicked by user
+        //    Make it the smallest scale chart on the stack
+        GetpCurrentStack()->CurrentStackEntry = GetpCurrentStack()->nEntry - 1;
+        int selected_index = GetpCurrentStack()->GetCurrentEntrydbIndex();
+        SetQuiltRefChart( selected_index );
+    }
+    
+    //    Validate the correct single chart, or set the quilt mode as appropriate
+    SetupCanvasQuiltMode();
+    if( !GetQuiltMode() && Current_Ch == 0) {
+        // use a dummy like in DoChartUpdate
+        if (NULL == pDummyChart ) 
+            pDummyChart = new ChartDummy;
+        Current_Ch = pDummyChart;
+        SetVPScale( old_scale );
+    }
+    
+    ReloadVP();
+    
+    UpdateCanvasControlBar();
+    UpdateGPSCompassStatusBox( true );
+    
+    SetCursor( wxCURSOR_ARROW );
+    
+    OCPNPlatform::HideBusySpinner();
+}
+
 
 bool ChartCanvas::DoCanvasUpdate( void )
 {
@@ -1031,7 +1198,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
              }
          }
                 
-         ChartData->BuildChartStack( m_pCurrentStack, tLat, tLon );
+         ChartData->BuildChartStack( m_pCurrentStack, tLat, tLon, m_groupIndex );
          m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
                 
          if( m_bFirstAuto ) {
@@ -2302,7 +2469,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             key_char -= 64;
 
         if (key_char >= '0' && key_char <= '9')
-            gFrame->SetGroupIndex( key_char - '0' );
+            SetGroupIndex( key_char - '0' );
         else
 
         switch( key_char ) {
@@ -4000,6 +4167,12 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 
     if( m_pQuilt ) m_pQuilt->Invalidate();
 
+    //  Make sure that the Selected Group is sensible...
+    if( m_groupIndex > (int) g_pGroupArray->GetCount() )
+        m_groupIndex = 0;
+    if( !CheckGroup( m_groupIndex ) )
+        m_groupIndex = 0;
+    
     SetViewPoint( vp.clat, vp.clon, vp.view_scale_ppm, vp.skew, vp.rotation, vp.m_projection_type, b_adjust );
 
 }
@@ -4097,7 +4270,7 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     m_pCurrentStack = NULL;
     m_pCurrentStack = new ChartStack;
     wxASSERT(ChartData);
-    ChartData->BuildChartStack( m_pCurrentStack, VPoint.clat, VPoint.clon );
+    ChartData->BuildChartStack( m_pCurrentStack, VPoint.clat, VPoint.clon, m_groupIndex );
 
     if( m_pQuilt ) {
         m_pQuilt->Compose( VPoint );
@@ -4266,7 +4439,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             int current_db_index;
             current_db_index = m_pCurrentStack->GetCurrentEntrydbIndex();       // capture the current
 
-            ChartData->BuildChartStack( m_pCurrentStack, lat, lon );
+            ChartData->BuildChartStack( m_pCurrentStack, lat, lon, m_groupIndex );
             m_pCurrentStack->SetCurrentEntryFromdbIndex( current_db_index );
 
             //   Check to see if the current quilt reference chart is in the new stack
@@ -8414,10 +8587,10 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 
         //    Check to see if the candidate chart is in the currently active group
         bool b_group_draw = false;
-        if( g_GroupIndex > 0 ) {
+        if( m_groupIndex > 0 ) {
             for( unsigned int ig = 0; ig < pt->GetGroupArray().GetCount(); ig++ ) {
                 int index = pt->GetGroupArray().Item( ig );
-                if( g_GroupIndex == index ) {
+                if( m_groupIndex == index ) {
                     b_group_draw = true;
                     break;
                 }

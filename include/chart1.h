@@ -448,7 +448,7 @@ class MyFrame: public wxFrame
     void SetToolbarScale(void);
     void SetGPSCompassScale(void);
     
-    void SetGroupIndex(int index);
+    void RefreshGroupIndices(void);
 
     double GetBestVPScale(ChartBase *pchart);
 

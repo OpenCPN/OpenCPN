@@ -155,7 +155,6 @@ extern double           g_ownship_HDTpredictor_miles;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 
-extern int              g_GroupIndex;
 extern ChartDB          *ChartData;
 
 extern PlugInManager* g_pi_manager;

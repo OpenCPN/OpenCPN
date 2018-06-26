@@ -2433,10 +2433,6 @@ bool MyApp::OnInit()
     //  Apply the inital Group Array structure to the chart data base
     ChartData->ApplyGroupArray( g_pGroupArray );
 
-    //  Make sure that the Selected Group is sensible...
-    if( g_GroupIndex > (int) g_pGroupArray->GetCount() ) g_GroupIndex = 0;
-    if( !gFrame->CheckGroup( g_GroupIndex ) ) g_GroupIndex = 0;
-
     //pCurrentStack = new ChartStack;
 
 //      All set to go.....
@@ -3877,51 +3873,13 @@ void MyFrame::DestroyPersistentDialogs()
 }
 
 
-void MyFrame::SetGroupIndex( int index )
+void MyFrame::RefreshGroupIndices( void )
 {
-    int new_index = index;
-    if( index > (int) g_pGroupArray->GetCount() ) new_index = 0;
-
-    bool bgroup_override = false;
-    int old_group_index = new_index;
-
-    if( !CheckGroup( new_index ) ) {
-        new_index = 0;
-        bgroup_override = true;
-    }
-
-    //    Get the currently displayed chart native scale, and the current ViewPort
-    int current_chart_native_scale = cc1->GetCanvasChartNativeScale();
-    ViewPort vp = cc1->GetVP();
-
-    g_GroupIndex = new_index;
-
-    //  Invalidate the "sticky" chart on group change, since it might not be in the new group
-    g_sticky_chart = -1;
-
-    //    We need a aartstack and quilt to figure out which chart to open in the new group
-    cc1->UpdateCanvasOnGroupChange();
-
-    int dbi_hint = cc1->FindClosestCanvasChartdbIndex( current_chart_native_scale );
-
-    double best_scale = cc1->GetBestStartScale(dbi_hint, vp);
-
-    cc1->SetVPScale( best_scale );
-
-    if(cc1->GetQuiltMode())
-        dbi_hint = cc1->GetQuiltReferenceChartIndex();
-
-    //    Refresh the canvas, selecting the "best" chart,
-    //    applying the prior ViewPort exactly
-    ChartsRefresh( dbi_hint, vp, true );
-
-    //    Message box is deferred so that canvas refresh occurs properly before dialog
-    if( bgroup_override ) {
-        wxString msg( _("Group \"") );
-        msg += GetGroupName( old_group_index );
-        msg += _("\" is empty, switching to \"All Active Charts\" group.");
-
-        OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc)
+            cc->canvasRefreshGroupIndex();
     }
 }
 
@@ -5584,7 +5542,7 @@ int MyFrame::ProcessOptionsDialog( int rr, ArrayOfCDI *pNewDirArray )
             || ( rr & GROUPS_CHANGED ) ) {
         b_groupchange = ScrubGroupArray();
         ChartData->ApplyGroupArray( g_pGroupArray );
-        SetGroupIndex( g_GroupIndex );
+        RefreshGroupIndices( );
     }
 
     if( rr & GROUPS_CHANGED || b_groupchange) {
@@ -5795,6 +5753,7 @@ void MyFrame::RefreshCanvasOther( ChartCanvas *ccThis )
 
 
 // Flav: This method reloads all charts for convenience
+//TODO  This neeeds for all canvases
 void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 {
     if( !ChartData ) return;

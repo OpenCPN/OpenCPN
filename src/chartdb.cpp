@@ -67,8 +67,7 @@ extern ThumbWin     *pthumbwin;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern bool         g_bopengl;
-extern ChartCanvas  *cc1;
-extern int          g_GroupIndex;
+//extern ChartCanvas  *cc1;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
@@ -284,7 +283,7 @@ void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture, const wxString
 
 #ifdef ocpnUSE_GL
      // The glCanvas may be cacheing some information for this chart     
-     if (g_bopengl && cc1)
+     if (g_bopengl /*&& cc1*/)  //TODO check this logic
          g_glTextureManager->PurgeChartTextures(ch, bDelTexture);
 #endif
 
@@ -477,9 +476,9 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
 //      Build a Chart Stack, and add the indicated chart to the stack, even if the chart does not
 //      cover the lat/lon specification
 
-int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add )
+int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add, int groupIndex )
 {
-    BuildChartStack(cstk, lat, lon);
+    BuildChartStack(cstk, lat, lon, groupIndex);
     
     if (db_add >= 0 )
         cstk->AddChart( db_add );
@@ -488,7 +487,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add
 }
 
 
-int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
+int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int groupIndex)
 {
       int i=0;
       int j=0;
@@ -508,12 +507,12 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
             
             //    Check to see if the candidate chart is in the currently active group
             bool b_group_add = false;
-            if(g_GroupIndex > 0)
+            if(groupIndex > 0)
             {
                   const int ng = cte.GetGroupArray().GetCount();
                   for(int ig=0 ; ig < ng; ig++)
                   {
-                        if(g_GroupIndex == cte.GetGroupArray().Item(ig))
+                      if(groupIndex == cte.GetGroupArray().Item(ig))
                         {
                               b_group_add = true;
                               break;
