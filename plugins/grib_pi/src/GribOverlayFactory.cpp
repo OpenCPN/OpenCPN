@@ -50,7 +50,7 @@ enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 // If they do not intersect, two scenario's are possible:
 // other is outside this -> return _OUT
 // other is inside this -> return _IN
-GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
+static GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
                    double lon_max, double Marge )
 {
 
@@ -68,7 +68,7 @@ GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, dou
 }
 
 // Is the given point in the vp ??
-bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
+static bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
 {
     double m_miny = vp->lat_min;
     double m_maxy = vp->lat_max;
