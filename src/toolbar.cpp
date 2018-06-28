@@ -1317,6 +1317,13 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
 
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 {
+    //We only add plugin tools on toolbar associated with canvas #0, the primary.
+    ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+    if(parentCanvas){
+        if(!parentCanvas->IsPrimaryCanvas())
+            return false;
+    }
+        
     if( !g_pi_manager ) return false;
 
     bool bret = false;
@@ -1368,6 +1375,13 @@ bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool( ocpnToolBarSimple *tb )
 
 bool ocpnFloatingToolbarDialog::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 {
+    //We only add plugin tools on toolbar associated with canvas #0, the primary.
+    ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+    if(parentCanvas){
+        if(!parentCanvas->IsPrimaryCanvas())
+            return false;
+    }
+    
     if( !g_pi_manager ) return false;
 
     bool bret = false;

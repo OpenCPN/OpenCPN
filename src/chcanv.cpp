@@ -299,6 +299,8 @@ extern bool              g_bShowTrue, g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
 
+extern wxString         g_toolbarConfigSecondary;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -895,6 +897,10 @@ void ChartCanvas::SetCanvasConfig(canvasConfig *pcc)
     m_restore_dbindex = pcc->DBindex;
     m_bFollow = pcc->bFollow;
     m_groupIndex = pcc->GroupID;
+    m_toolbarConfig = pcc->toolbarConfig;
+    if(m_toolbarConfig.IsEmpty() && (pcc->configIndex != 0)){
+        m_toolbarConfig = g_toolbarConfigSecondary;
+    }
 }
 
 
@@ -965,7 +971,7 @@ void ChartCanvas::SetGroupIndex( int index )
     
     //    Refresh the canvas, selecting the "best" chart,
         //    applying the prior ViewPort exactly
-        canvasChartsRefresh( dbi_hint, vp, true );
+        canvasChartsRefresh( dbi_hint );
         
         //    Message box is deferred so that canvas refresh occurs properly before dialog
         if( bgroup_override ) {
@@ -1016,7 +1022,7 @@ bool ChartCanvas::CheckGroup( int igroup )
 }
 
 
-void ChartCanvas::canvasChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
+void ChartCanvas::canvasChartsRefresh( int dbi_hint )
 {
     if( !ChartData )
         return;
@@ -1029,15 +1035,14 @@ void ChartCanvas::canvasChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge 
     
     Current_Ch = NULL;
     
-    //delete pCurrentStack;
-    //pCurrentStack = NULL;
-    
-    if( b_purge )
-        ChartData->PurgeCache();
+    //delete m_pCurrentStack;
+    //m_pCurrentStack = NULL;
     
     //    Build a new ChartStack
-    //pCurrentStack = new ChartStack;
-    //ChartData->BuildChartStack( pCurrentStack, vLat, vLon );
+    if(!m_pCurrentStack){
+        m_pCurrentStack = new ChartStack;
+        ChartData->BuildChartStack( m_pCurrentStack, m_vLat, m_vLon, m_groupIndex );
+    }
     
     if( -1 != dbi_hint ) {
         if( GetQuiltMode() ) {

@@ -157,7 +157,8 @@ public:
       void SetCanvasCursor( wxMouseEvent& event );
       
       void PopupMenuHandler(wxCommandEvent& event);
-
+      bool IsPrimaryCanvas(){ return (m_canvasIndex == 0); }
+      
       bool SetUserOwnship();
       
       double GetCanvasRangeMeters();
@@ -187,7 +188,7 @@ public:
       void SetGroupIndex( int index );
       bool CheckGroup( int igroup );
       void canvasRefreshGroupIndex( void );
-      void canvasChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge );
+      void canvasChartsRefresh( int dbi_hint );
       
       
       void SetupCanvasQuiltMode( void );

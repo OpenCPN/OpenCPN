@@ -2426,8 +2426,9 @@ wxWindow *GetOCPNCanvasWindow()
 
 void RequestRefresh(wxWindow *win)
 {
-    if(win)
-        win->Refresh();
+    //TODO This will be wrong if canvas config is changed...
+    //if(win)
+    //    win->Refresh();
 }
 
 void GetCanvasPixLL(PlugIn_ViewPort *vp, wxPoint *pp, double lat, double lon)

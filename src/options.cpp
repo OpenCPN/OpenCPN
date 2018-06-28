@@ -298,6 +298,7 @@ extern bool g_config_display_size_manual;
 extern bool g_bInlandEcdis;
 extern bool g_bDarkDecorations;
 extern bool g_bSpaceDropMark;
+extern unsigned int g_canvasConfig;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -2808,6 +2809,43 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   chartPanel->Layout();
 }
 
+void options::CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing)
+{
+    m_DisplayConfigsPage = AddPage(parent, _("Configs"));
+    
+    if (m_bcompact) {
+    }
+    else {
+//        wxFlexGridSizer* itemGridSizerUI = new wxFlexGridSizer(2);
+//        itemGridSizerUI->SetHGap(border_size);
+        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
+        // another sizer instead of letting it grow.
+        wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
+        m_DisplayConfigsPage->SetSizer(wrapperSizer);
+        //wrapperSizer->Add(itemGridSizerUI, 1, wxALL | wxALIGN_CENTER, border_size);
+        
+        // spacer, for both columns
+        //itemGridSizerUI->Add(0, border_size * 3);
+        //itemGridSizerUI->Add(0, border_size * 3);
+        
+        // canvas Layout Options
+        //itemGridSizerUI->Add( new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout")), groupLabelFlags);
+ //       wxBoxSizer* boxLayouts = new wxBoxSizer(wxVERTICAL);
+ //       itemGridSizerUI->Add(boxLayouts, groupInputFlags);
+        
+        wxString m_rbcanvasConfigChoices[] = { _("Single Canvas"), _("Two Canvas Horizontal") };
+        int nrbcanvasConfigChoices = sizeof( m_rbcanvasConfigChoices ) / sizeof( wxString );
+        
+        m_rbcanvasConfig = new wxRadioBox( m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"), wxDefaultPosition, wxDefaultSize, nrbcanvasConfigChoices, m_rbcanvasConfigChoices, 1, wxRA_SPECIFY_COLS );
+        m_rbcanvasConfig->SetSelection( 0 );
+
+        wrapperSizer->Add(m_rbcanvasConfig, 0, wxALIGN_CENTER);
+        
+       
+    }
+            
+}
+        
 void options::CreatePanel_Advanced(size_t parent, int border_size,
                                    int group_item_spacing) {
   m_ChartDisplayPage = AddPage(parent, _("Advanced"));
@@ -4915,11 +4953,9 @@ void options::CreateControls(void) {
   CreatePanel_Display(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Units(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
-
+  CreatePanel_Configs(m_pageDisplay, border_size, group_item_spacing);
+  
   m_pageCharts = CreatePanel(_("Charts"));
-  
-  
-  
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
   // ChartGroups must be created after ChartsLoad and must be at least third
@@ -5014,6 +5050,9 @@ void options::SetInitialSettings(void) {
   
   b_oldhaveWMM = b_haveWMM;
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+
+  // Canvas configuration
+  m_rbcanvasConfig->SetSelection( g_canvasConfig );
   
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
@@ -6492,6 +6531,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   for (int i = 0; i < nEntry; i++)
     TideCurrentDataSet.Add(tcDataSelected->GetString(i));
 
+  // Canvas configuration
+    g_canvasConfig = m_rbcanvasConfig->GetSelection(  );
+    
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
     m_CurrentDirList = *m_pWorkDirList; // Perform a deep copy back to main database.

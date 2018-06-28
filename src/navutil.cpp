@@ -243,6 +243,7 @@ extern wxColour         g_colourOwnshipRangeRingsColour;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
+extern wxString         g_toolbarConfigSecondary;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern int              gps_watchdog_timeout_ticks;
@@ -1920,13 +1921,16 @@ void MyConfig::LoadCanvasConfigs( )
     //  If the canvas config has never been set/persisted, use the global settings
     if(!HasEntry( _T ( "CanvasConfig" ))){
     
-        pcc = new canvasConfig;
+        pcc = new canvasConfig(0);
         pcc->iLat = vLat;
         pcc->iLon = vLon;
         pcc->iRotation = initial_rotation;
         pcc->iScale = initial_scale_ppm;
         pcc->DBindex = g_restore_dbindex;
         pcc->bFollow = false;
+        pcc->bShowTides = false;
+        pcc->bShowCurrents = false;
+        pcc->toolbarConfig = g_toolbarConfig;
         
         g_canvasConfigArray.Add(pcc);
         
@@ -1945,7 +1949,7 @@ void MyConfig::LoadCanvasConfigs( )
             s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
             SetPath( s );
             
-            pcc = new canvasConfig;
+            pcc = new canvasConfig(0);
             
             LoadConfigCanvas(pcc);
             g_canvasConfigArray.Add(pcc);
@@ -1956,13 +1960,13 @@ void MyConfig::LoadCanvasConfigs( )
             
             s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
             SetPath( s );
-            canvasConfig *pcc = new canvasConfig;
+            canvasConfig *pcc = new canvasConfig(0);
             LoadConfigCanvas(pcc);
             g_canvasConfigArray.Add(pcc);
             
             s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
             SetPath( s );
-            pcc = new canvasConfig;
+            pcc = new canvasConfig(1);
             LoadConfigCanvas(pcc);
             g_canvasConfigArray.Add(pcc);
             
@@ -2024,6 +2028,16 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
     Read( _T ( "canvasbFollow" ), &cc->bFollow, 0 );
     Read( _T ( "ActiveChartGroup" ), &cc->GroupID, 0 );
     
+    wxString st_toolbar_config;
+    if(Read( _T ( "canvasToolbarConfig" ), &st_toolbar_config )){
+         cc->toolbarConfig = st_toolbar_config;
+    }
+    else{
+        if(cc->configIndex == 0)
+            cc->toolbarConfig = g_toolbarConfig;
+        else
+            cc->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
+    }
 }   
             
     
@@ -2091,14 +2105,17 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cc )
             Write( _T ( "canvasVPRotation" ), st1 );
         }
         
-        int restore_dbindex = cc->canvas->GetpCurrentStack()->GetCurrentEntrydbIndex();
+        int restore_dbindex = 0;
+        ChartStack *pcs = cc->canvas->GetpCurrentStack();
+        if(pcs)
+            restore_dbindex = pcs->GetCurrentEntrydbIndex();
         if( cc->canvas->GetQuiltMode())
             restore_dbindex = cc->canvas->GetQuiltReferenceChartIndex();
-        
         Write( _T ( "canvasInitialdBIndex" ), restore_dbindex );
+
         Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
-        
         Write( _T ( "ActiveChartGroup" ), cc->canvas->m_groupIndex );
+        Write( _T ( "canvasToolbarConfig" ), cc->canvas->GetToolbarConfigString() );
         
     }
 }

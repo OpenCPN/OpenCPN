@@ -292,8 +292,10 @@ class canvasConfig
 {
 public:    
     canvasConfig();
+    canvasConfig(int index);
     ~canvasConfig();
     
+    int configIndex;
     ChartCanvas *canvas;
     double iLat, iLon, iScale, iRotation;
     int DBindex; 
@@ -400,7 +402,7 @@ class MyFrame: public wxFrame
     void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
-    int  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
+    bool  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
@@ -514,11 +516,16 @@ class MyFrame: public wxFrame
     
     void FastClose();
     void SetChartUpdatePeriod(ViewPort &vp);
+    void CreateCanvasLayout();
     
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
-
+    void UpdateCanvasConfigDescriptors();
+    void SetCanvasSizes( wxSize frameSize );
+    void SetCanvasToolbars( );
+    
+    
     void UpdateAllToolbars( ColorScheme cs );
     
     void FilterCogSog(void);
