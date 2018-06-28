@@ -415,6 +415,8 @@ public:
       
       void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
       void SelectdbChart( int dbindex );
+      void ShowTides(bool bShow);
+      void ShowCurrents(bool bShow);
       
 private:
       void CallPopupMenu( int x, int y );

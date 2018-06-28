@@ -2548,8 +2548,9 @@ extern ocpnGLOptions g_GLOptions;
 #endif
 
     // Setup Tides/Currents to settings present at last shutdown
-    gFrame->ShowTides( g_bShowTide );
-    gFrame->ShowCurrents( g_bShowCurrent );
+// TODO        
+//     gFrame->ShowTides( g_bShowTide );
+//     gFrame->ShowCurrents( g_bShowCurrent );
  
 //      Start up the ticker....
     gFrame->FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
@@ -4266,8 +4267,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_SHOW_CURRENTS:
-        case ID_CURRENT: {
-            ShowCurrents( !cc1->GetbShowCurrent() );
+        {
+            cc1->ShowCurrents( !cc1->GetbShowCurrent() );
             cc1->ReloadVP();
             cc1->Refresh( false );
             break;
@@ -4275,8 +4276,8 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_MENU_SHOW_TIDES:
-        case ID_TIDE: {
-            ShowTides( !cc1->GetbShowTide() );
+        {
+            cc1->ShowTides( !cc1->GetbShowTide() );
             cc1->ReloadVP();
             cc1->Refresh( false );
             break;
@@ -4461,6 +4462,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
 }
 
+#if 0
 void MyFrame::ShowTides(bool bShow)
 {
     LoadHarmonics();
@@ -4518,7 +4520,7 @@ void MyFrame::ShowCurrents(bool bShow)
         FrameTCTimer.Stop();
 
 }
-
+#endif
 
 void MyFrame::SetAISDisplayStyle(int StyleIndx)
 {

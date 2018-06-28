@@ -920,6 +920,67 @@ void ChartCanvas::ConfigureChartBar()
     
 }
 
+void ChartCanvas::ShowTides(bool bShow)
+{
+    gFrame->LoadHarmonics();
+    
+    if( ptcmgr->IsReady() ) {
+        SetbShowTide( bShow );
+        m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, bShow );
+        wxString tip = _("Show Tides");
+        if(bShow)
+            tip = _("Hide Tides");
+        if( m_toolBar )
+            m_toolBar->SetToolShortHelp( ID_TIDE, tip );
+        
+        parent_frame->SetMenubarItemState( ID_MENU_SHOW_TIDES, bShow );
+    } else {
+        wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
+        SetbShowTide( false );
+        m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, false );
+        parent_frame->SetMenubarItemState( ID_MENU_SHOW_TIDES, false );
+    }
+
+    // TODO
+//     if( GetbShowTide() ) {
+//         FrameTCTimer.Start( TIMER_TC_VALUE_SECONDS * 1000, wxTIMER_CONTINUOUS );
+//         SetbTCUpdate( true );                        // force immediate update
+//     } else
+//         FrameTCTimer.Stop();
+    
+}
+
+void ChartCanvas::ShowCurrents(bool bShow)
+{
+    gFrame->LoadHarmonics();
+    
+    if( ptcmgr->IsReady() ) {
+        SetbShowCurrent( bShow );
+        m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, bShow );
+        wxString tip = _("Show Currents");
+        if(bShow)
+            tip = _("Hide Currents");
+        if( m_toolBar )
+            m_toolBar->SetToolShortHelp( ID_CURRENT, tip );
+        
+        parent_frame->SetMenubarItemState( ID_MENU_SHOW_CURRENTS, bShow );
+    } else {
+        wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
+        SetbShowCurrent( false );
+        m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, false );
+        parent_frame->SetMenubarItemState( ID_MENU_SHOW_CURRENTS, false );
+    }
+    
+    // TODO
+//     if( GetbShowCurrent() ) {
+//         FrameTCTimer.Start( TIMER_TC_VALUE_SECONDS * 1000, wxTIMER_CONTINUOUS );
+//         SetbTCUpdate( true );                        // force immediate update
+//     } else
+//         FrameTCTimer.Stop();
+    
+}
+
+
 //TODO
 ///extern bool     bFirstAuto;
 extern int      g_restore_stackindex;
@@ -10919,6 +10980,23 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
             TogglebFollow();
             break;
         }
+        
+        case ID_CURRENT: {
+            ShowCurrents( !GetbShowCurrent() );
+            ReloadVP();
+            Refresh( false );
+            break;
+            
+        }
+        
+        case ID_TIDE: {
+            ShowTides( !GetbShowTide() );
+            ReloadVP();
+            Refresh( false );
+            break;
+            
+        }
+        
         
         default:
             break;

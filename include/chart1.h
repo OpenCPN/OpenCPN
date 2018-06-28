@@ -517,6 +517,7 @@ class MyFrame: public wxFrame
     void FastClose();
     void SetChartUpdatePeriod(ViewPort &vp);
     void CreateCanvasLayout();
+    void LoadHarmonics();
     
   private:
     void ODoSetSize(void);
@@ -535,7 +536,6 @@ class MyFrame: public wxFrame
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
-    void LoadHarmonics();
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
     void SetAISDisplayStyle(int StyleIndx);
