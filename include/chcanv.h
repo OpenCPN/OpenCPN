@@ -423,7 +423,9 @@ private:
       
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
-    
+      void DoCanvasStackDelta( int direction );
+      void ToggleCanvasQuiltMode( void );
+      
       ViewPort    VPoint;
       void        PositionConsole(void);
       

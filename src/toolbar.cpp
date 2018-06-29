@@ -1134,10 +1134,6 @@ ocpnToolBarSimple *ocpnFloatingToolbarDialog::CreateMyToolbar()
         tb->AddTool( ID_ZOOMOUT, _T("zoomout"),
             style->GetToolIcon( _T("zoomout"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
 
-//TODO  Move this up to parent with parent's chartstack
-//     m_toolbar_scale_tools_shown = pCurrentStack && pCurrentStack->b_valid
-//             && ( pCurrentStack->nEntry > 1 );
-
     CheckAndAddPlugInTool( tb );
     tipString = wxString( _("Shift to Larger Scale Chart") ) << _T(" (F7)");
     if( _toolbarConfigMenuUtil( ID_STKDN, tipString ) ) {

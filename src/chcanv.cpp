@@ -1520,14 +1520,19 @@ bool ChartCanvas::DoCanvasUpdate( void )
     update_finish:
     
     //    Ask for a new tool bar if the stack is going to or coming from only one entry.
-//TODO    
-//     if(cc1->GetToolbar()){
-//         bool scale_tools_shown = cc1->GetToolbar()->m_toolbar_scale_tools_shown;
-//         if( pCurrentStack
-//             && ( ( ( pCurrentStack->nEntry <= 1 ) && scale_tools_shown )
-//             || ( ( pCurrentStack->nEntry > 1 ) && !scale_tools_shown ) ) ) if( !m_bFirstAuto ) RequestNewToolbars();
-//     }
-//     
+     if(GetToolbar()){
+         if(m_pCurrentStack){
+            bool toolbar_scale_tools_show = m_pCurrentStack && m_pCurrentStack->b_valid && ( m_pCurrentStack->nEntry > 1 );
+            bool scale_tools_shown = m_toolBar->m_toolbar_scale_tools_shown;
+         
+            if( toolbar_scale_tools_show != scale_tools_shown){
+                if( !m_bFirstAuto )
+                    RequestNewCanvasToolbar( false );
+            }
+         }
+     }
+     
+//TODO
 //     if( bNewPiano ) UpdateControlBar();
                                                                     
                                                                     //  Update the ownship position on thumbnail chart, if shown
@@ -10965,6 +10970,115 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
     g_pais_query_dialog_active->Show();
 }
 
+void ChartCanvas::ToggleCanvasQuiltMode( void )
+{
+        bool cur_mode = GetQuiltMode();
+        
+        if( !GetQuiltMode() )
+            SetQuiltMode( true );
+        else
+            if( GetQuiltMode() ) {
+                SetQuiltMode( false );
+                g_sticky_chart = cc1->GetQuiltReferenceChartIndex();
+            }
+            
+            
+            if( cur_mode != GetQuiltMode() ){
+                SetupCanvasQuiltMode();
+                DoCanvasUpdate();
+                InvalidateGL();
+                Refresh();
+            }
+            //  TODO What to do about this?
+            //g_bQuiltEnable = GetQuiltMode();
+            
+            #ifdef USE_S57
+            // Recycle the S52 PLIB so that vector charts will flush caches and re-render
+            if(ps52plib)
+                ps52plib->GenerateStateHash();
+            #endif
+                
+}
+
+void ChartCanvas::DoCanvasStackDelta( int direction )
+{
+    if( !GetQuiltMode() ) {
+        int current_stack_index = GetpCurrentStack()->CurrentStackEntry;
+        if( (current_stack_index + direction) >= GetpCurrentStack()->nEntry )
+            return;
+        if( (current_stack_index + direction) < 0 )
+            return;
+        
+        if( m_bpersistent_quilt /*&& g_bQuiltEnable*/ ) {
+            int new_dbIndex = GetpCurrentStack()->GetDBIndex(current_stack_index + direction );
+            
+            if( IsChartQuiltableRef( new_dbIndex ) ) {
+                ToggleCanvasQuiltMode();
+                SelectQuiltRefdbChart( new_dbIndex );
+                m_bpersistent_quilt = false;
+            }
+        }
+        else {
+            SelectChartFromStack( current_stack_index + direction );
+        }
+    } else {
+        ArrayOfInts piano_chart_index_array = GetQuiltExtendedStackdbIndexArray();
+        int refdb = GetQuiltRefChartdbIndex();
+        
+        //      Find the ref chart in the stack
+        int current_index = -1;
+        for(unsigned int i=0 ; i < piano_chart_index_array.Count() ; i++){
+            if(refdb == piano_chart_index_array.Item( i )){
+                current_index = i;
+                break;
+            }
+        }
+        if(current_index == -1)
+            return;
+        
+        const ChartTableEntry &ctet = ChartData->GetChartTableEntry( refdb );
+        int target_family= ctet.GetChartFamily();
+        
+        int new_index = -1;
+        int check_index = current_index + direction;
+        bool found = false;
+        int check_dbIndex = -1;
+        int new_dbIndex = -1;
+        
+        //      When quilted. switch within the same chart family
+        while(!found && (unsigned int)check_index < piano_chart_index_array.Count() && (check_index >= 0)){
+            check_dbIndex = piano_chart_index_array.Item( check_index );
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( check_dbIndex );
+            if(target_family == cte.GetChartFamily()){
+                found = true;
+                new_index = check_index;
+                new_dbIndex = check_dbIndex;
+                break;
+            }
+            
+            check_index += direction;
+        }
+        
+        if(!found)
+            return;
+        
+        
+        if( !IsChartQuiltableRef( new_dbIndex ) ) {
+            ToggleCanvasQuiltMode();
+            SelectdbChart( new_dbIndex );
+            m_bpersistent_quilt = true;
+        } else {
+            SelectQuiltRefChart( new_index );
+        }
+    }
+    
+    gFrame->UpdateGlobalMenuItems(); // update the state of the menu items (checkmarks etc)
+    SetQuiltChartHiLiteIndex( -1 );
+    
+    ReloadVP();
+}
+
+
 //--------------------------------------------------------------------------------------------------------
 //
 //      Toolbar support
@@ -10976,6 +11090,27 @@ void ChartCanvas::OnToolLeftClick( wxCommandEvent& event )
     //  Handle the per-canvas toolbar clicks here
     
     switch( event.GetId() ){
+        
+        case ID_ZOOMIN: {
+            ZoomCanvas( 2.0, false );
+            break;
+        }
+        
+        case ID_ZOOMOUT: {
+            ZoomCanvas( 0.5, false );
+            break;
+        }
+        
+        case ID_STKUP:
+            DoCanvasStackDelta( 1 );
+            DoCanvasUpdate();
+            break;
+            
+        case ID_STKDN:
+            DoCanvasStackDelta( -1 );
+            DoCanvasUpdate();
+            break;
+            
         case ID_FOLLOW: {
             TogglebFollow();
             break;
@@ -11074,6 +11209,8 @@ void ChartCanvas::DestroyToolbar()
 
 ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
 {
+    bool toolbar_scale_tools_shown = m_pCurrentStack && m_pCurrentStack->b_valid && ( m_pCurrentStack->nEntry > 1 );
+    
     bool b_reshow = true;
     if( m_toolBar ) {
         b_reshow = m_toolBar->IsShown();
@@ -11095,6 +11232,8 @@ ocpnFloatingToolbarDialog *ChartCanvas::RequestNewCanvasToolbar(bool bforcenew)
             m_toolBar->DestroyToolBar();
         
 
+        m_toolBar->m_toolbar_scale_tools_shown = toolbar_scale_tools_shown;
+        
         m_toolBar->CreateMyToolbar();
         if (m_toolBar->isSubmergedToGrabber()) {
             m_toolBar->SubmergeToGrabber();

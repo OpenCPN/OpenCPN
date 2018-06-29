@@ -4097,25 +4097,21 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 {
     switch( event.GetId() ){
         case ID_MENU_SCALE_OUT:
-        case ID_STKUP:
             DoStackDelta( 1 );
             DoChartUpdate();
             break;
 
         case ID_MENU_SCALE_IN:
-        case ID_STKDN:
             DoStackDelta( -1 );
             DoChartUpdate();
             break;
 
-        case ID_MENU_ZOOM_IN:
-        case ID_ZOOMIN: {
+        case ID_MENU_ZOOM_IN:{
             cc1->ZoomCanvas( 2.0, false );
             break;
         }
 
-        case ID_MENU_ZOOM_OUT:
-        case ID_ZOOMOUT: {
+        case ID_MENU_ZOOM_OUT:{
             cc1->ZoomCanvas( 0.5, false );
             break;
         }
@@ -6032,6 +6028,14 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     FrameTimer1.Stop();                  // stop other asynchronous activity
 
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc )
+            cc->canvasChartsRefresh( -1 );
+    }
+    
+#if 0    
     double old_scale = cc1->GetVPScale();
     cc1->InvalidateQuilt();
     cc1->SetQuiltRefChart( -1 );
@@ -6095,6 +6099,8 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
     UpdateGPSCompassStatusBoxes( );
 
     cc1->SetCursor( wxCURSOR_ARROW );
+
+#endif
 
     if( b_run ) FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
