@@ -1,0 +1,30 @@
+From 1e414c7d0fa8756b6e4c973297062ec6ac5cccd0 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Wed, 4 Jul 2018 10:59:09 +0200
+Subject: [PATCH 3/5] build: Install headers required to build default plugins.
+
+It should be possible to build plugions from a installed instance,
+so some headers needs to available there.
+---
+ CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4a859bf9..22315403 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2110,6 +2110,11 @@ ELSE(PACKAGE_FORMAT EQUAL "DEB")
+ 	INSTALL(FILES data/changelog DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+ ENDIF(PACKAGE_FORMAT EQUAL "DEB")
+ 
++INSTALL(FILES include/ocpn_plugin.h DESTINATION ${PREFIX_INCLUDE})
++INSTALL(FILES include/wx28compat.h DESTINATION ${PREFIX_INCLUDE})
++INSTALL(FILES src/nmea0183/xte.hpp DESTINATION ${PREFIX_INCLUDE})
++INSTALL(DIRECTORY include/wx DESTINATION ${PREFIX_INCLUDE})
++
+ INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
+ 
+ IF(BUNDLE_DOCS MATCHES "ON")
+-- 
+2.17.0
+
