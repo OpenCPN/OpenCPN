@@ -9,7 +9,7 @@ distros. From a user perspective, the installation is about adding a repo
 and then installing the application from that repo, like:
 
     $ flatpak --user remote-add opencpn https://url/to/repo
-    $ flatpak --user install org.opencpn.OpenCPN
+    $ flatpak --user install opencpn org.opencpn.OpenCPN
 
 Seen as provider, publishing a flatpak is a way to provide a binary package
 to a much larger user-base than for example an Ubuntu PPA.
@@ -25,21 +25,38 @@ true for this directory.
 How to use
 ----------
 
-First, review the org.opencpn.OpenCPN.json manifest file. In the very end
+The first steps is about installing *flatpak* and *flatpak-builder*. How
+to do this varies depending on platform and is described at 
+https://flatpak.org/setup/
+
+Armed with these tools, inititalize by installing the runtime and sdk :
+
+     $ flatpak remote-add --if-not-exists flathub \
+           https://dl.flathub.org/repo/flathub.flatpakrepo
+     $ flatpak install flathub org.freedesktop.Platform//1.6
+     $ flatpak install flathub org.freedesktop.Sdk//1.6
+
+Review the org.opencpn.OpenCPN.json manifest file. In the very end
 are the definitions for the opencpn source; normally, it should just be
-to update the tag to make a new build. Then build the package in opencpn/:
+to update the tag to make a new build. Then build the package in *opencpn/*:
 
     $ flatpak-builder --force-clean opencpn org.opencpn.OpenCPN.json
 
 In order to sign the repo you need to have a public gpg key available. The
 urban wisdom seems to be to use a specific key created for this purpose.
-In any case, the public key is represented like below (your key is
-obviously something else).
+Create  and export one using something like:
 
-Create a repository and sign it:
+    $  mkdir gpg
+    $  gpg2 --homedir=gpg --quick-gen-key leamas@opencpn.org
+    $  gpg2 --homedir=gpg --export leamas@opencpn.org > leamas@opencpn.key
 
-    $ flatpak-builder --export-only --repo=repo --gpg-sign=4E068B4C \
-          opencpn org.opencpn.OpenCPN.json
+Build the repo stable branch and sign contents + summary:
 
-Now the repo is ready and can be published under an url, and used 
-by ```flatpak remote-add``` as described above.
+    $ flatpak build-export repo opencpn stable
+    $ flatpak build-sign --gpg-sign=leamas@opencpn.org --gpg-homedir=gpg repo
+    $ flatpak build-update-repo --gpg-sign=leamas@opencpn.org --gpg-homedir=gpg repo
+
+Now the repo is ready and can be published under an url, and used by 
+```flatpak remote-add``` using the exporeted key:
+
+    $  sudo flatpak remote-add  --gpg-import=leamas@opencpn.key   opencpn $PWD/repo
