@@ -99,24 +99,13 @@ specific group (e.g, . "uucp" or "dialout") r/w access,  i.e.
 permissions are 0660.
 
 To handle this you need to add the actual group the your user's group
-list, and run opencpn as this group. First, add the group owner of
+list, and run opencpn as this group. Add the group owner of
 your device to your user, like
 
     $ sudo usermod -aG dialout $USER
 
-Then, to run opencpn as this user copy the desktop file to your home
-directory:
-
-    $ cp /usr/share/applications/opencpn.desktop ~/.local/share/applications
-
-Edit the ~/.local/share/applications/opencpn.desktop file and change
-
-      exec=opencpn
-
-to 
-      exec=sg dialout opencpn
-
-and logout and in again (or reboot).
+and logout and in again (or reboot). For the most common cases there
+is a warning box displayed on this when required.
 
 For the more general case, you must ensure that device permissions
 will enable opencpn to read and write serial devices without root
