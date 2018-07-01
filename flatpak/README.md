@@ -59,11 +59,11 @@ Armed with these tools, initialize by installing the runtime and sdk:
      $ sudo flatpak install flathub org.freedesktop.Platform//1.6
      $ sudo flatpak install flathub org.freedesktop.Sdk//1.6
 
-Review the org.opencpn.OpenCPN.json manifest file. In the very end
+Review the org.opencpn.OpenCPN.yaml manifest file. In the very end
 are the definitions for the opencpn source; normally, it should just be
 to update the tag to make a new build. Then build the package in *opencpn/*:
 
-    $ flatpak-builder --force-clean opencpn org.opencpn.OpenCPN.json
+    $ flatpak-builder --force-clean opencpn org.opencpn.OpenCPN.yaml
 
 In order to sign the repo you need to have a public gpg key available. The
 urban wisdom seems to be to use a specific key created for this purpose.
