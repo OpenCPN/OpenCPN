@@ -379,7 +379,8 @@ class MyFrame: public wxFrame
     void selectChartDisplay( int type, int family);
     void applySettingsString( wxString settings);
     void setStringVP(wxString VPS);
-    
+    void InvalidateAllGL();
+    ChartCanvas *GetPrimaryCanvas();
     void DoStackDelta( int direction );
     void DoSettings( void );
     

@@ -3482,7 +3482,7 @@ void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp, float lat, float lon )
     ocpn_vp.pix_width = vp->pix_width;
     ocpn_vp.pix_height = vp->pix_height;
 
-    glChartCanvas::MultMatrixViewPort(ocpn_vp, lat, lon);
+//TODO fix for multicanvas    glChartCanvas::MultMatrixViewPort(ocpn_vp, lat, lon);
 #endif
 }
 

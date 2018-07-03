@@ -2152,102 +2152,6 @@ bool MyApp::OnInit()
     g_pauimgr->SetManagedWindow( gFrame );
     
     gFrame->CreateCanvasLayout();
-#if 0
-//      Create Children of Frame
-//              n.b.  if only one child exists, wxWindows expands the child
-//                        to the parent client area automatically, (as a favor?)
-//                        Here, we'll do explicit sizing on SIZE events
-
-    switch(g_canvasConfig){
-        default:
-        case 0:                                                 // a single canvas
-            cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
-            g_canvasArray.Add(cc1);
-            cc1->m_canvasIndex = 0;
-            g_canvasConfigArray.Item(0)->canvas = cc1;
-            
-            gFrame->SetCanvasWindow( cc1 );
-    
-            cc1->SetDisplaySizeMM(g_display_size_mm);
-    
-            cc1->SetCanvasConfig(g_canvasConfigArray.Item(0));
-            
-            cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-            //cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-            //cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
-            cc1->SetToolbarConfigString(g_toolbarConfig);
-            cc1->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-            cc1->SetToolbarOrientation( g_maintoolbar_orient);
-            cc1->ConfigureChartBar();
-            
-            g_pauimgr->AddPane( cc1 );
-            g_pauimgr->GetPane( cc1 ).Name( _T("ChartCanvas") );
-            g_pauimgr->GetPane( cc1 ).Fixed();
-            g_pauimgr->GetPane( cc1 ).CaptionVisible( false );
-            g_pauimgr->GetPane( cc1 ).CenterPane();
-            //g_pauimgr->GetPane( cc1 ).BestSize( cc1->GetSize() );
-            
-            break;
-            
-        case 1:{                                                 // two canvas, horizontal
-           cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
-           g_canvasArray.Add(cc1);
-           cc1->m_canvasIndex = 0;
-           g_canvasConfigArray.Item(0)->canvas = cc1;
-           
-           gFrame->SetCanvasWindow( cc1 );
-
-           cc1->SetCanvasConfig(g_canvasConfigArray.Item(0));
-           
-           cc1->SetDisplaySizeMM(g_display_size_mm);
-           cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
-           //cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
-           cc1->SetToolbarConfigString(g_toolbarConfig);
-           cc1->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-           cc1->SetToolbarOrientation( g_maintoolbar_orient);
-           cc1->ConfigureChartBar();
-           
-           g_pauimgr->AddPane( cc1 );
-           g_pauimgr->GetPane( cc1 ).Name( _T("ChartCanvas1") );
-           g_pauimgr->GetPane( cc1 ).Fixed();
-           g_pauimgr->GetPane( cc1 ).CaptionVisible( false );
-           g_pauimgr->GetPane( cc1 ).LeftDockable(true);
-           g_pauimgr->GetPane( cc1 ).Left();
-
-           
-           cc2 = new ChartCanvas( gFrame );                         // the chart display canvas
-           g_canvasArray.Add(cc2);
-           cc2->m_canvasIndex = 1;
-           g_canvasConfigArray.Item(1)->canvas = cc2;
-           
-           cc2->SetCanvasConfig(g_canvasConfigArray.Item(1));
-           
-           cc2->SetDisplaySizeMM(g_display_size_mm);
-           cc2->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
-           //cc2->m_bFollow = pConfig->st_bFollow;               // set initial state
-           //cc2->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
-           cc2->SetToolbarConfigString(g_toolbarConfig);
-           cc2->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
-           cc2->SetToolbarOrientation( g_maintoolbar_orient);
-           cc2->ConfigureChartBar();
-           
-           g_pauimgr->AddPane( cc2 );
-           g_pauimgr->GetPane( cc2 ).Name( _T("ChartCanvas2") );
-           g_pauimgr->GetPane( cc2 ).Fixed();
-           g_pauimgr->GetPane( cc2 ).CaptionVisible( false );
-           g_pauimgr->GetPane( cc2 ).RightDockable(true);
-           g_pauimgr->GetPane( cc2 ).Right();
-           //g_pauimgr->GetPane( cc2 ).Hide();
-           
-           break;
-        }
-            
-        case 2:                                                 // two canvas, vertical
-
-            break;
-    }        
-#endif
 
     g_ChartUpdatePeriod = !!cc1->m_bFollow;
     
@@ -3089,6 +2993,14 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
     }
 }
 
+ChartCanvas *MyFrame::GetPrimaryCanvas()
+{
+    if(g_canvasArray.GetCount() > 0)
+        return g_canvasArray.Item(0);
+    else
+        return NULL;
+}
+    
 void MyFrame::CreateCanvasLayout()
 {
     //  Clear the cache, and thus close all charts to avoid memory leaks
@@ -3123,9 +3035,8 @@ void MyFrame::CreateCanvasLayout()
     switch(g_canvasConfig){
         default:
         case 0:                                                 // a single canvas
-            cc1 = new ChartCanvas( this );                         // the chart display canvas
+            cc1 = new ChartCanvas( this, 0 );                         // the chart display canvas
             g_canvasArray.Add(cc1);
-            cc1->m_canvasIndex = 0;
             g_canvasConfigArray.Item(0)->canvas = cc1;
             
             SetCanvasWindow( cc1 );
@@ -3152,9 +3063,8 @@ void MyFrame::CreateCanvasLayout()
             break;
             
         case 1:{                                                 // two canvas, horizontal
-           cc1 = new ChartCanvas( this );                         // the chart display canvas
+           cc1 = new ChartCanvas( this, 0 );                         // the chart display canvas
            g_canvasArray.Add(cc1);
-           cc1->m_canvasIndex = 0;
            g_canvasConfigArray.Item(0)->canvas = cc1;
            
            SetCanvasWindow( cc1 );
@@ -3176,11 +3086,10 @@ void MyFrame::CreateCanvasLayout()
            g_pauimgr->GetPane( cc1 ).CaptionVisible( false );
            g_pauimgr->GetPane( cc1 ).LeftDockable(true);
            g_pauimgr->GetPane( cc1 ).Left();
-
+           //g_pauimgr->GetPane( cc1 ).Hide();
            
-           cc2 = new ChartCanvas( this );                         // the chart display canvas
+           cc2 = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc2);
-           cc2->m_canvasIndex = 1;
            
            //  There is not yet a config descriptor for canvas 2, so create one.
            if(g_canvasConfigArray.GetCount() < 2){
@@ -3210,7 +3119,7 @@ void MyFrame::CreateCanvasLayout()
            g_pauimgr->GetPane( cc2 ).RightDockable(true);
            g_pauimgr->GetPane( cc2 ).Right();
            //g_pauimgr->GetPane( cc2 ).Hide();
-           
+
            break;
         }
             
@@ -3236,8 +3145,8 @@ void MyFrame::RequestNewToolbars(bool bforcenew)
         if(cc)
             cc->RequestNewCanvasToolbar( bforcenew );
     }
+   
     
-        
     BuildiENCToolbar(bforcenew);
     
 #ifdef __OCPN__ANDROID__
@@ -3529,10 +3438,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     cc1->Destroy();
     cc1 = NULL;
 
-    if(cc2){
-        cc2->Destroy();
-        cc2 = NULL;
-    }
+ //TODO for all canvas
+//    if(cc2){
+//        cc2->Destroy();
+//        cc2 = NULL;
+//    }
     
     g_canvasArray.Clear();
     
@@ -3643,9 +3553,14 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 void MyFrame::OnMove( wxMoveEvent& event )
 {
-    // .. for each canvas...
-    if(cc1 && cc1->GetToolbar())
-        cc1->GetToolbar()->RePosition();
+    // ..For each canvas...
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if( cc && cc->GetToolbar()) {
+            cc->GetToolbar()->RePosition();
+            cc->ReloadVP();
+        }
+    }
 
     UpdateGPSCompassStatusBoxes( );
 
@@ -3741,6 +3656,7 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
 
 }
 
+#if 0
 void MyFrame::SetCanvasToolbars()
 {
     // ..For each canvas...
@@ -3760,7 +3676,7 @@ void MyFrame::SetCanvasToolbars()
     }
     
 }
-
+#endif
 
 void MyFrame::SetCanvasSizes( wxSize frameSize )
 {
@@ -4456,6 +4372,20 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
     }         // switch
 
+}
+
+void MyFrame::InvalidateAllGL()
+{
+#ifdef ocpnUSE_GL
+    // For each canvas
+    for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if(cc){
+            cc->InvalidateGL();
+            cc->Refresh();
+        }
+    }
+#endif    
 }
 
 #if 0
@@ -5683,6 +5613,10 @@ int MyFrame::DoOptionsDialog()
         wxYield();
         
         rr |= GENERIC_CHANGED;
+        
+        if(g_bopengl)           // Force mark/waypoint icon reload
+            rr |= S52_CHANGED;
+        
         b_refresh = true;
     }
     
@@ -6031,8 +5965,10 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
     // ..For each canvas...
     for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
         ChartCanvas *cc = g_canvasArray.Item(i);
-        if(cc )
-            cc->canvasChartsRefresh( -1 );
+        if(cc ){
+            int currentIndex = cc->GetpCurrentStack()->GetCurrentEntrydbIndex();
+            cc->canvasChartsRefresh( currentIndex );
+        }
     }
     
 #if 0    

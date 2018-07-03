@@ -39,6 +39,7 @@
 #endif
 
 class glTexFactory;
+class ChartCanvas;
 
 #define GESTURE_EVENT_TIMER 78334
 
@@ -70,12 +71,12 @@ public:
     static ViewPort ClippedViewport(const ViewPort &vp, const LLRegion &region);
 
     static bool HasNormalizedViewPort(const ViewPort &vp);
-    static void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
+    void MultMatrixViewPort(ViewPort &vp, float lat=0, float lon=0);
     static ViewPort NormalizedViewPort(const ViewPort &vp, float lat=0, float lon=0);
 
     static void RotateToViewPort(const ViewPort &vp);
-    static void DrawRegion( ViewPort &vp, const LLRegion &region);
-    static void SetClipRegion( ViewPort &vp, const LLRegion &region);
+    void DrawRegion( ViewPort &vp, const LLRegion &region);
+    void SetClipRegion( ViewPort &vp, const LLRegion &region);
     static void SetClipRect(const ViewPort &vp, const wxRect &rect, bool g_clear=false);
     static void DisableClipRegion();
     void SetColorScheme(ColorScheme cs);
@@ -112,7 +113,7 @@ public:
     wxString GetVersionString(){ return m_version; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
 
-    static void Invalidate();
+    void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, LLRegion &region);
     
     void DrawGLOverLayObjects(void);
@@ -219,6 +220,8 @@ protected:
     int          m_tideTexHeight;
     int          m_currentTexWidth;
     int          m_currentTexHeight;
+    
+    ChartCanvas *m_pParentCanvas;
     
     DECLARE_EVENT_TABLE()
 };

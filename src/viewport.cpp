@@ -101,7 +101,6 @@
 #include <setjmp.h>
 
 
-extern ChartCanvas *cc1;
 extern struct sigaction sa_all;
 extern struct sigaction sa_all_old;
 

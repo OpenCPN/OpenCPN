@@ -137,7 +137,7 @@ class ChartCanvas: public wxWindow
 {
      friend class glChartCanvas;
 public:
-      ChartCanvas(wxFrame *frame);
+      ChartCanvas(wxFrame *frame, int canvasIndex);
       ~ChartCanvas();
 
       //    Methods
@@ -705,7 +705,6 @@ private:
 
 //#ifdef ocpnUSE_GL
       glChartCanvas *m_glcc;
-      wxGLContext   *m_pGLcontext;
 //#endif
 
       //Smooth movement member variables

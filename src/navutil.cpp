@@ -1939,7 +1939,7 @@ void MyConfig::LoadCanvasConfigs( )
     
     Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
 
-    
+#if 0    
     switch( g_canvasConfig ){
         
         case 0:
@@ -1974,6 +1974,20 @@ void MyConfig::LoadCanvasConfigs( )
             break;
             
     }
+#endif
+
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            canvasConfig *pcca = new canvasConfig(0);
+            LoadConfigCanvas(pcca);
+            g_canvasConfigArray.Add(pcca);
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+            SetPath( s );
+            pcca = new canvasConfig(1);
+            LoadConfigCanvas(pcca);
+            g_canvasConfigArray.Add(pcca);
+
 }
             
 void MyConfig::LoadConfigCanvas( canvasConfig *cc )

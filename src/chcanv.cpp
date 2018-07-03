@@ -339,11 +339,14 @@ extern int              g_nAIS_activity_timer;
 extern bool             g_bskew_comp;
 extern float            g_compass_scalefactor;
 
+wxGLContext             *g_pGLcontext;   //shared common context
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
 #define MIN_BRIGHT 10
 #define MAX_BRIGHT 100
+
 
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
@@ -369,11 +372,11 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
-ChartCanvas::ChartCanvas ( wxFrame *frame ) :
+ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
      wxWindow ( frame, wxID_ANY,    wxPoint ( 20,20 ), wxSize ( 5,5 ), wxNO_BORDER )
 {
     parent_frame = ( MyFrame * ) frame;       // save a pointer to parent
-    m_canvasIndex = 0;
+    m_canvasIndex = canvasIndex;
     
     pscratch_bm = NULL;
 
@@ -462,7 +465,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = NULL;
-    m_pGLcontext = NULL;
     
     m_toolBar = NULL;
     m_toolbar_scalefactor = 1.0;
@@ -479,12 +481,15 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         wxLogMessage( _T("Creating glChartCanvas") );
         m_glcc = new glChartCanvas(this);
 
-    #if wxCHECK_VERSION(2, 9, 0)
-        m_pGLcontext = new wxGLContext(m_glcc);
-        m_glcc->SetContext(m_pGLcontext);
-    #else
-        m_pGLcontext = m_glcc->GetContext();
-    #endif
+        // We use one context for all GL windows, so that textures etc will be automatically shared
+        if(IsPrimaryCanvas()){
+            wxGLContext *pctx = new wxGLContext(m_glcc);
+            m_glcc->SetContext(pctx);
+            g_pGLcontext = pctx;                // Save a copy of the common context
+        }
+        else{
+            m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+        }
     }
 #endif
 
@@ -881,7 +886,8 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
         
 #if wxCHECK_VERSION(2, 9, 0)
-        delete m_pGLcontext;
+        if(IsPrimaryCanvas())
+            delete g_pGLcontext;
 #endif        
     }
 #endif
@@ -2003,7 +2009,7 @@ void ChartCanvas::InvalidateGL()
 {
 #ifdef ocpnUSE_GL
         if(g_bopengl)
-            glChartCanvas::Invalidate();
+            m_glcc->Invalidate();
 #endif
     if(m_Compass)
         m_Compass->UpdateStatus( true );
@@ -4222,7 +4228,7 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 {
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ) {
-        glChartCanvas::Invalidate();
+        m_glcc->Invalidate();
         if( m_glcc->GetSize() != GetSize() ) {
             m_glcc->SetSize( GetSize() );
         }
@@ -8697,7 +8703,7 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
             dc.SetPen( mPen );
         } 
         
-        pcm93->RenderNextSmallerCellOutlines( dc, vp );
+        pcm93->RenderNextSmallerCellOutlines( dc, vp, this );
     }
 #endif
 }

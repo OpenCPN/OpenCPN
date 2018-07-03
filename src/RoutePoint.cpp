@@ -53,7 +53,6 @@ extern float g_fWaypointRangeRingsStep;
 extern int g_iWaypointRangeRingsStepUnits;
 extern wxColour g_colourWaypointRangeRingsColour;
 extern OCPNPlatform *g_Platform;
-extern ChartCanvas *cc1;
 
 extern float g_ChartScaleFactorExp;
 
@@ -637,7 +636,7 @@ void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
         return;
@@ -678,7 +677,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
-        cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+        canvas->GetCanvasPointPix( m_lat, m_lon, &r );
 
     if(r.x == INVALID_COORD)
         return;
@@ -739,8 +738,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     /* update bounding box */
     if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.rotation != m_wpBBox_rotation) {
         double lat1, lon1, lat2, lon2;
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
         if(lon1 > lon2)
             m_wpBBox.Set(lat1, lon1, lat2, lon2+360);
@@ -894,7 +893,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         double tlat, tlon;
         wxPoint r1;
         ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
-        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        canvas->GetCanvasPointPix( tlat, tlon, &r1 );
         
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
         pow( (double) (r.y - r1.y), 2 ) );

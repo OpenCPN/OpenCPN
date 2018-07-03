@@ -57,6 +57,8 @@
 WX_DEFINE_LIST(JobList);
 WX_DEFINE_LIST(ProgressInfoList);
 
+WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
+
 extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int g_mipmap_max_level;
@@ -71,9 +73,10 @@ extern int              g_uncompressed_tile_size;
 extern int              g_nCPUCount;
 
 extern bool             b_inCompressAllCharts;
+extern MyFrame         *gFrame;
+extern arrayofCanvasPtr  g_canvasArray;
 
 extern OCPNPlatform *g_Platform;
-extern ChartCanvas *cc1;
 extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 
@@ -905,10 +908,7 @@ void glTextureManager::OnEvtThread( OCPN_CompressionThreadEvent & event )
             // We need to force a refresh to replace the uncompressed texture
             // This frees video memory and is also really required if we had
             // gone up a mipmap level
-            if(cc1) {
-                glChartCanvas::Invalidate(); // ensure we refresh
-                cc1->Refresh();
-            }
+            gFrame->InvalidateAllGL();
             ptd->compdata_ticks = 10;
         }
 
@@ -1272,19 +1272,26 @@ bool glTextureManager::TextureCrunch(double factor)
         if(!bGLMemCrunch)
             break;
 
-        if( cc1->GetVP().b_quilt )          // quilted
-        {
-                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
-                    }
-        }
-        else      // not quilted
-        {
-                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+               // For each canvas
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
+ 
+                if( cc->GetVP().b_quilt )          // quilted
                 {
-                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
+                        if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                            !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                            ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor *hysteresis);
+                            }
                 }
+                else      // not quilted
+                {
+                        if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                        {
+                            ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
+                        }
+                }
+            }
         }
     }
     
@@ -1325,23 +1332,31 @@ bool glTextureManager::FactoryCrunch(double factor)
         
         // we better have to find one because glTexFactory keep cache texture open
         // and ocpn will eventually run out of file descriptors
-        if( cc1->GetVP().b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+        
+        // For each canvas
+        for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
+            ChartCanvas *cc = g_canvasArray.Item(i);
+            if(cc){
                 
-                int lru = ptf->GetLRUTime();
-                if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
-                    lru_oldest = lru;
-                    ptf_oldest = ptf;
-                }
-            }
-        } else {
-            if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
-                int lru = ptf->GetLRUTime();
-                if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
-                    lru_oldest = lru;
-                    ptf_oldest = ptf;
+                if( cc->GetVP().b_quilt )          // quilted
+                {
+                    if( cc->m_pQuilt && cc->m_pQuilt->IsComposed() &&
+                        !cc->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                
+                        int lru = ptf->GetLRUTime();
+                        if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
+                            lru_oldest = lru;
+                            ptf_oldest = ptf;
+                        }
+                    }
+                } else {
+                    if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
+                        int lru = ptf->GetLRUTime();
+                        if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
+                            lru_oldest = lru;
+                            ptf_oldest = ptf;
+                        }
+                    }
                 }
             }
         }
@@ -1445,7 +1460,7 @@ void glTextureManager::BuildCompressedCache()
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));  
     int fontSize = qFont->GetPointSize();
     wxFont *sFont;    
-    wxSize csz = cc1->GetClientSize();
+    wxSize csz = gFrame->GetClientSize();
     if(csz.x < 500 || csz.y < 500)
         sFont = FontMgr::Get().FindOrCreateFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
     else
