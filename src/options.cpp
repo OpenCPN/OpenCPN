@@ -3668,7 +3668,7 @@ void ChartGroupsUI::CompletePanel(void) {
 
   allAvailableCtl =
       new wxGenericDirCtrl(this, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
-                           wxDefaultSize, wxVSCROLL);
+                           wxDefaultSize);
   activeListSizer->Add(allAvailableCtl, 1, wxEXPAND);
 
   m_pAddButton = new wxButton(this, ID_GROUPINSERTDIR, _("Add"));
@@ -3703,7 +3703,7 @@ void ChartGroupsUI::CompletePanel(void) {
   allActiveGroup->SetSizer(page0BoxSizer);
 
   defaultAllCtl = new wxGenericDirCtrl(
-      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
+      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize);
 
   //    Set the Font for the All Active Chart Group tree to be italic, dimmed
   iFont = new wxFont(*dialogFont);
