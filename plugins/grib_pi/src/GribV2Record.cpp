@@ -195,6 +195,7 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 *
 *   RETURN VALUES :
 *          0 = Successful decode
+*         -2 = no memory Error.
 *         -3 = Error decode jpeg2000 code stream.
 *         -5 = decoded image had multiple color components.
 *              Only grayscale is expected.
@@ -226,7 +227,10 @@ static int dec_jpeg2000(char *injpc,int bufsize,int *outfld)
 //       
 
     jpcstream=jas_stream_memopen(injpc,bufsize);
-
+    if (jpcstream == nullptr) {
+        printf(" dec_jpeg2000: no memory\n");
+        return -2;
+    }
 //   
 //     Decode JPEG200 codestream into jas_image_t structure.
 //       
