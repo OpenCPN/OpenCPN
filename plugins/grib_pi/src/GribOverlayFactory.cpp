@@ -39,8 +39,10 @@
 #include "GribOverlayFactory.h"
 
 #ifdef __WXGTK__
-#include <gdk/gdk.h>
+//#include <gdk/gdk.h>
 #endif
+
+#include "ocpn_plugin.h"
 
 extern int m_Altitude;
 
