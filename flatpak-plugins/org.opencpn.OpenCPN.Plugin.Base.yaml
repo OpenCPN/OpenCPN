@@ -1,0 +1,59 @@
+id: org.opencpn.OpenCPN.Plugin.Base
+runtime: org.opencpn.OpenCPN
+runtime-version: stable
+sdk: org.freedesktop.Sdk//1.6
+build-extension: true
+separate-locales: false
+appstream-compose: false
+modules: 
+    - name: chartdldr_pi
+      no-autogen: true
+      cmake: true
+      subdir: plugins/chartdldr_pi/
+      config-opts: 
+          - -DCMAKE_INSTALL_PREFIX:PATH=/app/extensions/Base
+      sources: 
+          - type: git
+            url: https://github.com/OpenCPN/OpenCPN.git
+            tag: v4.8.4 
+      post-install:
+          # Copy translations from main package to extensions -> everything in
+          # one place.
+          - cp -ura /app/share/locale.ORG/* /app/extensions/Base/share/locale
+
+    - name: wmm_pi
+      no-autogen: true
+      cmake: true
+      subdir: plugins/wmm_pi
+      config-opts: 
+          - -DCMAKE_INSTALL_PREFIX:PATH=/app/extensions/Base
+      sources: 
+          - type: git
+            url: https://github.com/OpenCPN/OpenCPN.git
+            tag: v4.8.4 
+
+    - name: dashboard_pi
+      no-autogen: true
+      cmake: true
+      subdir: plugins/dashboard_pi/
+      config-opts: 
+          - -DCMAKE_INSTALL_PREFIX:PATH=/app/extensions/Base
+      sources: 
+          - type: git
+            url: https://github.com/OpenCPN/OpenCPN.git
+            tag: v4.8.4    
+          - type: patch
+            path: 0004-dashboard-Fix-flatpak-separate-build.patch
+ 
+    - name: grib_pi
+      no-autogen: true
+      cmake: true
+      subdir: plugins/grib_pi/
+      config-opts: 
+          - -DCMAKE_INSTALL_PREFIX:PATH=/app/extensions/Base
+      sources: 
+          - type: git
+            url: https://github.com/OpenCPN/OpenCPN.git
+            tag: v4.8.4    
+          - type: patch
+            path: 0005-grib_pi-flatpak-build-fix-includes-for-separate-buil.patch
