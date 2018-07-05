@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GribOverlayFactory.h"
 
 #ifdef __WXGTK__
-#include <gdk/gdk.h>
+//#include <gdk/gdk.h>
 #endif
 
 //static void GenerateSpline(int n, wxPoint points[]);

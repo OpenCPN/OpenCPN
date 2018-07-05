@@ -18,6 +18,16 @@
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ## ***************************************************************************
 
+IF(NOT PREFIX_LIB)
+SET(PREFIX_LIB ${CMAKE_INSTALL_PREFIX}/lib)
+ENDIF(NOT PREFIX_LIB)
+
+IF(NOT PARENT)
+SET(PARENT opencpn)
+SET(PREFIX_DATA share)
+SET(PREFIX_PLUGINS ${PREFIX_LIB}/${PARENT})
+ENDIF(NOT PARENT)
+
 # define minimum cmake version
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module

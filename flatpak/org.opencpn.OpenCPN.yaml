@@ -1,0 +1,78 @@
+app-id: org.opencpn.OpenCPN
+runtime: org.freedesktop.Platform
+runtime-version: 1.6
+sdk: org.freedesktop.Sdk
+command: opencpn
+
+rename-desktop-file: opencpn.desktop
+rename-icon: opencpn
+rename-appdata-file: opencpn.appdata.xml
+
+finish-args: 
+    - --socket=x11
+    - --socket=pulseaudio
+    - --filesystem=home
+    - --device=all
+
+add-extensions: 
+    org.opencpn.OpenCPN.Plugin: 
+        directory: extensions
+        merge-dirs: lib/opencpn;share/opencpn/plugins;share/locale
+        subdirectories: true
+        no-autodownload: true
+        autodelete: false
+
+modules:
+    - name: mesa-libGLU
+      sources: 
+          - type: archive
+            url: https://mesa.freedesktop.org/archive/glu/glu-9.0.0.tar.bz2
+            sha256: 1f7ad0d379a722fcbd303aa5650c6d7d5544fde83196b42a73d1193568a4df12
+      config-opts: 
+          - --disable-static
+
+    - name: wxGTK3
+      sources: 
+          - type: archive
+            url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.0.4/wxWidgets-3.0.4.tar.bz2
+            sha256: 96157f988d261b7368e5340afa1a0cad943768f35929c22841f62c25b17bf7f0
+      config-opts: 
+          - --with-gtk=3
+          - --with-opengl
+          - --with-sdl
+          - --with-gnomeprint
+          - --with-libmspack
+          - --enable-intl
+          - --enable-no_deps
+          - --disable-rpath
+          - --enable-ipv6
+
+    - name: opencpn
+      buildsystem: cmake
+      builddir: true
+      config-opts: 
+          - -DBUNDLE_DOCS=ON
+          - -DBUNDLE_TCDATA=ON
+          - -DBUNDLE_GSHHS=CRUDE
+          - -DBUILD_SHARED_LIBS=OFF
+      post-install: 
+          - install -d /app/extensions
+            # Move plugins from main package out of the way so we can 
+            # install them from the base package instead (and have common 
+            # paths for # all plugins). The Plugins.Base extension will 
+            # install these again.
+          - mv /app/lib/opencpn /app/lib/opencpn.ORG
+          - ln -sf /app/extensions/lib/opencpn /app/lib  
+          - mv /app/share/opencpn/plugins /app/share/opencpn/plugins.ORG
+          - ln -sf /app/extensions/share/opencpn/plugins /app/share/opencpn
+          - mv /app/share/locale /app/share/locale.ORG
+          - ln -sf /app/extensions/share/locale /app/share
+      sources: 
+          - type: git
+            url: https://github.com/OpenCPN/OpenCPN.git
+            tag: v4.8.4
+          - type: patch
+            path: 0001-linux-gnome-Add-appdata-info.patch
+            use-git: true
+          - type: patch
+            path: 0003-build-Install-headers-required-to-build-default-plug.patch

@@ -95,38 +95,40 @@ read GPS input data and/or write autopilot output data, the serial
 devices to be used must exhibit read and write permission for the
 user in question.  For linux, these devices are created at startup.
 Typically, the devices as created are owned by root, with additional
-specific group (e.g. "uucp") r/w access,  i.e. permissions are 0660.
+specific group (e.g, . "uucp" or "dialout") r/w access,  i.e. 
+permissions are 0660.
 
-This configuration WILL NOT WORK for OpenCPN unless the user happens
-to belong to the group under which the devices were created,
-typically "uucp".  Not likely...
+To handle this you need to add the actual group the your user's group
+list, and run opencpn as this group. Add the group owner of
+your device to your user, like
+
+    $ sudo usermod -aG dialout $USER
+
+and logout and in again (or reboot). For the most common cases there
+is a warning box displayed on this when required.
 
 For the more general case, you must ensure that device permissions
 will enable opencpn to read and write serial devices without root
-privileges.  There are several ways to do this.
+privileges.  If a device doesn't have usable group permissions you
+need to add a udev rule updating them. Creating udev rules is a 
+large topic, please refer to more general documentation.
 
-On a Linux with udev, check the files in /etc/udev/rules.d to
-ensure that /dev/tty* devices are all created with the same group
-and with 0666 permissions.  More generally, you may need to run mknod
-or MAKEDEV as root to create a properly permissioned serial device before
-executing opencpn.  For example:
+Test your GPS input.  At user privilege, first ensure that you run
+with proper group id:
 
-      linux# mknod -m 666 /dev/ttyS0 c 4 64
+      $ sg dialout bash 
 
-If you use USB serial port adapters and your system has the Linux
-hotplug facility installed, Todo............
+Then, test the port like:
 
-Test your GPS input.  At user privilege,
+      $ stty -F /dev/ttyXXX ispeed 4800
+      $ cat </dev/ttyXXX
 
-      linux$ stty -F /dev/ttyXXX ispeed 4800
-      linux$ cat </dev/ttyXXX
-
-replace ttyXXX with the filename of the port.  This will probably be
+replacing ttyXXX with the filename of the port.  This will probably be
 either /dev/ttyUSB0 or /dev/ttyS0.  When you run this command, you
 should see text lines beginning with $ come to stdout (possibly after
 a short initial burst of binary garbage).  If you don't see this, you
 may have OS-level problems with your serial support, but more likely
-have the wrong device or permissions.  Look again.
+have the wrong device or permissions. Look again.
 
 ---------------------------------------------------------------------
 7. Cross Compiling for windows using mingw
