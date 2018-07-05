@@ -75,4 +75,4 @@ modules:
             path: 0001-linux-gnome-Add-appdata-info.patch
             use-git: true
           - type: patch
-            path: 0002-install-Install-plugin-header-file.patch
+            path: 0003-build-Install-headers-required-to-build-default-plug.patch
