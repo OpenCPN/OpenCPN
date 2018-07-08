@@ -4,8 +4,8 @@ Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
 Source: http://www.opencpn.org
 
 Files: *
-Copyright: 2000-2016 The OpenCPN Authors
-License: GPL-2
+Copyright: 2000-2018 The OpenCPN Authors
+License: GPL-2+
  On Debian systems, the full text of the GNU General Public
  License version 2 can be found in the file
  `/usr/share/common-licenses/GPL-2'.
