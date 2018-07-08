@@ -23,6 +23,41 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+/**
+ * From version 5.0, this header is distributed in the package and can
+ * be included from standard paths, usually like
+ *
+ *     #include <opencpn/ocpn_plugin.h>
+ *
+ * A plugin built this way will require current version or higher to build
+ * and run. To support older versions,  headers for the different API versions
+ * are available on paths like opencpn/12/ocpn_plugin.h for version 12. A
+ * plugin built this way will be usable on installations from version 12+.
+ * If the plugin should be buildable on the same, older version the header
+ * must be bundled with the plugin.
+ *
+ *
+ * Table of API versions
+ * ========================
+ *
+ * Commit       Version   Commit date
+ * cd5bb41d     0         2010-07-09
+ * 9b6b5ef5     2         2010-11-11
+ * 059e4df3     4         2011-03-09
+ * 9cb7df68     5         2011-05-06
+ * 658248a1     6         2011-12-26
+ * 632923ce     7         2012-03-07
+ * 5e7684b9     8         2012-04-17
+ * e3a6774b     9         2012-09-14
+ * 119786a0     10        2013-06-11
+ * 4b67b985     11        2013-12-12
+ * ca27506b     12        2014-09-02
+ * a35b687b     13        2015-03-03
+ * af85eb60     14        2017-03-05
+ * 4866342e     15        2017-09-18
+ *
+ */
+
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
