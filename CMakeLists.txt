@@ -351,18 +351,6 @@ ELSE(BUNDLE_TCDATA MATCHES "ON")
   ENDIF(UNIX AND NOT APPLE)
 ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
-IF(BUNDLE_HEADERS MATCHES "ON")
-  MESSAGE (STATUS "*** Package will include plugin development header(s) ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_headers ON")
-  ENDIF(UNIX AND NOT APPLE)
-ELSE(BUNDLE_HEADERS MATCHES "ON")
-	MESSAGE (STATUS "*** Package will NOT include plugin development header(s) ***")
-  IF(UNIX AND NOT APPLE)
-    SET(CPACK_RPM_SPEC_MORE_DEFINE "${CPACK_RPM_SPEC_MORE_DEFINE}\n%define _include_headers OFF")
-  ENDIF(UNIX AND NOT APPLE)
-ENDIF(BUNDLE_HEADERS MATCHES "ON")
-
 
 #  To build for android, use this cmake invocation..
 #$cmake -DUSE_GARMINHOST=OFF -D_wx_selected_config=androideabi-qt
