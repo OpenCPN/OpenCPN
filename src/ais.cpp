@@ -55,8 +55,7 @@
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
-extern ChartCanvas      *cc1;
-//extern MyFrame          *gFrame;
+extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;
 extern OCPNPlatform     *g_Platform;
 
@@ -889,7 +888,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     //  Compensate for various display resolutions
     //  Develop empirically, making a "diamond ATON" symbol about 4 mm square
     
-    float nominal_target_size_mm = cc1->GetDisplaySizeMM() / 60.0;
+    float nominal_target_size_mm = gFrame->GetPrimaryCanvas()->GetDisplaySizeMM() / 60.0;
     nominal_target_size_mm = wxMin(nominal_target_size_mm, 10.0);
     nominal_target_size_mm = wxMax(nominal_target_size_mm, 6.0);
     
@@ -1022,8 +1021,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     float sin_theta = sinf( theta ), cos_theta = cosf( theta );
 
     wxDash dash_long[2];
-    dash_long[0] = (int) ( 1.0 * cc1->GetPixPerMM() );  // Long dash  <---------+
-    dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
+    dash_long[0] = (int) ( 1.0 * gFrame->GetPrimaryCanvas()->GetPixPerMM() );  // Long dash  <---------+
+    dash_long[1] = (int) ( 0.5 * gFrame->GetPrimaryCanvas()->GetPixPerMM() );  // Short gap            |
 
     int targetscale = 100;
     if ( g_bAllowShowScaled && g_bShowScaled ){

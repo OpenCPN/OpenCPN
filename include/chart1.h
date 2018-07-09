@@ -374,31 +374,34 @@ class MyFrame: public wxFrame
     void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);
     void ClearRouteTool();
-    void DoStackUp(void);
-    void DoStackDown(void);
+    void DoStackUp(ChartCanvas *cc);
+    void DoStackDown(ChartCanvas *cc);
     void selectChartDisplay( int type, int family);
     void applySettingsString( wxString settings);
     void setStringVP(wxString VPS);
     void InvalidateAllGL();
+    void RefreshAllCanvas( bool bErase = true);
+    void CancelAllMouseRoute();
+    
     ChartCanvas *GetPrimaryCanvas();
-    void DoStackDelta( int direction );
+    void DoStackDelta( ChartCanvas *cc, int direction );
     void DoSettings( void );
     
     void TriggerResize(wxSize sz);
     void OnResizeTimer(wxTimerEvent &event);
     
     void MouseEvent(wxMouseEvent& event);
-    void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
-    void SelectdbChart(int dbindex);
-    void SelectQuiltRefChart(int selected_index);
-    void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
+//     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
+//     void SelectdbChart(int dbindex);
+//     void SelectQuiltRefChart(int selected_index);
+//     void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
 
-    void JumpToPosition(double lat, double lon, double scale);
-
+    void JumpToPosition( ChartCanvas *cc, double lat, double lon, double scale );
+    
     void ProcessCanvasResize(void);
 
     void BuildMenuBar( void );
-    void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
+    void ApplyGlobalSettings(bool bnewtoolbar);
     void RegisterGlobalMenuItems();
     void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
@@ -408,11 +411,11 @@ class MyFrame: public wxFrame
     void StopSockets(void);
     void ResumeSockets(void);
     void ToggleDataQuality();
-    void TogglebFollow(void);
+    void TogglebFollow(ChartCanvas *cc);
     void ToggleFullScreen();
-    void ToggleChartBar();
-    void SetbFollow(void);
-    void ClearbFollow(void);
+    void ToggleChartBar(ChartCanvas *cc);
+    void SetbFollow(ChartCanvas *cc);
+    void ClearbFollow(ChartCanvas *cc);
     void ToggleChartOutlines(void);
     void ToggleENCText(void);
     void ToggleSoundings(void);
@@ -422,24 +425,21 @@ class MyFrame: public wxFrame
     void ToggleTestPause(void);
     void TrackOn(void);
     void SetENCDisplayCategory( enum _DisCat nset );
-    void ToggleNavobjects(void);
-    
+    void ToggleNavobjects( ChartCanvas *cc );
+        
     Track *TrackOff(bool do_add_point = false);
     void TrackDailyRestart(void);
     bool ShouldRestartTrack();
     void ToggleColorScheme();
-    int GetnChartStack(void);
     void SetMenubarItemState ( int item_id, bool state );
-    void SetToolbarItemState ( int tool_id, bool state );
+    void SetToolbarItemState( ChartCanvas *cc, int tool_id, bool state );
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void SetToolbarItemSVG( int tool_id, wxString normalSVGfile,
                             wxString rolloverSVGfile,
                             wxString toggledSVGfile );
-    void ToggleQuiltMode(void);
-    void ToggleCourseUp(void);
-    void SetQuiltMode(bool bquilt);
-    bool GetQuiltMode(void);
-    void UpdateControlBar(void);
+    void ToggleQuiltMode(ChartCanvas *cc);
+    void ToggleCourseUp(ChartCanvas *cc);
+    void UpdateControlBar(ChartCanvas *cc);
 
     void ShowTides(bool bShow);
     void ShowCurrents(bool bShow);
@@ -447,25 +447,20 @@ class MyFrame: public wxFrame
     void SubmergeAllToolbars(void);
     void SurfaceAllToolbars(void);
     void ToggleAllToolbars( bool b_smooth = false );
-    bool IsToolbarShown();
-    void SetToolbarScale(void);
+    void SetAllToolbarScale(void);
     void SetGPSCompassScale(void);
     
     void RefreshGroupIndices(void);
 
     double GetBestVPScale(ChartBase *pchart);
 
-    ChartCanvas *GetCanvasWindow(){ return m_pchart_canvas; }
-    void SetCanvasWindow(ChartCanvas *pcanv){ m_pchart_canvas = pcanv; }
-
     ColorScheme GetColorScheme();
     void SetAndApplyColorScheme(ColorScheme cs);
 
     void OnFrameTCTimer(wxTimerEvent& event);
     void OnFrameCOGTimer(wxTimerEvent& event);
-    void SetupQuiltMode(void);
 
-    void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
+    void ChartsRefresh();
 
     bool CheckGroup(int igroup);
     double GetMag(double a);
@@ -481,7 +476,6 @@ class MyFrame: public wxFrame
     
     wxStatusBar         *m_pStatusBar;
     wxMenuBar           *m_pMenuBar;
-    int                 nRoute_State;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;
 
@@ -514,19 +508,19 @@ class MyFrame: public wxFrame
     bool                m_bdefer_resize;
     wxSize              m_defer_size;
     wxSize              m_newsize;
+    double           COGTable[MAX_COG_AVERAGE_SECONDS];
     
     void FastClose();
-    void SetChartUpdatePeriod(ViewPort &vp);
+    void SetChartUpdatePeriod();
     void CreateCanvasLayout();
     void LoadHarmonics();
+    void ReloadAllVP();
     
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
     void UpdateCanvasConfigDescriptors();
     void SetCanvasSizes( wxSize frameSize );
-    void SetCanvasToolbars( );
-    
     
     void UpdateAllToolbars( ColorScheme cs );
     
@@ -539,11 +533,9 @@ class MyFrame: public wxFrame
     wxString GetGroupName(int igroup);
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
-    void SetAISDisplayStyle(int StyleIndx);
+    void SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx);
 
     int                 m_StatusBarFieldCount;
-
-    ChartCanvas         *m_pchart_canvas;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads
 
@@ -555,7 +547,6 @@ class MyFrame: public wxFrame
     wxString         m_last_reported_chart_name;
     wxString         m_last_reported_chart_pubdate;
 
-    double           COGTable[MAX_COG_AVERAGE_SECONDS];
 
     wxString         m_lastAISiconName;
 

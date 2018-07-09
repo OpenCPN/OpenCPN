@@ -32,6 +32,7 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
+#include "RoutePoint.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
@@ -409,7 +410,7 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 {
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
-        if( td ) gFrame->JumpToPosition( td->Lat, td->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
+        if( td ) gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), td->Lat, td->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
     }
 }
 

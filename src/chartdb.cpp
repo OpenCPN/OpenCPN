@@ -62,12 +62,10 @@ extern ColorScheme GetColorScheme();
 
 class s52plib;
 
-extern ChartBase    *Current_Ch;
 extern ThumbWin     *pthumbwin;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern bool         g_bopengl;
-//extern ChartCanvas  *cc1;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
@@ -1070,13 +1068,9 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             for(unsigned int i=0 ; i<nCache ; i++)
             {
                 CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
-                if((ChartBase *)(pce->pChart) != Current_Ch)
-                {
-                    if(pce->RecentTime < LRUTime && !pce->n_lock)
-                    {
-                        LRUTime = pce->RecentTime;
-                        iOldest = i;
-                    }
+                if(pce->RecentTime < LRUTime && !pce->n_lock){
+                    LRUTime = pce->RecentTime;
+                    iOldest = i;
                 }
             }
             int dt = m_ticks - LRUTime;
@@ -1084,7 +1078,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(iOldest));
             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                 
-            if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) ){
+            if( (!pce->n_lock) ){
                 if(blog)
                     wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, dt);
                 
@@ -1448,8 +1442,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
     
     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
         
-      if(Current_Ch != pDeleteCandidate)
-      {
 
             // Find the chart in the cache
             CacheEntry *pce = NULL;
@@ -1472,7 +1464,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
                       retval = true;
                   }
             }
-      }
       
       m_cache_mutex.Unlock();
     }

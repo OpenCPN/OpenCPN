@@ -69,7 +69,6 @@ extern ocpnGLOptions g_GLOptions;
 #define new DEBUG_NEW
 #endif
 
-extern ChartCanvas               *cc1;
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
@@ -6882,7 +6881,7 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 
@@ -6927,7 +6926,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 }
@@ -6975,7 +6974,7 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 
       if ( m_pparent ) {
             m_pparent->Refresh ( true );
-            cc1->InvalidateGL();
+            gFrame->InvalidateAllGL();
       }
     }
 }

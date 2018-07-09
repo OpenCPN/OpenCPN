@@ -31,7 +31,6 @@
 #include "routeman.h"
 #include "Route.h"
 
-extern ChartCanvas *cc1;
 extern Routeman    *g_pRouteMan;
 
 Select::Select()
@@ -527,17 +526,17 @@ bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, 
     return false;
 }
 
-void Select::CalcSelectRadius()
+void Select::CalcSelectRadius(ChartCanvas *cc)
 {
-    selectRadius = pixelRadius / ( cc1->GetCanvasTrueScale() * 1852 * 60 );
+    selectRadius = pixelRadius / ( cc->GetCanvasTrueScale() * 1852 * 60 );
 }
 
-SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
+SelectItem *Select::FindSelection( ChartCanvas *cc, float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
 
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -578,7 +577,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
     find_ok: return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel )
+bool Select::IsSelectableSegmentSelected( ChartCanvas *cc, float slat, float slon, SelectItem *pFindSel )
 {
     bool valid = false;
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -595,7 +594,7 @@ bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pF
         // not in the list anymore
         return false;
     }
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
     float a = pFindSel->m_slat;
     float b = pFindSel->m_slat2;
@@ -605,13 +604,13 @@ bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pF
     return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
-SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype )
+SelectableItemList Select::FindSelectionList( ChartCanvas *cc, float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
     SelectableItemList ret_list;
 
-    CalcSelectRadius();
+    CalcSelectRadius(cc);
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -627,7 +626,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_DRAGHANDLE:    
                     if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
                             && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
-                        if(cc1->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
+                        if(cc->m_bShowNavobjects || ((RoutePoint *)pFindSel->m_pData1)->m_bIsActive || g_pRouteMan->FindRouteContainingWaypoint( (RoutePoint *)pFindSel->m_pData1 )->IsActive())
                             ret_list.Append( pFindSel );
                     }
                     break;
@@ -639,7 +638,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     d = pFindSel->m_slon2;
 
                     if( IsSegmentSelected( a, b, c, d, slat, slon ) )
-                        if(cc1->m_bShowNavobjects || ((Route *)pFindSel->m_pData3)->m_bRtIsActive)
+                        if(cc->m_bShowNavobjects || ((Route *)pFindSel->m_pData3)->m_bRtIsActive)
                             ret_list.Append( pFindSel );
 
                     break;

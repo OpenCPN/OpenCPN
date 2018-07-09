@@ -50,7 +50,6 @@
 
 extern bool                       g_bTransparentToolbar;
 extern bool                       g_bTransparentToolbarInOpenGLOK;
-extern ChartCanvas*               cc1;
 extern bool                       g_bopengl;
 extern ocpnStyle::StyleManager*   g_StyleManager;
 extern MyFrame*                   gFrame;
@@ -538,15 +537,18 @@ void ocpnFloatingToolbarDialog::SetGeometry(bool bAvoid, wxRect rectAvoid)
         
         int max_rows = 10;
         int max_cols = 100;
-        if(cc1){
+        
+        ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+        
+        if(parentCanvas){
 
-            int avoid_start = cc1->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
+            int avoid_start = parentCanvas->GetClientSize().x - (tool_size.x + m_style->GetToolSeparation()) * 2;  // default
             if(bAvoid && !rectAvoid.IsEmpty()){
-                avoid_start = cc1->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
+                avoid_start = parentCanvas->GetClientSize().x - rectAvoid.width - 10;  // this is compass window, if shown
             }
             
             
-            max_rows = (cc1->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
+            max_rows = (parentCanvas->GetClientSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 1;
             
             max_cols = (avoid_start - grabber_width) / ( tool_size.x + m_style->GetToolSeparation());
             max_cols -= 1;
@@ -2162,16 +2164,25 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
     // allow smooth zooming while toolbutton is held down
     if(g_bsmoothpanzoom && !g_btouch) {
+        ChartCanvas *pcc = NULL;
+        ocpnFloatingToolbarDialog *parent = wxDynamicCast(GetParent(), ocpnFloatingToolbarDialog);
+        if(parent)
+            pcc = wxDynamicCast(parent->GetParent(), ChartCanvas);
+            
+        
         if(event.LeftUp() && m_btoolbar_is_zooming) {
-            cc1->StopMovement();
-            m_btoolbar_is_zooming = false;
+            if(pcc){
+                pcc->StopMovement();
+                m_btoolbar_is_zooming = false;
+            }
             return;
         }
 
-        if( event.LeftDown() && tool &&
-            (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
-            cc1->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5, false, false );
-            m_btoolbar_is_zooming = true;
+        if( event.LeftDown() && tool && (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
+            if(pcc){
+                pcc->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5, false, false );
+                m_btoolbar_is_zooming = true;
+            }
             return;
         }
     }

@@ -2281,8 +2281,6 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
     OCPNRegion rendered_region;
 
-//    double scale_onscreen = vp.view_scale_ppm;
-//    double max_allowed_scale = 4. * cc1->GetAbsoluteMinScalePpm();
 
     if( GetnCharts() && !m_bbusy ) {
 
@@ -2297,7 +2295,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
         if( !chart_region.Empty() ) {
             while( chart ) {
-                bool okToRender = true;//cc1->IsChartLargeEnoughToRender( chart, vp );
+                bool okToRender = true;
 
                 if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
                     okToRender = false;
@@ -2543,7 +2541,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
 #if 0           // this is fogging effect
                 unsigned char *bg = src.GetData();
-                wxColour color = cc1->GetFogColor();
+                wxColour color = m_parent->GetFogColor();
 
                 float transparency = fog;
 

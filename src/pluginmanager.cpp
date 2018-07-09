@@ -117,7 +117,6 @@ extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
-extern ChartCanvas     *cc1;
 extern wxArrayString    g_locale_catalog_array;
 extern int              g_GUIScaleFactor;
 extern int              g_ChartScaleFactor;
@@ -192,8 +191,8 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.b_quilt =                pivp.b_quilt;
     vp.m_projection_type =      pivp.m_projection_type;
  
-    if(cc1)
-        vp.ref_scale = cc1->GetVP().ref_scale;
+    if(gFrame->GetPrimaryCanvas())
+        vp.ref_scale = gFrame->GetPrimaryCanvas()->GetVP().ref_scale;
     else
         vp.ref_scale = vp.chart_scale;
     
@@ -281,7 +280,7 @@ PlugInManager::PlugInManager(MyFrame *parent)
     MyFrame *pFrame = GetParentFrame();
     if(pFrame)
     {
-        m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
+        m_plugin_menu_item_id_next = pFrame->GetPrimaryCanvas()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
     #ifdef __OCPN_USE_CURL__
@@ -492,8 +491,8 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     
     // Inform Plugins of OpenGL configuration, if enabled
     if(g_bopengl){
-        if(cc1->GetglCanvas())
-            cc1->GetglCanvas()->SendJSONConfigMessage();
+        if(gFrame->GetPrimaryCanvas()->GetglCanvas())
+            gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
     }
     
     //  And then reload all catalogs.
@@ -2104,7 +2103,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle)
             if(pttc->id == item)
             {
                 pttc->b_toggle = toggle;
-                pParent->SetToolbarItemState(item, toggle);
+                pParent->SetToolbarItemState( gFrame->GetPrimaryCanvas(), item, toggle);
                 break;
             }
         }
@@ -2419,7 +2418,7 @@ wxWindow *GetOCPNCanvasWindow()
     if(s_ppim)
     {
         MyFrame *pFrame = s_ppim->GetParentFrame();
-        pret = (wxWindow *)pFrame->GetCanvasWindow();
+        pret = (wxWindow *)pFrame->GetPrimaryCanvas();
     }
     return pret;
 }
@@ -2656,8 +2655,7 @@ bool UpdateChartDBInplace(wxArrayString dir_array,
                 b_force_update, b_ProgressDialog,
                 ChartData->GetDBFileName());
 
-    ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp);
+    gFrame->ChartsRefresh();
 
     return b_ret;
 }
@@ -2701,9 +2699,8 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             }
             
             
-            if(b_RefreshCanvas || !cc1->GetQuiltMode()) {
-                ViewPort vp;
-                gFrame->ChartsRefresh(-1, vp);
+            if(b_RefreshCanvas || !gFrame->GetPrimaryCanvas()->GetQuiltMode()) {
+                gFrame->ChartsRefresh();
             }
         }
     }
@@ -2737,8 +2734,7 @@ int RemoveChartFromDBInPlace( wxString &full_path )
             g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
         }
         
-        ViewPort vp;
-        gFrame->ChartsRefresh(-1, vp);
+        gFrame->ChartsRefresh();
     }
     
     return bret;
@@ -2773,7 +2769,7 @@ void DimeWindow(wxWindow *win)
 
 void JumpToPosition(double lat, double lon, double scale)
 {
-    gFrame->JumpToPosition(lat, lon, scale);
+    gFrame->JumpToPosition(gFrame->GetPrimaryCanvas(), lat, lon, scale);
 }
 
 /* API 1.9 */
@@ -2848,8 +2844,9 @@ int GetChartbarHeight( void )
 {
     int val = 0;
     if(g_bShowChartBar){
-        if(cc1 && cc1->GetPiano()){
-            val = cc1->GetPiano()->GetHeight();
+        ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+        if(cc && cc->GetPiano()){
+            val = cc->GetPiano()->GetHeight();
         }
     }
     return val;
@@ -3183,7 +3180,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
             }
         }
 
-        SelectItem *pFind = pSelect->FindSelection( lat_save, lon_save, SELTYPE_ROUTEPOINT );
+        SelectItem *pFind = pSelect->FindSelection( gFrame->GetPrimaryCanvas(), lat_save, lon_save, SELTYPE_ROUTEPOINT );
         if( pFind ) {
             pFind->m_slat = pwaypoint->m_lat;             // update the SelectList entry
             pFind->m_slon = pwaypoint->m_lon;
@@ -4409,8 +4406,8 @@ InitReturn ChartPlugInWrapper::Init( const wxString& name, ChartInitFlag init_fl
 
         //  PlugIn may invoke wxExecute(), which steals the keyboard focus
         //  So take it back
-        if(cc1)
-            cc1->SetFocus();
+        if(gFrame->GetPrimaryCanvas())
+            gFrame->GetPrimaryCanvas()->SetFocus();
         
         return ret_val;
     }
@@ -5723,22 +5720,22 @@ double fromDMM_Plugin( wxString sdms )
 
 void SetCanvasRotation(double rotation)
 {
-    cc1->DoRotateCanvas( rotation );
+    gFrame->GetPrimaryCanvas()->DoRotateCanvas( rotation );
 }
 
 double GetCanvasTilt()
 {
-    return cc1->GetVPTilt();
+    return gFrame->GetPrimaryCanvas()->GetVPTilt();
 }
 
 void SetCanvasTilt(double tilt)
 {
-    cc1->DoTiltCanvas( tilt );
+    gFrame->GetPrimaryCanvas()->DoTiltCanvas( tilt );
 }
 
 void SetCanvasProjection(int projection)
 {
-    cc1->SetVPProjection(projection);
+    gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
 // Play a sound to a given device
@@ -5759,7 +5756,7 @@ bool PlugInPlaySoundEx( wxString &sound_file, int deviceIndex )
 
 bool CheckEdgePan_PlugIn( int x, int y, bool dragging, int margin, int delta )
 {
-    return cc1->CheckEdgePan( x, y, dragging, margin, delta );
+    return gFrame->GetPrimaryCanvas()->CheckEdgePan( x, y, dragging, margin, delta );
 }
 
 wxBitmap GetIcon_PlugIn(const wxString & name)
@@ -5770,7 +5767,7 @@ wxBitmap GetIcon_PlugIn(const wxString & name)
 
 void SetCursor_PlugIn( wxCursor *pCursor )
 {
-    cc1->pPlugIn_Cursor = pCursor;
+    gFrame->GetPrimaryCanvas()->pPlugIn_Cursor = pCursor;
 }
 
 void AddChartDirectory( wxString &path )
@@ -6425,8 +6422,8 @@ wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family,
     return FontMgr::Get().FindOrCreateFont(point_size, family, style, weight, underline, facename, encoding);
 }
 
-int PluginGetMinAvailableGshhgQuality() { return cc1->GetMinAvailableGshhgQuality(); }
-int PluginGetMaxAvailableGshhgQuality() { return cc1->GetMaxAvailableGshhgQuality(); }
+int PluginGetMinAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMinAvailableGshhgQuality(); }
+int PluginGetMaxAvailableGshhgQuality() { return gFrame->GetPrimaryCanvas()->GetMaxAvailableGshhgQuality(); }
 
 /* API 1.16 */
 // disable builtin console canvas, and autopilot nmea sentences

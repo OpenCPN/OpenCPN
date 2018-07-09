@@ -173,7 +173,7 @@ protected:
     
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
-
+    
     bool        m_b_paint_enable;
     int         m_in_glpaint;
 

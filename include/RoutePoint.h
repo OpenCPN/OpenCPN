@@ -49,7 +49,8 @@ public:
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
       void CalculateDCRect(wxDC& dc, ChartCanvas *canvas, wxRect *prect);
-
+      LLBBox &GetBBox(){ return m_wpBBox; }
+      
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
       bool IsVisible() { return m_bIsVisible; }
       bool IsListed() { return m_bIsListed; }

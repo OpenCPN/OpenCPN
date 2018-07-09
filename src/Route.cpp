@@ -468,21 +468,28 @@ void Route::DrawGL( ViewPort &vp, ChartCanvas *canvas )
 #ifdef ocpnUSE_GL
     if( pRoutePointList->empty() || !m_bVisible ) return;
 
-    if(!vp.GetBBox().IntersectOut(GetBBox())){
+    if(!vp.GetBBox().IntersectOut(GetBBox()))
         DrawGLRouteLines(vp, canvas);
 
-        /*  Route points  */
-        for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
-            RoutePoint *prp = node->GetData();
+    /*  Route points  */
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+        // Inflate the bounding box a bit to ensure full drawing in accelerated pan mode.
+        // TODO this is a little extravagant, assumming a mark is always a large fixed lat/lon extent.
+        //  Maybe better to use the mark's drawn box, once it is known.
+        if(vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)){
+                
             if ( !m_bVisible && prp->m_bKeepXRoute )
                 prp->DrawGL( vp, canvas );
             else if (m_bVisible)
                 prp->DrawGL( vp, canvas );
         }
     }
+    
 #endif
 }
 
+    
 void Route::DrawGLRouteLines( ViewPort &vp, ChartCanvas *canvas )
 {
 #ifdef ocpnUSE_GL
@@ -860,8 +867,16 @@ LLBBox &Route::GetBBox( void )
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *data = node->GetData();
 
-    bbox_lonmax = bbox_lonmin = data->m_lon;
-    bbox_latmax = bbox_latmin = data->m_lat;
+    if(data->m_wpBBox.GetValid()){
+        bbox_lonmax = data->m_wpBBox.GetMaxLon();
+        bbox_lonmin = data->m_wpBBox.GetMinLon();
+        bbox_latmax = data->m_wpBBox.GetMaxLat();
+        bbox_latmin = data->m_wpBBox.GetMinLat();
+    }
+    else{
+        bbox_lonmax = bbox_lonmin = data->m_lon;
+        bbox_latmax = bbox_latmin = data->m_lat;
+    }
 
     double lastlon = data->m_lon, wrap = 0;
 

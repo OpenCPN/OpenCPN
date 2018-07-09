@@ -90,7 +90,7 @@ millions of points.
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern ChartCanvas      *cc1;
+extern MyFrame *gFrame;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern Select *pSelect;
@@ -187,7 +187,7 @@ void TrackPoint::Draw(ocpnDC& dc )
     wxPoint r;
     wxRect hilitebox;
  
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    gFrame->GetPrimaryCanvas()->GetCanvasPointPix( m_lat, m_lon, &r );
     
     wxPen *pen;
     pen = g_pRouteMan->GetRoutePointPen();
@@ -549,7 +549,7 @@ void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
 {
     wxPoint r(INVALID_COORD, INVALID_COORD);
     if ( (size_t)n < TrackPoints.size() )
-        cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
+        gFrame->GetPrimaryCanvas()->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
 
     std::list<wxPoint> &pointlist = pointlists.back();
     if(r.x == INVALID_COORD) {
@@ -651,7 +651,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
     double radius = 0.;
     if( g_bHighliteTracks ) {
-        double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
+        double radius_meters = 20;          // 1.5 mm at original scale
         radius = radius_meters * VP.view_scale_ppm;
         if(radius < 1.0)
             radius = 0;
@@ -864,7 +864,7 @@ void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
         pointlists.push_back(new_list);
         AddPointToList(pointlists, TrackPoints.size()-1);
         wxPoint r;
-        cc1->GetCanvasPointPix( gLat, gLon, &r );
+        gFrame->GetPrimaryCanvas()->GetCanvasPointPix( gLat, gLon, &r );
         pointlists.back().push_back(r);
     }
 }

@@ -150,7 +150,7 @@ void doUndoAppendWaypoint( UndoAction* action )
     Route* route = (Route*) action->after[0];
 
     bool noRouteLeftToRedo = false;
-    if( (route->GetnPoints() == 2) && (gFrame->nRoute_State == 0) )
+    if( (route->GetnPoints() == 2) && (cc1->m_routeState == 0) )
         noRouteLeftToRedo = true;
 
     cc1->RemovePointFromRoute( point, route );
@@ -167,8 +167,8 @@ void doUndoAppendWaypoint( UndoAction* action )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 
-    if( gFrame->nRoute_State > 1 ) {
-        gFrame->nRoute_State--;
+    if( cc1->m_routeState > 1 ) {
+        cc1->m_routeState--;
         cc1->m_prev_pMousePoint = route->GetLastPoint();
         cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
         cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;
@@ -194,8 +194,8 @@ void doRedoAppendWaypoint( UndoAction* action )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 
-    if( gFrame->nRoute_State > 1 ) {
-        gFrame->nRoute_State++;
+    if( cc1->m_routeState > 1 ) {
+        cc1->m_routeState++;
         cc1->m_prev_pMousePoint = route->GetLastPoint();
         cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
         cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;

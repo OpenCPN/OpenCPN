@@ -137,8 +137,6 @@ extern bool             b_inCompressAllCharts;
 GLenum       g_texture_rectangle_format;
 
 extern int g_memCacheLimit;
-extern bool g_bCourseUp;
-extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin         *pthumbwin;
@@ -1234,15 +1232,17 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
         return;
     ocpnDC dc(*this);
 
-    for(wxTrackListNode *node = pTrackList->GetFirst();
-        node; node = node->GetNext() ) {
-        Track *pTrackDraw = node->GetData();
-            /* defer rendering active tracks until later */
-        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
-        if(pActiveTrack && pActiveTrack->IsRunning() )
-            continue;
+    if(m_pParentCanvas->IsPrimaryCanvas()){
+        for(wxTrackListNode *node = pTrackList->GetFirst();
+            node; node = node->GetNext() ) {
+            Track *pTrackDraw = node->GetData();
+                /* defer rendering active tracks until later */
+            ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+            if(pActiveTrack && pActiveTrack->IsRunning() )
+                continue;
 
-        pTrackDraw->Draw( dc, vp, vp.GetBBox() );
+            pTrackDraw->Draw( dc, vp, vp.GetBBox() );
+        }
     }
     
     for(wxRouteListNode *node = pRouteList->GetFirst();
@@ -1278,15 +1278,16 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
 
-    for(wxTrackListNode *node = pTrackList->GetFirst();
-        node; node = node->GetNext() ) {
-        Track *pTrackDraw = node->GetData();
-            /* defer rendering active tracks until later */
-        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
-        if(pActiveTrack && pActiveTrack->IsRunning() )
-            pTrackDraw->Draw( dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
+    if(m_pParentCanvas->IsPrimaryCanvas()){
+        for(wxTrackListNode *node = pTrackList->GetFirst();
+            node; node = node->GetNext() ) {
+            Track *pTrackDraw = node->GetData();
+                /* defer rendering active tracks until later */
+            ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+            if(pActiveTrack && pActiveTrack->IsRunning() )
+                pTrackDraw->Draw( dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
+        }
     }
-
     for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         
@@ -3004,16 +3005,16 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
     // we need to know this before rendering the chart so we can compute the background region
     // and nodta regions correctly.  I would prefer to just perform this here (or in SetViewPoint)
     // for all vector charts instead of in their render routine, but how to handle quilted cases?
-    if(!vp.b_quilt && Current_Ch->GetChartType() == CHART_TYPE_CM93COMP)
-        static_cast<cm93compchart*>( Current_Ch )->SetVPParms( vp );
+    if(!vp.b_quilt && m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP)
+        static_cast<cm93compchart*>( m_pParentCanvas->m_singleChart )->SetVPParms( vp );
 #endif
         
     LLRegion chart_region;
-    if( !vp.b_quilt && (Current_Ch->GetChartType() == CHART_TYPE_PLUGIN) ){
-        if(Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER){
+    if( !vp.b_quilt && (m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_PLUGIN) ){
+        if(m_pParentCanvas->m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER){
             // We do this the hard way, since PlugIn Raster charts do not understand LLRegion yet...
             double ll[8];
-            ChartPlugInWrapper *cpw = dynamic_cast<ChartPlugInWrapper*> ( Current_Ch );
+            ChartPlugInWrapper *cpw = dynamic_cast<ChartPlugInWrapper*> ( m_pParentCanvas->m_singleChart );
             if( !cpw) return;
             
             cpw->chartpix_to_latlong(0,                     0,              ll+0, ll+1);
@@ -3035,7 +3036,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         }
         else{
             Extent ext;
-            Current_Ch->GetChartExtent(&ext);
+            m_pParentCanvas->m_singleChart->GetChartExtent(&ext);
             
             double ll[8] = {ext.SLAT, ext.WLON,
             ext.SLAT, ext.ELON,
@@ -3045,7 +3046,7 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         }
     }
     else
-        chart_region = vp.b_quilt ? m_pParentCanvas->m_pQuilt->GetFullQuiltRegion() : Current_Ch->GetValidRegion();
+        chart_region = vp.b_quilt ? m_pParentCanvas->m_pQuilt->GetFullQuiltRegion() : m_pParentCanvas->m_singleChart->GetValidRegion();
 
     bool world_view = false;
     for(OCPNRegionIterator upd ( rect_region ); upd.HaveRects(); upd.NextRect()) {
@@ -3064,16 +3065,16 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, const OCPNRegion &rect_region)
         RenderQuiltViewGL( vp, rect_region );
     else {
         LLRegion region = vp.GetLLRegion(rect_region);
-        if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER ){
-            if(Current_Ch->GetChartType() == CHART_TYPE_MBTILES)
-                Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
+        if( m_pParentCanvas->m_singleChart->GetChartFamily() == CHART_FAMILY_RASTER ){
+            if(m_pParentCanvas->m_singleChart->GetChartType() == CHART_TYPE_MBTILES)
+                m_pParentCanvas->m_singleChart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
             else
-                RenderRasterChartRegionGL( Current_Ch, vp, region );
+                RenderRasterChartRegionGL( m_pParentCanvas->m_singleChart, vp, region );
         }
-        else if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) {
+        else if( m_pParentCanvas->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
             chart_region.Intersect(region);
             RenderNoDTA(vp, chart_region);
-            Current_Ch->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
+            m_pParentCanvas->m_singleChart->RenderRegionViewOnGL( *m_pcontext, vp, rect_region, region );
         } 
     }
         
@@ -3375,7 +3376,7 @@ void glChartCanvas::Render()
 {
     if( !m_bsetup || !m_pParentCanvas->m_pQuilt ||
         ( m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_pQuilt->IsComposed() ) ||
-        ( !m_pParentCanvas->VPoint.b_quilt && !Current_Ch ) ) {
+        ( !m_pParentCanvas->VPoint.b_quilt && !m_pParentCanvas->m_singleChart ) ) {
 #ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
             SwapBuffers();
 #endif
@@ -3468,7 +3469,7 @@ void glChartCanvas::Render()
                && m_cache_vp.clon == VPoint.clon
                && m_cache_vp.IsValid()
                && m_cache_vp.pix_height == VPoint.pix_height
-               && m_cache_current_ch == Current_Ch ) {
+               && m_cache_current_ch == m_pParentCanvas->m_singleChart ) {
             b_newview = false;
         }
 
@@ -3725,7 +3726,7 @@ void glChartCanvas::Render()
         glDisable( g_texture_rectangle_format );
 
         m_cache_vp = VPoint;
-        m_cache_current_ch = Current_Ch;
+        m_cache_current_ch = m_pParentCanvas->m_singleChart;
 
         if(VPoint.b_quilt)
             m_pParentCanvas->m_pQuilt->SetRenderedVP( VPoint );
@@ -3842,8 +3843,8 @@ void glChartCanvas::Render()
     if(g_bShowChartBar)
         DrawChartBar(gldc);
 
-// TODO    if (g_Compass)
-//         g_Compass->Paint(gldc);
+    if (m_pParentCanvas->m_Compass)
+        m_pParentCanvas->m_Compass->Paint(gldc);
     
     //quiting?
     if( g_bquiting )

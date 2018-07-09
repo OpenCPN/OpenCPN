@@ -77,7 +77,6 @@ extern MyFrame         *gFrame;
 extern arrayofCanvasPtr  g_canvasArray;
 
 extern OCPNPlatform *g_Platform;
-extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
@@ -1286,10 +1285,10 @@ bool glTextureManager::TextureCrunch(double factor)
                 }
                 else      // not quilted
                 {
-                        if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
-                        {
-                            ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
-                        }
+                    if( !cc->m_singleChart->GetFullPath().IsSameAs(chart_full_path))
+                    {
+                        ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor  *hysteresis);
+                    }
                 }
             }
         }
@@ -1350,7 +1349,7 @@ bool glTextureManager::FactoryCrunch(double factor)
                         }
                     }
                 } else {
-                    if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path)) {
+                    if( !cc->m_singleChart->GetFullPath().IsSameAs(chart_full_path)) {
                         int lru = ptf->GetLRUTime();
                         if(lru < lru_oldest && !ptf->BackgroundCompressionAsJob()){
                             lru_oldest = lru;

@@ -4201,6 +4201,28 @@ wxString getUsrSpeedUnit( int unit )
     return ret;
 }
 
+wxString FormatDistanceAdaptive( double distance ) {
+    wxString result;
+    int unit = g_iDistanceFormat;
+    double usrDistance = toUsrDistance( distance, unit );
+    if( usrDistance < 0.1 &&  ( unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI ) ) {
+        unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
+        usrDistance = toUsrDistance( distance, unit );
+    }
+    wxString format;
+    if( usrDistance < 5.0 ) {
+        format = _T("%1.2f ");
+    } else if( usrDistance < 100.0 ) {
+        format = _T("%2.1f ");
+    } else if( usrDistance < 1000.0 ) {
+        format = _T("%3.0f ");
+    } else {
+        format = _T("%4.0f ");
+    }
+    result << wxString::Format(format, usrDistance ) << getUsrDistanceUnit( unit );
+    return result;
+}
+
 /**************************************************************************/
 /*          Formats the coordinates to string                             */
 /**************************************************************************/

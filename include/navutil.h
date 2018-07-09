@@ -44,7 +44,7 @@
 #include "bbox.h"
 #include "chcanv.h"
 #include "chartdbs.h"
-#include "RoutePoint.h"
+//nclude "RoutePoint.h"
 #include "vector2D.h"
 #include "SelectItem.h"
 
@@ -76,6 +76,8 @@ extern double fromUsrSpeed( double usr_speed, int unit = -1 );
 extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
+extern wxString FormatDistanceAdaptive( double distance );
+
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                       wxColour color, unsigned char transparency );
 
@@ -92,6 +94,7 @@ class TrackPoint;
 class TrackList;
 class RouteList;
 class canvasConfig;
+class RoutePointList;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers

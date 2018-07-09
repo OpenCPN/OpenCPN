@@ -35,7 +35,7 @@
 #include <list>
 #include <deque>
 
-//#include "Route.h"
+class HyperlinkList;
 
 struct SubTrack
 {

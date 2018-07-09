@@ -106,7 +106,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern WayPointman *pWayPointMan;
-extern ChartCanvas* cc1;
 extern wxString g_PrivateDataDir;
 
 extern bool g_bSoftwareGL;
@@ -974,7 +973,7 @@ bool options::SendIdleEvents(wxIdleEvent &event )  {
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
-    wxSize canvas_size = cc1->GetSize();
+    wxSize canvas_size = gFrame->GetSize();
     wxSize fitted_size = GetSize();
 
     fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
@@ -2412,7 +2411,7 @@ void options::EnableItem(const long index) {
 
 void options::OnConnectionToggleEnable(wxListEvent& event) {
   EnableItem(event.GetIndex());
-  cc1->Refresh();
+  gFrame->RefreshAllCanvas();;
 }
 
 void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
@@ -5667,7 +5666,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
   if (dlg.ShowModal() == wxID_OK) {
     g_GLOptions.m_bUseAcceleratedPanning =
         g_bGLexpert ? dlg.GetAcceleratedPanning()
-                  : cc1->GetglCanvas()->CanAcceleratePanning();
+                  : gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning();
 
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
@@ -5690,7 +5689,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
       // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
       ::wxBeginBusyCursor();
-      cc1->GetglCanvas()->SetupCompression();
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
       g_glTextureManager->ClearAllRasterTextures();
       ::wxEndBusyCursor();
     }
@@ -6176,8 +6175,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bDisplayGrid = pSDisplayGrid->GetValue();
     
   bool temp_bquilting = pCDOQuilting->GetValue();
-  if (!g_bQuiltEnable && temp_bquilting)
-    cc1->ReloadVP(); /* compose the quilt */
+//   if (!g_bQuiltEnable && temp_bquilting)
+//     cc1->ReloadVP(); /* compose the quilt */
   g_bQuiltEnable = temp_bquilting;
 
   g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
@@ -6203,7 +6202,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
   g_COGAvgSec = wxMin(static_cast<int>(update_val), MAX_COG_AVERAGE_SECONDS);
 
-  if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
+  //TODO if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
 
   g_bLookAhead = pCBLookAhead->GetValue();
 
@@ -6543,7 +6542,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     m_returnChanges &= ~( CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE );
     k_charts = 0;
     
-    cc1->ReloadVP();
+    gFrame->RefreshAllCanvas();
   }
 
   ::wxEndBusyCursor();
@@ -6617,7 +6616,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
-    cc1->EnablePaint(false);
+    gFrame->GetPrimaryCanvas()->EnablePaint(false);
     
     extern void ParseAllENC();
 #ifdef __WXOSX__
@@ -6630,9 +6629,9 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 #endif
     
     ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp, true);
+    gFrame->ChartsRefresh();
     
-    cc1->EnablePaint(true);
+    gFrame->GetPrimaryCanvas()->EnablePaint(true);
     
 }   
 
@@ -6858,7 +6857,7 @@ They can be decompressed again using unxz or 7 zip programs."),
 
   //    Make sure the dialog is big enough to be readable
   wxSize sz = prog1.GetSize();
-  sz.x = cc1->GetClientSize().x * 8 / 10;
+  sz.x = gFrame->GetClientSize().x * 8 / 10;
   prog1.SetSize( sz );
 
   wxArrayString charts;
@@ -8824,7 +8823,7 @@ void OpenGLOptionsDlg::Populate(void) {
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-  if (cc1->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=
+  if (gFrame->GetPrimaryCanvas()->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=
       wxNOT_FOUND) {
     m_cbSoftwareGL->SetValue(g_bSoftwareGL);
   }
@@ -8836,13 +8835,13 @@ void OpenGLOptionsDlg::Populate(void) {
   SetFont(*dialogFont);
 
   if (g_bGLexpert) {
-    if (cc1->GetglCanvas()->CanAcceleratePanning()) {
-      m_cbUseAcceleratedPanning->Enable();
-      m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
-    } else {
-      m_cbUseAcceleratedPanning->SetValue(FALSE);
-      m_cbUseAcceleratedPanning->Disable();
-    }
+      if (gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning()) {
+            m_cbUseAcceleratedPanning->Enable();
+            m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+        } else {
+            m_cbUseAcceleratedPanning->SetValue(FALSE);
+            m_cbUseAcceleratedPanning->Disable();
+        }
   } else {
     m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
     m_cbUseAcceleratedPanning->Disable();

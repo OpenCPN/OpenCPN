@@ -192,7 +192,7 @@ public:
       
       
       void SetupCanvasQuiltMode( void );
-      void SetCanvasConfig(canvasConfig *pcc);
+      void ApplyCanvasConfig(canvasConfig *pcc);
       
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
@@ -214,6 +214,7 @@ public:
       void UpdateAIS();
       void UpdateAlerts();                          // pjotrc 2010.02.22
 
+      bool IsMeasureActive(){ return m_bMeasure_Active; }
       wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
       
       void UnlockQuilt();
@@ -237,8 +238,6 @@ public:
 
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
-
-      wxString FormatDistanceAdaptive( double distance );
 
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
@@ -305,6 +304,8 @@ public:
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
       int AdjustQuiltRefChart( void );
+      void ToggleCourseUp( );
+      
  
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
@@ -340,6 +341,8 @@ public:
       void OnPianoMenuDisableChart(wxCommandEvent& event);
       void OnPianoMenuEnableChart(wxCommandEvent& event);
       bool IsPianoContextMenuActive(){ return m_piano_ctx_menu != 0; }
+      void SetCanvasToolbarItemState( int tool_id, bool state );
+      bool DoCanvasCOGSet( void );
       
       
       //Todo build more accessors
@@ -361,6 +364,10 @@ public:
       bool        m_bShowNavobjects;
       int         m_canvasIndex;
       int         m_groupIndex;
+      int          m_routeState;
+      ChartBase   *m_singleChart;
+      bool        m_bCourseUp;
+      double      m_VPRotate;
       
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
@@ -417,13 +424,13 @@ public:
       void SelectdbChart( int dbindex );
       void ShowTides(bool bShow);
       void ShowCurrents(bool bShow);
+      void DoCanvasStackDelta( int direction );
       
 private:
       void CallPopupMenu( int x, int y );
       
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
-      void DoCanvasStackDelta( int direction );
       void ToggleCanvasQuiltMode( void );
       
       ViewPort    VPoint;
