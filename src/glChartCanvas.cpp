@@ -1232,17 +1232,15 @@ void glChartCanvas::DrawStaticRoutesTracksAndWaypoints( ViewPort &vp )
         return;
     ocpnDC dc(*this);
 
-    if(m_pParentCanvas->IsPrimaryCanvas()){
-        for(wxTrackListNode *node = pTrackList->GetFirst();
-            node; node = node->GetNext() ) {
-            Track *pTrackDraw = node->GetData();
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
                 /* defer rendering active tracks until later */
-            ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
-            if(pActiveTrack && pActiveTrack->IsRunning() )
-                continue;
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            continue;
 
-            pTrackDraw->Draw( dc, vp, vp.GetBBox() );
-        }
+        pTrackDraw->Draw( m_pParentCanvas, dc, vp, vp.GetBBox() );
     }
     
     for(wxRouteListNode *node = pRouteList->GetFirst();
@@ -1278,16 +1276,14 @@ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints( ViewPort &vp )
 {
     ocpnDC dc(*this);
 
-    if(m_pParentCanvas->IsPrimaryCanvas()){
-        for(wxTrackListNode *node = pTrackList->GetFirst();
-            node; node = node->GetNext() ) {
-            Track *pTrackDraw = node->GetData();
-                /* defer rendering active tracks until later */
-            ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
-            if(pActiveTrack && pActiveTrack->IsRunning() )
-                pTrackDraw->Draw( dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
-        }
+    for(wxTrackListNode *node = pTrackList->GetFirst();
+        node; node = node->GetNext() ) {
+        Track *pTrackDraw = node->GetData();
+        ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+        if(pActiveTrack && pActiveTrack->IsRunning() )
+            pTrackDraw->Draw( m_pParentCanvas, dc, vp, vp.GetBBox() );     // We need Track::Draw() to dynamically render last (ownship) point.
     }
+    
     for(wxRouteListNode *node = pRouteList->GetFirst(); node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
         

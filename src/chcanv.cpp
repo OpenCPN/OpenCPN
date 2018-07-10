@@ -10240,11 +10240,11 @@ void ChartCanvas::DrawAllTracksInBBox( ocpnDC& dc, LLBBox& BltBBox )
             continue;
         }
 
-        pTrackDraw->Draw( dc, GetVP(), BltBBox );
+        pTrackDraw->Draw( this, dc, GetVP(), BltBBox );
     }
 
     if( active_track )
-        active_track->Draw( dc, GetVP(), BltBBox );
+        active_track->Draw( this, dc, GetVP(), BltBBox );
 }
 
 
@@ -10261,7 +10261,7 @@ void ChartCanvas::DrawActiveTrackInBBox( ocpnDC& dc, LLBBox& BltBBox )
         }
     }
     if( active_track )
-        active_track->Draw( dc, GetVP(), BltBBox );
+        active_track->Draw( this, dc, GetVP(), BltBBox );
 }
 
 
@@ -10335,7 +10335,7 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox )
                     LLBBox radar_box;
                     radar_box.Set(pWP->m_lat-radius, pWP->m_lon-radius, pWP->m_lat+radius, pWP->m_lon+radius);
                     if( !BltBBox.IntersectOut( radar_box ) ){
-                        pWP->Draw( dc, NULL );
+                        pWP->Draw( dc, this, NULL );
                     }
                 }
             }
