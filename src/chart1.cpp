@@ -2122,7 +2122,8 @@ bool MyApp::OnInit()
     g_pauimgr = new wxAuiManager;
     g_pauidockart= new wxAuiDefaultDockArt;
     g_pauimgr->SetArtProvider(g_pauidockart);
-        
+    g_pauimgr->SetDockSizeConstraint(.9, .9);
+    
     g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
     g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
     g_border_size_default = g_pauidockart->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE );
@@ -3032,6 +3033,7 @@ void MyFrame::CreateCanvasLayout()
             cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
             cc->SetToolbarOrientation( g_maintoolbar_orient);
             cc->ConfigureChartBar();
+            cc->SetColorScheme( global_color_scheme );
             
             g_pauimgr->AddPane( cc );
             g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
@@ -3057,14 +3059,15 @@ void MyFrame::CreateCanvasLayout()
            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
+           cc->SetColorScheme( global_color_scheme );
            
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
-           g_pauimgr->GetPane( cc ).Fixed();
-           g_pauimgr->GetPane( cc ).CaptionVisible( false );
+           g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).LeftDockable(true);
            g_pauimgr->GetPane( cc ).Left();
-           //g_pauimgr->GetPane( cc ).Hide();
+           g_pauimgr->GetPane( cc ).DockFixed( true );
+           g_pauimgr->GetPane( cc ).PaneBorder( true );
            
            cc = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc);
@@ -3089,14 +3092,15 @@ void MyFrame::CreateCanvasLayout()
            cc->SetToolbarPosition(wxPoint( g_maintoolbar_x, g_maintoolbar_y ));
            cc->SetToolbarOrientation( g_maintoolbar_orient);
            cc->ConfigureChartBar();
+           cc->SetColorScheme( global_color_scheme );
            
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas2") );
-           g_pauimgr->GetPane( cc ).Fixed();
-           g_pauimgr->GetPane( cc ).CaptionVisible( false );
+           g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
-           //g_pauimgr->GetPane( cc ).Hide();
+           g_pauimgr->GetPane( cc ).DockFixed( true );
+           g_pauimgr->GetPane( cc ).PaneBorder( true );
 
            break;
         }
@@ -3677,8 +3681,9 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
             if( cc ) {
                 cc->GetSize( &cur_width, &cur_height );
                 if( ( cur_width != cccw / 2 ) || ( cur_height != ccch ) ) {
-                    if( g_pauimgr->GetPane( cc ).IsOk() )
+                    if( g_pauimgr->GetPane( cc ).IsOk() ){
                         g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
+                    }
                     else
                         cc->SetSize( 0, 0, cccw, ccch );
                 }
@@ -3688,8 +3693,9 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
             if( cc ) {
                 cc->GetSize( &cur_width, &cur_height );
                 if( ( cur_width != cccw / 2 ) || ( cur_height != ccch ) ) {
-                    if( g_pauimgr->GetPane( cc ).IsOk() )
+                    if( g_pauimgr->GetPane( cc ).IsOk() ){
                         g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
+                    }
                     else
                         cc->SetSize( 0, 0, cccw, ccch );
                 }
@@ -3850,6 +3856,9 @@ void MyFrame::ODoSetSize( void )
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
     options_lastWindowPos = wxPoint(0,0);
+    
+    if(g_pauimgr)
+        g_pauimgr->Update();
 
 }
 
