@@ -592,6 +592,7 @@ private:
     Osenc_instream        *m_pInstream;
 
     bool                  m_bVerbose;
+    wxArrayString         *m_UpFiles;
     
 };
 
