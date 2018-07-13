@@ -1056,7 +1056,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
     poS57DS->SetOptionList( papszReaderOptions );
     
     //      Open the OGRS57DataSource
-    //      This will ingest the .000 file from the working dir, and apply updates
+    //      This will ingest the .000 file from the working dir
     
     bool b_current_debug = g_bGDAL_Debug;
     g_bGDAL_Debug = m_bVerbose;
@@ -1085,16 +1085,18 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
         long n_upd;
         ext.ToLong(&n_upd);
         
-        DDFModule oUpdateModule;
-        if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
-            break;
+        if(n_upd > 0){                  // .000 is the base, not an update
+            DDFModule oUpdateModule;
+            if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
+                break;
+            }
+            int upResult = poReader->ApplyUpdates( &oUpdateModule, n_upd );
+            if(upResult){
+                break;
+            }
+            m_last_applied_update = n_upd;
+            last_successful_update_file = m_tmpup_array.Item( i_up );
         }
-        int upResult = poReader->ApplyUpdates( &oUpdateModule, n_upd );
-        if(upResult){
-            break;
-        }
-        m_last_applied_update = n_upd;
-        last_successful_update_file = m_tmpup_array.Item( i_up );
     }
 
     
@@ -1177,58 +1179,53 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
 
 
 int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
-                                       wxString &LastUpdateDate, bool b_copyfiles )
+                                    wxString &LastUpdateDate, bool b_copyfiles )
 {
     
-    int retval = m_UPDN;
+    int retval = 0;
+    wxFileName last_up_added;
     
     //       wxString DirName000 = file000.GetPath((int)(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     //       wxDir dir(DirName000);
-    wxArrayString *UpFiles = new wxArrayString;
-    int upmax = s57chart::GetUpdateFileArray( file000, UpFiles, m_date000, m_edtn000);
+    m_UpFiles = new wxArrayString;
+    retval = s57chart::GetUpdateFileArray( file000, m_UpFiles, m_date000, m_edtn000);
     
-    if( UpFiles->GetCount() ) {
+    if( m_UpFiles->GetCount() ) {
         //      The s57reader of ogr requires that update set be sequentially complete
-        //      to perform all the updates. 
+        //      to perform all the updates.  However, some NOAA ENC distributions are
+        //      not complete, as apparently some interim updates have been  withdrawn.
+        //      Example:  as of 20 Dec, 2005, the update set for US5MD11M.000 includes
+        //      US5MD11M.017, ...018, and ...019.  Updates 001 through 016 are missing.
+        //
+        //      Workaround.
+        //      Create temporary dummy update files to fill out the set before invoking
+        //      ogr file open/ingest.  Delete after SENC file create finishes.
+        //      Set starts with .000, which has the effect of copying the base file to the working dir
         
-        //      The update file extensions should start with one greater than the DSID:UPDN value.
-        //      This will accomodate the  "re-issue" policy exercised by some HOs.
-        
-        //  It is to be considered a WARNING if the update chain is broken,
-        //  With appropriate user dialog and logfile messages
+        //        bool chain_broken_mssage_shown = false;
         
         if( b_copyfiles ) {
             
-            //  Empty the target directory of any files which might contaminate the ingestion.
-            //  Especially, old update files that have apparently later extensions than we are looking for
-
-            wxArrayString files_to_erase;
-            wxString fileTemplate = file000.GetName() + _T(".???");
-            
-            wxDir::GetAllFiles(CopyDir, &files_to_erase, fileTemplate, wxDIR_FILES);
-            for(unsigned int i=0 ; i < files_to_erase.GetCount() ; i++){
-                wxString f = files_to_erase[i];
-                ::wxRemoveFile(files_to_erase[i]);
-            }
-            
-
-            //      Copy the 000 file to the SENC directory
-            wxString cp0_ufile = CopyDir;
-            if( cp0_ufile.Last() != wxFileName::GetPathSeparator() )
-                cp0_ufile.Append( wxFileName::GetPathSeparator() );
-            cp0_ufile.Append( file000.GetFullName() );
-            bool cpok0 = wxCopyFile( file000.GetFullPath(), cp0_ufile );
-            if( !cpok0 ) {
-                wxString msg( _T("   Cannot copy temporary working ENC file ") );
-                msg.Append( file000.GetFullPath() );
-                msg.Append( _T(" to ") );
-                msg.Append( cp0_ufile );
-                wxLogMessage( msg );
-            }
-            
-            // Now copy the updates
-            for( int iff = m_UPDN + 1; iff < upmax + 1; iff++ ) {
-                wxFileName ufile( file000 );
+            unsigned int jup = 0;
+            for( int iff = 0; iff < retval + 1; iff++ ) {
+                wxString upFile;
+                wxString targetFile;
+                
+                if(jup < m_UpFiles->GetCount())
+                    upFile = m_UpFiles->Item(jup);
+                wxFileName upCheck(upFile);
+                long tl = -1;
+                wxString text = upCheck.GetExt();
+                text.ToLong(&tl);
+                if(tl == iff){
+                    targetFile = upFile;
+                    jup++;              // used this one
+                }
+                else{
+                    targetFile = file000.GetFullName();         // ext will be updated
+                }
+                
+                wxFileName ufile( targetFile );
                 wxString sext;
                 sext.Printf( _T("%03d"), iff );
                 ufile.SetExt( sext );
@@ -1239,6 +1236,8 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                     ufile.GetPathSeparator() );
                 
                 cp_ufile.Append( ufile.GetFullName() );
+                
+                wxString tfile = ufile.GetFullPath();
                 
                 //      Explicit check for a short update file, possibly left over from a crash...
                 int flen = 0;
@@ -1251,7 +1250,7 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                 }
                 
                 if( ufile.FileExists() && ( flen > 25 ) )        // a valid update file or base file
-                {
+                        {
                             //      Copy the valid file to the SENC directory
                             bool cpok = wxCopyFile( ufile.GetFullPath(), cp_ufile );
                             if( !cpok ) {
@@ -1261,39 +1260,49 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
                                 msg.Append( cp_ufile );
                                 wxLogMessage( msg );
                             }
-                }
+                        }
                         
-                else {
-                    
-                    //  Update chain is broken, so stop the walk, inform user, and use the last update that we safely can 
-                    retval = iff-1;
-                    wxString msg( _T("WARNING---ENC Update chain incomplete. First missing update is:"));
-                    msg += ufile.GetFullName();
-                    wxLogMessage(msg);
-                    wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
-                    
-                         
-                    if( !chain_broken_mssage_shown ){
-                         OCPNMessageBox(NULL, 
-                         _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\n\nCheck the logfile for details."),
-                         _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
-                         chain_broken_mssage_shown = true;
-                    }
-                    break;
-                    
-                }
+                        else {
+                            // Create a dummy ISO8211 file with no real content
+                            // Correct this.  We should break the walk, and notify the user  See FS#1406
+                            
+                            //                             if( !chain_broken_mssage_shown ){
+                                //                                 OCPNMessageBox(NULL, 
+                                //                                                _("S57 Cell Update chain incomplete.\nENC features may be incomplete or inaccurate.\nCheck the logfile for details."),
+                                //                                                _("OpenCPN Create SENC Warning"), wxOK | wxICON_EXCLAMATION, 30 );
+                                //                                                chain_broken_mssage_shown = true;
+                                //                             }
+                                
+                                wxString msg( _T("WARNING---ENC Update chain incomplete. Substituting NULL update file: "));
+                                msg += ufile.GetFullName();
+                                wxLogMessage(msg);
+                                wxLogMessage(_T("   Subsequent ENC updates may produce errors.") );
+                                wxLogMessage(_T("   This ENC exchange set should be updated and SENCs rebuilt.") );
+                                
+                                bool bstat;
+                                DDFModule *dupdate = new DDFModule;
+                                dupdate->Initialize( '3', 'L', 'E', '1', '0', "!!!", 3, 4, 4 );
+                                bstat = !( dupdate->Create( cp_ufile.mb_str() ) == 0 );
+                                dupdate->Close();
+                                
+                                if( !bstat ) {
+                                    wxString msg( _T("   Error creating dummy update file: ") );
+                                    msg.Append( cp_ufile );
+                                    wxLogMessage( msg );
+                                }
+                        }
                         
-                m_tmpup_array.Add( cp_ufile );
+                        m_tmpup_array.Add( cp_ufile );
+                        last_up_added = cp_ufile;
             }
         }
         
         //      Extract the date field from the last of the update files
         //      which is by definition a valid, present update file....
         
-        
-        wxFileName lastfile( file000 );
+        wxFileName lastfile( last_up_added );
         wxString last_sext;
-        last_sext.Printf( _T("%03d"), upmax );
+        last_sext.Printf( _T("%03d"), retval );
         lastfile.SetExt( last_sext );
         
         bool bSuccess;
@@ -1322,10 +1331,6 @@ int Osenc::ValidateAndCountUpdates( const wxFileName file000, const wxString Cop
         }
     }
     
-    delete UpFiles;
-    
-    if(upmax > retval)
-        retval = upmax;
     return retval;
 }
 

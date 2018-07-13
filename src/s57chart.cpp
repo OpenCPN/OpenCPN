@@ -4599,38 +4599,67 @@ static int ExtensionCompare( const wxString& first, const wxString& second )
 int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFiles,
                                   wxDateTime date000, wxString edtn000)
 {
-
     wxString DirName000 = file000.GetPath( (int) ( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME ) );
     wxDir dir( DirName000 );
+    if(!dir.IsOpened()){
+        DirName000.Prepend(wxFileName::GetPathSeparator());
+        DirName000.Prepend(_T("."));
+        dir.Open(DirName000);
+        if(!dir.IsOpened()){
+            return 0;
+        }
+    }
+    
+    int flags = wxDIR_DEFAULT;
+    
+    // Check dir structure
+    //  We look to see if the directory one level above where the .000 file is located happens to be "perfectly numeric" in name.
+    //  If so, the dataset is presumed to be organized with each update in its own directory.
+    //  So, we search for updates from this level, recursing into subdirs.
+    wxFileName fnDir( DirName000 );
+    fnDir.RemoveLastDir();
+    wxString sdir = fnDir.GetPath();
+    wxFileName fnTest(sdir);
+    wxString sname = fnTest.GetName();
+    long tmps;
+    if(sname.ToLong( &tmps )){
+        dir.Open(sdir);
+        DirName000 = sdir;
+        flags |= wxDIR_DIRS;
+    }
+    
     wxString ext;
     wxArrayString *dummy_array;
     int retval = 0;
-
-    if( UpFiles == NULL ) dummy_array = new wxArrayString;
+    
+    if( UpFiles == NULL )
+        dummy_array = new wxArrayString;
     else
         dummy_array = UpFiles;
-
-    wxString filename;
-    bool cont = dir.GetFirst( &filename );
-    while( cont ) {
+    
+    wxArrayString possibleFiles;
+    wxDir::GetAllFiles( DirName000, &possibleFiles, wxEmptyString, flags );
+    
+    for(unsigned int i=0 ; i < possibleFiles.GetCount() ; i++){
+        wxString filename(possibleFiles[i]);
+        
         wxFileName file( filename );
         ext = file.GetExt();
-
+        
         long tmp;
         //  Files of interest have the same base name is the target .000 cell,
         //  and have numeric extension
         if( ext.ToLong( &tmp ) && ( file.GetName() == file000.GetName() ) ) {
-            wxString FileToAdd( DirName000 );
-            FileToAdd.Append( file.GetFullName() );
-
+            wxString FileToAdd = filename;
+            
             wxCharBuffer buffer=FileToAdd.ToUTF8();             // Check file namme for convertability
-
+            
             if( buffer.data() && !filename.IsSameAs( _T("CATALOG.031"), false ) )           // don't process catalogs
             {
-//          We must check the update file for validity
-//          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
-//          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
-
+                //          We must check the update file for validity
+                //          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
+                //          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
+                
                 wxDateTime umdate;
                 wxString sumdate;
                 wxString umedtn;
@@ -4641,82 +4670,77 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
                     wxLogMessage( msg );
                 } else {
                     poModule->Rewind();
-
+                    
                     //    Read and parse DDFRecord 0 to get some interesting data
                     //    n.b. assumes that the required fields will be in Record 0....  Is this always true?
-
+                    
                     DDFRecord *pr = poModule->ReadRecord();                              // Record 0
                     //    pr->Dump(stdout);
-
+                    
                     //  Fetch ISDT(Issue Date)
                     char *u = NULL;
                     if( pr ) {
                         u = (char *) ( pr->GetStringSubfield( "DSID", 0, "ISDT", 0 ) );
-
+                        
                         if( u ) {
                             if( strlen( u ) ) sumdate = wxString( u, wxConvUTF8 );
                         }
                     } else {
                         wxString msg(
-                                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:ISDT in update file ") );
+                            _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:ISDT in update file ") );
                         msg.Append( FileToAdd );
                         wxLogMessage( msg );
-
+                        
                         sumdate = _T("20000101");           // backstop, very early, so wont be used
                     }
-
+                    
                     umdate.ParseFormat( sumdate, _T("%Y%m%d") );
                     if( !umdate.IsValid() ) umdate.ParseFormat( _T("20000101"), _T("%Y%m%d") );
-
-                    umdate.ResetTime();
-
+                                     
+                                     umdate.ResetTime();
+                    
                     //    Fetch the EDTN(Edition) field
-                    if( pr ) {
-                        u = NULL;
-                        u = (char *) ( pr->GetStringSubfield( "DSID", 0, "EDTN", 0 ) );
-                        if( u ) {
-                            if( strlen( u ) ) umedtn = wxString( u, wxConvUTF8 );
-                        }
-                    } else {
-                        wxString msg(
-                                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:EDTN in update file ") );
-                        msg.Append( FileToAdd );
-                        wxLogMessage( msg );
-
-                        umedtn = _T("1");                // backstop
-                    }
+                                     if( pr ) {
+                                         u = NULL;
+                                         u = (char *) ( pr->GetStringSubfield( "DSID", 0, "EDTN", 0 ) );
+                                         if( u ) {
+                                             if( strlen( u ) ) umedtn = wxString( u, wxConvUTF8 );
+                                         }
+                                     } else {
+                                         wxString msg(
+                                             _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:EDTN in update file ") );
+                                         msg.Append( FileToAdd );
+                                         wxLogMessage( msg );
+                                         
+                                         umedtn = _T("1");                // backstop
+                                     }
                 }
-
+                
                 delete poModule;
-
-                if( umdate.IsValid() ){
-                    if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
-                        dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
-                }
+                
+                if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
+                dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
             }
         }
-
-        cont = dir.GetNext( &filename );
     }
-
-//      Sort the candidates
+    
+    //      Sort the candidates
     dummy_array->Sort( ExtensionCompare );
-
-//      Get the update number of the last in the list
+    
+    //      Get the update number of the last in the list
     if( dummy_array->GetCount() ) {
         wxString Last = dummy_array->Last();
         wxFileName fnl( Last );
         ext = fnl.GetExt();
         wxCharBuffer buffer=ext.ToUTF8();
-        if(buffer.data())
+        if(buffer.data())            
             retval = atoi( buffer.data() );
     }
-
+    
     if( UpFiles == NULL ) delete dummy_array;
-
+                                     
     return retval;
 }
-
 
 
 int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
