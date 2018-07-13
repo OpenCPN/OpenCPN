@@ -191,7 +191,9 @@ public class FileChooserActivity extends Activity implements FileChooser {
         
         // Add a listener for when a folder is created.
         core.addListener(new FileChooserCore.OnFileSelectedListener() {
-			public void onFileSelected(File folder, String name) {
+
+                public void onFileSelected(File folder, String name) {
+                //Log.i("OpenCPN", "FileChooserActivity::OnFileSelected(folder,name)");
 
                 final File newFolder = new File(folder.getPath() +  File.separator + name);
 
@@ -248,8 +250,9 @@ public class FileChooserActivity extends Activity implements FileChooser {
                 finish();				
 			}
 
-			public void onFileSelected(File file) {
+                public void onFileSelected(File file) {
 
+                //Log.i("OpenCPN", "FileChooserActivity::OnFileSelected(file)");
 
 
                 //String m_dirSelected = file.getAbsolutePath();

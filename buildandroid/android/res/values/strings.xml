@@ -358,4 +358,8 @@
     <string name="install_button_install_charts">Install charts</string>
     <string name="install_done">Done.</string>
 
+    <string name="permission_granted">SDCard permission granted.</string>
+    <string name="permission_denied">SDCard permission DENIED.</string>
+    <string name="ok_string">OK</string>
+
 </resources>

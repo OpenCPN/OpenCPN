@@ -303,4 +303,10 @@
   <string name="install_proposed_location">Carpeta de instalación de cartas propuesta:</string>
   <string name="install_button_install_charts">Instalar cartas</string>
   <string name="install_done">Hecho.</string>
+
+  <string name="permission_granted">Permiso SDCard concedido.</string>
+  <string name="sdcard_permission_help">OpenCPN necesita permiso para acceder a la tarjeta SD\n\n
+        En la siguiente pantalla, selecciona el directorio raíz de la SD para permitir el acceso completo.\n\n
+        Esta selección será almacenada para usos futuros.</string>
+
 </resources>

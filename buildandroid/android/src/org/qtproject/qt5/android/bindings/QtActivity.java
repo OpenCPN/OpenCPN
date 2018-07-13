@@ -113,6 +113,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.DialogInterface.OnCancelListener;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.view.ContextThemeWrapper;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
@@ -266,6 +267,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
     private final static int OCPN_FILECHOOSER_REQUEST_CODE = 0x5555;
     private final static int OCPN_AFILECHOOSER_REQUEST_CODE = 0x5556;
     private final static int OCPN_ARBITRARY_REQUEST_CODE = 0x5557;
+    private final static int OCPN_SAF_DIALOG_A_REQUEST_CODE = 0x5558;
 
     private final static int OCPN_ACTION_FOLLOW = 0x1000;
     private final static int OCPN_ACTION_ROUTE = 0x1001;
@@ -2499,8 +2501,9 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
     public String FileChooserDialog(final String initialDir, final String Title, final String Suggestion, final String wildcard)
     {
-        //Log.i("DEBUGGER_TAG", "FileChooserDialog");
-        //Log.i("DEBUGGER_TAG", initialDir);
+        Log.i("OpenCPN", "FileChooserDialog");
+        Log.i("OpenCPN", initialDir);
+        Log.i("OpenCPN", Suggestion);
 
         m_FileChooserDone = false;
 
@@ -2515,11 +2518,13 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
         //  Creating a file?
             if(!Suggestion.isEmpty()){
-                //Log.i("DEBUGGER_TAG", "FileChooserDialog Creating");
+                //Log.i("OpenCPN", "FileChooserDialog Creating");
                 intent.putExtra(FileChooserActivity.INPUT_CAN_CREATE_FILES, true);
             }
 
             this.startActivityForResult(intent, OCPN_AFILECHOOSER_REQUEST_CODE);
+            return "OK";
+
         }
 
         //Log.i("DEBUGGER_TAG", "FileChooserDialog create and show " + initialDir);
@@ -2543,11 +2548,18 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                         dialog.setShowFullPath( true );
                         dialog.setTitle( Title );
 
+                        //  Creating a file?
+                        if(!Suggestion.isEmpty()){
+                            Log.i("OpenCPN", "FileChooserDialog CanCreate");
+                            dialog.setCanCreateFiles(true);
+                        }
+
                         dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
                             public void onFileSelected(Dialog source, File file) {
                                 source.hide();
                                 //Toast toast = Toast.makeText(source.getContext(), "File selected: " + file.getName(), Toast.LENGTH_LONG);
                                 //toast.show();
+                                Log.i("OpenCPN", "FileChooserDialog selected: " + file.getName() );
 
                                 m_filechooserString = "file:" + file.getPath();
                                 m_FileChooserDone = true;
@@ -2557,8 +2569,30 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                                 source.hide();
                                 //Toast toast = Toast.makeText(source.getContext(), "File created: " + folder.getName() + "/" + name, Toast.LENGTH_LONG);
                                 //toast.show();
+                                Log.i("OpenCPN", "Listener: FileChooserDialog created: " + folder.getName() + "/" + name);
 
                                 m_filechooserString = "file:" + folder.getPath() + "/" + name;
+
+                                final File newFile = new File(folder.getPath() +  File.separator + name);
+                                if(!folder.canWrite()){
+                                    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                                        Log.i("OpenCPN", "FileChooserDialog listener needs SAF dialog");
+
+                                        //  Is this on an SDCard?
+                                        String sdRoot = getExtSdCardFolder(folder);
+                                        if (null != sdRoot) {
+                                            Log.i("OpenCPN", "FileChooserDialog listener found sdCard");
+
+                                            // This will NOT create the file
+                                            DocumentFile f = getDocumentFile(folder, true, false);
+                                            if (null == f){
+                                                startSAFDialog(OCPN_SAF_DIALOG_A_REQUEST_CODE);
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 m_FileChooserDone = true;
 
                             }
@@ -2566,7 +2600,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
                         dialog.setOnCancelListener(new OnCancelListener() {
                             public void onCancel(DialogInterface dialog) {
-                                //Log.i("DEBUGGER_TAG", "FileChooserDialog Cancel");
+                                Log.i("OpenCPN", "FileChooserDialog Cancel");
                                 m_filechooserString = "cancel:";
                                 m_FileChooserDone = true;
                             }
@@ -2781,6 +2815,7 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
    public String isFileChooserFinished()
    {
        if(m_FileChooserDone){
+            Log.i("OpenCPN", "isFileChooserFinished:  returning " + m_filechooserString);
             return m_filechooserString;
        }
        else{
@@ -3912,6 +3947,39 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
 
             return;
         }
+
+        if (requestCode == OCPN_SAF_DIALOG_A_REQUEST_CODE) {
+            Uri treeUri = null;
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                treeUri = data.getData();
+
+                Log.i("OpenCPN", "onqtActivityResult OCPN_SAF_DIALOG_A_REQUEST_CODE...URI is: " + treeUri.toString());
+
+                // Persist URI in shared preference so that you can use it later.
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("SDURI", treeUri.toString());
+                editor.commit();
+
+
+                getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+
+                showPermisionGrantedDialog( true );
+
+                m_FileChooserDone = true;
+
+
+            }
+
+            super.onActivityResult(requestCode, resultCode, data);
+
+            return;
+        }
+
+
 
         if (requestCode == OCPN_GOOGLEMAPS_REQUEST_CODE) {
             // Make sure the request was successful
@@ -5955,7 +6023,13 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
                     }
                 }
                 else{
+                    Log.i("OpenCPN", "SecureFileCopy destination on internal storage");
+                    try{
                      outStream = new FileOutputStream(outFile);
+                    }catch(Exception e){
+                        Log.i("OpenCPN", "SecureFileCopy ExceptionC");
+                        return "Exception";
+                    }
                 }
 
                 inStream = new FileInputStream(inFile);
@@ -5978,7 +6052,64 @@ public class QtActivity extends FragmentActivity implements ActionBar.OnNavigati
          }
 
 
+         private void startSAFDialog(final int code){
+              ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.AlertTheme1);
+              AlertDialog.Builder builder1 = new AlertDialog.Builder(ctw);
 
+              String msg = getString(R.string.sdcard_permission_help);
+              builder1.setMessage(msg);
+              builder1.setCancelable(true);
+
+              builder1.setPositiveButton(
+                      "OK",
+                      new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int id) {
+                              dialog.cancel();
+
+                              Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                              intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                              intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                              startActivityForResult(intent, code);
+
+
+                          }
+                      });
+
+              //builder1.setNegativeButton(
+              //        "No",
+              //        new DialogInterface.OnClickListener() {
+              //            public void onClick(DialogInterface dialog, int id) {
+              //                dialog.cancel();
+              //            }
+              //        });
+
+              AlertDialog alert11 = builder1.create();
+              alert11.show();
+          }
+
+          private void showPermisionGrantedDialog(boolean bGranted) {
+              ContextThemeWrapper ctw = new ContextThemeWrapper(this, R.style.AlertTheme1);
+              AlertDialog.Builder builder1 = new AlertDialog.Builder(ctw);
+
+              if(bGranted)
+                  builder1.setMessage(R.string.permission_granted);
+              else
+                  builder1.setMessage(R.string.permission_denied);
+
+              builder1.setCancelable(true);
+
+              builder1.setPositiveButton(R.string.ok_string,
+                      new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int id) {
+                              dialog.cancel();
+                          }
+                      });
+
+
+              AlertDialog alert11 = builder1.create();
+              alert11.show();
+
+          }
 
 
 }
