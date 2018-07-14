@@ -3183,6 +3183,8 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     
     m_Compass->SetColorScheme( cs );
 
+    if(pWorldBackgroundChart)
+        pWorldBackgroundChart->SetColorScheme( cs );
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ){
         m_glcc->SetColorScheme( cs );
