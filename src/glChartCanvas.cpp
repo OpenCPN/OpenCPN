@@ -475,7 +475,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
 #endif    
 
-    g_glTextureManager = new glTextureManager;
+    if( !g_glTextureManager)
+        g_glTextureManager = new glTextureManager;
 }
 
 glChartCanvas::~glChartCanvas()

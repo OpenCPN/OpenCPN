@@ -281,7 +281,7 @@ void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture, const wxString
 
 #ifdef ocpnUSE_GL
      // The glCanvas may be cacheing some information for this chart     
-     if (g_bopengl /*&& cc1*/)  //TODO check this logic
+     if (g_glTextureManager)
          g_glTextureManager->PurgeChartTextures(ch, bDelTexture);
 #endif
 

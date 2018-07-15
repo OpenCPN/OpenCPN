@@ -478,17 +478,19 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
-        wxLogMessage( _T("Creating glChartCanvas") );
-        m_glcc = new glChartCanvas(this);
+        if(g_bopengl){
+            wxLogMessage( _T("Creating glChartCanvas") );
+            m_glcc = new glChartCanvas(this);
 
         // We use one context for all GL windows, so that textures etc will be automatically shared
-        if(IsPrimaryCanvas()){
-            wxGLContext *pctx = new wxGLContext(m_glcc);
-            m_glcc->SetContext(pctx);
-            g_pGLcontext = pctx;                // Save a copy of the common context
-        }
-        else{
-            m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+            if(IsPrimaryCanvas()){
+                wxGLContext *pctx = new wxGLContext(m_glcc);
+                m_glcc->SetContext(pctx);
+                g_pGLcontext = pctx;                // Save a copy of the common context
+            }
+            else{
+                m_glcc->SetContext(g_pGLcontext);   // If not primary canvas, use the saved common context
+            }
         }
     }
 #endif
@@ -887,7 +889,7 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
         
 #if wxCHECK_VERSION(2, 9, 0)
-        if(IsPrimaryCanvas())
+        if(IsPrimaryCanvas() && g_bopengl)
             delete g_pGLcontext;
 #endif        
     }
@@ -1560,7 +1562,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
 #ifdef ocpnUSE_GL
     // If a new chart, need to invalidate gl viewport for refresh
     // so the fbo gets flushed
-    if(g_bopengl & bNewChart)
+    if(m_glcc && g_bopengl & bNewChart)
         GetglCanvas()->Invalidate();
 #endif
         
@@ -2008,6 +2010,8 @@ void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 #endif
 void ChartCanvas::InvalidateGL()
 {
+    if(!m_glcc)
+        return;
 #ifdef ocpnUSE_GL
         if(g_bopengl)
             m_glcc->Invalidate();
@@ -2315,7 +2319,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     // HOTKEYS
     switch( event.GetKeyCode() ) {
     case WXK_MENU:
-        int x, y, mx, my;
+        int x, y;
         event.GetPosition( &x, &y );
 
         CallPopupMenu(x, y);
@@ -9088,10 +9092,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         return;
 
 #ifdef ocpnUSE_GL
-    if( !g_bdisable_opengl )
+    if( !g_bdisable_opengl && m_glcc )
         m_glcc->Show( g_bopengl );
 
-    if( g_bopengl ) {
+    if( m_glcc && g_bopengl ) {
         if( !s_in_update ) {          // no recursion allowed, seen on lo-spec Mac
             s_in_update++;
             m_glcc->Update();
@@ -9849,7 +9853,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
         m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT );
 
 #ifdef ocpnUSE_GL
-    if( g_bopengl ) {
+    if( m_glcc && g_bopengl ) {
         
         //      We need to invalidate the FBO cache to ensure repaint of "grounded" overlay objects.
         if( eraseBackground && m_glcc->UsingFBO() )
@@ -9886,7 +9890,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 
 void ChartCanvas::Update()
 {
-    if( g_bopengl ) {
+    if( m_glcc && g_bopengl ) {
 #ifdef ocpnUSE_GL
         m_glcc->Update();
 #endif
@@ -12132,7 +12136,7 @@ WORD *g_pSavedGammaMap;
 int InitScreenBrightness( void )
 {
 #ifdef __WIN32__
-    if( g_bopengl ) {
+    if( gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl ) {
         HDC hDC;
         BOOL bbr;
 
@@ -12272,7 +12276,7 @@ int SetScreenBrightness( int brightness )
 
     //    Under Windows, we use the SetDeviceGammaRamp function which exists in some (most modern?) versions of gdi32.dll
     //    Load the required library dll, if not already in place
-    if( g_bopengl ) {
+    if( gFrame->GetPrimaryCanvas()->GetglCanvas() && g_bopengl ) {
         if( g_pcurtain ) {
             g_pcurtain->Close();
             g_pcurtain->Destroy();

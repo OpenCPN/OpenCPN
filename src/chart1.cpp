@@ -5482,7 +5482,7 @@ int MyFrame::DoOptionsDialog()
 
     bool b_refresh = false;
     
-    if(g_canvasConfig != last_canvasConfig){
+    if( (g_canvasConfig != last_canvasConfig) || ( rr & GL_CHANGED) ){
         UpdateCanvasConfigDescriptors();
         
         CreateCanvasLayout();
