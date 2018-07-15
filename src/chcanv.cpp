@@ -991,9 +991,6 @@ void ChartCanvas::ShowCurrents(bool bShow)
 
 
 //TODO
-///extern bool     bFirstAuto;
-extern int      g_restore_stackindex;
-//extern int      g_restore_dbindex;
 extern bool     g_bLookAhead;
 extern bool     g_bPreserveScaleOnX;
 extern ChartDummy *pDummyChart;
@@ -1282,11 +1279,7 @@ bool ChartCanvas::DoCanvasUpdate( void )
                         int initial_db_index = m_restore_dbindex;
                         if( initial_db_index < 0 ) {
                             if( m_pCurrentStack->nEntry ) {
-                                if( ( g_restore_stackindex < m_pCurrentStack->nEntry )
-                                    && ( g_restore_stackindex >= 0 ) )
-                                    initial_db_index = m_pCurrentStack->GetDBIndex( g_restore_stackindex );
-                                else
-                                    initial_db_index = m_pCurrentStack->GetDBIndex( m_pCurrentStack->nEntry - 1 );
+                                initial_db_index = m_pCurrentStack->GetDBIndex( m_pCurrentStack->nEntry - 1 );
                             } else
                                 m_bautofind = true; //initial_db_index = 0;
                         }
@@ -1301,16 +1294,18 @@ bool ChartCanvas::DoCanvasUpdate( void )
                                 // If it is not quiltable, then walk the stack up looking for a satisfactory chart
                                 // i.e. one that is quiltable and of the same type
                                 // XXX if there's none?
-                                int stack_index = g_restore_stackindex;
+                                int stack_index = 0;
                                 
-                                if ( stack_index >= 0 ) while( ( stack_index < m_pCurrentStack->nEntry - 1 ) ) {
-                                    int test_db_index = m_pCurrentStack->GetDBIndex( stack_index );
-                                    if( IsChartQuiltableRef( test_db_index )
-                                        && ( initial_type == ChartData->GetDBChartType( initial_db_index ) ) ) {
-                                        initial_db_index = test_db_index;
-                                    break;
+                                if ( stack_index >= 0 ){
+                                    while( ( stack_index < m_pCurrentStack->nEntry - 1 ) ) {
+                                        int test_db_index = m_pCurrentStack->GetDBIndex( stack_index );
+                                        if( IsChartQuiltableRef( test_db_index )
+                                            && ( initial_type == ChartData->GetDBChartType( initial_db_index ) ) ) {
+                                            initial_db_index = test_db_index;
+                                            break;
                                         }
                                         stack_index++;
+                                    }
                                 }
                             }
                             
@@ -1415,34 +1410,34 @@ bool ChartCanvas::DoCanvasUpdate( void )
             int start_index = 0;
             
             //    A special case:  If panning at high scale, open largest scale chart first
-            if( ( LastStack.CurrentStackEntry == LastStack.nEntry - 1 )
-                || ( LastStack.nEntry == 0 ) ) {
+            if( ( LastStack.CurrentStackEntry == LastStack.nEntry - 1 ) || ( LastStack.nEntry == 0 ) ) {
                 search_direction = true;
-            start_index = m_pCurrentStack->nEntry - 1;
-                }
+                start_index = m_pCurrentStack->nEntry - 1;
+            }
                 
                 //    Another special case, open specified index on program start
-                if( bOpenSpecified ) {
-                    search_direction = false;
-                    start_index = g_restore_stackindex;
-                    if( ( start_index < 0 ) | ( start_index >= m_pCurrentStack->nEntry ) ) start_index =
-                        0;
-                    new_open_type = CHART_TYPE_DONTCARE;
-                }
+            if( bOpenSpecified ) {
+                search_direction = false;
+                start_index = 0;
+                if( ( start_index < 0 ) | ( start_index >= m_pCurrentStack->nEntry ) )
+                    start_index = 0;
+            
+                new_open_type = CHART_TYPE_DONTCARE;
+            }
                 
-                pProposed = ChartData->OpenStackChartConditional( m_pCurrentStack, start_index,
+            pProposed = ChartData->OpenStackChartConditional( m_pCurrentStack, start_index,
                                                                   search_direction, new_open_type, new_open_family );
                 
                 //    Try to open other types/families of chart in some priority
-                if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
+            if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
                     m_pCurrentStack, start_index, search_direction, CHART_TYPE_CM93COMP,
                     CHART_FAMILY_VECTOR );
                 
-                if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
+            if( NULL == pProposed ) pProposed = ChartData->OpenStackChartConditional(
                     m_pCurrentStack, start_index, search_direction, CHART_TYPE_CM93COMP,
                     CHART_FAMILY_RASTER );
                 
-                bNewChart = true;
+            bNewChart = true;
                 
         }     // bCanvasChartAutoOpen
         
