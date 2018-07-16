@@ -2,8 +2,8 @@
 Version=1.0
 Name=OpenCPN
 Comment=Open source chart plotter / navigator
-Exec=opencpn
-Icon=opencpn
+Exec=opencpn.sh
+Icon=org.opencpn.OpenCPN
 StartupNotify=true
 Terminal=false
 Type=Application
