@@ -89,46 +89,8 @@ starting configuration.
 6. Serial Port GPS/AIS Data Input and Autopilot Output
 ----------------------------------------------------------------------
 
-a.  LINUX
-Opencpn runs at user privilege.  This means that in order to
-read GPS input data and/or write autopilot output data, the serial
-devices to be used must exhibit read and write permission for the
-user in question.  For linux, these devices are created at startup.
-Typically, the devices as created are owned by root, with additional
-specific group (e.g, . "uucp" or "dialout") r/w access,  i.e. 
-permissions are 0660.
-
-To handle this you need to add the actual group the your user's group
-list, and run opencpn as this group. Add the group owner of
-your device to your user, like
-
-    $ sudo usermod -aG dialout $USER
-
-and logout and in again (or reboot). For the most common cases there
-is a warning box displayed on this when required.
-
-For the more general case, you must ensure that device permissions
-will enable opencpn to read and write serial devices without root
-privileges.  If a device doesn't have usable group permissions you
-need to add a udev rule updating them. Creating udev rules is a 
-large topic, please refer to more general documentation.
-
-Test your GPS input.  At user privilege, first ensure that you run
-with proper group id:
-
-      $ sg dialout bash 
-
-Then, test the port like:
-
-      $ stty -F /dev/ttyXXX ispeed 4800
-      $ cat </dev/ttyXXX
-
-replacing ttyXXX with the filename of the port.  This will probably be
-either /dev/ttyUSB0 or /dev/ttyS0.  When you run this command, you
-should see text lines beginning with $ come to stdout (possibly after
-a short initial burst of binary garbage).  If you don't see this, you
-may have OS-level problems with your serial support, but more likely
-have the wrong device or permissions. Look again.
+See the file LINUX_DEVICESS.md in the distribution or at
+https://github.com/OpenCPN/OpenCPN/blob/master/LINUX_DEVICES.md
 
 ---------------------------------------------------------------------
 7. Cross Compiling for windows using mingw

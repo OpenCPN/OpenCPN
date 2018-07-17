@@ -35,16 +35,9 @@ Using the provisionary fedorapeople repo, opencpn can be installed using:
 Same thing can be achieved pointing the browser to 
 https://leamas.fedorapeople.org/opencpn/
 
-In order to fix device permissions, a udev rule needs to be installed. Create
-a file called *70-serial-opencpn.rules* like
-
-    KERNEL=="ttyUSB*", MODE="0666"
-    KERNEL=="ttyACM*", MODE="0666"
-    KERNEL=="ttyS*", MODE="0666"
-
-and drop it into */etc/udev/rules.d*. A reboot might be needed for it to 
-take effect. Normally, only one of the three lines is required depending
-on the device used - the rest could be removed.
+In order to fix device permissions, a udev rule needs to be installed. See 
+LINUX_DEVICES.md in the distribution or at 
+https://github.com/OpenCPN/OpenCPN/blob/master/LINUX_DEVICES.md
 
 
 Repo maintenance
