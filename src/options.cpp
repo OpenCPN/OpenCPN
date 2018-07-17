@@ -23,6 +23,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 #include <memory>
+
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -1218,6 +1223,52 @@ void options::Init(void) {
 #ifdef __OCPN__ANDROID__
   m_bcompact = true;
 #endif
+}
+
+#if defined(__GNUC__) && __GNUC__ < 8
+// Handle old gcc C++-11 bugs, remove when builders updated to gcc >= 8.1.1.
+
+static const wxString BAD_ACCESS_MSG = _(  \
+"The device selected is not accessible; opencpn will likely not be able\n"\
+"to use this device as-is. You might want to exit OpenCPN, reboot and\n"\
+"retry after creating a file called /etc/udev/rules.d/70-opencpn.rules\n"\
+"with the following contents:\n\n"\
+"            KERNEL==\"ttyUSB*\", MODE=\"0666\"\n"\
+"            KERNEL==\"ttyACM*\", MODE=\"0666\"\n"\
+"            KERNEL==\"ttyS*\", MODE=\"0666\"\n\n"\
+"For more info, see the file LINUX_DEVICES.md in the distribution docs.\n"\
+);
+
+#else
+
+static const wxString BAD_ACCESS_MSG = _( R"(
+The device selected is not accessible; opencpn will likely not be able
+to use this device as-is. You might want to exit OpenCPN, reboot and
+retry after creating a file called /etc/udev/rules.d/70-opencpn.rules
+with the following contents:
+
+            KERNEL=="ttyUSB*", MODE="0666"
+            KERNEL=="ttyACM*", MODE="0666"
+            KERNEL=="ttyS*", MODE="0666"
+
+For more info, see the file LINUX_DEVICES.md in the distribution docs.
+)" );
+
+#endif  // defined(__GNUC__) && __GNUC__ < 8
+
+void options::CheckDeviceAccess( /*[[maybe_unused]]*/ wxString &path) {
+   // Microsoft compiler 19.14.26433 requires rightfully std=c++-17 for this.
+
+#ifndef __linux__
+   return;
+#else
+   int r = access(path.mb_str(), R_OK | W_OK);
+   if (r == 0)
+      return;
+  OCPNMessageBox (this, BAD_ACCESS_MSG, wxString( _("OpenCPN Warning") ),
+		  wxICON_WARNING | wxOK, 60 );
+#endif
+
 }
 
 size_t options::CreatePanel(const wxString& title) {
@@ -6617,6 +6668,7 @@ ConnectionParams* options::UpdateConnectionParamsFromSelectedItem(ConnectionPara
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
+  CheckDeviceAccess(pConnectionParams->Port);
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;

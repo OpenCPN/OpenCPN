@@ -599,7 +599,7 @@ class options : private Uncopyable,
   void CreatePanel_Routes(size_t parent, int border_size, int group_item_spacing);
 
   void UpdateTemplateTitleText();
-  
+  void CheckDeviceAccess(wxString &path);
   int m_returnChanges;
   wxListBox *tcDataSelected;
   std::vector<int> marinersStdXref;
