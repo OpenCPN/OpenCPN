@@ -55,6 +55,9 @@ modules:
           - -DBUNDLE_TCDATA=ON
           - -DBUNDLE_GSHHS=CRUDE
           - -DBUILD_SHARED_LIBS=OFF
+      build-options:
+          cxxflags: -DFLATPAK
+          cflags: -DFLATPAK
       post-install: 
           - install -d /app/extensions
             # Move plugins from main package out of the way so we can 
