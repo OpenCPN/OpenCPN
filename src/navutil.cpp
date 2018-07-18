@@ -2052,6 +2052,12 @@ void MyConfig::LoadConfigCanvas( canvasConfig *cc )
         else
             cc->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
     }
+
+    int sx, sy;
+    Read( _T ( "canvasSizeX" ), &sx, 0 );
+    Read( _T ( "canvasSizeY" ), &sy, 0 );
+    cc->canvasSize = wxSize(sx, sy);
+    
 }   
             
     
@@ -2130,6 +2136,17 @@ void MyConfig::SaveConfigCanvas( canvasConfig *cc )
         Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
         Write( _T ( "ActiveChartGroup" ), cc->canvas->m_groupIndex );
         Write( _T ( "canvasToolbarConfig" ), cc->canvas->GetToolbarConfigString() );
+        
+        int width = cc->canvas->GetSize().x;
+//         if(cc->canvas->IsPrimaryCanvas()){
+//             width = wxMax(width, gFrame->GetClientSize().x / 10);
+//         }
+//         else{
+//             width = wxMin(width, gFrame->GetClientSize().x  * 9 / 10);
+//         }
+        
+        Write( _T ( "canvasSizeX" ), width );
+        Write( _T ( "canvasSizeY" ), cc->canvas->GetSize().y );
         
     }
 }

@@ -305,6 +305,7 @@ public:
     wxString toolbarConfig;
     bool bShowTides;
     bool bShowCurrents;
+    wxSize canvasSize;
 };
 
 WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
@@ -512,15 +513,15 @@ class MyFrame: public wxFrame
     
     void FastClose();
     void SetChartUpdatePeriod();
-    void CreateCanvasLayout();
+    void CreateCanvasLayout( bool b_useStoredSize = false );
     void LoadHarmonics();
     void ReloadAllVP();
+    void SetCanvasSizes( wxSize frameSize );
     
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
     void UpdateCanvasConfigDescriptors();
-    void SetCanvasSizes( wxSize frameSize );
     
     void UpdateAllToolbars( ColorScheme cs );
     

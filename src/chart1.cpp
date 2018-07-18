@@ -2123,6 +2123,8 @@ bool MyApp::OnInit()
     g_pauidockart= new wxAuiDefaultDockArt;
     g_pauimgr->SetArtProvider(g_pauidockart);
     g_pauimgr->SetDockSizeConstraint(.9, .9);
+
+    g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
     
     g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
     g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
@@ -2857,6 +2859,9 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     
     }
     
+    g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
+    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
+    
     g_pauimgr->Update();
     
     g_StyleManager->GetCurrentStyle()->SetColorScheme( cs );
@@ -2983,7 +2988,7 @@ void MyFrame::CancelAllMouseRoute()
     }
 }
     
-void MyFrame::CreateCanvasLayout()
+void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
 {
     //  Clear the cache, and thus close all charts to avoid memory leaks
     if(ChartData)
@@ -3064,10 +3069,13 @@ void MyFrame::CreateCanvasLayout()
            g_pauimgr->AddPane( cc );
            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
-           g_pauimgr->GetPane( cc ).LeftDockable(true);
-           g_pauimgr->GetPane( cc ).Left();
-           g_pauimgr->GetPane( cc ).DockFixed( true );
-           g_pauimgr->GetPane( cc ).PaneBorder( true );
+           
+           g_pauimgr->GetPane( cc ).CenterPane();
+           
+           //g_pauimgr->GetPane( cc ).LeftDockable(true);
+           //g_pauimgr->GetPane( cc ).Left();
+           //g_pauimgr->GetPane( cc ).DockFixed( true );
+           //g_pauimgr->GetPane( cc ).PaneBorder( true );
            
            cc = new ChartCanvas( this, 1 );                         // the chart display canvas
            g_canvasArray.Add(cc);
@@ -3099,9 +3107,17 @@ void MyFrame::CreateCanvasLayout()
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
-           g_pauimgr->GetPane( cc ).DockFixed( true );
-           g_pauimgr->GetPane( cc ).PaneBorder( true );
+           ///g_pauimgr->GetPane( cc ).DockFixed( true );
+           //g_pauimgr->GetPane( cc ).PaneBorder( true );
 
+//            if(b_useStoredSize){
+//                int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
+//                int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
+//                
+//                g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+//                cc->SetSize(ccw, cch);
+//            }
+           
            break;
         }
             
@@ -3663,6 +3679,7 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
     switch( g_canvasConfig){
         default:
         case 0:
+#if 0            
             cc = g_canvasArray.Item(0);
             if( cc ) {
                 cc->GetSize( &cur_width, &cur_height );
@@ -3673,32 +3690,28 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
                         cc->SetSize( 0, 0, cccw, ccch );
                 }
             }
+#endif            
             break;
             
             
         case 1:
-            cc = g_canvasArray.Item(0);
-            if( cc ) {
-                cc->GetSize( &cur_width, &cur_height );
-                if( ( cur_width != cccw / 2 ) || ( cur_height != ccch ) ) {
-                    if( g_pauimgr->GetPane( cc ).IsOk() ){
-                        g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
-                    }
-                    else
-                        cc->SetSize( 0, 0, cccw, ccch );
-                }
-            }
-            
             cc = g_canvasArray.Item(1);
             if( cc ) {
-                cc->GetSize( &cur_width, &cur_height );
-                if( ( cur_width != cccw / 2 ) || ( cur_height != ccch ) ) {
-                    if( g_pauimgr->GetPane( cc ).IsOk() ){
-                        g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
-                    }
-                    else
-                        cc->SetSize( 0, 0, cccw, ccch );
-                }
+               int ccw = g_canvasConfigArray.Item(1)->canvasSize.x;
+               int cch = g_canvasConfigArray.Item(1)->canvasSize.y;
+               
+               ccw = wxMin(ccw, cccw * 9 / 10);
+               ccw = wxMax(ccw, cccw * 1 / 10);
+               
+               g_canvasConfigArray.Item(1)->canvasSize = wxSize(ccw, cch);
+               
+               if(!cch)
+                   g_pauimgr->GetPane( cc ).BestSize( cccw / 2, ccch );
+               else
+                   g_pauimgr->GetPane( cc ).BestSize( ccw, cch );
+                   
+               //  Set min size for the docked canvas(1).
+               //g_pauimgr->GetPane( cc ).MinSize( cccw * 1 / 10, ccch);
             }
             
             break;
@@ -5348,6 +5361,7 @@ void MyFrame::UpdateCanvasConfigDescriptors()
                 cc->iScale = chart->GetVP().view_scale_ppm;
                 cc->DBindex = chart->GetQuiltReferenceChartIndex();
                 cc->GroupID = chart->m_groupIndex;
+                cc->canvasSize = chart->GetSize();
             }
             
         }
@@ -5485,7 +5499,11 @@ int MyFrame::DoOptionsDialog()
     if( (g_canvasConfig != last_canvasConfig) || ( rr & GL_CHANGED) ){
         UpdateCanvasConfigDescriptors();
         
-        CreateCanvasLayout();
+        if( (g_canvasConfig > 0) && (last_canvasConfig == 0) )
+            CreateCanvasLayout(true);    
+        else
+            CreateCanvasLayout();
+        
         SendSizeEvent();
         
         g_pauimgr->Update();
@@ -6153,8 +6171,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                 }
             }
 
-//            if( !bno_load )
-//                g_pauimgr->LoadPerspective( perspective, false );
+            if( !bno_load )
+                g_pauimgr->LoadPerspective( perspective, false );
 
             g_pauimgr->Update();
 
