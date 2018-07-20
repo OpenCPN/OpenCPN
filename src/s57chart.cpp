@@ -5317,6 +5317,16 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 } else {
                     if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") )
                         value.Replace(_T("|"), _T("<br>") );
+                    //if the attribute value is a filename, change it into a link to that file
+                    if( curAttrName == _T("TXTDSC") || curAttrName == _T("PICREP") ){
+                        wxFileName file;
+                        file.Assign( wxPathOnly( this->GetFullPath() ) + wxFILE_SEP_PATH + value );
+                        file.MakeAbsolute();                    
+                        if ( file.Exists( )){
+                            value = _T("<a href=\"") + wxFileSystem::FileNameToURL(file.GetFullPath() ) + _T("\">") + value + _T("</a>");
+                        }
+                    }
+                    
                     
                     if(curAttrName == _T("catgeo"))
                         attribStr << type2str(current->obj->Primitive_type);
