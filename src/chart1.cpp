@@ -3041,11 +3041,10 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
             cc->SetColorScheme( global_color_scheme );
             
             g_pauimgr->AddPane( cc );
-            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas") );
+            g_pauimgr->GetPane( cc ).Name( _T("ChartCanvas1") );
             g_pauimgr->GetPane( cc ).Fixed();
             g_pauimgr->GetPane( cc ).CaptionVisible( false );
             g_pauimgr->GetPane( cc ).CenterPane();
-            //g_pauimgr->GetPane( cc ).BestSize( cc->GetSize() );
             
             break;
             
@@ -3672,7 +3671,6 @@ void MyFrame::SetCanvasSizes( wxSize frameSize )
     int cccw = frameSize.x;
     int ccch = frameSize.y;
     
-    int cur_width, cur_height;
     ChartCanvas *cc;
     
     // .. for each canvas...
@@ -5403,8 +5401,6 @@ int MyFrame::DoOptionsDialog()
 
     g_options->SetInitialSettings();
 
-    bDBUpdateInProgress = true;
-
     bPrevQuilt = g_bQuiltEnable;
     bPrevFullScreenQuilt = g_bFullScreenQuilt;
     bPrevOGL = g_bopengl;
@@ -5521,8 +5517,10 @@ int MyFrame::DoOptionsDialog()
     }
     
     if( rr ) {
+        bDBUpdateInProgress = true;
         b_refresh |= ProcessOptionsDialog( rr,  g_options->GetWorkDirListPtr() );
         ChartData->GetChartDirArray() = *(g_options->GetWorkDirListPtr()); // Perform a deep copy back to main database.
+        bDBUpdateInProgress = false;
         ret_val = true;
     }
 
@@ -5547,7 +5545,6 @@ int MyFrame::DoOptionsDialog()
     SetAllToolbarScale();
     RequestNewToolbars();
 
-    bDBUpdateInProgress = false;
     if( g_MainToolbar ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )
             g_MainToolbar->Submerge();

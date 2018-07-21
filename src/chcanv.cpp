@@ -1182,7 +1182,8 @@ bool ChartCanvas::DoCanvasUpdate( void )
     
     ChartStack WorkStack;
     
-    if( bDBUpdateInProgress ) return false;
+    if( bDBUpdateInProgress )
+        return false;
     if( !ChartData ) return false;
     
     if(ChartData->IsBusy())
@@ -2446,8 +2447,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
 
     case WXK_F12: {
-//        if( m_modkeys == wxMOD_ALT )
-//            m_nMeasureState = *(int *)(0);          // generate a fault for testing
+        if( m_modkeys == wxMOD_ALT )
+            m_nMeasureState = *(int *)(0);          // generate a fault for testing
 
         parent_frame->ToggleChartOutlines();
         break;
@@ -6481,7 +6482,7 @@ void ChartCanvas::CallPopupMenu(int x, int y)
         m_pSelectedRoute->m_bRtIsSelected = false;        // Only one selection at a time
         m_pSelectedRoute->DeSelectRoute();
         #ifdef ocpnUSE_GL
-        if(g_bopengl){
+        if(g_bopengl && m_glcc){
             InvalidateGL();
             Update();
         }
@@ -6648,7 +6649,7 @@ void ChartCanvas::CallPopupMenu(int x, int y)
             m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
             if( m_pSelectedRoute->m_bRtIsSelected ){
                 #ifdef ocpnUSE_GL
-                if(g_bopengl){
+                if(g_bopengl && m_glcc){
                     InvalidateGL();
                     Update();
                 }
@@ -8750,7 +8751,7 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 {
 #ifdef ocpnUSE_GL
-    if(g_bopengl) {
+    if(g_bopengl && m_glcc) {
         /* opengl version specially optimized */
         m_glcc->RenderChartOutline(dbIndex, vp);
         return;
