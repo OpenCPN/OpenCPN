@@ -935,7 +935,8 @@ void ChartCanvas::ShowTides(bool bShow)
     
     if( ptcmgr->IsReady() ) {
         SetbShowTide( bShow );
-        m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, bShow );
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, bShow );
         wxString tip = _("Show Tides");
         if(bShow)
             tip = _("Hide Tides");
@@ -946,7 +947,8 @@ void ChartCanvas::ShowTides(bool bShow)
     } else {
         wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
         SetbShowTide( false );
-        m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, false );
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_TIDE, false );
         parent_frame->SetMenubarItemState( ID_MENU_SHOW_TIDES, false );
     }
 
@@ -965,7 +967,8 @@ void ChartCanvas::ShowCurrents(bool bShow)
     
     if( ptcmgr->IsReady() ) {
         SetbShowCurrent( bShow );
-        m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, bShow );
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, bShow );
         wxString tip = _("Show Currents");
         if(bShow)
             tip = _("Hide Currents");
@@ -976,7 +979,8 @@ void ChartCanvas::ShowCurrents(bool bShow)
     } else {
         wxLogMessage( _T("Chart1::Event...TCMgr Not Available") );
         SetbShowCurrent( false );
-        m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, false );
+        if( m_toolBar )
+            m_toolBar->GetToolbar()->ToggleTool( ID_CURRENT, false );
         parent_frame->SetMenubarItemState( ID_MENU_SHOW_CURRENTS, false );
     }
     
@@ -4133,7 +4137,8 @@ void ChartCanvas::ClearbFollow( void )
     androidSetFollowTool(false);
     #endif
    
-    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    if( m_toolBar )
+        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, false );
     
     DoCanvasUpdate();
@@ -4147,7 +4152,8 @@ void ChartCanvas::SetbFollow( void )
     JumpToPosition(gLat, gLon, GetVPScale());
     m_bFollow = true;
     
-    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
+    if( m_toolBar )
+        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, true );
     parent_frame->SetMenubarItemState( ID_MENU_NAV_FOLLOW, true );
     
     #ifdef __OCPN__ANDROID__
@@ -4179,7 +4185,8 @@ void ChartCanvas::JumpToPosition( double lat, double lon, double scale )
     
     ReloadVP();
     
-    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    if( m_toolBar )
+        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
   
     //TODO
 //    if( g_pi_manager ) {
@@ -4251,7 +4258,8 @@ bool ChartCanvas::PanCanvas( double dx, double dy )
 
     //ClearbFollow();      // update the follow flag
     m_bFollow = false;      // update the follow flag
-    m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
+    if( m_toolBar )
+        m_toolBar->GetToolbar()->ToggleTool( ID_FOLLOW, false );
     
     Refresh( false );
 
@@ -7848,7 +7856,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
             
-            if( !m_toolBar->IsToolbarShown())
+            if( m_toolBar && !m_toolBar->IsToolbarShown())
                 SurfaceToolbar();
             ret = true;
         }
@@ -7866,7 +7874,7 @@ bool ChartCanvas::MouseEventProcessObjects( wxMouseEvent& event )
             }
             m_pRoutePointEditTarget = NULL;
             m_bMarkEditing = false;
-            if( !m_toolBar->IsToolbarShown())
+            if( m_toolBar && !m_toolBar->IsToolbarShown())
                 SurfaceToolbar();
             ret = true;
         }
@@ -11231,7 +11239,10 @@ void ChartCanvas::SurfaceToolbar( void )
 
 bool ChartCanvas::IsToolbarShown()
 {
-    return m_toolBar->IsShown();
+    bool rv = false;
+    if(m_toolBar)
+        rv = m_toolBar->IsShown();
+    return rv;
 }
 
 void ChartCanvas::ToggleToolbar( bool b_smooth )
@@ -11388,6 +11399,9 @@ void ChartCanvas::SetAISCanvasDisplayStyle(int StyleIndx)
 
 void ChartCanvas::TouchAISToolActive( void )
 {
+    if(!m_toolBar)
+        return;
+    
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     
     if( m_toolBar->m_pTBAISTool ) {
