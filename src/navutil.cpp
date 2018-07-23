@@ -713,9 +713,9 @@ int MyConfig::LoadMyConfig()
     g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
     g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
     
-    Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
-    Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
-    Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
+//     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
+//     Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
+//     Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
     
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );

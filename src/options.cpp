@@ -2871,13 +2871,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                       _("Disable Full Screen Quilting"));
     boxCharts->Add(pFullScreenQuilt, inputFlags);
 
-    pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                       _("Suppress blur/fog effects on overzoom"));
-    boxCharts->Add(pOverzoomEmphasis, inputFlags);
-
-    pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                    _("Suppress scaled vector charts on overzoom"));
-    boxCharts->Add(pOZScaleVector, inputFlags);
+//     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                        _("Suppress blur/fog effects on overzoom"));
+//     boxCharts->Add(pOverzoomEmphasis, inputFlags);
+// 
+//     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                     _("Suppress scaled vector charts on overzoom"));
+//     boxCharts->Add(pOZScaleVector, inputFlags);
 
     // Control Options
     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
@@ -3026,15 +3026,15 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                       _("Disable Full Screen Quilting"));
     boxCharts->Add(pFullScreenQuilt, verticleInputFlags);
 
-    pOverzoomEmphasis =
-        new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                       _("Suppress blur/fog effects on overzoom"));
-    boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
-
-    pOZScaleVector =
-        new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                       _("Suppress scaled vector charts on overzoom"));
-    boxCharts->Add(pOZScaleVector, verticleInputFlags);
+//     pOverzoomEmphasis =
+//         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                        _("Suppress blur/fog effects on overzoom"));
+//     boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
+// 
+//     pOZScaleVector =
+//         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                        _("Suppress scaled vector charts on overzoom"));
+//     boxCharts->Add(pOZScaleVector, verticleInputFlags);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -5097,8 +5097,8 @@ void options::SetInitialSettings(void) {
   pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
-  pOverzoomEmphasis->SetValue(!g_fog_overzoom);
-  pOZScaleVector->SetValue(!g_oz_vector_scale);
+  //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
+  //pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
 #ifdef __WXOSX__
   pDarkDecorations->SetValue(g_bDarkDecorations);
@@ -6193,8 +6193,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_nAutoHideToolbar = wxMin(static_cast<int>(hide_val), 100);
   g_nAutoHideToolbar = wxMax(g_nAutoHideToolbar, 2);
 
-  g_fog_overzoom = !pOverzoomEmphasis->GetValue();
-  g_oz_vector_scale = !pOZScaleVector->GetValue();
+  //g_fog_overzoom = !pOverzoomEmphasis->GetValue();
+  //g_oz_vector_scale = !pOZScaleVector->GetValue();
 
   g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
