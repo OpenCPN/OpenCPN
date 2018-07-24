@@ -131,6 +131,9 @@ extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
 
+static const char* const DEFAULT_PLUGIN_DIRS =
+    "/usr/local/lib/opencpn:/usr/lib/opencpn";
+
 unsigned int      gs_plib_flags;
 
 enum
@@ -305,6 +308,29 @@ PlugInManager::~PlugInManager()
 
 
 bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
+{
+#ifdef __linux__
+    const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
+    wxString dirs(envdirs ? envdirs : DEFAULT_PLUGIN_DIRS);
+    if (envdirs == 0  && dirs.Find(plugin_dir) == wxNOT_FOUND)
+        dirs = dirs.Append(_T(":") + plugin_dir);
+#else
+    wxString dirs = plugin_dirs;
+#endif
+    wxLogMessage( _T("Plugins loading from ") + dirs);
+    bool any_dir_loaded = false;
+    wxStringTokenizer tokens(dirs, ":");
+    while (tokens.HasMoreTokens()) {
+        wxString dir = tokens.GetNextToken();
+	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
+           any_dir_loaded = true;
+    }
+    return any_dir_loaded;
+}
+
+
+// Static helper function: loads all plugins from a single directory
+bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
 {
     pConfig->SetPath( _T("/PlugIns/") );
     SetPluginOrder( pConfig->Read( _T("PluginOrder"), wxEmptyString ) );
