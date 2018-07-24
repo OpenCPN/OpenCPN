@@ -24,6 +24,9 @@
  **************************************************************************/
 
 #include <typeinfo>
+#ifdef __linux__
+#include <wordexp.h>
+#endif
 #include <wx/wx.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -132,7 +135,7 @@ extern bool             g_bopengl;
 extern ChartGroupArray  *g_pGroupArray;
 
 static const char* const DEFAULT_PLUGIN_DIRS =
-    "/usr/local/lib/opencpn:/usr/lib/opencpn";
+    "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
 
 unsigned int      gs_plib_flags;
 
@@ -322,8 +325,17 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     wxStringTokenizer tokens(dirs, ":");
     while (tokens.HasMoreTokens()) {
         wxString dir = tokens.GetNextToken();
+        wxLogMessage(_T("PlugInManager: trying plugin dir: %s"), dir);
+#ifdef linux
+        wordexp_t we;
+        wordexp(dir.c_str(), &we, 0);
 	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
            any_dir_loaded = true;
+        wordfree(&we);
+#else
+	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
+           any_dir_loaded = true;
+#endif
     }
     return any_dir_loaded;
 }
