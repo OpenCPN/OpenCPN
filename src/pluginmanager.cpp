@@ -134,6 +134,9 @@ extern bool             g_bopengl;
 
 extern ChartGroupArray  *g_pGroupArray;
 
+static const char* const DEFAULT_DATA_DIRS =
+    "~/.local/share:/usr/local/share:/usr/share";
+
 static const char* const DEFAULT_PLUGIN_DIRS =
     "~/.local/lib/opencpn:/usr/local/lib/opencpn:/usr/lib/opencpn";
 
@@ -147,6 +150,58 @@ enum
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
+
+
+static wxString ExpandWord(wxString word)
+{
+#ifdef __linux__
+    wordexp_t we;
+    wordexp(word.mb_str(), &we, 0);
+    wxString tmp = wxString(we.we_wordv[0]);
+    wordfree(&we);
+    return tmp;
+#else
+    wxString tmp = wxExpandEnvVars(word);
+    return tmp;
+#endif
+}
+
+wxString GetPluginDataDir(const char* plugin_name)
+{
+    const char* const sharedDataLoc = *GetpSharedDataLocation();
+#ifdef __linux__
+    const char* const envdirs = getenv("XDG_DATA_DIRS");
+    wxString datadirs(envdirs ? envdirs : DEFAULT_DATA_DIRS);
+    if (envdirs == 0 && datadirs.Find(sharedDataLoc) == wxNOT_FOUND)
+        datadirs.Append(wxString(":") + sharedDataLoc);
+    wxLogMessage(_T("PlugInManager: Using data dirs from: ") + datadirs);
+#else
+    wxString datadirs(sharedDataLoc);
+#endif
+    static const wxString sep = wxFileName::GetPathSeparator();
+    wxStringTokenizer dirs(datadirs, ":");
+    while (dirs.HasMoreTokens()) {
+        wxString dir = ExpandWord(dirs.GetNextToken()) + sep;
+	dir +=
+            dir.EndsWith("opencpn") ? "plugins" : "opencpn" + sep + "plugins";
+        wxFileName tryDirName(dir);
+        wxDir tryDir;
+        if (!tryDir.Open(tryDirName.GetFullPath()))
+            continue;
+        wxString next;
+        bool more = tryDir.GetFirst(&next);
+        while (more) {
+            if (next == plugin_name) {
+		next = next.Prepend(tryDirName.GetFullPath() + sep);
+                wxLogMessage(_T("PlugInManager: using data dir: %s"), next);
+                return next;
+            }
+            more = tryDir.GetNext(&next);
+        }
+    }
+    wxLogMessage(_T("Warnińg: no data directory found, using \"\""));
+    return "";
+}
 
 
 //    Some static helper funtions
@@ -320,22 +375,14 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
 #else
     wxString dirs = plugin_dirs;
 #endif
-    wxLogMessage( _T("Plugins loading from ") + dirs);
+    wxLogMessage( _T("PlugInManager: plugins loading from ") + dirs);
     bool any_dir_loaded = false;
     wxStringTokenizer tokens(dirs, ":");
     while (tokens.HasMoreTokens()) {
         wxString dir = tokens.GetNextToken();
-        wxLogMessage(_T("PlugInManager: trying plugin dir: %s"), dir);
-#ifdef linux
-        wordexp_t we;
-        wordexp(dir.c_str(), &we, 0);
-	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
-           any_dir_loaded = true;
-        wordfree(&we);
-#else
-	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
-           any_dir_loaded = true;
-#endif
+        dir = ExpandWord(dir);
+        if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
+            any_dir_loaded = true;
     }
     return any_dir_loaded;
 }
@@ -1362,7 +1409,7 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(pic->m_pplugin)
     {
-        msg = _T("  ");
+        msg = _T("PlugInManager:  ");
         msg += plugin_file;
         wxString msg1;
         msg1.Printf(_T("\n              API Version detected: %d"), api_ver);
