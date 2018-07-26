@@ -45,7 +45,8 @@ typedef enum
     TCP = 0,
     UDP = 1,
     GPSD = 2,
-    PROTO_UNDEFINED = 3
+    SIGNALK = 3,
+    PROTO_UNDEFINED = 4
 } NetworkProtocol;
 
 typedef enum

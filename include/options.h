@@ -375,6 +375,7 @@ class options : private Uncopyable,
   wxRadioButton *m_rbTypeSerial, *m_rbTypeNet, *m_rbTypeInternalGPS;
   wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
   wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
+  wxRadioButton *m_rbNetProtoSignalK;
   wxRadioButton *m_rbOIgnore;
   wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
   wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;

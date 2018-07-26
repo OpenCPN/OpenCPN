@@ -134,16 +134,18 @@ ConnectionParams::ConnectionParams()
 
 wxString ConnectionParams::GetSourceTypeStr()
 {
-    if ( Type == SERIAL )
-        return _("Serial");
-    else if ( Type == NETWORK )
-        return _("Network");
-    else if ( Type == INTERNAL_GPS )
-        return _("GPS");
-    else if ( Type == INTERNAL_BT )
-        return _("BT");
-    else
-        return _T("");
+    switch(Type) {
+        case SERIAL:
+            return _("Serial");
+        case NETWORK:
+            return _("Network");
+        case INTERNAL_GPS:
+            return _("GPS");
+        case INTERNAL_BT:
+            return _("BT");
+        default:
+            return _T("");
+    }
 }
 
 wxString ConnectionParams::GetAddressStr()
@@ -160,24 +162,36 @@ wxString ConnectionParams::GetAddressStr()
         return _T("");
 }
 
+static wxString NetworkProtocolToString(NetworkProtocol NetProtocol)
+{
+    switch(NetProtocol) {
+        case TCP:
+            return _("TCP");
+        case UDP:
+            return _("UDP");
+        case GPSD:
+            return _("GPSD");
+        case SIGNALK:
+            return _("Signal K");
+        default:
+            return _("Undefined");
+    }
+}
+
 wxString ConnectionParams::GetParametersStr()
 {
-    if ( Type == SERIAL )
-        return wxString::Format( _T("%d"), Baudrate );
-    else if ( Type == NETWORK ){
-        if ( NetProtocol == TCP )
-            return _("TCP");
-        else if (NetProtocol == UDP)
-            return _("UDP");
-        else
-            return _("GPSD");
+    switch( Type ) {
+        case SERIAL:
+            return wxString::Format( _T("%d"), Baudrate );
+        case NETWORK:
+            return NetworkProtocolToString(NetProtocol);
+        case INTERNAL_GPS:
+            return _T("GPS");
+        case INTERNAL_BT:
+            return Port;
+        default:
+            return _T("");
     }
-    else if ( Type == INTERNAL_GPS )
-        return _T("");
-    else if ( Type == INTERNAL_BT )
-        return Port;
-    else
-        return _T("");
 }
 
 wxString ConnectionParams::GetIOTypeValueStr()
@@ -247,13 +261,7 @@ wxString ConnectionParams::GetDSPort()
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else if( Type == NETWORK){
-        wxString proto;
-        if ( NetProtocol == TCP )
-            proto = _T("TCP");
-        else if (NetProtocol == UDP)
-            proto = _T("UDP");
-        else
-            proto = _T("GPSD");
+        wxString proto = NetworkProtocolToString(LastNetProtocol);
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
     }
     else if( Type == INTERNAL_BT ){
@@ -273,13 +281,7 @@ wxString ConnectionParams::GetLastDSPort()
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else
     {
-        wxString proto;
-        if ( LastNetProtocol == TCP )
-            proto = _T("TCP");
-        else if (LastNetProtocol == UDP)
-            proto = _T("UDP");
-        else
-            proto = _T("GPSD");
+        wxString proto = NetworkProtocolToString(LastNetProtocol);
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), LastNetworkAddress.c_str(), LastNetworkPort );
     }
 }
