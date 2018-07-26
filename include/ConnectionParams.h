@@ -106,7 +106,7 @@ public:
     wxString GetParametersStr();
     wxString GetIOTypeValueStr();
     wxString GetFiltersStr();
-    wxString GetDSPort();
+    wxString GetDSPort() const;
     wxString GetLastDSPort();
     wxString GetPortStr(){ return Port; }
     void SetPortStr( wxString str ){ Port = str; }

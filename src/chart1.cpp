@@ -6623,24 +6623,8 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     }
     #endif
 
-                    dsPortType port_type = cp->IOSelect;
-                    DataStream *dstr = new DataStream( g_pMUX,
-                                                    cp->Type,
-                                                    cp->GetDSPort(),
-                                                    wxString::Format(wxT("%i"),cp->Baudrate),
-                                                    port_type,
-                                                    cp->Priority,
-                                                    cp->Garmin
-                        );
-                    dstr->SetInputFilter(cp->InputSentenceList);
-                    dstr->SetInputFilterType(cp->InputSentenceListType);
-                    dstr->SetOutputFilter(cp->OutputSentenceList);
-                    dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                    dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                    cp->b_IsSetup = true;
-
-                    g_pMUX->AddStream(dstr);
+                    g_pMUX->AddStream(new DataStream(g_pMUX, cp));
+                    cp->b_IsSetup = TRUE;
                 }
             }
 
@@ -10391,23 +10375,8 @@ void MyFrame::applySettingsString( wxString settings)
 
 
             if( cp->bEnabled ) {
-                dsPortType port_type = cp->IOSelect;
-                DataStream *dstr = new DataStream( g_pMUX,
-                                                       cp->Type,
-                                                       cp->GetDSPort(),
-                                                       wxString::Format(wxT("%i"), cp->Baudrate),
-                                                       port_type,
-                                                       cp->Priority,
-                                                       cp->Garmin);
-                dstr->SetInputFilter(cp->InputSentenceList);
-                dstr->SetInputFilterType(cp->InputSentenceListType);
-                dstr->SetOutputFilter(cp->OutputSentenceList);
-                dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                dstr->SetChecksumCheck(cp->ChecksumCheck);
-
-                g_pMUX->AddStream(dstr);
-
-                cp->b_IsSetup = true;
+                g_pMUX->AddStream(new DataStream(g_pMUX, cp));
+                cp->b_IsSetup = TRUE;
             }
         }
     }

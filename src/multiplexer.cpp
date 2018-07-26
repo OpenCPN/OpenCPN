@@ -119,24 +119,8 @@ void Multiplexer::StartAllStreams( void )
             }
 #endif
 
-            dsPortType port_type = cp->IOSelect;
-            DataStream *dstr = new DataStream( this,
-                                               cp->Type,
-                                               cp->GetDSPort(),
-                                               wxString::Format(wxT("%i"),cp->Baudrate),
-                                               port_type,
-                                               cp->Priority,
-                                               cp->Garmin
-                                               );
-                                               dstr->SetInputFilter(cp->InputSentenceList);
-                                               dstr->SetInputFilterType(cp->InputSentenceListType);
-                                               dstr->SetOutputFilter(cp->OutputSentenceList);
-                                               dstr->SetOutputFilterType(cp->OutputSentenceListType);
-                                               dstr->SetChecksumCheck(cp->ChecksumCheck);
-
+            AddStream(new DataStream(this, cp));
             cp->b_IsSetup = true;
-
-            AddStream(dstr);
         }
     }
 

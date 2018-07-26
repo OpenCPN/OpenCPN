@@ -146,6 +146,7 @@ public:
                int EOS_type = DS_EOS_CRLF,
                int handshake_type = DS_HANDSHAKE_NONE,
                void *user_data = NULL );
+    DataStream(wxEvtHandler *input_consumer, const ConnectionParams* params);
 
     ~DataStream();
 

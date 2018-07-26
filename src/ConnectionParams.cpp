@@ -256,18 +256,15 @@ wxString ConnectionParams::GetFiltersStr()
     return  ret;
 }
 
-wxString ConnectionParams::GetDSPort()
+wxString ConnectionParams::GetDSPort() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else if( Type == NETWORK){
-        wxString proto = NetworkProtocolToString(LastNetProtocol);
+        wxString proto = NetworkProtocolToString(NetProtocol);
         return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
     }
     else if( Type == INTERNAL_BT ){
-        //  GPSD:HOLUX GR-231:0
-        //wxString proto = _T("GPSD");
-        //return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
         return Port;   //mac
     }
     else

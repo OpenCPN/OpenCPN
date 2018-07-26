@@ -175,6 +175,58 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     Open();
 }
 
+DataStream::DataStream(wxEvtHandler *input_consumer,
+             const ConnectionParams* params)
+    :
+    m_Thread_run_flag(-1),
+    m_bok(false),
+    m_consumer(input_consumer),
+    m_portstring(params->GetDSPort()),
+    // m_BaudRate(BaudRate),
+    m_io_select(params->IOSelect),
+    m_priority(params->Priority),
+    m_handshake(DS_HANDSHAKE_NONE),
+    m_user_data(NULL),
+    m_pSecondary_Thread(NULL),
+    m_sock(0),
+    m_tsock(0),
+    m_is_multicast(false),
+    // m_mrq
+    m_socket_server(0),
+    // m_socket_server_active(false),
+    // m_sock_buffer
+    // m_net_addr
+    // m_net_port
+    m_net_protocol(GPSD),
+    m_connection_type(params->Type),
+    // m_bchecksumCheck
+    // m_input_filter
+    // m_input_filter_type
+    // m_output_filter
+    // m_output_filter_type
+    m_bGarmin_GRMN_mode(params->Garmin),
+    m_GarminHandler(NULL),
+    // m_connect_time
+    // m_brx_connect_event
+    m_txenter(0)
+    // m_socketread_watchdog_timer
+    // m_dog_value
+{
+    m_BaudRate = wxString::Format(wxT("%i"), params->Baudrate),
+    SetSecThreadInActive();
+    
+    m_socket_timer.SetOwner(this, TIMER_SOCKET);
+    m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
+
+    Open();
+
+    SetInputFilter(params->InputSentenceList);
+    SetInputFilterType(params->InputSentenceListType);
+    SetOutputFilter(params->OutputSentenceList);
+    SetOutputFilterType(params->OutputSentenceListType);
+    SetChecksumCheck(params->ChecksumCheck);
+}
+
 void DataStream::Open(void)
 {
     //  Open a port
