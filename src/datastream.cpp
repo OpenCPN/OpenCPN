@@ -131,40 +131,48 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              bool bGarmin,
              int EOS_type,
              int handshake_type,
-             void *user_data )
+             void *user_data)
+    :
+    m_Thread_run_flag(-1),
+    m_bok(false),
+    m_consumer(input_consumer),
+    m_portstring(Port),
+    m_BaudRate(BaudRate),
+    m_io_select(io_select),
+    m_priority(priority),
+    m_handshake(handshake_type),
+    m_user_data(user_data),
+    m_pSecondary_Thread(NULL),
+    m_sock(0),
+    m_tsock(0),
+    m_is_multicast(false),
+    // m_mrq
+    m_socket_server(0),
+    // m_socket_server_active(false),
+    // m_sock_buffer
+    // m_net_addr
+    // m_net_port
+    m_net_protocol(GPSD),
+    m_connection_type(conn_type),
+    // m_bchecksumCheck
+    // m_input_filter
+    // m_input_filter_type
+    // m_output_filter
+    // m_output_filter_type
+    m_bGarmin_GRMN_mode(bGarmin),
+    m_GarminHandler(NULL),
+    // m_connect_time
+    // m_brx_connect_event
+    m_txenter(0)
+    // m_socketread_watchdog_timer
+    // m_dog_value
 {
-    m_consumer = input_consumer;
-    m_portstring = Port;
-    m_BaudRate = BaudRate;
-    m_io_select = io_select;
-    m_priority = priority;
-    m_handshake = handshake_type;
-    m_user_data = user_data;
-    m_bGarmin_GRMN_mode = bGarmin;
-    m_connection_type = conn_type;
-
-    Init();
-
-    Open();
-}
-
-void DataStream::Init(void)
-{
-    m_pSecondary_Thread = NULL;
-    m_GarminHandler = NULL;
-    m_bok = false;
     SetSecThreadInActive();
-    m_Thread_run_flag = -1;
-    m_sock = 0;
-    m_tsock = 0;
-    m_is_multicast = false;
-    m_socket_server = 0;
-    m_txenter = 0;
-    m_net_protocol = GPSD;
     
     m_socket_timer.SetOwner(this, TIMER_SOCKET);
     m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET + 1);
-    
+
+    Open();
 }
 
 void DataStream::Open(void)

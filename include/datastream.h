@@ -189,7 +189,7 @@ public:
 
     int                 m_Thread_run_flag;
 private:
-    void Init(void);
+    // void Init(void);
     void Open(void);
 
     void OnSocketEvent(wxSocketEvent& event);
