@@ -894,6 +894,7 @@ ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
             src/wxsvg/src/ExifHandler.cpp
         )
         ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
+        INCLUDE_DIRECTORIES(${EXIF_INCLUDE_DIR})
     endif()
 
     ADD_LIBRARY(WXSVG ${SRC_WXSVG})
