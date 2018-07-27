@@ -39,8 +39,8 @@ public:
     // accessors
     void SetNMEAString(std::string string) { m_NMEAstring = string; }
     void SetStream( DataStream *pDS ) { m_pDataStream = pDS; }
-    std::string GetNMEAString() { return m_NMEAstring; }
-    DataStream *GetStream() { return m_pDataStream; }
+    std::string GetNMEAString() const { return m_NMEAstring; }
+    DataStream *GetStream() const { return m_pDataStream; }
     
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;

@@ -177,16 +177,16 @@ public:
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
     bool ChecksumOK(const std::string& sentence);
-    bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
+    bool GetGarminMode() const { return m_bGarmin_GRMN_mode; }
 
-    wxString GetBaudRate(){ return m_BaudRate; }
-    dsPortType GetPortType(){ return m_io_select; }
-    wxArrayString GetInputSentenceList(){ return m_input_filter; }
-    wxArrayString GetOutputSentenceList(){ return m_output_filter; }
-    ListType GetInputSentenceListType(){ return m_input_filter_type; }
-    ListType GetOutputSentenceListType(){ return m_output_filter_type; }
-    bool GetChecksumCheck(){ return m_bchecksumCheck; }
-    ConnectionType GetConnectionType(){ return m_connection_type; }
+    wxString GetBaudRate() const { return m_BaudRate; }
+    dsPortType GetPortType() const { return m_io_select; }
+    wxArrayString GetInputSentenceList() const { return m_input_filter; }
+    wxArrayString GetOutputSentenceList() const { return m_output_filter; }
+    ListType GetInputSentenceListType() const { return m_input_filter_type; }
+    ListType GetOutputSentenceListType() const { return m_output_filter_type; }
+    bool GetChecksumCheck() const { return m_bchecksumCheck; }
+    ConnectionType GetConnectionType() const { return m_connection_type; }
 
     int                 m_Thread_run_flag;
 private:
@@ -248,6 +248,16 @@ private:
     int                 m_dog_value;
 
 DECLARE_EVENT_TABLE()
+
+    void OpenSerial();
+
+    void OpenNetwork();
+
+    void OpenInternalGPS() const;
+
+    void OpenInternalBT() const;
+
+    void ConfigNetworkParams();
 };
 
 
