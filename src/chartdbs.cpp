@@ -2822,14 +2822,20 @@ bool  ChartDatabase::IsChartAvailable(int dbIndex)
         
         for(unsigned int i=0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
         {
-            if(m_ChartClassDescriptorArray.Item(i).m_descriptor_type == PLUGIN_DESCRIPTOR)
-            {
-                if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_upper) {
+            if(m_ChartClassDescriptorArray.Item(i).m_descriptor_type == PLUGIN_DESCRIPTOR){
+                
+                wxString search_mask = m_ChartClassDescriptorArray.Item(i).m_search_mask;
+
+                if(search_mask == ext_upper) {
                     return true;
                 }
-                if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_lower) {
+                if(search_mask == ext_lower) {
                     return true;
                 }
+                if(path->Matches(search_mask)) {
+                    return true;
+                }
+                
             }
         }
     }
