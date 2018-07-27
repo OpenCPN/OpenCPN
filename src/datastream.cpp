@@ -148,8 +148,7 @@ DataStream *makeSerialDataStream(wxEvtHandler *input_consumer,
                                 priority,
                                 bGarmin,
                                 DS_EOS_CRLF,
-                                DS_HANDSHAKE_NONE,
-                                NULL);
+                                DS_HANDSHAKE_NONE);
 }
 
 
@@ -174,8 +173,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              int priority,
              bool bGarmin,
              int EOS_type,
-             int handshake_type,
-             void *user_data)
+             int handshake_type)
     :
     m_Thread_run_flag(-1),
     m_bok(false),
@@ -185,7 +183,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_io_select(io_select),
     m_priority(priority),
     m_handshake(handshake_type),
-    m_user_data(user_data),
     m_pSecondary_Thread(NULL),
     m_sock(0),
     m_tsock(0),
@@ -207,7 +204,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_GarminHandler(NULL),
     // m_connect_time
     // m_brx_connect_event
-    m_txenter(0),
     // m_socketread_watchdog_timer
     // m_dog_value
     m_params()
@@ -236,7 +232,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_io_select(params->IOSelect),
     m_priority(params->Priority),
     m_handshake(DS_HANDSHAKE_NONE),
-    m_user_data(NULL),
     m_pSecondary_Thread(NULL),
     m_sock(0),
     m_tsock(0),
@@ -258,7 +253,6 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_GarminHandler(NULL),
     // m_connect_time
     // m_brx_connect_event
-    m_txenter(0),
     // m_socketread_watchdog_timer
     // m_dog_value
     m_params(*params)
@@ -295,13 +289,15 @@ void DataStream::Open(void)
     m_connect_time = wxDateTime::Now();
 }
 
-void InternalBTDataStream::OpenInternalBT() const {
+void InternalBTDataStream::Open(void)
+{
 #ifdef __OCPN__ANDROID__
     SetOk(androidStartBT(m_consumer, m_portstring ));
 #endif
 }
 
-void InternalGPSDataStream::OpenInternalGPS() const {
+void InternalGPSDataStream::Open(void)
+{
 #ifdef __OCPN__ANDROID__
     androidStartNMEA(m_consumer);
     SetOk(true)
@@ -309,7 +305,7 @@ void InternalGPSDataStream::OpenInternalGPS() const {
 
 }
 
-void NetworkDataStream::OpenNetwork() {
+void NetworkDataStream::Open(void) {
 
 
 #ifdef __UNIX__
@@ -432,7 +428,8 @@ void NetworkDataStream::OpenNetworkGPSD()
     SetBrxConnectEvent(false);
 }
 
-void DataStream::ConfigNetworkParams() {
+void DataStream::ConfigNetworkParams()
+{
     if(m_portstring.Contains(_T("GPSD"))){
             m_net_addr = _T("127.0.0.1");              // defaults
             m_net_port = _T("2947");
@@ -472,7 +469,8 @@ void DataStream::ConfigNetworkParams() {
     m_addr.Service(m_net_port);
 }
 
-void SerialDataStream::OpenSerial() {
+void SerialDataStream::Open(void)
+{
     wxString comx;
     comx =  GetPort().AfterFirst(':');      // strip "Serial:"
 
@@ -848,7 +846,7 @@ bool DataStream::ChecksumOK( const std::string &sentence )
 }
 
 
-bool DataStream::SendSentenceSerial(const wxString &payload)
+bool SerialDataStream::SendSentenceSerial(const wxString &payload)
 {
     if( GetSecondaryThread() ) {
         if( IsSecThreadActive() )
@@ -868,6 +866,57 @@ bool DataStream::SendSentenceSerial(const wxString &payload)
     return true;
 }
 
+bool NetworkDataStream::SendSentenceNetwork(const wxString &payload)
+{
+    if(m_txenter)
+        return false;           // do not allow recursion, could happen with non-blocking sockets
+    m_txenter++;
+
+    bool ret = true;
+    wxDatagramSocket* udp_socket;
+    switch(GetProtocol()){
+        case TCP:
+            if( GetSock() && GetSock()->IsOk() ) {
+                GetSock()->Write( payload.mb_str(), strlen( payload.mb_str() ) );
+                if(GetSock()->Error()){
+                    if (GetSockServer()) {
+                        GetSock()->Destroy();
+                        SetSock(NULL);
+                    } else {
+                        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
+                        if (tcp_socket)
+                            tcp_socket->Close();
+                        if(!GetSocketTimer()->IsRunning())
+                            GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+                        GetSocketThreadWatchdogTimer()->Stop();
+                    }
+                    ret = false;
+                }
+
+            }
+            else
+                ret = false;
+            break;
+        case UDP:
+            udp_socket = dynamic_cast<wxDatagramSocket*>(GetTSock());
+            if(udp_socket && udp_socket->IsOk() ) {
+                udp_socket->SendTo(GetAddr(), payload.mb_str(), payload.size() );
+                if( udp_socket->Error())
+                    ret = false;
+            }
+            else
+                ret = false;
+            break;
+
+        case GPSD:
+        default:
+            ret = false;
+            break;
+    }
+    m_txenter--;
+    return ret;
+
+}
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
@@ -875,66 +924,7 @@ bool DataStream::SendSentence( const wxString &sentence )
     if( !sentence.EndsWith(_T("\r\n")) )
         payload += _T("\r\n");
 
-    switch( m_connection_type ) {
-        case SERIAL:{
-            return SendSentenceSerial(payload);
-        }
-            
-        case NETWORK:{
-            if(m_txenter)
-                return false;                 // do not allow recursion, could happen with non-blocking sockets
-            m_txenter++;
 
-            bool ret = true;
-            wxDatagramSocket* udp_socket;
-                switch(m_net_protocol){
-                    case TCP:
-                        if( m_sock && m_sock->IsOk() ) {
-                            m_sock->Write( payload.mb_str(), strlen( payload.mb_str() ) );
-                            if(m_sock->Error()){
-                                if (m_socket_server) {
-                                    m_sock->Destroy();
-                                    m_sock= 0;
-                                } else {
-                                    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                                    if (tcp_socket)
-                                        tcp_socket->Close();
-                                    if(!m_socket_timer.IsRunning())
-                                        m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
-                                    m_socketread_watchdog_timer.Stop();
-                                }
-                                ret = false;
-                            }
-
-                        }
-                        else
-                            ret = false;
-                        break;
-                    case UDP:
-                        udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
-                        if(udp_socket && udp_socket->IsOk() ) {
-                            udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
-                            if( udp_socket->Error())
-                                ret = false;
-                        }
-                        else
-                            ret = false;
-                        break;
-                    
-                    case GPSD:    
-                    default:
-                        ret = false;
-                        break;
-            }
-            m_txenter--;
-            return ret;
-            break;
-        }
-         
-        default:
-            break;
-    }
-    
     return true;
 }
 

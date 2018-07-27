@@ -146,20 +146,19 @@ protected:
                int priority,
                bool bGarmin,
                int EOS_type,
-               int handshake_type,
-               void *user_data);
+               int handshake_type);
     DataStream(wxEvtHandler *input_consumer, const ConnectionParams* params);
 
 public:
-    ~DataStream();
+    virtual ~DataStream();
 
-    void Close(void);
+    void Close();
 
     bool IsOk() const { return m_bok; }
     wxString GetPort() const { return m_portstring; }
     dsPortType GetIoSelect() const { return m_io_select; }
     int GetPriority() const { return m_priority; }
-    void *GetUserData() const { return m_user_data; }
+
     
     bool SendSentence( const wxString &sentence );
 
@@ -208,7 +207,7 @@ protected:
 
     void SetBrxConnectEvent(bool event) {m_brx_connect_event = event;}
     wxTimer* GetSocketTimer() { return &m_socket_timer; };
-
+    wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
     void SetMulticast(bool multicast) { m_is_multicast = multicast; }
     bool GetMulticast() const { return m_is_multicast; }
     void SetMrqAddr(unsigned int addr) {
@@ -230,8 +229,10 @@ protected:
     void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
 
     wxEvtHandler* GetConsumer() { return m_consumer; }
+
+    NetworkProtocol GetProtocol() { return m_net_protocol; }
 private:
-    void Open(void);
+    virtual void Open();
 
     void OnSocketEvent(wxSocketEvent& event);
     void OnTimerSocket(wxTimerEvent& event);
@@ -239,7 +240,6 @@ private:
 
     void ConfigNetworkParams();
 
-    bool SendSentenceSerial(const wxString &payload);
 
     bool                m_bok;
     wxEvtHandler        *m_consumer;
@@ -248,8 +248,6 @@ private:
     dsPortType          m_io_select;
     int                 m_priority;
     int                 m_handshake;
-    void                *m_user_data;
-
 
     OCP_DataStreamInput_Thread *m_pSecondary_Thread;
     bool                m_bsec_thread_active;
@@ -287,16 +285,11 @@ private:
     wxDateTime          m_connect_time;
     bool                m_brx_connect_event;
     wxTimer             m_socket_timer;
-    int                 m_txenter;
     wxTimer             m_socketread_watchdog_timer;
     int                 m_dog_value;
     ConnectionParams    m_params;
 
 DECLARE_EVENT_TABLE()
-
-
-
-
 };
 
 class SerialDataStream : public DataStream {
@@ -309,8 +302,7 @@ public:
                      int priority = 0,
                      bool bGarmin = false,
                      int EOS_type = DS_EOS_CRLF,
-                     int handshake_type = DS_HANDSHAKE_NONE,
-                     void *user_data = NULL) : DataStream(input_consumer,
+                     int handshake_type = DS_HANDSHAKE_NONE) : DataStream(input_consumer,
                                                           conn_type,
                                                           Port,
                                                           BaudRate,
@@ -318,8 +310,7 @@ public:
                                                           priority,
                                                           bGarmin,
                                                           EOS_type,
-                                                          handshake_type,
-                                                          user_data) {
+                                                          handshake_type) {
         Open();
     }
 
@@ -329,9 +320,13 @@ public:
     }
 
 private:
-    void OpenSerial();
-    void Open(void) {
-        OpenSerial();
+    void Open();
+    bool SendSentenceSerial(const wxString &payload);
+    bool SendSentence( const wxString &sentence ) {
+        wxString payload = sentence;
+        if( !sentence.EndsWith(_T("\r\n")) )
+            payload += _T("\r\n");
+        return SendSentenceSerial(payload);
     }
 
 };
@@ -339,18 +334,25 @@ private:
 class NetworkDataStream : public DataStream {
 public:
     NetworkDataStream(wxEvtHandler *input_consumer,
-                      const ConnectionParams *params) : DataStream(input_consumer, params) {
+                      const ConnectionParams *params)
+                      : DataStream(input_consumer, params),
+                      m_txenter(0) {
         Open();
     }
 private:
+    int                 m_txenter;  // Only used in SendSentenceNetwork()
 
-    void Open(void) {
-        OpenNetwork();
-    }
-    void OpenNetwork();
+    void Open();
     void OpenNetworkGPSD();
     void OpenNetworkTCP(unsigned int addr);
     void OpenNetworkUDP(unsigned int addr);
+    bool SendSentenceNetwork(const wxString &payload);
+    bool SendSentence( const wxString &sentence ) {
+        wxString payload = sentence;
+        if( !sentence.EndsWith(_T("\r\n")) )
+            payload += _T("\r\n");
+        return SendSentenceNetwork(payload);
+    }
 };
 
 class InternalGPSDataStream : public DataStream {
@@ -361,11 +363,7 @@ public:
     }
 
 private:
-    void OpenInternalGPS() const;
-
-    void Open(void) {
-        OpenInternalGPS();
-    }
+    void Open();
 };
 
 class InternalBTDataStream : public DataStream {
@@ -376,11 +374,7 @@ public:
     }
 
 private:
-    void OpenInternalBT() const;
-
-    void Open(void) {
-        OpenInternalBT();
-    }
+    void Open();
 };
 
 class NullDataStream : public DataStream {
