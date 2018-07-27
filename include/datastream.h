@@ -219,13 +219,28 @@ protected:
 
     wxString  GetNetPort() const { return m_net_port; }
 
+    void SetGarminProtocolHandler(GarminProtocolHandler *garminHandler) {
+        m_GarminHandler = garminHandler;
+    }
+
+    void SetSecondaryThread(OCP_DataStreamInput_Thread *secondary_Thread) {
+        m_pSecondary_Thread = secondary_Thread;
+    }
+    OCP_DataStreamInput_Thread* GetSecondaryThread() { return m_pSecondary_Thread; }
+    void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
+
+    wxEvtHandler* GetConsumer() { return m_consumer; }
 private:
     void Open(void);
 
     void OnSocketEvent(wxSocketEvent& event);
     void OnTimerSocket(wxTimerEvent& event);
     void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-    
+
+    void ConfigNetworkParams();
+
+    bool SendSentenceSerial(const wxString &payload);
+
     bool                m_bok;
     wxEvtHandler        *m_consumer;
     wxString            m_portstring;
@@ -279,14 +294,7 @@ private:
 
 DECLARE_EVENT_TABLE()
 
-    void OpenSerial();
 
-
-    void OpenInternalGPS() const;
-
-    void OpenInternalBT() const;
-
-    void ConfigNetworkParams();
 
 
 };
@@ -321,6 +329,7 @@ public:
     }
 
 private:
+    void OpenSerial();
     void Open(void) {
         OpenSerial();
     }
@@ -352,6 +361,8 @@ public:
     }
 
 private:
+    void OpenInternalGPS() const;
+
     void Open(void) {
         OpenInternalGPS();
     }
@@ -365,6 +376,8 @@ public:
     }
 
 private:
+    void OpenInternalBT() const;
+
     void Open(void) {
         OpenInternalBT();
     }

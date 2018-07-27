@@ -295,13 +295,13 @@ void DataStream::Open(void)
     m_connect_time = wxDateTime::Now();
 }
 
-void DataStream::OpenInternalBT() const {
+void InternalBTDataStream::OpenInternalBT() const {
 #ifdef __OCPN__ANDROID__
     SetOk(androidStartBT(m_consumer, m_portstring ));
 #endif
 }
 
-void DataStream::OpenInternalGPS() const {
+void InternalGPSDataStream::OpenInternalGPS() const {
 #ifdef __OCPN__ANDROID__
     androidStartNMEA(m_consumer);
     SetOk(true)
@@ -472,33 +472,31 @@ void DataStream::ConfigNetworkParams() {
     m_addr.Service(m_net_port);
 }
 
-void DataStream::OpenSerial() {
-    m_connection_type = SERIAL;
+void SerialDataStream::OpenSerial() {
     wxString comx;
-    comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
+    comx =  GetPort().AfterFirst(':');      // strip "Serial:"
 
-    wxString port_uc = m_portstring.Upper();
+    wxString port_uc = GetPort().Upper();
 
     if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
-        m_GarminHandler = new GarminProtocolHandler(this, m_consumer, true);
+        SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), true));
     }
-    else if(m_bGarmin_GRMN_mode) {
-        m_GarminHandler = new GarminProtocolHandler(this, m_consumer, false);
+    else if(GetGarminMode()) {
+        SetGarminProtocolHandler(new GarminProtocolHandler(this, GetConsumer(), false));
     }
     else {
-        m_connection_type = SERIAL;
         wxString comx;
-        comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
+        comx =  GetPort().AfterFirst(':');      // strip "Serial:"
 
         comx = comx.BeforeFirst(' ');               // strip off any description provided by Windows
 
         //    Kick off the DataSource RX thread
-        m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this,
-                                                             m_consumer,
-                                                             comx, m_BaudRate,
-                                                             m_io_select);
-        m_Thread_run_flag = 1;
-        m_pSecondary_Thread->Run();
+        SetSecondaryThread(new OCP_DataStreamInput_Thread(this,
+                                                          GetConsumer(),
+                                                          comx, GetBaudRate(),
+                                                          GetPortType()));
+        SetThreadRunFlag(1);
+        GetSecondaryThread()->Run();
 
         SetOk(true);
     }
@@ -612,7 +610,6 @@ void DataStream::OnTimerSocket(wxTimerEvent& event)
         }
     }
 }
-
 
 void DataStream::OnSocketEvent(wxSocketEvent& event)
 {
@@ -766,8 +763,6 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
     }
 }
 
-
-
 void DataStream::OnServerSocketEvent(wxSocketEvent& event)
 {
     
@@ -852,6 +847,28 @@ bool DataStream::ChecksumOK( const std::string &sentence )
     
 }
 
+
+bool DataStream::SendSentenceSerial(const wxString &payload)
+{
+    if( GetSecondaryThread() ) {
+        if( IsSecThreadActive() )
+        {
+            int retry = 10;
+            while( retry ) {
+                if( GetSecondaryThread()->SetOutMsg( payload ))
+                    return true;
+                else
+                    retry--;
+            }
+            return false;   // could not send after several tries....
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
+
 bool DataStream::SendSentence( const wxString &sentence )
 {
     wxString payload = sentence;
@@ -860,22 +877,7 @@ bool DataStream::SendSentence( const wxString &sentence )
 
     switch( m_connection_type ) {
         case SERIAL:{
-            if( m_pSecondary_Thread ) {
-                if( IsSecThreadActive() )
-                {
-                    int retry = 10;
-                    while( retry ) {
-                        if( m_pSecondary_Thread->SetOutMsg( payload ))
-                            return true;
-                        else
-                            retry--;
-                    }
-                    return false;   // could not send after several tries....
-                }
-                else
-                    return false;
-            }
-            break;
+            return SendSentenceSerial(payload);
         }
             
         case NETWORK:{
