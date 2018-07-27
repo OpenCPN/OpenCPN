@@ -5358,7 +5358,6 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 objText += _T("<br>");
                 ret_val << objText;
             }
-
         }
     } // Object for loop
 

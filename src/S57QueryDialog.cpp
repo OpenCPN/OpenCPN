@@ -23,6 +23,8 @@
  */
 
 #include "wx/wxprec.h"
+#include <wx/filename.h>
+
 
 #include "S57QueryDialog.h"
 #include "chcanv.h"
@@ -39,6 +41,8 @@ IMPLEMENT_CLASS ( S57QueryDialog, wxDialog )
 BEGIN_EVENT_TABLE ( S57QueryDialog, wxDialog )  //ws wxDialog
     EVT_SIZE ( S57QueryDialog::OnSize )
     EVT_CLOSE( S57QueryDialog::OnClose)
+    
+    EVT_HTML_LINK_CLICKED( wxID_ANY, S57QueryDialog::OnHtmlLinkClicked )
 END_EVENT_TABLE()
 
 S57QueryDialog::S57QueryDialog()
@@ -51,7 +55,6 @@ S57QueryDialog::S57QueryDialog( wxWindow* parent, wxWindowID id, const wxString&
 {
     Init();
     Create( parent, id, caption, pos, size, style );
-
 }
 
 S57QueryDialog::~S57QueryDialog()
@@ -195,3 +198,21 @@ void S57QueryDialog::OnClose( wxCloseEvent& event )
     g_pObjectQueryDialog = NULL;
 }
 
+void S57QueryDialog::OnHtmlLinkClicked(wxHtmlLinkEvent &event)
+{
+    S57QueryDialog* newS57QueryDialog = new S57QueryDialog( this->GetParent() );
+    wxPoint p( this->GetPosition().x +20, this->GetPosition().y +20 );
+    newS57QueryDialog->SetPosition( p );
+    wxFileName fn(event.GetLinkInfo().GetHref());
+    wxString f = fn.GetFullName();
+    newS57QueryDialog->SetTitle(f);
+    newS57QueryDialog->m_phtml->LoadPage( event.GetLinkInfo().GetHref() );
+    wxString text = newS57QueryDialog->m_phtml->ToText();
+    // in case of a text file, reload it as a html-table. This will set word wrapping
+    if ( text.length() > 0 ){
+        text = _("<html><body bgcolor=#eff1f0><font color=#000000></font><table border=0 cellspacing=0 cellpadding=0>" + text + _("</table>"));
+        newS57QueryDialog->SetHTMLPage( text );
+        newS57QueryDialog->SetColorScheme();
+    }    
+    newS57QueryDialog->Show();
+}

@@ -26,6 +26,8 @@
 #define __S57QUERYDIALOG_H__
 
 #include <wx/dialog.h>
+#include <wx/html/htmlcell.h>
+#include <wx/html/htmlwin.h>
 
 class wxHtmlWindow;
 
@@ -62,6 +64,7 @@ class S57QueryDialog: public wxDialog
             void RecalculateSize( void );
             
             void OnClose(wxCloseEvent& event);
+            void OnHtmlLinkClicked(wxHtmlLinkEvent &event);
 
       //    Overrides
             void OnPaint ( wxPaintEvent& event );
@@ -71,7 +74,7 @@ class S57QueryDialog: public wxDialog
       //    Data
             wxHtmlWindow      *m_phtml;
             wxSize            m_createsize;
-
+            
 };
 
 #endif
