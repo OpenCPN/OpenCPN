@@ -133,6 +133,8 @@ bool CheckSumCheck(const std::string& sentence);
 //
 //----------------------------------------------------------------------------
 
+
+
 class DataStream: public wxEvtHandler
 {
 public:
@@ -152,22 +154,22 @@ public:
 
     void Close(void);
 
-    bool IsOk(){ return m_bok; }
-    wxString GetPort(){ return m_portstring; }
-    dsPortType GetIoSelect(){ return m_io_select; }
-    int GetPriority(){ return m_priority; }
-    void *GetUserData(){ return m_user_data; }
+    bool IsOk() const { return m_bok; }
+    wxString GetPort() const { return m_portstring; }
+    dsPortType GetIoSelect() const { return m_io_select; }
+    int GetPriority() const { return m_priority; }
+    void *GetUserData() const { return m_user_data; }
     
     bool SendSentence( const wxString &sentence );
 
-    int GetLastError(){ return m_last_error; }
+    int GetLastError() const { return m_last_error; }
 
  //    Secondary thread life toggle
  //    Used to inform launching object (this) to determine if the thread can
  //    be safely called or polled, e.g. wxThread->Destroy();
     void SetSecThreadActive(void){m_bsec_thread_active = true;}
     void SetSecThreadInActive(void){m_bsec_thread_active = false;}
-    bool IsSecThreadActive(){ return m_bsec_thread_active; }
+    bool IsSecThreadActive() const { return m_bsec_thread_active; }
 
     void SetChecksumCheck(bool check) { m_bchecksumCheck = check; }
 
@@ -187,7 +189,7 @@ public:
     ListType GetOutputSentenceListType() const { return m_output_filter_type; }
     bool GetChecksumCheck() const { return m_bchecksumCheck; }
     ConnectionType GetConnectionType() const { return m_connection_type; }
-
+    const ConnectionParams* GetConnectionParams() const { return &m_params; }
     int                 m_Thread_run_flag;
 private:
     // void Init(void);
@@ -246,6 +248,7 @@ private:
     int                 m_txenter;
     wxTimer             m_socketread_watchdog_timer;
     int                 m_dog_value;
+    ConnectionParams    m_params;
 
 DECLARE_EVENT_TABLE()
 
@@ -260,6 +263,54 @@ DECLARE_EVENT_TABLE()
     void ConfigNetworkParams();
 };
 
+class SerialDataStream : public DataStream {
+public:
+    SerialDataStream(wxEvtHandler *input_consumer,
+                     const ConnectionParams *params) : DataStream(input_consumer, params) {}
+};
+
+class NetworkDataStream : public DataStream {
+public:
+    NetworkDataStream(wxEvtHandler *input_consumer,
+                      const ConnectionParams *params) : DataStream(input_consumer, params) {}
+};
+
+class InternalGPSDataStream : public DataStream {
+public:
+    InternalGPSDataStream(wxEvtHandler *input_consumer,
+                          const ConnectionParams *params) : DataStream(input_consumer, params) {}
+
+};
+
+class InternalBTDataStream : public DataStream {
+public:
+    InternalBTDataStream(wxEvtHandler *input_consumer,
+                         const ConnectionParams *params) : DataStream(input_consumer, params) {}
+
+};
+
+class NullDataStream : public DataStream {
+public:
+    NullDataStream(wxEvtHandler *input_consumer,
+                   const ConnectionParams *params) : DataStream(input_consumer, params) {}
+
+};
+
+// Factory methods, preparation to split into subclasses with clearer
+// Responsibilities
+
+DataStream* makeDataStream(wxEvtHandler *input_consumer, const ConnectionParams* params);
+
+DataStream *makeDataStream(wxEvtHandler *input_consumer,
+                           const ConnectionType conn_type,
+                           const wxString &Port,
+                           const wxString &BaudRate,
+                           dsPortType io_select,
+                           int priority = 0,
+                           bool bGarmin = false,
+                           int EOS_type = DS_EOS_CRLF,
+                           int handshake_type = DS_HANDSHAKE_NONE,
+                           void *user_data = NULL);
 
 //extern const wxEventType EVT_THREADMSG;
 

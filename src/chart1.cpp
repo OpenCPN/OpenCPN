@@ -6623,7 +6623,7 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
                     }
     #endif
 
-                    g_pMUX->AddStream(new DataStream(g_pMUX, cp));
+                    g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
                     cp->b_IsSetup = TRUE;
                 }
             }
@@ -10375,7 +10375,7 @@ void MyFrame::applySettingsString( wxString settings)
 
 
             if( cp->bEnabled ) {
-                g_pMUX->AddStream(new DataStream(g_pMUX, cp));
+                g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
                 cp->b_IsSetup = TRUE;
             }
         }

@@ -87,6 +87,7 @@ class Multiplexer : public wxEvtHandler
         ListType output_sentence_list_type_save;
         bool bchecksum_check_save;
         bool bGarmin_GRMN_mode_save;
+        const ConnectionParams* params_save;
 
 };
 #endif // __MULTIPLEXER_H__

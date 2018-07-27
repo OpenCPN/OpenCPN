@@ -43,7 +43,7 @@ extern wxString         g_TalkerIdText;
 
 extern "C" bool CheckSerialAccess( void );
 
-Multiplexer::Multiplexer()
+Multiplexer::Multiplexer() : params_save(NULL)
 {
     m_aisconsumer = NULL;
     m_gpsconsumer = NULL;
@@ -119,7 +119,7 @@ void Multiplexer::StartAllStreams( void )
             }
 #endif
 
-            AddStream(new DataStream(this, cp));
+            AddStream(makeDataStream(this, cp));
             cp->b_IsSetup = true;
         }
     }
@@ -337,6 +337,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 void Multiplexer::SaveStreamProperties( DataStream *stream )
 {
     if( stream ) {
+        wxLogMessage( wxString::Format(_T("SaveStreamProperties %s"),
+                                       stream->GetConnectionParams()->GetDSPort().c_str()) );
         type_save = stream->GetConnectionType();
         port_save = stream->GetPort();
         baud_rate_save = stream->GetBaudRate();
@@ -348,12 +350,15 @@ void Multiplexer::SaveStreamProperties( DataStream *stream )
         output_sentence_list_type_save = stream->GetOutputSentenceListType();
         bchecksum_check_save = stream->GetChecksumCheck();
         bGarmin_GRMN_mode_save = stream->GetGarminMode();
+        params_save = stream->GetConnectionParams();
     }
 }
 
 bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 {
-    DataStream *dstr = new DataStream( this,
+    wxLogMessage( wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
+                                   params_save->GetDSPort().c_str()) );
+    DataStream *dstr = makeDataStream( this,
                                        type_save,
                                        port_save,
                                        baud_rate_save,
@@ -533,7 +538,7 @@ ret_point:
                 baud = _T("4800");
             }
 
-            DataStream *dstr = new DataStream( this,
+            DataStream *dstr = makeDataStream( this,
                                                SERIAL,
                                                com_name,
                                                baud,
@@ -1087,7 +1092,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         baud = _T("4800");
     }
 
-    DataStream *dstr = new DataStream( this,
+    DataStream *dstr = makeDataStream( this,
                                        SERIAL,
                                        com_name,
                                        baud,

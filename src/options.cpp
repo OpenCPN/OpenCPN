@@ -6134,7 +6134,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     }
 
     if (!cp->bEnabled) continue;
-    g_pMUX->AddStream(new DataStream(g_pMUX, cp));
+    g_pMUX->AddStream(makeDataStream(g_pMUX, cp));
     cp->b_IsSetup = TRUE;
   }
 

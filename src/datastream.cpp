@@ -107,6 +107,46 @@ bool CheckSumCheck(const std::string& sentence)
 }
 
 
+DataStream* makeDataStream(wxEvtHandler *input_consumer, const ConnectionParams* params)
+{
+    wxLogMessage( wxString::Format(_T("makeDataStream %s"),
+            params->GetDSPort().c_str()) );
+    switch (params->Type) {
+        case SERIAL:
+            return new SerialDataStream(input_consumer, params);
+        case NETWORK:
+            return new NetworkDataStream(input_consumer, params);
+        case INTERNAL_GPS:
+            return new InternalGPSDataStream(input_consumer, params);
+        case INTERNAL_BT:
+            return new InternalBTDataStream(input_consumer, params);
+        default:
+            return new NullDataStream(input_consumer, params);
+    }
+}
+
+DataStream *makeDataStream(wxEvtHandler *input_consumer,
+                           const ConnectionType conn_type,
+                           const wxString &Port,
+                           const wxString &BaudRate,
+                           dsPortType io_select,
+                           int priority,
+                           bool bGarmin,
+                           int EOS_type,
+                           int handshake_type,
+                           void *user_data)
+{
+    return new DataStream(input_consumer,
+                          conn_type,
+                          Port,
+                          BaudRate,
+                          io_select,
+                          priority,
+                          bGarmin,
+                          EOS_type,
+                          handshake_type,
+                          user_data);
+}
 
 
 //------------------------------------------------------------------------------
@@ -163,9 +203,10 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_GarminHandler(NULL),
     // m_connect_time
     // m_brx_connect_event
-    m_txenter(0)
+    m_txenter(0),
     // m_socketread_watchdog_timer
     // m_dog_value
+    m_params()
 {
     wxLogMessage( _T("Classic CTOR"));
     if(m_connection_type == NETWORK) {
@@ -213,12 +254,17 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
     m_GarminHandler(NULL),
     // m_connect_time
     // m_brx_connect_event
-    m_txenter(0)
+    m_txenter(0),
     // m_socketread_watchdog_timer
     // m_dog_value
+    m_params(*params)
 {
     if(m_connection_type == NETWORK) {
-        ConfigNetworkParams();
+        m_net_addr = params->NetworkAddress;
+        m_net_port = wxString::Format(wxT("%i"), params->NetworkPort);
+        m_net_protocol = params->NetProtocol;
+        m_addr.Hostname(m_net_addr);
+        m_addr.Service(m_net_port);
     }
 
     m_BaudRate = wxString::Format(wxT("%i"), params->Baudrate),
@@ -304,7 +350,7 @@ void DataStream::OpenNetwork() {
             }
             case TCP: {
                 int isServer = ((addr == INADDR_ANY)?1:0);
-
+                wxLogMessage( wxString::Format(_T("Opening TCP Server %d"), isServer) );
                 wxSocketBase* tsock;
 
                 if (isServer) {
