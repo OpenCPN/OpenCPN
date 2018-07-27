@@ -98,24 +98,24 @@ public:
     int             Priority;
     bool            bEnabled;
 
-    wxString        Serialize();
+    wxString        Serialize() const;
     void            Deserialize(const wxString &configStr);
 
-    wxString GetSourceTypeStr();
-    wxString GetAddressStr();
-    wxString GetParametersStr();
-    wxString GetIOTypeValueStr();
-    wxString GetFiltersStr();
+    wxString GetSourceTypeStr() const;
+    wxString GetAddressStr() const;
+    wxString GetParametersStr() const;
+    wxString GetIOTypeValueStr() const;
+    wxString GetFiltersStr() const;
     wxString GetDSPort() const;
-    wxString GetLastDSPort();
-    wxString GetPortStr(){ return Port; }
+    wxString GetLastDSPort() const;
+    wxString GetPortStr() const { return Port; }
     void SetPortStr( wxString str ){ Port = str; }
     
     
     bool            Valid;
     bool            b_IsSetup;
 private:
-    wxString FilterTypeToStr(ListType type, FilterDirection dir);
+    wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
     
 };
 

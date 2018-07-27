@@ -71,7 +71,7 @@ void ConnectionParams::Deserialize(const wxString &configStr)
         bEnabled = !!wxAtoi(prms[17]);
 }
 
-wxString ConnectionParams::Serialize()
+wxString ConnectionParams::Serialize() const
 {
     wxString istcs;
     for( size_t i = 0; i < InputSentenceList.Count(); i++ )
@@ -132,7 +132,7 @@ ConnectionParams::ConnectionParams()
     b_IsSetup = false;
 }
 
-wxString ConnectionParams::GetSourceTypeStr()
+wxString ConnectionParams::GetSourceTypeStr() const
 {
     switch(Type) {
         case SERIAL:
@@ -148,7 +148,7 @@ wxString ConnectionParams::GetSourceTypeStr()
     }
 }
 
-wxString ConnectionParams::GetAddressStr()
+wxString ConnectionParams::GetAddressStr() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("%s"), Port.c_str() );
@@ -162,6 +162,7 @@ wxString ConnectionParams::GetAddressStr()
         return _T("");
 }
 
+// TODO: Make part of NetworkProtocol interface
 static wxString NetworkProtocolToString(NetworkProtocol NetProtocol)
 {
     switch(NetProtocol) {
@@ -178,7 +179,7 @@ static wxString NetworkProtocolToString(NetworkProtocol NetProtocol)
     }
 }
 
-wxString ConnectionParams::GetParametersStr()
+wxString ConnectionParams::GetParametersStr() const
 {
     switch( Type ) {
         case SERIAL:
@@ -194,7 +195,7 @@ wxString ConnectionParams::GetParametersStr()
     }
 }
 
-wxString ConnectionParams::GetIOTypeValueStr()
+wxString ConnectionParams::GetIOTypeValueStr() const
 {
     if ( IOSelect == DS_TYPE_INPUT )
         return _("Input");
@@ -204,7 +205,7 @@ wxString ConnectionParams::GetIOTypeValueStr()
         return _("In/Out");
 }
 
-wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
+wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir) const
 {
     if(dir == FILTER_INPUT) {
         if ( type == BLACKLIST )
@@ -220,7 +221,7 @@ wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
     }
 }
 
-wxString ConnectionParams::GetFiltersStr()
+wxString ConnectionParams::GetFiltersStr() const
 {
     wxString istcs;
     for( size_t i = 0; i < InputSentenceList.Count(); i++ )
@@ -272,7 +273,7 @@ wxString ConnectionParams::GetDSPort() const
     
 }
 
-wxString ConnectionParams::GetLastDSPort()
+wxString ConnectionParams::GetLastDSPort() const
 {
     if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
