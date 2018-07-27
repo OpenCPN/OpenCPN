@@ -1190,6 +1190,7 @@ SET(HDRS
 		include/compass.h
 		include/geodesic.h
 		include/datastream.h
+        include/GarminProtocolHandler.h
 		include/OCPN_DataStreamEvent.h
 		include/ConnectionParams.h
 		include/OCP_DataStreamInput_Thread.h
@@ -1285,6 +1286,7 @@ SET(SRCS
 		src/compass.cpp
 		src/geodesic.cpp
 		src/datastream.cpp
+        src/GarminProtocolHandler.cpp
 		src/OCPN_DataStreamEvent.cpp
 		src/ConnectionParams.cpp
 		src/OCP_DataStreamInput_Thread.cpp

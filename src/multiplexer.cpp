@@ -358,14 +358,14 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 {
     wxLogMessage( wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
                                    params_save->GetDSPort().c_str()) );
-    DataStream *dstr = makeDataStream( this,
-                                       type_save,
-                                       port_save,
-                                       baud_rate_save,
-                                       port_type_save,
-                                       priority_save,
-                                       bGarmin_GRMN_mode_save
-                                     );
+    DataStream *dstr = makeSerialDataStream(this,
+                                            type_save,
+                                            port_save,
+                                            baud_rate_save,
+                                            port_type_save,
+                                            priority_save,
+                                            bGarmin_GRMN_mode_save
+    );
     dstr->SetInputFilter(input_sentence_list_save);
     dstr->SetInputFilterType(input_sentence_list_type_save);
     dstr->SetOutputFilter(output_sentence_list_save);
@@ -538,12 +538,12 @@ ret_point:
                 baud = _T("4800");
             }
 
-            DataStream *dstr = makeDataStream( this,
-                                               SERIAL,
-                                               com_name,
-                                               baud,
-                                               DS_TYPE_INPUT_OUTPUT,
-                                               0 );
+            DataStream *dstr = makeSerialDataStream(this,
+                                                    SERIAL,
+                                                    com_name,
+                                                    baud,
+                                                    DS_TYPE_INPUT_OUTPUT,
+                                                    0, false);
 
             //  Wait up to 5 seconds for Datastream secondary thread to come up
             int timeout = 0;
@@ -1092,12 +1092,12 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
         baud = _T("4800");
     }
 
-    DataStream *dstr = makeDataStream( this,
-                                       SERIAL,
-                                       com_name,
-                                       baud,
-                                       DS_TYPE_INPUT_OUTPUT,
-                                       0 );
+    DataStream *dstr = makeSerialDataStream(this,
+                                            SERIAL,
+                                            com_name,
+                                            baud,
+                                            DS_TYPE_INPUT_OUTPUT,
+                                            0, false);
 
 
     //  Wait up to 1 seconds for Datastream secondary thread to come up
