@@ -2297,6 +2297,13 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
             }
         }
         
+        if(poDstSG2D == NULL && nCCUI == 2){
+            // Trying to delete a coordinate that does not exist...
+            // Theoretically, this is an error.
+            //  But we have seen this from some HOs, (China/HongKong) and seems to be OK to ignore
+            return TRUE;
+        }
+
         if( (poSrcSG2D == NULL && nCCUI != 2)
             || (poDstSG2D == NULL && nCCUI != 1) )
         {
