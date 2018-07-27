@@ -1315,6 +1315,11 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                                     chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
                                     break;
                               }
+                              if(ChartFullPath.Matches(m_ChartClassDescriptorArray.Item(i).m_search_mask)) {
+                                  chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                  break;
+                              }
+                              
                         }
                   }
 
