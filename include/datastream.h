@@ -202,10 +202,11 @@ protected:
     wxSocketBase* GetTSock() const { return m_tsock; }
 
     void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
-    wxSocketBase* GetSockServer() const { return m_socket_server; }
+    wxSocketServer* GetSockServer() const { return m_socket_server; }
 
 
     void SetBrxConnectEvent(bool event) {m_brx_connect_event = event;}
+    bool GetBrxConnectEvent() { return m_brx_connect_event; }
     wxTimer* GetSocketTimer() { return &m_socket_timer; };
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
     void SetMulticast(bool multicast) { m_is_multicast = multicast; }
@@ -231,12 +232,13 @@ protected:
     wxEvtHandler* GetConsumer() { return m_consumer; }
 
     NetworkProtocol GetProtocol() { return m_net_protocol; }
+
+    void SetConnectTime(wxDateTime time) { m_connect_time = time; }
+    wxDateTime GetConnectTime() { return m_connect_time; }
+    bool SetOutputSocketOptions(wxSocketBase* tsock);
+
 private:
     virtual void Open();
-
-    void OnSocketEvent(wxSocketEvent& event);
-    void OnTimerSocket(wxTimerEvent& event);
-    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
 
     void ConfigNetworkParams();
 
@@ -259,16 +261,12 @@ private:
     bool                m_is_multicast;  // Only for UDP...
     struct ip_mreq      m_mrq;      // mreq rather than mreqn for windows Only for UDP....
 
-    //  TCP Server support
-    void OnServerSocketEvent(wxSocketEvent& event);             // The listener
-    void OnActiveServerEvent(wxSocketEvent& event);             // The open connection
     // Setting output parameters
-    bool SetOutputSocketOptions(wxSocketBase* tsock);
 
     wxSocketServer      *m_socket_server;                       //  The listening server
     wxSocketBase        *m_socket_server_active;                //  The active connection
     
-    std::string         m_sock_buffer;
+    // std::string         m_sock_buffer;
     wxString            m_net_addr;
     wxString            m_net_port;
     NetworkProtocol     m_net_protocol;
@@ -289,7 +287,6 @@ private:
     int                 m_dog_value;
     ConnectionParams    m_params;
 
-DECLARE_EVENT_TABLE()
 };
 
 class SerialDataStream : public DataStream {
@@ -328,7 +325,6 @@ private:
             payload += _T("\r\n");
         return SendSentenceSerial(payload);
     }
-
 };
 
 class NetworkDataStream : public DataStream {
@@ -341,6 +337,8 @@ public:
     }
 private:
     int                 m_txenter;  // Only used in SendSentenceNetwork()
+    int                 m_dog_value;
+    std::string         m_sock_buffer;
 
     void Open();
     void OpenNetworkGPSD();
@@ -353,6 +351,15 @@ private:
             payload += _T("\r\n");
         return SendSentenceNetwork(payload);
     }
+
+    void OnTimerSocket(wxTimerEvent& event);
+    void OnSocketEvent(wxSocketEvent& event);
+    //  TCP Server support
+    void OnServerSocketEvent(wxSocketEvent& event);             // The listener
+    void OnActiveServerEvent(wxSocketEvent& event);             // The open connection
+    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+
+DECLARE_EVENT_TABLE()
 };
 
 class InternalGPSDataStream : public DataStream {

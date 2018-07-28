@@ -156,12 +156,11 @@ DataStream *makeSerialDataStream(wxEvtHandler *input_consumer,
 //    DataStream Implementation
 //------------------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(DataStream, wxEvtHandler)
-
-    EVT_SOCKET(DS_SOCKET_ID, DataStream::OnSocketEvent)
-    EVT_SOCKET(DS_SERVERSOCKET_ID, DataStream::OnServerSocketEvent)
-    EVT_TIMER(TIMER_SOCKET, DataStream::OnTimerSocket)
-    EVT_TIMER(TIMER_SOCKET + 1, DataStream::OnSocketReadWatchdogTimer)
+BEGIN_EVENT_TABLE(NetworkDataStream, wxEvtHandler)
+    EVT_TIMER(TIMER_SOCKET, NetworkDataStream::OnTimerSocket)
+    EVT_SOCKET(DS_SOCKET_ID, NetworkDataStream::OnSocketEvent)
+    EVT_SOCKET(DS_SERVERSOCKET_ID, NetworkDataStream::OnServerSocketEvent)
+    EVT_TIMER(TIMER_SOCKET + 1, NetworkDataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
 
 // constructor
@@ -579,37 +578,37 @@ void DataStream::Close()
         
 }
 
-void DataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
+void NetworkDataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
 {
     m_dog_value--;
     if( m_dog_value <= 0 ) {            // No receive in n seconds, assume connection lost
-        wxLogMessage( wxString::Format(_T("    TCP Datastream watchdog timeout: %s"), m_portstring.c_str()) );
+        wxLogMessage( wxString::Format(_T("    TCP NetworkDataStream watchdog timeout: %s"), GetPort().c_str()) );
 
-        if(m_net_protocol == TCP ) {
-            wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+        if(GetProtocol() == TCP ) {
+            wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
             if(tcp_socket) {
                 tcp_socket->Close();
             }
-            m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
-            m_socketread_watchdog_timer.Stop();
+            GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+            GetSocketThreadWatchdogTimer()->Stop();
         }
     }
 }
 
-void DataStream::OnTimerSocket(wxTimerEvent& event)
+void NetworkDataStream::OnTimerSocket(wxTimerEvent& event)
 {
     //  Attempt a connection
-    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
     if(tcp_socket) {
         if(tcp_socket->IsDisconnected() ) {
-            m_brx_connect_event = false;
-            tcp_socket->Connect(m_addr, FALSE);
-            m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule another attempt
+            SetBrxConnectEvent(false);
+            tcp_socket->Connect(GetAddr(), FALSE);
+            GetSocketTimer()->Start(5000, wxTIMER_ONE_SHOT);    // schedule another attempt
         }
     }
 }
 
-void DataStream::OnSocketEvent(wxSocketEvent& event)
+void NetworkDataStream::OnSocketEvent(wxSocketEvent& event)
 {
     //#define RD_BUF_SIZE    200
     #define RD_BUF_SIZE    4096 // Allows handling of high volume data streams, such as a National AIS stream with 100s of msgs a second.
@@ -681,13 +680,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     if(nmea_start != wxString::npos){
                         nmea_line = nmea_line.substr(nmea_start);
                         nmea_line += "\r\n";        // Add cr/lf, possibly superfluous
-                        if( m_consumer && ChecksumOK(nmea_line)){
+                        if( GetConsumer() && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                             if(nmea_line.size()) {
                                 Nevent.SetNMEAString( nmea_line );
                                 Nevent.SetStream( this );
-                            
-                                m_consumer->AddPendingEvent(Nevent);
+
+                                GetConsumer()->AddPendingEvent(Nevent);
                             }
                         }
                     }
@@ -706,28 +705,27 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_LOST:
         {
-            //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
-            if(m_net_protocol == TCP || m_net_protocol == GPSD) {
-				if (m_brx_connect_event)
-					wxLogMessage(wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()));
-                if (m_socket_server) {
-                    m_sock->Destroy();
-                    m_sock=0;
+            if(GetProtocol() == TCP || GetProtocol() == GPSD) {
+				if (GetBrxConnectEvent())
+					wxLogMessage(wxString::Format(_T("NetworkDataStream connection lost: %s"), GetPort().c_str()));
+                if (GetSockServer()) {
+                    GetSock()->Destroy();
+                    SetSock(NULL);
                     break;
                 }
                 wxDateTime now = wxDateTime::Now();
-                wxTimeSpan since_connect = now - m_connect_time;
+                wxTimeSpan since_connect = now - GetConnectTime();
 
                 int retry_time = 5000;          // default
 
                 //  If the socket has never connected, and it is a short interval since the connect request
                 //  then stretch the time a bit.  This happens on Windows if there is no dafault IP on any interface
                 
-                if(!m_brx_connect_event && (since_connect.GetSeconds() < 5) )
+                if(!GetBrxConnectEvent() && (since_connect.GetSeconds() < 5) )
                     retry_time = 10000;         // 10 secs
                 
-                m_socketread_watchdog_timer.Stop();
-                m_socket_timer.Start(retry_time, wxTIMER_ONE_SHOT);     // Schedule a re-connect attempt
+                GetSocketThreadWatchdogTimer()->Stop();
+                GetSocketTimer()->Start(retry_time, wxTIMER_ONE_SHOT);     // Schedule a re-connect attempt
 
                 break;
             }
@@ -735,24 +733,25 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_CONNECTION :
         {
-            if(m_net_protocol == GPSD) {
+            if(GetProtocol() == GPSD) {
                 //      Sign up for watcher mode, Cooked NMEA
                 //      Note that SIRF devices will be converted by gpsd into pseudo-NMEA
                 char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
-                m_sock->Write(cmd, strlen(cmd));
+                GetSock()->Write(cmd, strlen(cmd));
             }
-            else if(m_net_protocol == TCP) {
-                wxLogMessage( wxString::Format(_T("TCP Datastream connection established: %s"), m_portstring.c_str()) );
+            else if(GetProtocol() == TCP) {
+                wxLogMessage( wxString::Format(_T("TCP NetworkDataStream connection established: %s"),
+                        GetPort().c_str()) );
                 m_dog_value = N_DOG_TIMEOUT;                // feed the dog
-                if (m_io_select != DS_TYPE_OUTPUT)
-                    m_socketread_watchdog_timer.Start(1000);
-                if (m_io_select != DS_TYPE_INPUT && m_sock->IsOk())
-                    (void) SetOutputSocketOptions(m_sock);
-                m_socket_timer.Stop();
-                m_brx_connect_event = true;
+                if (GetPortType() != DS_TYPE_OUTPUT)
+                    GetSocketThreadWatchdogTimer()->Start(1000);
+                if (GetPortType() != DS_TYPE_INPUT && GetSock()->IsOk())
+                    (void) SetOutputSocketOptions(GetSock());
+                GetSocketTimer()->Stop();
+                SetBrxConnectEvent(true);
             }
 
-            m_connect_time = wxDateTime::Now();
+            SetConnectTime(wxDateTime::Now());
             break;
         }
 
@@ -761,28 +760,28 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
     }
 }
 
-void DataStream::OnServerSocketEvent(wxSocketEvent& event)
+void NetworkDataStream::OnServerSocketEvent(wxSocketEvent& event)
 {
     
     switch(event.GetSocketEvent())
     {
         case wxSOCKET_CONNECTION :
         {
-            m_sock= m_socket_server->Accept(false);
+            SetSock(GetSockServer()->Accept(false));
  
-            if( m_sock) {
-                m_sock->SetTimeout(2);
-                m_sock->SetFlags( wxSOCKET_BLOCK );
-                m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+            if( GetSock()) {
+                GetSock()->SetTimeout(2);
+                GetSock()->SetFlags( wxSOCKET_BLOCK );
+                GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
                 int notify_flags=(wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG );
-                if (m_io_select != DS_TYPE_INPUT) {
+                if (GetPortType() != DS_TYPE_INPUT) {
                     notify_flags |= wxSOCKET_OUTPUT_FLAG;
-                    (void) SetOutputSocketOptions(m_sock);
+                    (void) SetOutputSocketOptions(GetSock());
                 }
-                if (m_io_select != DS_TYPE_OUTPUT)
+                if (GetPortType() != DS_TYPE_OUTPUT)
                     notify_flags |= wxSOCKET_INPUT_FLAG;
-                m_sock->SetNotify(notify_flags);
-                m_sock->Notify(true);
+                GetSock()->SetNotify(notify_flags);
+                GetSock()->Notify(true);
             }
             
             break;
