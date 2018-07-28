@@ -51,6 +51,7 @@
 #include "datastream.h"
 #include "NetworkDataStream.h"
 #include "SerialDataStream.h"
+#include "SignalKDataStream.h"
 
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
@@ -118,13 +119,18 @@ bool CheckSumCheck(const std::string& sentence)
 
 DataStream* makeDataStream(wxEvtHandler *input_consumer, const ConnectionParams* params)
 {
-    wxLogMessage( wxString::Format(_T("makeSerialDataStream %s"),
+    wxLogMessage( wxString::Format(_T("makeDataStream %s"),
             params->GetDSPort().c_str()) );
     switch (params->Type) {
         case SERIAL:
             return new SerialDataStream(input_consumer, params);
         case NETWORK:
-            return new NetworkDataStream(input_consumer, params);
+            switch(params->NetProtocol) {
+                case SIGNALK:
+                    return new SignalKDataStream(input_consumer, params);
+                default:
+                    return new NetworkDataStream(input_consumer, params);
+            }
         case INTERNAL_GPS:
             return new InternalGPSDataStream(input_consumer, params);
         case INTERNAL_BT:

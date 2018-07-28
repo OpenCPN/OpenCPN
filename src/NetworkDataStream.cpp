@@ -59,6 +59,7 @@
 
 #include "datastream.h"
 #include "NetworkDataStream.h"
+
 #include "OCPN_DataStreamEvent.h"
 #include "OCP_DataStreamInput_Thread.h"
 #include "GarminProtocolHandler.h"

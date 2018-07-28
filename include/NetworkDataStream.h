@@ -72,9 +72,6 @@
 
 
 class NetworkDataStream : public DataStream {
-    wxTimer             m_socket_timer;
-    wxTimer             m_socketread_watchdog_timer;
-    bool                m_brx_connect_event;
 public:
     NetworkDataStream(wxEvtHandler *input_consumer,
                       const ConnectionParams *params)
@@ -95,6 +92,9 @@ public:
 
         Open();
     }
+    ~NetworkDataStream() {
+        Close();
+    }
 
     virtual bool SendSentence( const wxString &sentence ) {
         wxString payload = sentence;
@@ -114,8 +114,12 @@ private:
     struct ip_mreq      m_mrq;
     int                 m_txenter;
     int                 m_dog_value;
-
     std::string         m_sock_buffer;
+    wxTimer             m_socket_timer;
+    wxTimer             m_socketread_watchdog_timer;
+    bool                m_brx_connect_event;
+
+
     void Open();
     void OpenNetworkGPSD();
     void OpenNetworkTCP(unsigned int addr);
@@ -163,11 +167,11 @@ private:
 
     wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
 
-DECLARE_EVENT_TABLE()
-
     void SetBrxConnectEvent(bool event) {m_brx_connect_event = event;}
 
     bool GetBrxConnectEvent() { return m_brx_connect_event; }
+
+    DECLARE_EVENT_TABLE()
 };
 
 

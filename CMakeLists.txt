@@ -1192,8 +1192,10 @@ SET(HDRS
 		include/datastream.h
         include/SerialDataStream.h
         include/NetworkDataStream.h
+        include/SignalKDataStream.h
         include/GarminProtocolHandler.h
 		include/OCPN_DataStreamEvent.h
+        include/OCPN_SignalKEvent.h
 		include/ConnectionParams.h
 		include/OCP_DataStreamInput_Thread.h
 		include/dsPortType.h
@@ -1290,8 +1292,10 @@ SET(SRCS
 		src/datastream.cpp
         src/SerialDataStream.cpp
         src/NetworkDataStream.cpp
+        src/SignalKDataStream.cpp
         src/GarminProtocolHandler.cpp
 		src/OCPN_DataStreamEvent.cpp
+        src/OCPN_SignalKEvent.cpp
 		src/ConnectionParams.cpp
 		src/OCP_DataStreamInput_Thread.cpp
                 src/multiplexer.cpp
