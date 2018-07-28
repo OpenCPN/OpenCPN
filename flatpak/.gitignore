@@ -1,0 +1,7 @@
+.flatpak-builder
+*.key
+plugin
+gpg
+app
+repo/repo
+website

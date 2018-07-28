@@ -23,6 +23,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifdef __linux__
+#include <unistd.h>
+#endif
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -1082,6 +1086,20 @@ void options::Init(void) {
   m_bcompact = true;
 #endif
 }
+
+
+#ifdef __linux__
+void options::CheckDeviceAccess(wxString &path) {
+
+   int r = access(path.mb_str(), R_OK | W_OK);
+   if (r == 0)
+      return;
+   wxString msg = _T("The device selected is not accessible; opencpn\n\
+will likely not be able to use this device as-is. Please look into \n\
+LINUX_DEVICES.md in the data directory to fix.");
+   OCPNMessageBox (this, msg, wxString( _("OpenCPN Warning") ), wxICON_WARNING | wxOK, 60 );
+}
+#endif // __linux__
 
 size_t options::CreatePanel(const wxString& title) {
   size_t id = m_pListbook->GetPageCount();
@@ -5887,6 +5905,9 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
+#ifdef __linux__
+  CheckDeviceAccess(pConnectionParams->Port);
+#endif
   pConnectionParams->Protocol = PROTO_NMEA0183;
 
   pConnectionParams->bEnabled = m_connection_enabled;

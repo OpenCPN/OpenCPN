@@ -1,0 +1,13 @@
+id: org.opencpn.OpenCPN.Plugin.Base
+runtime: org.opencpn.OpenCPN
+runtime-version: stable
+sdk: org.freedesktop.Sdk//1.6
+build-extension: true
+separate-locales: false
+appstream-compose: false
+modules: 
+    - name: install-copy
+      no-autogen: true
+      sources: 
+          - type: file
+            path: src/Makefile

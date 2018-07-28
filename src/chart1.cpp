@@ -10782,7 +10782,7 @@ int paternAdd (const char* patern) {
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
  char* res = NULL;
- char  devname [255];
+ char  devname [272];
  int   fd, ind;
 
   // search if devname fits with searched paterns
@@ -11323,7 +11323,7 @@ bool CheckSerialAccess( void )
         }
     }
 
-#endif
+#endif  // 0
 
     //  Who owns /dev/ttyS0?
     bret = false;
@@ -11358,6 +11358,10 @@ You must install a serial port (modprobe correct kernel module) or plug in a usb
             bret = true;
     }
 
+#ifdef FLATPAK
+    return bret;
+#endif
+
     if(!bret){
 
         wxString msg = msg1 + _("\
@@ -11375,9 +11379,7 @@ You may do so by executing the following command from the linux command line:\n\
         OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
     }
 
-
-
-#endif
+#endif  // (__UNIX__) && !defined(__OCPN__ANDROID__)
 
     return bret;
 }

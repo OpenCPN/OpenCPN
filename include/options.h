@@ -562,6 +562,9 @@ class options : private Uncopyable,
                          int group_item_spacing);
   void CreatePanel_Advanced(size_t parent, int border_size,
                             int group_item_spacing);
+#ifdef __linux__
+  void CheckDeviceAccess(wxString &path);
+#endif
 
   int m_returnChanges;
   wxListBox *tcDataSelected;
