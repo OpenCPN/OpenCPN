@@ -341,17 +341,6 @@ void Multiplexer::SaveStreamProperties( DataStream *stream )
     if( stream ) {
         wxLogMessage( wxString::Format(_T("SaveStreamProperties %s"),
                                        stream->GetConnectionParams()->GetDSPort().c_str()) );
-        type_save = stream->GetConnectionType();
-        port_save = stream->GetPort();
-        baud_rate_save = stream->GetBaudRate();
-        port_type_save = stream->GetPortType();
-        priority_save = stream->GetPriority();
-        input_sentence_list_save = stream->GetInputSentenceList();
-        input_sentence_list_type_save = stream->GetInputSentenceListType();
-        output_sentence_list_save = stream->GetOutputSentenceList();
-        output_sentence_list_type_save = stream->GetOutputSentenceListType();
-        bchecksum_check_save = stream->GetChecksumCheck();
-        bGarmin_GRMN_mode_save = stream->GetGarminMode();
         params_save = stream->GetConnectionParams();
     }
 }
@@ -360,27 +349,15 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 {
     wxLogMessage( wxString::Format(_T("CreateAndRestoreSavedStreamProperties %s"),
                                    params_save->GetDSPort().c_str()) );
-    DataStream *dstr = makeSerialDataStream(this,
-                                            type_save,
-                                            port_save,
-                                            baud_rate_save,
-                                            port_type_save,
-                                            priority_save,
-                                            bGarmin_GRMN_mode_save
-    );
-    dstr->SetInputFilter(input_sentence_list_save);
-    dstr->SetInputFilterType(input_sentence_list_type_save);
-    dstr->SetOutputFilter(output_sentence_list_save);
-    dstr->SetOutputFilterType(output_sentence_list_type_save);
-    dstr->SetChecksumCheck(bchecksum_check_save);
-
-    AddStream(dstr);
-
+    AddStream(makeDataStream(this, params_save));
     return true;
 }
 
 
-int Multiplexer::SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
+int Multiplexer::SendRouteToGPS(Route *pr,
+        const wxString &com_name,
+        bool bsend_waypoints,
+        wxGauge *pProgress)
 {
     int ret_val = 0;
     DataStream *old_stream = FindStream( com_name );
@@ -534,7 +511,7 @@ ret_point:
             wxString baud;
 
             if( old_stream ) {
-                baud = baud_rate_save;
+                baud = wxString::Format(wxT("%i"), params_save->Baudrate);
             }
             else {
                 baud = _T("4800");
