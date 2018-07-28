@@ -152,15 +152,14 @@ protected:
 public:
     virtual ~DataStream();
 
-    void Close();
+    virtual void Close();
 
     bool IsOk() const { return m_bok; }
     wxString GetPort() const { return m_portstring; }
     dsPortType GetIoSelect() const { return m_io_select; }
     int GetPriority() const { return m_priority; }
 
-    
-    bool SendSentence( const wxString &sentence );
+    virtual bool SendSentence( const wxString &sentence );
 
     int GetLastError() const { return m_last_error; }
 
@@ -191,33 +190,9 @@ public:
     ConnectionType GetConnectionType() const { return m_connection_type; }
     const ConnectionParams* GetConnectionParams() const { return &m_params; }
     int                 m_Thread_run_flag;
+
 protected:
-    void SetOk(bool ok) { m_bok = ok; }
-    wxIPV4address GetAddr() const { return m_addr; }
-
-    void SetSock(wxSocketBase* sock) { m_sock = sock; }
-    wxSocketBase* GetSock() const { return m_sock; }
-
-    void SetTSock(wxSocketBase* sock) { m_tsock = sock; }
-    wxSocketBase* GetTSock() const { return m_tsock; }
-
-    void SetSockServer(wxSocketServer* sock) { m_socket_server = sock; }
-    wxSocketServer* GetSockServer() const { return m_socket_server; }
-
-
-    void SetBrxConnectEvent(bool event) {m_brx_connect_event = event;}
-    bool GetBrxConnectEvent() { return m_brx_connect_event; }
-    wxTimer* GetSocketTimer() { return &m_socket_timer; };
-    wxTimer* GetSocketThreadWatchdogTimer() { return &m_socketread_watchdog_timer; }
-    void SetMulticast(bool multicast) { m_is_multicast = multicast; }
-    bool GetMulticast() const { return m_is_multicast; }
-    void SetMrqAddr(unsigned int addr) {
-        m_mrq.imr_multiaddr.s_addr = addr;
-        m_mrq.imr_interface.s_addr = INADDR_ANY;
-    }
-    struct ip_mreq& GetMrq() { return m_mrq; }
-
-    wxString  GetNetPort() const { return m_net_port; }
+    void SetOk(bool ok) { m_bok = ok; };
 
     void SetGarminProtocolHandler(GarminProtocolHandler *garminHandler) {
         m_GarminHandler = garminHandler;
@@ -231,16 +206,12 @@ protected:
 
     wxEvtHandler* GetConsumer() { return m_consumer; }
 
-    NetworkProtocol GetProtocol() { return m_net_protocol; }
-
     void SetConnectTime(wxDateTime time) { m_connect_time = time; }
     wxDateTime GetConnectTime() { return m_connect_time; }
-    bool SetOutputSocketOptions(wxSocketBase* tsock);
+
 
 private:
     virtual void Open();
-
-    void ConfigNetworkParams();
 
 
     bool                m_bok;
@@ -255,21 +226,6 @@ private:
     bool                m_bsec_thread_active;
     int                 m_last_error;
 
-    wxIPV4address       m_addr;
-    wxSocketBase        *m_sock;
-    wxSocketBase        *m_tsock;
-    bool                m_is_multicast;  // Only for UDP...
-    struct ip_mreq      m_mrq;      // mreq rather than mreqn for windows Only for UDP....
-
-    // Setting output parameters
-
-    wxSocketServer      *m_socket_server;                       //  The listening server
-    wxSocketBase        *m_socket_server_active;                //  The active connection
-    
-    // std::string         m_sock_buffer;
-    wxString            m_net_addr;
-    wxString            m_net_port;
-    NetworkProtocol     m_net_protocol;
     ConnectionType      m_connection_type;
 
     bool                m_bchecksumCheck;
@@ -281,85 +237,8 @@ private:
     bool                m_bGarmin_GRMN_mode;
     GarminProtocolHandler *m_GarminHandler;
     wxDateTime          m_connect_time;
-    bool                m_brx_connect_event;
-    wxTimer             m_socket_timer;
-    wxTimer             m_socketread_watchdog_timer;
-    int                 m_dog_value;
     ConnectionParams    m_params;
 
-};
-
-class SerialDataStream : public DataStream {
-public:
-    SerialDataStream(wxEvtHandler *input_consumer,
-                     const ConnectionType conn_type,
-                     const wxString &Port,
-                     const wxString &BaudRate,
-                     dsPortType io_select,
-                     int priority = 0,
-                     bool bGarmin = false,
-                     int EOS_type = DS_EOS_CRLF,
-                     int handshake_type = DS_HANDSHAKE_NONE) : DataStream(input_consumer,
-                                                          conn_type,
-                                                          Port,
-                                                          BaudRate,
-                                                          io_select,
-                                                          priority,
-                                                          bGarmin,
-                                                          EOS_type,
-                                                          handshake_type) {
-        Open();
-    }
-
-    SerialDataStream(wxEvtHandler *input_consumer,
-                     const ConnectionParams *params) : DataStream(input_consumer, params) {
-        Open();
-    }
-
-private:
-    void Open();
-    bool SendSentenceSerial(const wxString &payload);
-    bool SendSentence( const wxString &sentence ) {
-        wxString payload = sentence;
-        if( !sentence.EndsWith(_T("\r\n")) )
-            payload += _T("\r\n");
-        return SendSentenceSerial(payload);
-    }
-};
-
-class NetworkDataStream : public DataStream {
-public:
-    NetworkDataStream(wxEvtHandler *input_consumer,
-                      const ConnectionParams *params)
-                      : DataStream(input_consumer, params),
-                      m_txenter(0) {
-        Open();
-    }
-private:
-    int                 m_txenter;  // Only used in SendSentenceNetwork()
-    int                 m_dog_value;
-    std::string         m_sock_buffer;
-
-    void Open();
-    void OpenNetworkGPSD();
-    void OpenNetworkTCP(unsigned int addr);
-    void OpenNetworkUDP(unsigned int addr);
-    bool SendSentenceNetwork(const wxString &payload);
-    bool SendSentence( const wxString &sentence ) {
-        wxString payload = sentence;
-        if( !sentence.EndsWith(_T("\r\n")) )
-            payload += _T("\r\n");
-        return SendSentenceNetwork(payload);
-    }
-
-    void OnTimerSocket(wxTimerEvent& event);
-    void OnSocketEvent(wxSocketEvent& event);
-    //  TCP Server support
-    void OnServerSocketEvent(wxSocketEvent& event);             // The listener
-    void OnActiveServerEvent(wxSocketEvent& event);             // The open connection
-    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
-
-DECLARE_EVENT_TABLE()
 };
 
 class InternalGPSDataStream : public DataStream {
@@ -395,16 +274,6 @@ public:
 // Responsibilities
 
 DataStream* makeDataStream(wxEvtHandler *input_consumer, const ConnectionParams* params);
-
-DataStream *makeSerialDataStream(wxEvtHandler *input_consumer,
-                                 const ConnectionType conn_type,
-                                 const wxString &Port,
-                                 const wxString &BaudRate,
-                                 dsPortType io_select,
-                                 int priority,
-                                 bool bGarmin);
-
-//extern const wxEventType EVT_THREADMSG;
 
 
 #endif

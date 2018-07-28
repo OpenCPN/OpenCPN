@@ -1182,24 +1182,3 @@ int GARMIN_USB_Thread::gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz)
     return ret_val;
 }
 
-
-bool DataStream::SetOutputSocketOptions(wxSocketBase* tsock)
-{
-    int ret;
-
-    // Disable nagle algorithm on outgoing connection
-    // Doing this here rather than after the accept() is
-    // pointless  on platforms where TCP_NODELAY is
-    // not inherited.  However, none of OpenCPN's currently
-    // supported platforms fall into that category.
-
-    int nagleDisable=1;
-    ret = tsock->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
-
-    //  Drastically reduce the size of the socket output buffer
-    //  so that when client goes away without properly closing, the stream will
-    //  quickly fill the output buffer, and thus fail the write() call
-    //  within a few seconds.
-    unsigned long outbuf_size = 1024;       // Smallest allowable value on Linux
-    return (tsock->SetOption(SOL_SOCKET,SO_SNDBUF,&outbuf_size, sizeof(outbuf_size)) && ret);
-}
