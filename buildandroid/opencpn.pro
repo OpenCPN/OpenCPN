@@ -317,6 +317,14 @@ OCPN_sv_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_sv.
 OCPN_sv_mo_deployment.path = /assets/files/locale/sv/LC_MESSAGES
 INSTALLS += OCPN_sv_mo_deployment
 
+OCPN_nb_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_nb_NO.lproj/opencpn.mo
+OCPN_nb_mo_deployment.path = /assets/files/locale/nb/LC_MESSAGES
+INSTALLS += OCPN_nb_mo_deployment
+
+OCPN_fi_mo_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/Resources/opencpn_fi_FI.lproj/opencpn.mo
+OCPN_fi_mo_deployment.path = /assets/files/locale/fi/LC_MESSAGES
+INSTALLS += OCPN_fi_mo_deployment
+
 # The built-in PlugIns
 
 # Chart Downloader-------------------------------------------------------------------
@@ -334,6 +342,8 @@ OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/es_ES.lproj/opencpn-chartdldr_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/de_DE.lproj/opencpn-chartdldr_pi.mo
 OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/sv_SE.lproj/opencpn-chartdldr_pi.mo
+OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/nb_NO.lproj/opencpn-chartdldr_pi.mo
+OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/Resources/fi_FI.lproj/opencpn-chartdldr_pi.mo
 
 #library
 so_dldr_plugin_deployment.files +=$${OCPN_Base}/$${OCPN_Build}/plugins/chartdldr_pi/libchartdldr_pi.so
@@ -363,6 +373,8 @@ OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resou
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/es_ES.lproj/opencpn-wmm_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/de_DE.lproj/opencpn-wmm_pi.mo
 OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/sv_SE.lproj/opencpn-wmm_pi.mo
+OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/fi_FI.lproj/opencpn-wmm_pi.mo
+OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/wmm_pi/Resources/nb_NO.lproj/opencpn-wmm_pi.mo
 
 #------------------------------------------------------------------------------------
 
@@ -377,6 +389,8 @@ OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Reso
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/es_ES.lproj/opencpn-grib_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/de_DE.lproj/opencpn-grib_pi.mo
 OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/sv_SE.lproj/opencpn-grib_pi.mo
+OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/nb_NO.lproj/opencpn-grib_pi.mo
+OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/grib_pi/Resources/fi_FI.lproj/opencpn-grib_pi.mo
 
 #SVG
 svg_grib_plugin_deployment.path = /assets/files/plugins/grib_pi/data
@@ -423,6 +437,8 @@ OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/es_ES.lproj/opencpn-dashboard_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/de_DE.lproj/opencpn-dashboard_pi.mo
 OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/sv_SE.lproj/opencpn-dashboard_pi.mo
+OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/nb_NO.lproj/opencpn-dashboard_pi.mo
+OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/dashboard_pi/Resources/fi_FI.lproj/opencpn-dashboard_pi.mo
 
 #------------------------------------------------------------------------------------
 
@@ -437,6 +453,8 @@ OCPN_fr_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/
 OCPN_es_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/es_ES.lproj/opencpn-squiddio_pi.mo
 OCPN_de_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/de_DE.lproj/opencpn-squiddio_pi.mo
 OCPN_sv_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/sv_SE.lproj/opencpn-squiddio_pi.mo
+OCPN_nb_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/nb_NO.lproj/opencpn-squiddio_pi.mo
+OCPN_fi_mo_deployment.files += $${OCPN_Base}/$${OCPN_Build}/plugins/squiddio_pi/Resources/fi_FI.lproj/opencpn-squiddio_pi.mo
 
 #------------------------------------------------------------------------------------
 
