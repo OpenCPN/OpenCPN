@@ -2203,18 +2203,32 @@ wxString RouteProp::MakeTideInfo( int jx, time_t tm, int tz_selection, long LMT_
 {
     int ev = 0;
     wxString tide_form;
+    
+    // tm comes in as UTC...
+    // convert to local time for GetNextBigEvent
+    wxDateTime now = wxDateTime::Now();
+    wxDateTime nowutc = wxDateTime::Now().MakeUTC();
+    time_t t_off = now.GetTicks() - nowutc.GetTicks();
+    
+    wxDateTime dtmu;
+    dtmu.Set( tm + t_off );
 
+    time_t dtmtt = dtmu.GetTicks();
+    
     if( gpIDX ) {
-        ev = ptcmgr->GetNextBigEvent( &tm,
+        ev = ptcmgr->GetNextBigEvent( &dtmtt,
                 ptcmgr->GetStationIDXbyName( wxString( gpIDX->IDX_station_name, wxConvUTF8 ),
                         gpIDX->IDX_lat, gpIDX->IDX_lon ) );
     } else
-        ev = ptcmgr->GetNextBigEvent( &tm, jx );
+        ev = ptcmgr->GetNextBigEvent( &dtmtt, jx );
 
+    //convert event time back to UTC
     wxDateTime dtm;
-    dtm.Set( tm ).MakeUTC(); // apparently Set works as from LT
+    dtm.Set( dtmtt ).MakeUTC(); 
+    
     if( ev == 1 ) tide_form.Printf( _T("LW: ") );
     if( ev == 2 ) tide_form.Printf( _T("HW: ") );
+    
     tide_form.Append( ts2s( dtm, tz_selection, LMT_Offset, DISPLAY_FORMAT ) );
     if( !gpIDX ) {
         wxString locn( ptcmgr->GetIDX_entry( jx )->IDX_station_name, wxConvUTF8 );
