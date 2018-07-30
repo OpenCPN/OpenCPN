@@ -88,6 +88,7 @@
 #include "compass.h"
 #include "datastream.h"
 #include "OCPN_DataStreamEvent.h"
+#include "OCPN_SignalKEvent.h"
 #include "multiplexer.h"
 #include "routeprintout.h"
 #include "Select.h"
@@ -2760,7 +2761,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX->SetAISHandler(g_pAIS);
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
+    wxLogMessage(" **** Connect stuff");
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_SIGNALK );
 
     bFirstAuto = true;
     b_autofind = false;
@@ -9389,6 +9392,22 @@ static bool ParsePosition(const LATLONG &Position)
     }
 
     return ll_valid;
+}
+
+void MyFrame::OnEvtOCPN_SIGNALK(OCPN_SignalKEvent &event)
+{
+    wxLogMessage(_T(" ***** Got Signal K Event...."));
+#if 1
+    const wxJSONValue signalKRoot = event.GetValue();
+    wxString dbg;
+    wxJSONWriter writer;
+    writer.Write(signalKRoot, dbg);
+
+    wxString msg( _T("SignalK Event received: ") );
+    msg.append(dbg);
+    wxLogMessage(msg);
+#endif
+  //   exit(0);
 }
 
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )

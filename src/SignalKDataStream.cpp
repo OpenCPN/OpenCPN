@@ -30,9 +30,10 @@
 #include "dychart.h"
 
 #include "datastream.h"
+#include "SignalKDataStream.h"
 #include "NetworkDataStream.h"
 #include "OCPN_SignalKEvent.h"
-
+#include "OCPN_DataStreamEvent.h"
 
 
 #if !defined(NAN)
@@ -61,14 +62,16 @@ int gethostbyaddr_r(const char *, int, int, struct hostent *, char *, size_t, st
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
 
-#include "SignalKDataStream.h"
-const wxEventType wxEVT_OCPN_SIGNALKSTREAM = wxNewEventType();
+// extern const wxEventType wxEVT_OCPN_SIGNALKSTREAM;
+
+// const wxEventType wxEVT_OCPN_SIGNALKSTREAM = wxNewEventType();
 
 BEGIN_EVENT_TABLE(SignalKDataStream, wxEvtHandler)
                 EVT_TIMER(TIMER_SOCKET + 2, SignalKDataStream::OnTimerSocket)
                 EVT_SOCKET(SIGNALK_SOCKET_ID, SignalKDataStream::OnSocketEvent)
                 EVT_TIMER(TIMER_SOCKET + 3, SignalKDataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
+
 
 
 void SignalKDataStream::Open(void) {
@@ -161,8 +164,10 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_INPUT:
         {
+#if 0
             wxLogMessage(wxString::Format(_T("SignalKDataStream input: %s"),
                                           GetPort().c_str()));
+#endif
             wxJSONReader jsonReader;
             wxJSONValue root;
             wxSocketInputStream stream(*event.GetSocket());
@@ -174,107 +179,23 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                                              GetPort().c_str()));
 
             } else {
+#if 0
                 wxString dbg;
                 wxJSONWriter writer;
                 writer.Write(root, dbg);
                 wxLogMessage(dbg);
-            }
-            OCPN_SignalKEvent signalKEvent(event.GetId(), wxEVT_OCPN_SIGNALKSTREAM, root);
-            GetConsumer()->AddPendingEvent(signalKEvent);
-            break;
-        }
-
-#if 0
-        case wxSOCKET_INPUT :                     // from gpsd Daemon
-        {
-            // TODO determine if the follwing SetFlags needs to be done at every socket event or only once when socket is created, it it needs to be done at all!
-            //m_sock->SetFlags(wxSOCKET_WAITALL | wxSOCKET_BLOCK);      // was (wxSOCKET_NOWAIT);
-
-            // We use wxSOCKET_BLOCK to avoid Yield() reentrancy problems
-            // if a long ProgressDialog is active, as in S57 SENC creation.
-
-
-            //    Disable input event notifications to preclude re-entrancy on non-blocking socket
-            //           m_sock->SetNotify(wxSOCKET_LOST_FLAG);
-
-            std::vector<char> data(RD_BUF_SIZE+1);
-            event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
-            if(!event.GetSocket()->Error())
-            {
-                size_t count = event.GetSocket()->LastCount();
-                if(count)
-                {
-                    if(!g_benableUDPNullHeader){
-                        data[count]=0;
-                        m_sock_buffer += (&data.front());
-                    }
-                    else{
-                        // XXX FIXME: is it reliable?
-                        // copy all received bytes
-                        // there's 0 in furuno UDP tags before NMEA sentences.
-                        m_sock_buffer.append(&data.front(), count);
-                    }
-                }
-            }
-
-            bool done = false;
-
-            while(!done){
-                int nmea_tail = 2;
-                size_t nmea_end = m_sock_buffer.find_first_of("*\r\n"); // detect the potential end of a NMEA string by finding the checkum marker or EOL
-
-                if (nmea_end == wxString::npos) // No termination characters: continue reading
-                    break;
-
-                if (m_sock_buffer[nmea_end] != '*')
-                    nmea_tail = -1;
-
-                if(nmea_end < m_sock_buffer.size() - nmea_tail){
-                    nmea_end += nmea_tail + 1; // move to the char after the 2 checksum digits, if present
-                    if ( nmea_end == 0 ) //The first character in the buffer is a terminator, skip it to avoid infinite loop
-                        nmea_end = 1;
-                    std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
-
-                    //  If, due to some logic error, the {nmea_end} parameter is larger than the length of the
-                    //  socket buffer, then std::string::substr() will throw an exception.
-                    //  We don't want that, so test for it.
-                    //  If found, the simple solution is to clear the socket buffer, and carry on
-                    //  This has been seen on high volume TCP feeds, Windows only.
-                    //  Hard to catch.....
-                    if(nmea_end > m_sock_buffer.size())
-                        m_sock_buffer.clear();
-                    else
-                        m_sock_buffer = m_sock_buffer.substr(nmea_end);
-
-                    size_t nmea_start = nmea_line.find_last_of("$!"); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
-                    if(nmea_start != wxString::npos){
-                        nmea_line = nmea_line.substr(nmea_start);
-                        nmea_line += "\r\n";        // Add cr/lf, possibly superfluous
-                        if( GetConsumer() && ChecksumOK(nmea_line)){
-                            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            if(nmea_line.size()) {
-                                Nevent.SetNMEAString( nmea_line );
-                                Nevent.SetStream( this );
-
-                                GetConsumer()->AddPendingEvent(Nevent);
-                            }
-                        }
-                    }
-                }
-                else
-                    done = true;
-            }
-
-            // Prevent non-nmea junk from consuming to much memory by limiting carry-over buffer size.
-            if(m_sock_buffer.size()>RD_BUF_SIZE)
-                m_sock_buffer = m_sock_buffer.substr(m_sock_buffer.size()-RD_BUF_SIZE);
-
-            m_dog_value = N_DOG_TIMEOUT;                // feed the dog
-            break;
-        }
 #endif
-
-
+                if( GetConsumer() ) {
+                    wxLogMessage(wxString::Format(_T("SignalKDataStream send to: %p"),
+                                                  GetConsumer()));
+                    OCPN_SignalKEvent signalKEvent(0,
+                                                   EVT_OCPN_SIGNALKSTREAM,
+                                                   root);
+                    GetConsumer()->AddPendingEvent(signalKEvent);
+                }
+            }
+            break;
+        }
         default :
             break;
     }

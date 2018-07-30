@@ -24,6 +24,8 @@
 
 #include "OCPN_DataStreamEvent.h"
 
+
+
 OCPN_DataStreamEvent::OCPN_DataStreamEvent(wxEventType commandType, int id)
       :wxEvent(id, commandType)
 {

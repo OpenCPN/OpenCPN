@@ -325,6 +325,8 @@ void NetworkDataStream::OnSocketEvent(wxSocketEvent& event)
                         if( GetConsumer() && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                             if(nmea_line.size()) {
+                                //wxLogMessage(wxString::Format(_T("NetworkDataStream send to: %p"),
+                                //                              GetConsumer()));
                                 Nevent.SetNMEAString( nmea_line );
                                 Nevent.SetStream( this );
 

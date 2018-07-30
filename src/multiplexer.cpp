@@ -30,6 +30,7 @@
 #include "NMEALogWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
+#include "OCPN_SignalKEvent.h"
 #include "datastream.h"
 #include "SerialDataStream.h"
 
@@ -50,6 +51,8 @@ Multiplexer::Multiplexer() : params_save(NULL)
     m_aisconsumer = NULL;
     m_gpsconsumer = NULL;
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&Multiplexer::OnEvtStream);
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &Multiplexer::OnEvtSignalK );
+
     m_pdatastreams = new wxArrayOfDataStreams();
 }
 
@@ -334,6 +337,17 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             LogInputMessage( fmsg, port, !bpass, b_error );
         }
     }
+}
+
+void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
+{
+    if( m_aisconsumer )
+        m_aisconsumer->AddPendingEvent(event);
+    if( m_gpsconsumer )
+        m_gpsconsumer->AddPendingEvent(event);
+
+    // XXX Send SignalK to all plugins
+    // g_pi_manager->SendSignalKToAllPlugIns( message );
 }
 
 void Multiplexer::SaveStreamProperties( DataStream *stream )

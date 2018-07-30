@@ -30,6 +30,7 @@
 
 class DataStream;
 
+
 class OCPN_DataStreamEvent: public wxEvent
 {
 public:
@@ -52,4 +53,6 @@ private:
     DataStream *m_pDataStream;
 };
 
-#endif
+
+
+#endif // __OCPN_DATASTREAMEVENT_H__
