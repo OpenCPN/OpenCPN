@@ -3141,7 +3141,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
         if( fillCombo ){
             for( int i = 0; i < pWayPointMan->GetNumIcons(); i++ ) {
                 wxString *ps = pWayPointMan->GetIconDescription( i );
-                wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i);
+                wxBitmap bmp = pWayPointMan->GetIconBitmapForList(i, 2 * GetCharHeight());
                     
                 m_bcomboBoxIcon->Append( *ps, bmp );
             }

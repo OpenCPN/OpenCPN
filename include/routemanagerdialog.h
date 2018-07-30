@@ -191,6 +191,7 @@ class RouteManagerDialog : public wxDialog {
             int m_lastRteItem;
             
             int m_charWidth;
+            int m_listIconSize;
 };
 
 #endif // _RouteManagerDialog_h_

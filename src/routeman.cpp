@@ -1116,6 +1116,7 @@ WayPointman::WayPointman()
     
     m_nGUID = 0;
     m_iconListScale = -999.0;
+    m_iconListHeight = -1;
 }
 
 WayPointman::~WayPointman()
@@ -1558,30 +1559,23 @@ wxRect WayPointman::CropImageOnAlpha(wxImage &image)
         
 }
     
-wxImageList *WayPointman::Getpmarkicon_image_list( double scale )
+wxImageList *WayPointman::Getpmarkicon_image_list( int nominal_height )
 {
     // Cached version available?
-    if( pmarkicon_image_list && (fabs(scale-m_iconListScale) < .001)){
+    if( pmarkicon_image_list && (nominal_height == m_iconListHeight)){
         return pmarkicon_image_list;
     }
     
-    //  Create the scaled list
-    
-    int w = m_bitmapSizeForList;
-    int h = m_bitmapSizeForList;
-    w *= scale;
-    h *= scale;
-    
     // Build an image list large enough
-
     if( NULL != pmarkicon_image_list ) {
         pmarkicon_image_list->RemoveAll();
         delete pmarkicon_image_list;
     }
-    pmarkicon_image_list = new wxImageList( w, h );
+    pmarkicon_image_list = new wxImageList( nominal_height, nominal_height );
 
-    m_iconListScale = scale;
-        
+    m_iconListHeight = nominal_height;
+    m_bitmapSizeForList = nominal_height;
+    
     return pmarkicon_image_list;
 }
 
@@ -1813,7 +1807,7 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
 }
 
 
-wxBitmap WayPointman::GetIconBitmapForList( int index )
+wxBitmap WayPointman::GetIconBitmapForList( int index, int height )
 {
     wxBitmap pret;
     MarkIcon *pmi;
@@ -1821,15 +1815,15 @@ wxBitmap WayPointman::GetIconBitmapForList( int index )
     if( index >= 0 ) {
         pmi = (MarkIcon *) m_pIconArray->Item( index );
         // Scale the icon to "list size" if necessary
-        if(pmi->iconImage.GetWidth() != m_bitmapSizeForList){
-            int w = m_bitmapSizeForList;
-            int h = m_bitmapSizeForList;
+        if(pmi->iconImage.GetHeight() != height){
+            int w = height;
+            int h = height;
             int w0 = pmi->iconImage.GetWidth();
             int h0 = pmi->iconImage.GetHeight();
             
-            wxImage icon_larger;
+            wxImage icon_resized = pmi->iconImage;       // make a copy
             if( h0 <= h && w0 <= w ) {
-                 icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
+                icon_resized = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
             } else {
                 // rescale in one or two directions to avoid cropping, then resize to fit to cell
                 int h1 = h;
@@ -1838,11 +1832,11 @@ wxBitmap WayPointman::GetIconBitmapForList( int index )
                 
                 else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
                 
-                icon_larger = pmi->iconImage.Rescale( w1, h1 );
-                icon_larger = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2 ) );
+                icon_resized = pmi->iconImage.Rescale( w1, h1 );
+                icon_resized = pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w1/2, h/2-h1/2 ) );
             }
             
-            pret = wxBitmap(icon_larger);
+            pret = wxBitmap(icon_resized);
             
         }
         else
@@ -1915,7 +1909,7 @@ int WayPointman::GetIconImageListIndex( const wxBitmap *pbm )
         int h = m_bitmapSizeForList;
         int w = m_bitmapSizeForList;
         
-        wxImage icon_larger;
+        wxImage icon_larger = pmi->iconImage;           // make a copy
         if( h0 <= h && w0 <= w ) {
             icon_larger =  pmi->iconImage.Resize( wxSize( w, h ), wxPoint( w/2 -w0/2, h/2-h0/2 ) );
         } else {

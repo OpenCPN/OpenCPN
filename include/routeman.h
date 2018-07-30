@@ -191,11 +191,11 @@ public:
       void ReloadRoutepointIcons();
       
       bool DoesIconExist(const wxString & icon_key) const;
-      wxBitmap GetIconBitmapForList(int index);
+      wxBitmap GetIconBitmapForList(int index, int height);
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);
 
-      wxImageList *Getpmarkicon_image_list( double scale = 1.0 );
+      wxImageList *Getpmarkicon_image_list( int nominal_height );
       
       bool AddRoutePoint(RoutePoint *prp);
       bool RemoveRoutePoint(RoutePoint *prp);
@@ -223,6 +223,7 @@ private:
       SortedArrayOfMarkIcon    *m_pExtendedIconArray;
       
       int         m_bitmapSizeForList;
+      int         m_iconListHeight;
       ColorScheme m_cs;
 };
 
