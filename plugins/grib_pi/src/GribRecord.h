@@ -153,6 +153,7 @@ class GribRecord
 
         void   multiplyAllData(double k);
         void Substract(const GribRecord &rec, bool positive=true);
+        void   Average(const GribRecord &rec);
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};

@@ -1734,7 +1734,8 @@ GRIBFile::GRIBFile( const wxArrayString & file_names, bool CumRec, bool WaveRec,
 
     // fixup Accumulation records
     m_pGribReader->computeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
-
+    m_pGribReader->computeAccumulationRecords(GRB_PRECIP_RATE,LV_GND_SURF, 0);
+    m_pGribReader->computeAccumulationRecords(GRB_CLOUD_TOT,  LV_ATMOS_ALL, 0);
 
     if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
     if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""

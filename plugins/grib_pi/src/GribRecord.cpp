@@ -397,8 +397,50 @@ void GribRecord::Substract(const GribRecord &rec, bool pos)
     } 
 }
 
-
 //------------------------------------------------------------------------------
+void GribRecord::Average(const GribRecord &rec)
+{
+
+    // for now only average records of same size
+    // this : 6-12
+    // rec  : 6-9
+    // compute average 9-12
+    //
+    // this : 0-12
+    // rec  : 0-11
+    // compute average 11-12
+
+    if (rec.data == 0 || !rec.isOk())
+        return;
+
+    if (data == 0 || !isOk())
+        return;
+
+    if (Ni != rec.Ni || Nj != rec.Nj)
+        return;
+
+    if (getPeriodP1() != rec.getPeriodP1())
+        return;
+
+    double d2 = getPeriodP2() - getPeriodP1();
+    double d1 = rec.getPeriodP2() - rec.getPeriodP1();
+
+    if (d2 <= d1)
+        return;
+
+    zuint size = Ni *Nj;
+    double diff = d2 -d1;
+    for (zuint i=0; i<size; i++) {
+        if (rec.data[i] == GRIB_NOTDEF)
+           continue;
+        if (data[i] == GRIB_NOTDEF)
+           continue;
+
+        data[i] = (data[i]*d2 -rec.data[i]*d1)/diff;
+    }
+}
+
+//-------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {
 	dataType = t;
