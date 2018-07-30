@@ -2763,7 +2763,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     //  Create/connect a dynamic event handler slot
     wxLogMessage(" **** Connect stuff");
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
-    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_SIGNALK );
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_SignalK );
 
     bFirstAuto = true;
     b_autofind = false;
@@ -9394,7 +9394,7 @@ static bool ParsePosition(const LATLONG &Position)
     return ll_valid;
 }
 
-void MyFrame::OnEvtOCPN_SIGNALK(OCPN_SignalKEvent &event)
+void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
     wxLogMessage(_T(" ***** Got Signal K Event...."));
 #if 1
@@ -9407,7 +9407,30 @@ void MyFrame::OnEvtOCPN_SIGNALK(OCPN_SignalKEvent &event)
     msg.append(dbg);
     wxLogMessage(msg);
 #endif
-  //   exit(0);
+
+    const wchar_t *navigation_path = _T("navigation.position");
+    if(event.GetUpdatePath() == navigation_path) {
+        wxLogMessage(_T(" ***** Position Update"));
+        bool pos_valid = false;
+        bool cog_sog_valid = false;
+        wxString sfixtime = event.GetTimeStampForPath(navigation_path);
+        LATLONG Pos;
+        auto value = event.GetValueForPath(navigation_path);
+        gLat = value["latitude"].AsDouble();
+        gLon = value["longitude"].AsDouble();
+        if(g_own_ship_sog_cog_calc) {
+            UpdatePositionCalculatedSogCog();
+        }
+        pos_valid = true;
+        wxLogMessage(wxString::Format(_T(" ***** Position Update: %f %f"), gLat, gLon));
+        if(pos_valid)
+        {
+            gGPS_Watchdog = gps_watchdog_timeout_ticks;
+            wxDateTime now = wxDateTime::Now();
+            m_fixtime = now.GetTicks();
+        }
+        PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
+    }
 }
 
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )

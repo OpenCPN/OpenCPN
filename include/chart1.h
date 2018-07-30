@@ -341,7 +341,7 @@ class MyFrame: public wxFrame
     bool DoChartUpdate(void);
     void OnEvtTHREADMSG(OCPN_ThreadMessageEvent& event);
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
-    void OnEvtOCPN_SIGNALK(OCPN_SignalKEvent & event);
+    void OnEvtOCPN_SignalK(OCPN_SignalKEvent &event);
     void OnEvtOCPN_SIGNALK_Test(OCPN_SignalKEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
