@@ -6675,11 +6675,25 @@ void MyFrame::OnInitTimer(wxTimerEvent& event)
             // If any are not found, then use the default layout
 
             bool bno_load = false;
-            wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
 
+            wxArrayString name_array;
+            wxStringTokenizer st(perspective, _T("|;"));
+            while( st.HasMoreTokens() )
+            {
+                wxString s1 = st.GetNextToken();
+                if(s1.StartsWith(_T("name="))){
+                    wxString sc = s1.AfterFirst('=');
+                    name_array.Add(sc);
+                }
+            }
+                    
+            wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
             for( unsigned int i = 0; i < pane_array_val.GetCount(); i++ ) {
                 wxAuiPaneInfo pane = pane_array_val.Item( i );
-                if( perspective.Find( pane.name ) == wxNOT_FOUND ) {
+                
+                // If we find a pane that is not in the perspective,
+                //  then we should not load the perspective at all
+                if(name_array.Index(pane.name) == wxNOT_FOUND) {
                     bno_load = true;
                     break;
                 }
