@@ -851,6 +851,7 @@ void RouteManagerDialog::Create()
     
 #ifdef __OCPN__ANDROID__    
     int imageRefSize = g_Platform->GetDisplayDPmm() * 4;
+    imageRefSize = wxMax(imageRefSize, GetCharHeight() * 2);
     
     imglist = new wxImageList( imageRefSize, imageRefSize, true, 1 );
     
@@ -2072,8 +2073,8 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
         m_pWptListCtrl->EnsureVisible( m_lastWptItem );
 
+    int iwidth, iheight;
     if(pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetImageCount()) {
-        int iwidth, iheight;
         pWayPointMan->Getpmarkicon_image_list(m_listIconSize)->GetSize(0, iwidth, iheight);
         
         m_pWptListCtrl->SetColumnWidth(0, wxMax(iwidth + 4, 4 * m_charWidth));
