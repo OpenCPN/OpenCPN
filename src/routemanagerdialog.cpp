@@ -48,70 +48,10 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
+
 #define DIALOG_MARGIN 3
 
-/* XPM */
-static const char *eye[]={
-"20 20 7 1",
-". c none",
-"# c #000000",
-"a c #333333",
-"b c #666666",
-"c c #999999",
-"d c #cccccc",
-"e c #ffffff",
-"....................",
-"....................",
-"....................",
-"....................",
-".......######.......",
-".....#aabccb#a#.....",
-"....#deeeddeebcb#...",
-"..#aeeeec##aceaec#..",
-".#bedaeee####dbcec#.",
-"#aeedbdabc###bcceea#",
-".#bedad######abcec#.",
-"..#be#d######dadb#..",
-"...#abac####abba#...",
-".....##acbaca##.....",
-".......######.......",
-"....................",
-"....................",
-"....................",
-"....................",
-"...................."};
-
-/* XPM */
-static const char *eyex[]={
-    "20 20 8 1",
-    "# c None",
-    "a c #000000",
-    "b c #333333",
-    "c c #666666",
-    "d c #999999",
-    "f c #cccccc",
-    ". c #ff0000",
-    "e c #ffffff",
-    ".##################.",
-    "..################..",
-    "#..##############..#",
-    "##..############..##",
-    "###..##aaaaaa##..###",
-    "####..bbcddcab..####",
-    "####a..eeffee..ca###",
-    "##abee..daab..beda##",
-    "#acefbe..aa..fcdeda#",
-    "abeefcfb....acddeeba",
-    "#acefbfaa..aabcdeda#",
-    "##aceafa....afbfca##",
-    "###abcb..aa..ccba###",
-    "#####a..dcbd..a#####",
-    "#####..aaaaaa..#####",
-    "####..########..####",
-    "###..##########..###",
-    "##..############..##",
-    "#..##############..#",
-    "..################.."};
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
@@ -140,6 +80,7 @@ extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bresponsive;
+extern OCPNPlatform     *g_Platform;
 
 static int SortRouteTrack(int column, int order, wxListCtrl *lc, wxListItem &it1, wxListItem &it2)
 {
@@ -860,10 +801,24 @@ void RouteManagerDialog::Create()
     
     RecalculateSize();
 
-    // create a image list for the list with just the eye icon
-    wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
-    imglist->Add( wxBitmap( eye ) );
-    imglist->Add( wxBitmap( eyex ) );
+    // create a image list for the list with just the eye icons
+    int bmSize = 22;
+    wxImageList *imglist = new wxImageList( bmSize, bmSize, true, 1 );
+    
+    // Load eye icons
+    wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
+    wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("eye.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));           // Avoid wxImageList size asserts
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
+    
+    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyex.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
+    
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );

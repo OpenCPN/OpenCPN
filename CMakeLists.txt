@@ -1731,7 +1731,9 @@ SET(uiData
         src/bitmaps/iconUserStd.png
         src/bitmaps/iconAll.png
         src/bitmaps/DragHandle.svg
-	)
+        src/bitmaps/eye.svg
+        src/bitmaps/eyex.svg
+    )
 
 IF (USE_S57)
       SET(s57data
