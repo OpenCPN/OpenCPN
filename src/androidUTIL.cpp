@@ -2343,12 +2343,12 @@ wxSize getAndroidDisplayDimensions( void )
         token = tk.GetNextToken();              // densityDPI
         
         token = tk.GetNextToken();
-        long a = ::wxGetDisplaySize().x;        // default is wxWidgets idea
+        long a = 1000;
         if(token.ToLong( &a ))
             sz_ret.x = a;
         
         token = tk.GetNextToken();
-        long b = ::wxGetDisplaySize().y;        
+        long b = 1000;        
         if(token.ToLong( &b ))
             sz_ret.y = b;
         
