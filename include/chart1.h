@@ -42,6 +42,7 @@
 #include "nmea0183.h"
 #include "chartdbs.h"
 #include "s52s57.h"
+#include "SignalKEventHandler.h"
 
 #ifdef USE_S57
 #include "mygdal/cpl_error.h"
@@ -260,6 +261,7 @@ class OCPN_SignalKEvent;
 class DataStream;
 class AIS_Target_Data;
 
+
 //      A class to contain NMEA messages, their receipt time, and their source priority
 class NMEA_Msg_Container
 {
@@ -322,6 +324,7 @@ class MyApp: public wxApp
 
 class MyFrame: public wxFrame
 {
+    friend class SignalKEventHandler;
   public:
     MyFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size, long style);
 
@@ -510,8 +513,14 @@ class MyFrame: public wxFrame
     wxSize              m_newsize;
     
     void FastClose();
-    
+
+
   private:
+    void setPosition(double lat, double lon);
+    void setCourseOverGround(double cog);
+    void setSpeedOverGround(double sog);
+    bool ParsePosition(const LATLONG &Position);
+
     void ODoSetSize(void);
     void DoCOGSet(void);
 
@@ -580,7 +589,9 @@ class MyFrame: public wxFrame
     bool                b_autofind;
     
     time_t              m_last_track_rotation_ts;
-    
+
+    SignalKEventHandler m_signalKHandler;
+
     DECLARE_EVENT_TABLE()
 };
 

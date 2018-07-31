@@ -113,6 +113,7 @@
 #include "Track.h"
 #include "iENCToolbar.h"
 #include "Quilt.h"
+#include "SignalKEventHandler.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -857,8 +858,6 @@ void BuildiENCToolbar( bool bnew )
 
 }
 
-
-
 int ShowNavWarning()
 {
     wxString msg0(
@@ -901,7 +900,6 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
         
 }
 
-
 wxString newPrivateFileName(wxString home_locn, const char *name, const char *windowsName)
 {
     wxString fname = wxString::FromUTF8(name);
@@ -920,7 +918,6 @@ wxString newPrivateFileName(wxString home_locn, const char *name, const char *wi
 
      return filePathAndName;
 }
-
 
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -2685,8 +2682,9 @@ END_EVENT_TABLE()
 // My frame constructor
 MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
         long style ) :
-        wxFrame( frame, -1, title, pos, size, style ) //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
+        wxFrame( frame, -1, title, pos, size, style ), //wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxRESIZE_BORDER)
 //wxCAPTION | wxSYSTEM_MENU | wxRESIZE_BORDER
+        m_signalKHandler(this)
 {
     m_last_track_rotation_ts = 0;
     m_ulLastNEMATicktime = 0;
@@ -3453,7 +3451,6 @@ void MyFrame::SetGPSCompassScale()
 
 }
 
-
 void MyFrame::FastClose(){
     
     FrameTimer1.Stop();
@@ -3842,7 +3839,6 @@ void MyFrame::ProcessCanvasResize( void )
     if( console && console->IsShown() ) PositionConsole();
 }
 
-
 int timer_sequence;
 void MyFrame::TriggerResize(wxSize sz)
 {
@@ -3856,7 +3852,6 @@ void MyFrame::TriggerResize(wxSize sz)
 
 #endif
 }
-
 
 void MyFrame::OnResizeTimer(wxTimerEvent &event)
 {
@@ -3909,8 +3904,6 @@ void MyFrame::OnResizeTimer(wxTimerEvent &event)
 
 
 }
-
-
 
 void MyFrame::OnSize( wxSizeEvent& event )
 {
@@ -4139,7 +4132,6 @@ void MyFrame::DestroyPersistentDialogs()
     }
 
 }
-
 
 void MyFrame::SetGroupIndex( int index )
 {
@@ -4617,7 +4609,6 @@ void MyFrame::ShowCurrents(bool bShow)
 
 }
 
-
 void MyFrame::SetAISDisplayStyle(int StyleIndx)
 {
     // make some arrays to hold the dfferences between cycle steps
@@ -4692,9 +4683,6 @@ void MyFrame::setStringVP(wxString VPS)
     cc1->SetViewPoint( lat, lon, scale_ppm, 0, cc1->GetVPRotation() );
     
 }
-
-
-
 
 void MyFrame::DoSettings()
 {
@@ -8237,8 +8225,6 @@ void MyFrame::selectChartDisplay( int type, int family)
     cc1->ReloadVP();
 }
 
-
-
 //----------------------------------------------------------------------------------
 //      DoChartUpdate
 //      Create a chartstack based on current lat/lon.
@@ -8762,10 +8748,6 @@ void MyFrame::OnPianoMenuDisableChart( wxCommandEvent& event )
         }
     }
 }
-
-
-
-
 
 //      Memory monitor support
 
@@ -9358,18 +9340,52 @@ static void UpdatePositionCalculatedSogCog()
     }
 }
 
-static bool ParsePosition(const LATLONG &Position)
+void MyFrame::setPosition(double lat, double lon)
+{
+    gLat = lat;
+    gLon = lon;
+    if( g_own_ship_sog_cog_calc ) {
+        UpdatePositionCalculatedSogCog();
+    }
+
+    gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    wxDateTime now = wxDateTime::Now();
+    m_fixtime = now.GetTicks();
+
+}
+
+void MyFrame::setCourseOverGround(double cog)
+{
+    if(!g_own_ship_sog_cog_calc) {
+        gCog = cog;
+        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    }
+}
+
+void MyFrame::setSpeedOverGround(double sog)
+{
+    if(!g_own_ship_sog_cog_calc) {
+        gSog = sog;
+        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+    }
+}
+
+bool MyFrame::ParsePosition(const LATLONG &Position)
 {
     bool ll_valid = true;
     double llt = Position.Latitude.Latitude;
+    double lat = gLat;
+    double lon = gLon;
+
     if( !wxIsNaN(llt) )
     {
         int lat_deg_int = (int) ( llt / 100 );
         double lat_deg = lat_deg_int;
         double lat_min = llt - ( lat_deg * 100 );
-        gLat = lat_deg + ( lat_min / 60. );
+
+        lat = lat_deg + (lat_min / 60. );
         if( Position.Latitude.Northing == South )
-            gLat = -gLat;
+            lat = -lat;
     }
     else
         ll_valid = false;
@@ -9380,15 +9396,16 @@ static bool ParsePosition(const LATLONG &Position)
         int lon_deg_int = (int) ( lln / 100 );
         double lon_deg = lon_deg_int;
         double lon_min = lln - ( lon_deg * 100 );
-        gLon = lon_deg + ( lon_min / 60. );
+
+        lon = lon_deg + (lon_min / 60. );
         if( Position.Longitude.Easting == West )
-            gLon = -gLon;
+            lon = -lon;
     }
     else
         ll_valid = false;
 
-    if( ll_valid && g_own_ship_sog_cog_calc ) {
-        UpdatePositionCalculatedSogCog();
+    if( ll_valid ) {
+        setPosition(lat, lon);
     }
 
     return ll_valid;
@@ -9397,7 +9414,7 @@ static bool ParsePosition(const LATLONG &Position)
 void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
     wxLogMessage(_T(" ***** Got Signal K Event...."));
-#if 1
+#ifdef SUPER_EXTRA_DEBUGPRINTING
     const wxJSONValue signalKRoot = event.GetValue();
     wxString dbg;
     wxJSONWriter writer;
@@ -9407,30 +9424,7 @@ void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
     msg.append(dbg);
     wxLogMessage(msg);
 #endif
-
-    const wchar_t *navigation_path = _T("navigation.position");
-    if(event.GetUpdatePath() == navigation_path) {
-        wxLogMessage(_T(" ***** Position Update"));
-        bool pos_valid = false;
-        bool cog_sog_valid = false;
-        wxString sfixtime = event.GetTimeStampForPath(navigation_path);
-        LATLONG Pos;
-        auto value = event.GetValueForPath(navigation_path);
-        gLat = value["latitude"].AsDouble();
-        gLon = value["longitude"].AsDouble();
-        if(g_own_ship_sog_cog_calc) {
-            UpdatePositionCalculatedSogCog();
-        }
-        pos_valid = true;
-        wxLogMessage(wxString::Format(_T(" ***** Position Update: %f %f"), gLat, gLon));
-        if(pos_valid)
-        {
-            gGPS_Watchdog = gps_watchdog_timeout_ticks;
-            wxDateTime now = wxDateTime::Now();
-            m_fixtime = now.GetTicks();
-        }
-        PostProcessNNEA( pos_valid, cog_sog_valid, sfixtime );
-    }
+    m_signalKHandler.OnEvtOCPN_SignalK(event);
 }
 
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
@@ -9597,12 +9591,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 break;
             }
 
-            if(pos_valid)
-            {
-                gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                wxDateTime now = wxDateTime::Now();
-                m_fixtime = now.GetTicks();
-            }
 
         } else if( g_nNMEADebug ) {
             wxString msg( _T("   ") );
@@ -10131,7 +10119,6 @@ void MyFrame::UpdateAISMOBRoute( AIS_Target_Data *ptarget )
     }
 
 }
-
 
 void MyFrame::applySettingsString( wxString settings)
 {
