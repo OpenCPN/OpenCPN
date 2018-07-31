@@ -1143,8 +1143,10 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 g_pMarkInfoDialog->UpdateProperties();
             }
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
-                pRouteManagerDialog->UpdateWptListCtrl();
+            if( pRouteManagerDialog ){
+                if( pRouteManagerDialog->IsShown() )
+                    pRouteManagerDialog->UpdateWptListCtrl();
+            }
 
             gFrame->RefreshAllCanvas( false );
             gFrame->InvalidateAllGL();
