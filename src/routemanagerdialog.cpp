@@ -52,70 +52,10 @@
 #include "androidUTIL.h"
 #endif
 
+extern wxImage LoadSVGIcon( wxString filename, int width, int height );
+
 #define DIALOG_MARGIN 3
 
-/* XPM */
-static const char *eye[]={
-"20 20 7 1",
-". c none",
-"# c #000000",
-"a c #333333",
-"b c #666666",
-"c c #999999",
-"d c #cccccc",
-"e c #ffffff",
-"....................",
-"....................",
-"....................",
-"....................",
-".......######.......",
-".....#aabccb#a#.....",
-"....#deeeddeebcb#...",
-"..#aeeeec##aceaec#..",
-".#bedaeee####dbcec#.",
-"#aeedbdabc###bcceea#",
-".#bedad######abcec#.",
-"..#be#d######dadb#..",
-"...#abac####abba#...",
-".....##acbaca##.....",
-".......######.......",
-"....................",
-"....................",
-"....................",
-"....................",
-"...................."};
-
-/* XPM */
-static const char *eyex[]={
-    "20 20 8 1",
-    "# c None",
-    "a c #000000",
-    "b c #333333",
-    "c c #666666",
-    "d c #999999",
-    "f c #cccccc",
-    ". c #ff0000",
-    "e c #ffffff",
-    ".##################.",
-    "..################..",
-    "#..##############..#",
-    "##..############..##",
-    "###..##aaaaaa##..###",
-    "####..bbcddcab..####",
-    "####a..eeffee..ca###",
-    "##abee..daab..beda##",
-    "#acefbe..aa..fcdeda#",
-    "abeefcfb....acddeeba",
-    "#acefbfaa..aabcdeda#",
-    "##aceafa....afbfca##",
-    "###abcb..aa..ccba###",
-    "#####a..dcbd..a#####",
-    "#####..aaaaaa..#####",
-    "####..########..####",
-    "###..##########..###",
-    "##..############..##",
-    "#..##############..#",
-    "..################.."};
 
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
@@ -847,34 +787,34 @@ void RouteManagerDialog::Create()
     RecalculateSize();
 
     // create a image list for the list with just the eye icon
-    wxImageList *imglist;
+    int bmSize = 22;
     
 #ifdef __OCPN__ANDROID__    
-    int imageRefSize = g_Platform->GetDisplayDPmm() * 4;
-    imageRefSize = wxMax(imageRefSize, GetCharHeight() * 2);
+    bmSize = g_Platform->GetDisplayDPmm() * 4;
+    bmSize = wxMax(bmSize, GetCharHeight() * 2);
+#endif
     
-    imglist = new wxImageList( imageRefSize, imageRefSize, true, 1 );
+    wxImageList *imglist = new wxImageList( bmSize, bmSize, true, 1 );
     
-    wxImage eye1 = wxBitmap( eye ).ConvertToImage();
-    wxImage eye1s = eye1.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
-    imglist->Add( wxBitmap( eye1s ) );
+    // Load eye icons
+    wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") + wxFileName::GetPathSeparator();
+    wxImage iconSVG = LoadSVGIcon( UserIconPath  + _T("eye.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));           // Avoid wxImageList size asserts
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
     
-    wxImage eye2 = wxBitmap( eyex).ConvertToImage();
-    wxImage eye2s = eye2.Scale(imageRefSize, imageRefSize, wxIMAGE_QUALITY_HIGH);
-    imglist->Add( wxBitmap( eye2s ) );
+    iconSVG = LoadSVGIcon( UserIconPath  + _T("eyex.svg"), bmSize, bmSize );
+    if(iconSVG.IsOk()){
+        iconSVG.Resize( wxSize(bmSize, bmSize), wxPoint(0,0));
+        imglist->Add( wxBitmap( iconSVG ) );
+    }
     
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
-
-    m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(imageRefSize, imageRefSize));
-#else
-
-    imglist = new wxImageList( 20, 20, true, 1 );
     
-    imglist->Add( wxBitmap( eye ) );
-    imglist->Add( wxBitmap( eyex ) );
-    m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
-    
-#endif    
+#ifdef __OCPN__ANDROID__    
+    m_pRouteListCtrl->GetHandle() ->setIconSize(QSize(bmSize, bmSize));
+#endif
     
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
