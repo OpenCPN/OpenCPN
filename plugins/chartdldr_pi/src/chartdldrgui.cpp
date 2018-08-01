@@ -242,6 +242,9 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     
     
     //  Buttons
+#ifdef __OCPN__ANDROID__
+    catalogPanelBoxSizer->AddSpacer(2 * GetCharHeight());
+#endif
     
     wxBoxSizer* bSizerCatalogBtns = new wxBoxSizer( wxHORIZONTAL );
     catalogPanelBoxSizer->Add( bSizerCatalogBtns, 0, wxALL | wxEXPAND, border_size );
@@ -292,46 +295,9 @@ ChartDldrPanel::ChartDldrPanel( wxWindow* parent, wxWindowID id, const wxPoint& 
     
     
     
- /*   
-    wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
-    chartsPanelBoxSizer->Add( nbSizer, 0, wxALL | wxEXPAND, border_size );
-    
-    m_clCharts = new wxCheckedListCtrl(chartsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SINGLE_SEL);
-    
-    
-    m_clCharts->SetMinSize( wxSize( 100,10 * GetCharHeight() ) );
-    nbSizer->Add( m_clCharts, 1, wxEXPAND );
-    */
-    
-#if 0 
-    // Selection control
-    wxStaticBoxSizer* sbSelControl = new wxStaticBoxSizer( new wxStaticBox( chartsPanel, wxID_ANY, _("Selection Control") ), wxVERTICAL );
-    chartsPanelBoxSizer->Add(sbSelControl, 0, wxEXPAND);
-    
-    
-    wxFlexGridSizer *buttonSizerGrid = new wxFlexGridSizer( 2, 2, border_size, border_size );
-    sbSelControl->Add(buttonSizerGrid, 0, wxEXPAND);
-    
-    //buttonSizerGrid->AddGrowableCol( 0 );
-    //buttonSizerGrid->AddGrowableRow( 1, 1 );
-    //buttonSizerGrid->AddGrowableRow( 3, 1 );
-    
-    wxButton *selectAllButton = new wxButton( chartsPanel, wxID_ANY, _("Select all"), wxDefaultPosition, wxDefaultSize, 0 );
-    buttonSizerGrid->Add( selectAllButton, 0, wxALL, 5 );
-    
-    wxButton *deselectAllButton = new wxButton( chartsPanel, wxID_ANY, _("Deselect all"), wxDefaultPosition, wxDefaultSize, 0 );
-    buttonSizerGrid->Add( deselectAllButton, 0, wxALL, 5 );
-    
-    wxButton *selectUpdatedButton = new wxButton( chartsPanel, wxID_ANY, _("Select updated"), wxDefaultPosition, wxDefaultSize, 0 );
-    buttonSizerGrid->Add( selectUpdatedButton, 0, wxALL, 5 );
-    
-    wxButton *selectNewButton = new wxButton( chartsPanel, wxID_ANY, _("Select new"), wxDefaultPosition, wxDefaultSize, 0 );
-    buttonSizerGrid->Add( selectNewButton, 0, wxALL, 5 );
-#endif    
-
-    //  Buttons
-//     wxBoxSizer* bSizerChartBtns = new wxBoxSizer( wxHORIZONTAL );
-//     chartsPanelBoxSizer->Add( bSizerChartBtns, 0, wxALL | wxEXPAND, 2 * border_size );
+#ifdef __OCPN__ANDROID__
+    chartsPanelBoxSizer->AddSpacer(2 * GetCharHeight());
+#endif
     
     m_bDnldCharts = new wxButton( chartsPanel, wxID_ANY, _("Download selected charts"), wxDefaultPosition, wxDefaultSize, 0 );
     chartsPanelBoxSizer->Add( m_bDnldCharts, 0, wxALIGN_LEFT|wxALL, 5 );
