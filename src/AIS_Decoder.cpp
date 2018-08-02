@@ -419,12 +419,32 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
                 pTargetData->Lat = lat;
                 pTargetData->Lon = lon;
                 pTargetData->b_positionOnceValid = true;
+                pTargetData->b_positionDoubtful = false;
 
             }
         } else if (update_path == _T("navigation.speedOverGround")) {
             pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
         } else if (update_path == _T("navigation.courseOverGroundTrue")) {
             pTargetData->COG = GEODESIC_RAD2DEG(value.AsDouble());
+        } else if (update_path == _T("navigation.headingTrue")) {
+            pTargetData->HDG = GEODESIC_RAD2DEG(value.AsDouble());
+        } else if (update_path == _T("navigation.state")) {
+            auto state = value.AsString();
+            if (state == _T("motoring")) { pTargetData->NavStatus = UNDERWAY_USING_ENGINE; }
+            if (state == _T("anchored")) { pTargetData->NavStatus = AT_ANCHOR; }
+            if (state == _T("not under command")) { pTargetData->NavStatus = NOT_UNDER_COMMAND; }
+            if (state == _T("restricted manouverability")) { pTargetData->NavStatus = RESTRICTED_MANOEUVRABILITY; }
+            if (state == _T("constrained by draft")) { pTargetData->NavStatus = CONSTRAINED_BY_DRAFT; }
+            if (state == _T("moored")) { pTargetData->NavStatus = MOORED; }
+            if (state == _T("aground")) { pTargetData->NavStatus = AGROUND; }
+            if (state == _T("fishing")) { pTargetData->NavStatus = FISHING; }
+            if (state == _T("sailing")) { pTargetData->NavStatus = UNDERWAY_SAILING; }
+            if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
+            if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
+            if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+        } else if (update_path == _T("communication.callsignVhf")) {
+            const wxString &callsign = value.AsString();
+            strncpy(pTargetData->CallSign, callsign.c_str(), strlen(callsign.c_str()) + 1 );
         } else if (update_path == _T("")) {
             if(value.HasMember("name")) {
                 const wxString &name = value["name"].AsString();
