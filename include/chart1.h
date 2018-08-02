@@ -519,6 +519,10 @@ class MyFrame: public wxFrame
     void setPosition(double lat, double lon);
     void setCourseOverGround(double cog);
     void setSpeedOverGround(double sog);
+    void setMagneticVariation(double var);
+    void setSatelitesInView(int no);
+    void setHeadingTrue(double heading);
+    void setHeadingMagnetic(double heading);
     bool ParsePosition(const LATLONG &Position);
 
     void ODoSetSize(void);

@@ -9357,6 +9357,7 @@ void MyFrame::setPosition(double lat, double lon)
 void MyFrame::setCourseOverGround(double cog)
 {
     if(!g_own_ship_sog_cog_calc) {
+        wxLogMessage(wxString::Format(_T("COG: %f"), cog));
         gCog = cog;
         gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
@@ -9365,9 +9366,47 @@ void MyFrame::setCourseOverGround(double cog)
 void MyFrame::setSpeedOverGround(double sog)
 {
     if(!g_own_ship_sog_cog_calc) {
+        wxLogMessage(wxString::Format(_T("SOG: %f"), sog));
         gSog = sog;
         gGPS_Watchdog = gps_watchdog_timeout_ticks;
     }
+}
+
+void MyFrame::setMagneticVariation(double var)
+{
+    wxLogMessage(wxString::Format(_T("Var: %f"), var));
+    gVar = var;
+    g_bVAR_Rx = true;
+    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+}
+
+void MyFrame::setSatelitesInView(int no)
+{
+    wxLogMessage(wxString::Format(_T("SatsInView: %d"), no));
+    g_SatsInView = no;
+    gSAT_Watchdog = sat_watchdog_timeout_ticks;
+    g_bSatValid = true;
+}
+
+void MyFrame::setHeadingTrue(double heading)
+{
+    wxLogMessage(wxString::Format(_T("setHeadingTrue: %f"), heading));
+    gHdt = heading;
+    if (!wxIsNaN(heading)) {
+        g_bHDT_Rx = true;
+        gHDT_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
+}
+
+void MyFrame::setHeadingMagnetic(double heading)
+{
+    wxLogMessage(wxString::Format(_T("setHeadingMagnetic: %f"), heading));
+    gHdm = heading;
+    if (!wxIsNaN(heading)) {
+        gHDx_Watchdog = gps_watchdog_timeout_ticks;
+    }
+
 }
 
 bool MyFrame::ParsePosition(const LATLONG &Position)
@@ -9413,17 +9452,6 @@ bool MyFrame::ParsePosition(const LATLONG &Position)
 
 void MyFrame::OnEvtOCPN_SignalK(OCPN_SignalKEvent &event)
 {
-    wxLogMessage(_T(" ***** Got Signal K Event...."));
-#ifdef SUPER_EXTRA_DEBUGPRINTING
-    const wxJSONValue signalKRoot = event.GetValue();
-    wxString dbg;
-    wxJSONWriter writer;
-    writer.Write(signalKRoot, dbg);
-
-    wxString msg( _T("SignalK Event received: ") );
-    msg.append(dbg);
-    wxLogMessage(msg);
-#endif
     m_signalKHandler.OnEvtOCPN_SignalK(event);
 }
 
@@ -9485,89 +9513,65 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
         if( m_NMEA0183.Parse() )
         {
-            switch(id)
-            {
-            case RMC:
-                if( m_NMEA0183.Rmc.IsDataValid == NTrue )
-                {
-                    pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
+            switch(id) {
+                case RMC:
+                    if (m_NMEA0183.Rmc.IsDataValid == NTrue) {
+                        pos_valid = ParsePosition(m_NMEA0183.Rmc.Position);
 
-                    // course is not valid in this case
-                    // but also my gps occasionally outputs RMC
-                    // messages with valid lat and lon but
-                    // 0.0 for speed and course which messes up the filter
-                    if(!g_own_ship_sog_cog_calc && m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
-                        gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                        gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-                        cog_sog_valid = true;
+                        // course is not valid in this case
+                        // but also my gps occasionally outputs RMC
+                        // messages with valid lat and lon but
+                        // 0.0 for speed and course which messes up the filter
+                        if (!g_own_ship_sog_cog_calc && m_NMEA0183.Rmc.SpeedOverGroundKnots > 0) {
+                            setSpeedOverGround(m_NMEA0183.Rmc.SpeedOverGroundKnots);
+                            setCourseOverGround(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue);
+                            cog_sog_valid = true;
+                        }
+
+                        if (!wxIsNaN(m_NMEA0183.Rmc.MagneticVariation)) {
+                            if (m_NMEA0183.Rmc.MagneticVariationDirection == East)
+                                setMagneticVariation(m_NMEA0183.Rmc.MagneticVariation);
+                            else if (m_NMEA0183.Rmc.MagneticVariationDirection == West)
+                                setMagneticVariation(-m_NMEA0183.Rmc.MagneticVariation);
+                        }
+
+                        sfixtime = m_NMEA0183.Rmc.UTCTime;
                     }
-                    
-                    if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
-                    {
-                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
-                            gVar = m_NMEA0183.Rmc.MagneticVariation;
-                        else
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
-                                gVar = -m_NMEA0183.Rmc.MagneticVariation;
-                        
-                        g_bVAR_Rx = true;
-                        gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                    break;
+
+                case HDT:
+                    setHeadingTrue(m_NMEA0183.Hdt.DegreesTrue);
+                    break;
+
+                case HDG:
+                    setHeadingMagnetic(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees);
+
+                    if (m_NMEA0183.Hdg.MagneticVariationDirection == East)
+                        setMagneticVariation(m_NMEA0183.Hdg.MagneticVariationDegrees);
+                    else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
+                        setMagneticVariation(-m_NMEA0183.Hdg.MagneticVariationDegrees);
+                    break;
+
+                case HDM:
+                    setHeadingMagnetic(m_NMEA0183.Hdm.DegreesMagnetic);
+                    break;
+
+                case VTG:
+                    // should we allow either Sog or Cog but not both to be valid?
+                    if (!g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots)) {
+                        setSpeedOverGround(m_NMEA0183.Vtg.SpeedKnots);
                     }
-                    
-                    sfixtime = m_NMEA0183.Rmc.UTCTime;
-                }
-                break;
-
-            case HDT:
-                gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
-                {
-                    g_bHDT_Rx = true;
-                    gHDT_Watchdog = gps_watchdog_timeout_ticks;
-                }
-                break;
-
-            case HDG:
-                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
-                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-
-                if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
-                    gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
-                else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
-                    gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
-                {
-                    g_bVAR_Rx = true;
-                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                }
-                break;
-
-            case HDM:
-                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
-                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                break;
-
-            case VTG:
-                // should we allow either Sog or Cog but not both to be valid?
-                if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) )
-                    gSog = m_NMEA0183.Vtg.SpeedKnots;
                 if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                 if( !g_own_ship_sog_cog_calc && !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) &&
                     !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) {
-                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                    setCourseOverGround(m_NMEA0183.Vtg.TrackDegreesTrue);
                     cog_sog_valid = true;
-                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
                 }
                 break;
 
             case GSV:
-                g_SatsInView = m_NMEA0183.Gsv.SatsInView;
-                gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                g_bSatValid = true;
+                setSatelitesInView(m_NMEA0183.Gsv.SatsInView);
                 break;
 
             case GGA:
@@ -9575,10 +9579,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 {
                     pos_valid = ParsePosition(m_NMEA0183.Gga.Position);
                     sfixtime = m_NMEA0183.Gga.UTCTime;
-                    
-                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
-                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                    g_bSatValid = true;
+                    setSatelitesInView(m_NMEA0183.Gga.NumberOfSatellitesInUse);
                 }
                 break;
 

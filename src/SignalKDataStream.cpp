@@ -186,8 +186,6 @@ void SignalKDataStream::OnSocketEvent(wxSocketEvent& event)
                 wxLogMessage(dbg);
 #endif
                 if( GetConsumer() ) {
-                    wxLogMessage(wxString::Format(_T("SignalKDataStream send to: %p"),
-                                                  GetConsumer()));
                     OCPN_SignalKEvent signalKEvent(0,
                                                    EVT_OCPN_SIGNALKSTREAM,
                                                    root);

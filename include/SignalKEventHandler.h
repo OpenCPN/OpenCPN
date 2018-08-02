@@ -6,6 +6,8 @@
 #define OPENCPN_SIGNALKEVENTHANDLER_H
 
 
+static const double ms_to_knot_factor = 1.9438444924406;
+
 #include "../plugins/dashboard_pi/src/wxJSON/jsonval.h"
 
 class MyFrame;
@@ -14,11 +16,11 @@ class OCPN_SignalKEvent;
 
 class SignalKEventHandler {
 public:
-    explicit SignalKEventHandler(MyFrame* app) : m_frame(app) {}
+    explicit SignalKEventHandler(MyFrame* frame) : m_frame(frame), m_self("") {}
     void OnEvtOCPN_SignalK(OCPN_SignalKEvent &event);
 private:
     MyFrame* m_frame;
-
+    wxString m_self;
 
     void handleUpdate(wxJSONValue &update) const;
 
@@ -27,7 +29,10 @@ private:
     void updateNavigationPosition(wxJSONValue &value, const wxString &sfixtime) const;
     void updateNavigationSpeedOverGround(wxJSONValue &value, const wxString &sfixtime) const;
     void updateNavigationCourseOverGround(wxJSONValue &value, const wxString &sfixtime) const;
-
+    void updateGnssSatellites(wxJSONValue &value, const wxString &sfixtime) const;
+    void updateHeadingTrue(wxJSONValue &value, const wxString &sfixtime) const;
+    void updateHeadingMagnetic(wxJSONValue &value, const wxString &sfixtime) const;
+    void updateMagneticVariance(wxJSONValue &value, const wxString &sfixtime) const;
 };
 
 
