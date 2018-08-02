@@ -345,9 +345,7 @@ void Multiplexer::OnEvtSignalK(OCPN_SignalKEvent &event)
         m_aisconsumer->AddPendingEvent(event);
     if( m_gpsconsumer )
         m_gpsconsumer->AddPendingEvent(event);
-
-    // XXX Send SignalK to all plugins
-    // g_pi_manager->SendSignalKToAllPlugIns( message );
+    g_pi_manager->SendJSONMessageToAllPlugins(wxT("SignalK"), event.GetValue());
 }
 
 void Multiplexer::SaveStreamProperties( DataStream *stream )

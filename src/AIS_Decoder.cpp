@@ -21,6 +21,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
+#include <fstream>
 
 #include "wx/tokenzr.h"
 
@@ -29,8 +30,9 @@
 #include "AISTargetAlertDialog.h"
 #include "Select.h"
 #include "georef.h"
+#include "geodesic.h"
 #include "OCPN_DataStreamEvent.h"
-#include <fstream>
+#include "OCPN_SignalKEvent.h"
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "Track.h"
@@ -118,12 +120,10 @@ static double arpa_ref_hdg = NAN;
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
 
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
+        : m_signalk_selfid(""),
+        AISTargetList(new AIS_Target_Hash()),
+        AISTargetNames(new AIS_Target_Name_Hash())
 {
-    AISTargetList = new AIS_Target_Hash;
-
-    // Load cached AIS target names from a file
-    AISTargetNames = new AIS_Target_Name_Hash;
-    
     if(g_benableAISNameCache){
         std::ifstream infile( AISTargetNameFileName.mb_str() );
         if( infile ) {
@@ -157,6 +157,7 @@ AIS_Decoder::AIS_Decoder( wxFrame *parent )
 
     //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS);
+    Connect( EVT_OCPN_SIGNALKSTREAM, (wxObjectEventFunction) (wxEventFunction) &AIS_Decoder::OnEvtSignalK );
 }
 
 AIS_Decoder::~AIS_Decoder( void )
@@ -281,6 +282,172 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
         {
                 nr = Decode( message );
                 gFrame->TouchAISActive();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------
+//     Handle events from SignalK DataStream
+//----------------------------------------------------------------------------------
+void AIS_Decoder::OnEvtSignalK(OCPN_SignalKEvent &event)
+{
+    auto root = event.GetValue();
+
+    if(root.HasMember("self")) {
+        m_signalk_selfid = _T("vessels.") + (root["self"].AsString());
+    }
+    if(m_signalk_selfid.IsEmpty()) {
+        return; // Don't handle any messages (with out self) until we know how we are
+    }
+    long mmsi = 0;
+    if(root.HasMember("context")
+       && root["context"].IsString()) {
+        auto context = root["context"].AsString();
+        if (context == m_signalk_selfid) {
+#if 0
+            wxLogMessage(_T("** Ignore context own ship.."));
+#endif
+            return;
+        }
+        wxString mmsi_string;
+        if(context.StartsWith("vessels.urn:mrn:imo:mmsi:", &mmsi_string)) {
+            wxLogMessage(wxString::Format(_T("Context: %s, %s"), context.c_str(), mmsi_string));
+            if(mmsi_string.ToLong(&mmsi)) {
+                wxLogMessage(_T("Got MMSI from context."));
+            } else {
+                mmsi = 0;
+            }
+        }
+    }
+    if(mmsi == 0) {
+        return; // Only handle ships with MMSI for now
+    }
+#if 0
+    wxString dbg;
+    wxJSONWriter writer;
+    writer.Write(root, dbg);
+
+    wxString msg( _T("AIS_Decoder::OnEvtSignalK: ") );
+    msg.append(dbg);
+    wxLogMessage(msg);
+#endif
+    AIS_Target_Data *pTargetData = 0;
+    AIS_Target_Data *pStaleTarget = NULL;
+    bool bnewtarget = false;
+    int last_report_ticks;
+    wxDateTime now;
+    getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks, now);
+    if(pTargetData) {
+        if (root.HasMember("updates")
+            && root["updates"].IsArray()) {
+            wxJSONValue &updates = root["updates"];
+            for (int i = 0; i < updates.Size(); ++i) {
+                handleUpdate(pTargetData, bnewtarget, updates[i]);
+            }
+        }
+        pTargetData->MMSI = mmsi;
+        pTargetData->b_OwnShip = false;
+        ( *AISTargetList )[pTargetData->MMSI] = pTargetData;
+    }
+
+}
+
+void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData,
+        bool bnewtarget,
+        wxJSONValue &update)
+{
+    wxString sfixtime = "";
+
+    if(update.HasMember("timestamp")) {
+        sfixtime = update["timestamp"].AsString();
+    }
+    if(update.HasMember("values")
+       && update["values"].IsArray())
+    {
+        for (int j = 0; j < update["values"].Size(); ++j) {
+            wxJSONValue &item = update["values"][j];
+            updateItem(pTargetData, bnewtarget, item, sfixtime);
+        }
+    }
+    wxDateTime now;
+    pTargetData->m_utc_hour = now.ToUTC().GetHour();
+    pTargetData->m_utc_min = now.ToUTC().GetMinute();
+    pTargetData->m_utc_sec = now.ToUTC().GetSecond();
+    pTargetData->NavStatus = 15; // undefined
+    pTargetData->b_active = true;
+    pTargetData->b_lost = false;
+
+    if( pTargetData->b_positionOnceValid ) {
+        long mmsi_long = pTargetData->MMSI;
+        SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
+                                                           pTargetData->Lon,
+                                                           (void *) mmsi_long,
+                                                           SELTYPE_AISTARGET );
+        pSel->SetUserData( pTargetData->MMSI );
+    }
+    UpdateOneCPA(pTargetData);
+    if( pTargetData->b_show_track )
+        UpdateOneTrack( pTargetData );
+
+}
+
+void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
+                             bool bnewtarget,
+                             wxJSONValue &item,
+                             wxString &sfixtime) const
+{
+    if (item.HasMember("path")
+        && item.HasMember("value")) {
+
+        const wxString &update_path = item["path"].AsString();
+        wxJSONValue &value = item["value"];
+        if (update_path == _T("navigation.position")) {
+            if (value.HasMember("latitude")
+                && value.HasMember("longitude")) {
+                wxDateTime now;
+                double lat = value["latitude"].AsDouble();
+                double lon = value["longitude"].AsDouble();
+                if( !bnewtarget ) {
+                    int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
+                    if ( age_of_last > 0 ) {
+                        ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, lat, lon, &pTargetData->COG, &pTargetData->SOG );
+                        pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
+                    }
+                }
+                pTargetData->PositionReportTicks = now.GetTicks();
+                pTargetData->StaticReportTicks = now.GetTicks();
+                pTargetData->Lat = lat;
+                pTargetData->Lon = lon;
+                pTargetData->b_positionOnceValid = true;
+
+            }
+        } else if (update_path == _T("navigation.speedOverGround")) {
+            pTargetData->SOG = value.AsDouble() * ms_to_knot_factor;
+        } else if (update_path == _T("navigation.courseOverGroundTrue")) {
+            pTargetData->COG = GEODESIC_RAD2DEG(value.AsDouble());
+        } else if (update_path == _T("")) {
+            if(value.HasMember("name")) {
+                const wxString &name = value["name"].AsString();
+                strncpy(pTargetData->ShipName, name.c_str(), strlen(name.c_str()) + 1 );
+                pTargetData->b_nameValid = true;
+            }
+            if(value.HasMember("mmsi")) {
+                long mmsi;
+                if(value["mmsi"].AsString().ToLong(&mmsi)) {
+                    pTargetData->MMSI = mmsi;
+                }
+            }
+        } else {
+            wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: unhandled path %s"), update_path));
+#if 1
+            wxString dbg;
+            wxJSONWriter writer;
+            writer.Write(item, dbg);
+            wxString msg( _T("update: ") );
+            msg.append(dbg);
+            wxLogMessage(msg);
+#endif
+
         }
     }
 }
@@ -806,34 +973,9 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             }
             
              //  Search the current AISTargetList for an MMSI match
-            AIS_Target_Hash::iterator it = AISTargetList->find( mmsi );
-            if( it == AISTargetList->end() )                  // not found
-                    {
-                pTargetData = new AIS_Target_Data;
-                bnewtarget = true;
-                m_n_targets++;
-            } else {
-                pTargetData = it->second;          // find current entry
-                pStaleTarget = pTargetData;        // save a pointer to stale data
-            }
-            // XXX Should be ?
-            // assert(pTargetData != 0);
+            wxDateTime now;
+            getAISTarget(mmsi, pTargetData, pStaleTarget, bnewtarget, last_report_ticks, now);
 
-            //  Grab the stale targets's last report time
-             wxDateTime now = wxDateTime::Now();
-            now.MakeGMT();
-
-            if( pStaleTarget )
-                last_report_ticks = pStaleTarget->PositionReportTicks;
-            else
-                last_report_ticks = now.GetTicks();
-
-            // Delete the stale AIS Target selectable point
-            if( pStaleTarget )
-                pSelectAIS->DeleteSelectablePoint( (void *) mmsi_long, SELTYPE_AISTARGET );
-
-            bool bhad_name = false;
-            if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid;
 
             if (pTargetData) {
               if( gpsg_mmsi ) {
@@ -1079,6 +1221,42 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 #endif
 
     return ret;
+}
+
+void AIS_Decoder::getAISTarget(long mmsi,
+                               AIS_Target_Data *&pTargetData,
+                               AIS_Target_Data *&pStaleTarget,
+                               bool &bnewtarget,
+                               int &last_report_ticks,
+                               wxDateTime &now)
+{
+    now= wxDateTime::Now();
+    AIS_Target_Hash_wxImplementation_HashTable::iterator it = AISTargetList->find(mmsi);
+    if( it == AISTargetList->end() )                  // not found
+    {
+        pTargetData = new AIS_Target_Data;
+        bnewtarget = true;
+        m_n_targets++;
+    } else {
+        pTargetData = it->second;          // find current entry
+        pStaleTarget = pTargetData;        // save a pointer to stale data
+    }
+
+    //  Grab the stale targets's last report time
+    now.MakeGMT();
+
+    if( pStaleTarget )
+        last_report_ticks = pStaleTarget->PositionReportTicks;
+    else
+        last_report_ticks = now.GetTicks();
+
+    // Delete the stale AIS Target selectable point
+    if( pStaleTarget )
+        pSelectAIS->DeleteSelectablePoint( (void *) mmsi, SELTYPE_AISTARGET );
+
+    bool bhad_name = false;
+    if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid;
+
 }
 
 AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
