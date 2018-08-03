@@ -1077,7 +1077,7 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
     wxString baud;
 
     if( old_stream ) {
-        baud = baud_rate_save;
+        baud = wxString::Format(wxT("%i"), params_save->Baudrate);;
     }
     else {
         baud = _T("4800");
