@@ -369,11 +369,11 @@ void AIS_Decoder::handleUpdate(AIS_Target_Data *pTargetData,
             updateItem(pTargetData, bnewtarget, item, sfixtime);
         }
     }
-    wxDateTime now;
+    wxDateTime now = wxDateTime::Now();
     pTargetData->m_utc_hour = now.ToUTC().GetHour();
     pTargetData->m_utc_min = now.ToUTC().GetMinute();
     pTargetData->m_utc_sec = now.ToUTC().GetSecond();
-    pTargetData->NavStatus = 15; // undefined
+    // pTargetData->NavStatus = 15; // undefined
     pTargetData->b_active = true;
     pTargetData->b_lost = false;
 
@@ -404,16 +404,24 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
         if (update_path == _T("navigation.position")) {
             if (value.HasMember("latitude")
                 && value.HasMember("longitude")) {
-                wxDateTime now;
+                wxDateTime now = wxDateTime::Now();
+                now.MakeUTC();
                 double lat = value["latitude"].AsDouble();
                 double lon = value["longitude"].AsDouble();
                 if( !bnewtarget ) {
                     int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
                     if ( age_of_last > 0 ) {
-                        ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, lat, lon, &pTargetData->COG, &pTargetData->SOG );
+                        ll_gc_ll_reverse( pTargetData->Lat,
+                                          pTargetData->Lon,
+                                          lat,
+                                          lon,
+                                          &pTargetData->COG,
+                                          &pTargetData->SOG );
                         pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
                     }
                 }
+                wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: PositionReportTicks %d"),
+                        now.GetTicks()));
                 pTargetData->PositionReportTicks = now.GetTicks();
                 pTargetData->StaticReportTicks = now.GetTicks();
                 pTargetData->Lat = lat;
@@ -428,6 +436,45 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             pTargetData->COG = GEODESIC_RAD2DEG(value.AsDouble());
         } else if (update_path == _T("navigation.headingTrue")) {
             pTargetData->HDG = GEODESIC_RAD2DEG(value.AsDouble());
+        } else if (update_path == _T("navigation.rateOfTurn")) {
+            pTargetData->ROTAIS = 4.733*sqrt(value.AsDouble());
+        } else if (update_path == _T("design.aisShipType")) {
+            if (value.HasMember("id")) {
+                pTargetData->ShipType = value["id"].AsUInt();
+                pTargetData->Class = AIS_CLASS_A;
+            }
+        } else if (update_path == _T("design.draft")) {
+            if (value.HasMember("maximum")) {
+                pTargetData->Draft = value["maximum"].AsDouble();
+                pTargetData->Euro_Draft = value["maximum"].AsDouble();
+            }
+        } else if (update_path == _T("design.length")) {
+            if (pTargetData->DimB == 0) {
+                if (value.HasMember("overall")) {
+                    pTargetData->Euro_Length = value["overall"].AsDouble();
+                    pTargetData->DimA = value["overall"].AsInt();
+                    pTargetData->DimB = 0;
+                }
+            }
+        } else if (update_path == _T("sensors.ais.fromBow")) {
+            if(pTargetData->DimB == 0 && pTargetData->DimA != 0) {
+                int length = pTargetData->DimA;
+                pTargetData->DimA = value.AsInt();
+                pTargetData->DimB = length - value.AsInt();
+            }
+        } else if (update_path == _T("design.beam")) {
+            if (pTargetData->DimD == 0) {
+                pTargetData->Euro_Beam = value.AsDouble();
+                pTargetData->DimC = value.AsInt();
+                pTargetData->DimD = 0;
+            }
+        } else if (update_path == _T("sensors.ais.fromCenter")) {
+            if(pTargetData->DimD == 0 && pTargetData->DimC != 0) {
+                int beam = pTargetData->DimC;
+                int center = beam / 2;
+                pTargetData->DimC = center + value.AsInt();
+                pTargetData->DimD = beam - pTargetData->DimC;
+            }
         } else if (update_path == _T("navigation.state")) {
             auto state = value.AsString();
             if (state == _T("motoring")) { pTargetData->NavStatus = UNDERWAY_USING_ENGINE; }
@@ -442,13 +489,25 @@ void AIS_Decoder::updateItem(AIS_Target_Data *pTargetData,
             if (state == _T("hazardous material high speed")) { pTargetData->NavStatus = HSC; }
             if (state == _T("hazardous material wing in ground")) { pTargetData->NavStatus = WIG; }
             if (state == _T("ais-sart")) { pTargetData->NavStatus = RESERVED_14; }
+
+            wxLogMessage(wxString::Format(_T("** AIS_Decoder::updateItem: navigation.state %s %d"),
+                    state, pTargetData->NavStatus));
         } else if (update_path == _T("communication.callsignVhf")) {
             const wxString &callsign = value.AsString();
-            strncpy(pTargetData->CallSign, callsign.c_str(), strlen(callsign.c_str()) + 1 );
+            strncpy(pTargetData->CallSign,
+                    callsign.c_str(),
+                    7 );
+        } else if (update_path == _T("navigation.destination.commonName")) {
+            const wxString &destination = value.AsString();
+            strncpy(pTargetData->Destination,
+                    destination.c_str(),
+                    20 );
         } else if (update_path == _T("")) {
             if(value.HasMember("name")) {
                 const wxString &name = value["name"].AsString();
-                strncpy(pTargetData->ShipName, name.c_str(), strlen(name.c_str()) + 1 );
+                strncpy(pTargetData->ShipName,
+                        name.c_str(),
+                        20 );
                 pTargetData->b_nameValid = true;
             }
             if(value.HasMember("mmsi")) {
