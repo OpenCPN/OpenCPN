@@ -1,0 +1,105 @@
+From b37e96faf7ae8784ef032c5ee62a2d6e67818984 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Tue, 24 Jul 2018 15:57:16 +0200
+Subject: [PATCH 4/6] Linux: plugin loading: Support multiple plugin
+ directories.
+
+The customary way to load plugins on linux is to have separate
+directories for system (package manager), site (/usr/local) and
+user (not really well defined). Patch  by default supports
+
+    %{prefix}/%{lib}/opencpn
+    /usr/lib/opencpn
+    /usr/local/lib/opencpn
+
+The first item is the path directly configured in cmake, the others
+hardcoded defaults. The list of directories could be modified using the
+OPENCPN_PLUGIN_DIRS environment variable, a standard :-separated path.
+
+Docs and data paths are still pending. Usecases includes separately
+compiled plugins and flatpak packaging.
+---
+ include/pluginmanager.h |  1 +
+ src/OCPNPlatform.cpp    |  2 --
+ src/pluginmanager.cpp   | 26 ++++++++++++++++++++++++++
+ 3 files changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/include/pluginmanager.h b/include/pluginmanager.h
+index 93091c7b..1609126f 100644
+--- a/include/pluginmanager.h
++++ b/include/pluginmanager.h
+@@ -324,6 +324,7 @@ private:
+       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
+       bool UpDateChartDataTypes(void);
+       bool CheckPluginCompatibility(wxString plugin_file);
++      bool LoadPlugInDirectory(const wxString &plugin_dir, bool enabled_plugins, bool b_enable_blackdialog);
+ 
+       MyFrame                 *pParent;
+ 
+diff --git a/src/OCPNPlatform.cpp b/src/OCPNPlatform.cpp
+index 20459ddd..ab7ba9ac 100644
+--- a/src/OCPNPlatform.cpp
++++ b/src/OCPNPlatform.cpp
+@@ -1155,7 +1155,6 @@ wxString &OCPNPlatform::GetPluginDir()
+ #ifdef __WXMSW__
+         m_PluginsDir += _T("\\plugins");             // Windows: {exe dir}/plugins
+ #endif
+-        
+         if( g_bportable ) {
+             m_PluginsDir = GetHomeDir();
+             m_PluginsDir += _T("plugins");
+@@ -1166,7 +1165,6 @@ wxString &OCPNPlatform::GetPluginDir()
+         wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
+         fdir.RemoveLastDir();
+         m_PluginsDir = fdir.GetPath();
+-        
+ #endif        
+         
+         
+diff --git a/src/pluginmanager.cpp b/src/pluginmanager.cpp
+index 389b4ba2..2a14eb47 100644
+--- a/src/pluginmanager.cpp
++++ b/src/pluginmanager.cpp
+@@ -131,6 +131,9 @@ extern bool             g_bopengl;
+ 
+ extern ChartGroupArray  *g_pGroupArray;
+ 
++static const char* const DEFAULT_PLUGIN_DIRS =
++    "/usr/local/lib/opencpn:/usr/lib/opencpn";
++
+ unsigned int      gs_plib_flags;
+ 
+ enum
+@@ -305,6 +308,29 @@ PlugInManager::~PlugInManager()
+ 
+ 
+ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
++{
++#ifdef __linux__
++    const char* const envdirs = getenv("OPENCPN_PLUGIN_DIRS");
++    wxString dirs(envdirs ? envdirs : DEFAULT_PLUGIN_DIRS);
++    if (envdirs == 0  && dirs.Find(plugin_dir) == wxNOT_FOUND)
++        dirs = dirs.Append(_T(":") + plugin_dir);
++#else
++    wxString dirs = plugin_dirs;
++#endif
++    wxLogMessage( _T("Plugins loading from ") + dirs);
++    bool any_dir_loaded = false;
++    wxStringTokenizer tokens(dirs, ":");
++    while (tokens.HasMoreTokens()) {
++        wxString dir = tokens.GetNextToken();
++	if (LoadPlugInDirectory(dir, load_enabled, b_enable_blackdialog))
++           any_dir_loaded = true;
++    }
++    return any_dir_loaded;
++}
++
++
++// Static helper function: loads all plugins from a single directory
++bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_enabled, bool b_enable_blackdialog)
+ {
+     pConfig->SetPath( _T("/PlugIns/") );
+     SetPluginOrder( pConfig->Read( _T("PluginOrder"), wxEmptyString ) );
+-- 
+2.17.1
+

@@ -1,0 +1,75 @@
+From 5245b40a01e7db6f1379658c41592d0d50774370 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Tue, 17 Jul 2018 22:06:34 +0200
+Subject: [PATCH 3/6] linux: Check permissions for selected connection device.
+
+Add a test and a dialog if user actually cannot access the device
+she selects.
+---
+ include/options.h |  3 +++
+ src/options.cpp   | 21 +++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/include/options.h b/include/options.h
+index 1e82cda6..c37ba505 100644
+--- a/include/options.h
++++ b/include/options.h
+@@ -561,6 +561,9 @@ class options : private Uncopyable,
+                          int group_item_spacing);
+   void CreatePanel_Advanced(size_t parent, int border_size,
+                             int group_item_spacing);
++#ifdef __linux__
++  void CheckDeviceAccess(wxString &path);
++#endif
+ 
+   int m_returnChanges;
+   wxListBox *tcDataSelected;
+diff --git a/src/options.cpp b/src/options.cpp
+index 2d487643..e53c2ad5 100644
+--- a/src/options.cpp
++++ b/src/options.cpp
+@@ -23,6 +23,10 @@
+  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+  **************************************************************************/
+ 
++#ifdef __linux__
++#include <unistd.h>
++#endif
++
+ // For compilers that support precompilation, includes "wx/wx.h".
+ #include "wx/wxprec.h"
+ 
+@@ -1079,6 +1083,20 @@ void options::Init(void) {
+ #endif
+ }
+ 
++
++#ifdef __linux__
++void options::CheckDeviceAccess(wxString &path) {
++
++   int r = access(path.mb_str(), R_OK | W_OK);
++   if (r == 0)
++      return;
++   wxString msg = _T("The device selected is not accessible; opencpn\n\
++will likely not be able to use this device as-is. Please look into \n\
++LINUX_DEVICES.md in the data directory to fix.");
++   OCPNMessageBox (this, msg, wxString( _("OpenCPN Warning") ), wxICON_WARNING | wxOK, 60 );
++}
++#endif // __linux__
++
+ size_t options::CreatePanel(const wxString& title) {
+   size_t id = m_pListbook->GetPageCount();
+   /* This is the default empty content for any top tab.
+@@ -5872,6 +5890,9 @@ ConnectionParams* options::CreateConnectionParamsFromSelectedItem(void) {
+   else
+     pConnectionParams->OutputSentenceListType = BLACKLIST;
+   pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
++#ifdef __linux__
++  CheckDeviceAccess(pConnectionParams->Port);
++#endif
+   pConnectionParams->Protocol = PROTO_NMEA0183;
+ 
+   pConnectionParams->bEnabled = m_connection_enabled;
+-- 
+2.17.1
+

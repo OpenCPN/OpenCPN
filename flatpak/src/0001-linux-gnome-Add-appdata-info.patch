@@ -1,0 +1,214 @@
+From f14da8c53ae704cea257038e59857514fd01b77c Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas@nowhere.net>
+Date: Sun, 1 Jul 2018 14:02:28 +0200
+Subject: [PATCH] linux-gnome: Add appdata info.
+
+---
+ CMakeLists.txt             |   2 ++
+ data/opencpn.appdata.xml   |  56 +++++++++++++++++++++++++++++++++++++
+ src/bitmaps/opencpn-64.png | Bin 0 -> 5854 bytes
+ 3 files changed, 58 insertions(+)
+ create mode 100644 data/opencpn.appdata.xml
+ create mode 100644 src/bitmaps/opencpn-64.png
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a1000689..c35c8865 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2005,8 +2005,10 @@ ENDIF(BUNDLE_DOCS MATCHES "ON")
+ 
+ IF(UNIX)
+   INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
++  INSTALL(FILES src/bitmaps/opencpn-64.png DESTINATION ${PREFIX_DATA}/icons/hicolor/64x64/apps RENAME opencpn.png PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+   INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+   INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
++  INSTALL(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+ ENDIF(UNIX)
+ 
+ ENDIF(NOT APPLE)
+diff --git a/data/opencpn.appdata.xml b/data/opencpn.appdata.xml
+new file mode 100644
+index 00000000..54ed21a0
+--- /dev/null
++++ b/data/opencpn.appdata.xml
+@@ -0,0 +1,56 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!-- Copyright 2018 Alec Leamas <leamas@nowhere.net> -->
++<component type="desktop">
++  <id>opencpn.desktop</id>
++  <metadata_license>CC0-1.0</metadata_license>
++  <project_license>GPL-2.0+</project_license>
++  <name>OpenCPN</name>
++  <summary>A concise Chartplotter and Navigation software</summary>
++  <summary xml:lang="sv">Kartplotter och navigationsprogram</summary>
++  <description>
++    <p>
++      A cross-platform ship-borne GUI navigation application made
++      up by a core program, a large set of plugins and freely
++      available charts.  The application is configurable with user
++      icon. The core supports:
++    </p>
++    <ul>
++      <li> GPS/GPDS Position Input and Display</li>
++      <li> BSB Raster Chart display </li>
++      <li> S57 Vector ENC and CM93 chart display </li>
++      <li> AIS Input Decoding and Display</li>
++      <li> Waypoint Autopilot Navigation </li>
++    </ul>
++    <p>
++      Plugin support includes wheather, tactical, annotations and tidal data.
++      Pilot charts can be downloaded from project website at opencpn.org.
++      Other useful add-ons may be found inside the "Download" link at
++      at the same site.
++    </p>
++  </description>
++  <description xml:lang="sv">
++    <p> Plattformsoberoende navigationsprogram som stödjer: </p>
++    <ul>
++      <li> GPS/GPDS positionsdata </li>
++      <li> Presentation av BSB rasterkort. </li>
++      <li> Presentation av S57 och CM93 vektorkort </li>
++      <li> AIS-data </li>
++      <li> Rutter och girpunkter för att styra autopilot </li>
++    </ul>
++    <p>
++      Ytterligare sjökort kan laddas ner från projektets webbplats
++      opencpn.org. Här finns också ytterligare tillägg till programmet, bl
++      a under länken "Download".
++    </p>
++   </description>
++
++  <screenshots>
++    <screenshot type="default">
++      <image>
++        https://upload.wikimedia.org/wikipedia/commons/c/cd/Opencpn-screenshot.png
++      </image>
++    </screenshot>
++  </screenshots>
++  <url type="homepage">https://opencpn.org/</url>
++  <update_contact>https://opencpn.org/flyspray/</update_contact>
++</component>
+diff --git a/src/bitmaps/opencpn-64.png b/src/bitmaps/opencpn-64.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..3679d0fa4d00c0075aca45cd348b5fe4cdd841b1
+GIT binary patch
+literal 5854
+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
+
+literal 0
+HcmV?d00001
+
+-- 
+2.17.0
+
