@@ -113,6 +113,7 @@
 #include "iENCToolbar.h"
 #include "Quilt.h"
 #include "Route.h"
+#include "OCPN_AUIManager.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -660,6 +661,7 @@ bool                      g_bAisTargetList_autosort;
 bool                      g_bGarminHostUpload;
 bool                      g_bFullscreen;
 
+//OCPN_AUIManager           *g_pauimgr;
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
@@ -2120,11 +2122,12 @@ bool MyApp::OnInit()
     g_pi_manager = new PlugInManager( gFrame );
 
     g_pauimgr = new wxAuiManager;
+    //g_pauimgr = new OCPN_AUIManager;
     g_pauidockart= new wxAuiDefaultDockArt;
     g_pauimgr->SetArtProvider(g_pauidockart);
     g_pauimgr->SetDockSizeConstraint(.9, .9);
 
-    g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
+    //g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
     
     g_grad_default = g_pauidockart->GetMetric(wxAUI_DOCKART_GRADIENT_TYPE);
     g_border_color_default = g_pauidockart->GetColour(wxAUI_DOCKART_BORDER_COLOUR );
@@ -2860,7 +2863,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     }
     
     g_pauidockart->SetColour(wxAUI_DOCKART_SASH_COLOUR, wxColour(0,0,0));
-    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 6);
+    g_pauidockart->SetMetric(wxAUI_DOCKART_SASH_SIZE, 20);
     
     g_pauimgr->Update();
     
@@ -3106,6 +3109,8 @@ void MyFrame::CreateCanvasLayout( bool b_useStoredSize )
            g_pauimgr->GetPane( cc ).CaptionVisible( false ).PaneBorder(false).CloseButton(false);
            g_pauimgr->GetPane( cc ).RightDockable(true);
            g_pauimgr->GetPane( cc ).Right();
+           //g_pauimgr->GetPane( cc ).LeftDockable(true);
+           //g_pauimgr->GetPane( cc ).Left();
            ///g_pauimgr->GetPane( cc ).DockFixed( true );
            //g_pauimgr->GetPane( cc ).PaneBorder( true );
 

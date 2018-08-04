@@ -1205,6 +1205,7 @@ SET(HDRS
                 include/FlexHash.h
                 include/iENCToolbar.h
                 include/mbtiles.h
+                include/OCPN_AUIManager.h
 
 )
 
@@ -1300,6 +1301,7 @@ SET(SRCS
                 src/FlexHash.cpp
                 src/iENCToolbar.cpp
                 src/mbtiles.cpp
+                src/OCPN_AUIManager.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}
