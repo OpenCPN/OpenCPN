@@ -373,7 +373,7 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled
     if (envdirs == 0  && dirs.Find(plugin_dir) == wxNOT_FOUND)
         dirs = dirs.Append(_T(":") + plugin_dir);
 #else
-    wxString dirs = plugin_dirs;
+    wxString dirs = plugin_dir;
 #endif
     wxLogMessage( _T("PlugInManager: plugins loading from ") + dirs);
     bool any_dir_loaded = false;
