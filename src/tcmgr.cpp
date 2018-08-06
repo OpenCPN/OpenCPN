@@ -729,10 +729,10 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 
     for(unsigned int i=0 ; i < sources.GetCount() ; i++) {
         TCDataSource *s = new TCDataSource;
-        TC_Error_Code r = s->LoadData(sources.Item(i));
+        TC_Error_Code r = s->LoadData(sources[i]);
         if(r != TC_NO_ERROR) {
             wxString msg;
-            msg.Printf(_T("   Error loading Tide/Currect data source %s "), sources.Item(i).c_str());
+            msg.Printf(_T("   Error loading Tide/Currect data source %s "), sources[i].c_str());
             if( r == TC_FILE_NOT_FOUND)
                 msg += _T("Error Code: TC_FILE_NOT_FOUND");
             else {
@@ -767,7 +767,7 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
 const IDX_entry *TCMgr::GetIDX_entry(int index) const
 {
     if((unsigned int)index < m_Combined_IDX_array.GetCount())
-        return &m_Combined_IDX_array.Item(index);
+        return &m_Combined_IDX_array[index];
     else
         return NULL;
 }
@@ -780,7 +780,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
     tcvalue = 0;
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );    // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];    // point to the index entry
 
     if( !pIDX ) {
         dir = 0;
@@ -822,7 +822,7 @@ extern wxDateTime gTimeSource;
 bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float& dir, bool &bnew_val)
 {
     int ret;
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX ) {
         dir = 0;
@@ -903,7 +903,7 @@ bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
 
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX )
         return false;
@@ -937,7 +937,7 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     tctime = t;
 
     //    Load up this location data
-    IDX_entry *pIDX = &m_Combined_IDX_array.Item( idx );             // point to the index entry
+    IDX_entry *pIDX = &m_Combined_IDX_array[idx];             // point to the index entry
 
     if( !pIDX )
         return;

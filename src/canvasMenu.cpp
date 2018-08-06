@@ -528,7 +528,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
     ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
     for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
-        PlugInMenuItemContainer *pimis = item_array.Item( i );
+        PlugInMenuItemContainer *pimis = item_array[i];
         {
             if( pimis->b_viz ) {
                 wxMenu *submenu = NULL;
@@ -538,7 +538,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                     for( wxMenuItemList::const_iterator it = items.begin(); it != items.end(); ++it ) {
                         int id = -1;
                         for( unsigned int j = 0; j < item_array.GetCount(); j++ ) {
-                            PlugInMenuItemContainer *pimis = item_array.Item( j );
+                            PlugInMenuItemContainer *pimis = item_array[j];
                             if(pimis->pmenu_item == *it)
                                 id = pimis->id;
                         }
@@ -1493,7 +1493,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         ArrayOfPlugInMenuItems item_array = g_pi_manager->GetPluginContextMenuItemArray();
 
         for( unsigned int i = 0; i < item_array.GetCount(); i++ ) {
-            PlugInMenuItemContainer *pimis = item_array.Item( i );
+            PlugInMenuItemContainer *pimis = item_array[i];
             {
                 if( pimis->id == event.GetId() ) {
                     if( pimis->m_pplugin )

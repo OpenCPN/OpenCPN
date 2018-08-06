@@ -1631,12 +1631,12 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             mergeList.Sort( (CMPFUNC_wxArrayTrackArray) CompareTracks );
 
-            targetTrack = mergeList.Item( 0 );
+            targetTrack = mergeList[0];
             lastPoint = targetTrack->GetLastPoint();
 
             for( unsigned int t = 1; t < mergeList.Count(); t++ ) {
 
-                mergeTrack = mergeList.Item( t );
+                mergeTrack = mergeList[t];
 
                 if( mergeTrack->IsRunning() ) {
                     runningSkipped = true;
@@ -1658,7 +1658,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             }
 
             for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
-                Track* deleteTrack = deleteList.Item( i );
+                Track* deleteTrack = deleteList[i];
                 g_pAIS->DeletePersistentTrack( deleteTrack );
                 pConfig->DeleteConfigTrack( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );

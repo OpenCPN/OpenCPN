@@ -227,17 +227,17 @@ Osenc::~Osenc()
 {
     // Free the coverage arrays, if they exist
     SENCFloatPtrArray &AuxPtrArray = getSENCReadAuxPointArray();
-    wxArrayInt &AuxCntArray = getSENCReadAuxPointCountArray();
-    int nCOVREntries = AuxCntArray.GetCount();
+    std::vector<int> &AuxCntArray = getSENCReadAuxPointCountArray();
+    int nCOVREntries = AuxCntArray.size();
         for( unsigned int j = 0; j < (unsigned int) nCOVREntries; j++ ) {
-        free(AuxPtrArray.Item(j));
+        free(AuxPtrArray[j]);
     }
 
     SENCFloatPtrArray &AuxNoPtrArray = getSENCReadNOCOVRPointArray();
-    wxArrayInt &AuxNoCntArray = getSENCReadNOCOVRPointCountArray();
-    int nNoCOVREntries = AuxNoCntArray.GetCount();
+    std::vector<int> &AuxNoCntArray = getSENCReadNOCOVRPointCountArray();
+    int nNoCOVREntries = AuxNoCntArray.size();
     for( unsigned int j = 0; j < (unsigned int) nNoCOVREntries; j++ ) {
-        free(AuxNoPtrArray.Item(j));
+        free(AuxNoPtrArray[j]);
     }
     
     free(pBuffer);
@@ -475,7 +475,7 @@ int Osenc::ingestHeader(const wxString &senc_file_name)
                 _OSENC_COVR_Record_Payload *pPayload = (_OSENC_COVR_Record_Payload*)buf;
                 
                 int point_count = pPayload->point_count;
-                m_AuxCntArray.Add(point_count);
+                m_AuxCntArray.push_back(point_count);
                 
                 float *pf = (float *)malloc(point_count * 2 * sizeof(float));
                 memcpy(pf, &pPayload->point_array, point_count * 2 * sizeof(float));
@@ -494,7 +494,7 @@ int Osenc::ingestHeader(const wxString &senc_file_name)
                 _OSENC_NOCOVR_Record_Payload *pPayload = (_OSENC_NOCOVR_Record_Payload*)buf;
                 
                 int point_count = pPayload->point_count;
-                m_NoCovrCntArray.Add(point_count);
+                m_NoCovrCntArray.push_back(point_count);
                 
                 float *pf = (float *)malloc(point_count * 2 * sizeof(float));
                 memcpy(pf, &pPayload->point_array, point_count * 2 * sizeof(float));
@@ -1087,13 +1087,13 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
 
     // Apply the updates...
     for(unsigned int i_up = 0 ; i_up < m_tmpup_array.GetCount() ; i_up++){
-        wxFileName fn(m_tmpup_array.Item( i_up ));
+        wxFileName fn(m_tmpup_array[i_up]);
         wxString ext = fn.GetExt();
         long n_upd;
         ext.ToLong(&n_upd);
         
         DDFModule oUpdateModule;
-        if(!oUpdateModule.Open( m_tmpup_array.Item( i_up ).mb_str(), FALSE )){
+        if(!oUpdateModule.Open( m_tmpup_array[i_up].mb_str(), FALSE )){
             break;
         }
         int upResult = poReader->ApplyUpdates( &oUpdateModule, n_upd );
@@ -1101,7 +1101,7 @@ int Osenc::ingestCell( OGRS57DataSource *poS57DS, const wxString &FullPath000, c
             break;
         }
         m_last_applied_update = n_upd;
-        last_successful_update_file = m_tmpup_array.Item( i_up );
+        last_successful_update_file = m_tmpup_array[i_up];
     }
 
     
@@ -1697,7 +1697,7 @@ int Osenc::createSenc200(const wxString& FullPath000, const wxString& SENCFileNa
     //  Delete any temporary (working) real and dummy update files,
     //  as well as .000 file created by ValidateAndCountUpdates()
     for( unsigned int iff = 0; iff < m_tmpup_array.GetCount(); iff++ )
-        remove( m_tmpup_array.Item( iff ).mb_str() );
+        remove( m_tmpup_array[iff].mb_str() );
     
     int ret_code = 0;
     
@@ -2589,25 +2589,24 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
             }
             
             //      Reduce the LOD of this linestring
-            wxArrayInt index_keep;
+            std::vector<int> index_keep;
             if(nPoints > 5 && (m_LOD_meters > .01)){
-                index_keep.Clear();
-                index_keep.Add(0);
-                index_keep.Add(nPoints-1);
+                index_keep.push_back(0);
+                index_keep.push_back(nPoints-1);
                 
                 DouglasPeucker(ppd, 0, nPoints-1, m_LOD_meters, &index_keep);
                 //               printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
                 
             }
             else {
-                index_keep.Clear();
+                index_keep.resize(nPoints);
                 for(int i = 0 ; i < nPoints ; i++)
-                    index_keep.Add(i);
+                    index_keep[i] = i;
             }
             
             
             //  Store the point count in the payload
-            int nPointReduced = index_keep.GetCount();
+            int nPointReduced = index_keep.size();
             *(int *)pRun = nPointReduced;
             pRun += sizeof(int);
             
@@ -2628,8 +2627,8 @@ void Osenc::CreateSENCVectorEdgeTableRecord200( Osenc_outstream *stream, S57Read
                 double x = *ppr++;
                 double y = *ppr++;
                 
-                for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-                    if(index_keep.Item(j) == ip){
+                for(unsigned int j=0 ; j < index_keep.size() ; j++){
+                    if(index_keep[j] == ip){
                         *npp_run++ = x;
                         *npp_run++ = y;
                         pRun += 2 * sizeof(float);
@@ -3344,10 +3343,9 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
     
     //  Create arrays to hold geometry objects temporarily
     MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pAuxCntArray = new wxArrayInt;
+    std::vector<int> auxCntArray, noCovrCntArray;
     
     MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pNoCovrCntArray = new wxArrayInt;
     
     //Get the first M_COVR object
     pFeat = GetChartFirstM_COVR( catcov, poReader, poRegistrar );
@@ -3384,11 +3382,11 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
             
             if( catcov == 1 ) {
                 pAuxPtrArray->Add( pf );
-                pAuxCntArray->Add( npt );
+                auxCntArray.push_back( npt );
             }
             else if( catcov == 2 ){
                 pNoCovrPtrArray->Add( pf );
-                pNoCovrCntArray->Add( npt );
+                noCovrCntArray.push_back( npt );
             }
             else
                 free( pf );
@@ -3401,18 +3399,18 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
     
     //    Allocate the storage
     
-    m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = auxCntArray.size();
     
     //    If only one M_COVR,CATCOV=1 object was found,
     //    assign the geometry to the one and only COVR
     
     if( m_nCOVREntries == 1 ) {
         m_pCOVRTablePoints = (int *) malloc( sizeof(int) );
-        *m_pCOVRTablePoints = pAuxCntArray->Item( 0 );
+        *m_pCOVRTablePoints = auxCntArray[0];
         m_pCOVRTable = (float **) malloc( sizeof(float *) );
-        *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
+        *m_pCOVRTable = (float *) malloc( auxCntArray[0] * 2 * sizeof(float) );
         memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
-                pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
+                auxCntArray[0] * 2 * sizeof(float) );
     }
     
     else if( m_nCOVREntries > 1 ) {
@@ -3421,10 +3419,10 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
         
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
-            m_pCOVRTable[j] = (float *) malloc( pAuxCntArray->Item( j ) * 2 * sizeof(float) );
-            memcpy( m_pCOVRTable[j], pAuxPtrArray->Item( j ),
-                    pAuxCntArray->Item( j ) * 2 * sizeof(float) );
+            m_pCOVRTablePoints[j] = auxCntArray[j];
+            m_pCOVRTable[j] = (float *) malloc( auxCntArray[j] * 2 * sizeof(float) );
+            memcpy( m_pCOVRTable[j], pAuxPtrArray->Item(j),
+                    auxCntArray[j] * 2 * sizeof(float) );
         }
     }
     
@@ -3437,7 +3435,7 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
         
         
         //      And for the NoCovr regions
-        m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+        m_nNoCOVREntries = noCovrCntArray.size();
     
     if( m_nNoCOVREntries ) {
         //    Create new NoCOVR entries
@@ -3445,7 +3443,7 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
         m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
         
         for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-            int npoints = pNoCovrCntArray->Item( j );
+            int npoints = noCovrCntArray[j];
             m_pNoCOVRTablePoints[j] = npoints;
             m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
             memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
@@ -3464,9 +3462,7 @@ bool Osenc::CreateCOVRTables( S57Reader *poReader, S57ClassRegistrar *poRegistra
      
     
     delete pAuxPtrArray;
-    delete pAuxCntArray;
     delete pNoCovrPtrArray;
-    delete pNoCovrCntArray;
     
     
     if( 0 == m_nCOVREntries ) {                        // fallback
