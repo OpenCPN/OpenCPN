@@ -35,7 +35,7 @@ extern int m_DialogStyle;
 #define round(x) wxRound(x) //extern int round (double x);
 #endif
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_ABBR, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
 
 //---------------------------------------------------------------------------------------
 //               GRIB Cursor Data  implementation
@@ -154,7 +154,7 @@ void CursorData::PopulateTrackingControls( bool vertical )
     //Get text controls sizing data
     wxFont *font = OCPNGetFont(_("Dialog"), 10);
     int wn, wd, ws,wl;
-    GetTextExtent( _T("abcdefghih"), &wn, NULL, 0, 0, font); // normal width text control size
+    GetTextExtent( _T("abcdefghihjk"), &wn, NULL, 0, 0, font); // normal width text control size
     GetTextExtent( _T("abcdef"), &ws, NULL, 0, 0, font); // short width text control size for direction only
     GetTextExtent( _T("abcdefghijklmopq"), &wd, NULL, 0, 0, font); // long width text control size for double unit wind display
     GetTextExtent( _T("abcdefghijklm"), &wl, NULL, 0, 0, font); // long width text control size for double unit wave display
@@ -320,7 +320,7 @@ void CursorData::UpdateTrackingControls( void )
 
         if( press != GRIB_NOTDEF ) {
             press = m_gparent.m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
-            int p = (m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units == 2) ? 2 : 0;  // if PRESSURE & inHG = two decimals
+            int p = (m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units == 2) ? 2 : 1;  // if PRESSURE & inHG = two decimals
             m_tcPressure->SetValue( wxString::Format(_T("%2.*f ") + m_gparent.m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE), p, ( press )) );
         } else
             m_tcPressure->SetValue( _("N/A") );
@@ -504,6 +504,7 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
             break;
         case GribOverlaySettings::PRESSURE:
             MenuAppend( menu, ISO_LINE, _("Display Isobars"), id );
+            MenuAppend( menu, ISO_ABBR, _("Abbreviated Isobars Numbers"), id );
             MenuAppend( menu, NUMBERS, _("Numbers"), id );
             break;
         case GribOverlaySettings::AIR_TEMPERATURE:
@@ -544,6 +545,9 @@ void CursorData::OnMenuCallBack( wxMouseEvent& event )
                 break;
             case ISO_LINE:
                 m_gparent.m_OverlaySettings.Settings[id].m_bIsoBars = it->IsChecked();
+                break;
+            case ISO_ABBR:
+                m_gparent.m_OverlaySettings.Settings[id].m_bAbbrIsoBarsNumbers = it->IsChecked();
                 break;
             case D_ARROWS:
                 m_gparent.m_OverlaySettings.Settings[id].m_bDirectionArrows = it->IsChecked();
@@ -586,6 +590,8 @@ void CursorData::MenuAppend( wxMenu *menu, int id, wxString label, int setting)
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bBarbedArrows;
     else if( id == ISO_LINE )
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bIsoBars;
+    else if( id == ISO_ABBR )
+        check = m_gparent.m_OverlaySettings.Settings[setting].m_bAbbrIsoBarsNumbers;
     else if( id == D_ARROWS )
         check = m_gparent.m_OverlaySettings.Settings[setting].m_bDirectionArrows;
     else if( id == OVERLAY )

@@ -611,7 +611,7 @@ MMSIListCtrl::~MMSIListCtrl(void) {}
 
 wxString MMSIListCtrl::OnGetItemText(long item, long column) const {
   wxString ret;
-  MMSIProperties* props = g_MMSI_Props_Array.Item(item);
+  MMSIProperties* props = g_MMSI_Props_Array[item];
 
   if (!props) return ret;
   switch (column) {
@@ -704,7 +704,7 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
 
 void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
   int context_item = m_context_item;
-  MMSIProperties* props = g_MMSI_Props_Array.Item(context_item);
+  MMSIProperties* props = g_MMSI_Props_Array[context_item];
 
   if (!props) 
       return;
@@ -866,7 +866,7 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
 
   int selMMSI = wxNOT_FOUND;
   if (selItemID != wxNOT_FOUND)
-    selMMSI = g_MMSI_Props_Array.Item(selItemID)->MMSI;
+    selMMSI = g_MMSI_Props_Array[selItemID]->MMSI;
 
   m_pListCtrlMMSI->SetItemCount(g_MMSI_Props_Array.GetCount());
 
@@ -874,7 +874,7 @@ void MMSI_Props_Panel::UpdateMMSIList(void) {
   long item_sel = wxNOT_FOUND;
   if (selItemID != wxNOT_FOUND && selMMSI != wxNOT_FOUND) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
-      if (g_MMSI_Props_Array.Item(i)->MMSI == selMMSI) {
+      if (g_MMSI_Props_Array[i]->MMSI == selMMSI) {
         item_sel = i;
         break;
       }
@@ -1348,11 +1348,11 @@ void options::CreatePanel_NMEA_Compact(size_t parent, int border_size,
 
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         m_choiceBTDataSources->Clear();
-        m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+        m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
 
         unsigned int i=1;
         while( (i+1) < m_BTscan_results.GetCount()){
-            wxString item1 = m_BTscan_results.Item(i) + _T(";");
+            wxString item1 = m_BTscan_results[i] + _T(";");
             wxString item2 = m_BTscan_results.Item(i+1);
             m_choiceBTDataSources->Append(item1 + item2);
 
@@ -1951,11 +1951,11 @@ void options::CreatePanel_NMEA(size_t parent, int border_size,
 
         m_BTscan_results = g_Platform->getBluetoothScanResults();
         m_choiceBTDataSources->Clear();
-        m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+        m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
 
         unsigned int i=1;
         while( (i+1) < m_BTscan_results.GetCount()){
-            wxString item1 = m_BTscan_results.Item(i) + _T(";");
+            wxString item1 = m_BTscan_results[i] + _T(";");
             wxString item2 = m_BTscan_results.Item(i+1);
             m_choiceBTDataSources->Append(item1 + item2);
 
@@ -2761,7 +2761,7 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
     pActiveChartsList->Clear();
     int nDir = m_CurrentDirList.GetCount();
     for (int i = 0; i < nDir; i++) {
-      dirname = m_CurrentDirList.Item(i).fullpath;
+      dirname = m_CurrentDirList[i].fullpath;
       if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
     }
   }
@@ -3607,7 +3607,7 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
   //  Populate Selection List Control with the contents
   //  of the Global static array
   for (unsigned int id = 0; id < TideCurrentDataSet.Count(); id++) {
-    tcDataSelected->Append(TideCurrentDataSet.Item(id));
+    tcDataSelected->Append(TideCurrentDataSet[id]);
   }
 
   //    Add the "Insert/Remove" buttons
@@ -3668,7 +3668,7 @@ void ChartGroupsUI::CompletePanel(void) {
 
   allAvailableCtl =
       new wxGenericDirCtrl(this, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition,
-                           wxDefaultSize, wxVSCROLL);
+                           wxDefaultSize);
   activeListSizer->Add(allAvailableCtl, 1, wxEXPAND);
 
   m_pAddButton = new wxButton(this, ID_GROUPINSERTDIR, _("Add"));
@@ -3703,7 +3703,7 @@ void ChartGroupsUI::CompletePanel(void) {
   allActiveGroup->SetSizer(page0BoxSizer);
 
   defaultAllCtl = new wxGenericDirCtrl(
-      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL);
+      allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize);
 
   //    Set the Font for the All Active Chart Group tree to be italic, dimmed
   iFont = new wxFont(*dialogFont);
@@ -4504,7 +4504,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 
   wxArrayPtrVoid styles = g_StyleManager->GetArrayOfStyles();
   for (unsigned int i = 0; i < styles.Count(); i++) {
-    ocpnStyle::Style* style = (ocpnStyle::Style*)(styles.Item(i));
+    ocpnStyle::Style* style = (ocpnStyle::Style*)(styles[i]);
     m_itemStyleListBox->Append(style->name);
   }
   m_itemStyleListBox->SetStringSelection(
@@ -5021,7 +5021,7 @@ void options::SetInitialSettings(void) {
   if (pActiveChartsList) {
     pActiveChartsList->Clear();
     for (int i = 0; i < nDir; ++i) {
-        wxString dirname = m_CurrentDirList.Item(i).fullpath;
+        wxString dirname = m_CurrentDirList[i].fullpath;
         if (!dirname.IsEmpty() && pActiveChartsList) {
             pActiveChartsList->Append(dirname);
         }
@@ -5757,7 +5757,7 @@ void options::UpdateDisplayedChartDirList(ArrayOfCDI p) {
     pActiveChartsList->Clear();
     int nDir = p.GetCount();
     for (int i = 0; i < nDir; i++) {
-      dirname = p.Item(i).fullpath;
+      dirname = p[i].fullpath;
       if (!dirname.IsEmpty()) pActiveChartsList->Append(dirname);
     }
   }
@@ -5788,8 +5788,8 @@ void options::UpdateWorkArrayFromTextCtl(void) {
           int nDir = m_CurrentDirList.GetCount();
 
           for (int i = 0; i < nDir; i++) {
-            if (m_CurrentDirList.Item(i).fullpath == dirname) {
-              ChartDirInfo cdi = m_CurrentDirList.Item(i);
+            if (m_CurrentDirList[i].fullpath == dirname) {
+              ChartDirInfo cdi = m_CurrentDirList[i];
               m_pWorkDirList->Add(cdi);
               b_added = TRUE;
               break;
@@ -5977,7 +5977,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     int nDir = m_CurrentDirList.GetCount();
 
     for (int i = 0; i < nDir; i++) {
-      ChartDirInfo cdi = m_CurrentDirList.Item(i);
+      ChartDirInfo cdi = m_CurrentDirList[i];
       m_pWorkDirList->Add(cdi);
     }
   }
@@ -7055,8 +7055,10 @@ void options::OnChartsPageChange(wxListbookEvent& event) {
   }
   else if(1 == i){              // Vector charts panel
     LoadS57();
-    if (!m_bVectorInit)
+    if (!m_bVectorInit){
         SetInitialVectorSettings();
+        UpdateOptionsUnits();  // sets depth values, overriding defaults
+    }
   }
   
   event.Skip();  // Allow continued event processing
@@ -7425,12 +7427,12 @@ ChartGroupArray* ChartGroupsUI::CloneChartGroupArray(ChartGroupArray* s) {
 
     for (unsigned int j = 0; j < psg->m_element_array.GetCount(); j++) {
       ChartGroupElement* pde = new ChartGroupElement;
-      pde->m_element_name = psg->m_element_array.Item(j)->m_element_name;
+      pde->m_element_name = psg->m_element_array[j]->m_element_name;
       for (unsigned int k = 0;
-           k < psg->m_element_array.Item(j)->m_missing_name_array.GetCount();
+           k < psg->m_element_array[j]->m_missing_name_array.GetCount();
            k++) {
         wxString missing_name =
-            psg->m_element_array.Item(j)->m_missing_name_array.Item(k);
+            psg->m_element_array[j]->m_missing_name_array[k];
         pde->m_missing_name_array.Add(missing_name);
       }
       pdg->m_element_array.Add(pde);
@@ -7447,7 +7449,7 @@ void ChartGroupsUI::EmptyChartGroupArray(ChartGroupArray* s) {
     ChartGroup* psg = s->Item(0);
 
     while (psg->m_element_array.GetCount() != 0) {
-      ChartGroupElement* pe = psg->m_element_array.Item(0);
+      ChartGroupElement* pe = psg->m_element_array[0];
       pe->m_missing_name_array.Clear();
       psg->m_element_array.RemoveAt(0);
       delete pe;
@@ -7515,7 +7517,7 @@ void ChartGroupsUI::PopulateTrees(void) {
   wxArrayString dir_array;
   int nDir = m_db_dirs.GetCount();
   for (int i = 0; i < nDir; i++) {
-    wxString dirname = m_db_dirs.Item(i).fullpath;
+    wxString dirname = m_db_dirs[i].fullpath;
     if (!dirname.IsEmpty()) dir_array.Add(dirname);
   }
 
@@ -7528,7 +7530,7 @@ void ChartGroupsUI::PopulateTrees(void) {
   wxArrayString dir_array0;
   int nDir0 = m_db_dirs.GetCount();
   for (int i = 0; i < nDir0; i++) {
-    wxString dirname = m_db_dirs.Item(i).fullpath;
+    wxString dirname = m_db_dirs[i].fullpath;
     if (!dirname.IsEmpty()) dir_array0.Add(dirname);
   }
   PopulateTreeCtrl(defaultAllCtl->GetTreeCtrl(), dir_array0,
@@ -7560,7 +7562,7 @@ void ChartGroupsUI::PopulateTreeCtrl(wxTreeCtrl* ptc,
   wxString dirname;
   int nDir = dir_array.GetCount();
   for (int i = 0; i < nDir; i++) {
-    wxString dirname = dir_array.Item(i);
+    wxString dirname = dir_array[i];
     if (!dirname.IsEmpty()) {
       wxDirItemData* dir_item = new wxDirItemData(dirname, dirname, TRUE);
       wxTreeItemId id = ptc->AppendItem(m_rootId, dirname, 0, -1, dir_item);
@@ -7578,7 +7580,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
   wxString insert_candidate = allAvailableCtl->GetPath();
   if (!insert_candidate.IsEmpty()) {
     if (m_DirCtrlArray.GetCount()) {
-      wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+      wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
       ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
       if (pDirCtrl) {
         wxTreeCtrl* ptree = pDirCtrl->GetTreeCtrl();
@@ -7613,7 +7615,7 @@ void ChartGroupsUI::OnInsertChartItem(wxCommandEvent& event) {
 
 void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
   if (m_DirCtrlArray.GetCount()) {
-    wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+    wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
     ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
 
     if (pDirCtrl) {
@@ -7629,11 +7631,11 @@ void ChartGroupsUI::OnRemoveChartItem(wxCommandEvent& event) {
               FindGroupBranch(pGroup, ptree, id, &branch_adder);
           if (group_item_index >= 0) {
             ChartGroupElement* pelement =
-                pGroup->m_element_array.Item(group_item_index);
+                pGroup->m_element_array[group_item_index];
             bool b_duplicate = FALSE;
             for (unsigned int k = 0;
                  k < pelement->m_missing_name_array.GetCount(); k++) {
-              if (pelement->m_missing_name_array.Item(k) == sel_item) {
+              if (pelement->m_missing_name_array[k] == sel_item) {
                 b_duplicate = TRUE;
                 break;
               }
@@ -7760,9 +7762,9 @@ int ChartGroupsUI::FindGroupBranch(ChartGroup* pGroup, wxTreeCtrl* ptree,
   unsigned int target_item_index = -1;
 
   for (unsigned int i = 0; i < pGroup->m_element_array.GetCount(); i++) {
-    wxString target = pGroup->m_element_array.Item(i)->m_element_name;
+    wxString target = pGroup->m_element_array[i]->m_element_name;
     if (branch_name == target) {
-      ChartGroupElement* target_element = pGroup->m_element_array.Item(i);
+      ChartGroupElement* target_element = pGroup->m_element_array[i];
       target_item_index = i;
       break;
     }
@@ -7777,7 +7779,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   wxTreeItemId node = event.GetItem();
 
   if (m_GroupSelectedPage <= 0) return;
-  wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray.Item(m_GroupSelectedPage));
+  wxGenericDirCtrl* pDirCtrl = (m_DirCtrlArray[m_GroupSelectedPage]);
   ChartGroup* pGroup = m_pGroupArray->Item(m_GroupSelectedPage - 1);
   if (!pDirCtrl) return;
 
@@ -7786,7 +7788,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
   int target_item_index = FindGroupBranch(pGroup, ptree, node, &branch_adder);
   if (target_item_index < 0) return;
   ChartGroupElement* target_element =
-      pGroup->m_element_array.Item(target_item_index);
+      pGroup->m_element_array[target_item_index];
   wxString branch_name = target_element->m_element_name;
 
   // Walk the children of the expanded node, marking any items which appear in
@@ -7804,7 +7806,7 @@ void ChartGroupsUI::OnNodeExpanded(wxTreeEvent& event) {
 
     for (unsigned int k = 0;
          k < target_element->m_missing_name_array.GetCount(); k++) {
-      if (target_element->m_missing_name_array.Item(k) == target_string) {
+      if (target_element->m_missing_name_array[k] == target_string) {
         ptree->SetItemTextColour(child, wxColour(128, 128, 128));
         break;
       }
@@ -7824,7 +7826,7 @@ void ChartGroupsUI::BuildNotebookPages(ChartGroupArray* pGroupArray)
     wxString itemname;
     int nItems = pGroup->m_element_array.GetCount();
     for (int i = 0; i < nItems; i++) {
-      wxString itemname = pGroup->m_element_array.Item(i)->m_element_name;
+      wxString itemname = pGroup->m_element_array[i]->m_element_name;
       if (!itemname.IsEmpty()) {
         wxDirItemData* dir_item = new wxDirItemData(itemname, itemname, TRUE);
         wxTreeItemId id =
@@ -7908,12 +7910,12 @@ void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
   int nSel = tcDataSelected->GetSelections(sels);
   wxArrayString a;
   for (int i = 0; i < nSel; i++) {
-    a.Add(tcDataSelected->GetString(sels.Item(i)));
+    a.Add(tcDataSelected->GetString(sels[i]));
   }
 
   for (unsigned int i = 0; i < a.Count(); i++) {
-    int b = tcDataSelected->FindString(a.Item(i));
-    wxCharBuffer buf = a.Item(i).ToUTF8();
+    int b = tcDataSelected->FindString(a[i]);
+    wxCharBuffer buf = a[i].ToUTF8();
     tcDataSelected->Delete(b);
   }
 #else
@@ -7947,11 +7949,11 @@ void options::onBTScanTimer(wxTimerEvent& event) {
     m_BTscan_results = g_Platform->getBluetoothScanResults();
 
     m_choiceBTDataSources->Clear();
-    m_choiceBTDataSources->Append(m_BTscan_results.Item(0));  // scan status
+    m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
 
     unsigned int i = 1;
     while ((i + 1) < m_BTscan_results.GetCount()) {
-      wxString item1 = m_BTscan_results.Item(i) + _T(";");
+      wxString item1 = m_BTscan_results[i] + _T(";");
       wxString item2 = m_BTscan_results.Item(i + 1);
       m_choiceBTDataSources->Append(item1 + item2);
 

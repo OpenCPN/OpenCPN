@@ -88,6 +88,7 @@ struct GribOverlaySettings
 		bool m_bBarbArrFixSpac;
 		int m_iBarbArrSpacing;
         bool m_bIsoBars;
+        bool m_bAbbrIsoBarsNumbers;
         bool m_iIsoBarVisibility;
         double m_iIsoBarSpacing;
         bool m_bDirectionArrows;

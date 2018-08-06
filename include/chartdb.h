@@ -120,7 +120,7 @@ public:
       ChartBase *OpenStackChartConditional(ChartStack *ps, int start_index, bool bLargest, ChartTypeEnum New_Type, ChartFamilyEnum New_Family_Fallback);
 
       wxArrayPtrVoid *GetChartCache(void) { return pChartCache; }
-      ArrayOfInts GetCSArray(ChartStack *ps);
+      std::vector<int> GetCSArray(ChartStack *ps);
 
       int GetStackEntry(ChartStack *ps, wxString fp);
       bool IsChartInCache(int dbindex);

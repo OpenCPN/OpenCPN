@@ -1586,12 +1586,12 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             mergeList.Sort( (CMPFUNC_wxArrayTrackArray) CompareTracks );
 
-            targetTrack = mergeList.Item( 0 );
+            targetTrack = mergeList[0];
             lastPoint = targetTrack->GetLastPoint();
 
             for( unsigned int t = 1; t < mergeList.Count(); t++ ) {
 
-                mergeTrack = mergeList.Item( t );
+                mergeTrack = mergeList[t];
 
                 if( mergeTrack->IsRunning() ) {
                     runningSkipped = true;
@@ -1601,7 +1601,6 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                 for(int i=0; i<mergeTrack->GetnPoints(); i++) {
                     tPoint = mergeTrack->GetPoint(i);
                     newPoint = new TrackPoint( tPoint->m_lat, tPoint->m_lon, tPoint->GetCreateTime() );
-                    newPoint->m_GPXTrkSegNo = 1;
 
                     targetTrack->AddPoint( newPoint );
 
@@ -1614,7 +1613,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             }
 
             for( unsigned int i = 0; i < deleteList.Count(); i++ ) {
-                Track* deleteTrack = deleteList.Item( i );
+                Track* deleteTrack = deleteList[i];
                 g_pAIS->DeletePersistentTrack( deleteTrack );
                 pConfig->DeleteConfigTrack( deleteTrack );
                 g_pRouteMan->DeleteTrack( deleteTrack );

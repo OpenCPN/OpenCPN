@@ -78,8 +78,6 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE, D_ARROWS, OVERLAY, NUMBERS, PARTICLES};
-
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {
@@ -949,12 +947,11 @@ void GRIBUICtrlBar::OnRequest(  wxCommandEvent& event )
     if( m_tPlayStop.IsRunning() ) return;                            // do nothing when play back is running !
 
     /*if there is one instance of the dialog already visible, do nothing*/
-    if(pReq_Dialog){
-        if( pReq_Dialog->IsShown() ) return;
-    }
+    if(pReq_Dialog && pReq_Dialog->IsShown() ) return;
 
     /*a second click without selection cancel the process*/
     if( m_ZoneSelMode == DRAW_SELECTION ) {
+        assert(pReq_Dialog);
         m_ZoneSelMode = START_SELECTION;
         pReq_Dialog->StopGraphicalZoneSelection();
         SetRequestBitmap( m_ZoneSelMode );

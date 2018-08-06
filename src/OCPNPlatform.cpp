@@ -764,9 +764,9 @@ wxString OCPNPlatform::ChangeLocale(wxString &newLocaleID, wxLocale *presentLoca
         
         for(unsigned int i=0 ; i < g_locale_catalog_array.GetCount() ; i++){
             wxString imsg = _T("Loading catalog for:  ");
-            imsg += g_locale_catalog_array.Item(i);
+            imsg += g_locale_catalog_array[i];
             wxLogMessage( imsg );
-            locale->AddCatalog( g_locale_catalog_array.Item(i) );
+            locale->AddCatalog( g_locale_catalog_array[i] );
         }
         
         
@@ -1153,7 +1153,6 @@ wxString &OCPNPlatform::GetPluginDir()
 #ifdef __WXMSW__
         m_PluginsDir += _T("\\plugins");             // Windows: {exe dir}/plugins
 #endif
-        
         if( g_bportable ) {
             m_PluginsDir = GetHomeDir();
             m_PluginsDir += _T("plugins");
@@ -1164,7 +1163,6 @@ wxString &OCPNPlatform::GetPluginDir()
         wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
         fdir.RemoveLastDir();
         m_PluginsDir = fdir.GetPath();
-        
 #endif        
         
         

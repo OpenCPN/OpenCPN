@@ -1263,10 +1263,10 @@ bool glTextureManager::TextureCrunch(double factor)
     
     ChartPathHashTexfactType::iterator it0;
     for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        wxString chart_full_path = it0->first;
         glTexFactory *ptf = it0->second;
         if(!ptf)
             continue;
+        wxString chart_full_path = ptf->GetChartPath();
         
         bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor *hysteresis;
         if(!bGLMemCrunch)
@@ -1384,8 +1384,14 @@ void glTextureManager::BuildCompressedCache()
         /* skip if not kap */
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
-        if(chart_type != CHART_TYPE_KAP)
-            continue;
+        if(chart_type == CHART_TYPE_PLUGIN){
+            if(cte.GetChartFamily() != CHART_FAMILY_RASTER)
+                continue;
+        }
+        else{
+            if(chart_type != CHART_TYPE_KAP)
+                continue;
+        }
         
         wxString CompressedCacheFilePath = CompressedCachePath(ChartData->GetDBChartFileName(i));
         wxFileName fn(CompressedCacheFilePath);
@@ -1413,7 +1419,7 @@ void glTextureManager::BuildCompressedCache()
     ArrayOfCompressTargets ct_array;
     for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
 
-        int i = idx_sorted_by_distance.Item(j);
+        int i = idx_sorted_by_distance[j];
 
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         double distance = chart_dist(i);
@@ -1482,9 +1488,9 @@ void glTextureManager::BuildCompressedCache()
 
     for( m_jcnt = 0; m_jcnt<ct_array.GetCount(); m_jcnt++) {
 
-        wxString filename = ct_array.Item(m_jcnt).chart_path;
+        wxString filename = ct_array[m_jcnt].chart_path;
         wxString CompressedCacheFilePath = CompressedCachePath(filename);
-        double distance = ct_array.Item(m_jcnt).distance;
+        double distance = ct_array[m_jcnt].distance;
 
         ChartBase *pchart = ChartData->OpenChartFromDBAndLock( filename, FULL_INIT );
         if(!pchart) /* probably a corrupt chart */

@@ -404,7 +404,6 @@ wxCurlBase::wxCurlBase(const wxString& szURL /*= wxEmptyString*/,
                     long flags /*=wxCURL_DEFAULT_FLAGS*/)
  : m_pCURL(NULL),
 m_bAbortHungTransfer(false),
-m_szBaseURL(wxCURL_STRING2BUF(szURL)),
 m_szCurrFullURL(wxCURL_STRING2BUF(szURL)),
 m_szUsername(wxCURL_STRING2BUF(szUserName)),
 m_szPassword(wxCURL_STRING2BUF(szPassword)),
@@ -632,7 +631,7 @@ std::string wxCurlBase::GetBaseURL() const
 
 void wxCurlBase::SetURL(const wxString& szRelativeURL)
 {
-    wxString str = wxCURL_BUF2STRING(m_szCurrFullURL) + szRelativeURL;
+    wxString str = wxCURL_BUF2STRING(m_szBaseURL) + szRelativeURL;
     m_szCurrFullURL = wxCURL_STRING2BUF(str);
 }
 

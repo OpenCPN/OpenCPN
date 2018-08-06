@@ -373,9 +373,9 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
                                        int flags ) const
 {
     
-    int offset_x = bmpArray.Item(item).GetWidth();
-    int bmpHeight = bmpArray.Item(item).GetHeight();
-    dc.DrawBitmap(bmpArray.Item(item), rect.x, rect.y + (rect.height - bmpHeight)/2, true);
+    int offset_x = bmpArray[item].GetWidth();
+    int bmpHeight = bmpArray[item].GetHeight();
+    dc.DrawBitmap(bmpArray[item], rect.x, rect.y + (rect.height - bmpHeight)/2, true);
     
     if ( flags & wxODCB_PAINTING_CONTROL )
     {
@@ -405,7 +405,7 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
 
 wxCoord OCPNIconCombo::OnMeasureItem( size_t item ) const
 {
-    int bmpHeight = bmpArray.Item(item).GetHeight();
+    int bmpHeight = bmpArray[item].GetHeight();
     
     return wxMax(itemHeight, bmpHeight);
 }
@@ -3034,7 +3034,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 //        m_bitmapIcon->SetBitmap( *m_pRoutePoint->GetIconBitmap() );
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowListNode *node = kids.Item(i);
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -3183,7 +3183,7 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
     
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
         win->Hide();    
     }

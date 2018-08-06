@@ -1238,4 +1238,25 @@ extern DECL_EXP int PlugInGetMinAvailableGshhgQuality();
 extern DECL_EXP int PlugInGetMaxAvailableGshhgQuality();
 
 extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
+
+// API 1.16?
+//
+/**
+ * Return the plugin data directory for a given directory name.
+ *
+ * On Linux, the returned data path is an existing directory ending in
+ * "opencpn/plugins/<plugin_name>" where the last part is the plugin_name
+ * argument. The prefix part is one of the directories listed in the
+ * environment variable XDG_DATA_DIRS, by default
+ * ~/.local/share:/usr/local/share:/usr/share.
+ *
+ * On other platforms, the returned value is GetSharedDataDir() +
+ * "/opencpn/plugins/" + plugin_name (with native path separators)
+ * if that path exists.
+ *
+ * Return "" if no existing directory is found.
+ */
+extern DECL_EXP wxString GetPluginDataDir(const char* plugin_name);
+
+
 #endif //_PLUGIN_H_
