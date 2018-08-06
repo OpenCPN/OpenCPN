@@ -10773,7 +10773,7 @@ int paternAdd (const char* patern) {
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
  char* res = NULL;
- char  devname [255];
+ char  devname [272];
  int   fd, ind;
 
   // search if devname fits with searched paterns

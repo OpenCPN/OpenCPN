@@ -1153,7 +1153,6 @@ wxString &OCPNPlatform::GetPluginDir()
 #ifdef __WXMSW__
         m_PluginsDir += _T("\\plugins");             // Windows: {exe dir}/plugins
 #endif
-        
         if( g_bportable ) {
             m_PluginsDir = GetHomeDir();
             m_PluginsDir += _T("plugins");
@@ -1164,7 +1163,6 @@ wxString &OCPNPlatform::GetPluginDir()
         wxFileName fdir = wxFileName::DirName(std_path.GetUserConfigDir());
         fdir.RemoveLastDir();
         m_PluginsDir = fdir.GetPath();
-        
 #endif        
         
         
