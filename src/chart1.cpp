@@ -661,8 +661,8 @@ bool                      g_bAisTargetList_autosort;
 bool                      g_bGarminHostUpload;
 bool                      g_bFullscreen;
 
-//OCPN_AUIManager           *g_pauimgr;
-wxAuiManager              *g_pauimgr;
+OCPN_AUIManager           *g_pauimgr;
+//wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -2121,8 +2121,8 @@ bool MyApp::OnInit()
 //  Initialize the Plugin Manager
     g_pi_manager = new PlugInManager( gFrame );
 
-    g_pauimgr = new wxAuiManager;
-    //g_pauimgr = new OCPN_AUIManager;
+    //g_pauimgr = new wxAuiManager;
+    g_pauimgr = new OCPN_AUIManager;
     g_pauidockart= new wxAuiDefaultDockArt;
     g_pauimgr->SetArtProvider(g_pauidockart);
     g_pauimgr->SetDockSizeConstraint(.9, .9);

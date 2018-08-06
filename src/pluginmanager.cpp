@@ -77,6 +77,7 @@
 #include "toolbar.h"
 #include "Track.h"
 #include "Route.h"
+#include "OCPN_AUIManager.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -88,7 +89,7 @@
 
 extern MyConfig        *pConfig;
 extern AIS_Decoder     *g_pAIS;
-extern wxAuiManager    *g_pauimgr;
+extern OCPN_AUIManager  *g_pauimgr;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3,0,0)

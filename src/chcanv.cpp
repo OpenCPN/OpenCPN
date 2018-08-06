@@ -87,6 +87,7 @@
 #include "wx28compat.h"
 #include "Track.h"
 #include "Route.h"
+#include "OCPN_AUIManager.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -265,7 +266,7 @@ extern wxString         g_sAIS_Alert_Sound_File;
 
 extern PlugInManager    *g_pi_manager;
 
-extern wxAuiManager      *g_pauimgr;
+extern OCPN_AUIManager  *g_pauimgr;
 
 extern bool             g_bopengl;
 extern bool             g_bdisable_opengl;

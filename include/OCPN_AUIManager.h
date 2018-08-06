@@ -1,3 +1,27 @@
+/***************************************************************************
+ * 
+ * Project:  OpenCPN
+ * Purpose:  OCPN_AUIManager
+ * Author:   David Register
+ *
+ ***************************************************************************
+ *   Copyright (C) 2018 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef WX_PRECOMP
     #include "wx/wx.h"
@@ -12,19 +36,10 @@ public:
     ~OCPN_AUIManager();
  
     void OnMotionx(wxMouseEvent& event);
-
-    //void OnPaint(wxPaintEvent& evt){ wxAuiManager::OnPaint(evt); }
-    //void OnEraseBackground(wxEraseEvent& evt){ wxAuiManager::OnEraseBackground(evt); }
-//     void OnSize(wxSizeEvent& evt);
-//     void OnSetCursor(wxSetCursorEvent& evt);
-//     void OnLeftDown(wxMouseEvent& evt);
-//     void OnLeftUp(wxMouseEvent& evt);
-//     void OnMotion(wxMouseEvent& evt);
-//     void OnCaptureLost(wxMouseCaptureLostEvent& evt);
-//     void OnLeaveWindow(wxMouseEvent& evt);
-//     void OnChildFocus(wxChildFocusEvent& evt);
-//     void OnHintFadeTimer(wxTimerEvent& evt);
-//     void OnFindManager(wxAuiManagerEvent& evt);
+    bool DoEndResizeAction(wxMouseEvent& event);
+    void OnLeftUp(wxMouseEvent& event);
+    
+    wxRect  m_0actionHintRect;
     
     DECLARE_EVENT_TABLE()
     

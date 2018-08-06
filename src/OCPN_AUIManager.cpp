@@ -1,3 +1,27 @@
+/***************************************************************************
+ * 
+ * Project:  OpenCPN
+ * Purpose:  OCPN_AUIManager
+ * Author:   David Register
+ *
+ ***************************************************************************
+ *   Copyright (C) 2018 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef WX_PRECOMP
     #include "wx/wx.h"
@@ -5,8 +29,11 @@
 
 #include <OCPN_AUIManager.h>
 
-//static void DrawResizeHint(wxDC& dc, const wxRect& rect);
-//extern bool wxAuiManager_HasLiveResize(wxAuiManager& manager);
+#ifdef __WXMSW__
+#include "wx/msw/wrapwin.h"
+#include "wx/msw/private.h"
+#include "wx/msw/dc.h"
+#endif
 
 
 // -- static utility functions --
@@ -20,7 +47,7 @@ static wxBitmap wxOPaneCreateStippleBitmap()
 
 static void ODrawResizeHint(wxDC& dc, const wxRect& rect)
 {
-#if 0    
+#if 1    
     wxBitmap stipple = wxOPaneCreateStippleBitmap();
     wxBrush brush(stipple);
     dc.SetBrush(brush);
@@ -36,11 +63,21 @@ static void ODrawResizeHint(wxDC& dc, const wxRect& rect)
 #endif
 }
 
+// Convenience function
+bool OAuiManager_HasLiveResize(wxAuiManager& manager)
+{
+    // With Core Graphics on Mac, it's not possible to show sash feedback,
+    // so we'll always use live update instead.
+#if defined(__WXMAC__)
+    wxUnusedVar(manager);
+    return true;
+#else
+    return (manager.GetFlags() & wxAUI_MGR_LIVE_RESIZE) == wxAUI_MGR_LIVE_RESIZE;
+#endif
+}
+
 // OCPN_AUIManager Implementation
 
-// BEGIN_EVENT_TABLE(OCPN_AUIManager, wxEvtHandler)
- //EVT_MOTION(OCPN_AUIManager::OnMotionx)
-// END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(OCPN_AUIManager, wxEvtHandler)
 EVT_AUI_PANE_BUTTON(wxAuiManager::OnPaneButton)
@@ -51,7 +88,7 @@ EVT_SIZE(OCPN_AUIManager::OnSize)
 EVT_SET_CURSOR(OCPN_AUIManager::OnSetCursor)
 EVT_LEFT_DOWN(OCPN_AUIManager::OnLeftDown)
 EVT_LEFT_UP(OCPN_AUIManager::OnLeftUp)
-EVT_MOTION(OCPN_AUIManager::OnMotion)
+EVT_MOTION(OCPN_AUIManager::OnMotionx)
 EVT_LEAVE_WINDOW(OCPN_AUIManager::OnLeaveWindow)
 EVT_MOUSE_CAPTURE_LOST(OCPN_AUIManager::OnCaptureLost)
 EVT_CHILD_FOCUS(OCPN_AUIManager::OnChildFocus)
@@ -102,10 +139,7 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
             else
                 pos.x = wxMax(0, event.m_x - m_actionOffset.x);
             
-            if (0/*wxAuiManager_HasLiveResize(*this)*/)
-            {
- 
-#if 1                
+
                 wxSize client_size = m_frame->GetClientSize();
                 int used_width = 0, used_height = 0;
                 
@@ -123,39 +157,48 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
                     {
                         used_width += dock.size;
                     }
-//                     if (dock.resizable)
-//                         used_width += sashSize;
+                    //                     if (dock.resizable)
+                    //                         used_width += sashSize;
                 }
                 
-                //printf("dock width:  %d          frame width:  %d\n", used_width, client_size.x);
-#endif
+            if (OAuiManager_HasLiveResize(*this))
+            {
+ 
 
                 m_frame->ReleaseMouse();
-                if(used_width < client_size.x * 9 / 10)
+                if( (used_width < client_size.x * 9 / 10) &&  (used_width > client_size.x * 1 / 10) )
                     DoEndResizeAction(event);
                 
                 m_frame->CaptureMouse();
             }
             else
             {
-                wxRect rect(m_frame->ClientToScreen(pos),
-                            m_actionPart->rect.GetSize());
+                m_frame->ReleaseMouse();
+                
+                wxRect rect(m_frame->ClientToScreen(pos), m_actionPart->rect.GetSize());
                 wxScreenDC dc;
                 
-                if (!m_actionHintRect.IsEmpty())
+                if (!m_0actionHintRect.IsEmpty())
                 {
                     // remove old resize hint
-                    ODrawResizeHint(dc, m_actionHintRect);
-                    m_actionHintRect = wxRect();
+                    ODrawResizeHint(dc, m_0actionHintRect);
+                    m_0actionHintRect = wxRect();
                 }
+ 
+                wxRect frameScreenRect = m_frame->GetScreenRect();
+                
+                rect.x = wxMax(rect.x, frameScreenRect.width * 1 / 10);
+                rect.x = wxMin(rect.x, frameScreenRect.width * 9 / 10);
                 
                 // draw new resize hint, if it's inside the managed frame
-                wxRect frameScreenRect = m_frame->GetScreenRect();
-                if (frameScreenRect.Contains(rect))
+                if (1/*frameScreenRect.Contains(rect)*/)
                 {
                     ODrawResizeHint(dc, rect);
-                    m_actionHintRect = rect;
+                    m_0actionHintRect = rect;
                 }
+                
+                m_frame->CaptureMouse();
+                
             }
         }
     }
@@ -163,144 +206,360 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
         OnMotion(event);
     }
     
-#if 0    
-    else if (m_action == actionClickCaption)
+}
+
+bool OCPN_AUIManager::DoEndResizeAction(wxMouseEvent& event)
+{
+    // resize the dock or the pane
+    if (m_actionPart && m_actionPart->type==wxAuiDockUIPart::typeDockSizer)
     {
-        int drag_x_threshold = wxSystemSettings::GetMetric(wxSYS_DRAG_X);
-        int drag_y_threshold = wxSystemSettings::GetMetric(wxSYS_DRAG_Y);
-        
-        // caption has been clicked.  we need to check if the mouse
-        // is now being dragged. if it is, we need to change the
-        // mouse action to 'drag'
-        if (m_actionPart &&
-            (abs(event.m_x - m_actionStart.x) > drag_x_threshold ||
-            abs(event.m_y - m_actionStart.y) > drag_y_threshold))
+        // first, we must calculate the maximum size the dock may be
+        int sashSize = m_art->GetMetric(wxAUI_DOCKART_SASH_SIZE);
+
+        int used_width = 0, used_height = 0;
+
+        wxSize client_size = m_frame->GetClientSize();
+
+        size_t dock_i, dock_count = m_docks.GetCount();
+        for (dock_i = 0; dock_i < dock_count; ++dock_i)
         {
-            wxAuiPaneInfo* paneInfo = m_actionPart->pane;
-            
-            if (!paneInfo->IsToolbar())
+            wxAuiDockInfo& dock = m_docks.Item(dock_i);
+            if (dock.dock_direction == wxAUI_DOCK_TOP ||
+                dock.dock_direction == wxAUI_DOCK_BOTTOM)
             {
-                if ((m_flags & wxAUI_MGR_ALLOW_FLOATING) &&
-                    paneInfo->IsFloatable())
-                {
-                    m_action = actionDragFloatingPane;
-                    
-                    // set initial float position
-                    wxPoint pt = m_frame->ClientToScreen(event.GetPosition());
-                    paneInfo->floating_pos = wxPoint(pt.x - m_actionOffset.x,
-                                                     pt.y - m_actionOffset.y);
-                    
-                    // float the window
-                    if (paneInfo->IsMaximized())
-                        RestorePane(*paneInfo);
-                    paneInfo->Float();
-                    Update();
-                    
-                    m_actionWindow = paneInfo->frame;
-                    
-                    // action offset is used here to make it feel "natural" to the user
-                    // to drag a docked pane and suddenly have it become a floating frame.
-                    // Sometimes, however, the offset where the user clicked on the docked
-                    // caption is bigger than the width of the floating frame itself, so
-                    // in that case we need to set the action offset to a sensible value
-                    wxSize frame_size = m_actionWindow->GetSize();
-                    if (frame_size.x <= m_actionOffset.x)
-                        m_actionOffset.x = 30;
-                }
+                used_height += dock.size;
+            }
+            if (dock.dock_direction == wxAUI_DOCK_LEFT ||
+                dock.dock_direction == wxAUI_DOCK_RIGHT)
+            {
+                used_width += dock.size;
+            }
+            if (dock.resizable)
+                used_width += sashSize;
+        }
+
+
+        int available_width = client_size.GetWidth() - used_width;
+        int available_height = client_size.GetHeight() - used_height;
+
+
+#if wxUSE_STATUSBAR
+        // if there's a status control, the available
+        // height decreases accordingly
+        if (wxDynamicCast(m_frame, wxFrame))
+        {
+            wxFrame* frame = static_cast<wxFrame*>(m_frame);
+            wxStatusBar* status = frame->GetStatusBar();
+            if (status)
+            {
+                wxSize status_client_size = status->GetClientSize();
+                available_height -= status_client_size.GetHeight();
+            }
+        }
+#endif
+
+        wxRect& rect = m_actionPart->dock->rect;
+
+        wxPoint new_pos(event.m_x - m_actionOffset.x,
+            event.m_y - m_actionOffset.y);
+        int new_size, old_size = m_actionPart->dock->size;
+
+        switch (m_actionPart->dock->dock_direction)
+        {
+        case wxAUI_DOCK_LEFT:
+            new_size = new_pos.x - rect.x;
+            if (new_size-old_size > available_width)
+                new_size = old_size+available_width;
+            m_actionPart->dock->size = new_size;
+            break;
+        case wxAUI_DOCK_TOP:
+            new_size = new_pos.y - rect.y;
+            if (new_size-old_size > available_height)
+                new_size = old_size+available_height;
+            m_actionPart->dock->size = new_size;
+            break;
+        case wxAUI_DOCK_RIGHT:
+            new_size = rect.x + rect.width - new_pos.x -
+                       m_actionPart->rect.GetWidth();
+            if (new_size-old_size > available_width)
+                new_size = old_size+available_width;
+            m_actionPart->dock->size = new_size;
+            
+            m_actionPart->dock->size = wxMax(m_actionPart->dock->size, client_size.x * 1 / 10);
+            m_actionPart->dock->size = wxMin(m_actionPart->dock->size, client_size.x * 9 / 10);
+            
+            break;
+        case wxAUI_DOCK_BOTTOM:
+            new_size = rect.y + rect.height -
+                new_pos.y - m_actionPart->rect.GetHeight();
+            if (new_size-old_size > available_height)
+                new_size = old_size+available_height;
+            m_actionPart->dock->size = new_size;
+            break;
+        }
+
+        Update();
+        Repaint(NULL);
+    }
+    else if (m_actionPart &&
+        m_actionPart->type == wxAuiDockUIPart::typePaneSizer)
+    {
+        wxAuiDockInfo& dock = *m_actionPart->dock;
+        wxAuiPaneInfo& pane = *m_actionPart->pane;
+
+        int total_proportion = 0;
+        int dock_pixels = 0;
+        int new_pixsize = 0;
+
+        int caption_size = m_art->GetMetric(wxAUI_DOCKART_CAPTION_SIZE);
+        int pane_borderSize = m_art->GetMetric(wxAUI_DOCKART_PANE_BORDER_SIZE);
+        int sashSize = m_art->GetMetric(wxAUI_DOCKART_SASH_SIZE);
+
+        wxPoint new_pos(event.m_x - m_actionOffset.x,
+            event.m_y - m_actionOffset.y);
+
+        // determine the pane rectangle by getting the pane part
+        wxAuiDockUIPart* pane_part = GetPanePart(pane.window);
+        wxASSERT_MSG(pane_part,
+            wxT("Pane border part not found -- shouldn't happen"));
+
+        // determine the new pixel size that the user wants;
+        // this will help us recalculate the pane's proportion
+        if (dock.IsHorizontal())
+            new_pixsize = new_pos.x - pane_part->rect.x;
+        else
+            new_pixsize = new_pos.y - pane_part->rect.y;
+
+        // determine the size of the dock, based on orientation
+        if (dock.IsHorizontal())
+            dock_pixels = dock.rect.GetWidth();
+        else
+            dock_pixels = dock.rect.GetHeight();
+
+        // determine the total proportion of all resizable panes,
+        // and the total size of the dock minus the size of all
+        // the fixed panes
+        int i, dock_pane_count = dock.panes.GetCount();
+        int pane_position = -1;
+        for (i = 0; i < dock_pane_count; ++i)
+        {
+            wxAuiPaneInfo& p = *dock.panes.Item(i);
+            if (p.window == pane.window)
+                pane_position = i;
+
+            // while we're at it, subtract the pane sash
+            // width from the dock width, because this would
+            // skew our proportion calculations
+            if (i > 0)
+                dock_pixels -= sashSize;
+
+            // also, the whole size (including decorations) of
+            // all fixed panes must also be subtracted, because they
+            // are not part of the proportion calculation
+            if (p.IsFixed())
+            {
+                if (dock.IsHorizontal())
+                    dock_pixels -= p.best_size.x;
+                else
+                    dock_pixels -= p.best_size.y;
             }
             else
             {
-                m_action = actionDragToolbarPane;
-                m_actionWindow = paneInfo->window;
+                total_proportion += p.dock_proportion;
             }
         }
+
+        // new size can never be more than the number of dock pixels
+        if (new_pixsize > dock_pixels)
+            new_pixsize = dock_pixels;
+
+
+        // find a pane in our dock to 'steal' space from or to 'give'
+        // space to -- this is essentially what is done when a pane is
+        // resized; the pane should usually be the first non-fixed pane
+        // to the right of the action pane
+        int borrow_pane = -1;
+        for (i = pane_position+1; i < dock_pane_count; ++i)
+        {
+            wxAuiPaneInfo& p = *dock.panes.Item(i);
+            if (!p.IsFixed())
+            {
+                borrow_pane = i;
+                break;
+            }
+        }
+
+
+        // demand that the pane being resized is found in this dock
+        // (this assert really never should be raised)
+        wxASSERT_MSG(pane_position != -1, wxT("Pane not found in dock"));
+
+        // prevent division by zero
+        if (dock_pixels == 0 || total_proportion == 0 || borrow_pane == -1)
+        {
+            m_action = actionNone;
+            return false;
+        }
+
+        // calculate the new proportion of the pane
+        int new_proportion = (new_pixsize*total_proportion)/dock_pixels;
+
+        // default minimum size
+        int min_size = 0;
+
+        // check against the pane's minimum size, if specified. please note
+        // that this is not enough to ensure that the minimum size will
+        // not be violated, because the whole frame might later be shrunk,
+        // causing the size of the pane to violate it's minimum size
+        if (pane.min_size.IsFullySpecified())
+        {
+            min_size = 0;
+
+            if (pane.HasBorder())
+                min_size += (pane_borderSize*2);
+
+            // calculate minimum size with decorations (border,caption)
+            if (pane_part->orientation == wxVERTICAL)
+            {
+                min_size += pane.min_size.y;
+                if (pane.HasCaption())
+                    min_size += caption_size;
+            }
+            else
+            {
+                min_size += pane.min_size.x;
+            }
+        }
+
+
+        // for some reason, an arithmatic error somewhere is causing
+        // the proportion calculations to always be off by 1 pixel;
+        // for now we will add the 1 pixel on, but we really should
+        // determine what's causing this.
+        min_size++;
+
+        int min_proportion = (min_size*total_proportion)/dock_pixels;
+
+        if (new_proportion < min_proportion)
+            new_proportion = min_proportion;
+
+
+
+        int prop_diff = new_proportion - pane.dock_proportion;
+
+        // borrow the space from our neighbor pane to the
+        // right or bottom (depending on orientation);
+        // also make sure we don't make the neighbor too small
+        int prop_borrow = dock.panes.Item(borrow_pane)->dock_proportion;
+
+        if (prop_borrow - prop_diff < 0)
+        {
+            // borrowing from other pane would make it too small,
+            // so cancel the resize operation
+            prop_borrow = min_proportion;
+        }
+         else
+        {
+            prop_borrow -= prop_diff;
+        }
+
+
+        dock.panes.Item(borrow_pane)->dock_proportion = prop_borrow;
+        pane.dock_proportion = new_proportion;
+
+
+        // repaint
+        Update();
+        Repaint(NULL);
+    }
+
+    return true;
+}
+
+void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event)
+{
+    if (m_action == actionResize)
+    {
+        m_frame->ReleaseMouse();
+        
+        if (!OAuiManager_HasLiveResize(*this))
+        {
+            // get rid of the hint rectangle
+            wxScreenDC dc;
+            ODrawResizeHint(dc, m_0actionHintRect);
+        }
+        if (m_currentDragItem != -1 && OAuiManager_HasLiveResize(*this))
+            m_actionPart = & (m_uiParts.Item(m_currentDragItem));
+        
+        DoEndResizeAction(event);
+        
+        m_currentDragItem = -1;
+        
+    }
+    else if (m_action == actionClickButton)
+    {
+        m_hoverButton = NULL;
+        m_frame->ReleaseMouse();
+        
+        if (m_actionPart)
+        {
+            UpdateButtonOnScreen(m_actionPart, event);
+            
+            // make sure we're still over the item that was originally clicked
+            if (m_actionPart == HitTest(event.GetX(), event.GetY()))
+            {
+                // fire button-click event
+                wxAuiManagerEvent e(wxEVT_AUI_PANE_BUTTON);
+                e.SetManager(this);
+                e.SetPane(m_actionPart->pane);
+                e.SetButton(m_actionPart->button->button_id);
+                ProcessMgrEvent(e);
+            }
+        }
+    }
+    else if (m_action == actionClickCaption)
+    {
+        m_frame->ReleaseMouse();
     }
     else if (m_action == actionDragFloatingPane)
     {
-        if (m_actionWindow)
-        {
-            // We can't move the child window so we need to get the frame that
-            // we want to be really moving. This is probably not the best place
-            // to do this but at least it fixes the bug (#13177) for now.
-            if (!wxDynamicCast(m_actionWindow, wxAuiFloatingFrame))
-            {
-                wxAuiPaneInfo& pane = GetPane(m_actionWindow);
-                m_actionWindow = pane.frame;
-            }
-            
-            wxPoint pt = m_frame->ClientToScreen(event.GetPosition());
-            m_actionWindow->Move(pt.x - m_actionOffset.x,
-                                 pt.y - m_actionOffset.y);
-        }
+        m_frame->ReleaseMouse();
     }
+#if 0    
     else if (m_action == actionDragToolbarPane)
     {
+        m_frame->ReleaseMouse();
+        
         wxAuiPaneInfo& pane = GetPane(m_actionWindow);
         wxASSERT_MSG(pane.IsOk(), wxT("Pane window not found"));
         
-        pane.SetFlag(wxAuiPaneInfo::actionPane, true);
-        
-        wxPoint point = event.GetPosition();
-        DoDrop(m_docks, m_panes, pane, point, m_actionOffset);
-        
-        // if DoDrop() decided to float the pane, set up
-        // the floating pane's initial position
-        if (pane.IsFloating())
+        // save the new positions
+        wxAuiDockInfoPtrArray docks;
+        FindDocks(m_docks, pane.dock_direction,
+                  pane.dock_layer, pane.dock_row, docks);
+        if (docks.GetCount() == 1)
         {
-            wxPoint pt = m_frame->ClientToScreen(event.GetPosition());
-            pane.floating_pos = wxPoint(pt.x - m_actionOffset.x,
-                                        pt.y - m_actionOffset.y);
+            wxAuiDockInfo& dock = *docks.Item(0);
+            
+            wxArrayInt pane_positions, pane_sizes;
+            GetPanePositionsAndSizes(dock, pane_positions, pane_sizes);
+            
+            int i, dock_pane_count = dock.panes.GetCount();
+            for (i = 0; i < dock_pane_count; ++i)
+                dock.panes.Item(i)->dock_pos = pane_positions[i];
         }
         
-        // this will do the actiual move operation;
-        // in the case that the pane has been floated,
-        // this call will create the floating pane
-        // and do the reparenting
+        pane.state &= ~wxAuiPaneInfo::actionPane;
         Update();
-        
-        // if the pane has been floated, change the mouse
-        // action actionDragFloatingPane so that subsequent
-        // EVT_MOTION() events will move the floating pane
-        if (pane.IsFloating())
-        {
-            pane.state &= ~wxAuiPaneInfo::actionPane;
-            m_action = actionDragFloatingPane;
-            m_actionWindow = pane.frame;
-        }
-    }
-    else
-    {
-        wxAuiDockUIPart* part = HitTest(event.GetX(), event.GetY());
-        if (part && part->type == wxAuiDockUIPart::typePaneButton)
-        {
-            if (part != m_hoverButton)
-            {
-                // make the old button normal
-                if (m_hoverButton)
-                {
-                    UpdateButtonOnScreen(m_hoverButton, event);
-                    Repaint();
-                }
-                
-                // mouse is over a button, so repaint the
-                // button in hover mode
-                UpdateButtonOnScreen(part, event);
-                m_hoverButton = part;
-                
-            }
-        }
-        else
-        {
-            if (m_hoverButton)
-            {
-                m_hoverButton = NULL;
-                Repaint();
-            }
-            else
-            {
-                event.Skip();
-            }
-        }
     }
 #endif    
+    else
+    {
+        event.Skip();
+    }
+    
+    m_action = actionNone;
+    m_lastMouseMove = wxPoint(); // see comment in OnMotion()
 }
+
+
