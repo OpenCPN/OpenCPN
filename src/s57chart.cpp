@@ -5121,29 +5121,25 @@ wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString Attr
     return value;
 }
 
-int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
+bool s57chart::CompareLights( const S57Light* l1, const S57Light* l2 )
 {
-    S57Light l1 = *(S57Light*) *l1ptr;
-    S57Light l2 = *(S57Light*) *l2ptr;
+    int positionDiff = l1->position.Cmp( l2->position );
+    if( positionDiff != 0 ) return true;
 
-    int positionDiff = l1.position.Cmp( l2.position );
-    if( positionDiff != 0 ) return positionDiff;
 
-    double angle1, angle2;
-    int attrIndex1 = l1.attributeNames.Index( _T("SECTR1") );
-    int attrIndex2 = l2.attributeNames.Index( _T("SECTR1") );
+    int attrIndex1 = l1->attributeNames.Index( _T("SECTR1") );
+    int attrIndex2 = l2->attributeNames.Index( _T("SECTR1") );
 
     // This should put Lights without sectors last in the list.
-    if( attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return 0;
-    if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return -1;
-    if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return 1;
+    if( attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return false;
+    if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return true;
+    if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return false;
 
-    l1.attributeValues[attrIndex1].ToDouble( &angle1 );
-    l2.attributeValues[attrIndex2].ToDouble( &angle2 );
+    double angle1, angle2;
+    l1->attributeValues.Item( attrIndex1 ).ToDouble( &angle1 );
+    l2->attributeValues.Item( attrIndex2 ).ToDouble( &angle2 );
 
-    if( angle1 == angle2 ) return 0;
-    if( angle1 > angle2 ) return 1;
-    return -1;
+    return angle1 < angle2;
 }
 
 static const char *type2str( GeoPrim_t type)
@@ -5181,7 +5177,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString objText;
     wxString lightsHtml;
     wxString positionString;
-    wxArrayPtrVoid lights;
+    std::vector<S57Light*> lights;
     S57Light* curLight = NULL;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
@@ -5272,7 +5268,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 curLight = new S57Light;
                 curLight->position = positionString;
                 curLight->hasSectors = false;
-                lights.Add( curLight );
+                lights.push_back( curLight );
             }
         }
 
@@ -5372,30 +5368,31 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         }
     } // Object for loop
 
-    if( lights.Count() > 0 ) {
+    if( !lights.empty() ) {
 
         // For lights we now have all the info gathered but no HTML output yet, now
         // run through the data and build a merged table for all lights.
 
-        lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+        std::sort(lights.begin(), lights.end(), s57chart::CompareLights);
 
         wxString lastPos;
 
-        for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
-            S57Light* thisLight = (S57Light*) lights[curLightNo];
+        for(auto const& thisLight: lights) {
             int attrIndex;
 
             if( thisLight->position != lastPos ) {
 
                 lastPos = thisLight->position;
 
-                if( curLightNo > 0 ) lightsHtml << _T("</table>\n<hr noshade>\n");
+                if( thisLight != *lights.begin() )
+                    lightsHtml << _T("</table>\n<hr noshade>\n");
+                curLight++;
 
                 lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                 lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
 
-                if( curLight && curLight->hasSectors ) lightsHtml
-                        <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
+                if( curLight && curLight->hasSectors )
+                    lightsHtml <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
 
                 lightsHtml << _T("<table>");
             }
@@ -5405,13 +5402,13 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
-                wxString color = thisLight->attributeValues[attrIndex];
-                if( color == _T("red (3)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green (4)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white (1)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                wxString color = thisLight->attributeValues.Item( attrIndex );
+                if( color == _T("red (3)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                if( color == _T("green (4)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                if( color == _T("white (1)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
             }
 
             lightsHtml << _T("</font></td><td><font size=-1><nobr><b>");
@@ -5494,7 +5491,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         lightsHtml << _T("</table><hr noshade>\n");
         ret_val = lightsHtml << ret_val;
 
-        lights.Clear();
+        lights.clear();
     }
 
     return ret_val;
