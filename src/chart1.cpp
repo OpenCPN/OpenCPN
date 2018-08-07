@@ -87,6 +87,10 @@
 #include "toolbar.h"
 #include "compass.h"
 #include "datastream.h"
+#ifdef __WXMSW__
+#include "GarminProtocolHandler.h"  // Used for port probing on Windows
+#endif
+
 #include "OCPN_DataStreamEvent.h"
 #include "OCPN_SignalKEvent.h"
 #include "multiplexer.h"
