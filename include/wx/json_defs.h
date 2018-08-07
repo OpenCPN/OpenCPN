@@ -210,8 +210,12 @@
 //
 // defines the MIN and MAX macro for numeric arguments
 // note that the safest way to define such functions is using templates
+#ifndef MIN
 #define MIN(a,b)    a < b ? a : b
+#endif
+#ifndef MAX
 #define MAX(a,b)    a > b ? a : b
+#endif
 
 
 #endif // _WX_JSON_DEFS_H_
