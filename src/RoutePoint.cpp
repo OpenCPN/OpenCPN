@@ -40,7 +40,6 @@
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
-extern ChartCanvas *cc1;
 extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
 extern Multiplexer *g_pMUX;
@@ -267,21 +266,21 @@ RoutePoint::~RoutePoint( void )
 #endif    
 }
 
-wxPoint2DDouble RoutePoint::GetDragHandlePoint(ViewPort &vp)
+wxPoint2DDouble RoutePoint::GetDragHandlePoint(ChartCanvas *canvas)
 {
     if(!m_bDrawDragHandle)
        return wxPoint2DDouble(m_lon, m_lat);
     else{
-       return computeDragHandlePoint(vp); 
+       return computeDragHandlePoint(canvas); 
     }
 }    
 
-wxPoint2DDouble RoutePoint::computeDragHandlePoint(ViewPort &vp)
+wxPoint2DDouble RoutePoint::computeDragHandlePoint(ChartCanvas *canvas)
 {
     wxPoint r;
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
     double lat, lon;
-    cc1->GetCanvasPixPoint(r.x + m_drag_icon_offset, r.y + m_drag_icon_offset, lat, lon);
+    canvas->GetCanvasPixPoint(r.x + m_drag_icon_offset, r.y + m_drag_icon_offset, lat, lon);
     
     // Keep the members updated
     m_dragHandleLat = lat;
@@ -290,28 +289,28 @@ wxPoint2DDouble RoutePoint::computeDragHandlePoint(ViewPort &vp)
     return wxPoint2DDouble(lon, lat);
 }
 
-void RoutePoint::SetPointFromDraghandlePoint(ViewPort &vp, double lat, double lon)
+void RoutePoint::SetPointFromDraghandlePoint(ChartCanvas *canvas, double lat, double lon)
 {
     wxPoint r;
-    cc1->GetCanvasPointPix( lat, lon, &r );
+    canvas->GetCanvasPointPix( lat, lon, &r );
     double tlat, tlon;
-    cc1->GetCanvasPixPoint(r.x - m_drag_icon_offset, r.y - m_drag_icon_offset, tlat, tlon);
+    canvas->GetCanvasPixPoint(r.x - m_drag_icon_offset, r.y - m_drag_icon_offset, tlat, tlon);
     m_lat = tlat;
     m_lon = tlon;
 }
 
-void RoutePoint::SetPointFromDraghandlePoint(ViewPort &vp, int x, int y)
+void RoutePoint::SetPointFromDraghandlePoint(ChartCanvas *canvas, int x, int y)
 {
     double tlat, tlon;
-    cc1->GetCanvasPixPoint(x - m_drag_icon_offset - m_draggingOffsetx, y - m_drag_icon_offset - m_draggingOffsety, tlat, tlon);
+    canvas->GetCanvasPixPoint(x - m_drag_icon_offset - m_draggingOffsetx, y - m_drag_icon_offset - m_draggingOffsety, tlat, tlon);
     m_lat = tlat;
     m_lon = tlon;
 }
 
-void RoutePoint::PresetDragOffset( int x, int y)
+void RoutePoint::PresetDragOffset( ChartCanvas *canvas, int x, int y)
 {
     wxPoint r;
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
     
     m_draggingOffsetx = x - (r.x + m_drag_icon_offset);
     m_draggingOffsety = y - (r.y + m_drag_icon_offset);
@@ -484,12 +483,12 @@ void RoutePoint::ReLoadIcon( void )
     m_IconScaleFactor = -1;             // Force scaled icon reload
 }
 
-void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
+void RoutePoint::Draw( ocpnDC& dc, ChartCanvas *canvas, wxPoint *rpn )
 {
     wxPoint r;
     wxRect hilitebox;
 
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    canvas->GetCanvasPointPix( m_lat, m_lon, &r );
 
     //  return the home point in this dc to allow "connect the dots"
     if( NULL != rpn ) *rpn = r;
@@ -606,7 +605,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
         double tlat, tlon;
         wxPoint r1;
         ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
-        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        canvas->GetCanvasPointPix( tlat, tlon, &r1 );
 
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
                            pow( (double) (r.y - r1.y), 2 ) );
@@ -637,7 +636,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 }
 
 #ifdef ocpnUSE_GL
-void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
+void RoutePoint::DrawGL( ViewPort &vp, ChartCanvas *canvas, bool use_cached_screen_coords )
 {
     if( !m_bIsVisible )
         return;
@@ -678,7 +677,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     if(use_cached_screen_coords && m_pos_on_screen)
         r.x = m_screen_pos.m_x, r.y = m_screen_pos.m_y;
     else
-        cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+        canvas->GetCanvasPointPix( m_lat, m_lon, &r );
 
     if(r.x == INVALID_COORD)
         return;
@@ -739,8 +738,8 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
     /* update bounding box */
     if(!m_wpBBox.GetValid() || vp.view_scale_ppm != m_wpBBox_view_scale_ppm || vp.rotation != m_wpBBox_rotation) {
         double lat1, lon1, lat2, lon2;
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
-        cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
+        canvas->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
 
         if(lon1 > lon2)
             m_wpBBox.Set(lat1, lon1, lat2, lon2+360);
@@ -894,7 +893,7 @@ void RoutePoint::DrawGL( ViewPort &vp, bool use_cached_screen_coords )
         double tlat, tlon;
         wxPoint r1;
         ll_gc_ll( m_lat, m_lon, 0, factor, &tlat, &tlon );
-        cc1->GetCanvasPointPix( tlat, tlon, &r1 );
+        canvas->GetCanvasPointPix( tlat, tlon, &r1 );
         
         double lpp = sqrt( pow( (double) (r.x - r1.x), 2) +
         pow( (double) (r.y - r1.y), 2 ) );
@@ -985,14 +984,14 @@ void RoutePoint::SetPosition( double lat, double lon )
     m_lon = lon;
 }
 
-void RoutePoint::CalculateDCRect( wxDC& dc, wxRect *prect )
+void RoutePoint::CalculateDCRect( wxDC& dc, ChartCanvas *canvas, wxRect *prect )
 {
     dc.ResetBoundingBox();
     dc.DestroyClippingRegion();
 
     // Draw the mark on the dc
     ocpnDC odc( dc );
-    Draw( odc, NULL );
+    Draw( odc, canvas, NULL );
 
     //  Retrieve the drawing extents
     prect->x = dc.MinX() - 1;

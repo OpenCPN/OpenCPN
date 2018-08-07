@@ -106,7 +106,6 @@ extern OCPNPlatform* g_Platform;
 
 extern MyFrame* gFrame;
 extern WayPointman *pWayPointMan;
-extern ChartCanvas* cc1;
 extern wxString g_PrivateDataDir;
 
 extern bool g_bSoftwareGL;
@@ -298,6 +297,7 @@ extern bool g_config_display_size_manual;
 extern bool g_bInlandEcdis;
 extern bool g_bDarkDecorations;
 extern bool g_bSpaceDropMark;
+extern unsigned int g_canvasConfig;
 
 extern "C" bool CheckSerialAccess(void);
 
@@ -973,7 +973,7 @@ bool options::SendIdleEvents(wxIdleEvent &event )  {
 
 void options::RecalculateSize(void) {
   if (!g_bresponsive) {
-    wxSize canvas_size = cc1->GetSize();
+    wxSize canvas_size = gFrame->GetSize();
     wxSize fitted_size = GetSize();
 
     fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
@@ -2411,7 +2411,7 @@ void options::EnableItem(const long index) {
 
 void options::OnConnectionToggleEnable(wxListEvent& event) {
   EnableItem(event.GetIndex());
-  cc1->Refresh();
+  gFrame->RefreshAllCanvas();;
 }
 
 void options::OnConnectionToggleEnableMouse(wxMouseEvent& event) {
@@ -2808,6 +2808,43 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
   chartPanel->Layout();
 }
 
+void options::CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing)
+{
+    m_DisplayConfigsPage = AddPage(parent, _("Configs"));
+    
+    if (m_bcompact) {
+    }
+    else {
+//        wxFlexGridSizer* itemGridSizerUI = new wxFlexGridSizer(2);
+//        itemGridSizerUI->SetHGap(border_size);
+        // wxFlexGridSizer grows wrongly in wx2.8, so we need to centre it in
+        // another sizer instead of letting it grow.
+        wxBoxSizer* wrapperSizer = new wxBoxSizer(wxVERTICAL);
+        m_DisplayConfigsPage->SetSizer(wrapperSizer);
+        //wrapperSizer->Add(itemGridSizerUI, 1, wxALL | wxALIGN_CENTER, border_size);
+        
+        // spacer, for both columns
+        //itemGridSizerUI->Add(0, border_size * 3);
+        //itemGridSizerUI->Add(0, border_size * 3);
+        
+        // canvas Layout Options
+        //itemGridSizerUI->Add( new wxStaticText(m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout")), groupLabelFlags);
+ //       wxBoxSizer* boxLayouts = new wxBoxSizer(wxVERTICAL);
+ //       itemGridSizerUI->Add(boxLayouts, groupInputFlags);
+        
+        wxString m_rbcanvasConfigChoices[] = { _("Single Canvas"), _("Two Canvas Horizontal") };
+        int nrbcanvasConfigChoices = sizeof( m_rbcanvasConfigChoices ) / sizeof( wxString );
+        
+        m_rbcanvasConfig = new wxRadioBox( m_DisplayConfigsPage, wxID_ANY, _("Canvas Layout"), wxDefaultPosition, wxDefaultSize, nrbcanvasConfigChoices, m_rbcanvasConfigChoices, 1, wxRA_SPECIFY_COLS );
+        m_rbcanvasConfig->SetSelection( 0 );
+
+        wrapperSizer->Add(m_rbcanvasConfig, 0, wxALIGN_CENTER);
+        
+       
+    }
+            
+}
+        
 void options::CreatePanel_Advanced(size_t parent, int border_size,
                                    int group_item_spacing) {
   m_ChartDisplayPage = AddPage(parent, _("Advanced"));
@@ -2834,13 +2871,13 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                       _("Disable Full Screen Quilting"));
     boxCharts->Add(pFullScreenQuilt, inputFlags);
 
-    pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                       _("Suppress blur/fog effects on overzoom"));
-    boxCharts->Add(pOverzoomEmphasis, inputFlags);
-
-    pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                                    _("Suppress scaled vector charts on overzoom"));
-    boxCharts->Add(pOZScaleVector, inputFlags);
+//     pOverzoomEmphasis = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                        _("Suppress blur/fog effects on overzoom"));
+//     boxCharts->Add(pOverzoomEmphasis, inputFlags);
+// 
+//     pOZScaleVector = new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                                     _("Suppress scaled vector charts on overzoom"));
+//     boxCharts->Add(pOZScaleVector, inputFlags);
 
     // Control Options
     wxBoxSizer* boxCtrls = new wxBoxSizer(wxVERTICAL);
@@ -2989,15 +3026,15 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                       _("Disable Full Screen Quilting"));
     boxCharts->Add(pFullScreenQuilt, verticleInputFlags);
 
-    pOverzoomEmphasis =
-        new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                       _("Suppress blur/fog effects on overzoom"));
-    boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
-
-    pOZScaleVector =
-        new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
-                       _("Suppress scaled vector charts on overzoom"));
-    boxCharts->Add(pOZScaleVector, verticleInputFlags);
+//     pOverzoomEmphasis =
+//         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                        _("Suppress blur/fog effects on overzoom"));
+//     boxCharts->Add(pOverzoomEmphasis, verticleInputFlags);
+// 
+//     pOZScaleVector =
+//         new wxCheckBox(m_ChartDisplayPage, ID_FULLSCREENQUILT,
+//                        _("Suppress scaled vector charts on overzoom"));
+//     boxCharts->Add(pOZScaleVector, verticleInputFlags);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -4915,11 +4952,9 @@ void options::CreateControls(void) {
   CreatePanel_Display(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Units(m_pageDisplay, border_size, group_item_spacing);
   CreatePanel_Advanced(m_pageDisplay, border_size, group_item_spacing);
-
+  CreatePanel_Configs(m_pageDisplay, border_size, group_item_spacing);
+  
   m_pageCharts = CreatePanel(_("Charts"));
-  
-  
-  
   CreatePanel_ChartsLoad(m_pageCharts, border_size, group_item_spacing);
   CreatePanel_VectorCharts(m_pageCharts, border_size, group_item_spacing);
   // ChartGroups must be created after ChartsLoad and must be at least third
@@ -5014,6 +5049,9 @@ void options::SetInitialSettings(void) {
   
   b_oldhaveWMM = b_haveWMM;
   b_haveWMM = g_pi_manager && g_pi_manager->IsPlugInAvailable(_T("WMM"));
+
+  // Canvas configuration
+  m_rbcanvasConfig->SetSelection( g_canvasConfig );
   
   // ChartsLoad
   int nDir = m_CurrentDirList.GetCount();
@@ -5059,8 +5097,8 @@ void options::SetInitialSettings(void) {
   pSkewComp->SetValue(g_bskew_comp);
   pMobile->SetValue(g_btouch);
   pResponsive->SetValue(g_bresponsive);
-  pOverzoomEmphasis->SetValue(!g_fog_overzoom);
-  pOZScaleVector->SetValue(!g_oz_vector_scale);
+  //pOverzoomEmphasis->SetValue(!g_fog_overzoom);
+  //pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
 #ifdef __WXOSX__
   pDarkDecorations->SetValue(g_bDarkDecorations);
@@ -5628,7 +5666,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
   if (dlg.ShowModal() == wxID_OK) {
     g_GLOptions.m_bUseAcceleratedPanning =
         g_bGLexpert ? dlg.GetAcceleratedPanning()
-                  : cc1->GetglCanvas()->CanAcceleratePanning();
+                  : gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning();
 
     g_bShowFPS = dlg.GetShowFPS();
     g_bSoftwareGL = dlg.GetSoftwareGL();
@@ -5651,7 +5689,7 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
       // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
       ::wxBeginBusyCursor();
-      cc1->GetglCanvas()->SetupCompression();
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
       g_glTextureManager->ClearAllRasterTextures();
       ::wxEndBusyCursor();
     }
@@ -6137,8 +6175,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_bDisplayGrid = pSDisplayGrid->GetValue();
     
   bool temp_bquilting = pCDOQuilting->GetValue();
-  if (!g_bQuiltEnable && temp_bquilting)
-    cc1->ReloadVP(); /* compose the quilt */
+//   if (!g_bQuiltEnable && temp_bquilting)
+//     cc1->ReloadVP(); /* compose the quilt */
   g_bQuiltEnable = temp_bquilting;
 
   g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
@@ -6155,8 +6193,8 @@ void options::OnApplyClick(wxCommandEvent& event) {
   g_nAutoHideToolbar = wxMin(static_cast<int>(hide_val), 100);
   g_nAutoHideToolbar = wxMax(g_nAutoHideToolbar, 2);
 
-  g_fog_overzoom = !pOverzoomEmphasis->GetValue();
-  g_oz_vector_scale = !pOZScaleVector->GetValue();
+  //g_fog_overzoom = !pOverzoomEmphasis->GetValue();
+  //g_oz_vector_scale = !pOZScaleVector->GetValue();
 
   g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
@@ -6164,7 +6202,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
   g_COGAvgSec = wxMin(static_cast<int>(update_val), MAX_COG_AVERAGE_SECONDS);
 
-  if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
+  //TODO if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
 
   g_bLookAhead = pCBLookAhead->GetValue();
 
@@ -6492,6 +6530,9 @@ void options::OnApplyClick(wxCommandEvent& event) {
   for (int i = 0; i < nEntry; i++)
     TideCurrentDataSet.Add(tcDataSelected->GetString(i));
 
+  // Canvas configuration
+    g_canvasConfig = m_rbcanvasConfig->GetSelection(  );
+    
   if (event.GetId() == ID_APPLY) {
     gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
     m_CurrentDirList = *m_pWorkDirList; // Perform a deep copy back to main database.
@@ -6501,7 +6542,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
     m_returnChanges &= ~( CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE );
     k_charts = 0;
     
-    cc1->ReloadVP();
+    gFrame->RefreshAllCanvas();
   }
 
   ::wxEndBusyCursor();
@@ -6575,7 +6616,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonParseENC(wxCommandEvent &event)
 {
-    cc1->EnablePaint(false);
+    gFrame->GetPrimaryCanvas()->EnablePaint(false);
     
     extern void ParseAllENC();
 #ifdef __WXOSX__
@@ -6588,9 +6629,9 @@ void options::OnButtonParseENC(wxCommandEvent &event)
 #endif
     
     ViewPort vp;
-    gFrame->ChartsRefresh(-1, vp, true);
+    gFrame->ChartsRefresh();
     
-    cc1->EnablePaint(true);
+    gFrame->GetPrimaryCanvas()->EnablePaint(true);
     
 }   
 
@@ -6816,7 +6857,7 @@ They can be decompressed again using unxz or 7 zip programs."),
 
   //    Make sure the dialog is big enough to be readable
   wxSize sz = prog1.GetSize();
-  sz.x = cc1->GetClientSize().x * 8 / 10;
+  sz.x = gFrame->GetClientSize().x * 8 / 10;
   prog1.SetSize( sz );
 
   wxArrayString charts;
@@ -8784,7 +8825,7 @@ void OpenGLOptionsDlg::Populate(void) {
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__OCPN__ANDROID__) && !defined(__WXOSX__)
-  if (cc1->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=
+  if (gFrame->GetPrimaryCanvas()->GetglCanvas()->GetVersionString().Upper().Find(_T( "MESA" )) !=
       wxNOT_FOUND) {
     m_cbSoftwareGL->SetValue(g_bSoftwareGL);
   }
@@ -8796,13 +8837,13 @@ void OpenGLOptionsDlg::Populate(void) {
   SetFont(*dialogFont);
 
   if (g_bGLexpert) {
-    if (cc1->GetglCanvas()->CanAcceleratePanning()) {
-      m_cbUseAcceleratedPanning->Enable();
-      m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
-    } else {
-      m_cbUseAcceleratedPanning->SetValue(FALSE);
-      m_cbUseAcceleratedPanning->Disable();
-    }
+      if (gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning()) {
+            m_cbUseAcceleratedPanning->Enable();
+            m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+        } else {
+            m_cbUseAcceleratedPanning->SetValue(FALSE);
+            m_cbUseAcceleratedPanning->Disable();
+        }
   } else {
     m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
     m_cbUseAcceleratedPanning->Disable();

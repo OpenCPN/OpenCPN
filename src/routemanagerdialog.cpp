@@ -49,6 +49,7 @@
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "Route.h"
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 
@@ -70,7 +71,6 @@ extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
 extern ChartCanvas *cc1;
-extern ChartBase *Current_Ch;
 extern ActiveTrack      *g_pActiveTrack;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoImpl     *pMarkPropDialog;
@@ -1027,7 +1027,7 @@ void RouteManagerDialog::UpdateRteButtons()
     m_lastRteItem = selected_index_index;
 
     btnRteDelete->Enable( m_pRouteListCtrl->GetSelectedItemCount() > 0 );
-    btnRteZoomto->Enable( enable1 ); // && !cc1->m_bFollow);
+    btnRteZoomto->Enable( enable1 ); 
     btnRteProperties->Enable( enable1 );
     btnRteReverse->Enable( enable1 );
     btnRteExport->Enable( enablemultiple );
@@ -1086,17 +1086,13 @@ void RouteManagerDialog::ZoomtoRoute( Route *route )
     DistanceBearingMercator( RBBox.GetMinLat(), RBBox.GetMinLon(), RBBox.GetMaxLat(),
                              RBBox.GetMinLon(), NULL, &rh );
 
-    cc1->GetSize( &ww, &wh );
+    gFrame->GetPrimaryCanvas()->GetSize( &ww, &wh );
 
     ppm = wxMin(ww/(rw*1852), wh/(rh*1852)) * ( 100 - fabs( clat ) ) / 90;
 
     ppm = wxMin(ppm, 1.0);
 
-//      cc1->ClearbFollow();
-//      cc1->SetViewPoint(clat, clon, ppm, 0, cc1->GetVPRotation(), CURRENT_RENDER);
-//      cc1->Refresh();
-
-    gFrame->JumpToPosition( clat, clon, ppm );
+    gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), clat, clon, ppm );
 
     m_bNeedConfigFlush = true;
 }
@@ -1113,7 +1109,7 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
     bool busy = false;
     if( m_pRouteListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
-        cc1->CancelMouseRoute();
+        gFrame->CancelAllMouseRoute();
         m_bNeedConfigFlush = true;
         busy = true;
     }
@@ -1146,7 +1142,7 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
 
         cc1->undo->InvalidateUndo();
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
 
@@ -1160,7 +1156,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
     if( dialog_ret == wxID_YES ) {
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
 
-        cc1->CancelMouseRoute();
+        gFrame->CancelAllMouseRoute();
 
         g_pRouteMan->DeleteAllRoutes();
 // TODO Seth
@@ -1176,7 +1172,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 
         if( pRoutePropDialog ) pRoutePropDialog->Hide();
         cc1->undo->InvalidateUndo();
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
 
         m_bNeedConfigFlush = true;
     }
@@ -1212,8 +1208,6 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnRteZoomtoClick( wxCommandEvent &event )
 {
-//      if (cc1->m_bFollow)
-//            return;
 
     // Zoom into the bounding box of the selected route
     long item = -1;
@@ -1264,7 +1258,7 @@ void RouteManagerDialog::OnRteReverseClick( wxCommandEvent &event )
         m_pRouteListCtrl->SetItem( item, 2, startend );
 
         pConfig->UpdateRoute( route );
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
     }
 
     m_bNeedConfigFlush = true;
@@ -1327,7 +1321,7 @@ void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
 
     pConfig->UpdateRoute( route );
 
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 
 //      btnRteActivate->SetLabel(route->m_bRtIsActive ? _("Deactivate") : _("Activate"));
 
@@ -1359,8 +1353,8 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         ::wxBeginBusyCursor();
 
         pConfig->UpdateRoute( route );
-        cc1->Refresh();
-
+        gFrame->RefreshAllCanvas();
+        
         //   We need to update the waypoint list control only if the visibility of shared waypoints might have changed.
         if( has_shared_wpts )
             UpdateWptListCtrlViz();
@@ -1408,9 +1402,8 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
     m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
 
-    if( cc1 )
-        cc1->Refresh();
-
+    gFrame->RefreshAllCanvas();
+    
     UpdateRteButtons();
 
 }
@@ -1624,7 +1617,8 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             UpdateTrkListCtrl();
             UpdateRouteListCtrl();
-            cc1->Refresh();
+            gFrame->RefreshAllCanvas();
+            
 
             if( runningSkipped ) {
                 wxMessageDialog skipWarning( this,
@@ -1762,7 +1756,7 @@ void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
             }
         }
         
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
     }
 
     // Allow wx to process...
@@ -1841,7 +1835,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
         UpdateTrkListCtrl();
 
         cc1->undo->InvalidateUndo();
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
 }
@@ -1889,8 +1883,8 @@ void RouteManagerDialog::TrackToRoute( Track *track )
     pprog->Update( 101, _("Done.") );
     delete pprog;
 
-    cc1->Refresh();
-
+    gFrame->RefreshAllCanvas();
+    
     ::wxEndBusyCursor();
 }
 
@@ -1926,8 +1920,8 @@ void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
 
     if( pRoutePropDialog ) pRoutePropDialog->Hide();
 
-    cc1->Refresh();
-
+    gFrame->RefreshAllCanvas();
+    
     m_bNeedConfigFlush = true;
 }
 
@@ -2133,7 +2127,7 @@ void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
 
         pConfig->UpdateWayPoint( wp );
 
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
     }
 
     // Allow wx to process...
@@ -2147,8 +2141,8 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
     pSelect->AddSelectableRoutePoint( gLat, gLon, pWP );
     pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
-    cc1->Refresh( false );      // Needed for MSW, why not GTK??
-
+    gFrame->RefreshAllCanvas();
+    
     pMarkPropDialog = MarkInfoImpl::getInstance( GetParent() );
     
     pMarkPropDialog->SetRoutePoint( pWP );
@@ -2201,10 +2195,7 @@ void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )
 
     if( !wp ) return;
 
-//      cc1->ClearbFollow();
-//      cc1->SetViewPoint(wp->m_lat, wp->m_lon, cc1->GetVPScale(), 0, cc1->GetVPRotation(), CURRENT_RENDER);
-//      cc1->Refresh();
-    gFrame->JumpToPosition( wp->m_lat, wp->m_lon, cc1->GetVPScale() );
+    gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), wp->m_lat, wp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 
 }
 
@@ -2271,7 +2262,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         }
 
         cc1->undo->InvalidateUndo();
-        cc1->Refresh();
+        gFrame->RefreshAllCanvas();
         ::wxEndBusyCursor();
     }
 
@@ -2399,7 +2390,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
     UpdateRouteListCtrl();
     UpdateWptListCtrl();
     cc1->undo->InvalidateUndo();
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void RouteManagerDialog::OnLaySelected( wxListEvent &event )
@@ -2491,7 +2482,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
     
     g_bShowLayers = show_flag;
     UpdateLists();
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void RouteManagerDialog::OnLayPropertiesClick( wxCommandEvent &event )
@@ -2568,8 +2559,8 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
 
     UpdateLists();
 
-    cc1->Refresh();
-
+    gFrame->RefreshAllCanvas();
+    
     m_bNeedConfigFlush = false;
 }
 
@@ -2626,7 +2617,7 @@ void RouteManagerDialog::ToggleLayerContentsOnChart( Layer *layer )
 
     UpdateLayButtons();
 
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void RouteManagerDialog::OnLayToggleNamesClick( wxCommandEvent &event )
@@ -2676,7 +2667,7 @@ void RouteManagerDialog::ToggleLayerContentsNames( Layer *layer )
 
     UpdateLayButtons();
 
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void RouteManagerDialog::OnLayToggleListingClick( wxCommandEvent &event )
@@ -2736,7 +2727,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
 
     ::wxEndBusyCursor();
 
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void RouteManagerDialog::OnLayDefaultAction( wxListEvent &event )
@@ -2824,7 +2815,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     
     UpdateLists();
 
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 void RouteManagerDialog::OnExportClick( wxCommandEvent &event )
 {

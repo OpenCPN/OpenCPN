@@ -72,6 +72,7 @@
 #include "AIS_Decoder.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "chartdb.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -242,6 +243,7 @@ extern wxColour         g_colourOwnshipRangeRingsColour;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
+extern wxString         g_toolbarConfigSecondary;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern int              gps_watchdog_timeout_ticks;
@@ -419,6 +421,8 @@ extern wxString         g_uiStyle;
 int                     g_nCPUCount;
 
 extern bool             g_bDarkDecorations;
+extern unsigned int     g_canvasConfig;
+extern arrayofCanvasConfigPtr g_canvasConfigArray;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -709,9 +713,9 @@ int MyConfig::LoadMyConfig()
     g_chart_zoom_modifier_vector = wxMin(g_chart_zoom_modifier_vector,5);
     g_chart_zoom_modifier_vector = wxMax(g_chart_zoom_modifier_vector,-5);
     
-    Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
-    Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
-    Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
+//     Read( _T ( "FogOnOverzoom" ), &g_fog_overzoom, 1 );
+//     Read( _T ( "OverzoomVectorScale" ), &g_oz_vector_scale, 1 );
+//     Read( _T ( "OverzoomEmphasisBase" ), &g_overzoom_emphasis_base, 10.0 );
     
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
@@ -1310,6 +1314,9 @@ int MyConfig::LoadMyConfig()
     //    Groups
     LoadConfigGroups( g_pGroupArray );
 
+    //    Multicanvas Settings
+    LoadCanvasConfigs();
+    
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
@@ -1903,6 +1910,249 @@ void MyConfig::LoadConfigGroups( ChartGroupArray *pGroupArray )
 
 }
 
+void MyConfig::LoadCanvasConfigs( )
+{
+    int n_canvas;
+    wxString s;
+    canvasConfig *pcc;
+    
+    SetPath( _T ( "/Canvas" ) );
+    
+    //  If the canvas config has never been set/persisted, use the global settings
+    if(!HasEntry( _T ( "CanvasConfig" ))){
+    
+        pcc = new canvasConfig(0);
+        pcc->iLat = vLat;
+        pcc->iLon = vLon;
+        pcc->iRotation = initial_rotation;
+        pcc->iScale = initial_scale_ppm;
+        pcc->DBindex = g_restore_dbindex;
+        pcc->bFollow = false;
+        pcc->bShowTides = false;
+        pcc->bShowCurrents = false;
+        pcc->toolbarConfig = g_toolbarConfig;
+        
+        g_canvasConfigArray.Add(pcc);
+        
+        return;
+    }
+    
+    Read( _T ( "CanvasConfig" ), (int *)&g_canvasConfig, 0 );
+
+#if 0    
+    switch( g_canvasConfig ){
+        
+        case 0:
+        default:
+            n_canvas = 1;
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            
+            pcc = new canvasConfig(0);
+            
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            break;
+        case 1:
+            n_canvas = 1;
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            canvasConfig *pcc = new canvasConfig(0);
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+            SetPath( s );
+            pcc = new canvasConfig(1);
+            LoadConfigCanvas(pcc);
+            g_canvasConfigArray.Add(pcc);
+            
+            
+            break;
+            
+    }
+#endif
+
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            canvasConfig *pcca = new canvasConfig(0);
+            LoadConfigCanvas(pcca);
+            g_canvasConfigArray.Add(pcca);
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+            SetPath( s );
+            pcca = new canvasConfig(1);
+            LoadConfigCanvas(pcca);
+            g_canvasConfigArray.Add(pcca);
+
+}
+            
+void MyConfig::LoadConfigCanvas( canvasConfig *cc )
+{
+    wxString st;
+    double st_lat, st_lon;
+    
+    //    Reasonable starting point
+    cc->iLat = START_LAT;                   // display viewpoint
+    cc->iLon = START_LON;
+    
+    if( Read( _T ( "canvasVPLatLon" ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf,%lf", &st_lat, &st_lon );
+        
+        //    Sanity check the lat/lon...both have to be reasonable.
+        if( fabs( st_lon ) < 360. ) {
+            while( st_lon < -180. )
+                st_lon += 360.;
+            
+            while( st_lon > 180. )
+                st_lon -= 360.;
+            
+            cc->iLon = st_lon;
+        }
+        
+        if( fabs( st_lat ) < 90.0 )
+            cc->iLat = st_lat;
+    }
+    
+    cc->iScale = .0003;        // decent initial value
+    cc->iRotation = 0;
+    
+    double st_view_scale;
+    if( Read( wxString( _T ( "canvasVPScale" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_view_scale );
+        //    Sanity check the scale
+        st_view_scale = fmax ( st_view_scale, .001/32 );
+        st_view_scale = fmin ( st_view_scale, 4 );
+        cc->iScale = st_view_scale;
+    }
+    
+    double st_rotation;
+    if( Read( wxString( _T ( "canvasVPRotation" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
+        //    Sanity check the rotation
+        st_rotation = fmin ( st_rotation, 360 );
+        st_rotation = fmax ( st_rotation, 0 );
+        cc->iRotation = st_rotation * PI / 180.;
+    }
+
+    Read( _T ( "canvasInitialdBIndex" ), &cc->DBindex, 0 );
+    Read( _T ( "canvasbFollow" ), &cc->bFollow, 0 );
+    Read( _T ( "ActiveChartGroup" ), &cc->GroupID, 0 );
+    
+    wxString st_toolbar_config;
+    if(Read( _T ( "canvasToolbarConfig" ), &st_toolbar_config )){
+         cc->toolbarConfig = st_toolbar_config;
+    }
+    else{
+        if(cc->configIndex == 0)
+            cc->toolbarConfig = g_toolbarConfig;
+        else
+            cc->toolbarConfig = g_toolbarConfigSecondary;    //  Default non-primary toolBar config
+    }
+
+    int sx, sy;
+    Read( _T ( "canvasSizeX" ), &sx, 0 );
+    Read( _T ( "canvasSizeY" ), &sy, 0 );
+    cc->canvasSize = wxSize(sx, sy);
+    
+}   
+            
+    
+void MyConfig::SaveCanvasConfigs( )
+{
+    SetPath( _T ( "/Canvas" ) );
+    Write( _T ( "CanvasConfig" ), (int )g_canvasConfig );
+
+    wxString s;
+    canvasConfig *pcc;
+    
+    switch( g_canvasConfig ){
+        
+        case 0:
+        default:
+            
+            s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+            SetPath( s );
+            
+            if(g_canvasConfigArray.GetCount() > 0 ){
+                pcc = g_canvasConfigArray.Item(0);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+            }
+            break;
+            
+        case 1:
+ 
+            if(g_canvasConfigArray.GetCount() > 1 ){
+                
+                s.Printf( _T("/Canvas/CanvasConfig%d"), 1 );
+                SetPath( s );
+                pcc = g_canvasConfigArray.Item(0);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+                
+                s.Printf( _T("/Canvas/CanvasConfig%d"), 2 );
+                SetPath( s );
+                pcc = g_canvasConfigArray.Item(1);
+                if(pcc){
+                    SaveConfigCanvas(pcc);
+                }
+            }        
+            break;
+            
+    }
+}
+    
+
+void MyConfig::SaveConfigCanvas( canvasConfig *cc )
+{
+    wxString st1;
+    
+    if(cc->canvas){
+        ViewPort vp = cc->canvas->GetVP();
+            
+        if( vp.IsValid() ) {
+            st1.Printf( _T ( "%10.4f,%10.4f" ), vp.clat, vp.clon );
+            Write( _T ( "canvasVPLatLon" ), st1 );
+            st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
+            Write( _T ( "canvasVPScale" ), st1 );
+            st1.Printf( _T ( "%i" ), ((int)(vp.rotation * 180 / PI)) % 360 );
+            Write( _T ( "canvasVPRotation" ), st1 );
+        }
+        
+        int restore_dbindex = 0;
+        ChartStack *pcs = cc->canvas->GetpCurrentStack();
+        if(pcs)
+            restore_dbindex = pcs->GetCurrentEntrydbIndex();
+        if( cc->canvas->GetQuiltMode())
+            restore_dbindex = cc->canvas->GetQuiltReferenceChartIndex();
+        Write( _T ( "canvasInitialdBIndex" ), restore_dbindex );
+
+        Write( _T ( "canvasbFollow" ), cc->canvas->m_bFollow );
+        Write( _T ( "ActiveChartGroup" ), cc->canvas->m_groupIndex );
+        Write( _T ( "canvasToolbarConfig" ), cc->canvas->GetToolbarConfigString() );
+        
+        int width = cc->canvas->GetSize().x;
+//         if(cc->canvas->IsPrimaryCanvas()){
+//             width = wxMax(width, gFrame->GetClientSize().x / 10);
+//         }
+//         else{
+//             width = wxMin(width, gFrame->GetClientSize().x  * 9 / 10);
+//         }
+        
+        Write( _T ( "canvasSizeX" ), width );
+        Write( _T ( "canvasSizeY" ), cc->canvas->GetSize().y );
+        
+    }
+}
+        
+        
+
 void MyConfig::UpdateSettings()
 {
     //  Temporarily suppress logging of trivial non-fatal wxLogSysError() messages provoked by Android security...
@@ -2367,6 +2617,7 @@ void MyConfig::UpdateSettings()
         Write( p, g_MMSI_Props_Array[i]->Serialize() );
     }
 
+    SaveCanvasConfigs();
 
     Flush();
 }
@@ -2746,7 +2997,7 @@ void SwitchInlandEcdisMode( bool Switch )
         g_iSpeedFormat =2; //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
         if ( ps52plib ) ps52plib->SetDisplayCategory( STANDARD );
         g_bDrawAISSize = false;
-        if (gFrame) gFrame->RequestNewToolbar(true);
+        if (gFrame) gFrame->RequestNewToolbars(true);
     }
     else{      
         wxLogMessage( _T("Switch InlandEcdis mode Off") );
@@ -2763,7 +3014,7 @@ void SwitchInlandEcdisMode( bool Switch )
             pConfig->SetPath( _T ( "/Settings/AIS" ) );
             pConfig->Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
         }
-        if (gFrame) gFrame->RequestNewToolbar(true);
+        if (gFrame) gFrame->RequestNewToolbars(true);
     }        
 }
 
@@ -3965,6 +4216,28 @@ wxString getUsrSpeedUnit( int unit )
             break;
     }
     return ret;
+}
+
+wxString FormatDistanceAdaptive( double distance ) {
+    wxString result;
+    int unit = g_iDistanceFormat;
+    double usrDistance = toUsrDistance( distance, unit );
+    if( usrDistance < 0.1 &&  ( unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI ) ) {
+        unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
+        usrDistance = toUsrDistance( distance, unit );
+    }
+    wxString format;
+    if( usrDistance < 5.0 ) {
+        format = _T("%1.2f ");
+    } else if( usrDistance < 100.0 ) {
+        format = _T("%2.1f ");
+    } else if( usrDistance < 1000.0 ) {
+        format = _T("%3.0f ");
+    } else {
+        format = _T("%4.0f ");
+    }
+    result << wxString::Format(format, usrDistance ) << getUsrDistanceUnit( unit );
+    return result;
 }
 
 /**************************************************************************/

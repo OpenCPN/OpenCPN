@@ -62,13 +62,10 @@ extern ColorScheme GetColorScheme();
 
 class s52plib;
 
-extern ChartBase    *Current_Ch;
 extern ThumbWin     *pthumbwin;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 extern bool         g_bopengl;
-extern ChartCanvas  *cc1;
-extern int          g_GroupIndex;
 extern s52plib      *ps52plib;
 extern ChartDB      *ChartData;
 
@@ -284,7 +281,7 @@ void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture, const wxString
 
 #ifdef ocpnUSE_GL
      // The glCanvas may be cacheing some information for this chart     
-     if (g_bopengl && cc1)
+     if (g_glTextureManager)
          g_glTextureManager->PurgeChartTextures(ch, bDelTexture);
 #endif
 
@@ -477,9 +474,9 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath, ChartClassDescriptor &ch
 //      Build a Chart Stack, and add the indicated chart to the stack, even if the chart does not
 //      cover the lat/lon specification
 
-int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add )
+int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add, int groupIndex )
 {
-    BuildChartStack(cstk, lat, lon);
+    BuildChartStack(cstk, lat, lon, groupIndex);
     
     if (db_add >= 0 )
         cstk->AddChart( db_add );
@@ -488,7 +485,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add
 }
 
 
-int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
+int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon, int groupIndex)
 {
       int i=0;
       int j=0;
@@ -508,12 +505,12 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
             
             //    Check to see if the candidate chart is in the currently active group
             bool b_group_add = false;
-            if(g_GroupIndex > 0)
+            if(groupIndex > 0)
             {
                   const int ng = cte.GetGroupArray().size();
                   for(int ig=0 ; ig < ng; ig++)
                   {
-                        if(g_GroupIndex == cte.GetGroupArray()[ig])
+                      if(groupIndex == cte.GetGroupArray()[ig])
                         {
                               b_group_add = true;
                               break;
@@ -1072,13 +1069,9 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             for(unsigned int i=0 ; i<nCache ; i++)
             {
                 CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
-                if((ChartBase *)(pce->pChart) != Current_Ch)
-                {
-                    if(pce->RecentTime < LRUTime && !pce->n_lock)
-                    {
-                        LRUTime = pce->RecentTime;
-                        iOldest = i;
-                    }
+                if(pce->RecentTime < LRUTime && !pce->n_lock){
+                    LRUTime = pce->RecentTime;
+                    iOldest = i;
                 }
             }
             int dt = m_ticks - LRUTime;
@@ -1086,7 +1079,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(iOldest));
             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                 
-            if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) ){
+            if( (!pce->n_lock) ){
                 if(blog)
                     wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, dt);
                 
@@ -1455,8 +1448,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
     
     if( wxMUTEX_NO_ERROR == m_cache_mutex.Lock() ){
         
-      if(Current_Ch != pDeleteCandidate)
-      {
 
             // Find the chart in the cache
             CacheEntry *pce = NULL;
@@ -1479,7 +1470,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate)
                       retval = true;
                   }
             }
-      }
       
       m_cache_mutex.Unlock();
     }

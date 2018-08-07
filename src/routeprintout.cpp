@@ -72,6 +72,7 @@ using namespace std;
 #include "printtable.h"
 #include "wx28compat.h"
 #include "Track.h"
+#include "Route.h"
 
 #define PRINT_WP_NAME 0
 #define PRINT_WP_POSITION 1

@@ -90,7 +90,7 @@ millions of points.
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern ChartCanvas      *cc1;
+extern MyFrame *gFrame;
 extern WayPointman *pWayPointMan;
 extern Routeman *g_pRouteMan;
 extern Select *pSelect;
@@ -181,12 +181,12 @@ void TrackPoint::SetCreateTime( wxString ts )
         m_timestring = NULL;
 }
 
-void TrackPoint::Draw(ocpnDC& dc )
+void TrackPoint::Draw(ChartCanvas *cc, ocpnDC& dc )
 {
     wxPoint r;
     wxRect hilitebox;
  
-    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+    cc->GetCanvasPointPix( m_lat, m_lon, &r );
     
     wxPen *pen;
     pen = g_pRouteMan->GetRoutePointPen();
@@ -544,11 +544,11 @@ void ActiveTrack::AddPointNow( bool do_add_point )
     m_prev_time = now;
 }
 
-void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
+void Track::AddPointToList(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, int n)
 {
     wxPoint r(INVALID_COORD, INVALID_COORD);
     if ( (size_t)n < TrackPoints.size() )
-        cc1->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
+        cc->GetCanvasPointPix( TrackPoints[n]->m_lat, TrackPoints[n]->m_lon, &r );
 
     std::list<wxPoint> &pointlist = pointlists.back();
     if(r.x == INVALID_COORD) {
@@ -571,7 +571,7 @@ void Track::AddPointToList(std::list< std::list<wxPoint> > &pointlists, int n)
 
 /* assembles lists of line strips from the given track recursively traversing
    the subtracks data */
-void Track::Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos)
+void Track::Assemble(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale, int &last, int level, int pos)
 {
     if(pos == (int)SubTracks[level].size())
         return;
@@ -589,23 +589,23 @@ void Track::Assemble(std::list< std::list<wxPoint> > &pointlists, const LLBBox &
         }
 
         if(last < pos)
-            AddPointToList(pointlists, pos);
+            AddPointToList(cc, pointlists, pos);
         last = wxMin(pos + (1<<level), TrackPoints.size() - 1);
-        AddPointToList(pointlists, last);
+        AddPointToList(cc, pointlists, last);
     } else {
-        Assemble(pointlists, box, scale, last, level-1, pos<<1);
-        Assemble(pointlists, box, scale, last, level-1, (pos<<1)+1);
+        Assemble(cc, pointlists, box, scale, last, level-1, pos<<1);
+        Assemble(cc, pointlists, box, scale, last, level-1, (pos<<1)+1);
     }
 }
 
 // Entry to recursive Assemble at the head of the SubTracks tree
-void Track::Segments(std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale)
+void Track::Segments(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists, const LLBBox &box, double scale)
 {
     if(!SubTracks.size())
         return;
 
     int level = SubTracks.size()-1, last = -2;
-    Assemble(pointlists, box, 1/scale/scale, last, level, 0);
+    Assemble(cc, pointlists, box, 1/scale/scale, last, level, 0);
 }
 
 void Track::ClearHighlights()
@@ -613,10 +613,10 @@ void Track::ClearHighlights()
     m_HighlightedTrackPoint = -1;
 }
 
-void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
+void Track::Draw( ChartCanvas *cc, ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 {
     std::list< std::list<wxPoint> > pointlists;
-    GetPointLists(pointlists, VP, box);
+    GetPointLists(cc, pointlists, VP, box);
 
     if(!pointlists.size())
         return;
@@ -650,7 +650,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 
     double radius = 0.;
     if( g_bHighliteTracks ) {
-        double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
+        double radius_meters = 20;          // 1.5 mm at original scale
         radius = radius_meters * VP.view_scale_ppm;
         if(radius < 1.0)
             radius = 0;
@@ -732,7 +732,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP, const LLBBox &box )
 #endif
 
     if(m_HighlightedTrackPoint >= 0)
-        TrackPoints[m_HighlightedTrackPoint]->Draw(dc);
+        TrackPoints[m_HighlightedTrackPoint]->Draw(cc, dc);
 }
 
 TrackPoint *Track::GetPoint( int nWhichPoint )
@@ -834,13 +834,13 @@ void Track::AddPoint( TrackPoint *pNewPoint )
     SubTracks.clear(); // invalidate subtracks
 }
 
-void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
+void Track::GetPointLists(ChartCanvas *cc, std::list< std::list<wxPoint> > &pointlists,
                           ViewPort &VP, const LLBBox &box )
 {
     if( !IsVisible() || GetnPoints() == 0 ) return;
     Finalize();
 //    OCPNStopWatch sw;
-    Segments(pointlists, box, VP.view_scale_ppm);
+    Segments(cc, pointlists, box, VP.view_scale_ppm);
 
 #if 0
     if(GetnPoints() > 40000) {
@@ -861,9 +861,9 @@ void Track::GetPointLists(std::list< std::list<wxPoint> > &pointlists,
     if( IsRunning() ) {
         std::list<wxPoint> new_list;
         pointlists.push_back(new_list);
-        AddPointToList(pointlists, TrackPoints.size()-1);
+        AddPointToList(cc, pointlists, TrackPoints.size()-1);
         wxPoint r;
-        cc1->GetCanvasPointPix( gLat, gLon, &r );
+        cc->GetCanvasPointPix( gLat, gLon, &r );
         pointlists.back().push_back(r);
     }
 }

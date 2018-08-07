@@ -40,10 +40,8 @@ extern int         g_chart_zoom_modifier;
 extern int         g_chart_zoom_modifier_vector;
 extern int         g_detailslider_dialog_x;
 extern int         g_detailslider_dialog_y;
-extern ChartCanvas *cc1;
 extern MyFrame     *gFrame;
 extern bool        g_bQuiltEnable;
-extern ChartStack  *pCurrentStack;
 
 BEGIN_EVENT_TABLE(PopUpDSlide, wxDialog)
     EVT_KEY_DOWN(PopUpDSlide::OnKeyDown )
@@ -174,8 +172,10 @@ void PopUpDSlide::OnChangeValue( wxScrollEvent& event )
 
     if ( (ChartType == CHART_TYPE_CM93COMP ) || (ChartType == CHART_TYPE_CM93 )){
         g_cm93_zoom_factor = m_p_DetailSlider->GetValue();
-        cc1->ReloadVP();
-        cc1->Refresh();
+        ChartCanvas *parentCanvas = dynamic_cast<ChartCanvas *>( GetParent() );
+        
+        parentCanvas->ReloadVP();
+        parentCanvas->Refresh();
         ::wxEndBusyCursor();
         return;
     }

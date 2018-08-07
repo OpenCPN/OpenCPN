@@ -43,9 +43,6 @@ WX_DEFINE_LIST( PatchList );
 extern ChartDB *ChartData;
 extern std::vector<int> g_quilt_noshow_index_array;
 extern s52plib *ps52plib;
-extern ChartStack *pCurrentStack;
-extern ChartCanvas *cc1;
-extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 extern int g_chart_zoom_modifier;
 extern int g_chart_zoom_modifier_vector;
@@ -203,12 +200,13 @@ void QuiltCandidate::SetScale( int scale )
        rounding = 5 *pow(10, log10(scale) -2);
 }
 
-Quilt::Quilt()
+Quilt::Quilt( ChartCanvas *parent)
 {
 //      m_bEnableRaster = true;
 //      m_bEnableVector = false;;
 //      m_bEnableCM93 = false;
 
+    m_parent = parent;
     m_reference_scale = 1;
     m_refchart_dbIndex = -1;
     m_reference_type = CHART_TYPE_UNKNOWN;
@@ -869,7 +867,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum t
     for(size_t i=0 ; i < m_extended_stack_array.size() ; i++){
         int test_db_index = m_extended_stack_array[i];
 
-        if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
+        if( b_allow_fullscreen_ref || m_parent->GetpCurrentStack()->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
                 && IsChartQuiltableRef( test_db_index )
                 /*&& !IsChartS57Overlay( test_db_index )*/ ){
@@ -1111,17 +1109,17 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
     ViewPort vp_local = vp_in;          // non-const copy
 
-    if( !pCurrentStack ) {
-        pCurrentStack = new ChartStack;
-        ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
-    }
+//     if( !pCurrentStack ) {
+//         pCurrentStack = new ChartStack;
+//         ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
+//     }
 
-    int n_charts = pCurrentStack->nEntry;
+    int n_charts = m_parent->GetpCurrentStack()->nEntry;
 
     //    Walk the current ChartStack...
     //    Building the quilt candidate array
     for( int ics = 0; ics < n_charts; ics++ ) {
-        int i = pCurrentStack->GetDBIndex( ics );
+        int i = m_parent->GetpCurrentStack()->GetDBIndex( ics );
         if (i < 0)
             continue;
         m_extended_stack_array.push_back( i );
@@ -1194,7 +1192,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    We can eliminate some charts immediately
             //    Try to make these tests in some sensible order....
 
-            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
+            int groupIndex = m_parent->m_groupIndex;
+            if( ( groupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, groupIndex ) ) ) continue;
             
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
 
@@ -1339,11 +1338,11 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
     int tentative_ref_index = dbi_ref_hint;
     if( dbi_ref_hint < 0 ) {
         //arbitrarily select reference chart as largest scale on current stack
-        if( !pCurrentStack ) {
-            pCurrentStack = new ChartStack;
-            ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
-        }
-        tentative_ref_index = pCurrentStack->GetDBIndex(0);
+//         if( !pCurrentStack ) {
+//             pCurrentStack = new ChartStack;
+//             ChartData->BuildChartStack( pCurrentStack, vp_local.clat, vp_local.clon );
+//         }
+        tentative_ref_index = m_parent->GetpCurrentStack()->GetDBIndex(0);
     }
 
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
@@ -1386,7 +1385,7 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
         }
 
         if(!bfq)        // fallback to first chart in stack
-            m_refchart_dbIndex = pCurrentStack->GetDBIndex(0);
+            m_refchart_dbIndex = m_parent->GetpCurrentStack()->GetDBIndex(0);
     }
 
     if(m_refchart_dbIndex >= 0) {
@@ -1394,14 +1393,14 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in)
         // meaning not overzoomed, and not underzoomed
         ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
         if( pc ) {
-            double min_ref_scale = pc->GetNormalScaleMin( cc1->GetCanvasScaleFactor(), false );
-            double max_ref_scale = pc->GetNormalScaleMax( cc1->GetCanvasScaleFactor(), m_canvas_width );
+            double min_ref_scale = pc->GetNormalScaleMin( m_parent->GetCanvasScaleFactor(), false );
+            double max_ref_scale = pc->GetNormalScaleMax( m_parent->GetCanvasScaleFactor(), m_canvas_width );
 
             proposed_scale_onscreen = wxMin(proposed_scale_onscreen, max_ref_scale);
             proposed_scale_onscreen = wxMax(proposed_scale_onscreen, min_ref_scale);
         }
     }
-    return cc1->GetCanvasScaleFactor() / proposed_scale_onscreen;
+    return m_parent->GetCanvasScaleFactor() / proposed_scale_onscreen;
 }
 
 ChartBase *Quilt::GetRefChart()
@@ -1737,8 +1736,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
 #endif
 
         if( b_must_add_cm93 ) {
-            for( int ics = 0; ics < pCurrentStack->nEntry; ics++ ) {
-                int i = pCurrentStack->GetDBIndex( ics );
+            for( int ics = 0; ics < m_parent->GetpCurrentStack()->nEntry; ics++ ) {
+                int i = m_parent->GetpCurrentStack()->GetDBIndex( ics );
                 if( CHART_TYPE_CM93COMP == ChartData->GetDBChartType( i ) ) {
                     QuiltCandidate *qcnew = new QuiltCandidate;
                     qcnew->dbIndex = i;
@@ -2041,7 +2040,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //  Stop (temporarily) canvas paint events, since some chart loads mught Yield(),
     //  thus causing performance loss on recursion
     //  We will (always??) get a refresh on the new Quilt anyway...
-    cc1->EnablePaint(false);
+    m_parent->EnablePaint(false);
 
     //  first lock charts already in the cache
     //  otherwise under memory pressure if chart1 and chart2
@@ -2067,7 +2066,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    cc1->EnablePaint(true);
+    m_parent->EnablePaint(true);
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -2282,8 +2281,6 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
     OCPNRegion rendered_region;
 
-//    double scale_onscreen = vp.view_scale_ppm;
-//    double max_allowed_scale = 4. * cc1->GetAbsoluteMinScalePpm();
 
     if( GetnCharts() && !m_bbusy ) {
 
@@ -2298,7 +2295,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
         if( !chart_region.Empty() ) {
             while( chart ) {
-                bool okToRender = true;//cc1->IsChartLargeEnoughToRender( chart, vp );
+                bool okToRender = true;
 
                 if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
                     okToRender = false;
@@ -2360,7 +2357,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
             }
         }
 
-        if( ! chartsDrawn ) cc1->GetVP().SetProjectionType( PROJECTION_MERCATOR );
+        if( ! chartsDrawn ) m_parent->GetVP().SetProjectionType( PROJECTION_MERCATOR );
 
 
         //    Render any Overlay patches for s57 charts(cells)
@@ -2544,7 +2541,7 @@ bool Quilt::DoRenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegio
 
 #if 0           // this is fogging effect
                 unsigned char *bg = src.GetData();
-                wxColour color = cc1->GetFogColor();
+                wxColour color = m_parent->GetFogColor();
 
                 float transparency = fog;
 

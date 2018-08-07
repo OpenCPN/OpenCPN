@@ -32,6 +32,7 @@
 #include "OCPNPlatform.h"
 #include "TrackPropDlg.h"
 #include "Track.h"
+#include "Route.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -46,7 +47,6 @@ extern Select              *pSelect;
 extern RouteManagerDialog  *pRouteManagerDialog;
 extern MyConfig            *pConfig;
 extern MyFrame             *gFrame;
-extern ChartCanvas         *cc1;
 extern PlugInManager       *g_pi_manager;
 
 #define    UTCINPUT         0
@@ -1276,7 +1276,7 @@ void TrackPropDlg::OnTrackPropListClick( wxListEvent& event )
                 m_nSelected = selected_no + 1;
                 m_sdbBtmBtnsSizerSplit->Enable( true );
             }
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 #ifdef __WXMSW__            
             if(m_lcPoints)
                 m_lcPoints->SetFocus();
@@ -1578,8 +1578,8 @@ void TrackPropDlg::OnOKBtnClick( wxCommandEvent& event )
         pRouteManagerDialog->UpdateTrkListCtrl();
 
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 }
@@ -1602,9 +1602,9 @@ void TrackPropDlg::OnCancelBtnClick( wxCommandEvent& event )
         m_pTrack->ClearHighlights();
         
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
-
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
+    
     event.Skip();
 }
 

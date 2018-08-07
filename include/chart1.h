@@ -287,8 +287,28 @@ private:
 };
 
 
+//  Class to encapsulate persistant canvas configuration(s)
+class canvasConfig
+{
+public:    
+    canvasConfig();
+    canvasConfig(int index);
+    ~canvasConfig();
+    
+    int configIndex;
+    ChartCanvas *canvas;
+    double iLat, iLon, iScale, iRotation;
+    int DBindex; 
+    int GroupID;
+    bool bFollow;
+    bool bQuilt;
+    wxString toolbarConfig;
+    bool bShowTides;
+    bool bShowCurrents;
+    wxSize canvasSize;
+};
 
-
+WX_DECLARE_OBJARRAY(canvasConfig*, arrayofCanvasConfigPtr);
 
 
 class MyApp: public wxApp
@@ -350,48 +370,53 @@ class MyFrame: public wxFrame
     void OnResume(wxPowerEvent &event);
 #endif // wxHAS_POWER_EVENTS
     
+    void RefreshCanvasOther( ChartCanvas *ccThis );
     void UpdateAllFonts(void);
     void PositionConsole(void);
     void OnToolLeftClick(wxCommandEvent& event);
     void ClearRouteTool();
-    void DoStackUp(void);
-    void DoStackDown(void);
+    void DoStackUp(ChartCanvas *cc);
+    void DoStackDown(ChartCanvas *cc);
     void selectChartDisplay( int type, int family);
     void applySettingsString( wxString settings);
     void setStringVP(wxString VPS);
+    void InvalidateAllGL();
+    void RefreshAllCanvas( bool bErase = true);
+    void CancelAllMouseRoute();
     
-    void DoStackDelta( int direction );
+    ChartCanvas *GetPrimaryCanvas();
+    void DoStackDelta( ChartCanvas *cc, int direction );
     void DoSettings( void );
     
     void TriggerResize(wxSize sz);
     void OnResizeTimer(wxTimerEvent &event);
     
     void MouseEvent(wxMouseEvent& event);
-    void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
-    void SelectdbChart(int dbindex);
-    void SelectQuiltRefChart(int selected_index);
-    void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
+//     void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
+//     void SelectdbChart(int dbindex);
+//     void SelectQuiltRefChart(int selected_index);
+//     void SelectQuiltRefdbChart(int db_index, bool b_autoscale = true);
 
-    void JumpToPosition(double lat, double lon, double scale);
-
+    void JumpToPosition( ChartCanvas *cc, double lat, double lon, double scale );
+    
     void ProcessCanvasResize(void);
 
     void BuildMenuBar( void );
-    void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
+    void ApplyGlobalSettings(bool bnewtoolbar);
     void RegisterGlobalMenuItems();
     void UpdateGlobalMenuItems();
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
-    int  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
+    bool  ProcessOptionsDialog(int resultFlags, ArrayOfCDI *pNewDirArray );
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
     void ToggleDataQuality();
-    void TogglebFollow(void);
+    void TogglebFollow(ChartCanvas *cc);
     void ToggleFullScreen();
-    void ToggleChartBar();
-    void SetbFollow(void);
-    void ClearbFollow(void);
+    void ToggleChartBar(ChartCanvas *cc);
+    void SetbFollow(ChartCanvas *cc);
+    void ClearbFollow(ChartCanvas *cc);
     void ToggleChartOutlines(void);
     void ToggleENCText(void);
     void ToggleSoundings(void);
@@ -401,62 +426,42 @@ class MyFrame: public wxFrame
     void ToggleTestPause(void);
     void TrackOn(void);
     void SetENCDisplayCategory( enum _DisCat nset );
-    void ToggleNavobjects(void);
-    
+    void ToggleNavobjects( ChartCanvas *cc );
+        
     Track *TrackOff(bool do_add_point = false);
     void TrackDailyRestart(void);
     bool ShouldRestartTrack();
     void ToggleColorScheme();
-    int GetnChartStack(void);
     void SetMenubarItemState ( int item_id, bool state );
-    void SetToolbarItemState ( int tool_id, bool state );
+    void SetToolbarItemState( ChartCanvas *cc, int tool_id, bool state );
     void SetToolbarItemBitmaps ( int tool_id, wxBitmap *bitmap, wxBitmap *bmpDisabled );
     void SetToolbarItemSVG( int tool_id, wxString normalSVGfile,
                             wxString rolloverSVGfile,
                             wxString toggledSVGfile );
-    void ToggleQuiltMode(void);
-    void ToggleCourseUp(void);
-    void SetQuiltMode(bool bquilt);
-    bool GetQuiltMode(void);
-    void UpdateControlBar(void);
-    void RemoveChartFromQuilt(int dbIndex);
+    void ToggleQuiltMode(ChartCanvas *cc);
+    void ToggleCourseUp(ChartCanvas *cc);
+    void UpdateControlBar(ChartCanvas *cc);
 
     void ShowTides(bool bShow);
     void ShowCurrents(bool bShow);
 
-    void SubmergeToolbar(void);
-    void SubmergeToolbarIfOverlap(int x, int y, int margin = 0);
-    void SurfaceToolbar(void);
-    void ToggleToolbar( bool b_smooth = false );
-    void RaiseToolbarRecoveryWindow();
-    bool IsToolbarShown();
-    void SetToolbarScale(void);
+    void SubmergeAllToolbars(void);
+    void SurfaceAllToolbars(void);
+    void ToggleAllToolbars( bool b_smooth = false );
+    void SetAllToolbarScale(void);
     void SetGPSCompassScale(void);
     
-    void HandlePianoClick(int selected_index, int selected_dbIndex);
-    void HandlePianoRClick(int x, int y,int selected_index, int selected_dbIndex);
-    void HandlePianoRollover(int selected_index, int selected_dbIndex);
-
-    void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
-    void OnPianoMenuDisableChart(wxCommandEvent& event);
-    void OnPianoMenuEnableChart(wxCommandEvent& event);
-    bool IsPianoContextMenuActive(){ return piano_ctx_menu != 0; }
-    
-    void SetGroupIndex(int index);
+    void RefreshGroupIndices(void);
 
     double GetBestVPScale(ChartBase *pchart);
-
-    ChartCanvas *GetCanvasWindow(){ return m_pchart_canvas; }
-    void SetCanvasWindow(ChartCanvas *pcanv){ m_pchart_canvas = pcanv; }
 
     ColorScheme GetColorScheme();
     void SetAndApplyColorScheme(ColorScheme cs);
 
     void OnFrameTCTimer(wxTimerEvent& event);
     void OnFrameCOGTimer(wxTimerEvent& event);
-    void SetupQuiltMode(void);
 
-    void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
+    void ChartsRefresh();
 
     bool CheckGroup(int igroup);
     double GetMag(double a);
@@ -472,7 +477,6 @@ class MyFrame: public wxFrame
     
     wxStatusBar         *m_pStatusBar;
     wxMenuBar           *m_pMenuBar;
-    int                 nRoute_State;
     int                 nBlinkerTick;
     bool                m_bTimeIsSet;
 
@@ -491,11 +495,11 @@ class MyFrame: public wxFrame
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
-    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbar(); }
-    void RequestNewToolbar( bool bforcenew = false);
+    void RequestNewToolbarArgEvent( wxCommandEvent & WXUNUSED( event ) ){ return RequestNewToolbars(); }
+    void RequestNewToolbars( bool bforcenew = false);
 
     void ActivateMOB(void);
-    void UpdateGPSCompassStatusBox(bool b_force_new = false);
+    void UpdateGPSCompassStatusBoxes(bool b_force_new = false);
     void UpdateRotationState( double rotation );
     
     bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
@@ -505,38 +509,34 @@ class MyFrame: public wxFrame
     bool                m_bdefer_resize;
     wxSize              m_defer_size;
     wxSize              m_newsize;
+    double           COGTable[MAX_COG_AVERAGE_SECONDS];
     
     void FastClose();
+    void SetChartUpdatePeriod();
+    void CreateCanvasLayout( bool b_useStoredSize = false );
+    void LoadHarmonics();
+    void ReloadAllVP();
+    void SetCanvasSizes( wxSize frameSize );
     
   private:
     void ODoSetSize(void);
     void DoCOGSet(void);
-
-        //      Toolbar support
-    ocpnToolBarSimple *CreateAToolbar();
-    void DestroyMyToolbar();
-    void UpdateToolbar(ColorScheme cs);
-
-    void EnableToolbar(bool newstate);
-
-    bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
-    bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
+    void UpdateCanvasConfigDescriptors();
+    
+    void UpdateAllToolbars( ColorScheme cs );
+    
     void FilterCogSog(void);
-    void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool pos_valid, bool cog_sog_valid, const wxString &sfixtime);
 
     bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
-    void LoadHarmonics();
 
     bool EvalPriority(const wxString & message, DataStream *pDS );
-    void SetAISDisplayStyle(int StyleIndx);
+    void SetAISDisplayStyle(ChartCanvas *cc, int StyleIndx);
 
     int                 m_StatusBarFieldCount;
-
-    ChartCanvas         *m_pchart_canvas;
 
     NMEA0183        m_NMEA0183;                 // Used to parse messages from NMEA threads
 
@@ -548,11 +548,8 @@ class MyFrame: public wxFrame
     wxString         m_last_reported_chart_name;
     wxString         m_last_reported_chart_pubdate;
 
-    double           COGTable[MAX_COG_AVERAGE_SECONDS];
 
     wxString         m_lastAISiconName;
-
-    bool             m_toolbar_scale_tools_shown;
 
     //      Plugin Support
     int                 m_next_available_plugin_tool_id;
@@ -577,6 +574,7 @@ class MyFrame: public wxFrame
     bool                b_autofind;
     
     time_t              m_last_track_rotation_ts;
+    wxRect              m_mainlast_tb_rect;
     
     DECLARE_EVENT_TABLE()
 };

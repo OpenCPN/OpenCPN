@@ -52,6 +52,7 @@
 class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
+class ocpnCompass;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -94,6 +95,8 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
       class ChInfoWin;
       class glChartCanvas;
       class CanvasMenuHandler;
+      class ChartStack;
+      class Piano;
 
 enum                                //  specify the render behaviour of SetViewPoint()
 {
@@ -123,6 +126,10 @@ enum {
       ID_AISDIALOGOK
 };
 
+enum {
+    ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
+};
+
 //----------------------------------------------------------------------------
 // ChartCanvas
 //----------------------------------------------------------------------------
@@ -130,7 +137,7 @@ class ChartCanvas: public wxWindow
 {
      friend class glChartCanvas;
 public:
-      ChartCanvas(wxFrame *frame);
+      ChartCanvas(wxFrame *frame, int canvasIndex);
       ~ChartCanvas();
 
       //    Methods
@@ -140,7 +147,8 @@ public:
       void OnPaint(wxPaintEvent& event);
       void PaintCleanup();
       void Scroll(int dx, int dy);
-
+      void OnToolLeftClick( wxCommandEvent& event );
+      
       bool MouseEventOverlayWindows( wxMouseEvent& event );
       bool MouseEventChartBar( wxMouseEvent& event );
       bool MouseEventSetup( wxMouseEvent& event, bool b_handle_dclick = true );
@@ -149,7 +157,8 @@ public:
       void SetCanvasCursor( wxMouseEvent& event );
       
       void PopupMenuHandler(wxCommandEvent& event);
-
+      bool IsPrimaryCanvas(){ return (m_canvasIndex == 0); }
+      
       bool SetUserOwnship();
       
       double GetCanvasRangeMeters();
@@ -157,8 +166,7 @@ public:
       
       void EnablePaint(bool b_enable);
       virtual bool SetCursor(const wxCursor &c);
-      virtual void Refresh( bool eraseBackground = true,
-                            const wxRect *rect = (const wxRect *) NULL );
+      virtual void Refresh( bool eraseBackground = true, const wxRect *rect = (const wxRect *) NULL );
       virtual void Update();
 
       void LostMouseCapture(wxMouseCaptureLostEvent& event);
@@ -176,12 +184,25 @@ public:
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
 
+      ChartStack *GetpCurrentStack(){ return m_pCurrentStack; }
+      void SetGroupIndex( int index );
+      bool CheckGroup( int igroup );
+      void canvasRefreshGroupIndex( void );
+      void canvasChartsRefresh( int dbi_hint );
+      
+      
+      void SetupCanvasQuiltMode( void );
+      void ApplyCanvasConfig(canvasConfig *pcc);
+      
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
       double GetVPTilt(void) { return GetVP().tilt; }
       void ClearbFollow(void);
-
+      void SetbFollow(void);
+      void TogglebFollow( void );
+      void JumpToPosition( double lat, double lon, double scale );
+      
       void GetDoubleCanvasPointPix(double rlat, double rlon, wxPoint2DDouble *r);
       void GetDoubleCanvasPointPixVP( ViewPort &vp, double rlat, double rlon, wxPoint2DDouble *r );
       bool GetCanvasPointPix( double rlat, double rlon, wxPoint *r );
@@ -193,6 +214,7 @@ public:
       void UpdateAIS();
       void UpdateAlerts();                          // pjotrc 2010.02.22
 
+      bool IsMeasureActive(){ return m_bMeasure_Active; }
       wxBitmap &GetTideBitmap(){ return m_cTideBitmap; }
       
       void UnlockQuilt();
@@ -203,6 +225,7 @@ public:
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
       double GetBestStartScale(int dbi_hint, const ViewPort &vp);
+      void ConfigureChartBar();
       
       int GetNextContextMenuId();
 
@@ -215,8 +238,6 @@ public:
 
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
-
-      wxString FormatDistanceAdaptive( double distance );
 
       //    Accessors
       int GetCanvasWidth(){ return m_canvas_width;}
@@ -231,6 +252,7 @@ public:
       void SetVP(ViewPort &);
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
+      Piano *GetPiano(){ return m_Piano; }
 
       bool isRouteEditing( void ){ return m_bRouteEditing && m_pRoutePointEditTarget; }
       bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
@@ -282,6 +304,8 @@ public:
       int FindClosestCanvasChartdbIndex(int scale);
       void UpdateCanvasOnGroupChange(void);
       int AdjustQuiltRefChart( void );
+      void ToggleCourseUp( );
+      
  
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
@@ -289,6 +313,8 @@ public:
       void ShowTrackPropertiesDialog( Track* selected );
       void DrawTCWindow(int x, int y, void *pIDX);
       
+      void UpdateGPSCompassStatusBox( bool b_force_new );
+      ocpnCompass *GetCompass(){ return m_Compass; }
       
       wxColour GetFogColor(){ return m_fog_color; }      
       
@@ -299,6 +325,26 @@ public:
       void CancelMeasureRoute();
       void DropMarker(bool atOwnShip = true);
 
+      bool DoCanvasUpdate( void );
+      void SelectQuiltRefdbChart( int db_index, bool b_autoscale = true );
+      void SelectQuiltRefChart( int selected_index );
+      double GetBestVPScale( ChartBase *pchart );
+      void selectCanvasChartDisplay( int type, int family);
+      void RemoveChartFromQuilt( int dbIndex );
+      
+      void HandlePianoClick( int selected_index, int selected_dbIndex );
+      void HandlePianoRClick( int x, int y, int selected_index, int selected_dbIndex );
+      void HandlePianoRollover( int selected_index, int selected_dbIndex );
+      void UpdateCanvasControlBar( void );
+      void FormatPianoKeys( void );
+      void PianoPopupMenu ( int x, int y, int selected_index, int selected_dbIndex );
+      void OnPianoMenuDisableChart(wxCommandEvent& event);
+      void OnPianoMenuEnableChart(wxCommandEvent& event);
+      bool IsPianoContextMenuActive(){ return m_piano_ctx_menu != 0; }
+      void SetCanvasToolbarItemState( int tool_id, bool state );
+      bool DoCanvasCOGSet( void );
+      
+      
       //Todo build more accessors
       bool        m_bFollow;
       wxCursor    *pCursorPencil;
@@ -316,6 +362,12 @@ public:
       RoutePoint  *m_prev_pMousePoint;
       Quilt       *m_pQuilt;
       bool        m_bShowNavobjects;
+      int         m_canvasIndex;
+      int         m_groupIndex;
+      int          m_routeState;
+      ChartBase   *m_singleChart;
+      bool        m_bCourseUp;
+      double      m_VPRotate;
       
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
@@ -347,12 +399,40 @@ public:
       int GetMinAvailableGshhgQuality() { return pWorldBackgroundChart->GetMinAvailableQuality(); }
       int GetMaxAvailableGshhgQuality() { return pWorldBackgroundChart->GetMaxAvailableQuality(); }
 
+      ocpnFloatingToolbarDialog *RequestNewCanvasToolbar(bool bforcenew);
+      void UpdateToolbarColorScheme( ColorScheme cs );
+      void SetAISCanvasDisplayStyle(int StyleIndx);
+      void TouchAISToolActive( void );
+      void UpdateAISTBTool( void );
+      void SetToolbarScaleFactor( double scale_factor){ m_toolbar_scalefactor = scale_factor; }
+      ocpnFloatingToolbarDialog *GetToolbar(){ return m_toolBar; }
+      void SetToolbarConfigString( wxString& config){ m_toolbarConfig = config; }
+      wxString GetToolbarConfigString(){ return m_toolbarConfig; }
+      
+      void SetToolbarPosition( wxPoint position );
+      wxPoint GetToolbarPosition();
+      void SetToolbarOrientation( long orient );
+      long GetToolbarOrientation();
+      
+      void SubmergeToolbar(void);
+      void SurfaceToolbar(void);
+      void ToggleToolbar( bool b_smooth = false );
+      bool IsToolbarShown();
+      void DestroyToolbar();
+      
+      void SelectChartFromStack(int index,  bool bDir = false,  ChartTypeEnum New_Type = CHART_TYPE_DONTCARE, ChartFamilyEnum New_Family = CHART_FAMILY_DONTCARE);
+      void SelectdbChart( int dbindex );
+      void ShowTides(bool bShow);
+      void ShowCurrents(bool bShow);
+      void DoCanvasStackDelta( int direction );
+      
 private:
       void CallPopupMenu( int x, int y );
       
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
-    
+      void ToggleCanvasQuiltMode( void );
+      
       ViewPort    VPoint;
       void        PositionConsole(void);
       
@@ -632,7 +712,6 @@ private:
 
 //#ifdef ocpnUSE_GL
       glChartCanvas *m_glcc;
-      wxGLContext   *m_pGLcontext;
 //#endif
 
       //Smooth movement member variables
@@ -659,6 +738,27 @@ private:
       
       bool        m_dragoffsetSet;
 
+      ocpnFloatingToolbarDialog *m_toolBar;
+      double      m_toolbar_scalefactor;
+      wxString    m_toolbarConfig;
+      wxPoint     m_toolbarPosition;
+      long        m_toolbarOrientation;
+      
+      bool        m_bautofind;
+      bool        m_bFirstAuto;
+      double      m_vLat, m_vLon;
+      ChartStack  *m_pCurrentStack;
+      Piano       *m_Piano;
+      bool        m_bpersistent_quilt;
+      
+      wxMenu      *m_piano_ctx_menu;
+      int         menu_selected_dbIndex, menu_selected_index;
+      
+      ocpnCompass *m_Compass;
+      wxRect       m_mainlast_tb_rect;
+      int          m_restore_dbindex;
+      int          m_restore_group;
+      
 DECLARE_EVENT_TABLE()
 };
 

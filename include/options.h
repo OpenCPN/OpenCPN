@@ -486,6 +486,11 @@ class options : private Uncopyable,
   wxTextCtrl *m_pText_Track_Length, *m_pText_Moored_Speed, *m_pText_Scale_Priority;
   wxTextCtrl *m_pText_ACK_Timeout, *m_pText_Show_Target_Name_Scale;
 
+  // For Display->Configs page...
+  wxScrolledWindow *m_DisplayConfigsPage;
+  
+  wxRadioBox *m_rbcanvasConfig;
+  
   // For the ship page
   wxFlexGridSizer *realSizes;
   wxTextCtrl *m_pOSLength, *m_pOSWidth, *m_pOSGPSOffsetX, *m_pOSGPSOffsetY;
@@ -542,27 +547,19 @@ class options : private Uncopyable,
   void Init(void);
   void CreatePanel_MMSI(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Ownship(size_t parent, int border_size,
-                           int group_item_spacing);
+  void CreatePanel_Ownship(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_NMEA_Compact(size_t parent, int border_size,
-                                int group_item_spacing);
-  void CreatePanel_ChartsLoad(size_t parent, int border_size,
-                              int group_item_spacing);
-  void CreatePanel_VectorCharts(size_t parent, int border_size,
-                                int group_item_spacing);
-  void CreatePanel_TidesCurrents(size_t parent, int border_size,
-                                 int group_item_spacing);
-  void CreatePanel_ChartGroups(size_t parent, int border_size,
-                               int group_item_spacing);
-  void CreatePanel_Display(size_t parent, int border_size,
-                           int group_item_spacing);
+  void CreatePanel_NMEA_Compact(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_ChartsLoad(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_VectorCharts(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_TidesCurrents(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_ChartGroups(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Display(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_UI(size_t parent, int border_size, int group_item_spacing);
-  void CreatePanel_Units(size_t parent, int border_size,
-                         int group_item_spacing);
-  void CreatePanel_Advanced(size_t parent, int border_size,
-                            int group_item_spacing);
-
+  void CreatePanel_Units(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Advanced(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_Configs(size_t parent, int border_size, int group_item_spacing);
+  
   int m_returnChanges;
   wxListBox *tcDataSelected;
   std::vector<int> marinersStdXref;

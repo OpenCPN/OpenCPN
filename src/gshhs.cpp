@@ -64,6 +64,9 @@ extern wxString gWorldMapLocation;
 
 GSHHSChart::GSHHSChart() {
     reader = NULL;
+    land = wxColor( 250, 250, 250 );
+    water = wxColor( 0, 0, 0 );
+    
 }
 
 GSHHSChart::~GSHHSChart() {
@@ -820,11 +823,12 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
         glEnableClientState(GL_VERTEX_ARRAY);
         
         // use a viewport that allows the vertexes to be reused over many frames
-        if(glChartCanvas::HasNormalizedViewPort(vp)) {
-            glPushMatrix();
-            glChartCanvas::MultMatrixViewPort(vp);
-            nvp = glChartCanvas::NormalizedViewPort(vp);
-        }
+        // TODO fix for multicanvas
+//         if(glChartCanvas::HasNormalizedViewPort(vp)) {
+//             glPushMatrix();
+//             glChartCanvas::MultMatrixViewPort(vp);
+//             nvp = glChartCanvas::NormalizedViewPort(vp);
+//         }
     }
 #endif
     for( clon = clonmin; clon < clonmax; clon++ ) {

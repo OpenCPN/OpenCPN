@@ -104,8 +104,6 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
-extern ChartCanvas       *cc1;
-extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
@@ -3438,7 +3436,6 @@ static int ExtensionCompare( const wxString& first, const wxString& second )
 }
 
 
-
 int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFiles,
                                   wxDateTime date000, wxString edtn000)
 {
@@ -5818,7 +5815,11 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
     }
 }
 
-bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
+bool s57_CheckExtendedLightSectors( ChartCanvas *cc, int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs )
+{
+    if( !cc )
+        return false;
+    
     double cursor_lat, cursor_lon;
     static float lastLat, lastLon;
 
@@ -5828,7 +5829,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     ChartPlugInWrapper *target_plugin_chart = NULL;
     s57chart *Chs57 = NULL;
 
-    ChartBase *target_chart = cc1->GetChartAtCursor();
+    ChartBase *target_chart = cc->GetChartAtCursor();
     if( target_chart ){
         if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
             target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
@@ -5837,7 +5838,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     }
 
 
-    cc1->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
+    cc->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
 
     if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
 
@@ -5849,8 +5850,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     bool bleading_attribute = false;
 
     int opacity = 100;
-    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
-    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
+    if( cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
+    if( cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
 
     int yOpacity = (float)opacity*1.3; // Matched perception of white/yellow with red/green
 

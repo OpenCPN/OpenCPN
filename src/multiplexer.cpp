@@ -30,6 +30,7 @@
 #include "NMEALogWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
+#include "Route.h"
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;

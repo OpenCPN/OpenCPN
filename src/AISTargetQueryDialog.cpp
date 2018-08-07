@@ -38,6 +38,7 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 #include "Track.h"
+#include "RoutePoint.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
@@ -48,10 +49,10 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern ChartCanvas *cc1;
 extern RouteList *pRouteList;
 extern TrackList *pTrackList;
 extern OCPNPlatform  *g_Platform;
+extern MyFrame *gFrame;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
@@ -119,8 +120,8 @@ void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
-            cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-            cc1->undo->AfterUndoableAction( NULL );
+            gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
             Refresh( false );
         }
     }

@@ -61,8 +61,6 @@ extern GLuint g_raster_format;
 extern int          g_nCacheLimit;
 extern int          g_memCacheLimit;
 
-extern ChartCanvas *cc1;
-extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 
 extern ChartDB      *ChartData;

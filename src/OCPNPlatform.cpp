@@ -392,8 +392,11 @@ void OCPNPlatform::Initialize_1( void )
     
     
     // URL for sending error reports over HTTP.
+    info.pszEmailTo = _T("opencpn@bigdumboat.com");
+    info.pszSmtpLogin = _T("opencpn");
+    info.pszSmtpPassword = _T("19micronheads");
+    
     if(1/*g_bEmailCrashReport*/){
-        info.pszEmailTo = _T("opencpn@bigdumboat.com");
         info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
         info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
         info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
@@ -402,9 +405,9 @@ void OCPNPlatform::Initialize_1( void )
         info.dwFlags |= CR_INST_DONT_SEND_REPORT;
         info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY;       // don't send at all
     }
-    
-    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
+
+    info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP
+    info.uPriorities[CR_SMAPI] = 3;  // Third try send report over Simple MAPI
     
     wxStandardPaths& crash_std_path = g_Platform->GetStdPaths();
     

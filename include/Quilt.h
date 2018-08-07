@@ -28,6 +28,7 @@
 #include "chart1.h"
 #include "LLRegion.h"
 #include "OCPNRegion.h"
+#include "chcanv.h"
 
 extern bool g_bopengl;
 
@@ -88,7 +89,7 @@ class Quilt
 {
 public:
 
-    Quilt();
+    Quilt( ChartCanvas *parent);
     ~Quilt();
 
     void SetQuiltParameters( double CanvasScaleFactor, int CanvasWidth )
@@ -281,6 +282,8 @@ private:
     
     bool m_bquiltskew;
     bool m_bquiltanyproj;
+    ChartCanvas *m_parent;
+    
 };
 
 #endif

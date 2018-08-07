@@ -1,11 +1,11 @@
 /***************************************************************************
- *
+ * 
  * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
+ * Purpose:  OCPN_AUIManager
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2018 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,52 +23,24 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef WX_PRECOMP
+    #include "wx/wx.h"
+#endif
 
-class ocpnDC;
-class ChartCanvas;
+#include <wx/aui/aui.h>
 
-class ocpnCompass
+class OCPN_AUIManager : public wxAuiManager
 {
 public:
-      ocpnCompass(ChartCanvas *parent);
-      ~ocpnCompass();
-
-      bool IsShown() const { return m_shown; }
-      void Show(bool show) { m_shown = show; }
-      void Paint( ocpnDC& dc );
-
-      void UpdateStatus( bool newColorScheme = false );
-
-      bool MouseEvent( wxMouseEvent& event );
-      void SetColorScheme( ColorScheme cs );
-      int GetXOffset(void) const { return m_xoffset; }
-      int GetYOffset(void) const { return m_yoffset; }
-      float GetScaleFactor(){ return m_scale; }
-      void SetScaleFactor( float factor);
-      
-      void Move(const wxPoint &pt) { m_rect.SetPosition(pt); }
-      wxRect GetRect(void) const { return m_rect; }
-private:
-      void CreateBmp( bool bnew = false );
-
-      ChartCanvas *m_parent;
-      wxBitmap m_StatBmp;
-      wxBitmap m_MaskBmp;
-      wxStaticBitmap *m_pStatBoxToolStaticBmp;
-
-      wxString m_lastgpsIconName;
-      double m_rose_angle;
-
-      wxBitmap _img_compass;
-      wxBitmap _img_gpsRed;
-      int m_xoffset;
-      int m_yoffset;
-      float m_scale;
-
-      wxRect m_rect;
-      bool m_shown;
-#ifdef ocpnUSE_GL
-      unsigned int texobj;
-#endif
-      
+    OCPN_AUIManager(wxWindow* managed_wnd = NULL, unsigned int flags = wxAUI_MGR_DEFAULT);
+    ~OCPN_AUIManager();
+ 
+    void OnMotionx(wxMouseEvent& event);
+    bool DoEndResizeAction(wxMouseEvent& event);
+    void OnLeftUp(wxMouseEvent& event);
+    
+    wxRect  m_0actionHintRect;
+    
+    DECLARE_EVENT_TABLE()
+    
 };

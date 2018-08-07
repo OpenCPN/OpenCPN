@@ -50,6 +50,7 @@
 #include "PositionParser.h"
 #include "pluginmanager.h"
 #include "OCPNPlatform.h"
+#include "Route.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -716,8 +717,7 @@ bool RouteProp::IsThisRouteExtendable()
     else
         if( pEditRouteArray->GetCount() == 0 ) {
 
-            //int nearby_radius_meters = 8./cc1->GetCanvasScaleFactor(); // "nearby" means 8 pixels away
-            int nearby_radius_meters = (int) ( 8. / cc1->GetCanvasTrueScale() );
+            int nearby_radius_meters = (int) ( 8. / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale() );
             double rlat = pLastPoint->m_lat;
             double rlon = pLastPoint->m_lon;
 
@@ -1465,7 +1465,7 @@ void RouteProp::OnRoutepropListClick( wxListEvent& event )
                 m_SplitButton->Enable( true );
             }
 
-            gFrame->JumpToPosition( prp->m_lat, prp->m_lon, cc1->GetVPScale() );
+            gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), prp->m_lat, prp->m_lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
 
 #ifdef __WXMSW__            
             if (m_wpList)
@@ -2351,7 +2351,7 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
     gFrame->Raise();
     #endif
     Hide();
-    cc1->Refresh( false );
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 }
@@ -2388,8 +2388,8 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     gFrame->Raise();
     #endif
     Hide();
-    cc1->InvalidateGL();
-    cc1->Refresh( false );
+    gFrame->InvalidateAllGL();
+    gFrame->RefreshAllCanvas( false );
 
     event.Skip();
 
@@ -3424,7 +3424,7 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
         
         OnPositionCtlUpdated( event );
         SaveChanges(); // write changes to globals and update config
-        cc1->RefreshRect( m_pRoutePoint->CurrentRect_in_DC.Inflate( 1000, 100 ), false );
+        gFrame->RefreshAllCanvas( false );
     }
 
     #ifdef __WXGTK__ 
@@ -3508,7 +3508,7 @@ void MarkInfoImpl::OnPositionCtlUpdated( wxCommandEvent& event )
     }
 
     // Update the mark position dynamically
-    cc1->Refresh();
+    gFrame->RefreshAllCanvas();
 }
 
 void MarkInfoImpl::OnRightClick( wxCommandEvent& event )

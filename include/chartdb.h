@@ -107,8 +107,8 @@ public:
       bool LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check);
       bool SaveBinary(const wxString & filename) { return ChartDatabase::Write(filename); }
 
-      int  BuildChartStack(ChartStack * cstk, float lat, float lon);
-      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add );
+      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int groupIndex);
+      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add, int groupIndex );
       bool EqualStacks(ChartStack *, ChartStack *);
       bool CopyStack(ChartStack *pa, ChartStack *pb);
       wxString GetFullPath(ChartStack *ps, int stackindex);

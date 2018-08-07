@@ -37,16 +37,15 @@
 
 
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern ChartCanvas *cc1;
 extern bool bGPSValid;
 extern bool g_bSatValid;
 extern int g_SatsInView;
-extern bool g_bCourseUp;
 extern MyFrame *gFrame;
 extern bool g_bopengl;
 
-ocpnCompass::ocpnCompass()
+ocpnCompass::ocpnCompass( ChartCanvas *parent)
 {
+    m_parent = parent;
      ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
      _img_compass = style->GetIcon( _T("CompassRose") );
      _img_gpsRed = style->GetIcon( _T("gpsRed") );
@@ -63,7 +62,8 @@ ocpnCompass::ocpnCompass()
 #ifdef ocpnUSE_GL
     texobj = 0;
 #endif
-    
+
+    m_scale = 1.0;
 }
 
 ocpnCompass::~ocpnCompass()
@@ -114,7 +114,7 @@ bool ocpnCompass::MouseEvent( wxMouseEvent& event )
         return false;
 
     if (event.LeftDown())
-        gFrame->ToggleCourseUp();
+        m_parent->ToggleCourseUp( );
     return true;
 }
 
@@ -248,12 +248,13 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
 
     double rose_angle = -999.;
 
-    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
-        rose_angle = -cc1->GetVPRotation();
-    } else
-        rose_angle = 0.;
+    if( ( fabs( m_parent->GetVPRotation() ) > .01 ) || ( fabs( m_parent->GetVPSkew() ) > .01 ) ) {
+        rose_angle = -m_parent->GetVPRotation();
+     } else
+         rose_angle = 0.;
 
-    if( fabs( m_rose_angle - rose_angle ) > .1 ) b_need_refresh = true;
+    if( fabs( m_rose_angle - rose_angle ) > .1 ) 
+        b_need_refresh = true;
 
     if( !b_need_refresh )
         return;
@@ -315,17 +316,16 @@ void ocpnCompass::CreateBmp( bool newColorScheme )
     cwidth = wxMin( cwidth, cheight );
     cheight = cwidth;
     
-    if( g_bCourseUp )
+    if( m_parent->m_bCourseUp )
         BMPRose = style->GetIcon( _T("CompassRose"), cwidth, cheight );
     else
         BMPRose = style->GetIcon( _T("CompassRoseBlue"), cwidth, cheight );
-    if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
-        
-        wxImage rose_img = BMPRose.ConvertToImage();
-        wxPoint rot_ctr( cwidth / 2, cheight / 2  );
-        wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
-        BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, cwidth, cheight ));
-    }
+    if( ( fabs( m_parent->GetVPRotation() ) > .01 ) || ( fabs( m_parent->GetVPSkew() ) > .01 ) ) {
+         wxImage rose_img = BMPRose.ConvertToImage();
+         wxPoint rot_ctr( cwidth / 2, cheight / 2  );
+         wxImage rot_image = rose_img.Rotate( rose_angle, rot_ctr, true, &after_rotate );
+         BMPRose = wxBitmap( rot_image ).GetSubBitmap( wxRect( -after_rotate.x, -after_rotate.y, cwidth, cheight ));
+     }
 
     wxBitmap iconBm;
 

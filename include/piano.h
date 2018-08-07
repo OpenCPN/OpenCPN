@@ -43,6 +43,7 @@
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 class MyFrame;
+class ChartCanvas;
 
 //----------------------------------------------------------------------------
 // Piano
@@ -50,7 +51,7 @@ class MyFrame;
 class Piano : public wxEvtHandler
 {
 public:
-      Piano();
+      Piano( ChartCanvas *parent );
       ~Piano();
 
       void Paint(int y, wxDC &dc, wxDC *shapeDC=NULL);
@@ -93,6 +94,8 @@ private:
 
       wxString GetStateHash();
       wxString    m_hash;
+      
+      ChartCanvas *m_parentCanvas;
       
       int         m_nRegions;
       int         m_index_last;

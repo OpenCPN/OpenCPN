@@ -1290,6 +1290,19 @@ void s52plib::FlushSymbolCaches( void )
         glDeleteLists( list, 1 );
     }
     m_CARC_DL_hashmap.clear();
+    
+    // Flush all texFonts
+    TexFont *f_cache = 0;
+    unsigned int i;
+    for (i = 0; i < TXF_CACHE; i++)
+    {
+        if (s_txf[i].key != 0) {
+            f_cache = &s_txf[i].cache;
+            f_cache->Delete();
+            s_txf[i].key = 0;
+        }
+    }
+    
 #endif
 }
 
@@ -7931,7 +7944,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                 break; // AC
 
             case RUL_ARE_PA:
-                RenderToGLAP( rzRules, rules, vp );
+                //RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
             case RUL_CND_SY: {
@@ -7949,7 +7962,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                                 RenderToGLAC( rzRules, rules, vp );
                                 break;
                             case RUL_ARE_PA:
-                                RenderToGLAP( rzRules, rules, vp );
+                                //RenderToGLAP( rzRules, rules, vp );
                                 break;
                             case RUL_NONE:
                             default:

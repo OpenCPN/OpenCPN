@@ -55,6 +55,7 @@
 #include "cutil.h"
 #include "AIS_Decoder.h"
 #include "wx28compat.h"
+#include "Route.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>

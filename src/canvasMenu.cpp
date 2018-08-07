@@ -64,7 +64,7 @@
 #include "AIS_Target_Data.h"
 #include "SendToGpsDlg.h"
 #include "Track.h"
-
+#include "Route.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -91,10 +91,8 @@ extern void pupHandler_PasteWaypoint();
 extern AIS_Decoder      *g_pAIS;
 extern bool             g_bShowAIS;
 extern bool             g_bShowAreaNotices;
-extern ChartBase        *Current_Ch;
 extern bool             bGPSValid;
 extern Routeman         *g_pRouteMan;
-extern bool             g_bCourseUp;
 extern bool             g_bskew_comp;
 extern double           gLat, gLon, gSog, gCog, vLat, vLon;
 extern MyFrame          *gFrame;
@@ -128,9 +126,7 @@ extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern RouteList        *pRouteList;
 extern wxString         g_default_wp_icon;
-extern ChartStack       *pCurrentStack;
 extern bool              g_btouch;
-extern int              g_GroupIndex;
 extern bool             g_bBasicMenus;
 
 
@@ -380,14 +376,19 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             }
         }
     }
+
+    int nChartStack = 0;
+    if(parent->GetpCurrentStack())
+        nChartStack = parent->GetpCurrentStack()->nEntry;
+    
     if( !parent->GetVP().b_quilt ) {
-        if( parent->parent_frame->GetnChartStack() > 1 ) {
+        if( nChartStack > 1 ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
             MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
             MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
         }
 
-        if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
+        if( ( parent->m_singleChart && ( parent->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _( "..." ) );
         }
 
@@ -397,7 +398,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
             MenuAppend1( contextMenu, ID_DEF_MENU_QUERY, _( "Object Query" ) + _( "..." ) );
         } else {
 #ifndef __OCPN__ANDROID__            
-            if( !g_bBasicMenus && (parent->parent_frame->GetnChartStack() > 1 ) ) {
+if( !g_bBasicMenus && (nChartStack > 1 ) ) {
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("Ctrl-Left") ) );
                 MenuAppend1( contextMenu, ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("Ctrl-Right") ) );
             }
@@ -419,10 +420,10 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         MenuAppend1( contextMenu, ID_DEF_MENU_GOTOPOSITION, _("Center view") + _T("...") );
 
     if( !g_bBasicMenus){
-        if( !g_bCourseUp )
+        if( !parent->m_bCourseUp )
             MenuAppend1( contextMenu, ID_DEF_MENU_COGUP, _("Course Up Mode") );
         else {
-            if( !parent->GetVP().b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
+            if( !parent->GetVP().b_quilt && parent->m_singleChart && ( fabs( parent->m_singleChart->GetChartSkew() ) > .01 )
                 && !g_bskew_comp ) MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
             else
                 MenuAppend1( contextMenu, ID_DEF_MENU_NORTHUP, _("North Up Mode") );
@@ -472,7 +473,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         }
         delete kml;
 
-        if( !parent->GetVP().b_quilt && Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
+        if( !parent->GetVP().b_quilt && parent->m_singleChart && ( parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP ) ) {
             MenuAppend1( contextMenu, ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog..." ) );
         }
 
@@ -480,11 +481,12 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
         
  
 #ifndef __OCPN__ANDROID__        
-    if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
-        int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
-        if( dbIndex != -1 )
-            MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
-    }
+//TODO stack
+//     if( ( parent->GetVP().b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
+//         int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
+//         if( dbIndex != -1 )
+//             MenuAppend1( contextMenu, ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
+//     }
 #endif
 
 
@@ -519,7 +521,7 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
 #ifdef __WXMSW__
     subMenuChart->Remove( wxID_CANCEL );
 #endif
-        subMenuChart->Check( ID_DEF_MENU_GROUPBASE + g_GroupIndex, true );
+        subMenuChart->Check( ID_DEF_MENU_GROUPBASE + parent->m_groupIndex, true );
     }
     
         
@@ -606,6 +608,20 @@ void CanvasMenuHandler::CanvasPopupMenu( int x, int y, int seltype )
                 }
 
                 MenuAppend1( menuAIS, ID_DEF_MENU_COPY_MMSI, _("Copy Target MMSI") );
+                menuAIS->AppendSeparator();
+                
+                if( !parent->GetVP().b_quilt ) {
+                    if( ( parent->m_singleChart && ( parent->m_singleChart->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
+                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+                    }
+                    
+                } else {
+                    ChartBase *pChartTest = parent->m_pQuilt->GetChartAtPix( parent->GetVP(), wxPoint( x, y ) );
+                    if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) ) {
+                        MenuAppend1( menuAIS, ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+                    }
+                }
+                        
                 
                 menuFocus = menuAIS;
             }
@@ -917,16 +933,15 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
         parent->parent_frame->DoChartUpdate();
 
-        parent->parent_frame->SelectChartFromStack( 0, false, CHART_TYPE_DONTCARE,
+        parent->SelectChartFromStack( 0, false, CHART_TYPE_DONTCARE,
                                             CHART_FAMILY_RASTER );
         break;
 
     case ID_DEF_MENU_SCALE_IN:
-        parent->parent_frame->DoStackDown();
-        break;
+        parent->DoCanvasStackDelta( -1 );
 
     case ID_DEF_MENU_SCALE_OUT:
-        parent->parent_frame->DoStackUp();
+        parent->DoCanvasStackDelta( 1 );
         break;
 
     case ID_UNDO:
@@ -1030,11 +1045,11 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_DEF_MENU_COGUP:
-        gFrame->ToggleCourseUp();
+        parent->ToggleCourseUp();
         break;
 
     case ID_DEF_MENU_NORTHUP:
-        gFrame->ToggleCourseUp();
+        parent->ToggleCourseUp();
         break;
         
     case ID_DEF_MENU_TOGGLE_FULL:
@@ -1044,6 +1059,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     case ID_DEF_MENU_GOTOPOSITION:
         if( NULL == pGoToPositionDialog ) // There is one global instance of the Go To Position Dialog
             pGoToPositionDialog = new GoToPositionDialog( parent );
+        pGoToPositionDialog->SetCanvas(parent);
         pGoToPositionDialog->CheckPasteBufferForPosition();
         pGoToPositionDialog->Show();
         break;
@@ -1129,7 +1145,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_DEF_MENU_DEACTIVATE_MEASURE:
         parent->CancelMeasureRoute();
-        gFrame->SurfaceToolbar();
+        gFrame->SurfaceAllToolbars();
         parent->InvalidateGL();
         parent->Refresh( false );
         break;
@@ -1142,8 +1158,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         }
         
         cm93compchart *pch = NULL;
-        if( !parent->GetVP().b_quilt && Current_Ch  && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
-                pch = (cm93compchart *) Current_Ch;
+        if( !parent->GetVP().b_quilt && parent->m_singleChart  && ( parent->m_singleChart->GetChartType() == CHART_TYPE_CM93COMP ) ) {
+            pch = (cm93compchart *) parent->m_singleChart;
         }
         
         if( g_pCM93OffsetDialog ){
@@ -1193,7 +1209,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     case ID_DEF_MENU_QUILTREMOVE: {
         if( parent->GetVP().b_quilt ) {
             int dbIndex = parent->m_pQuilt->GetChartdbIndexAtPix( parent->GetVP(), wxPoint( popx, popy ) );
-            parent->parent_frame->RemoveChartFromQuilt( dbIndex );
+            parent->RemoveChartFromQuilt( dbIndex );
 
             parent->ReloadVP();
 
@@ -1232,6 +1248,9 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
                 pRoutePropDialog->UpdateProperties();
             }
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas();
+            
         }
         break;
     }
@@ -1262,7 +1281,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
             parent->undo->InvalidateUndo();
 
-            parent->InvalidateGL();
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas();
         }
         break;
     }
@@ -1332,7 +1352,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute->m_bIsInLayer ) break;
 
         parent->m_pMouseRoute = m_pSelectedRoute;
-        parent->parent_frame->nRoute_State = m_pSelectedRoute->GetnPoints() + 1;
+        parent->m_routeState = m_pSelectedRoute->GetnPoints() + 1;
         parent->m_pMouseRoute->m_lastMousePointIndex = m_pSelectedRoute->GetnPoints();
         parent->m_pMouseRoute->SetHiLite(50);
         
@@ -1445,7 +1465,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }
 
-            parent->InvalidateGL();
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas( true );
         }
 
         break;
@@ -1454,7 +1475,8 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute ) {
             if( m_pSelectedRoute->m_bIsInLayer ) break;
             parent->RemovePointFromRoute( m_pFoundRoutePoint, m_pSelectedRoute );
-            parent->InvalidateGL();
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas();
         }
         break;
 
@@ -1506,19 +1528,20 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateTrkListCtrl();
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }
-            parent->InvalidateGL();
+            gFrame->InvalidateAllGL();
+            gFrame->RefreshAllCanvas();
         }
         break;
     }
 
     case ID_RC_MENU_SCALE_IN:
-        parent->parent_frame->DoStackDown();
+        parent->parent_frame->DoStackDown( parent );
         parent->GetCanvasPointPix( zlat, zlon, &r );
         parent->WarpPointer( r.x, r.y );
         break;
 
     case ID_RC_MENU_SCALE_OUT:
-        parent->parent_frame->DoStackUp();
+        parent->parent_frame->DoStackUp( parent );
         parent->GetCanvasPointPix( zlat, zlon, &r );
         parent->WarpPointer( r.x, r.y );
         break;
@@ -1537,7 +1560,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_RC_MENU_FINISH:
         parent->FinishRoute();
-        gFrame->SurfaceToolbar();
+        gFrame->SurfaceAllToolbars();
         parent->Refresh( false );
         break;
 
@@ -1567,7 +1590,7 @@ void CanvasMenuHandler::PopupMenuHandler( wxCommandEvent& event )
     //  Chart Groups....
     if( ( event.GetId() >= ID_DEF_MENU_GROUPBASE )
             && ( event.GetId() <= ID_DEF_MENU_GROUPBASE + (int) g_pGroupArray->GetCount() ) ) {
-        gFrame->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
+        parent->SetGroupIndex( event.GetId() - ID_DEF_MENU_GROUPBASE );
     }
 
     parent->InvalidateGL();

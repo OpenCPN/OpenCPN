@@ -32,12 +32,12 @@
 #include "Select.h"
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
+#include "RoutePoint.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern MyFrame *gFrame;
-extern ChartCanvas *cc1;
 extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx;
@@ -47,7 +47,6 @@ extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern ChartCanvas *cc1;
 extern OCPNPlatform  *g_Platform;
 
 
@@ -386,10 +385,10 @@ void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
             
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
-            if(cc1){
-                cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
-                cc1->undo->AfterUndoableAction( NULL );
-                cc1->InvalidateGL();
+            if(gFrame->GetPrimaryCanvas()){
+                gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+                gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction( NULL );
+                gFrame->InvalidateAllGL();
             }
             Refresh( false );
         }
@@ -411,7 +410,7 @@ void AISTargetAlertDialog::OnIdJumptoClick( wxCommandEvent& event )
 {
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
-        if( td ) gFrame->JumpToPosition( td->Lat, td->Lon, cc1->GetVPScale() );
+        if( td ) gFrame->JumpToPosition( gFrame->GetPrimaryCanvas(), td->Lat, td->Lon, gFrame->GetPrimaryCanvas()->GetVPScale() );
     }
 }
 

@@ -44,9 +44,8 @@
 #include "bbox.h"
 #include "chcanv.h"
 #include "chartdbs.h"
-#include "RoutePoint.h"
+//nclude "RoutePoint.h"
 #include "vector2D.h"
-#include "Route.h"
 #include "SelectItem.h"
 
 enum
@@ -77,6 +76,8 @@ extern double fromUsrSpeed( double usr_speed, int unit = -1 );
 extern wxString getUsrDistanceUnit( int unit = -1 );
 extern wxString getUsrSpeedUnit( int unit = -1 );
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
+extern wxString FormatDistanceAdaptive( double distance );
+
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                       wxColour color, unsigned char transparency );
 
@@ -91,6 +92,9 @@ class NavObjectCollection1;
 class NavObjectChanges;
 class TrackPoint;
 class TrackList;
+class RouteList;
+class canvasConfig;
+class RoutePointList;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers
@@ -146,7 +150,11 @@ public:
       virtual void DestroyConfigGroups ( void );
       virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
 
-
+      virtual void LoadCanvasConfigs( );
+      virtual void LoadConfigCanvas( canvasConfig *cc );
+      virtual void SaveCanvasConfigs( );
+      virtual void SaveConfigCanvas( canvasConfig *cc );
+      
       virtual bool UpdateChartDirs(ArrayOfCDI &dirarray);
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();

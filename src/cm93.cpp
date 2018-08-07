@@ -71,7 +71,6 @@ extern ocpnGLOptions g_GLOptions;
 #define new DEBUG_NEW
 #endif
 
-extern ChartCanvas               *cc1;
 extern CM93OffsetDialog          *g_pCM93OffsetDialog;
 extern OCPNPlatform     *g_Platform;
 extern wxString         g_SENCPrefix;
@@ -6012,7 +6011,7 @@ void cm93compchart::SetSpecialCellIndexOffset ( int cell_index, int object_id, i
             m_pcm93chart_current->SetUserOffsets ( cell_index, object_id, subcell, xoff, yoff );
 }
 
-bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
+bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp, ChartCanvas *cc )
 {
       if ( m_cmscale >= 7 )
           return false;
@@ -6020,6 +6019,8 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 #ifdef ocpnUSE_GL        
       ViewPort nvp;
       bool secondpass = false;
+      glChartCanvas *glcc = cc->GetglCanvas();
+      
       if(g_bopengl) /* opengl */ {
           wxPen pen = dc.GetPen();
           wxColour col = pen.GetColour();
@@ -6043,8 +6044,9 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
           // use a viewport that allows the vertexes to be reused over many frames
           glPushMatrix();
 
+          //TODO this needs fixing for multicanvas
           if(glChartCanvas::HasNormalizedViewPort(vp)) {
-              glChartCanvas::MultMatrixViewPort(vp);
+              glcc->MultMatrixViewPort(vp);
               nvp = glChartCanvas::NormalizedViewPort(vp);
           } else
               nvp = vp;
@@ -6430,8 +6432,9 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 #ifdef ocpnUSE_GL
       if(g_bopengl) {
           /* need a full refresh if not in quilted mode, and the cell changed */
-          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
-              glChartCanvas::Invalidate();
+          //TODO re-add this for multicanvas
+          //if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              //glChartCanvas::Invalidate();
 
           m_last_cell_adjustvp = m_pcm93chart_current;
       }
@@ -6880,7 +6883,7 @@ void CM93OffsetDialog::OnClose ( wxCloseEvent& event )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 
@@ -6925,7 +6928,7 @@ void CM93OffsetDialog::UpdateOffsets ( void )
 
             if ( m_pparent ) {
                   m_pparent->Refresh ( true );
-                  cc1->InvalidateGL();
+                  gFrame->InvalidateAllGL();
             }
       }
 }
@@ -6973,7 +6976,7 @@ void CM93OffsetDialog::OnCellSelected ( wxListEvent &event )
 
       if ( m_pparent ) {
             m_pparent->Refresh ( true );
-            cc1->InvalidateGL();
+            gFrame->InvalidateAllGL();
       }
     }
 }

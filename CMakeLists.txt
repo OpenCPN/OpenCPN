@@ -1212,6 +1212,7 @@ SET(HDRS
                 include/FlexHash.h
                 include/iENCToolbar.h
                 include/mbtiles.h
+                include/OCPN_AUIManager.h
 
 )
 
@@ -1307,6 +1308,7 @@ SET(SRCS
                 src/FlexHash.cpp
                 src/iENCToolbar.cpp
                 src/mbtiles.cpp
+                src/OCPN_AUIManager.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}
@@ -2121,11 +2123,11 @@ ENDIF(PACKAGE_FORMAT EQUAL "DEB")
 
 INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-IF(BUNDLE_DOCS MATCHES "ON")
-  INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
-ELSE(BUNDLE_DOCS MATCHES "ON")
+#IF(BUNDLE_DOCS MATCHES "ON")
+#  INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+#ELSE(BUNDLE_DOCS MATCHES "ON")
   INSTALL(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc )
-ENDIF(BUNDLE_DOCS MATCHES "ON")
+#ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 IF(UNIX)
   INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
