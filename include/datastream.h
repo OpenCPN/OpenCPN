@@ -60,10 +60,10 @@
 #endif
 
 #ifdef __WXMSW__
-#include <windows.h>
-#include <dbt.h>
-#include <winioctl.h>
-#include <initguid.h>
+// #include <windows.h>
+// #include <dbt.h>
+// #include <winioctl.h>
+// #include <initguid.h>
 #endif
 #include <string>
 #include "ConnectionParams.h"
