@@ -5178,7 +5178,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString lightsHtml;
     wxString positionString;
     std::vector<S57Light*> lights;
-    S57Light* curLight = NULL;
+    S57Light* curLight = nullptr;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
         ObjRazRules *current = node->GetData();
@@ -5297,6 +5297,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 // DEPARE gets just its range. Lights are grouped.
 
                 if( isLight ) {
+                    assert( curLight != nullptr);
                     curLight->attributeNames.Add( curAttrName );
                     if( curAttrName.StartsWith( _T("SECTR") ) ) curLight->hasSectors = true;
                 } else {
@@ -5329,6 +5330,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
 
                 if( isLight ) {
+                    assert( curLight != nullptr);
                     curLight->attributeValues.Add( value );
                 } else {
                     if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") )
@@ -5369,6 +5371,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     } // Object for loop
 
     if( !lights.empty() ) {
+        assert( curLight != nullptr);
 
         // For lights we now have all the info gathered but no HTML output yet, now
         // run through the data and build a merged table for all lights.
@@ -5390,7 +5393,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                 lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
 
-                if( curLight && curLight->hasSectors )
+                if( curLight->hasSectors )
                     lightsHtml <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
 
                 lightsHtml << _T("<table>");
