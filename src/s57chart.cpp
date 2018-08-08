@@ -5386,7 +5386,6 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
                 if( thisLight != *lights.begin() )
                     lightsHtml << _T("</table>\n<hr noshade>\n");
-                curLight++;
 
                 lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                 lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
