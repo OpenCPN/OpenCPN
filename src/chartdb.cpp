@@ -881,10 +881,10 @@ ChartFamilyEnum ChartDB::GetCSChartFamily(ChartStack *ps, int stackindex)
 std::vector<int> ChartDB::GetCSArray(ChartStack *ps)
 {
       std::vector<int> ret;
-      ret.reserve(ps->nEntry);
 
       if(ps)
       {
+            ret.reserve(ps->nEntry);
             for(int i=0 ; i<ps->nEntry ; i++)
             {
                   ret.push_back(ps->GetDBIndex(i));
