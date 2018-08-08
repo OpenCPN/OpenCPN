@@ -187,8 +187,8 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event)
  
                 wxRect frameScreenRect = m_frame->GetScreenRect();
                 
-                rect.x = wxMax(rect.x, frameScreenRect.width * 1 / 10);
-                rect.x = wxMin(rect.x, frameScreenRect.width * 9 / 10);
+                rect.x = wxMax(rect.x, frameScreenRect.x + frameScreenRect.width * 1 / 10);
+                rect.x = wxMin(rect.x, frameScreenRect.x + frameScreenRect.width * 9 / 10);
                 
                 // draw new resize hint, if it's inside the managed frame
                 if (1/*frameScreenRect.Contains(rect)*/)
