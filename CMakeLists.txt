@@ -1213,6 +1213,7 @@ SET(HDRS
                 include/iENCToolbar.h
                 include/mbtiles.h
                 include/OCPN_AUIManager.h
+                include/MUIBar.h
 
 )
 
@@ -1309,6 +1310,7 @@ SET(SRCS
                 src/iENCToolbar.cpp
                 src/mbtiles.cpp
                 src/OCPN_AUIManager.cpp
+                src/MUIBar.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}

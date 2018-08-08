@@ -738,6 +738,8 @@ bool             b_reloadForPlugins;
 
 unsigned int     g_canvasConfig;
 
+bool             g_useMUI;
+
 WX_DECLARE_OBJARRAY(ChartCanvas*, arrayofCanvasPtr);
 WX_DEFINE_OBJARRAY(arrayofCanvasPtr);
 

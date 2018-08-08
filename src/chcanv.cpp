@@ -88,6 +88,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "OCPN_AUIManager.h"
+#include "MUIBar.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
@@ -339,6 +340,8 @@ extern int              g_COGAvgSec; // COG average period (sec.) for Course Up 
 
 wxGLContext             *g_pGLcontext;   //shared common context
 
+extern bool             g_useMUI;
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -475,6 +478,11 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     m_Compass = NULL;
     
     g_ChartNotRenderScaleFactor = 2.0;
+    
+    m_muiBar = NULL;
+    if(g_useMUI){
+        m_muiBar = new MUIBar(this);
+    }
 
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -914,6 +922,15 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc)
 }
 
 
+int ChartCanvas::GetPianoHeight()
+{
+    int height = 0;
+    if(g_bShowChartBar && GetPiano())
+        height = m_Piano->GetHeight();
+    
+    return height;
+}
+    
 void ChartCanvas::ConfigureChartBar()
 {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -5956,6 +5973,12 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
         m_toolBar->RePosition();
     }
     
+    //  if MUIBar is active, size the bar
+    if(m_muiBar){
+        m_muiBar->SetBestSize();
+        m_muiBar->SetBestPosition();
+    }
+    
 //    Set up the scroll margins
     xr_margin = m_canvas_width * 95 / 100;
     xl_margin = m_canvas_width * 5 / 100;
@@ -9671,6 +9694,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     dc.DestroyClippingRegion();
 
+    
+    if(m_muiBar)
+        m_muiBar->Refresh();
     
     PaintCleanup();
 

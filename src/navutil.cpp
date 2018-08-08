@@ -417,6 +417,7 @@ extern bool             g_bShowCurrent;
 extern bool             g_benableUDPNullHeader;
 
 extern wxString         g_uiStyle;
+extern bool             g_useMUI;
 
 int                     g_nCPUCount;
 
@@ -558,6 +559,8 @@ int MyConfig::LoadMyConfig()
     Read( _T( "SpaceDropMark" ), &g_bSpaceDropMark, 0 );
     int mem_limit;
     Read( _T ( "MEMCacheLimit" ), &mem_limit, 0 );
+
+    Read( _T ( "UseModernUI5" ), &g_useMUI, 1 );
     
     if(mem_limit > 0)
         g_memCacheLimit = mem_limit * 1024;       // convert from MBytes to kBytes

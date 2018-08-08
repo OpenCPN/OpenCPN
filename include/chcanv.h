@@ -53,6 +53,7 @@ class wxGLContext;
 class GSHHSChart;
 class IDX_entry;
 class ocpnCompass;
+class MUIBar;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -253,7 +254,8 @@ public:
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
       Piano *GetPiano(){ return m_Piano; }
-
+      int GetPianoHeight();
+      
       bool isRouteEditing( void ){ return m_bRouteEditing && m_pRoutePointEditTarget; }
       bool isMarkEditing( void ){ return m_bMarkEditing && m_pRoutePointEditTarget; }
       
@@ -758,6 +760,8 @@ private:
       wxRect       m_mainlast_tb_rect;
       int          m_restore_dbindex;
       int          m_restore_group;
+
+      MUIBar       *m_muiBar;
       
 DECLARE_EVENT_TABLE()
 };
