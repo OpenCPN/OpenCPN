@@ -435,7 +435,7 @@ wxCurlBase::~wxCurlBase()
 //////////////////////////////////////////////////////////////////////
 
 typedef int (*func_T)(void);
-bool wxCurlBase::SetOpt(CURLoption option, ...)
+bool wxCurlBase::SetOpt(int opt, ...)
 {
     va_list arg;
 
@@ -444,7 +444,8 @@ bool wxCurlBase::SetOpt(CURLoption option, ...)
     void *param_obj = NULL;
     curl_off_t param_offset = 0;
 
-    va_start(arg, option);
+    va_start(arg, opt);
+    CURLoption option = (CURLoption)opt;
 
     CURLcode res = CURLE_OK;
 
@@ -491,7 +492,7 @@ bool wxCurlBase::SetStringOpt(CURLoption option, const wxCharBuffer &str)
     return SetOpt(option, (const char*)str);
 }
 
-bool wxCurlBase::GetInfo(CURLINFO info, ...) const
+bool wxCurlBase::GetInfo(int info, ...) const
 {
     va_list arg;
     void* pParam;
@@ -500,8 +501,8 @@ bool wxCurlBase::GetInfo(CURLINFO info, ...) const
     pParam = va_arg(arg, void*);
 
     CURLcode res = CURLE_OK;
-
-    res = curl_easy_getinfo(m_pCURL, info, pParam);
+    CURLINFO cInfo = (CURLINFO)info;
+    res = curl_easy_getinfo(m_pCURL, cInfo, pParam);
 
     DumpErrorIfNeed(res);
     va_end(arg);
