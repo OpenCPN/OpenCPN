@@ -979,7 +979,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
     bool b_hdgValid = true;
     
-    float theta;
+    float theta = (float)-PI / 2.;
     //    If the target reported a valid HDG, then use it for icon
     if( (int) ( td->HDG ) != 511 ) {
         theta = ( ( td->HDG - 90 ) * PI / 180. ) + vp.rotation;
