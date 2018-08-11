@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  MUI Control Bar
+ * Purpose:  Canvas Options Window/Dialog
  * Author:   David Register
  *
  ***************************************************************************
@@ -25,78 +25,63 @@
  */
 
 
-#ifndef __muibar_H__
-#define __muibar_H__
+#ifndef __canvasoption_H__
+#define __canvasoption_H__
 
 #include "chart1.h"
 
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
-
-enum
-{
-    ID_MUI_MENU = 21500
-};
-    
-enum{
-    CO_ANIMATION_LINEAR = 0,
-    CO_PULL,
-    CO_PUSH
+enum {
+    ID_SHOWDEPTHUNITSBOX1 = 31000,
+    ID_OUTLINECHECKBOX1,
+    ID_CHECK_DISPLAYGRID,
+    ID_ZTCCHECKBOX,
+    ID_SMOOTHPANZOOMBOX,
+    ID_PRESERVECHECKBOX,
+    ID_QUILTCHECKBOX1,
+    ID_CHECK_LOOKAHEAD,
+    ID_COURSEUPCHECKBOX
 };
 
 class MyFrame;
 class ChartCanvas;
-class MUIButton;
-class CanvasOptions;
 
 //----------------------------------------------------------------------------
-// MUIBar
+// CanvasOptions
 //----------------------------------------------------------------------------
-class MUIBar : public wxWindow
+
+class  CanvasOptions: public wxScrolledWindow
 {
-public:
-    MUIBar();
-    MUIBar(ChartCanvas* parent, wxWindowID id = wxID_ANY, 
-           const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-           long style = 0, const wxString& name = wxPanelNameStr);
-    
-    ~MUIBar();
 
-    void OnSize( wxSizeEvent& event );
-    void OnPaint( wxPaintEvent& event ); 
-    void OnToolLeftClick(  wxCommandEvent& event );
-    void OnEraseBackground( wxEraseEvent& event );
-    void onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event );
+public:
+    CanvasOptions(wxWindow *parent);
+
+    void OnClose( wxCloseEvent& event );
+    void OnOptionChange( wxCommandEvent &event);
     
-    void SetBestSize( void );
-    void SetBestPosition( void );
+    void RefreshControlValues( void );
+    void UpdateCanvasOptions( void );
     
 private:
-    void Init( void );
-    void CreateControls();
-    void PullCanvasOptions();
-    void PushCanvasOptions();
+    int m_style;
+    DECLARE_EVENT_TABLE()
     
-    ChartCanvas *m_parentCanvas;
+    wxCheckBox *pShowStatusBar, *pShowMenuBar, *pShowChartBar, *pShowCompassWin;
+    wxCheckBox *pPrintShowIcon, *pCDOOutlines, *pSDepthUnits, *pSDisplayGrid;
+    wxCheckBox *pAutoAnchorMark, *pCDOQuilting, *pCBRaster, *pCBVector;
+    wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
+    wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
+    wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pDarkDecorations;
+    wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
+    wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+    wxChoice *m_pShipIconType, *m_pcTCDatasets;
+    wxSlider *m_pSlider_Zoom, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor;
+    wxSlider *m_pSlider_Zoom_Vector;
+    wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
+    wxCheckBox *pEnableZoomToCursor, *pPreserveScale;
     
-    MUIButton   *m_zinButton;
-    MUIButton   *m_zoutButton;
-    MUIButton   *m_menuButton;
-   
-    CanvasOptions *m_canvasOptions;
-    wxPoint     m_targetCOPos;
-    wxPoint     m_currentCOPos;
-    wxPoint     m_startCOPos;
-    
-    wxTimer     m_canvasOptionsAnimationTimer;
-    int         m_animateStep;
-    int         m_animateSteps;
-    int         m_animationType;
-    int         m_animationTotalTime;
-    int         m_pushPull;
-    
-DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif //guard

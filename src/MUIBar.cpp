@@ -36,6 +36,7 @@
 #include "chcanv.h"
 #include "MUIBar.h"
 #include "OCPNPlatform.h"
+#include "CanvasOptions.h"
 
 #ifdef ocpnUSE_SVG
 #include "wxsvg/include/wxSVG/svg.h"
@@ -67,6 +68,7 @@ static wxBitmap LoadSVG( const wxString filename, unsigned int width, unsigned i
     #endif // ocpnUSE_SVG
 }
 
+double getValue(int animationType, double animateStep, double animateSteps);
 
 
 //  Helper classes
@@ -299,11 +301,13 @@ void MUIButton::OnEraseBackground( wxEraseEvent& event )
 
 
 
+#define CANVAS_OPTIONS_ANIMATION_TIMER_1 800
+
 //------------------------------------------------------------------------------
 //          MUIBar Window Implementation
 //------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(MUIBar, wxWindow)
-//EVT_TIMER ( MUIBAR_EVENT_TIMER, MUIBar::onTimerEvent )
+EVT_TIMER ( CANVAS_OPTIONS_ANIMATION_TIMER_1, MUIBar::onCanvasOptionsAnimationTimerEvent )
 EVT_PAINT ( MUIBar::OnPaint )
 EVT_SIZE( MUIBar::OnSize )
 EVT_MENU(-1, MUIBar::OnToolLeftClick)
@@ -336,6 +340,9 @@ MUIBar::~MUIBar()
 void MUIBar::Init()
 {
     m_zinButton = NULL;
+    m_zoutButton = NULL;
+    m_canvasOptions = NULL;
+    m_canvasOptionsAnimationTimer.SetOwner(this, CANVAS_OPTIONS_ANIMATION_TIMER_1);
 }
 
 void MUIBar::CreateControls()
@@ -412,7 +419,22 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
             GetParent()->GetEventHandler()->AddPendingEvent( evt );
             break;
         }
-     
+
+        case ID_MUI_MENU:
+        {
+            if(!m_canvasOptions){
+                m_canvasOptions = new CanvasOptions(m_parent);
+                m_currentCOPos = wxPoint( m_parent->GetSize().x, 20);
+                m_canvasOptions->Move(m_currentCOPos);
+                m_canvasOptions->Hide();
+            }
+            
+            if(m_canvasOptions->IsShown())
+                PushCanvasOptions();
+            else
+                PullCanvasOptions();
+            break;
+        }
         default:
             break;
     }        
@@ -444,4 +466,97 @@ void MUIBar::OnPaint( wxPaintEvent& event )
 }
 
 
+void MUIBar::PullCanvasOptions()
+{
+    //  Setup animation parameters
+    
+    //  Target position
+    int cox = m_parent->GetSize().x - m_canvasOptions->GetSize().x;
+    int coy = 20;
+    m_targetCOPos = wxPoint(cox, coy);
+    
+    //  Start Position
+    m_startCOPos = m_canvasOptions->GetPosition();
+
+    //  Present Position
+    m_currentCOPos = m_startCOPos;
+    
+    //  Animation type
+    m_animationType = CO_ANIMATION_LINEAR;
+    m_animateSteps = 100; 
+    m_animationTotalTime = 200;  // msec
+    m_pushPull = CO_PULL;
+    
+    // Start the animation....
+    m_animateStep = 0;
+    m_canvasOptionsAnimationTimer.Start(10, true);
+    m_canvasOptions->Show();
+}
+
+
+
+void MUIBar::PushCanvasOptions()
+{
+    //  Setup animation parameters
+    
+    //  Target position
+    int cox = m_parent->GetSize().x;
+    int coy = 20;
+    m_targetCOPos = wxPoint(cox, coy);
+    
+    //  Start Position
+    m_startCOPos = m_canvasOptions->GetPosition();
+    
+    //  Present Position
+    m_currentCOPos = m_startCOPos;
+    
+    //  Animation type
+    m_animationType = CO_ANIMATION_LINEAR;
+    m_animateSteps = 100; 
+    m_animationTotalTime = 200;  // msec
+    m_pushPull = CO_PUSH;
+    
+    // Start the animation....
+    m_animateStep = 0;
+    m_canvasOptionsAnimationTimer.Start(10, true);
+    m_canvasOptions->Show();
+    
+}
+
+void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
+{
+    double valueX = getValue(m_animationType, m_animateStep, m_animateSteps);
+    double dx = (m_targetCOPos.x - m_startCOPos.x) * valueX;
+    
+    wxPoint newPos = wxPoint(m_startCOPos.x + dx, m_currentCOPos.y);
+
+    m_canvasOptions->Move(newPos);
+    m_currentCOPos = newPos;
+    m_canvasOptions->Show();
+    
+    double dt = m_animationTotalTime / m_animateSteps;
+    
+    if(m_animateStep++ < m_animateSteps)
+        m_canvasOptionsAnimationTimer.Start(dt, true);
+    else{
+        m_canvasOptions->Move(m_targetCOPos);
+        m_currentCOPos = m_targetCOPos;
+        m_canvasOptions->Show(m_pushPull == CO_PULL);
+    }
+    
+}
+
+//   Animation support 
+double getValue(int animationType, double animateStep, double animateSteps)
+{
+    double value = 0;
+    switch (animationType){
+        case CO_ANIMATION_LINEAR:
+        default:
+            value = animateStep / animateSteps;
+            break;
+    }
+    
+    return value;
+}
 

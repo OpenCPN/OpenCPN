@@ -427,13 +427,22 @@ public:
       void ShowTides(bool bShow);
       void ShowCurrents(bool bShow);
       void DoCanvasStackDelta( int direction );
+
+      bool GetShowDepthUnits(){ return m_bShowDepthUnits; }
+      void SetShowDepthUnits( bool show ){ m_bShowDepthUnits = show; }
+      bool GetShowGrid(){ return m_bDisplayGrid; }
+      void SetShowGrid( bool show ){ m_bDisplayGrid = show; }
+      bool GetShowOutlines(){ return m_bShowOutlines; }
+      void SetShowOutlines( bool show ){ m_bShowOutlines = show; }
+      
+      void ToggleChartOutlines(void);
+      void ToggleCanvasQuiltMode( void );
       
 private:
       void CallPopupMenu( int x, int y );
       
       bool IsTempMenuBarEnabled();
       bool InvokeCanvasMenu(int x, int y, int seltype);
-      void ToggleCanvasQuiltMode( void );
       
       ViewPort    VPoint;
       void        PositionConsole(void);
@@ -762,6 +771,10 @@ private:
       int          m_restore_group;
 
       MUIBar       *m_muiBar;
+      bool         m_bShowOutlines;
+      bool         m_bDisplayGrid;
+      bool         m_bShowDepthUnits;
+
       
 DECLARE_EVENT_TABLE()
 };

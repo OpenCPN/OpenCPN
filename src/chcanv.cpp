@@ -206,8 +206,8 @@ extern CM93OffsetDialog  *g_pCM93OffsetDialog;
 #endif
 
 extern bool             bGPSValid;
-extern bool             g_bShowOutlines;
-extern bool             g_bShowDepthUnits;
+//extern bool             g_bShowOutlines;
+//extern bool             g_bShowDepthUnits;
 extern bool             g_bTempShowMenuBar;
 
 extern AIS_Decoder      *g_pAIS;
@@ -239,7 +239,7 @@ extern int              g_detailslider_dialog_x, g_detailslider_dialog_y;
 extern int              g_cm93_zoom_factor;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
-extern bool             g_bDisplayGrid;
+//extern bool             g_bDisplayGrid;
 
 extern bool             g_bUseGreenShip;
 
@@ -484,6 +484,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
         m_muiBar = new MUIBar(this);
     }
 
+    m_bShowOutlines = false;
+    m_bDisplayGrid = false;
+    m_bShowDepthUnits = true;
+    
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
     {
@@ -2472,7 +2476,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         if( m_modkeys == wxMOD_ALT )
             m_nMeasureState = *(int *)(0);          // generate a fault for testing
 
-        parent_frame->ToggleChartOutlines();
+        ToggleChartOutlines();
         break;
     }
 
@@ -2649,7 +2653,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
 
         case 'O':
-            parent_frame->ToggleChartOutlines();
+            ToggleChartOutlines();
             break;
 
         case 'Q':
@@ -2930,6 +2934,19 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
     }
     event.Skip();
 }
+
+void ChartCanvas::ToggleChartOutlines( void )
+{
+    m_bShowOutlines = !m_bShowOutlines;
+    
+    Refresh( false );
+    
+    #ifdef ocpnUSE_GL         // opengl renders chart outlines as part of the chart this needs a full refresh
+    if( g_bopengl )
+        InvalidateGL();
+    #endif
+}
+
 
 void ChartCanvas::ToggleCourseUp( )
 {
@@ -5502,7 +5519,7 @@ wxString CalcGridText( float latlon, float spacing, bool bPostfix )
  ************************************************************************/
 void ChartCanvas::GridDraw( ocpnDC& dc )
 {
-    if( !( g_bDisplayGrid && ( fabs( GetVP().rotation ) < 1e-5 ) ) )
+    if( !( m_bDisplayGrid && ( fabs( GetVP().rotation ) < 1e-5 ) ) )
         return;
 
     double nlat, elon, slat, wlon;
@@ -5599,7 +5616,7 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
         double blat, blon, tlat, tlon;
         wxPoint r;
 
-        int x_origin = g_bDisplayGrid ? 60 : 20;
+        int x_origin = m_bDisplayGrid ? 60 : 20;
         int y_origin = m_canvas_height - 50;
 
         float dist;
@@ -8726,7 +8743,7 @@ void ChartCanvas::ShowAISTargetList( void )
 
 void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 {
-    if( !g_bShowOutlines ) return;
+    if( !m_bShowOutlines ) return;
 
     int nEntry = ChartData->GetChartTableEntries();
 
@@ -10067,7 +10084,7 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 
 emboss_data *ChartCanvas::EmbossDepthScale()
 {
-    if( !g_bShowDepthUnits ) return NULL;
+    if( !m_bShowDepthUnits ) return NULL;
 
     int depth_unit_type = DEPTH_UNIT_UNKNOWN;
 
