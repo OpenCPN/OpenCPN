@@ -36,6 +36,11 @@
 #endif
 #endif
 
+#ifdef __WXMSW__
+#ifdef MAKING_PLUGIN
+#  define DECL_IMP     __declspec(dllimport)
+#endif
+#endif    
 
 #include <wx/xml/xml.h>
 
@@ -1217,7 +1222,13 @@ private:
 //DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
 //extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
-extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
+//extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
+
+#ifdef MAKING_PLUGIN
+extern   DECL_IMP wxEventType wxEVT_DOWNLOAD_EVENT;
+#else
+extern   DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT;
+#endif
 
 // API 1.14 Extra canvas Support
 

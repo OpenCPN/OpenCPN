@@ -5941,7 +5941,8 @@ wxEvent* OCPN_downloadEvent::Clone() const
     return newevent;
 }
 
-const wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
+//const wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
+DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
 
 
 
