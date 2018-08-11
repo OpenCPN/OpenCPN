@@ -1214,9 +1214,8 @@ private:
     bool m_b_complete;
 };
 
-//DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
-//extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
+//DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)          // Macro expanded manually below
 extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 // API 1.14 Extra canvas Support

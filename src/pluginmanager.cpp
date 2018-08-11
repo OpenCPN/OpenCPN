@@ -5917,7 +5917,8 @@ int PlatformFileSelectorDialog( wxWindow *parent, wxString *file_spec, wxString 
 
 //      OCPN_downloadEvent Implementation
 
-//DEFINE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT)
+//DEFINE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT)               // Macro expanded manually for reference below
+const wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
 
 OCPN_downloadEvent::OCPN_downloadEvent(wxEventType commandType, int id)
 :wxEvent(id, commandType)
@@ -5945,7 +5946,7 @@ wxEvent* OCPN_downloadEvent::Clone() const
     return newevent;
 }
 
-const wxEventType wxEVT_DOWNLOAD_EVENT = wxNewEventType();
+
 
 
 
