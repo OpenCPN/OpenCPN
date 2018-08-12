@@ -467,6 +467,12 @@ if(WXWIDGETS_FORCE_VERSION)
   set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
 endif()
 
+IF(MSVC)
+    # Exclude wxexpat.lib, since we use our own version.
+    # Other things are excluded as well, but we don't need them
+    SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+ENDIF(MSVC)
+
 IF(WIN32 OR APPLE OR QT_ANDROID)
   FIND_PACKAGE(wxWidgets REQUIRED)
   IF(MSYS)
