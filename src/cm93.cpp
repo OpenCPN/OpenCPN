@@ -54,6 +54,8 @@
 #include "OCPNPlatform.h"
 #include "wx28compat.h"
 #include "ChartDataInputStream.h"
+#include "DetailSlider.h"
+#include "chcanv.h"
 
 #include <stdio.h>
 

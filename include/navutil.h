@@ -42,11 +42,12 @@
 #endif
 
 #include "bbox.h"
-#include "chcanv.h"
+//#include "chcanv.h"
 #include "chartdbs.h"
 //nclude "RoutePoint.h"
 #include "vector2D.h"
 #include "SelectItem.h"
+#include "ocpndc.h"
 
 enum
 {
@@ -79,7 +80,11 @@ extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
 extern wxString FormatDistanceAdaptive( double distance );
 
 extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
-                                      wxColour color, unsigned char transparency );
+                                       wxColour color, unsigned char transparency );
+
+    //Central dimmer...
+void DimeControl(wxWindow* ctrl);
+void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 extern double fromDMM(wxString sdms);
 extern double parseLatLon(wxString latlon);
@@ -95,6 +100,8 @@ class TrackList;
 class RouteList;
 class canvasConfig;
 class RoutePointList;
+class RoutePoint;
+class Track;
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers

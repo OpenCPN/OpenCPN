@@ -39,6 +39,7 @@
 #include "pluginmanager.h"
 #include "FontMgr.h"
 #include "OCPNPlatform.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

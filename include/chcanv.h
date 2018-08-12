@@ -67,9 +67,6 @@ int InitScreenBrightness(void);
 int RestoreScreenBrightness(void);
 int SetScreenBrightness(int brightness);
 
-//Central dimmer...
-void DimeControl(wxWindow* ctrl);
-void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,wxColour text_color,wxColour uitext, wxColour udkrd, wxColour gridline);
 
 //    Set up the preferred quilt type
 #define QUILT_TYPE_2
@@ -438,7 +435,11 @@ public:
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );
       
+      bool        m_b_paint_enable;
+      
 private:
+      bool UpdateS52State();
+      
       void CallPopupMenu( int x, int y );
       
       bool IsTempMenuBarEnabled();
@@ -736,7 +737,6 @@ private:
 
       wxDateTime m_last_movement_time;
 
-      bool        m_b_paint_enable;
       
       int         m_AISRollover_MMSI;
       bool        m_bsectors_shown;
@@ -775,6 +775,9 @@ private:
       bool         m_bDisplayGrid;
       bool         m_bShowDepthUnits;
 
+      // S52PLib state storage
+      long         m_s52StateHash;
+      bool         m_encShowText;
       
 DECLARE_EVENT_TABLE()
 };

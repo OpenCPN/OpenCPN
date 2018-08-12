@@ -37,6 +37,7 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 #include "RoutePoint.h"
+#include "chcanv.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 

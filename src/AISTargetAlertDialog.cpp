@@ -33,6 +33,7 @@
 #include "routemanagerdialog.h"
 #include "OCPNPlatform.h"
 #include "RoutePoint.h"
+#include "chcanv.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;

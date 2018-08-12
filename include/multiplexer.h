@@ -35,6 +35,9 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "datastream.h"
 
+class RoutePoint;
+class Route;
+
 WX_DEFINE_ARRAY(DataStream *, wxArrayOfDataStreams);
 
 //      Garmin interface private error codes

@@ -60,6 +60,7 @@
 #include "pluginmanager.h"                      // for S57 lights overlay
 
 #include "Osenc.h"
+#include "chcanv.h"
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC

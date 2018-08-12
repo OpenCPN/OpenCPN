@@ -148,6 +148,9 @@ extern float  g_ShipScaleFactorExp;
 extern bool G_FloatPtInPolygon ( MyFlPoint *rgpts, int wnumpts, float x, float y ) ;
 extern void catch_signals(int signo);
 
+extern void AlphaBlending( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
+                                       wxColour color, unsigned char transparency );
+
 extern ChartBase        *Current_Vector_Ch;
 extern double           g_ChartNotRenderScaleFactor;
 extern double           gLat, gLon, gCog, gSog, gHdt;
@@ -9132,8 +9135,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //  Otherwise, the paint message may not be removed from the message queue, esp on Windows. (FS#1213)
     //  This would lead to a deadlock condition in ::wxYield()
 
-    if(!m_b_paint_enable)
+    if(!m_b_paint_enable){
         return;
+    }
 
 #ifdef ocpnUSE_GL
     if( !g_bdisable_opengl && m_glcc )
@@ -9247,14 +9251,22 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         if( !m_pQuilt || !m_pQuilt->IsComposed() ) 
             return;  // not ready
 
+        bool bvectorQuilt = m_pQuilt->IsQuiltVector();    
+        
         bool busy = false;
-        if( m_pQuilt->IsQuiltVector() &&
+        if( bvectorQuilt &&
             ( m_cache_vp.view_scale_ppm != VPoint.view_scale_ppm || m_cache_vp.rotation != VPoint.rotation))
         {
             OCPNPlatform::ShowBusySpinner();
             busy = true;
         }
-            
+        
+        if(bvectorQuilt){
+            if(ps52plib->GetStateHash() != m_s52StateHash){
+                UpdateS52State();
+                m_s52StateHash = ps52plib->GetStateHash();
+            }
+        }
             
         if( ( m_working_bm.GetWidth() != svp.pix_width )
                 || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
@@ -12115,7 +12127,13 @@ void ChartCanvas::RemoveChartFromQuilt( int dbIndex )
 
 
 
-
+bool ChartCanvas::UpdateS52State()
+{
+    bool retval = false;
+    
+    return retval;
+}
+    
 
 
 
@@ -12611,149 +12629,4 @@ int CreateSimpleICCProfileFile(const char *file_name, double co_red, double co_g
     return 0;
 }
 #endif // __OPCPN_USEICC__
-
-void DimeControl( wxWindow* ctrl )
-{
-#ifdef __WXQT__
-    return; // this is seriously broken on wxqt
-#endif
-    
-    if( NULL == ctrl ) return;
-
-    wxColour col, window_back_color, gridline, uitext, udkrd, ctrl_back_color, text_color;
-    col = GetGlobalColor( _T("DILG0") );       // Dialog Background white
-    window_back_color = GetGlobalColor( _T("DILG1") );      // Dialog Background
-    ctrl_back_color = GetGlobalColor( _T("DILG1") );      // Control Background
-    text_color = GetGlobalColor( _T("DILG3") );      // Text
-    uitext = GetGlobalColor( _T("UITX1") );    // Menu Text, derived from UINFF
-    udkrd = GetGlobalColor( _T("UDKRD") );
-    gridline = GetGlobalColor( _T("GREY2") );
-
-    DimeControl( ctrl, col, window_back_color, ctrl_back_color, text_color, uitext, udkrd, gridline );
-}
-
-void DimeControl( wxWindow* ctrl, wxColour col, wxColour window_back_color, wxColour ctrl_back_color,
-                  wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
-{
-
-    ColorScheme cs = global_color_scheme;
-
-    static int depth = 0; // recursion count
-    if ( depth == 0 ) {   // only for the window root, not for every child
-
-        // If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
-        if( cs == GLOBAL_COLOR_SCHEME_DAY || cs == GLOBAL_COLOR_SCHEME_RGB ) {
-#ifdef __WXOSX__
-            window_back_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWFRAME);
-            ctrl->SetBackgroundColour( window_back_color );
-            if( g_bDarkDecorations ) {
-                applyDarkAppearanceToWindow(ctrl->MacGetTopLevelWindowRef(), false, true, true);
-            }
-#else
-            window_back_color = wxNullColour;
-            ctrl->SetBackgroundColour( window_back_color );
-#endif
-
-            col = wxSystemSettings::GetColour(wxSYS_COLOUR_LISTBOX);
-        }
-
-    }
-
-    wxWindowList kids = ctrl->GetChildren();
-    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item(i);
-        wxWindow *win = node->GetData();
-
-        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
-            ( (wxListBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
-            ( (wxListCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
-            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-
-#ifndef __WXOSX__
-        // on OS X most controls can't be styled, and trying to do so only creates weird coloured boxes around them
-
-        else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) )
-            ( (wxBitmapComboBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
-            ( (wxChoice*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
-            ( (wxComboBox*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) ) {
-            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
-        }
-#endif
-
-        else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
-            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxListbook) ) )
-            ( (wxListbook*) win )->SetBackgroundColour( window_back_color );
-
-        else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) )
-            ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
-
-        else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
-            ( (wxNotebook*) win )->SetBackgroundColour( window_back_color );
-            ( (wxNotebook*) win )->SetForegroundColour( text_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxButton) ) ) {
-            ( (wxButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
-            ( (wxToggleButton*) win )->SetBackgroundColour( window_back_color );
-        }
-
-//        else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
-////                  ((wxPanel*)win)->SetBackgroundColour(col1);
-//            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-//                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
-//            else
-//                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
-//        }
-
-        else if( win->IsKindOf( CLASSINFO(wxHtmlWindow) ) ) {
-            if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
-                ( (wxPanel*) win )->SetBackgroundColour( ctrl_back_color );
-            else
-                ( (wxPanel*) win )->SetBackgroundColour( wxNullColour );
-        }
-
-        else if( win->IsKindOf( CLASSINFO(wxGrid) ) ) {
-            ( (wxGrid*) win )->SetDefaultCellBackgroundColour( window_back_color );
-            ( (wxGrid*) win )->SetDefaultCellTextColour( uitext );
-            ( (wxGrid*) win )->SetLabelBackgroundColour( col );
-            ( (wxGrid*) win )->SetLabelTextColour( uitext );
-#if !wxCHECK_VERSION(3,0,0)
-            ( (wxGrid*) win )->SetDividerPen( wxPen( col ) );
-#endif            
-            ( (wxGrid*) win )->SetGridLineColour( gridline );
-        }
-
-        else {
-            ;
-        }
-
-        if( win->GetChildren().GetCount() > 0 ) {
-            depth++;
-            wxWindow * w = win;
-            DimeControl( w, col, window_back_color, ctrl_back_color, text_color, uitext, udkrd, gridline );
-            depth--;
-        }
-    }
-}
 

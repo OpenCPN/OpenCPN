@@ -33,6 +33,7 @@
 #include "PositionParser.h"
 #include "routeprop.h"
 #include "navutil.h"
+#include "chcanv.h"
 
 extern MyFrame *gFrame;
 

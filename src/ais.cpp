@@ -51,6 +51,7 @@
 #include "AISTargetQueryDialog.h"
 #include "wx28compat.h"
 #include "OCPNPlatform.h"
+#include "chcanv.h"
 
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;

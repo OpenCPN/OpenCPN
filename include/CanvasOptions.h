@@ -42,7 +42,10 @@ enum {
     ID_PRESERVECHECKBOX,
     ID_QUILTCHECKBOX1,
     ID_CHECK_LOOKAHEAD,
-    ID_COURSEUPCHECKBOX
+    ID_COURSEUPCHECKBOX,
+    ID_TIDES_CHECKBOX,
+    ID_CURRENTS_CHECKBOX,
+    ID_ENCTEXT_CHECKBOX1,
 };
 
 class MyFrame;
@@ -82,6 +85,8 @@ private:
     wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
     wxCheckBox *pEnableZoomToCursor, *pPreserveScale;
     
+    wxCheckBox *pCDOTides, *pCDOCurrents;
+    wxCheckBox *pCDOENCText;
 };
 
 #endif //guard

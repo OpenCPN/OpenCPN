@@ -83,6 +83,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
+    SetScrollRate(0, 5);
 #if 0    
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
     
@@ -168,6 +169,32 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     boxDisp->Add(pSDepthUnits, verticleInputFlags);
     pSDepthUnits->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
     
+    // spacer
+    generalSizer->Add(0, border_size * 4);
+    
+    // Tide/Current Options
+    wxStaticBoxSizer* boxTC = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Tides and Currents")), wxVERTICAL);
+    generalSizer->Add(boxTC, 0, wxALL | wxEXPAND, border_size);
+    
+    pCDOTides = new wxCheckBox(pDisplayPanel, ID_TIDES_CHECKBOX, _("Show Tide stations"));
+    boxTC->Add(pCDOTides, verticleInputFlags);
+    pCDOTides->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    pCDOCurrents = new wxCheckBox(pDisplayPanel, ID_CURRENTS_CHECKBOX, _("Show Currents"));
+    boxTC->Add(pCDOCurrents, verticleInputFlags);
+    pCDOCurrents->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
+    // spacer
+    generalSizer->Add(0, border_size * 4);
+ 
+    // ENC Options
+    wxStaticBoxSizer* boxENC = new wxStaticBoxSizer(new wxStaticBox(pDisplayPanel, wxID_ANY, _("Vector Charts")), wxVERTICAL);
+    generalSizer->Add(boxENC, 0, wxALL | wxEXPAND, border_size);
+    
+    pCDOENCText = new wxCheckBox(pDisplayPanel, ID_ENCTEXT_CHECKBOX1, _("Show Text"));
+    boxENC->Add(pCDOENCText, verticleInputFlags);
+    pCDOENCText->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( CanvasOptions::OnOptionChange ), NULL, this );
+    
     RefreshControlValues();
     
     SetAutoLayout( true );
@@ -204,11 +231,17 @@ void CanvasOptions::RefreshControlValues( void )
         return;
     
     //  Display options
- 
     pCDOQuilting->SetValue(parentCanvas->GetQuiltMode());
     pSDisplayGrid->SetValue(parentCanvas->GetShowGrid());
     pCDOOutlines->SetValue(parentCanvas->GetShowOutlines());
     pSDepthUnits->SetValue(parentCanvas->GetShowDepthUnits());
+ 
+    // Tide/Current
+    pCDOTides->SetValue(parentCanvas->GetbShowTide());
+    pCDOCurrents->SetValue(parentCanvas->GetbShowCurrent());;
+    
+    //ENC Options
+    //pCDOENCText->SetValue(parentCanvas->GetbShowTide());
     
     
 }
@@ -235,6 +268,15 @@ void CanvasOptions::UpdateCanvasOptions( void )
     }
     if(pSDepthUnits->GetValue() != parentCanvas->GetShowDepthUnits()){
         parentCanvas->SetShowDepthUnits(pSDepthUnits->GetValue());
+        b_needRefresh = true;
+    }
+
+    if(pCDOTides->GetValue() != parentCanvas->GetbShowTide()){
+        parentCanvas->ShowTides(pCDOTides->GetValue());
+        b_needRefresh = true;
+    }
+    if(pCDOCurrents->GetValue() != parentCanvas->GetbShowCurrent()){
+        parentCanvas->ShowCurrents(pCDOCurrents->GetValue());
         b_needRefresh = true;
     }
     

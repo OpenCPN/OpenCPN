@@ -28,7 +28,7 @@
 #include "chart1.h"
 #include "LLRegion.h"
 #include "OCPNRegion.h"
-#include "chcanv.h"
+//#include "chcanv.h"
 
 extern bool g_bopengl;
 

@@ -81,6 +81,7 @@
 #include "Track.h"
 #include "Route.h"
 #include "OCPN_AUIManager.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

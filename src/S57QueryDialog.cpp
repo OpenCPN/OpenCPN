@@ -23,9 +23,12 @@
  */
 
 #include "wx/wxprec.h"
+#include <wx/wxhtml.h>
 
 #include "S57QueryDialog.h"
-#include "chcanv.h"
+//#include "chcanv.h"
+#include "navutil.h"
+#include "chart1.h"
 
 extern ColorScheme global_color_scheme;
 extern S57QueryDialog *g_pObjectQueryDialog;

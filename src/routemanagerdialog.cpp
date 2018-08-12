@@ -50,6 +50,7 @@
 #include "OCPNPlatform.h"
 #include "Track.h"
 #include "Route.h"
+#include "chcanv.h"
 
 extern wxImage LoadSVGIcon( wxString filename, int width, int height );
 

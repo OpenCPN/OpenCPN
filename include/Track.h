@@ -36,6 +36,8 @@
 #include <deque>
 
 class HyperlinkList;
+class ChartCanvas;
+class ViewPort;
 
 struct SubTrack
 {

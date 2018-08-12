@@ -47,7 +47,7 @@
 #include "version.h"
 #include "OCPNPlatform.h"
 #include "FontMgr.h"
-
+#include "navutil.h"
 
 extern OCPNPlatform *g_Platform;
 extern MyFrame *gFrame;

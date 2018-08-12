@@ -424,6 +424,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
         {
             if(!m_canvasOptions){
                 m_canvasOptions = new CanvasOptions(m_parent);
+                m_canvasOptions->SetSize(wxSize(-1, 400));
                 m_currentCOPos = wxPoint( m_parent->GetSize().x, 20);
                 m_canvasOptions->Move(m_currentCOPos);
                 m_canvasOptions->Hide();
@@ -483,9 +484,11 @@ void MUIBar::PullCanvasOptions()
     
     //  Animation type
     m_animationType = CO_ANIMATION_LINEAR;
-    m_animateSteps = 100; 
-    m_animationTotalTime = 200;  // msec
+    m_animateSteps = 20; 
+    m_animationTotalTime = 100;  // msec
     m_pushPull = CO_PULL;
+    ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+    pcc->m_b_paint_enable = false;
     
     // Start the animation....
     m_animateStep = 0;
@@ -512,9 +515,11 @@ void MUIBar::PushCanvasOptions()
     
     //  Animation type
     m_animationType = CO_ANIMATION_LINEAR;
-    m_animateSteps = 100; 
-    m_animationTotalTime = 200;  // msec
+    m_animateSteps = 20; 
+    m_animationTotalTime = 100;  // msec
     m_pushPull = CO_PUSH;
+    ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+    pcc->m_b_paint_enable = false;
     
     // Start the animation....
     m_animateStep = 0;
@@ -542,6 +547,10 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
         m_canvasOptions->Move(m_targetCOPos);
         m_currentCOPos = m_targetCOPos;
         m_canvasOptions->Show(m_pushPull == CO_PULL);
+        
+        ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+        pcc->m_b_paint_enable = true;
+        
     }
     
 }

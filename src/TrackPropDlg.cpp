@@ -33,6 +33,7 @@
 #include "TrackPropDlg.h"
 #include "Track.h"
 #include "Route.h"
+#include "chcanv.h"
 
 #ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"

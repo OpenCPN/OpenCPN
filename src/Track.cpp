@@ -84,6 +84,7 @@ millions of points.
 #include "chartbase.h"
 #include "navutil.h"
 #include "Select.h"
+#include "chcanv.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"

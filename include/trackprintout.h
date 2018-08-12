@@ -40,6 +40,7 @@
 #include "navutil.h"
 #include "TrackPropDlg.h"
 #include "printtable.h"
+#include "chart1.h"
 
 class MyTrackPrintout : public MyPrintout {
 public:

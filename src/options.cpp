@@ -69,6 +69,7 @@ extern GLuint g_raster_format;
 #include "NMEALogWindow.h"
 #include "wx28compat.h"
 #include "routeman.h"
+#include "chcanv.h"
 
 #include "ais.h"
 #include "AIS_Decoder.h"
