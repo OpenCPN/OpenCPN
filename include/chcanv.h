@@ -436,6 +436,9 @@ public:
       void ToggleCanvasQuiltMode( void );
       
       bool        m_b_paint_enable;
+
+      bool GetShowENCText(){ return m_encShowText; }
+      void SetShowENCText( bool show );
       
 private:
       bool UpdateS52State();

@@ -667,7 +667,7 @@ OCPN_AUIManager           *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-wxString                  g_toolbarConfigSecondary = _T("XX..XX.XXXX...X..XXXXXXXXXXXX");
+wxString                  g_toolbarConfigSecondary = _T("....XX..X........XXXXXXXXXXXX");
 
 ocpnFloatingToolbarDialog *g_MainToolbar;
 int                       g_maintoolbar_x;

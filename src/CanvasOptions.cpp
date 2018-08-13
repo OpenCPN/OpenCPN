@@ -241,7 +241,7 @@ void CanvasOptions::RefreshControlValues( void )
     pCDOCurrents->SetValue(parentCanvas->GetbShowCurrent());;
     
     //ENC Options
-    //pCDOENCText->SetValue(parentCanvas->GetbShowTide());
+    pCDOENCText->SetValue(parentCanvas->GetShowENCText());
     
     
 }
@@ -253,6 +253,8 @@ void CanvasOptions::UpdateCanvasOptions( void )
         return;
     
     bool b_needRefresh = false;
+    bool b_needReLoad = false;
+    
     if(pCDOQuilting->GetValue() != parentCanvas->GetQuiltMode()){
         parentCanvas->ToggleCanvasQuiltMode();
     }
@@ -279,9 +281,18 @@ void CanvasOptions::UpdateCanvasOptions( void )
         parentCanvas->ShowCurrents(pCDOCurrents->GetValue());
         b_needRefresh = true;
     }
+
+    //  ENC Options
+    if(pCDOENCText->GetValue() != parentCanvas->GetShowENCText()){
+        parentCanvas->SetShowENCText(pCDOENCText->GetValue());
+        b_needReLoad = true;
+    }
     
-    if(b_needRefresh){
-        parentCanvas->Refresh();
+    if(b_needReLoad){
+        parentCanvas->ReloadVP();
+    }
+    else if (b_needRefresh){
+        parentCanvas->Refresh(true);
         parentCanvas->InvalidateGL();
     }
         

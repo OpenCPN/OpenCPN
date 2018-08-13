@@ -12131,12 +12131,20 @@ bool ChartCanvas::UpdateS52State()
 {
     bool retval = false;
     
+    ps52plib->SetShowS57Text( m_encShowText );
+    
+    
     return retval;
 }
     
 
 
-
+void ChartCanvas::SetShowENCText( bool show )
+{ 
+    m_encShowText = show;
+    m_s52StateHash = 0;         // Force a S52 PLIB re-configure
+}
+    
 
 
 
