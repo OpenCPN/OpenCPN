@@ -210,7 +210,7 @@ wxSize MUIButton::DoGetBestSize() const
 //     wxSize labelSize = wxDefaultSize;
 //     GetTextExtent(m_Label, &labelSize.x, &labelSize.y);
 //     return wxSize(wxMax(40, labelSize.x + 20), wxMax(20, labelSize.y + 10));
-    return wxSize(100, 100);
+    return wxSize(40, 40);
 }
 
 
@@ -268,30 +268,23 @@ void MUIButton::OnPaint( wxPaintEvent& event )
 }
 
 
+#if 1
 void MUIButton::OnLeftDown( wxMouseEvent& event )
 {
-    if(GetCapture() != this)
-    {
-        CaptureMouse();
-        Refresh();
-    }
+    event.Skip();
 }
 
 
 void MUIButton::OnLeftUp( wxMouseEvent& event )
 {
-    if(GetCapture() == this)
-    {
-        ReleaseMouse();
-        Refresh();
-        if(GetClientRect().Contains(event.GetPosition()))
-        {
-            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
-            GetParent()->GetEventHandler()->AddPendingEvent( evt );
-        }
+    printf("lup\n");
+    if(GetClientRect().Contains(event.GetPosition())){
+        wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
+        GetParent()->GetEventHandler()->AddPendingEvent( evt );
     }
+    event.Skip();
 }
-
+#endif
 
 void MUIButton::OnEraseBackground( wxEraseEvent& event )
 {
@@ -306,7 +299,7 @@ void MUIButton::OnEraseBackground( wxEraseEvent& event )
 //------------------------------------------------------------------------------
 //          MUIBar Window Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(MUIBar, wxWindow)
+BEGIN_EVENT_TABLE(MUIBar, wxDialog)
 EVT_TIMER ( CANVAS_OPTIONS_ANIMATION_TIMER_1, MUIBar::onCanvasOptionsAnimationTimerEvent )
 EVT_PAINT ( MUIBar::OnPaint )
 EVT_SIZE( MUIBar::OnSize )
@@ -320,14 +313,19 @@ MUIBar::MUIBar()
 }
 
 MUIBar::MUIBar(ChartCanvas* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-        : wxWindow()
+        : wxDialog()
 {
     m_parentCanvas = parent;
     SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
-    wxWindow::Create(parent, id, pos, size, style, name);
+    //wxWindow::Create(parent, id, pos, size, style, name);
+    //long mstyle = wxSIMPLE_BORDER;
+    long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+    
+    wxDialog::Create(parent, id, _T(""), pos, size, mstyle, name);
     
     Init();
     CreateControls();
+    Show();
 }
 
 
@@ -376,16 +374,20 @@ void MUIBar::CreateControls()
      barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
     
     //topSizer->AddSpacer(50);
+     topSizer->SetSizeHints( this );
+     topSizer->Fit( this );
+     
     
 }
 
 void MUIBar::SetBestSize( void )
 {
-    SetSize( 400, 50);
+ //  SetSize( 400, 50);
 }
 
 void MUIBar::SetBestPosition( void )
 {
+#if 0 // for wxWindow    
     int x = (m_parent->GetClientSize().x - GetSize().x) / 2;
     if(x > 0){
         int bottomOffset = 0;
@@ -396,14 +398,41 @@ void MUIBar::SetBestPosition( void )
         int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
         SetSize(x, y, -1, -1, wxSIZE_USE_EXISTING);
     }
+    
+#else   // for wxDialog
+    int x = (m_parent->GetClientSize().x - GetSize().x) / 2;
+    if(x > 0){
+        int bottomOffset = 0;
+    
+        ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
+        bottomOffset += pcc->GetPianoHeight();
+    
+        int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
+        
+        wxPoint m_position = wxPoint(x,y);
+        wxPoint screenPos = pcc->ClientToScreen( m_position );
+        
+        //  GTK sometimes has trouble with ClientToScreen() if executed in the context of an event handler
+        //  The position of the window is calculated incorrectly if a deferred Move() has not been processed yet.
+        //  So work around this here...
+        
+#ifdef __WXGTK__
+        wxPoint pp = m_parent->GetPosition();
+        wxPoint ppg = m_parent->GetParent()->GetScreenPosition();
+        wxPoint screen_pos_fix = ppg + pp + m_position;
+        screenPos.x = screen_pos_fix.x;
+#endif        
+        
+        Move( screenPos );
+        
+    }
+#endif
 }
 
 void MUIBar::OnSize( wxSizeEvent& event )
 {
-    int buttonSize = event.GetSize().y / 2;
+    //int buttonSize = event.GetSize().y / 2;
     Layout();
-//     if(m_zinButton)
-//         m_zinButton->SetSize(buttonSize, buttonSize);
 }
 
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
