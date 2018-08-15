@@ -82,6 +82,7 @@ public:
       void SetRoundedRectangles(bool val){ m_brounded = val; m_hash.Clear();}
 
       int GetHeight();
+      int GetWidth();
       
       wxString &GenerateAndStoreNewHash();
       wxString &GetStoredHash();
@@ -138,7 +139,8 @@ private:
       bool        m_bleaving;
 
       GLuint      m_tex, m_texw, m_texh, m_tex_piano_height;
-
+      int         m_width;
+      
 DECLARE_EVENT_TABLE()
 };
 

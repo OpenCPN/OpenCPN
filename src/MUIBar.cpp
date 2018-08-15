@@ -314,10 +314,12 @@ MUIBar::MUIBar()
 {
 }
 
-MUIBar::MUIBar(ChartCanvas* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+MUIBar::MUIBar(ChartCanvas* parent, int orientation, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name)
         : wxDialog()
 {
     m_parentCanvas = parent;
+    m_orientation = orientation;
+    
     SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
     //wxWindow::Create(parent, id, pos, size, style, name);
     //long mstyle = wxSIMPLE_BORDER;
@@ -351,49 +353,88 @@ void MUIBar::CreateControls()
     
     //SetBackgroundColour(wxColour(40,40,40));
     SetBackgroundColour(wxColour(40,40,40, 0));
+    wxBoxSizer *topSizer;
     
-    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
-    SetSizer(topSizer);
+    if(m_orientation == wxHORIZONTAL){
+        topSizer = new wxBoxSizer(wxVERTICAL);
+        SetSizer(topSizer);
 
-    //topSizer->AddSpacer(50);
+        wxBoxSizer *barSizer = new wxBoxSizer(wxHORIZONTAL);
+        topSizer->Add(barSizer, 0, wxEXPAND );
+        
+        // Buttons
+        //wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
+        wxString iconDir = _T("/home/dsr/Projects/opencpn/data/svg/MUI/");
+        
+        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("zoom-in.svg"));
+        barSizer->Add(m_zinButton, 1, wxSHAPED);
     
-    wxBoxSizer *barSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add(barSizer, 0, wxEXPAND );
+        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("zoom-out.svg"));
+        barSizer->Add(m_zoutButton, 1, wxSHAPED);
     
-    // Buttons
-    //wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
-    wxString iconDir = _T("/home/dsr/Projects/opencpn/data/svg/MUI/");
+        barSizer->AddSpacer(5);
+        
+        //  Scale 
+        m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:40000"));
+        m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
+        barSizer->Add(m_scaleTextBox, 1 );
+        
+        
+        wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
+        barSizer->Add(pl1, 1);
+        
+        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("follow.svg"));
+        barSizer->Add(m_followButton, 1, wxSHAPED);
+        
+        barSizer->AddSpacer(15);
+        
+        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("menu.svg"));
+        barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
+    }
+    else{
+        topSizer = new wxBoxSizer(wxVERTICAL);
+        SetSizer(topSizer);
+        
+        wxBoxSizer *barSizer = new wxBoxSizer(wxVERTICAL);
+        topSizer->Add(barSizer, 0, wxEXPAND );
+        
+        // Buttons
+        //wxString iconDir = g_Platform->GetSharedDataDir() + _T("uidata/traditional/");
+        wxString iconDir = _T("/home/dsr/Projects/opencpn/data/svg/MUI/");
+        
+        m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("zoom-in.svg"));
+        barSizer->Add(m_zinButton, 1, wxSHAPED);
+        
+        m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("zoom-out.svg"));
+        barSizer->Add(m_zoutButton, 1, wxSHAPED);
+        
+        barSizer->AddSpacer(5);
+        
+        //  Scale 
+        m_scaleTextBox = new wxStaticText(this, wxID_ANY, _("1:40000"));
+        m_scaleTextBox->SetForegroundColour(wxColour(200,200,200));
+        barSizer->Add(m_scaleTextBox, 1 );
+        
+        
+        wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+        barSizer->Add(pl1, 1);
+        
+        m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("follow.svg"));
+        barSizer->Add(m_followButton, 1, wxSHAPED);
+        
+        barSizer->AddSpacer(15);
+        
+        m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("menu.svg"));
+        barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
+        
+        
+    }
     
-     m_zinButton = new MUIButton( this, ID_ZOOMIN, iconDir + _T("zoom-in.svg"));
-     barSizer->Add(m_zinButton, 1, wxSHAPED);
- 
-     m_zoutButton = new MUIButton( this, ID_ZOOMOUT, iconDir + _T("zoom-out.svg"));
-     barSizer->Add(m_zoutButton, 1, wxSHAPED);
-  
-     barSizer->AddSpacer(5);
-     
-     wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
-     barSizer->Add(pl1, 1);
-     
-     m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("follow.svg"));
-     barSizer->Add(m_followButton, 1, wxSHAPED);
-     
-     barSizer->AddSpacer(15);
-     
-     m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("menu.svg"));
-     barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
-
-     
-    //topSizer->AddSpacer(50);
-     topSizer->SetSizeHints( this );
-     topSizer->Fit( this );
+    
+    topSizer->SetSizeHints( this );
+    topSizer->Fit( this );
      
     
-}
-
-void MUIBar::SetBestSize( void )
-{
- //  SetSize( 400, 50);
 }
 
 void MUIBar::SetBestPosition( void )
@@ -411,12 +452,14 @@ void MUIBar::SetBestPosition( void )
     }
     
 #else   // for wxDialog
-    int x = (m_parent->GetClientSize().x - GetSize().x) / 2;
-    if(x > 0){
+    int x = (m_parent->GetClientSize().x - (GetSize().x * 1.02));
+    
+    //if(x > 0)
+    {
         int bottomOffset = 0;
     
         ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
-        bottomOffset += pcc->GetPianoHeight();
+//         bottomOffset += pcc->GetPianoHeight();
     
         int y = m_parent->GetClientSize().y - GetSize().y - bottomOffset;
         
@@ -445,6 +488,12 @@ void MUIBar::OnSize( wxSizeEvent& event )
     //int buttonSize = event.GetSize().y / 2;
     Layout();
 }
+
+void MUIBar::UpdateDynamicValues()
+{
+    m_scaleTextBox->SetLabel(m_parentCanvas->GetScaleText());
+}
+
 
 void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
 {

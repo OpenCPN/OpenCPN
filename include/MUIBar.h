@@ -57,7 +57,7 @@ class MUIBar : public wxDialog
 {
 public:
     MUIBar();
-    MUIBar(ChartCanvas* parent, wxWindowID id = wxID_ANY, 
+    MUIBar(ChartCanvas* parent, int orientation = wxHORIZONTAL, wxWindowID id = wxID_ANY, 
            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
            long style = 0, const wxString& name = wxPanelNameStr);
     
@@ -69,8 +69,9 @@ public:
     void OnEraseBackground( wxEraseEvent& event );
     void onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event );
     
-    void SetBestSize( void );
     void SetBestPosition( void );
+    void UpdateDynamicValues();
+    int GetOrientation(){ return m_orientation; }
     
 private:
     void Init( void );
@@ -79,11 +80,13 @@ private:
     void PushCanvasOptions();
     
     ChartCanvas *m_parentCanvas;
+    int         m_orientation;
     
     MUIButton   *m_zinButton;
     MUIButton   *m_zoutButton;
     MUIButton   *m_menuButton;
     MUIButton   *m_followButton;
+    wxStaticText *m_scaleTextBox;
     
     CanvasOptions *m_canvasOptions;
     wxPoint     m_targetCOPos;

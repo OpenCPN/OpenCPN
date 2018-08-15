@@ -83,6 +83,8 @@ Piano::Piano(ChartCanvas *parent)
     m_bBusy = false;
     
     m_nRegions = 0;
+    m_width = 0;
+    
 
 //>    SetBackgroundStyle( wxBG_STYLE_CUSTOM ); // on WXMSW, this prevents flashing on color scheme change
 
@@ -881,17 +883,23 @@ void Piano::FormatKeys( void )
     width *= g_btouch ? 0.98f : 0.6f;
 
     int nKeys = m_key_array.size();
+    int kw = style->chartStatusIconWidth;
     if( nKeys ) {
-        int kw = style->chartStatusIconWidth;
-        if( !kw ) kw = width / nKeys;
+        if( !kw )
+            kw = width / nKeys;
 
+        kw = wxMin(kw, (m_parentCanvas->GetClientSize().x * 3 / 4) / nKeys);
+        kw = wxMax(kw, 6);
+        
 //    Build the Key Regions
 
         KeyRect.Empty();
         KeyRect.Alloc( nKeys );
+        m_width = 0;
         for( int i = 0; i < nKeys; i++ ) {
             wxRect r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
             KeyRect.Add( r );
+            m_width = r.x + r.width;
         }
     }
     m_nRegions = nKeys;
@@ -1025,6 +1033,12 @@ int Piano::GetHeight()
     return height;
 }
 
+int Piano::GetWidth()
+{
+    return m_width;
+}
+
+    
 void Piano::onTimerEvent(wxTimerEvent &event)
 {
     switch(m_action){

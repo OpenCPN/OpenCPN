@@ -484,7 +484,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame, int canvasIndex ) :
     
     m_muiBar = NULL;
     if(g_useMUI){
-        m_muiBar = new MUIBar(this);
+        m_muiBar = new MUIBar(this, wxHORIZONTAL);
+        m_muiBarHOSize = m_muiBar->GetSize();
     }
 
     m_bShowOutlines = false;
@@ -4828,34 +4829,34 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
         else
             VPoint.chart_scale = 1.0;
 
-        if( parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
-            double round_factor = 100.;
-            if(VPoint.chart_scale < 1000.)
-                round_factor = 10.;
-            else if (VPoint.chart_scale < 10000.)
-                round_factor = 50.;
             
-            double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
-            wxString text;
+        // Create a nice renderable string
+        double round_factor = 100.;
+        if(VPoint.chart_scale < 1000.)
+            round_factor = 10.;
+        else if (VPoint.chart_scale < 10000.)
+            round_factor = 50.;
+            
+        double true_scale_display =  wxRound(VPoint.chart_scale / round_factor ) * round_factor;
+        wxString text;
 
-            m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
+        m_displayed_scale_factor = VPoint.ref_scale / VPoint.chart_scale;
             
-            if( m_displayed_scale_factor > 10.0 )
-                text.Printf( _T("%s %4.0f (%1.0fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
-            else if( m_displayed_scale_factor > 1.0 )
-                text.Printf( _T("%s %4.0f (%1.1fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
-            else if( m_displayed_scale_factor > 0.1 ){
-                double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
-                text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
-            }
-            else if( m_displayed_scale_factor > 0.01 ){
-                double sfr = wxRound(m_displayed_scale_factor * 100.) / 100.;
-                text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
-            }
-            
-            else  {
-                text.Printf( _T("%s %4.0f (---)"), _("Scale"), true_scale_display );      // Generally, no chart, so no chart scale factor
-            }
+        if( m_displayed_scale_factor > 10.0 )
+            text.Printf( _T("%s %4.0f (%1.0fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
+        else if( m_displayed_scale_factor > 1.0 )
+            text.Printf( _T("%s %4.0f (%1.1fx)"), _("Scale"), true_scale_display, m_displayed_scale_factor );
+        else if( m_displayed_scale_factor > 0.1 ){
+            double sfr = wxRound(m_displayed_scale_factor * 10.) / 10.;
+            text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
+        }
+        else if( m_displayed_scale_factor > 0.01 ){
+            double sfr = wxRound(m_displayed_scale_factor * 100.) / 100.;
+            text.Printf( _T("%s %4.0f (%1.2fx)"), _("Scale"), true_scale_display, sfr );
+        }
+        else  {
+            text.Printf( _T("%s %4.0f (---)"), _("Scale"), true_scale_display );      // Generally, no chart, so no chart scale factor
+        }
 
 #ifdef ocpnUSE_GL
             if( g_bopengl && g_bShowFPS){
@@ -4869,37 +4870,44 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             }
 #endif            
             
-            // Check to see if the text will fit in the StatusBar field...
-            bool b_noshow = false;
-            {
-                int w = 0;
-                int h;
-                wxClientDC dc(parent_frame->GetStatusBar());
-                if( dc.IsOk() ){
-                    wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
-                    dc.SetFont(*templateFont);
-                    dc.GetTextExtent(text, &w, &h);
-                    
+        m_scaleText = text;
+        if(m_muiBar)
+            m_muiBar->UpdateDynamicValues();
+        
+        if( parent_frame->GetStatusBar() && (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE) ) {
+                // Check to see if the text will fit in the StatusBar field...
+                bool b_noshow = false;
+                {
+                    int w = 0;
+                    int h;
+                    wxClientDC dc(parent_frame->GetStatusBar());
+                    if( dc.IsOk() ){
+                        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 0 );
+                        dc.SetFont(*templateFont);
+                        dc.GetTextExtent(text, &w, &h);
+                        
 
-                // If text is too long for the allocated field, try to reduce the text string a bit.
-                    wxRect rect;
-                    parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
-                    if(w && w > rect.width){
-                        text.Printf( _T("%s (%1.1fx)"), _("Scale"), m_displayed_scale_factor );
-                    }
-                
-                //  Test again...if too big still, then give it up.
-                    dc.GetTextExtent(text, &w, &h);
-                
-                    if(w && w > rect.width){
-                        b_noshow = true;
+                    // If text is too long for the allocated field, try to reduce the text string a bit.
+                        wxRect rect;
+                        parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
+                        if(w && w > rect.width){
+                            text.Printf( _T("%s (%1.1fx)"), _("Scale"), m_displayed_scale_factor );
+                        }
+                    
+                    //  Test again...if too big still, then give it up.
+                        dc.GetTextExtent(text, &w, &h);
+                    
+                        if(w && w > rect.width){
+                            b_noshow = true;
+                        }
                     }
                 }
-            }
-            
-            if(!b_noshow)
-                parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
+                
+                if(!b_noshow)
+                    parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
+            
+         
     }
 
     //  Maintain member vLat/vLon
@@ -5995,7 +6003,24 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     
     //  if MUIBar is active, size the bar
     if(m_muiBar){
-        m_muiBar->SetBestSize();
+        int pianoWidth = 0;
+        if(m_Piano)
+            pianoWidth = m_Piano->GetWidth();
+        
+        if((m_muiBar->GetOrientation() == wxHORIZONTAL)){
+            if(m_muiBarHOSize.x > (event.GetSize().x - pianoWidth)){
+                delete m_muiBar;
+                m_muiBar = new MUIBar(this, wxVERTICAL);
+            }
+        }
+        
+        if((m_muiBar->GetOrientation() == wxVERTICAL)){
+            if(m_muiBarHOSize.x < (event.GetSize().x - pianoWidth)){
+                delete m_muiBar;
+                m_muiBar = new MUIBar(this, wxHORIZONTAL);
+            }
+        }
+        
         m_muiBar->SetBestPosition();
         m_muiBar->Raise();
     }
@@ -9726,7 +9751,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     
     if(m_muiBar){
-        m_muiBar->Raise();
+        //m_muiBar->Raise();
         m_muiBar->Refresh();
     }
     

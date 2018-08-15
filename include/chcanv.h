@@ -435,6 +435,8 @@ public:
       void ToggleChartOutlines(void);
       void ToggleCanvasQuiltMode( void );
       
+      wxString GetScaleText(){ return m_scaleText; }
+      
       bool        m_b_paint_enable;
 
       bool GetShowENCText(){ return m_encShowText; }
@@ -470,7 +472,8 @@ private:
       bool        m_bShowTide;
       int         cursor_region;
       bool        m_bTCupdate;
-
+      wxString    m_scaleText;
+      
       wxRect      bbRect;
 
       wxPoint     LastShipPoint;
@@ -774,6 +777,8 @@ private:
       int          m_restore_group;
 
       MUIBar       *m_muiBar;
+      wxSize       m_muiBarHOSize;
+      
       bool         m_bShowOutlines;
       bool         m_bDisplayGrid;
       bool         m_bShowDepthUnits;
