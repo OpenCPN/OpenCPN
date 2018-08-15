@@ -466,14 +466,22 @@ set (WXWIDGETS_FORCE_VERSION CACHE VERSION "Force usage of a specific wxWidgets 
 if(WXWIDGETS_FORCE_VERSION)
   set (wxWidgets_CONFIG_OPTIONS --version=${WXWIDGETS_FORCE_VERSION})
 endif()
-FIND_PACKAGE(wxWidgets REQUIRED)
 
-IF(MSYS)
-# this is to convert msys to windows paths, and handle the missing /usr
-STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
-ENDIF(MSYS)
+IF(MSVC)
+    # Exclude wxexpat.lib, since we use our own version.
+    # Other things are excluded as well, but we don't need them
+    SET(wxWidgets_EXCLUDE_COMMON_LIBRARIES TRUE)
+ENDIF(MSVC)
 
-INCLUDE(${wxWidgets_USE_FILE})
+IF(WIN32 OR APPLE OR QT_ANDROID)
+  FIND_PACKAGE(wxWidgets REQUIRED)
+  IF(MSYS)
+  # this is to convert msys to windows paths, and handle the missing /usr
+  STRING( REGEX REPLACE "/usr/local" ";C:/MinGW/msys/1.0/local" wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIRS} )
+  ENDIF(MSYS)
+  INCLUDE(${wxWidgets_USE_FILE})
+ENDIF(WIN32 OR APPLE OR QT_ANDROID)
+
 MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS " wxWidgets Includ: ${wxWidgets_INCLUDE_DIRS}")
     MESSAGE (STATUS " wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
@@ -894,6 +902,7 @@ ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
             src/wxsvg/src/ExifHandler.cpp
         )
         ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
+        INCLUDE_DIRECTORIES(${EXIF_INCLUDE_DIR})
     endif()
 
     ADD_LIBRARY(WXSVG ${SRC_WXSVG})
@@ -917,6 +926,7 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   ENDIF(NOT OCPN_FORCE_GTK3)
 
   IF(GTK2_FOUND)
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk2)
     INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     SET(GTK_LIBRARIES ${GTK2_LIBRARIES})
     MESSAGE(STATUS "Building against GTK2...")
@@ -924,9 +934,12 @@ IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
     FIND_PACKAGE(GTK3)
     INCLUDE_DIRECTORIES(${GTK3_INCLUDE_DIRS})
     SET(GTK_LIBRARIES ${GTK3_LIBRARIES})
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__WXGTK3__")
+    set(wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --toolkit=gtk3)
     MESSAGE(STATUS "Building against GTK3...")
   ENDIF(GTK2_FOUND)
-        
+  FIND_PACKAGE(wxWidgets REQUIRED)
+  INCLUDE(${wxWidgets_USE_FILE})
   SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK_LIBRARIES})
 ENDIF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
 
@@ -1731,7 +1744,9 @@ SET(uiData
         src/bitmaps/iconUserStd.png
         src/bitmaps/iconAll.png
         src/bitmaps/DragHandle.svg
-	)
+        src/bitmaps/eye.svg
+        src/bitmaps/eyex.svg
+    )
 
 IF (USE_S57)
       SET(s57data
@@ -2124,6 +2139,7 @@ IF(UNIX)
   INSTALL(FILES src/bitmaps/other_svg_src/opencpn.svg DESTINATION ${PREFIX_DATA}/icons/hicolor/scalable/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
   INSTALL(FILES data/opencpn.desktop DESTINATION ${PREFIX_DATA}/applications PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
   INSTALL(FILES data/opencpn.appdata.xml DESTINATION ${PREFIX_DATA}/appdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+  INSTALL(FILES opencpn.1 DESTINATION ${PREFIX_DATA}/man/man1 PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
 ENDIF(UNIX)
 
 ENDIF(NOT APPLE)

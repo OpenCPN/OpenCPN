@@ -4326,23 +4326,23 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2DDouble **dest)
 {
     //      Reduce the LOD of this linestring
-    wxArrayInt index_keep;
+    std::vector<int> index_keep;
     if(nPoints > 5 && (LOD_meters > .01)){
-        index_keep.Clear();
-        index_keep.Add(0);
-        index_keep.Add(nPoints-1);
-        index_keep.Add(nPoints-2);
+	index_keep.push_back(0);
+	index_keep.push_back(nPoints-1);
+	index_keep.push_back(nPoints-2);
         
         DouglasPeucker(source, 1, nPoints-2, LOD_meters, &index_keep);
         
     }
     else {
-        index_keep.Clear();
+	index_keep.resize(nPoints);
+	// Consider using std::iota here when there is C++11 support.
         for(int i = 0 ; i < nPoints ; i++)
-            index_keep.Add(i);
+            index_keep[i] = i;
     }
     
-    wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.GetCount() ) * sizeof(wxPoint2DDouble) ); 
+    wxPoint2DDouble *pReduced = (wxPoint2DDouble *)malloc( ( index_keep.size() ) * sizeof(wxPoint2DDouble) ); 
     *dest = pReduced;
     
     double *ppr = source;  
@@ -4352,15 +4352,15 @@ int s52plib::reduceLOD( double LOD_meters, int nPoints, double *source, wxPoint2
         double x = *ppr++;
         double y = *ppr++;
         
-        for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
-            if(index_keep.Item(j) == ip){
+        for(unsigned int j=0 ; j < index_keep.size() ; j++){
+            if(index_keep[j] == ip){
                 pReduced[ir++] = wxPoint2DDouble(x, y);
                 break;
             }
         }
     }
     
-    return index_keep.GetCount();
+    return index_keep.size();
 }
     
 

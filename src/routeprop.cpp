@@ -373,9 +373,9 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
                                        int flags ) const
 {
     
-    int offset_x = bmpArray.Item(item).GetWidth();
-    int bmpHeight = bmpArray.Item(item).GetHeight();
-    dc.DrawBitmap(bmpArray.Item(item), rect.x, rect.y + (rect.height - bmpHeight)/2, true);
+    int offset_x = bmpArray[item].GetWidth();
+    int bmpHeight = bmpArray[item].GetHeight();
+    dc.DrawBitmap(bmpArray[item], rect.x, rect.y + (rect.height - bmpHeight)/2, true);
     
     if ( flags & wxODCB_PAINTING_CONTROL )
     {
@@ -405,7 +405,7 @@ void OCPNIconCombo::OnDrawItem( wxDC& dc,
 
 wxCoord OCPNIconCombo::OnMeasureItem( size_t item ) const
 {
-    int bmpHeight = bmpArray.Item(item).GetHeight();
+    int bmpHeight = bmpArray[item].GetHeight();
     
     return wxMax(itemHeight, bmpHeight);
 }
@@ -2192,18 +2192,32 @@ wxString RouteProp::MakeTideInfo( int jx, time_t tm, int tz_selection, long LMT_
 {
     int ev = 0;
     wxString tide_form;
+    
+    // tm comes in as UTC...
+    // convert to local time for GetNextBigEvent
+    wxDateTime now = wxDateTime::Now();
+    wxDateTime nowutc = wxDateTime::Now().MakeUTC();
+    time_t t_off = now.GetTicks() - nowutc.GetTicks();
+    
+    wxDateTime dtmu;
+    dtmu.Set( tm + t_off );
 
+    time_t dtmtt = dtmu.GetTicks();
+    
     if( gpIDX ) {
-        ev = ptcmgr->GetNextBigEvent( &tm,
+        ev = ptcmgr->GetNextBigEvent( &dtmtt,
                 ptcmgr->GetStationIDXbyName( wxString( gpIDX->IDX_station_name, wxConvUTF8 ),
                         gpIDX->IDX_lat, gpIDX->IDX_lon ) );
     } else
-        ev = ptcmgr->GetNextBigEvent( &tm, jx );
+        ev = ptcmgr->GetNextBigEvent( &dtmtt, jx );
 
+    //convert event time back to UTC
     wxDateTime dtm;
-    dtm.Set( tm ).MakeUTC(); // apparently Set works as from LT
+    dtm.Set( dtmtt ).MakeUTC(); 
+    
     if( ev == 1 ) tide_form.Printf( _T("LW: ") );
     if( ev == 2 ) tide_form.Printf( _T("HW: ") );
+    
     tide_form.Append( ts2s( dtm, tz_selection, LMT_Offset, DISPLAY_FORMAT ) );
     if( !gpIDX ) {
         wxString locn( ptcmgr->GetIDX_entry( jx )->IDX_station_name, wxConvUTF8 );
@@ -3022,7 +3036,7 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 //        m_bitmapIcon->SetBitmap( *m_pRoutePoint->GetIconBitmap() );
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-            wxWindowListNode *node = kids.Item( i );
+            wxWindowListNode *node = kids.Item(i);
             wxWindow *win = node->GetData();
 
             if( win->IsKindOf( CLASSINFO(wxHyperlinkCtrl) ) ) {
@@ -3171,7 +3185,7 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
     
     wxWindowList kids = m_scrolledWindowLinks->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
-        wxWindowListNode *node = kids.Item( i );
+        wxWindowListNode *node = kids.Item(i);
         wxWindow *win = node->GetData();
         win->Hide();    
     }

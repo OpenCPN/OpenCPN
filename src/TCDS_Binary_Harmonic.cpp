@@ -544,7 +544,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
 
 IDX_entry *TCDS_Binary_Harmonic::GetIndexEntry(int n_index)
 {
-    return &m_IDX_array.Item(n_index);
+    return &m_IDX_array[n_index];
 }
 
 

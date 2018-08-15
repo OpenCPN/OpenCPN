@@ -1864,7 +1864,7 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         if( g_pi_manager ) {
             ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
             for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-                PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+                PlugInToolbarToolContainer *pttc = tool_array[i];
                 if( tool->GetId() == pttc->id ) {
                     opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
                     if( ppi ) {
@@ -2290,7 +2290,7 @@ bool ocpnToolBarSimple::DeleteToolByPos( size_t pos )
     wxCHECK_MSG( pos < GetToolsCount(), false,
             _T("invalid position in wxToolBar::DeleteToolByPos()") );
 
-    wxToolBarToolsList::compatibility_iterator node = m_tools.Item( pos );
+    wxToolBarToolsList::compatibility_iterator node = m_tools.Item(pos);
 
     if( !DoDeleteTool( pos, node->GetData() ) ) {
         return false;
@@ -2490,7 +2490,7 @@ void ocpnToolBarSimple::DoPluginToolUp()
 
     ArrayOfPlugInToolbarTools tool_array = g_pi_manager->GetPluginToolbarToolArray();
     for( unsigned int i = 0; i < tool_array.GetCount(); i++ ) {
-        PlugInToolbarToolContainer *pttc = tool_array.Item( i );
+        PlugInToolbarToolContainer *pttc = tool_array[i];
         if( m_last_plugin_down_id == pttc->id ) {
             opencpn_plugin_113 *ppi = dynamic_cast<opencpn_plugin_113 *>(pttc->m_pplugin);
             if( ppi )

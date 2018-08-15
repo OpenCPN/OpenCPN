@@ -510,10 +510,10 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
             bool b_group_add = false;
             if(g_GroupIndex > 0)
             {
-                  const int ng = cte.GetGroupArray().GetCount();
+                  const int ng = cte.GetGroupArray().size();
                   for(int ig=0 ; ig < ng; ig++)
                   {
-                        if(g_GroupIndex == cte.GetGroupArray().Item(ig))
+                        if(g_GroupIndex == cte.GetGroupArray()[ig])
                         {
                               b_group_add = true;
                               break;
@@ -669,9 +669,9 @@ bool ChartDB::IsChartInGroup(const int db_index, const int group)
       bool b_in_group = false;
       if(group > 0)
       {
-            for(unsigned int ig=0 ; ig < pt->GetGroupArray().GetCount(); ig++)
+            for(unsigned int ig=0 ; ig < pt->GetGroupArray().size(); ig++)
             {
-                  if(group == pt->GetGroupArray().Item(ig))
+                  if(group == pt->GetGroupArray()[ig])
                   {
                         b_in_group = true;
                         break;
@@ -878,15 +878,16 @@ ChartFamilyEnum ChartDB::GetCSChartFamily(ChartStack *ps, int stackindex)
 }
 
 
-ArrayOfInts ChartDB::GetCSArray(ChartStack *ps)
+std::vector<int> ChartDB::GetCSArray(ChartStack *ps)
 {
-      ArrayOfInts ret;
+      std::vector<int> ret;
+      ret.reserve(ps->nEntry);
 
       if(ps)
       {
             for(int i=0 ; i<ps->nEntry ; i++)
             {
-                  ret.Add(ps->GetDBIndex(i));
+                  ret.push_back(ps->GetDBIndex(i));
             }
       }
 
@@ -1325,18 +1326,23 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
 
                   for(unsigned int i=0 ; i < m_ChartClassDescriptorArray.GetCount() ; i++)
                   {
-                        if(m_ChartClassDescriptorArray.Item(i).m_descriptor_type == PLUGIN_DESCRIPTOR)
+                        if(m_ChartClassDescriptorArray[i].m_descriptor_type == PLUGIN_DESCRIPTOR)
                         {
-                              if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_upper)
+                              if(m_ChartClassDescriptorArray[i].m_search_mask == ext_upper)
                               {
-                                    chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                    chart_class_name = m_ChartClassDescriptorArray[i].m_class_name;
                                     break;
                               }
-                              if(m_ChartClassDescriptorArray.Item(i).m_search_mask == ext_lower)
+                              if(m_ChartClassDescriptorArray[i].m_search_mask == ext_lower)
                               {
-                                    chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                    chart_class_name = m_ChartClassDescriptorArray[i].m_class_name;
                                     break;
                               }
+                              if(ChartFullPath.Matches(m_ChartClassDescriptorArray.Item(i).m_search_mask)) {
+                                  chart_class_name = m_ChartClassDescriptorArray.Item(i).m_class_name;
+                                  break;
+                              }
+                              
                         }
                   }
 

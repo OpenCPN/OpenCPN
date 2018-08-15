@@ -117,7 +117,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadData(const wxString &data_file_path)
 
 IDX_entry *TCDS_Ascii_Harmonic::GetIndexEntry(int n_index)
 {
-    return &m_IDX_array.Item(n_index);
+    return &m_IDX_array[n_index];
 }
 
 
@@ -438,7 +438,7 @@ TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicData(IDX_entry *pIDX)
     // Try the member array of "already-looked-at" master stations
     for(unsigned int i=0 ; i < m_msd_array.GetCount() ; i++)
     {
-        psd = &m_msd_array.Item(i);
+        psd = &m_msd_array[i];
         //    In the following comparison, it is allowed that the sub-station reference_name may be
         //          a pre-subset of the master station name.
         //          e.g  IDX_refence_name:  The Narrows midchannel New York

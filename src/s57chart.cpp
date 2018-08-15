@@ -140,7 +140,7 @@ static bool s_ProgressCallBack( void )
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed)
 {
-    const uint64_t	m = 0x880355f21e6d1965ULL;
+    const uint64_t    m = 0x880355f21e6d1965ULL;
     const uint64_t *pos = (const uint64_t *)buf;
     const uint64_t *end = pos + (len >> 3);
     const unsigned char *pc;
@@ -2967,10 +2967,9 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     //  Create arrays to hold geometry objects temporarily
     MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pAuxCntArray = new wxArrayInt;
+    std::vector<int> auxCntArray, noCovrCntArray;
 
     MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
-    wxArrayInt *pNoCovrCntArray = new wxArrayInt;
 
     //Get the first M_COVR object
     pFeat = GetChartFirstM_COVR( catcov );
@@ -3007,11 +3006,11 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
                     if( catcov == 1 ) {
                         pAuxPtrArray->Add( pf );
-                        pAuxCntArray->Add( npt );
+                        auxCntArray.push_back( npt );
                     }
                     else if( catcov == 2 ){
                         pNoCovrPtrArray->Add( pf );
-                        pNoCovrCntArray->Add( npt );
+                        noCovrCntArray.push_back( npt );
                     }
                 }
 
@@ -3022,7 +3021,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     //    Allocate the storage
 
-    m_nCOVREntries = pAuxCntArray->GetCount();
+    m_nCOVREntries = auxCntArray.size();
 
     //    Create new COVR entries
 
@@ -3031,7 +3030,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-            m_pCOVRTablePoints[j] = pAuxCntArray->Item( j );
+            m_pCOVRTablePoints[j] = auxCntArray[j];
             m_pCOVRTable[j] = pAuxPtrArray->Item( j );
         }
     }
@@ -3045,7 +3044,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
 
     //      And for the NoCovr regions
-    m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+    m_nNoCOVREntries = noCovrCntArray.size();
 
     if( m_nNoCOVREntries ) {
         //    Create new NoCOVR entries
@@ -3053,8 +3052,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
         m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-            int npoints = pNoCovrCntArray->Item( j );
-            m_pNoCOVRTablePoints[j] = npoints;
+            m_pNoCOVRTablePoints[j] = noCovrCntArray[j];
             m_pNoCOVRTable[j] = pNoCovrPtrArray->Item( j );
         }
     }
@@ -3064,9 +3062,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     }
 
     delete pAuxPtrArray;
-    delete pAuxCntArray;
     delete pNoCovrPtrArray;
-    delete pNoCovrCntArray;
 
 
     if( 0 == m_nCOVREntries ) {                        // fallback
@@ -3181,25 +3177,25 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
 
         //Coverage areas
         SENCFloatPtrArray &AuxPtrArray = senc.getSENCReadAuxPointArray();
-        wxArrayInt &AuxCntArray = senc.getSENCReadAuxPointCountArray();
+        std::vector<int> &AuxCntArray = senc.getSENCReadAuxPointCountArray();
 
-        m_nCOVREntries = AuxCntArray.GetCount();
+        m_nCOVREntries = AuxCntArray.size();
 
         m_pCOVRTablePoints = (int *) malloc( m_nCOVREntries * sizeof(int) );
         m_pCOVRTable = (float **) malloc( m_nCOVREntries * sizeof(float *) );
 
         for( unsigned int j = 0; j < (unsigned int) m_nCOVREntries; j++ ) {
-            m_pCOVRTablePoints[j] = AuxCntArray.Item( j );
-            m_pCOVRTable[j] = (float *) malloc( AuxCntArray.Item( j ) * 2 * sizeof(float) );
-            memcpy( m_pCOVRTable[j], AuxPtrArray.Item( j ),
-                    AuxCntArray.Item( j ) * 2 * sizeof(float) );
+            m_pCOVRTablePoints[j] = AuxCntArray[j];
+            m_pCOVRTable[j] = (float *) malloc( AuxCntArray[j] * 2 * sizeof(float) );
+            memcpy( m_pCOVRTable[j], AuxPtrArray[j],
+                    AuxCntArray[j] * 2 * sizeof(float) );
         }
 
         // NoCoverage areas
         SENCFloatPtrArray &NoCovrPtrArray = senc.getSENCReadNOCOVRPointArray();
-        wxArrayInt &NoCovrCntArray = senc.getSENCReadNOCOVRPointCountArray();
+        std::vector<int> &NoCovrCntArray = senc.getSENCReadNOCOVRPointCountArray();
 
-        m_nNoCOVREntries = NoCovrCntArray.GetCount();
+        m_nNoCOVREntries = NoCovrCntArray.size();
 
         if( m_nNoCOVREntries ) {
             //    Create new NoCOVR entries
@@ -3207,10 +3203,10 @@ bool s57chart::CreateHeaderDataFromoSENC( void )
             m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
 
             for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
-                int npoints = NoCovrCntArray.Item( j );
+                int npoints = NoCovrCntArray[j];
                 m_pNoCOVRTablePoints[j] = npoints;
                 m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
-                memcpy( m_pNoCOVRTable[j], NoCovrPtrArray.Item( j ),
+                memcpy( m_pNoCOVRTable[j], NoCovrPtrArray[j],
                         npoints * 2 * sizeof(float) );
             }
         }
@@ -3373,7 +3369,7 @@ void s57chart::GetChartNameFromTXT( const wxString& FullPath, wxString &Name )
     name.Clear();
 
     for( unsigned int j = 0; j < FileList.GetCount(); j++ ) {
-        wxFileName file( FileList.Item( j ) );
+        wxFileName file( FileList[j] );
         if( ( ( file.GetExt() ).MakeUpper() ) == _T("TXT") ) {
             //  Look for the line beginning with the name of the .000 file
             wxTextFile text_file( file.GetFullPath() );
@@ -3446,38 +3442,67 @@ static int ExtensionCompare( const wxString& first, const wxString& second )
 int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFiles,
                                   wxDateTime date000, wxString edtn000)
 {
-
     wxString DirName000 = file000.GetPath( (int) ( wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME ) );
     wxDir dir( DirName000 );
+    if(!dir.IsOpened()){
+        DirName000.Prepend(wxFileName::GetPathSeparator());
+        DirName000.Prepend(_T("."));
+        dir.Open(DirName000);
+        if(!dir.IsOpened()){
+            return 0;
+        }
+    }
+    
+    int flags = wxDIR_DEFAULT;
+    
+    // Check dir structure
+    //  We look to see if the directory one level above where the .000 file is located happens to be "perfectly numeric" in name.
+    //  If so, the dataset is presumed to be organized with each update in its own directory.
+    //  So, we search for updates from this level, recursing into subdirs.
+    wxFileName fnDir( DirName000 );
+    fnDir.RemoveLastDir();
+    wxString sdir = fnDir.GetPath();
+    wxFileName fnTest(sdir);
+    wxString sname = fnTest.GetName();
+    long tmps;
+    if(sname.ToLong( &tmps )){
+        dir.Open(sdir);
+        DirName000 = sdir;
+        flags |= wxDIR_DIRS;
+    }
+    
     wxString ext;
     wxArrayString *dummy_array;
     int retval = 0;
-
-    if( UpFiles == NULL ) dummy_array = new wxArrayString;
+    
+    if( UpFiles == NULL )
+        dummy_array = new wxArrayString;
     else
         dummy_array = UpFiles;
-
-    wxString filename;
-    bool cont = dir.GetFirst( &filename );
-    while( cont ) {
+    
+    wxArrayString possibleFiles;
+    wxDir::GetAllFiles( DirName000, &possibleFiles, wxEmptyString, flags );
+    
+    for(unsigned int i=0 ; i < possibleFiles.GetCount() ; i++){
+        wxString filename(possibleFiles[i]);
+        
         wxFileName file( filename );
         ext = file.GetExt();
-
+        
         long tmp;
         //  Files of interest have the same base name is the target .000 cell,
         //  and have numeric extension
         if( ext.ToLong( &tmp ) && ( file.GetName() == file000.GetName() ) ) {
-            wxString FileToAdd( DirName000 );
-            FileToAdd.Append( file.GetFullName() );
-
+            wxString FileToAdd = filename;
+            
             wxCharBuffer buffer=FileToAdd.ToUTF8();             // Check file namme for convertability
-
+            
             if( buffer.data() && !filename.IsSameAs( _T("CATALOG.031"), false ) )           // don't process catalogs
             {
-//          We must check the update file for validity
-//          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
-//          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
-
+                //          We must check the update file for validity
+                //          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
+                //          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
+                
                 wxDateTime umdate;
                 wxString sumdate;
                 wxString umedtn;
@@ -3488,82 +3513,77 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
                     wxLogMessage( msg );
                 } else {
                     poModule->Rewind();
-
+                    
                     //    Read and parse DDFRecord 0 to get some interesting data
                     //    n.b. assumes that the required fields will be in Record 0....  Is this always true?
-
+                    
                     DDFRecord *pr = poModule->ReadRecord();                              // Record 0
                     //    pr->Dump(stdout);
-
+                    
                     //  Fetch ISDT(Issue Date)
                     char *u = NULL;
                     if( pr ) {
                         u = (char *) ( pr->GetStringSubfield( "DSID", 0, "ISDT", 0 ) );
-
+                        
                         if( u ) {
                             if( strlen( u ) ) sumdate = wxString( u, wxConvUTF8 );
                         }
                     } else {
                         wxString msg(
-                                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:ISDT in update file ") );
+                            _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:ISDT in update file ") );
                         msg.Append( FileToAdd );
                         wxLogMessage( msg );
-
+                        
                         sumdate = _T("20000101");           // backstop, very early, so wont be used
                     }
-
+                    
                     umdate.ParseFormat( sumdate, _T("%Y%m%d") );
                     if( !umdate.IsValid() ) umdate.ParseFormat( _T("20000101"), _T("%Y%m%d") );
-
-                    umdate.ResetTime();
-
+                                     
+                                     umdate.ResetTime();
+                    
                     //    Fetch the EDTN(Edition) field
-                    if( pr ) {
-                        u = NULL;
-                        u = (char *) ( pr->GetStringSubfield( "DSID", 0, "EDTN", 0 ) );
-                        if( u ) {
-                            if( strlen( u ) ) umedtn = wxString( u, wxConvUTF8 );
-                        }
-                    } else {
-                        wxString msg(
-                                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:EDTN in update file ") );
-                        msg.Append( FileToAdd );
-                        wxLogMessage( msg );
-
-                        umedtn = _T("1");                // backstop
-                    }
+                                     if( pr ) {
+                                         u = NULL;
+                                         u = (char *) ( pr->GetStringSubfield( "DSID", 0, "EDTN", 0 ) );
+                                         if( u ) {
+                                             if( strlen( u ) ) umedtn = wxString( u, wxConvUTF8 );
+                                         }
+                                     } else {
+                                         wxString msg(
+                                             _T("   s57chart::BuildS57File  DDFRecord 0 does not contain DSID:EDTN in update file ") );
+                                         msg.Append( FileToAdd );
+                                         wxLogMessage( msg );
+                                         
+                                         umedtn = _T("1");                // backstop
+                                     }
                 }
-
+                
                 delete poModule;
-
-                if( umdate.IsValid() ){
-                    if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
-                        dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
-                }
+                
+                if( ( !umdate.IsEarlierThan( date000 ) ) && ( umedtn.IsSameAs( edtn000 ) ) ) // Note polarity on Date compare....
+                dummy_array->Add( FileToAdd );                    // Looking for umdate >= m_date000
             }
         }
-
-        cont = dir.GetNext( &filename );
     }
-
-//      Sort the candidates
+    
+    //      Sort the candidates
     dummy_array->Sort( ExtensionCompare );
-
-//      Get the update number of the last in the list
+    
+    //      Get the update number of the last in the list
     if( dummy_array->GetCount() ) {
         wxString Last = dummy_array->Last();
         wxFileName fnl( Last );
         ext = fnl.GetExt();
         wxCharBuffer buffer=ext.ToUTF8();
-        if(buffer.data())
+        if(buffer.data())            
             retval = atoi( buffer.data() );
     }
-
+    
     if( UpFiles == NULL ) delete dummy_array;
-
+                                     
     return retval;
 }
-
 
 
 int s57chart::ValidateAndCountUpdates( const wxFileName file000, const wxString CopyDir,
@@ -5101,29 +5121,25 @@ wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString Attr
     return value;
 }
 
-int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
+bool s57chart::CompareLights( const S57Light* l1, const S57Light* l2 )
 {
-    S57Light l1 = *(S57Light*) *l1ptr;
-    S57Light l2 = *(S57Light*) *l2ptr;
+    int positionDiff = l1->position.Cmp( l2->position );
+    if( positionDiff != 0 ) return true;
 
-    int positionDiff = l1.position.Cmp( l2.position );
-    if( positionDiff != 0 ) return positionDiff;
 
-    double angle1, angle2;
-    int attrIndex1 = l1.attributeNames.Index( _T("SECTR1") );
-    int attrIndex2 = l2.attributeNames.Index( _T("SECTR1") );
+    int attrIndex1 = l1->attributeNames.Index( _T("SECTR1") );
+    int attrIndex2 = l2->attributeNames.Index( _T("SECTR1") );
 
     // This should put Lights without sectors last in the list.
-    if( attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return 0;
-    if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return -1;
-    if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return 1;
+    if( attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return false;
+    if( attrIndex1 != wxNOT_FOUND && attrIndex2 == wxNOT_FOUND ) return true;
+    if( attrIndex1 == wxNOT_FOUND && attrIndex2 != wxNOT_FOUND ) return false;
 
-    l1.attributeValues.Item( attrIndex1 ).ToDouble( &angle1 );
-    l2.attributeValues.Item( attrIndex2 ).ToDouble( &angle2 );
+    double angle1, angle2;
+    l1->attributeValues.Item( attrIndex1 ).ToDouble( &angle1 );
+    l2->attributeValues.Item( attrIndex2 ).ToDouble( &angle2 );
 
-    if( angle1 == angle2 ) return 0;
-    if( angle1 > angle2 ) return 1;
-    return -1;
+    return angle1 < angle2;
 }
 
 static const char *type2str( GeoPrim_t type)
@@ -5161,7 +5177,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString objText;
     wxString lightsHtml;
     wxString positionString;
-    wxArrayPtrVoid lights;
+    std::vector<S57Light*> lights;
     S57Light* curLight = NULL;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
@@ -5252,7 +5268,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 curLight = new S57Light;
                 curLight->position = positionString;
                 curLight->hasSectors = false;
-                lights.Add( curLight );
+                lights.push_back( curLight );
             }
         }
 
@@ -5361,30 +5377,31 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         }
     } // Object for loop
 
-    if( lights.Count() > 0 ) {
+    if( !lights.empty() ) {
 
         // For lights we now have all the info gathered but no HTML output yet, now
         // run through the data and build a merged table for all lights.
 
-        lights.Sort( ( CMPFUNC_wxArraywxArrayPtrVoid )( &s57chart::CompareLights ) );
+        std::sort(lights.begin(), lights.end(), s57chart::CompareLights);
 
         wxString lastPos;
 
-        for( unsigned int curLightNo = 0; curLightNo < lights.Count(); curLightNo++ ) {
-            S57Light* thisLight = (S57Light*) lights.Item( curLightNo );
+        for(auto const& thisLight: lights) {
             int attrIndex;
 
             if( thisLight->position != lastPos ) {
 
                 lastPos = thisLight->position;
 
-                if( curLightNo > 0 ) lightsHtml << _T("</table>\n<hr noshade>\n");
+                if( thisLight != *lights.begin() )
+                    lightsHtml << _T("</table>\n<hr noshade>\n");
+                curLight++;
 
                 lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                 lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
 
-                if( curLight && curLight->hasSectors ) lightsHtml
-                        <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
+                if( curLight && curLight->hasSectors )
+                    lightsHtml <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
 
                 lightsHtml << _T("<table>");
             }
@@ -5395,43 +5412,43 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             attrIndex = thisLight->attributeNames.Index( _T("COLOUR") );
             if( attrIndex != wxNOT_FOUND ) {
                 wxString color = thisLight->attributeValues.Item( attrIndex );
-                if( color == _T("red (3)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("green (4)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
-                if( color == _T("white (1)") ) lightsHtml
-                        << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                if( color == _T("red (3)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                if( color == _T("green (4)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+                if( color == _T("white (1)") )
+                    lightsHtml << _T("<table border=0><tr><td bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
             }
 
             lightsHtml << _T("</font></td><td><font size=-1><nobr><b>");
 
             attrIndex = thisLight->attributeNames.Index( _T("LITCHR") );
             if( attrIndex != wxNOT_FOUND ) {
-                wxString character = thisLight->attributeValues.Item( attrIndex );
+                wxString character = thisLight->attributeValues[attrIndex];
                 lightsHtml << character.BeforeFirst( wxChar( '(' ) ) << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("SIGGRP") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("SIGPER") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("HEIGHT") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
             attrIndex = thisLight->attributeNames.Index( _T("VALNMR") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" ");
             }
 
@@ -5439,10 +5456,10 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             attrIndex = thisLight->attributeNames.Index( _T("SECTR1") );
             if( attrIndex != wxNOT_FOUND ) {
-                lightsHtml << _T("(") <<thisLight->attributeValues.Item( attrIndex );
+                lightsHtml << _T("(") <<thisLight->attributeValues[attrIndex];
                 lightsHtml << _T(" - ");
                 attrIndex = thisLight->attributeNames.Index( _T("SECTR2") );
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ) << _T(") ");
+                lightsHtml << thisLight->attributeValues[attrIndex] << _T(") ");
             }
 
             lightsHtml << _T("</nobr>");
@@ -5451,7 +5468,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<nobr>");
                 lightsHtml
-                        << thisLight->attributeValues.Item( attrIndex ).BeforeFirst(
+                        << thisLight->attributeValues[attrIndex].BeforeFirst(
                                 wxChar( '(' ) );
                 lightsHtml << _T("</nobr> ");
             }
@@ -5460,7 +5477,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<nobr>");
                 lightsHtml
-                        << thisLight->attributeValues.Item( attrIndex ).BeforeFirst(
+                        << thisLight->attributeValues[attrIndex].BeforeFirst(
                                 wxChar( '(' ) );
                 lightsHtml << _T("</nobr> ");
             }
@@ -5468,8 +5485,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             attrIndex = thisLight->attributeNames.Index( _T("OBJNAM") );
             if( attrIndex != wxNOT_FOUND ) {
                 lightsHtml << _T("<br><nobr>");
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ).Left( 1 ).Upper();
-                lightsHtml << thisLight->attributeValues.Item( attrIndex ).Mid( 1 );
+                lightsHtml << thisLight->attributeValues[attrIndex].Left( 1 ).Upper();
+                lightsHtml << thisLight->attributeValues[attrIndex].Mid( 1 );
                 lightsHtml << _T("</nobr> ");
             }
 
@@ -5483,7 +5500,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         lightsHtml << _T("</table><hr noshade>\n");
         ret_val = lightsHtml << ret_val;
 
-        lights.Clear();
+        lights.clear();
     }
 
     return ret_val;

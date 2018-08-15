@@ -979,7 +979,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
 
     bool b_hdgValid = true;
     
-    float theta;
+    float theta = (float)-PI / 2.;
     //    If the target reported a valid HDG, then use it for icon
     if( (int) ( td->HDG ) != 511 ) {
         theta = ( ( td->HDG - 90 ) * PI / 180. ) + vp.rotation;
@@ -1701,8 +1701,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc, ViewPort& vp, ChartC
     bool b_noshow = false;
     bool b_forceshow = false;
     for(unsigned int i=0 ; i < g_MMSI_Props_Array.GetCount() ; i++){
-        if(td->MMSI == g_MMSI_Props_Array.Item(i)->MMSI ){
-            MMSIProperties *props = g_MMSI_Props_Array.Item(i);
+        if(td->MMSI == g_MMSI_Props_Array[i]->MMSI ){
+            MMSIProperties *props = g_MMSI_Props_Array[i];
             if( TRACKTYPE_NEVER == props->TrackType){
                 b_noshow = true;
                 break;
@@ -1764,7 +1764,6 @@ void AISDraw( ocpnDC& dc, ViewPort& vp, ChartCanvas *cp )
     // Toggling AIS display on and off
     if( !g_bShowAIS )
         return;//
-    //wxArrayInt importancearray; 
     //      Iterate over the AIS Target Hashmap
     AIS_Target_Hash::iterator it;
 
