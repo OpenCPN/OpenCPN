@@ -83,7 +83,8 @@ private:
     MUIButton   *m_zinButton;
     MUIButton   *m_zoutButton;
     MUIButton   *m_menuButton;
-   
+    MUIButton   *m_followButton;
+    
     CanvasOptions *m_canvasOptions;
     wxPoint     m_targetCOPos;
     wxPoint     m_currentCOPos;

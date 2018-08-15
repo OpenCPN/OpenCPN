@@ -31,6 +31,9 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+
+#include <wx/statline.h>
+
 #include "dychart.h"
 
 #include "chcanv.h"
@@ -370,9 +373,18 @@ void MUIBar::CreateControls()
   
      barSizer->AddSpacer(5);
      
+     wxStaticLine *pl1=new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
+     barSizer->Add(pl1, 1);
+     
+     m_followButton = new MUIButton( this, ID_FOLLOW, iconDir + _T("follow.svg"));
+     barSizer->Add(m_followButton, 1, wxSHAPED);
+     
+     barSizer->AddSpacer(15);
+     
      m_menuButton = new MUIButton( this, ID_MUI_MENU, iconDir + _T("menu.svg"));
      barSizer->Add(m_menuButton, 1,  wxALIGN_RIGHT | wxSHAPED);
-    
+
+     
     //topSizer->AddSpacer(50);
      topSizer->SetSizeHints( this );
      topSizer->Fit( this );
@@ -449,6 +461,13 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
             break;
         }
 
+        case ID_FOLLOW:
+        {
+            wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
+            GetParent()->GetEventHandler()->AddPendingEvent( evt );
+            break;
+        }
+        
         case ID_MUI_MENU:
         {
             if(!m_canvasOptions){
@@ -465,6 +484,7 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
                 PullCanvasOptions();
             break;
         }
+        
         default:
             break;
     }        
@@ -490,9 +510,9 @@ void MUIBar::OnPaint( wxPaintEvent& event )
 //     dc.DrawRectangle( 0, 0, width, height);
     
     wxColour backColor = wxColour(40,40,40);
-    dc.SetBrush( wxBrush( wxColour(200, 0, 0)) );
+    dc.SetBrush( wxBrush( wxColour(200, 200, 200)) );
     dc.SetPen( wxPen( backColor) );
-    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );
+//    dc.DrawRoundedRectangle( 0, 0, width - 10, height - 10, 8 );
 }
 
 
@@ -548,7 +568,7 @@ void MUIBar::PushCanvasOptions()
     m_animationTotalTime = 100;  // msec
     m_pushPull = CO_PUSH;
     ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
-    pcc->m_b_paint_enable = false;
+    //pcc->m_b_paint_enable = false;
     
     // Start the animation....
     m_animateStep = 0;
