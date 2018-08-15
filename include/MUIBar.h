@@ -89,6 +89,7 @@ private:
     wxPoint     m_targetCOPos;
     wxPoint     m_currentCOPos;
     wxPoint     m_startCOPos;
+    wxSize      m_canvasOptionsFullSize;
     
     wxTimer     m_canvasOptionsAnimationTimer;
     int         m_animateStep;

@@ -68,7 +68,7 @@ extern OCPNPlatform              *g_Platform;
 //    CanvasOptions
 //------------------------------------------------------------------------------
 
-BEGIN_EVENT_TABLE(CanvasOptions, wxScrolledWindow)
+BEGIN_EVENT_TABLE(CanvasOptions, wxDialog)
 EVT_CLOSE(CanvasOptions::OnClose)
 //EVT_CHECKBOX(ID_QUILTCHECKBOX1, CanvasOptions::OnOptionChange)
 END_EVENT_TABLE()
@@ -77,13 +77,23 @@ END_EVENT_TABLE()
 //: wxPanel( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
 
 CanvasOptions::CanvasOptions( wxWindow *parent)
-: wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxSUNKEN_BORDER)
+ :wxDialog()
 
 {
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
     SetFont( *qFont );
 
-    SetScrollRate(0, 5);
+    SetBackgroundStyle( wxBG_STYLE_TRANSPARENT );
+    long mstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR | wxFRAME_SHAPED;
+    wxDialog::Create(parent, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize, mstyle);
+    
+    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+    SetSizer(topsizer);
+    
+    m_sWindow = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL | wxSUNKEN_BORDER);
+    topsizer->Add(m_sWindow, 1, wxEXPAND );
+    
+    m_sWindow->SetScrollRate(0, 5);
 #if 0    
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
     
@@ -101,7 +111,7 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     wxSizerFlags verticleInputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT).Border(wxALL, group_item_spacing);
     wxSizerFlags inputFlags = wxSizerFlags(0).Align(wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL).Border(wxALL, group_item_spacing);
     
-    wxScrolledWindow *pDisplayPanel = this;
+    wxScrolledWindow *pDisplayPanel = m_sWindow;
 
 #if 0    
     wxFlexGridSizer* generalSizer = new wxFlexGridSizer(2);
@@ -199,14 +209,8 @@ CanvasOptions::CanvasOptions( wxWindow *parent)
     
     SetAutoLayout( true );
     
-    generalSizer->SetSizeHints( this );
-    generalSizer->Fit( this );
-//     wxSize size( GetSize() );
-//     if (size.x < size.y*3/2)
-//     {
-//         size.x = size.y*3/2;
-//         SetSize( size );
-//     }
+//    topsizer->SetSizeHints( this );
+    topsizer->Fit( this );
     
 }
 

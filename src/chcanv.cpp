@@ -5997,6 +5997,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     if(m_muiBar){
         m_muiBar->SetBestSize();
         m_muiBar->SetBestPosition();
+        m_muiBar->Raise();
     }
     
 //    Set up the scroll margins
@@ -9724,8 +9725,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     dc.DestroyClippingRegion();
 
     
-    if(m_muiBar)
+    if(m_muiBar){
+        m_muiBar->Raise();
         m_muiBar->Refresh();
+    }
     
     PaintCleanup();
 

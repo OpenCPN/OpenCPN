@@ -55,7 +55,7 @@ class ChartCanvas;
 // CanvasOptions
 //----------------------------------------------------------------------------
 
-class  CanvasOptions: public wxScrolledWindow
+class  CanvasOptions: public wxDialog
 {
 
 public:
@@ -70,6 +70,8 @@ public:
 private:
     int m_style;
     DECLARE_EVENT_TABLE()
+    
+    wxScrolledWindow *m_sWindow;
     
     wxCheckBox *pShowStatusBar, *pShowMenuBar, *pShowChartBar, *pShowCompassWin;
     wxCheckBox *pPrintShowIcon, *pCDOOutlines, *pSDepthUnits, *pSDisplayGrid;

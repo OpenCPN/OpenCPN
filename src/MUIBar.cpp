@@ -280,7 +280,6 @@ void MUIButton::OnLeftDown( wxMouseEvent& event )
 
 void MUIButton::OnLeftUp( wxMouseEvent& event )
 {
-    printf("lup\n");
     if(GetClientRect().Contains(event.GetPosition())){
         wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, GetId());
         GetParent()->GetEventHandler()->AddPendingEvent( evt );
@@ -473,7 +472,14 @@ void MUIBar::OnToolLeftClick(  wxCommandEvent& event )
             if(!m_canvasOptions){
                 m_canvasOptions = new CanvasOptions(m_parent);
                 m_canvasOptions->SetSize(wxSize(-1, 400));
-                m_currentCOPos = wxPoint( m_parent->GetSize().x, 20);
+                m_canvasOptionsFullSize = m_canvasOptions->GetSize();
+                m_canvasOptionsFullSize.x += m_canvasOptions->GetCharWidth();  // Allow for scroll bar, since sizer won't do it.
+                
+                if(1)
+                    m_currentCOPos = m_parent->ClientToScreen(wxPoint( m_parent->GetSize().x, 20));
+                else
+                    m_currentCOPos = wxPoint( m_parent->GetSize().x, 20);
+                
                 m_canvasOptions->Move(m_currentCOPos);
                 m_canvasOptions->Hide();
             }
@@ -521,9 +527,12 @@ void MUIBar::PullCanvasOptions()
     //  Setup animation parameters
     
     //  Target position
-    int cox = m_parent->GetSize().x - m_canvasOptions->GetSize().x;
+    int cox = m_parent->GetSize().x - m_canvasOptionsFullSize.x; //m_canvasOptions->GetSize().x;
     int coy = 20;
-    m_targetCOPos = wxPoint(cox, coy);
+    if(1)
+        m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
+    else
+        m_targetCOPos = wxPoint(cox, coy);
     
     //  Start Position
     m_startCOPos = m_canvasOptions->GetPosition();
@@ -554,7 +563,11 @@ void MUIBar::PushCanvasOptions()
     //  Target position
     int cox = m_parent->GetSize().x;
     int coy = 20;
-    m_targetCOPos = wxPoint(cox, coy);
+
+    if(1)
+        m_targetCOPos = m_parent->ClientToScreen(wxPoint(cox, coy));
+    else
+        m_targetCOPos = wxPoint(cox, coy);
     
     //  Start Position
     m_startCOPos = m_canvasOptions->GetPosition();
@@ -584,7 +597,16 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
     
     wxPoint newPos = wxPoint(m_startCOPos.x + dx, m_currentCOPos.y);
 
-    m_canvasOptions->Move(newPos);
+    int size_x;
+    if(m_pushPull == CO_PULL)
+        size_x =  abs(dx);
+    else
+        size_x = (m_targetCOPos.x - m_startCOPos.x) - abs(dx);
+    
+    m_canvasOptions->SetSize(newPos.x, newPos.y, size_x, wxDefaultCoord, wxSIZE_USE_EXISTING);
+    m_canvasOptions->GetSizer()->Layout();
+    
+    //m_canvasOptions->Move(newPos);
     m_currentCOPos = newPos;
     m_canvasOptions->Show();
     
@@ -599,6 +621,11 @@ void MUIBar::onCanvasOptionsAnimationTimerEvent( wxTimerEvent &event )
         
         ChartCanvas *pcc = wxDynamicCast(m_parent, ChartCanvas);
         pcc->m_b_paint_enable = true;
+
+        if(m_pushPull == CO_PUSH){
+            delete m_canvasOptions;
+            m_canvasOptions = NULL;
+        }
         
     }
     
