@@ -454,18 +454,27 @@ bool PlugInManager::LoadPlugInDirectory(const wxString &plugin_dir, bool load_en
         for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
         {
             PlugInContainer *pic = plugin_array[i];
+            
+            // Checking for dynamically updated plugins
             if(pic->m_plugin_filename == plugin_file) {
-                if(pic->m_plugin_modification != plugin_modification) {
-                    // modification times don't match, reload plugin
-                    plugin_array.Remove(pic);
-                    i--;
+                
+                // Do not re-load same-name plugins from different directories.  Certain to crash...
+                if(pic->m_plugin_file == file_name){ 
+                    if(pic->m_plugin_modification != plugin_modification) {
+                        // modification times don't match, reload plugin
+                        plugin_array.Remove(pic);
+                        i--;
 
-                    DeactivatePlugIn(pic);
-                    pic->m_destroy_fn(pic->m_pplugin);
-                    
-                    delete pic->m_plibrary;            // This will unload the PlugIn
-                    delete pic;
-                    ret = true;
+                        DeactivatePlugIn(pic);
+                        pic->m_destroy_fn(pic->m_pplugin);
+                        
+                        delete pic->m_plibrary;            // This will unload the PlugIn
+                        delete pic;
+                        ret = true;
+                    } else {
+                        loaded = true;
+                        break;
+                    }
                 } else {
                     loaded = true;
                     break;
