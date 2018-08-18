@@ -670,8 +670,6 @@ IF(NOT QT_ANDROID)
         src/wxcurl/davtool.cpp
         src/wxcurl/dialog.cpp
         src/wxcurl/ftp.cpp
-        src/wxcurl/ftpparse.cpp
-        src/wxcurl/ftptool.cpp
         src/wxcurl/http.cpp
         src/wxcurl/panel.cpp
         src/wxcurl/telnet.cpp
