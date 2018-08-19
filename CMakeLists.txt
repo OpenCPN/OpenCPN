@@ -452,7 +452,7 @@ ENDIF()
 
 MESSAGE (STATUS "    Adding local GLU" )
 add_subdirectory(src/glu)
-SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES}) 
+SET( OPENGL_LIBRARIES "GLU_static" ${OPENGL_LIBRARIES})
 
 IF(NOT QT_ANDROID)
 # Find wxWidgets here, and the setting get inherited by all plugins.
@@ -492,10 +492,10 @@ MESSAGE (STATUS "Found wxWidgets..." )
         SET(UCNAME ${_currentLibFile})
         string(TOUPPER ${UCNAME} UCNAME)
         IF(NOT ${UCNAME} MATCHES   "(.*)GLU(.*)")
-            SET( REVISED_wxWidgets_LIBRARIES  ${REVISED_wxWidgets_LIBRARIES} ${_currentLibFile}) 
+            SET( REVISED_wxWidgets_LIBRARIES  ${REVISED_wxWidgets_LIBRARIES} ${_currentLibFile})
         ENDIF()
     ENDFOREACH (_currentLibFile )
-    SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES}) 
+    SET( wxWidgets_LIBRARIES ${REVISED_wxWidgets_LIBRARIES})
 
     MESSAGE (STATUS " Revised wxWidgets Libraries: ${wxWidgets_LIBRARIES}")
 ENDIF(NOT QT_ANDROID)
@@ -535,7 +535,7 @@ IF(NOT WIN32 AND NOT APPLE )
   IF(CMAKE_BUILD_TYPE MATCHES "Debug")
     ADD_DEFINITIONS( " -O0")
   ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-  
+
   ADD_DEFINITIONS( " -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof
 #    ADD_DEFINITIONS( -pg )
@@ -574,7 +574,7 @@ IF(OCPN_USE_CRASHREPORT)
     ELSE(MSVC)
         IF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
             IF(CMAKE_BUILD_TYPE MATCHES "Rel*")
-		    MESSAGE (STATUS "Using Linux crash reporting")
+                MESSAGE (STATUS "Using Linux crash reporting")
                 ADD_DEFINITIONS(-DLINUX_CRASHRPT)
             ENDIF(CMAKE_BUILD_TYPE MATCHES "Rel*")
         ENDIF(NOT APPLE AND NOT QT_ANDROID AND NOT MINGW)
@@ -662,7 +662,7 @@ IF(NOT QT_ANDROID)
         INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIR})
     ELSE(OCPN_USE_EXTERN_CURL)
         INCLUDE("Curl.cmake")
-	MESSAGE (STATUS "Using local curl library...")
+        MESSAGE (STATUS "Using local curl library...")
     ENDIF(OCPN_USE_EXTERN_CURL)
     SET(SRC_WXCURL
         src/wxcurl/base.cpp
@@ -681,10 +681,10 @@ IF(NOT QT_ANDROID)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/wxcurl)
     SET(EXTRA_LIBS ${EXTRA_LIBS} WXCURL)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CURL_LIBRARIES})
-    
+
     MESSAGE (STATUS "wxCurl configured...")
     MESSAGE (STATUS "CURL_LIBRARIES:"  ${CURL_LIBRARIES})
-    
+
     IF(WIN32 AND OCPN_USE_EXTERN_CURL)
         find_library(CURL_LIBRARY_DLL NAMES
             curl
@@ -721,15 +721,15 @@ IF(OCPN_USE_SVG)
             SET(LOOK_OPTION NO_DEFAULT_PATH)
         ENDIF(NOT APPLE_MODERN)
       ENDIF(APPLE)
-        
+
       FIND_PATH( CAIRO_INCLUDE_DIR cairo.h
               PATHS ${CAIRO_INC_LOOK_PATHS}
               PATH_SUFFIXES cairo/ libcairo/ cairo/libcairo/
               ${LOOK_OPTION} )
-              
+
       message(STATUS " Cairo include directory found: ${CAIRO_INCLUDE_DIR}")
 
-      
+
       SET(CAIRO_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
       IF(APPLE)
         IF(NOT APPLE_MODERN)
@@ -737,7 +737,7 @@ IF(OCPN_USE_SVG)
             SET(LOOK_OPTION NO_DEFAULT_PATH)
         ENDIF(NOT APPLE_MODERN)
       ENDIF(APPLE)
-      
+
       SET( CAIRO_NAMES libcairo cairo )
 
       FIND_LIBRARY( CAIRO_LIBRARY
@@ -769,11 +769,11 @@ IF(OCPN_USE_SVG)
       FIND_PACKAGE_HANDLE_STANDARD_ARGS( "CAIRO_EXTRAS" DEFAULT_MSG PANGOCAIRO_LIBRARY
                                             PANGOFT2_LIBRARY PANGOXFT_LIBRARY GDK_PIXBUF_LIBRARY)
       ENDIF(NOT APPLE)
-      
-      IF ( CAIRO_EXTRAS_FOUND )                                           
+
+      IF ( CAIRO_EXTRAS_FOUND )
         SET( CAIRO_EXTRA_LIBRARIES ${PANGOCAIRO_LIBRARY} ${PANGOFT2_LIBRARY} ${PANGOXFT_LIBRARY} ${GDK_PIXBUF_LIBRARY} )
         message(STATUS "Cairo Extra Libraries: " ${CAIRO_EXTRA_LIBRARIES})
-      ENDIF ( CAIRO_EXTRAS_FOUND ) 
+      ENDIF ( CAIRO_EXTRAS_FOUND )
 
 
       # Find FFMPEG - we have it disabled in our wxSVG
@@ -807,7 +807,7 @@ IF(OCPN_USE_SVG)
     IF(WIN32)
       SET(SVG_LIBS
         ${CMAKE_SOURCE_DIR}/buildwin/gtk/cairo.lib
-	${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
+        ${CMAKE_SOURCE_DIR}/buildwin/expat-2.2.5/expat.lib
 ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
       )
       FILE(GLOB gtkdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/gtk/*.dll")
@@ -899,7 +899,7 @@ ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
         SET(SRC_WXSVG ${SRC_WXSVG}
             src/wxsvg/src/ExifHandler.cpp
         )
-        ADD_DEFINITIONS(-DwxsvgUSE_EXIF) 
+        ADD_DEFINITIONS(-DwxsvgUSE_EXIF)
         INCLUDE_DIRECTORIES(${EXIF_INCLUDE_DIR})
     endif()
 
@@ -915,7 +915,7 @@ ${CMAKE_SOURCE_DIR}/buildwin/archive.lib
   ENDIF(NOT QT_ANDROID)
 ENDIF(OCPN_USE_SVG)
 
- 
+
 IF(NOT WIN32 AND NOT APPLE AND NOT QT_ANDROID)
   OPTION(OCPN_FORCE_GTK3 "Force the build to use GTK3" OFF)
 
@@ -981,7 +981,7 @@ IF(UNIX AND NOT APPLE)
     SET(SQLITE3_LIB_LOOK_PATHS /usr/lib /usr/local/lib /usr/lib/i386-linux-gnu)
     FIND_LIBRARY(SQLITE3_LIBRARY NAMES PATHS ${SQLITE3_LIB_LOOK_PATHS} NAMES sqlite3 libsqlite3)
     message(STATUS " SQLite3 runtime library: ${SQLITE3_LIBRARY}")
-    
+
     IF( SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY )
       MESSAGE(STATUS "Found SQLite3 dev environment.")
       INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
@@ -1041,48 +1041,48 @@ ENDIF(OCPN_USE_LZMA)
 # header files and cpp/c files and CMake will sort them out
 
 SET(SRC_NMEA0183
-		src/nmea0183/LatLong.hpp
-		src/nmea0183/latlong.cpp
-		src/nmea0183/long.cpp
-		src/nmea0183/nmea0183.cpp
-		src/nmea0183/nmea0183.hpp
-		src/nmea0183/Response.hpp
-		src/nmea0183/response.cpp
-		src/nmea0183/RMB.hpp
-		src/nmea0183/rmb.cpp
-		src/nmea0183/Sentence.hpp
-		src/nmea0183/sentence.cpp
-		src/nmea0183/talkerid.cpp
-		src/nmea0183/RMC.HPP
-		src/nmea0183/rmc.cpp
-		src/nmea0183/hexvalue.cpp
-		src/nmea0183/lat.cpp
-		src/nmea0183/expid.cpp
-		src/nmea0183/wpl.hpp
-		src/nmea0183/wpl.cpp
-		src/nmea0183/rte.hpp
-		src/nmea0183/rte.cpp
-		src/nmea0183/hdt.hpp
-		src/nmea0183/hdt.cpp
-		src/nmea0183/hdg.hpp
-		src/nmea0183/hdg.cpp
-		src/nmea0183/hdm.hpp
-		src/nmea0183/hdm.cpp
-		src/nmea0183/gll.hpp
-		src/nmea0183/gll.cpp
-		src/nmea0183/vtg.hpp
-		src/nmea0183/vtg.cpp
-		src/nmea0183/gga.hpp
-		src/nmea0183/gga.cpp
-		src/nmea0183/gsv.hpp
-		src/nmea0183/gsv.cpp
-		src/nmea0183/GPwpl.cpp
-		src/nmea0183/GPwpl.hpp
+        src/nmea0183/LatLong.hpp
+        src/nmea0183/latlong.cpp
+        src/nmea0183/long.cpp
+        src/nmea0183/nmea0183.cpp
+        src/nmea0183/nmea0183.hpp
+        src/nmea0183/Response.hpp
+        src/nmea0183/response.cpp
+        src/nmea0183/RMB.hpp
+        src/nmea0183/rmb.cpp
+        src/nmea0183/Sentence.hpp
+        src/nmea0183/sentence.cpp
+        src/nmea0183/talkerid.cpp
+        src/nmea0183/RMC.HPP
+        src/nmea0183/rmc.cpp
+        src/nmea0183/hexvalue.cpp
+        src/nmea0183/lat.cpp
+        src/nmea0183/expid.cpp
+        src/nmea0183/wpl.hpp
+        src/nmea0183/wpl.cpp
+        src/nmea0183/rte.hpp
+        src/nmea0183/rte.cpp
+        src/nmea0183/hdt.hpp
+        src/nmea0183/hdt.cpp
+        src/nmea0183/hdg.hpp
+        src/nmea0183/hdg.cpp
+        src/nmea0183/hdm.hpp
+        src/nmea0183/hdm.cpp
+        src/nmea0183/gll.hpp
+        src/nmea0183/gll.cpp
+        src/nmea0183/vtg.hpp
+        src/nmea0183/vtg.cpp
+        src/nmea0183/gga.hpp
+        src/nmea0183/gga.cpp
+        src/nmea0183/gsv.hpp
+        src/nmea0183/gsv.cpp
+        src/nmea0183/GPwpl.cpp
+        src/nmea0183/GPwpl.hpp
         src/nmea0183/apb.cpp
         src/nmea0183/apb.hpp
         src/nmea0183/xte.cpp
         src/nmea0183/xte.hpp
-	)
+)
 ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
 set_property(TARGET NMEA0183 PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
 
@@ -1115,95 +1115,95 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 SET(HDRS
                 include/ocpn_types.h
                 include/ocpndc.h
-		include/chart1.h
-		include/bbox.h
-		include/ocpn_pixel.h
-		include/chartdb.h
-		include/chartdbs.h
-		include/chartimg.h
+                include/chart1.h
+                include/bbox.h
+                include/ocpn_pixel.h
+                include/chartdb.h
+                include/chartdbs.h
+                include/chartimg.h
                 include/ChartDataInputStream.h
-		include/chcanv.h
-		include/timers.h
-		include/emboss_data.h
-		include/AISTargetQueryDialog.h
-		include/AIS_Bitstring.h
-		include/AISTargetListDialog.h
-		include/OCPNListCtrl.h
-		include/AISTargetAlertDialog.h
-		include/AIS_Decoder.h
-		include/AIS_Target_Data.h
-		include/DetailSlider.h
-		include/GoToPositionDialog.h
-		include/RolloverWin.h
-		include/S57QueryDialog.h
-		include/S57ObjectDesc.h
-		include/S57Light.h
-		include/S57ClassRegistrar.h
-		include/MarkIcon.h
-		include/SendToGpsDlg.h
-		include/TCWin.h
-		include/tide_time.h
-		include/ChInfoWin.h
-		include/ocpCursor.h
-		include/Quilt.h
-		include/Hyperlink.h
-		include/NavObjectCollection.h
-		include/RoutePoint.h
-		include/Route.h
+                include/chcanv.h
+                include/timers.h
+                include/emboss_data.h
+                include/AISTargetQueryDialog.h
+                include/AIS_Bitstring.h
+                include/AISTargetListDialog.h
+                include/OCPNListCtrl.h
+                include/AISTargetAlertDialog.h
+                include/AIS_Decoder.h
+                include/AIS_Target_Data.h
+                include/DetailSlider.h
+                include/GoToPositionDialog.h
+                include/RolloverWin.h
+                include/S57QueryDialog.h
+                include/S57ObjectDesc.h
+                include/S57Light.h
+                include/S57ClassRegistrar.h
+                include/MarkIcon.h
+                include/SendToGpsDlg.h
+                include/TCWin.h
+                include/tide_time.h
+                include/ChInfoWin.h
+                include/ocpCursor.h
+                include/Quilt.h
+                include/Hyperlink.h
+                include/NavObjectCollection.h
+                include/RoutePoint.h
+                include/Route.h
                 include/Track.h
-		include/SelectItem.h
-		include/Select.h
-		include/FontMgr.h
-		include/FontDesc.h
-		include/vector2D.h
-		include/OCPNSoundData.h
-		include/OCPN_Sound.h
-		include/NMEALogWindow.h
-		include/WindowDestroyListener.h
-		include/TTYWindow.h
-		include/TTYScroll.h
-		include/Layer.h
-		include/concanv.h
-		include/cutil.h
-		include/georef.h
-		include/navutil.h
-		include/routeman.h
-		include/routemanagerdialog.h
-		include/routeprop.h
-		include/routeprintout.h
-		include/trackprintout.h
-		include/PositionParser.h
-		include/printtable.h
-		include/piano.h
-		include/tcmgr.h
-		include/Station_Data.h
-		include/IDX_entry.h
-		include/TC_Error_Code.h
-		include/TCDataFactory.h
-		include/TCDS_Ascii_Harmonic.h
-		include/TCDS_Binary_Harmonic.h
-		include/TCDataSource.h
-		include/thumbwin.h
-		include/options.h
-		include/gshhs.h
-		include/kml.h
-		include/undo.h
-		include/about.h
-		include/ais.h
-		include/pluginmanager.h
-		include/ocpn_plugin.h
-		include/wx/json_defs.h
-		include/wx/jsonwriter.h
-		include/wx/jsonreader.h
-		include/styles.h
-		include/toolbar.h
-		include/compass.h
-		include/geodesic.h
-		include/datastream.h
-		include/OCPN_DataStreamEvent.h
-		include/ConnectionParams.h
-		include/OCP_DataStreamInput_Thread.h
-		include/dsPortType.h
+                include/SelectItem.h
+                include/Select.h
+                include/FontMgr.h
+                include/FontDesc.h
+                include/vector2D.h
+                include/OCPNSoundData.h
+                include/OCPN_Sound.h
+                include/NMEALogWindow.h
+                include/WindowDestroyListener.h
+                include/TTYWindow.h
+                include/TTYScroll.h
+                include/Layer.h
+                include/concanv.h
+                include/cutil.h
+                include/georef.h
+                include/navutil.h
+                include/routeman.h
+                include/routemanagerdialog.h
+                include/routeprop.h
+                include/routeprintout.h
+                include/trackprintout.h
+                include/PositionParser.h
+                include/printtable.h
+                include/piano.h
+                include/tcmgr.h
+                include/Station_Data.h
+                include/IDX_entry.h
+                include/TC_Error_Code.h
+                include/TCDataFactory.h
+                include/TCDS_Ascii_Harmonic.h
+                include/TCDS_Binary_Harmonic.h
+                include/TCDataSource.h
+                include/thumbwin.h
+                include/options.h
+                include/gshhs.h
+                include/kml.h
+                include/undo.h
+                include/about.h
+                include/ais.h
+                include/pluginmanager.h
+                include/ocpn_plugin.h
+                include/wx/json_defs.h
+                include/wx/jsonwriter.h
+                include/wx/jsonreader.h
+                include/styles.h
+                include/toolbar.h
+                include/compass.h
+                include/geodesic.h
+                include/datastream.h
+                include/OCPN_DataStreamEvent.h
+                include/ConnectionParams.h
+                include/OCP_DataStreamInput_Thread.h
+                include/dsPortType.h
                 include/multiplexer.h
                 include/OCPNRegion.h
                 include/LLRegion.h
@@ -1220,97 +1220,97 @@ SET(HDRS
 )
 
 SET(SRCS
-		src/chart1.cpp
-		src/bbox.cpp
-		src/ocpn_pixel.cpp
-                src/ocpndc.cpp
-		src/chartdb.cpp
-		src/chartdbs.cpp
-		src/chartimg.cpp
-                src/ChartDataInputStream.cpp
-		src/chcanv.cpp
-		src/ocpCursor.cpp
-		src/TCWin.cpp
-		src/S57QueryDialog.cpp
-		src/GoToPositionDialog.cpp
-		src/DetailSlider.cpp
-		src/RolloverWin.cpp
-		src/ChInfoWin.cpp
-		src/AISTargetQueryDialog.cpp
-		src/AIS_Bitstring.cpp
-		src/AISTargetListDialog.cpp
-		src/AISTargetAlertDialog.cpp
-		src/AIS_Decoder.cpp
-		src/AIS_Target_Data.cpp
-		src/OCPNListCtrl.cpp
-		src/Quilt.cpp
-		src/Hyperlink.cpp
-		src/NavObjectCollection.cpp
-		src/RoutePoint.cpp
-		src/Route.cpp
-                src/Track.cpp
-		src/SelectItem.cpp
-		src/Select.cpp
-		src/FontMgr.cpp
-		src/FontDesc.cpp
-		src/OCPNSoundData.cpp
-		src/OCPN_Sound.cpp
-		src/NMEALogWindow.cpp
-		src/TTYWindow.cpp
-		src/TTYScroll.cpp
-		src/SendToGpsDlg.cpp
-		src/Layer.cpp
-		src/concanv.cpp
-		src/cutil.cpp
-		src/georef.cpp
-		src/navutil.cpp
-		src/routeman.cpp
-		src/routemanagerdialog.cpp
-		src/routeprop.cpp
-		src/routeprintout.cpp
-		src/trackprintout.cpp
-		src/PositionParser.cpp
-		src/printtable.cpp
-		src/piano.cpp
-		src/tcmgr.cpp
-		src/Station_Data.cpp
-		src/IDX_entry.cpp
-		src/TCDataFactory.cpp
-		src/TCDS_Ascii_Harmonic.cpp
-		src/TCDS_Binary_Harmonic.cpp
-		src/TCDataSource.cpp
-		src/thumbwin.cpp
-		src/options.cpp
-		src/gshhs.cpp
-		src/kml.cpp
-		src/undo.cpp
-		src/about.cpp
-		src/ais.cpp
-		src/pluginmanager.cpp
-		src/wxJSON/jsonwriter.cpp
-		src/wxJSON/jsonreader.cpp
-		src/wxJSON/jsonval.cpp
-		src/styles.cpp
-		src/toolbar.cpp
-		src/compass.cpp
-		src/geodesic.cpp
-		src/datastream.cpp
-		src/OCPN_DataStreamEvent.cpp
-		src/ConnectionParams.cpp
-		src/OCP_DataStreamInput_Thread.cpp
-                src/multiplexer.cpp
-                src/pugixml.cpp
-                src/OCPNRegion.cpp
-                src/LLRegion.cpp
-                src/TrackPropDlg.cpp
-                src/LinkPropDlg.cpp
-                src/ssl/sha1.c
-                src/viewport.cpp
-                src/canvasMenu.cpp
-                src/OCPNPlatform.cpp 
-                src/FlexHash.cpp
-                src/iENCToolbar.cpp
-                src/mbtiles.cpp
+        src/chart1.cpp
+        src/bbox.cpp
+        src/ocpn_pixel.cpp
+        src/ocpndc.cpp
+        src/chartdb.cpp
+        src/chartdbs.cpp
+        src/chartimg.cpp
+        src/ChartDataInputStream.cpp
+        src/chcanv.cpp
+        src/ocpCursor.cpp
+        src/TCWin.cpp
+        src/S57QueryDialog.cpp
+        src/GoToPositionDialog.cpp
+        src/DetailSlider.cpp
+        src/RolloverWin.cpp
+        src/ChInfoWin.cpp
+        src/AISTargetQueryDialog.cpp
+        src/AIS_Bitstring.cpp
+        src/AISTargetListDialog.cpp
+        src/AISTargetAlertDialog.cpp
+        src/AIS_Decoder.cpp
+        src/AIS_Target_Data.cpp
+        src/OCPNListCtrl.cpp
+        src/Quilt.cpp
+        src/Hyperlink.cpp
+        src/NavObjectCollection.cpp
+        src/RoutePoint.cpp
+        src/Route.cpp
+        src/Track.cpp
+        src/SelectItem.cpp
+        src/Select.cpp
+        src/FontMgr.cpp
+        src/FontDesc.cpp
+        src/OCPNSoundData.cpp
+        src/OCPN_Sound.cpp
+        src/NMEALogWindow.cpp
+        src/TTYWindow.cpp
+        src/TTYScroll.cpp
+        src/SendToGpsDlg.cpp
+        src/Layer.cpp
+        src/concanv.cpp
+        src/cutil.cpp
+        src/georef.cpp
+        src/navutil.cpp
+        src/routeman.cpp
+        src/routemanagerdialog.cpp
+        src/routeprop.cpp
+        src/routeprintout.cpp
+        src/trackprintout.cpp
+        src/PositionParser.cpp
+        src/printtable.cpp
+        src/piano.cpp
+        src/tcmgr.cpp
+        src/Station_Data.cpp
+        src/IDX_entry.cpp
+        src/TCDataFactory.cpp
+        src/TCDS_Ascii_Harmonic.cpp
+        src/TCDS_Binary_Harmonic.cpp
+        src/TCDataSource.cpp
+        src/thumbwin.cpp
+        src/options.cpp
+        src/gshhs.cpp
+        src/kml.cpp
+        src/undo.cpp
+        src/about.cpp
+        src/ais.cpp
+        src/pluginmanager.cpp
+        src/wxJSON/jsonwriter.cpp
+        src/wxJSON/jsonreader.cpp
+        src/wxJSON/jsonval.cpp
+        src/styles.cpp
+        src/toolbar.cpp
+        src/compass.cpp
+        src/geodesic.cpp
+        src/datastream.cpp
+        src/OCPN_DataStreamEvent.cpp
+        src/ConnectionParams.cpp
+        src/OCP_DataStreamInput_Thread.cpp
+        src/multiplexer.cpp
+        src/pugixml.cpp
+        src/OCPNRegion.cpp
+        src/LLRegion.cpp
+        src/TrackPropDlg.cpp
+        src/LinkPropDlg.cpp
+        src/ssl/sha1.c
+        src/viewport.cpp
+        src/canvasMenu.cpp
+        src/OCPNPlatform.cpp
+        src/FlexHash.cpp
+        src/iENCToolbar.cpp
+        src/mbtiles.cpp
     )
 IF(APPLE)
     SET(SRCS ${SRCS}
@@ -1376,116 +1376,116 @@ ENDIF(TINYXML_FOUND)
 
 OPTION (USE_S57 "Enable S57 ENC support" ON)
 IF (USE_S57)
-	message (STATUS "S57 ENC support: enabled")
-	ADD_DEFINITIONS(-DUSE_S57)
+        message (STATUS "S57 ENC support: enabled")
+        ADD_DEFINITIONS(-DUSE_S57)
 
-	SET(SRC_S57ENC
-                include/TexFont.h
-		include/s52plib.h
-		include/s52utils.h
-		include/s57chart.h
-		include/mygeom.h
-                src/TexFont.cpp
-		src/s52cnsy.cpp
-		src/s52plib.cpp
-		src/s52utils.cpp
-		src/s57chart.cpp
-		src/cm93.cpp
-		src/mygeom.cpp
-		include/cm93.h
-		src/Osenc.cpp
-		include/Osenc.h
-                include/s57RegistrarMgr.h
-                src/s57RegistrarMgr.cpp
-                src/s57obj.cpp
+        SET(SRC_S57ENC
+        include/TexFont.h
+        include/s52plib.h
+        include/s52utils.h
+        include/s57chart.h
+        include/mygeom.h
+        src/TexFont.cpp
+        src/s52cnsy.cpp
+        src/s52plib.cpp
+        src/s52utils.cpp
+        src/s57chart.cpp
+        src/cm93.cpp
+        src/mygeom.cpp
+        include/cm93.h
+        src/Osenc.cpp
+        include/Osenc.h
+        include/s57RegistrarMgr.h
+        src/s57RegistrarMgr.cpp
+        src/s57obj.cpp
 
-		src/myiso8211/ddffielddefn.cpp
-		src/myiso8211/ddfmodule.cpp
-		src/myiso8211/ddfrecord.cpp
-		src/myiso8211/ddfsubfielddefn.cpp
-		src/myiso8211/ddffield.cpp
-		src/myiso8211/ddfutils.cpp
-		src/mygdal/cpl_config.h
-		src/mygdal/gdal_priv.h
-		src/mygdal/cpl_conv.h
-		src/mygdal/iso8211.h
-		src/mygdal/cpl_csv.h
-		src/mygdal/ogr_api.h
-		src/mygdal/cpl_error.h
-		src/mygdal/ogr_attrind.h
-		src/mygdal/cpl_list.h
-		src/mygdal/cpl_minixml.h
-		src/mygdal/ogr_feature.h
-		src/mygdal/cpl_multiproc.h
-		src/mygdal/ogr_geometry.h
-		src/mygdal/cpl_odbc.h
-		src/mygdal/ogr_p.h
-		src/mygdal/ogr_core.h
-		src/mygdal/cpl_port.h
-		src/mygdal/ogr_s57.h
-		src/mygdal/cpl_string.h
-		src/mygdal/ogr_spatialref.h
-		src/mygdal/cpl_vsi.h
-		src/mygdal/ogrsf_frmts.h
-		src/mygdal/gdal.h
-		src/mygdal/s57.h
-		src/mygdal/gdal_frmts.h
-		src/mygdal/ddfrecordindex.cpp
-		src/mygdal/cpl_conv.cpp
-		src/mygdal/cpl_csv.cpp
-		src/mygdal/cpl_error.cpp
-		src/mygdal/cpl_findfile.cpp
-		src/mygdal/cpl_minixml.cpp
-		src/mygdal/cpl_path.cpp
-		src/mygdal/cpl_string.cpp
-		src/mygdal/cpl_vsisimple.cpp
-		src/mygdal/cplgetsymbol.cpp
-		src/mygdal/ograssemblepolygon.cpp
-		src/mygdal/ogrcurve.cpp
-		src/mygdal/ogrfeature.cpp
-		src/mygdal/ogrfeaturedefn.cpp
-		src/mygdal/ogrfielddefn.cpp
-		src/mygdal/ogrgeometry.cpp
-		src/mygdal/ogrgeometrycollection.cpp
-		src/mygdal/ogrgeometryfactory.cpp
-		src/mygdal/ogrlinearring.cpp
-		src/mygdal/ogrlinestring.cpp
-		src/mygdal/ogrmultilinestring.cpp
-		src/mygdal/ogrmultipoint.cpp
-		src/mygdal/ogrmultipolygon.cpp
-		src/mygdal/ogrpoint.cpp
-		src/mygdal/ogrpolygon.cpp
-		src/mygdal/ogrs57datasource.cpp
-		src/mygdal/ogrlayer.cpp
-		src/mygdal/ogrs57layer.cpp
-		src/mygdal/ogrutils.cpp
-		src/mygdal/s57classregistrar.cpp
-		src/mygdal/s57featuredefns.cpp
-		src/mygdal/s57reader.cpp
-		src/mygdal/gdal_misc.cpp
-	)
-	ADD_LIBRARY(S57ENC ${SRC_S57ENC})
-	INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
-    	set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-	SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
-	
+        src/myiso8211/ddffielddefn.cpp
+        src/myiso8211/ddfmodule.cpp
+        src/myiso8211/ddfrecord.cpp
+        src/myiso8211/ddfsubfielddefn.cpp
+        src/myiso8211/ddffield.cpp
+        src/myiso8211/ddfutils.cpp
+        src/mygdal/cpl_config.h
+        src/mygdal/gdal_priv.h
+        src/mygdal/cpl_conv.h
+        src/mygdal/iso8211.h
+        src/mygdal/cpl_csv.h
+        src/mygdal/ogr_api.h
+        src/mygdal/cpl_error.h
+        src/mygdal/ogr_attrind.h
+        src/mygdal/cpl_list.h
+        src/mygdal/cpl_minixml.h
+        src/mygdal/ogr_feature.h
+        src/mygdal/cpl_multiproc.h
+        src/mygdal/ogr_geometry.h
+        src/mygdal/cpl_odbc.h
+        src/mygdal/ogr_p.h
+        src/mygdal/ogr_core.h
+        src/mygdal/cpl_port.h
+        src/mygdal/ogr_s57.h
+        src/mygdal/cpl_string.h
+        src/mygdal/ogr_spatialref.h
+        src/mygdal/cpl_vsi.h
+        src/mygdal/ogrsf_frmts.h
+        src/mygdal/gdal.h
+        src/mygdal/s57.h
+        src/mygdal/gdal_frmts.h
+        src/mygdal/ddfrecordindex.cpp
+        src/mygdal/cpl_conv.cpp
+        src/mygdal/cpl_csv.cpp
+        src/mygdal/cpl_error.cpp
+        src/mygdal/cpl_findfile.cpp
+        src/mygdal/cpl_minixml.cpp
+        src/mygdal/cpl_path.cpp
+        src/mygdal/cpl_string.cpp
+        src/mygdal/cpl_vsisimple.cpp
+        src/mygdal/cplgetsymbol.cpp
+        src/mygdal/ograssemblepolygon.cpp
+        src/mygdal/ogrcurve.cpp
+        src/mygdal/ogrfeature.cpp
+        src/mygdal/ogrfeaturedefn.cpp
+        src/mygdal/ogrfielddefn.cpp
+        src/mygdal/ogrgeometry.cpp
+        src/mygdal/ogrgeometrycollection.cpp
+        src/mygdal/ogrgeometryfactory.cpp
+        src/mygdal/ogrlinearring.cpp
+        src/mygdal/ogrlinestring.cpp
+        src/mygdal/ogrmultilinestring.cpp
+        src/mygdal/ogrmultipoint.cpp
+        src/mygdal/ogrmultipolygon.cpp
+        src/mygdal/ogrpoint.cpp
+        src/mygdal/ogrpolygon.cpp
+        src/mygdal/ogrs57datasource.cpp
+        src/mygdal/ogrlayer.cpp
+        src/mygdal/ogrs57layer.cpp
+        src/mygdal/ogrutils.cpp
+        src/mygdal/s57classregistrar.cpp
+        src/mygdal/s57featuredefns.cpp
+        src/mygdal/s57reader.cpp
+        src/mygdal/gdal_misc.cpp
+    )
+    ADD_LIBRARY(S57ENC ${SRC_S57ENC})
+    INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/src/mygdal)
+    set_property(TARGET S57ENC PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+    SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
+
 ELSE (USE_S57)
-	message (STATUS "S57 ENC support: disabled")
+    message (STATUS "S57 ENC support: disabled")
 ENDIF (USE_S57)
 
 OPTION (USE_GARMINHOST "Enable Garmin Host Mode support" ON)
 IF (USE_GARMINHOST)
-	message (STATUS "Garmin Host Mode support: enabled")
-	ADD_DEFINITIONS(-DUSE_GARMINHOST)
+        message (STATUS "Garmin Host Mode support: enabled")
+        ADD_DEFINITIONS(-DUSE_GARMINHOST)
 
-	SET(SRC_GARMINHOST
+        SET(SRC_GARMINHOST
                   src/garmin/jeeps/gpsapp.c
                   src/garmin/jeeps/gpscom.c
                   src/garmin/jeeps/gpsmath.c
                   src/garmin/jeeps/gpsmem.c
-	          src/garmin/jeeps/gpsprot.c
+                  src/garmin/jeeps/gpsprot.c
                   src/garmin/jeeps/gpsread.c
-	          src/garmin/jeeps/gpsdevice.c
+                  src/garmin/jeeps/gpsdevice.c
                   src/garmin/jeeps/gpsdevice_ser.c
                   src/garmin/jeeps/gpsdevice_usb.c
                   src/garmin/jeeps/gpsrqst.c
@@ -1519,20 +1519,20 @@ IF (USE_GARMINHOST)
                   src/garmin/jeeps/gpssend.h
                   src/garmin/jeeps/gpsusbcommon.h
                   src/garmin/jeeps/gpsutil.h
-	)
+        )
         IF(WIN32)
            SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
         ENDIF(WIN32)
 
-	ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
-	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
-    	set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
-	SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
+        ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
+        INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
+        set_property(TARGET GARMINHOST PROPERTY COMPILE_FLAGS "${OBJ_VISIBILITY}")
+        SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
         IF(WIN32)
            ADD_DEFINITIONS(-D__WIN32__)
         ENDIF(WIN32)
 ELSE (USE_GARMINHOST)
-	message (STATUS "Garmin Host Mode support: disabled")
+        message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
 
 #Chart Symbols library
@@ -1731,11 +1731,11 @@ IF(BUNDLE_GSHHS MATCHES "FULL")
 ENDIF(BUNDLE_GSHHS MATCHES "FULL")
 
 SET(uiData
-	src/bitmaps/styles.xml
-	src/bitmaps/toolicons_journeyman.png
-	src/bitmaps/toolicons_journeyman_flat.png
-	src/bitmaps/toolicons_traditional.png
-	src/bitmaps/iconRMinus.png
+        src/bitmaps/styles.xml
+        src/bitmaps/toolicons_journeyman.png
+        src/bitmaps/toolicons_journeyman_flat.png
+        src/bitmaps/toolicons_traditional.png
+        src/bitmaps/iconRMinus.png
         src/bitmaps/iconRPlus.png
         src/bitmaps/iconMinimum.png
         src/bitmaps/iconStandard.png
@@ -1779,7 +1779,7 @@ IF(APPLE)
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
 
   IF(OCPN_USE_LIBCPP)
-	  SET(OCPN_LIBCPP "-std=c++11 -stdlib=libc++")
+     SET(OCPN_LIBCPP "-std=c++11 -stdlib=libc++")
   ENDIF(OCPN_USE_LIBCPP)
   SET(CMAKE_CXX_FLAGS "-O2 ${OCPN_LIBCPP} -arch ${ARCH}")
   SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 ${OCPN_LIBCPP} -arch ${ARCH}")
@@ -1860,7 +1860,7 @@ IF(OCPN_USE_SVG)
   FILE(GLOB TRADITIONAL_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/traditional/*")
   FOREACH (_currentSvgFile ${TRADITIONAL_SVG_FILES})
     SET_SOURCE_FILES_PROPERTIES(
-	    ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/traditional )
+         ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/traditional )
   ENDFOREACH (_currentSvgFile )
 
   #Journeyman theme SVG icons
@@ -1869,7 +1869,7 @@ IF(OCPN_USE_SVG)
     SET_SOURCE_FILES_PROPERTIES(
             ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/journeyman )
   ENDFOREACH (_currentSvgFile )
-  
+
   #Journeyman_flat theme SVG icons
   FILE(GLOB JOURNEYMAN_FLAT_SVG_FILES "${CMAKE_SOURCE_DIR}/data/svg/journeyman_flat/*")
   FOREACH (_currentSvgFile ${JOURNEYMAN_FLAT_SVG_FILES})
@@ -1882,7 +1882,7 @@ IF(OCPN_USE_SVG)
   FOREACH (_currentSvgFile ${DEFAULT_ICON_SVG_FILES})
     SET_SOURCE_FILES_PROPERTIES( ${_currentSvgFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata/markicons )
   ENDFOREACH (_currentSvgFile )
- 
+
 ENDIF(OCPN_USE_SVG)
 
 INSTALL(DIRECTORY data/svg/markicons/ DESTINATION ${PREFIX_PKGDATA}/uidata/markicons)
@@ -1894,7 +1894,7 @@ IF(BUNDLE_DOCS MATCHES "ON")
 
   FILE(GLOB_RECURSE WIKI_DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/*")
   FOREACH (_currentWikiDocFile ${WIKI_DOC_FILES})
- 
+
     file(RELATIVE_PATH
     _docfileRelPath # Output variable
     "${CMAKE_SOURCE_DIR}/data/doc/" # Base directory
@@ -1906,8 +1906,8 @@ IF(BUNDLE_DOCS MATCHES "ON")
 #    MESSAGE (STATUS "    Adding Wiki Doc File : " ${_currentWikiDocFile}  "  Destination: "  ${_location})
     SET_SOURCE_FILES_PROPERTIES( ${_currentWikiDocFile}  PROPERTIES MACOSX_PACKAGE_LOCATION ${_location} )
   ENDFOREACH (_currentWikiDocFile )
-  
-  
+
+
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 SET_SOURCE_FILES_PROPERTIES( buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
@@ -1921,15 +1921,13 @@ SET(MACOSX_BUNDLE_BUNDLE_NAME "OpenCPN")
 SET(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
 
 IF(BUNDLE_DOCS MATCHES "ON")
-	SET(DOC_FILES 
-		data/doc/help_web.html
-		data/doc/help_en_US.html
-		${WIKI_DOC_FILES}
-		)
+    SET(DOC_FILES
+             data/doc/help_web.html
+             data/doc/help_en_US.html
+             ${WIKI_DOC_FILES}
+    )
 ELSE(BUNDLE_DOCS MATCHES "ON")
-	SET(DOC_FILES 
-		data/doc/help_web.html
-		)
+    SET(DOC_FILES data/doc/help_web.html)
 ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
@@ -2001,8 +1999,8 @@ ENDIF(NOT APPLE AND NOT QT_ANDROID)
 
 IF(WIN32)
 TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-	setupapi.lib
-#	glu32.lib
+        setupapi.lib
+#       glu32.lib
         "GLU_static"
         psapi.lib
         )
@@ -2106,7 +2104,7 @@ IF(OCPN_USE_SVG)
 ENDIF(OCPN_USE_SVG)
 
 IF (USE_S57)
-	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 ENDIF (USE_S57)
 
 IF(BUNDLE_TCDATA MATCHES "ON")
@@ -2120,9 +2118,9 @@ INSTALL(FILES data/CoC-909_2013-InlandECDIS_20170308s.pdf DESTINATION ${PREFIX_P
 INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
 IF(PACKAGE_FORMAT EQUAL "DEB")
-	INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES data/changelog.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 ELSE(PACKAGE_FORMAT EQUAL "DEB")
-	INSTALL(FILES data/changelog DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+    INSTALL(FILES data/changelog DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 ENDIF(PACKAGE_FORMAT EQUAL "DEB")
 
 INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
@@ -2284,19 +2282,19 @@ IF(WIN32 AND NOT UNIX)
     IF(BUNDLE_WXDLLS)
         FILE(GLOB wxdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/wxWidgets/*.dll")
         INSTALL(FILES ${wxdll_files} DESTINATION ".")
-	MESSAGE(STATUS "wxWidgets DLLs bundled into the installer package...")
+        MESSAGE(STATUS "wxWidgets DLLs bundled into the installer package...")
     ENDIF(BUNDLE_WXDLLS)
     OPTION (BUNDLE_VCDLLS "Bundle the VC redistributable libraries" ON)
     IF(BUNDLE_VCDLLS)
         FILE(GLOB vcdll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/vc/*.dll")
         INSTALL(FILES ${vcdll_files} DESTINATION ".")
-	MESSAGE(STATUS "MSVC redistributable DLLs bundled into the installer package...")
+        MESSAGE(STATUS "MSVC redistributable DLLs bundled into the installer package...")
     ENDIF(BUNDLE_VCDLLS)
     OPTION (BUNDLE_LIBARCHIVEDLLS "Bundle the prebuilt LibArchive and LibLZMA DLLs" ON)
     IF(BUNDLE_LIBARCHIVEDLLS)
         FILE(GLOB libarchivedll_files "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/archive.dll" "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/liblzma.dll"  "${CMAKE_CURRENT_SOURCE_DIR}/buildwin/zlib1.dll")
         INSTALL(FILES ${libarchivedll_files} DESTINATION ".")
-	MESSAGE(STATUS "LibArchive DLLs bundled into the installer package...")
+        MESSAGE(STATUS "LibArchive DLLs bundled into the installer package...")
     ENDIF(BUNDLE_LIBARCHIVEDLLS)
 ENDIF(WIN32 AND NOT UNIX)
 
@@ -2477,7 +2475,7 @@ IF(APPLE)
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/dashboard_pi/libdashboard_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/grib_pi/libgrib_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/chartdldr_pi/libchartdldr_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")  
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/plugins/wmm_pi/libwmm_pi.dylib DESTINATION "bin/OpenCPN.app/Contents/PlugIns")
 
   SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
   SET(LIBS ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
