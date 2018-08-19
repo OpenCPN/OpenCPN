@@ -8,6 +8,7 @@ Files-Excluded: .*
  buildwin
  plugins/chartdldr_pi/src/tinyxml
  plugins/grib_pi/src/bzip2
+ src/texcmp/lz4
  src/wxsvg
 
 
@@ -431,14 +432,6 @@ Files: plugins/dashboard_pi/src/baro_history.cpp
  plugins/grib_pi/src/CustomGrid.h
 Copyright: 2010, David S. Register *
 License: GPL-2+
-
-Files: src/texcmp/lz4/lz4.c
- src/texcmp/lz4/lz4.h
- src/texcmp/lz4/lz4hc.c
- src/texcmp/lz4/lz4hc.h
-Copyright: 2011-2013, Yann Collet.
-  2011-2014, Yann Collet.
-License: BSD-2-clause
 
 Files: src/mygdal/cpl_error.cpp
  src/mygdal/cpl_error.h

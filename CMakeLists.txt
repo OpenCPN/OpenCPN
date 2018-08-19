@@ -1556,10 +1556,7 @@ SET(EXTRA_LIBS ${EXTRA_LIBS} SYMBOLS)
 
 # Compile texcompression support library
 IF (OPENGL_FOUND)
-
   SET(SRC_TEXCMP
-    src/texcmp/lz4/lz4.c
-    src/texcmp/lz4/lz4hc.c
     src/texcmp/squish/alpha.cpp
     src/texcmp/squish/clusterfit.cpp
     src/texcmp/squish/colourblock.cpp
@@ -1571,10 +1568,22 @@ IF (OPENGL_FOUND)
     src/texcmp/squish/singlecolourfitfast.cpp
     src/texcmp/squish/twocolourfitfast.cpp
     src/texcmp/squish/squish.cpp
-    src/texcmp/etcpak.cpp)
-
-  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
+    src/texcmp/etcpak.cpp
+  )
   INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
+  PKG_SEARCH_MODULE(LZ4 liblz4 lz4)
+  IF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    message (STATUS "Building with system lz4")
+    INCLUDE_DIRECTORIES(${LZ4_INCLUDE_DIR})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${LZ4_LIBRARIES})
+  ELSE (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
+    message (STATUS "Building with bundled lz4")
+    SET(SRC_TEXCMP ${SRC_TEXCMP}
+      src/texcmp/lz4/lz4.c
+      src/texcmp/lz4/lz4hc.c
+    )
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
+  ENDIF (LZ4_FOUND AND USE_BUNDLED_LIBS MATCHES "OFF")
 
   ADD_LIBRARY(TEXCMP ${SRC_TEXCMP})
   SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
