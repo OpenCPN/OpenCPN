@@ -23,34 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * From version 5.0, this header is distributed in the package and can
- * be included from standard paths, usually like
- *
- *     #include <opencpn/ocpn_plugin.h>
- *
- * A plugin built this way will require current version or higher to build
- * and run. To support older versions,  headers for the different API versions
- * are available on paths like opencpn/12/ocpn_plugin.h for version 12. A
- * plugin built this way will be usable on installations from version 12+.
- * If the plugin should be buildable on the same, older version the header
- * must be bundled with the plugin.
- *
- *
- * Table of API versions
- * =====================
- *
- * Commit       Version   Commit date  Release       Release date
- * 9b6b5ef5     2         2010-11-11   2.3.0         2010-12-18
- * 9cb7df68     5         2011-05-06   2.5.0         2011-07-06
- * 5e7684b9     8         2012-04-17   3.0.0         2012-06-06
- * e3a6774b     9         2012-09-14   3.2.0         2013-03-07
- * ca27506b     12        2014-09-02   4.0.0         2015-01-21
- * af85eb60     13        2017-03-05   4.4.0         2016-06-25
- * 4866342e     15        2017-09-18   4.8.1.10119   2018-01-18
- *
- */
-
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
@@ -64,11 +36,6 @@
 #endif
 #endif
 
-#ifdef __WXMSW__
-#ifdef MAKING_PLUGIN
-#  define DECL_IMP     __declspec(dllimport)
-#endif
-#endif    
 
 #include <wx/xml/xml.h>
 
@@ -1107,7 +1074,6 @@ extern DECL_EXP void ForceChartDBUpdate();
 extern  DECL_EXP wxString GetWritableDocumentsDir( void );
 extern  DECL_EXP wxDialog *GetActiveOptionsDialog();
 extern  DECL_EXP wxArrayString GetWaypointGUIDArray( void );
-extern  DECL_EXP wxArrayString GetIconNameArray(void);
 
 extern  DECL_EXP bool AddPersistentFontKey(wxString TextElement);
 extern  DECL_EXP wxString GetActiveStyleName();
@@ -1250,13 +1216,7 @@ private:
 //DECLARE_EVENT_TYPE(wxEVT_DOWNLOAD_EVENT, -1)
 //extern const wxEventType DECL_EXP wxEVT_DOWNLOAD_EVENT;
 
-//extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
-
-#ifdef MAKING_PLUGIN
-extern   DECL_IMP wxEventType wxEVT_DOWNLOAD_EVENT;
-#else
-extern   DECL_EXP wxEventType wxEVT_DOWNLOAD_EVENT;
-#endif
+extern WXDLLIMPEXP_CORE const wxEventType wxEVT_DOWNLOAD_EVENT;
 
 // API 1.14 Extra canvas Support
 
@@ -1266,36 +1226,6 @@ extern DECL_EXP bool PlugInSetFontColor(const wxString TextElement, const wxColo
 
 // API 1.15
 extern DECL_EXP double PlugInGetDisplaySizeMM();
-
-// 
-extern DECL_EXP wxFont* FindOrCreateFont_PlugIn( int point_size, wxFontFamily family, 
-                    wxFontStyle style, wxFontWeight weight, bool underline = false,
-                    const wxString &facename = wxEmptyString,
-                    wxFontEncoding encoding = wxFONTENCODING_DEFAULT );
-
-extern DECL_EXP int PlugInGetMinAvailableGshhgQuality();
-extern DECL_EXP int PlugInGetMaxAvailableGshhgQuality();
-
-extern DECL_EXP void PlugInHandleAutopilotRoute(bool enable);
-
-// API 1.16?
-//
-/**
- * Return the plugin data directory for a given directory name.
- *
- * On Linux, the returned data path is an existing directory ending in
- * "opencpn/plugins/<plugin_name>" where the last part is the plugin_name
- * argument. The prefix part is one of the directories listed in the
- * environment variable XDG_DATA_DIRS, by default
- * ~/.local/share:/usr/local/share:/usr/share.
- *
- * On other platforms, the returned value is GetSharedDataDir() +
- * "/opencpn/plugins/" + plugin_name (with native path separators)
- * if that path exists.
- *
- * Return "" if no existing directory is found.
- */
-extern DECL_EXP wxString GetPluginDataDir(const char* plugin_name);
 
 
 #endif //_PLUGIN_H_
