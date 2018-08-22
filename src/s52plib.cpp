@@ -8820,9 +8820,22 @@ void s52plib::PLIB_LoadS57Config()
     }
 }
 
-
-
-
+void s52plib::SetObjOnOff(const char *s, bool val)
+{
+    if(val) {                  // off
+        AddObjNoshow(s);
+    }
+    else{                      // on
+        RemoveObjNoshow(s);
+        for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, s, 6 ) ) {
+                pOLE->nViz = 1;
+                break;
+            }
+        }
+    }
+}
 
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
@@ -8858,19 +8871,7 @@ void s52plib::PrepareForRender()
             OBJLElement *pOLE = NULL;
             
             // Detect and manage "LIGHTS" toggle
-            if(m_lightsOff) {                   // off
-                AddObjNoshow("LIGHTS");
-            }
-            else{                               // on
-                RemoveObjNoshow("LIGHTS");
-                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                    OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
-                        pOLE->nViz = 1;
-                        break;
-                    }
-                }
-            }
+            SetObjOnOff("LIGHTS", m_lightsOff);
 
             
             const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL", "SBDARE" };
@@ -8899,20 +8900,7 @@ void s52plib::PrepareForRender()
             }
                 
             // Handle Quality of data toggle
-            bool bQuality = m_qualityOfDataOn;
-            if(!bQuality){
-                AddObjNoshow("M_QUAL");
-            }
-            else{
-                RemoveObjNoshow("M_QUAL");
-                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
-                    OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
-                    if( !strncmp( pOLE->OBJLName, "M_QUAL", 6 ) ) {
-                        pOLE->nViz = 1;         // force on
-                        break;
-                    }
-                }
-            }
+            SetObjOnOff("M_QUAL", !m_qualityOfDataOn);
         }
         
         m_myConfig = PI_GetPLIBStateHash();
