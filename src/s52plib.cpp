@@ -75,8 +75,6 @@ void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, in
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 void PLIBDrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_hiqual );
 
-void LoadS57Config();
-
 #ifdef ocpnUSE_GL
 typedef struct {
     TexFont cache;
@@ -8702,11 +8700,11 @@ void s52plib::ClearNoshow(void)
     m_noshow_array.Clear();
 }
 
-void s52plib::PLIB_LoadS57Config()
+void s52plib::LoadS57Config(wxFileConfig *pconfig)
 {
-    //    Get a pointer to the opencpn configuration object
-    wxFileConfig *pconfig = GetOCPNConfigObject();
-    
+    if (pconfig == nullptr)
+        return;
+
     int read_int;
     double dval;
     
@@ -8818,6 +8816,13 @@ void s52plib::PLIB_LoadS57Config()
             bCont = pconfig->GetNextEntry( str, dummy );
         }
     }
+}
+
+void s52plib::PLIB_LoadS57Config()
+{
+    //    Get a pointer to the opencpn configuration object
+    wxFileConfig *pconfig = GetOCPNConfigObject();
+    LoadS57Config(pconfig);
 }
 
 void s52plib::SetObjOnOff(const char *s, bool val)
