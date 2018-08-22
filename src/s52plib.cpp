@@ -8858,11 +8858,18 @@ void s52plib::PrepareForRender()
             OBJLElement *pOLE = NULL;
             
             // Detect and manage "LIGHTS" toggle
-            bool bshow_lights = !m_lightsOff;
-            if(!bshow_lights)                     // On, going off
+            if(m_lightsOff) {                   // off
                 AddObjNoshow("LIGHTS");
-            else{                                   // Off, going on
+            }
+            else{                               // on
                 RemoveObjNoshow("LIGHTS");
+                for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ ) {
+                    OBJLElement *pOLE = (OBJLElement *) ( pOBJLArray->Item( iPtr ) );
+                    if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                        pOLE->nViz = 1;
+                        break;
+                    }
+                }
             }
 
             
