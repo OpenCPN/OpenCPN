@@ -55,11 +55,6 @@ Files:  plugins/chartdldr_pi/src/unarr/lzmasdk/7zTypes.h
 Copyright: NONE
 License: public-domain
 
-Files:  src/glshim/*
-Copyright: 2013 Ryan Hileman
-License: Expat
-Comment: https://github.com/lunixbochs/glshim/blob/unstable/LICENSE
-
 Files:plugins/wmm_pi/src/*
 Copyright: 2014 ESA-VirES
 Comment: https://github.com/ESA-VirES/WMM/blob/master/LICENSE
@@ -344,7 +339,7 @@ Copyright: APvel Xalian
 License: GPL-3+
 
 
-Files: include/GL/glext.h src/glshim/*
+Files: include/GL/glext.h
 Copyright: 2007, The Khronos Group Inc.
   2007-2009, The Khronos Group Inc.
   2007-2010, The Khronos Group Inc.
@@ -352,10 +347,6 @@ Copyright: 2007, The Khronos Group Inc.
   2008-2009, The Khronos Group Inc.
   2013, The Khronos Group Inc.
 License: MIT
-
-Files: src/glshim/include/GLES/*
-Copyright: NONE
-License: SGI-B-2.0
 
 Files: src/wxcurl/dialog.cpp
  src/wxcurl/panel.cpp
@@ -408,10 +399,6 @@ License: GPL-2+
 
 Files: include/GL/gl.h
  include/GL/gl_private.h
- src/glshim/include/GL/glx.h
- src/glshim/include/GL/glx_mangle.h
- src/glshim/src/gl/math/eval.c
- src/glshim/src/gl/math/eval.h
 Copyright: 1999-2001, Brian Paul
   1999-2006, Brian Paul
   1999-2007, Brian Paul
@@ -558,15 +545,6 @@ Files: src/mygdal/cpl_list.h
 Copyright: 2003, Andrey Kiselev <dron@remotesensing.org>
 License: Expat
 
-Files: src/glshim/src/util/khash.h
-Copyright: 2008-2009, 2011, Attractive Chaos <attractor@live.co.uk>
-License: Expat
-
-Files: src/glshim/include/GL/gl.h
-Copyright: 1999-2006, Brian Paul
-  2009, VMware, Inc.
-License: Expat
-
 Files: plugins/dashboard_pi/src/nmea0183/vlw.cpp
 Copyright: 2010, Samuel R. Blackburn, David S Register *
 License: GPL-2+
@@ -582,10 +560,6 @@ License: GPL-2+
 Files: FindEXIF.cmake
 Copyright: 2011, Simone Rossetto <simros85@gmail.com>
 License: GPL-3+
-
-Files: src/glshim/include/GL/glu_mangle.h
-Copyright: 1995-1998, Brian Paul
-License: LGPL-2+
 
 Files: include/GL/glu.h
 Copyright: 1991-2000, Silicon Graphics, Inc.
@@ -610,12 +584,6 @@ Copyright: 2012 Charles F. F. Karney (charles@karney.com)
 Comment: https://geographiclib.sourceforge.io/
 License: Expat
 
-Files: src/glshim/include/GL/internal/dri_interface.h
-Copyright: 1998-1999, Precision Insight, Inc., Cedar Park, Texas.
-  2007-2008, Red Hat, Inc.
-  IBM Corporation 2004
-License: Expat
-
 Files: plugins/chartdldr_pi/CMakeLists.txt
 Copyright: 2014 Pavel Kalian
 License: GPL-2
@@ -624,11 +592,6 @@ Files: src/SQLiteCpp/include/SQLiteCpp/VariadicBind.h
 Copyright: 2016, Paul Dreik (github@pauldreik.se)
   2016-2018, Sebastien Rombauts (sebastien.rombauts@gmail.com)
 License: MIT
-
-Files: src/glshim/spec/xml/gles-2.0.xml
-Copyright: 2012-2013, Wladimir J. van der Laan
-License: MIT
-
 
 License: GPL-2+
  This program is free software; you can redistribute it and/or modify
