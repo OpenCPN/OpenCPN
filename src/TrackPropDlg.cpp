@@ -223,6 +223,19 @@ void TrackPropDlg::RecalculateSize( void )
 
 }
 
+static void addColumns(wxListCtrl *lctrl, int dx) {
+    lctrl->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6);
+    lctrl->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10);
+    lctrl->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8);
+    lctrl->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    lctrl->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11);
+    // Width of timestamp is typically 19 characters: 'MM/DD/YYYY HH:MM:SS'.
+    lctrl->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 19);
+    lctrl->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8);
+
+    lctrl->SetMinSize(wxSize(-1, 50) );
+}
+
 void TrackPropDlg::CreateControlsCompact()
 {
 
@@ -435,21 +448,9 @@ void TrackPropDlg::CreateControlsCompact()
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( itemlistWin, wxID_ANY, wxDefaultPosition, wxSize( 100, 500 ), flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
      // sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
@@ -707,21 +708,9 @@ void TrackPropDlg::CreateControls( void )
 #endif
 
       m_lcPoints = new OCPNTrackListCtrl( m_panel0, wxID_ANY, wxDefaultPosition, wxDefaultSize, flags);
-
+      addColumns(m_lcPoints, GetCharWidth());
 
       sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
-
-      int dx = GetCharWidth();
-
-      m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
-      m_lcPoints->InsertColumn( 1, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
-      m_lcPoints->InsertColumn( 2, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
-      m_lcPoints->InsertColumn( 3, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
-      m_lcPoints->InsertColumn( 4, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
-      m_lcPoints->InsertColumn( 5, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
-      m_lcPoints->InsertColumn( 6, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
-
-      m_lcPoints->SetMinSize(wxSize(-1, 50) );
 
 #ifdef __OCPN__ANDROID__
       m_lcPoints->GetHandle()->setStyleSheet( getQtStyleSheet());
